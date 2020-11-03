@@ -60,7 +60,6 @@
 <translation id="1456407467406159627">ეკრანის ჩაწერა შეწყდა, რადგან ეკრანზე კონფიდენციალური კონტენტი გაქვთ.</translation>
 <translation id="1460620680449458626">ხმა დადუმებულია.</translation>
 <translation id="1467432559032391204">მარცხენა</translation>
-<translation id="1475439723810528286">სრული ეკრანის აღსაბეჭდად შეეხეთ ნებისმიერ ადგილს</translation>
 <translation id="1479909375538722835">მარტივი წვდომის მოლივლივე მენიუ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">მფლობელის ეს ანგარიში გახდეს პირველი შესული ანგარიში მრავალპროფილიან სესიაში.</translation>
@@ -127,7 +126,6 @@
 <translation id="2132302418721800944">ეკრანის სრულად ჩაწერა</translation>
 <translation id="2135456203358955318">ჩამაგრებული ლუპა</translation>
 <translation id="2144487987174258011">გადატვირთეთ Adobe Flash Player-ის განახლებისთვის</translation>
-<translation id="2180011262286780504">ეკრანის აღბეჭდვის შესაძლებლობა გათიშულია თქვენი ადმინისტრატორის მიერ.</translation>
 <translation id="2208323208084708176">ერთიანი დესკტოპის რეჟიმი</translation>
 <translation id="2220572644011485463">PIN-კოდი ან პაროლი</translation>
 <translation id="2222338659135520253">აუცილებელია სისტემაში შესვლა</translation>
@@ -801,7 +799,6 @@
 <translation id="8843682306134542540">ბრუნვის ჩაკეტვის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">თქვენი PIN-კოდის ან პაროლის დადასტურება კვლავ ვერ მოხერხდა. გაითვალისწინეთ: თუ ახლახან შეცვალეთ პაროლი, გამოიყენეთ თქვენი ძველი პაროლი. ახალი პაროლი ძალაში შევა, როცა სისტემიდან გახვალთ.</translation>
-<translation id="885387440427703469">ეკრანის აღბეჭდვა გათიშულია</translation>
 <translation id="8870509716567206129">ეკრანის გაყოფა არ არის მხარდაჭერილი აპის მიერ.</translation>
 <translation id="8871580645200179206">მუქი თემის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">არ არის დაკავშირებული</translation>

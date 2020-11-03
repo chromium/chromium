@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">కొత్త ట్యాబ్‌ను సృష్టించండి.</translation>
 <translation id="1145536944570833626">ఇప్పటికే ఉన్న డేటాను తొలగించండి.</translation>
 <translation id="1154690515305205900">హైలైట్ చేయబడిన టెక్స్ట్‌కు లింక్‌ను క్రియేట్ చేయడం సాధ్యపడదు.</translation>
+<translation id="1157749421655780457">లొకేషన్‌ను అనుమతించు...</translation>
 <translation id="1165039591588034296">ఎర్రర్</translation>
 <translation id="1172898394251786223">తర్వాతి ఫీల్డ్</translation>
 <translation id="1176932207622159128">చిత్రాన్ని సేవ్ చేయడం సాధ్యపడలేదు</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">అంశాలు లేవు</translation>
 <translation id="1692118695553449118">సమకాలీకరణ ఆన్‌లో ఉంది</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ఎంచుకోబడ్డాయి</translation>
+<translation id="1715940067130687605">మీ ప్రస్తుత లొకేషన్‌ను ఉపయోగించండి.</translation>
 <translation id="1740468249224277719">ఇన్‌స్టాల్ చేయడానికి రెండుసార్లు నొక్కండి.</translation>
 <translation id="1746815479209538200">వెబ్‌ను బ్రౌజ్ చేయడానికి, కొత్త ట్యాబ్‌ను జోడించండి.</translation>
 <translation id="1752547299766512813">పాస్‌వర్డ్‌లను సేవ్ చేయి</translation>
@@ -374,6 +376,7 @@
 <translation id="5059136629401106827">సరే</translation>
 <translation id="5062321486222145940">ఇన్‌స్టాల్ Google డిస్క్‌</translation>
 <translation id="5083464117946352670">ఫైల్ పరిమాణం గుర్తించలేకపో..</translation>
+<translation id="5090832849094901128">ఈ పాస్‌వర్డ్‌ను తొలగించడం వలన <ph name="WEBSITE" />లో మీ ఖాతా తొలగించబడదు.</translation>
 <translation id="5094827893301452931">ట్వీట్ చేయడం పూర్తయింది.</translation>
 <translation id="5118764316110575523">ఆఫ్ చేయబడి ఉంది</translation>
 <translation id="5127805178023152808">సమకాలీకరణ ఆఫ్‌లో ఉంది</translation>

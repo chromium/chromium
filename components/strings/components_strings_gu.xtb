@@ -80,6 +80,14 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">તમે એવી સાઇટ પર તમારો પાસવર્ડ દાખલ કર્યો કે જે તમારી કંપની દ્વારા મેનેજ કરવામાં આવતો નથી. તમારા એકાઉન્ટને સુરક્ષિત કરવા માટે, અન્ય ઍપ અને સાઇટ પર તમારા પાસવર્ડનો ફરી ઉપયોગ કરશો નહિ.</translation>
 <translation id="1263231323834454256">વાચન સૂચિ</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        આ ડિવાઇસ પર નહીં રહે તેવી પ્રવૃત્તિ આ છે:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />આ વિન્ડોમાં તમે જોયેલા પેજ
+          <ph name="LIST_ITEM" />કુકી અને સાઇટનો ડેટા
+          <ph name="LIST_ITEM" />એકાઉન્ટ વિશેની માહિતી (<ph name="LINK_BEGIN" />સાઇન આઉટ કરો<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">પિકઅપ પદ્ધતિ</translation>
 <translation id="1281476433249504884">સ્ટૅકર 1</translation>
 <translation id="1285320974508926690">આ સાઇટનું ક્યારેય ભાષાંતર કરશો નહીં</translation>
@@ -555,6 +563,7 @@
 <translation id="3207960819495026254">બુકમાર્ક કરેલ</translation>
 <translation id="3209034400446768650">પેજ કદાચ નાણાં વસૂલી શકે છે</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> પરની તમારી પ્રવૃત્તિનું નિરીક્ષણ કરવામાં આવી રહ્યું છે</translation>
+<translation id="3212623355668894776">તમામ અતિથિ વિન્ડો બંધ કરો જેથી આ ડિવાઇસમાંથી તમારી બ્રાઉઝિંગ પ્રવૃત્તિ ડિલીટ કરવામાં આવે.</translation>
 <translation id="3215092763954878852">WebAuthnનો ઉપયોગ કરી શક્યાં નથી</translation>
 <translation id="3218181027817787318">સંબંધિત</translation>
 <translation id="3225919329040284222">સર્વર એક પ્રમાણપત્ર પ્રસ્તુત કરે છે જે બિલ્ટ-ઇન અપેક્ષાઓ સાથે મેળ ખાતું નથી. આ અપેક્ષાઓમાં તમને સુરક્ષિત રાખવા માટે અમુક ચોક્કસ, ઉચ્ચ-સુરક્ષા વેબસાઇટ્સનો સમાવેશ થાય છે.</translation>
@@ -916,6 +925,7 @@
 <translation id="4658638640878098064">ઉપર ડાબી બાજુએ સ્ટેપલ લગાવો</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">વર્ચ્યુઅલ રિયાલિટી</translation>
+<translation id="4675657451653251260">અતિથિ મોડમાં તમને Chrome પ્રોફાઇલની કોઈપણ માહિતી દેખાશે નહીં. તમારા Google એકાઉન્ટની માહિતી જેમકે પાસવર્ડ અને ચુકવણી પદ્ધતિઓ ઍક્સેસ કરવા માટે, તમે <ph name="LINK_BEGIN" />સાઇન ઇન<ph name="LINK_END" /> કરી શકો છો.</translation>
 <translation id="467662567472608290">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેના સુરક્ષા પ્રમાણપત્રમાં ભૂલો છે. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> ઍક્સેસિબિલિટી ઇવેન્ટનો જવાબ આપવા માગે છે</translation>
 <translation id="467809019005607715">Google સ્લાઇડ</translation>
@@ -943,6 +953,12 @@
 <translation id="4761104368405085019">તમારા માઇક્રોફોનનો ઉપયોગ કરો</translation>
 <translation id="4764776831041365478"><ph name="URL" /> પરનાં વેબપેજ અસ્થાયી ધોરણે બંધ હોઈ શકે છે અથવા તે કાયમ માટે નવા વેબ ઍડ્રેસ પર ખસેડવામાં આવ્યા હોઈ શકે છે.</translation>
 <translation id="4766713847338118463">નીચે બે સ્ટેપલ લગાવો</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        આ ડિવાઇસ પર રહેશે તેવી પ્રવૃત્તિ આ છે:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />આ વિન્ડોમાં તમે ડાઉનલોડ કરેલી કોઈપણ ફાઇલ
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">કોઈ અજ્ઞાત ભૂલ આવી.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{પૉપ-અપ બ્લૉક કર્યુંં છે}one{# પૉપ-અપ બ્લૉક કર્યુંં છે}other{# પૉપ-અપ બ્લૉક કર્યુંં છે}}</translation>
 <translation id="4780366598804516005">મેઇલબૉક્સ 1</translation>
@@ -1397,6 +1413,7 @@
 <translation id="6587923378399804057">તમે કૉપિ કરેલી લિંક</translation>
 <translation id="6591833882275308647">તમારું <ph name="DEVICE_TYPE" /> મેનેજ કરવામાં આવતું નથી</translation>
 <translation id="6596325263575161958">એન્ક્રિપ્શન વિકલ્પો</translation>
+<translation id="6596892391065203054">આ કન્ટેન્ટ પ્રિન્ટ કરવાની સુવિધા તમારા વ્યવસ્થાપક દ્વારા બ્લૉક કરવામાં આવી છે.</translation>
 <translation id="6604181099783169992">મોશન અથવા લાઇટ સેન્સર</translation>
 <translation id="6609880536175561541">Prc7 (એન્વલપ)</translation>
 <translation id="6612358246767739896">સુરક્ષિત કન્ટેન્ટ</translation>
@@ -1880,11 +1897,21 @@
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> પર ખાનગી કનેક્શન સ્થાપિત કરી શકાતું નથી કારણ કે તમારા ઉપકરણની તારીખ અને સમય (<ph name="DATE_AND_TIME" />) અયોગ્ય છે.</translation>
 <translation id="8564182942834072828">અલગ દસ્તાવેજો/ગોઠવણી વિનાની કૉપિ</translation>
 <translation id="8564985650692024650">જો તમે અન્ય સાઇટ પર <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> પાસવર્ડનો ફરી ઉપયોગ કર્યો હોય, તો Chromium તેને રીસેટ કરવાનો સુઝાવ આપે છે.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        આ ડિવાઇસ પર નહીં રહે તેવી પ્રવૃત્તિ આ છે:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />આ વિન્ડોમાં તમે જોયેલા પેજ
+          <ph name="LIST_ITEM" />કુકી અને સાઇટનો ડેટા
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">કાર્ડને વધુ ઝડપથી કન્ફર્મ કરવા માટે Touch IDનો ઉપયોગ કરો</translation>
 <translation id="858637041960032120">ફોન નંબર ઉમેરો</translation>
 <translation id="8589998999637048520">શ્રેષ્ઠ ક્વૉલિટી</translation>
 <translation id="860043288473659153">કાર્ડધારકનું નામ</translation>
 <translation id="8606726445206553943">તમારા MIDI ઉપકરણોનો ઉપયોગ કરો</translation>
+<translation id="8612761427948161954">નમસ્કાર <ph name="USERNAME" />,
+        <ph name="BR" />
+        તમે અતિથિ તરીકે બ્રાઉઝ કરી રહ્યાં છો</translation>
 <translation id="861775596732816396">કદ 4</translation>
 <translation id="8622948367223941507">કાનૂની-અતિરિક્ત</translation>
 <translation id="8623885649813806493">કોઈ મેળ ખાતા પાસવર્ડ નથી. બધા સાચવેલા પાસવર્ડ બતાવો.</translation>
@@ -2023,6 +2050,7 @@
 <translation id="9183302530794969518">Google દસ્તાવેજ</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" />, એક અસમર્થિત પ્રોટોકોલનો ઉપયોગ કરે છે.</translation>
 <translation id="9191834167571392248">નીચે ડાબી બાજુએ કાણું પાડો</translation>
+<translation id="9199905725844810519">પ્રિન્ટ કરવાની સુવિધા બ્લૉક કરવામાં આવી છે</translation>
 <translation id="9205078245616868884">તમારો ડેટા તમારા સિંક પાસફ્રેઝ સાથે એન્ક્રિપ્ટ કરવામાં આવ્યો છે. સિંક શરૂ કરવા માટે એ દાખલ કરો.</translation>
 <translation id="9207861905230894330">લેખ ઉમેરવામાં નિષ્ફળ થયાં.</translation>
 <translation id="9213433120051936369">દેખાવને કસ્ટમાઇઝ કરો</translation>

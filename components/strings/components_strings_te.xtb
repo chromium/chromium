@@ -80,6 +80,14 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">మీ సంస్థ నిర్వహించని ఒక సైట్‌లో మీరు మీ పాస్‌వర్డ్‌ను నమోదు చేసారు. మీ ఖాతాను రక్షించడం కోసం, ఇతర యాప్‌లు మరియు సైట్‌లలో మీ పాస్‌వర్డ్‌ను తిరిగి ఉపయోగించవద్దు.</translation>
 <translation id="1263231323834454256">పఠన జాబితా</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        ఈ పరికరంలో సేవ్ అవ్వని యాక్టివిటీ:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />మీరు ఈ విండోలో చూసే పేజీలు
+          <ph name="LIST_ITEM" />కుక్కీ‌లు, సైట్ డేటా
+          <ph name="LIST_ITEM" />ఖాతా సమాచారం (<ph name="LINK_BEGIN" />సైన్ అవుట్<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">పికప్ పద్ధతి</translation>
 <translation id="1281476433249504884">స్టాకర్ 1</translation>
 <translation id="1285320974508926690">ఈ సైట్‌ను ఎప్పటికీ అనువదించవద్దు</translation>
@@ -555,6 +563,7 @@
 <translation id="3207960819495026254">బుక్‌మార్క్ చేయబడింది</translation>
 <translation id="3209034400446768650">పేజీ, నగదును ఛార్జ్ చేయవచ్చు</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" />లోని మీ కార్యకలాపం పర్యవేక్షించబడుతోంది</translation>
+<translation id="3212623355668894776">అన్ని గెస్ట్ విండోలను మూసివేయండి, తద్వారా ఈ పరికరం నుండి మీ బ్రౌజింగ్ యాక్టివిటీ తొలగించబడుతుంది.</translation>
 <translation id="3215092763954878852">WebAuthn ఉపయోగించడం సాధ్యం కాలేదు</translation>
 <translation id="3218181027817787318">సంబంధిత</translation>
 <translation id="3225919329040284222">అంతర్గత అంచనాలకు సరిపోలని ఒక ధృవీకరణ పత్రాన్ని సర్వర్ సమర్పించింది. మిమ్మల్ని సంరక్షించే దిశగా నిర్దిష్ట, ఉన్నత స్ధాయి భద్రతా వెబ్‌సైట్‌ల కోసం ఈ అంచనాలు చేర్చబడ్డాయి.</translation>
@@ -916,6 +925,7 @@
 <translation id="4658638640878098064">ఎడమవైపు ఎగువ భాగంలో స్టేపుల్</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">వర్చువల్ రియాలిటీ</translation>
+<translation id="4675657451653251260">గెస్ట్ మోడ్‌లో మీరు ఎటువంటి Chrome ప్రొఫైల్ సమాచారాన్ని చూడలేరు. పాస్‌వర్డ్‌లు, పేమెంట్ ఆప్షన్‌లు వంటి మీ Google ఖాతా సమాచారాన్ని యాక్సెస్ చేయడానికి, మీరు <ph name="LINK_BEGIN" />సైన్ ఇన్<ph name="LINK_END" /> చేయవచ్చు.</translation>
 <translation id="467662567472608290">ఈ సర్వర్ <ph name="DOMAIN" /> అని నిరూపించుకోలేకపోయింది; దీని భద్రతా ప్రమాణపత్రంలో లోపాలు ఉన్నాయి. ఇది తప్పుగా కాన్ఫిగర్ చేయడం వలన లేదా దాడిచేసే వ్యక్తి మీ కనెక్షన్‌కు అంతరాయం కలిగించడం వలన జరిగి ఉండవచ్చు.</translation>
 <translation id="4677585247300749148">యాక్సెసిబిలిటీ ఈవెంట్‌లకు <ph name="URL" /> ప్రతిస్పందించాలని అనుకుంటోంది</translation>
 <translation id="467809019005607715">Google స్లయిడ్‌లు</translation>
@@ -943,6 +953,12 @@
 <translation id="4761104368405085019">మీ మైక్రోఫోన్‌ను ఉపయోగించండి</translation>
 <translation id="4764776831041365478"><ph name="URL" /> వద్ద వెబ్‌పేజీ తాత్కాలికంగా తెరుచుకోవటం లేదు లేదా అది కొత్త‌ వెబ్ చిరునామాకు శాశ్వతంగా తరలించబడి ఉండవచ్చు.</translation>
 <translation id="4766713847338118463">దిగువ భాగంలో డ్యుయల్ స్టేపుల్</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        ఈ పరికరంలో సేవ్ అయ్యే మీ యాక్టివిటీ:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ఈ విండోలో మీరు డౌన్‌లోడ్ చేసిన ఏవైనా ఫైల్‌లు
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">తెలియని ఎర్రర్ ఒకటి ఏర్పడింది.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{పాప్-అప్ బ్లాక్ చేయబడింది}other{# పాప్-అప్‌లు బ్లాక్ చేయబడ్డాయి}}</translation>
 <translation id="4780366598804516005">మెయిల్‌బాక్స్ 1</translation>
@@ -1397,6 +1413,7 @@
 <translation id="6587923378399804057">మీరు కాపీ చేసిన లింక్</translation>
 <translation id="6591833882275308647">మీ <ph name="DEVICE_TYPE" /> నిర్వహించబడటం లేదు</translation>
 <translation id="6596325263575161958">ఎన్‌క్రిప్షన్ ఎంపికలు</translation>
+<translation id="6596892391065203054">ఈ కంటెంట్‌ను ప్రింట్ చేయడాన్ని మీ అడ్మినిస్ట్రేటర్ బ్లాక్ చేశారు.</translation>
 <translation id="6604181099783169992">చలనం లేదా కాంతి సర్దుబాటు సెన్సార్‌లు</translation>
 <translation id="6609880536175561541">Prc7 (ఎన్వలప్)</translation>
 <translation id="6612358246767739896">రక్షిత కంటెంట్</translation>
@@ -1880,11 +1897,21 @@
 <translation id="8559762987265718583">మీ పరికరం తేదీ మరియు సమయం <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> తప్పుగా ఉన్నందున (<ph name="DATE_AND_TIME" />)కు ప్రైవేట్ కనెక్షన్ ఏర్పాటు చేయబడదు.</translation>
 <translation id="8564182942834072828">విడి డాక్యుమెంట్‌లు/విడి కాపీలు</translation>
 <translation id="8564985650692024650">మీరు మీ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> పాస్‌వర్డ్‌ని ఇతర సైట్‌లలో తిరిగి ఉపయోగించినట్లయితే దీనిని రీసెట్ చేయాల్సిందిగా Chromium సిఫార్సు చేస్తోంది.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        ఈ పరికరంలో సేవ్ అవ్వని యాక్టివిటీ:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />మీరు ఈ విండోలో చూసే పేజీలు
+          <ph name="LIST_ITEM" />కుక్కీ‌లు, సైట్ డేటా
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">కార్డ్‌లను వేగంగా నిర్ధారించడానికి Touch IDని ఉపయోగించండి</translation>
 <translation id="858637041960032120">ఫోన్ నం. జోడిం.</translation>
 <translation id="8589998999637048520">ఉత్తమ నాణ్యత</translation>
 <translation id="860043288473659153">కార్డుదారుని పేరు</translation>
 <translation id="8606726445206553943">మీ MIDI పరికరాలను ఉపయోగించాలనుకుంటోంది</translation>
+<translation id="8612761427948161954">హాయ్ <ph name="USERNAME" />,
+        <ph name="BR" />
+        మీరు గెస్ట్‌లాగా బ్రౌజ్ చేస్తున్నారు</translation>
 <translation id="861775596732816396">పరిమాణం 4</translation>
 <translation id="8622948367223941507">చట్ట సంబంధితం-అదనం</translation>
 <translation id="8623885649813806493">పాస్‌వర్డ్‌లు ఏవీ మ్యాచ్ అవ్వలేదు. సేవ్ చేసిన అన్ని పాస్‌వర్డ్‌లను చూపు.</translation>
@@ -2023,6 +2050,7 @@
 <translation id="9183302530794969518">Google డాక్స్</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> మద్దతు లేని ప్రోటోకాల్‌ను ఉపయోగిస్తోంది.</translation>
 <translation id="9191834167571392248">ఎడమవైపు దిగువ భాగంలో రంధ్రం</translation>
+<translation id="9199905725844810519">ప్రింటింగ్ బ్లాక్ చేయబడింది</translation>
 <translation id="9205078245616868884">మీ సింక్‌ రహస్య పదబంధంతో మీ డేటా ఎన్‌క్రిప్ట్ చేయ‌బ‌డింది. సింక్‌ను ప్రారంభించడానికి దీన్ని నమోదు చేయండి.</translation>
 <translation id="9207861905230894330">కథనాన్ని జోడించడంలో విఫలమైంది.</translation>
 <translation id="9213433120051936369">కనిపించే తీరును అనుకూలంగా మార్చండి</translation>

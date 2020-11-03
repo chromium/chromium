@@ -60,7 +60,6 @@
 <translation id="1456407467406159627">由於你的螢幕上有機密內容，因此系統已停止錄製螢幕畫面。</translation>
 <translation id="1460620680449458626">音量已設為靜音。</translation>
 <translation id="1467432559032391204">向左</translation>
-<translation id="1475439723810528286">輕按任一處即可擷取全螢幕畫面</translation>
 <translation id="1479909375538722835">浮動式無障礙選單</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">擁有者帳戶必須是多重登入工作階段中第一個登入的帳戶。</translation>
@@ -127,7 +126,6 @@
 <translation id="2132302418721800944">錄製全螢幕畫面</translation>
 <translation id="2135456203358955318">停駐放大鏡</translation>
 <translation id="2144487987174258011">重新啟動以便更新 Adobe Flash Player</translation>
-<translation id="2180011262286780504">系統管理員已停用擷取螢幕畫面的功能。</translation>
 <translation id="2208323208084708176">整合桌面模式</translation>
 <translation id="2220572644011485463">PIN 或密碼</translation>
 <translation id="2222338659135520253">必須登入</translation>
@@ -801,7 +799,6 @@
 <translation id="8843682306134542540">切換旋轉鎖定。<ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">搜尋鍵 + Esc 鍵</translation>
 <translation id="8853703225951107899">系統仍然無法驗證你的 PIN 碼或密碼。注意：如果你最近變更了密碼，請使用舊密碼。系統會在你登出帳戶後套用新密碼。</translation>
-<translation id="885387440427703469">已停用擷取螢幕畫面的功能</translation>
 <translation id="8870509716567206129">這個應用程式不支援分割畫面。</translation>
 <translation id="8871580645200179206">切換深色主題。<ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">未連線</translation>

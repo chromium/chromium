@@ -62,7 +62,6 @@
 <translation id="1060292118287751956">Określa częstotliwość aktualizacji ekranu</translation>
 <translation id="1061904396131502319">Wielkimi krokami nadchodzi przerwa</translation>
 <translation id="1067048845568873861">Utworzono</translation>
-<translation id="1067291318998134776">Linux (Beta)</translation>
 <translation id="1067922213147265141">Inne usługi Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Inny program na Twoim komputerze dodał rozszerzenie, które może zmieniać sposób działania Chrome.
@@ -1322,7 +1321,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2505127913256479918">To konto nadzorowane zostanie wkrótce usunięte</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Ekran #}few{Ekran #}many{Ekran #}other{Ekran #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> z <ph name="TOTAL_SIZE" /></translation>
-<translation id="250642123108534012">Urządzenia w pobliżu, na których otwarto Udostępnianie w pobliżu</translation>
 <translation id="250704661983564564">Rozmieszczanie wyświetlaczy</translation>
 <translation id="2507253002925770350">Bilet został usunięty</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> – wstrzymano</translation>
@@ -1872,6 +1870,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3155072594963189910">Nie zezwalaj stronom na edytowanie plików i folderów na urządzeniu</translation>
 <translation id="3156531245809797194">Aby skorzystać z Chrome, musisz się zalogować</translation>
 <translation id="315738237743207937">Wykryto portal przechwytujący</translation>
+<translation id="3157387275655328056">Dodaj do listy „Do przeczytania”</translation>
 <translation id="3157931365184549694">Przywróć</translation>
 <translation id="3158033540161634471">Skonfiguruj swój odcisk palca</translation>
 <translation id="3159493096109238499">Beżowy</translation>
@@ -2048,7 +2047,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3388788256054548012">Ten plik jest zaszyfrowany. Poproś właściciela, by go odszyfrował.</translation>
 <translation id="3390013585654699824">Szczegóły aplikacji</translation>
 <translation id="3390741581549395454">Utworzono kopię zapasową aplikacji i plików Linuksa. Uaktualnianie wkrótce się rozpocznie.</translation>
-<translation id="339507021360520688">Osoby, które chcą być dla Ciebie widoczne, gdy mają odblokowany ekran.</translation>
 <translation id="3396800784455899911">Klikając przycisk „Zaakceptuj i kontynuuj”, wyrażasz zgodę na opisane powyżej przetwarzanie danych w tych usługach Google.</translation>
 <translation id="3399432415385675819">Powiadomienia zostaną wyłączone</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hz) – z przeplotem</translation>
@@ -2129,7 +2127,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3471876058939596279">Do wyświetlania obrazu nie można używać jednocześnie portu HDMI i portu USB typu C. Użyj innego portu wideo.</translation>
 <translation id="3473241910002674503">Przechodź do strony głównej i wstecz oraz przełączaj się między aplikacjami, korzystając z przycisków w trybie tabletu.</translation>
 <translation id="3473479545200714844">Lupa</translation>
-<translation id="347394413229268704">Przeczytaj później</translation>
 <translation id="3474218480460386727">Możesz użyć maksymalnie 99 liter</translation>
 <translation id="3475843873335999118">Odcisk palca nie został rozpoznany. Podaj hasło.</translation>
 <translation id="3476303763173086583">Wysyłaj dane diagnostyczne oraz informacje o użyciu. Pomóż ulepszyć działanie Androida na urządzeniu dziecka, automatycznie wysyłając do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To <ph name="BEGIN_LINK1" />ustawienie<ph name="END_LINK1" /> jest wymuszone przez właściciela. Właściciel może ustawić wysyłanie do Google danych diagnostycznych i informacji o używaniu tego urządzenia. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na tym koncie. <ph name="BEGIN_LINK2" />Więcej informacji<ph name="END_LINK2" /></translation>
@@ -2260,7 +2257,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="362333465072914957">Czekam na wygenerowanie certyfikatu CA</translation>
 <translation id="3624567683873126087">Odblokuj urządzenie i zaloguj się na konto Google</translation>
-<translation id="3625258641415618104">Zrzuty ekranu wyłączone</translation>
 <translation id="3625481642044239431">Wybrany plik jest nieprawidłowy. Spróbuj ponownie.</translation>
 <translation id="3626296069957678981">Aby naładować tego Chromebooka, użyj przeznaczonej do niego baterii firmy Dell.</translation>
 <translation id="3627320433825461852">Została mniej niż 1 minuta</translation>
@@ -2595,7 +2591,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3965965397408324205">Zamknij: <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Wybierz inny folder...</translation>
 <translation id="3967822245660637423">Pobieranie zakończone</translation>
-<translation id="3967919079500697218">Możliwość robienia zrzutów ekranów została wyłączona przez administratora.</translation>
 <translation id="3969092967100188979">Wł., w roamingu</translation>
 <translation id="3970114302595058915">Identyfikator</translation>
 <translation id="397105322502079400">Obliczanie...</translation>
@@ -2753,7 +2748,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4163560723127662357">Nieznana klawiatura</translation>
 <translation id="4167686856635546851">Strony zwykle używają JavaScriptu do wyświetlania elementów interaktywnych, takich jak gry wideo czy formularze</translation>
 <translation id="4168015872538332605">Niektóre ustawienia należące do <ph name="PRIMARY_EMAIL" /> zostały Ci udostępnione. Mają one wpływ na Twoje konto, tylko jeśli korzystasz z wielokrotnego logowania.</translation>
-<translation id="4170256733935344210">Zeskanuj kod QR, używając aparatu urządzenia, lub wpisz kod aktywacyjny podany przez operatora</translation>
 <translation id="4170314459383239649">Wyczyść przy zamykaniu</translation>
 <translation id="4175137578744761569">Jasnofioletowo-biały</translation>
 <translation id="4175737294868205930">Pamięć trwała</translation>
@@ -2793,7 +2787,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4232375817808480934">Konfigurowanie Kerberos</translation>
 <translation id="4235200303672858594">Cały ekran</translation>
 <translation id="4235965441080806197">Anuluj logowanie</translation>
-<translation id="4241393667672058421">{NUM_TABS,plural, =1{Przeczytaj tę kartę później}few{Przeczytaj te karty później}many{Przeczytaj te karty później}other{Przeczytaj te karty później}}</translation>
 <translation id="4242145785130247982">Funkcja nie obsługuje wielu certyfikatów klienta</translation>
 <translation id="4242533952199664413">Otwórz ustawienia</translation>
 <translation id="4242577469625748426">Instalacja ustawień zasad na urządzeniu nie powiodła się: <ph name="VALIDATION_ERROR" />.</translation>
@@ -3151,7 +3144,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="4651484272688821107">Nie udało się załadować komponentu online z zasobami trybu demonstracyjnego.</translation>
 <translation id="4652935475563630866">Zmiana ustawienia kamery wymaga ponownego uruchomienia aplikacji Parallels Desktop. Aby kontynuować, uruchom ponownie Parallels Desktop.</translation>
 <translation id="4653405415038586100">Błąd podczas konfigurowania Linuksa</translation>
-<translation id="4657810666108475055">Wyszukiwanie kart</translation>
 <translation id="465878909996028221">Przekierowania przeglądarki działają tylko z protokołami http, https i file.</translation>
 <translation id="4659077111144409915">Konto główne</translation>
 <translation id="4659126640776004816">Ta funkcja zostanie włączona, gdy zalogujesz się na swoje konto Google.</translation>
@@ -3232,7 +3224,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="4763408175235639573">Podczas wyświetlania strony zostały utworzone te pliki cookie</translation>
 <translation id="4764368918650455114">Dopilnuj, by obydwa urządzenia były odblokowane, znajdowały się blisko siebie i miały włączony Bluetooth. Jeśli chcesz coś udostępnić Chromebookowi, upewnij się, że ma włączone Udostępnianie w pobliżu (kliknij godzinę, by otworzyć pasek stanu, a potem wybierz Udostępnianie w pobliżu). <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">Zezwala Wiadomościom na Androida przesyłać SMS-y z telefonu na Chromebooka</translation>
-<translation id="476598255842811483">Nikt, chyba że na swoim urządzeniu otworzysz Udostępnianie w pobliżu</translation>
 <translation id="4768332406694066911">Masz certyfikaty od tych organizacji potwierdzające Twoją tożsamość</translation>
 <translation id="477647109558161443">Utwórz skrót na pulpicie</translation>
 <translation id="4776917500594043016">Hasło dla <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4108,7 +4099,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5826993284769733527">Półprzezroczyste</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">Trwa drukowanie...</translation>
-<translation id="5830659417568730973">Wybrane kontakty w pobliżu, gdy masz odblokowany ekran.</translation>
 <translation id="5830720307094128296">Zapisz stronę &amp;jako...</translation>
 <translation id="5832805196449965646">Dodaj osobę</translation>
 <translation id="583281660410589416">Nieznany</translation>
@@ -4408,7 +4398,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6164005077879661055">W chwili usunięcia użytkownika nadzorowanego wszystkie powiązane z nim pliki i dane lokalne zostaną trwale usunięte. Lista stron, na które wszedł ten użytkownik, oraz jego ustawienia mogą być wciąż widoczne dla menedżera na <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
 <translation id="6166185671393271715">Importowanie haseł do Chrome</translation>
-<translation id="616831107264507309">Przeczytaj później</translation>
 <translation id="6169040057125497443">Sprawdź mikrofon.</translation>
 <translation id="6169666352732958425">Nie można przesłać pulpitu.</translation>
 <translation id="6170470584681422115">Kanapka</translation>
@@ -5803,7 +5792,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="782057141565633384">K&amp;opiuj adres wideo</translation>
 <translation id="7822187537422052256">Czy na pewno chcesz usunąć ten adres?</translation>
 <translation id="7824864914877854148">Tworzenie kopii zapasowej nie powiodło się z powodu błędu</translation>
-<translation id="7825666486843191125">Wszystkie kontakty w pobliżu, gdy masz odblokowany ekran.</translation>
 <translation id="782590969421016895">Użyj bieżących stron</translation>
 <translation id="7826249772873145665">Debugowanie ADB jest wyłączone</translation>
 <translation id="7826254698725248775">Konflikt identyfikatorów urządzeń.</translation>
@@ -5858,7 +5846,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="786073089922909430">Usługa: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Pobrane pliki</translation>
 <translation id="7864539943188674973">Wyłącz Bluetooth</translation>
-<translation id="7866352732146932341">Urządzenia w pobliżu, gdy na swoim urządzeniu masz otwarte Udostępnianie w pobliżu</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – sparowano</translation>
 <translation id="7870730066603611552">Sprawdź opcje synchronizowania po konfiguracji</translation>
 <translation id="7870790288828963061">Nie odnaleziono nowszej wersji aplikacji kiosku. Aktualizacja nie jest wymagana. Odłącz pamięć USB.</translation>
@@ -5901,6 +5888,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176">Strona <ph name="ORIGIN" /> może wyświetlać: <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Dodaj słowa, które mają być pomijane podczas sprawdzania pisowni</translation>
+<translation id="7924080089023843180">Nikt, chyba że masz włączone Udostępnianie w pobliżu.</translation>
 <translation id="7924358170328001543">Błąd przekierowania portów</translation>
 <translation id="792514962475806987">Poziom powiększenia lupy zadokowanej:</translation>
 <translation id="7925247922861151263">Sprawdzenie AAA nie powiodło się</translation>
@@ -6298,7 +6286,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8379878387931047019">To urządzenie nie obsługuje typu klucza bezpieczeństwa, o który prosi ta witryna</translation>
 <translation id="8379991678458444070">Dodaj tę stronę do zakładek, by szybko na nią wrócić</translation>
 <translation id="8380266723152870797">Nazwa okna</translation>
-<translation id="8382384117483909115">{NUM_TABS,plural, =1{Przeczytaj tę kartę później}few{Przeczytaj te karty później}many{Przeczytaj te karty później}other{Przeczytaj te karty później}}</translation>
 <translation id="8382913212082956454">Kopiuj adres &amp;e-mail</translation>
 <translation id="8386091599636877289">Nie znaleziono zasady.</translation>
 <translation id="8386903983509584791">Skanowanie ukończone</translation>
@@ -6803,6 +6790,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8962918469425892674">Ta witryna używa czujników ruchu lub oświetlenia.</translation>
 <translation id="8965037249707889821">Wpisz stare hasło</translation>
 <translation id="8966870118594285808">Możesz ponownie otworzyć kartę zamkniętą przez przypadek</translation>
+<translation id="8967427617812342790">Dodaj do listy „Do przeczytania”</translation>
 <translation id="8967866634928501045">Naciśnij Alt+Shift+A, by wyświetlić</translation>
 <translation id="8968766641738584599">Zapisz kartę</translation>
 <translation id="89720367119469899">Ucieczka</translation>

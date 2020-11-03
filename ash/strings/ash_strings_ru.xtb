@@ -60,7 +60,6 @@
 <translation id="1456407467406159627">На вашем экране обнаружены конфиденциальные данные.</translation>
 <translation id="1460620680449458626">Сейчас звук выключен.</translation>
 <translation id="1467432559032391204">Слева</translation>
-<translation id="1475439723810528286">Чтобы снять экран полностью, нажмите в любом его месте</translation>
 <translation id="1479909375538722835">Плавающее меню специальных возможностей</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">При одновременной работе в нескольких аккаунтах необходимо сначала зайти в аккаунт владельца.</translation>
@@ -127,7 +126,6 @@
 <translation id="2132302418721800944">Запись видео со всего экрана</translation>
 <translation id="2135456203358955318">Закрепленная лупа</translation>
 <translation id="2144487987174258011">Перезагрузите, чтобы обновить Adobe Flash Player</translation>
-<translation id="2180011262286780504">Функция записи экрана отключена администратором.</translation>
 <translation id="2208323208084708176">Единый рабочий стол</translation>
 <translation id="2220572644011485463">PIN-код или пароль</translation>
 <translation id="2222338659135520253">Требуется выполнить вход.</translation>
@@ -801,7 +799,6 @@
 <translation id="8843682306134542540">Изменить настройки автоповорота экрана. <ph name="STATE_TEXT" />.</translation>
 <translation id="8850991929411075241">Клавиша поиска + Esc</translation>
 <translation id="8853703225951107899">Введенный PIN-код или пароль снова оказался недействительным. Если вы недавно меняли пароль, введите прежний. Новый пароль вступит в силу после того, как вы выйдете из аккаунта.</translation>
-<translation id="885387440427703469">Запись экрана отключена</translation>
 <translation id="8870509716567206129">Приложение не поддерживает разделение экрана.j</translation>
 <translation id="8871580645200179206">Включить или отключить тёмную тему. <ph name="STATE_TEXT" />.</translation>
 <translation id="8874184842967597500">Не подключено</translation>

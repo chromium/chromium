@@ -80,6 +80,14 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">আপুনি আপোনাৰ প্ৰতিষ্ঠানে পৰিচালনা নকৰা এটা ছাইটত নিজৰ পাছৱৰ্ডটো দিছে। আপোনাৰ একাউণ্টটো সুৰক্ষিত কৰিবলৈ আপোনাৰ পাছৱৰ্ডটো অন্য এপ্‌ আৰু ছাইটত পুনৰ ব্যৱহাৰ নকৰিব।</translation>
 <translation id="1263231323834454256">পঢ়াৰ সূচী</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        এইসমূহ কাৰ্যকলাপ এই ডিভাইচটোত ছেভ কৰা নহ’ব:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />আপুনি এই ৱিণ্ড’ত চোৱা পৃষ্ঠা
+          <ph name="LIST_ITEM" />কুকি আৰু ছাইটৰ ডেটা
+          <ph name="LIST_ITEM" />একাউণ্টৰ তথ্য (<ph name="LINK_BEGIN" />ছাইন আউট কৰক<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">পিকআপৰ পদ্ধতি</translation>
 <translation id="1281476433249504884">ষ্টেকাৰ ১</translation>
 <translation id="1285320974508926690">এই ছাইটটো কেতিয়াও অনুবাদ নকৰিব</translation>
@@ -553,6 +561,7 @@
 <translation id="3207960819495026254">বুকমার্ক কৰা হৈছে</translation>
 <translation id="3209034400446768650">পৃষ্ঠাখনে মাচুল হিচাপে টকা ল’ব পাৰে</translation>
 <translation id="3212581601480735796">আপুনি <ph name="HOSTNAME" />ত কৰা কার্যকলাপ নিৰীক্ষণ কৰি থকা হৈছে</translation>
+<translation id="3212623355668894776">আটাইবোৰ অতিথিৰ ৱিণ্ড’ বন্ধ কৰক যাতে এই ডিভাইচটোৰ পৰা আপোনাৰ ব্ৰাউজিং কাৰ্যকলাপ মচা হয়।</translation>
 <translation id="3215092763954878852">WebAuthn ব্যৱহাৰ কৰিব পৰা নগ’ল</translation>
 <translation id="3218181027817787318">আপেক্ষিক</translation>
 <translation id="3225919329040284222">ছাৰ্ভাৰটোৱে এনে এখন প্ৰমাণপত্ৰ দিছে যিখন বিল্ট-ইন কৰি ৰখা প্ৰত্যাশা সৈতে মিলা নাই। এই প্ৰত্যাশাসমূহ আপোনাক সুৰক্ষিত ৰাখিবলৈ কিছুমান নিৰ্দিষ্ট, উচ্চ-সুৰক্ষা সম্পন্ন ৱেবছাইটত অন্তৰ্ভুক্ত কৰা হয়।</translation>
@@ -911,6 +920,7 @@
 <translation id="4658638640878098064">ওপৰৰ বাওঁফালে ষ্টে'পল কৰক</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">ভাৰ্চুৱেল ৰিয়েলিটি</translation>
+<translation id="4675657451653251260">অতিথি ম’ডত আপুনি কোনো Chrome প্ৰ’ফাইলৰ তথ্য দেখা নাপায়। পাছৱৰ্ড আৰু পৰিশোধ পদ্ধতিৰ দৰে নিজৰ Google একাউণ্টৰ তথ্য এক্সেছ কৰিবলৈ আপুনি <ph name="LINK_BEGIN" />ছাইন ইন<ph name="LINK_END" /> কৰিব পাৰে।</translation>
 <translation id="467662567472608290">ছাৰ্ভাৰটোৱে এইটো <ph name="DOMAIN" /> বুলি প্ৰমাণ কৰিব নোৱাৰিলে; ইয়াৰ সুৰক্ষা সম্পৰ্কীয় প্ৰমাণপত্ৰত আসোঁৱাহ আছে। এয়া কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ অৱৰোধ কৰাৰ বাবে হ’ব পাৰে।</translation>
 <translation id="4677585247300749148">সাধ্য সুবিধাৰ অনুষ্ঠানসমূ্হলৈ <ph name="URL" />এ সঁহাৰি জনাব খোজে</translation>
 <translation id="467809019005607715">Google Slides</translation>
@@ -938,6 +948,12 @@
 <translation id="4761104368405085019">আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰক</translation>
 <translation id="4764776831041365478"><ph name="URL" />ৰ ৱেবপৃষ্ঠাটো অস্থায়ীভাৱে ব্যৱহাৰযোগ্য হৈ নাথাকিব পাৰে বা ইয়াক কোনো নতুন ৱেব ঠিকনালৈ স্থায়ী ভাৱে নিয়া হ’ব পাৰে।</translation>
 <translation id="4766713847338118463">তলৰ অংশত দুবাৰ ষ্টে'পল কৰক</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        আপোনাৰ এই কাৰ্যকলাপটো এই ডিভাইচটোত ছেভ কৰা হ’ব:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />আপুনি এই ৱিণ্ড’ত ডাউনল’ড কৰা যিকোনো ফাইল
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">কোনো অজ্ঞাত আসোঁৱাহ হৈছে।</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{পপ-আপ অৱৰোধ কৰা হ’ল}one{#টা পপ-আপ অৱৰোধ কৰা হৈছে}other{#টা পপ-আপ অৱৰোধ কৰা হৈছে}}</translation>
 <translation id="4780366598804516005">মেইলবক্স ১</translation>
@@ -1390,6 +1406,7 @@
 <translation id="6587923378399804057">আপুনি প্ৰতিলিপি কৰা লিংক</translation>
 <translation id="6591833882275308647">আপোনাৰ <ph name="DEVICE_TYPE" /> পৰিচালিত নহয়</translation>
 <translation id="6596325263575161958">এনক্ৰিপশ্বনৰ বিকল্প</translation>
+<translation id="6596892391065203054">এই সমলখিনি প্ৰিণ্ট কৰাটো আপোনাৰ প্ৰশাসকে অৱৰোধ কৰিছে।</translation>
 <translation id="6604181099783169992">গতি বা পোহৰ ধৰা পেলাব পৰা ছেন্সৰ</translation>
 <translation id="6609880536175561541">Prc7 (লেফাফা)</translation>
 <translation id="6612358246767739896">সুৰক্ষিত সমল</translation>
@@ -1870,11 +1887,21 @@
 <translation id="8559762987265718583">আপোনাৰ ডিভাইচৰ তাৰিখ আৰু সময় (<ph name="DATE_AND_TIME" />) অশুদ্ধ হোৱাৰ বাবে <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />লৈ কোনো ব্যক্তিগত সংযোগ স্থাপন কৰিব নোৱাৰি।</translation>
 <translation id="8564182942834072828">পৃথক নথি/নিমিলোৱা প্ৰতিলিপিসমূহ</translation>
 <translation id="8564985650692024650">আপুনি যদি নিজৰ পাছৱৰ্ডটো অন্য ছাইটত পুনৰ ব্যৱহাৰ কৰিছিল <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />এ আপোনাৰ পাছৱর্ডটো ৰিছেট কৰিবলৈ চুপাৰিছ কৰে।</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        এইসমূহ কাৰ্যকলাপ এই ডিভাইচটোত ছেভ কৰা নহ’ব:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />আপুনি এই ৱিণ্ড’ত চোৱা পৃষ্ঠা
+          <ph name="LIST_ITEM" />কুকি আৰু ছাইটৰ ডেটা
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">কাৰ্ডসমূহ খৰতকীয়াকৈ নিশ্চিত কৰিবলৈ স্পৰ্শ আইডি ব্যৱহাৰ কৰক</translation>
 <translation id="858637041960032120">ফোন নম্বৰ যোগ কৰক</translation>
 <translation id="8589998999637048520">উত্তম গুণগত মান</translation>
 <translation id="860043288473659153">কার্ডৰ গৰাকীৰ নাম</translation>
 <translation id="8606726445206553943">আপোনাৰ MIDI ডিভাইচসমূহ ব্যৱহাৰ কৰক</translation>
+<translation id="8612761427948161954">নমস্কাৰ <ph name="USERNAME" />,
+        <ph name="BR" />
+        আপুনি অতিথি হিচাপে ব্ৰাউজ কৰি আছে</translation>
 <translation id="861775596732816396">আকাৰ ৪</translation>
 <translation id="8622948367223941507">লিগেল-অতিৰিক্ত</translation>
 <translation id="8623885649813806493">মিলা কোনো পাছৱৰ্ড নাই। ছেভ হৈ থকা সকলো পাছৱৰ্ড দেখুৱাওক।</translation>
@@ -2013,6 +2040,7 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" />এ এটা অসমর্থিত প্ৰ'ট'কল ব্যৱহাৰ কৰে।</translation>
 <translation id="9191834167571392248">বাওঁফালে তলৰ অংশত পাঞ্চ কৰক</translation>
+<translation id="9199905725844810519">প্ৰিণ্ট কৰাটো অৱৰোধ কৰা হৈছে</translation>
 <translation id="9205078245616868884">আপোনাৰ ডেটা নিজৰ ছিংক পাছফ্ৰেজৰ জৰিয়তে এনক্ৰিপ্ট কৰা হৈছে। ছিংক কৰিবলৈ পাছফ্ৰেজ দিয়ক।</translation>
 <translation id="9207861905230894330">লেখা যোগ কৰিব নোৱাৰিলে।</translation>
 <translation id="9213433120051936369">ৰূপ কাষ্টমাইজ কৰক</translation>

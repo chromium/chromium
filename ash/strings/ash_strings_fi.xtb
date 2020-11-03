@@ -60,7 +60,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1456407467406159627">Näytön tallennus loppui, koska näytöllä on luottamuksellista sisältöä.</translation>
 <translation id="1460620680449458626">Äänet on mykistetty.</translation>
 <translation id="1467432559032391204">Vasemmalla</translation>
-<translation id="1475439723810528286">Ota kuvakaappaus koko ruudusta koskettamalla minne tahansa</translation>
 <translation id="1479909375538722835">Kelluva esteettömyysvalikko</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Tämän omistajatilin täytyy olla ensimmäinen sisään kirjautuva tili useiden tilien istunnossa.</translation>
@@ -127,7 +126,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2132302418721800944">Tallenna koko näyttö</translation>
 <translation id="2135456203358955318">Kiinnitetty suurennus</translation>
 <translation id="2144487987174258011">Päivitä Adobe Flash Player käynnistämällä uudelleen.</translation>
-<translation id="2180011262286780504">Järjestelmänvalvoja on estänyt kuvakaappausten ottamisen.</translation>
 <translation id="2208323208084708176">Yhtenäisen työpöydän tila</translation>
 <translation id="2220572644011485463">PIN-koodi tai salasana</translation>
 <translation id="2222338659135520253">Sisäänkirjautuminen vaaditaan</translation>
@@ -803,7 +801,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8843682306134542540">Laita kierron lukitus päälle tai pois päältä. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Haku+Esc</translation>
 <translation id="8853703225951107899">PIN-koodiasi tai salasanaasi ei voitu vieläkään vahvistaa. Huom. Jos vaihdoit salasanasi äskettäin, käytä vanhaa salasanaa. Uusi salasana otetaan käyttöön kirjauduttuasi ulos.</translation>
-<translation id="885387440427703469">Kuvakaappaukset estetty</translation>
 <translation id="8870509716567206129">Sovellus ei tue jaetun näytön tilaa.</translation>
 <translation id="8871580645200179206">Tumma teema päälle/pois. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Ei yhdistetty</translation>

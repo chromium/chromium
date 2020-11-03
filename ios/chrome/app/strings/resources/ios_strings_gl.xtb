@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">Crear pestana nova</translation>
 <translation id="1145536944570833626">Elimina os datos existentes.</translation>
 <translation id="1154690515305205900">Non se puido crear unha ligazón ao texto destacado.</translation>
+<translation id="1157749421655780457">Permitir uso da localización...</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1172898394251786223">Campo seguinte</translation>
 <translation id="1176932207622159128">Impos. gardar imaxe</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">Sen elementos</translation>
 <translation id="1692118695553449118">A sincronización está activada</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionados</translation>
+<translation id="1715940067130687605">Usar a túa localización actual.</translation>
 <translation id="1740468249224277719">Toca dúas veces para instalar.</translation>
 <translation id="1746815479209538200">Para navegar pola web, engade unha nova pestana.</translation>
 <translation id="1752547299766512813">Gardar contras.</translation>
@@ -374,6 +376,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5059136629401106827">Aceptar</translation>
 <translation id="5062321486222145940">Instalar Google Drive</translation>
 <translation id="5083464117946352670">Imposible determinar tamaño.</translation>
+<translation id="5090832849094901128">Ao eliminar este contrasinal non se eliminará a túa conta de <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Completouse o chío.</translation>
 <translation id="5118764316110575523">Non</translation>
 <translation id="5127805178023152808">A sincronización está desactivada</translation>

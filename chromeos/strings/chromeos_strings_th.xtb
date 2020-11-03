@@ -23,6 +23,7 @@
 <translation id="1947737735496445907">พิมพ์แล้ว</translation>
 <translation id="1979103255016296513">เลยเวลาเปลี่ยนรหัสผ่านแล้ว</translation>
 <translation id="2049639323467105390">อุปกรณ์นี้ได้รับการจัดการโดย <ph name="DOMAIN" /></translation>
+<translation id="2080070583977670716">การตั้งค่าเพิ่มเติม</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">ยกเลิกงานพิมพ์</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
@@ -66,6 +67,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">ตั๋ว Kerberos กำลังจะหมดอายุ</translation>
 <translation id="445059817448385655">รหัสผ่านเดิม</translation>
+<translation id="4454245904991689773">สแกนแล้วบันทึกไว้ใน</translation>
 <translation id="4483049906298469269">ใช้คำสั่ง ping กับเกตเวย์เครือข่ายที่ไม่ใช่ค่าเริ่มต้นไม่สำเร็จ</translation>
 <translation id="4548483925627140043">ไม่พบสัญญาณ</translation>
 <translation id="458794348635939462">แก้ไขทุกโฮสต์ไม่สำเร็จ</translation>

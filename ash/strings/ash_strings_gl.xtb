@@ -49,6 +49,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1346748346194534595">Dereita</translation>
 <translation id="1351937230027495976">Contraer menú</translation>
 <translation id="1383876407941801731">Buscar</translation>
+<translation id="1390105199421505038">Cadro de diálogo Quitar conta (<ph name="USER_EMAIL_ADDRESS" />)</translation>
 <translation id="1391102559483454063">Activada</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
 <translation id="1419738280318246476">Desbloquea o dispositivo para levar a cabo a acción de notificación</translation>
@@ -59,7 +60,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1456407467406159627">Detívose a gravación da pantalla porque nela se mostraba contido confidencial.</translation>
 <translation id="1460620680449458626">O volume está silenciado.</translation>
 <translation id="1467432559032391204">Esquerda</translation>
-<translation id="1475439723810528286">Toca calquera parte para facer unha captura a pantalla completa</translation>
 <translation id="1479909375538722835">Menú flotante de accesibilidade</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Esta conta de propietario debe ser a primeira en que se inicie sesión cando se realice un inicio de sesión múltiple.</translation>
@@ -126,7 +126,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2132302418721800944">Gravar pantalla completa</translation>
 <translation id="2135456203358955318">Lupa ancorada</translation>
 <translation id="2144487987174258011">Reinicia para actualizar Adobe Flash Player</translation>
-<translation id="2180011262286780504">O teu administrador desactivou a función de facer capturas de pantalla.</translation>
 <translation id="2208323208084708176">Modo de escritorio unificado</translation>
 <translation id="2220572644011485463">PIN ou contrasinal</translation>
 <translation id="2222338659135520253">É obrigatorio iniciar sesión</translation>
@@ -370,6 +369,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4477892968187500306">Este dispositivo pode conter aplicacións non verificadas por Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Dispositivos desincronizados</translation>
+<translation id="4485060137115666462">Se fas clic co botón dereito ou realizas unha pulsación longa, o Asistente móstrache información (por exemplo, unha definición, unha tradución ou unha conversión de unidades) relacionada co que seleccionases.</translation>
 <translation id="4505050298327493054">Escritorio activo.</translation>
 <translation id="4506458088675900627">Modificouse o xesto do panel táctil para acceder ao modo Visión xeral</translation>
 <translation id="4513946894732546136">Dános a túa opinión</translation>
@@ -598,6 +598,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6803622936009808957">Non se puideron replicar as pantallas porque non se atopou ningunha resolución compatible. No seu lugar accedeuse ao escritorio ampliado.</translation>
 <translation id="6818242057446442178">Retroceder unha palabra</translation>
 <translation id="6820676911989879663">Fai unha pausa!</translation>
+<translation id="6850010208275816200">A aplicación actual está aberta a pantalla completa. Se che pide o contrasinal, primeiro tes que saír do modo de pantalla completa.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6857811139397017780">Activar <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un díxito}other{Faltan # díxitos}}</translation>
@@ -647,6 +648,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7398254312354928459">Cambiouse a conexión de rede</translation>
 <translation id="7405710164030118432">Para desbloquear o dispositivo, introduce o código de acceso parental de Family Link</translation>
 <translation id="741244894080940828">conversión</translation>
+<translation id="7413851974711031813">Para pechar o diálogo, preme a tecla Escape</translation>
 <translation id="742594950370306541">Estase utilizando a cámara.</translation>
 <translation id="742608627846767349">Bos días!</translation>
 <translation id="743058460480092004">Estanse utilizando a cámara e o micrófono.</translation>
@@ -798,7 +800,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="8843682306134542540">Activar/desactivar o bloqueo de rotación. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Busca+Esc</translation>
 <translation id="8853703225951107899">Aínda non se puido verificar o teu PIN ou contrasinal. Nota: Se cambiaches o contrasinal recentemente, utiliza o antigo. O contrasinal novo aplicarase en canto peches sesión.</translation>
-<translation id="885387440427703469">As capturas de pantalla están desactivadas</translation>
 <translation id="8870509716567206129">A aplicación non é compatible coa función de pantalla dividida.</translation>
 <translation id="8871580645200179206">Activar/desactivar tema escuro. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Non conectada</translation>

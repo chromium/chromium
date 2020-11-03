@@ -80,6 +80,14 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">ທ່ານໄດ້ປ້ອນລະຫັດຜ່ານຂອງທ່ານໃນເວັບໄຊທີ່ບໍ່ຖືກຈັດການໂດຍອົງການຈັດຕັ້ງຂອງທ່ານ. ເພື່ອປົກປ້ອງບັນຊີຂອງທ່ານ, ກະລຸນາຢ່ານຳລະຫັດຜ່ານຂອງທ່ານມາໃຊ້ໃໝ່ຢູ່ໃນແອັບ ແລະ ເວັບໄຊອື່ນ.</translation>
 <translation id="1263231323834454256">ລາຍການທີ່ຈະອ່ານ</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        ການເຄື່ອນໄຫວທີ່ຈະບໍ່ຄົງຢູ່ໃນອຸປະກອນນີ້:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ໜ້າທີ່ທ່ານເບິ່ງໃນໜ້າຈໍນີ້
+          <ph name="LIST_ITEM" />ຂໍ້ມູນຄຸກກີ້ ແລະ ເວັບໄຊ
+          <ph name="LIST_ITEM" />ຂໍ້ມູນບັນຊີ (<ph name="LINK_BEGIN" />ອອກຈາກລະບົບ<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">ວິທີການຮັບເຄື່ອງ</translation>
 <translation id="1281476433249504884">ສະແຕັກເກີ້ 1</translation>
 <translation id="1285320974508926690">ຢ່າແປເວັບ​ໄຊ​ທ໌ນີ້</translation>
@@ -555,6 +563,7 @@
 <translation id="3207960819495026254">ໃສ່ບຸກ​ມາກ​໌​ແລ້ວ</translation>
 <translation id="3209034400446768650">ໜ້າອາດຈະຮຽກເກັບເງິນ</translation>
 <translation id="3212581601480735796">ກຳລັງມີການຕິດຕາມເບິ່ງການເຄື່ອນໄຫວຂອງທ່ານໃນ <ph name="HOSTNAME" /></translation>
+<translation id="3212623355668894776">ປິດໜ້າຈໍແຂກທັງໝົດເພື່ອໃຫ້ການເຄື່ອນໄຫວທ່ອງເວັບຂອງທ່ານຖືກລຶບອອກຈາກອຸປະກອນນີ້.</translation>
 <translation id="3215092763954878852">ບໍ່ສາມາດໃຊ້ WebAuthn ໄດ້</translation>
 <translation id="3218181027817787318">ຍາດພີ່ນ້ອງ</translation>
 <translation id="3225919329040284222">ເຊີບເວີໄດ້ນໍາສະເໜີໃບຢັ້ງຢືນທີ່ບໍ່ກົງກັບສິ່ງຄາດຫວັງທີ່ຝັງໄວ້ຢູ່ໃນ. ສິ່ງຄາດຫວັງເຫຼົ່ານີ້ຖືກເອົາລວມໄວ້ໃຫ້ກັບເວັບໄຊທ໌ຄວາມປອດໄພສູງ, ສະເພາະ ເພື່ອປົກປ້ອງທ່ານ.</translation>
@@ -916,6 +925,7 @@
 <translation id="4658638640878098064">ໜີບກະຫຼັບເຟີຢູ່ເທິງສຸດເບື້ອງຊ້າຍ</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">ເວີຊົວ ຣິອາຣິທີ</translation>
+<translation id="4675657451653251260">ທ່ານຈະບໍ່ເຫັນຂໍ້ມູນໂປຣໄຟລ໌ Chrome ໃດໆໃນໂໝດແຂກ. ທ່ານສາມາດ <ph name="LINK_BEGIN" />ເຂົ້າສູ່ລະບົບ<ph name="LINK_END" /> ເພື່ອເຂົ້າເຖິງຂໍ້ມູນບັນຊີ Google ຂອງທ່ານ ເຊັ່ນ: ລະຫັດຜ່ານ ແລະ ວິທີການຈ່າຍເງິນໄດ້.</translation>
 <translation id="467662567472608290">ເຊີບເວີນີ້ບໍ່ສາມາດພິສູດໄດ້ວ່າ ມັນແມ່ນ <ph name="DOMAIN" />; ໃບຢັ້ງຢືນຄວາມປອດໄພຂອງມັນມີຄວາມຜິດພາດ. ອັນນີ້ອາດຈະເຮັດໃຫ້ເກີດມີການປັບຕັ້ງຄ່າຜິດ ຫຼືຜູ້ໂຈມຕີອາດຈະດັກເອົາການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> ຕ້ອງການຕອບສະໜອງກັບເຫດການຊ່ວຍເຂົ້າເຖິງ</translation>
 <translation id="467809019005607715">Google Slides</translation>
@@ -943,6 +953,12 @@
 <translation id="4761104368405085019">ໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ</translation>
 <translation id="4764776831041365478">ໜ້າເວັບຢູ່ທີ່ <ph name="URL" /> ອາດຈະໃຊ້ບໍ່ໄດ້ຊົ່ວຄາວ ຫຼືມັນອາດຈະໄດ້ຍ້າຍອອກໄປໃສ່ທີ່ຢູ່ເວັບໃໝ່ຖາວອນແລ້ວ.</translation>
 <translation id="4766713847338118463">ໜີບກະຫຼັບເຟີຢູ່ລຸ່ມສຸດສອງເທື່ອ</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        ການເຄື່ອນໄຫວຂອງທ່ານທີ່ຈະຍັງຄົງຢູ່ໃນອຸປະກອນນີ້:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ໄຟລ໌ຕ່າງໆທີ່ທ່ານດາວໂຫຼດໃນໜ້າຈໍນີ້
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">ເກີດຄວາມຜິດພາດທີ່ບໍ່ຮູ້ຈັກ.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{ບລັອກປັອບອັບແລ້ວ}other{ບລັອກ # ປັອບອັບແລ້ວ}}</translation>
 <translation id="4780366598804516005">ກ່ອງຈົດໝາຍ 1</translation>
@@ -1397,6 +1413,7 @@
 <translation id="6587923378399804057">ລິ້ງທີ່ທ່ານສຳເນົາ</translation>
 <translation id="6591833882275308647">ບໍ່ມີການຈັດການ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="6596325263575161958">ທາງເລືອກການໃສ່ລະຫັດ</translation>
+<translation id="6596892391065203054">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານບລັອກການພິມເນື້ອຫານີ້.</translation>
 <translation id="6604181099783169992">ເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວ ຫຼື ແສງ</translation>
 <translation id="6609880536175561541">Prc7 (ຊອງຈົດໝາຍ)</translation>
 <translation id="6612358246767739896">ເນື້ອ​ໃນ​ທີ່ຖືກ​ປົກ​ປ້ອງ</translation>
@@ -1880,11 +1897,21 @@
 <translation id="8559762987265718583">ບໍ່​ສາ​ມາດ​ຕັ້ງ​ການ​ເຊື່ອມ​ຕໍ່​ສ່ວນ​ຕົວ​ກັບ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ໄດ້ ເພາະ​ວ່າ​ວັນ​ທີ ແລະ​ເວ​ລາ​ອຸ​ປະ​ກອນ​ຂອງ​ທ່ານ (<ph name="DATE_AND_TIME" />) ບໍ່​ຖືກ​ຕ້ອງ.</translation>
 <translation id="8564182942834072828">ເອກະສານແຍກກັນ/ບໍ່ໄດ້ຈັດຊຸດສຳເນົາ</translation>
 <translation id="8564985650692024650">Chromium ແນະນຳໃຫ້ຣີເຊັດລະຫັດຜ່ານ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ຂອງທ່ານ ຖ້າທ່ານນຳມັນມາໃຊ້ໃໝ່ໃນເວັບໄຊອື່ນ.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        ການເຄື່ອນໄຫວທີ່ຈະບໍ່ຄົງຢູ່ໃນອຸປະກອນນີ້:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ໜ້າທີ່ທ່ານເບິ່ງໃນໜ້າຈໍນີ້
+          <ph name="LIST_ITEM" />ຂໍ້ມູນຄຸກກີ້ ແລະ ເວັບໄຊ
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">ໃຊ້ Touch ID ເພື່ອຢືນຢັນບັດໄດ້ໄວຂຶ້ນ</translation>
 <translation id="858637041960032120">ເພີ່ມ​ເບີໂທລະ​ສັບ</translation>
 <translation id="8589998999637048520">ຄຸນນະພາບດີສຸດ</translation>
 <translation id="860043288473659153">ຊື່ຜູ້ຖືບັດ</translation>
 <translation id="8606726445206553943">ໃຊ້​ອຸ​ປະ​ກອນ​ MIDI ຂອງ​ທ່ານ</translation>
+<translation id="8612761427948161954">ສະບາຍດີ <ph name="USERNAME" />,
+        <ph name="BR" />
+        ທ່ານກຳລັງທ່ອງເວັບເປັນແຂກຢູ່</translation>
 <translation id="861775596732816396">ຂະໜາດ 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">ບໍ່ມີລະຫັດຜ່ານທີ່ກົງກັນ. ສະແດງລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ທັງໝົດ.</translation>
@@ -2023,6 +2050,7 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> ໃຊ້ໂປຣໂຕຄໍທີ່ບໍ່ຖືກຮອງຮັບ.</translation>
 <translation id="9191834167571392248">ເຈາະຮູຢູ່ລຸ່ມສຸດເບື້ອງຊ້າຍ</translation>
+<translation id="9199905725844810519">ມີການບລັອກການພິມໄວ້</translation>
 <translation id="9205078245616868884">ຂໍ້ມູນຂອງທ່ານຖືກເຂົ້າລະຫັດໄວ້ດ້ວຍວະລີຜ່ານການຊິ້ງຂອງທ່ານ. ໃຫ້ປ້ອນມັນເພື່ອເລີ່ມການຊິ້ງຂໍ້ມູນ.</translation>
 <translation id="9207861905230894330">ເພີ່ມບົດຄວາມບໍ່ສໍາເລັດ.</translation>
 <translation id="9213433120051936369">ປັບແຕ່ງຮູບຮ່າງລັກສະນະ</translation>

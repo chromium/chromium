@@ -60,7 +60,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1456407467406159627">Snimanje ekrana je zaustavljeno zbog poverljivog sadržaja na ekranu.</translation>
 <translation id="1460620680449458626">Zvuk je isključen.</translation>
 <translation id="1467432559032391204">Ulevo</translation>
-<translation id="1475439723810528286">Dodirnite bilo gde da biste snimili ceo ekran</translation>
 <translation id="1479909375538722835">Plutajući meni pristupačnosti</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Ovaj vlasnički nalog mora da bude prvi prijavljeni nalog u sesiji sa višestrukim prijavljivanjem.</translation>
@@ -127,7 +126,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2132302418721800944">Snimi ceo ekran</translation>
 <translation id="2135456203358955318">Montirana lupa ekrana</translation>
 <translation id="2144487987174258011">Pokrenite ponovo da biste ažurirali Adobe Flash Player</translation>
-<translation id="2180011262286780504">Administrator je onemogućio snimanje ekrana.</translation>
 <translation id="2208323208084708176">Režim spojenih radnih površina</translation>
 <translation id="2220572644011485463">PIN ili lozinka</translation>
 <translation id="2222338659135520253">Prijavljivanje je obavezno</translation>
@@ -801,7 +799,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="8843682306134542540">Uključite/isključite zaključavanje rotacije. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Verifikacija PIN-a ili lozinke još uvek nije uspela. Napomena: Ako ste nedavno promenili lozinku, koristite staru. Nova lozinka će biti primenjena kada se odjavite.</translation>
-<translation id="885387440427703469">Snimanje ekrana je onemogućeno</translation>
 <translation id="8870509716567206129">Aplikacija ne podržava podeljeni ekran.</translation>
 <translation id="8871580645200179206">Uključite/isključite tamnu temu. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Nije povezano</translation>

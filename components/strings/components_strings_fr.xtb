@@ -80,6 +80,14 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Vous avez saisi votre mot de passe sur un site qui n'est pas géré par votre organisation. Pour protéger votre compte, ne réutilisez pas ce mot de passe dans d'autres applications ni sur d'autres sites.</translation>
 <translation id="1263231323834454256">Liste de lecture</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        Les données d'activité suivantes ne seront pas conservées sur cet appareil :
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Les pages que vous consultez dans cette fenêtre
+          <ph name="LIST_ITEM" />Les cookies et données de site
+          <ph name="LIST_ITEM" />Les informations de compte (<ph name="LINK_BEGIN" />déconnectez-vous<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Mode d'enlèvement</translation>
 <translation id="1281476433249504884">Empileur 1</translation>
 <translation id="1285320974508926690">Ne jamais traduire ce site</translation>
@@ -553,6 +561,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3207960819495026254">Favori</translation>
 <translation id="3209034400446768650">Cette page peut vous facturer de l'argent</translation>
 <translation id="3212581601480735796">Votre activité sur <ph name="HOSTNAME" /> est surveillée</translation>
+<translation id="3212623355668894776">Fermez toutes les fenêtres en mode Invité pour que votre activité de navigation soit supprimée de cet appareil.</translation>
 <translation id="3215092763954878852">Impossible d'utiliser WebAuthn</translation>
 <translation id="3218181027817787318">Valeur relative</translation>
 <translation id="3225919329040284222">Le serveur dispose d'un certificat qui ne répond pas aux exigences intégrées. Celles-ci sont incluses dans certains sites Web très sécurisés afin de vous protéger.</translation>
@@ -914,6 +923,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4658638640878098064">Agrafe en haut à gauche</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Réalité virtuelle</translation>
+<translation id="4675657451653251260">Vous ne pouvez voir aucune information de profil Chrome en mode Invité. Pour accéder à des informations liées à votre compte Google, comme vos mots de passe et modes de paiement, vous pouvez <ph name="LINK_BEGIN" />vous connecter<ph name="LINK_END" />.</translation>
 <translation id="467662567472608290">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité contient des erreurs. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> souhaite répondre aux événements d'accessibilité</translation>
 <translation id="467809019005607715">Google Slides</translation>
@@ -941,6 +951,12 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4761104368405085019">Utiliser votre micro</translation>
 <translation id="4764776831041365478">Il se peut que la page Web à l'adresse <ph name="URL" /> soit temporairement inaccessible ou qu'elle ait été déplacée de façon permanente à une autre adresse Web.</translation>
 <translation id="4766713847338118463">Double agrafe en bas</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        Les données d'activité suivantes seront conservées sur cet appareil :
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Tous les fichiers que vous téléchargez dans cette fenêtre
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Une erreur inconnue s'est produite.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{ fenêtre pop-up bloquée}one{# fenêtre pop-up bloquée}other{# fenêtres pop-up bloquées}}</translation>
 <translation id="4780366598804516005">Boîte aux lettres 1</translation>
@@ -1395,6 +1411,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6587923378399804057">Lien copié</translation>
 <translation id="6591833882275308647">Votre <ph name="DEVICE_TYPE" /> n'est pas géré</translation>
 <translation id="6596325263575161958">Options de chiffrement</translation>
+<translation id="6596892391065203054">L'administrateur a bloqué l'impression de ce contenu.</translation>
 <translation id="6604181099783169992">Capteurs de mouvement ou de lumière</translation>
 <translation id="6609880536175561541">Prc7 (enveloppe)</translation>
 <translation id="6612358246767739896">Contenu protégé</translation>
@@ -1878,11 +1895,21 @@ Informations supplémentaires :
 <translation id="8559762987265718583">Impossible d'établir une connexion privée à <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> : la date et l'heure de votre appareil (<ph name="DATE_AND_TIME" />) sont incorrectes.</translation>
 <translation id="8564182942834072828">Documents séparés/Copies non assemblées</translation>
 <translation id="8564985650692024650">L'équipe Chromium vous recommande de réinitialiser votre mot de passe <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> si vous l'avez réutilisé sur d'autres sites.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        Les données d'activité suivantes ne seront pas conservées sur cet appareil :
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Les pages que vous consultez dans cette fenêtre
+          <ph name="LIST_ITEM" />Les cookies et données de site
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Utiliser Touch ID pour confirmer les cartes plus rapidement</translation>
 <translation id="858637041960032120">Saisir num tél</translation>
 <translation id="8589998999637048520">Qualité optimale</translation>
 <translation id="860043288473659153">Nom du titulaire de la carte</translation>
 <translation id="8606726445206553943">Utiliser vos appareils MIDI</translation>
+<translation id="8612761427948161954">Bonjour <ph name="USERNAME" />,
+        <ph name="BR" />
+        Vous êtes actuellement en mode Invité</translation>
 <translation id="861775596732816396">Taille 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Aucun mot de passe enregistré. Afficher tous les mots de passe enregistrés.</translation>
@@ -2021,6 +2048,7 @@ Informations supplémentaires :
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> utilise un protocole incompatible.</translation>
 <translation id="9191834167571392248">Perforation en bas à gauche</translation>
+<translation id="9199905725844810519">Impression bloquée</translation>
 <translation id="9205078245616868884">Vos données sont chiffrées avec votre phrase secrète de synchronisation. Saisissez-la pour lancer la synchronisation.</translation>
 <translation id="9207861905230894330">Échec de l'ajout de l'article.</translation>
 <translation id="9213433120051936369">Personnaliser l'apparence</translation>

@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">สร้างแท็บใหม่</translation>
 <translation id="1145536944570833626">ลบข้อมูลที่มีอยู่</translation>
 <translation id="1154690515305205900">สร้างลิงก์ไปยังข้อความที่ไฮไลต์ไม่สำเร็จ</translation>
+<translation id="1157749421655780457">อนุญาตให้ใช้ตำแหน่ง...</translation>
 <translation id="1165039591588034296">ข้อผิดพลาด</translation>
 <translation id="1172898394251786223">ช่องถัดไป</translation>
 <translation id="1176932207622159128">ไม่สามารถบันทึกภาพ</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">ไม่มีรายการ</translation>
 <translation id="1692118695553449118">การซิงค์เปิดอยู่</translation>
 <translation id="1700629756560807968">เลือก <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> รายการ</translation>
+<translation id="1715940067130687605">ใช้ตำแหน่งปัจจุบันของคุณ</translation>
 <translation id="1740468249224277719">แตะ 2 ครั้งเพื่อติดตั้ง</translation>
 <translation id="1746815479209538200">หากต้องการท่องเว็บ ให้เพิ่มแท็บใหม่</translation>
 <translation id="1752547299766512813">บันทึกรหัสผ่าน</translation>
@@ -374,6 +376,7 @@
 <translation id="5059136629401106827">ตกลง</translation>
 <translation id="5062321486222145940">ติดตั้ง Google ไดรฟ์</translation>
 <translation id="5083464117946352670">ไม่สามารถระบุขนาดไฟล์ได้</translation>
+<translation id="5090832849094901128">การลบรหัสผ่านนี้จะไม่ลบบัญชีของคุณใน <ph name="WEBSITE" /></translation>
 <translation id="5094827893301452931">ทวีตแล้ว</translation>
 <translation id="5118764316110575523">ปิด</translation>
 <translation id="5127805178023152808">การซิงค์ปิดอยู่</translation>

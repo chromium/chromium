@@ -87,7 +87,7 @@
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{‏Chrome יופעל מחדש עכשיו}=1{‏Chrome יופעל מחדש בעוד שנייה}two{‏Chrome יופעל מחדש בעוד # שניות}many{‏Chrome יופעל מחדש בעוד # שניות}other{‏Chrome יופעל מחדש בעוד # שניות}}</translation>
 <translation id="3395323229510056640">‏עזרה בנושא Chrome OS</translation>
-<translation id="3396977131400919238">‏במהלך ההתקנה ארעה שגיאה של מערכת ההפעלה. הורד שוב את Google Chrome.</translation>
+<translation id="3396977131400919238">‏במהלך ההתקנה אירעה שגיאה של מערכת ההפעלה. יש להוריד שוב את Google Chrome.</translation>
 <translation id="3398288718845740432">‏הסתרה בתפריט Chrome</translation>
 <translation id="3434246496373299699">‏Chrome יכול לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google</translation>
 <translation id="3451115285585441894">‏הוספה ל-‏Chrome...</translation>
@@ -253,7 +253,7 @@
 <translation id="8625237574518804553">{0,plural, =1{‏Chrome יופעל מחדש בעוד דקה}two{‏Chrome יופעל מחדש בעוד # דקות}many{‏Chrome יופעל מחדש בעוד # דקות}other{‏Chrome יופעל מחדש בעוד # דקות}}</translation>
 <translation id="8641606876632989680">‏אם מערכת Chrome תזהה שנכנסת עם סיסמה שנחשפה, היא תתריע לך על כך</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
-<translation id="8679801911857917785">‏הגדרה זו גם קובעת איזה דף מוצג כשאתה מפעיל את Chrome.</translation>
+<translation id="8679801911857917785">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chrome.</translation>
 <translation id="870251953148363156">‏יש לעדכן את Google Chrome&amp;</translation>
 <translation id="873133009373065397">‏Google Chrome אינו יכול לקבוע או להגדיר את דפדפן ברירת המחדל</translation>
 <translation id="8748242232968346981">‏ליצור פרופיל ב-Chrome?</translation>

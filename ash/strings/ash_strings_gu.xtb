@@ -49,6 +49,7 @@
 <translation id="1346748346194534595">જમણે</translation>
 <translation id="1351937230027495976">મેનૂ સંકુચિત કરો</translation>
 <translation id="1383876407941801731">શોધો</translation>
+<translation id="1390105199421505038"><ph name="USER_EMAIL_ADDRESS" /> માટે એકાઉન્ટનો સંવાદ કાઢી નાખો</translation>
 <translation id="1391102559483454063">ચાલુ</translation>
 <translation id="1407069428457324124">ઘેરી થીમ</translation>
 <translation id="1419738280318246476">નોટિફિકેશન ક્રિયા કરવા માટે ઉપકરણને અનલૉક કરો</translation>
@@ -59,7 +60,6 @@
 <translation id="1456407467406159627">તમારી સ્ક્રીન પર ગોપનીય કન્ટેન્ટ હોવાને કારણે સ્ક્રીન રેકોર્ડિંગ બંધ કરવામાં આવ્યું છે.</translation>
 <translation id="1460620680449458626">વૉલ્યૂમ મ્યૂટ કરેલું છે.</translation>
 <translation id="1467432559032391204">ડાબું</translation>
-<translation id="1475439723810528286">પૂર્ણ સ્ક્રીન કૅપ્ચર કરવા માટે સ્ક્રીન પર ગમે ત્યાં ટૅપ કરો</translation>
 <translation id="1479909375538722835">ફ્લોટિંગ ઍક્સેસિબિલિટી મેનૂ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">આ માલિક એકાઉન્ટ દ્વારા એકથી વધુ સાઇન ઇન સત્રમાં પહેલા સાઇન ઇન કરનાર એકાઉન્ટ હોવું જોઈએ.</translation>
@@ -126,7 +126,6 @@
 <translation id="2132302418721800944">પૂર્ણ સ્ક્રીન રેકોર્ડ કરો</translation>
 <translation id="2135456203358955318">ડૉક કરેલ મૅગ્નિફાયર</translation>
 <translation id="2144487987174258011">Adobe Flash Player અપડેટ કરવા પુનઃપ્રારંભ કરો</translation>
-<translation id="2180011262286780504">તમારા વ્યવસ્થાપક દ્વારા સ્ક્રીન કૅપ્ચર કરવાની ક્ષમતા બંધ કરવામાં આવી છે.</translation>
 <translation id="2208323208084708176">એકીકૃત ડેસ્કટૉપ મોડ</translation>
 <translation id="2220572644011485463">PIN અથવા પાસવર્ડ</translation>
 <translation id="2222338659135520253">સાઇન ઇન આવશ્યક</translation>
@@ -369,6 +368,7 @@
 <translation id="4477892968187500306">આ ડિવાઇસમાં એવી ઍપ હોય શકે કે જેની Google દ્વારા ચકાસણી કરવામાં આવી છે.</translation>
 <translation id="4479639480957787382">ઇથરનેટ</translation>
 <translation id="4481530544597605423">જોડીથી અલગ કરેલા ઉપકરણો</translation>
+<translation id="4485060137115666462">બટનને રાઇટ ક્લિક કરવાથી અથવા થોડીવાર દબાવી રાખવાથી, Assistant તમારી પસંદગી માટે વ્યાખ્યા, અનુવાદ અથવા એકમના રૂપાંતરણ જેવી માહિતી બતાવે છે.</translation>
 <translation id="4505050298327493054">સક્રિય ડેસ્ક.</translation>
 <translation id="4506458088675900627">ઓવરવ્યૂ માટેનો ટચપૅડ સંકેત બદલાયો છે</translation>
 <translation id="4513946894732546136">પ્રતિસાદ</translation>
@@ -597,6 +597,7 @@
 <translation id="6803622936009808957">કોઈ સમર્થિત રિઝોલ્યૂશન મળ્યું ન હોવાથી, પ્રદર્શનોને પ્રતિબિંબિત કરી શકાયા નથી. તેને બદલે વિસ્તૃત ડેસ્કટૉપ દાખલ કર્યું.</translation>
 <translation id="6818242057446442178">એક શબ્દ પાછળ જાઓ</translation>
 <translation id="6820676911989879663">વિરામ લો!</translation>
+<translation id="6850010208275816200">તમારી વર્તમાન ઍપ પૂર્ણ સ્ક્રીન મોડમાં છે. જો ઍપ તમારો પાસવર્ડ પૂછે, તો પહેલાં પૂર્ણ સ્ક્રીન મોડમાંથી બહાર નીકળો.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> સેકન્ડ</translation>
 <translation id="6857811139397017780">સક્રિય કરો <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{એક અંક બાકી}one{# અંક બાકી}other{# અંક બાકી}}</translation>
@@ -646,6 +647,7 @@
 <translation id="7398254312354928459">સ્વિચ કરેલ નેટવર્ક કનેક્શન</translation>
 <translation id="7405710164030118432">ડિવાઇસને અનલૉક કરવા માટે, તમારી Family Linkનો માતાપિતા માટેનો ઍક્સેસ કોડ દાખલ કરો</translation>
 <translation id="741244894080940828">રૂપાંતરણ</translation>
+<translation id="7413851974711031813">બંધ કરવા માટે Escape કી દબાવો</translation>
 <translation id="742594950370306541">કૅમેરો ઉપયોગમાં છે.</translation>
 <translation id="742608627846767349">ગુડ મોર્નિંગ,</translation>
 <translation id="743058460480092004">કૅમેરો અને માઇક્રોફોન ઉપયોગમાં છે.</translation>
@@ -797,7 +799,6 @@
 <translation id="8843682306134542540">રોટેશન લૉક ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">તમારો પિન કે પાસવર્ડ હજી પણ ચકાસી શકાયો નથી. નોંધ: જો તમે તમારો પાસવર્ડ તાજેતરમાં બદલ્યો હોય, તો તમારા જૂના પાસવર્ડનો ઉપયોગ કરો. એકવાર તમે સાઇન આઉટ કરો, તે પછી તમારો નવો પાસવર્ડ લાગુ કરવામાં આવશે.</translation>
-<translation id="885387440427703469">સ્ક્રીન કૅપ્ચરની સુવિધા બંધ કરવામાં આવી છે</translation>
 <translation id="8870509716567206129">ઍપ સ્ક્રીન-વિભાજનને સહાય કરતી નથી.</translation>
 <translation id="8871580645200179206">ઘેરી થીમ ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">કનેક્ટ નથી</translation>

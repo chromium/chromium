@@ -60,7 +60,6 @@
 <translation id="1456407467406159627">A képernyőrögzítés leállt, mert bizalmas tartalom látható a képernyőn.</translation>
 <translation id="1460620680449458626">Hang némítva.</translation>
 <translation id="1467432559032391204">Balra</translation>
-<translation id="1475439723810528286">Koppintson bárhova a teljes képernyő rögzítéséhez</translation>
 <translation id="1479909375538722835">Kisegítő lehetőségek lebegő menüje</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Ennek a tulajdonosi fióknak kell lennie az első bejelentkezett fióknak a többfiókos bejelentkezés munkamenete során.</translation>
@@ -127,7 +126,6 @@
 <translation id="2132302418721800944">Teljes képernyő rögzítése</translation>
 <translation id="2135456203358955318">Dokkolt nagyító</translation>
 <translation id="2144487987174258011">Az Adobe Flash Player frissítéséhez újraindítás szükséges</translation>
-<translation id="2180011262286780504">A képernyőfelvétel funkció le lett tiltva a rendszergazda által.</translation>
 <translation id="2208323208084708176">Egységes asztali mód</translation>
 <translation id="2220572644011485463">PIN-kód vagy jelszó</translation>
 <translation id="2222338659135520253">Bejelentkezést igényel</translation>
@@ -802,7 +800,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="8843682306134542540">Váltás a forgatás zárolásának állapotai közt. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Keresés+Esc</translation>
 <translation id="8853703225951107899">PIN-kódjának vagy jelszavának ellenőrzése még mindig nem sikerült. Megjegyzés: Ha nemrég módosította jelszavát, akkor használja a régit. Az új jelszó beállítása a kijelentkezés után lép érvénybe.</translation>
-<translation id="885387440427703469">Képernyőfelvétel letiltva</translation>
 <translation id="8870509716567206129">Az alkalmazás nem támogatja az osztott képernyős nézetet.</translation>
 <translation id="8871580645200179206">Sötét téma be-/kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Nincs csatl.</translation>

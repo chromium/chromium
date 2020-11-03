@@ -204,7 +204,7 @@
 <translation id="3188257591659621405">הקבצים שלי</translation>
 <translation id="3197563288998582412">‏בריטניה - Dvorak</translation>
 <translation id="3202131003361292969">נתיב</translation>
-<translation id="3224239078034945833">קנדית - מרובת-שפות</translation>
+<translation id="3224239078034945833">קנדית – מרובת-שפות</translation>
 <translation id="3236289833370040187">הבעלות תועבר אל <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">אירית</translation>
 <translation id="3245321423178950146">אמן לא ידוע</translation>
@@ -508,7 +508,7 @@
 <translation id="6248400709929739064">הפעלת כתוביות</translation>
 <translation id="6264347891387618177">‏תעתוק (selam → ሰላም)</translation>
 <translation id="6287852322318138013">בחירת אפליקציה לפתיחת הקובץ</translation>
-<translation id="6305012486838822927">מקלדת לאית</translation>
+<translation id="6305012486838822927">מקלדת לאו</translation>
 <translation id="6339034549827494595">‏מקלדת רוסית פונטית (AATSEEL)</translation>
 <translation id="6339145975392024142">‏מקלדת ארה"ב בינלאומית (PC)</translation>
 <translation id="6346310558342052870">גישה מוגבלת</translation>
@@ -640,7 +640,7 @@
 <translation id="7765158879357617694">העברה</translation>
 <translation id="7774365994322694683">ציפור</translation>
 <translation id="7788080748068240085">כדי לשמור את "<ph name="FILE_NAME" />" באופן לא מקוון, יש לפנות נפח נוסף של <ph name="TOTAL_FILE_SIZE" /> :<ph name="MARKUP_1" />
-        <ph name="MARKUP_2" />ניתן לבטל הצמדה של קבצים שאינך צריך לגשת אליהם יותר במצב לא מקוון<ph name="MARKUP_3" />
+        <ph name="MARKUP_2" />ניתן לבטל הצמדה של קבצים שאין צורך לגשת אליהם יותר במצב לא מקוון<ph name="MARKUP_3" />
         <ph name="MARKUP_4" />ניתן למחוק קבצים מהתיקייה 'הורדות'<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">פרמוט המכשיר</translation>
 <translation id="7799329977874311193">‏מסמך HTML</translation>

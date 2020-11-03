@@ -80,6 +80,14 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Zure erakundeak kudeatzen ez duen webgune batean idatzi duzu pasahitza. Kontua babesteko, ez erabili berriro pasahitz hori beste inongo aplikazio eta webgunetan.</translation>
 <translation id="1263231323834454256">Irakurketa-zerrenda</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        Jarduera hauek ez dira gordeko gailuan:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />leiho honetan ikusten dituzun orriak,
+          <ph name="LIST_ITEM" />cookieak eta webgunearen datuak,
+          <ph name="LIST_ITEM" />kontuaren informazioa (<ph name="LINK_BEGIN" />amaitu saioa<ph name="LINK_END" />).
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Jasotzeko modua</translation>
 <translation id="1281476433249504884">1. pilatzailea</translation>
 <translation id="1285320974508926690">Ez itzuli inoiz webgune hau</translation>
@@ -546,6 +554,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3207960819495026254">Laster-marka gisa gordea</translation>
 <translation id="3209034400446768650">Baliteke orriak dirua kobratzea</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> webgunean egiten ari zarena gainbegiratzen ari dira</translation>
+<translation id="3212623355668894776">Itxi gonbidatuentzako leiho guztiak arakatze-jarduerak ezabatzeko gailu honetatik.</translation>
 <translation id="3215092763954878852">Ezin izan da erabili WebAuthn</translation>
 <translation id="3218181027817787318">Erlatiboa</translation>
 <translation id="3225919329040284222">Zerbitzariak aurkeztu duen ziurtagiria ez dator bat integratutako eskakizunekin. Eskakizun horiek segurtasun handiko webgune batzuek egiten dituzte erabiltzaileak babesteko.</translation>
@@ -901,6 +910,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4658638640878098064">Grapa bat goian, ezkerretara</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Errealitate birtuala</translation>
+<translation id="4675657451653251260">Ez duzu ikusiko Chrome-ko profilari buruzko informaziorik gonbidatu moduan. Google-ko kontuko informazioa (adibidez, pasahitzak eta ordainketa-metodoak) atzitzeko, <ph name="LINK_BEGIN" />hasi saioa<ph name="LINK_END" />.</translation>
 <translation id="467662567472608290">Zerbitzari honek ezin izan du egiaztatu <ph name="DOMAIN" /> domeinua denik. Bere segurtasun-ziurtagiriak erroreak ditu. Baliteke gaizki konfiguratuta dagoelako izatea edo erasotzaile batek zure konexioa atzeman duelako izatea.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> webguneak erabilerraztasun-gertaerei erantzun nahi die</translation>
 <translation id="467809019005607715">Google Aurkezpenak</translation>
@@ -928,6 +938,12 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4761104368405085019">Erabili mikrofonoa</translation>
 <translation id="4764776831041365478">Baliteke <ph name="URL" /> helbideko web-orria tarte batez ez funtzionatzea edo beste web-helbide batera behin betiko aldatu izatea.</translation>
 <translation id="4766713847338118463">Bi grapa behean</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        Jarduera hauek gailuan gordeko dira:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />leiho honetan deskargatzen dituzun fitxategiak.
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Errore ezezagun bat gertatu da.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Leiho gainerakor bat blokeatu da}other{# leiho gainerakor blokeatu dira}}</translation>
 <translation id="4780366598804516005">1. postontzia</translation>
@@ -1381,6 +1397,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6587923378399804057">Kopiatu duzun esteka</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> gailuak ez du kudeatzailerik</translation>
 <translation id="6596325263575161958">Enkriptatze aukerak</translation>
+<translation id="6596892391065203054">Administratzaileak blokeatu egin du eduki hau inprimatzeko aukera.</translation>
 <translation id="6604181099783169992">Mugimenduaren eta argiaren sentsoreak</translation>
 <translation id="6609880536175561541">Prc7 (gutun-azala)</translation>
 <translation id="6612358246767739896">Eduki babestua</translation>
@@ -1864,11 +1881,21 @@ Xehetasun gehiago:
 <translation id="8559762987265718583">Ezin da ezarri <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeinurako konexio pribatua gailuaren data eta ordua (<ph name="DATE_AND_TIME" />) okerrak direlako.</translation>
 <translation id="8564182942834072828">Dokumentu bereiziak / Elkartu gabeko kopiak</translation>
 <translation id="8564985650692024650"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> pasahitza beste webgune batzuetan ere erabili baduzu, hura berrezartzea gomendatzen du Chromium-ek.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        Jarduera hauek ez dira gordeko gailuan:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />leiho honetan ikusten dituzun orriak,
+          <ph name="LIST_ITEM" />cookieak eta webgunearen datuak.
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Erabili Touch ID txartelak bizkorrago berresteko</translation>
 <translation id="858637041960032120">Gehitu telefono-zenbakia</translation>
 <translation id="8589998999637048520">Kalitaterik onena</translation>
 <translation id="860043288473659153">Txartelaren titularraren izena</translation>
 <translation id="8606726445206553943">Erabili MIDI gailuak</translation>
+<translation id="8612761427948161954">Kaixo, <ph name="USERNAME" />:
+        <ph name="BR" />
+        Gonbidatu gisa arakatzen ari zara</translation>
 <translation id="861775596732816396">Tamaina: 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Ez dago bat datorren pasahitzik. Erakutsi gordetako pasahitz guztiak.</translation>
@@ -2007,6 +2034,7 @@ Xehetasun gehiago:
 <translation id="9183302530794969518">Google Dokumentuak</translation>
 <translation id="9183425211371246419">Onartzen ez den protokolo bat darabil <ph name="HOST_NAME" /> webguneak.</translation>
 <translation id="9191834167571392248">Zulo bat behean, ezkerretara</translation>
+<translation id="9199905725844810519">Inprimatzeko aukera blokeatuta dago</translation>
 <translation id="9205078245616868884">Sinkronizatzeko pasaesaldiaren bidez daude enkriptatuta datuak. Idatz ezazu sinkronizatzen hasteko.</translation>
 <translation id="9207861905230894330">Ezin izan da artikulua gehitu.</translation>
 <translation id="9213433120051936369">Pertsonalizatu itxura</translation>

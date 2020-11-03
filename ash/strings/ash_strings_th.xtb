@@ -49,6 +49,7 @@
 <translation id="1346748346194534595">ขวา</translation>
 <translation id="1351937230027495976">ยุบเมนู</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
+<translation id="1390105199421505038">นำกล่องโต้ตอบของบัญชี <ph name="USER_EMAIL_ADDRESS" /> ออก</translation>
 <translation id="1391102559483454063">เปิด</translation>
 <translation id="1407069428457324124">ธีมมืด</translation>
 <translation id="1419738280318246476">ปลดล็อกอุปกรณ์เพื่อดำเนินการแจ้งเตือน</translation>
@@ -59,7 +60,6 @@
 <translation id="1456407467406159627">หยุดบันทึกหน้าจอเนื่องจากมีเนื้อหาลับในหน้าจอ</translation>
 <translation id="1460620680449458626">ระดับเสียงปิดเสียงอยู่</translation>
 <translation id="1467432559032391204">ซ้าย</translation>
-<translation id="1475439723810528286">แตะที่ใดก็ได้เพื่อจับภาพแบบเต็มหน้าจอ</translation>
 <translation id="1479909375538722835">เมนูการช่วยเหลือพิเศษแบบลอย</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">บัญชีเจ้าของนี้ต้องเป็นบัญชีที่ลงชื่อเข้าใช้บัญชีแรกในเซสชันการลงชื่อเข้าใช้พร้อมกัน</translation>
@@ -126,7 +126,6 @@
 <translation id="2132302418721800944">บันทึกแบบเต็มหน้าจอ</translation>
 <translation id="2135456203358955318">แว่นขยายหน้าจอบางส่วน</translation>
 <translation id="2144487987174258011">รีสตาร์ทเพื่ออัปเดต Adobe Flash Player</translation>
-<translation id="2180011262286780504">ผู้ดูแลระบบปิดใช้การจับภาพหน้าจอ</translation>
 <translation id="2208323208084708176">โหมดเดสก์ท็อปแบบรวม</translation>
 <translation id="2220572644011485463">PIN หรือรหัสผ่าน</translation>
 <translation id="2222338659135520253">ต้องลงชื่อเข้าใช้</translation>
@@ -369,6 +368,7 @@
 <translation id="4477892968187500306">อุปกรณ์นี้อาจมีแอปที่ยังไม่ได้รับการยืนยันจาก Google</translation>
 <translation id="4479639480957787382">อีเทอร์เน็ต</translation>
 <translation id="4481530544597605423">อุปกรณ์ที่ไม่ได้จับคู่</translation>
+<translation id="4485060137115666462">เมื่อคลิกขวาหรือกดค้าง Assistant จะแสดงข้อมูล เช่น คำจำกัดความ คำแปล หรือการแปลงหน่วยของรายการที่คุณเลือก</translation>
 <translation id="4505050298327493054">โต๊ะทำงานที่ใช้งานอยู่</translation>
 <translation id="4506458088675900627">มีการเปลี่ยนแปลงท่าทางสัมผัส "ภาพรวม" ของทัชแพด</translation>
 <translation id="4513946894732546136">ข้อเสนอแนะ</translation>
@@ -597,6 +597,7 @@
 <translation id="6803622936009808957">ไม่สามารถแสดงผลคู่ขนานได้เนื่องจากไม่พบความละเอียดที่สนับสนุน เข้าสู่เดสก์ท็อปแบบขยายแทน</translation>
 <translation id="6818242057446442178">ถอยกลับทีละคำ</translation>
 <translation id="6820676911989879663">พักสายตาหน่อย</translation>
+<translation id="6850010208275816200">แอปที่เปิดอยู่แสดงเต็มหน้าจอ หากแอปขอให้ป้อนรหัสผ่าน ขอแนะนำให้ออกจากโหมดเต็มหน้าจอก่อน</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> วินาที</translation>
 <translation id="6857811139397017780">เปิดใช้งาน <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{เหลือตัวเลขอีก 1 หลัก}other{เหลือตัวเลขอีก # หลัก}}</translation>
@@ -646,6 +647,7 @@
 <translation id="7398254312354928459">เปลี่ยนการเชื่อมต่อเครือข่ายแล้ว</translation>
 <translation id="7405710164030118432">ป้อนรหัสการเข้าถึง Family Link ของผู้ปกครองเพื่อปลดล็อกอุปกรณ์</translation>
 <translation id="741244894080940828">การแปลง</translation>
+<translation id="7413851974711031813">กด Escape เพื่อปิด</translation>
 <translation id="742594950370306541">ใช้กล้องถ่ายรูปอยู่</translation>
 <translation id="742608627846767349">สวัสดียามเช้า</translation>
 <translation id="743058460480092004">ใช้กล้องถ่ายรูปและไมโครโฟนอยู่</translation>
@@ -797,7 +799,6 @@
 <translation id="8843682306134542540">เปิด/ปิดการล็อกการหมุน <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">ยังคงยืนยัน PIN หรือรหัสผ่านของคุณไม่ได้ หากคุณเพิ่งเปลี่ยนรหัสผ่านไปไม่นาน ให้ใช้รหัสผ่านเก่า รหัสผ่านใหม่จะมีผลเมื่อคุณออกจากระบบ</translation>
-<translation id="885387440427703469">มีการปิดใช้การจับภาพหน้าจอ</translation>
 <translation id="8870509716567206129">แอปไม่สนับสนุนการแยกหน้าจอ</translation>
 <translation id="8871580645200179206">เปิด/ปิดธีมมืด <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">ไม่เชื่อมต่อ</translation>

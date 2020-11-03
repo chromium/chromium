@@ -387,7 +387,7 @@
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">בחירת שיטת מסירה</translation>
 <translation id="2465688316154986572">סיכת הידוק</translation>
-<translation id="2467694685043708798"><ph name="BEGIN_LINK" />מפעיל את אבחון הרשת<ph name="END_LINK" /></translation>
+<translation id="2467694685043708798"><ph name="BEGIN_LINK" />להפעיל את אבחון הרשת<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">‏סדר מ-1 עד N</translation>
 <translation id="2470767536994572628">המסמך הזה יחזור לתצוגת דף יחיד ולמצב הסיבוב המקורי שלו בזמן עריכת ההערות</translation>
 <translation id="2479410451996844060">‏כתובת URL לא חוקית לחיפוש</translation>
@@ -432,7 +432,7 @@
 <translation id="2660779039299703961">אירוע</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{אין}=1{סיסמה אחת (עבור <ph name="DOMAIN_LIST" />)}=2{שתי סיסמאות (עבור <ph name="DOMAIN_LIST" />)}many{# סיסמאות (עבור <ph name="DOMAIN_LIST" />)}other{# סיסמאות (עבור <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">למעלה</translation>
-<translation id="2666117266261740852">סגירת כרטיסיות או יישומים אחרים</translation>
+<translation id="2666117266261740852">סגירת כרטיסיות או אפליקציות אחרות</translation>
 <translation id="2672201172023654893">הדפדפן שלך לא מנוהל.</translation>
 <translation id="2674170444375937751">בטוח שברצונך להסיר דפים אלו מההיסטוריה שלך?</translation>
 <translation id="2674804415323431591">הסתרת ההצעות</translation>
@@ -782,7 +782,7 @@
 <translation id="4121428309786185360">בתוקף עד </translation>
 <translation id="4123572138124678573">3 ניקובים בחלק התחתון</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{אחד נוסף}two{שניים נוספים}many{# נוספים}other{# נוספים}}</translation>
-<translation id="4130226655945681476">בדוק את כבלי הרשת, את המודם ואת הנתב</translation>
+<translation id="4130226655945681476">כדאי לבדוק את כבלי הרשת, את המודם ואת הנתב</translation>
 <translation id="413544239732274901">מידע נוסף</translation>
 <translation id="4142935452406587478">מגש 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -970,7 +970,7 @@ Del</translation>
 <translation id="4792686369684665359">המידע שבכוונתך לשלוח לא מאובטח</translation>
 <translation id="4796594887379589189">מזהה חשבון עבודה</translation>
 <translation id="4798078619018708837">‏כדי לעדכן את פרטי הכרטיס, יש להזין את תאריך התפוגה וקוד האימות של <ph name="CREDIT_CARD" />. אחרי שנקבל ממך אישור, נשתף עם האתר הזה את פרטי הכרטיס מחשבון Google.</translation>
-<translation id="4800132727771399293">‏בדוק את תאריך התפוגה ואת ה-CVC ונסה שוב</translation>
+<translation id="4800132727771399293">‏יש לבדוק את תאריך התפוגה ואת ה-CVC ולנסות שוב</translation>
 <translation id="480334179571489655">שגיאת מדיניות מקור</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4807049035289105102">‏לא ניתן לבקר כעת באתר <ph name="SITE" /> מכיוון שהאתר שלח אישורים משובשים ש-Google Chrome אינו יכול לעבד. שגיאות רשת ותקיפות מתרחשות בדרך כלל לזמן מוגבל, כך שסביר להניח שהדף הזה יפעל מאוחר יותר.</translation>
@@ -1037,7 +1037,7 @@ Del</translation>
 <translation id="5070335125961472645">‏<ph name="BEGIN_LINK" />לבדוק את כתובת שרת ה-Proxy<ph name="END_LINK" /></translation>
 <translation id="507130231501693183">תיבת דואר 4</translation>
 <translation id="5087286274860437796">האישור של השרת אינו תקף כעת.</translation>
-<translation id="5087580092889165836">הוסף כרטיס</translation>
+<translation id="5087580092889165836">הוספת כרטיס</translation>
 <translation id="5088142053160410913">הודעה לאופרטור</translation>
 <translation id="5089810972385038852">מדינה</translation>
 <translation id="5093232627742069661">‏קיפול Z</translation>
@@ -1170,7 +1170,7 @@ Del</translation>
 <translation id="5565735124758917034">פעילה</translation>
 <translation id="5570825185877910964">הגנה על החשבון</translation>
 <translation id="5571083550517324815">לא ניתן לבצע איסוף מהכתובת הזו. עליך לבחור כתובת אחרת.</translation>
-<translation id="5580958916614886209">בדוק את חודש התפוגה ונסה שוב</translation>
+<translation id="5580958916614886209">יש לבדוק את חודש התפוגה ולנסות שוב</translation>
 <translation id="5586446728396275693">לא נשמרו כתובות</translation>
 <translation id="5595485650161345191">עריכת כתובת</translation>
 <translation id="5598944008576757369">בחירת אמצעי תשלום</translation>
@@ -1305,7 +1305,7 @@ Del</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6106989379647458772">ייתכן שדף האינטרנט בכתובת <ph name="PAGE" /> אינו פעיל זמנית, או שהוא הועבר לכתובת אינטרנט קבועה אחרת.</translation>
 <translation id="6107012941649240045">מונפק ל</translation>
-<translation id="610911394827799129">‏ייתכן שלחשבון Google שלך משויכים סוגים אחרים של היסטוריית גלישה בכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="610911394827799129">‏ייתכן שיהיה אפשר לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6116338172782435947">גישה אל טקסט ותמונות שהועתקו ללוח</translation>
 <translation id="6120179357481664955">‏מזהה UPI שלך זכור לך?</translation>
 <translation id="6124432979022149706">‏מחברים של Chrome Enterprise</translation>

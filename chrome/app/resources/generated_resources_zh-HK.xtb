@@ -62,7 +62,6 @@
 <translation id="1060292118287751956">決定螢幕更新的頻率</translation>
 <translation id="1061904396131502319">快到休息時間了</translation>
 <translation id="1067048845568873861">已建立</translation>
-<translation id="1067291318998134776">Linux (Beta 版本)</translation>
 <translation id="1067922213147265141">其他 Google 服務</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">電腦中其他程式所新增的擴充功能可能會變更 Chrome 的運作方式。
@@ -1325,7 +1324,6 @@
 <translation id="2505127913256479918">此受監管帳戶即將被移除</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{螢幕 #}other{螢幕 #}}</translation>
 <translation id="2505402373176859469">已收到 <ph name="RECEIVED_AMOUNT" />，共 <ph name="TOTAL_SIZE" /></translation>
-<translation id="250642123108534012">您附近已開啟「咫尺共享」的裝置</translation>
 <translation id="250704661983564564">顯示安排</translation>
 <translation id="2507253002925770350">已移除票證</translation>
 <translation id="2507397597949272797">「<ph name="NAME" />」已暫停</translation>
@@ -1875,6 +1873,7 @@
 <translation id="3155072594963189910">禁止網站編輯裝置上的檔案和資料夾</translation>
 <translation id="3156531245809797194">如要使用 Chrome，請登入帳戶</translation>
 <translation id="315738237743207937">已偵測到強制網絡入口</translation>
+<translation id="3157387275655328056">新增至閱讀清單</translation>
 <translation id="3157931365184549694">還原</translation>
 <translation id="3158033540161634471">設定指紋</translation>
 <translation id="3159493096109238499">米黃色</translation>
@@ -2051,7 +2050,6 @@
 <translation id="3388788256054548012">此檔案已加密。請要求擁有者解密。</translation>
 <translation id="3390013585654699824">應用程式詳情</translation>
 <translation id="3390741581549395454">已成功備份 Linux 應用程式和檔案。升級即將開始。</translation>
-<translation id="339507021360520688">已選擇向您顯示裝置並已解鎖螢幕的使用者</translation>
 <translation id="3396800784455899911">按一下 [接受並繼續] 按鈕，即表示您同意上述的 Google 服務處理程序。.</translation>
 <translation id="3399432415385675819">通知將會停用</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hz) - 交錯顯示</translation>
@@ -2132,7 +2130,6 @@
 <translation id="3471876058939596279">HDMI 和 USB Type-C 連接埠無法同時用於影片。請使用其他影片連接埠。</translation>
 <translation id="3473241910002674503">在平板電腦模式中，使用按鈕前往主畫面、返回及切換應用程式。</translation>
 <translation id="3473479545200714844">放大鏡</translation>
-<translation id="347394413229268704">稍後閱讀</translation>
 <translation id="3474218480460386727">新字詞請保持在 99 個字母內</translation>
 <translation id="3475843873335999118">很抱歉，系統仍然無法識別您的指紋，請輸入您的密碼。</translation>
 <translation id="3476303763173086583">傳送使用情況和診斷資料。自動將診斷、裝置及應用程式的使用情況資料傳送至 Google，協助改善您子女的 Android 使用體驗。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。擁有者可強制執行此<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />。擁有者可選擇是否將此裝置的診斷和使用情況資料傳送給 Google。如果已為子女開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至其 Google 帳戶。<ph name="BEGIN_LINK2" />瞭解詳情<ph name="END_LINK2" /></translation>
@@ -2263,7 +2260,6 @@
 <translation id="3619115746895587757">泡沫咖啡</translation>
 <translation id="362333465072914957">正在等待 CA 發出憑證</translation>
 <translation id="3624567683873126087">解鎖裝置和登入 Google 帳戶</translation>
-<translation id="3625258641415618104">已停用螢幕擷圖</translation>
 <translation id="3625481642044239431">所選的檔案無效，請再試一次。</translation>
 <translation id="3626296069957678981">如要為此 Chromebook 充電，請使用兼容的 Dell 電池。</translation>
 <translation id="3627320433825461852">還有不到 1 分鐘</translation>
@@ -2598,7 +2594,6 @@
 <translation id="3965965397408324205">退出「<ph name="PROFILE_NAME" />」</translation>
 <translation id="3966072572894326936">選擇其他資料夾…</translation>
 <translation id="3967822245660637423">下載完成</translation>
-<translation id="3967919079500697218">您的管理員已停用螢幕擷圖功能。</translation>
 <translation id="3969092967100188979">已啟用並正在使用</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">計算中…</translation>
@@ -2756,7 +2751,6 @@
 <translation id="4163560723127662357">未知的鍵盤</translation>
 <translation id="4167686856635546851">網站通常會使用 JavaScript 來顯示互動功能，例如電子遊戲或網上表格</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> 的部分設定已與您共用。不過只有使用多重登入時，這些設定才會影響您的帳戶。</translation>
-<translation id="4170256733935344210">請使用裝置相機掃瞄二維條碼，或輸入流動網絡供應商提供的啟動碼</translation>
 <translation id="4170314459383239649">退出時清除</translation>
 <translation id="4175137578744761569">淺紫色和白色</translation>
 <translation id="4175737294868205930">永久儲存空間</translation>
@@ -2796,7 +2790,6 @@
 <translation id="4232375817808480934">設定 Kerberos</translation>
 <translation id="4235200303672858594">整個螢幕</translation>
 <translation id="4235965441080806197">取消登入</translation>
-<translation id="4241393667672058421">{NUM_TABS,plural, =1{稍後閱讀分頁}other{稍後閱讀分頁}}</translation>
 <translation id="4242145785130247982">不支援多個用戶端憑證</translation>
 <translation id="4242533952199664413">開啟設定</translation>
 <translation id="4242577469625748426">無法在裝置上安裝政策設定：<ph name="VALIDATION_ERROR" />。</translation>
@@ -3154,7 +3147,6 @@
 <translation id="4651484272688821107">無法使用示範模式的資源載入網上組件。</translation>
 <translation id="4652935475563630866">Parallels Desktop 需要重新啟動，相機設定的變更才會生效。重新啟動 Parallels Desktop 即可繼續。</translation>
 <translation id="4653405415038586100">設定 Linux 時發生錯誤</translation>
-<translation id="4657810666108475055">分頁搜尋</translation>
 <translation id="465878909996028221">瀏覽器重新導向僅支援 http、https 和 file 通訊協定。</translation>
 <translation id="4659077111144409915">主要帳戶</translation>
 <translation id="4659126640776004816">當您登入 Google 帳戶時，系統會啟用此功能</translation>
@@ -3235,7 +3227,6 @@
 <translation id="4763408175235639573">系統在您瀏覽此網頁時已設定下列 Cookie</translation>
 <translation id="4764368918650455114">請確保兩部裝置都已解鎖並放在一起，且已開啟藍牙功能。如果您要用 Chromebook 分享檔案，請確認該 Chromebook 已開啟「咫尺共享」 (請透過選取時間開啟狀態區，然後選取「咫尺共享」)。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">允許「Android 訊息」由您的手機轉送短訊至 Chromebook</translation>
-<translation id="476598255842811483">除非您在裝置上開啟「咫尺共享」，否則沒有人可與您分享內容</translation>
 <translation id="4768332406694066911">您具備下列組織的識別憑證</translation>
 <translation id="477647109558161443">建立桌面捷徑</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密碼</translation>
@@ -4111,7 +4102,6 @@
 <translation id="5826993284769733527">半透明</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">列印中…</translation>
-<translation id="5830659417568730973">當您的螢幕解鎖時，附近您已選取的聯絡人皆可與您分享內容</translation>
 <translation id="5830720307094128296">另存網頁(&amp;A)…</translation>
 <translation id="5832805196449965646">新增使用者</translation>
 <translation id="583281660410589416">不明</translation>
@@ -4411,7 +4401,6 @@
 <translation id="6164005077879661055">將這位受管使用者移除後，系統即會永久刪除所有與該使用者相關的檔案和本機數據。管理員仍可前往 <ph name="MANAGEMENT_URL" /> 查看這位受管使用者的網頁瀏覽記錄和設定。</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
 <translation id="6166185671393271715">將密碼匯入至 Chrome</translation>
-<translation id="616831107264507309">稍後閱讀</translation>
 <translation id="6169040057125497443">請檢查麥克風。</translation>
 <translation id="6169666352732958425">無法投放桌面。</translation>
 <translation id="6170470584681422115">三文治</translation>
@@ -5806,7 +5795,6 @@
 <translation id="782057141565633384">複製影片位址(&amp;O)</translation>
 <translation id="7822187537422052256">確定要移除此地址嗎？</translation>
 <translation id="7824864914877854148">發生錯誤，因此無法完成備份程序</translation>
-<translation id="7825666486843191125">當您的螢幕解鎖時，附近的所有聯絡人皆可與您分享檔案</translation>
 <translation id="782590969421016895">使用目前的網頁</translation>
 <translation id="7826249772873145665">已停用 ADB 偵錯</translation>
 <translation id="7826254698725248775">裝置識別碼發生衝突。</translation>
@@ -5861,7 +5849,6 @@
 <translation id="786073089922909430">服務：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">下載(&amp;D)</translation>
 <translation id="7864539943188674973">停用藍牙</translation>
-<translation id="7866352732146932341">您的裝置開啟「咫尺共享」時，位處附近的裝置</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 已配對</translation>
 <translation id="7870730066603611552">設定後查看同步選項</translation>
 <translation id="7870790288828963061">找不到較新版本的 Kiosk 應用程式，無需更新。請移除 USB 記憶體。</translation>
@@ -5904,6 +5891,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> 秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> 可查看「<ph name="FILENAME" />」</translation>
 <translation id="7920482456679570420">新增您想拼字檢查略過的字詞</translation>
+<translation id="7924080089023843180">除非您開啟開啟「咫尺共享」，否則沒有人可與您分享內容</translation>
 <translation id="7924358170328001543">轉送連接埠時發生錯誤</translation>
 <translation id="792514962475806987">固定放大鏡的縮放等級：</translation>
 <translation id="7925247922861151263">AAA 檢查失敗</translation>
@@ -6300,7 +6288,6 @@
 <translation id="8379878387931047019">此裝置不支援此網站要求的安全密鑰類型</translation>
 <translation id="8379991678458444070">將此分頁加入書籤，方便您快速返回此處</translation>
 <translation id="8380266723152870797">視窗名稱</translation>
-<translation id="8382384117483909115">{NUM_TABS,plural, =1{稍後閱讀分頁}other{稍後閱讀分頁}}</translation>
 <translation id="8382913212082956454">複製電郵地址(&amp;E)</translation>
 <translation id="8386091599636877289">找不到政策。</translation>
 <translation id="8386903983509584791">掃瞄完成</translation>
@@ -6805,6 +6792,7 @@
 <translation id="8962918469425892674">此網站正在使用動作或光線感應器。</translation>
 <translation id="8965037249707889821">輸入舊密碼</translation>
 <translation id="8966870118594285808">當您意外關閉標籤時重新開啟標籤</translation>
+<translation id="8967427617812342790">加入閱讀清單</translation>
 <translation id="8967866634928501045">㩒住 Alt、Shift 同 A 鍵就會顯示</translation>
 <translation id="8968766641738584599">儲存付款卡</translation>
 <translation id="89720367119469899">Escape</translation>

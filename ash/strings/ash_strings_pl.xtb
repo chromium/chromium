@@ -60,7 +60,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1456407467406159627">Nagrywanie ekranu zostało zatrzymane z powodu wyświetlenia treści poufnych.</translation>
 <translation id="1460620680449458626">Dźwięk jest wyciszony.</translation>
 <translation id="1467432559032391204">W lewo</translation>
-<translation id="1475439723810528286">Aby zrobić zrzut całego ekranu, kliknij w dowolnym miejscu</translation>
 <translation id="1479909375538722835">Pływające menu ułatwień dostępu</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">W sesji wielokrotnego logowania trzeba w pierwszej kolejności zalogować się na konto tego właściciela.</translation>
@@ -127,7 +126,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2132302418721800944">Nagraj cały ekran</translation>
 <translation id="2135456203358955318">Lupa zadokowana</translation>
 <translation id="2144487987174258011">Uruchom ponownie, by zaktualizować Adobe Flash Playera</translation>
-<translation id="2180011262286780504">Administrator wyłączył możliwość tworzenia zrzutów ekranu.</translation>
 <translation id="2208323208084708176">Tryb ujednoliconego pulpitu</translation>
 <translation id="2220572644011485463">Kod PIN lub hasło</translation>
 <translation id="2222338659135520253">Musisz się zalogować</translation>
@@ -801,7 +799,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8843682306134542540">Włącz lub wyłącz blokadę obracania. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Szukaj+Esc</translation>
 <translation id="8853703225951107899">Nadal nie udało się zweryfikować Twojego hasła ani kodu PIN. Uwaga: jeśli Twoje hasło zostało ostatnio zmienione, użyj starego hasła. Nowe hasło zacznie obowiązywać, gdy się wylogujesz.</translation>
-<translation id="885387440427703469">Zrzuty ekranu zostały wyłączone</translation>
 <translation id="8870509716567206129">Aplikacja nie obsługuje dzielonego ekranu.</translation>
 <translation id="8871580645200179206">Przełącz tryb ciemny. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Brak połączenia</translation>

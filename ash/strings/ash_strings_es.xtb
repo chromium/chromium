@@ -60,7 +60,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1456407467406159627">Se ha dejado de grabar la pantalla al detectar que mostraba contenido confidencial.</translation>
 <translation id="1460620680449458626">El volumen está silenciado.</translation>
 <translation id="1467432559032391204">Izquierda</translation>
-<translation id="1475439723810528286">Toca cualquier parte de la pantalla para hacer una captura de la pantalla completa</translation>
 <translation id="1479909375538722835">Menú de accesibilidad flotante</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">La cuenta de este propietario debe ser la primera cuenta que ha iniciado sesión en un inicio de sesión múltiple.</translation>
@@ -127,7 +126,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2132302418721800944">Grabar pantalla completa</translation>
 <translation id="2135456203358955318">Lupa fijada</translation>
 <translation id="2144487987174258011">Reinicia para actualizar Adobe Flash Player</translation>
-<translation id="2180011262286780504">El administrador ha inhabilitado la función de captura de pantalla.</translation>
 <translation id="2208323208084708176">Modo de escritorio unificado</translation>
 <translation id="2220572644011485463">PIN o contraseña</translation>
 <translation id="2222338659135520253">Debes iniciar sesión</translation>
@@ -802,7 +800,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8843682306134542540">Activa o desactiva el bloqueo. <ph name="STATE_TEXT" />.</translation>
 <translation id="8850991929411075241">Buscar+Esc</translation>
 <translation id="8853703225951107899">Todavía no se ha podido verificar tu PIN o contraseña. Nota: Si has cambiado la contraseña recientemente, utiliza la contraseña anterior. La nueva contraseña se aplicará cuando hayas cerrado la sesión.</translation>
-<translation id="885387440427703469">Captura de pantalla inhabilitada</translation>
 <translation id="8870509716567206129">La aplicación no admite la pantalla dividida.</translation>
 <translation id="8871580645200179206">Activar o desactivar Tema oscuro. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">No conectado</translation>

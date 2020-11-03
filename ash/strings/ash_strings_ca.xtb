@@ -60,7 +60,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1456407467406159627">La gravació de la pantalla s'ha aturat perquè s'hi mostra contingut confidencial.</translation>
 <translation id="1460620680449458626">El volum està silenciat.</translation>
 <translation id="1467432559032391204">Esquerra</translation>
-<translation id="1475439723810528286">Toca qualsevol lloc per capturar la pantalla completa</translation>
 <translation id="1479909375538722835">Menú flotant d'accessibilitat</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Aquest compte de propietari ha de ser el primer compte amb la sessió iniciada en un inici de sessió múltiple.</translation>
@@ -127,7 +126,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2132302418721800944">Grava la pantalla completa</translation>
 <translation id="2135456203358955318">Lupa acoblada</translation>
 <translation id="2144487987174258011">Reinicia per actualitzar Adobe Flash Player</translation>
-<translation id="2180011262286780504">L'administrador ha desactivat la possibilitat de fer captures de pantalla.</translation>
 <translation id="2208323208084708176">Mode d'escriptori unificat</translation>
 <translation id="2220572644011485463">PIN o contrasenya</translation>
 <translation id="2222338659135520253">Cal iniciar la sessió</translation>
@@ -801,7 +799,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8843682306134542540">Activa o desactiva el bloqueig de rotació. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Cerca + Esc</translation>
 <translation id="8853703225951107899">El PIN o la contrasenya continuen sense poder-se verificar. Nota: si fa poc que has canviat la contrasenya, fes servir l'antiga. La contrasenya nova s'aplicarà un cop hagis tancat la sessió.</translation>
-<translation id="885387440427703469">Les captures de pantalla estan desactivades</translation>
 <translation id="8870509716567206129">L'aplicació no admet la pantalla dividida.</translation>
 <translation id="8871580645200179206">Commuta el tema fosc. <ph name="STATE_TEXT" />.</translation>
 <translation id="8874184842967597500">No connectada</translation>

@@ -80,6 +80,14 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">คุณป้อนรหัสผ่านในเว็บไซต์ที่องค์กรไม่ได้จัดการ เพื่อปกป้องบัญชี โปรดอย่าใช้รหัสผ่านซ้ำในแอปและเว็บไซต์อื่นๆ</translation>
 <translation id="1263231323834454256">เรื่องรออ่าน</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        กิจกรรมที่จะไม่บันทึกไว้ในอุปกรณ์นี้ ได้แก่
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />หน้าเว็บที่คุณดูในหน้าต่างนี้
+          <ph name="LIST_ITEM" />คุกกี้และข้อมูลเว็บไซต์
+          <ph name="LIST_ITEM" />ข้อมูลบัญชี (<ph name="LINK_BEGIN" />ออกจากระบบ<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">วิธีการรับสินค้า</translation>
 <translation id="1281476433249504884">สแต็กเกอร์ 1</translation>
 <translation id="1285320974508926690">ไม่ต้องแปลเว็บไซต์นี้</translation>
@@ -549,6 +557,7 @@
 <translation id="3207960819495026254">บุ๊กมาร์กแล้ว</translation>
 <translation id="3209034400446768650">อาจมีการเรียกเก็บเงินในหน้านี้</translation>
 <translation id="3212581601480735796">มีการตรวจสอบกิจกรรมที่คุณทำใน <ph name="HOSTNAME" /></translation>
+<translation id="3212623355668894776">ปิดหน้าต่างโหมดผู้มาเยือนทั้งหมดเพื่อลบกิจกรรมการท่องเว็บออกจากอุปกรณ์นี้</translation>
 <translation id="3215092763954878852">ใช้ WebAuthn ไม่ได้</translation>
 <translation id="3218181027817787318">Relative</translation>
 <translation id="3225919329040284222">เซิร์ฟเวอร์แสดงใบรับรองที่ไม่ตรงกับการคาดการณ์ที่มีอยู่ การคาดการณ์เหล่านี้มีอยู่ในบางเว็บไซต์ที่มีการรักษาความปลอดภัยสูงเพื่อปกป้องคุณ</translation>
@@ -904,6 +913,7 @@
 <translation id="4658638640878098064">เย็บด้วยลวดเย็บกระดาษด้านซ้ายบน</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Virtual Reality</translation>
+<translation id="4675657451653251260">คุณจะไม่เห็นข้อมูลใดๆ ของโปรไฟล์ Chrome ในโหมดผู้มาเยือน แต่สามารถ<ph name="LINK_BEGIN" />ลงชื่อเข้าใช้<ph name="LINK_END" />เพื่อดูข้อมูลในบัญชี Google เช่น รหัสผ่านและวิธีการชำระเงิน</translation>
 <translation id="467662567472608290">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะใบรับรองความปลอดภัยมีข้อผิดพลาด โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="4677585247300749148"><ph name="URL" /> ต้องการตอบสนองต่อเหตุการณ์การเข้าถึงพิเศษ</translation>
 <translation id="467809019005607715">Google สไลด์</translation>
@@ -931,6 +941,12 @@
 <translation id="4761104368405085019">ใช้ไมโครโฟนของคุณ</translation>
 <translation id="4764776831041365478">หน้าเว็บใน <ph name="URL" /> อาจหยุดให้บริการชั่วคราวหรืออาจถูกย้ายไปยังที่อยู่เว็บใหม่อย่างถาวร</translation>
 <translation id="4766713847338118463">เย็บด้วยลวดเย็บกระดาษด้านล่าง 2 ครั้ง</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        กิจกรรมที่จะบันทึกไว้ในอุปกรณ์นี้ ได้แก่
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ไฟล์ใดๆ ที่คุณดาวน์โหลดในหน้าต่างนี้
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">มีข้อผิดพลาดที่ไม่ทราบเกิดขึ้น</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{ป๊อปอัปถูกบล็อก}other{# ป๊อปอัปถูกบล็อก}}</translation>
 <translation id="4780366598804516005">กล่องจดหมาย 1</translation>
@@ -1385,6 +1401,7 @@
 <translation id="6587923378399804057">ลิงก์ที่คุณคัดลอก</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> ของคุณไม่มีการจัดการ</translation>
 <translation id="6596325263575161958">ตัวเลือกการเข้ารหัส</translation>
+<translation id="6596892391065203054">ผู้ดูแลระบบบล็อกการพิมพ์เนื้อหานี้ไว้</translation>
 <translation id="6604181099783169992">เซ็นเซอร์จับความเคลื่อนไหวหรือเซ็นเซอร์แสง</translation>
 <translation id="6609880536175561541">Prc7 (ซองจดหมาย)</translation>
 <translation id="6612358246767739896">เนื้อหาที่ได้รับความคุ้มครอง</translation>
@@ -1868,12 +1885,22 @@
 <translation id="8559762987265718583">ไม่สามารถเริ่มการเชื่อมต่อส่วนตัวกับ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ได้เนื่องจากวันที่และเวลาของอุปกรณ์ (<ph name="DATE_AND_TIME" />) ไม่ถูกต้อง</translation>
 <translation id="8564182942834072828">เอกสารแยกกัน/ไม่จัดชุดสำเนา</translation>
 <translation id="8564985650692024650">Chromium ขอแนะนำให้รีเซ็ตรหัสผ่าน <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> หากคุณใช้รหัสผ่านนี้ซ้ำในเว็บไซต์อื่น</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        กิจกรรมที่จะไม่บันทึกไว้ในอุปกรณ์นี้ ได้แก่
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />หน้าเว็บที่คุณดูในหน้าต่างนี้
+          <ph name="LIST_ITEM" />คุกกี้และข้อมูลเว็บไซต์
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">ใช้ Touch ID เพื่อยืนยันบัตรได้เร็วขึ้น</translation>
 <translation id="858637041960032120">เพิ่มเบอร์โทร
 </translation>
 <translation id="8589998999637048520">คุณภาพดีที่สุด</translation>
 <translation id="860043288473659153">ชื่อผู้ถือบัตร</translation>
 <translation id="8606726445206553943">ใช้อุปกรณ์ MIDI ของคุณ</translation>
+<translation id="8612761427948161954">สวัสดี คุณ <ph name="USERNAME" />
+        <ph name="BR" />
+        คุณกำลังท่องเว็บในฐานะผู้มาเยือน</translation>
 <translation id="861775596732816396">ขนาด 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">ไม่มีรหัสผ่านที่ตรงกัน แสดงรหัสผ่านที่บันทึกไว้ทั้งหมด</translation>
@@ -2012,6 +2039,7 @@
 <translation id="9183302530794969518">Google เอกสาร</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> ใช้โปรโตคอลที่ไม่รองรับ</translation>
 <translation id="9191834167571392248">เจาะรูด้านซ้ายล่าง</translation>
+<translation id="9199905725844810519">การพิมพ์ถูกบล็อก</translation>
 <translation id="9205078245616868884">ข้อมูลของคุณมีการเข้ารหัสด้วยรหัสผ่านการซิงค์ โปรดป้อนรหัสผ่านเพื่อเริ่มซิงค์</translation>
 <translation id="9207861905230894330">การเพิ่มบทความล้มเหลว</translation>
 <translation id="9213433120051936369">กำหนดลักษณะที่ปรากฏ</translation>

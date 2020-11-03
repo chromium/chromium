@@ -23,6 +23,7 @@
 <translation id="1947737735496445907">Impression terminée</translation>
 <translation id="1979103255016296513">Mot de passe à modifier</translation>
 <translation id="2049639323467105390">Cet appareil est géré par <ph name="DOMAIN" />.</translation>
+<translation id="2080070583977670716">Plus de paramètres</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Annuler la tâche d'impression</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
@@ -66,6 +67,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Le ticket Kerberos arrive bientôt à expiration</translation>
 <translation id="445059817448385655">Ancien mot de passe</translation>
+<translation id="4454245904991689773">Enregistrer dans</translation>
 <translation id="4483049906298469269">Impossible de pinguer la passerelle du réseau non défini par défaut</translation>
 <translation id="4548483925627140043">Signal introuvable</translation>
 <translation id="458794348635939462">Impossible de résoudre tous les hôtes</translation>

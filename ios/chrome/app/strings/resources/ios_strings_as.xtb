@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">নতুন টেব সৃষ্টি কৰক।</translation>
 <translation id="1145536944570833626">পূর্বে থকা ডেটা মচক।</translation>
 <translation id="1154690515305205900">হাইলাইট কৰা পাঠলৈ এটা লিংক সৃষ্টি কৰিব নোৱাৰি।</translation>
+<translation id="1157749421655780457">অৱস্থান ব্যৱহাৰৰ অনুমতি দিয়ক...</translation>
 <translation id="1165039591588034296">আসোঁৱাহ</translation>
 <translation id="1172898394251786223">পৰৱৰ্তী ক্ষেত্ৰ</translation>
 <translation id="1176932207622159128">প্ৰতিচ্ছবি ছেভ কৰিব নোৱাৰি</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">কোনো বস্তু নাই</translation>
 <translation id="1692118695553449118">ছিংক অন হৈ আছে</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> বাছনি কৰা হ’ল</translation>
+<translation id="1715940067130687605">আপোনাৰ বৰ্তমানৰ অৱস্থান ব্যৱহাৰ কৰক।</translation>
 <translation id="1740468249224277719">ইনষ্টল কৰিবলৈ দুবাৰ টিপক।</translation>
 <translation id="1746815479209538200">ৱেব ব্ৰাউজ কৰিবলৈ এটা নতুন টেব যোগ কৰক।</translation>
 <translation id="1752547299766512813">পাছৱর্ডসমূহ ছেভ কৰক</translation>
@@ -374,6 +376,7 @@
 <translation id="5059136629401106827">ঠিক আছে</translation>
 <translation id="5062321486222145940">Google Drive ইনষ্টল কৰক</translation>
 <translation id="5083464117946352670">ফাইলৰ আকাৰ নির্ধাৰণ কৰিব পৰা নাই।</translation>
+<translation id="5090832849094901128">এই পাছৱৰ্ডটো মচাৰ ফলত <ph name="WEBSITE" />ত থকা আপোনাৰ একাউণ্টটো মচি পেলোৱা নহ’ব।</translation>
 <translation id="5094827893301452931">টুইট সম্পূর্ণ হ'ল</translation>
 <translation id="5118764316110575523">অফ আছে</translation>
 <translation id="5127805178023152808">ছিংক অফ কৰা আছে</translation>

@@ -60,7 +60,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1456407467406159627">Huminto ang pag-record ng screen dahil kumpidensyal ang content sa iyong screen.</translation>
 <translation id="1460620680449458626">Naka-mute ang volume.</translation>
 <translation id="1467432559032391204">Kaliwa</translation>
-<translation id="1475439723810528286">Mag-tap kahit saan para i-capture ang full screen</translation>
 <translation id="1479909375538722835">Nakalutang na menu ng accessibility</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Ang account ng may-ari na ito ay dapat ang unang naka-sign in na account sa isang session ng multiple na pag-sign in.</translation>
@@ -127,7 +126,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2132302418721800944">I-record ang full screen</translation>
 <translation id="2135456203358955318">Naka-dock na magnifier</translation>
 <translation id="2144487987174258011">I-restart upang i-update ang Adobe Flash Player</translation>
-<translation id="2180011262286780504">Na-disable ng iyong administrator ang kakayahang mag-screen capture.</translation>
 <translation id="2208323208084708176">Unified desktop mode</translation>
 <translation id="2220572644011485463">PIN o password</translation>
 <translation id="2222338659135520253">Kinakailangang mag-sign in</translation>
@@ -801,7 +799,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8843682306134542540">I-toggle ang lock ng pag-rotate. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Hindi pa rin ma-verify ang iyong PIN o password. Tandaan: Kung pinalitan mo kamakailan ang iyong password, gamitin ang lumang password mo. Malalapat ang iyong bagong password kapag nag-sign out ka.</translation>
-<translation id="885387440427703469">Na-disable ang screen capture</translation>
 <translation id="8870509716567206129">Hindi sinusuportahan ng app ang split-screen.</translation>
 <translation id="8871580645200179206">I-toggle ang Madilim na tema. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Hindi konekta</translation>

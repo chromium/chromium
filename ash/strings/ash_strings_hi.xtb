@@ -60,7 +60,6 @@
 <translation id="1456407467406159627">आपकी स्क्रीन पर गोपनीय कॉन्टेंट होने की वजह से स्क्रीन की रिकॉर्डिंग बंद कर दी गई है.</translation>
 <translation id="1460620680449458626">आवाज़ को म्यूट किया गया है.</translation>
 <translation id="1467432559032391204">बाएं</translation>
-<translation id="1475439723810528286">फ़ुल स्क्रीन को कैप्चर करने के लिए कहीं भी टैप करें</translation>
 <translation id="1479909375538722835">फ़्लोट करने वाले सुलभता मेन्यू</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">किसी एक से ज़्यादा साइन-इन वाले सत्र में इस मालिक खाते को पहला साइन-इन खाता होना चाहिए.</translation>
@@ -127,7 +126,6 @@
 <translation id="2132302418721800944">फ़ुल स्क्रीन रिकॉर्ड करें</translation>
 <translation id="2135456203358955318">सामग्री को बड़ा दिखाने की डॉक की गई सुविधा</translation>
 <translation id="2144487987174258011">Adobe Flash Player को अपडेट करने के लिए रीस्टार्ट करें</translation>
-<translation id="2180011262286780504">आपके एडमिन ने स्क्रीन कैप्चर करने की सुविधा बंद कर दी है.</translation>
 <translation id="2208323208084708176">संयुक्त डेस्कटॉप मोड</translation>
 <translation id="2220572644011485463">पिन या पासवर्ड</translation>
 <translation id="2222338659135520253">साइन इन करना ज़रूरी है</translation>
@@ -802,7 +800,6 @@
 <translation id="8843682306134542540">रोटेशन लॉक को टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">अब भी आपके पिन या पासवर्ड की पुष्टि नहीं की जा सकी. ध्यान दें: अगर आपने हाल ही में अपना पासवर्ड बदला है, तो पुराना पासवर्ड इस्तेमाल करें. नया पासवर्ड आपके साइन आउट करने के बाद लागू होगा.</translation>
-<translation id="885387440427703469">स्क्रीन कैप्चर करने की सुविधा बंद कर दी गई</translation>
 <translation id="8870509716567206129">ऐप्लिकेशन दो-स्क्रीन मोड में काम नहीं करता है.</translation>
 <translation id="8871580645200179206">गहरे रंग वाली थीम को टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">कनेक्ट नहीं है</translation>

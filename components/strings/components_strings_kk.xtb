@@ -80,6 +80,14 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Құпия сөзіңізді ұйымыңыз басқармайтын сайтта енгіздіңіз. Есептік жазбаны қорғау үшін құпия сөзді басқа қолданбалар мен сайттарда қолданбаңыз.</translation>
 <translation id="1263231323834454256">Оқу тізімі</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        Құрылғыда келесі ақпарат сақталмайды:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />осы терезеде көретін беттер;
+          <ph name="LIST_ITEM" />cookie файлдары және сайт деректері;
+          <ph name="LIST_ITEM" />есептік жазба туралы ақпарат (<ph name="LINK_BEGIN" />шығу<ph name="LINK_END" />).
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Таңдау әдісі</translation>
 <translation id="1281476433249504884">1-жинастырушы</translation>
 <translation id="1285320974508926690">Бұл сайтты ешқашан аудармау</translation>
@@ -554,6 +562,7 @@
 <translation id="3207960819495026254">Бетбелгі қойылған</translation>
 <translation id="3209034400446768650">Бұл бет ақылы болуы мүмкін</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> хостында әрекетіңіз бақыланады</translation>
+<translation id="3212623355668894776">Браузерді қолдану мәліметі бұл құрылғыдан жойылуы үшін, қонақ режиміндегі барлық терезені жабыңыз.</translation>
 <translation id="3215092763954878852">WebAuthn қолдану мүмкін болмады</translation>
 <translation id="3218181027817787318">Ұқсас</translation>
 <translation id="3225919329040284222">Сервер ендірілген параметрлерге сәйкес келмейтін сертификатты ұсынды. Бұл параметрлер сізді қорғау үшін аса қауіпсіз белгілі бір веб-сайттар үшін қамтылған.</translation>
@@ -915,6 +924,7 @@
 <translation id="4658638640878098064">Жоғарғы сол жағын қапсыру</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Виртуалды шындық</translation>
+<translation id="4675657451653251260">Қонақ режимінде Chrome профилі туралы ешқандай ақпарат көрсетілмейді. Құпия сөздер және төлеу әдісі сияқты деректерді пайдалану үшін Google есептік жазбасына <ph name="LINK_BEGIN" />кіріңіз<ph name="LINK_END" />.</translation>
 <translation id="467662567472608290">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификатында қателер бар. Бұл дұрыс конфигурацияланбағаннан немесе зиянды бағдарламаның байланысқа кедергі келтіргенінен болуы мүмкін.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> арнайы мүмкіндіктер оқиғаларына жауап бергісі келеді</translation>
 <translation id="467809019005607715">Google Slides</translation>
@@ -942,6 +952,12 @@
 <translation id="4761104368405085019">Микрофоныңызды пайдалану</translation>
 <translation id="4764776831041365478"><ph name="URL" /> мекенжайындағы веб-бет уақытша істен шыққан немесе тұрақты түрде басқа мекенжайға көшкен болуы мүмкін.</translation>
 <translation id="4766713847338118463">Төменгі жағын екі рет қапсыру</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        Құрылғыда келесілер сақталады:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />осы терезеде жүктеп алған кез келген файлдар.
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Белгісіз қате орын алды.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Қалқымалы терезе бөгелді}other{# қалқымалы терезе бөгелді}}</translation>
 <translation id="4780366598804516005">1-ші пошта жәшігі</translation>
@@ -1396,6 +1412,7 @@
 <translation id="6587923378399804057">Көшірілген сілтеме</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> құрылғыңыз басқарылмайды.</translation>
 <translation id="6596325263575161958">Шифрлау опциялары</translation>
+<translation id="6596892391065203054">Бұл мазмұнды басып шығаруға әкімші тыйым салған.</translation>
 <translation id="6604181099783169992">Қозғалыс не жарық датчиктері</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
 <translation id="6612358246767739896">Қорғалған мазмұн</translation>
@@ -1879,11 +1896,21 @@
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> доменімен жеке байланыс орнату мүмкін емес, себебі құрылғыңыздың күні мен уақыты (<ph name="DATE_AND_TIME" />) дұрыс емес.</translation>
 <translation id="8564182942834072828">Бөлек құжаттар/реттелмеген көшірмелер</translation>
 <translation id="8564985650692024650">Chromium басқа сайттарда пайдаланылған <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> құпия сөзін қайта орнатуды ұсынады.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        Құрылғыда келесі ақпарат сақталмайды:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />осы терезеде көрілетін беттер;
+          <ph name="LIST_ITEM" />cookie файлдары және сайт деректері.
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Карталарыңызды жылдам растау үшін Touch ID пайдаланыңыз.</translation>
 <translation id="858637041960032120">Телефон нөмірін қосу</translation>
 <translation id="8589998999637048520">Ең жақсы сапа</translation>
 <translation id="860043288473659153">Карта иесінің аты-жөні</translation>
 <translation id="8606726445206553943">MIDI құрылғыларыңызды пайдалану</translation>
+<translation id="8612761427948161954">Сәлеметсіз бе, <ph name="USERNAME" />!
+        <ph name="BR" />
+        Сіз қонақ режимін пайдаланып жатырсыз.</translation>
 <translation id="861775596732816396">Өлшемі: 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Сәйкес құпия сөздер жоқ. Барлық сақталған құпия сөздерді көрсету.</translation>
@@ -2022,6 +2049,7 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> қолданылмайтын протоколды пайдаланады.</translation>
 <translation id="9191834167571392248">Төменгі сол жақты тесу</translation>
+<translation id="9199905725844810519">Басып шығаруға тыйым салынған</translation>
 <translation id="9205078245616868884">Деректер синхрондаудың құпия фразасымен шифрланған. Синхрондауды бастау үшін оны енгізіңіз.</translation>
 <translation id="9207861905230894330">Мақала қосу мүмкін болмады.</translation>
 <translation id="9213433120051936369">Көріністі реттеу</translation>

@@ -60,7 +60,6 @@
 <translation id="1456407467406159627">화면에 기밀 콘텐츠가 있어 화면 녹화가 중지되었습니다.</translation>
 <translation id="1460620680449458626">음소거되어 있습니다.</translation>
 <translation id="1467432559032391204">왼쪽</translation>
-<translation id="1475439723810528286">전체 화면을 캡처하려면 아무 곳이나 탭하세요</translation>
 <translation id="1479909375538722835">플로팅 접근성 메뉴</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" />(HDMI/DP)</translation>
 <translation id="1503394326855300303">이 소유자 계정이 멀티 로그인 세션에서 처음으로 로그인하는 계정이 되어야 합니다.</translation>
@@ -127,7 +126,6 @@
 <translation id="2132302418721800944">화면 전체 녹화</translation>
 <translation id="2135456203358955318">고정 돋보기</translation>
 <translation id="2144487987174258011">Adobe Flash Player를 업데이트하려면 다시 시작하세요.</translation>
-<translation id="2180011262286780504">관리자가 화면 캡처 기능을 사용 중지했습니다.</translation>
 <translation id="2208323208084708176">통합 바탕화면 모드</translation>
 <translation id="2220572644011485463">PIN 또는 비밀번호</translation>
 <translation id="2222338659135520253">로그인 필요</translation>
@@ -801,7 +799,6 @@
 <translation id="8843682306134542540">회전 잠금을 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">여전히 PIN 또는 비밀번호를 확인할 수 없습니다. 참고: 최근에 비밀번호를 변경한 경우 이전 비밀번호를 사용해 보세요. 로그아웃하고 나면 새로운 비밀번호가 적용됩니다.</translation>
-<translation id="885387440427703469">화면 캡처가 사용 중지됨</translation>
 <translation id="8870509716567206129">앱이 화면 분할을 지원하지 않습니다.</translation>
 <translation id="8871580645200179206">어두운 테마를 켜거나 끕니다. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">연결되지 않음</translation>

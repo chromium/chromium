@@ -60,7 +60,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1456407467406159627">L'enregistrement d'écran a été arrêté en raison de la présence de contenu confidentiel à l'écran.</translation>
 <translation id="1460620680449458626">Le volume est désactivé.</translation>
 <translation id="1467432559032391204">À gauche</translation>
-<translation id="1475439723810528286">Touchez n'importe où pour capturer la totalité de l'écran</translation>
 <translation id="1479909375538722835">Menu d'accessibilité flottant</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Ce compte de propriétaire doit être le premier compte à être connecté lors de sessions de connexion multicompte.</translation>
@@ -127,7 +126,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2132302418721800944">Enregistrer tout l'écran</translation>
 <translation id="2135456203358955318">Loupe en mode ancré</translation>
 <translation id="2144487987174258011">Redémarrer pour mettre à jour Adobe Flash Player</translation>
-<translation id="2180011262286780504">La fonctionnalité de capture d'écran a été désactivée par votre administrateur.</translation>
 <translation id="2208323208084708176">Mode Bureau unifié</translation>
 <translation id="2220572644011485463">NIP ou mot de passe</translation>
 <translation id="2222338659135520253">Connexion requise</translation>
@@ -370,7 +368,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4477892968187500306">Cet appareil pourrait contenir des applications qui n'ont pas été vérifiées par Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Appareils dissociés</translation>
-<translation id="4485060137115666462">Si vous effectuez un clic droit ou maintenez un doigt sur l'écran, l'Assistant vous présente de l'information, comme la définition ou la conversion d'unités, relative à votre sélection.</translation>
+<translation id="4485060137115666462">Si vous effectuez un clic droit ou maintenez un doigt sur l'écran, l'Assistant vous présente de l'information, comme la définition, la traduction ou la conversion d'unités, relative à votre sélection.</translation>
 <translation id="4505050298327493054">Bureau actif.</translation>
 <translation id="4506458088675900627">Le geste à effectuer sur le pavé tactile pour afficher l'aperçu a changé</translation>
 <translation id="4513946894732546136">Commentaires</translation>
@@ -599,7 +597,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="6803622936009808957">La mise en miroir n'a pas été possible faute de résolutions prises en charge. Le mode de bureau étendu a plutôt été sélectionné.</translation>
 <translation id="6818242057446442178">Déplacer un mot vers l'arrière</translation>
 <translation id="6820676911989879663">Prenez une pause!</translation>
-<translation id="6850010208275816200">L'application actuelle s'affiche en plein écran. Si l'application vous demande votre mot de passe, quitte d'abord le mode plein écran.</translation>
+<translation id="6850010208275816200">L'application actuelle s'affiche en plein écran. Si l'application vous demande votre mot de passe, quittez d'abord le mode plein écran.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6857811139397017780">Activer <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Il reste 1 chiffre}one{Il reste # chiffre}other{Il reste # chiffres}}</translation>
@@ -801,7 +799,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="8843682306134542540">Activer/désactiver le verrouillage de la rotation. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Recherche+Échap</translation>
 <translation id="8853703225951107899">Votre NIP ou votre mot de passe n'a toujours pas pu être vérifié. Remarque : Si vous avez récemment changé votre mot de passe, servez-vous de votre ancien mot de passe. Votre nouveau mot de passe sera appliqué lorsque vous vous déconnecterez.</translation>
-<translation id="885387440427703469">Mode de capture d'écran désactivé</translation>
 <translation id="8870509716567206129">L'application n'est pas compatible avec l'écran partagé.</translation>
 <translation id="8871580645200179206">Basculer le thème sombre. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Non connecté</translation>

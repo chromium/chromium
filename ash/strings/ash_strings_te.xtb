@@ -49,6 +49,7 @@
 <translation id="1346748346194534595">కుడి</translation>
 <translation id="1351937230027495976">మెనూను కుదించు</translation>
 <translation id="1383876407941801731">సెర్చ్</translation>
+<translation id="1390105199421505038"><ph name="USER_EMAIL_ADDRESS" /> కోసం ఖాతా డైలాగ్‌ను తీసివేయి</translation>
 <translation id="1391102559483454063">ఆన్</translation>
 <translation id="1407069428457324124">ముదురు రూపం</translation>
 <translation id="1419738280318246476">నోటిఫికేషన్ చర్యను నిర్వహించడానికి పరికరాన్ని అన్‌లాక్ చేయండి</translation>
@@ -59,7 +60,6 @@
 <translation id="1456407467406159627">మీ స్క్రీన్‌పై గోప్యమైన కంటెంట్ ఉన్నందున స్క్రీన్ రికార్డింగ్ ఆపివేయబడింది.</translation>
 <translation id="1460620680449458626">వాల్యూమ్ మ్యూట్ చేయబడింది.</translation>
 <translation id="1467432559032391204">ఎడమ</translation>
-<translation id="1475439723810528286">ఫుల్ స్క్రీన్‌ను క్యాప్చర్ చేయడానికి ఎక్కడైనా ట్యాప్ చేయండి</translation>
 <translation id="1479909375538722835">తేలియాడే యాక్సెసిబిలిటీ మెనూ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">ఈ యజమాని ఖాతానే బహుళ సైన్-ఇన్ సెషన్‌లో మొదటిగా సైన్-ఇన్ చేయాల్సిన ఖాతా.</translation>
@@ -126,7 +126,6 @@
 <translation id="2132302418721800944">ఫుల్ స్క్రీన్‌ను రికార్డ్ చేయండి</translation>
 <translation id="2135456203358955318">డాక్ చేయబడిన మాగ్నిఫైయర్</translation>
 <translation id="2144487987174258011">Adobe Flash Playerను అప్‌డేట్ చేయ‌డానికి పున:ప్రారంభించండి</translation>
-<translation id="2180011262286780504">స్క్రీన్‌ను క్యాప్చర్ చేయగల సామర్థ్యాన్ని మీ అడ్మినిస్ట్రేట‌ర్ డిజేబుల్ చేశారు.</translation>
 <translation id="2208323208084708176">ఏకీకృత డెస్క్‌టాప్ మోడ్</translation>
 <translation id="2220572644011485463">PIN లేదా పాస్‌వర్డ్</translation>
 <translation id="2222338659135520253">సైన్ ఇన్ చేయాలి</translation>
@@ -370,6 +369,7 @@
 <translation id="4477892968187500306">ఈ పరికరంలో Google ధృవీకరించని యాప్‌లు ఉండవచ్చు.</translation>
 <translation id="4479639480957787382">ఈథర్నెట్</translation>
 <translation id="4481530544597605423">జతను తీసివేసిన పరికరాలు</translation>
+<translation id="4485060137115666462">కుడి క్లిక్ ద్వారా లేదా ఎక్కువసేపు నొక్కి, ఉంచడం ద్వారా, మీ ఎంపిక కోసం నిర్వచనం, అనువాదం లేదా యూనిట్ మార్పిడి లాంటి సమాచారాన్ని Assistant చూపుతుంది.</translation>
 <translation id="4505050298327493054">యాక్టివ్ డెస్క్.</translation>
 <translation id="4506458088675900627">ఓవర్‌వ్యూ టచ్‌ప్యాడ్ సంజ్ఞ మారింది</translation>
 <translation id="4513946894732546136">అభిప్రాయం</translation>
@@ -598,6 +598,7 @@
 <translation id="6803622936009808957">మద్దతు ఉన్న రిజల్యూషన్‌లు కనుగొనబడనందున ప్రదర్శనలను ప్రతిబింబించడం సాధ్యపడలేదు. దానికి బదులుగా విస్తారిత డెస్క్‌టాప్‌కు మారారు.</translation>
 <translation id="6818242057446442178">ఒక పదం వెనుకకు</translation>
 <translation id="6820676911989879663">విరామం తీసుకోండి!</translation>
+<translation id="6850010208275816200">మీ ప్రస్తుత యాప్ ఫుల్ స్క్రీన్ మోడ్‌లో ఉంది. యాప్ మీ పాస్‌వర్డ్ కోసం అడిగితే మొదట ఫుల్ స్క్రీన్ నుండి నిష్క్రమించండి.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> సెక</translation>
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" />ని సక్రియం చేయి</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ఒక అంకె మిగిలింది}other{# అంకెలు మిగిలాయి}}</translation>
@@ -647,6 +648,7 @@
 <translation id="7398254312354928459">నెట్‌వర్క్ కనెక్షన్ మార్చబడింది</translation>
 <translation id="7405710164030118432">పరికరాన్ని అన్‌లాక్ చేయడానికి, మీ Family Link తల్లి/తండ్రి యాక్సెస్ కోడ్‌ను నమోదు చేయండి</translation>
 <translation id="741244894080940828">మార్పిడి</translation>
+<translation id="7413851974711031813">మూసివేయడానికి escapeను నొక్కండి</translation>
 <translation id="742594950370306541">కెమెరా ఉపయోగంలో ఉంది.</translation>
 <translation id="742608627846767349">శుభోదయం,</translation>
 <translation id="743058460480092004">కెమెరా మరియు మైక్రోఫోన్ ఉపయోగంలో ఉన్నాయి.</translation>
@@ -798,7 +800,6 @@
 <translation id="8843682306134542540">భ్రమణం లాక్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">మీ పిన్ లేదా పాస్‌వర్డ్‌ను వెరిఫై చేయడం ఇంకా సాధ్యం కాలేదు. గమనిక: మీరు ఇటీవలే మీ పాస్‌వర్డ్‌ను మార్చి ఉంటే, మీ పాత పాస్‌వర్డ్‌ను ఉపయోగించండి. మీరు ఖాతా నుంచి సైన్ అవుట్ చేసిన తర్వాత మీ కొత్త పాస్‌వర్డ్ వర్తిస్తుంది.</translation>
-<translation id="885387440427703469">స్క్రీన్ క్యాప్చర్ డిజేబుల్ చేయబడింది</translation>
 <translation id="8870509716567206129">యాప్‌లో విభజన స్క్రీన్‌కు మద్దతు లేదు.</translation>
 <translation id="8871580645200179206">ముదురు రంగు రూపాన్ని టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">కనెక్ట్ కాలేదు</translation>

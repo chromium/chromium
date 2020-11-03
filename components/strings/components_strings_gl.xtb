@@ -80,6 +80,14 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Introduciches o teu contrasinal nun sitio que non está xestionado pola túa organización. Para protexer a túa conta, non reutilices o contrasinal noutras aplicacións ou sitios.</translation>
 <translation id="1263231323834454256">Lista de lectura</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        Actividade que non permanecerá neste dispositivo:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />As páxinas que vexas nesta ventá
+          <ph name="LIST_ITEM" />As cookies e os datos dos sitios
+          <ph name="LIST_ITEM" />A información da conta (<ph name="LINK_BEGIN" />pechar sesión<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Método de recollida</translation>
 <translation id="1281476433249504884">Amontoador 1</translation>
 <translation id="1285320974508926690">Non traducir nunca este sitio</translation>
@@ -552,6 +560,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3207960819495026254">Engadida a marcadores</translation>
 <translation id="3209034400446768650">Nesta páxina pódense aplicar cargos</translation>
 <translation id="3212581601480735796">Estase supervisando a túa actividade en <ph name="HOSTNAME" /></translation>
+<translation id="3212623355668894776">Pecha todas as ventás do modo de invitado para eliminar a túa actividade de navegación deste dispositivo.</translation>
 <translation id="3215092763954878852">Non se puido utilizar WebAuthn</translation>
 <translation id="3218181027817787318">Relativo</translation>
 <translation id="3225919329040284222">O servidor presentou un certificado que non coincide coas expectativas integradas. Estas expectativas inclúense para determinados sitios web de alta seguranza co fin de protexerte.</translation>
@@ -913,6 +922,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4658638640878098064">Grampa na parte superior esquerda</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>
+<translation id="4675657451653251260">Non verás a información de ningún perfil de Chrome no modo de invitado. Podes <ph name="LINK_BEGIN" />iniciar sesión<ph name="LINK_END" /> para acceder á información (como os contrasinais e os métodos de pago) da túa conta de Google.</translation>
 <translation id="467662567472608290">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o seu certificado de seguranza contén erros. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="4677585247300749148">O URL <ph name="URL" /> quere responder a eventos de accesibilidade</translation>
 <translation id="467809019005607715">Presentacións de Google</translation>
@@ -940,6 +950,12 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4761104368405085019">Utilizar o micrófono</translation>
 <translation id="4764776831041365478">É posible que a páxina web de <ph name="URL" /> estea temporalmente inactiva ou que se trasladase definitivamente a outro enderezo web.</translation>
 <translation id="4766713847338118463">Dúas grampas na parte inferior</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        Actividade que permanecerá neste dispositivo:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Calquera ficheiro que descargues nesta ventá
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Produciuse un erro descoñecido.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Bloqueouse a ventá emerxente}other{Bloqueáronse # ventás emerxentes}}</translation>
 <translation id="4780366598804516005">Caixa de correo 1</translation>
@@ -1394,6 +1410,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6587923378399804057">Ligazón que copiaches</translation>
 <translation id="6591833882275308647">O teu <ph name="DEVICE_TYPE" /> non está xestionado</translation>
 <translation id="6596325263575161958">Opcións de cifrado</translation>
+<translation id="6596892391065203054">O teu administrador bloqueou a opción de imprimir este contido.</translation>
 <translation id="6604181099783169992">Sensores de movemento ou de luz</translation>
 <translation id="6609880536175561541">Prc7 (sobre)</translation>
 <translation id="6612358246767739896">Contido protexido</translation>
@@ -1877,11 +1894,21 @@ Detalles adicionais:
 <translation id="8559762987265718583">Non se pode establecer unha conexión privada con <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque a data e a hora do dispositivo (<ph name="DATE_AND_TIME" />) son incorrectas.</translation>
 <translation id="8564182942834072828">Documentos independentes/copias non intercaladas</translation>
 <translation id="8564985650692024650">Chromium recoméndache que restablezas o contrasinal de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> se o reutilizaches noutros sitios.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        Actividade que non permanecerá neste dispositivo:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />As páxinas que vexas nesta ventá
+          <ph name="LIST_ITEM" />As cookies e os datos dos sitios
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Usar Touch ID para confirmar as tarxetas máis rápido</translation>
 <translation id="858637041960032120">Engadir número de teléfono</translation>
 <translation id="8589998999637048520">Calidade máxima</translation>
 <translation id="860043288473659153">Nome do titular da tarxeta</translation>
 <translation id="8606726445206553943">Usar os dispositivos MIDI</translation>
+<translation id="8612761427948161954">Ola, <ph name="USERNAME" />:
+        <ph name="BR" />
+        Estás navegando como invitado</translation>
 <translation id="861775596732816396">Tamaño 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Non tes ningún contrasinal para este sitio. Mostrar todos os contrasinais gardados.</translation>
@@ -2020,6 +2047,7 @@ Detalles adicionais:
 <translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> utiliza un protocolo non compatible.</translation>
 <translation id="9191834167571392248">Perforación na parte inferior esquerda</translation>
+<translation id="9199905725844810519">A opción de impresión está bloqueada</translation>
 <translation id="9205078245616868884">Os teus datos encriptáronse co teu contrasinal de sincronización. Introdúceo para comezar a sincronización.</translation>
 <translation id="9207861905230894330">Non se puido engadir o artigo.</translation>
 <translation id="9213433120051936369">Personalizar a aparencia</translation>

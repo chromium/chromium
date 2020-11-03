@@ -60,7 +60,6 @@
 <translation id="1456407467406159627">הקלטת המסך הופסקה עקב תוכן סודי במסך.</translation>
 <translation id="1460620680449458626">צלילים מושתקים.</translation>
 <translation id="1467432559032391204">שמאלה</translation>
-<translation id="1475439723810528286">כדי לצלם את המסך המלא, יש להקיש במקום כלשהו</translation>
 <translation id="1479909375538722835">תפריט נגישות צף</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">החשבון של בעלים זה צריך להיות החשבון הראשון שאליו נכנסים בעת כניסה לפעילות באתר מחשבונות מרובים.</translation>
@@ -127,7 +126,6 @@
 <translation id="2132302418721800944">הקלטה של מסך מלא</translation>
 <translation id="2135456203358955318">מגדיל במצב מעוגן</translation>
 <translation id="2144487987174258011">‏יש להפעיל מחדש כדי לעדכן את Adobe Flash Player</translation>
-<translation id="2180011262286780504">מנהל המערכת השבית את האפשרות לצלם את המסך.</translation>
 <translation id="2208323208084708176">מצב שולחן עבודה מאוחד</translation>
 <translation id="2220572644011485463">קוד אימות או סיסמה</translation>
 <translation id="2222338659135520253">נדרשת כניסה</translation>
@@ -584,7 +582,7 @@
 <translation id="6671495933530132209">העתקת התמונה</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">קבלת מידע בקשר לבחירה שלך</translation>
-<translation id="6696025732084565524">המקלדת הניתנת לניתוק זקוקה לעדכון קריטי</translation>
+<translation id="6696025732084565524">למקלדת הניתנת לניתוק דרוש עדכון קריטי</translation>
 <translation id="6700713906295497288">‏לחצן תפריט IME</translation>
 <translation id="6713285437468012787">‏מכשיר ה-Bluetooth‏ "<ph name="DEVICE_NAME" />" הותאם והוא זמין כעת לכל המשתמשים. ניתן להסיר את ההתאמה הזו ב'הגדרות'.</translation>
 <translation id="6715542151869432661">לא נמצאו מכשירים ניידים.</translation>
@@ -803,7 +801,6 @@
 <translation id="8843682306134542540">הפעלה או השבתה של נעילת הסיבוב. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">לא הצלחנו לאמת את קוד האימות או את הסיסמה שלך. הערה: אם שינית לאחרונה את הסיסמה, עליך לנסות להיכנס עם הסיסמה הישנה. הסיסמה החדשה תיכנס לתוקף לאחר היציאה מהחשבון.</translation>
-<translation id="885387440427703469">אפשרות צילום המסך מושבתת</translation>
 <translation id="8870509716567206129">האפליקציה אינה תומכת במסך מפוצל.</translation>
 <translation id="8871580645200179206">מעבר לעיצוב כהה. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">לא מחובר</translation>

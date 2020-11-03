@@ -60,7 +60,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1456407467406159627">Skärminspelningen stoppades på grund av konfidentiellt innehåll på skärmen.</translation>
 <translation id="1460620680449458626">Ljudet är av.</translation>
 <translation id="1467432559032391204">Vänster</translation>
-<translation id="1475439723810528286">Tryck var som helst för att ta en bild av hela skärmen</translation>
 <translation id="1479909375538722835">Flytande tillgänglighetsmeny</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Det här ägarkontot måste vara det första inloggade kontot i en session med flera inloggningar.</translation>
@@ -127,7 +126,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2132302418721800944">Spela in hela skärmen</translation>
 <translation id="2135456203358955318">Dockad skärmförstoring</translation>
 <translation id="2144487987174258011">Starta om för att uppdatera Adobe Flash Player</translation>
-<translation id="2180011262286780504">Funktionen för skärmbilder/skärminspelningar har inaktiverats av administratören.</translation>
 <translation id="2208323208084708176">Enhetligt skrivbordsläge</translation>
 <translation id="2220572644011485463">Pinkod eller lösenord</translation>
 <translation id="2222338659135520253">Inloggning krävs</translation>
@@ -801,7 +799,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8843682306134542540">Aktivera och inaktivera rotationslås. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Sök+Escape</translation>
 <translation id="8853703225951107899">Det gick fortfarande inte att verifiera pinkoden eller lösenordet. Obs! Om du nyligen har bytt lösenord ska du använda det gamla lösenordet. Det nya lösenordet börjar gälla när du loggar ut.</translation>
-<translation id="885387440427703469">Skärmbilder/skärminspelningar har inaktiverats</translation>
 <translation id="8870509716567206129">Appen har inte stöd för delad skärm.</translation>
 <translation id="8871580645200179206">Aktivera och inaktivera mörkt tema. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Inte ansluten</translation>

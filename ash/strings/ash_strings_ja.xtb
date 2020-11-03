@@ -59,7 +59,6 @@
 <translation id="1456407467406159627">画面上に機密コンテンツがあるため、画面の録画を停止しました。</translation>
 <translation id="1460620680449458626">音量はミュートされています。</translation>
 <translation id="1467432559032391204">左</translation>
-<translation id="1475439723810528286">全画面をキャプチャするには任意の場所をタップしてください</translation>
 <translation id="1479909375538722835">フローティング ユーザー補助機能メニュー</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" />（HDMI / DP）</translation>
 <translation id="1503394326855300303">この所有者アカウントは、マルチログイン セッションで最初にログインするアカウントである必要があります。</translation>
@@ -126,7 +125,6 @@
 <translation id="2132302418721800944">全画面を録画</translation>
 <translation id="2135456203358955318">ドッキング拡大鏡</translation>
 <translation id="2144487987174258011">Adobe Flash Player を更新するには再起動してください</translation>
-<translation id="2180011262286780504">スクリーン キャプチャ機能は管理者によって無効にされています。</translation>
 <translation id="2208323208084708176">デスクトップ統合モード</translation>
 <translation id="2220572644011485463">PIN またはパスワード</translation>
 <translation id="2222338659135520253">ログインしてください</translation>
@@ -798,7 +796,6 @@
 <translation id="8843682306134542540">画面の向きの固定を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN またはパスワードはまだ確認されていません。注: パスワードを最近変更した場合は、古いパスワードを使用してください。新しいパスワードはログアウトした後に適用されます。</translation>
-<translation id="885387440427703469">スクリーン キャプチャは無効になっています</translation>
 <translation id="8870509716567206129">アプリで分割画面がサポートされていません。</translation>
 <translation id="8871580645200179206">ダークテーマを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">未接続</translation>

@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">નવું ટૅબ બનાવો.</translation>
 <translation id="1145536944570833626">અસ્તિત્વમાંના ડેટાને ડિલીટ કરો.</translation>
 <translation id="1154690515305205900">હાઇલાઇટ કરેલી ટેક્સ્ટ માટે લિંક બનાવી શકાતી નથી.</translation>
+<translation id="1157749421655780457">સ્થાનની મંજૂરી આપો...</translation>
 <translation id="1165039591588034296">ભૂલ</translation>
 <translation id="1172898394251786223">આગલું ફીલ્ડ</translation>
 <translation id="1176932207622159128">ફોટા સાચવી શકતું નથી</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">કોઈ આઇટમ નથી</translation>
 <translation id="1692118695553449118">સમન્વયન ચાલુ છે</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> પસંદ કર્યાં</translation>
+<translation id="1715940067130687605">તમારા વર્તમાન સ્થાનનો ઉપયોગ કરો.</translation>
 <translation id="1740468249224277719">ઇન્સ્ટૉલ કરવા માટે બે વાર ટૅપ કરો.</translation>
 <translation id="1746815479209538200">વેબ બ્રાઉઝ કરવા માટે, નવી ટૅબ ઉમેરો.</translation>
 <translation id="1752547299766512813">પાસવર્ડ સાચવો</translation>
@@ -374,6 +376,7 @@
 <translation id="5059136629401106827">ઓકે</translation>
 <translation id="5062321486222145940">Google ડ્રાઇવ ઇન્સ્ટોલ કરો</translation>
 <translation id="5083464117946352670">ફાઇલ કદ નિર્ધારિત કરી શકાતું નથી.</translation>
+<translation id="5090832849094901128">આ પાસવર્ડ ડિલીટ કરવાથી <ph name="WEBSITE" />નું તમારું એકાઉન્ટ ડિલીટ થશે નહીં.</translation>
 <translation id="5094827893301452931">ટ્વિટ પૂર્ણ કરેલ છે.</translation>
 <translation id="5118764316110575523">બંધ</translation>
 <translation id="5127805178023152808">સમન્વયન બંધ છે</translation>

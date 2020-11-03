@@ -60,7 +60,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1456407467406159627">Skjermopptaket ble stanset på grunn av konfidensielt innhold på skjermen.</translation>
 <translation id="1460620680449458626">Lyden er dempet.</translation>
 <translation id="1467432559032391204">Venstre</translation>
-<translation id="1475439723810528286">Trykk hvor som helst for å ta bilde i fullskjerm</translation>
 <translation id="1479909375538722835">Flytende tilgjengelighetsmeny</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Denne eierkontoen må være den første påloggingskontoen i en multipåloggingsøkt.</translation>
@@ -127,7 +126,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2132302418721800944">Ta opp hele skjermen</translation>
 <translation id="2135456203358955318">Dokket lupe</translation>
 <translation id="2144487987174258011">Start på nytt for å oppdatere Adobe Flash Player</translation>
-<translation id="2180011262286780504">Administratoren din har slått av muligheten for skjermopptak.</translation>
 <translation id="2208323208084708176">Enhetlig skrivebordsmodus</translation>
 <translation id="2220572644011485463">PIN-kode eller passord</translation>
 <translation id="2222338659135520253">Pålogging kreves</translation>
@@ -801,7 +799,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="8843682306134542540">Slå av/på rotasjonslås. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Søk+Esc</translation>
 <translation id="8853703225951107899">PIN-koden eller passordet kunne fremdeles ikke verifiseres. Merk: Hvis du nylig har byttet passord, bruker du det gamle passordet. Det nye passordet blir tatt i bruk når du logger av.</translation>
-<translation id="885387440427703469">Skjermopptak er slått av</translation>
 <translation id="8870509716567206129">Appen støtter ikke delt skjerm.</translation>
 <translation id="8871580645200179206">Slå av/på mørkt tema. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Ikke tilkoblet</translation>

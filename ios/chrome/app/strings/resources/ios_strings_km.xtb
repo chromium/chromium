@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">បង្កើតផ្ទាំងថ្មី</translation>
 <translation id="1145536944570833626">លុបទិន្នន័យដែលមានស្រាប់។</translation>
 <translation id="1154690515305205900">មិនអាច​បង្កើត​តំណ​ទៅកាន់​អត្ថបទ​ដែលបាន​រំលេចបានទេ​។</translation>
+<translation id="1157749421655780457">អនុញ្ញាតឱ្យប្រើទីតាំង...</translation>
 <translation id="1165039591588034296">កំហុសឆ្គង</translation>
 <translation id="1172898394251786223">ប្រអប់បំពេញបន្ទាប់</translation>
 <translation id="1176932207622159128">មិនអាចរក្សាទុករូបភាព</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">គ្មានធាតុ</translation>
 <translation id="1692118695553449118">សមកម្មបានបើក</translation>
 <translation id="1700629756560807968">បានជ្រើសរើស <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1715940067130687605">ប្រើទីតាំង​បច្ចុប្បន្ន​របស់អ្នក។</translation>
 <translation id="1740468249224277719">ប៉ះពីរដងដើម្បីដំឡើង</translation>
 <translation id="1746815479209538200">ដើម្បី​រុក​រកលើ​បណ្ដាញ សូមបញ្ចូល​ផ្ទាំង​ថ្មី។</translation>
 <translation id="1752547299766512813">រក្សាទុកពាក្យសម្ងាត់</translation>
@@ -374,6 +376,7 @@
 <translation id="5059136629401106827">យល់ព្រម</translation>
 <translation id="5062321486222145940">ដំឡើង Google Drive</translation>
 <translation id="5083464117946352670">មិនអាចដឹងពីទំហំឯកសារទេ។</translation>
+<translation id="5090832849094901128">ការលុបពាក្យសម្ងាត់នេះ​នឹងមិន​លុបគណនីរបស់អ្នក​នៅលើ <ph name="WEBSITE" />​ ទេ។</translation>
 <translation id="5094827893301452931">ការបង្ហោះតាម Twitter រួចរាល់។</translation>
 <translation id="5118764316110575523">បិទ</translation>
 <translation id="5127805178023152808">សមកម្មបានបិទ</translation>

@@ -23,6 +23,7 @@
 <translation id="1947737735496445907">ພິມແລ້ວ</translation>
 <translation id="1979103255016296513">ກາຍກຳນົດປ່ຽນລະຫັດຜ່ານແລ້ວ</translation>
 <translation id="2049639323467105390">ອຸປະກອນນີ້ຖືກຈັດການໂດຍ <ph name="DOMAIN" /></translation>
+<translation id="2080070583977670716">ການຕັ້ງຄ່າເພີ່ມເຕີມ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">ຍົກເລີກວຽກພິມ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
@@ -66,6 +67,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">ປີ້ Kerberos ຈະໝົດອາຍຸໃນໄວໆນີ້</translation>
 <translation id="445059817448385655">ລະຫັດຜ່ານເກົ່າ</translation>
+<translation id="4454245904991689773">ສະແກນເພື່ອ</translation>
 <translation id="4483049906298469269">ໃຊ້ຄຳສັ່ງ ping ກັບເກດເວເຄືອຂ່າຍທີ່ບໍ່ແມ່ນຄ່າເລີ່ມຕົ້ນບໍ່ໄດ້</translation>
 <translation id="4548483925627140043">ບໍ່ພົບສັນຍານ</translation>
 <translation id="458794348635939462">ແກ້ໄຂບັນຫາໂຮສທັງໝົດບໍ່ສຳເລັດ</translation>

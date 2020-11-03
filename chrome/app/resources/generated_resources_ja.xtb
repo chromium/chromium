@@ -62,7 +62,6 @@
 <translation id="1060292118287751956">画面の更新頻度を指定します</translation>
 <translation id="1061904396131502319">もうすぐ休憩の時間です</translation>
 <translation id="1067048845568873861">作成日</translation>
-<translation id="1067291318998134776">Linux（ベータ版）</translation>
 <translation id="1067922213147265141">他の Google サービス</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">パソコン上の別のプログラムにより、Chrome の動作に影響を及ぼす可能性のある拡張機能が追加されました。
@@ -1324,7 +1323,6 @@
 <translation id="2505127913256479918">この管理対象アカウントはまもなく削除されます</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{画面 #}other{画面 #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" /> 中 <ph name="RECEIVED_AMOUNT" /></translation>
-<translation id="250642123108534012">近くにある、ニアバイシェア画面が開いているデバイス</translation>
 <translation id="250704661983564564">ディスプレイの配置</translation>
 <translation id="2507253002925770350">チケットを削除しました</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> は一時停止中</translation>
@@ -1874,6 +1872,7 @@
 <translation id="3155072594963189910">サイトがデバイスのファイルやフォルダを編集できないようにする</translation>
 <translation id="3156531245809797194">Chrome を使用するにはログインしてください</translation>
 <translation id="315738237743207937">キャプティブ ポータルが検出されました</translation>
+<translation id="3157387275655328056">リーディング リストに追加</translation>
 <translation id="3157931365184549694">復元</translation>
 <translation id="3158033540161634471">指紋の設定</translation>
 <translation id="3159493096109238499">ベージュ</translation>
@@ -2050,7 +2049,6 @@
 <translation id="3388788256054548012">このファイルは暗号化されています。所有者に復号するよう依頼してください。</translation>
 <translation id="3390013585654699824">アプリの詳細</translation>
 <translation id="3390741581549395454">Linux のアプリとファイルをバックアップしました。まもなくアップグレードを開始します。</translation>
-<translation id="339507021360520688">画面のロックが解除されているときに、あなたに表示するよう選択している連絡先</translation>
 <translation id="3396800784455899911">[同意して続行] をクリックすると、これらの Google サービスに関する上記の処理内容に同意したことになります。</translation>
 <translation id="3399432415385675819">通知が無効になります</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" />x<ph name="HEIGHT" />（<ph name="REFRESH_RATE" /> Hz）インターレース</translation>
@@ -2131,7 +2129,6 @@
 <translation id="3471876058939596279">HDMI ポートと USB Type-C ポートを同時にビデオ出力に使用することはできません。別のビデオポートを使用してください。</translation>
 <translation id="3473241910002674503">タブレット モードで、ボタンを使用してホームに移動したり、戻ったり、アプリを切り替えたりできます。</translation>
 <translation id="3473479545200714844">画面拡大鏡</translation>
-<translation id="347394413229268704">後で読む</translation>
 <translation id="3474218480460386727">新しい語句は 99 文字以内で指定してください</translation>
 <translation id="3475843873335999118">指紋を認識できません。パスワードを入力してください。</translation>
 <translation id="3476303763173086583">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、お子様向けの Android 機能の向上にご協力ください。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />は所有者によって管理されています。このデバイスの診断データや使用状況データを Google に送信するよう所有者が設定している可能性があります。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。<ph name="BEGIN_LINK2" />詳細<ph name="END_LINK2" /></translation>
@@ -2261,7 +2258,6 @@
 <translation id="3619115746895587757">カプチーノ</translation>
 <translation id="362333465072914957">CA による証明書の発行を待機しています</translation>
 <translation id="3624567683873126087">デバイスのロックを解除して Google アカウントにログインする</translation>
-<translation id="3625258641415618104">スクリーンショットが無効</translation>
 <translation id="3625481642044239431">無効なファイルが選択されています。もう一度お試しください。</translation>
 <translation id="3626296069957678981">この Chromebook を充電するには、対応する Dell のバッテリーを使用してください。</translation>
 <translation id="3627320433825461852">あと 1 分未満</translation>
@@ -2596,7 +2592,6 @@
 <translation id="3965965397408324205">「<ph name="PROFILE_NAME" />」を終了</translation>
 <translation id="3966072572894326936">別のフォルダを選択...</translation>
 <translation id="3967822245660637423">ダウンロード完了</translation>
-<translation id="3967919079500697218">スクリーンショットを撮る機能は、管理者によって無効にされています。</translation>
 <translation id="3969092967100188979">オン（ローミングあり）</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">計算しています...</translation>
@@ -2753,7 +2748,6 @@
 <translation id="4163560723127662357">不明なキーボード</translation>
 <translation id="4167686856635546851">多くのサイトは、インタラクティブなビデオゲームやウェブフォームなどを表示するために JavaScript を使用します。</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> に帰属する設定の一部を共有しています。これらの設定は、マルチログインを使用した場合にのみこのアカウントに適用されます。</translation>
-<translation id="4170256733935344210">QR コードをデバイスのカメラでスキャンするか、携帯通信会社から提供されたアクティベーション コードを入力してください</translation>
 <translation id="4170314459383239649">終了時に削除</translation>
 <translation id="4175137578744761569">明るい紫と白</translation>
 <translation id="4175737294868205930">永続的ストレージ</translation>
@@ -2793,7 +2787,6 @@
 <translation id="4232375817808480934">Kerberos の設定</translation>
 <translation id="4235200303672858594">画面全体</translation>
 <translation id="4235965441080806197">ログインをキャンセル</translation>
-<translation id="4241393667672058421">{NUM_TABS,plural, =1{タブを後で読む}other{タブを後で読む}}</translation>
 <translation id="4242145785130247982">サポートされていないクライアント証明書が複数あります</translation>
 <translation id="4242533952199664413">設定を開く</translation>
 <translation id="4242577469625748426">デバイスにポリシー設定をインストールできませんでした: <ph name="VALIDATION_ERROR" />。</translation>
@@ -3150,7 +3143,6 @@
 <translation id="4651484272688821107">デモモード リソースでオンライン コンポーネントを読み込めませんでした。</translation>
 <translation id="4652935475563630866">カメラの設定を変更するには、Parallels Desktop を再起動する必要があります。続行するには、Parallels Desktop を再起動してください。</translation>
 <translation id="4653405415038586100">Linux の設定中にエラーが発生しました</translation>
-<translation id="4657810666108475055">タブ検索</translation>
 <translation id="465878909996028221">ブラウザのリダイレクトでは、http、https、file プロトコルのみサポートされています。</translation>
 <translation id="4659077111144409915">メイン アカウント</translation>
 <translation id="4659126640776004816">この機能は Google アカウントにログインすると有効になります。</translation>
@@ -3231,7 +3223,6 @@
 <translation id="4763408175235639573">このページを表示したときに以下の Cookie が設定されました</translation>
 <translation id="4764368918650455114">両方のデバイスでロックが解除されていること、お互いが近くにあること、Bluetooth が有効になっていることを確認してください。Chromebook でファイルを共有する場合は、Chromebook でニアバイシェアが有効になっていることも確認してください（時刻を選択してステータス領域を開き、ニアバイシェアを選択します）。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">スマートフォンから Chromebook へのテキストの伝達を Android メッセージに許可します</translation>
-<translation id="476598255842811483">あなたのデバイスでニアバイシェアを開かない場合、誰とも共有しません</translation>
 <translation id="4768332406694066911">次の機関から発行された、あなたを識別する証明書があります</translation>
 <translation id="477647109558161443">デスクトップ ショートカットを作成</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> のパスワード</translation>
@@ -4106,7 +4097,6 @@
 <translation id="5826993284769733527">半透明</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">印刷中...</translation>
-<translation id="5830659417568730973">画面のロックが解除されているときに近くにいる指定した連絡先</translation>
 <translation id="5830720307094128296">ページを別名で保存(&amp;A)...</translation>
 <translation id="5832805196449965646">ユーザーを追加</translation>
 <translation id="583281660410589416">不明</translation>
@@ -4406,7 +4396,6 @@
 <translation id="6164005077879661055">この監視対象ユーザーを削除すると、このユーザーに関連付けられたすべてのファイルとローカル データも完全に削除されます。この監視対象ユーザーがアクセスしたウェブサイトやこのユーザーの設定は引き続き、管理者が <ph name="MANAGEMENT_URL" /> で見ることができます。</translation>
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6166185671393271715">Chrome にパスワードをインポート</translation>
-<translation id="616831107264507309">後で読む</translation>
 <translation id="6169040057125497443">マイクを確認してください。</translation>
 <translation id="6169666352732958425">デスクトップをキャストできません。</translation>
 <translation id="6170470584681422115">サンドイッチ</translation>
@@ -5799,7 +5788,6 @@
 <translation id="782057141565633384">動画アドレスをコピー(&amp;C)</translation>
 <translation id="7822187537422052256">この住所を削除してもよろしいですか？</translation>
 <translation id="7824864914877854148">エラーが発生したため、バックアップを完了できませんでした</translation>
-<translation id="7825666486843191125">画面のロックが解除されているときに近くにいるすべての連絡先</translation>
 <translation id="782590969421016895">現在のページを使用</translation>
 <translation id="7826249772873145665">ADB デバッグが無効になりました</translation>
 <translation id="7826254698725248775">競合するデバイス識別子です。</translation>
@@ -5854,7 +5842,6 @@
 <translation id="786073089922909430">サービス: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">ダウンロード(&amp;D)</translation>
 <translation id="7864539943188674973">Bluetooth を無効にする</translation>
-<translation id="7866352732146932341">あなたのデバイスでニアバイシェア画面が開いているときに近くにあるデバイス</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - ペア設定済み</translation>
 <translation id="7870730066603611552">設定後に同期オプションを確認する</translation>
 <translation id="7870790288828963061">新しいバージョンのキオスクアプリが見つかりませんでした。更新するものはありません。USB スティックを取り外してください。</translation>
@@ -5897,6 +5884,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" />秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> は <ph name="FILENAME" /> を表示できます</translation>
 <translation id="7920482456679570420">スペルチェックしない語句を追加してください</translation>
+<translation id="7924080089023843180">ニアバイシェアを開かない場合、誰とも共有しません</translation>
 <translation id="7924358170328001543">ポート転送エラー</translation>
 <translation id="792514962475806987">ドッキング画面のズームレベル:</translation>
 <translation id="7925247922861151263">AAA を確認できませんでした</translation>
@@ -6294,7 +6282,6 @@
 <translation id="8379878387931047019">このデバイスでは、このウェブサイトからリクエストされているセキュリティ キーのタイプはサポートされていません。</translation>
 <translation id="8379991678458444070">このタブをブックマークに追加すると、すばやくこのタブに戻ることができます</translation>
 <translation id="8380266723152870797">ウィンドウ名</translation>
-<translation id="8382384117483909115">{NUM_TABS,plural, =1{タブを後で読む}other{タブを後で読む}}</translation>
 <translation id="8382913212082956454">メール アドレスをコピー(&amp;E)</translation>
 <translation id="8386091599636877289">ポリシーが見つかりません。</translation>
 <translation id="8386903983509584791">スキャンが完了しました</translation>
@@ -6799,6 +6786,7 @@
 <translation id="8962918469425892674">このサイトはモーション センサーまたは光センサーを使用しています。</translation>
 <translation id="8965037249707889821">古いパスワードを入力</translation>
 <translation id="8966870118594285808">間違って閉じたタブをもう一度開きます</translation>
+<translation id="8967427617812342790">リーディング リストに追加</translation>
 <translation id="8967866634928501045">Alt+Shift+A キーで表示します</translation>
 <translation id="8968766641738584599">カードを保存</translation>
 <translation id="89720367119469899">Esc</translation>

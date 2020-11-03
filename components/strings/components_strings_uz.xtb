@@ -80,6 +80,14 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Parolingizni tashkilot domenidan tashqaridagi saytda kiritdingiz. Hisobingizni himoyalash uchun tashqi ilova va saytlarda parolingizni qayta kiritmang.</translation>
 <translation id="1263231323834454256">Mutolaa ro‘yxati</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        Bu qurilmada saqlanib qolmaydigan amallar:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Bu oynada ochilgan sahifalar
+          <ph name="LIST_ITEM" />Cookie fayllari va sayt maʼlumotlari
+          <ph name="LIST_ITEM" />Hisob axboroti (<ph name="LINK_BEGIN" />chiqish<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Olib ketish usuli</translation>
 <translation id="1281476433249504884">Taxlovchi 1</translation>
 <translation id="1285320974508926690">Bu sayt hech qachon tarjima qilinmasin</translation>
@@ -552,6 +560,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3207960819495026254">Xatcho‘plarga qo‘shildi</translation>
 <translation id="3209034400446768650">Sahifa pul yechib olishi mumkin</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> saytidagi harakatlaringiz kuzatuv ostida</translation>
+<translation id="3212623355668894776">Barcha mehmon oynalarni yopsangiz, bu qurilmadan brauzerdagi faoliyat oʻchiriladi.</translation>
 <translation id="3215092763954878852">WebAuthn ishlatib boʻlmadi</translation>
 <translation id="3218181027817787318">Aloqador</translation>
 <translation id="3225919329040284222">Serverdagi sertifikat ba’zi saytlardagi yuqori darajali havfsizlik ichki parametrlariga mos kelmaydi.</translation>
@@ -911,6 +920,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4658638640878098064">Yuqori chapdan steplerlash</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Virtual reallik</translation>
+<translation id="4675657451653251260">Mehmon rejimida hech qanday Chrome profilini koʻra olmaysiz. Parol va toʻlov usullari kabi Google hisobingizdagi maʼlumotlarga kiritish uchun <ph name="LINK_BEGIN" />hisobingizga kiring<ph name="LINK_END" />.</translation>
 <translation id="467662567472608290">Bu <ph name="DOMAIN" /> serveri ekanligi tasdiqlanmadi. Uning sertifikati ayni paytda yaroqsiz bo‘lishi mumkin. Balki, server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘rilashga urinayotgan bo‘lishi mumkin.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> maxsus imkoniyatlardan foydalanmoqchi</translation>
 <translation id="467809019005607715">Google Slides</translation>
@@ -938,6 +948,12 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4761104368405085019">Mikrofoningizni ishlatish</translation>
 <translation id="4764776831041365478"><ph name="URL" /> manzilidagi veb-sahifa vaqtinchalik ishlamayapti yoki boshqa manzilga butunlay ko‘chirilgan.</translation>
 <translation id="4766713847338118463">Quyidan ikki marta steplerlash</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        Bu qurilmada saqlanib qoladigan amallar:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Bu oynada yuklab olingan har qanday fayllar
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Noma’lum xatolik yuz berdi.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Qalqib chiquvchi oyna bloklandi}other{# ta qalqib chiquvchi oyna bloklandi}}</translation>
 <translation id="4780366598804516005">Pochta qutisi 1</translation>
@@ -1391,6 +1407,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6587923378399804057">Nusxalangan havola</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> qurilmangiz mustaqil</translation>
 <translation id="6596325263575161958">Shifrlash parametrlari</translation>
+<translation id="6596892391065203054">Bu kontentni chop etish administrator tomonidan taqiqlangan.</translation>
 <translation id="6604181099783169992">Harakat va yorug‘lik sensorlari</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
 <translation id="6612358246767739896">Himoyalangan kontent</translation>
@@ -1874,11 +1891,21 @@ Batafsil axborot:
 <translation id="8559762987265718583">Tizimdagi sana va vaqt sozlamalari (<ph name="DATE_AND_TIME" />) noto‘g‘ri bo‘lganligi sababli <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeni bilan havfsiz aloqa o‘rnatib bo‘lmadi.</translation>
 <translation id="8564182942834072828">Bir nechta hujjat/Tartibsiz nusxalarda</translation>
 <translation id="8564985650692024650">Parolingizni <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> domenidan tashqaridagi saytda kiritgan bo‘lsangiz, uni zudlik bilan almashtirishingizni tavsiya etamiz.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        Bu qurilmada saqlanib qolmaydigan amallar:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Bu oynada ochilgan sahifalar
+          <ph name="LIST_ITEM" />Cookie fayllari va sayt maʼlumotlari
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Kartalarni tezda tasdiqlash uchun Touch ID ishlating</translation>
 <translation id="858637041960032120">Raqam qo‘shing</translation>
 <translation id="8589998999637048520">Eng sifatli</translation>
 <translation id="860043288473659153">Karta egasining ismi</translation>
 <translation id="8606726445206553943">MIDI qurilmalaridan foydalanish</translation>
+<translation id="8612761427948161954">Salom <ph name="USERNAME" />,
+        <ph name="BR" />
+        Siz mehmon rejimida kirdingiz</translation>
 <translation id="861775596732816396">Hajmi: 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Mos parollar mavjud emas. Saqlangan barcha parollar koʻrsatilsin.</translation>
@@ -2017,6 +2044,7 @@ Batafsil axborot:
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> sayti qo‘llab-quvvatlanmaydigan protokoldan foydalanmoqda.</translation>
 <translation id="9191834167571392248">Quyi chapdan teshik ochish</translation>
+<translation id="9199905725844810519">Chop etish taqiqlangan</translation>
 <translation id="9205078245616868884">Ma’lumotlaringiz kodli ibora bilan shifrlangan. Sinxronlashuvni boshlash uchun uni kiriting.</translation>
 <translation id="9207861905230894330">Maqolani qo‘shib bo‘lmadi.</translation>
 <translation id="9213433120051936369">Dizaynini moslash</translation>

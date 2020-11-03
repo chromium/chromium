@@ -49,6 +49,7 @@
 <translation id="1346748346194534595">Оңға</translation>
 <translation id="1351937230027495976">Мәзірді жию</translation>
 <translation id="1383876407941801731">Іздеу</translation>
+<translation id="1390105199421505038"><ph name="USER_EMAIL_ADDRESS" /> есептік жазбасын өшіру диалогтік терезесі</translation>
 <translation id="1391102559483454063">Қосулы</translation>
 <translation id="1407069428457324124">Қараңғы тақырып</translation>
 <translation id="1419738280318246476">Хабарландыруда ұсынылған әрекетті орындау үшін құрылғының құлпын ашыңыз</translation>
@@ -59,7 +60,6 @@
 <translation id="1456407467406159627">Құпия мазмұнның болуына байланысты экранды бейнеге жазу тоқтатылды.</translation>
 <translation id="1460620680449458626">Дыбысы өшірулі.</translation>
 <translation id="1467432559032391204">Сол жақ</translation>
-<translation id="1475439723810528286">Толық экранды түсіру үшін кез келген жерден түртіңіз.</translation>
 <translation id="1479909375538722835">Қалқымалы арнайы мүмкіндіктер мәзірі</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Бұл иеленуші есептік жазбасы көп кіру сеансында алғашқы жүйеге кірген есептік жазба болуы керек.</translation>
@@ -126,7 +126,6 @@
 <translation id="2132302418721800944">Толық экранды жазу</translation>
 <translation id="2135456203358955318">Бекітілген ұлғайтқыш</translation>
 <translation id="2144487987174258011">Adobe Flash Player қолданбасын жаңарту үшін қайта іске қосыңыз</translation>
-<translation id="2180011262286780504">Экранды түсіру мүмкіндігін әкімші өшірген.</translation>
 <translation id="2208323208084708176">Бірыңғай жұмыс үстелі режимі</translation>
 <translation id="2220572644011485463">PIN коды немесе құпия сөз</translation>
 <translation id="2222338659135520253">Есептік жазбаға кіру керек</translation>
@@ -369,6 +368,7 @@
 <translation id="4477892968187500306">Құрылғыда Google растамаған қолданбалар болуы мүмкін.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Жұпталмаған құрылғылар</translation>
+<translation id="4485060137115666462">Тінтуірдің оң жақ түймесін бассаңыз немесе басып тұрсаңыз, Assistant таңдаған нәрсеңізге қатысты анықтама, аударма немесе бірлікті түрлендіру сияқты ақпаратты көрсетеді.</translation>
 <translation id="4505050298327493054">Белсенді жұмыс үстелі.</translation>
 <translation id="4506458088675900627">"Жалпы ақпарат" сенсорлық тақтасындағы қимыл өзгерді</translation>
 <translation id="4513946894732546136">Пікір жіберу</translation>
@@ -597,6 +597,7 @@
 <translation id="6803622936009808957">Қолдау көрсетілген ажыратымдылықтар табылмағандықтан, дисплейлерді бейнелеу мүмкін емес. Оның орнына кеңейтілген жұмыс үстелі енгізілген.</translation>
 <translation id="6818242057446442178">Бір сөзге артқа жылжу</translation>
 <translation id="6820676911989879663">Үзіліс жасаңыз!</translation>
+<translation id="6850010208275816200">Ағымдағы қолданба толық экран режимінде пайдаланылады. Егер қолданба құпия сөзді сұраса, толық экран режимінен шығыңыз.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> белсендіру</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Бір цифр қалды.}other{# цифр қалды.}}</translation>
@@ -646,6 +647,7 @@
 <translation id="7398254312354928459">Желі ауысты</translation>
 <translation id="7405710164030118432">Құрылғының құлпын ашу үшін Family Link ата-анаға арналған кіру кодын енгізіңіз.</translation>
 <translation id="741244894080940828">түрлендіру</translation>
+<translation id="7413851974711031813">Жабу үшін Escape пернесін басыңыз.</translation>
 <translation id="742594950370306541">Камера пайдаланылуда.</translation>
 <translation id="742608627846767349">Қайырлы таң!</translation>
 <translation id="743058460480092004">Камера және микрофон пайдаланылуда.</translation>
@@ -797,7 +799,6 @@
 <translation id="8843682306134542540">Бұру құлпын ашу/жабу. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN кодыңыз не құпия сөзіңіз әлі расталмады. Ескертпе: құпия сөзіңізді жақында өзгерткен болсаңыз, бұрынғы құпия сөзіңізді пайдаланыңыз. Жаңа құпия сөз, есептік жазбадан шыққаннан кейін, күшіне енеді.</translation>
-<translation id="885387440427703469">Экранды түсіру өшірілді</translation>
 <translation id="8870509716567206129">Қолданба бөлінген экранды қолдамайды.</translation>
 <translation id="8871580645200179206">Қараңғы тақырыпты қосу немесе өшіру. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Қосылмаған</translation>

@@ -59,7 +59,6 @@
 <translation id="1456407467406159627">由于您的屏幕上包含机密内容，系统已停止录制屏幕。</translation>
 <translation id="1460620680449458626">当前处于静音状态。</translation>
 <translation id="1467432559032391204">向左</translation>
-<translation id="1475439723810528286">点按任意位置即可截取整个屏幕</translation>
 <translation id="1479909375538722835">悬浮无障碍功能菜单</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">在多帐号登录会话中，此所有者帐号必须是最先登录的帐号。</translation>
@@ -126,7 +125,6 @@
 <translation id="2132302418721800944">录制整个屏幕</translation>
 <translation id="2135456203358955318">停靠的放大镜</translation>
 <translation id="2144487987174258011">请重新启动以更新 Adobe Flash Player</translation>
-<translation id="2180011262286780504">您的管理员已停用截取屏幕功能。</translation>
 <translation id="2208323208084708176">统一桌面模式</translation>
 <translation id="2220572644011485463">PIN 码或密码</translation>
 <translation id="2222338659135520253">必须登录</translation>
@@ -797,7 +795,6 @@
 <translation id="8843682306134542540">切换旋转锁定设置。<ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">仍然无法验证您的 PIN 码或密码。注意：如果您最近更改了密码，请使用旧密码。待您退出登录后，系统才会应用新密码。</translation>
-<translation id="885387440427703469">截取屏幕功能已停用</translation>
 <translation id="8870509716567206129">应用不支持分屏。</translation>
 <translation id="8871580645200179206">开启/关闭深色主题。<ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">未连接</translation>

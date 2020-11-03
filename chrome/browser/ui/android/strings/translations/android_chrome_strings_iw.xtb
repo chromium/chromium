@@ -300,12 +300,12 @@
 <translation id="3208584281581115441">בדיקה עכשיו</translation>
 <translation id="3211426585530211793">מועד המחיקה: <ph name="ITEM_TITLE" /></translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> דפים שלא נקראו</translation>
-<translation id="321773570071367578">אם שכחת את ביטוי הסיסמה או אם ברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />אפס את הסינכרון<ph name="END_LINK" /></translation>
+<translation id="321773570071367578">אם שכחת את ביטוי הסיסמה או אם ברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />יש לאפס את הסנכרון<ph name="END_LINK" /></translation>
 <translation id="3227557059438308877">‏Google Chrome כמפתח אבטחה</translation>
 <translation id="3232754137068452469">אפליקציית אינטרנט</translation>
 <translation id="3236059992281584593">נותרה דקה אחת</translation>
 <translation id="3244271242291266297">MM</translation>
-<translation id="3254409185687681395">הוסף את הדף לסימניות</translation>
+<translation id="3254409185687681395">הוספת הדף לסימניות</translation>
 <translation id="3259831549858767975">הקטן את כל מה שמופיע בדף</translation>
 <translation id="3264124641674805320">איך להוריד תוכן שסומן לקריאה מאוחר יותר</translation>
 <translation id="3269093882174072735">טעינת תמונה</translation>
@@ -331,7 +331,7 @@
 <translation id="3384347053049321195">שיתוף תמונה</translation>
 <translation id="3387650086002190359">הורדת <ph name="FILE_NAME" /> נכשלה עקב שגיאות במערכת הקבצים.</translation>
 <translation id="3389286852084373014">הטקסט ארוך מדי</translation>
-<translation id="3398320232533725830">פתח את מנהל הסימניות</translation>
+<translation id="3398320232533725830">פתיחת מנהל הסימניות</translation>
 <translation id="3414952576877147120">גודל:</translation>
 <translation id="3443221991560634068">טען מחדש את הדף הנוכחי</translation>
 <translation id="3478363558367712427">אפשר לבחור את מנוע החיפוש</translation>
@@ -552,7 +552,7 @@
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">זה בסדר</translation>
 <translation id="5040262127954254034">פרטיות</translation>
-<translation id="5087580092889165836">הוסף כרטיס</translation>
+<translation id="5087580092889165836">הוספת כרטיס</translation>
 <translation id="5091249083535528968">נתונים נוספים על השימוש במכשיר</translation>
 <translation id="509429900233858213">אירעה שגיאה.</translation>
 <translation id="510275257476243843">נותרה שעה אחת</translation>
@@ -686,11 +686,11 @@
 <translation id="5964869237734432770">הפסקה של תיאורי התמונות</translation>
 <translation id="5979084224081478209">בדיקת הסיסמאות</translation>
 <translation id="5982307838673692400">פתיחה של כרטיסיית מצב אנונימי</translation>
-<translation id="6000066717592683814">‏המשך להשתמש ב-Google</translation>
+<translation id="6000066717592683814">‏להמשיך להשתמש ב-Google</translation>
 <translation id="6005538289190791541">הצעה לסיסמה</translation>
 <translation id="6014293228235665243">לא נקראו</translation>
 <translation id="6036057147555329831">‏ICU נוסף</translation>
-<translation id="6039379616847168523">עבור לכרטיסייה הבאה</translation>
+<translation id="6039379616847168523">מעבר לכרטיסייה הבאה</translation>
 <translation id="6040143037577758943">סגור</translation>
 <translation id="604124094241169006">אוטומטי</translation>
 <translation id="6042308850641462728">עוד</translation>
@@ -979,6 +979,7 @@
 <translation id="7971136598759319605">פעילות אחרונה: לפני יום אחד</translation>
 <translation id="7975379999046275268">הצגת הדף בתצוגה מקדימה<ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">טעינה מראש של דפים כדי לאפשר גלישה וחיפוש מהירים יותר</translation>
+<translation id="7986497153528221272">כדי להציג סיסמאות, תחילה יש להגדיר נעילת מסך במכשיר</translation>
 <translation id="7998918019931843664">פתיחה מחדש של כרטיסייה שנסגרה</translation>
 <translation id="8004582292198964060">דפדפן</translation>
 <translation id="8013372441983637696">‏יש לנקות גם את נתוני Chrome מהמכשיר הזה</translation>
@@ -1066,7 +1067,7 @@
 <translation id="8569404424186215731">מאז <ph name="DATE" /></translation>
 <translation id="8571213806525832805">מארבעת השבועות האחרונים</translation>
 <translation id="8572344201470131220">התמונה הועתקה</translation>
-<translation id="8583805026567836021">מנקה נתוני חשבון</translation>
+<translation id="8583805026567836021">נתוני החשבון נמחקים</translation>
 <translation id="860043288473659153">שם בעל הכרטיס</translation>
 <translation id="8616006591992756292">‏ייתכן שלחשבון Google שלך יהיו צורות אחרות של היסטוריית גלישה בכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">האם לעבור אל כתובת האתר שצוינה כהצעה בתוכן שהורדת?</translation>

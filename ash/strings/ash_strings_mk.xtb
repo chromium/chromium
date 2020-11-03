@@ -60,7 +60,6 @@
 <translation id="1456407467406159627">Снимањето на екранот запре поради доверливи содржини на вашиот екран.</translation>
 <translation id="1460620680449458626">Звукот е исклучен.</translation>
 <translation id="1467432559032391204">Лево</translation>
-<translation id="1475439723810528286">Допрете каде било за да го сликате целиот екран</translation>
 <translation id="1479909375538722835">Лебдечко мени за пристапност</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Оваа сметка на сопственик треба да биде првата пријавена сметка во сесија со повеќекратно пријавување.</translation>
@@ -127,7 +126,6 @@
 <translation id="2132302418721800944">Снимање цел екран</translation>
 <translation id="2135456203358955318">Закотвена лупа</translation>
 <translation id="2144487987174258011">Рестартирајте за да се ажурира Adobe Flash Player</translation>
-<translation id="2180011262286780504">Администраторот ја оневозможил можноста за снимање на екранот.</translation>
 <translation id="2208323208084708176">Режим на единствена работна површина</translation>
 <translation id="2220572644011485463">PIN или лозинка</translation>
 <translation id="2222338659135520253">Потребно е најавување</translation>
@@ -802,7 +800,6 @@
 <translation id="8843682306134542540">Заклучи/отклучи ротација. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Пребарај+Esc</translation>
 <translation id="8853703225951107899">Сѐ уште не може да се потврди PIN-кодот или лозинката. Забелешка: ако неодамна сте ја промениле лозинката, користете ја вашата стара лозинка. Новата лозинка ќе се примени откако ќе се одјавите.</translation>
-<translation id="885387440427703469">Снимањето на екранот е оневозможено</translation>
 <translation id="8870509716567206129">Апликацијата не поддржува поделен екран.</translation>
 <translation id="8871580645200179206">Вклучете/исклучете ја темната тема. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Не е поврзано</translation>

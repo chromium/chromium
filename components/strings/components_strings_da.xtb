@@ -925,7 +925,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4658638640878098064">Hæftning øverst til venstre</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
-<translation id="4675657451653251260">Du kan ikke se nogen Chrome-profiloplysninger i gæstetilstand. Du kan <ph name="LINK_BEGIN" />logge ind<ph name="LINK_END" /> for at få adgang til dine Google-kontooplysninger som f.eks. adgangskoder og betalingsmetoder.</translation>
+<translation id="4675657451653251260">Du vil ikke kunne se nogen Chrome-profiloplysninger i gæstetilstand. Du kan <ph name="LINK_BEGIN" />logge ind<ph name="LINK_END" /> for at få adgang til dine Google-kontooplysninger som f.eks. adgangskoder og betalingsmetoder.</translation>
 <translation id="467662567472608290">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da sikkerhedscertifikatet indeholder fejl. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> anmoder om at reagere på handlinger foretaget i hjælpetilstand</translation>
 <translation id="467809019005607715">Google Slides</translation>

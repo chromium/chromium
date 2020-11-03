@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">Sortu beste fitxa bat.</translation>
 <translation id="1145536944570833626">Ezabatu lehendik dauden datuak.</translation>
 <translation id="1154690515305205900">Ezin da sortu nabarmendutako testura daraman esteka.</translation>
+<translation id="1157749421655780457">Eman kokapena atzitzeko baimena…</translation>
 <translation id="1165039591588034296">Errorea</translation>
 <translation id="1172898394251786223">Hurrengo eremua</translation>
 <translation id="1176932207622159128">Ezin da gorde irudia</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">Ez dago ezer</translation>
 <translation id="1692118695553449118">Sinkronizazioa aktibatuta dago</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> hautatu dira</translation>
+<translation id="1715940067130687605">Erabili uneko kokapena.</translation>
 <translation id="1740468249224277719">Instalatzeko, sakatu birritan.</translation>
 <translation id="1746815479209538200">Sarea arakatzeko, gehitu fitxa berri bat.</translation>
 <translation id="1752547299766512813">Gorde pasahitzak</translation>
@@ -374,6 +376,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5059136629401106827">Ados</translation>
 <translation id="5062321486222145940">Instalatu Google Drive</translation>
 <translation id="5083464117946352670">Ezin da zehaztu fitxategiaren tamaina.</translation>
+<translation id="5090832849094901128">Pasahitza ezabatzen baduzu ere, ez da ezabatuko <ph name="WEBSITE" /> webguneko kontua.</translation>
 <translation id="5094827893301452931">Txio egin da.</translation>
 <translation id="5118764316110575523">Desaktibatuta</translation>
 <translation id="5127805178023152808">Sinkronizazioa desaktibatuta dago</translation>

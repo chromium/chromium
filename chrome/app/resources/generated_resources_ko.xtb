@@ -62,7 +62,6 @@
 <translation id="1060292118287751956">화면 업데이트 빈도 결정</translation>
 <translation id="1061904396131502319">곧 휴식 시간입니다</translation>
 <translation id="1067048845568873861">생성됨</translation>
-<translation id="1067291318998134776">Linux(베타)</translation>
 <translation id="1067922213147265141">다른 Google 서비스</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">컴퓨터의 다른 프로그램에서 Chrome 작동에 영향을 줄 수 있는 확장 프로그램을 추가했습니다. 
@@ -1326,7 +1325,6 @@
 <translation id="2505127913256479918">이 감독 대상 계정이 곧 삭제됩니다</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{화면 #}other{화면 #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" />중 <ph name="RECEIVED_AMOUNT" /></translation>
-<translation id="250642123108534012">사용자의 기기에서 Nearby Share 실행 시 근처에 있는 기기</translation>
 <translation id="250704661983564564">디스플레이 배치</translation>
 <translation id="2507253002925770350">티켓 삭제됨</translation>
 <translation id="2507397597949272797"><ph name="NAME" />이(가) 일시중지됨</translation>
@@ -1876,6 +1874,7 @@
 <translation id="3155072594963189910">사이트에서 기기의 파일과 폴더를 수정하지 못하도록 차단</translation>
 <translation id="3156531245809797194">Chrome을 사용하려면 로그인하세요</translation>
 <translation id="315738237743207937">종속 포털 감지됨</translation>
+<translation id="3157387275655328056">읽기 목록에 추가</translation>
 <translation id="3157931365184549694">복구</translation>
 <translation id="3158033540161634471">지문 설정</translation>
 <translation id="3159493096109238499">베이지</translation>
@@ -2052,7 +2051,6 @@
 <translation id="3388788256054548012">암호화된 파일입니다. 소유자에게 복호화를 요청하세요.</translation>
 <translation id="3390013585654699824">앱 세부정보</translation>
 <translation id="3390741581549395454">Linux 앱 및 파일 백업이 완료되었습니다. 업그레이드가 곧 시작됩니다.</translation>
-<translation id="339507021360520688">본인의 화면 잠금 해제 시 나에게 표시되도록 선택한 사용자</translation>
 <translation id="3396800784455899911">'동의 및 계속' 버튼을 클릭하면 이러한 Google 서비스와 관련하여 위에 설명된 처리 방식에 동의하는 것으로 간주됩니다.</translation>
 <translation id="3399432415385675819">알림이 사용 중지됩니다.</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" />x<ph name="HEIGHT" />(<ph name="REFRESH_RATE" />Hz) - 인터레이스</translation>
@@ -2133,7 +2131,6 @@
 <translation id="3471876058939596279">HDMI 및 USB 타입-C 포트를 동시에 비디오용으로 사용할 수 없습니다. 다른 비디오 포트를 사용하세요.</translation>
 <translation id="3473241910002674503">태블릿 모드에서 버튼을 사용하여 홈이나 뒤로 이동하고 앱 간에 전환합니다.</translation>
 <translation id="3473479545200714844">화면 돋보기</translation>
-<translation id="347394413229268704">나중에 읽기</translation>
 <translation id="3474218480460386727">새 단어는 99자 이하(영문 기준)여야 합니다.</translation>
 <translation id="3475843873335999118">죄송합니다. 지문이 인식되지 않았습니다. 비밀번호를 입력하세요.</translation>
 <translation id="3476303763173086583">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 자녀의 Android 사용 환경 개선에 참여합니다. 이 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 이 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />은 소유자가 지정합니다. 소유자가 이 기기의 진단 및 사용 데이터를 Google에 전송할지 선택할 수 있습니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK2" />자세히 알아보기<ph name="END_LINK2" /></translation>
@@ -2264,7 +2261,6 @@
 <translation id="3619115746895587757">카푸치노</translation>
 <translation id="362333465072914957">CA에서 인증서를 발급할 때까지 기다리는 중</translation>
 <translation id="3624567683873126087">기기를 잠금 해제하고 Google 계정에 로그인합니다.</translation>
-<translation id="3625258641415618104">스크린샷 캡쳐 사용 중지됨</translation>
 <translation id="3625481642044239431">잘못된 파일이 선택되었습니다. 다시 시도해 보세요.</translation>
 <translation id="3626296069957678981">Chromebook을 충전하려면 호환되는 Dell 배터리를 사용하세요.</translation>
 <translation id="3627320433825461852">1분 미만 남음</translation>
@@ -2599,7 +2595,6 @@
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> 나가기</translation>
 <translation id="3966072572894326936">다른 폴더 선택...</translation>
 <translation id="3967822245660637423">다운로드 완료</translation>
-<translation id="3967919079500697218">관리자가 스크린샷 캡쳐 기능을 사용 중지했습니다.</translation>
 <translation id="3969092967100188979">켜짐, 로밍 사용</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">계산 중...</translation>
@@ -2755,7 +2750,6 @@
 <translation id="4163560723127662357">알 수 없는 키보드</translation>
 <translation id="4167686856635546851">사이트에서는 일반적으로 비디오 게임 또는 웹 양식과 같은 대화형 기능을 실행하는 데 자바스크립트를 사용합니다.</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" />의 설정 중 일부가 나와 공유됩니다. 이러한 설정은 멀티 로그인을 사용하는 경우에만 계정에 적용됩니다.</translation>
-<translation id="4170256733935344210">기기 카메라로 QR 코드를 스캔하거나 이동통신사에서 제공한 활성화 코드를 입력하세요.</translation>
 <translation id="4170314459383239649">종료 시 삭제</translation>
 <translation id="4175137578744761569">연한 보라색 및 흰색</translation>
 <translation id="4175737294868205930">영구 저장소</translation>
@@ -2795,7 +2789,6 @@
 <translation id="4232375817808480934">Kerberos 설정</translation>
 <translation id="4235200303672858594">전체 화면</translation>
 <translation id="4235965441080806197">로그인 취소</translation>
-<translation id="4241393667672058421">{NUM_TABS,plural, =1{탭 나중에 읽기}other{탭 나중에 읽기}}</translation>
 <translation id="4242145785130247982">여러 개의 클라이언트 인증서는 지원되지 않습니다.</translation>
 <translation id="4242533952199664413">설정 열기</translation>
 <translation id="4242577469625748426">기기에 정책 설정을 설치하지 못함: <ph name="VALIDATION_ERROR" />.</translation>
@@ -3153,7 +3146,6 @@
 <translation id="4651484272688821107">데모 모드 리소스로 온라인 구성요소를 로드하지 못했습니다.</translation>
 <translation id="4652935475563630866">카메라 설정을 변경하려면 Parallels Desktop을 다시 실행해야 합니다. 계속하려면 Parallels Desktop을 다시 실행하세요.</translation>
 <translation id="4653405415038586100">Linux 설정 중 오류 발생</translation>
-<translation id="4657810666108475055">탭 검색</translation>
 <translation id="465878909996028221">http, https 및 파일 프로토콜에만 브라우저 리디렉션이 지원됩니다.</translation>
 <translation id="4659077111144409915">기본 계정</translation>
 <translation id="4659126640776004816">Google 계정에 로그인하면 이 기능이 사용 설정됩니다.</translation>
@@ -3234,7 +3226,6 @@
 <translation id="4763408175235639573">페이지를 열었을 때 다음 쿠키가 설정됨</translation>
 <translation id="4764368918650455114">두 기기가 모두 잠금 해제되어 있고 서로 가까이에 있으며 블루투스가 사용 설정되어 있어야 합니다. Chromebook과 공유하는 경우 Chromebook의 Nearby Share가 사용 설정되어 있는지 확인하세요. 시간, Nearby Share를 차례로 선택한 후 상태 영역에서 확인할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">Android 메시지가 휴대전화의 문자 메시지를 Chromebook으로 전달하도록 허용합니다.</translation>
-<translation id="476598255842811483">기기에서 Nearby Share를 실행하지 않으면 아무도 공유할 수 없음</translation>
 <translation id="4768332406694066911">다음 기관에 사용자의 신원을 확인하는 인증서가 있습니다.</translation>
 <translation id="477647109558161443">바탕화면 바로가기 만들기</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />의 비밀번호</translation>
@@ -4110,7 +4101,6 @@
 <translation id="5826993284769733527">반투명</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5828633471261496623">인쇄 중...</translation>
-<translation id="5830659417568730973">화면 잠금 해제 시 근처에 있으며 내가 선택한 연락처</translation>
 <translation id="5830720307094128296">페이지를 다른 이름으로 저장(&amp;A)...</translation>
 <translation id="5832805196449965646">사용자 추가</translation>
 <translation id="583281660410589416">알 수 없음</translation>
@@ -4410,7 +4400,6 @@
 <translation id="6164005077879661055">관리 대상 사용자를 제거하면 해당 관리 대상 사용자와 연결되어 있는 모든 파일 및 로컬 데이터가 영구적으로 삭제됩니다. 하지만 관리자는 관리 대상 사용자의 방문한 웹사이트 및 설정을 <ph name="MANAGEMENT_URL" /> 페이지에서 계속 볼 수 있습니다.</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6166185671393271715">Chrome으로 비밀번호 가져오기</translation>
-<translation id="616831107264507309">나중에 읽기</translation>
 <translation id="6169040057125497443">마이크를 확인하세요.</translation>
 <translation id="6169666352732958425">데스크톱을 전송할 수 없음</translation>
 <translation id="6170470584681422115">샌드위치</translation>
@@ -5805,7 +5794,6 @@
 <translation id="782057141565633384">동영상 주소 복사(&amp;O)</translation>
 <translation id="7822187537422052256">주소를 삭제할까요?</translation>
 <translation id="7824864914877854148">오류로 인해 백업을 완료할 수 없습니다.</translation>
-<translation id="7825666486843191125">화면 잠금 해제 시 근처에 있는 모든 연락처</translation>
 <translation id="782590969421016895">현재 페이지 사용</translation>
 <translation id="7826249772873145665">ADB 디버깅 사용 중지됨</translation>
 <translation id="7826254698725248775">기기 식별자가 충돌합니다.</translation>
@@ -5860,7 +5848,6 @@
 <translation id="786073089922909430">서비스: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">다운로드(&amp;D)</translation>
 <translation id="7864539943188674973">블루투스 사용 안 함</translation>
-<translation id="7866352732146932341">내 기기에서 Nearby Share 실행 시 근처에 있는 기기</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 페어링됨</translation>
 <translation id="7870730066603611552">설정 후 동기화 옵션 검토</translation>
 <translation id="7870790288828963061">새로운 버전의 Kiosk 앱을 찾을 수 없습니다. 업데이트할 대상이 없습니다. USB 메모리를 제거하세요.</translation>
@@ -5903,6 +5890,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" />초</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 볼 수 있습니다.</translation>
 <translation id="7920482456679570420">맞춤법 검사를 건너뛸 단어를 추가합니다.</translation>
+<translation id="7924080089023843180">Nearby Share를 실행하지 않으면 아무도 공유할 수 없음</translation>
 <translation id="7924358170328001543">포트 전달 중 오류 발생</translation>
 <translation id="792514962475806987">고정 돋보기 확대/축소 수준:</translation>
 <translation id="7925247922861151263">AAA 확인 실패</translation>
@@ -6300,7 +6288,6 @@
 <translation id="8379878387931047019">이 기기는 이 웹사이트에서 요청하는 유형의 보안 키를 지원하지 않습니다.</translation>
 <translation id="8379991678458444070">이 탭을 북마크에 추가하여 간편하게 다시 방문하세요.</translation>
 <translation id="8380266723152870797">창 이름</translation>
-<translation id="8382384117483909115">{NUM_TABS,plural, =1{탭 나중에 읽기}other{탭 나중에 읽기}}</translation>
 <translation id="8382913212082956454">이메일 주소 복사(&amp;E)</translation>
 <translation id="8386091599636877289">정책을 찾을 수 없습니다.</translation>
 <translation id="8386903983509584791">검색 완료</translation>
@@ -6805,6 +6792,7 @@
 <translation id="8962918469425892674">사이트에서 모션 센서 또는 조도 센서를 사용 중입니다.</translation>
 <translation id="8965037249707889821">이전 비밀번호 입력</translation>
 <translation id="8966870118594285808">실수로 탭을 닫은 경우 탭 다시 열기</translation>
+<translation id="8967427617812342790">읽기 목록에 추가</translation>
 <translation id="8967866634928501045">표시하려면 Alt Shift A를 누르세요</translation>
 <translation id="8968766641738584599">카드 저장</translation>
 <translation id="89720367119469899">Esc</translation>
