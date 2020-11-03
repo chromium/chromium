@@ -685,6 +685,12 @@ class CORE_EXPORT NGConstraintSpace final {
     return true;
   }
 
+  void ReplaceTableConstraintSpaceData(
+      const NGTableConstraintSpaceData& table_data) {
+    DCHECK(HasRareData());
+    rare_data_->ReplaceTableConstraintSpaceData(table_data);
+  }
+
   String ToString() const;
 
  private:
@@ -996,6 +1002,14 @@ class CORE_EXPORT NGConstraintSpace final {
         wtf_size_t section_index) {
       EnsureTableSectionData()->table_data = std::move(table_data);
       EnsureTableSectionData()->section_index = section_index;
+    }
+
+    void ReplaceTableConstraintSpaceData(
+        const NGTableConstraintSpaceData& table_data) {
+      DCHECK_EQ(data_union_type, kTableRowData);
+      DCHECK(table_data.IsTableSpecificDataEqual(
+          *(EnsureTableRowData()->table_data)));
+      EnsureTableRowData()->table_data = &table_data;
     }
 
     const NGTableConstraintSpaceData* TableData() {

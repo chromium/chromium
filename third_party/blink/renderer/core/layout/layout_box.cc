@@ -3498,6 +3498,14 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
   // not clear the child dirty bits.
   ClearNeedsLayout();
 
+  // Optimization: TableConstraintSpaceData can be large, and it is shared
+  // between all the rows in a table. Make constraint space table data for
+  // reused row fragment be identical to the one used by other row fragments.
+  if (IsTableRow() && IsLayoutNGMixin()) {
+    const_cast<NGConstraintSpace&>(old_space).ReplaceTableConstraintSpaceData(
+        *new_space.TableData());
+  }
+
   // OOF-positioned nodes have to two-tier cache. The additional cache check
   // runs before the OOF-positioned sizing, and positioning calculations.
   //
