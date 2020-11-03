@@ -24,6 +24,5 @@ dictionary AuthenticationExtensionsClientInputs {
   boolean enforceCredentialProtectionPolicy = false;
 
   // https://w3c.github.io/webauthn/#sctn-authenticator-credential-properties-extension
-  // [RuntimeEnabled=WebAuthenticationResidentKeyRequirement]
-  boolean credProps = false;
+  [RuntimeEnabled=WebAuthenticationResidentKeyRequirement] boolean credProps = false;
 };
