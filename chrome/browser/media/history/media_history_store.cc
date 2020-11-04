@@ -218,7 +218,7 @@ sql::Database* MediaHistoryStore::DB() {
 }
 
 void MediaHistoryStore::SavePlayback(
-    const content::MediaPlayerWatchTime& watch_time) {
+    std::unique_ptr<content::MediaPlayerWatchTime> watch_time) {
   DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
   if (!CanAccessDatabase())
     return;
@@ -234,8 +234,8 @@ void MediaHistoryStore::SavePlayback(
   }
 
   // TODO(https://crbug.com/1052436): Remove the separate origin.
-  auto origin = url::Origin::Create(watch_time.origin);
-  if (origin != url::Origin::Create(watch_time.url)) {
+  auto origin = url::Origin::Create(watch_time->origin);
+  if (origin != url::Origin::Create(watch_time->url)) {
     DB()->RollbackTransaction();
 
     base::UmaHistogramEnumeration(
@@ -255,7 +255,7 @@ void MediaHistoryStore::SavePlayback(
     return;
   }
 
-  if (!playback_table_->SavePlayback(watch_time)) {
+  if (!playback_table_->SavePlayback(*watch_time)) {
     DB()->RollbackTransaction();
 
     base::UmaHistogramEnumeration(
@@ -265,9 +265,9 @@ void MediaHistoryStore::SavePlayback(
     return;
   }
 
-  if (watch_time.has_audio && watch_time.has_video) {
+  if (watch_time->has_audio && watch_time->has_video) {
     if (!origin_table_->IncrementAggregateAudioVideoWatchTime(
-            origin, watch_time.cumulative_watch_time)) {
+            origin, watch_time->cumulative_watch_time)) {
       DB()->RollbackTransaction();
 
       base::UmaHistogramEnumeration(

@@ -195,7 +195,12 @@ void MediaHistoryKeyedService::SavePlayback(
   if (auto* store = store_->GetForWrite()) {
     store->db_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&MediaHistoryStore::SavePlayback, store, watch_time));
+        base::BindOnce(
+            &MediaHistoryStore::SavePlayback, store,
+            std::make_unique<content::MediaPlayerWatchTime>(
+                watch_time.url, watch_time.origin,
+                watch_time.cumulative_watch_time, watch_time.last_timestamp,
+                watch_time.has_video, watch_time.has_audio)));
   }
 }
 
