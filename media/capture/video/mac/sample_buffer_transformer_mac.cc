@@ -256,8 +256,7 @@ void ConvertFromMjpegToNV12(uint8_t* source_buffer_data_base_address,
                             const NV12Planes& destination) {
   // Despite libyuv::MJPGToNV12() taking both source and destination sizes as
   // arguments, this function is only successful if the sizes match. So here we
-  // require the destination buffer's size to match the source's, which can be
-  // obtained using libyuv::MJPGSize().
+  // require the destination buffer's size to match the source's.
   int result = libyuv::MJPGToNV12(
       source_buffer_data_base_address, source_buffer_data_size,
       destination.y_plane_data, destination.y_plane_stride,
@@ -528,24 +527,20 @@ void SampleBufferTransformer::TransformSampleBuffer(
     CMSampleBufferRef source_sample_buffer,
     CVPixelBufferRef destination_pixel_buffer) {
   DCHECK(transformer_ == Transformer::kLibyuv);
-  // Ensure source pixel format is MJPEG.
+  // Ensure source pixel format is MJPEG and get width and height.
   CMFormatDescriptionRef source_format_description =
       CMSampleBufferGetFormatDescription(source_sample_buffer);
   FourCharCode source_pixel_format =
       CMFormatDescriptionGetMediaSubType(source_format_description);
   DCHECK(source_pixel_format == kPixelFormatMjpeg);
+  CMVideoDimensions source_dimensions =
+      CMVideoFormatDescriptionGetDimensions(source_format_description);
 
   // Access source pixel buffer bytes.
   uint8_t* source_buffer_data_base_address;
   size_t source_buffer_data_size;
   std::tie(source_buffer_data_base_address, source_buffer_data_size) =
       GetSampleBufferBaseAddressAndSize(source_sample_buffer);
-  int mjpg_width;
-  int mjpg_height;
-  int result =
-      libyuv::MJPGSize(source_buffer_data_base_address, source_buffer_data_size,
-                       &mjpg_width, &mjpg_height);
-  DCHECK(result == 0);
 
   // Lock destination pixel buffer.
   CVReturn lock_status =
@@ -555,13 +550,15 @@ void SampleBufferTransformer::TransformSampleBuffer(
   switch (destination_pixel_format_) {
     case kPixelFormatI420:
       TransformSampleBufferFromMjpegToI420(
-          source_buffer_data_base_address, source_buffer_data_size, mjpg_width,
-          mjpg_height, destination_pixel_buffer);
+          source_buffer_data_base_address, source_buffer_data_size,
+          source_dimensions.width, source_dimensions.height,
+          destination_pixel_buffer);
       break;
     case kPixelFormatNv12:
       TransformSampleBufferFromMjpegToNV12(
-          source_buffer_data_base_address, source_buffer_data_size, mjpg_width,
-          mjpg_height, destination_pixel_buffer);
+          source_buffer_data_base_address, source_buffer_data_size,
+          source_dimensions.width, source_dimensions.height,
+          destination_pixel_buffer);
       break;
     default:
       NOTREACHED();
