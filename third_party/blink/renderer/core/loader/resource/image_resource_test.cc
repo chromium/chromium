@@ -118,7 +118,14 @@ constexpr size_t kJpegImageSubrangeWithDimensionsLength =
 constexpr size_t kJpegImageSubrangeWithoutDimensionsLength = 3;
 
 class ImageResourceTest : public testing::Test,
-                          private ScopedMockOverlayScrollbars {};
+                          private ScopedMockOverlayScrollbars {
+  void TearDown() override {
+    // Trigger a GC so MockFinishObserver gets destroyed and EXPECT_CALL gets
+    // checked before the test ends.
+    ThreadState::Current()->CollectAllGarbageForTesting(
+        BlinkGC::kNoHeapPointersOnStack);
+  }
+};
 
 // Ensure that the image decoder can determine the dimensions of kJpegImage from
 // just the first kJpegImageSubrangeWithDimensionsLength bytes. If this test
@@ -398,6 +405,8 @@ TEST_F(ImageResourceTest, CancelWithImageAndFinishObserver) {
   ScopedMockedURLLoad scoped_mocked_url_load(test_url, GetTestFilePath());
 
   ResourceFetcher* fetcher = CreateFetcher();
+  scheduler::FakeTaskRunner* task_runner =
+      static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get());
 
   // Emulate starting a real load.
   ImageResource* image_resource = ImageResource::CreateForTest(test_url);
@@ -427,7 +436,7 @@ TEST_F(ImageResourceTest, CancelWithImageAndFinishObserver) {
 
   // ResourceFinishObserver is notified asynchronously.
   EXPECT_CALL(*finish_observer, NotifyFinished());
-  blink::test::RunPendingTasks();
+  task_runner->RunUntilIdle();
 }
 
 TEST_F(ImageResourceTest, DecodedDataRemainsWhileHasClients) {
