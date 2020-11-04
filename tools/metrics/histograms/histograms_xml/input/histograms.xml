@@ -247,7 +247,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.Handwriting.Actions" enum="ImeHandwritingActions"
-    expires_after="2021-03-01">
+    expires_after="2021-05-02">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -289,7 +289,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.Handwriting.CharsEdited10s" units="chars"
-    expires_after="2021-03-01">
+    expires_after="2021-05-02">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -299,7 +299,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.Handwriting.CharsEdited5s" units="chars"
-    expires_after="2021-03-01">
+    expires_after="2021-05-02">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>

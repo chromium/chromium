@@ -527,7 +527,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.DnsConfig.SecureDnsMode" enum="SecureDnsModeDetails"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>ericorth@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
@@ -881,7 +881,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.InsecureDnsTask.FailureTime" units="ms"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>ericorth@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -1092,7 +1092,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.SecureDnsTask.DnsModeAutomatic.FailureTime" units="ms"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>ericorth@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
@@ -1103,7 +1103,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.SecureDnsTask.DnsModeSecure.FailureTime" units="ms"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>ericorth@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
@@ -1134,7 +1134,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Net.DNS.UI.DropdownSelectionEvent"
-    enum="DohProviderId" expires_after="2021-02-28">
+    enum="DohProviderId" expires_after="2021-05-02">
 <!-- Name completed by histogram_suffixes
    name="DnsDropdownSelectionEvent" -->
 
@@ -1147,7 +1147,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.UI.ProbeAttemptSuccess" enum="Boolean"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>ericorth@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
@@ -1157,7 +1157,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.UI.ValidationAttemptSuccess" enum="Boolean"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>ericorth@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
@@ -1167,7 +1167,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.UpgradeConfig.DotUpgradeSucceeded" enum="Boolean"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>ericorth@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
@@ -1177,7 +1177,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.UpgradeConfig.HasPublicInsecureNameserver"
-    enum="Boolean" expires_after="2021-02-28">
+    enum="Boolean" expires_after="2021-05-02">
   <owner>ericorth@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
@@ -1188,7 +1188,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.UpgradeConfig.Ineligible.DohSpecified" enum="Boolean"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>ericorth@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
@@ -1209,7 +1209,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.UpgradeConfig.InsecureUpgradeSucceeded" enum="Boolean"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>ericorth@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
@@ -4824,7 +4824,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.URLRequest.ReferrerHasInformativePath"
-    enum="BooleanPathIsInformative" expires_after="2021-02-28">
+    enum="BooleanPathIsInformative" expires_after="2021-05-02">
 <!-- Name completed by histogram_suffixes name="ReferrerPolicySameOrigin" -->
 
   <owner>davidvc@chromium.org</owner>
@@ -4838,7 +4838,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.URLRequest.ReferrerPolicyForRequest"
-    enum="URLRequestReferrerPolicy" expires_after="2021-02-28">
+    enum="URLRequestReferrerPolicy" expires_after="2021-05-02">
 <!-- Name completed by histogram_suffixes name="ReferrerPolicySameOrigin" -->
 
   <owner>davidvc@chromium.org</owner>

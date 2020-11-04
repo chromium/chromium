@@ -95,7 +95,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.HypervPresent" enum="BooleanEnabled"
-    expires_after="2020-12-31">
+    expires_after="2021-05-02">
   <owner>rkc@chromium.org</owner>
   <owner>rockot@chromium.org</owner>
   <summary>
@@ -275,7 +275,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.ProcessorFamily" enum="ProcessorFamily"
-    expires_after="2020-12-31">
+    expires_after="2021-05-02">
   <owner>rkc@chromium.org</owner>
   <owner>rockot@chromium.org</owner>
   <summary>
@@ -287,7 +287,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.ProcessorVirtualizationFirmwareEnabled"
-    enum="BooleanEnabled" expires_after="2020-12-31">
+    enum="BooleanEnabled" expires_after="2021-05-02">
   <owner>rkc@chromium.org</owner>
   <owner>rockot@chromium.org</owner>
   <summary>
@@ -302,7 +302,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.TmpFileDeleter.FailCount" units="files"
-    expires_after="2021-01-19">
+    expires_after="2021-05-02">
   <owner>grt@chromium.org</owner>
   <owner>etiennep@chromium.org</owner>
   <summary>
@@ -316,7 +316,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.TmpFileDeleter.SuccessCount" units="files"
-    expires_after="2021-01-19">
+    expires_after="2021-05-02">
   <owner>grt@chromium.org</owner>
   <owner>etiennep@chromium.org</owner>
   <summary>

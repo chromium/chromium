@@ -332,7 +332,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Sync.DeviceCount2" units="units" expires_after="2021-02-28">
+<histogram name="Sync.DeviceCount2" units="units" expires_after="2021-05-02">
   <owner>mastiz@chromium.org</owner>
   <owner>jkrcal@chromium.org</owner>
   <summary>
@@ -543,7 +543,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Sync.ModelTypeMemoryKB" units="KB"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>mastiz@chromium.org</owner>
   <owner>jkrcal@chromium.org</owner>
   <summary>

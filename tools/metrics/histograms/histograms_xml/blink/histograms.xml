@@ -433,7 +433,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.CompositingAssignments.UpdateTime" units="microseconds"
-    expires_after="2021-03-01">
+    expires_after="2021-05-02">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
   <owner>schenney@chromium.org</owner>
@@ -448,7 +448,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.CompositingCommit.UpdateTime" units="microseconds"
-    expires_after="2021-03-01">
+    expires_after="2021-05-02">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
   <owner>schenney@chromium.org</owner>
@@ -467,7 +467,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.CompositingInputs.UpdateTime" units="microseconds"
-    expires_after="2021-03-01">
+    expires_after="2021-05-02">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
   <owner>schenney@chromium.org</owner>
@@ -573,7 +573,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Image codec inferred during decode.</summary>
 </histogram>
 
-<histogram name="Blink.EffectiveZoom" units="%" expires_after="2021-03-01">
+<histogram name="Blink.EffectiveZoom" units="%" expires_after="2021-05-02">
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -807,7 +807,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.HandleInputEvents.UpdateTime" units="microseconds"
-    expires_after="2021-03-01">
+    expires_after="2021-05-02">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
   <owner>schenney@chromium.org</owner>
@@ -955,7 +955,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.ImageDecoders.IncrementalDecodeNeeded"
-    enum="IncrementalDecodeNeeded" expires_after="2021-01-31">
+    enum="IncrementalDecodeNeeded" expires_after="2021-05-02">
   <owner>mbarowsky@chromium.org</owner>
   <owner>andrescj@chromium.org</owner>
   <summary>
@@ -1027,7 +1027,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.ImplCompositorCommit.UpdateTime" units="microseconds"
-    expires_after="2021-03-01">
+    expires_after="2021-05-02">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
   <owner>schenney@chromium.org</owner>
@@ -1106,7 +1106,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Layout.UpdateTime" units="microseconds"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
   <owner>schenney@chromium.org</owner>
@@ -1584,7 +1584,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Script.ForceDeferredScripts.Mainframe" units="count"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>dougarnett@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
   <summary>
@@ -1596,7 +1596,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Script.ForceDeferredScripts.Mainframe.External"
-    units="count" expires_after="2021-02-28">
+    units="count" expires_after="2021-05-02">
   <owner>dougarnett@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
   <summary>
@@ -1630,7 +1630,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Script.SchedulingType" enum="ScriptSchedulingType"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>kouhei@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
   <summary>
@@ -2108,7 +2108,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold"
-    enum="NQEEffectiveConnectionType" expires_after="2021-02-21">
+    enum="NQEEffectiveConnectionType" expires_after="2021-05-02">
   <owner>sclittle@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>

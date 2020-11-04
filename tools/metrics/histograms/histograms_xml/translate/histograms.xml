@@ -82,7 +82,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.CLD3.TopLanguageEvaluationDuration" units="ms"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -392,7 +392,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.MenuTranslation.UnavailableReasons"
-    enum="MenuTranslationUnavailableReason" expires_after="2021-01-31">
+    enum="MenuTranslationUnavailableReason" expires_after="2021-05-02">
   <owner>cuianthony@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

@@ -111,7 +111,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.OptInFlow.GetSettingsRequestTime" units="ms"
-    expires_after="2020-12-31">
+    expires_after="2021-05-02">
   <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>

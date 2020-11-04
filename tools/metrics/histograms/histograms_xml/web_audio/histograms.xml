@@ -63,7 +63,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.AudioContext.HardwareSampleRate" units="Hz"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>rtoy@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <summary>
@@ -106,7 +106,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.AudioDestination.CallbackBufferSize" units="units"
-    expires_after="2021-01-06">
+    expires_after="2021-05-02">
   <owner>rtoy@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <summary>

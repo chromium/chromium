@@ -194,7 +194,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.FormatFileSystemType"
-    enum="FileManagerFormatFileSystemType" expires_after="2021-02-28">
+    enum="FileManagerFormatFileSystemType" expires_after="2021-05-02">
   <owner>austinct@chromium.org</owner>
   <summary>
     Chrome OS File Browser: this records the filesystem selected when formatting

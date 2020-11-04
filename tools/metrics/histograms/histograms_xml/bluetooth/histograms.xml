@@ -44,7 +44,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Bluetooth.Android.GATTConnection.Success.Result"
-    enum="AndroidGATTConnectionErrorCodes" expires_after="2021-01-31">
+    enum="AndroidGATTConnectionErrorCodes" expires_after="2021-05-02">
   <owner>odejesush@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>

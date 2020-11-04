@@ -290,7 +290,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.BetterAuth.OptOutCalled.FromSettingsPage"
-    enum="BooleanHit" expires_after="2021-02-28">
+    enum="BooleanHit" expires_after="2021-05-02">
   <owner>jsaul@google.com</owner>
   <owner>manasverma@google.com</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -324,7 +324,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.OptedIn.Duration"
-    units="ms" expires_after="2021-02-21">
+    units="ms" expires_after="2021-05-02">
   <owner>jsaul@google.com</owner>
   <owner>manasverma@google.com</owner>
   <owner>autofill-auth-team@google.com</owner>

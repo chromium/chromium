@@ -354,7 +354,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.ContentVerification.ComputeHashesOnInstallResult"
-    enum="BooleanSuccess" expires_after="2021-02-28">
+    enum="BooleanSuccess" expires_after="2021-05-02">
   <owner>burunduk@chromium.org</owner>
   <owner>lazyboy@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -370,7 +370,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.ContentVerification.ComputeHashesOnInstallTime"
-    units="ms" expires_after="2021-02-28">
+    units="ms" expires_after="2021-05-02">
   <owner>burunduk@chromium.org</owner>
   <owner>lazyboy@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -577,7 +577,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.CreateVerifiedMatcherTime"
-    units="ms" expires_after="2021-02-28">
+    units="ms" expires_after="2021-05-02">
   <owner>karandeepb@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -615,7 +615,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.IndexAndPersistRulesTime"
-    units="ms" expires_after="2020-12-30">
+    units="ms" expires_after="2021-05-02">
   <owner>karandeepb@chromium.org</owner>
   <owner>lazyboy@chromium.org</owner>
   <summary>
@@ -637,7 +637,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.LoadRulesetResult"
-    enum="LoadRulesetResult" expires_after="2021-02-28">
+    enum="LoadRulesetResult" expires_after="2021-05-02">
   <owner>karandeepb@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1499,7 +1499,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsFromCache"
-    enum="BooleanCacheHit" expires_after="2021-01-24">
+    enum="BooleanCacheHit" expires_after="2021-05-02">
   <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>snijhara@google.com</owner>

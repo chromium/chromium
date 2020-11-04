@@ -127,7 +127,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.AppInstalledReason" enum="InstallationCounterReasonEnum"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>robsc@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <summary>
@@ -889,7 +889,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Provisioning.TimeDelta.Failure" units="ms"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
 <!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
 
   <owner>alexchau@google.com</owner>
@@ -900,7 +900,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Provisioning.TimeDelta.Success" units="ms"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
 <!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
 
   <owner>alexchau@google.com</owner>

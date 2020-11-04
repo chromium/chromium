@@ -1398,7 +1398,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.Omnibox.InvalidMatch" enum="MatchResult"
-    expires_after="2021-02-27">
+    expires_after="2021-05-02">
   <owner>ender@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
@@ -2871,7 +2871,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AndroidSms.NumAttemptsForSuccessfulInstallation"
-    units="attempts" expires_after="2021-02-02">
+    units="attempts" expires_after="2021-05-02">
   <owner>azeemarshad@chromium.org</owner>
   <owner>jonmann@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>

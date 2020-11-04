@@ -544,7 +544,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.Parallelizable.FileSize" units="KB"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>The download size of a parallelizable download.</summary>
@@ -777,7 +777,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.Service.Files.FreeDiskSpace" units="%"
-    expires_after="2021-01-17">
+    expires_after="2021-05-02">
   <owner>xingliu@chromium.org</owner>
   <summary>
     The percentage of free disk space to total disk space. Recorded during

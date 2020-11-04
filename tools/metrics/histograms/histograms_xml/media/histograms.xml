@@ -316,7 +316,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.InitError" enum="Hresult"
-    expires_after="2021-01-01">
+    expires_after="2021-05-02">
   <owner>tommi@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -327,7 +327,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.InitError.FormatRelated"
-    enum="AudioStreamFormatRelatedInitError" expires_after="2021-01-01">
+    enum="AudioStreamFormatRelatedInitError" expires_after="2021-05-02">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -3051,7 +3051,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.RTCVideoDecoderInitializationLatencyMs" units="ms"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -3071,7 +3071,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.RTCVideoDecoderReinitializationLatencyMs" units="ms"
-    expires_after="2020-12-26">
+    expires_after="2021-05-02">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -3590,7 +3590,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoCapture.Error" enum="VideoCaptureError"
-    expires_after="2021-03-01">
+    expires_after="2021-05-02">
   <owner>mcasas@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
@@ -3604,7 +3604,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoCapture.FrameDrop"
-    enum="VideoCaptureFrameDropReason" expires_after="2021-03-01">
+    enum="VideoCaptureFrameDropReason" expires_after="2021-05-02">
   <owner>mcasas@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
@@ -3621,7 +3621,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoCapture.FrameRate" units="fps"
-    expires_after="2021-03-01">
+    expires_after="2021-05-02">
   <owner>mcasas@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
@@ -4574,7 +4574,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.PresentationRequest.AvailabilityUrlType"
-    enum="PresentationUrlType" expires_after="2021-02-01">
+    enum="PresentationUrlType" expires_after="2021-05-02">
   <owner>takumif@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -4803,7 +4803,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Dialog.Paint" units="ms"
-    expires_after="2021-02-01">
+    expires_after="2021-05-02">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>

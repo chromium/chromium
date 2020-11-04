@@ -123,7 +123,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.CompileMicroSeconds" units="microseconds"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>yangguo@chromium.org</owner>
   <summary>
     Time spent in V8 compiler (full codegen) excluding parser.
@@ -765,7 +765,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.MemoryHeapSampleTotalCommitted" units="KB"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>hpayer@chromium.org</owner>
   <summary>
     The total size of committed memory used by V8 after each GC in KB.

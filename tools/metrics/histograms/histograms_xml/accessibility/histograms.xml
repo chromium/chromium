@@ -485,7 +485,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.iOS.NewLargerTextCategory" enum="BooleanHit"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>gambard@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>

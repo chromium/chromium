@@ -892,7 +892,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.TokenFetchStatus"
-    enum="GoogleServiceAuthError" expires_after="2021-02-28">
+    enum="GoogleServiceAuthError" expires_after="2021-05-02">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>

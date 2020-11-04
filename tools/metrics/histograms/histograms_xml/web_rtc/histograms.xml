@@ -972,7 +972,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Call.TimeReceivingVideoRtpPacketsInSeconds" units="s"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>saza@chromium.org</owner>
   <summary>
     The amount of time between the arrival of the first and last video RTP
@@ -1518,7 +1518,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.SentVideoTrackDuration" units="ms"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>perkj@chromium.org</owner>
   <summary>
     Durations of video tracks sent over a PeerConnection. The stopwatch starts

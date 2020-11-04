@@ -488,7 +488,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Omnibox.MatchStability.AsyncMatchChange2" units="position"
-    expires_after="2021-03-01">
+    expires_after="2021-05-02">
   <owner>tommycli@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -518,7 +518,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Omnibox.MatchStability.AsyncMatchChangedInAnyPosition"
-    enum="BooleanChanged" expires_after="2021-03-01">
+    enum="BooleanChanged" expires_after="2021-05-02">
   <owner>tommycli@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>

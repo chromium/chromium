@@ -761,7 +761,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.Modules.Impression" units="ms"
-    expires_after="2021-01-01">
+    expires_after="2021-05-02">
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -775,7 +775,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.Modules.Loaded" units="ms"
-    expires_after="2021-01-01">
+    expires_after="2021-05-02">
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -911,7 +911,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.Promo.EnhancedProtectionPromo"
-    enum="AndroidEnhancedProtectionPromoAction" expires_after="2021-02-01">
+    enum="AndroidEnhancedProtectionPromoAction" expires_after="2021-05-02">
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-core@google.com</owner>
   <summary>

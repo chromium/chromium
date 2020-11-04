@@ -648,7 +648,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.ThirdParty.Origins.LocalStorageAccess2"
-    units="Count" expires_after="2021-01-22">
+    units="Count" expires_after="2021-05-02">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -869,7 +869,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Experimental.ClickInputBurst" units="count"
-    expires_after="2021-03-01">
+    expires_after="2021-05-02">
   <owner>dougarnett@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <owner>tdresser@chromium.org</owner>

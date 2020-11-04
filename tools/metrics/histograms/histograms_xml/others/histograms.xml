@@ -344,7 +344,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AnchorElementMetrics.Clicked.OnDSE.SameHost"
-    enum="BooleanAnchorElementSameHost" expires_after="2021-02-28">
+    enum="BooleanAnchorElementSameHost" expires_after="2021-05-02">
   <owner>tbansal@chromium.org</owner>
   <summary>
     True if the target link of the anchor element has the same host as the root
@@ -2819,7 +2819,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ContextMenu.SelectedOptionDesktop"
-    enum="ContextMenuOptionDesktop" expires_after="2021-02-28">
+    enum="ContextMenuOptionDesktop" expires_after="2021-05-02">
   <owner>avi@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <summary>
@@ -2955,7 +2955,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Conversions.RegisteredConversionsPerPage" units="conversions"
-    expires_after="2021-01-30">
+    expires_after="2021-05-02">
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
@@ -3780,7 +3780,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Discarding.WinOSPressureSignals.AvailableMemoryMbOnLowMemoryNotification"
-    units="MB" expires_after="2021-01-31">
+    units="MB" expires_after="2021-05-02">
   <owner>sebmarchand@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -3790,7 +3790,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Discarding.WinOSPressureSignals.LowMemorySessionLength"
-    units="ms" expires_after="2021-01-31">
+    units="ms" expires_after="2021-05-02">
   <owner>sebmarchand@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -3801,7 +3801,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Discarding.WinOSPressureSignals.PressureLevelOnLowMemoryNotification"
-    enum="MemoryPressureLevel" expires_after="2021-01-31">
+    enum="MemoryPressureLevel" expires_after="2021-05-02">
   <owner>sebmarchand@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -6062,7 +6062,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Hardware.Concurrency" units="CPU cores"
-    expires_after="2021-02-21">
+    expires_after="2021-05-02">
   <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -6092,7 +6092,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Hardware.TotalDiskSpace" units="GB" expires_after="2021-02-21">
+<histogram name="Hardware.TotalDiskSpace" units="GB" expires_after="2021-05-02">
   <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -6102,7 +6102,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="HeapProfiling.ProfiledProcess.Type"
-    enum="HeapProfilingProcessType" expires_after="2021-02-25">
+    enum="HeapProfilingProcessType" expires_after="2021-05-02">
   <owner>erikchen@chromium.org</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
@@ -6286,7 +6286,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="HttpCache.AccessToDone" units="ms" expires_after="2021-02-28">
+<histogram name="HttpCache.AccessToDone" units="ms" expires_after="2021-05-02">
   <owner>morlovich@chromium.org</owner>
   <summary>
     For every http cache transaction with a pattern (see HttpCache.Pattern), the
@@ -6493,7 +6493,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ImportantFile.FileDeleteNoRetryError" enum="PlatformFileError"
-    expires_after="2021-01-19">
+    expires_after="2021-05-02">
   <owner>grt@chromium.org</owner>
   <owner>xaerox@yandex-team.ru</owner>
   <summary>
@@ -6512,7 +6512,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ImportantFile.FileDeleteRetrySuccessCount"
-    units="attept number" expires_after="2021-01-19">
+    units="attept number" expires_after="2021-05-02">
   <owner>grt@chromium.org</owner>
   <owner>xaerox@yandex-team.ru</owner>
   <summary>
@@ -9473,7 +9473,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OccludedWindowMouseEvents" units="events"
-    expires_after="2021-02-01">
+    expires_after="2021-05-02">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
@@ -9523,7 +9523,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OSCrypt.Win.KeyDecryptionError" enum="WinGetLastError"
-    expires_after="2021-01-01">
+    expires_after="2021-05-02">
   <owner>wfh@chromium.org</owner>
   <owner>forshaw@chromium.org</owner>
   <summary>
@@ -9593,7 +9593,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OSX.NativeShare" units="BooleanSuccess"
-    expires_after="2021-03-01">
+    expires_after="2021-05-02">
   <owner>lgrey@chromium.org</owner>
   <summary>
     Whether the user successfully shared via a native sharing extensions after
@@ -9966,7 +9966,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PDF.LinkHighlightOverlapsInPage" units="overlaps"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>thestig@chromium.org</owner>
   <owner>ankk@microsoft.com</owner>
   <owner>mohitb@microsoft.com</owner>
@@ -10876,7 +10876,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Process.Sandbox.Launch.Error" enum="WinGetLastError"
-    expires_after="2021-01-02">
+    expires_after="2021-05-02">
   <owner>forshaw@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
@@ -12231,7 +12231,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SBIRS.UploadResult" enum="ReportProcessingResult"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>caitkp@google.com</owner>
   <summary>
     The result of an attempted report upload by the safe browsing incident
@@ -12414,7 +12414,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Servicification.Startup2" enum="ServicificationStartupMode"
-    expires_after="2021-02-16">
+    expires_after="2021-05-02">
   <owner>hanxi@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <owner>hnakashima@chromium.org</owner>
@@ -12427,7 +12427,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Servicification.Startup3" enum="ServicificationStartupMode"
-    expires_after="2021-02-16">
+    expires_after="2021-05-02">
   <owner>hanxi@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <owner>hnakashima@chromium.org</owner>
@@ -13472,7 +13472,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram base="true" name="Spellcheck.Windows.ChromeLocalesSupport"
-    units="locales" expires_after="2021-02-28">
+    units="locales" expires_after="2021-05-02">
   <owner>gujen@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -13492,7 +13492,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram base="true" name="Spellcheck.Windows.SpellcheckLocalesSupport"
-    units="locales" expires_after="2021-02-28">
+    units="locales" expires_after="2021-05-02">
   <owner>gujen@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -13508,7 +13508,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram base="true" name="Spellcheck.Windows.SpellcheckRequestDuration"
-    units="ms" expires_after="2021-02-28">
+    units="ms" expires_after="2021-05-02">
   <owner>gujen@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -13522,7 +13522,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram base="true" name="Spellcheck.Windows.SuggestionGatheringDuration"
-    units="ms" expires_after="2021-02-28">
+    units="ms" expires_after="2021-05-02">
   <owner>gujen@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -15200,7 +15200,7 @@ should be kept until we use this API.  -->
   </summary>
 </histogram>
 
-<histogram name="UI.DeviceScale" units="%" expires_after="2021-01-03">
+<histogram name="UI.DeviceScale" units="%" expires_after="2021-05-02">
   <owner>bsep@chromium.org</owner>
   <summary>
     The device scales available on the system at startup. A system may report
@@ -15378,7 +15378,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="UsageStats.Events" enum="UsageStatsEvents"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>pnoland@chromium.org</owner>
   <owner>fgorski@chromium.org</owner>
   <summary>
@@ -16988,7 +16988,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WindowOcclusionChanged" enum="WindowOcclusionState"
-    expires_after="2021-02-01">
+    expires_after="2021-05-02">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>

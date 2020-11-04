@@ -148,7 +148,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Browser.PaintPreview.Player.CompositorProcessStartupTime"
-    units="ms" expires_after="2021-02-28">
+    units="ms" expires_after="2021-05-02">
   <owner>ckitagawa@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -223,7 +223,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Browser.PaintPreview.TabbedPlayer.SnackbarCount" units="units"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>ckitagawa@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -256,7 +256,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Browser.PaintPreview.TabService.DiskUsageAtStartup" units="KB"
-    expires_after="2021-02-28">
+    expires_after="2021-05-02">
   <owner>ckitagawa@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -693,7 +693,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BrowserSwitcher.Decision" enum="BooleanBrowserSwitch"
-    expires_after="2020-12-18">
+    expires_after="2021-05-02">
   <owner>nicolaso@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -705,7 +705,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BrowserSwitcher.DecisionTime" units="ms"
-    expires_after="2020-12-18">
+    expires_after="2021-05-02">
   <owner>nicolaso@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -757,7 +757,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BrowserSwitcher.IeemSitelistSize" units="rules"
-    expires_after="2020-12-18">
+    expires_after="2021-05-02">
   <owner>nicolaso@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
