@@ -21,7 +21,6 @@
 #include "components/media_message_center/media_notification_util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "services/media_session/public/cpp/util.h"
-#include "services/media_session/public/mojom/media_session.mojom.h"
 #include "services/media_session/public/mojom/media_session_service.mojom.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -140,11 +139,20 @@ const gfx::VectorIcon& GetVectorIconForMediaAction(MediaSessionAction action) {
 // MediaActionButton is an image button with a custom ink drop mask.
 class MediaActionButton : public views::ImageButton {
  public:
-  MediaActionButton(views::ButtonListener* listener,
+  MediaActionButton(LockScreenMediaControlsView* view,
                     int icon_size,
                     MediaSessionAction action,
                     const base::string16& accessible_name)
-      : views::ImageButton(listener), icon_size_(icon_size) {
+      : views::ImageButton(base::BindRepeating(
+            // Handle dynamically-updated button tags without rebinding.
+            [](LockScreenMediaControlsView* controls,
+               MediaActionButton* button) {
+              controls->ButtonPressed(
+                  media_message_center::GetActionFromButtonTag(*button));
+            },
+            view,
+            this)),
+        icon_size_(icon_size) {
     SetInkDropMode(views::Button::InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
     SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
@@ -634,21 +642,6 @@ void LockScreenMediaControlsView::OnImplicitAnimationsCompleted() {
   Dismiss();
 }
 
-void LockScreenMediaControlsView::ButtonPressed(views::Button* sender,
-                                                const ui::Event& event) {
-  if (!base::Contains(enabled_actions_,
-                      media_message_center::GetActionFromButtonTag(*sender)) ||
-      !media_session_id_.has_value()) {
-    return;
-  }
-
-  auto action = media_message_center::GetActionFromButtonTag(*sender);
-
-  base::UmaHistogramEnumeration(kMediaControlsUserActionHistogramName, action);
-
-  media_session::PerformMediaSessionAction(action, media_controller_remote_);
-}
-
 void LockScreenMediaControlsView::OnGestureEvent(ui::GestureEvent* event) {
   gfx::Point point_in_screen = event->location();
   ConvertPointToScreen(this, &point_in_screen);
@@ -685,6 +678,16 @@ void LockScreenMediaControlsView::OnGestureEvent(ui::GestureEvent* event) {
 
 void LockScreenMediaControlsView::OnSuspend() {
   Hide(HideReason::kDeviceSleep);
+}
+
+void LockScreenMediaControlsView::ButtonPressed(
+    media_session::mojom::MediaSessionAction action) {
+  if (base::Contains(enabled_actions_, action) &&
+      media_session_id_.has_value()) {
+    base::UmaHistogramEnumeration(kMediaControlsUserActionHistogramName,
+                                  action);
+    media_session::PerformMediaSessionAction(action, media_controller_remote_);
+  }
 }
 
 void LockScreenMediaControlsView::FlushForTesting() {

@@ -540,8 +540,7 @@ class LoginAuthUserView::FingerprintView : public views::View {
 };
 
 // Consists of challenge-response icon view and a label.
-class LoginAuthUserView::ChallengeResponseView : public views::View,
-                                                 public views::ButtonListener {
+class LoginAuthUserView::ChallengeResponseView : public views::View {
  public:
   enum class State { kInitial, kAuthenticating, kFailure };
 
@@ -555,7 +554,9 @@ class LoginAuthUserView::ChallengeResponseView : public views::View,
     layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
     auto arrow_button_view = std::make_unique<ArrowButtonView>(
-        /*listener=*/this, kChallengeResponseArrowSizeDp);
+        base::BindRepeating(&ChallengeResponseView::ArrowButtonPressed,
+                            base::Unretained(this)),
+        kChallengeResponseArrowSizeDp);
     arrow_button_view->SetInstallFocusRingOnFocus(true);
     views::InstallCircleHighlightPathGenerator(arrow_button_view.get());
     arrow_button_ = AddChildView(std::move(arrow_button_view));
@@ -587,17 +588,6 @@ class LoginAuthUserView::ChallengeResponseView : public views::View,
   }
 
   ~ChallengeResponseView() override = default;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    if (sender == arrow_button_) {
-      // Ignore further clicks while handling the previous one.
-      if (state_ != State::kAuthenticating)
-        on_start_tap_.Run();
-    } else {
-      NOTREACHED();
-    }
-  }
 
   void SetState(State state) {
     if (state_ == state)
@@ -654,6 +644,12 @@ class LoginAuthUserView::ChallengeResponseView : public views::View,
         return l10n_util::GetStringUTF16(
             IDS_ASH_LOGIN_SMART_CARD_SIGN_IN_FAILURE_MESSAGE);
     }
+  }
+
+  void ArrowButtonPressed() {
+    // Ignore further clicks while handling the previous one.
+    if (state_ != State::kAuthenticating)
+      on_start_tap_.Run();
   }
 
   base::RepeatingClosure on_start_tap_;
@@ -1035,8 +1031,9 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       gfx::Insets(kPinPasswordToggleButtonPaddingTop, 0, 0, 0)));
   pin_password_toggle_ =
       toggle_container->AddChildView(std::make_unique<SystemLabelButton>(
-          this, GetPinPasswordToggleText(),
-          SystemLabelButton::DisplayType::DEFAULT,
+          base::BindRepeating(&LoginAuthUserView::OnSwitchButtonClicked,
+                              base::Unretained(this)),
+          GetPinPasswordToggleText(), SystemLabelButton::DisplayType::DEFAULT,
           /*multiline*/ false));
   pin_password_toggle_->SetMaxSize(
       gfx::Size(/*ignored*/ 0, kPinPasswordToggleButtonHeight));
@@ -1067,7 +1064,9 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
         l10n_util::GetStringUTF16(IDS_ASH_LOCK_SCREEN_VERIFY_ACCOUNT_MESSAGE);
   }
   auto online_sign_in_message = std::make_unique<SystemLabelButton>(
-      this, button_message, SystemLabelButton::DisplayType::ALERT_WITH_ICON,
+      base::BindRepeating(&LoginAuthUserView::OnOnlineSignInMessageTap,
+                          base::Unretained(this)),
+      button_message, SystemLabelButton::DisplayType::ALERT_WITH_ICON,
       /*multiline*/ false);
   online_sign_in_message_ = online_sign_in_message.get();
 
@@ -1505,16 +1504,6 @@ void LoginAuthUserView::RequestFocus() {
     pin_input_view_->RequestFocus();
   else
     password_view_->RequestFocus();
-}
-
-void LoginAuthUserView::ButtonPressed(views::Button* sender,
-                                      const ui::Event& event) {
-  DCHECK(sender == online_sign_in_message_ || sender == pin_password_toggle_);
-  if (sender == online_sign_in_message_) {
-    OnOnlineSignInMessageTap();
-  } else if (sender == pin_password_toggle_) {
-    OnSwitchButtonClicked();
-  }
 }
 
 void LoginAuthUserView::OnAuthSubmit(const base::string16& password) {

@@ -17,8 +17,7 @@ struct VectorIcon;
 
 namespace ash {
 
-class BottomStatusIndicator : public views::LabelButton,
-                              public views::ButtonListener {
+class BottomStatusIndicator : public views::LabelButton {
  public:
   using TappedCallback = base::RepeatingClosure;
 
@@ -32,14 +31,10 @@ class BottomStatusIndicator : public views::LabelButton,
 
   void set_role_for_accessibility(ax::mojom::Role role) { role_ = role; }
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
-  TappedCallback on_tapped_callback_;
   ax::mojom::Role role_ = ax::mojom::Role::kStaticText;
 };
 

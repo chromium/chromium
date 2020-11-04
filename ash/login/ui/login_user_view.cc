@@ -308,8 +308,8 @@ class LoginUserView::UserLabel : public NonAccessibleView {
 // have any children (ie, the dropdown button).
 class LoginUserView::TapButton : public views::Button {
  public:
-  explicit TapButton(LoginUserView* parent)
-      : views::Button(parent), parent_(parent) {}
+  TapButton(PressedCallback callback, LoginUserView* parent)
+      : views::Button(std::move(callback)), parent_(parent) {}
   ~TapButton() override = default;
 
   // views::Button:
@@ -413,7 +413,8 @@ LoginUserView::LoginUserView(
       2 * (kDistanceBetweenUsernameAndDropdownDp + kDropdownIconSizeDp);
   user_label_ = new UserLabel(style, label_width);
   if (show_dropdown) {
-    dropdown_ = new LoginButton(this);
+    dropdown_ = new LoginButton(base::BindRepeating(
+        &LoginUserView::DropdownButtonPressed, base::Unretained(this)));
     dropdown_->SetHasInkDropActionOnClick(false);
     dropdown_->SetPreferredSize(
         gfx::Size(kDropdownIconSizeDp, kDropdownIconSizeDp));
@@ -422,7 +423,7 @@ LoginUserView::LoginUserView(
         gfx::CreateVectorIcon(kLockScreenDropdownIcon, gfx::kGoogleGrey200));
     dropdown_->SetFocusBehavior(FocusBehavior::ALWAYS);
   }
-  tap_button_ = new TapButton(this);
+  tap_button_ = new TapButton(on_tap_, this);
   SetTapEnabled(true);
 
   switch (style) {
@@ -554,44 +555,35 @@ void LoginUserView::RequestFocus() {
   tap_button_->RequestFocus();
 }
 
-void LoginUserView::ButtonPressed(views::Button* sender,
-                                  const ui::Event& event) {
-  // Handle click on the dropdown arrow.
-  if (sender == dropdown_) {
-    DCHECK(dropdown_);
-    DCHECK(menu_);
+void LoginUserView::OnHover(bool has_hover) {
+  UpdateOpacity();
+}
 
-    // If menu is showing, just close it
-    if (menu_->GetVisible()) {
-      menu_->Hide();
-      return;
-    }
+void LoginUserView::DropdownButtonPressed() {
+  DCHECK(dropdown_);
+  DCHECK(menu_);
 
-    bool opener_focused =
-        menu_->GetBubbleOpener() && menu_->GetBubbleOpener()->HasFocus();
-
-    if (!menu_->parent())
-      login_views_utils::GetBubbleContainer(this)->AddChildView(menu_);
-
-    // Reset state in case the remove-user button was clicked once previously.
-    menu_->ResetState();
-    menu_->Show();
-
-    // If the menu was opened by pressing Enter on the focused dropdown, focus
-    // should automatically go to the remove-user button (for keyboard
-    // accessibility).
-    if (opener_focused)
-      menu_->RequestFocus();
-
+  // If menu is showing, just close it
+  if (menu_->GetVisible()) {
+    menu_->Hide();
     return;
   }
 
-  // Run generic on_tap handler for any other click.
-  on_tap_.Run();
-}
+  bool opener_focused =
+      menu_->GetBubbleOpener() && menu_->GetBubbleOpener()->HasFocus();
 
-void LoginUserView::OnHover(bool has_hover) {
-  UpdateOpacity();
+  if (!menu_->parent())
+    login_views_utils::GetBubbleContainer(this)->AddChildView(menu_);
+
+  // Reset state in case the remove-user button was clicked once previously.
+  menu_->ResetState();
+  menu_->Show();
+
+  // If the menu was opened by pressing Enter on the focused dropdown, focus
+  // should automatically go to the remove-user button (for keyboard
+  // accessibility).
+  if (opener_focused)
+    menu_->RequestFocus();
 }
 
 void LoginUserView::UpdateCurrentUserState() {

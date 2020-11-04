@@ -51,12 +51,6 @@ views::View* LoginPublicAccountUserView::TestApi::arrow_button() const {
   return view_->arrow_button_;
 }
 
-void LoginPublicAccountUserView::TestApi::OnArrowTap() const {
-  view_->ButtonPressed(views::Button::AsButton(arrow_button()),
-                       ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(),
-                                      gfx::PointF(), base::TimeTicks(), 0, 0));
-}
-
 LoginPublicAccountUserView::Callbacks::Callbacks() = default;
 
 LoginPublicAccountUserView::Callbacks::Callbacks(const Callbacks& other) =
@@ -79,8 +73,10 @@ LoginPublicAccountUserView::LoginPublicAccountUserView(
       base::BindRepeating(&LoginPublicAccountUserView::OnUserViewTap,
                           base::Unretained(this)),
       base::RepeatingClosure(), base::RepeatingClosure());
-  auto arrow_button =
-      std::make_unique<ArrowButtonView>(this, kArrowButtonSizeDp);
+  auto arrow_button = std::make_unique<ArrowButtonView>(
+      base::BindRepeating(&LoginPublicAccountUserView::ArrowButtonPressed,
+                          base::Unretained(this)),
+      kArrowButtonSizeDp);
   arrow_button->SetBackgroundColor(kArrowButtonBackground);
   arrow_button->SetFocusPainter(nullptr);
 
@@ -150,18 +146,14 @@ gfx::Size LoginPublicAccountUserView::CalculatePreferredSize() const {
   return size;
 }
 
-void LoginPublicAccountUserView::ButtonPressed(views::Button* sender,
-                                               const ui::Event& event) {
-  if (sender == arrow_button_) {
-    DCHECK(arrow_button_);
-    // If the pod isn't active, activate it first.
-    if (!auth_enabled_) {
-      OnUserViewTap();
-    }
+void LoginPublicAccountUserView::ArrowButtonPressed() {
+  DCHECK(arrow_button_);
+  // If the pod isn't active, activate it first.
+  if (!auth_enabled_)
+    OnUserViewTap();
 
-    DCHECK(auth_enabled_);
-    on_public_account_tap_.Run();
-  }
+  DCHECK(auth_enabled_);
+  on_public_account_tap_.Run();
 }
 
 void LoginPublicAccountUserView::OnUserViewTap() {

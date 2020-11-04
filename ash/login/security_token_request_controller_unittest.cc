@@ -18,6 +18,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/test/button_test_api.h"
 
 namespace ash {
 
@@ -45,7 +46,7 @@ class SecurityTokenRequestControllerTest : public LoginTestBase {
   void SimulateButtonPress(views::Button* button) {
     ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                          ui::EventTimeForNow(), 0, 0);
-    view_->ButtonPressed(button, event);
+    views::test::ButtonTestApi(button).NotifyClick(event);
   }
 
   void StartRequest(int attempts_left = -1) {

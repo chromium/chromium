@@ -71,8 +71,8 @@ class TrappedFocusSearch : public views::FocusSearch {
 // A button that holds a child view.
 class RemoveUserButton : public SystemLabelButton {
  public:
-  RemoveUserButton(views::ButtonListener* listener, LoginUserMenuView* bubble)
-      : SystemLabelButton(listener,
+  RemoveUserButton(PressedCallback callback, LoginUserMenuView* bubble)
+      : SystemLabelButton(std::move(callback),
                           l10n_util::GetStringUTF16(
                               IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_ACCESSIBLE_NAME),
                           SystemLabelButton::DisplayType::DEFAULT,
@@ -213,7 +213,10 @@ LoginUserMenuView::LoginUserMenuView(
     remove_user_confirm_data_->AddChildView(
         login_views_utils::CreateBubbleLabel(part2, gfx::kGoogleGrey200, this));
 
-    remove_user_button_ = new RemoveUserButton(this, this);
+    remove_user_button_ = new RemoveUserButton(
+        base::BindRepeating(&LoginUserMenuView::RemoveUserButtonPressed,
+                            base::Unretained(this)),
+        this);
     remove_user_button_->SetID(kUserMenuRemoveUserButtonIdForTest);
     AddChildView(remove_user_button_);
 
@@ -243,37 +246,6 @@ void LoginUserMenuView::ResetState() {
 
 LoginButton* LoginUserMenuView::GetBubbleOpener() const {
   return bubble_opener_;
-}
-
-void LoginUserMenuView::ButtonPressed(views::Button* sender,
-                                      const ui::Event& event) {
-  // Show confirmation warning. The user has to click the button again before
-  // we actually allow the exit.
-  if (!remove_user_confirm_data_->GetVisible()) {
-    remove_user_confirm_data_->SetVisible(true);
-    if (managed_user_data_)
-      managed_user_data_->SetVisible(false);
-    remove_user_button_->SetDisplayType(
-        SystemLabelButton::DisplayType::ALERT_NO_ICON);
-
-    Layout();
-
-    // Change the node's description to force assistive technologies, like
-    // ChromeVox, to report the updated description.
-    remove_user_button_->GetViewAccessibility().OverrideDescription(
-        warning_message_);
-    if (on_remove_user_warning_shown_)
-      std::move(on_remove_user_warning_shown_).Run();
-    return;
-  }
-
-  // Immediately hide the bubble with no animation before running the remove
-  // user callback. If an animation is triggered while the the views hierarchy
-  // for this bubble is being torn down, we can get a crash.
-  SetVisible(false);
-
-  if (on_remove_user_requested_)
-    std::move(on_remove_user_requested_).Run();
 }
 
 void LoginUserMenuView::RequestFocus() {
@@ -314,6 +286,36 @@ views::FocusTraversable* LoginUserMenuView::GetFocusTraversableParent() {
 
 views::View* LoginUserMenuView::GetFocusTraversableParentView() {
   return nullptr;
+}
+
+void LoginUserMenuView::RemoveUserButtonPressed() {
+  // Show confirmation warning. The user has to click the button again before
+  // we actually allow the exit.
+  if (!remove_user_confirm_data_->GetVisible()) {
+    remove_user_confirm_data_->SetVisible(true);
+    if (managed_user_data_)
+      managed_user_data_->SetVisible(false);
+    remove_user_button_->SetDisplayType(
+        SystemLabelButton::DisplayType::ALERT_NO_ICON);
+
+    Layout();
+
+    // Change the node's description to force assistive technologies, like
+    // ChromeVox, to report the updated description.
+    remove_user_button_->GetViewAccessibility().OverrideDescription(
+        warning_message_);
+    if (on_remove_user_warning_shown_)
+      std::move(on_remove_user_warning_shown_).Run();
+    return;
+  }
+
+  // Immediately hide the bubble with no animation before running the remove
+  // user callback. If an animation is triggered while the the views hierarchy
+  // for this bubble is being torn down, we can get a crash.
+  SetVisible(false);
+
+  if (on_remove_user_requested_)
+    std::move(on_remove_user_requested_).Run();
 }
 
 }  // namespace ash

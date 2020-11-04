@@ -178,11 +178,11 @@ class BubbleTargeterDelegate : public views::MaskedTargeterDelegate {
 // The action button foreground - an image button with actionable area matching
 // the (small) bubble shape centered in the top right corner of the action
 // button bounds.
-class NoteActionLaunchButton::ActionButton : public views::ImageButton,
-                                             public views::ButtonListener {
+class NoteActionLaunchButton::ActionButton : public views::ImageButton {
  public:
   explicit ActionButton(NoteActionLaunchButton::BackgroundView* background)
-      : views::ImageButton(this),
+      : views::ImageButton(base::BindRepeating(&ActionButton::ButtonPressed,
+                                               base::Unretained(this))),
         background_(background),
         event_targeter_delegate_(kLargeBubbleRadiusDp, kSmallBubbleRadiusDp) {
     SetAccessibleName(
@@ -269,19 +269,6 @@ class NoteActionLaunchButton::ActionButton : public views::ImageButton,
       views::ImageButton::OnGestureEvent(event);
   }
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    UserMetricsRecorder::RecordUserClickOnTray(
-        LoginMetricsRecorder::TrayClickTarget::kTrayActionNoteButton);
-    if (event.IsKeyEvent()) {
-      Shell::Get()->tray_action()->RequestNewLockScreenNote(
-          mojom::LockScreenNoteOrigin::kLockScreenButtonKeyboard);
-    } else {
-      Shell::Get()->tray_action()->RequestNewLockScreenNote(
-          mojom::LockScreenNoteOrigin::kLockScreenButtonTap);
-    }
-  }
-
  private:
   // Updates the background view size and opacity depending on the current note
   // action button state.
@@ -292,6 +279,18 @@ class NoteActionLaunchButton::ActionButton : public views::ImageButton,
     background_->SetBubbleRadiusAndOpacity(
         show_large_bubble ? kLargeBubbleRadiusDp : kSmallBubbleRadiusDp,
         show_large_bubble ? kLargeBubbleOpacity : kSmallBubbleOpacity);
+  }
+
+  void ButtonPressed(const ui::Event& event) {
+    UserMetricsRecorder::RecordUserClickOnTray(
+        LoginMetricsRecorder::TrayClickTarget::kTrayActionNoteButton);
+    if (event.IsKeyEvent()) {
+      Shell::Get()->tray_action()->RequestNewLockScreenNote(
+          mojom::LockScreenNoteOrigin::kLockScreenButtonKeyboard);
+    } else {
+      Shell::Get()->tray_action()->RequestNewLockScreenNote(
+          mojom::LockScreenNoteOrigin::kLockScreenButtonTap);
+    }
   }
 
   // Called when a fling is detected - if the gesture direction was bottom-left,

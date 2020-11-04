@@ -374,6 +374,8 @@ class ASH_EXPORT LockContentsView
   // Called when the public account is tapped.
   void OnPublicAccountTapped(bool is_primary);
 
+  void LearnMoreButtonPressed();
+
   // Helper method to allocate a LoginBigUserView instance.
   std::unique_ptr<LoginBigUserView> AllocateLoginBigUserView(
       const LoginUserInfo& user,

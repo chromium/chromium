@@ -13,11 +13,13 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
+#include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/compositor/layer_animation_observer.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/view.h"
 
 namespace views {
+class Button;
 class Label;
 class ImageView;
 }  // namespace views
@@ -40,7 +42,6 @@ class ASH_EXPORT LockScreenMediaControlsView
       public media_session::mojom::MediaControllerObserver,
       public media_session::mojom::MediaControllerImageObserver,
       public base::PowerObserver,
-      public views::ButtonListener,
       public ui::ImplicitAnimationObserver {
  public:
   METADATA_HEADER(LockScreenMediaControlsView);
@@ -127,14 +128,13 @@ class ASH_EXPORT LockScreenMediaControlsView
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   // base::PowerObserver:
   void OnSuspend() override;
+
+  void ButtonPressed(media_session::mojom::MediaSessionAction action);
 
   void FlushForTesting();
 

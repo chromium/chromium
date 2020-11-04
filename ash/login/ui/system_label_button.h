@@ -15,7 +15,7 @@ class ASH_EXPORT SystemLabelButton : public views::LabelButton {
  public:
   enum class DisplayType { DEFAULT, ALERT_NO_ICON, ALERT_WITH_ICON };
 
-  SystemLabelButton(views::ButtonListener* listener,
+  SystemLabelButton(PressedCallback callback,
                     const base::string16& text,
                     DisplayType display_type,
                     bool multiline = false);

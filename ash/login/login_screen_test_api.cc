@@ -88,7 +88,7 @@ bool SimulateButtonPressedForTesting(LoginShelfView::ButtonId button_id) {
   if (!button->GetEnabled())
     return false;
 
-  views::test::ButtonTestApi(static_cast<views::Button*>(button))
+  views::test::ButtonTestApi(views::Button::AsButton(button))
       .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(),
                                   gfx::PointF(), base::TimeTicks(), 0, 0));
   return true;
@@ -513,7 +513,10 @@ bool LoginScreenTestApi::ExpandPublicSessionPod(const AccountId& account_id) {
     ADD_FAILURE() << "Arrow button not visible";
     return false;
   }
-  public_account_test.OnArrowTap();
+  views::test::ButtonTestApi(
+      views::Button::AsButton(public_account_test.arrow_button()))
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(),
+                                  gfx::PointF(), base::TimeTicks(), 0, 0));
   return lock_contents_test.expanded_view();
 }
 
@@ -567,7 +570,10 @@ void LoginScreenTestApi::ClickPublicExpandedAdvancedViewButton() {
       lock_screen_test.contents_view());
   LoginExpandedPublicAccountView::TestApi expanded_test(
       lock_contents_test.expanded_view());
-  expanded_test.OnAdvancedButtonTap();
+  views::test::ButtonTestApi(
+      views::Button::AsButton(expanded_test.advanced_view_button()))
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(),
+                                  gfx::PointF(), base::TimeTicks(), 0, 0));
 }
 
 // static
@@ -577,7 +583,10 @@ void LoginScreenTestApi::ClickPublicExpandedSubmitButton() {
       lock_screen_test.contents_view());
   LoginExpandedPublicAccountView::TestApi expanded_test(
       lock_contents_test.expanded_view());
-  expanded_test.OnSubmitButtonTap();
+  views::test::ButtonTestApi(
+      views::Button::AsButton(expanded_test.submit_button()))
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(),
+                                  gfx::PointF(), base::TimeTicks(), 0, 0));
 }
 
 // static

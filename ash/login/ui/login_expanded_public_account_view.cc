@@ -129,9 +129,8 @@ class LoginExpandedPublicAccountEventHandler : public ui::EventHandler {
 // Button with text on the left side and an icon on the right side.
 class SelectionButtonView : public LoginButton {
  public:
-  SelectionButtonView(const base::string16& text,
-                      views::ButtonListener* listener)
-      : LoginButton(listener) {
+  SelectionButtonView(PressedCallback callback, const base::string16& text)
+      : LoginButton(std::move(callback)) {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -292,7 +291,7 @@ class MonitoringWarningView : public NonAccessibleView {
 };
 
 // Implements the right part of the expanded public session view.
-class RightPaneView : public NonAccessibleView, public views::ButtonListener {
+class RightPaneView : public NonAccessibleView {
  public:
   explicit RightPaneView(const base::RepeatingClosure& on_learn_more_tapped) {
     SetPreferredSize(
@@ -336,9 +335,10 @@ class RightPaneView : public NonAccessibleView, public views::ButtonListener {
 
     // Create button to show/hide advanced view.
     advanced_view_button_ = new SelectionButtonView(
+        base::BindRepeating(&RightPaneView::AdvancedViewButtonPressed,
+                            base::Unretained(this)),
         l10n_util::GetStringUTF16(
-            IDS_ASH_LOGIN_PUBLIC_SESSION_LANGUAGE_AND_INPUT),
-        this);
+            IDS_ASH_LOGIN_PUBLIC_SESSION_LANGUAGE_AND_INPUT));
     advanced_view_button_->SetTextColor(kPublicSessionBlueColor);
     advanced_view_button_->SetIcon(kLoginScreenButtonDropdownIcon,
                                    kPublicSessionBlueColor);
@@ -354,8 +354,9 @@ class RightPaneView : public NonAccessibleView, public views::ButtonListener {
 
     // Creates button to open the menu.
     auto create_menu_button =
-        [&](const base::string16& text) -> SelectionButtonView* {
-      auto* button = new SelectionButtonView(text, this);
+        [&](views::Button::PressedCallback callback,
+            const base::string16& text) -> SelectionButtonView* {
+      auto* button = new SelectionButtonView(std::move(callback), text);
       button->SetPreferredSize(
           gfx::Size(kSelectionBoxWidthDp, kSelectionBoxHeightDp));
       button->SetMargins(kLeftMarginForSelectionButton,
@@ -375,12 +376,18 @@ class RightPaneView : public NonAccessibleView, public views::ButtonListener {
     views::Label* language_title = CreateLabel(
         l10n_util::GetStringUTF16(IDS_ASH_LOGIN_LANGUAGE_SELECTION_SELECT),
         kSelectionMenuTitleColor);
-    language_selection_ = create_menu_button(base::string16());
+    language_selection_ = create_menu_button(
+        base::BindRepeating(&RightPaneView::LanguageSelectionButtonPressed,
+                            base::Unretained(this)),
+        base::string16());
 
     views::Label* keyboard_title = CreateLabel(
         l10n_util::GetStringUTF16(IDS_ASH_LOGIN_KEYBOARD_SELECTION_SELECT),
         kSelectionMenuTitleColor);
-    keyboard_selection_ = create_menu_button(base::string16());
+    keyboard_selection_ = create_menu_button(
+        base::BindRepeating(&RightPaneView::KeyboardSelectionButtonPressed,
+                            base::Unretained(this)),
+        base::string16());
 
     advanced_view_->AddChildView(language_title);
     advanced_view_->AddChildView(
@@ -393,7 +400,10 @@ class RightPaneView : public NonAccessibleView, public views::ButtonListener {
         create_padding(kSpacingBetweenSelectionTitleAndButtonDp));
     advanced_view_->AddChildView(keyboard_selection_);
 
-    submit_button_ = new ArrowButtonView(this, kArrowButtonSizeDp);
+    submit_button_ = new ArrowButtonView(
+        base::BindRepeating(&RightPaneView::SubmitButtonPressed,
+                            base::Unretained(this)),
+        kArrowButtonSizeDp);
     submit_button_->SetBackgroundColor(kArrowButtonColor);
     AddChildView(submit_button_);
   }
@@ -433,49 +443,6 @@ class RightPaneView : public NonAccessibleView, public views::ButtonListener {
     submit_button_->SetPosition(
         gfx::Point(bounds.right() - kArrowButtonSizeDp,
                    bounds.bottom() - kArrowButtonSizeDp));
-  }
-
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    if (sender == advanced_view_button_) {
-      show_advanced_view_ = !show_advanced_view_;
-      show_advanced_changed_by_user_ = true;
-      Layout();
-    } else if (sender == submit_button_) {
-      // TODO(crbug.com/984021) change to LaunchSamlPublicSession which would
-      // take selected_language_item_.value, selected_keyboard_item_.value too.
-      if (current_user_.public_account_info->using_saml) {
-        Shell::Get()->login_screen_controller()->ShowGaiaSignin(
-            current_user_.basic_user_info.account_id);
-      } else {
-        Shell::Get()->login_screen_controller()->LaunchPublicSession(
-            current_user_.basic_user_info.account_id,
-            selected_language_item_.value, selected_keyboard_item_.value);
-      }
-    } else if (sender == language_selection_) {
-      DCHECK(language_menu_view_);
-      if (language_menu_view_->GetVisible()) {
-        language_menu_view_->Hide();
-      } else {
-        bool opener_had_focus = language_selection_->HasFocus();
-
-        language_menu_view_->Show();
-
-        if (opener_had_focus)
-          language_menu_view_->RequestFocus();
-      }
-    } else if (sender == keyboard_selection_) {
-      DCHECK(keyboard_menu_view_);
-      if (keyboard_menu_view_->GetVisible()) {
-        keyboard_menu_view_->Hide();
-      } else {
-        bool opener_had_focus = keyboard_selection_->HasFocus();
-
-        keyboard_menu_view_->Show();
-
-        if (opener_had_focus)
-          keyboard_menu_view_->RequestFocus();
-      }
-    }
   }
 
   void UpdateForUser(const LoginUserInfo& user) {
@@ -610,6 +577,53 @@ class RightPaneView : public NonAccessibleView, public views::ButtonListener {
 
  private:
   friend class LoginExpandedPublicAccountView::TestApi;
+
+  void AdvancedViewButtonPressed() {
+    show_advanced_view_ = !show_advanced_view_;
+    show_advanced_changed_by_user_ = true;
+    Layout();
+  }
+
+  void SubmitButtonPressed() {
+    // TODO(crbug.com/984021) change to LaunchSamlPublicSession which would
+    // take selected_language_item_.value, selected_keyboard_item_.value too.
+    if (current_user_.public_account_info->using_saml) {
+      Shell::Get()->login_screen_controller()->ShowGaiaSignin(
+          current_user_.basic_user_info.account_id);
+    } else {
+      Shell::Get()->login_screen_controller()->LaunchPublicSession(
+          current_user_.basic_user_info.account_id,
+          selected_language_item_.value, selected_keyboard_item_.value);
+    }
+  }
+
+  void LanguageSelectionButtonPressed() {
+    DCHECK(language_menu_view_);
+    if (language_menu_view_->GetVisible()) {
+      language_menu_view_->Hide();
+    } else {
+      bool opener_had_focus = language_selection_->HasFocus();
+
+      language_menu_view_->Show();
+
+      if (opener_had_focus)
+        language_menu_view_->RequestFocus();
+    }
+  }
+
+  void KeyboardSelectionButtonPressed() {
+    DCHECK(keyboard_menu_view_);
+    if (keyboard_menu_view_->GetVisible()) {
+      keyboard_menu_view_->Hide();
+    } else {
+      bool opener_had_focus = keyboard_selection_->HasFocus();
+
+      keyboard_menu_view_->Show();
+
+      if (opener_had_focus)
+        keyboard_menu_view_->RequestFocus();
+    }
+  }
 
   bool show_advanced_view_ = false;
   LoginUserInfo current_user_;
@@ -758,20 +772,6 @@ std::vector<LocaleItem> LoginExpandedPublicAccountView::TestApi::GetLocales() {
     locales.push_back(locale);
   }
   return locales;
-}
-
-void LoginExpandedPublicAccountView::TestApi::OnAdvancedButtonTap() {
-  view_->right_pane_->ButtonPressed(
-      views::Button::AsButton(advanced_view_button()),
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(), gfx::PointF(),
-                     base::TimeTicks(), 0, 0));
-}
-
-void LoginExpandedPublicAccountView::TestApi::OnSubmitButtonTap() {
-  view_->right_pane_->ButtonPressed(
-      views::Button::AsButton(submit_button()),
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(), gfx::PointF(),
-                     base::TimeTicks(), 0, 0));
 }
 
 LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(

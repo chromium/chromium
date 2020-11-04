@@ -52,11 +52,11 @@ SkPath GetSystemButtonHighlightPath(const views::View* view) {
 
 }  // namespace
 
-SystemLabelButton::SystemLabelButton(views::ButtonListener* listener,
+SystemLabelButton::SystemLabelButton(PressedCallback callback,
                                      const base::string16& text,
                                      DisplayType display_type,
                                      bool multiline)
-    : LabelButton(listener, text), display_type_(display_type) {
+    : LabelButton(std::move(callback), text), display_type_(display_type) {
   SetImageLabelSpacing(kSystemButtonImageLabelSpacing);
   if (multiline) {
     label()->SetMultiLine(true);

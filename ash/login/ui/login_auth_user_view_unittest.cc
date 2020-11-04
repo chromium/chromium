@@ -26,6 +26,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/widget.h"
 
 using testing::_;
@@ -263,7 +264,7 @@ TEST_P(LoginAuthUserViewUnittest, OnlineSignInMessage) {
       ShowGaiaSignin(user_view->current_user().basic_user_info.account_id));
   const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                              ui::EventTimeForNow(), 0, 0);
-  view_->ButtonPressed(online_sign_in_message, event);
+  views::test::ButtonTestApi(online_sign_in_message).NotifyClick(event);
   base::RunLoop().RunUntilIdle();
 
   // The online sign-in message is invisible for all other auth methods.
@@ -448,7 +449,8 @@ TEST_P(LoginAuthUserViewUnittest, PinAutosubmitFieldModes) {
     // Clicking on the switch button changes to the password field
     const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                                ui::EventTimeForNow(), 0, 0);
-    view_->ButtonPressed(auth_test.pin_password_toggle(), event);
+    views::test::ButtonTestApi(auth_test.pin_password_toggle())
+        .NotifyClick(event);
     base::RunLoop().RunUntilIdle();
     ExpectModeVisibility(LoginAuthUserView::InputFieldMode::PWD_WITH_TOGGLE);
     SetAuthMethods(LoginAuthUserView::AUTH_NONE);  // Clear state for next run.

@@ -20,7 +20,6 @@ struct LoginUserInfo;
 class RemoveUserButton;
 
 class ASH_EXPORT LoginUserMenuView : public LoginBaseBubbleView,
-                                     public views::ButtonListener,
                                      public views::FocusTraversable {
  public:
   class TestApi {
@@ -52,9 +51,6 @@ class ASH_EXPORT LoginUserMenuView : public LoginBaseBubbleView,
   // LoginBaseBubbleView:
   LoginButton* GetBubbleOpener() const override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // views::View:
   void RequestFocus() override;
   bool HasFocus() const override;
@@ -68,6 +64,8 @@ class ASH_EXPORT LoginUserMenuView : public LoginBaseBubbleView,
   views::View* GetFocusTraversableParentView() override;
 
  private:
+  void RemoveUserButtonPressed();
+
   LoginButton* bubble_opener_ = nullptr;
   base::RepeatingClosure on_remove_user_warning_shown_;
   base::RepeatingClosure on_remove_user_requested_;

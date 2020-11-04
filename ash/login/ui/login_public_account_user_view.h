@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/login/ui/login_user_view.h"
 #include "ash/login/ui/non_accessible_view.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -18,8 +17,7 @@ class HoverNotifier;
 
 // This is the big user view for the public account user. It wraps a UserView
 // and a arrow button below.
-class ASH_EXPORT LoginPublicAccountUserView : public NonAccessibleView,
-                                              public views::ButtonListener {
+class ASH_EXPORT LoginPublicAccountUserView : public NonAccessibleView {
  public:
   // TestApi is used for tests to get internal implementation details.
   class ASH_EXPORT TestApi {
@@ -28,8 +26,6 @@ class ASH_EXPORT LoginPublicAccountUserView : public NonAccessibleView,
     ~TestApi();
 
     views::View* arrow_button() const;
-
-    void OnArrowTap() const;
 
    private:
     LoginPublicAccountUserView* const view_;
@@ -59,13 +55,12 @@ class ASH_EXPORT LoginPublicAccountUserView : public NonAccessibleView,
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   bool auth_enabled() const { return auth_enabled_; }
   LoginUserView* user_view() { return user_view_; }
 
  private:
+  void ArrowButtonPressed();
+
   // Called when the user view has been tapped and it will run |on_tap_|.
   void OnUserViewTap();
 

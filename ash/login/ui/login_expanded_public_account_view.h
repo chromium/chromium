@@ -56,9 +56,6 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
     bool SelectKeyboard(const std::string& ime_id);
     std::vector<LocaleItem> GetLocales();
 
-    void OnAdvancedButtonTap();
-    void OnSubmitButtonTap();
-
    private:
     LoginExpandedPublicAccountView* const view_;
   };

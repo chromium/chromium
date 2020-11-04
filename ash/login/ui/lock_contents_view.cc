@@ -362,20 +362,12 @@ class UserAddingScreenIndicator : public views::View {
 
 }  // namespace
 
-class LockContentsView::AuthErrorBubble : public LoginErrorBubble,
-                                          public views::ButtonListener {
+class LockContentsView::AuthErrorBubble : public LoginErrorBubble {
  public:
   AuthErrorBubble() {
     set_positioning_strategy(PositioningStrategy::kTryAfterThenBefore);
     SetPadding(kHorizontalPaddingAuthErrorBubbleDp,
                kVerticalPaddingAuthErrorBubbleDp);
-  }
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    Shell::Get()->login_screen_controller()->ShowAccountAccessHelpApp(
-        GetWidget()->GetNativeWindow());
-    Hide();
   }
 };
 
@@ -2104,7 +2096,9 @@ void LockContentsView::ShowAuthErrorMessage() {
   label->SetAutoColorReadabilityEnabled(false);
 
   auto learn_more_button = std::make_unique<SystemLabelButton>(
-      auth_error_bubble_, l10n_util::GetStringUTF16(IDS_ASH_LEARN_MORE),
+      base::BindRepeating(&LockContentsView::LearnMoreButtonPressed,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_ASH_LEARN_MORE),
       SystemLabelButton::DisplayType::DEFAULT, /*multiline*/ true);
 
   auto container = std::make_unique<NonAccessibleView>(kAuthErrorContainerName);
@@ -2200,6 +2194,12 @@ void LockContentsView::OnPublicAccountTapped(bool is_primary) {
   // OnPublicSessionDisplayNameChanged and OnPublicSessionLocalesChanged.
   expanded_view_->UpdateForUser(user->GetCurrentUser());
   SetDisplayStyle(DisplayStyle::kExclusivePublicAccountExpandedView);
+}
+
+void LockContentsView::LearnMoreButtonPressed() {
+  Shell::Get()->login_screen_controller()->ShowAccountAccessHelpApp(
+      GetWidget()->GetNativeWindow());
+  auth_error_bubble_->Hide();
 }
 
 std::unique_ptr<LoginBigUserView> LockContentsView::AllocateLoginBigUserView(

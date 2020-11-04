@@ -95,9 +95,8 @@ PinRequest::~PinRequest() = default;
 // Label button that displays focus ring.
 class PinRequestView::FocusableLabelButton : public views::LabelButton {
  public:
-  FocusableLabelButton(views::ButtonListener* listener,
-                       const base::string16& text)
-      : views::LabelButton(listener, text) {
+  FocusableLabelButton(PressedCallback callback, const base::string16& text)
+      : views::LabelButton(std::move(callback), text) {
     SetInstallFocusRingOnFocus(true);
     focus_ring()->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
     SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -251,7 +250,8 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   back_button_view->SetLayoutManager(std::move(back_button_layout));
   header->AddChildView(back_button_view);
 
-  back_button_ = new LoginButton(this);
+  back_button_ = new LoginButton(
+      base::BindRepeating(&PinRequestView::OnBack, base::Unretained(this)));
   back_button_->SetPreferredSize(
       gfx::Size(kBackButtonSizeDp, kBackButtonSizeDp));
   back_button_->SetBackground(
@@ -364,7 +364,12 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   AddChildView(footer);
 
   help_button_ = new FocusableLabelButton(
-      this, l10n_util::GetStringUTF16(IDS_ASH_LOGIN_PIN_REQUEST_HELP));
+      base::BindRepeating(
+          [](PinRequestView* view) {
+            view->delegate_->OnHelp(view->GetWidget()->GetNativeWindow());
+          },
+          this),
+      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_PIN_REQUEST_HELP));
   help_button_->SetPaintToLayer();
   help_button_->layer()->SetFillsBoundsOpaquely(false);
   help_button_->SetTextSubpixelRenderingEnabled(false);
@@ -376,7 +381,9 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   footer->AddChildView(horizontal_spacer);
   bottom_layout->SetFlexForView(horizontal_spacer, 1);
 
-  submit_button_ = new ArrowButtonView(this, kArrowButtonSizeDp);
+  submit_button_ = new ArrowButtonView(
+      base::BindRepeating(&PinRequestView::SubmitCode, base::Unretained(this)),
+      kArrowButtonSizeDp);
   submit_button_->SetBackgroundColor(kArrowButtonColor);
   submit_button_->SetPreferredSize(
       gfx::Size(kArrowButtonSizeDp, kArrowButtonSizeDp));
@@ -420,17 +427,6 @@ views::View* PinRequestView::GetInitiallyFocusedView() {
 
 base::string16 PinRequestView::GetAccessibleWindowTitle() const {
   return default_accessible_title_;
-}
-
-void PinRequestView::ButtonPressed(views::Button* sender,
-                                   const ui::Event& event) {
-  if (sender == back_button_) {
-    OnBack();
-  } else if (sender == help_button_) {
-    delegate_->OnHelp(GetWidget()->GetNativeWindow());
-  } else if (sender == submit_button_) {
-    SubmitCode();
-  }
 }
 
 void PinRequestView::OnTabletModeStarted() {

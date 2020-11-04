@@ -38,8 +38,7 @@ class LoginPinInputView;
 // This class will make call mojo authentication APIs directly. The embedder can
 // receive some events about the results of those mojo
 // authentication attempts (ie, success/failure).
-class ASH_EXPORT LoginAuthUserView : public NonAccessibleView,
-                                     public views::ButtonListener {
+class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
  public:
   // Flags which describe the set of currently visible auth methods.
   enum AuthMethods {
@@ -181,9 +180,6 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView,
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void RequestFocus() override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
  private:
   struct UiState;

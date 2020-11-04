@@ -42,6 +42,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -117,7 +118,7 @@ class PinRequestViewTest : public LoginTestBase,
     PinRequestView::TestApi test_api(view);
     ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                          ui::EventTimeForNow(), 0, 0);
-    view->ButtonPressed(test_api.back_button(), event);
+    views::test::ButtonTestApi(test_api.back_button()).NotifyClick(event);
   }
 
   void SimulateFailedValidation() {

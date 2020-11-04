@@ -28,7 +28,7 @@ enum class TrayActionState;
 }
 
 // Contains the debug UI row (ie, add user, toggle PIN buttons).
-class LockDebugView : public views::View, public views::ButtonListener {
+class LockDebugView : public views::View {
  public:
   LockDebugView(mojom::TrayActionState initial_note_action_state,
                 LockScreen::ScreenType screen_type);
@@ -36,9 +36,6 @@ class LockDebugView : public views::View, public views::ButtonListener {
 
   // views::View:
   void Layout() override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   LockContentsView* lock() { return lock_; }
 
@@ -53,7 +50,36 @@ class LockDebugView : public views::View, public views::ButtonListener {
     kDetachableBaseFailed,
   };
 
-  // Cycle through the various types of auth error bubbles that can be shown on
+  // Adds or removes users.
+  void AddOrRemoveUsersButtonPressed(int delta);
+
+  // Iteratively adds more info to the system info labels to test 7 permutations
+  // and then disables the button.
+  void AddSystemInfoButtonPressed();
+
+  // Enables/disables auth. This is useful for testing auth failure scenarios on
+  // Linux Desktop builds, where the cryptohome dbus stub accepts all passwords
+  // as valid.
+  void ToggleAuthButtonPressed();
+
+  void AddKioskAppButtonPressed();
+  void RemoveKioskAppButtonPressed();
+  void ToggleDebugDetachableBaseButtonPressed();
+  void CycleDetachableBaseStatusButtonPressed();
+  void CycleDetachableBaseIdButtonPressed();
+
+  // Shows or hides warning banner.
+  void ToggleWarningBannerButtonPressed();
+
+  void ToggleManagedSessionDisclosureButtonPressed();
+
+  // Updates the last used detachable base.
+  void UseDetachableBaseButtonPressed(int index);
+
+  // Converts this user to regular user or public account.
+  void TogglePublicAccountButtonPressed(int index);
+
+  // Cycles through the various types of auth error bubbles that can be shown on
   // the login screen.
   void CycleAuthErrorMessage();
 
@@ -67,7 +93,7 @@ class LockDebugView : public views::View, public views::ButtonListener {
 
   // Creates a button on the debug row that cannot be focused.
   views::LabelButton* AddButton(const std::string& text,
-                                int id,
+                                views::Button::PressedCallback callback,
                                 views::View* container);
 
   LockContentsView* lock_ = nullptr;
@@ -75,9 +101,12 @@ class LockDebugView : public views::View, public views::ButtonListener {
   // Debug container which holds the entire debug UI.
   views::View* container_ = nullptr;
 
-  // Container which holds global actions. Each child button has an id which can
-  // be used to identify it.
+  // Container which holds global actions.
   views::View* global_action_view_container_ = nullptr;
+
+  // Global add system info button. Reference is needed to dynamically disable.
+  views::LabelButton* global_action_add_system_info_ = nullptr;
+
   // Global toggle auth button. Reference is needed to update the string.
   views::LabelButton* global_action_toggle_auth_ = nullptr;
 
