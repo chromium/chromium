@@ -61,7 +61,7 @@ void SetContentMainDelegate(ContentMainDelegate* delegate) {
     ContentClientCreator::Create(delegate);
 }
 
-ContentMainDelegate* GetContentMainDelegateForTesting() {
+ContentMainDelegate* GetContentMainDelegate() {
   DCHECK(g_content_main_delegate.Get().get());
   return g_content_main_delegate.Get().get();
 }

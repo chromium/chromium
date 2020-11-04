@@ -4,7 +4,6 @@
 
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -2429,39 +2428,6 @@ class CoopReportingOriginTrialBrowserTest : public ContentBrowserTest {
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
-  // On every platforms, except on Android, ContainMain is called for
-  // browsertest. This calls SetOriginTrialPolicyGetter.
-  // On Android, a meager re-implementation of ContentMainRunnerImpl is made by
-  // BrowserTestBase. This doesn't call SetOriginTrialPolicyGetter.
-  //
-  // So on Android + BrowserTestBase + browser process, the OriginTrial policy
-  // isn't setup. This is tracked by https://crbug.com/1123953
-  //
-  // To fix this we could:
-  //
-  // 1) Fix https://crbug.com/1123953. Call SetOriginTrialPolicyGetter using
-  //    GetContentClient()->GetOriginTrialPolicy() from BrowserTestBase. This
-  //    doesn't work, because GetContentClient() is private to the
-  //    implementation of content/, unreachable from the test.
-  //
-  // 2) Setup our own blink::OriginTrialPolicy here, based on
-  //    embedder_support::OriginTrialPolicy. This doesn't work, because this
-  //    violate the DEPS rules.
-  //
-  // 3) Copy-paste the implementation of embedder_support::OriginTrialPolicy
-  //    here. This doesn't really worth the cost.
-  //
-  // Instead we abandon testing the OriginTrial on the Android platform :-(
-  //
-  // TODO(https://crbug.com/1123953). Remove this once fixed.
-  bool IsOriginTrialPolicySetup() {
-#if defined(OS_ANDROID)
-    return false;
-#else
-    return true;
-#endif
-  }
-
  private:
   void SetUpOnMainThread() final {
     ContentBrowserTest::TearDownOnMainThread();
@@ -2519,10 +2485,6 @@ IN_PROC_BROWSER_TEST_F(CoopReportingOriginTrialBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CoopReportingOriginTrialBrowserTest,
                        CoopStateWithToken) {
-  // TODO(https://crbug.com/1123953). Remove this once fixed.
-  if (!IsOriginTrialPolicySetup())
-    return;
-
   URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](URLLoaderInterceptor::RequestParams* params) {
         if (params->url_request.url != OriginTrialURL())
@@ -2591,9 +2553,6 @@ IN_PROC_BROWSER_TEST_F(CoopReportingOriginTrialBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CoopReportingOriginTrialBrowserTest,
                        AccessReportingWithToken) {
-  // TODO(https://crbug.com/1123953). Remove this once fixed.
-  if (!IsOriginTrialPolicySetup())
-    return;
   URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](URLLoaderInterceptor::RequestParams* params) {
         if (params->url_request.url != OriginTrialURL())

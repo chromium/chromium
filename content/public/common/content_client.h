@@ -56,7 +56,7 @@ class ContentUtilityClient;
 struct CdmInfo;
 struct PepperPluginInfo;
 
-// Setter and getter for the client.  The client should be set early, before any
+// Setter and getter for the client. The client should be set early, before any
 // content code is called.
 CONTENT_EXPORT void SetContentClient(ContentClient* client);
 

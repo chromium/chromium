@@ -86,6 +86,7 @@
 #if defined(OS_ANDROID)
 #include "base/android/task_scheduler/post_task_android.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"  // nogncheck
+#include "content/app/content_main_runner_impl.h"
 #include "content/app/mojo/mojo_init.h"
 #include "content/app/service_manager_environment.h"
 #include "content/public/app/content_main_delegate.h"
@@ -522,6 +523,12 @@ void BrowserTestBase::SetUp() {
     tracing::InitTracingPostThreadPoolStartAndFeatureList();
     InitializeBrowserMemoryInstrumentationClient();
   }
+
+  blink::TrialTokenValidator::SetOriginTrialPolicyGetter(
+      base::BindRepeating([]() -> blink::OriginTrialPolicy* {
+        ContentClient* client = GetContentClientForTesting();
+        return client ? client->GetOriginTrialPolicy() : nullptr;
+      }));
 
   // All FeatureList overrides should have been registered prior to browser test
   // SetUp().

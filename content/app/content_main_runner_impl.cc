@@ -70,6 +70,7 @@
 #include "content/public/app/content_main_delegate.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/system_connector.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_descriptor_keys.h"
 #include "content/public/common/content_features.h"
@@ -1040,5 +1041,15 @@ void ContentMainRunnerImpl::Shutdown() {
 std::unique_ptr<ContentMainRunner> ContentMainRunner::Create() {
   return ContentMainRunnerImpl::Create();
 }
+
+ContentClient* GetContentClientForTesting() {
+  return GetContentClient();
+}
+
+#if defined(OS_ANDROID)
+ContentMainDelegate* GetContentMainDelegateForTesting() {
+  return GetContentMainDelegate();
+}
+#endif
 
 }  // namespace content

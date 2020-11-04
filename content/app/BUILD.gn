@@ -99,10 +99,9 @@ source_set("app") {
   ]
 
   configs += extra_configs
-  deps = content_app_deps + [
-           ":content_main_runner_app",
-           "//ipc",
-         ]
+  deps = content_app_deps + [ "//ipc" ]
+
+  public_deps = [ ":content_main_runner_app" ]
 
   # Only the public target should depend on this. All other targets (even
   # internal content ones) should depend on the public one.
