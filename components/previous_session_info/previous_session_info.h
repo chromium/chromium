@@ -28,6 +28,10 @@ extern NSString* const kPreviousSessionInfoConnectedSceneSessionIDs;
 extern NSString* const kPreviousSessionInfoParams;
 // Key in the UserDefaults for the memory footprint of the browser process.
 extern NSString* const kPreviousSessionInfoMemoryFootprint;
+// Key in the UserDefaults for the number of open tabs.
+extern NSString* const kPreviousSessionInfoTabCount;
+// Key in the UserDefaults for the number of open "off the record" tabs.
+extern NSString* const kPreviousSessionInfoOTRTabCount;
 
 // The values of this enum are persisted (both to NSUserDefaults and logs) and
 // represent the state of the last session (which may have been running a
@@ -143,6 +147,12 @@ enum class DeviceBatteryState {
 // session.
 @property(nonatomic, readonly) BOOL applicationWillTerminateWasReceived;
 
+// Number of open tabs in the previous session.
+@property(nonatomic, readonly) NSInteger tabCount;
+
+// Number of open "off the record" tabs in the previous session.
+@property(nonatomic, readonly) NSInteger OTRTabCount;
+
 // Singleton PreviousSessionInfo. During the lifetime of the app, the returned
 // object is the same, and describes the previous session, even after a new
 // session has started (by calling beginRecordingCurrentSession).
@@ -207,6 +217,11 @@ enum class DeviceBatteryState {
 // Automatically called when ScopedClosureRunner returned from -startRestoration
 // gets destructed.
 - (void)resetSessionRestorationFlag;
+
+// Records number of regular (non off the record) tabs.
+- (void)updateCurrentSessionTabCount:(NSInteger)count;
+// Records number of off the record tabs.
+- (void)updateCurrentSessionOTRTabCount:(NSInteger)count;
 
 // Records information crash report parameters.
 - (void)setReportParameterValue:(NSString*)value forKey:(NSString*)key;

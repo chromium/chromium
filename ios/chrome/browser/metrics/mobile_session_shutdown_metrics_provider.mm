@@ -285,12 +285,18 @@ void MobileSessionShutdownMetricsProvider::ProvidePreviousSessionData(
     return;
   }
 
+  PreviousSessionInfo* session_info = [PreviousSessionInfo sharedInstance];
+  NSInteger allTabCount = session_info.tabCount + session_info.OTRTabCount;
   // Do not log UTE metrics if the application terminated cleanly.
   if (shutdown_type == SHUTDOWN_IN_BACKGROUND) {
+    UMA_STABILITY_HISTOGRAM_COUNTS_100(
+        "Stability.iOS.TabCountBeforeCleanShutdown", allTabCount);
     return;
   }
 
-  PreviousSessionInfo* session_info = [PreviousSessionInfo sharedInstance];
+  UMA_STABILITY_HISTOGRAM_COUNTS_100("Stability.iOS.TabCountBeforeCrash",
+                                     allTabCount);
+
   // Log metrics to improve categorization of crashes.
   LogApplicationBackgroundedTime(session_info.sessionEndTime);
 
@@ -314,6 +320,9 @@ void MobileSessionShutdownMetricsProvider::ProvidePreviousSessionData(
     UMA_STABILITY_HISTOGRAM_BOOLEAN(
         "Stability.iOS.UTE.OSRestartedAfterPreviousSession",
         session_info.OSRestartedAfterPreviousSession);
+
+    UMA_STABILITY_HISTOGRAM_COUNTS_100("Stability.iOS.TabCountBeforeUTE",
+                                       allTabCount);
 
     bool possible_explanation =
         // Log any of the following cases as a possible explanation for the
@@ -356,6 +365,15 @@ void MobileSessionShutdownMetricsProvider::ProvidePreviousSessionData(
           ->GetStoredEvents(
               base::BindOnce(CreateSyntheticCrashReportWithBreadcrumbs));
     }
+  } else if (shutdown_type ==
+                 SHUTDOWN_IN_FOREGROUND_WITH_CRASH_LOG_NO_MEMORY_WARNING ||
+             shutdown_type ==
+                 SHUTDOWN_IN_FOREGROUND_WITH_CRASH_LOG_WITH_MEMORY_WARNING) {
+    UMA_STABILITY_HISTOGRAM_COUNTS_100(
+        "Stability.iOS.TabCountBeforeSignalCrash", allTabCount);
+  } else if (shutdown_type == SHUTDOWN_IN_FOREGROUND_WITH_MAIN_THREAD_FROZEN) {
+    UMA_STABILITY_HISTOGRAM_COUNTS_100("Stability.iOS.TabCountBeforeFreeze",
+                                       allTabCount);
   }
   [session_info resetSessionRestorationFlag];
 }

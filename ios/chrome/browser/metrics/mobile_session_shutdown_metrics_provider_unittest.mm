@@ -180,6 +180,155 @@ TEST_P(MobileSessionShutdownMetricsProviderTest, ProvideStabilityMetrics) {
   [PreviousSessionInfo resetSharedInstanceForTesting];
 }
 
+// Tests Stability.iOS.TabCountBefore* metrics recording after clean shutdown.
+TEST_F(MobileSessionShutdownMetricsProviderTest, TabCountMetricCleanShutdown) {
+  // Setup the MetricsService.
+  [PreviousSessionInfo sharedInstance].tabCount = 2;
+  [PreviousSessionInfo sharedInstance].OTRTabCount = 3;
+  local_state_.SetBoolean(metrics::prefs::kStabilityExitedCleanly, true);
+  metrics_state_ = metrics::MetricsStateManager::Create(
+      &local_state_, new metrics::TestEnabledStateProvider(false, false),
+      base::string16(), metrics::MetricsStateManager::StoreClientInfoCallback(),
+      metrics::MetricsStateManager::LoadClientInfoCallback());
+  metrics_service_.reset(new metrics::MetricsService(
+      metrics_state_.get(), &metrics_client_, &local_state_));
+
+  // Create the metrics provider to test.
+  metrics_provider_.reset(new MobileSessionShutdownMetricsProviderForTesting(
+      metrics_service_.get()));
+
+  // Create a histogram tester for verifying samples written to the shutdown
+  // type histogram.
+  base::HistogramTester histogram_tester;
+
+  // Now call the method under test and verify exactly one sample is written to
+  // the expected bucket.
+  metrics_provider_->ProvidePreviousSessionData(nullptr);
+  histogram_tester.ExpectUniqueSample(
+      "Stability.iOS.TabCountBeforeCleanShutdown", 5, 1);
+  histogram_tester.ExpectTotalCount("Stability.iOS.TabCountBeforeCrash", 0);
+  histogram_tester.ExpectTotalCount("Stability.iOS.TabCountBeforeUTE", 0);
+  histogram_tester.ExpectTotalCount("Stability.iOS.TabCountBeforeSignalCrash",
+                                    0);
+  histogram_tester.ExpectTotalCount("Stability.iOS.TabCountBeforeFreeze", 0);
+
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+}
+
+// Tests Stability.iOS.TabCountBefore* metrics recording after
+// Unexplained Termination Event or Explained Termination Event.
+TEST_F(MobileSessionShutdownMetricsProviderTest, TabCountMetricUte) {
+  // Setup the MetricsService.
+  [PreviousSessionInfo sharedInstance].tabCount = 2;
+  [PreviousSessionInfo sharedInstance].OTRTabCount = 3;
+  local_state_.SetBoolean(metrics::prefs::kStabilityExitedCleanly, false);
+  metrics_state_ = metrics::MetricsStateManager::Create(
+      &local_state_, new metrics::TestEnabledStateProvider(false, false),
+      base::string16(), metrics::MetricsStateManager::StoreClientInfoCallback(),
+      metrics::MetricsStateManager::LoadClientInfoCallback());
+  metrics_service_.reset(new metrics::MetricsService(
+      metrics_state_.get(), &metrics_client_, &local_state_));
+
+  // Create the metrics provider to test.
+  metrics_provider_.reset(new MobileSessionShutdownMetricsProviderForTesting(
+      metrics_service_.get()));
+
+  // Create a histogram tester for verifying samples written to the shutdown
+  // type histogram.
+  base::HistogramTester histogram_tester;
+
+  // Now call the method under test and verify exactly one sample is written to
+  // the expected bucket.
+  metrics_provider_->ProvidePreviousSessionData(nullptr);
+  histogram_tester.ExpectTotalCount("Stability.iOS.TabCountBeforeCleanShutdown",
+                                    0);
+  histogram_tester.ExpectUniqueSample("Stability.iOS.TabCountBeforeCrash", 5,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Stability.iOS.TabCountBeforeUTE", 5, 1);
+  histogram_tester.ExpectTotalCount("Stability.iOS.TabCountBeforeSignalCrash",
+                                    0);
+  histogram_tester.ExpectTotalCount("Stability.iOS.TabCountBeforeFreeze", 0);
+
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+}
+
+// Tests Stability.iOS.TabCountBefore* metrics recording after crash with log.
+TEST_F(MobileSessionShutdownMetricsProviderTest, TabCountMetricCrashWithLog) {
+  // Setup the MetricsService.
+  [PreviousSessionInfo sharedInstance].tabCount = 2;
+  [PreviousSessionInfo sharedInstance].OTRTabCount = 3;
+  local_state_.SetBoolean(metrics::prefs::kStabilityExitedCleanly, false);
+  metrics_state_ = metrics::MetricsStateManager::Create(
+      &local_state_, new metrics::TestEnabledStateProvider(false, false),
+      base::string16(), metrics::MetricsStateManager::StoreClientInfoCallback(),
+      metrics::MetricsStateManager::LoadClientInfoCallback());
+  metrics_service_.reset(new metrics::MetricsService(
+      metrics_state_.get(), &metrics_client_, &local_state_));
+
+  // Create the metrics provider to test.
+  metrics_provider_.reset(new MobileSessionShutdownMetricsProviderForTesting(
+      metrics_service_.get()));
+
+  metrics_provider_->set_has_crash_logs(true);
+
+  // Create a histogram tester for verifying samples written to the shutdown
+  // type histogram.
+  base::HistogramTester histogram_tester;
+
+  // Now call the method under test and verify exactly one sample is written to
+  // the expected bucket.
+  metrics_provider_->ProvidePreviousSessionData(nullptr);
+  histogram_tester.ExpectTotalCount("Stability.iOS.TabCountBeforeCleanShutdown",
+                                    0);
+  histogram_tester.ExpectUniqueSample("Stability.iOS.TabCountBeforeCrash", 5,
+                                      1);
+  histogram_tester.ExpectTotalCount("Stability.iOS.TabCountBeforeUTE", 0);
+  histogram_tester.ExpectUniqueSample("Stability.iOS.TabCountBeforeSignalCrash",
+                                      5, 1);
+  histogram_tester.ExpectTotalCount("Stability.iOS.TabCountBeforeFreeze", 0);
+
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+}
+
+// Tests Stability.iOS.TabCountBefore* metrics recording after UI Freeze.
+TEST_F(MobileSessionShutdownMetricsProviderTest, TabCountMetricFreeze) {
+  // Setup the MetricsService.
+  [PreviousSessionInfo sharedInstance].tabCount = 2;
+  [PreviousSessionInfo sharedInstance].OTRTabCount = 3;
+  local_state_.SetBoolean(metrics::prefs::kStabilityExitedCleanly, false);
+  metrics_state_ = metrics::MetricsStateManager::Create(
+      &local_state_, new metrics::TestEnabledStateProvider(false, false),
+      base::string16(), metrics::MetricsStateManager::StoreClientInfoCallback(),
+      metrics::MetricsStateManager::LoadClientInfoCallback());
+  metrics_service_.reset(new metrics::MetricsService(
+      metrics_state_.get(), &metrics_client_, &local_state_));
+
+  // Create the metrics provider to test.
+  metrics_provider_.reset(new MobileSessionShutdownMetricsProviderForTesting(
+      metrics_service_.get()));
+
+  metrics_provider_->set_was_last_shutdown_frozen(true);
+
+  // Create a histogram tester for verifying samples written to the shutdown
+  // type histogram.
+  base::HistogramTester histogram_tester;
+
+  // Now call the method under test and verify exactly one sample is written to
+  // the expected bucket.
+  metrics_provider_->ProvidePreviousSessionData(nullptr);
+  histogram_tester.ExpectTotalCount("Stability.iOS.TabCountBeforeCleanShutdown",
+                                    0);
+  histogram_tester.ExpectUniqueSample("Stability.iOS.TabCountBeforeCrash", 5,
+                                      1);
+  histogram_tester.ExpectTotalCount("Stability.iOS.TabCountBeforeUTE", 0);
+  histogram_tester.ExpectTotalCount("Stability.iOS.TabCountBeforeSignalCrash",
+                                    0);
+  histogram_tester.ExpectUniqueSample("Stability.iOS.TabCountBeforeFreeze", 5,
+                                      1);
+
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+}
+
 // Tests logging the following metrics:
 //   - Stability.iOS.UTE.HasPossibleExplanation
 //   - Stability.iOS.UTE.OSRestartedAfterPreviousSession

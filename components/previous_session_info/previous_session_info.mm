@@ -115,6 +115,9 @@ NSString* const kPreviousSessionInfoConnectedSceneSessionIDs =
 NSString* const kPreviousSessionInfoParams = @"PreviousSessionInfoParams";
 NSString* const kPreviousSessionInfoMemoryFootprint =
     @"PreviousSessionInfoMemoryFootprint";
+NSString* const kPreviousSessionInfoTabCount = @"PreviousSessionInfoTabCount";
+NSString* const kPreviousSessionInfoOTRTabCount =
+    @"PreviousSessionInfoOTRTabCount";
 }  // namespace previous_session_info_constants
 
 @interface PreviousSessionInfo ()
@@ -148,6 +151,9 @@ NSString* const kPreviousSessionInfoMemoryFootprint =
 @property(nonatomic, copy) NSDictionary<NSString*, NSString*>* reportParameters;
 @property(nonatomic, assign) NSInteger memoryFootprint;
 @property(nonatomic, assign) BOOL applicationWillTerminateWasReceived;
+@property(nonatomic, assign) NSInteger tabCount;
+@property(nonatomic, assign) NSInteger OTRTabCount;
+
 @end
 
 @implementation PreviousSessionInfo {
@@ -245,6 +251,12 @@ static PreviousSessionInfo* gSharedInstance = nil;
 
     gSharedInstance.applicationWillTerminateWasReceived =
         [defaults boolForKey:kPreviousSessionInfoAppWillTerminate];
+    gSharedInstance.tabCount =
+        [defaults integerForKey:previous_session_info_constants::
+                                    kPreviousSessionInfoTabCount];
+    gSharedInstance.OTRTabCount =
+        [defaults integerForKey:previous_session_info_constants::
+                                    kPreviousSessionInfoOTRTabCount];
   }
   return gSharedInstance;
 }
@@ -583,6 +595,21 @@ static PreviousSessionInfo* gSharedInstance = nil;
       removeObjectForKey:previous_session_info_constants::
                              kPreviousSessionInfoRestoringSession];
   // Save critical state information for crash detection.
+  [NSUserDefaults.standardUserDefaults synchronize];
+}
+
+- (void)updateCurrentSessionTabCount:(NSInteger)count {
+  [NSUserDefaults.standardUserDefaults
+      setInteger:count
+          forKey:previous_session_info_constants::kPreviousSessionInfoTabCount];
+  [NSUserDefaults.standardUserDefaults synchronize];
+}
+
+- (void)updateCurrentSessionOTRTabCount:(NSInteger)count {
+  [NSUserDefaults.standardUserDefaults
+      setInteger:count
+          forKey:previous_session_info_constants::
+                     kPreviousSessionInfoOTRTabCount];
   [NSUserDefaults.standardUserDefaults synchronize];
 }
 

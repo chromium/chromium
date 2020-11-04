@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 
 #include "base/check.h"
+#import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/browser/crash_report/breakpad_helper.h"
 #import "ios/chrome/browser/crash_report/crash_report_user_application_state.h"
 #import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
@@ -123,11 +124,14 @@ void SetCurrentlySignedIn(bool signedIn) {
 void SetRegularTabCount(int tabCount) {
   [[CrashReportUserApplicationState sharedInstance] setValue:kRegularTabCount
                                                    withValue:tabCount];
+  [[PreviousSessionInfo sharedInstance] updateCurrentSessionTabCount:tabCount];
 }
 
 void SetIncognitoTabCount(int tabCount) {
   [[CrashReportUserApplicationState sharedInstance] setValue:kIncognitoTabCount
                                                    withValue:tabCount];
+  [[PreviousSessionInfo sharedInstance]
+      updateCurrentSessionOTRTabCount:tabCount];
 }
 
 void SetDestroyingAndRebuildingIncognitoBrowserState(bool in_progress) {

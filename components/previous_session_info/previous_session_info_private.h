@@ -24,6 +24,8 @@
 @property(nonatomic, strong) NSMutableSet<NSString*>* connectedSceneSessionsIDs;
 @property(nonatomic, copy) NSDictionary<NSString*, NSString*>* reportParameters;
 @property(nonatomic, assign) NSInteger memoryFootprint;
+@property(nonatomic, assign) NSInteger tabCount;
+@property(nonatomic, assign) NSInteger OTRTabCount;
 
 + (void)resetSharedInstanceForTesting;
 

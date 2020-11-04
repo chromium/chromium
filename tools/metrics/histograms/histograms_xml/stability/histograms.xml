@@ -345,6 +345,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Stability.iOS.TabCountBefore{Event}" units="tabs"
+    expires_after="2021-05-05">
+  <owner>djean@chromium.org</owner>
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The number of tabs opened in the previous session when the app starts after
+    {Event}. Can be used to understand if there is a correlation between
+    increase of number of tabs and decline in stability. iOS Only.
+  </summary>
+  <token key="Event">
+    <variant name="CleanShutdown" summary="a clean shutdown"/>
+    <variant name="Crash"
+        summary="a crash. This metric is a superset of these 3 methrics:
+                 Stability.iOS.TabCountBeforeFreeze,
+                 Stability.iOS.TabCountBeforeSignalCrash,
+                 Stability.iOS.TabCountBeforeUTE"/>
+    <variant name="Freeze" summary="a UI thread freeze"/>
+    <variant name="SignalCrash" summary="a signal crash"/>
+    <variant name="UTE" summary="a crash (UTE or XTE)"/>
+  </token>
+</histogram>
+
 <histogram name="Stability.iOS.UTE.AvailableStorage" units="KB"
     expires_after="2021-04-04">
   <owner>michaeldo@chromium.org</owner>

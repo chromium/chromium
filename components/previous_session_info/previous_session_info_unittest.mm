@@ -21,8 +21,12 @@ using previous_session_info_constants::kPreviousSessionInfoMemoryFootprint;
 using previous_session_info_constants::kPreviousSessionInfoRestoringSession;
 using previous_session_info_constants::
     kPreviousSessionInfoConnectedSceneSessionIDs;
+using previous_session_info_constants::kPreviousSessionInfoTabCount;
+using previous_session_info_constants::kPreviousSessionInfoOTRTabCount;
 
 namespace {
+
+const NSInteger kTabCount = 15;
 
 // Key in the UserDefaults for a boolean value keeping track of memory warnings.
 NSString* const kDidSeeMemoryWarningShortlyBeforeTerminating =
@@ -577,6 +581,54 @@ TEST_F(PreviousSessionInfoTest, MemoryFootprintRecording) {
         [[NSUserDefaults.standardUserDefaults
             objectForKey:kPreviousSessionInfoMemoryFootprint] integerValue] > 0;
   }));
+}
+
+// Tests tabCount property.
+TEST_F(PreviousSessionInfoTest, TabCount) {
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+  [NSUserDefaults.standardUserDefaults setInteger:kTabCount
+                                           forKey:kPreviousSessionInfoTabCount];
+
+  [[PreviousSessionInfo sharedInstance] beginRecordingCurrentSession];
+  EXPECT_EQ(kTabCount, [PreviousSessionInfo sharedInstance].tabCount);
+}
+
+// Tests tab count gets written to NSUserDefaults.
+TEST_F(PreviousSessionInfoTest, TabCountRecording) {
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+  [NSUserDefaults.standardUserDefaults
+      removeObjectForKey:kPreviousSessionInfoTabCount];
+
+  [[PreviousSessionInfo sharedInstance] beginRecordingCurrentSession];
+  [[PreviousSessionInfo sharedInstance] updateCurrentSessionTabCount:kTabCount];
+
+  EXPECT_NSEQ(@(kTabCount), [NSUserDefaults.standardUserDefaults
+                                objectForKey:kPreviousSessionInfoTabCount]);
+}
+
+// Tests OTRTabCount property.
+TEST_F(PreviousSessionInfoTest, OtrTabCount) {
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+  [NSUserDefaults.standardUserDefaults
+      setInteger:kTabCount
+          forKey:kPreviousSessionInfoOTRTabCount];
+
+  [[PreviousSessionInfo sharedInstance] beginRecordingCurrentSession];
+  EXPECT_EQ(kTabCount, [PreviousSessionInfo sharedInstance].OTRTabCount);
+}
+
+// Tests OTR tab count gets written to NSUserDefaults.
+TEST_F(PreviousSessionInfoTest, OtrTabCountRecording) {
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+  [NSUserDefaults.standardUserDefaults
+      removeObjectForKey:kPreviousSessionInfoOTRTabCount];
+
+  [[PreviousSessionInfo sharedInstance] beginRecordingCurrentSession];
+  [[PreviousSessionInfo sharedInstance]
+      updateCurrentSessionOTRTabCount:kTabCount];
+
+  EXPECT_NSEQ(@(kTabCount), [NSUserDefaults.standardUserDefaults
+                                objectForKey:kPreviousSessionInfoOTRTabCount]);
 }
 
 // Tests memoryFootprint property.
