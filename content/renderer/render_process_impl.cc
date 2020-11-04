@@ -126,10 +126,6 @@ RenderProcessImpl::RenderProcessImpl()
   SetV8FlagIfHasSwitch(switches::kEnableUnsafeFastJSCalls,
                        "--turbo-fast-api-calls");
 
-  constexpr char kModuleFlags[] =
-      "--harmony-dynamic-import --harmony-import-meta";
-  v8::V8::SetFlagsFromString(kModuleFlags, sizeof(kModuleFlags));
-
   SetV8FlagIfFeature(features::kV8VmFuture, "--future");
   SetV8FlagIfNotFeature(features::kV8VmFuture, "--no-future");
 
