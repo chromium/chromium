@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/i18n/case_conversion.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -25,25 +26,52 @@ SimpleCommandSource::~SimpleCommandSource() = default;
 CommandSource::CommandResults SimpleCommandSource::GetCommands(
     const base::string16& input,
     Browser* browser) const {
-  static constexpr struct {
-    int command_id;
-    int string_constant;
+  // TODO(lgrey): Temporarily using hardcoded English titles instead of
+  // translated strings so we can experiment without adding translation load.
+  // As implied, none of these strings are final, or necessarily expected to
+  // ship.
+  const struct {
+    int id;
+    base::string16 title;
   } command_map[] = {
-      {IDC_SHOW_HISTORY, IDS_HISTORY_SHOWFULLHISTORY_LINK},
-      {IDC_FIND, IDS_FIND},
-      {IDC_RELOAD, IDS_TOOLTIP_RELOAD},
-      {IDC_SAVE_PAGE, IDS_SAVE_PAGE},
-      {IDC_PRINT, IDS_PRINT},
+      {IDC_FIND, l10n_util::GetStringUTF16(IDS_FIND)},
+      {IDC_SAVE_PAGE, l10n_util::GetStringUTF16(IDS_SAVE_PAGE)},
+      {IDC_PRINT, l10n_util::GetStringUTF16(IDS_PRINT)},
+      {IDC_SHOW_HISTORY, base::ASCIIToUTF16("Show history")},
+      {IDC_RELOAD, base::ASCIIToUTF16("Reload")},
+      {IDC_NEW_TAB, base::ASCIIToUTF16("Create new tab")},
+      {IDC_RESTORE_TAB, base::ASCIIToUTF16("Open recently closed tab")},
+      {IDC_NEW_WINDOW, base::ASCIIToUTF16("Create new window")},
+      {IDC_NEW_INCOGNITO_WINDOW,
+       base::ASCIIToUTF16("Create new incognito window")},
+      {IDC_BOOKMARK_THIS_TAB, base::ASCIIToUTF16("Bookmark this tab")},
+      {IDC_BOOKMARK_ALL_TABS, base::ASCIIToUTF16("Bookmark all tabs")},
+      {IDC_BACK, base::ASCIIToUTF16("Back")},
+      {IDC_FORWARD, base::ASCIIToUTF16("Forward")},
+      {IDC_ZOOM_PLUS, base::ASCIIToUTF16("Zoom in")},
+      {IDC_ZOOM_MINUS, base::ASCIIToUTF16("Zoom out")},
+      {IDC_ZOOM_NORMAL, base::ASCIIToUTF16("Reset zoom")},
+      {IDC_VIEW_SOURCE, base::ASCIIToUTF16("View page source")},
+      {IDC_EXIT, base::ASCIIToUTF16("Quit")},
+      {IDC_EMAIL_PAGE_LOCATION, base::ASCIIToUTF16("Email page location")},
+      {IDC_FOCUS_LOCATION, base::ASCIIToUTF16("Focus location bar")},
+      {IDC_FOCUS_TOOLBAR, base::ASCIIToUTF16("Focus toolbar")},
+      {IDC_OPEN_FILE, base::ASCIIToUTF16("Open file")},
+      {IDC_TASK_MANAGER, base::ASCIIToUTF16("Show task manager")},
+      {IDC_SHOW_BOOKMARK_MANAGER, base::ASCIIToUTF16("Show bookmark manager")},
+      {IDC_SHOW_DOWNLOADS, base::ASCIIToUTF16("Show downloads")},
+      {IDC_CLEAR_BROWSING_DATA, base::ASCIIToUTF16("Clear browsing data")},
+      {IDC_OPTIONS, base::ASCIIToUTF16("Show settings")},
+      {IDC_SHOW_AVATAR_MENU, base::ASCIIToUTF16("Switch profile")},
+      {IDC_DEV_TOOLS_TOGGLE, base::ASCIIToUTF16("Toggle developer tools")},
   };
-
   CommandSource::CommandResults results;
   const base::string16& folded_input = base::i18n::FoldCase(input);
   std::vector<gfx::Range> ranges;
   for (const auto& command_spec : command_map) {
-    if (!chrome::IsCommandEnabled(browser, command_spec.command_id))
+    if (!chrome::IsCommandEnabled(browser, command_spec.id))
       continue;
-    base::string16 title =
-        l10n_util::GetStringUTF16(command_spec.string_constant);
+    base::string16 title = command_spec.title;
     base::Erase(title, '&');
     double score = FuzzyFind(folded_input, title, &ranges);
     if (score == 0)
@@ -57,20 +85,15 @@ CommandSource::CommandResults SimpleCommandSource::GetCommands(
     ui::Accelerator accelerator;
     ui::AcceleratorProvider* provider =
         chrome::AcceleratorProviderForBrowser(browser);
-    if (provider->GetAcceleratorForCommandId(command_spec.command_id,
-                                             &accelerator)) {
+    if (provider->GetAcceleratorForCommandId(command_spec.id, &accelerator)) {
       item->annotation = accelerator.GetShortcutText();
     }
 
-    // TODO(lgrey): For base::Unretained to be safe here, we need to ensure
-    // that if |browser| is destroyed, the palette is reset. It's likely
-    // that this will be the case anyway, but leaving this comment so:
-    // - it doesn't get dropped/forgotten
-    // - as a reminder to replace the comment with the actual explanation
-    //   when we have it
+    // base::Unretained is safe because the controller is reset when the
+    // browser it's attached to closes.
     item->command =
         base::BindOnce(&SimpleCommandSource::ExecuteCommand, weak_this_,
-                       base::Unretained(browser), command_spec.command_id);
+                       base::Unretained(browser), command_spec.id);
     results.push_back(std::move(item));
   }
 
