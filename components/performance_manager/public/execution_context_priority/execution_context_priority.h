@@ -59,7 +59,6 @@ using VoteReceipt = voting::VoteReceipt<Vote>;
 using VotingChannel = voting::VotingChannel<Vote>;
 using VotingChannelFactory = voting::VotingChannelFactory<Vote>;
 using VoteConsumer = voting::VoteConsumer<Vote>;
-using VoteConsumerDefaultImpl = voting::VoteConsumerDefaultImpl<Vote>;
 using AcceptedVote = voting::AcceptedVote<Vote>;
 
 }  // namespace execution_context_priority

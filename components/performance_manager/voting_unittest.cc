@@ -20,7 +20,6 @@ using TestVoteReceipt = voting::VoteReceipt<TestVote>;
 using TestVotingChannel = voting::VotingChannel<TestVote>;
 using TestVotingChannelFactory = voting::VotingChannelFactory<TestVote>;
 using TestVoteConsumer = voting::VoteConsumer<TestVote>;
-using TestVoteConsumerDefaultImpl = voting::VoteConsumerDefaultImpl<TestVote>;
 using TestAcceptedVote = voting::AcceptedVote<TestVote>;
 
 using DummyVoter = voting::test::DummyVoter<TestVote>;

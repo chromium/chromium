@@ -398,28 +398,6 @@ class VoteConsumer {
                                AcceptedVote* vote) = 0;
 };
 
-// Provides a default implementation of VoteConsumer that implements a naive
-// (less efficient) version of "ChangeVote".
-template <class VoteImpl>
-class VoteConsumerDefaultImpl : public VoteConsumer<VoteImpl> {
- public:
-  VoteConsumerDefaultImpl();
-  ~VoteConsumerDefaultImpl() override;
-  VoteConsumerDefaultImpl(const VoteConsumerDefaultImpl& rhs) = delete;
-  VoteConsumerDefaultImpl& operator=(const VoteConsumerDefaultImpl& rhs) =
-      delete;
-
-  // VoteConsumer implementation left to the derived class:
-  VoteReceipt<VoteImpl> SubmitVote(VoterId<VoteImpl> voter_id,
-                                   const VoteImpl& vote) override = 0;
-  void VoteInvalidated(AcceptedVote<VoteImpl>* vote) override = 0;
-
-  // VoteConsumer implementation provided by this class:
-  VoteReceipt<VoteImpl> ChangeVote(VoteReceipt<VoteImpl> receipt,
-                                   AcceptedVote<VoteImpl>* existing_vote,
-                                   const VoteImpl& new_vote) override;
-};
-
 /////////////////////////////////////////////////////////////////////
 // Vote
 
@@ -825,30 +803,6 @@ template <class VoteImpl>
 VoteConsumer<VoteImpl>::VoteConsumer() = default;
 template <class VoteImpl>
 VoteConsumer<VoteImpl>::~VoteConsumer() = default;
-
-/////////////////////////////////////////////////////////////////////
-// VoteConsumerDefaultImpl
-
-template <class VoteImpl>
-VoteConsumerDefaultImpl<VoteImpl>::VoteConsumerDefaultImpl() = default;
-template <class VoteImpl>
-VoteConsumerDefaultImpl<VoteImpl>::~VoteConsumerDefaultImpl() = default;
-
-template <class VoteImpl>
-VoteReceipt<VoteImpl> VoteConsumerDefaultImpl<VoteImpl>::ChangeVote(
-    VoteReceipt<VoteImpl> receipt,
-    AcceptedVote<VoteImpl>* old_vote,
-    const VoteImpl& new_vote) {
-  // The receipt and vote should be entangled, and the vote should be valid.
-  DCHECK(receipt.HasVote(old_vote));
-  DCHECK(old_vote->IsValid());
-
-  // Tear down the old vote before submitting a new one in order to prevent
-  // the voter from having 2 simultaneous votes for the same context.
-  auto voter_id = receipt.GetVoterId();
-  receipt.Reset();
-  return SubmitVote(voter_id, new_vote);
-}
 
 }  // namespace voting
 }  // namespace performance_manager
