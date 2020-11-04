@@ -43,7 +43,6 @@ class _Generator(object):
       .Append()
       .Append(self._util_cc_helper.GetIncludePath())
       .Append('#include "base/check.h"')
-      .Append('#include "base/check_op.h"')
       .Append('#include "base/notreached.h"')
       .Append('#include "base/strings/string_number_conversions.h"')
       .Append('#include "base/strings/utf_string_conversions.h"')
@@ -256,15 +255,24 @@ class _Generator(object):
       if type_.properties or type_.additional_properties is not None:
         c.Append('const auto* dict = '
                      'static_cast<const base::DictionaryValue*>(&value);')
-
-      # TODO(crbug.com/1145154): The generated code here will ignore
-      # unrecognized keys, but the parsing code for types passed to APIs in the
-      # renderer will hard-error on them. We should probably be consistent with
-      # the renderer here (at least for types also parsed in the renderer).
+        if self._generate_error_messages:
+          c.Append('std::set<std::string> keys;')
       for prop in type_.properties.values():
         c.Concat(self._InitializePropertyToDefault(prop, 'out'))
       for prop in type_.properties.values():
+        if self._generate_error_messages:
+          c.Append('keys.insert("%s");' % (prop.name))
         c.Concat(self._GenerateTypePopulateProperty(prop, 'dict', 'out'))
+      # Check for extra values.
+      if self._generate_error_messages:
+        (c.Sblock('for (base::DictionaryValue::Iterator it(*dict); '
+                       '!it.IsAtEnd(); it.Advance()) {')
+          .Sblock('if (!keys.count(it.key())) {')
+          .Concat(self._GenerateError('"found unexpected key \'" + '
+                                          'it.key() + "\'"'))
+          .Eblock('}')
+          .Eblock('}')
+        )
       if type_.additional_properties is not None:
         if type_.additional_properties.property_type == PropertyType.ANY:
           c.Append('out->additional_properties.MergeDictionary(dict);')
@@ -345,18 +353,15 @@ class _Generator(object):
       .Append('std::unique_ptr<%s> %s::FromValue(%s) {' % (classname,
         cpp_namespace, self._GenerateParams(('const base::Value& value',))))
     )
-    c.Sblock();
     if self._generate_error_messages:
       c.Append('DCHECK(error);')
-    c.Append('auto out = std::make_unique<%s>();' % classname)
-    c.Append('bool result = Populate(%s);' %
-      self._GenerateArgs(('value', 'out.get()')))
-    if self._generate_error_messages:
-      c.Append('DCHECK_EQ(result, error->empty());')
-    c.Sblock('if (!result)')
-    c.Append('return nullptr;')
-    c.Eblock('return out;')
-    c.Eblock('}')
+    (c.Append('  auto out = std::make_unique<%s>();' % classname)
+      .Append('  if (!Populate(%s))' % self._GenerateArgs(
+          ('value', 'out.get()')))
+      .Append('    return nullptr;')
+      .Append('  return out;')
+      .Append('}')
+    )
     return c
 
   def _GenerateTypeToValue(self, cpp_namespace, type_):
@@ -916,7 +921,8 @@ class _Generator(object):
                 self._util_cc_helper.GetValueTypeString(
                     '%%(src_var)s', True)))))
         c.Append('%(dst_var)s.reset();')
-        c.Append('return %(failure_value)s;')
+        if not self._generate_error_messages:
+          c.Append('return %(failure_value)s;')
         (c.Eblock('}')
           .Append('else')
           .Append('  %(dst_var)s = std::make_unique<%(cpp_type)s>(temp);')
@@ -940,9 +946,12 @@ class _Generator(object):
           .Sblock('if (!%(src_var)s->GetAsDictionary(&dictionary)) {')
           .Concat(self._GenerateError(
             '"\'%%(key)s\': expected dictionary, got " + ' +
-            self._util_cc_helper.GetValueTypeString('%%(src_var)s', True)))
-          .Append('return %(failure_value)s;')
-        )
+            self._util_cc_helper.GetValueTypeString('%%(src_var)s', True))))
+        # If an optional property fails to populate, the population can still
+        # succeed with a warning. If no error messages are generated, this
+        # warning is not set and we fail out instead.
+        if not self._generate_error_messages:
+          c.Append('return %(failure_value)s;')
         (c.Eblock('}')
           .Sblock('else {')
           .Append('auto temp = std::make_unique<%(cpp_type)s>();')
@@ -977,11 +986,14 @@ class _Generator(object):
       # util_cc_helper deals with optional and required arrays
       (c.Append('const base::ListValue* list = nullptr;')
         .Sblock('if (!%(src_var)s->GetAsList(&list)) {')
-        .Concat(self._GenerateError(
-          '"\'%%(key)s\': expected list, got " + ' +
-          self._util_cc_helper.GetValueTypeString('%%(src_var)s', True)))
-        .Append('return %(failure_value)s;')
+          .Concat(self._GenerateError(
+            '"\'%%(key)s\': expected list, got " + ' +
+            self._util_cc_helper.GetValueTypeString('%%(src_var)s', True)))
       )
+      if is_ptr and self._generate_error_messages:
+        c.Append('%(dst_var)s.reset();')
+      else:
+        c.Append('return %(failure_value)s;')
       c.Eblock('}')
       c.Sblock('else {')
       item_type = self._type_helper.FollowRef(underlying_type.item_type)
@@ -998,7 +1010,10 @@ class _Generator(object):
             self._GenerateArgs(('*list', '&%(dst_var)s'))))
         c.Concat(self._GenerateError(
             '"unable to populate array \'%%(parent_key)s\'"'))
-        c.Append('return %(failure_value)s;')
+        if is_ptr and self._generate_error_messages:
+          c.Append('%(dst_var)s.reset();')
+        else:
+          c.Append('return %(failure_value)s;')
         c.Eblock('}')
       c.Eblock('}')
     elif underlying_type.property_type == PropertyType.CHOICES:
@@ -1023,8 +1038,9 @@ class _Generator(object):
         .Concat(self._GenerateError(
           '"\'%%(key)s\': expected binary, got " + ' +
           self._util_cc_helper.GetValueTypeString('%%(src_var)s', True)))
-        .Append('return %(failure_value)s;')
       )
+      if not self._generate_error_messages:
+        c.Append('return %(failure_value)s;')
       (c.Eblock('}')
         .Sblock('else {')
       )
