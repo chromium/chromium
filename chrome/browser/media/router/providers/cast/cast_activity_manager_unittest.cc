@@ -291,6 +291,12 @@ class CastActivityManagerTest : public testing::Test,
     EXPECT_CALL(message_handler_,
                 EnsureConnection(kChannelId, "theClientId", "theTransportId",
                                  cast_channel::VirtualConnectionType::kStrong));
+    EXPECT_CALL(message_handler_,
+                SendMediaRequest(kChannelId,
+                                 // NOTE: MEDIA_GET_STATUS is translated to
+                                 // GET_STATUS inside SendMediaRequest.
+                                 IsJson(R"({"type": "MEDIA_GET_STATUS"})"),
+                                 "theClientId", "theTransportId"));
 
     auto response = GetSuccessLaunchResponse(app_id);
     session_tracker_->SetSessionForTest(

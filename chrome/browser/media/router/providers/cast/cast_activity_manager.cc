@@ -818,24 +818,25 @@ void CastActivityManager::HandleLaunchSessionResponse(
   }
   RecordLaunchSessionResponseAppType(session->value().FindKey("appType"));
 
+  const std::string& client_id = cast_source.client_id();
+  const auto channel_id = sink.cast_data().cast_channel_id;
+  const auto destination_id = session->transport_id();
+
   // Cast SDK sessions have a |client_id|, and we ensure a virtual connection
   // for them. For mirroring sessions, we ensure a strong virtual connection for
   // |message_handler_|. Mirroring initiated via the Cast SDK will have
   // EnsureConnection() called for both.
-  const std::string& client_id = cast_source.client_id();
   if (!client_id.empty()) {
     activity_it->second->SendMessageToClient(
         client_id,
         CreateNewSessionMessage(*session, client_id, sink, hash_token_));
-    message_handler_->EnsureConnection(sink.cast_data().cast_channel_id,
-                                       client_id, session->transport_id(),
+    message_handler_->EnsureConnection(channel_id, client_id, destination_id,
                                        cast_source.connection_type());
-    // TODO(jrw): Query media status.
   }
   if (cast_source.ContainsStreamingApp()) {
     message_handler_->EnsureConnection(
-        sink.cast_data().cast_channel_id, message_handler_->sender_id(),
-        session->transport_id(), cast_channel::VirtualConnectionType::kStrong);
+        channel_id, message_handler_->sender_id(), destination_id,
+        cast_channel::VirtualConnectionType::kStrong);
   } else if (client_id.empty()) {
     logger_->LogError(
         mojom::LogCategory::kRoute, kLoggerComponent,
@@ -845,6 +846,19 @@ void CastActivityManager::HandleLaunchSessionResponse(
   }
 
   activity_it->second->SetOrUpdateSession(*session, sink, hash_token_);
+
+  if (!client_id.empty() && base::Contains(session->message_namespaces(),
+                                           cast_channel::kMediaNamespace)) {
+    // Request media status from the receiver.
+    base::Value request(base::Value::Type::DICTIONARY);
+    request.SetStringKey("type",
+                         cast_util::EnumToString<
+                             cast_channel::V2MessageType,
+                             cast_channel::V2MessageType::kMediaGetStatus>());
+    message_handler_->SendMediaRequest(channel_id, request, client_id,
+                                       destination_id);
+  }
+
   NotifyAllOnRoutesUpdated();
   logger_->LogInfo(mojom::LogCategory::kRoute, kLoggerComponent,
                    "Successfully Launched the session.", sink.id(),
