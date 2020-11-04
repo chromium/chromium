@@ -17,8 +17,11 @@ see .cc files in green and get confused.
   shebang, add it to IGNORED_FILENAMES.
 
 Any file not matching the above will be opened and looked if it has a shebang
-or an ELF header. If this does not match the executable bit on the file, the
-file will be flagged.
+or an ELF or Mach-O header. If this does not match the executable bit on the
+file, the file will be flagged. Mach-O files are allowed to exist with or
+without an executable bit set, as there are many examples of it appearing as
+test data, and as Mach-O types such as dSYM that canonically do not have their
+executable bits set.
 
 Note that all directory separators must be slashes (Unix-style) and not
 backslashes. All directories should be relative to the source root and all
@@ -253,14 +256,23 @@ def has_executable_bit(full_path):
   return bool(permission & os.stat(full_path).st_mode)
 
 
-def has_shebang_or_is_elf(full_path):
-  """Returns if the file starts with #!/ or is an ELF binary.
+def has_shebang_or_is_elf_or_mach_o(full_path):
+  """Returns if the file starts with #!/ or is an ELF or Mach-O binary.
 
   full_path is the absolute path to the file.
   """
   with open(full_path, 'rb') as f:
     data = f.read(4)
-    return (data[:3] == '#!/' or data == '#! /', data == '\x7fELF')
+    return (data[:3] == '#!/' or data == '#! /',
+            data == '\x7fELF',  # ELFMAG
+            data in ('\xfe\xed\xfa\xce',  # MH_MAGIC
+                     '\xce\xfa\xed\xfe',  # MH_CIGAM
+                     '\xfe\xed\xfa\xcf',  # MH_MAGIC_64
+                     '\xcf\xfa\xed\xfe',  # MH_CIGAM_64
+                     '\xca\xfe\xba\xbe',  # FAT_MAGIC
+                     '\xbe\xba\xfe\xca',  # FAT_CIGAM
+                     '\xca\xfe\xba\xbf',  # FAT_MAGIC_64
+                     '\xbf\xba\xfe\xca'))  # FAT_CIGAM_64
 
 
 def check_file(root_path, rel_path):
@@ -272,7 +284,8 @@ def check_file(root_path, rel_path):
   If the file name is matched with must_be_executable() or
   must_not_be_executable(), only its executable bit is checked.
   Otherwise, the first few bytes of the file are read to verify if it has a
-  shebang or ELF header and compares this with the executable bit on the file.
+  shebang or ELF or Mach-O header and compares this with the executable bit on
+  the file.
   """
   full_path = os.path.join(root_path, rel_path)
   def result_dict(error):
@@ -300,13 +313,16 @@ def check_file(root_path, rel_path):
     return
 
   # For the others, it depends on the file header.
-  (shebang, elf) = has_shebang_or_is_elf(full_path)
-  if bit != (shebang or elf):
+  (shebang, elf, mach_o) = has_shebang_or_is_elf_or_mach_o(full_path)
+  if bit != (shebang or elf or mach_o):
     if bit:
-      return result_dict('Has executable bit but not shebang or ELF header')
+      return result_dict(
+          'Has executable bit but not shebang or ELF or Mach-O header')
     if shebang:
       return result_dict('Has shebang but not executable bit')
-    return result_dict('Has ELF header but not executable bit')
+    if elf:
+      return result_dict('Has ELF header but not executable bit')
+    # Mach-O is allowed to exist in the tree with or without an executable bit.
 
 
 def check_files(root, files):
@@ -457,7 +473,7 @@ Examples:
     errors = api.check(start_dir)
 
     if not options.bare:
-      print('Processed %s files, %d files where tested for shebang/ELF '
+      print('Processed %s files, %d files where tested for shebang/ELF/Mach-O '
             'header' % (api.count, api.count_read_header))
 
   if options.json:
