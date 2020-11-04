@@ -6238,3 +6238,5 @@ crbug.com/997202 [ Mac ] virtual/transform-interop/external/wpt/css/css-transfor
 
 # Sheriff 2020-11-04
 crbug.com/1144273 http/tests/devtools/sources/debugger-ui/continue-to-location-markers-in-top-level-function.js [ Pass Failure ]
+crbug.com/1145424 [ Linux ] http/tests/devtools/sources/debugger-ui/reveal-execution-line.js [ Pass Timeout ]
+crbug.com/1145424 [ Win ] http/tests/devtools/sources/debugger-ui/reveal-execution-line.js [ Pass Timeout ]
