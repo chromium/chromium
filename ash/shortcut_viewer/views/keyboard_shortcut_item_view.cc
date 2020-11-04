@@ -102,14 +102,18 @@ KeyboardShortcutItemView::KeyboardShortcutItemView(
   }
 
   int shortcut_message_id;
-  if (item.shortcut_message_id) {
+  if (has_invalid_dom_key) {
+    // |shortcut_message_id| should never be used if the shortcut is not
+    // supported on the current keyboard layout.
+    shortcut_message_id = -1;
+  } else if (item.shortcut_message_id) {
     shortcut_message_id = *item.shortcut_message_id;
   } else {
     // Automatically determine the shortcut message based on the number of
-    // shortcut_key_codes.
+    // replacement strings.
     // As there are separators inserted between the modifiers, a shortcut with
-    // N modifiers has 2*N + 1 shortcut_key_codes.
-    switch (item.shortcut_key_codes.size()) {
+    // N modifiers has 2*N + 1 replacement strings.
+    switch (replacement_strings.size()) {
       case 1:
         shortcut_message_id = IDS_KSV_SHORTCUT_ONE_KEY;
         break;
@@ -124,7 +128,7 @@ KeyboardShortcutItemView::KeyboardShortcutItemView(
         break;
       default:
         NOTREACHED() << "Automatically determined shortcut has "
-                     << item.shortcut_key_codes.size() << " key codes.";
+                     << replacement_strings.size() << " replacement strings.";
     }
   }
 
