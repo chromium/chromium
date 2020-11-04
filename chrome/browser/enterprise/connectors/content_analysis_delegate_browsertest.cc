@@ -204,15 +204,21 @@ class ContentAnalysisDelegateBrowserTest
   void EnableUploadsScanningAndReporting() {
     SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting(kDmToken));
 
-    safe_browsing::SetDlpPolicyForConnectors(safe_browsing::CHECK_UPLOADS);
-    safe_browsing::SetMalwarePolicyForConnectors(safe_browsing::SEND_UPLOADS);
-    safe_browsing::SetDelayDeliveryUntilVerdictPolicyForConnectors(
-        safe_browsing::DELAY_UPLOADS);
+    constexpr char kBlockingScansForDlpAndMalware[] = R"({
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp", "malware"]
+            }
+          ],
+          "block_until_verdict": 1
+        })";
+    safe_browsing::SetAnalysisConnector(enterprise_connectors::FILE_ATTACHED,
+                                        kBlockingScansForDlpAndMalware);
+    safe_browsing::SetAnalysisConnector(enterprise_connectors::BULK_DATA_ENTRY,
+                                        kBlockingScansForDlpAndMalware);
     safe_browsing::SetOnSecurityEventReporting(true);
-
-    // Add the wildcard pattern to this policy since malware responses are
-    // verified for most of these tests.
-    safe_browsing::AddUrlsToCheckForMalwareOfUploadsForConnectors({"*"});
 
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
     extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
@@ -446,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDelegateBrowserTest, Texts) {
             ASSERT_FALSE(result.text_results[1]);
             called = true;
           }),
-      safe_browsing::DeepScanAccessPoint::UPLOAD);
+      safe_browsing::DeepScanAccessPoint::PASTE);
 
   FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
 
@@ -459,32 +465,32 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDelegateBrowserTest, Texts) {
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
 }
 
-class ContentAnalysisDelegatePasswordProtectedFilesBrowserTest
+// This class tests each of the blocking settings used in Connector policies:
+// - block_until_verdict
+// - block_password_protected
+// - block_large_files
+// - block_unsupported_file_types
+class ContentAnalysisDelegateBlockingSettingBrowserTest
     : public ContentAnalysisDelegateBrowserTest,
-      public testing::WithParamInterface<
-          safe_browsing::AllowPasswordProtectedFilesValues> {
+      public testing::WithParamInterface<bool> {
  public:
-  ContentAnalysisDelegatePasswordProtectedFilesBrowserTest() = default;
+  ContentAnalysisDelegateBlockingSettingBrowserTest() = default;
 
-  safe_browsing::AllowPasswordProtectedFilesValues
-  allow_password_protected_files() const {
-    return GetParam();
+  // Use a string since the setting value is inserted into a JSON policy.
+  const char* bool_setting_value() const {
+    return GetParam() ? "true" : "false";
   }
+  const char* int_setting_value() const { return GetParam() ? "1" : "0"; }
 
-  bool expected_result() const {
-    switch (allow_password_protected_files()) {
-      case safe_browsing::ALLOW_NONE:
-      case safe_browsing::ALLOW_DOWNLOADS:
-        return false;
-      case safe_browsing::ALLOW_UPLOADS:
-      case safe_browsing::ALLOW_UPLOADS_AND_DOWNLOADS:
-        return true;
-    }
-  }
+  bool expected_result() const { return !GetParam(); }
 };
 
-IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegatePasswordProtectedFilesBrowserTest,
-                       Test) {
+INSTANTIATE_TEST_SUITE_P(,
+                         ContentAnalysisDelegateBlockingSettingBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
+                       BlockPasswordProtected) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath test_zip;
@@ -495,8 +501,19 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegatePasswordProtectedFilesBrowserTest,
 
   // Set up delegate and upload service.
   EnableUploadsScanningAndReporting();
-  SetAllowPasswordProtectedFilesPolicyForConnectors(
-      allow_password_protected_files());
+  safe_browsing::SetAnalysisConnector(
+      enterprise_connectors::FILE_ATTACHED,
+      base::StringPrintf(R"({
+        "service_provider": "google",
+        "enable": [
+          {
+            "url_list": ["*"],
+            "tags": ["dlp"]
+          }
+        ],
+        "block_until_verdict": 1,
+        "block_password_protected": %s
+      })", bool_setting_value()));
 
   enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
@@ -556,48 +573,25 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegatePasswordProtectedFilesBrowserTest,
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 1);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ContentAnalysisDelegatePasswordProtectedFilesBrowserTest,
-    testing::Values(safe_browsing::ALLOW_NONE,
-                    safe_browsing::ALLOW_DOWNLOADS,
-                    safe_browsing::ALLOW_UPLOADS,
-                    safe_browsing::ALLOW_UPLOADS_AND_DOWNLOADS));
-
-class ContentAnalysisDelegateBlockUnsupportedFileTypesBrowserTest
-    : public ContentAnalysisDelegateBrowserTest,
-      public testing::WithParamInterface<
-          safe_browsing::BlockUnsupportedFiletypesValues> {
- public:
-  ContentAnalysisDelegateBlockUnsupportedFileTypesBrowserTest() = default;
-
-  safe_browsing::BlockUnsupportedFiletypesValues block_unsupported_file_types()
-      const {
-    return GetParam();
-  }
-
-  bool expected_result() const {
-    switch (block_unsupported_file_types()) {
-      case safe_browsing::BLOCK_UNSUPPORTED_FILETYPES_NONE:
-      case safe_browsing::BLOCK_UNSUPPORTED_FILETYPES_DOWNLOADS:
-        return true;
-      case safe_browsing::BLOCK_UNSUPPORTED_FILETYPES_UPLOADS:
-      case safe_browsing::BLOCK_UNSUPPORTED_FILETYPES_UPLOADS_AND_DOWNLOADS:
-        return false;
-    }
-  }
-};
-
-IN_PROC_BROWSER_TEST_P(
-    ContentAnalysisDelegateBlockUnsupportedFileTypesBrowserTest,
-    Test) {
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
+                       BlockUnsupportedFileTypes) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Set up delegate and upload service.
   EnableUploadsScanningAndReporting();
-  safe_browsing::SetBlockUnsupportedFileTypesPolicyForConnectors(
-      block_unsupported_file_types());
-  safe_browsing::ClearUrlsToCheckForMalwareOfUploadsForConnectors();
+  safe_browsing::SetAnalysisConnector(
+      enterprise_connectors::FILE_ATTACHED,
+      base::StringPrintf(R"({
+        "service_provider": "google",
+        "enable": [
+          {
+            "url_list": ["*"],
+            "tags": ["dlp"]
+          }
+        ],
+        "block_until_verdict": 1,
+        "block_unsupported_file_types": %s
+      })", bool_setting_value()));
 
   enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
@@ -657,46 +651,25 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 1);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ContentAnalysisDelegateBlockUnsupportedFileTypesBrowserTest,
-    testing::Values(
-        safe_browsing::BLOCK_UNSUPPORTED_FILETYPES_NONE,
-        safe_browsing::BLOCK_UNSUPPORTED_FILETYPES_DOWNLOADS,
-        safe_browsing::BLOCK_UNSUPPORTED_FILETYPES_UPLOADS,
-        safe_browsing::BLOCK_UNSUPPORTED_FILETYPES_UPLOADS_AND_DOWNLOADS));
-
-class ContentAnalysisDelegateBlockLargeFileTransferBrowserTest
-    : public ContentAnalysisDelegateBrowserTest,
-      public testing::WithParamInterface<
-          safe_browsing::BlockLargeFileTransferValues> {
- public:
-  ContentAnalysisDelegateBlockLargeFileTransferBrowserTest() = default;
-
-  safe_browsing::BlockLargeFileTransferValues block_large_file_transfer()
-      const {
-    return GetParam();
-  }
-
-  bool expected_result() const {
-    switch (block_large_file_transfer()) {
-      case safe_browsing::BLOCK_NONE:
-      case safe_browsing::BLOCK_LARGE_DOWNLOADS:
-        return true;
-      case safe_browsing::BLOCK_LARGE_UPLOADS:
-      case safe_browsing::BLOCK_LARGE_UPLOADS_AND_DOWNLOADS:
-        return false;
-    }
-  }
-};
-
-IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockLargeFileTransferBrowserTest,
-                       Test) {
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
+                       BlockLargeFiles) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Set up delegate and upload service.
   EnableUploadsScanningAndReporting();
-  SetBlockLargeFileTransferPolicyForConnectors(block_large_file_transfer());
+  safe_browsing::SetAnalysisConnector(
+      enterprise_connectors::FILE_ATTACHED,
+      base::StringPrintf(R"({
+        "service_provider": "google",
+        "enable": [
+          {
+            "url_list": ["*"],
+            "tags": ["dlp", "malware"]
+          }
+        ],
+        "block_until_verdict": 1,
+        "block_large_files": %s
+      })", bool_setting_value()));
 
   enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
@@ -760,46 +733,24 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockLargeFileTransferBrowserTest,
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 1);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ContentAnalysisDelegateBlockLargeFileTransferBrowserTest,
-    testing::Values(safe_browsing::BLOCK_NONE,
-                    safe_browsing::BLOCK_LARGE_DOWNLOADS,
-                    safe_browsing::BLOCK_LARGE_UPLOADS,
-                    safe_browsing::BLOCK_LARGE_UPLOADS_AND_DOWNLOADS));
-
-class ContentAnalysisDelegateDelayDeliveryUntilVerdictTest
-    : public ContentAnalysisDelegateBrowserTest,
-      public testing::WithParamInterface<
-          safe_browsing::DelayDeliveryUntilVerdictValues> {
- public:
-  ContentAnalysisDelegateDelayDeliveryUntilVerdictTest() = default;
-
-  safe_browsing::DelayDeliveryUntilVerdictValues delay_delivery_until_verdict()
-      const {
-    return GetParam();
-  }
-
-  bool expected_result() const {
-    switch (delay_delivery_until_verdict()) {
-      case safe_browsing::DELAY_NONE:
-      case safe_browsing::DELAY_DOWNLOADS:
-        return true;
-      case safe_browsing::DELAY_UPLOADS:
-      case safe_browsing::DELAY_UPLOADS_AND_DOWNLOADS:
-        return false;
-    }
-  }
-};
-
-IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateDelayDeliveryUntilVerdictTest,
-                       Test) {
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
+                       BlockUntilVerdict) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Set up delegate and upload service.
   EnableUploadsScanningAndReporting();
-  SetDelayDeliveryUntilVerdictPolicyForConnectors(
-      delay_delivery_until_verdict());
+  safe_browsing::SetAnalysisConnector(
+      enterprise_connectors::FILE_ATTACHED,
+      base::StringPrintf(R"({
+        "service_provider": "google",
+        "enable": [
+          {
+            "url_list": ["*"],
+            "tags": ["dlp", "malware"]
+          }
+        ],
+        "block_until_verdict": %s
+      })", int_setting_value()));
 
   enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
@@ -891,13 +842,5 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateDelayDeliveryUntilVerdictTest,
   // authentication with the corresponding request type.
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ContentAnalysisDelegateDelayDeliveryUntilVerdictTest,
-    testing::Values(safe_browsing::DELAY_NONE,
-                    safe_browsing::DELAY_DOWNLOADS,
-                    safe_browsing::DELAY_UPLOADS,
-                    safe_browsing::DELAY_UPLOADS_AND_DOWNLOADS));
 
 }  // namespace enterprise_connectors
