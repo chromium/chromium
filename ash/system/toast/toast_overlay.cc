@@ -12,7 +12,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/scoped_light_mode_as_default.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -69,7 +68,6 @@ class ToastOverlayLabel : public views::Label {
     SetAutoColorReadabilityEnabled(false);
     SetMultiLine(true);
     SetMaxLines(2);
-    ScopedLightModeAsDefault scoped_light_mode_as_default;
     SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
     SetSubpixelRenderingEnabled(false);
@@ -119,7 +117,6 @@ class ToastOverlayButton : public views::LabelButton {
       : views::LabelButton(listener, text, CONTEXT_TOAST_OVERLAY) {
     SetInkDropMode(InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
-    ScopedLightModeAsDefault scoped_light_mode_as_default;
     const auto* color_provider = AshColorProvider::Get();
     SetInkDropBaseColor(color_provider->GetRippleAttributes().base_color);
     SetEnabledTextColors(color_provider->GetContentLayerColor(
@@ -162,7 +159,6 @@ class ToastOverlayView : public views::View, public views::ButtonListener {
                    const bool is_managed)
       : overlay_(overlay) {
     SetPaintToLayer();
-    ScopedLightModeAsDefault scoped_light_mode_as_default;
     SetBackground(
         views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
             AshColorProvider::BaseLayerType::kTransparent80)));
