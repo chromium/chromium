@@ -21,6 +21,8 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.mojo.system.MojoException;
+import org.chromium.payments.mojom.CanMakePaymentQueryResult;
+import org.chromium.payments.mojom.HasEnrolledInstrumentQueryResult;
 import org.chromium.payments.mojom.PayerDetail;
 import org.chromium.payments.mojom.PaymentAddress;
 import org.chromium.payments.mojom.PaymentDetails;
@@ -102,11 +104,16 @@ public class PaymentRequestService {
      * after all payment apps have been queried.
      */
     private boolean mHasEnrolledInstrument;
+    /** True if any of the requested payment methods are supported. */
+    private boolean mCanMakePayment;
     /**
      * Whether there's at least one app that is not an autofill card. Should be read only after all
      * payment apps have been queried.
      */
     private boolean mHasNonAutofillApp;
+
+    private boolean mIsCanMakePaymentResponsePending;
+    private boolean mIsHasEnrolledInstrumentResponsePending;
 
     /**
      * An observer interface injected when running tests to allow them to observe events.
@@ -527,6 +534,75 @@ public class PaymentRequestService {
         pendingApps.add(paymentApp);
     }
 
+    /** @return Whether the response of CanMakePayment is pending. */
+    public boolean isCanMakePaymentResponsePending() {
+        return mIsCanMakePaymentResponsePending;
+    }
+
+    /** Sets pending for the response of CanMakePayment. */
+    public void setCanMakePaymentResponsePending(boolean isPending) {
+        mIsCanMakePaymentResponsePending = isPending;
+    }
+
+    /** @return Whether the response of HasEnrolledInstrument is pending. */
+    public boolean isHasEnrolledInstrumentResponsePending() {
+        return mIsHasEnrolledInstrumentResponsePending;
+    }
+
+    /** Sets pending for HasEnrolledInstrument. */
+    public void setIsHasEnrolledInstrumentResponsePending(boolean isPending) {
+        mIsHasEnrolledInstrumentResponsePending = isPending;
+    }
+
+    /** Responds to the CanMakePayment query from the merchant page. */
+    public void respondCanMakePaymentQuery() {
+        // Every caller should stop referencing this class once close() is called.
+        assert mClient != null;
+
+        mIsCanMakePaymentResponsePending = false;
+
+        boolean response = mCanMakePayment && mDelegate.prefsCanMakePayment();
+        mClient.onCanMakePayment(response ? CanMakePaymentQueryResult.CAN_MAKE_PAYMENT
+                                          : CanMakePaymentQueryResult.CANNOT_MAKE_PAYMENT);
+
+        mJourneyLogger.setCanMakePaymentValue(response || mIsOffTheRecord);
+
+        if (sObserverForTest != null) {
+            sObserverForTest.onPaymentRequestServiceCanMakePaymentQueryResponded();
+        }
+        if (sNativeObserverForTest != null) {
+            sNativeObserverForTest.onCanMakePaymentReturned();
+        }
+    }
+
+    /** Responds to the HasEnrolledInstrument query from the merchant page. */
+    public void respondHasEnrolledInstrumentQuery() {
+        boolean response = mHasEnrolledInstrument;
+        mIsHasEnrolledInstrumentResponsePending = false;
+
+        if (CanMakePaymentQuery.canQuery(
+                    mWebContents, mTopLevelOrigin, mPaymentRequestOrigin, mQueryForQuota)) {
+            onHasEnrolledInstrument(response
+                            ? HasEnrolledInstrumentQueryResult.HAS_ENROLLED_INSTRUMENT
+                            : HasEnrolledInstrumentQueryResult.HAS_NO_ENROLLED_INSTRUMENT);
+        } else if (mBrowserPaymentRequest.shouldEnforceCanMakePaymentQueryQuota()) {
+            onHasEnrolledInstrument(HasEnrolledInstrumentQueryResult.QUERY_QUOTA_EXCEEDED);
+        } else {
+            onHasEnrolledInstrument(response
+                            ? HasEnrolledInstrumentQueryResult.WARNING_HAS_ENROLLED_INSTRUMENT
+                            : HasEnrolledInstrumentQueryResult.WARNING_HAS_NO_ENROLLED_INSTRUMENT);
+        }
+
+        mJourneyLogger.setHasEnrolledInstrumentValue(response || mIsOffTheRecord);
+
+        if (sObserverForTest != null) {
+            sObserverForTest.onPaymentRequestServiceHasEnrolledInstrumentQueryResponded();
+        }
+        if (sNativeObserverForTest != null) {
+            sNativeObserverForTest.onHasEnrolledInstrumentReturned();
+        }
+    }
+
     /** @return Whether the instrument has been enrolled. */
     public boolean getHasEnrolledInstrument() {
         return mHasEnrolledInstrument;
@@ -535,6 +611,20 @@ public class PaymentRequestService {
     /** Sets whether the instrument has been enrolled. */
     public void setHasEnrolledInstrument(boolean hasEnrolledInstrument) {
         mHasEnrolledInstrument = hasEnrolledInstrument;
+    }
+
+    /**
+     * Sets the result of CanMakePayment request.
+     * @param canMakePayment Whether the user can make a payment with the merchant specified
+     *         request.
+     */
+    public void setCanMakePayment(boolean canMakePayment) {
+        mCanMakePayment = canMakePayment;
+    }
+
+    /** @return The result of the CanMakePayment request. */
+    public boolean getCanMakePayment() {
+        return mCanMakePayment;
     }
 
     /** @return Whether the created payment apps includes any autofill payment app. */

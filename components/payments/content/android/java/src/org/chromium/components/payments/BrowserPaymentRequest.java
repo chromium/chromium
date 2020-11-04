@@ -70,6 +70,11 @@ public interface BrowserPaymentRequest {
      */
     void hasEnrolledInstrument();
 
+    /** @return Whether CanMakePayment query quota should be enfored. */
+    default boolean shouldEnforceCanMakePaymentQueryQuota() {
+        return false;
+    }
+
     /** The browser part of the {@link PaymentRequest#canMakePayment} implementation. */
     void canMakePayment();
 
