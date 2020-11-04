@@ -8064,6 +8064,8 @@ TEST_P(AXPositionTextNavigationTestWithParam,
 }
 
 TEST_F(AXPositionTest, TextPositionComparisonTextField) {
+  g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
+
   // ++1 kRootWebArea
   // ++++2 kTextField editable
   // ++++++3 kGenericContainer editable
@@ -8119,6 +8121,88 @@ TEST_F(AXPositionTest, TextPositionComparisonTextField) {
   // but different anchors are logically equal.
   EXPECT_EQ(*inline_text_position, *text_field_position);
   EXPECT_EQ(*text_field_position, *inline_text_position);
+}
+
+TEST_F(AXPositionTest, TextPositionComparisonSearchBox) {
+  g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
+
+  // ++1 kRootWebArea
+  // ++++2 kSearchBox editable editableRoot=true
+  // ++++++3 kGenericContainer
+  // ++++++++4 kGenericContainer editable
+  // ++++++++++5 kStaticText editable "Hello"
+  // ++++++++++++6 kInlineTextBox "Hello"
+  // ++++7 kButton
+  // ++++++8 kStaticText "X"
+  // ++++++++9 kInlineTextBox "X"
+  AXNodeData root_1;
+  AXNodeData search_box_2;
+  AXNodeData generic_container_3;
+  AXNodeData generic_container_4;
+  AXNodeData static_text_5;
+  AXNodeData inline_box_6;
+  AXNodeData button_7;
+  AXNodeData static_text_8;
+  AXNodeData inline_box_9;
+
+  root_1.id = 1;
+  search_box_2.id = 2;
+  generic_container_3.id = 3;
+  generic_container_4.id = 4;
+  static_text_5.id = 5;
+  inline_box_6.id = 6;
+  button_7.id = 7;
+  static_text_8.id = 8;
+  inline_box_9.id = 9;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {search_box_2.id, button_7.id};
+
+  search_box_2.role = ax::mojom::Role::kSearchBox;
+  search_box_2.AddState(ax::mojom::State::kEditable);
+  search_box_2.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
+  search_box_2.child_ids = {generic_container_3.id};
+
+  generic_container_3.role = ax::mojom::Role::kGenericContainer;
+  generic_container_3.child_ids = {generic_container_4.id};
+
+  generic_container_4.role = ax::mojom::Role::kGenericContainer;
+  generic_container_4.AddState(ax::mojom::State::kEditable);
+  generic_container_4.child_ids = {static_text_5.id};
+
+  static_text_5.role = ax::mojom::Role::kStaticText;
+  static_text_5.SetName("Hello");
+  static_text_5.child_ids = {inline_box_6.id};
+
+  inline_box_6.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_6.SetName("Hello");
+
+  button_7.role = ax::mojom::Role::kButton;
+  button_7.child_ids = {static_text_8.id};
+
+  static_text_8.role = ax::mojom::Role::kStaticText;
+  static_text_8.SetName("X");
+  static_text_8.child_ids = {inline_box_9.id};
+
+  inline_box_9.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_9.SetName("X");
+
+  SetTree(CreateAXTree({root_1, search_box_2, generic_container_3,
+                        generic_container_4, static_text_5, inline_box_6,
+                        button_7, static_text_8, inline_box_9}));
+
+  // TextPosition anchor_role=inlineTextBox text_offset=5 annotated_text=hello<>
+  TestPositionType inline_text_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_6.id, 5, ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, inline_text_position);
+
+  // TextPosition anchor_role=searchBox text_offset=5 annotated_text=hello<>
+  TestPositionType search_box_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), search_box_2.id, 5, ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, search_box_position);
+
+  EXPECT_EQ(*search_box_position, *inline_text_position);
+  EXPECT_EQ(*inline_text_position, *search_box_position);
 }
 
 //

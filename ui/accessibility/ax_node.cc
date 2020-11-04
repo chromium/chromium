@@ -1298,8 +1298,14 @@ bool AXNode::IsEmbeddedGroup() const {
 }
 
 AXNode* AXNode::GetTextFieldAncestor() const {
+  // The descendants of a text field usually have State::kEditable, however in
+  // the case of Role::kSearchBox or Role::kSpinButton being the text field
+  // ancestor, its immediate descendant can have Role::kGenericContainer without
+  // State::kEditable.
   for (AXNode* ancestor = const_cast<AXNode*>(this);
-       ancestor && ancestor->data().HasState(ax::mojom::State::kEditable);
+       ancestor &&
+       (ancestor->data().HasState(ax::mojom::State::kEditable) ||
+        ancestor->data().role == ax::mojom::Role::kGenericContainer);
        ancestor = ancestor->GetUnignoredParent()) {
     if (ancestor->data().IsTextField())
       return ancestor;
