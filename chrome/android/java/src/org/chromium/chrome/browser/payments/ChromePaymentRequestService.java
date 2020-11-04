@@ -408,7 +408,7 @@ public class ChromePaymentRequestService
         mWaitForUpdatedDetails = waitForUpdatedDetails;
 
         mJourneyLogger.setTriggerTime();
-        if (disconnectIfNoPaymentMethodsSupported()) return;
+        if (disconnectIfNoPaymentMethodsSupported(hasAvailableApps())) return;
         if (mIsFinishedQueryingPaymentApps && !showAppSelector()) return;
 
         triggerPaymentAppUiSkipIfApplicable();
@@ -1373,7 +1373,8 @@ public class ChromePaymentRequestService
     public void onDoneCreatingPaymentApps(PaymentAppFactoryInterface factory /* Unused */) {
         mIsFinishedQueryingPaymentApps = true;
 
-        if (mPaymentRequestService == null || disconnectIfNoPaymentMethodsSupported()) {
+        if (mPaymentRequestService == null
+                || disconnectIfNoPaymentMethodsSupported(hasAvailableApps())) {
             return;
         }
 
@@ -1463,24 +1464,19 @@ public class ChromePaymentRequestService
 
     /**
      * If no payment methods are supported, disconnect from the client and return true.
+     * @param hasAvailableApps Whether any payment app is available.
      * @return Whether client has been disconnected.
      */
-    private boolean disconnectIfNoPaymentMethodsSupported() {
+    private boolean disconnectIfNoPaymentMethodsSupported(boolean hasAvailableApps) {
         if (!mIsFinishedQueryingPaymentApps || !mIsCurrentPaymentRequestShowing) return false;
-
-        boolean havePaymentApps = !mPendingApps.isEmpty()
-                || (mPaymentUiService.getPaymentMethodsSection() != null
-                        && !mPaymentUiService.getPaymentMethodsSection().isEmpty());
-
-        if (!mCanMakePayment
-                || (!havePaymentApps && !mPaymentUiService.merchantSupportsAutofillCards())) {
+        if (!mCanMakePayment || (mPendingApps.isEmpty() && !hasAvailableApps)) {
             // All factories have responded, but none of them have apps. It's possible to add credit
             // cards, but the merchant does not support them either. The payment request must be
             // rejected.
             mJourneyLogger.setNotShown(mCanMakePayment
                             ? NotShownReason.NO_MATCHING_PAYMENT_METHOD
                             : NotShownReason.NO_SUPPORTED_PAYMENT_METHOD);
-            if (mPaymentRequestService.isOffTheRecord()) {
+            if (mDelegate.isOffTheRecord()) {
                 // If the user is in the OffTheRecord mode, hide the absence of their payment
                 // methods from the merchant site.
                 disconnectFromClientWithDebugMessage(
@@ -1505,8 +1501,16 @@ public class ChromePaymentRequestService
             }
             return true;
         }
+        boolean isDisconnected = disconnectForStrictShow(mIsUserGestureShow);
+        if (isDisconnected && PaymentRequestService.getObserverForTest() != null) {
+            PaymentRequestService.getObserverForTest().onPaymentRequestServiceShowFailed();
+        }
+        return isDisconnected;
+    }
 
-        return disconnectForStrictShow();
+    /** @return Whether at least one payment app (including basic-card payment app) is available. */
+    private boolean hasAvailableApps() {
+        return mPaymentUiService.hasAvailableApps();
     }
 
     private boolean isInTwa() {
@@ -1516,9 +1520,10 @@ public class ChromePaymentRequestService
     /**
      * If strict show() conditions are not satisfied, disconnect from client and return true.
      * @return Whether client has been disconnected.
+     * @param isUserGestureShow Whether the PaymentRequest.show() is triggered by user gesture.
      */
-    private boolean disconnectForStrictShow() {
-        if (!mIsUserGestureShow || !mSpec.getMethodData().containsKey(MethodStrings.BASIC_CARD)
+    private boolean disconnectForStrictShow(boolean isUserGestureShow) {
+        if (!isUserGestureShow || !mSpec.getMethodData().containsKey(MethodStrings.BASIC_CARD)
                 || mPaymentRequestService.getHasEnrolledInstrument()
                 || mPaymentRequestService.getHasNonAutofillApp()
                 || !PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(

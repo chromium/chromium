@@ -1684,6 +1684,13 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         PersonalDataManager.getInstance().normalizeAddress(address.getProfile(), /*delegate=*/this);
     }
 
+    /** @return Whether at least one payment app (including basic-card payment app) is available. */
+    public boolean hasAvailableApps() {
+        assert mHasInitialized;
+        return (mPaymentMethodsSection != null && !mPaymentMethodsSection.isEmpty())
+                || mMerchantSupportsAutofillCards;
+    }
+
     /** Close the instance. Do not use this instance any more after calling this method. */
     public void close() {
         assert !mHasClosed;
