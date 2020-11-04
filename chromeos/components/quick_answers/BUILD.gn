@@ -32,8 +32,6 @@ source_set("quick_answers") {
     "translation_result_loader.h",
     "understanding/intent_generator.cc",
     "understanding/intent_generator.h",
-    "utils/language_detector.cc",
-    "utils/language_detector.h",
     "utils/quick_answers_metrics.cc",
     "utils/quick_answers_metrics.h",
     "utils/quick_answers_utils.cc",
