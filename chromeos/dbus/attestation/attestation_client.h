@@ -135,6 +135,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) AttestationClient {
     virtual ::attestation::GetKeyInfoReply* GetMutableKeyInfoReply(
         const std::string& username,
         const std::string& label) = 0;
+    // Sets the returned status of `GetKeyInfo()` to be D-Bus error for
+    // `count` times to emulate D-Bus late availability.
+    virtual void set_key_info_dbus_error_count(int count) = 0;
+    // Gets the remaining count of `GetKeyInfo()` replying D-Bus error.
+    virtual int key_info_dbus_error_count() const = 0;
 
     // Verifies if `signed_data` is signed against `challenge`.
     virtual bool VerifySimpleChallengeResponse(

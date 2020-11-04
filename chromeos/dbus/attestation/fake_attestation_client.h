@@ -121,6 +121,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
   ::attestation::GetKeyInfoReply* GetMutableKeyInfoReply(
       const std::string& username,
       const std::string& label) override;
+  void set_key_info_dbus_error_count(int count) override;
+  int key_info_dbus_error_count() const override;
   bool VerifySimpleChallengeResponse(
       const std::string& challenge,
       const ::attestation::SignedData& signed_data) override;
@@ -189,6 +191,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
            ::attestation::GetKeyInfoReply,
            GetKeyInfoRequestComparator>
       key_info_database_;
+  int key_info_dbus_error_count_ = 0;
 
   // The status returned by `SignSimpleChallenge()`.
   ::attestation::AttestationStatus sign_simple_challenge_status_ =

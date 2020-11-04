@@ -67,19 +67,23 @@ class MachineCertificateUploaderImpl : public MachineCertificateUploader {
   // Gets a new certificate for the Enterprise Machine Key (EMK).
   void GetNewCertificate();
 
-  // Gets the existing EMK certificate and sends it to CheckCertificateExpiry.
-  void GetExistingCertificate();
+  // Called when `GetKeyInfo()` returned to check the existing certificate.
+  // There are 3 cases by the status replied from attestation service:
+  //     1. If the existing EMK is found, calls `CheckCertificateExpiry()`.
+  //     2. If the key does not exist, calls `GetNewCertificate()`.
+  //     3. Otherwise, there is an error and `Reschedule()` is called to retry.
+  void OnGetExistingCertificate(const ::attestation::GetKeyInfoReply& reply);
 
-  // Checks if any certificate in the given pem_certificate_chain is expired
-  // and, if so, gets a new one. If not renewing, calls CheckIfUploaded.
-  void CheckCertificateExpiry(const std::string& pem_certificate_chain);
+  // Checks if any certificate in the given `reply` is expired and, if so, gets
+  // a new one. If not renewing, calls `CheckIfUploaded()`.
+  void CheckCertificateExpiry(const ::attestation::GetKeyInfoReply& reply);
 
   // Uploads a machine certificate to the policy server.
   void UploadCertificate(const std::string& pem_certificate_chain);
 
-  // Checks if a certificate has already been uploaded and, if not, upload.
-  void CheckIfUploaded(const std::string& pem_certificate_chain,
-                       const ::attestation::GetKeyInfoReply& reply);
+  // Checks if a certificate in `reply` has already been uploaded and, if not,
+  // upload.
+  void CheckIfUploaded(const ::attestation::GetKeyInfoReply& reply);
 
   // Called when a certificate upload operation completes.  On success, |status|
   // will be true.

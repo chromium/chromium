@@ -76,11 +76,16 @@ void FakeAttestationClient::GetKeyInfo(
     const ::attestation::GetKeyInfoRequest& request,
     GetKeyInfoCallback callback) {
   ::attestation::GetKeyInfoReply reply;
-  auto iter = key_info_database_.find(request);
-  if (iter != key_info_database_.end()) {
-    reply = iter->second;
+  if (key_info_dbus_error_count_ > 0) {
+    reply.set_status(::attestation::STATUS_DBUS_ERROR);
+    key_info_dbus_error_count_--;
   } else {
-    reply.set_status(::attestation::STATUS_INVALID_PARAMETER);
+    auto iter = key_info_database_.find(request);
+    if (iter != key_info_database_.end()) {
+      reply = iter->second;
+    } else {
+      reply.set_status(::attestation::STATUS_INVALID_PARAMETER);
+    }
   }
 
   PostProtoResponse(std::move(callback), reply);
@@ -411,6 +416,14 @@ void FakeAttestationClient::set_enrollment_id_dbus_error_count(int count) {
   request.set_key_label(label);
   // If there doesn't exist the entry yet, just create a new one.
   return &(key_info_database_[request]);
+}
+
+void FakeAttestationClient::set_key_info_dbus_error_count(int count) {
+  key_info_dbus_error_count_ = count;
+}
+
+int FakeAttestationClient::key_info_dbus_error_count() const {
+  return key_info_dbus_error_count_;
 }
 
 bool FakeAttestationClient::VerifySimpleChallengeResponse(

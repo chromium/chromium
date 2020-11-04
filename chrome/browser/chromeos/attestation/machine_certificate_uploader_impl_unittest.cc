@@ -17,6 +17,7 @@
 #include "chrome/browser/chromeos/attestation/machine_certificate_uploader_impl.h"
 #include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/attestation/mock_attestation_flow.h"
+#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/settings/cros_settings_names.h"
@@ -34,9 +35,11 @@ namespace attestation {
 
 namespace {
 
-const int64_t kCertValid = 90;
-const int64_t kCertExpiringSoon = 20;
-const int64_t kCertExpired = -20;
+constexpr int64_t kCertValid = 90;
+constexpr int64_t kCertExpiringSoon = 20;
+constexpr int64_t kCertExpired = -20;
+constexpr int kRetryLimit = 3;
+constexpr char kFakeCertificate[] = "fake_cert";
 
 void CertCallbackSuccess(AttestationFlow::CertificateCallback callback) {
   AttestationClient::Get()
@@ -77,16 +80,50 @@ class CallbackObserver {
   }
 };
 
+class MockableFakeAttestationFlow : public MockAttestationFlow {
+ public:
+  MockableFakeAttestationFlow() {
+    ON_CALL(*this, GetCertificate(_, _, _, _, _, _))
+        .WillByDefault(
+            Invoke(this, &MockableFakeAttestationFlow::GetCertificateInternal));
+  }
+  ~MockableFakeAttestationFlow() override = default;
+  void set_status(AttestationStatus status) { status_ = status; }
+
+ private:
+  void GetCertificateInternal(AttestationCertificateProfile certificate_profile,
+                              const AccountId& account_id,
+                              const std::string& request_origin,
+                              bool force_new_key,
+                              const std::string& key_name,
+                              CertificateCallback callback) {
+    std::string certificate;
+    if (status_ == ATTESTATION_SUCCESS) {
+      certificate = certificate_;
+      AttestationClient::Get()
+          ->GetTestInterface()
+          ->GetMutableKeyInfoReply(cryptohome::Identification(account_id).id(),
+                                   kEnterpriseMachineKey)
+          ->set_certificate(certificate_);
+    }
+    std::move(callback).Run(status_, certificate);
+  }
+  AttestationStatus status_ = ATTESTATION_SUCCESS;
+  const std::string certificate_ = kFakeCertificate;
+};
+
 }  // namespace
 
-class MachineCertificateUploaderTest : public ::testing::TestWithParam<bool> {
+class MachineCertificateUploaderTestBase : public ::testing::Test {
  public:
-  MachineCertificateUploaderTest() {
+  MachineCertificateUploaderTestBase() {
     AttestationClient::InitializeFake();
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     policy_client_.SetDMToken("fake_dm_token");
   }
-  ~MachineCertificateUploaderTest() override { AttestationClient::Shutdown(); }
+  ~MachineCertificateUploaderTestBase() override {
+    AttestationClient::Shutdown();
+  }
 
  protected:
   enum MockOptions {
@@ -95,7 +132,9 @@ class MachineCertificateUploaderTest : public ::testing::TestWithParam<bool> {
     MOCK_NEW_KEY = (1 << 2)        // Configure expecting new key generation.
   };
 
-  bool GetShouldRefreshCert() { return GetParam(); }
+  // The derived fixture has different needs to control this function's
+  // behavior.
+  virtual bool GetShouldRefreshCert() const = 0;
 
   // Configures mock expectations according to |mock_options|.  If options
   // require that a certificate exists, |certificate| will be used.
@@ -103,8 +142,6 @@ class MachineCertificateUploaderTest : public ::testing::TestWithParam<bool> {
     bool key_exists = (mock_options & MOCK_KEY_EXISTS);
     // Setup expected key / cert queries.
     if (key_exists) {
-      cryptohome_client_.SetTpmAttestationDeviceCertificate(
-          kEnterpriseMachineKey, certificate);
       ::attestation::GetKeyInfoReply* key_info =
           AttestationClient::Get()->GetTestInterface()->GetMutableKeyInfoReply(
               /*username=*/"", kEnterpriseMachineKey);
@@ -112,8 +149,7 @@ class MachineCertificateUploaderTest : public ::testing::TestWithParam<bool> {
     }
 
     // Setup expected key payload queries.
-    bool key_uploaded =
-        GetShouldRefreshCert() || (mock_options & MOCK_KEY_UPLOADED);
+    bool key_uploaded = (mock_options & MOCK_KEY_UPLOADED);
     if (key_uploaded) {
       ::attestation::GetKeyInfoReply* key_info =
           AttestationClient::Get()->GetTestInterface()->GetMutableKeyInfoReply(
@@ -128,8 +164,9 @@ class MachineCertificateUploaderTest : public ::testing::TestWithParam<bool> {
     // status in the key payload matches the upload operation.
     bool new_key = GetShouldRefreshCert() || (mock_options & MOCK_NEW_KEY);
     if (new_key || !key_uploaded) {
-      EXPECT_CALL(policy_client_, UploadEnterpriseMachineCertificate(
-                                      new_key ? "fake_cert" : certificate, _))
+      EXPECT_CALL(policy_client_,
+                  UploadEnterpriseMachineCertificate(
+                      new_key ? kFakeCertificate : certificate, _))
           .WillOnce(WithArgs<1>(Invoke(StatusCallbackSuccess)));
     }
 
@@ -137,15 +174,14 @@ class MachineCertificateUploaderTest : public ::testing::TestWithParam<bool> {
     // another costly operation and if it gets triggered more than once during
     // a single pass this indicates a logical problem in the observer.
     if (new_key) {
-      EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _))
-          .WillOnce(WithArgs<5>(Invoke(CertCallbackSuccess)));
+      EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _));
     }
   }
 
-  void Run() {
+  void RunUploader() {
     MachineCertificateUploaderImpl uploader(
         &policy_client_, &cryptohome_client_, &attestation_flow_);
-    uploader.set_retry_limit(3);
+    uploader.set_retry_limit(kRetryLimit);
     uploader.set_retry_delay(0);
     if (GetShouldRefreshCert())
       uploader.RefreshAndUploadCertificate(base::DoNothing());
@@ -166,30 +202,37 @@ class MachineCertificateUploaderTest : public ::testing::TestWithParam<bool> {
   content::BrowserTaskEnvironment task_environment_;
   ScopedCrosSettingsTestHelper settings_helper_;
   FakeCryptohomeClient cryptohome_client_;
-  StrictMock<MockAttestationFlow> attestation_flow_;
+  StrictMock<MockableFakeAttestationFlow> attestation_flow_;
   StrictMock<policy::MockCloudPolicyClient> policy_client_;
+};
+
+class MachineCertificateUploaderTest
+    : public MachineCertificateUploaderTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  bool GetShouldRefreshCert() const final { return GetParam(); }
 };
 
 TEST_P(MachineCertificateUploaderTest, UnregisteredPolicyClient) {
   policy_client_.SetDMToken("");
-  Run();
+  RunUploader();
 }
 
 TEST_P(MachineCertificateUploaderTest, GetCertificateUnspecifiedFailure) {
   EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _))
       .WillRepeatedly(WithArgs<5>(Invoke(CertCallbackUnspecifiedFailure)));
-  Run();
+  RunUploader();
 }
 
 TEST_P(MachineCertificateUploaderTest, GetCertificateBadRequestFailure) {
   EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _))
       .WillOnce(WithArgs<5>(Invoke(CertCallbackBadRequestFailure)));
-  Run();
+  RunUploader();
 }
 
 TEST_P(MachineCertificateUploaderTest, NewCertificate) {
   SetupMocks(MOCK_NEW_KEY, "");
-  Run();
+  RunUploader();
   EXPECT_EQ(CreatePayload(),
             AttestationClient::Get()
                 ->GetTestInterface()
@@ -266,7 +309,7 @@ TEST_P(MachineCertificateUploaderTest, KeyExistsNotUploaded) {
   ASSERT_TRUE(GetFakeCertificatePEM(base::TimeDelta::FromDays(kCertValid),
                                     &certificate));
   SetupMocks(MOCK_KEY_EXISTS, certificate);
-  Run();
+  RunUploader();
   EXPECT_EQ(CreatePayload(),
             AttestationClient::Get()
                 ->GetTestInterface()
@@ -279,7 +322,7 @@ TEST_P(MachineCertificateUploaderTest, KeyExistsAlreadyUploaded) {
   ASSERT_TRUE(GetFakeCertificatePEM(base::TimeDelta::FromDays(kCertValid),
                                     &certificate));
   SetupMocks(MOCK_KEY_EXISTS | MOCK_KEY_UPLOADED, certificate);
-  Run();
+  RunUploader();
 }
 
 TEST_P(MachineCertificateUploaderTest, KeyExistsCertExpiringSoon) {
@@ -287,7 +330,7 @@ TEST_P(MachineCertificateUploaderTest, KeyExistsCertExpiringSoon) {
   ASSERT_TRUE(GetFakeCertificatePEM(
       base::TimeDelta::FromDays(kCertExpiringSoon), &certificate));
   SetupMocks(MOCK_KEY_EXISTS | MOCK_KEY_UPLOADED | MOCK_NEW_KEY, certificate);
-  Run();
+  RunUploader();
 }
 
 TEST_P(MachineCertificateUploaderTest, KeyExistsCertExpired) {
@@ -295,41 +338,38 @@ TEST_P(MachineCertificateUploaderTest, KeyExistsCertExpired) {
   ASSERT_TRUE(GetFakeCertificatePEM(base::TimeDelta::FromDays(kCertExpired),
                                     &certificate));
   SetupMocks(MOCK_KEY_EXISTS | MOCK_KEY_UPLOADED | MOCK_NEW_KEY, certificate);
-  Run();
+  RunUploader();
 }
 
 TEST_P(MachineCertificateUploaderTest, IgnoreUnknownCertFormat) {
   SetupMocks(MOCK_KEY_EXISTS | MOCK_KEY_UPLOADED, "unsupported");
-  Run();
-}
-
-TEST_P(MachineCertificateUploaderTest, DBusFailureRetry) {
-  SetupMocks(MOCK_NEW_KEY, "");
-  // Simulate a DBus failure.
-  cryptohome_client_.SetServiceIsAvailable(false);
-
-  // Emulate delayed service initialization.
-  // Run() instantiates an Observer, which synchronously calls
-  // TpmAttestationDoesKeyExist() and fails. During this call, we make the
-  // service available in the next run, so on retry, it will successfully
-  // return the result.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](FakeCryptohomeClient* cryptohome_client) {
-                       cryptohome_client->SetServiceIsAvailable(true);
-                     },
-                     base::Unretained(&cryptohome_client_)));
-  Run();
-  EXPECT_EQ(CreatePayload(),
-            AttestationClient::Get()
-                ->GetTestInterface()
-                ->GetMutableKeyInfoReply(/*username=*/"", kEnterpriseMachineKey)
-                ->payload());
+  RunUploader();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
                          MachineCertificateUploaderTest,
                          testing::Values(false, true));
+
+class MachineCertificateUploaderTestNoRefresh
+    : public MachineCertificateUploaderTestBase {
+ public:
+  bool GetShouldRefreshCert() const final { return false; }
+};
+
+TEST_F(MachineCertificateUploaderTestNoRefresh, DBusFailureRetry) {
+  SetupMocks(MOCK_NEW_KEY, "");
+  AttestationClient::Get()->GetTestInterface()->set_key_info_dbus_error_count(
+      kRetryLimit - 1);
+  RunUploader();
+  EXPECT_EQ(CreatePayload(),
+            AttestationClient::Get()
+                ->GetTestInterface()
+                ->GetMutableKeyInfoReply(/*username=*/"", kEnterpriseMachineKey)
+                ->payload());
+  EXPECT_EQ(
+      AttestationClient::Get()->GetTestInterface()->key_info_dbus_error_count(),
+      0);
+}
 
 }  // namespace attestation
 }  // namespace chromeos
