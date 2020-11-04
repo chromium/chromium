@@ -14,14 +14,19 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
+#include "base/run_loop.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "cc/test/pixel_comparator.h"
+#include "cc/test/pixel_test_utils.h"
 #include "components/exo/data_device.h"
 #include "components/exo/data_offer_delegate.h"
 #include "components/exo/file_helper.h"
 #include "components/exo/test/exo_test_base.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 
 namespace exo {
@@ -308,42 +313,6 @@ TEST_F(DataOfferTest, ReceiveUriList) {
   EXPECT_EQ(base::ASCIIToUTF16("file:///test/downloads/file"), result);
 }
 
-TEST_F(DataOfferTest, ReceiveUriListFromPickle_ReceiveAfterUrlIsResolved) {
-  TestDataOfferDelegate delegate;
-  DataOffer data_offer(&delegate, DataOffer::Purpose::DRAG_DROP);
-
-  TestFileHelper file_helper;
-  ui::OSExchangeData data;
-
-  base::Pickle pickle;
-  pickle.WriteUInt32(1);  // num files
-  pickle.WriteString("filesystem:chrome-extension://path/to/file1");
-  pickle.WriteInt64(1000);   // file size
-  pickle.WriteString("id");  // filesystem id
-  data.SetPickledData(
-      ui::ClipboardFormatType::GetType("chromium/x-file-system-files"), pickle);
-  data_offer.SetDropData(&file_helper, data);
-
-  // Run callback with a resolved URL.
-  std::vector<GURL> urls;
-  urls.push_back(
-      GURL("content://org.chromium.arc.chromecontentprovider/path/to/file1"));
-  file_helper.RunUrlsCallback(urls);
-
-  base::ScopedFD read_pipe;
-  base::ScopedFD write_pipe;
-  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
-
-  // Receive is called after UrlsCallback runs.
-  data_offer.Receive("text/uri-list", std::move(write_pipe));
-  base::string16 result;
-  ASSERT_TRUE(ReadString16(std::move(read_pipe), &result));
-  EXPECT_EQ(
-      base::ASCIIToUTF16(
-          "content://org.chromium.arc.chromecontentprovider/path/to/file1"),
-      result);
-}
-
 TEST_F(DataOfferTest, ReceiveUriListFromPickle_ReceiveBeforeUrlIsResolved) {
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate, DataOffer::Purpose::DRAG_DROP);
@@ -444,13 +413,21 @@ TEST_F(DataOfferTest, SetClipboardDataPlainText) {
 
   base::ScopedFD read_pipe;
   base::ScopedFD write_pipe;
-  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
 
+  // Read as utf-8.
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
   data_offer.Receive("text/plain;charset=utf-8", std::move(write_pipe));
   std::string result;
   ASSERT_TRUE(ReadString(std::move(read_pipe), &result));
   EXPECT_EQ("Test data", result);
 
+  // Read a second time.
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
+  data_offer.Receive("text/plain;charset=utf-8", std::move(write_pipe));
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &result));
+  EXPECT_EQ("Test data", result);
+
+  // Read as utf-16.
   ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
   data_offer.Receive("text/plain;charset=utf-16", std::move(write_pipe));
   base::string16 result16;
@@ -513,6 +490,56 @@ TEST_F(DataOfferTest, SetClipboardDataRTF) {
   std::string result;
   ASSERT_TRUE(ReadString(std::move(read_pipe), &result));
   EXPECT_EQ("Test data", result);
+}
+
+TEST_F(DataOfferTest, SetClipboardDataImage) {
+  TestDataOfferDelegate delegate;
+  DataOffer data_offer(&delegate, DataOffer::Purpose::COPY_PASTE);
+
+  SkBitmap image;
+  image.allocN32Pixels(10, 10);
+  image.eraseColor(SK_ColorMAGENTA);
+
+  TestFileHelper file_helper;
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteImage(image);
+  }
+  data_offer.SetClipboardData(&file_helper,
+                              *ui::Clipboard::GetForCurrentThread());
+
+  EXPECT_EQ(1u, delegate.mime_types().size());
+  EXPECT_EQ(1u, delegate.mime_types().count("image/png"));
+
+  base::ScopedFD read_pipe;
+  base::ScopedFD write_pipe;
+  base::ScopedFD read_pipe2;
+  base::ScopedFD write_pipe2;
+  std::string result;
+
+  // Call Receive() twice in quick succession. Requires RunUntilIdle() since
+  // processing is done on worker thread.
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
+  ASSERT_TRUE(base::CreatePipe(&read_pipe2, &write_pipe2));
+  data_offer.Receive("image/png", std::move(write_pipe));
+  data_offer.Receive("image/png", std::move(write_pipe2));
+  task_environment()->RunUntilIdle();
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &result));
+  SkBitmap decoded;
+  ASSERT_TRUE(gfx::PNGCodec::Decode(
+      reinterpret_cast<const unsigned char*>(result.data()), result.size(),
+      &decoded));
+  EXPECT_TRUE(cc::MatchesBitmap(
+      image, decoded, cc::ExactPixelComparator(/*discard_alpha=*/false)));
+  std::string good = result;
+  ASSERT_TRUE(ReadString(std::move(read_pipe2), &result));
+  EXPECT_EQ(good, result);
+
+  // Receive() should now return immediately with result from cache.
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
+  data_offer.Receive("image/png", std::move(write_pipe));
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &result));
+  EXPECT_EQ(good, result);
 }
 
 TEST_F(DataOfferTest, AcceptWithNull) {

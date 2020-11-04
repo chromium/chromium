@@ -19,6 +19,7 @@
 #include "url/gurl.h"
 
 namespace base {
+class Pickle;
 class RefCountedMemory;
 }
 
@@ -37,6 +38,10 @@ enum class DndAction;
 // Object representing transferred data offered to a client.
 class DataOffer final : public ui::PropertyHandler {
  public:
+  using SendDataCallback =
+      base::OnceCallback<void(scoped_refptr<base::RefCountedMemory>)>;
+  using AsyncSendDataCallback = base::OnceCallback<void(SendDataCallback)>;
+
   enum Purpose {
     COPY_PASTE,
     DRAG_DROP,
@@ -84,28 +89,34 @@ class DataOffer final : public ui::PropertyHandler {
   bool finished() const { return finished_; }
 
  private:
-  void OnPickledUrlsResolved(const std::string& uri_list_mime_type,
+  void OnDataReady(const std::string& mime_type,
+                   base::ScopedFD fd,
+                   scoped_refptr<base::RefCountedMemory> data);
+  void GetUrlsFromPickle(FileHelper* file_helper,
+                         const base::Pickle& pickle,
+                         SendDataCallback callback);
+  void OnPickledUrlsResolved(SendDataCallback callback,
                              const std::vector<GURL>& urls);
 
   DataOfferDelegate* const delegate_;
 
-  // Map between mime type and drop data bytes.
-  // nullptr may be set as a temporary value until data bytes are populated.
-  base::flat_map<std::string, scoped_refptr<base::RefCountedMemory>> data_;
-  // Unprocessed receive requests (pairs of mime type and FD) that are waiting
-  // for unpopulated (nullptr) data bytes in |data_| to be populated.
+  // Data for a given mime type may not ever be requested, or may be requested
+  // more than once. Using callbacks and a cache allows us to delay any
+  // expensive operations until they are required, and then ensure that they are
+  // performed at most once. When we offer data for a given mime type we will
+  // populate |data_callbacks_| with mime type and a callback which will produce
+  // the required data. On the first request to |Receive()| we remove and invoke
+  // the callback and set |data_cache_| with null data. When the callback
+  // completes we populate |data_cache_| with data and fulfill any
+  // |pending_receive_requests|.
+  base::flat_map<std::string, AsyncSendDataCallback> data_callbacks_;
+  base::flat_map<std::string, scoped_refptr<base::RefCountedMemory>>
+      data_cache_;
   std::vector<std::pair<std::string, base::ScopedFD>> pending_receive_requests_;
-
-  using SendDataCallback = base::RepeatingCallback<void(base::ScopedFD)>;
-  // Map from mime type (or other offered data type) to a callback that sends
-  // data for that type. Using callbacks allows us to delay making copies or
-  // doing other expensive processing until actually necessary.
-  base::flat_map<std::string, SendDataCallback> data_callbacks_;
 
   base::flat_set<DndAction> source_actions_;
   DndAction dnd_action_;
   base::ObserverList<DataOfferObserver>::Unchecked observers_;
-  Purpose purpose_;
   bool finished_;
 
   base::WeakPtrFactory<DataOffer> weak_ptr_factory_{this};
