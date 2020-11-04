@@ -8,6 +8,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/cocoa/accelerators_cocoa.h"
 #include "chrome/browser/ui/cocoa/history_menu_bridge.h"
+#include "chrome/browser/ui/commander/commander.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chromium_strings.h"
@@ -268,6 +269,10 @@ base::scoped_nsobject<NSMenuItem> BuildViewMenu(
                 Item(IDS_DISTILL_PAGE)
                     .command_id(IDC_DISTILL_PAGE)
                     .remove_if(!dom_distiller::IsDomDistillerEnabled()),
+                Item(IDS_TOGGLE_COMMANDER)
+                    .command_id(IDC_TOGGLE_COMMANDER)
+                    .remove_if(!commander::IsEnabled()),
+
                 Item().is_separator(),
                 Item(IDS_DEVELOPER_MENU_MAC)
                     .tag(IDC_DEVELOPER_MENU)

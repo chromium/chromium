@@ -53,6 +53,7 @@ const struct AcceleratorMapping {
     {IDC_VIEW_SOURCE, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::VKEY_U},
     {IDC_ZOOM_MINUS, ui::EF_COMMAND_DOWN, ui::VKEY_OEM_MINUS},
     {IDC_ZOOM_PLUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN, ui::VKEY_OEM_PLUS},
+    {IDC_TOGGLE_COMMANDER, ui::EF_CONTROL_DOWN, ui::VKEY_SPACE},
 
     // Accelerators used in the Main Menu, but not the toolbar menu.
     {IDC_OPTIONS, ui::EF_COMMAND_DOWN, ui::VKEY_OEM_COMMA},
@@ -129,4 +130,3 @@ const ui::Accelerator* AcceleratorsCocoa::GetAcceleratorForCommand(
     return NULL;
   return &it->second;
 }
-
