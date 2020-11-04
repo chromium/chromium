@@ -348,7 +348,7 @@ the client may continue to send data for that histogram for some time after the
 official expiry date so simply bumping the 'expires_after' date at HEAD may be
 sufficient to resurrect it without any discontinuity. If too much time has
 passed and the client is no longer sending data, it can be re-enabled via Finch:
-see [Expired Histogram Whitelist](#Expired-histogram-whitelist).
+see [Expired histogram allowlist](#Expired-histogram-allowlist).
 
 Once a histogram has expired, the code that records it becomes dead code and
 should be removed from the codebase along with marking the histogram definition
@@ -400,12 +400,13 @@ notifier regularly checks all histograms across the histograms.xml files and
 identifies expired or soon-to-be expired histograms. It then creates or updates
 crbugs accordingly.
 
-### Expired histogram whitelist
+### Expired histogram allowlist
 
 If a histogram expires but turns out to be useful, you can add the histogram's
-name to the whitelist until the updated expiration date reaches the stable
-channel. For adding a histogram to the whitelist, see the internal
-documentation:
+name to the allowlist until the updated expiration date reaches the stable
+channel. When doing so, update the histogram's summary to document the period
+during which the histogram's data is incomplete. To add a histogram to the
+allowlist, see the internal documentation:
 [Histogram Expiry](https://goto.google.com/histogram-expiry-gdoc).
 
 ## Testing
