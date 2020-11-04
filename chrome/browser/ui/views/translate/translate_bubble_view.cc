@@ -840,6 +840,8 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedTarget() {
 
   target_language_combobox->SetCallback(base::BindRepeating(
       &TranslateBubbleView::TargetLanguageChanged, base::Unretained(this)));
+  target_language_combobox->SetAccessibleName(l10n_util::GetStringUTF16(
+      IDS_TRANSLATE_BUBBLE_TARGET_LANG_COMBOBOX_ACCNAME));
   target_language_combobox_ = target_language_combobox.get();
 
   auto advanced_done_button = std::make_unique<views::MdTextButton>(

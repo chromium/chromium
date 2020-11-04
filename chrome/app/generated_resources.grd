@@ -8464,6 +8464,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_TRANSLATE_BUBBLE_COULD_NOT_TRANSLATE_TITLE" desc="Title text for the translate bubble label when the page could not be translated.">
           This page could not be translated
         </message>
+        <message name="IDS_TRANSLATE_BUBBLE_TARGET_LANG_COMBOBOX_ACCNAME" desc="Accessible name for the target language selection combobox.">
+          Choose the language to translate the page to
+        </message>
         <if expr="not use_titlecase">
           <message name="IDS_TRANSLATE_BUBBLE_ADVANCED_BUTTON" desc="Text to show for the translate bubble button to jump to the advanced panel.">
             Options
