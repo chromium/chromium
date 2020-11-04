@@ -11,6 +11,8 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/char_iterator.h"
 #include "base/notreached.h"
@@ -259,6 +261,22 @@ int GetLineSegmentContainingXCoord(const internal::Line& line,
     line_x -= segment.width();
   }
   return line.segments.size();
+}
+
+// This code is a crash debugging helper for http://crbug.com/1142020. Remove
+// this code when the bug is fixed.
+void EnsureRangeWithinTextBounds(const Range& range,
+                                 const base::string16& text) {
+  static bool already_uploaded = false;
+  if (!already_uploaded && !range.is_empty() && range.end() > text.size()) {
+    already_uploaded = true;
+    NOTREACHED() << "Applying a text property outside of text bounds.";
+    std::string text_utf8 = base::UTF16ToUTF8(text);
+    DEBUG_ALIAS_FOR_CSTR(text_copy_, text_utf8.c_str(), 32);
+    Range range_copy = range;
+    base::debug::Alias(&range_copy);
+    base::debug::DumpWithoutCrashing();
+  }
 }
 
 }  // namespace
@@ -815,6 +833,7 @@ void RenderText::SetColor(SkColor value) {
 }
 
 void RenderText::ApplyColor(SkColor value, const Range& range) {
+  EnsureRangeWithinTextBounds(range, text_);
   colors_.ApplyValue(value, range);
   OnLayoutTextAttributeChanged(false);
 }
@@ -825,12 +844,14 @@ void RenderText::SetBaselineStyle(BaselineStyle value) {
 }
 
 void RenderText::ApplyBaselineStyle(BaselineStyle value, const Range& range) {
+  EnsureRangeWithinTextBounds(range, text_);
   baselines_.ApplyValue(value, range);
   OnLayoutTextAttributeChanged(false);
 }
 
 void RenderText::ApplyFontSizeOverride(int font_size_override,
                                        const Range& range) {
+  EnsureRangeWithinTextBounds(range, text_);
   font_size_overrides_.ApplyValue(font_size_override, range);
   OnLayoutTextAttributeChanged(false);
 }
@@ -845,6 +866,7 @@ void RenderText::SetStyle(TextStyle style, bool value) {
 }
 
 void RenderText::ApplyStyle(TextStyle style, bool value, const Range& range) {
+  EnsureRangeWithinTextBounds(range, text_);
   styles_[style].ApplyValue(value, range);
 
   cached_bounds_and_offset_valid_ = false;
@@ -861,6 +883,7 @@ void RenderText::SetWeight(Font::Weight weight) {
 }
 
 void RenderText::ApplyWeight(Font::Weight weight, const Range& range) {
+  EnsureRangeWithinTextBounds(range, text_);
   weights_.ApplyValue(weight, range);
 
   cached_bounds_and_offset_valid_ = false;
