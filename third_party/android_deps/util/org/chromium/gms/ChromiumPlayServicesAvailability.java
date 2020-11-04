@@ -16,7 +16,7 @@ public final class ChromiumPlayServicesAvailability {
      * class. To see how this number originated, see
      * https://bugs.chromium.org/p/chromium/issues/detail?id=1145211#c3.
      */
-    private static final int GMS_VERSION_NUMBER = 20415000;
+    public static final int GMS_VERSION_NUMBER = 20415000;
 
     /**
      * Checks, with an appropriate version number, if Play Services is available in this context.
@@ -29,7 +29,7 @@ public final class ChromiumPlayServicesAvailability {
      * the user to update GMS Core or fail with exception." If in doubt, please consult with your
      * PM/UX.
      */
-    public static int isGooglePlayServicesAvailable(final Context context) {
+    public static int getGooglePlayServicesConnectionResult(final Context context) {
         return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
                 context, GMS_VERSION_NUMBER);
     }
@@ -43,7 +43,7 @@ public final class ChromiumPlayServicesAvailability {
      * the user to update GMS Core or fail with exception." If in doubt, please consult with your
      * PM/UX.
      */
-    public static boolean chromiumIsGooglePlayServicesAvailable(final Context context) {
+    public static boolean isGooglePlayServicesAvailable(final Context context) {
         return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
                        context, GMS_VERSION_NUMBER)
                 == ConnectionResult.SUCCESS;

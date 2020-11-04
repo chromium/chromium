@@ -24,7 +24,7 @@ public class BackgroundSyncGooglePlayServicesCheckerTest {
     @Test
     @Feature("BackgroundSync")
     public void testDisableLogicWhenGooglePlayServicesReturnsSuccess() {
-        ShadowChromiumPlayServicesAvailability.setIsGooglePlayServicesAvailable(
+        ShadowChromiumPlayServicesAvailability.setGetGooglePlayServicesConnectionResult(
                 ConnectionResult.SUCCESS);
         assertFalse(GooglePlayServicesChecker.shouldDisableBackgroundSync());
     }
@@ -32,7 +32,7 @@ public class BackgroundSyncGooglePlayServicesCheckerTest {
     @Test
     @Feature("BackgroundSync")
     public void testDisableLogicWhenGooglePlayServicesReturnsError() {
-        ShadowChromiumPlayServicesAvailability.setIsGooglePlayServicesAvailable(
+        ShadowChromiumPlayServicesAvailability.setGetGooglePlayServicesConnectionResult(
                 ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED);
         assertTrue(GooglePlayServicesChecker.shouldDisableBackgroundSync());
     }

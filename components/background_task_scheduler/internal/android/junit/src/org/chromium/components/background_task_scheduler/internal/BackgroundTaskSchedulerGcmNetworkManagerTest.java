@@ -56,7 +56,7 @@ public class BackgroundTaskSchedulerGcmNetworkManagerTest {
 
     @Before
     public void setUp() {
-        ShadowChromiumPlayServicesAvailability.setChromiumIsGooglePlayServicesAvailable(true);
+        ShadowChromiumPlayServicesAvailability.setIsGooglePlayServicesAvailable(true);
         mGcmNetworkManager = (ShadowGcmNetworkManager) Shadow.extract(
                 GcmNetworkManager.getInstance(ContextUtils.getApplicationContext()));
         BackgroundTaskSchedulerGcmNetworkManager.setClockForTesting(mClock);
@@ -297,7 +297,7 @@ public class BackgroundTaskSchedulerGcmNetworkManagerTest {
     @Test
     @Feature("BackgroundTaskScheduler")
     public void testScheduleNoGooglePlayServices() {
-        ShadowChromiumPlayServicesAvailability.setChromiumIsGooglePlayServicesAvailable(false);
+        ShadowChromiumPlayServicesAvailability.setIsGooglePlayServicesAvailable(false);
 
         TaskInfo.TimingInfo timingInfo =
                 TaskInfo.OneOffInfo.create().setWindowEndTimeMs(TIME_24_H_TO_MS).build();
@@ -327,7 +327,7 @@ public class BackgroundTaskSchedulerGcmNetworkManagerTest {
     @Feature("BackgroundTaskScheduler")
     public void testCancelNoGooglePlayServices() {
         // This simulates situation where Google Play Services is uninstalled.
-        ShadowChromiumPlayServicesAvailability.setChromiumIsGooglePlayServicesAvailable(false);
+        ShadowChromiumPlayServicesAvailability.setIsGooglePlayServicesAvailable(false);
 
         TaskInfo.TimingInfo timingInfo =
                 TaskInfo.OneOffInfo.create().setWindowEndTimeMs(TIME_24_H_TO_MS).build();

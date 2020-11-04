@@ -87,7 +87,7 @@ public class TextDetectionImpl implements TextDetection {
     }
 
     public static TextDetection create() {
-        if (!ChromiumPlayServicesAvailability.chromiumIsGooglePlayServicesAvailable(
+        if (!ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(
                     ContextUtils.getApplicationContext())) {
             Log.e(TAG, "Google Play Services not available");
             return null;

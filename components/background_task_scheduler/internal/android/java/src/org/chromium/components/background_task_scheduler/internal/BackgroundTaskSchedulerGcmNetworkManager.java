@@ -245,7 +245,7 @@ class BackgroundTaskSchedulerGcmNetworkManager implements BackgroundTaskSchedule
     }
 
     private GcmNetworkManager getGcmNetworkManager(Context context) {
-        if (ChromiumPlayServicesAvailability.chromiumIsGooglePlayServicesAvailable(context)) {
+        if (ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(context)) {
             return GcmNetworkManager.getInstance(context);
         }
         return null;

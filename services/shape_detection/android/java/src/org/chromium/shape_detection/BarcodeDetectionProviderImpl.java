@@ -55,7 +55,7 @@ public class BarcodeDetectionProviderImpl implements BarcodeDetectionProvider {
 
     public static BarcodeDetectionProvider create() {
         Context ctx = ContextUtils.getApplicationContext();
-        if (!ChromiumPlayServicesAvailability.chromiumIsGooglePlayServicesAvailable(ctx)) {
+        if (!ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(ctx)) {
             Log.w(TAG, "Google Play Services not available");
             return null;
         }

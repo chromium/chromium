@@ -27,7 +27,7 @@ public class TestUtils {
     public static final boolean IS_GMS_CORE_SUPPORTED = isGmsCoreSupported();
 
     private static boolean isGmsCoreSupported() {
-        return ChromiumPlayServicesAvailability.chromiumIsGooglePlayServicesAvailable(
+        return ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(
                 ContextUtils.getApplicationContext());
     }
 

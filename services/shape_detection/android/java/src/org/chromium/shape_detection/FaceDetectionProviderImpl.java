@@ -22,7 +22,7 @@ public class FaceDetectionProviderImpl implements FaceDetectionProvider {
     public void createFaceDetection(
             InterfaceRequest<FaceDetection> request, FaceDetectorOptions options) {
         final boolean isGmsCoreSupported =
-                ChromiumPlayServicesAvailability.chromiumIsGooglePlayServicesAvailable(
+                ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(
                         ContextUtils.getApplicationContext());
 
         if (isGmsCoreSupported) {

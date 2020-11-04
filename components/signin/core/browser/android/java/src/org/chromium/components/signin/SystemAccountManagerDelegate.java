@@ -91,7 +91,7 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     protected void checkCanUseGooglePlayServices() throws AccountManagerDelegateException {
         Context context = ContextUtils.getApplicationContext();
         final int resultCode =
-                ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(context);
+                ChromiumPlayServicesAvailability.getGooglePlayServicesConnectionResult(context);
         if (resultCode == ConnectionResult.SUCCESS) {
             return;
         }
@@ -264,7 +264,7 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     public boolean isGooglePlayServicesAvailable() {
         // TODO(http://crbug.com/577190): Remove StrictMode override.
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            return ChromiumPlayServicesAvailability.chromiumIsGooglePlayServicesAvailable(
+            return ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(
                     ContextUtils.getApplicationContext());
         }
     }

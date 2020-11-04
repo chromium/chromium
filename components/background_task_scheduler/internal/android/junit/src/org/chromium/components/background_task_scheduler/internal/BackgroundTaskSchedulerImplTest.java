@@ -63,7 +63,7 @@ public class BackgroundTaskSchedulerImplTest {
         TestBackgroundTask.reset();
 
         // Initialize Google Play Services and GCM Network Manager for upgrade testing.
-        ShadowChromiumPlayServicesAvailability.setChromiumIsGooglePlayServicesAvailable(true);
+        ShadowChromiumPlayServicesAvailability.setIsGooglePlayServicesAvailable(true);
         mGcmNetworkManager = (ShadowGcmNetworkManager) Shadow.extract(
                 GcmNetworkManager.getInstance(ContextUtils.getApplicationContext()));
 

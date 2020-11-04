@@ -252,7 +252,7 @@ public class ExternalAuthUtils {
     protected int checkGooglePlayServicesAvailable(final Context context) {
         // TODO(crbug.com/577190): Temporarily allowing disk access until more permanent fix is in.
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            return ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(context);
+            return ChromiumPlayServicesAvailability.getGooglePlayServicesConnectionResult(context);
         }
     }
 

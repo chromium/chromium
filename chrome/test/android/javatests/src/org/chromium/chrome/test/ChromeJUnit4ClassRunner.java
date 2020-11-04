@@ -152,7 +152,7 @@ public class ChromeJUnit4ClassRunner extends ContentJUnit4ClassRunner {
         protected boolean restrictionApplies(String restriction) {
             if (TextUtils.equals(
                         restriction, ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
-                    && (!ChromiumPlayServicesAvailability.chromiumIsGooglePlayServicesAvailable(
+                    && (!ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(
                             getTargetContext()))) {
                 return true;
             }

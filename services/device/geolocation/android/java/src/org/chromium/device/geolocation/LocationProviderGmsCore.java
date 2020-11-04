@@ -42,7 +42,7 @@ public class LocationProviderGmsCore implements ConnectionCallbacks, OnConnectio
     private LocationRequest mLocationRequest;
 
     public static boolean isGooglePlayServicesAvailable(Context context) {
-        return ChromiumPlayServicesAvailability.chromiumIsGooglePlayServicesAvailable(context);
+        return ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(context);
     }
 
     LocationProviderGmsCore(Context context) {

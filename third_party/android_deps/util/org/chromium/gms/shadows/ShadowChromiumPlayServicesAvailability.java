@@ -17,20 +17,20 @@ public class ShadowChromiumPlayServicesAvailability {
     private static boolean sChromiumSuccess;
     private static int sConnectionResult;
 
-    public static void setChromiumIsGooglePlayServicesAvailable(boolean value) {
+    public static void setIsGooglePlayServicesAvailable(boolean value) {
         sChromiumSuccess = value;
     }
-    public static void setIsGooglePlayServicesAvailable(int value) {
+    public static void setGetGooglePlayServicesConnectionResult(int value) {
         sConnectionResult = value;
     }
 
     @Implementation
-    public static int isGooglePlayServicesAvailable(final Context context) {
+    public static int getGooglePlayServicesConnectionResult(final Context context) {
         return sConnectionResult;
     }
 
     @Implementation
-    public static boolean chromiumIsGooglePlayServicesAvailable(final Context context) {
+    public static boolean isGooglePlayServicesAvailable(final Context context) {
         return sChromiumSuccess;
     }
 }
