@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -411,21 +412,20 @@ bool HTMLCanvasElement::IsAccelerated() const {
   return context_ && context_->IsAccelerated();
 }
 
+Settings* HTMLCanvasElement::GetSettings() const {
+  auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext());
+  if (window && window->GetFrame())
+    return window->GetFrame()->GetSettings();
+  return nullptr;
+}
+
 bool HTMLCanvasElement::IsWebGL1Enabled() const {
-  Document& document = GetDocument();
-  LocalFrame* frame = document.GetFrame();
-  if (!frame)
-    return false;
-  Settings* settings = frame->GetSettings();
+  Settings* settings = GetSettings();
   return settings && settings->GetWebGL1Enabled();
 }
 
 bool HTMLCanvasElement::IsWebGL2Enabled() const {
-  Document& document = GetDocument();
-  LocalFrame* frame = document.GetFrame();
-  if (!frame)
-    return false;
-  Settings* settings = frame->GetSettings();
+  Settings* settings = GetSettings();
   return settings && settings->GetWebGL2Enabled();
 }
 

@@ -1366,7 +1366,7 @@ void WebGLRenderingContextBase::SetupFlags() {
   DCHECK(GetDrawingBuffer());
   if (canvas()) {
     synthesized_errors_to_console_ =
-        canvas()->GetDocument().GetSettings()->GetWebGLErrorsToConsoleEnabled();
+        canvas()->GetSettings()->GetWebGLErrorsToConsoleEnabled();
   }
 
   is_depth_stencil_supported_ =
