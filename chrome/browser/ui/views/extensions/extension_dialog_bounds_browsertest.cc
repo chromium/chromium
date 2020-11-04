@@ -77,7 +77,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionDialogBoundsTest, Test_OpenFileDialog) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionDialogBoundsTest, Test_BigExtensionDialog) {
+// TODO(crbug.com/1012025): Test crashes as enabling docked magnifier now loads
+// another extension (Accessibility Common).
+IN_PROC_BROWSER_TEST_F(ExtensionDialogBoundsTest,
+                       DISABLED_Test_BigExtensionDialog) {
   EnableDockedMagnifier();
   ShowAndVerifyUi();
 }

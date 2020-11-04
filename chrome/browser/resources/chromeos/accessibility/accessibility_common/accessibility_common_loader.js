@@ -44,6 +44,11 @@ class AccessibilityCommon {
         {}, this.onMagnifierUpdated_.bind(this));
     chrome.accessibilityFeatures.screenMagnifier.onChange.addListener(
         this.onMagnifierUpdated_.bind(this));
+
+    chrome.accessibilityFeatures.dockedMagnifier.get(
+        {}, this.onMagnifierUpdated_.bind(this));
+    chrome.accessibilityFeatures.dockedMagnifier.onChange.addListener(
+        this.onMagnifierUpdated_.bind(this));
   }
 
   /**

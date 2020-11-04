@@ -75,6 +75,46 @@ TEST_F(
       });
     });
 
+TEST_F(
+    'MagnifierE2ETest', 'MovesDockedMagnifierToActiveDescendant', function() {
+      const site = `
+    <div role="group" id="parent" aria-activedescendant="apple">
+      <div id="apple" role="treeitem">Apple</div>
+      <div id="banana" role="treeitem">Banana</div>
+    </div>
+    <script>
+      const parent = document.getElementById('parent');
+      parent.addEventListener('click', function() {
+        parent.setAttribute('aria-activedescendant', 'banana');
+      });
+      </script>
+  `;
+      this.runWithLoadedTree(site, async function(root) {
+        // Enable docked magnifier.
+        await new Promise(resolve => {
+          chrome.accessibilityFeatures.dockedMagnifier.set(
+              {value: true}, resolve);
+        });
+
+        // Validate magnifier wants to move to root.
+        const rootLocation = await getNextMagnifierLocation();
+        assertTrue(RectUtil.equal(rootLocation, root.location));
+
+        // Click parent to change active descendant from apple to banana.
+        const parent = root.find({role: RoleType.GROUP});
+        parent.doDefault();
+
+        // Register and wait for rect from magnifier.
+        const rect = await getNextMagnifierLocation();
+
+        // Validate rect from magnifier is rect of banana.
+        const bananaNode =
+            root.find({role: RoleType.TREE_ITEM, attributes: {name: 'Banana'}});
+        assertTrue(RectUtil.equal(rect, bananaNode.location));
+      }, {returnPage: true});
+    });
+
+
 // Disabled - flaky: https://crbug.com/1139939
 TEST_F(
     'MagnifierE2ETest', 'DISABLED_MovesScreenMagnifierToActiveDescendant',

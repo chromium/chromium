@@ -1044,7 +1044,8 @@ void AccessibilityManager::SetProfile(Profile* profile) {
   // All features supported by accessibility common.
   static const char* kAccessibilityCommonFeatures[] = {
       ash::prefs::kAccessibilityAutoclickEnabled,
-      ash::prefs::kAccessibilityScreenMagnifierEnabled};
+      ash::prefs::kAccessibilityScreenMagnifierEnabled,
+      ash::prefs::kDockedMagnifierEnabled};
 
   if (profile) {
     // TODO(yoshiki): Move following code to PrefHandler.

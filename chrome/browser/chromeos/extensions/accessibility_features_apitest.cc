@@ -323,7 +323,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFeaturesApiTest, ObserveFeatures) {
   std::vector<std::string> enabled_features = {
       "caretHighlight",
       "cursorColor",
-      "dockedMagnifier",
       "focusHighlight",
       "stickyKeys",
   };
@@ -331,6 +330,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFeaturesApiTest, ObserveFeatures) {
   std::vector<std::string> disabled_features = {
       "autoclick",
       "cursorHighlight",
+      "dockedMagnifier",
       "highContrast",
       "largeCursor",
       "screenMagnifier",
