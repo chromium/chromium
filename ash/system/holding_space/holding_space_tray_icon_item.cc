@@ -11,6 +11,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/system/holding_space/holding_space_tray_icon.h"
 #include "ash/system/tray/tray_constants.h"
+#include "base/i18n/rtl.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -158,6 +159,7 @@ HoldingSpaceTrayIconItem::HoldingSpaceTrayIconItem(HoldingSpaceTrayIcon* icon,
   contents_image_ = std::make_unique<ContentsImage>(
       item_, base::BindRepeating(&HoldingSpaceTrayIconItem::InvalidateLayer,
                                  base::Unretained(this)));
+  icon_observer_.Add(icon_);
 }
 
 HoldingSpaceTrayIconItem::~HoldingSpaceTrayIconItem() = default;
@@ -194,11 +196,10 @@ void HoldingSpaceTrayIconItem::AnimateOut(
   layer_->SetVisible(false);
 }
 
-// TODO(crbug.com/1142572): Handle RTL.
 void HoldingSpaceTrayIconItem::AnimateShift() {
-  transform_.Translate(icon_->shelf()->PrimaryAxisValue(
-      /*horizontal=*/gfx::Vector2dF(kTrayItemSize / 2, 0),
-      /*vertical=*/gfx::Vector2dF(0, kTrayItemSize / 2)));
+  gfx::Vector2dF translation(kTrayItemSize / 2, 0);
+  AdjustForShelfAlignmentAndTextDirection(&translation);
+  transform_.Translate(translation);
 
   if (!layer_)
     return;
@@ -215,12 +216,9 @@ void HoldingSpaceTrayIconItem::AnimateShift() {
   }
 }
 
-// TODO(crbug.com/1142572): Handle RTL.
 void HoldingSpaceTrayIconItem::AnimateUnshift() {
-  const gfx::Vector2dF translation = icon_->shelf()->PrimaryAxisValue(
-      /*horizontal=*/gfx::Vector2dF(-kTrayItemSize / 2, 0),
-      /*vertical=*/gfx::Vector2dF(0, -kTrayItemSize / 2));
-
+  gfx::Vector2dF translation(-kTrayItemSize / 2, 0);
+  AdjustForShelfAlignmentAndTextDirection(&translation);
   transform_.Translate(translation);
 
   if (!layer_ && !NeedsLayer())
@@ -248,7 +246,6 @@ void HoldingSpaceTrayIconItem::AnimateUnshift() {
   layer_->SetOpacity(1.f);
 }
 
-// TODO(crbug.com/1142572): Handle RTL.
 void HoldingSpaceTrayIconItem::OnShelfAlignmentChanged(
     ShelfAlignment old_shelf_alignment,
     ShelfAlignment new_shelf_alignment) {
@@ -271,12 +268,25 @@ void HoldingSpaceTrayIconItem::OnShelfAlignmentChanged(
   // Swap x-coordinate and y-coordinate of the target `transform_` since the
   // shelf has changed orientation from horizontal to vertical or vice versa.
   gfx::Vector2dF translation = transform_.To2dTranslation();
+
+  // In LTR, `translation` is always a positive offset. With a horizontal shelf,
+  // offset is relative to the parent layer's left bound while with a vertical
+  // shelf, offset is relative to the parent layer's top bound. In RTL, positive
+  // offset is still used for vertical shelf but with a horizontal shelf the
+  // `translation` is a negative offset from the parent layer's right bound. For
+  // this reason, a change in shelf orientation in RTL requires a negation of
+  // the current `translation`.
+  if (base::i18n::IsRTL())
+    translation = -translation;
+
   gfx::Transform swapped_transform;
   swapped_transform.Translate(translation.y(), translation.x());
   transform_ = swapped_transform;
 
-  if (layer_)
+  if (layer_) {
+    UpdateLayerBounds();
     layer_->SetTransform(transform_);
+  }
 }
 
 // TODO(crbug.com/1142572): Support theming.
@@ -321,27 +331,71 @@ void HoldingSpaceTrayIconItem::OnImplicitAnimationsCompleted() {
     std::move(animate_out_closure_).Run();
 }
 
+void HoldingSpaceTrayIconItem::OnViewBoundsChanged(views::View* view) {
+  DCHECK_EQ(icon_, view);
+  if (layer_)
+    UpdateLayerBounds();
+}
+
+void HoldingSpaceTrayIconItem::OnViewIsDeleting(views::View* view) {
+  DCHECK_EQ(icon_, view);
+  icon_observer_.Remove(icon_);
+}
+
 void HoldingSpaceTrayIconItem::CreateLayer() {
   DCHECK(!layer_);
   layer_ = std::make_unique<ui::Layer>(ui::LAYER_TEXTURED);
-  layer_->SetBounds(gfx::Rect(0, 0, kTrayItemSize, kTrayItemSize));
   layer_->SetFillsBoundsOpaquely(false);
   layer_->SetTransform(transform_);
   layer_->set_delegate(this);
+  UpdateLayerBounds();
 }
 
-// TODO(crbug.com/1142572): Handle RTL.
 bool HoldingSpaceTrayIconItem::NeedsLayer() const {
-  const float primary_axis_translation = icon_->shelf()->PrimaryAxisValue(
-      /*horizontal=*/transform_.To2dTranslation().x(),
-      /*vertical=*/transform_.To2dTranslation().y());
+  // With horizontal shelf in RTL, `primary_axis_translation` is expected to be
+  // negative prior to taking its absolute value since it represents an offset
+  // relative to the parent layer's right bound.
+  const float primary_axis_translation =
+      std::abs(icon_->shelf()->PrimaryAxisValue(
+          /*horizontal=*/transform_.To2dTranslation().x(),
+          /*vertical=*/transform_.To2dTranslation().y()));
   return primary_axis_translation <
          kHoldingSpaceTrayIconMaxVisibleItems * kTrayItemSize / 2;
 }
 
 void HoldingSpaceTrayIconItem::InvalidateLayer() {
   if (layer_)
-    layer_->SchedulePaint(layer_->bounds());
+    layer_->SchedulePaint(gfx::Rect(layer_->size()));
+}
+
+void HoldingSpaceTrayIconItem::AdjustForShelfAlignmentAndTextDirection(
+    gfx::Vector2dF* vector_2df) {
+  if (!icon_->shelf()->IsHorizontalAlignment()) {
+    const float x = vector_2df->x();
+    vector_2df->set_x(vector_2df->y());
+    vector_2df->set_y(x);
+    return;
+  }
+  // With a horizontal shelf in RTL, translation is a negative offset relative
+  // to the parent layer's right bound. This requires negation of `vector_2df`.
+  if (base::i18n::IsRTL())
+    vector_2df->Scale(-1.f);
+}
+
+void HoldingSpaceTrayIconItem::UpdateLayerBounds() {
+  DCHECK(layer_);
+  // With a horizontal shelf in RTL, `layer_` is aligned with its parent layer's
+  // right bound and translated with a negative offset. In all other cases,
+  // `layer_` is aligned with its parent layer's left/top bound and translated
+  // with a positive offset.
+  gfx::Point origin;
+  if (icon_->shelf()->IsHorizontalAlignment() && base::i18n::IsRTL()) {
+    origin = icon_->GetLocalBounds().top_right();
+    origin -= gfx::Vector2d(kTrayItemSize, 0);
+  }
+  gfx::Rect bounds(origin, gfx::Size(kTrayItemSize, kTrayItemSize));
+  if (bounds != layer_->bounds())
+    layer_->SetBounds(bounds);
 }
 
 }  // namespace ash

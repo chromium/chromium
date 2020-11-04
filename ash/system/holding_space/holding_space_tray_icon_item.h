@@ -10,8 +10,11 @@
 
 #include "ash/ash_export.h"
 #include "base/callback.h"
+#include "base/scoped_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_delegate.h"
+#include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
 namespace gfx {
 class ImageSkia;
@@ -32,7 +35,8 @@ enum class ShelfAlignment;
 // viewport, each instance will manage a layer for the holding space tray icon.
 class ASH_EXPORT HoldingSpaceTrayIconItem
     : public ui::LayerDelegate,
-      public ui::ImplicitAnimationObserver {
+      public ui::ImplicitAnimationObserver,
+      public views::ViewObserver {
  public:
   HoldingSpaceTrayIconItem(HoldingSpaceTrayIcon*, const HoldingSpaceItem*);
   HoldingSpaceTrayIconItem(const HoldingSpaceTrayIconItem&) = delete;
@@ -68,6 +72,10 @@ class ASH_EXPORT HoldingSpaceTrayIconItem
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
 
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override;
+  void OnViewIsDeleting(views::View* observed_view) override;
+
   // Creates the `layer_` for this item. Note that `layer_` may be created
   // multiple times throughout this instance's lifetime as `layer_` will only
   // exist while in the viewport for the holding space tray `icon_`.
@@ -80,6 +88,14 @@ class ASH_EXPORT HoldingSpaceTrayIconItem
 
   // Schedules repaint of `layer_`, no-oping if it doesn't exist.
   void InvalidateLayer();
+
+  // Updates the bounds of `layer_`.
+  void UpdateLayerBounds();
+
+  // Adjusts the specified `vector_2df` for shelf alignment and text direction.
+  // The given `vector_2df` should specify the desired value for horizontal
+  // alignment in LTR and will be adjusted for vertical alignment and/or RTL.
+  void AdjustForShelfAlignmentAndTextDirection(gfx::Vector2dF* vector_2df);
 
   HoldingSpaceTrayIcon* const icon_;
   const HoldingSpaceItem* item_;
@@ -103,6 +119,11 @@ class ASH_EXPORT HoldingSpaceTrayIconItem
   // Closure to invoke on completion of `AnimateOut()`. It is expected that this
   // instance may be deleted during invocation.
   base::OnceClosure animate_out_closure_;
+
+  // The `layer_` for this icon item is parented by `icon_`'s layer. It is
+  // necessary to observe and react to bounds changes in `icon_` to keep
+  // `layer_`'s bounds in sync.
+  ScopedObserver<views::View, views::ViewObserver> icon_observer_{this};
 
   base::WeakPtrFactory<HoldingSpaceTrayIconItem> weak_factory_{this};
 };
