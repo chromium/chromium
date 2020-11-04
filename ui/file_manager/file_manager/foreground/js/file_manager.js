@@ -1061,7 +1061,7 @@ class FileManager extends cr.EventTarget {
         this.launchParams_.showAndroidPickerApps,
         this.launchParams_.includeAllFiles, this.launchParams_.typeList);
 
-    this.recentEntry_ = new FakeEntry(
+    this.recentEntry_ = new FakeEntryImpl(
         str('RECENT_ROOT_LABEL'), VolumeManagerCommon.RootType.RECENT,
         this.getSourceRestriction_());
 
@@ -1545,7 +1545,7 @@ class FileManager extends cr.EventTarget {
             if (!this.fakeDriveItem_) {
               this.fakeDriveItem_ = new NavigationModelFakeItem(
                   str('DRIVE_DIRECTORY_LABEL'), NavigationModelItemType.DRIVE,
-                  new FakeEntry(
+                  new FakeEntryImpl(
                       str('DRIVE_DIRECTORY_LABEL'),
                       VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT));
             }

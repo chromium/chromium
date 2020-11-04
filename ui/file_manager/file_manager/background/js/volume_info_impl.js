@@ -69,12 +69,12 @@ class VolumeInfoImpl {
 
     if (volumeType === VolumeManagerCommon.VolumeType.DRIVE) {
       this.fakeEntries_[VolumeManagerCommon.RootType.DRIVE_OFFLINE] =
-          new FakeEntry(
+          new FakeEntryImpl(
               str('DRIVE_OFFLINE_COLLECTION_LABEL'),
               VolumeManagerCommon.RootType.DRIVE_OFFLINE);
 
       this.fakeEntries_[VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME] =
-          new FakeEntry(
+          new FakeEntryImpl(
               str('DRIVE_SHARED_WITH_ME_COLLECTION_LABEL'),
               VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME);
     }

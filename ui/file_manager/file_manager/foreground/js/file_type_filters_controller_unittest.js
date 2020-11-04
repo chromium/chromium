@@ -68,7 +68,7 @@ function setUp() {
   // Create FileTypeFiltersController instance with dependencies.
   container = /** @type {!HTMLInputElement} */ (document.createElement('div'));
   directoryModel = MockDirectoryModel.create();
-  recentEntry = new FakeEntry(
+  recentEntry = new FakeEntryImpl(
       'Recent', VolumeManagerCommon.RootType.RECENT,
       chrome.fileManagerPrivate.SourceRestriction.ANY_SOURCE);
   fileTypeFiltersController =

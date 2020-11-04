@@ -77,7 +77,7 @@ function testModel() {
 
   const crostiniFakeItem = new NavigationModelFakeItem(
       'linux-files-label', NavigationModelItemType.CROSTINI,
-      new FakeEntry(
+      new FakeEntryImpl(
           'linux-files-label', VolumeManagerCommon.RootType.CROSTINI));
 
   const androidAppListModelWithApps =
@@ -515,7 +515,7 @@ function testMyFilesVolumeEnabled(callback) {
 
   const crostiniFakeItem = new NavigationModelFakeItem(
       'linux-files-label', NavigationModelItemType.CROSTINI,
-      new FakeEntry(
+      new FakeEntryImpl(
           'linux-files-label', VolumeManagerCommon.RootType.CROSTINI));
 
   // Navigation items built above:

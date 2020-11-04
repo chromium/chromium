@@ -94,8 +94,8 @@ function testIsDescendantEntry() {
   const file = fileSystem.entries['/file_a.txt'];
   const deepFile = fileSystem.entries['/dir_a/dir_b/dir_c/file_g.txt'];
 
-  const fakeEntry =
-      new FakeEntry('fake-entry-label', VolumeManagerCommon.RootType.CROSTINI);
+  const fakeEntry = new FakeEntryImpl(
+      'fake-entry-label', VolumeManagerCommon.RootType.CROSTINI);
 
   const entryList =
       new EntryList('entry-list-label', VolumeManagerCommon.RootType.MY_FILES);
@@ -155,8 +155,8 @@ function testEntryDebugString() {
   const root = fileSystem.root;
   const folder = fileSystem.entries['/dir_a'];
   const file = fileSystem.entries['/file_a.txt'];
-  const fakeEntry =
-      new FakeEntry('fake-entry-label', VolumeManagerCommon.RootType.CROSTINI);
+  const fakeEntry = new FakeEntryImpl(
+      'fake-entry-label', VolumeManagerCommon.RootType.CROSTINI);
   const entryList =
       new EntryList('entry-list-label', VolumeManagerCommon.RootType.MY_FILES);
   entryList.addEntry(fakeEntry);
@@ -184,7 +184,8 @@ function testEntryDebugString() {
       util.entryDebugString(file));
   // FilesAppEntry types:
   assertEquals(
-      '(FakeEntry) / fake-entry://crostini', util.entryDebugString(fakeEntry));
+      '(FakeEntryImpl) / fake-entry://crostini',
+      util.entryDebugString(fakeEntry));
   assertEquals(
       '(EntryList) / entry-list://my_files', util.entryDebugString(entryList));
   assertEquals(

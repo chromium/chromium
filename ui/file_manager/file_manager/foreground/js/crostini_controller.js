@@ -44,7 +44,7 @@ class CrostiniController {
         this.crostini_.isEnabled(constants.DEFAULT_CROSTINI_VM) ?
         new NavigationModelFakeItem(
             str('LINUX_FILES_ROOT_LABEL'), NavigationModelItemType.CROSTINI,
-            new FakeEntry(
+            new FakeEntryImpl(
                 str('LINUX_FILES_ROOT_LABEL'),
                 VolumeManagerCommon.RootType.CROSTINI)) :
         null;

@@ -47,7 +47,10 @@ js_library("async_util") {
 
 js_library("files_app_entry_types") {
   deps = [ "//ui/file_manager/externs:file_manager_private" ]
-  externs_list = [ "//ui/file_manager/externs/volume_info.js" ]
+  externs_list = [
+    "//ui/file_manager/externs/files_app_entry_interfaces.js",
+    "//ui/file_manager/externs/volume_info.js",
+  ]
 }
 
 js_unittest("files_app_entry_types_unittest") {
