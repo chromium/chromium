@@ -15,7 +15,9 @@
 #include "ui/events/event.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/events/platform/scoped_event_dispatcher.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
@@ -68,7 +70,11 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
 
   State state() const { return state_; }
 
+  void OnToplevelWindowCreated(WaylandToplevelWindow* window);
+
  private:
+  class ExtendedDragSource;
+
   // WaylandDataDevice::DragDelegate:
   bool IsDragSource() const override;
   void DrawIcon() override;
@@ -103,6 +109,13 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   void RunLoop();
   // Unregisters the internal event dispatcher and asks to quit the nested loop.
   void QuitLoop();
+  // Set |window| as the current dragged window and |offset| as the drag offset,
+  // which makes |window| to appear anchored to the pointer cursor, if
+  // extended-drag extension is available.
+  void SetDraggedWindow(WaylandToplevelWindow* window,
+                        const gfx::Vector2d& offset);
+  // Tells if "extended drag" extension is available.
+  bool IsExtendedDragAvailable() const;
 
   WaylandConnection* const connection_;
   WaylandDataDeviceManager* const data_device_manager_;
@@ -118,6 +131,8 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
 
   std::unique_ptr<WaylandDataSource> data_source_;
   std::unique_ptr<WaylandDataOffer> data_offer_;
+
+  std::unique_ptr<ExtendedDragSource> extended_drag_source_;
 
   // The current toplevel window being dragged, when in detached mode.
   WaylandToplevelWindow* dragged_window_ = nullptr;

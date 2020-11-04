@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
+#include <extended-drag-unstable-v1-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
 #include <xdg-shell-unstable-v6-client-protocol.h>
 
@@ -69,6 +70,7 @@ constexpr uint32_t kMinAuraShellVersion = 11;
 constexpr uint32_t kMinWlDrmVersion = 2;
 constexpr uint32_t kMinWlOutputVersion = 2;
 constexpr uint32_t kMaxXdgDecorationVersion = 1;
+constexpr uint32_t kMaxExtendedDragVersion = 1;
 }  // namespace
 
 WaylandConnection::WaylandConnection() = default;
@@ -447,6 +449,14 @@ void WaylandConnection::Global(void* data,
     connection->xdg_decoration_manager_ =
         wl::Bind<struct zxdg_decoration_manager_v1>(registry, name,
                                                     kMaxXdgDecorationVersion);
+  } else if (!connection->extended_drag_v1_ &&
+             strcmp(interface, "zcr_extended_drag_v1") == 0) {
+    connection->extended_drag_v1_ =
+        wl::Bind<zcr_extended_drag_v1>(registry, name, kMaxExtendedDragVersion);
+    if (!connection->extended_drag_v1_) {
+      LOG(ERROR) << "Failed to bind to zcr_extended_drag_v1 global";
+      return;
+    }
   }
 
   connection->ScheduleFlush();

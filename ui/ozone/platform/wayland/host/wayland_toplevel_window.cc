@@ -132,6 +132,9 @@ void WaylandToplevelWindow::Show(bool inactive) {
   }
 
   UpdateBufferScale(false);
+
+  if (auto* drag_controller = connection()->window_drag_controller())
+    drag_controller->OnToplevelWindowCreated(this);
 }
 
 void WaylandToplevelWindow::Hide() {

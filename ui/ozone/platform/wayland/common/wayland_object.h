@@ -51,6 +51,9 @@ struct zaura_surface;
 struct zcr_cursor_shapes_v1;
 struct zcr_keyboard_extension_v1;
 struct zcr_extended_keyboard_v1;
+struct zcr_extended_drag_v1;
+struct zcr_extended_drag_source_v1;
+struct zcr_extended_drag_offer_v1;
 struct zwp_linux_dmabuf_v1;
 struct zwp_linux_buffer_release_v1;
 struct zwp_linux_explicit_synchronization_v1;
@@ -328,6 +331,24 @@ template <>
 struct ObjectTraits<zcr_cursor_shapes_v1> {
   static const wl_interface* interface;
   static void (*deleter)(zcr_cursor_shapes_v1*);
+};
+
+template <>
+struct ObjectTraits<zcr_extended_drag_v1> {
+  static const wl_interface* interface;
+  static void (*deleter)(zcr_extended_drag_v1*);
+};
+
+template <>
+struct ObjectTraits<zcr_extended_drag_source_v1> {
+  static const wl_interface* interface;
+  static void (*deleter)(zcr_extended_drag_source_v1*);
+};
+
+template <>
+struct ObjectTraits<zcr_extended_drag_offer_v1> {
+  static const wl_interface* interface;
+  static void (*deleter)(zcr_extended_drag_offer_v1*);
 };
 
 template <>

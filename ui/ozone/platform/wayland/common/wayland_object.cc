@@ -6,6 +6,7 @@
 
 #include <aura-shell-client-protocol.h>
 #include <cursor-shapes-unstable-v1-client-protocol.h>
+#include <extended-drag-unstable-v1-client-protocol.h>
 #include <gtk-primary-selection-client-protocol.h>
 #include <keyboard-extension-unstable-v1-client-protocol.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
@@ -252,6 +253,21 @@ const wl_interface* ObjectTraits<zcr_cursor_shapes_v1>::interface =
     &zcr_cursor_shapes_v1_interface;
 void (*ObjectTraits<zcr_cursor_shapes_v1>::deleter)(zcr_cursor_shapes_v1*) =
     &zcr_cursor_shapes_v1_destroy;
+
+const wl_interface* ObjectTraits<zcr_extended_drag_v1>::interface =
+    &zcr_extended_drag_v1_interface;
+void (*ObjectTraits<zcr_extended_drag_v1>::deleter)(zcr_extended_drag_v1*) =
+    &zcr_extended_drag_v1_destroy;
+
+const wl_interface* ObjectTraits<zcr_extended_drag_source_v1>::interface =
+    &zcr_extended_drag_source_v1_interface;
+void (*ObjectTraits<zcr_extended_drag_source_v1>::deleter)(
+    zcr_extended_drag_source_v1*) = &zcr_extended_drag_source_v1_destroy;
+
+const wl_interface* ObjectTraits<zcr_extended_drag_offer_v1>::interface =
+    &zcr_extended_drag_offer_v1_interface;
+void (*ObjectTraits<zcr_extended_drag_offer_v1>::deleter)(
+    zcr_extended_drag_offer_v1*) = &zcr_extended_drag_offer_v1_destroy;
 
 const wl_interface* ObjectTraits<zcr_keyboard_extension_v1>::interface =
     &zcr_keyboard_extension_v1_interface;

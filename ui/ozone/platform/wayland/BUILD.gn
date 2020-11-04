@@ -165,6 +165,7 @@ source_set("wayland") {
     "//mojo/public/cpp/system",
     "//skia",
     "//third_party/wayland-protocols:cursor_shapes_protocol",
+    "//third_party/wayland-protocols:extended_drag",
     "//third_party/wayland-protocols:gtk_primary_selection_protocol",
     "//third_party/wayland-protocols:keyboard_extension_protocol",
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
