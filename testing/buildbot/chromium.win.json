@@ -1318,7 +1318,8 @@
         },
         "name": "content_shell_crash_test",
         "resultdb": {
-          "enable": false
+          "enable": true,
+          "result_format": "single"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1347,7 +1348,8 @@
         },
         "name": "flatbuffers_unittests",
         "resultdb": {
-          "enable": false
+          "enable": true,
+          "result_format": "single"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3712,7 +3714,8 @@
         },
         "name": "content_shell_crash_test",
         "resultdb": {
-          "enable": false
+          "enable": true,
+          "result_format": "single"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3755,7 +3758,8 @@
         },
         "name": "flatbuffers_unittests",
         "resultdb": {
-          "enable": false
+          "enable": true,
+          "result_format": "single"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -5869,7 +5873,8 @@
         },
         "name": "content_shell_crash_test",
         "resultdb": {
-          "enable": false
+          "enable": true,
+          "result_format": "single"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -5910,7 +5915,8 @@
         },
         "name": "flatbuffers_unittests",
         "resultdb": {
-          "enable": false
+          "enable": true,
+          "result_format": "single"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -7467,7 +7473,8 @@
         },
         "name": "content_shell_crash_test",
         "resultdb": {
-          "enable": false
+          "enable": true,
+          "result_format": "single"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -7496,7 +7503,8 @@
         },
         "name": "flatbuffers_unittests",
         "resultdb": {
-          "enable": false
+          "enable": true,
+          "result_format": "single"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -8974,7 +8982,8 @@
         },
         "name": "content_shell_crash_test",
         "resultdb": {
-          "enable": false
+          "enable": true,
+          "result_format": "single"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -9003,7 +9012,8 @@
         },
         "name": "flatbuffers_unittests",
         "resultdb": {
-          "enable": false
+          "enable": true,
+          "result_format": "single"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,

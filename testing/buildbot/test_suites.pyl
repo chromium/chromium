@@ -91,9 +91,9 @@
         'args': [
           '--platform=android',
         ],
-        # TODO (crbug.com/1135909): Re-enable resultdb.
         'resultdb': {
-          'enable': False,
+          'enable': True,
+          'result_format': 'single'
         }
       },
     },
@@ -1073,9 +1073,9 @@
 
     'client_v8_chromium_isolated_scripts': {
       'content_shell_crash_test': {
-        # TODO (crbug.com/1135909): Re-enable resultdb.
         'resultdb': {
-          'enable': False,
+          'enable': True,
+          'result_format': 'single'
         }
       },
       'telemetry_gpu_unittests': {
@@ -1151,10 +1151,9 @@
             },
           ],
         },
-        # TODO(crbug.com/1137507): Enable resutldb after it can support
-        # single integration test suites.
         'resultdb': {
-          'enable': False,
+          'enable': True,
+          'result_format': 'single'
         },
       },
     },
@@ -1207,15 +1206,16 @@
         }
       },
       'content_shell_crash_test': {
-        # TODO (crbug.com/1135909): Re-enable resultdb.
         'resultdb': {
-          'enable': False,
+          'enable': True,
+          'result_format': 'single'
         }
       },
       'extension_docserver_python_unittests': {},
       'flatbuffers_unittests': {
         'resultdb': {
-          'enable': False,
+          'enable': True,
+          'result_format': 'single'
         }
       },
       'grit_python_unittests': {},
