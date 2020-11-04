@@ -191,7 +191,11 @@ bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
     if (accessibility_controller->IsPointScanEnabled()) {
       PointScanController* point_scan_controller =
           accessibility_controller->GetPointScanController();
-      point_scan_controller->OnPointSelect();
+      base::Optional<gfx::PointF> point =
+          point_scan_controller->OnPointSelect();
+      if (point.has_value()) {
+        delegate_->SendPointScanPoint(point.value());
+      }
     } else {
       SwitchAccessCommand command =
           key_code_to_switch_access_command_[key_event->key_code()];

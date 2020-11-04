@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace ui {
 class Event;
@@ -33,6 +34,9 @@ class ASH_PUBLIC_EXPORT AccessibilityEventRewriterDelegate {
 
   // Sends a command to Switch Access.
   virtual void SendSwitchAccessCommand(SwitchAccessCommand command) = 0;
+
+  // Sends a point to Switch Access's Point Scan.
+  virtual void SendPointScanPoint(const gfx::PointF& point) = 0;
 
  protected:
   virtual ~AccessibilityEventRewriterDelegate() {}

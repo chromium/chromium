@@ -10,6 +10,7 @@
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
 #include "base/macros.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace ash {
@@ -37,6 +38,7 @@ class AccessibilityEventRewriterDelegate
                                    bool capture) override;
   void DispatchMouseEventToChromeVox(std::unique_ptr<ui::Event> event) override;
   void SendSwitchAccessCommand(ash::SwitchAccessCommand command) override;
+  void SendPointScanPoint(const gfx::PointF& point) override;
 
  private:
   // Reports unhandled key events to the EventRewriterController for dispatch.

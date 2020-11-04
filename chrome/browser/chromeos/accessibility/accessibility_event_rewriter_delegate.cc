@@ -103,6 +103,24 @@ void AccessibilityEventRewriterDelegate::SendSwitchAccessCommand(
       extension_misc::kSwitchAccessExtensionId, std::move(event));
 }
 
+void AccessibilityEventRewriterDelegate::SendPointScanPoint(
+    const gfx::PointF& point) {
+  extensions::EventRouter* event_router = extensions::EventRouter::Get(
+      chromeos::AccessibilityManager::Get()->profile());
+
+  auto event_args = std::make_unique<base::ListValue>();
+  event_args->AppendDouble(point.x());
+  event_args->AppendDouble(point.y());
+
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::ACCESSIBILITY_PRIVATE_ON_POINT_SCAN_SET,
+      extensions::api::accessibility_private::OnPointScanSet::kEventName,
+      std::move(event_args));
+
+  event_router->DispatchEventWithLazyListener(
+      extension_misc::kSwitchAccessExtensionId, std::move(event));
+}
+
 void AccessibilityEventRewriterDelegate::OnUnhandledSpokenFeedbackEvent(
     std::unique_ptr<ui::Event> event) const {
   ash::EventRewriterController::Get()->OnUnhandledSpokenFeedbackEvent(

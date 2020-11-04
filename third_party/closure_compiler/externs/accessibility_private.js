@@ -78,6 +78,14 @@ chrome.accessibilityPrivate.SwitchAccessBubble = {
 };
 
 /**
+ * @typedef {{
+ *   x: number,
+ *   y: number
+ * }}
+ */
+chrome.accessibilityPrivate.PointScanPoint;
+
+/**
  * @enum {string}
  */
 chrome.accessibilityPrivate.SwitchAccessMenuAction = {
@@ -412,6 +420,12 @@ chrome.accessibilityPrivate.onSelectToSpeakStateChangeRequested;
  * @type {!ChromeEvent}
  */
 chrome.accessibilityPrivate.onSwitchAccessCommand;
+
+/**
+ * Fired when Chrome OS has received the final point of point scanning.
+ * @type {!ChromeEvent}
+ */
+chrome.accessibilityPrivate.onPointScanSet;
 
 /**
  * Fired when an internal component within accessibility wants to force speech

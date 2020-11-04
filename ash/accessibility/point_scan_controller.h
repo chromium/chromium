@@ -8,6 +8,7 @@
 #include "ash/accessibility/accessibility_layer.h"
 #include "ash/accessibility/layer_animation_info.h"
 #include "ash/ash_export.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace ash {
 
@@ -40,7 +41,7 @@ class ASH_EXPORT PointScanController : public AccessibilityLayerDelegate {
   void Start();
   void Pause();
   void Stop();
-  void OnPointSelect();
+  base::Optional<gfx::PointF> OnPointSelect();
   bool IsPointScanEnabled();
 
  private:

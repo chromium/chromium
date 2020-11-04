@@ -197,6 +197,8 @@ class ActionManager {
         return true;
       case SwitchAccessMenuAction.POINT_SCAN:
         chrome.accessibilityPrivate.activatePointScan();
+        chrome.accessibilityPrivate.onPointScanSet.addListener(
+            this.pointScanClick_.bind(this));
         ActionManager.exitCurrentMenu();
         return true;
       default:
@@ -247,5 +249,16 @@ class ActionManager {
         }
         this.openCurrentMenu_();
     }
+  }
+
+  /**
+   * Performs mouse left click action on the selected point scanning point
+   * coordinates
+   * @param {number} x
+   * @param {number} y
+   * @private
+   */
+  pointScanClick_(x, y) {
+    EventGenerator.sendMouseClick(x, y);
   }
 }

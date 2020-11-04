@@ -51,6 +51,20 @@
         "description": "Different Switch Access bubbles that can be shown or hidden."
       },
       {
+        "id": "PointScanPoint",
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number",
+            "description": "X coordinate of the selected point in DIPs."
+          },
+          "y": {
+            "type": "number",
+            "description": "Y coordinate of the selected point in DIPs."
+          }
+        }
+      },
+      {
         "id": "SwitchAccessMenuAction",
         "type": "string",
         "enum": [ "copy", "cut", "decrement", "dictation", "endTextSelection", "increment", "jumpToBeginningOfText", "jumpToEndOfText", "keyboard", "moveBackwardOneCharOfText", "moveBackwardOneWordOfText", "moveCursor", "moveDownOneLineOfText", "moveForwardOneCharOfText", "moveForwardOneWordOfText", "moveUpOneLineOfText", "paste", "pointScan", "scrollDown", "scrollLeft", "scrollRight", "scrollUp", "select", "settings", "startTextSelection" ],
@@ -552,6 +566,18 @@
           {
             "name": "command",
             "$ref": "SwitchAccessCommand"
+          }
+        ],
+        "platforms": ["chromeos"]
+      },
+      {
+        "name": "onPointScanSet",
+        "type": "function",
+        "description": "Fired when Chrome OS has received the final point of point scanning.",
+        "parameters": [
+          {
+            "name": "point",
+            "$ref": "PointScanPoint"
           }
         ],
         "platforms": ["chromeos"]

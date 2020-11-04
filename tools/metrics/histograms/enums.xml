@@ -23654,6 +23654,7 @@ Called by update_extension_histograms.py.-->
   <int value="463" label="PASSWORDS_PRIVATE_ON_WEAK_CREDENTIALS_CHANGED"/>
   <int value="464" label="ACCESSIBILITY_PRIVATE_ON_MAGNIFIER_BOUNDS_CHANGED"/>
   <int value="465" label="FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED"/>
+  <int value="466" label="ACCESSIBILITY_PRIVATE_ON_POINT_SCAN_SET"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">

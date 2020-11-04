@@ -10,16 +10,17 @@
 #include "ui/display/screen.h"
 
 namespace {
-// Scanning line rate constants
-constexpr float kHorizontalLineRate = 10;
-constexpr float kVerticalLineRate = 10;
+// Scanning time in seconds from the start of the screen (offset = 0) to the end
+// of the screen (offset = bound).
+constexpr float kHorizontalScanTimeSecs = 20;
+constexpr float kVerticalScanTimeSecs = 20;
 }  // namespace
 
 namespace ash {
 
 PointScanController::PointScanController() {
-  horizontal_line_layer_info_.animation_rate = kHorizontalLineRate;
-  vertical_line_layer_info_.animation_rate = kVerticalLineRate;
+  horizontal_line_layer_info_.animation_rate = kHorizontalScanTimeSecs;
+  vertical_line_layer_info_.animation_rate = kVerticalScanTimeSecs;
 }
 
 PointScanController::~PointScanController() = default;
@@ -46,16 +47,17 @@ void PointScanController::Stop() {
   vertical_line_layer_->PauseVerticalScanning();
 }
 
-void PointScanController::OnPointSelect() {
+base::Optional<gfx::PointF> PointScanController::OnPointSelect() {
   switch (state_) {
     case PointScanState::kHorizontalScanning:
       Pause();
-      return;
+      return base::nullopt;
     case PointScanState::kVerticalScanning:
       Stop();
-      return;
+      return gfx::PointF(horizontal_line_layer_info_.offset,
+                         vertical_line_layer_info_.offset);
     case PointScanState::kOff:
-      return;
+      return base::nullopt;
   }
 }
 

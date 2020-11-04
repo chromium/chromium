@@ -60,6 +60,7 @@ class ChromeVoxTestDelegate : public AccessibilityEventRewriterDelegate {
     chromevox_recorded_event_count_++;
   }
   void SendSwitchAccessCommand(SwitchAccessCommand command) override {}
+  void SendPointScanPoint(const gfx::PointF& point) override {}
 };
 
 class ChromeVoxAccessibilityEventRewriterTest
@@ -408,6 +409,7 @@ class SwitchAccessTestDelegate : public AccessibilityEventRewriterDelegate {
   void SendSwitchAccessCommand(SwitchAccessCommand command) override {
     commands_.push_back(command);
   }
+  void SendPointScanPoint(const gfx::PointF& point) override {}
   void DispatchKeyEventToChromeVox(std::unique_ptr<ui::Event>, bool) override {}
   void DispatchMouseEventToChromeVox(std::unique_ptr<ui::Event>) override {}
 
