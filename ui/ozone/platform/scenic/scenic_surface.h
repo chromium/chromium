@@ -57,7 +57,8 @@ class ScenicSurface : public ui::PlatformWindowSurface {
   bool UpdateOverlayViewPosition(gfx::SysmemBufferCollectionId id,
                                  int plane_z_order,
                                  const gfx::Rect& display_bounds,
-                                 const gfx::RectF& crop_rect);
+                                 const gfx::RectF& crop_rect,
+                                 std::vector<zx::event> acquire_fences);
 
   // Remove ViewHolder specified by |id|.
   bool RemoveOverlayView(gfx::SysmemBufferCollectionId id);

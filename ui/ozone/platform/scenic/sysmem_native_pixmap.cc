@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/scenic/sysmem_native_pixmap.h"
 
+#include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/gpu_fence.h"
@@ -17,6 +18,18 @@ namespace {
 zx::event GpuFenceToZxEvent(gfx::GpuFence fence) {
   DCHECK(!fence.GetGpuFenceHandle().is_null());
   return fence.GetGpuFenceHandle().Clone().owned_event;
+}
+
+std::vector<zx::event> DuplicateZxEvents(
+    const std::vector<zx::event>& acquire_events) {
+  std::vector<zx::event> duped_events;
+  for (auto& event : acquire_events) {
+    duped_events.emplace_back();
+    zx_status_t status =
+        event.duplicate(ZX_RIGHT_SAME_RIGHTS, &duped_events.back());
+    ZX_DCHECK(status == ZX_OK, status);
+  }
+  return duped_events;
 }
 
 }  // namespace
@@ -98,9 +111,6 @@ bool SysmemNativePixmap::ScheduleOverlayPlane(
     DLOG(ERROR) << "Failed to attach to surface.";
     return false;
   }
-  surface->UpdateOverlayViewPosition(buffer_collection_id, plane_z_order,
-                                     display_bounds, crop_rect);
-  overlay_view->SetBlendMode(enable_blend);
 
   // Convert gfx::GpuFence to zx::event for PresentImage call.
   std::vector<zx::event> acquire_events;
@@ -109,6 +119,12 @@ bool SysmemNativePixmap::ScheduleOverlayPlane(
   std::vector<zx::event> release_events;
   for (auto& fence : release_fences)
     release_events.push_back(GpuFenceToZxEvent(std::move(fence)));
+
+  surface->UpdateOverlayViewPosition(buffer_collection_id, plane_z_order,
+                                     display_bounds, crop_rect,
+                                     DuplicateZxEvents(acquire_events));
+
+  overlay_view->SetBlendMode(enable_blend);
   overlay_view->PresentImage(handle_.buffer_index, std::move(acquire_events),
                              std::move(release_events));
 

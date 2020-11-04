@@ -119,10 +119,12 @@ bool ScenicSurface::PresentOverlayView(
   return true;
 }
 
-bool ScenicSurface::UpdateOverlayViewPosition(gfx::SysmemBufferCollectionId id,
-                                              int plane_z_order,
-                                              const gfx::Rect& display_bounds,
-                                              const gfx::RectF& crop_rect) {
+bool ScenicSurface::UpdateOverlayViewPosition(
+    gfx::SysmemBufferCollectionId id,
+    int plane_z_order,
+    const gfx::Rect& display_bounds,
+    const gfx::RectF& crop_rect,
+    std::vector<zx::event> acquire_fences) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(overlays_.count(id));
   auto& overlay_view_info = overlays_.at(id);
@@ -136,6 +138,10 @@ bool ScenicSurface::UpdateOverlayViewPosition(gfx::SysmemBufferCollectionId id,
   overlay_view_info.plane_z_order = plane_z_order;
   overlay_view_info.display_bounds = display_bounds;
   overlay_view_info.crop_rect = crop_rect;
+
+  for (auto& fence : acquire_fences)
+    scenic_session_.EnqueueAcquireFence(std::move(fence));
+
   // TODO(crbug.com/1143514): Only queue commands for the affected overlays
   // instead of the whole scene.
   UpdateViewHolderScene();

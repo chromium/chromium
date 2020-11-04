@@ -44,6 +44,20 @@ void GrSemaphoresToZxEvents(gpu::VulkanImplementation* vulkan_implementation,
   }
 }
 
+// Duplicates the given zx::events and stores in gfx::GpuFences.
+std::vector<gfx::GpuFence> ZxEventsToGpuFences(
+    const std::vector<zx::event>& events) {
+  std::vector<gfx::GpuFence> fences;
+  for (const auto& event : events) {
+    gfx::GpuFenceHandle handle;
+    zx_status_t status =
+        event.duplicate(ZX_RIGHT_SAME_RIGHTS, &handle.owned_event);
+    ZX_DCHECK(status == ZX_OK, status);
+    fences.emplace_back(std::move(handle));
+  }
+  return fences;
+}
+
 class PresenterImageFuchsia : public OutputPresenter::Image {
  public:
   explicit PresenterImageFuchsia(uint32_t image_id);
@@ -112,6 +126,18 @@ void PresenterImageFuchsia::TakeSemaphores(
 }
 
 }  // namespace
+
+OutputPresenterFuchsia::PendingOverlay::PendingOverlay(
+    OverlayCandidate candidate,
+    std::vector<gfx::GpuFence> release_fences)
+    : candidate(std::move(candidate)),
+      release_fences(std::move(release_fences)) {}
+OutputPresenterFuchsia::PendingOverlay::~PendingOverlay() = default;
+
+OutputPresenterFuchsia::PendingOverlay::PendingOverlay(PendingOverlay&&) =
+    default;
+OutputPresenterFuchsia::PendingOverlay&
+OutputPresenterFuchsia::PendingOverlay::operator=(PendingOverlay&&) = default;
 
 OutputPresenterFuchsia::PendingFrame::PendingFrame() = default;
 OutputPresenterFuchsia::PendingFrame::~PendingFrame() = default;
@@ -360,8 +386,9 @@ void OutputPresenterFuchsia::SchedulePrimaryPlane(
     bool is_submitted) {
   auto* image_fuchsia = static_cast<PresenterImageFuchsia*>(image);
 
-  DCHECK(!next_frame_);
-  next_frame_ = PendingFrame();
+  if (!next_frame_)
+    next_frame_ = PendingFrame();
+  DCHECK(!next_frame_->buffer_collection_id);
   next_frame_->image_id = image_fuchsia->image_id();
   next_frame_->buffer_collection_id = last_buffer_collection_id_;
 
@@ -388,21 +415,18 @@ void OutputPresenterFuchsia::SchedulePrimaryPlane(
 void OutputPresenterFuchsia::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays,
     std::vector<ScopedOverlayAccess*> accesses) {
-  for (size_t i = 0; i < overlays.size(); ++i) {
-    auto& overlay = overlays[i];
-    DCHECK(overlay.mailbox.IsSharedImage());
-    auto pixmap =
-        dependency_->GetSharedImageManager()->GetNativePixmap(overlay.mailbox);
-    if (!pixmap) {
-      LOG(ERROR) << "Cannot access SysmemNativePixmap";
-      continue;
-    }
+  if (!next_frame_)
+    next_frame_ = PendingFrame();
 
-    pixmap->ScheduleOverlayPlane(
-        dependency_->GetSurfaceHandle(), overlay.plane_z_order,
-        overlay.transform, gfx::ToRoundedRect(overlay.display_rect),
-        overlay.uv_rect, !overlay.is_opaque, accesses[i]->TakeAcquireFences(),
-        accesses[i]->TakeReleaseFences());
+  for (size_t i = 0; i < overlays.size(); ++i) {
+    next_frame_->overlays.emplace_back(std::move(overlays[i]),
+                                       accesses[i]->TakeReleaseFences());
+    // Merge all fences under |acquire_fences|, because we are trying to sync
+    // primary plane and overlay updates to avoid artifacts.
+    for (auto& fence : accesses[i]->TakeAcquireFences()) {
+      next_frame_->acquire_fences.push_back(
+          std::move(fence.GetGpuFenceHandle().Clone().owned_event));
+    }
   }
 }
 
@@ -410,19 +434,36 @@ void OutputPresenterFuchsia::PresentNextFrame() {
   DCHECK(!present_is_pending_);
   DCHECK(!pending_frames_.empty());
 
+  auto& frame = pending_frames_.front();
   TRACE_EVENT_NESTABLE_ASYNC_END1("viz", "OutputPresenterFuchsia::PresentQueue",
                                   TRACE_ID_LOCAL(this), "image_id",
-                                  pending_frames_.front().image_id);
+                                  frame.image_id);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
       "viz", "OutputPresenterFuchsia::PresentFrame", TRACE_ID_LOCAL(this),
-      "image_id", pending_frames_.front().image_id);
+      "image_id", frame.image_id);
 
   present_is_pending_ = true;
-  uint64_t target_presentation_time = zx_clock_get_monotonic();
+
+  for (size_t i = 0; i < frame.overlays.size(); ++i) {
+    auto& overlay = frame.overlays[i].candidate;
+    DCHECK(overlay.mailbox.IsSharedImage());
+    auto pixmap =
+        dependency_->GetSharedImageManager()->GetNativePixmap(overlay.mailbox);
+    if (!pixmap) {
+      LOG(ERROR) << "Cannot access SysmemNativePixmap";
+      continue;
+    }
+    pixmap->ScheduleOverlayPlane(dependency_->GetSurfaceHandle(),
+                                 overlay.plane_z_order, overlay.transform,
+                                 gfx::ToRoundedRect(overlay.display_rect),
+                                 overlay.uv_rect, !overlay.is_opaque,
+                                 ZxEventsToGpuFences(frame.acquire_fences),
+                                 std::move(frame.overlays[i].release_fences));
+  }
+
   image_pipe_->PresentImage(
-      pending_frames_.front().image_id, target_presentation_time,
-      std::move(pending_frames_.front().acquire_fences),
-      std::move(pending_frames_.front().release_fences),
+      pending_frames_.front().image_id, zx_clock_get_monotonic(),
+      std::move(frame.acquire_fences), std::move(frame.release_fences),
       fit::bind_member(this, &OutputPresenterFuchsia::OnPresentComplete));
 }
 

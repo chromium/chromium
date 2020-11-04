@@ -63,6 +63,18 @@ class VIZ_SERVICE_EXPORT OutputPresenterFuchsia : public OutputPresenter {
                         std::vector<ScopedOverlayAccess*> accesses) final;
 
  private:
+  struct PendingOverlay {
+    PendingOverlay(OverlayCandidate candidate,
+                   std::vector<gfx::GpuFence> release_fences);
+    ~PendingOverlay();
+
+    PendingOverlay(PendingOverlay&&);
+    PendingOverlay& operator=(PendingOverlay&&);
+
+    OverlayCandidate candidate;
+    std::vector<gfx::GpuFence> release_fences;
+  };
+
   struct PendingFrame {
     PendingFrame();
     ~PendingFrame();
@@ -70,8 +82,8 @@ class VIZ_SERVICE_EXPORT OutputPresenterFuchsia : public OutputPresenter {
     PendingFrame(PendingFrame&&);
     PendingFrame& operator=(PendingFrame&&);
 
-    uint32_t buffer_collection_id;
-    uint32_t image_id;
+    uint32_t buffer_collection_id = 0;
+    uint32_t image_id = 0;
 
     std::vector<zx::event> acquire_fences;
     std::vector<zx::event> release_fences;
@@ -82,6 +94,9 @@ class VIZ_SERVICE_EXPORT OutputPresenterFuchsia : public OutputPresenter {
     // Indicates that this is the last frame for this buffer collection and that
     // the collection can be removed after the frame is presented.
     bool remove_buffer_collection = false;
+
+    // Vector of overlays that are associated with this frame.
+    std::vector<PendingOverlay> overlays;
   };
 
   void PresentNextFrame();
