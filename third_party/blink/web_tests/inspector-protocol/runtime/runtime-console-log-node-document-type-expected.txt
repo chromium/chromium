@@ -1,0 +1,9 @@
+Test description generation for DocumentType Nodes.
+{
+    className : DocumentType
+    description : <!DOCTYPE svg:svg>
+    objectId : <string>
+    subtype : node
+    type : object
+}
+

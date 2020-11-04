@@ -1,0 +1,30 @@
+Test description generation for HTML Nodes.
+{
+    className : HTMLDivElement
+    description : div
+    objectId : <string>
+    subtype : node
+    type : object
+}
+{
+    className : HTMLDivElement
+    description : div#x_id
+    objectId : <string>
+    subtype : node
+    type : object
+}
+{
+    className : HTMLDivElement
+    description : div#x_id.x_class
+    objectId : <string>
+    subtype : node
+    type : object
+}
+{
+    className : HTMLDivElement
+    description : div#x_id.x_class1.x_class2
+    objectId : <string>
+    subtype : node
+    type : object
+}
+

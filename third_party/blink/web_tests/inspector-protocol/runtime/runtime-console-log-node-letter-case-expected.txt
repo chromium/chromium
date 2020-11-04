@@ -1,0 +1,16 @@
+Test right letter case in description of Nodes.
+{
+    className : Element
+    description : PascalCase
+    objectId : <string>
+    subtype : node
+    type : object
+}
+{
+    className : HTMLUnknownElement
+    description : pascalcase
+    objectId : <string>
+    subtype : node
+    type : object
+}
+
