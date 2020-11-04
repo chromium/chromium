@@ -390,7 +390,10 @@ target(link_target_type, "gles2_sources") {
   }
 
   if (use_dawn) {
-    deps += [ "//third_party/dawn/src/dawn_native" ]
+    deps += [
+      "//third_party/dawn/src/dawn_native",
+      "//third_party/dawn/src/dawn_platform",
+    ]
   }
 
   if (is_mac) {
