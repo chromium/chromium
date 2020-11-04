@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
+#include "ui/display/display_observer.h"
 #include "ui/display/tablet_state.h"
 
 namespace ash {
@@ -19,7 +20,8 @@ namespace chromeos {
 //
 // The idea is that only the creator of this class in Ash or Lacros/Ozone code
 // is able to set the state.
-class COMPONENT_EXPORT(CHROMEOS_UI_BASE) TabletState {
+class COMPONENT_EXPORT(CHROMEOS_UI_BASE) TabletState
+    : public display::DisplayObserver {
  public:
   // Returns the singleton instance.
   static TabletState* Get();
@@ -35,7 +37,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_BASE) TabletState {
   TabletState();
   TabletState(const TabletState&) = delete;
   TabletState& operator=(const TabletState&) = delete;
-  ~TabletState();
+  ~TabletState() override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -44,6 +46,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_BASE) TabletState {
   bool InTabletMode() const;
 
   display::TabletState state() const { return state_; }
+
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
  private:
   // The friend class declaration here is used to control classes that can set

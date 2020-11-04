@@ -12,6 +12,8 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "ui/display/display_list.h"
+#include "ui/display/display_observer.h"
+#include "ui/display/tablet_state.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/public/platform_screen.h"
@@ -36,6 +38,8 @@ class WaylandScreen : public PlatformScreen {
                               const gfx::Rect& bounds,
                               int32_t output_scale);
   void OnOutputRemoved(uint32_t output_id);
+
+  void OnTabletStateChanged(display::TabletState tablet_state);
 
   base::WeakPtr<WaylandScreen> GetWeakPtr();
 

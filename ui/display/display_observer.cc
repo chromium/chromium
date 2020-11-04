@@ -4,6 +4,8 @@
 
 #include "ui/display/display_observer.h"
 
+#include "ui/display/tablet_state.h"
+
 namespace display {
 
 DisplayObserver::~DisplayObserver() {}
@@ -21,5 +23,7 @@ void DisplayObserver::OnDisplayMetricsChanged(const Display& display,
 
 void DisplayObserver::OnCurrentWorkspaceChanged(
     const std::string& new_workspace) {}
+
+void DisplayObserver::OnDisplayTabletStateChanged(TabletState state) {}
 
 }  // namespace display

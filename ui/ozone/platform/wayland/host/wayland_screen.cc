@@ -13,7 +13,6 @@
 #include "ui/display/display.h"
 #include "ui/display/display_finder.h"
 #include "ui/display/display_list.h"
-#include "ui/display/display_observer.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/point.h"
@@ -131,6 +130,13 @@ void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
   auto* wayland_window_manager = connection_->wayland_window_manager();
   for (auto* window : wayland_window_manager->GetWindowsOnOutput(output_id))
     window->UpdateBufferScale(true);
+}
+
+void WaylandScreen::OnTabletStateChanged(display::TabletState tablet_state) {
+  auto* observer_list = display_list_.observers();
+  for (auto& observer : *observer_list) {
+    observer.OnDisplayTabletStateChanged(tablet_state);
+  }
 }
 
 base::WeakPtr<WaylandScreen> WaylandScreen::GetWeakPtr() {

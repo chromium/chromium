@@ -5,6 +5,7 @@
 #include "chromeos/ui/base/tablet_state.h"
 
 #include "base/check_op.h"
+#include "ui/display/screen.h"
 
 namespace chromeos {
 
@@ -19,11 +20,13 @@ TabletState* TabletState::Get() {
 TabletState::TabletState() {
   DCHECK_EQ(nullptr, g_instance);
   g_instance = this;
+  display::Screen::GetScreen()->AddObserver(this);
 }
 
 TabletState::~TabletState() {
   DCHECK_EQ(this, g_instance);
   g_instance = nullptr;
+  display::Screen::GetScreen()->RemoveObserver(this);
 }
 
 void TabletState::AddObserver(Observer* observer) {
@@ -44,6 +47,10 @@ void TabletState::SetState(display::TabletState state) {
 
   for (auto& observer : observers_)
     observer.OnTabletStateChanged(state_);
+}
+
+void TabletState::OnDisplayTabletStateChanged(display::TabletState state) {
+  SetState(state);
 }
 
 }  // namespace chromeos

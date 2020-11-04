@@ -22,6 +22,11 @@ class WaylandZAuraShell {
   zaura_shell* wl_object() const { return obj_.get(); }
 
  private:
+  // zaura_shell_listener
+  static void OnLayoutMode(void* data,
+                           struct zaura_shell* zaura_shell,
+                           uint32_t layout_mode);
+
   wl::Object<zaura_shell> obj_;
   WaylandConnection* const connection_;
 };
