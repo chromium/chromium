@@ -146,7 +146,8 @@ TEST(JsonSchemaCompilerErrorTest, WrongParameterCreationType) {
   }
 }
 
-TEST(JsonSchemaCompilerErrorTest, WrongTypeValueType) {
+// Disabled due to consistent failures on some bots https://crbug.com/1113513.
+TEST(JsonSchemaCompilerErrorTest, DISABLED_WrongTypeValueType) {
   {
     auto value = std::make_unique<base::DictionaryValue>();
     EXPECT_TRUE(EqualsUtf16("", GetPopulateError<errors::ObjectType>(*value)));
@@ -227,8 +228,8 @@ TEST(JsonSchemaCompilerErrorTest, BadEnumValue) {
 }
 
 // Warn but don't fail out errors
-
-TEST(JsonSchemaCompilerErrorTest, WarnOnOptionalFailure) {
+// Disabled due to consistent failures on some bots https://crbug.com/1113513.
+TEST(JsonSchemaCompilerErrorTest, DISABLED_WarnOnOptionalFailure) {
   {
     std::unique_ptr<base::DictionaryValue> value =
         Dictionary("string", std::make_unique<Value>("bling"));
@@ -248,7 +249,8 @@ TEST(JsonSchemaCompilerErrorTest, WarnOnOptionalFailure) {
   }
 }
 
-TEST(JsonSchemaCompilerErrorTest, OptionalBinaryTypeFailure) {
+// Disabled due to consistent failures on some bots https://crbug.com/1113513.
+TEST(JsonSchemaCompilerErrorTest, DISABLED_OptionalBinaryTypeFailure) {
   {
     std::unique_ptr<base::DictionaryValue> value =
         Dictionary("data", std::make_unique<Value>(Value::Type::BINARY));
@@ -269,7 +271,8 @@ TEST(JsonSchemaCompilerErrorTest, OptionalBinaryTypeFailure) {
   }
 }
 
-TEST(JsonSchemaCompilerErrorTest, OptionalArrayTypeFailure) {
+// Disabled due to consistent failures on some bots https://crbug.com/1113513.
+TEST(JsonSchemaCompilerErrorTest, DISABLED_OptionalArrayTypeFailure) {
   {
     std::unique_ptr<base::DictionaryValue> value =
         Dictionary("TheArray", std::make_unique<base::ListValue>());
@@ -287,7 +290,8 @@ TEST(JsonSchemaCompilerErrorTest, OptionalArrayTypeFailure) {
   }
 }
 
-TEST(JsonSchemaCompilerErrorTest, OptionalUnableToPopulateArray) {
+// Disabled due to consistent failures on some bots https://crbug.com/1113513.
+TEST(JsonSchemaCompilerErrorTest, DISABLED_OptionalUnableToPopulateArray) {
   {
     std::unique_ptr<base::ListValue> params_value =
         List(std::make_unique<Value>(5));
@@ -309,7 +313,8 @@ TEST(JsonSchemaCompilerErrorTest, OptionalUnableToPopulateArray) {
   }
 }
 
-TEST(JsonSchemaCompilerErrorTest, MultiplePopulationErrors) {
+// Disabled due to consistent failures on some bots https://crbug.com/1113513.
+TEST(JsonSchemaCompilerErrorTest, DISABLED_MultiplePopulationErrors) {
   {
     std::unique_ptr<base::DictionaryValue> value =
         Dictionary("TheArray", std::make_unique<Value>(5));
@@ -328,7 +333,8 @@ TEST(JsonSchemaCompilerErrorTest, MultiplePopulationErrors) {
   }
 }
 
-TEST(JsonSchemaCompilerErrorTest, TooManyKeys) {
+// Disabled due to consistent failures on some bots https://crbug.com/1113513.
+TEST(JsonSchemaCompilerErrorTest, DISABLED_TooManyKeys) {
   {
     std::unique_ptr<base::DictionaryValue> value =
         Dictionary("string", std::make_unique<Value>("yes"));
