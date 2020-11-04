@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
       std::make_unique<chromeos::ReleaseNotesStorage>(profile());
 
   // Force the release notes notification to show up.
-  profile()->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone, -1);
+  profile()->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone, 20);
   release_notes_notification->MaybeShowReleaseNotes();
   // Assert that the notification really is there.
   auto notifications = display_service->GetDisplayedNotificationsForType(

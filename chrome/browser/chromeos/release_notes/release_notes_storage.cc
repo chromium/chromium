@@ -8,6 +8,7 @@
 #include "base/version.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/profiles/chrome_version_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
@@ -50,8 +51,7 @@ bool ShouldShowForCurrentChannel() {
 namespace chromeos {
 
 void ReleaseNotesStorage::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(prefs::kReleaseNotesLastShownMilestone,
-                                GetMilestone());
+  registry->RegisterIntegerPref(prefs::kReleaseNotesLastShownMilestone, -1);
   registry->RegisterIntegerPref(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 0);
 }
@@ -72,8 +72,18 @@ bool ReleaseNotesStorage::ShouldNotify() {
   if (!IsEligibleProfile(profile_))
     return false;
 
-  const int last_milestone =
+  int last_milestone =
       profile_->GetPrefs()->GetInteger(prefs::kReleaseNotesLastShownMilestone);
+  if (profile_->GetPrefs()
+          ->FindPreference(prefs::kReleaseNotesLastShownMilestone)
+          ->IsDefaultValue()) {
+    // We don't know if the user has seen any notification before as we have
+    // never set which milestone was last seen. So use the version of chrome
+    // where the profile was created instead.
+    base::Version profile_version(
+        ChromeVersionService::GetVersion(profile_->GetPrefs()));
+    last_milestone = profile_version.components()[0];
+  }
   if (last_milestone >= GetMilestone()) {
     return false;
   }
