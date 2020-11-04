@@ -25,24 +25,7 @@ UnifiedVolumeSliderController::UnifiedVolumeSliderController(
 UnifiedVolumeSliderController::~UnifiedVolumeSliderController() = default;
 
 views::View* UnifiedVolumeSliderController::CreateView() {
-  DCHECK(!slider_);
-  slider_ = new UnifiedVolumeView(this);
-  return slider_;
-}
-
-void UnifiedVolumeSliderController::ButtonPressed(views::Button* sender,
-                                                  const ui::Event& event) {
-  if (sender == slider_->button()) {
-    bool mute_on = !CrasAudioHandler::Get()->IsOutputMuted();
-    if (mute_on) {
-      base::RecordAction(base::UserMetricsAction("StatusArea_Audio_Muted"));
-    } else {
-      base::RecordAction(base::UserMetricsAction("StatusArea_Audio_Unmuted"));
-    }
-    CrasAudioHandler::Get()->SetOutputMute(mute_on);
-  } else if (sender == slider_->more_button()) {
-    delegate_->OnAudioSettingsButtonClicked();
-  }
+  return new UnifiedVolumeView(this, delegate_);
 }
 
 void UnifiedVolumeSliderController::SliderValueChanged(
@@ -67,6 +50,16 @@ void UnifiedVolumeSliderController::SliderValueChanged(
       level > CrasAudioHandler::Get()->GetOutputDefaultVolumeMuteThreshold()) {
     CrasAudioHandler::Get()->SetOutputMute(false);
   }
+}
+
+void UnifiedVolumeSliderController::SliderButtonPressed() {
+  auto* const audio_handler = CrasAudioHandler::Get();
+  const bool mute = !audio_handler->IsOutputMuted();
+  if (mute)
+    base::RecordAction(base::UserMetricsAction("StatusArea_Audio_Muted"));
+  else
+    base::RecordAction(base::UserMetricsAction("StatusArea_Audio_Unmuted"));
+  audio_handler->SetOutputMute(mute);
 }
 
 }  // namespace ash

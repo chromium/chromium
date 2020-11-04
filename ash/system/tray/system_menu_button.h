@@ -30,7 +30,7 @@ class SystemMenuButton : public views::ImageButton {
   // Similar to the above constructor. Just gets a single vector icon and
   // creates the normal and disabled icons based on that using default menu icon
   // colors.
-  SystemMenuButton(views::ButtonListener* listener,
+  SystemMenuButton(PressedCallback callback,
                    const gfx::VectorIcon& icon,
                    int accessible_name_id);
   ~SystemMenuButton() override;

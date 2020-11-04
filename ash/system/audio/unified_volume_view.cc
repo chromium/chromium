@@ -8,7 +8,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/i18n/rtl.h"
 #include "base/stl_util.h"
@@ -61,8 +60,8 @@ SkColor GetBackgroundColorOfMoreButton() {
 
 class MoreButton : public views::Button {
  public:
-  explicit MoreButton(views::ButtonListener* listener)
-      : views::Button(listener) {
+  explicit MoreButton(PressedCallback callback)
+      : views::Button(std::move(callback)) {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal,
         gfx::Insets((kTrayItemSize -
@@ -133,11 +132,19 @@ class MoreButton : public views::Button {
 
 }  // namespace
 
-UnifiedVolumeView::UnifiedVolumeView(UnifiedVolumeSliderController* controller)
-    : UnifiedSliderView(controller,
+UnifiedVolumeView::UnifiedVolumeView(
+    UnifiedVolumeSliderController* controller,
+    UnifiedVolumeSliderController::Delegate* delegate)
+    : UnifiedSliderView(base::BindRepeating(
+                            &UnifiedVolumeSliderController::SliderButtonPressed,
+                            base::Unretained(controller)),
+                        controller,
                         kSystemMenuVolumeHighIcon,
                         IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_LABEL),
-      more_button_(new MoreButton(controller)) {
+      more_button_(new MoreButton(
+          base::BindRepeating(&UnifiedVolumeSliderController::Delegate::
+                                  OnAudioSettingsButtonClicked,
+                              base::Unretained(delegate)))) {
   CrasAudioHandler::Get()->AddAudioObserver(this);
   AddChildView(more_button_);
   Update(false /* by_user */);

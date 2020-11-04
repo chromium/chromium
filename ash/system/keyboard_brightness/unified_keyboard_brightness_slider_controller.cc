@@ -18,7 +18,8 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
   UnifiedKeyboardBrightnessView(
       UnifiedKeyboardBrightnessSliderController* controller,
       UnifiedSystemTrayModel* model)
-      : UnifiedSliderView(controller,
+      : UnifiedSliderView(views::Button::PressedCallback(),
+                          controller,
                           kUnifiedMenuKeyboardBrightnessIcon,
                           IDS_ASH_STATUS_TRAY_BRIGHTNESS,
                           true /* readonly*/),
@@ -53,12 +54,6 @@ views::View* UnifiedKeyboardBrightnessSliderController::CreateView() {
   DCHECK(!slider_);
   slider_ = new UnifiedKeyboardBrightnessView(this, model_);
   return slider_;
-}
-
-void UnifiedKeyboardBrightnessSliderController::ButtonPressed(
-    views::Button* sender,
-    const ui::Event& event) {
-  // This slider is read-only.
 }
 
 void UnifiedKeyboardBrightnessSliderController::SliderValueChanged(

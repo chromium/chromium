@@ -41,7 +41,6 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/range/range.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
@@ -64,12 +63,6 @@ gfx::Range GetImeListViewRange() {
   const int min_items = 1;
   const int tray_item_height = kTrayPopupItemMinHeight;
   return gfx::Range(tray_item_height * min_items, tray_item_height * max_items);
-}
-
-// Shows language and input settings page.
-void ShowIMESettings() {
-  base::RecordAction(base::UserMetricsAction("StatusArea_IME_Detailed"));
-  Shell::Get()->system_tray_model()->client()->ShowIMESettings();
 }
 
 // Returns true if the current screen is login or lock screen.
@@ -120,15 +113,8 @@ class ImeMenuImageView : public views::ImageView {
   DISALLOW_COPY_AND_ASSIGN(ImeMenuImageView);
 };
 
-SystemMenuButton* CreateImeMenuButton(views::ButtonListener* listener,
-                                      const gfx::VectorIcon& icon,
-                                      int accessible_name_id,
-                                      int right_border) {
-  return new SystemMenuButton(listener, icon, accessible_name_id);
-}
-
 // The view that contains IME menu title.
-class ImeTitleView : public views::View, public views::ButtonListener {
+class ImeTitleView : public views::View {
  public:
   explicit ImeTitleView() {
     SetBorder(views::CreatePaddedBorder(
@@ -153,14 +139,13 @@ class ImeTitleView : public views::View, public views::ButtonListener {
     layout_ptr->SetFlexForView(title_label, 1);
 
     settings_button_ = AddChildView(std::make_unique<TopShortcutButton>(
-        this, kSystemMenuSettingsIcon, IDS_ASH_STATUS_TRAY_IME_SETTINGS));
+        base::BindRepeating([]() {
+          base::RecordAction(
+              base::UserMetricsAction("StatusArea_IME_Detailed"));
+          Shell::Get()->system_tray_model()->client()->ShowIMESettings();
+        }),
+        kSystemMenuSettingsIcon, IDS_ASH_STATUS_TRAY_IME_SETTINGS));
     settings_button_->SetEnabled(TrayPopupUtils::CanOpenWebUISettings());
-  }
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    DCHECK_EQ(sender, settings_button_);
-    ShowIMESettings();
   }
 
   ~ImeTitleView() override = default;
@@ -175,7 +160,7 @@ class ImeTitleView : public views::View, public views::ButtonListener {
 };
 
 // The view that contains buttons shown on the bottom of IME menu.
-class ImeButtonsView : public views::View, public views::ButtonListener {
+class ImeButtonsView : public views::View {
  public:
   ImeButtonsView(ImeMenuTray* ime_menu_tray,
                  bool show_emoji,
@@ -189,28 +174,16 @@ class ImeButtonsView : public views::View, public views::ButtonListener {
 
   ~ImeButtonsView() override = default;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    // The |keyset| will be used for drawing input view keyset in IME
-    // extensions. ImeMenuTray::ShowKeyboardWithKeyset() will deal with
-    // the |keyset| string to generate the right input view url.
-    chromeos::input_method::ImeKeyset keyset =
-        chromeos::input_method::ImeKeyset::kNone;
-    if (sender == emoji_button_)
-      keyset = chromeos::input_method::ImeKeyset::kEmoji;
-    else if (sender == voice_button_)
-      keyset = chromeos::input_method::ImeKeyset::kVoice;
-    else if (sender == handwriting_button_)
-      keyset = chromeos::input_method::ImeKeyset::kHandwriting;
-    else
-      NOTREACHED();
-
+  void KeysetButtonPressed(chromeos::input_method::ImeKeyset keyset) {
     // TODO(dcheng): When https://crbug.com/742517 is fixed, Mojo will generate
     // a constant for the number of values in the enum. For now, we just define
     // it here and keep it in sync with the enum.
     const int kImeKeysetUmaBoundary = 4;
     UMA_HISTOGRAM_ENUMERATION("InputMethod.ImeMenu.EmojiHandwritingVoiceButton",
                               keyset, kImeKeysetUmaBoundary);
+    // The |keyset| will be used for drawing input view keyset in IME
+    // extensions. ImeMenuTray::ShowKeyboardWithKeyset() will deal with
+    // the |keyset| string to generate the right input view url.
     ime_menu_tray_->ShowKeyboardWithKeyset(keyset);
   }
 
@@ -231,26 +204,31 @@ class ImeButtonsView : public views::View, public views::ButtonListener {
         gfx::Insets(kMenuSeparatorVerticalPadding - kMenuSeparatorWidth,
                     kMenuExtraMarginFromLeftEdge)));
 
-    const int right_border = 1;
     if (show_emoji) {
-      emoji_button_ =
-          CreateImeMenuButton(this, kImeMenuEmoticonIcon,
-                              IDS_ASH_STATUS_TRAY_IME_EMOJI, right_border);
+      emoji_button_ = new SystemMenuButton(
+          base::BindRepeating(&ImeButtonsView::KeysetButtonPressed,
+                              base::Unretained(this),
+                              chromeos::input_method::ImeKeyset::kEmoji),
+          kImeMenuEmoticonIcon, IDS_ASH_STATUS_TRAY_IME_EMOJI);
       emoji_button_->SetID(kEmojiButtonId);
       AddChildView(emoji_button_);
     }
 
     if (show_handwriting) {
-      handwriting_button_ = CreateImeMenuButton(
-          this, kImeMenuWriteIcon, IDS_ASH_STATUS_TRAY_IME_HANDWRITING,
-          right_border);
+      handwriting_button_ = new SystemMenuButton(
+          base::BindRepeating(&ImeButtonsView::KeysetButtonPressed,
+                              base::Unretained(this),
+                              chromeos::input_method::ImeKeyset::kHandwriting),
+          kImeMenuWriteIcon, IDS_ASH_STATUS_TRAY_IME_HANDWRITING);
       AddChildView(handwriting_button_);
     }
 
     if (show_voice) {
-      voice_button_ =
-          CreateImeMenuButton(this, kImeMenuMicrophoneIcon,
-                              IDS_ASH_STATUS_TRAY_IME_VOICE, right_border);
+      voice_button_ = new SystemMenuButton(
+          base::BindRepeating(&ImeButtonsView::KeysetButtonPressed,
+                              base::Unretained(this),
+                              chromeos::input_method::ImeKeyset::kVoice),
+          kImeMenuMicrophoneIcon, IDS_ASH_STATUS_TRAY_IME_VOICE);
       AddChildView(voice_button_);
     }
   }

@@ -33,11 +33,6 @@ views::View* UnifiedBrightnessSliderController::CreateView() {
   return slider_;
 }
 
-void UnifiedBrightnessSliderController::ButtonPressed(views::Button* sender,
-                                                      const ui::Event& event) {
-  // The button in is UnifiedBrightnessView is no-op.
-}
-
 void UnifiedBrightnessSliderController::SliderValueChanged(
     views::Slider* sender,
     float value,

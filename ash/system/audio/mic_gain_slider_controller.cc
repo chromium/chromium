@@ -41,20 +41,6 @@ views::View* MicGainSliderController::CreateView() {
   return nullptr;
 }
 
-void MicGainSliderController::ButtonPressed(views::Button* sender,
-                                            const ui::Event& event) {
-  bool is_muted = !CrasAudioHandler::Get()->IsInputMuted();
-
-  if (is_muted) {
-    base::RecordAction(base::UserMetricsAction("StatusArea_Mic_Muted"));
-  } else {
-    base::RecordAction(base::UserMetricsAction("StatusArea_Mic_Unmuted"));
-  }
-
-  CrasAudioHandler::Get()->SetMuteForDevice(
-      CrasAudioHandler::Get()->GetPrimaryActiveInputNode(), is_muted);
-}
-
 void MicGainSliderController::SliderValueChanged(
     views::Slider* sender,
     float value,
@@ -72,6 +58,17 @@ void MicGainSliderController::SliderValueChanged(
   base::RecordAction(base::UserMetricsAction("StatusArea_Mic_Gain_Changed"));
 
   CrasAudioHandler::Get()->SetInputGainPercent(value * 100);
+}
+
+void MicGainSliderController::SliderButtonPressed() {
+  auto* const audio_handler = CrasAudioHandler::Get();
+  const bool mute = !audio_handler->IsInputMuted();
+  if (mute)
+    base::RecordAction(base::UserMetricsAction("StatusArea_Mic_Muted"));
+  else
+    base::RecordAction(base::UserMetricsAction("StatusArea_Mic_Unmuted"));
+  audio_handler->SetMuteForDevice(audio_handler->GetPrimaryActiveInputNode(),
+                                  mute);
 }
 
 }  // namespace ash

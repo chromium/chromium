@@ -83,10 +83,10 @@ std::unique_ptr<views::Slider> CreateSlider(UnifiedSliderListener* listener,
 
 }  // namespace
 
-UnifiedSliderButton::UnifiedSliderButton(views::ButtonListener* listener,
+UnifiedSliderButton::UnifiedSliderButton(PressedCallback callback,
                                          const gfx::VectorIcon& icon,
                                          int accessible_name_id)
-    : views::ImageButton(listener) {
+    : views::ImageButton(std::move(callback)) {
   SetImageHorizontalAlignment(ALIGN_CENTER);
   SetImageVerticalAlignment(ALIGN_MIDDLE);
   if (accessible_name_id)
@@ -182,12 +182,13 @@ void UnifiedSliderButton::UpdateVectorIcon() {
       this, *icon_, toggled_, GetDefaultSizeOfVectorIcon(*icon_));
 }
 
-UnifiedSliderView::UnifiedSliderView(UnifiedSliderListener* listener,
+UnifiedSliderView::UnifiedSliderView(views::Button::PressedCallback callback,
+                                     UnifiedSliderListener* listener,
                                      const gfx::VectorIcon& icon,
                                      int accessible_name_id,
                                      bool readonly)
     : button_(AddChildView(
-          std::make_unique<UnifiedSliderButton>(listener,
+          std::make_unique<UnifiedSliderButton>(std::move(callback),
                                                 icon,
                                                 accessible_name_id))),
       slider_(AddChildView(CreateSlider(listener, readonly))) {

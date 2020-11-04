@@ -31,11 +31,12 @@ class ASH_EXPORT MicGainSliderController : public UnifiedSliderListener {
 
   // UnifiedSliderListener:
   views::View* CreateView() override;
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
   void SliderValueChanged(views::Slider* sender,
                           float value,
                           float old_value,
                           views::SliderChangeReason reason) override;
+
+  void SliderButtonPressed();
 };
 
 }  // namespace ash

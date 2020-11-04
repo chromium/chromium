@@ -20,9 +20,12 @@ namespace ash {
 MicGainSliderView::MicGainSliderView(MicGainSliderController* controller,
                                      uint64_t device_id,
                                      bool internal)
-    : UnifiedSliderView(controller,
-                        kImeMenuMicrophoneIcon,
-                        IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_LABEL),
+    : UnifiedSliderView(
+          base::BindRepeating(&MicGainSliderController::SliderButtonPressed,
+                              base::Unretained(controller)),
+          controller,
+          kImeMenuMicrophoneIcon,
+          IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_LABEL),
       device_id_(device_id),
       internal_(internal) {
   CrasAudioHandler::Get()->AddAudioObserver(this);

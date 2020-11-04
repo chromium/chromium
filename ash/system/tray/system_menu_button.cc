@@ -40,10 +40,10 @@ SystemMenuButton::SystemMenuButton(PressedCallback callback,
       AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
-SystemMenuButton::SystemMenuButton(views::ButtonListener* listener,
+SystemMenuButton::SystemMenuButton(PressedCallback callback,
                                    const gfx::VectorIcon& icon,
                                    int accessible_name_id)
-    : SystemMenuButton(PressedCallback(listener, this),
+    : SystemMenuButton(std::move(callback),
                        gfx::ImageSkia(),
                        gfx::ImageSkia(),
                        accessible_name_id) {

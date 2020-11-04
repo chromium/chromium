@@ -14,7 +14,8 @@ namespace ash {
 UnifiedBrightnessView::UnifiedBrightnessView(
     UnifiedBrightnessSliderController* controller,
     UnifiedSystemTrayModel* model)
-    : UnifiedSliderView(controller,
+    : UnifiedSliderView(views::Button::PressedCallback(),
+                        controller,
                         kUnifiedMenuBrightnessIcon,
                         IDS_ASH_STATUS_TRAY_BRIGHTNESS),
       model_(model) {
