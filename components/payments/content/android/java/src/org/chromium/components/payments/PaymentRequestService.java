@@ -96,6 +96,17 @@ public class PaymentRequestService {
      *  - requestShipping
      */
     private HashMap<String, PaymentMethodData> mQueryForQuota;
+    /**
+     * True after at least one usable payment app has been found and the setting allows querying
+     * this value. This value can be used to respond to hasEnrolledInstrument(). Should be read only
+     * after all payment apps have been queried.
+     */
+    private boolean mHasEnrolledInstrument;
+    /**
+     * Whether there's at least one app that is not an autofill card. Should be read only after all
+     * payment apps have been queried.
+     */
+    private boolean mHasNonAutofillApp;
 
     /**
      * An observer interface injected when running tests to allow them to observe events.
@@ -493,6 +504,42 @@ public class PaymentRequestService {
         } else {
             mJourneyLogger.setEventOccurred(Event.SELECTED_OTHER);
         }
+    }
+
+    /**
+     * Called when a payment app is created.
+     * @param paymentApp The created payment app.
+     * @param pendingApps The list of created apps increasing until onDoneCreatingPaymentApp().
+     */
+    public void onPaymentAppCreated(PaymentApp paymentApp, List<PaymentApp> pendingApps) {
+        mHasEnrolledInstrument |= paymentApp.canMakePayment();
+        mHasNonAutofillApp |= !paymentApp.isAutofillInstrument();
+
+        if (paymentApp.isAutofillInstrument()) {
+            mJourneyLogger.setEventOccurred(Event.AVAILABLE_METHOD_BASIC_CARD);
+        } else if (paymentApp.getInstrumentMethodNames().contains(MethodStrings.GOOGLE_PAY)
+                || paymentApp.getInstrumentMethodNames().contains(MethodStrings.ANDROID_PAY)) {
+            mJourneyLogger.setEventOccurred(Event.AVAILABLE_METHOD_GOOGLE);
+        } else {
+            mJourneyLogger.setEventOccurred(Event.AVAILABLE_METHOD_OTHER);
+        }
+
+        pendingApps.add(paymentApp);
+    }
+
+    /** @return Whether the instrument has been enrolled. */
+    public boolean getHasEnrolledInstrument() {
+        return mHasEnrolledInstrument;
+    }
+
+    /** Sets whether the instrument has been enrolled. */
+    public void setHasEnrolledInstrument(boolean hasEnrolledInstrument) {
+        mHasEnrolledInstrument = hasEnrolledInstrument;
+    }
+
+    /** @return Whether the created payment apps includes any autofill payment app. */
+    public boolean getHasNonAutofillApp() {
+        return mHasNonAutofillApp;
     }
 
     /**

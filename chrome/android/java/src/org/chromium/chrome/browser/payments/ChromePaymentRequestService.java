@@ -171,19 +171,6 @@ public class ChromePaymentRequestService
     /** True if any of the requested payment methods are supported. */
     private boolean mCanMakePayment;
 
-    /**
-     * True after at least one usable payment app has been found and the setting allows querying
-     * this value. This value can be used to respond to hasEnrolledInstrument(). Should be read only
-     * after all payment apps have been queried.
-     */
-    private boolean mHasEnrolledInstrument;
-
-    /**
-     * Whether there's at least one app that is not an autofill card. Should be read only after all
-     * payment apps have been queried.
-     */
-    private boolean mHasNonAutofillApp;
-
     /** Whether PaymentRequest.show() was invoked with a user gesture. */
     private boolean mIsUserGestureShow;
 
@@ -1164,7 +1151,7 @@ public class ChromePaymentRequestService
         }
 
         if (mIsFinishedQueryingPaymentApps) {
-            respondHasEnrolledInstrumentQuery(mHasEnrolledInstrument);
+            respondHasEnrolledInstrumentQuery(mPaymentRequestService.getHasEnrolledInstrument());
         } else {
             mIsHasEnrolledInstrumentResponsePending = true;
         }
@@ -1362,19 +1349,7 @@ public class ChromePaymentRequestService
 
         mHideServerAutofillCards |= paymentApp.isServerAutofillInstrumentReplacement();
         paymentApp.setHaveRequestedAutofillData(mPaymentUiService.haveRequestedAutofillData());
-        mHasEnrolledInstrument |= paymentApp.canMakePayment();
-        mHasNonAutofillApp |= !paymentApp.isAutofillInstrument();
-
-        if (paymentApp.isAutofillInstrument()) {
-            mJourneyLogger.setEventOccurred(Event.AVAILABLE_METHOD_BASIC_CARD);
-        } else if (paymentApp.getInstrumentMethodNames().contains(MethodStrings.GOOGLE_PAY)
-                || paymentApp.getInstrumentMethodNames().contains(MethodStrings.ANDROID_PAY)) {
-            mJourneyLogger.setEventOccurred(Event.AVAILABLE_METHOD_GOOGLE);
-        } else {
-            mJourneyLogger.setEventOccurred(Event.AVAILABLE_METHOD_OTHER);
-        }
-
-        mPendingApps.add(paymentApp);
+        mPaymentRequestService.onPaymentAppCreated(paymentApp, mPendingApps);
     }
 
     // PaymentAppFactoryDelegate implementation.
@@ -1393,7 +1368,9 @@ public class ChromePaymentRequestService
         }
 
         // Always return false when can make payment is disabled.
-        mHasEnrolledInstrument &= mDelegate.prefsCanMakePayment();
+        mPaymentRequestService.setHasEnrolledInstrument(
+                mPaymentRequestService.getHasEnrolledInstrument()
+                && mDelegate.prefsCanMakePayment());
 
         if (mHideServerAutofillCards) {
             List<PaymentApp> nonServerAutofillCards = new ArrayList<>();
@@ -1430,7 +1407,7 @@ public class ChromePaymentRequestService
         }
 
         if (mIsHasEnrolledInstrumentResponsePending) {
-            respondHasEnrolledInstrumentQuery(mHasEnrolledInstrument);
+            respondHasEnrolledInstrumentQuery(mPaymentRequestService.getHasEnrolledInstrument());
         }
 
         ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
@@ -1558,7 +1535,8 @@ public class ChromePaymentRequestService
      */
     private boolean disconnectForStrictShow() {
         if (!mIsUserGestureShow || !mSpec.getMethodData().containsKey(MethodStrings.BASIC_CARD)
-                || mHasEnrolledInstrument || mHasNonAutofillApp
+                || mPaymentRequestService.getHasEnrolledInstrument()
+                || mPaymentRequestService.getHasNonAutofillApp()
                 || !PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
                         PaymentFeatureList.STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT)) {
             return false;
