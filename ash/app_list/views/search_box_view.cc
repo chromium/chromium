@@ -227,6 +227,13 @@ int SearchBoxView::GetFocusRingSpacing() {
 
 void SearchBoxView::SetupCloseButton() {
   views::ImageButton* close = close_button();
+  close->SetCallback(base::BindRepeating(
+      [](SearchBoxView* view) {
+        view->view_delegate_->LogSearchAbandonHistogram();
+        view->SetSearchBoxActive(false, ui::ET_UNKNOWN);
+        view->ClearSearch();
+      },
+      this));
   close->SetImage(
       views::ImageButton::STATE_NORMAL,
       gfx::CreateVectorIcon(views::kIcCloseIcon, kSearchBoxIconSize,
@@ -746,15 +753,6 @@ bool SearchBoxView::HandleGestureEvent(views::Textfield* sender,
   if (gesture_event.type() == ui::ET_GESTURE_TAP && HasAutocompleteText())
     AcceptAutocompleteText();
   return SearchBoxViewBase::HandleGestureEvent(sender, gesture_event);
-}
-
-void SearchBoxView::ButtonPressed(views::Button* sender,
-                                  const ui::Event& event) {
-  if (close_button() && sender == close_button()) {
-    view_delegate_->LogSearchAbandonHistogram();
-    SetSearchBoxActive(false, ui::ET_UNKNOWN);
-  }
-  SearchBoxViewBase::ButtonPressed(sender, event);
 }
 
 void SearchBoxView::UpdateSearchBoxTextForSelectedResult(

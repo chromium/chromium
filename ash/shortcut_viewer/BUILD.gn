@@ -54,5 +54,6 @@ source_set("unit_tests") {
     "//ui/events:test_support",
     "//ui/events/devices:test_support",
     "//ui/views",
+    "//ui/views:test_support",
   ]
 }

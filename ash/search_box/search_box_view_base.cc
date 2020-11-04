@@ -81,8 +81,8 @@ class SearchBoxBackground : public views::Background {
 // fullscreen launcher.
 class SearchBoxImageButton : public views::ImageButton {
  public:
-  explicit SearchBoxImageButton(views::ButtonListener* listener)
-      : ImageButton(listener) {
+  explicit SearchBoxImageButton(PressedCallback callback)
+      : ImageButton(std::move(callback)) {
     SetFocusBehavior(FocusBehavior::ALWAYS);
 
     // Avoid drawing default dashed focus and draw customized focus in
@@ -253,7 +253,8 @@ SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
   search_box_->SetTextInputType(ui::TEXT_INPUT_TYPE_SEARCH);
   search_box_->SetTextInputFlags(ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF);
 
-  back_button_ = new SearchBoxImageButton(this);
+  back_button_ = new SearchBoxImageButton(base::BindRepeating(
+      &SearchBoxViewDelegate::BackButtonPressed, base::Unretained(delegate_)));
   content_container_->AddChildView(back_button_);
 
   search_icon_ = new views::ImageView();
@@ -272,13 +273,16 @@ SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
   search_box_right_space_->SetPreferredSize(gfx::Size(kSearchBoxIconSize, 0));
   content_container_->AddChildView(search_box_right_space_);
 
-  assistant_button_ = new SearchBoxImageButton(this);
+  assistant_button_ = new SearchBoxImageButton(
+      base::BindRepeating(&SearchBoxViewDelegate::AssistantButtonPressed,
+                          base::Unretained(delegate_)));
   assistant_button_->SetFlipCanvasOnPaintForRTLUI(false);
   // Default hidden, child class should decide if it should shown.
   assistant_button_->SetVisible(false);
   content_container_->AddChildView(assistant_button_);
 
-  close_button_ = new SearchBoxImageButton(this);
+  close_button_ = new SearchBoxImageButton(base::BindRepeating(
+      &SearchBoxViewBase::ClearSearch, base::Unretained(this)));
   content_container_->AddChildView(close_button_);
 }
 
@@ -400,19 +404,6 @@ ax::mojom::Role SearchBoxViewBase::GetAccessibleWindowRole() {
   // focus within the root view. Assign ax::mojom::Role::kGroup here to allow
   // the focus to move from elements in search box to app list view.
   return ax::mojom::Role::kGroup;
-}
-
-void SearchBoxViewBase::ButtonPressed(views::Button* sender,
-                                      const ui::Event& event) {
-  if (assistant_button_ && sender == assistant_button_) {
-    delegate_->AssistantButtonPressed();
-  } else if (back_button_ && sender == back_button_) {
-    delegate_->BackButtonPressed();
-  } else if (close_button_ && sender == close_button_) {
-    ClearSearch();
-  } else {
-    NOTREACHED();
-  }
 }
 
 void SearchBoxViewBase::OnSearchBoxFocusedChanged() {

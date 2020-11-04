@@ -69,9 +69,6 @@ class APP_LIST_EXPORT SearchBoxView : public SearchBoxViewBase,
   void OnPaintBackground(gfx::Canvas* canvas) override;
   const char* GetClassName() const override;
 
-  // Overridden from views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // Updates the search box's background corner radius and color based on the
   // state of AppListModel.
   void UpdateBackground(double progress,

@@ -26,9 +26,6 @@ class KSVSearchBoxView : public ash::SearchBoxViewBase {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnKeyEvent(ui::KeyEvent* event) override;
 
-  // Overridden from views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   void SetAccessibleValue(const base::string16& value);
 
   // SearchBoxViewBase:

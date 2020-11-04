@@ -69,14 +69,6 @@ void KSVSearchBoxView::OnKeyEvent(ui::KeyEvent* event) {
     SetSearchBoxActive(false, event->type());
 }
 
-void KSVSearchBoxView::ButtonPressed(views::Button* sender,
-                                     const ui::Event& event) {
-  // Focus on the search box text field after clicking close button.
-  if (close_button() && sender == close_button())
-    search_box()->RequestFocus();
-  SearchBoxViewBase::ButtonPressed(sender, event);
-}
-
 void KSVSearchBoxView::SetAccessibleValue(const base::string16& value) {
   accessible_value_ = value;
   NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
@@ -108,6 +100,13 @@ void KSVSearchBoxView::UpdateSearchBoxBorder() {
 
 void KSVSearchBoxView::SetupCloseButton() {
   views::ImageButton* close = close_button();
+  close->SetCallback(base::BindRepeating(
+      [](ash::SearchBoxViewBase* view) {
+        // Focus on the search box text field after clicking close button.
+        view->search_box()->RequestFocus();
+        view->ClearSearch();
+      },
+      this));
   close->SetHasInkDropActionOnClick(true);
   close->SetImage(
       views::ImageButton::STATE_NORMAL,
