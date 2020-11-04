@@ -17,7 +17,6 @@ namespace exo {
 
 class DataSourceDelegate;
 class DataSourceObserver;
-class ExtendedDragSource;
 enum class DndAction;
 
 // Object representing transferred data offered by a client.
@@ -82,11 +81,6 @@ class DataSource {
 
   bool CanBeDataSourceForCopy(Surface* surface) const;
 
-  ExtendedDragSource* extended_drag_source() { return extended_drag_source_; }
-  void set_extended_drag_source(ExtendedDragSource* extended_drag_source) {
-    extended_drag_source_ = extended_drag_source;
-  }
-
  private:
   // Reads data from the source. Then |callback| is invoked with read data. If
   // Cancelled() is invoked or DataSource is destroyed before completion,
@@ -112,8 +106,6 @@ class DataSource {
   bool finished_;
 
   base::flat_set<DndAction> dnd_actions_;
-
-  ExtendedDragSource* extended_drag_source_ = nullptr;
 
   base::WeakPtrFactory<DataSource> read_data_weak_ptr_factory_{this};
 

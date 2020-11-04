@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/optional.h"
 #include "components/exo/data_source.h"
+#include "components/exo/seat.h"
 #include "components/exo/surface.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_observer.h"
@@ -96,13 +97,15 @@ class ExtendedDragSource::DraggedWindowHolder : public aura::WindowObserver {
   aura::Window* toplevel_window_ = nullptr;
 };
 
-ExtendedDragSource::ExtendedDragSource(DataSource* source, Delegate* delegate)
-    : delegate_(delegate), source_(source) {
+ExtendedDragSource::ExtendedDragSource(Seat* seat,
+                                       DataSource* source,
+                                       Delegate* delegate)
+    : seat_(seat), source_(source), delegate_(delegate) {
+  DCHECK(seat_);
   DCHECK(source_);
   DCHECK(delegate_);
-  DVLOG(1) << "ExtendedDragSource created. wl_source=" << source_;
 
-  source_->set_extended_drag_source(this);
+  seat_->set_extended_drag_source(this);
   source_->AddObserver(this);
 }
 
@@ -111,10 +114,9 @@ ExtendedDragSource::~ExtendedDragSource() {
   for (auto& observer : observers_)
     observer.OnExtendedDragSourceDestroying(this);
 
-  if (source_) {
-    source_->set_extended_drag_source(nullptr);
+  seat_->set_extended_drag_source(nullptr);
+  if (source_)
     source_->RemoveObserver(this);
-  }
 }
 
 void ExtendedDragSource::AddObserver(Observer* observer) {

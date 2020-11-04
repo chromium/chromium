@@ -16,6 +16,7 @@
 #include "components/exo/display.h"
 #include "components/exo/extended_drag_offer.h"
 #include "components/exo/extended_drag_source.h"
+#include "components/exo/seat.h"
 #include "components/exo/surface.h"
 #include "components/exo/wayland/server_util.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -143,6 +144,7 @@ void extended_drag_get_extended_drag_source(wl_client* client,
                                             uint32_t id,
                                             wl_resource* data_source_resource,
                                             uint32_t settings) {
+  Display* display = GetUserDataAs<Display>(resource);
   DataSource* source = GetUserDataAs<DataSource>(data_source_resource);
 
   wl_resource* extended_drag_source_resource =
@@ -152,8 +154,9 @@ void extended_drag_get_extended_drag_source(wl_client* client,
   SetImplementation(extended_drag_source_resource,
                     &extended_drag_source_implementation,
                     std::make_unique<ExtendedDragSource>(
-                        source, new ZcrExtendedDragSourceDelegate(
-                                    extended_drag_source_resource, settings)));
+                        display->seat(), source,
+                        new ZcrExtendedDragSourceDelegate(
+                            extended_drag_source_resource, settings)));
 }
 
 void extended_drag_get_extended_drag_offer(wl_client* client,

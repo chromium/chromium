@@ -33,6 +33,7 @@ class LocatedEvent;
 namespace exo {
 
 class DataSource;
+class Seat;
 class Surface;
 
 class ExtendedDragSource : public DataSourceObserver,
@@ -59,7 +60,7 @@ class ExtendedDragSource : public DataSourceObserver,
     virtual ~Observer() = default;
   };
 
-  ExtendedDragSource(DataSource* source, Delegate* delegate);
+  ExtendedDragSource(Seat* seat, DataSource* source, Delegate* delegate);
   ExtendedDragSource(const ExtendedDragSource&) = delete;
   ExtendedDragSource& operator=(const ExtendedDragSource&) = delete;
   ~ExtendedDragSource() override;
@@ -95,11 +96,13 @@ class ExtendedDragSource : public DataSourceObserver,
   gfx::Point CalculateOrigin(aura::Window* target) const;
   void Cleanup();
 
+  Seat* const seat_;
+  DataSource* source_ = nullptr;
+
   // Created and destroyed at wayland/zcr_extended_drag.cc and its lifetime is
   // tied to the zcr_extended_drag_source_v1 object it's attached to.
   Delegate* const delegate_;
 
-  DataSource* source_ = nullptr;
   gfx::PointF pointer_location_;
   ui::mojom::DragEventSource drag_event_source_;
   bool cursor_locked_ = false;

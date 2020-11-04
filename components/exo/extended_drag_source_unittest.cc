@@ -112,17 +112,20 @@ class ExtendedDragSourceTest : public test::ExoTestBase {
     drag_drop_controller_->set_should_block_during_drag_drop(false);
     drag_drop_controller_->set_enabled(true);
 
+    seat_ = std::make_unique<Seat>();
     data_source_ = std::make_unique<DataSource>(new TestDataSourceDelegate);
-    extended_drag_source_ = std::make_unique<ExtendedDragSource>(
-        data_source_.get(), new TestExtendedDragSourceDelegate(
-                                /*allow_drop_no_target=*/true,
-                                /*lock_cursor=*/true));
+    extended_drag_source_ =
+        std::make_unique<ExtendedDragSource>(seat_.get(), data_source_.get(),
+                                             new TestExtendedDragSourceDelegate(
+                                                 /*allow_drop_no_target=*/true,
+                                                 /*lock_cursor=*/true));
   }
 
   void TearDown() override {
-    test::ExoTestBase::TearDown();
     extended_drag_source_.reset();
     data_source_.reset();
+    seat_.reset();
+    test::ExoTestBase::TearDown();
   }
 
  protected:
@@ -145,6 +148,7 @@ class ExtendedDragSourceTest : public test::ExoTestBase {
   }
 
   ash::DragDropController* drag_drop_controller_ = nullptr;
+  std::unique_ptr<Seat> seat_;
   std::unique_ptr<DataSource> data_source_;
   std::unique_ptr<ExtendedDragSource> extended_drag_source_;
 };
@@ -152,20 +156,19 @@ class ExtendedDragSourceTest : public test::ExoTestBase {
 }  // namespace
 
 TEST_F(ExtendedDragSourceTest, DestroySource) {
-  Seat seat;
   Surface origin;
 
   // Give |origin| a root window and start DragDropOperation.
   GetContext()->AddChild(origin.window());
-  seat.StartDrag(data_source_.get(), &origin, /*icon=*/nullptr,
-                 ui::mojom::DragEventSource::kMouse);
+  seat_->StartDrag(data_source_.get(), &origin, /*icon=*/nullptr,
+                   ui::mojom::DragEventSource::kMouse);
 
   // Ensure that destroying the data source invalidates its extended_drag_source
   // counterpart for the rest of its lifetime.
-  EXPECT_TRUE(seat.get_drag_drop_operation_for_testing());
+  EXPECT_TRUE(seat_->get_drag_drop_operation_for_testing());
   EXPECT_TRUE(extended_drag_source_->IsActive());
   data_source_.reset();
-  EXPECT_FALSE(seat.get_drag_drop_operation_for_testing());
+  EXPECT_FALSE(seat_->get_drag_drop_operation_for_testing());
   EXPECT_FALSE(extended_drag_source_->IsActive());
 }
 

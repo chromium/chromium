@@ -105,7 +105,7 @@ TEST_F(DragDropOperationTest, DeleteDuringDragging) {
 
   auto operation = DragDropOperation::Create(
       data_source.get(), origin_surface.get(), icon_surface.get(),
-      gfx::PointF(), ui::mojom::DragEventSource::kMouse);
+      gfx::PointF(), ui::mojom::DragEventSource::kMouse, nullptr);
   icon_surface->Commit();
 
   base::RunLoop run_loop;
