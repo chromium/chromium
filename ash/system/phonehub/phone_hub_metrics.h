@@ -63,6 +63,9 @@ void LogTabContinuationChipClicked(int tab_index);
 // Logs a given |quick_action| click.
 void LogQuickActionClick(QuickAction quick_action);
 
+// Logs the number of PhoneHub notifications after one is added or removed.
+void LogNotificationCount(int count);
+
 }  // namespace phone_hub_metrics
 }  // namespace ash
 

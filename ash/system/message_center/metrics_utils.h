@@ -52,7 +52,12 @@ enum NotificationTypeDetailed : int {
   CROS_SYSTEM_PRIORITY_CRITICAL_WARNING = 36,
   CROS_SYSTEM_PRIORITY_CRITICAL_WARNING_PINNED = 37,
   OTHER = 38,
-  kMaxValue = OTHER,
+  PHONEHUB_PRIORITY_MINUS_TWO = 39,
+  PHONEHUB_PRIORITY_MINUS_ONE = 40,
+  PHONEHUB_PRIORITY_ZERO = 41,
+  PHONEHUB_PRIORITY_ONE = 42,
+  PHONEHUB_PRIORITY_TWO = 43,
+  kMaxValue = PHONEHUB_PRIORITY_TWO,
 };
 
 // Returns the detailed notification type enum for a notification.
@@ -68,6 +73,9 @@ void LogClickedBody(const std::string& notification_id, bool is_popup);
 
 // Logs a ClickedActionButton event.
 void LogClickedActionButton(const std::string& notification_id, bool is_popup);
+
+// Logs an InlineReplySent event.
+void LogInlineReplySent(const std::string& notification_id, bool is_popup);
 
 // Logs a ExpireToTray event for a pop-up notification.
 void LogPopupExpiredToTray(const std::string& notification_id);

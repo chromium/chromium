@@ -3790,23 +3790,51 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="CrosNotificationActions" separator=".">
   <suffix name="NotificationAdded"
       label="A notification was created (regardless if it was shown or not)"/>
-  <suffix name="Popup.ClickedActionButton" label=""/>
-  <suffix name="Popup.ClickedBody" label=""/>
-  <suffix name="Popup.ClosedByUser.Click" label=""/>
-  <suffix name="Popup.ClosedByUser.Swipe" label=""/>
-  <suffix name="Popup.ExpireToTray" label=""/>
-  <suffix name="Popup.SettingsShown.HoverControls" label=""/>
-  <suffix name="Popup.Shown" label=""/>
-  <suffix name="Popup.Snoozed.HoverControls" label=""/>
-  <suffix name="Tray.ClickedActionButton" label=""/>
-  <suffix name="Tray.ClickedBody" label=""/>
-  <suffix name="Tray.ClosedByClearAll" label=""/>
-  <suffix name="Tray.ClosedByUser.Click" label=""/>
-  <suffix name="Tray.ClosedByUser.Swipe" label=""/>
-  <suffix name="Tray.SettingsShown.HoverControls" label=""/>
-  <suffix name="Tray.SettingsShown.SlideControls" label=""/>
-  <suffix name="Tray.Snoozed.HoverControls" label=""/>
-  <suffix name="Tray.Snoozed.SlideControls" label=""/>
+  <suffix name="Popup.ClickedActionButton"
+      label="User clicks on an action button of a popup notification"/>
+  <suffix name="Popup.ClickedBody"
+      label="User clicks the body of a popup notification"/>
+  <suffix name="Popup.ClosedByUser.Click"
+      label="User closes a popup notification by clicking on the close button"/>
+  <suffix name="Popup.ClosedByUser.Swipe"
+      label="User closes a popup notification by swiping it away"/>
+  <suffix name="Popup.ExpireToTray"
+      label="A popup notification times out and is hidden (but still visible
+             in the message center)"/>
+  <suffix name="Popup.InlineReplySent"
+      label="User sends an inline reply in a popup notification"/>
+  <suffix name="Popup.SettingsShown.HoverControls"
+      label="User opens the settings of a popup notification by clicking on
+             the hover button"/>
+  <suffix name="Popup.Shown" label="A popup notification is shown"/>
+  <suffix name="Popup.Snoozed.HoverControls"
+      label="User clicks on the snooze button of a popup notification"/>
+  <suffix name="Tray.ClickedActionButton"
+      label="User clicks on the action button of a notification in the tray"/>
+  <suffix name="Tray.ClickedBody"
+      label="User clicks on the body of a notification in the tray"/>
+  <suffix name="Tray.ClosedByClearAll"
+      label="A tray notification is closed after the user clicks on the Clear
+             All button (note that this is logged for each notification
+             dismissed)"/>
+  <suffix name="Tray.ClosedByUser.Click"
+      label="User closes a tray notification by clicking on the close button"/>
+  <suffix name="Tray.ClosedByUser.Swipe"
+      label="User closes a tray notification by swiping it away"/>
+  <suffix name="Tray.InlineReplySent"
+      label="User sends an inline reply for a tray notification"/>
+  <suffix name="Tray.SettingsShown.HoverControls"
+      label="User opens the settings by clicking on the hover button of a
+             tray notification"/>
+  <suffix name="Tray.SettingsShown.SlideControls"
+      label="User opens the settings by clicking on the slide settings button
+             of a tray notification"/>
+  <suffix name="Tray.Snoozed.HoverControls"
+      label="User snoozes a notification by clicking on the hover button of a
+             tray notification"/>
+  <suffix name="Tray.Snoozed.SlideControls"
+      label="User snoozes a notification by clicking on the snooze button of
+             a tray notification"/>
   <affected-histogram name="Notifications.Cros.Actions"/>
 </histogram_suffixes>
 
