@@ -642,19 +642,9 @@ void MediaInternals::SendUpdate(const base::string16& update) {
 void MediaInternals::SaveEvent(int process_id,
                                const media::MediaLogRecord& event) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-// Save the event and limit the total number per renderer. At the time of
-// writing, 512 events of the kind: { "property": value } together consume
-// ~88kb of memory on linux.
-#if defined(OS_ANDROID)
-  const size_t kEventLimit = 128;
-#else
-  const size_t kEventLimit = 512;
-#endif
-
   auto& saved_events = saved_events_by_process_[process_id];
   saved_events.push_back(event);
-  if (saved_events.size() > kEventLimit) {
+  if (saved_events.size() > media::MediaLog::kLogLimit) {
     // Remove all events for a given player as soon as we have to remove a
     // single event for that player to avoid showing incomplete players.
     const int id_to_remove = saved_events.front().id;

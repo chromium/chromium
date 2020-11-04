@@ -2,16 +2,17 @@
 <title>Test that video frame replaces poster on seeking.</title>
 <script>
 function doSetup() {
-    // TODO(srirama.m): convert this test to reference test.
     var video = document.querySelector("video");
-    video.src = "content/test.ogv";
-    video.addEventListener("canplaythrough", function () {
+    function seekVideo() {
+        video.removeEventListener("canplaythrough", seekVideo);
         video.currentTime = 1;  // so the snapshot always has the same frame.
-    });
-    testRunner.waitUntilDone();
+    }
+    video.addEventListener("canplaythrough", seekVideo);
     video.addEventListener("seeked", function() {
         testRunner.notifyDone();
     });
+    video.src = "content/test.ogv";
+    testRunner.waitUntilDone();
 }
 window.addEventListener("load", doSetup, false);
 </script>

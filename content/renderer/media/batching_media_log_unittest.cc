@@ -121,6 +121,17 @@ TEST_F(BatchingMediaLogTest, ThrottleSendingEvents) {
   EXPECT_EQ(1, message_count());
 }
 
+TEST_F(BatchingMediaLogTest, LimitEvents) {
+  // Add 2x the log limit in play/pause messages.
+  for (size_t i = 0; i < media::MediaLog::kLogLimit; ++i) {
+    AddEvent<media::MediaLogEvent::kPlay>();
+    AddEvent<media::MediaLogEvent::kPause>();
+  }
+
+  Advance(base::TimeDelta::FromMilliseconds(1100));
+  EXPECT_EQ(media::MediaLog::kLogLimit + 1, GetMediaLogRecords().size());
+}
+
 TEST_F(BatchingMediaLogTest, EventSentWithoutDelayAfterIpcInterval) {
   AddEvent<media::MediaLogEvent::kPlay>();
   Advance(base::TimeDelta::FromMilliseconds(1000));

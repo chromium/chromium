@@ -57,6 +57,8 @@ class CONTENT_EXPORT BatchingMediaLog : public media::MediaLog {
   // frequency.
   void SendQueuedMediaEvents();
 
+  void MaybeQueueEvent_Locked(std::unique_ptr<media::MediaLogRecord> event);
+
   std::string MediaEventToMessageString(const media::MediaLogRecord& event);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -78,19 +80,22 @@ class CONTENT_EXPORT BatchingMediaLog : public media::MediaLog {
   // For enforcing max 1 pending send.
   bool ipc_send_pending_;
 
+  // True if we've logged a warning message about exceeding rate limits.
+  bool logged_rate_limit_warning_;
+
   // Limits the number of events we send over IPC to one.
-  std::unique_ptr<media::MediaLogRecord> last_duration_changed_event_;
-  std::unique_ptr<media::MediaLogRecord> last_buffering_state_event_;
+  base::Optional<media::MediaLogRecord> last_duration_changed_event_;
+  base::Optional<media::MediaLogRecord> last_buffering_state_event_;
 
   // Holds the earliest MEDIA_ERROR_LOG_ENTRY event added to this log. This is
   // most likely to contain the most specific information available describing
   // any eventual fatal error.
   // TODO(wolenetz): Introduce a reset method to clear this in cases like
   // non-fatal error recovery like decoder fallback.
-  std::unique_ptr<media::MediaLogRecord> cached_media_error_for_message_;
+  base::Optional<media::MediaLogRecord> cached_media_error_for_message_;
 
   // Holds a copy of the most recent PIPELINE_ERROR, if any.
-  std::unique_ptr<media::MediaLogRecord> last_pipeline_error_;
+  base::Optional<media::MediaLogRecord> last_pipeline_error_;
 
   base::WeakPtr<BatchingMediaLog> weak_this_;
   base::WeakPtrFactory<BatchingMediaLog> weak_factory_{this};
