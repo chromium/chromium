@@ -53,7 +53,6 @@ by a child template that "extends" this file.
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-permission android:name="android.permission.NFC"/>
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
     <uses-permission android:name="android.permission.READ_SYNC_STATS"/>
@@ -177,7 +176,6 @@ by a child template that "extends" this file.
         android:allowBackup="false"
         {% endif %}
         android:networkSecurityConfig="@xml/network_security_config"
-        android:allowAudioPlaybackCapture="false"
         {% block extra_application_attributes %}{% endblock %}>
 
       {% macro application_definitions() %}
