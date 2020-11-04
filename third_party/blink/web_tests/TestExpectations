@@ -1186,8 +1186,6 @@ crbug.com/1140307 accessibility/inline-text-textarea.html [ Failure ]
 crbug.com/1040826 fast/forms/input-in-table-cell-no-value.html [ Failure ]
 crbug.com/1040826 [ Linux ] fast/forms/text/text-font-height-mismatch.html [ Failure ]
 crbug.com/1040826 [ Win ] fast/forms/text/text-font-height-mismatch.html [ Failure ]
-crbug.com/1040826 [ Linux ] fast/selectors/input-with-selection-pseudo-element.html [ Failure ]
-crbug.com/1040826 [ Win ] fast/selectors/input-with-selection-pseudo-element.html [ Failure ]
 crbug.com/1040826 fast/table/cell-change-baseline-then-border.html [ Failure ]
 
 # ====== LayoutNG-only failures until here ======

@@ -409,6 +409,9 @@ crbug.com/591099 fast/forms/color-scheme/href/href-appearance-basic.html [ Failu
 crbug.com/591099 fast/replaced/border-radius-clip-content-edge.html [ Failure ]
 crbug.com/591099 fast/replaced/outline-replaced-elements.html [ Failure ]
 
+### fast/selectors/
+crbug.com/591099 fast/selectors/input-with-selection-pseudo-element.html [ Failure ]
+
 ### fast/writing-mode/
 crbug.com/591099 fast/writing-mode/flipped-blocks-inline-map-local-to-container.html [ Failure ]
 
