@@ -29,6 +29,9 @@ VideoCaptureDeviceFactoryAndroid::createVideoCaptureAndroid(
       AttachCurrentThread(), id, nativeVideoCaptureDeviceAndroid));
 }
 
+VideoCaptureDeviceFactoryAndroid::VideoCaptureDeviceFactoryAndroid() = default;
+VideoCaptureDeviceFactoryAndroid::~VideoCaptureDeviceFactoryAndroid() = default;
+
 std::unique_ptr<VideoCaptureDevice>
 VideoCaptureDeviceFactoryAndroid::CreateDevice(
     const VideoCaptureDeviceDescriptor& device_descriptor) {
@@ -64,22 +67,28 @@ void VideoCaptureDeviceFactoryAndroid::GetDevicesInfo(
   }
 
   std::vector<VideoCaptureDeviceInfo> devices_info;
-  for (int camera_id = num_cameras - 1; camera_id >= 0; --camera_id) {
+  for (int camera_index = num_cameras - 1; camera_index >= 0; --camera_index) {
     base::android::ScopedJavaLocalRef<jstring> device_name =
-        Java_VideoCaptureFactory_getDeviceName(env, camera_id);
-    if (device_name.obj() == NULL)
+        Java_VideoCaptureFactory_getDeviceName(env, camera_index);
+    if (device_name.obj() == nullptr)
       continue;
-
     const std::string display_name =
         base::android::ConvertJavaStringToUTF8(device_name);
-    const std::string device_id = base::NumberToString(camera_id);
+
+    base::android::ScopedJavaLocalRef<jstring> device_id_jstring =
+        Java_VideoCaptureFactory_getDeviceId(env, camera_index);
+    if (device_id_jstring.obj() == nullptr)
+      continue;
+    const std::string device_id =
+        base::android::ConvertJavaStringToUTF8(device_id_jstring);
+
     const int capture_api_type =
-        Java_VideoCaptureFactory_getCaptureApiType(env, camera_id);
+        Java_VideoCaptureFactory_getCaptureApiType(env, camera_index);
     VideoCaptureControlSupport control_support;
     control_support.zoom =
-        Java_VideoCaptureFactory_isZoomSupported(env, camera_id);
+        Java_VideoCaptureFactory_isZoomSupported(env, camera_index);
     const int facing_mode =
-        Java_VideoCaptureFactory_getFacingMode(env, camera_id);
+        Java_VideoCaptureFactory_getFacingMode(env, camera_index);
 
     // Android cameras are not typically USB devices, and the model_id is
     // currently only used for USB model identifiers, so this implementation
@@ -89,8 +98,16 @@ void VideoCaptureDeviceFactoryAndroid::GetDevicesInfo(
         static_cast<VideoCaptureApi>(capture_api_type), control_support,
         VideoCaptureTransportType::OTHER_TRANSPORT,
         static_cast<VideoFacingMode>(facing_mode)));
-    device_info.supported_formats =
-        GetSupportedFormats(camera_id, display_name);
+
+    auto it = supported_formats_cache_.find(device_id);
+    if (it != supported_formats_cache_.end()) {
+      device_info.supported_formats = it->second;
+    } else {
+      device_info.supported_formats =
+          GetSupportedFormats(camera_index, display_name);
+      supported_formats_cache_.emplace(device_id,
+                                       device_info.supported_formats);
+    }
 
     // We put user-facing devices to the front of the list in order to make
     // them by-default preferred over environment-facing ones when no other
@@ -105,17 +122,27 @@ void VideoCaptureDeviceFactoryAndroid::GetDevicesInfo(
              << "device_name=" << display_name << ", unique_id=" << device_id;
   }
 
+  // Remove old entries from |supported_formats_cache_| if necessary.
+  if (supported_formats_cache_.size() > devices_info.size()) {
+    base::EraseIf(supported_formats_cache_, [&devices_info](const auto& entry) {
+      return base::ranges::none_of(
+          devices_info, [&entry](const VideoCaptureDeviceInfo& info) {
+            return entry.first == info.descriptor.device_id;
+          });
+    });
+  }
+
   std::move(callback).Run(std::move(devices_info));
 }
 
 VideoCaptureFormats VideoCaptureDeviceFactoryAndroid::GetSupportedFormats(
-    int device_id,
+    int device_index,
     const std::string& display_name) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   JNIEnv* env = AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobjectArray> collected_formats =
-      Java_VideoCaptureFactory_getDeviceSupportedFormats(env, device_id);
+      Java_VideoCaptureFactory_getDeviceSupportedFormats(env, device_index);
   if (collected_formats.is_null())
     return {};
 

@@ -1017,17 +1017,17 @@ public class VideoCaptureCamera2 extends VideoCapture {
     private boolean mEnableFaceDetection;
 
     // Service function to grab CameraCharacteristics and handle exceptions.
-    private static CameraCharacteristics getCameraCharacteristics(int id) {
+    private static CameraCharacteristics getCameraCharacteristics(int index) {
         final CameraManager manager =
                 (CameraManager) ContextUtils.getApplicationContext().getSystemService(
                         Context.CAMERA_SERVICE);
         try {
             final String[] cameraIdList = manager.getCameraIdList();
-            if (id >= cameraIdList.length) {
-                Log.e(TAG, "Invalid camera Id: ", id);
+            if (index >= cameraIdList.length) {
+                Log.e(TAG, "Invalid camera index: ", index);
                 return null;
             }
-            return manager.getCameraCharacteristics(cameraIdList[id]);
+            return manager.getCameraCharacteristics(cameraIdList[index]);
         } catch (CameraAccessException | IllegalArgumentException | AssertionError ex) {
             Log.e(TAG, "getCameraCharacteristics: ", ex);
         }
@@ -1317,8 +1317,8 @@ public class VideoCaptureCamera2 extends VideoCapture {
         return matchedTemperature;
     }
 
-    public static boolean isLegacyDevice(int id) {
-        final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(id);
+    public static boolean isLegacyDevice(int index) {
+        final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(index);
         return cameraCharacteristics != null
                 && cameraCharacteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL)
                 == CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY;
@@ -1343,8 +1343,8 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
-    public static int getCaptureApiType(int id) {
-        final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(id);
+    public static int getCaptureApiType(int index) {
+        final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(index);
         if (cameraCharacteristics == null) {
             return VideoCaptureApi.UNKNOWN;
         }
@@ -1363,8 +1363,8 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
-    public static boolean isZoomSupported(int id) {
-        final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(id);
+    public static boolean isZoomSupported(int index) {
+        final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(index);
         if (cameraCharacteristics == null) {
             return false;
         }
@@ -1375,8 +1375,8 @@ public class VideoCaptureCamera2 extends VideoCapture {
         return isZoomSupported;
     }
 
-    public static int getFacingMode(int id) {
-        final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(id);
+    public static int getFacingMode(int index) {
+        final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(index);
         if (cameraCharacteristics == null) {
             return VideoFacingMode.MEDIA_VIDEO_FACING_NONE;
         }
@@ -1392,8 +1392,8 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
-    public static String getName(int id) {
-        final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(id);
+    public static String getName(int index) {
+        final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(index);
         if (cameraCharacteristics == null) return null;
         final int facing = cameraCharacteristics.get(CameraCharacteristics.LENS_FACING);
 
@@ -1405,13 +1405,30 @@ public class VideoCaptureCamera2 extends VideoCapture {
                     && infoColor.equals(
                             CameraCharacteristics.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_NIR);
         }
-        return "camera2 " + id + ", facing "
+        return "camera2 " + index + ", facing "
                 + ((facing == CameraCharacteristics.LENS_FACING_FRONT) ? "front" : "back")
                 + (isInfrared ? " infrared" : "");
     }
 
-    public static VideoCaptureFormat[] getDeviceSupportedFormats(int id) {
-        final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(id);
+    static String getDeviceId(int index) {
+        final CameraManager manager =
+                (CameraManager) ContextUtils.getApplicationContext().getSystemService(
+                        Context.CAMERA_SERVICE);
+        try {
+            final String[] cameraIdList = manager.getCameraIdList();
+            if (index >= cameraIdList.length) {
+                Log.e(TAG, "Invalid camera index: ", index);
+                return null;
+            }
+            return cameraIdList[index];
+        } catch (CameraAccessException ex) {
+            Log.e(TAG, "manager.getCameraIdList: ", ex);
+            return null;
+        }
+    }
+
+    public static VideoCaptureFormat[] getDeviceSupportedFormats(int index) {
+        final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(index);
         if (cameraCharacteristics == null) return null;
 
         final int[] capabilities =
@@ -1453,8 +1470,8 @@ public class VideoCaptureCamera2 extends VideoCapture {
         return formatList.toArray(new VideoCaptureFormat[formatList.size()]);
     }
 
-    VideoCaptureCamera2(int id, long nativeVideoCaptureDeviceAndroid) {
-        super(id, nativeVideoCaptureDeviceAndroid);
+    VideoCaptureCamera2(int index, long nativeVideoCaptureDeviceAndroid) {
+        super(index, nativeVideoCaptureDeviceAndroid);
 
         VideoCaptureJni.get().dCheckCurrentlyOnIncomingTaskRunner(
                 mNativeVideoCaptureDeviceAndroid, VideoCaptureCamera2.this);
@@ -1463,7 +1480,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
         thread.start();
         mCameraThreadHandler = new Handler(thread.getLooper());
 
-        final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(id);
+        final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(index);
         if (cameraCharacteristics != null) {
             mMaxZoom = cameraCharacteristics.get(
                     CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM);
