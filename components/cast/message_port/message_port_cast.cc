@@ -63,6 +63,7 @@ blink::WebMessagePort MessagePortCast::TakePort() {
   return std::move(port_);
 }
 
+// cast_api_bindings::MessagePortCast implementation
 bool MessagePortCast::PostMessage(base::StringPiece message) {
   return PostMessageWithTransferables(message, {});
 }

@@ -1,4 +1,4 @@
 include_rules = [
-  "+fuchsia",
   "+third_party/blink/public/common/messaging",
+  "+fuchsia",
 ]
