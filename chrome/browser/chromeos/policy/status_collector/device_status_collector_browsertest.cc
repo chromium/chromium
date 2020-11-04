@@ -146,6 +146,7 @@ constexpr char kFakeBatteryStatus[] = "fake_battery_status";
 const char kFakeFirstPowerDate[] = "2020-40";
 const char kFakeManufactureDate[] = "2019-01-01";
 const char kFakeSkuNumber[] = "ABCD&^A";
+const char kFakeSerialNumber[] = "8607G03EDF";
 constexpr char kFakeMarketingName[] = "Latitude 1234 Chromebook Enterprise";
 constexpr char kFakeBiosVersion[] = "Google_BoardName.12200.68.0";
 constexpr char kFakeBoardName[] = "BoardName";
@@ -523,9 +524,9 @@ cros_healthd::SystemResultPtr CreateSystemResult() {
   return cros_healthd::SystemResult::NewSystemInfo(
       cros_healthd::SystemInfo::New(
           kFakeFirstPowerDate, kFakeManufactureDate, kFakeSkuNumber,
-          kFakeMarketingName, kFakeBiosVersion, kFakeBoardName,
-          kFakeBoardVersion, cros_healthd::UInt64Value::New(kFakeChassisType),
-          kFakeProductName,
+          kFakeSerialNumber, kFakeMarketingName, kFakeBiosVersion,
+          kFakeBoardName, kFakeBoardVersion,
+          cros_healthd::UInt64Value::New(kFakeChassisType), kFakeProductName,
           cros_healthd::OsVersion::New(
               kFakeVersionMilestone, kFakeVersionBuildNumber,
               kFakeVersionPatchNumber, kFakeVersionReleaseChannel)));
@@ -3179,6 +3180,8 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfo) {
   EXPECT_EQ(device_status_.system_status().manufacture_date(),
             kFakeManufactureDate);
   EXPECT_EQ(device_status_.system_status().vpd_sku_number(), kFakeSkuNumber);
+  EXPECT_EQ(device_status_.system_status().vpd_serial_number(),
+            kFakeSerialNumber);
   EXPECT_EQ(device_status_.system_status().marketing_name(),
             kFakeMarketingName);
   EXPECT_EQ(device_status_.system_status().bios_version(), kFakeBiosVersion);
@@ -3334,6 +3337,8 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdVpdAndSystemInfo) {
   EXPECT_EQ(device_status_.system_status().manufacture_date(),
             kFakeManufactureDate);
   EXPECT_EQ(device_status_.system_status().vpd_sku_number(), kFakeSkuNumber);
+  EXPECT_EQ(device_status_.system_status().vpd_serial_number(),
+            kFakeSerialNumber);
   ASSERT_FALSE(device_status_.system_status().has_marketing_name());
   ASSERT_FALSE(device_status_.system_status().has_bios_version());
   ASSERT_FALSE(device_status_.system_status().has_board_name());

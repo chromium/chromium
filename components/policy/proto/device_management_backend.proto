@@ -1152,6 +1152,8 @@ message SystemStatus {
   optional uint64 chassis_type = 8;
   // The product name (model) of the system. E.g. "Sarien"
   optional string product_name = 9;
+  // The product serial number.
+  optional string vpd_serial_number = 10;
 }
 
 // Status of a single C-state. C-states are various modes the CPU can transition
