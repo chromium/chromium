@@ -560,15 +560,6 @@ void RenderWidgetHostViewBase::TransformPointToRootSurface(gfx::PointF* point) {
   return;
 }
 
-const DisplayFeature* RenderWidgetHostViewBase::GetDisplayFeature() {
-  return base::OptionalOrNullptr(display_feature_);
-}
-
-void RenderWidgetHostViewBase::SetDisplayFeatureForTesting(
-    base::Optional<DisplayFeature> display_feature) {
-  display_feature_ = std::move(display_feature);
-}
-
 void RenderWidgetHostViewBase::OnDidNavigateMainFrameToNewPage() {
 }
 

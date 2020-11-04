@@ -114,6 +114,32 @@ float ViewAndroid::GetDipScale() {
   return ui::GetScaleFactorForNativeView(this);
 }
 
+base::Optional<gfx::Rect> ViewAndroid::GetDisplayFeature() {
+  ScopedJavaLocalRef<jobject> delegate(GetViewAndroidDelegate());
+  if (delegate.is_null())
+    return base::nullopt;
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jintArray> jni_display_feature =
+      Java_ViewAndroidDelegate_getDisplayFeature(env, delegate);
+  std::vector<int> display_feature_values;
+  if (jni_display_feature.obj()) {
+    // In order to reduce jni overhead, the DisplayFeature is returned in
+    // an integer array. This array must have 4 items in it (or the return
+    // value should be null).
+    base::android::JavaIntArrayToIntVector(env, jni_display_feature,
+                                           &display_feature_values);
+    CHECK(display_feature_values.size() == 4);
+    gfx::Rect display_feature;
+    display_feature.SetByBounds(
+        display_feature_values[0], display_feature_values[1],
+        display_feature_values[2], display_feature_values[3]);
+    return display_feature;
+  }
+
+  return base::nullopt;
+}
+
 ScopedJavaLocalRef<jobject> ViewAndroid::GetEventForwarder() {
   if (!event_forwarder_) {
     DCHECK(!RootPathHasEventForwarder(parent_))

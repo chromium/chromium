@@ -2378,6 +2378,62 @@ void RenderWidgetHostViewAndroid::TransferTouches(
   // Touch transfer for Android is not implemented in content/.
 }
 
+base::Optional<DisplayFeature>
+RenderWidgetHostViewAndroid::GetDisplayFeature() {
+  gfx::Size view_size(view_.GetSize());
+  if (view_size.IsEmpty())
+    return base::nullopt;
+
+  // On Android, the display feature is exposed as a rectangle as a generic
+  // concept. Here in the content layer, we translate that to a more
+  // constrained concept, see content::DisplayFeature.
+  base::Optional<gfx::Rect> display_feature_rect = view_.GetDisplayFeature();
+  if (!display_feature_rect)
+    return base::nullopt;
+
+  // The display feature and view location are both provided in device pixels,
+  // relative to the window. Convert this to DIP and view relative coordinates,
+  // first by applying the scale, converting the display feature to view
+  // relative coordinates, then intersect with the view bounds rect.
+  // the convert to view-relative coordinates.
+  float dip_scale = 1 / view_.GetDipScale();
+  gfx::Point view_location = view_.GetLocationOfContainerViewInWindow();
+  view_location = gfx::ScaleToRoundedPoint(view_location, dip_scale);
+  gfx::Rect transformed_display_feature =
+      gfx::ScaleToRoundedRect(*display_feature_rect, dip_scale);
+
+  transformed_display_feature.Offset(-view_location.x(), -view_location.y());
+  transformed_display_feature.Intersect(gfx::Rect(view_size));
+
+  DisplayFeature display_feature;
+  if (transformed_display_feature.x() == 0 &&
+      transformed_display_feature.width() == view_size.width()) {
+    // A horizontal display feature covers the view's width and starts at
+    // an x-offset of 0.
+    display_feature = {DisplayFeature::Orientation::kHorizontal,
+                       transformed_display_feature.y(),
+                       transformed_display_feature.height()};
+  } else if (transformed_display_feature.y() == 0 &&
+             transformed_display_feature.height() == view_size.height()) {
+    // A vertical display feature covers the view's height and starts at
+    // a y-offset of 0.
+    display_feature = {DisplayFeature::Orientation::kVertical,
+                       transformed_display_feature.x(),
+                       transformed_display_feature.width()};
+  } else {
+    return base::nullopt;
+  }
+
+  return display_feature;
+}
+
+void RenderWidgetHostViewAndroid::SetDisplayFeatureForTesting(
+    const DisplayFeature* display_feature) {
+  // RenderWidgetHostViewAndroid display feature mocking should be done via
+  // TestViewAndroidDelegate instead - see MockDisplayFeature.
+  NOTREACHED();
+}
+
 void RenderWidgetHostViewAndroid::WasEvicted() {
   // Eviction can occur when the CompositorFrameSink has changed. This can
   // occur either from a lost connection, as well as from the initial conneciton

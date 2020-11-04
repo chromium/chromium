@@ -218,6 +218,9 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
 
   // RenderWidgetHostViewBase:
   void UpdateBackgroundColor() override;
+  base::Optional<DisplayFeature> GetDisplayFeature() override;
+  void SetDisplayFeatureForTesting(
+      const DisplayFeature* display_feature) override;
 
   void StopFlingingIfNecessary(
       const blink::WebGestureEvent& event,

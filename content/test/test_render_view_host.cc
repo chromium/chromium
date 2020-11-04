@@ -229,6 +229,18 @@ TestRenderWidgetHostView::CreateSyntheticGestureTarget() {
 
 void TestRenderWidgetHostView::UpdateBackgroundColor() {}
 
+void TestRenderWidgetHostView::SetDisplayFeatureForTesting(
+    const DisplayFeature* display_feature) {
+  if (display_feature)
+    display_feature_ = *display_feature;
+  else
+    display_feature_ = base::nullopt;
+}
+
+base::Optional<DisplayFeature> TestRenderWidgetHostView::GetDisplayFeature() {
+  return display_feature_;
+}
+
 TestRenderViewHost::TestRenderViewHost(
     SiteInstance* instance,
     std::unique_ptr<RenderWidgetHostImpl> widget,

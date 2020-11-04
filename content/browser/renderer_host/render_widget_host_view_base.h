@@ -71,7 +71,6 @@ class TextInputManager;
 class TouchSelectionControllerClientManager;
 class WebCursor;
 class DelegatedFrameHost;
-struct DisplayFeature;
 
 // Basic implementation shared by concrete RenderWidgetHostView subclasses.
 class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
@@ -466,10 +465,10 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   // Gets the DisplayFeature whose offset and mask_length are expressed in DIPs
   // relative to the view. See display_feature.h for more details.
-  virtual const DisplayFeature* GetDisplayFeature();
+  virtual base::Optional<DisplayFeature> GetDisplayFeature() = 0;
 
-  void SetDisplayFeatureForTesting(
-      base::Optional<DisplayFeature> display_feature);
+  virtual void SetDisplayFeatureForTesting(
+      const DisplayFeature* display_feature) = 0;
 
   // Returns the associated RenderWidgetHostImpl.
   RenderWidgetHostImpl* host() const { return host_; }
@@ -593,11 +592,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   base::Optional<SkColor> default_background_color_;
 
   bool is_currently_scrolling_viewport_ = false;
-
-  // TODO(crbug.com/1039050) Remove this member that is set for testing once
-  // support for returning the actual DisplayFeature is added to the platform
-  // specific RenderWidgetHostView.
-  base::Optional<DisplayFeature> display_feature_;
 
  protected:
   ~RenderWidgetHostViewBase() override;

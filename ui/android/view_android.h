@@ -209,11 +209,15 @@ class UI_ANDROID_EXPORT ViewAndroid {
 
   ViewAndroid* parent() const { return parent_; }
 
+  base::Optional<gfx::Rect> GetDisplayFeature();
+
   bool OnTouchEventForTesting(const MotionEventAndroid& event) {
     return OnTouchEvent(event);
   }
 
   void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect);
+
+  void SetLayoutForTesting(int x, int y, int width, int height);
 
  protected:
   void RemoveAllChildren(bool attached_to_window);
@@ -246,8 +250,6 @@ class UI_ANDROID_EXPORT ViewAndroid {
 
   void OnAttachedToWindow();
   void OnDetachedFromWindow();
-
-  void SetLayoutForTesting(int x, int y, int width, int height);
 
   template <typename E>
   using EventHandlerCallback =

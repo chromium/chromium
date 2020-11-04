@@ -372,6 +372,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   // RenderWidgetHostViewBase:
   void UpdateBackgroundColor() override;
   bool HasFallbackSurface() const override;
+  base::Optional<DisplayFeature> GetDisplayFeature() override;
+  void SetDisplayFeatureForTesting(
+      const DisplayFeature* display_feature) override;
 
  private:
   friend class RenderWidgetHostViewAndroidTest;

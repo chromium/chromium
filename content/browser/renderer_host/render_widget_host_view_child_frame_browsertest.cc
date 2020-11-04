@@ -28,6 +28,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "content/test/mock_display_feature.h"
 #include "content/test/portal/portal_created_observer.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/dns/mock_host_resolver.h"
@@ -573,7 +574,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     // to the descendant (at which point we're done and can validate the
     // values).
 
-    root_view->SetDisplayFeatureForTesting(emulated_display_feature);
+    MockDisplayFeature mock_display_feature(root_view);
+    mock_display_feature.SetDisplayFeature(&emulated_display_feature);
     root_widget->SynchronizeVisualProperties();
 
     while (true) {

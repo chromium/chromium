@@ -1102,7 +1102,9 @@ TEST_F(RenderWidgetHostTest, RootWindowSegments) {
       DisplayFeature::Orientation::kVertical,
       /* offset */ screen_rect.width() / 2 - kDisplayFeatureLength / 2,
       /* mask_length */ kDisplayFeatureLength};
-  view_->SetDisplayFeatureForTesting(emulated_display_feature);
+  RenderWidgetHostViewBase* render_widget_host_view = view_.get();
+  render_widget_host_view->SetDisplayFeatureForTesting(
+      &emulated_display_feature);
 
   ClearScreenRects();
 
@@ -1147,7 +1149,7 @@ TEST_F(RenderWidgetHostTest, RootWindowSegments) {
   // resized the widget and causes a pending ack. This is unrelated to what
   // we're testing here so ignore the pending ack by using
   // |SynchronizeVisualPropertiesIgnoringPendingAck()|.
-  view_->SetDisplayFeatureForTesting(base::nullopt);
+  render_widget_host_view->SetDisplayFeatureForTesting(nullptr);
   host_->SynchronizeVisualPropertiesIgnoringPendingAck();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, widget_.ReceivedVisualProperties().size());
@@ -1163,7 +1165,8 @@ TEST_F(RenderWidgetHostTest, RootWindowSegments) {
       DisplayFeature::Orientation::kHorizontal,
       /* offset */ screen_rect.height() / 2 - kDisplayFeatureLength / 2,
       /* mask_length */ kDisplayFeatureLength};
-  view_->SetDisplayFeatureForTesting(emulated_display_feature);
+  render_widget_host_view->SetDisplayFeatureForTesting(
+      &emulated_display_feature);
   host_->SynchronizeVisualPropertiesIgnoringPendingAck();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, widget_.ReceivedVisualProperties().size());

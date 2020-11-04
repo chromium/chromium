@@ -683,6 +683,18 @@ void RenderWidgetHostViewAura::UpdateBackgroundColor() {
   window_->layer()->SetColor(color);
 }
 
+base::Optional<DisplayFeature> RenderWidgetHostViewAura::GetDisplayFeature() {
+  return display_feature_;
+}
+
+void RenderWidgetHostViewAura::SetDisplayFeatureForTesting(
+    const DisplayFeature* display_feature) {
+  if (display_feature)
+    display_feature_ = *display_feature;
+  else
+    display_feature_ = base::nullopt;
+}
+
 void RenderWidgetHostViewAura::WindowTitleChanged() {
   if (delegated_frame_host_) {
     delegated_frame_host_->WindowTitleChanged(

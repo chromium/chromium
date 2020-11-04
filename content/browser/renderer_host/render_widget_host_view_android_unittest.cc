@@ -196,4 +196,53 @@ TEST_F(RenderWidgetHostViewAndroidTest, HideWindowRemoveViewAddViewShowWindow) {
                    ->hide_layer_and_subtree());
 }
 
+TEST_F(RenderWidgetHostViewAndroidTest, DisplayFeature) {
+  // By default there is no display feature so verify we get back null.
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  RenderWidgetHostViewBase* rwhv = rwhva;
+  rwhva->GetNativeView()->SetLayoutForTesting(0, 0, 200, 400);
+  test_view_android_delegate_->SetupTestDelegate(GetViewAndroid());
+  EXPECT_EQ(base::nullopt, rwhv->GetDisplayFeature());
+
+  // Set a vertical display feature, and verify this is reflected in the
+  // computed display feature.
+  test_view_android_delegate_->SetDisplayFeatureForTesting(
+      gfx::Rect(95, 0, 10, 400));
+  DisplayFeature expected_display_feature = {
+      DisplayFeature::Orientation::kVertical,
+      /* offset */ 95,
+      /* mask_length */ 10};
+  EXPECT_EQ(expected_display_feature, *rwhv->GetDisplayFeature());
+
+  // Validate that a display feature in the middle of the view results in not
+  // being exposed as a content::DisplayFeature (we currently only consider
+  // display features that completely cover one of the view's dimensions).
+  rwhva->GetNativeView()->SetLayoutForTesting(0, 0, 400, 200);
+  test_view_android_delegate_->SetDisplayFeatureForTesting(
+      gfx::Rect(200, 100, 100, 200));
+  EXPECT_EQ(base::nullopt, rwhv->GetDisplayFeature());
+
+  // Verify that horizontal display feature is correctly validated.
+  test_view_android_delegate_->SetDisplayFeatureForTesting(
+      gfx::Rect(0, 90, 400, 20));
+  expected_display_feature = {DisplayFeature::Orientation::kHorizontal,
+                              /* offset */ 90,
+                              /* mask_length */ 20};
+  EXPECT_EQ(expected_display_feature, *rwhv->GetDisplayFeature());
+
+  test_view_android_delegate_->SetDisplayFeatureForTesting(
+      gfx::Rect(0, 95, 600, 10));
+  expected_display_feature = {DisplayFeature::Orientation::kHorizontal,
+                              /* offset */ 95,
+                              /* mask_length */ 10};
+  EXPECT_EQ(expected_display_feature, *rwhv->GetDisplayFeature());
+
+  test_view_android_delegate_->SetDisplayFeatureForTesting(
+      gfx::Rect(195, 0, 10, 300));
+  expected_display_feature = {DisplayFeature::Orientation::kVertical,
+                              /* offset */ 195,
+                              /* mask_length */ 10};
+  EXPECT_EQ(expected_display_feature, *rwhv->GetDisplayFeature());
+}
+
 }  // namespace content

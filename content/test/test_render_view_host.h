@@ -126,6 +126,9 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
  protected:
   // RenderWidgetHostViewBase:
   void UpdateBackgroundColor() override;
+  base::Optional<DisplayFeature> GetDisplayFeature() override;
+  void SetDisplayFeatureForTesting(
+      const DisplayFeature* display_feature) override;
 
   viz::FrameSinkId frame_sink_id_;
 
@@ -142,6 +145,8 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
 #if defined(USE_AURA)
   std::unique_ptr<aura::Window> window_;
 #endif
+
+  base::Optional<DisplayFeature> display_feature_;
 };
 
 // TestRenderViewHost ----------------------------------------------------------

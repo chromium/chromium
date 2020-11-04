@@ -1369,6 +1369,18 @@ void RenderWidgetHostViewMac::SetBackgroundLayerColor(SkColor color) {
   ns_view_->SetBackgroundColor(color);
 }
 
+base::Optional<DisplayFeature> RenderWidgetHostViewMac::GetDisplayFeature() {
+  return display_feature_;
+}
+
+void RenderWidgetHostViewMac::SetDisplayFeatureForTesting(
+    const DisplayFeature* display_feature) {
+  if (display_feature)
+    display_feature_ = *display_feature;
+  else
+    display_feature_ = base::nullopt;
+}
+
 BrowserAccessibilityManager*
 RenderWidgetHostViewMac::CreateBrowserAccessibilityManager(
     BrowserAccessibilityDelegate* delegate,

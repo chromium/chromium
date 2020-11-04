@@ -29,6 +29,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "content/test/mock_display_feature.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -728,11 +729,12 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
 
   const gfx::Size root_view_size = view()->GetVisibleViewportSize();
   const int kDisplayFeatureLength = 10;
+  int offset = root_view_size.width() / 2 - kDisplayFeatureLength / 2;
   DisplayFeature emulated_display_feature{
-      DisplayFeature::Orientation::kVertical,
-      /* offset */ root_view_size.width() / 2 - kDisplayFeatureLength / 2,
+      DisplayFeature::Orientation::kVertical, offset,
       /* mask_length */ kDisplayFeatureLength};
-  view()->SetDisplayFeatureForTesting(emulated_display_feature);
+  MockDisplayFeature mock_display_feature(view());
+  mock_display_feature.SetDisplayFeature(&emulated_display_feature);
   host()->SynchronizeVisualProperties();
 
   EXPECT_EQ(
@@ -760,9 +762,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
 
   emulated_display_feature.orientation =
       DisplayFeature::Orientation::kHorizontal;
-  emulated_display_feature.offset =
-      root_view_size.height() / 2 - kDisplayFeatureLength / 2,
-  view()->SetDisplayFeatureForTesting(emulated_display_feature);
+  offset = root_view_size.height() / 2 - kDisplayFeatureLength / 2;
+  emulated_display_feature.offset = offset;
+
+  mock_display_feature.SetDisplayFeature(&emulated_display_feature);
   host()->SynchronizeVisualProperties();
 
   EXPECT_EQ(
@@ -788,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
       "0.3",
       EvalJs(shell(), "getComputedStyle(target).opacity").ExtractString());
 
-  view()->SetDisplayFeatureForTesting(base::nullopt);
+  mock_display_feature.SetDisplayFeature(nullptr);
   host()->SynchronizeVisualProperties();
 
   EXPECT_EQ(
@@ -828,11 +831,12 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
 
   const gfx::Size root_view_size = view()->GetVisibleViewportSize();
   const int kDisplayFeatureLength = 10;
+  const int offset = root_view_size.width() / 2 - kDisplayFeatureLength / 2;
   DisplayFeature emulated_display_feature{
-      DisplayFeature::Orientation::kVertical,
-      /* offset */ root_view_size.width() / 2 - kDisplayFeatureLength / 2,
+      DisplayFeature::Orientation::kVertical, offset,
       /* mask_length */ kDisplayFeatureLength};
-  view()->SetDisplayFeatureForTesting(emulated_display_feature);
+  MockDisplayFeature mock_display_feature(view());
+  mock_display_feature.SetDisplayFeature(&emulated_display_feature);
   host()->SynchronizeVisualProperties();
 
   EXPECT_EQ(

@@ -965,7 +965,7 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   // The root widget's window segments are computed here - child frames just
   // use the value provided from the parent.
   if (is_top_most_widget) {
-    const DisplayFeature* display_feature = view_->GetDisplayFeature();
+    base::Optional<DisplayFeature> display_feature = view_->GetDisplayFeature();
     if (display_feature) {
       visual_properties.root_widget_window_segments =
           display_feature->ComputeWindowSegments(

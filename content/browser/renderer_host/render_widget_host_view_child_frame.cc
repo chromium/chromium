@@ -316,6 +316,17 @@ void RenderWidgetHostViewChildFrame::UpdateBackgroundColor() {
   }
 }
 
+base::Optional<DisplayFeature>
+RenderWidgetHostViewChildFrame::GetDisplayFeature() {
+  NOTREACHED();
+  return base::nullopt;
+}
+
+void RenderWidgetHostViewChildFrame::SetDisplayFeatureForTesting(
+    const DisplayFeature*) {
+  NOTREACHED();
+}
+
 gfx::Size RenderWidgetHostViewChildFrame::GetCompositorViewportPixelSize() {
   if (frame_connector_)
     return frame_connector_->local_frame_size_in_pixels();

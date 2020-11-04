@@ -375,6 +375,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // RenderWidgetHostViewBase:
   void UpdateBackgroundColor() override;
   bool HasFallbackSurface() const override;
+  base::Optional<DisplayFeature> GetDisplayFeature() override;
+  void SetDisplayFeatureForTesting(
+      const DisplayFeature* display_feature) override;
 
  private:
   friend class DelegatedFrameHostClientAura;
@@ -709,6 +712,11 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   bool double_tap_to_zoom_enabled_ = false;
 
   Visibility visibility_ = Visibility::HIDDEN;
+
+  // Represents a feature of the physical display whose offset and mask_length
+  // are expressed in DIPs relative to the view. See display_feature.h for more
+  // details.
+  base::Optional<DisplayFeature> display_feature_;
 
   base::WeakPtrFactory<RenderWidgetHostViewAura> weak_ptr_factory_{this};
 

@@ -292,6 +292,8 @@ static_library("test_support") {
     "mock_client_hints_utils.h",
     "mock_clipboard_host.cc",
     "mock_clipboard_host.h",
+    "mock_display_feature.cc",
+    "mock_display_feature.h",
     "mock_keyboard.cc",
     "mock_keyboard.h",
     "mock_overscroll_observer.h",
@@ -891,12 +893,18 @@ if (is_android) {
     output = content_browsertests_manifest
   }
 
+  generate_jni("content_browsertests_jni_headers") {
+    testonly = true
+    sources = [ "//content/public/android/javatests/src/org/chromium/content/browser/fakes/TestViewAndroidDelegate.java" ]
+  }
+
   android_library("content_browsertests_java") {
     testonly = true
     resources_package = "org.chromium.content_browsertests_apk"
     sources = [
       "../shell/android/browsertests_apk/src/org/chromium/content_browsertests_apk/ContentBrowserTestsActivity.java",
       "../shell/android/browsertests_apk/src/org/chromium/content_browsertests_apk/ContentBrowserTestsApplication.java",
+      "//content/public/android/javatests/src/org/chromium/content/browser/fakes/TestViewAndroidDelegate.java",
     ]
     deps = [
       ":content_browsertests_manifest",
@@ -1463,6 +1471,7 @@ test("content_browsertests") {
     deps += [
       ":android_test_message_pump_support",
       ":content_browsertests_java",
+      ":content_browsertests_jni_headers",
       "//content/shell:content_shell_app",
       "//content/shell/android:content_shell_assets",
       "//content/shell/android:content_shell_jni_headers",
