@@ -385,6 +385,52 @@ testcase.drivePinFileMobileNetwork = async () => {
 };
 
 /**
+ * Tests that the pinned toggle in the toolbar updates on pinned state changes
+ * within fake entries.
+ */
+testcase.drivePinToggleUpdatesInFakeEntries = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+
+  // Navigate to the Offline fake entry.
+  await navigateWithDirectoryTree(appId, '/Offline');
+
+  // Bring up the context menu for test.txt.
+  await remoteCall.waitAndRightClick(
+      appId, '#file-list [file-name="test.txt"]');
+
+  // The pinned toggle should update to be checked.
+  await remoteCall.waitForElement(appId, '#pinned-toggle[checked]');
+
+  // Unpin the file.
+  await remoteCall.waitAndClickElement(
+      appId,
+      '#file-context-menu:not([hidden]) ' +
+          '[command="#toggle-pinned"][checked]');
+
+  // The pinned toggle should change to be unchecked.
+  await remoteCall.waitForElement(appId, '#pinned-toggle:not([checked])');
+
+  // Navigate to the Shared with me fake entry.
+  await navigateWithDirectoryTree(appId, '/Shared with me');
+
+  // Bring up the context menu for test.txt.
+  await remoteCall.waitAndRightClick(
+      appId, '#file-list [file-name="test.txt"]');
+
+  // The pinned toggle should remain unchecked.
+  await remoteCall.waitForElement(appId, '#pinned-toggle:not([checked])');
+
+  // Pin the file.
+  await remoteCall.waitAndClickElement(
+      appId,
+      '#file-context-menu:not([hidden]) ' +
+          '[command="#toggle-pinned"]:not([checked])');
+
+  // The pinned toggle should change to be checked.
+  await remoteCall.waitForElement(appId, '#pinned-toggle[checked]');
+};
+
+/**
  * Tests that pressing Ctrl+A (select all files) from the search box doesn't put
  * the Files App into check-select mode (crbug.com/849253).
  */

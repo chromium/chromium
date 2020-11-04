@@ -648,6 +648,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("drivePinMultiple"),
         TestCase("drivePinHosted"),
         TestCase("drivePinFileMobileNetwork"),
+        TestCase("drivePinToggleUpdatesInFakeEntries"),
         TestCase("driveClickFirstSearchResult"),
         TestCase("drivePressEnterToSearch"),
         TestCase("drivePressClearSearch"),
