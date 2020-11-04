@@ -8,9 +8,11 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -48,7 +50,7 @@ std::unique_ptr<views::ImageButton> CreateScrollButton(
 
 class FrameGrabHandle : public views::View {
  public:
-  gfx::Size GetMinimumSize() const override {
+  gfx::Size CalculatePreferredSize() const override {
     // Reserve some space for the frame to be grabbed by, even if the tabstrip
     // is full.
     // TODO(tbergquist): Define this relative to the NTB insets again.
@@ -88,13 +90,6 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
         views::kFlexBehaviorKey,
         views::FlexSpecification(base::BindRepeating(
             &TabScrollContainerFlexRule, base::Unretained(tab_strip_))));
-
-    leading_scroll_button_ = AddChildView(CreateScrollButton(
-        base::BindRepeating(&TabStripRegionView::ScrollTowardsLeadingTab,
-                            base::Unretained(this))));
-    trailing_scroll_button_ = AddChildView(CreateScrollButton(
-        base::BindRepeating(&TabStripRegionView::ScrollTowardsTrailingTab,
-                            base::Unretained(this))));
   } else {
     tab_strip_container_ = AddChildView(std::move(tab_strip));
 
@@ -108,11 +103,33 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
                                       tab_strip_container_flex_spec);
   }
 
+  new_tab_button_ = AddChildView(std::make_unique<NewTabButton>(
+      tab_strip_, base::BindRepeating(&TabStrip::NewTabButtonPressed,
+                                      base::Unretained(tab_strip_))));
+  new_tab_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_TOOLTIP_NEW_TAB));
+  new_tab_button_->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_ACCNAME_NEWTAB));
+  new_tab_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_BOTTOM);
+  new_tab_button_->SetEventTargeter(
+      std::make_unique<views::ViewTargeter>(new_tab_button_));
+
+  UpdateNewTabButtonBorder();
+
+  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
+    leading_scroll_button_ = AddChildView(CreateScrollButton(
+        base::BindRepeating(&TabStripRegionView::ScrollTowardsLeadingTab,
+                            base::Unretained(this))));
+    trailing_scroll_button_ = AddChildView(CreateScrollButton(
+        base::BindRepeating(&TabStripRegionView::ScrollTowardsTrailingTab,
+                            base::Unretained(this))));
+  }
+
   reserved_grab_handle_space_ =
       AddChildView(std::make_unique<FrameGrabHandle>());
   reserved_grab_handle_space_->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kUnbounded));
 
   if (base::FeatureList::IsEnabled(features::kTabSearch) &&
@@ -164,6 +181,7 @@ bool TabStripRegionView::IsPositionInWindowCaption(const gfx::Point& point) {
 }
 
 void TabStripRegionView::FrameColorsChanged() {
+  new_tab_button_->FrameColorsChanged();
   if (tab_search_button_)
     tab_search_button_->FrameColorsChanged();
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
@@ -256,4 +274,26 @@ void TabStripRegionView::ScrollTowardsTrailingTab() {
                    visible_content.y(), visible_content.width(),
                    visible_content.height());
   scroll_view_container->contents()->ScrollRectToVisible(scroll);
+}
+
+void TabStripRegionView::UpdateNewTabButtonBorder() {
+  const int extra_vertical_space = GetLayoutConstant(TAB_HEIGHT) -
+                                   GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP) -
+                                   NewTabButton::kButtonSize.height();
+  constexpr int kHorizontalInset = 8;
+  // The new tab button is placed vertically exactly in the center of the
+  // tabstrip. Extend the border of the button such that it extends to the top
+  // of the tabstrip bounds. This is essential to ensure it is targetable on the
+  // edge of the screen when in fullscreen mode and ensures the button abides
+  // by the correct Fitt's Law behavior (https://crbug.com/1136557).
+  // TODO(crbug.com/1142016): The left border is 0 in order to abut the NTB
+  // directly with the tabstrip. That's the best immediately available
+  // approximation to the prior behavior of aligning the NTB relative to the
+  // trailing separator (instead of the right bound of the trailing tab). This
+  // still isn't quite what we ideally want in the non-scrolling case, and
+  // definitely isn't what we want in the scrolling case, so this naive approach
+  // should be improved, likely by taking the scroll state of the tabstrip into
+  // account.
+  new_tab_button_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets(extra_vertical_space / 2, 0, 0, kHorizontalInset)));
 }

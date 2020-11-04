@@ -12,6 +12,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/base/ui_base_switches.h"
@@ -82,24 +83,43 @@ class BrowserNonClientFrameViewTabbedTest
 #endif
 
 TEST_F(BrowserNonClientFrameViewTabbedTest, MAYBE_HitTestTabstrip) {
-  gfx::Rect tabstrip_bounds =
-      frame_view_->browser_view()->tabstrip()->GetLocalBounds();
+  // Add a tab because the browser starts out without any tabs at all.
+  AddTab(browser(), GURL("about:blank"));
+
+  const gfx::Rect frame_bounds = frame_view_->bounds();
+
+  gfx::RectF tabstrip_bounds_in_frame_coords(
+      frame_view_->browser_view()->tabstrip()->GetLocalBounds());
+  views::View::ConvertRectToTarget(frame_view_->browser_view()->tabstrip(),
+                                   frame_view_,
+                                   &tabstrip_bounds_in_frame_coords);
+  const gfx::Rect tabstrip_bounds =
+      gfx::ToEnclosingRect(tabstrip_bounds_in_frame_coords);
   EXPECT_FALSE(tabstrip_bounds.IsEmpty());
 
-  // Completely outside bounds.
+  // Completely outside the frame's bounds.
   EXPECT_FALSE(frame_view_->HitTestRect(
-      gfx::Rect(tabstrip_bounds.x() - 1, tabstrip_bounds.y() + 1, 1, 1)));
+      gfx::Rect(frame_bounds.x() - 1, frame_bounds.y() + 1, 1, 1)));
   EXPECT_FALSE(frame_view_->HitTestRect(
-      gfx::Rect(tabstrip_bounds.x() + 1, tabstrip_bounds.y() - 1, 1, 1)));
+      gfx::Rect(frame_bounds.x() + 1, frame_bounds.y() - 1, 1, 1)));
 
-  // Hits tab strip but not client area.
+  // Hits client portions of the tabstrip (near the bottom left corner of the
+  // first tab).
+  EXPECT_FALSE(frame_view_->HitTestRect(gfx::Rect(
+      tabstrip_bounds.x() + 10, tabstrip_bounds.bottom() - 10, 1, 1)));
+
+// Tabs extend to the top of the tabstrip everywhere in this test context on
+// ChromeOS, so there is no non-client area in the tab strip to test for.
+// TODO (tbergquist): Investigate whether we can key off this condition in an
+// OS-agnostic way.
+#if !defined(OS_CHROMEOS)
+  // Hits non-client portions of the tab strip (the top left corner of the
+  // first tab).
   EXPECT_TRUE(frame_view_->HitTestRect(
-      gfx::Rect(tabstrip_bounds.x() + 1,
-                tabstrip_bounds.bottom() -
-                    GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP) - 1,
-                1, 1)));
+      gfx::Rect(tabstrip_bounds.x(), tabstrip_bounds.y(), 1, 1)));
+#endif
 
-  // Hits tab strip and client area.
+  // Hits tab strip and the browser-client area.
   EXPECT_TRUE(frame_view_->HitTestRect(
       gfx::Rect(tabstrip_bounds.x() + 1,
                 tabstrip_bounds.bottom() -

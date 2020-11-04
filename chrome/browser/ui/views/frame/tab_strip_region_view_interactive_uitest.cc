@@ -51,7 +51,9 @@ class TabStripRegionViewBrowserTest
     return browser_view()->GetTabSearchButton();
   }
 
-  views::View* new_tab_button() { return tab_strip()->new_tab_button(); }
+  views::View* new_tab_button() {
+    return tab_strip_region_view()->new_tab_button();
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

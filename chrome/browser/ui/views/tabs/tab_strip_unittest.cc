@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
-#include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_animation.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
@@ -152,10 +151,6 @@ class TabStripTest : public ChromeViewsTestBase,
 
   void CompleteAnimationAndLayout() {
     tab_strip_->CompleteAnimationAndLayout();
-  }
-
-  int TabToNewTabButtonSpacing() {
-    return tab_strip_->TabToNewTabButtonSpacing();
   }
 
   void AnimateToIdealBounds() { tab_strip_->AnimateToIdealBounds(); }
@@ -515,7 +510,9 @@ TEST_P(TabStripTest, GroupedTabSlotVisibility) {
 // across the strip at the top, middle, and bottom, events will target each tab
 // in order.
 TEST_P(TabStripTest, TabForEventWhenStacked) {
-  tab_strip_parent_->SetBounds(0, 0, 250, GetLayoutConstant(TAB_HEIGHT));
+  // This tabstrip width is chosen to make the tabstrip narrow enough to engage
+  // stacked tabs mode.
+  tab_strip_parent_->SetBounds(0, 0, 197, GetLayoutConstant(TAB_HEIGHT));
 
   controller_->AddTab(0, false);
   controller_->AddTab(1, true);
@@ -572,7 +569,10 @@ TEST_P(TabStripTest, TabGroupCreatedWhenStacked) {
 TEST_P(TabStripTest, TabCloseButtonVisibilityWhenStacked) {
   // Touch-optimized UI requires a larger width for tabs to show close buttons.
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
-  tab_strip_parent_->SetBounds(0, 0, touch_ui ? 442 : 346, 20);
+  // The tabstrip width is chosen so that it is:
+  // a) narrow enough to enter stacked tabs mode, and
+  // b) wide enough for tabs to show close buttons when not stacked.
+  tab_strip_parent_->SetBounds(0, 0, touch_ui ? 389 : 293, 20);
 
   controller_->AddTab(0, false);
   controller_->AddTab(1, true);
@@ -850,7 +850,8 @@ TEST_P(TabStripTest, GetTooltipHandler) {
   EXPECT_FALSE(tab_strip_->GetTooltipHandlerForPoint(gfx::Point(-1, 2)));
 }
 
-TEST_P(TabStripTest, NewTabButtonStaysVisible) {
+// TODO(tbergquist): Move this to TabStripRegionViewUnitTest once that exists.
+TEST_P(TabStripTest, DISABLED_NewTabButtonStaysVisible) {
   const int kTabStripWidth = 500;
   tab_strip_parent_->SetBounds(0, 0, kTabStripWidth, 20);
 
@@ -859,10 +860,12 @@ TEST_P(TabStripTest, NewTabButtonStaysVisible) {
 
   CompleteAnimationAndLayout();
 
-  EXPECT_LE(tab_strip_->new_tab_button_ideal_bounds().right(), kTabStripWidth);
+  // EXPECT_LE(tab_strip_->new_tab_button_ideal_bounds().right(),
+  // kTabStripWidth);
 }
 
-TEST_P(TabStripTest, NewTabButtonRightOfTabs) {
+// TODO(tbergquist): Move this to TabStripRegionViewUnitTest once that exists.
+TEST_P(TabStripTest, DISABLED_NewTabButtonRightOfTabs) {
   const int kTabStripWidth = 500;
   tab_strip_parent_->SetBounds(0, 0, kTabStripWidth, 20);
 
@@ -870,8 +873,8 @@ TEST_P(TabStripTest, NewTabButtonRightOfTabs) {
 
   AnimateToIdealBounds();
 
-  EXPECT_EQ(tab_strip_->new_tab_button_ideal_bounds().x(),
-            tab_strip_->ideal_bounds(0).right() + TabToNewTabButtonSpacing());
+  // EXPECT_EQ(tab_strip_->new_tab_button_ideal_bounds().x(),
+  //          tab_strip_->ideal_bounds(0).right() + TabToNewTabButtonSpacing());
 }
 
 // The cached widths are private, but if they give incorrect results it can
@@ -1039,7 +1042,8 @@ TEST_P(TabStripTest, TabNeedsAttentionGeneric) {
   EXPECT_TRUE(IsShowingAttentionIndicator(tab1));
 }
 
-TEST_P(TabStripTest, NewTabButtonInkDrop) {
+// TODO(tbergquist): Move this to TabStripRegionViewUnitTest once that exists.
+TEST_P(TabStripTest, DISABLED_NewTabButtonInkDrop) {
   constexpr int kTabStripWidth = 500;
   tab_strip_parent_->SetBounds(0, 0, kTabStripWidth,
                                GetLayoutConstant(TAB_HEIGHT));
@@ -1049,12 +1053,12 @@ TEST_P(TabStripTest, NewTabButtonInkDrop) {
   // ink drop container size should remain equal to the new tab button visible
   // bounds size. https://crbug.com/814105.
   for (int i = 0; i < 10; ++i) {
-    tab_strip_->new_tab_button()->AnimateInkDropToStateForTesting(
-        views::InkDropState::ACTION_TRIGGERED);
+    // tab_strip_->new_tab_button()->AnimateInkDropToStateForTesting(
+    //    views::InkDropState::ACTION_TRIGGERED);
     controller_->AddTab(i, true /* is_active */);
     CompleteAnimationAndLayout();
-    tab_strip_->new_tab_button()->AnimateInkDropToStateForTesting(
-        views::InkDropState::HIDDEN);
+    // tab_strip_->new_tab_button()->AnimateInkDropToStateForTesting(
+    //    views::InkDropState::HIDDEN);
   }
 }
 
@@ -1340,7 +1344,8 @@ TEST_P(TabStripTest, ChangingLayoutTypeResizesTabs) {
 // of the new tab button and users are able to hit the new tab button when the
 // tab strip is flush with the top of the screen when the window is maximized
 // (https://crbug.com/1136557).
-TEST_P(TabStripTest, NewTabButtonFlushWithTopOfTabStrip) {
+// TODO(tbergquist): Move this to TabStripRegionViewUnitTest once that exists.
+TEST_P(TabStripTest, DISABLED_NewTabButtonFlushWithTopOfTabStrip) {
   tab_strip_parent_->SetBounds(0, 0, 1000, 100);
   controller_->AddTab(0, true);
 
@@ -1348,8 +1353,8 @@ TEST_P(TabStripTest, NewTabButtonFlushWithTopOfTabStrip) {
 
   // The new tab button should sit flush with the top of the
   // |tab_strip_|.
-  EXPECT_EQ(tab_strip_, tab_strip_->new_tab_button()->parent());
-  EXPECT_EQ(0, tab_strip_->new_tab_button()->bounds().y());
+  // EXPECT_EQ(tab_strip_, tab_strip_->new_tab_button()->parent());
+  // EXPECT_EQ(0, tab_strip_->new_tab_button()->bounds().y());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, TabStripTest, ::testing::Values(false, true));

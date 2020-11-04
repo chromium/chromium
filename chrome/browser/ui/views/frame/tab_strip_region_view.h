@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_
 
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/accessible_pane_view.h"
 
+class NewTabButton;
 class TabSearchButton;
 class TabStrip;
 
@@ -30,6 +32,8 @@ class TabStripRegionView final : public views::AccessiblePaneView,
 
   // Called when the colors of the frame change.
   void FrameColorsChanged();
+
+  NewTabButton* new_tab_button() { return new_tab_button_; }
 
   TabSearchButton* tab_search_button() { return tab_search_button_; }
 
@@ -57,12 +61,22 @@ class TabStripRegionView final : public views::AccessiblePaneView,
   // Scrolls the tabstrip towards the last tab in the tabstrip.
   void ScrollTowardsTrailingTab();
 
+  // Updates the border padding for |new_tab_button_|.  This should be called
+  // whenever any input of the computation of the border's sizing changes.
+  void UpdateNewTabButtonBorder();
+
   views::View* tab_strip_container_;
   views::View* reserved_grab_handle_space_;
   TabStrip* tab_strip_;
+  NewTabButton* new_tab_button_ = nullptr;
   TabSearchButton* tab_search_button_ = nullptr;
   views::ImageButton* leading_scroll_button_;
   views::ImageButton* trailing_scroll_button_;
+
+  const std::unique_ptr<ui::TouchUiController::Subscription> subscription_ =
+      ui::TouchUiController::Get()->RegisterCallback(
+          base::BindRepeating(&TabStripRegionView::UpdateNewTabButtonBorder,
+                              base::Unretained(this)));
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_

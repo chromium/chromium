@@ -67,9 +67,7 @@ class TabStripRegionViewTestBase : public ChromeViewsTestBase {
 
  protected:
   int GetInactiveTabWidth() { return tab_strip_->GetInactiveTabWidth(); }
-  void CompleteAnimationAndLayout() {
-    tab_strip_->CompleteAnimationAndLayout();
-  }
+  void CompleteAnimationAndLayout() { tab_strip_region_view_->Layout(); }
 
   // Owned by TabStrip.
   FakeBaseTabStripController* controller_ = nullptr;
