@@ -4,6 +4,7 @@
 
 #include "components/payments/content/payment_credential.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/memory/ref_counted_memory.h"
@@ -19,16 +20,22 @@ namespace payments {
 PaymentCredential::PaymentCredential(
     content::WebContents* web_contents,
     content::GlobalFrameRoutingId initiator_frame_routing_id,
-    scoped_refptr<PaymentManifestWebDataService> web_data_sevice,
+    scoped_refptr<PaymentManifestWebDataService> web_data_service,
     mojo::PendingReceiver<mojom::PaymentCredential> receiver)
     : WebContentsObserver(web_contents),
       initiator_frame_routing_id_(initiator_frame_routing_id),
-      web_data_service_(web_data_sevice) {
+      web_data_service_(web_data_service) {
   DCHECK(web_contents);
   receiver_.Bind(std::move(receiver));
 }
 
-PaymentCredential::~PaymentCredential() = default;
+PaymentCredential::~PaymentCredential() {
+  if (web_data_service_) {
+    std::for_each(callbacks_.begin(), callbacks_.end(), [&](const auto& pair) {
+      web_data_service_->CancelRequest(pair.first);
+    });
+  }
+}
 
 void PaymentCredential::StorePaymentCredential(
     payments::mojom::PaymentCredentialInstrumentPtr instrument,
