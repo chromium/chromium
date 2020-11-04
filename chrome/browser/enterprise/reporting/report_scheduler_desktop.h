@@ -30,15 +30,13 @@ class ReportSchedulerDesktop : public ReportScheduler::Delegate,
                                     base::TimeDelta upload_interval) override;
   void StopWatchingUpdates() override;
   void OnBrowserVersionUploaded() override;
-
-  void StartWatchingExtensionRequestIfNeeded() override;
   void StopWatchingExtensionRequest() override;
   void OnExtensionRequestUploaded() override;
 
   // BuildStateObserver implementation.
   void OnUpdate(const BuildState* build_state) override;
 
-  void TriggerExtensionRequest();
+  void OnExtensionRequest();
 
  private:
   ExtensionRequestObserverFactory extension_request_observer_factory_;

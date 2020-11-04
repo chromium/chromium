@@ -34,16 +34,12 @@ void ReportSchedulerIOS::OnBrowserVersionUploaded() {
   // Not used on iOS because there is no in-app auto-update.
 }
 
-void ReportSchedulerIOS::StartWatchingExtensionRequestIfNeeded() {
-  // Not used on iOS because there is no extension.
-}
-
 void ReportSchedulerIOS::StopWatchingExtensionRequest() {
-  // Not used on iOS because there is no extension.
+  // Not used on iOS because there is no in-app auto-update.
 }
 
 void ReportSchedulerIOS::OnExtensionRequestUploaded() {
-  // Not used on iOS because there is no extension.
+  // Not used on iOS because there is no in-app auto-update.
 }
 
 }  // namespace enterprise_reporting
