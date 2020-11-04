@@ -243,10 +243,7 @@ TEST_F(ScreenOrientationControllerTest, PageVisibilityCrash) {
   // referenced before this.
   ScreenOrientation::Create(frame->DomWindow());
   page->SetVisibilityState(mojom::blink::PageVisibilityState::kHidden, false);
-  web_view_helper.GetWebView()
-      ->MainFrame()
-      ->ToWebLocalFrame()
-      ->SendOrientationChangeEvent();
+  web_view_helper.LocalMainFrame()->SendOrientationChangeEvent();
   page->SetVisibilityState(mojom::blink::PageVisibilityState::kVisible, false);
 
   // When the iframe's orientation is initialized, it should be properly synced.

@@ -135,7 +135,6 @@ class CORE_EXPORT WebLocalFrameImpl final
   void SetReferrerForRequest(WebURLRequest&, const WebURL& referrer) override;
   bool IsNavigationScheduledWithin(base::TimeDelta interval) const override;
   void BlinkFeatureUsageReport(blink::mojom::WebFeature feature) override;
-  void SendOrientationChangeEvent() override;
   PageSizeType GetPageSizeType(uint32_t page_index) override;
   void GetPageDescription(uint32_t page_index,
                           WebPrintPageDescription*) override;
@@ -415,6 +414,8 @@ class CORE_EXPORT WebLocalFrameImpl final
   LocalFrameView* GetFrameView() const {
     return GetFrame() ? GetFrame()->View() : nullptr;
   }
+
+  void SendOrientationChangeEvent();
 
   void SetDevToolsAgentImpl(WebDevToolsAgentImpl*);
   WebDevToolsAgentImpl* DevToolsAgentImpl();

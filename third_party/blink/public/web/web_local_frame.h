@@ -281,11 +281,6 @@ class WebLocalFrame : public WebFrame {
 
   virtual void BlinkFeatureUsageReport(blink::mojom::WebFeature feature) = 0;
 
-  // Orientation Changes ----------------------------------------------------
-
-  // Notify the frame that the screen orientation has changed.
-  virtual void SendOrientationChangeEvent() = 0;
-
   // CSS3 Paged Media ----------------------------------------------------
 
   // Returns the type of @page size styling for the given page.

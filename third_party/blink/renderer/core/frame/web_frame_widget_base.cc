@@ -2338,7 +2338,7 @@ void WebFrameWidgetBase::SetPageScaleStateAndLimits(
 }
 
 void WebFrameWidgetBase::OrientationChanged() {
-  LocalRoot()->SendOrientationChangeEvent();
+  local_root_->SendOrientationChangeEvent();
 }
 
 void WebFrameWidgetBase::DidUpdateSurfaceAndScreen(
