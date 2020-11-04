@@ -202,6 +202,12 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
       : env_(env),
         interaction_needed_callback_(std::move(interaction_needed_callback)) {}
 
+  ~AndroidPlatform() override {
+    if (notification_showing_) {
+      Java_CableAuthenticator_dropNotification(env_);
+    }
+  }
+
   // Platform:
   void MakeCredential(std::unique_ptr<MakeCredentialParams> params) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -289,6 +295,7 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
   void NeedInteractive() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+    notification_showing_ = true;
     std::move(interaction_needed_callback_)
         .Run(base::BindOnce(&AndroidPlatform::OnInteractionReady,
                             weak_factory_.GetWeakPtr()));
@@ -299,11 +306,13 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
   void OnInteractionReady(ScopedJavaGlobalRef<jobject> cable_authenticator) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(!cable_authenticator_);
+    DCHECK(notification_showing_);
     DCHECK(env_->IsInstanceOf(
         cable_authenticator.obj(),
         org_chromium_chrome_browser_webauth_authenticator_CableAuthenticator_clazz(
             env_)));
     cable_authenticator_ = std::move(cable_authenticator);
+    notification_showing_ = false;
 
     DCHECK(static_cast<bool>(pending_make_credential_) ^
            static_cast<bool>(pending_get_assertion_));
@@ -315,6 +324,7 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
   }
 
   JNIEnv* const env_;
+  bool notification_showing_ = false;
   ScopedJavaGlobalRef<jobject> cable_authenticator_;
   std::unique_ptr<MakeCredentialParams> pending_make_credential_;
   std::unique_ptr<GetAssertionParams> pending_get_assertion_;
@@ -442,7 +452,6 @@ static void JNI_CableAuthenticator_StartUSB(
   DCHECK(!global_data.usb_callback);
   global_data.usb_callback = transport->GetCallback();
 
-  DCHECK(!global_data.current_transaction);
   global_data.current_transaction =
       device::cablev2::authenticator::TransactWithPlaintextTransport(
           std::make_unique<AndroidPlatform>(env, cable_authenticator),
@@ -464,7 +473,6 @@ static jboolean JNI_CableAuthenticator_StartQR(
     return false;
   }
 
-  DCHECK(!global_data.current_transaction);
   global_data.current_transaction =
       device::cablev2::authenticator::TransactFromQRCode(
           std::make_unique<AndroidPlatform>(env, cable_authenticator),

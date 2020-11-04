@@ -526,6 +526,13 @@ class CableAuthenticator {
         notificationManager.notify(NOTIFICATION_CHANNEL_ID, ID, builder.build());
     }
 
+    @CalledByNative
+    public static void dropNotification() {
+        Context context = ContextUtils.getApplicationContext();
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        notificationManager.cancel(NOTIFICATION_CHANNEL_ID, ID);
+    }
+
     @NativeMethods
     interface Natives {
         /**
