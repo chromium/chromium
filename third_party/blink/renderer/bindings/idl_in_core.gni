@@ -484,6 +484,8 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/streams/count_queuing_strategy.idl",
           "//third_party/blink/renderer/core/streams/queuing_strategy_init.idl",
           "//third_party/blink/renderer/core/streams/readable_stream.idl",
+          "//third_party/blink/renderer/core/streams/readable_stream_byob_reader.idl",
+          "//third_party/blink/renderer/core/streams/readable_stream_byob_read_result.idl",
           "//third_party/blink/renderer/core/streams/readable_stream_default_controller.idl",
           "//third_party/blink/renderer/core/streams/readable_stream_default_reader.idl",
           "//third_party/blink/renderer/core/streams/readable_writable_pair.idl",

@@ -17,6 +17,8 @@ blink_core_sources_streams = [
   "queuing_strategy_common.h",
   "readable_stream.cc",
   "readable_stream.h",
+  "readable_stream_byob_reader.cc",
+  "readable_stream_byob_reader.h",
   "readable_stream_default_controller.cc",
   "readable_stream_default_controller.h",
   "readable_stream_default_controller_with_script_scope.cc",
