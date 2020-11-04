@@ -102,9 +102,6 @@ class HoldingSpaceKeyedService : public KeyedService,
   // Invoked when the associated profile is ready.
   void OnProfileReady();
 
-  // Invoked when the specified `file_path` is removed.
-  void OnFileRemoved(const base::FilePath& file_path);
-
   // Invoked when holding space persistence has been restored.
   void OnPersistenceRestored();
 

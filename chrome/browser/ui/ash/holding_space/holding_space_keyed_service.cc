@@ -224,10 +224,7 @@ void HoldingSpaceKeyedService::OnProfileReady() {
 
   // The `HoldingSpaceFileSystemDelegate` monitors the file system for changes.
   delegates_.push_back(std::make_unique<HoldingSpaceFileSystemDelegate>(
-      profile_, &holding_space_model_,
-      /*file_removed_callback=*/
-      base::BindRepeating(&HoldingSpaceKeyedService::OnFileRemoved,
-                          weak_factory_.GetWeakPtr())));
+      profile_, &holding_space_model_));
 
   // The `HoldingSpacePersistenceDelegate` manages holding space persistence.
   delegates_.push_back(std::make_unique<HoldingSpacePersistenceDelegate>(
@@ -244,15 +241,6 @@ void HoldingSpaceKeyedService::OnProfileReady() {
   // but once they have been initialized they are free to do so.
   for (auto& delegate : delegates_)
     delegate->Init();
-}
-
-void HoldingSpaceKeyedService::OnFileRemoved(const base::FilePath& file_path) {
-  // When `file_path` is removed, we need to remove any associated items.
-  holding_space_model_.RemoveIf(base::BindRepeating(
-      [](const base::FilePath& file_path, const HoldingSpaceItem* item) {
-        return item->file_path() == file_path;
-      },
-      std::cref(file_path)));
 }
 
 void HoldingSpaceKeyedService::OnPersistenceRestored() {

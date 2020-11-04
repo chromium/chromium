@@ -6,12 +6,13 @@
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -68,10 +69,8 @@ class HoldingSpaceFileSystemDelegate::FileSystemWatcher {
 
 HoldingSpaceFileSystemDelegate::HoldingSpaceFileSystemDelegate(
     Profile* profile,
-    HoldingSpaceModel* model,
-    FileRemovedCallback file_removed_callback)
+    HoldingSpaceModel* model)
     : HoldingSpaceKeyedServiceDelegate(profile, model),
-      file_removed_callback_(file_removed_callback),
       file_system_watcher_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -89,18 +88,58 @@ void HoldingSpaceFileSystemDelegate::Init() {
   file_system_watcher_ = std::make_unique<FileSystemWatcher>(
       base::Bind(&HoldingSpaceFileSystemDelegate::OnFilePathChanged,
                  weak_factory_.GetWeakPtr()));
+
+  if (file_manager::VolumeManager::Get(profile()))
+    volume_manager_observer_.Add(file_manager::VolumeManager::Get(profile()));
+
+  // Schedule a task to clean up items that belong to volumes that haven't been
+  // mounted in a reasonable amount of time.
+  // The primary goal of handling the delayed volume mount is to support volumes
+  // that are mounted asynchronously during the startup.
+  clear_non_finalized_items_timer_.Start(
+      FROM_HERE, base::TimeDelta::FromMinutes(1),
+      base::BindOnce(&HoldingSpaceFileSystemDelegate::ClearNonFinalizedItems,
+                     base::Unretained(this)));
+}
+
+void HoldingSpaceFileSystemDelegate::Shutdown() {
+  volume_manager_observer_.RemoveAll();
 }
 
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemAdded(
     const HoldingSpaceItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!item->IsFinalized())
+  if (item->IsFinalized()) {
+    // Watch the directory containing `items`'s backing file. If the directory
+    // is already being watched, this will no-op.
+    AddWatch(item->file_path().DirName());
+    return;
+  }
+
+  // If the item has not yet been finalized, check whether it's path can be
+  // resolved to a file system URL - failure to do so may indicate that the
+  // volume to which it path belongs is not mounted there. If the file system
+  // URL cannot be resolved, leave the item in partially initialized state.
+  // Validity will be checked when the associated mount point is mounted.
+  // NOTE: Items will not be kept in partially initialized state indefinitely
+  // - see `clear_non_finalized_items_timer_`.
+  // NOTE: This does not work well for removable devices, as all removable
+  // devices have the same top level "external" mount point (media/removable),
+  // so a removable device path will be successfully resolved even if the
+  // device is not currently mounted. The logic will have to be updated if
+  // support for restoring items across removable device mounts becomes a
+  // requirement.
+  const GURL file_system_url =
+      holding_space_util::ResolveFileSystemUrl(profile(), item->file_path());
+  if (file_system_url.is_empty())
     return;
 
-  // Watch the directory containing `items`'s backing file. If the directory is
-  // already being watched, this will no-op.
-  AddWatch(item->file_path().DirName());
+  holding_space_util::ValidityRequirement requirements;
+  if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
+    requirements.must_be_newer_than = kMaxFileAge;
+
+  ScheduleFilePathValidityCheck({item->file_path(), requirements});
 }
 
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemRemoved(
@@ -126,6 +165,36 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemFinalized(
   AddWatch(item->file_path().DirName());
 }
 
+void HoldingSpaceFileSystemDelegate::OnVolumeMounted(
+    chromeos::MountError error_code,
+    const file_manager::Volume& volume) {
+  holding_space_util::FilePathsWithValidityRequirements
+      file_paths_with_requirements;
+  // Check validity of partially initialized items under the volume's mount
+  // path.
+  for (auto& item : model()->items()) {
+    if (item->IsFinalized())
+      continue;
+    if (!volume.mount_path().IsParent(item->file_path()))
+      continue;
+
+    holding_space_util::ValidityRequirement requirements;
+    if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
+      requirements.must_be_newer_than = kMaxFileAge;
+    ScheduleFilePathValidityCheck({item->file_path(), requirements});
+  }
+}
+
+void HoldingSpaceFileSystemDelegate::OnVolumeUnmounted(
+    chromeos::MountError error_code,
+    const file_manager::Volume& volume) {
+  model()->RemoveIf(base::BindRepeating(
+      [](const base::FilePath& volume_path, const HoldingSpaceItem* item) {
+        return volume_path.IsParent(item->file_path());
+      },
+      volume.mount_path()));
+}
+
 void HoldingSpaceFileSystemDelegate::OnFilePathChanged(
     const base::FilePath& file_path,
     bool error) {
@@ -137,29 +206,67 @@ void HoldingSpaceFileSystemDelegate::OnFilePathChanged(
   // that some, all, or none of these backing files have been removed. We need
   // to verify the existence of these backing files and remove any holding space
   // items that no longer exist.
-
-  holding_space_util::FilePathsWithValidityRequirements
-      file_paths_with_requirements;
   for (const auto& item : model()->items()) {
-    if (file_path.IsParent(item->file_path())) {
-      file_paths_with_requirements.push_back(
-          {item->file_path(), /*requirements=*/{}});
+    if (file_path.IsParent(item->file_path()))
+      ScheduleFilePathValidityCheck({item->file_path(), /*requirements=*/{}});
+  }
+}
+
+void HoldingSpaceFileSystemDelegate::ScheduleFilePathValidityCheck(
+    holding_space_util::FilePathWithValidityRequirement requirement) {
+  pending_file_path_validity_checks_.push_back(std::move(requirement));
+  if (file_path_validity_checks_scheduled_)
+    return;
+
+  file_path_validity_checks_scheduled_ = true;
+
+  // Schedule file validity check for pending items. The check is scheduled
+  // asynchronously so path checks added in quick succession are handled in a
+  // single batch.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &HoldingSpaceFileSystemDelegate::RunPendingFilePathValidityChecks,
+          weak_factory_.GetWeakPtr()));
+}
+
+void HoldingSpaceFileSystemDelegate::RunPendingFilePathValidityChecks() {
+  holding_space_util::FilePathsWithValidityRequirements requirements;
+  requirements.swap(pending_file_path_validity_checks_);
+
+  file_path_validity_checks_scheduled_ = false;
+  holding_space_util::PartitionFilePathsByValidity(
+      profile(), std::move(requirements),
+      base::BindOnce(
+          &HoldingSpaceFileSystemDelegate::OnFilePathValidityChecksComplete,
+          weak_factory_.GetWeakPtr()));
+}
+
+void HoldingSpaceFileSystemDelegate::OnFilePathValidityChecksComplete(
+    std::vector<base::FilePath> valid_paths,
+    std::vector<base::FilePath> invalid_paths) {
+  // Remove items with invalid paths.
+  // When `file_path` is removed, we need to remove any associated items.
+  model()->RemoveIf(base::BindRepeating(
+      [](const std::vector<base::FilePath>* invalid_paths,
+         const HoldingSpaceItem* item) {
+        return base::Contains(*invalid_paths, item->file_path());
+      },
+      &invalid_paths));
+
+  std::vector<const HoldingSpaceItem*> items_to_finalize;
+  for (auto& item : model()->items()) {
+    if (!item->IsFinalized() &&
+        base::Contains(valid_paths, item->file_path())) {
+      items_to_finalize.push_back(item.get());
     }
   }
 
-  holding_space_util::PartitionFilePathsByValidity(
-      profile(), std::move(file_paths_with_requirements),
-      base::BindOnce(
-          [](const base::WeakPtr<HoldingSpaceFileSystemDelegate>& weak_ptr,
-             std::vector<base::FilePath> valid_file_paths,
-             std::vector<base::FilePath> invalid_file_paths) {
-            if (weak_ptr) {
-              auto file_removed_callback = weak_ptr->file_removed_callback_;
-              for (const auto& invalid_file_path : invalid_file_paths)
-                file_removed_callback.Run(invalid_file_path);
-            }
-          },
-          weak_factory_.GetWeakPtr()));
+  for (auto* item : items_to_finalize) {
+    model()->FinalizeOrRemoveItem(
+        item->id(),
+        holding_space_util::ResolveFileSystemUrl(profile(), item->file_path()));
+  }
 }
 
 void HoldingSpaceFileSystemDelegate::AddWatch(const base::FilePath& file_path) {
@@ -175,6 +282,11 @@ void HoldingSpaceFileSystemDelegate::RemoveWatch(
   file_system_watcher_runner_->PostTask(
       FROM_HERE, base::BindOnce(&FileSystemWatcher::RemoveWatch,
                                 file_system_watcher_->GetWeakPtr(), file_path));
+}
+
+void HoldingSpaceFileSystemDelegate::ClearNonFinalizedItems() {
+  model()->RemoveIf(base::BindRepeating(
+      [](const HoldingSpaceItem* item) { return !item->IsFinalized(); }));
 }
 
 }  // namespace ash

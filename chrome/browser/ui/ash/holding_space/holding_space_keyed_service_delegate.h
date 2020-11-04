@@ -40,7 +40,7 @@ class HoldingSpaceKeyedServiceDelegate : public HoldingSpaceModelObserver {
   Profile* profile() { return profile_; }
 
   // Returns the holding space model owned by `HoldingSpaceKeyedService`.
-  const HoldingSpaceModel* model() const { return model_; }
+  HoldingSpaceModel* model() { return model_; }
 
   // Returns if persistence is being restored.
   bool is_restoring_persistence() const { return is_restoring_persistence_; }
@@ -55,7 +55,7 @@ class HoldingSpaceKeyedServiceDelegate : public HoldingSpaceModelObserver {
   virtual void OnPersistenceRestored();
 
   Profile* const profile_;
-  const HoldingSpaceModel* const model_;
+  HoldingSpaceModel* const model_;
 
   // If persistence is being restored.
   bool is_restoring_persistence_ = true;

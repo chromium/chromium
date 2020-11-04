@@ -39,7 +39,7 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/ash/holding_space/fake_holding_space_color_provider.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
-#include "chrome/browser/ui/ash/holding_space/scoped_test_downloads_mount_point.h"
+#include "chrome/browser/ui/ash/holding_space/scoped_test_mount_point.h"
 #include "chrome/browser/ui/ash/test_session_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -1188,14 +1188,17 @@ class NearbyFilesHoldingSpaceTest : public testing::Test {
 };
 
 TEST_F(NearbyFilesHoldingSpaceTest, ShowSuccess_Files) {
-  ash::holding_space::ScopedTestDownloadsMountPoint downloads_mount(profile_);
-  ASSERT_TRUE(downloads_mount.IsValid());
+  std::unique_ptr<ash::holding_space::ScopedTestMountPoint> downloads_mount =
+      ash::holding_space::ScopedTestMountPoint::CreateAndMountDownloads(
+          profile_);
+  ASSERT_TRUE(downloads_mount->IsValid());
+
   ShareTarget share_target;
   share_target.is_incoming = true;
 
   const base::FilePath file_virtual_path("Sample.txt");
   base::FilePath file_path =
-      downloads_mount.CreateFile(file_virtual_path, "Sample Text");
+      downloads_mount->CreateFile(file_virtual_path, "Sample Text");
 
   FileAttachment attachment(file_path);
   share_target.file_attachments.push_back(std::move(attachment));

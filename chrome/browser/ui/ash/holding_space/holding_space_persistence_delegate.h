@@ -10,10 +10,7 @@
 
 #include "base/callback.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
-
-namespace base {
-class FilePath;
-}  // namespace base
+#include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -68,10 +65,6 @@ class HoldingSpacePersistenceDelegate
 
   // Restores the holding space model from persistent storage.
   void RestoreModelFromPersistence();
-  void RestoreModelByValidity(
-      std::vector<HoldingSpaceItemPtr> holding_space_items,
-      std::vector<base::FilePath> valid_file_paths,
-      std::vector<base::FilePath> invalid_file_paths);
 
   // Owned by `HoldingSpaceKeyedService`.
   HoldingSpaceThumbnailLoader* const thumbnail_loader_;
