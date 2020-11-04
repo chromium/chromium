@@ -269,7 +269,7 @@ def main():
       lib = [p.replace('"', r'\"') for p in env['LIB'].split(';') if p]
       # Make lib path relative to builddir when cwd and sdk in same drive.
       try:
-        lib = map(os.path.relpath, lib)
+        lib = list(map(os.path.relpath, lib))
       except ValueError:
         pass
 
