@@ -5,14 +5,11 @@
 import("//device/vr/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-mojom_component("mojom") {
-  output_prefix = "device_vr_mojo_bindings"
-  macro_prefix = "DEVICE_VR_MOJO_BINDINGS"
+mojom_component("vr_service") {
+  output_prefix = "device_vr_service_mojo_bindings"
+  macro_prefix = "DEVICE_VR_SERVICE_MOJO_BINDINGS"
 
-  sources = [
-    "isolated_xr_service.mojom",
-    "vr_service.mojom",
-  ]
+  sources = [ "vr_service.mojom" ]
 
   public_deps = [
     ":test_mojom",
@@ -54,6 +51,27 @@ mojom_component("mojom") {
 
   cpp_typemaps = [ shared_cpp_typemap ]
   blink_cpp_typemaps = [ shared_cpp_typemap ]
+}
+
+# Separating the public mojom interface into vr_service and isolated_xr_service
+# components allows us to add dependencies to isolated_xr_service without having
+# a blink variant. The blink variant tends to cause problematic, unresolved externals.
+mojom_component("isolated_xr_service") {
+  output_prefix = "device_vr_isolated_xr_service_mojo_bindings"
+  macro_prefix = "DEVICE_VR_ISOLATED_XR_SERVICE_MOJO_BINDINGS"
+
+  sources = [ "isolated_xr_service.mojom" ]
+
+  disable_variants = true
+
+  public_deps = [
+    ":test_mojom",
+    ":vr_service",
+    "//gpu/ipc/common:interfaces",
+    "//mojo/public/mojom/base",
+    "//skia/public/mojom",
+    "//ui/gfx/geometry/mojom",
+  ]
 }
 
 mojom_component("test_mojom") {

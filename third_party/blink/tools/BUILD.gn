@@ -76,7 +76,7 @@ group("wpt_tests_mojo_bindings") {
   data_deps = [
     ":wpt_tests_base_mojo_bindings",
     "//device/bluetooth/public/mojom:fake_bluetooth_interfaces_js_data_deps",
-    "//device/vr/public/mojom:mojom_js_data_deps",
+    "//device/vr/public/mojom:vr_service_js_data_deps",
     "//media/capture/mojom:image_capture_js_data_deps",
     "//media/midi:mojo_js_data_deps",
     "//services/device/public/mojom:generic_sensor_js_data_deps",

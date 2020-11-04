@@ -249,7 +249,7 @@ component("vr_common") {
 
   public_deps = [
     ":vr_base",
-    "//device/vr/public/mojom",
+    "//device/vr/public/mojom:isolated_xr_service",
   ]
 
   deps = [
@@ -265,7 +265,7 @@ component("vr_common") {
     "//device/base",
     "//device/vr",
     "//device/vr/buildflags:buildflags",
-    "//device/vr/public/mojom",
+    "//device/vr/public/mojom:isolated_xr_service",
     "//media",
     "//net",
     "//services/audio/public/cpp",
@@ -391,7 +391,7 @@ component("vr_base") {
     "//components/ukm/content",
     "//components/url_formatter",
     "//content/public/browser",
-    "//device/vr/public/mojom:mojom",
+    "//device/vr/public/mojom:isolated_xr_service",
     "//media",
     "//net",
     "//services/metrics/public/cpp:ukm_builders",
@@ -628,7 +628,7 @@ if (!is_android) {
       "//device/vr:vr",
       "//device/vr/buildflags:buildflags",
       "//device/vr/orientation",
-      "//device/vr/public/mojom",
+      "//device/vr/public/mojom:isolated_xr_service",
       "//device/vr/public/mojom:test_mojom",
     ]
 

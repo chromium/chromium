@@ -2340,7 +2340,7 @@ static_library("browser") {
       "//components/drive",
       "//components/quirks",
       "//components/session_manager/core",
-      "//device/vr/public/mojom",
+      "//device/vr/public/mojom:isolated_xr_service",
     ]
     if (!is_official_build) {
       deps += [
@@ -6121,7 +6121,7 @@ static_library("browser") {
         "vr/ui_host/vr_ui_host_impl.h",
       ]
 
-      deps += [ "//device/vr/public/mojom" ]
+      deps += [ "//device/vr/public/mojom:isolated_xr_service" ]
     }
 
     sources += [
@@ -6144,7 +6144,7 @@ static_library("browser") {
         ]
       }
     } else {
-      deps += [ "//device/vr/public/mojom" ]
+      deps += [ "//device/vr/public/mojom:isolated_xr_service" ]
     }
   }
 

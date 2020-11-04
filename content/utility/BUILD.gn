@@ -91,7 +91,7 @@ source_set("utility") {
   if (enable_vr && !is_android) {
     deps += [
       "//content/services/isolated_xr_device:lib",
-      "//device/vr/public/mojom",
+      "//device/vr/public/mojom:isolated_xr_service",
     ]
   }
 }

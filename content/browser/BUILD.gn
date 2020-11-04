@@ -126,7 +126,7 @@ source_set("browser") {
     "//device/bluetooth/public/cpp",
     "//device/fido",
     "//device/gamepad",
-    "//device/vr/public/mojom",
+    "//device/vr/public/mojom:isolated_xr_service",
     "//google_apis",
     "//gpu",
     "//gpu/command_buffer/client:gles2_implementation",

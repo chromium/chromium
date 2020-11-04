@@ -211,7 +211,7 @@ group("generate_mojo_bindings") {
 
   deps = [
     "//device/gamepad/public/mojom:mojom_blink_headers",
-    "//device/vr/public/mojom:mojom_blink_headers",
+    "//device/vr/public/mojom:vr_service_blink_headers",
     "//media/capture/mojom:image_capture_blink_headers",
     "//media/midi:mojo_blink_headers",
     "//services/device/public/mojom:generic_sensor_headers",

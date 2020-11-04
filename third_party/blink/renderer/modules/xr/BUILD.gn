@@ -108,7 +108,7 @@ blink_modules_sources("xr") {
   ]
 
   deps = [
-    "//device/vr/public/mojom:mojom_blink",
+    "//device/vr/public/mojom:vr_service_blink",
     "//services/metrics/public/cpp:ukm_builders",
   ]
 

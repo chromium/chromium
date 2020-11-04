@@ -28,7 +28,7 @@ source_set("lib") {
     "//device/base",
     "//device/vr:vr",
     "//device/vr:vr_base",
-    "//device/vr/public/mojom",
+    "//device/vr/public/mojom:isolated_xr_service",
     "//device/vr/public/mojom:test_mojom",
   ]
 }

@@ -1051,7 +1051,7 @@ if (!is_ios) {
       "//content/test:mojo_bindings_web_test_mojom_js_data_deps",
       "//content/test:mojo_web_test_bindings_js_data_deps",
       "//device/bluetooth/public/mojom:fake_bluetooth_interfaces_js_data_deps",
-      "//device/vr/public/mojom:mojom_js_data_deps",
+      "//device/vr/public/mojom:vr_service_js_data_deps",
       "//media/capture/mojom:image_capture_js_data_deps",
       "//media/midi:mojo_js_data_deps",
       "//mojo/public/interfaces/bindings/tests:test_data_deps",

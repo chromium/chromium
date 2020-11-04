@@ -54,7 +54,7 @@ if (enable_vr) {
     public_deps = [
       ":vr_gl_bindings",
       "//device/vr/public/cpp",
-      "//device/vr/public/mojom",
+      "//device/vr/public/mojom:isolated_xr_service",
     ]
     deps = [
       "//base",
@@ -91,7 +91,7 @@ if (enable_vr) {
       "//components/ukm:ukm",
       "//device/base",
       "//device/vr/buildflags",
-      "//device/vr/public/mojom",
+      "//device/vr/public/mojom:isolated_xr_service",
       "//gpu/ipc/common:interfaces",
       "//mojo/public/cpp/bindings",
       "//services/device/public/cpp/generic_sensor",
@@ -273,7 +273,7 @@ if (enable_vr) {
       ":vr_base",
       "//base",
       "//device/vr/orientation",
-      "//device/vr/public/mojom",
+      "//device/vr/public/mojom:isolated_xr_service",
       "//mojo/public/cpp/bindings",
       "//services/device/public/cpp/generic_sensor",
       "//testing/gmock",

@@ -1624,7 +1624,7 @@ component("platform") {
     "//components/viz/client",
     "//components/viz/common",
     "//crypto",
-    "//device/vr/public/mojom:mojom_blink",
+    "//device/vr/public/mojom:vr_service_blink",
     "//gin",
     "//gpu:gpu",
     "//gpu/command_buffer/client:webgpu_interface",

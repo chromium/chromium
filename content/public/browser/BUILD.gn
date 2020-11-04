@@ -546,7 +546,7 @@ source_set("browser_sources") {
 
     public_deps += [
       "//device/vr/public/cpp",
-      "//device/vr/public/mojom",
+      "//device/vr/public/mojom:isolated_xr_service",
     ]
   }
 }

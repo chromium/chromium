@@ -172,7 +172,7 @@ blink_modules_sources("webgl") {
   # include the core pch for faster Windows compilation times.
   configs += [ "//third_party/blink/renderer/core:blink_core_pch" ]
 
-  public_deps = [ "//device/vr/public/mojom:mojom_blink" ]
+  public_deps = [ "//device/vr/public/mojom:vr_service_blink" ]
   deps = [ "//third_party/blink/renderer/modules/xr:xr" ]
   allow_circular_includes_from = deps
 }

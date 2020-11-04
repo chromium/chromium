@@ -373,7 +373,7 @@ test("device_unittests") {
       "//device/vr",
       "//device/vr:vr_fakes",
       "//device/vr/orientation",
-      "//device/vr/public/mojom",
+      "//device/vr/public/mojom:isolated_xr_service",
       "//services/device/public/cpp/generic_sensor",
       "//ui/display",
       "//ui/display:test_support",
