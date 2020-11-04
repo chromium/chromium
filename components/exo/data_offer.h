@@ -42,12 +42,7 @@ class DataOffer final : public ui::PropertyHandler {
       base::OnceCallback<void(scoped_refptr<base::RefCountedMemory>)>;
   using AsyncSendDataCallback = base::OnceCallback<void(SendDataCallback)>;
 
-  enum Purpose {
-    COPY_PASTE,
-    DRAG_DROP,
-  };
-
-  DataOffer(DataOfferDelegate* delegate, Purpose purpose);
+  DataOffer(DataOfferDelegate* delegate);
   ~DataOffer() override;
 
   void AddObserver(DataOfferObserver* observer);

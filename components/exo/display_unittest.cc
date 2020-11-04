@@ -210,9 +210,7 @@ class TestDataDeviceDelegate : public DataDeviceDelegate {
  public:
   // Overriden from DataDeviceDelegate:
   void OnDataDeviceDestroying(DataDevice* data_device) override {}
-  DataOffer* OnDataOffer(DataOffer::Purpose purpose) override {
-    return nullptr;
-  }
+  DataOffer* OnDataOffer() override { return nullptr; }
   void OnEnter(Surface* surface,
                const gfx::PointF& location,
                const DataOffer& data_offer) override {}

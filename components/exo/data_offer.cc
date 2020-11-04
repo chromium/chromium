@@ -194,10 +194,8 @@ ScopedDataOffer::~ScopedDataOffer() {
   data_offer_->RemoveObserver(observer_);
 }
 
-DataOffer::DataOffer(DataOfferDelegate* delegate, Purpose purpose)
-    : delegate_(delegate),
-      dnd_action_(DndAction::kNone),
-      finished_(false) {}
+DataOffer::DataOffer(DataOfferDelegate* delegate)
+    : delegate_(delegate), dnd_action_(DndAction::kNone), finished_(false) {}
 
 DataOffer::~DataOffer() {
   delegate_->OnDataOfferDestroying(this);

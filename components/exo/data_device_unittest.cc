@@ -74,9 +74,9 @@ class TestDataDeviceDelegate : public DataDeviceDelegate {
   void OnDataDeviceDestroying(DataDevice* data_device) override {
     events_.push_back(DataEvent::kDestroy);
   }
-  DataOffer* OnDataOffer(DataOffer::Purpose purpose) override {
+  DataOffer* OnDataOffer() override {
     events_.push_back(DataEvent::kOffer);
-    data_offer_.reset(new DataOffer(new TestDataOfferDelegate, purpose));
+    data_offer_.reset(new DataOffer(new TestDataOfferDelegate));
     return data_offer_.get();
   }
   void OnEnter(Surface* surface,

@@ -138,7 +138,7 @@ TEST_F(DataOfferTest, SetTextDropData) {
   data.SetString(base::string16(base::ASCIIToUTF16("Test data")));
 
   TestDataOfferDelegate delegate;
-  DataOffer data_offer(&delegate, DataOffer::Purpose::DRAG_DROP);
+  DataOffer data_offer(&delegate);
 
   EXPECT_EQ(0u, delegate.mime_types().size());
   EXPECT_EQ(0u, delegate.source_actions().size());
@@ -168,7 +168,7 @@ TEST_F(DataOfferTest, SetHTMLDropData) {
   data.SetHtml(base::UTF8ToUTF16(html_data), GURL());
 
   TestDataOfferDelegate delegate;
-  DataOffer data_offer(&delegate, DataOffer::Purpose::DRAG_DROP);
+  DataOffer data_offer(&delegate);
 
   EXPECT_EQ(0u, delegate.mime_types().size());
   EXPECT_EQ(0u, delegate.source_actions().size());
@@ -202,7 +202,7 @@ TEST_F(DataOfferTest, SetHTMLDropData) {
 
 TEST_F(DataOfferTest, SetFileDropData) {
   TestDataOfferDelegate delegate;
-  DataOffer data_offer(&delegate, DataOffer::Purpose::DRAG_DROP);
+  DataOffer data_offer(&delegate);
 
   TestFileHelper file_helper;
   ui::OSExchangeData data;
@@ -215,7 +215,7 @@ TEST_F(DataOfferTest, SetFileDropData) {
 
 TEST_F(DataOfferTest, SetPickleDropData) {
   TestDataOfferDelegate delegate;
-  DataOffer data_offer(&delegate, DataOffer::Purpose::DRAG_DROP);
+  DataOffer data_offer(&delegate);
 
   TestFileHelper file_helper;
   ui::OSExchangeData data;
@@ -235,7 +235,7 @@ TEST_F(DataOfferTest, SetPickleDropData) {
 
 TEST_F(DataOfferTest, ReceiveString) {
   TestDataOfferDelegate delegate;
-  DataOffer data_offer(&delegate, DataOffer::Purpose::DRAG_DROP);
+  DataOffer data_offer(&delegate);
 
   TestFileHelper file_helper;
   ui::OSExchangeData data;
@@ -270,7 +270,7 @@ TEST_F(DataOfferTest, ReceiveString) {
 
 TEST_F(DataOfferTest, ReceiveHTML) {
   TestDataOfferDelegate delegate;
-  DataOffer data_offer(&delegate, DataOffer::Purpose::DRAG_DROP);
+  DataOffer data_offer(&delegate);
 
   TestFileHelper file_helper;
   ui::OSExchangeData data;
@@ -296,7 +296,7 @@ TEST_F(DataOfferTest, ReceiveHTML) {
 
 TEST_F(DataOfferTest, ReceiveUriList) {
   TestDataOfferDelegate delegate;
-  DataOffer data_offer(&delegate, DataOffer::Purpose::DRAG_DROP);
+  DataOffer data_offer(&delegate);
 
   TestFileHelper file_helper;
   ui::OSExchangeData data;
@@ -315,7 +315,7 @@ TEST_F(DataOfferTest, ReceiveUriList) {
 
 TEST_F(DataOfferTest, ReceiveUriListFromPickle_ReceiveBeforeUrlIsResolved) {
   TestDataOfferDelegate delegate;
-  DataOffer data_offer(&delegate, DataOffer::Purpose::DRAG_DROP);
+  DataOffer data_offer(&delegate);
 
   TestFileHelper file_helper;
   ui::OSExchangeData data;
@@ -363,7 +363,7 @@ TEST_F(DataOfferTest, ReceiveUriListFromPickle_ReceiveBeforeUrlIsResolved) {
 TEST_F(DataOfferTest,
        ReceiveUriListFromPickle_ReceiveBeforeEmptyUrlIsReturned) {
   TestDataOfferDelegate delegate;
-  DataOffer data_offer(&delegate, DataOffer::Purpose::DRAG_DROP);
+  DataOffer data_offer(&delegate);
 
   TestFileHelper file_helper;
   ui::OSExchangeData data;
@@ -396,7 +396,7 @@ TEST_F(DataOfferTest,
 
 TEST_F(DataOfferTest, SetClipboardDataPlainText) {
   TestDataOfferDelegate delegate;
-  DataOffer data_offer(&delegate, DataOffer::Purpose::COPY_PASTE);
+  DataOffer data_offer(&delegate);
 
   TestFileHelper file_helper;
   {
@@ -437,7 +437,7 @@ TEST_F(DataOfferTest, SetClipboardDataPlainText) {
 
 TEST_F(DataOfferTest, SetClipboardDataHTML) {
   TestDataOfferDelegate delegate;
-  DataOffer data_offer(&delegate, DataOffer::Purpose::COPY_PASTE);
+  DataOffer data_offer(&delegate);
 
   TestFileHelper file_helper;
   {
@@ -469,7 +469,7 @@ TEST_F(DataOfferTest, SetClipboardDataHTML) {
 
 TEST_F(DataOfferTest, SetClipboardDataRTF) {
   TestDataOfferDelegate delegate;
-  DataOffer data_offer(&delegate, DataOffer::Purpose::COPY_PASTE);
+  DataOffer data_offer(&delegate);
 
   TestFileHelper file_helper;
   {
@@ -494,7 +494,7 @@ TEST_F(DataOfferTest, SetClipboardDataRTF) {
 
 TEST_F(DataOfferTest, SetClipboardDataImage) {
   TestDataOfferDelegate delegate;
-  DataOffer data_offer(&delegate, DataOffer::Purpose::COPY_PASTE);
+  DataOffer data_offer(&delegate);
 
   SkBitmap image;
   image.allocN32Pixels(10, 10);
@@ -544,7 +544,7 @@ TEST_F(DataOfferTest, SetClipboardDataImage) {
 
 TEST_F(DataOfferTest, AcceptWithNull) {
   TestDataOfferDelegate delegate;
-  DataOffer data_offer(&delegate, DataOffer::Purpose::COPY_PASTE);
+  DataOffer data_offer(&delegate);
   data_offer.Accept(nullptr);
 }
 
