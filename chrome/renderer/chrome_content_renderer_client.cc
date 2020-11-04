@@ -1630,11 +1630,7 @@ bool ChromeContentRendererClient::RequiresWebComponentsV0(const GURL& url) {
 #endif
            false;
   }
-
-  // TODO(1025782): For now, file:// URLs are allowed to access Web Components
-  // v0 features. This will be removed once origin trials support file:// URLs
-  // for this purpose.
-  return url.SchemeIs("file");
+  return false;
 }
 
 // When extension is not available, we don't need to proxy the URLLoaderFactory.
