@@ -33,13 +33,13 @@ self.addEventListener("fetch", event => {
     );
   } else if (param.has("sleep_then_fetch")) {
     event.respondWith(
-      sleep(param.get("sleep") || 0, event.request.url).then(() => {
+      sleep(param.get("sleep") || 0).then(() => {
         return fetch(event.request.url);
       })
     );
   } else if (param.has("sleep_then_offline")) {
     event.respondWith(
-      sleep(param.get("sleep") || 0, event.request.url).then(() => {
+      sleep(param.get("sleep") || 0).then(() => {
         return new Response("Hello Offline page");
       })
     );

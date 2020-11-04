@@ -677,6 +677,24 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerOfflineCapabilityCheckBrowserTest,
 
   EXPECT_EQ(OfflineCapability::kUnsupported,
             CheckOfflineCapability("/service_worker/empty.html?cache_add"));
+
+  EXPECT_EQ(
+      OfflineCapability::kSupported,
+      CheckOfflineCapability("/service_worker/empty.html?sleep_then_offline"));
+
+  // Site that takes more than the timeout is considered as "offline capable".
+  EXPECT_EQ(OfflineCapability::kSupported,
+            CheckOfflineCapability(
+                "/service_worker/empty.html?sleep_then_offline&sleep=20000"));
+
+  EXPECT_EQ(
+      OfflineCapability::kUnsupported,
+      CheckOfflineCapability("/service_worker/empty.html?sleep_then_fetch"));
+
+  // Site that takes more than the timeout is considered as "offline capable".
+  EXPECT_EQ(OfflineCapability::kSupported,
+            CheckOfflineCapability(
+                "/service_worker/empty.html?sleep_then_fetch&sleep=20000"));
 }
 
 // Sites with a service worker which is not activated yet are identified as

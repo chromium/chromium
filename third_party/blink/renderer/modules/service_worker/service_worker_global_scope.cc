@@ -1952,9 +1952,9 @@ void ServiceWorkerGlobalScope::DispatchFetchEventForMainResource(
   DCHECK(IsContextThread());
 
   // The timeout for offline events in a service worker. The default value is
-  // the same as the default timeout (5 mins) of all events.
+  // the same as the update interval value in the event queue.
   static const base::FeatureParam<int> kCustomTimeoutForOfflineEvent{
-      &features::kCheckOfflineCapability, "timeout_second", 5 * 60};
+      &features::kCheckOfflineCapability, "timeout_second", 10};
 
   const int event_id = event_queue_->NextEventId();
   fetch_event_callbacks_.Set(event_id, std::move(callback));

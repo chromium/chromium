@@ -101,11 +101,10 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
   // are settled. This function is called once the renderer signals that
   // happened. |fetch_callback_| can run before this, once respondWith() is
   // settled.
-  static void OnFetchEventFinished(
-      ServiceWorkerVersion* version,
-      int event_finish_id,
-      scoped_refptr<URLLoaderAssets> url_loader_assets,
-      blink::mojom::ServiceWorkerEventStatus status);
+  void OnFetchEventFinished(ServiceWorkerVersion* version,
+                            int event_finish_id,
+                            scoped_refptr<URLLoaderAssets> url_loader_assets,
+                            blink::mojom::ServiceWorkerEventStatus status);
 
   ServiceWorkerMetrics::EventType GetEventType() const;
 

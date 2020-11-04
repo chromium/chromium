@@ -130,15 +130,18 @@ void ServiceWorkerOfflineCapabilityChecker::OnFetchResult(
     blink::mojom::ServiceWorkerStreamHandlePtr /* stream */,
     blink::mojom::ServiceWorkerFetchEventTimingPtr /* timing */,
     scoped_refptr<ServiceWorkerVersion> version) {
-  if (status == blink::ServiceWorkerStatusCode::kOk &&
-      result == ServiceWorkerFetchDispatcher::FetchEventResult::kGotResponse &&
-      // TODO(hayato): Investigate whether any 2xx should be accepted or not.
-      response->status_code == 200) {
+  // The sites are considered as "offline capable" when the response finished
+  // successfully and returns 200 or the timeout happens.
+  if ((status == blink::ServiceWorkerStatusCode::kOk &&
+       result == ServiceWorkerFetchDispatcher::FetchEventResult::kGotResponse &&
+       // TODO(hayato): Investigate whether any 2xx should be accepted or not.
+       response->status_code == 200) ||
+      status == blink::ServiceWorkerStatusCode::kErrorTimeout) {
     std::move(callback_).Run(OfflineCapability::kSupported,
                              version->registration_id());
   } else {
     // TODO(hayato): At present, we return kUnsupported even if the detection
-    // failed due to internal errors (disk fialures, timeout, etc). In the
+    // failed due to internal errors except timeout (disk fialures, etc). In the
     // future, we might want to return another enum value so that the callside
     // can know whether internal errors happened or not.
     std::move(callback_).Run(OfflineCapability::kUnsupported,
