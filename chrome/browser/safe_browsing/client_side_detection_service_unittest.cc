@@ -50,7 +50,7 @@ namespace {
 class MockModelLoader : public ModelLoader {
  public:
   explicit MockModelLoader(const std::string& model_name)
-      : ModelLoader(base::Closure(), nullptr, model_name) {}
+      : ModelLoader(base::RepeatingClosure(), nullptr, model_name) {}
   ~MockModelLoader() override {}
 
   MOCK_METHOD1(ScheduleFetch, void(int64_t));
@@ -95,8 +95,8 @@ class ClientSideDetectionServiceTest : public testing::Test {
     base::RunLoop run_loop;
     csd_service_->SendClientReportPhishingRequest(
         std::move(request), is_extended_reporting, is_enhanced_reporting,
-        base::Bind(&ClientSideDetectionServiceTest::SendRequestDone,
-                   base::Unretained(this), run_loop.QuitWhenIdleClosure()));
+        base::BindOnce(&ClientSideDetectionServiceTest::SendRequestDone,
+                       base::Unretained(this), run_loop.QuitWhenIdleClosure()));
     phishing_url_ = phishing_url;
     run_loop.Run();  // Waits until callback is called.
     return is_phishing_;

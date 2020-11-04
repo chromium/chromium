@@ -64,7 +64,7 @@ class ModelLoader {
   // Constructs a model loader to fetch a model using |url_loader_factory|.
   // When ScheduleFetch is called, |update_renderers| will be called on the
   // same sequence if the fetch is successful.
-  ModelLoader(base::Closure update_renderers,
+  ModelLoader(base::RepeatingClosure update_renderers,
               scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
               bool is_extended_reporting);
   virtual ~ModelLoader();
@@ -90,7 +90,7 @@ class ModelLoader {
 
  protected:
   // For testing only.
-  ModelLoader(base::Closure update_renderers,
+  ModelLoader(base::RepeatingClosure update_renderers,
               scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
               const std::string& model_name);
 
@@ -136,7 +136,7 @@ class ModelLoader {
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
   // Callback to invoke when we've got a new model.  CSD will send it around.
-  base::Closure update_renderers_callback_;
+  base::RepeatingClosure update_renderers_callback_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

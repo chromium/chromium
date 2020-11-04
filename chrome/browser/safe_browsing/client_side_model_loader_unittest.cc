@@ -43,7 +43,7 @@ namespace {
 class MockModelLoader : public ModelLoader {
  public:
   MockModelLoader(
-      base::Closure update_renderers_callback,
+      base::RepeatingClosure update_renderers_callback,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string model_name)
       : ModelLoader(update_renderers_callback, url_loader_factory, model_name) {
@@ -129,8 +129,8 @@ ACTION_P(InvokeClosure, closure) {
 }
 
 TEST_F(ModelLoaderTest, FetchModelFromLocalFileTest) {
-  StrictMock<MockModelLoader> loader(base::Closure(), shared_loader_factory(),
-                                     "top_model.pb");
+  StrictMock<MockModelLoader> loader(base::RepeatingClosure(),
+                                     shared_loader_factory(), "top_model.pb");
   SetModelUrl(loader);
 
   // The model fetch tries to read from local file but is empty.
@@ -190,8 +190,8 @@ TEST_F(ModelLoaderTest, FetchModelFromLocalFileTest) {
 
 // Test the response to many variations of model responses.
 TEST_F(ModelLoaderTest, FetchModelTest) {
-  StrictMock<MockModelLoader> loader(base::Closure(), shared_loader_factory(),
-                                     "top_model.pb");
+  StrictMock<MockModelLoader> loader(base::RepeatingClosure(),
+                                     shared_loader_factory(), "top_model.pb");
   SetModelUrl(loader);
 
   // The model fetch failed.
@@ -332,7 +332,8 @@ TEST_F(ModelLoaderTest, UpdateRenderersTest) {
 
 // Test that a one fetch schedules another fetch.
 TEST_F(ModelLoaderTest, RescheduleFetchTest) {
-  StrictMock<MockModelLoader> loader(base::Closure(), nullptr, "top_model.pb");
+  StrictMock<MockModelLoader> loader(base::RepeatingClosure(), nullptr,
+                                     "top_model.pb");
 
   // Zero max_age.  Uses default.
   base::TimeDelta max_age;
@@ -364,7 +365,7 @@ TEST_F(ModelLoaderTest, ModelNamesTest) {
 
   // No Finch setup. Should default to 4.
   std::unique_ptr<ModelLoader> loader;
-  loader.reset(new ModelLoader(base::Closure(), nullptr,
+  loader.reset(new ModelLoader(base::RepeatingClosure(), nullptr,
                                false /* is_extended_reporting */));
   EXPECT_EQ(loader->name(), "client_model_v5_variation_4.pb");
   EXPECT_EQ(loader->url_.spec(),
@@ -373,12 +374,12 @@ TEST_F(ModelLoaderTest, ModelNamesTest) {
 
   // Model 1, no extended reporting.
   SetFinchModelNumber(1);
-  loader.reset(new ModelLoader(base::Closure(), nullptr, false));
+  loader.reset(new ModelLoader(base::RepeatingClosure(), nullptr, false));
   EXPECT_EQ(loader->name(), "client_model_v5_variation_1.pb");
 
   // Model 2, with extended reporting.
   SetFinchModelNumber(2);
-  loader.reset(new ModelLoader(base::Closure(), nullptr, true));
+  loader.reset(new ModelLoader(base::RepeatingClosure(), nullptr, true));
   EXPECT_EQ(loader->name(), "client_model_v5_ext_variation_2.pb");
 }
 

@@ -66,7 +66,7 @@ void CertificateReportingServiceFactory::SetMaxQueuedReportCountForTesting(
 }
 
 void CertificateReportingServiceFactory::SetServiceResetCallbackForTesting(
-    const base::Callback<void()>& service_reset_callback) {
+    const base::RepeatingClosure& service_reset_callback) {
   service_reset_callback_ = service_reset_callback;
 }
 

@@ -116,7 +116,7 @@ class DownloadItemCreatedObserver : public DownloadManager::Observer {
       base::RunLoop run_loop;
       quit_waiting_callback_ = run_loop.QuitClosure();
       run_loop.Run();
-      quit_waiting_callback_ = base::Closure();
+      quit_waiting_callback_ = base::OnceClosure();
     }
 
     *items_seen = items_seen_;
@@ -131,17 +131,17 @@ class DownloadItemCreatedObserver : public DownloadManager::Observer {
     items_seen_.push_back(item);
 
     if (!quit_waiting_callback_.is_null())
-      quit_waiting_callback_.Run();
+      std::move(quit_waiting_callback_).Run();
   }
 
   void ManagerGoingDown(DownloadManager* manager) override {
     manager_->RemoveObserver(this);
     manager_ = nullptr;
     if (!quit_waiting_callback_.is_null())
-      quit_waiting_callback_.Run();
+      std::move(quit_waiting_callback_).Run();
   }
 
-  base::Closure quit_waiting_callback_;
+  base::OnceClosure quit_waiting_callback_;
   DownloadManager* manager_;
   std::vector<DownloadItem*> items_seen_;
 

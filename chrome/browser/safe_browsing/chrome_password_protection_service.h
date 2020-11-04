@@ -581,8 +581,8 @@ class ChromePasswordProtectionService : public PasswordProtectionService {
 
   // Subscription for state changes. When this subscription is notified, it
   // means HashPasswordManager password data list has changed.
-  std::unique_ptr<
-      base::CallbackList<void(const std::string& username)>::Subscription>
+  std::unique_ptr<base::RepeatingCallbackList<void(
+      const std::string& username)>::Subscription>
       hash_password_manager_subscription_;
 
   // Reference to the current profile's VerdictCacheManager. This is unowned.

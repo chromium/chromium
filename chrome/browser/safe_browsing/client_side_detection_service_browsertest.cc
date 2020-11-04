@@ -29,7 +29,9 @@ namespace {
 class FakeModelLoader : public ModelLoader {
  public:
   explicit FakeModelLoader(std::string model_str)
-      : ModelLoader(base::Closure(), nullptr, /*is_extended_reporting=*/false) {
+      : ModelLoader(base::RepeatingClosure(),
+                    nullptr,
+                    /*is_extended_reporting=*/false) {
     model_str_ = model_str;
   }
   ~FakeModelLoader() override = default;

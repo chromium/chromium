@@ -159,14 +159,14 @@ void ClientSideDetectionService::SendClientReportPhishingRequest(
     std::unique_ptr<ClientPhishingRequest> verdict,
     bool is_extended_reporting,
     bool is_enhanced_reporting,
-    const ClientReportPhishingRequestCallback& callback) {
+    ClientReportPhishingRequestCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &ClientSideDetectionService::StartClientReportPhishingRequest,
           weak_factory_.GetWeakPtr(), std::move(verdict), is_extended_reporting,
-          is_enhanced_reporting, callback));
+          is_enhanced_reporting, std::move(callback)));
 }
 
 bool ClientSideDetectionService::IsPrivateIPAddress(
@@ -218,12 +218,12 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
     std::unique_ptr<ClientPhishingRequest> request,
     bool is_extended_reporting,
     bool is_enhanced_reporting,
-    const ClientReportPhishingRequestCallback& callback) {
+    ClientReportPhishingRequestCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!enabled_) {
     if (!callback.is_null())
-      callback.Run(GURL(request->url()), false);
+      std::move(callback).Run(GURL(request->url()), false);
     return;
   }
 
@@ -299,7 +299,7 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
   std::unique_ptr<ClientPhishingReportInfo> info(new ClientPhishingReportInfo);
   auto* loader_ptr = loader.get();
   info->loader = std::move(loader);
-  info->callback = callback;
+  info->callback = std::move(callback);
   info->phishing_url = GURL(request->url());
   client_phishing_reports_[loader_ptr] = std::move(info);
 

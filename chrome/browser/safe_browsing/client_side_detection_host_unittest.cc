@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/safe_browsing/client_side_detection_service.h"
@@ -106,7 +107,7 @@ MATCHER(CallbackIsNull, "") {
 
 class MockModelLoader : public ModelLoader {
  public:
-  MockModelLoader() : ModelLoader(base::Closure(), nullptr, false) {}
+  MockModelLoader() : ModelLoader(base::RepeatingClosure(), nullptr, false) {}
   ~MockModelLoader() override = default;
 
   MOCK_METHOD1(ScheduleFetch, void(int64_t));
@@ -125,7 +126,7 @@ class MockClientSideDetectionService : public ClientSideDetectionService {
                void(std::unique_ptr<ClientPhishingRequest>,
                     bool,
                     bool,
-                    const ClientReportPhishingRequestCallback&));
+                    ClientReportPhishingRequestCallback));
   MOCK_CONST_METHOD1(IsPrivateIPAddress, bool(const std::string&));
   MOCK_METHOD2(GetValidCachedResult, bool(const GURL&, bool*));
   MOCK_METHOD1(IsInCache, bool(const GURL&));
@@ -392,14 +393,14 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneNotPhishing) {
 
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
                                  PartiallyEqualVerdict(verdict), _, _, _))
-      .WillOnce(SaveArg<3>(&cb));
+      .WillOnce(MoveArg<3>(&cb));
   PhishingDetectionDone(verdict.SerializeAsString());
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
   ASSERT_FALSE(cb.is_null());
 
   // Make sure DisplayBlockingPage is not going to be called.
   EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(0);
-  cb.Run(GURL(verdict.url()), false);
+  std::move(cb).Run(GURL(verdict.url()), false);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
 }
@@ -415,14 +416,14 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneDisabled) {
 
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
                                  PartiallyEqualVerdict(verdict), _, _, _))
-      .WillOnce(SaveArg<3>(&cb));
+      .WillOnce(MoveArg<3>(&cb));
   PhishingDetectionDone(verdict.SerializeAsString());
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
   ASSERT_FALSE(cb.is_null());
 
   // Make sure DisplayBlockingPage is not going to be called.
   EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(0);
-  cb.Run(GURL(verdict.url()), false);
+  std::move(cb).Run(GURL(verdict.url()), false);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
 }
@@ -439,7 +440,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
 
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
                                  PartiallyEqualVerdict(verdict), _, _, _))
-      .WillOnce(SaveArg<3>(&cb));
+      .WillOnce(MoveArg<3>(&cb));
   PhishingDetectionDone(verdict.SerializeAsString());
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
@@ -448,7 +449,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
   UnsafeResource resource;
   EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_))
       .WillOnce(SaveArg<0>(&resource));
-  cb.Run(phishing_url, true);
+  std::move(cb).Run(phishing_url, true);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
@@ -481,7 +482,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
 
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
                                  PartiallyEqualVerdict(verdict), _, _, _))
-      .WillOnce(SaveArg<3>(&cb));
+      .WillOnce(MoveArg<3>(&cb));
   PhishingDetectionDone(verdict.SerializeAsString());
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
@@ -501,7 +502,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
   verdict.set_client_score(0.8f);
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
                                  PartiallyEqualVerdict(verdict), _, _, _))
-      .WillOnce(SaveArg<3>(&cb_other));
+      .WillOnce(MoveArg<3>(&cb_other));
   PhishingDetectionDone(verdict.SerializeAsString());
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
@@ -514,8 +515,9 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
   EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_))
       .WillOnce(SaveArg<0>(&resource));
 
-  cb.Run(phishing_url, true);  // Should have no effect.
-  cb_other.Run(other_phishing_url, true);  // Should show interstitial.
+  std::move(cb).Run(phishing_url, true);  // Should have no effect.
+  std::move(cb_other).Run(other_phishing_url,
+                          true);  // Should show interstitial.
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));

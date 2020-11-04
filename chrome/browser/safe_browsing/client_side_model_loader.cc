@@ -117,7 +117,7 @@ bool ModelLoader::ModelHasValidHashIds(const ClientSideModel& model) {
 
 // Model name and URL are a function of is_extended_reporting and Finch.
 ModelLoader::ModelLoader(
-    base::Closure update_renderers_callback,
+    base::RepeatingClosure update_renderers_callback,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     bool is_extended_reporting)
     : name_(FillInModelName(is_extended_reporting, GetModelNumber())),
@@ -131,7 +131,7 @@ ModelLoader::ModelLoader(
 
 // For testing only
 ModelLoader::ModelLoader(
-    base::Closure update_renderers_callback,
+    base::RepeatingClosure update_renderers_callback,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& model_name)
     : name_(model_name),

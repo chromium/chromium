@@ -356,7 +356,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/resource_coordinator/',
   '^chrome/browser/resources/chromeos/accessibility/',
   '^chrome/browser/rlz/chrome_rlz_tracker_delegate.cc',
-  '^chrome/browser/safe_browsing/',
   '^chrome/browser/search_engines/',
   '^chrome/browser/service_process/',
   '^chrome/browser/signin/',

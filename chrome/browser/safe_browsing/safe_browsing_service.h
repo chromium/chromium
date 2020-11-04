@@ -171,14 +171,13 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   void AddDownloadManager(content::DownloadManager* download_manager);
 
   // Type for subscriptions to SafeBrowsing service state.
-  typedef base::CallbackList<void(void)>::Subscription StateSubscription;
-  typedef base::CallbackList<void(void)>::Subscription ShutdownSubscription;
+  typedef base::RepeatingClosureList::Subscription StateSubscription;
 
   // Adds a listener for when SafeBrowsing preferences might have changed.
   // To get the current state, the callback should call enabled_by_prefs().
   // Should only be called on the UI thread.
   virtual std::unique_ptr<StateSubscription> RegisterStateCallback(
-      const base::Callback<void(void)>& callback);
+      const base::RepeatingClosure& callback);
 
   // Sends serialized download report to backend.
   virtual void SendSerializedDownloadReport(Profile* profile,

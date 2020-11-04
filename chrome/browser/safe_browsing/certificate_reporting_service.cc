@@ -147,8 +147,8 @@ CertificateReportingService::Reporter::GetQueueForTesting() const {
 }
 
 void CertificateReportingService::Reporter::
-    SetClosureWhenNoInflightReportsForTesting(const base::Closure& closure) {
-  no_in_flight_reports_ = closure;
+    SetClosureWhenNoInflightReportsForTesting(base::OnceClosure closure) {
+  no_in_flight_reports_ = std::move(closure);
 }
 
 void CertificateReportingService::Reporter::SendInternal(
@@ -176,14 +176,14 @@ void CertificateReportingService::Reporter::ErrorCallback(
   }
   CHECK_GT(inflight_reports_.erase(report_id), 0u);
   if (inflight_reports_.empty() && no_in_flight_reports_)
-    no_in_flight_reports_.Run();
+    std::move(no_in_flight_reports_).Run();
 }
 
 void CertificateReportingService::Reporter::SuccessCallback(int report_id) {
   RecordUMAEvent(ReportOutcome::SUCCESSFUL);
   CHECK_GT(inflight_reports_.erase(report_id), 0u);
   if (inflight_reports_.empty() && no_in_flight_reports_)
-    no_in_flight_reports_.Run();
+    std::move(no_in_flight_reports_).Run();
 }
 
 CertificateReportingService::CertificateReportingService(

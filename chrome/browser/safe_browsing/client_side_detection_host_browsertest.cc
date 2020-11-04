@@ -32,15 +32,18 @@ class FakeClientSideDetectionService : public ClientSideDetectionService {
       std::unique_ptr<ClientPhishingRequest> verdict,
       bool is_extended_reporting,
       bool is_enhanced_protection,
-      const ClientReportPhishingRequestCallback& callback) override {
+      ClientReportPhishingRequestCallback callback) override {
     saved_request_ = *verdict;
-    saved_callback_ = callback;
+    saved_callback_ = std::move(callback);
     request_callback_.Run();
   }
 
   const ClientPhishingRequest& saved_request() { return saved_request_; }
-  const ClientReportPhishingRequestCallback& saved_callback() {
-    return saved_callback_;
+
+  bool saved_callback_is_null() { return saved_callback_.is_null(); }
+
+  ClientReportPhishingRequestCallback saved_callback() {
+    return std::move(saved_callback_);
   }
 
   void SetModel(const ClientSideModel& model) { model_ = model; }
@@ -123,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostBrowserTest,
 
   run_loop.Run();
 
-  ASSERT_FALSE(fake_csd_service.saved_callback().is_null());
+  ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
 
   EXPECT_EQ(fake_csd_service.saved_request().model_version(), 123);
   ASSERT_EQ(fake_csd_service.saved_request().vision_match_size(), 1);
@@ -133,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostBrowserTest,
 
   // Expect an interstitail to be shown
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
-  fake_csd_service.saved_callback().Run(page_url, true);
+  std::move(fake_csd_service.saved_callback()).Run(page_url, true);
 }
 
 }  // namespace safe_browsing

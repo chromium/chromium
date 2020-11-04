@@ -523,7 +523,7 @@ int MockChromeCleanerProcess::Run() {
   // task to unblock the child process's main thread.
   auto quit_closure = base::BindOnce(
       [](scoped_refptr<base::SequencedTaskRunner> main_runner,
-         base::Closure quit_closure) {
+         base::OnceClosure quit_closure) {
         main_runner->PostTask(FROM_HERE, std::move(quit_closure));
       },
       base::SequencedTaskRunnerHandle::Get(), run_loop.QuitClosure());

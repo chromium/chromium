@@ -70,7 +70,7 @@ class TestSafeBrowsingService : public SafeBrowsingService,
   void SetUseTestUrlLoaderFactory(bool use_test_url_loader_factory);
 
   std::unique_ptr<SafeBrowsingService::StateSubscription> RegisterStateCallback(
-      const base::Callback<void(void)>& callback) override;
+      const base::RepeatingClosure& callback) override;
   network::TestURLLoaderFactory* GetTestUrlLoaderFactory();
 
  protected:

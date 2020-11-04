@@ -36,13 +36,13 @@ using ::testing::StrictMock;
 // Callback for CreateProfile() that assigns |profile| to |*out_profile|
 // if the profile creation is successful.
 void CreateProfileCallback(Profile** out_profile,
-                           const base::Closure& closure,
+                           base::OnceClosure closure,
                            Profile* profile,
                            Profile::CreateStatus status) {
   DCHECK(out_profile);
   if (status == Profile::CREATE_STATUS_INITIALIZED)
     *out_profile = profile;
-  closure.Run();
+  std::move(closure).Run();
 }
 
 // Creates a new profile from the UI thread.

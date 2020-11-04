@@ -460,14 +460,15 @@ void ClientSideDetectionHost::PhishingDetectionDone(
     // We only send phishing verdict to the server if the verdict is phishing.
     if (verdict->is_phishing()) {
       ClientSideDetectionService::ClientReportPhishingRequestCallback callback =
-          base::Bind(&ClientSideDetectionHost::MaybeShowPhishingWarning,
-                     weak_factory_.GetWeakPtr(),
-                     /*is_from_cache=*/false);
+          base::BindOnce(&ClientSideDetectionHost::MaybeShowPhishingWarning,
+                         weak_factory_.GetWeakPtr(),
+                         /*is_from_cache=*/false);
       Profile* profile =
           Profile::FromBrowserContext(web_contents()->GetBrowserContext());
       csd_service_->SendClientReportPhishingRequest(
           std::move(verdict), IsExtendedReportingEnabled(*profile->GetPrefs()),
-          IsEnhancedProtectionEnabled(*profile->GetPrefs()), callback);
+          IsEnhancedProtectionEnabled(*profile->GetPrefs()),
+          std::move(callback));
     }
   }
 }

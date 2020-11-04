@@ -52,7 +52,8 @@ class ClientSideDetectionHost;
 class ClientSideDetectionService : public KeyedService {
  public:
   // void(GURL phishing_url, bool is_phishing).
-  typedef base::Callback<void(GURL, bool)> ClientReportPhishingRequestCallback;
+  typedef base::OnceCallback<void(GURL, bool)>
+      ClientReportPhishingRequestCallback;
 
   explicit ClientSideDetectionService(Profile* profile);
   ~ClientSideDetectionService() override;
@@ -85,7 +86,7 @@ class ClientSideDetectionService : public KeyedService {
       std::unique_ptr<ClientPhishingRequest> verdict,
       bool is_extended_reporting,
       bool is_enhanced_protection,
-      const ClientReportPhishingRequestCallback& callback);
+      ClientReportPhishingRequestCallback callback);
 
   // Returns true if the given IP address string falls within a private
   // (unroutable) network block.  Pages which are hosted on these IP addresses
@@ -170,7 +171,7 @@ class ClientSideDetectionService : public KeyedService {
       std::unique_ptr<ClientPhishingRequest> request,
       bool is_extended_reporting,
       bool is_enhanced_protection,
-      const ClientReportPhishingRequestCallback& callback);
+      ClientReportPhishingRequestCallback callback);
 
   // Called by OnURLFetchComplete to handle the server response from
   // sending the client-side phishing request.
