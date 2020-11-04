@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/rand_util.h"
 #include "base/single_thread_task_runner.h"
@@ -18,8 +19,13 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "components/omnibox/browser/intranet_redirector_state.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -73,7 +79,7 @@ void IntranetRedirectDetector::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kLastKnownIntranetRedirectOrigin,
                                std::string());
   registry->RegisterBooleanPref(prefs::kDNSInterceptionChecksEnabled, true);
-  registry->RegisterIntegerPref(prefs::kIntranetRedirectBehavior, 0);
+  registry->RegisterIntegerPref(omnibox::kIntranetRedirectBehavior, 0);
 }
 
 void IntranetRedirectDetector::Restart() {
@@ -260,6 +266,24 @@ void IntranetRedirectDetector::OnDnsConfigClientConnectionError() {
 }
 
 bool IntranetRedirectDetector::IsEnabledByPolicy() {
-  return g_browser_process->local_state()->GetBoolean(
-      prefs::kDNSInterceptionChecksEnabled);
+  // The InterceptionChecksBehavior pref and the older
+  // DNSInterceptionChecksEnabled policy should each be able to disable
+  // interception checks. Therefore, we enable the redirect detector iff allowed
+  // by both policies.
+
+  // Check IntranetRedirectorBehavior pref and experiment.
+  auto behavior =
+      omnibox::GetInterceptionChecksBehavior(g_browser_process->local_state());
+  if (behavior == omnibox::IntranetRedirectorBehavior::DISABLE_FEATURE ||
+      behavior == omnibox::IntranetRedirectorBehavior::
+                      DISABLE_INTERCEPTION_CHECKS_ENABLE_INFOBARS) {
+    return false;
+  }
+
+  // Consult previous DNSInterceptionChecksEnabled policy.
+  if (!g_browser_process->local_state()->GetBoolean(
+          prefs::kDNSInterceptionChecksEnabled))
+    return false;
+
+  return true;
 }

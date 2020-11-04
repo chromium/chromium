@@ -24,6 +24,7 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/base_search_provider.h"
+#include "components/omnibox/browser/intranet_redirector_state.h"
 #include "components/omnibox/browser/match_compare.h"
 #include "components/omnibox/browser/omnibox_pedal.h"
 #include "components/omnibox/browser/omnibox_pedal_provider.h"
@@ -714,7 +715,19 @@ void AutocompleteResult::Validate() const {
 // static
 GURL AutocompleteResult::ComputeAlternateNavUrl(
     const AutocompleteInput& input,
-    const AutocompleteMatch& match) {
+    const AutocompleteMatch& match,
+    AutocompleteProviderClient* provider_client) {
+  auto redirector_policy =
+      omnibox::GetInterceptionChecksBehavior(provider_client->GetLocalState());
+
+  bool policy_allows_alternate_navs =
+      (redirector_policy == omnibox::IntranetRedirectorBehavior::
+                                DISABLE_INTERCEPTION_CHECKS_ENABLE_INFOBARS ||
+       redirector_policy == omnibox::IntranetRedirectorBehavior::
+                                ENABLE_INTERCEPTION_CHECKS_AND_INFOBARS);
+  if (!policy_allows_alternate_navs)
+    return GURL();
+
   return ((input.type() == metrics::OmniboxInputType::UNKNOWN) &&
           (AutocompleteMatch::IsSearchType(match.type)) &&
           !ui::PageTransitionCoreTypeIs(match.transition,

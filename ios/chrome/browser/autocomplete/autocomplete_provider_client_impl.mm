@@ -60,6 +60,10 @@ PrefService* AutocompleteProviderClientImpl::GetPrefs() {
   return browser_state_->GetPrefs();
 }
 
+PrefService* AutocompleteProviderClientImpl::GetLocalState() {
+  return GetApplicationContext()->GetLocalState();
+}
+
 const AutocompleteSchemeClassifier&
 AutocompleteProviderClientImpl::GetSchemeClassifier() const {
   return scheme_classifier_;

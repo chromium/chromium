@@ -329,6 +329,16 @@ const base::Feature kOmniboxSuggestionsWrapAround{
 const base::Feature kWebUIOmniboxPopup{"WebUIOmniboxPopup",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables rollout of changing the default behavior for DNS interception checks
+// and did-you-mean infobar.
+// Users who are in the enabled group for this feature will have interception
+// checks and did-you-mean turned off. Enterprise Policy takes precedence over
+// this setting, and policy is checked before the feature group is checked and
+// marked.
+const base::Feature kIntranetRedirectBehaviorPolicyRollout{
+    "OmniboxDNSInterceptionChecksPolicyRollout",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, use Assistant for omnibox voice query recognition instead of
 // Android's built-in voice recognition service. Only works on Android.
 const base::Feature kOmniboxAssistantVoiceSearch{

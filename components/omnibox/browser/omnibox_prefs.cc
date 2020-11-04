@@ -25,6 +25,11 @@ const char kToggleSuggestionGroupIdOnHistogram[] =
 // Also gated by a feature and server-side Admin Panel controls.
 const char kDocumentSuggestEnabled[] = "documentsuggest.enabled";
 
+// Enum specifying the active behavior for the intranet redirect detector.
+// The browser pref kDNSInterceptionChecksEnabled also impacts the redirector.
+// Values are defined in omnibox::IntranetRedirectorBehavior.
+const char kIntranetRedirectBehavior[] = "browser.intranet_redirect_behavior";
+
 // A dictionary of visibility preferences for suggestion groups. The key is the
 // suggestion group ID serialized as a string, and the value is
 // SuggestionGroupVisibility serialized as an integer.

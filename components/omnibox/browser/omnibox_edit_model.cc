@@ -249,8 +249,10 @@ AutocompleteMatch OmniboxEditModel::CurrentMatch(
   if (!match.destination_url.is_valid()) {
     GetInfoForCurrentText(&match, alternate_nav_url);
   } else if (alternate_nav_url) {
+    std::unique_ptr<AutocompleteProviderClient> provider_client =
+        client_->CreateAutocompleteProviderClient();
     *alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
-        input_, match);
+        input_, match, provider_client.get());
   }
   return match;
 }
@@ -1628,8 +1630,10 @@ void OmniboxEditModel::GetInfoForCurrentText(AutocompleteMatch* match,
     }
     if (found_match_for_text && alternate_nav_url &&
         (!popup_model() || popup_model()->SelectionOnInitialLine())) {
-      *alternate_nav_url =
-          AutocompleteResult::ComputeAlternateNavUrl(input_, *match);
+      std::unique_ptr<AutocompleteProviderClient> provider_client =
+          client_->CreateAutocompleteProviderClient();
+      *alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
+          input_, *match, provider_client.get());
     }
   }
 

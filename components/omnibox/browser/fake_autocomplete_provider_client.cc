@@ -16,6 +16,7 @@
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "components/omnibox/browser/in_memory_url_index_test_util.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/query_tiles/test/fake_tile_service.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -34,6 +35,9 @@ FakeAutocompleteProviderClient::FakeAutocompleteProviderClient(
       new InMemoryURLIndex(bookmark_model_.get(), history_service_.get(),
                            nullptr, history_dir_.GetPath(), SchemeSet()));
   in_memory_url_index_->Init();
+
+  pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+  local_state_ = std::make_unique<TestingPrefServiceSimple>();
 
   shortcuts_backend_ = base::MakeRefCounted<ShortcutsBackend>(
       GetTemplateURLService(), std::make_unique<SearchTermsData>(),
@@ -58,6 +62,14 @@ FakeAutocompleteProviderClient::~FakeAutocompleteProviderClient() {
   history_service->SetOnBackendDestroyTask(run_loop.QuitClosure());
   history_service->Shutdown();
   run_loop.Run();
+}
+
+PrefService* FakeAutocompleteProviderClient::GetPrefs() {
+  return pref_service_.get();
+}
+
+PrefService* FakeAutocompleteProviderClient::GetLocalState() {
+  return local_state_.get();
 }
 
 const AutocompleteSchemeClassifier&

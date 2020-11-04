@@ -172,8 +172,10 @@ class AutocompleteResult {
 
   // Returns a URL to offer the user as an alternative navigation when they
   // open |match| after typing in |input|.
-  static GURL ComputeAlternateNavUrl(const AutocompleteInput& input,
-                                     const AutocompleteMatch& match);
+  static GURL ComputeAlternateNavUrl(
+      const AutocompleteInput& input,
+      const AutocompleteMatch& match,
+      AutocompleteProviderClient* provider_client);
 
   // Prepend missing tail suggestion prefixes in results, if present.
   void InlineTailPrefixes();

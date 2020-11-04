@@ -174,6 +174,11 @@ class AutocompleteController : public AutocompleteProviderListener,
   // Sets the provider timeout duration for future calls to |Start()|.
   void SetStartStopTimerDurationForTesting(base::TimeDelta duration);
 
+  // Returns the AutocompleteProviderClient owned by the controller.
+  AutocompleteProviderClient* autocomplete_provider_client() const {
+    return provider_client_.get();
+  }
+
  private:
   friend class AutocompleteProviderTest;
   friend class OmniboxSuggestionButtonRowBrowserTest;

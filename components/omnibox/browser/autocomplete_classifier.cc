@@ -99,7 +99,7 @@ void AutocompleteClassifier::Classify(
 
   *match = *default_match;
   if (alternate_nav_url) {
-    *alternate_nav_url =
-        AutocompleteResult::ComputeAlternateNavUrl(input, *match);
+    *alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
+        input, *match, controller_->autocomplete_provider_client());
   }
 }

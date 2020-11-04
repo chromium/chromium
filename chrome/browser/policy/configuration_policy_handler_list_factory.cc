@@ -598,7 +598,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kDNSInterceptionChecksEnabled,
     base::Value::Type::BOOLEAN },
   { key::kIntranetRedirectBehavior,
-    prefs::kIntranetRedirectBehavior,
+    omnibox::kIntranetRedirectBehavior,
     base::Value::Type::INTEGER },
   { key::kAdvancedProtectionAllowed,
     prefs::kAdvancedProtectionAllowed,

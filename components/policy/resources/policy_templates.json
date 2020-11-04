@@ -1615,7 +1615,7 @@
           'caption': '''Allow DNS interception checks and did-you-mean "http://intranetsite/" infobars.''',
         }
       ],
-      'future_on': ['chrome.*', 'chrome_os'],
+      'supported_on': ['chrome.*:88-', 'chrome_os:88-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,

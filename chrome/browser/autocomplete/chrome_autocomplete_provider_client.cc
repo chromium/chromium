@@ -200,6 +200,10 @@ PrefService* ChromeAutocompleteProviderClient::GetPrefs() {
   return profile_->GetPrefs();
 }
 
+PrefService* ChromeAutocompleteProviderClient::GetLocalState() {
+  return g_browser_process->local_state();
+}
+
 const AutocompleteSchemeClassifier&
 ChromeAutocompleteProviderClient::GetSchemeClassifier() const {
   return scheme_classifier_;

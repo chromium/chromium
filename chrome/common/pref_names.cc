@@ -1764,18 +1764,10 @@ const char kLastKnownIntranetRedirectOrigin[] = "browser.last_redirect_origin";
 
 // Boolean specifying that the intranet redirect detector should be enabled.
 // Defaults to true.
-// Will be replaced by DNSInterceptionChecksBehavior, below; see notes for that
-// function.
+// See also kIntranetRedirectBehavior in the omnibox component's prefs, which
+// also impacts the redirect detector.
 const char kDNSInterceptionChecksEnabled[] =
     "browser.dns_interception_checks_enabled";
-
-// Enum specifying the active behavior for the intranet redirect detector.
-// This will replace kDNSInterceptionChecksEnabled over time, though
-// currently both policies are in use. When the Enabled policy is set to false,
-// it effectively short-circuits the behavior, and it cannot be enabled by this
-// Behavior policy. Alternatively the policies can be considered to AND
-// together. Values are defined in IntranetRedirectDetector::RedirectorBehavior.
-const char kIntranetRedirectBehavior[] = "browser.intranet_redirect_behavior";
 
 // An enum value of how the browser was shut down (see browser_shutdown.h).
 const char kShutdownType[] = "shutdown.type";

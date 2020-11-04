@@ -26,9 +26,13 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
+#include "components/omnibox/browser/intranet_redirector_state.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/variations_associated_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -313,13 +317,18 @@ TEST_F(AutocompleteResultTest, AlternateNavUrl) {
                           metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
 
+  FakeAutocompleteProviderClient client;
+  reinterpret_cast<TestingPrefServiceSimple*>(client.GetLocalState())
+      ->registry()
+      ->RegisterIntegerPref(omnibox::kIntranetRedirectBehavior, 0);
+
   // Against search matches, we should generate an alternate nav URL.
   {
     AutocompleteMatch match;
     match.type = AutocompleteMatchType::SEARCH_SUGGEST;
     match.destination_url = GURL("http://www.foo.com/s?q=foo");
     GURL alternate_nav_url =
-        AutocompleteResult::ComputeAlternateNavUrl(input, match);
+        AutocompleteResult::ComputeAlternateNavUrl(input, match, &client);
     EXPECT_EQ("http://a/", alternate_nav_url.spec());
   }
 
@@ -329,7 +338,47 @@ TEST_F(AutocompleteResultTest, AlternateNavUrl) {
     match.type = AutocompleteMatchType::SEARCH_SUGGEST;
     match.destination_url = GURL("http://a/");
     GURL alternate_nav_url =
-        AutocompleteResult::ComputeAlternateNavUrl(input, match);
+        AutocompleteResult::ComputeAlternateNavUrl(input, match, &client);
+    EXPECT_FALSE(alternate_nav_url.is_valid());
+  }
+}
+
+TEST_F(AutocompleteResultTest, AlternateNavUrl_IntranetRedirectPolicy) {
+  AutocompleteInput input(base::ASCIIToUTF16("a"),
+                          metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+
+  FakeAutocompleteProviderClient client;
+  reinterpret_cast<TestingPrefServiceSimple*>(client.GetLocalState())
+      ->registry()
+      ->RegisterIntegerPref(omnibox::kIntranetRedirectBehavior, 0);
+
+  // Allow alternate nav URLs when policy allows.
+  {
+    client.GetLocalState()->SetInteger(
+        omnibox::kIntranetRedirectBehavior,
+        static_cast<int>(omnibox::IntranetRedirectorBehavior::
+                             ENABLE_INTERCEPTION_CHECKS_AND_INFOBARS));
+
+    AutocompleteMatch match;
+    match.type = AutocompleteMatchType::SEARCH_SUGGEST;
+    match.destination_url = GURL("http://www.foo.com/s?q=foo");
+    GURL alternate_nav_url =
+        AutocompleteResult::ComputeAlternateNavUrl(input, match, &client);
+    EXPECT_EQ("http://a/", alternate_nav_url.spec());
+  }
+
+  // Disallow alternate nav URLs when policy disallows.
+  {
+    client.GetLocalState()->SetInteger(
+        omnibox::kIntranetRedirectBehavior,
+        static_cast<int>(omnibox::IntranetRedirectorBehavior::DISABLE_FEATURE));
+
+    AutocompleteMatch match;
+    match.type = AutocompleteMatchType::SEARCH_SUGGEST;
+    match.destination_url = GURL("http://www.foo.com/s?q=foo");
+    GURL alternate_nav_url =
+        AutocompleteResult::ComputeAlternateNavUrl(input, match, &client);
     EXPECT_FALSE(alternate_nav_url.is_valid());
   }
 }
