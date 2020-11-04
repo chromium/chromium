@@ -156,7 +156,7 @@ TEST(JsonSchemaCompilerErrorTest, WrongTypeValueType) {
         Dictionary("otherType", std::make_unique<Value>(1.1));
     errors::ObjectType out;
     base::string16 error;
-    EXPECT_TRUE(errors::ObjectType::Populate(*value, &out, &error));
+    EXPECT_FALSE(errors::ObjectType::Populate(*value, &out, &error));
     EXPECT_TRUE(EqualsUtf16("'otherType': expected dictionary, got double",
         error));
     EXPECT_EQ(NULL, out.other_type.get());
@@ -226,9 +226,7 @@ TEST(JsonSchemaCompilerErrorTest, BadEnumValue) {
   }
 }
 
-// Warn but don't fail out errors
-
-TEST(JsonSchemaCompilerErrorTest, WarnOnOptionalFailure) {
+TEST(JsonSchemaCompilerErrorTest, ErrorOnOptionalFailure) {
   {
     std::unique_ptr<base::DictionaryValue> value =
         Dictionary("string", std::make_unique<Value>("bling"));
@@ -241,7 +239,7 @@ TEST(JsonSchemaCompilerErrorTest, WarnOnOptionalFailure) {
 
     errors::OptionalTestType out;
     base::string16 error;
-    EXPECT_TRUE(errors::OptionalTestType::Populate(*value, &out, &error));
+    EXPECT_FALSE(errors::OptionalTestType::Populate(*value, &out, &error));
     EXPECT_TRUE(EqualsUtf16("'string': expected string, got integer",
         error));
     EXPECT_EQ(NULL, out.string.get());
@@ -262,7 +260,7 @@ TEST(JsonSchemaCompilerErrorTest, OptionalBinaryTypeFailure) {
 
     errors::OptionalBinaryData out;
     base::string16 error;
-    EXPECT_TRUE(errors::OptionalBinaryData::Populate(*value, &out, &error));
+    EXPECT_FALSE(errors::OptionalBinaryData::Populate(*value, &out, &error));
     EXPECT_TRUE(EqualsUtf16("'data': expected binary, got integer",
         error));
     EXPECT_EQ(NULL, out.data.get());
@@ -280,7 +278,7 @@ TEST(JsonSchemaCompilerErrorTest, OptionalArrayTypeFailure) {
         Dictionary("TheArray", std::make_unique<Value>(5));
     errors::ArrayObject out;
     base::string16 error;
-    EXPECT_TRUE(errors::ArrayObject::Populate(*value, &out, &error));
+    EXPECT_FALSE(errors::ArrayObject::Populate(*value, &out, &error));
     EXPECT_TRUE(EqualsUtf16("'TheArray': expected list, got integer",
         error));
     EXPECT_EQ(NULL, out.the_array.get());
@@ -300,8 +298,8 @@ TEST(JsonSchemaCompilerErrorTest, OptionalUnableToPopulateArray) {
         List(std::make_unique<Value>(5), std::make_unique<Value>(false));
     errors::OptionalChoiceType::Integers out;
     base::string16 error;
-    EXPECT_TRUE(errors::OptionalChoiceType::Integers::Populate(*params_value,
-                                                               &out, &error));
+    EXPECT_FALSE(errors::OptionalChoiceType::Integers::Populate(*params_value,
+                                                                &out, &error));
     EXPECT_TRUE(EqualsUtf16(
         "expected integer, got boolean; unable to populate array 'integers'",
         error));
@@ -315,12 +313,12 @@ TEST(JsonSchemaCompilerErrorTest, MultiplePopulationErrors) {
         Dictionary("TheArray", std::make_unique<Value>(5));
     errors::ArrayObject out;
     base::string16 error;
-    EXPECT_TRUE(errors::ArrayObject::Populate(*value, &out, &error));
+    EXPECT_FALSE(errors::ArrayObject::Populate(*value, &out, &error));
     EXPECT_TRUE(EqualsUtf16("'TheArray': expected list, got integer",
         error));
     EXPECT_EQ(NULL, out.the_array.get());
 
-    EXPECT_TRUE(errors::ArrayObject::Populate(*value, &out, &error));
+    EXPECT_FALSE(errors::ArrayObject::Populate(*value, &out, &error));
     EXPECT_TRUE(EqualsUtf16("'TheArray': expected list, got integer; "
         "'TheArray': expected list, got integer",
         error));
@@ -335,10 +333,10 @@ TEST(JsonSchemaCompilerErrorTest, TooManyKeys) {
     EXPECT_TRUE(EqualsUtf16("", GetPopulateError<errors::TestType>(*value)));
   }
   {
+    // We simply ignore extra keys.
     std::unique_ptr<base::DictionaryValue> value =
         Dictionary("string", std::make_unique<Value>("yes"), "ohno",
                    std::make_unique<Value>("many values"));
-    EXPECT_TRUE(EqualsUtf16("found unexpected key 'ohno'",
-                            GetPopulateError<errors::TestType>(*value)));
+    EXPECT_TRUE(EqualsUtf16("", GetPopulateError<errors::TestType>(*value)));
   }
 }
