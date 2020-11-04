@@ -50,6 +50,7 @@
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -415,6 +416,10 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     status->AddExclusionReason(
         CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY);
   }
+
+  // Collect metrics on whether usage of SameParty attribute is correct.
+  if (parsed_cookie.IsSameParty())
+    base::UmaHistogramBoolean("Cookie.IsSamePartyValid", is_same_party_valid);
 
   // TODO(chlily): Log metrics.
   if (!status->IsInclude())
