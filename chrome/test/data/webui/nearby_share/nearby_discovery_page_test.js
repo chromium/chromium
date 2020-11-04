@@ -10,6 +10,7 @@ import {setDiscoveryManagerForTesting} from 'chrome://nearby/discovery_manager.j
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {isVisible} from '../test_util.m.js';
 
 import {FakeConfirmationManagerRemote, FakeDiscoveryManagerRemote} from './fake_mojo_interfaces.js';
 
@@ -53,8 +54,15 @@ suite('DiscoveryPageTest', function() {
   function getShareTargetElements() {
     // Make sure the iron-list had time to render its elements.
     flush();
-    return [...discoveryPageElement.$$('#deviceList')
-                .querySelectorAll('nearby-device:not([hidden])')];
+    const deviceList = discoveryPageElement.$$('#deviceList');
+
+    // If the device list isn't found, it's because the dom-if wrapping it
+    // isn't showing because there are no elements.
+    if (!deviceList) {
+      return [];
+    }
+
+    return [...deviceList.querySelectorAll('nearby-device:not([hidden])')];
   }
 
   /**
@@ -182,6 +190,12 @@ suite('DiscoveryPageTest', function() {
     const listener = await startDiscovery();
     listener.onShareTargetDiscovered(createShareTarget('Device Name'));
     await listener.$.flushForTesting();
+    flush();
+    const deviceList = /** @type{?HTMLElement} */
+        (discoveryPageElement.$$('#deviceList'));
+    const placeholder = discoveryPageElement.$$('#placeholder');
+    assertTrue(!!deviceList && isVisible(deviceList));
+    assertTrue(placeholder.hidden);
     assertEquals(1, getShareTargetElements().length);
 
     const onConnectionClosedPromise = new Promise(
@@ -189,7 +203,8 @@ suite('DiscoveryPageTest', function() {
     discoveryPageElement.fire('view-exit-finish');
     await onConnectionClosedPromise;
 
-    assertEquals(0, getShareTargetElements().length);
+    assertFalse(!!deviceList && isVisible(deviceList));
+    assertFalse(placeholder.hidden);
   });
 
   test('shows newly discovered device', async function() {

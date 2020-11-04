@@ -271,6 +271,11 @@ Polymer({
 
   /** @private */
   onSelectedShareTargetChanged_() {
+    // The device list gets removed from the DOM if there are no share targets.
+    if (!this.$.deviceList) {
+      return;
+    }
+
     // <iron-list> causes |this.$.deviceList.selectedItem| to be null if tapped
     // a second time. Manually reselect the last item to preserve selection.
     if (!this.$.deviceList.selectedItem && this.lastSelectedShareTarget_) {
@@ -295,6 +300,14 @@ Polymer({
    */
   isShareTargetSelectedStr_(shareTarget) {
     return this.isShareTargetSelected_(shareTarget).toString();
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isShareTargetsEmpty_() {
+    return this.shareTargets_.length === 0;
   },
 
   /**

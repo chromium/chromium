@@ -65,6 +65,9 @@
   <message name="IDS_NEARBY_DISCOVERY_PAGE_TITLE" desc="Title of the Nearby Share device discovery page. This is where users select a device to share files with. Nearby Share is the feature name.">
     Nearby Share
   </message>
+  <message name="IDS_NEARBY_DISCOVERY_PAGE_PLACEHOLDER" desc="Text shown on the Nearby Share device discovery page. This is where users select a device to share files with. This placeholder text is shown when the list of devices to share with is empty, and is meant to inform the user that we are currently looking for a device to share with.">
+    Scanning for nearby devices...
+  </message>
 
   <!-- Onboarding page -->
   <message name="IDS_NEARBY_ONBOARDING_PAGE_DEVICE_NAME" desc="Label of the text input field to set the name of a users device which is shown to other devices for the Nearby Share feature.">

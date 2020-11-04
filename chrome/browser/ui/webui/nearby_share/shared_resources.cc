@@ -126,6 +126,8 @@ void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
       {"nearbyShareDeviceNameInvalidCharactersError",
        IDS_NEARBY_DEVICE_NAME_INVALID_CHARACTERS_ERROR},
       {"nearbyShareDiscoveryPageInfo", IDS_NEARBY_DISCOVERY_PAGE_INFO},
+      {"nearbyShareDiscoveryPagePlaceholder",
+       IDS_NEARBY_DISCOVERY_PAGE_PLACEHOLDER},
       {"nearbyShareDiscoveryPageSubtitle", IDS_NEARBY_DISCOVERY_PAGE_SUBTITLE},
       {"nearbyShareDiscoveryPageTitle", IDS_NEARBY_DISCOVERY_PAGE_TITLE},
       {"nearbyShareFeatureName", IDS_NEARBY_SHARE_FEATURE_NAME},

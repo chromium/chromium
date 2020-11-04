@@ -17,6 +17,7 @@
   }
 
   #deviceList {
+    display: block;
     overflow: auto;
     padding-inline-end:  var(--nearby-page-space-large-inline);
     padding-inline-start:  var(--nearby-page-space-large-inline);
@@ -57,6 +58,7 @@
   }
 
   #process-row {
+    align-items: center;
     display: flex;
     flex-grow: 1;
     justify-content: space-between;
@@ -68,6 +70,13 @@
     bottom: 0;
     height: 100px;
     position: absolute;
+  }
+
+  #placeholder {
+    color: rgb(95, 99, 104);
+    font-size: 13px;
+    line-height: 20px;
+    margin-inline-end: var(--nearby-page-space-large-inline);
   }
 </style>
 
@@ -82,22 +91,28 @@
     <div id="process-row">
       <nearby-preview title="[[sendPreview.description]]"
           share-type="[[sendPreview.shareType]]"></nearby-preview>
-      <iron-list items="[[shareTargets_]]" id="deviceList"
-          selected-item="{{selectedShareTarget}}"
-          on-selected-item-changed="onSelectedShareTargetChanged_"
-          preserve-focus selection-enabled
-          role="radiogroup" aria-live="polite"
-          aria-label="$i18n{nearbyShareDiscoveryPageSubtitle}">
-        <template>
-          <nearby-device tabindex$="[[tabIndex]]" share-target="[[item]]"
-              is-selected="[[isShareTargetSelected_(
-                               item, selectedShareTarget)]]"
-              role="radio"
-              aria-checked$="[[isShareTargetSelectedStr_(
-                               item, selectedShareTarget)]]">
-          </nearby-device>
-        </template>
-      </iron-list>
+      <div id="placeholder"
+          hidden="[[!isShareTargetsEmpty_(shareTargets_.*)]]">
+        $i18n{nearbyShareDiscoveryPagePlaceholder}
+      </div>
+      <template is="dom-if" if="[[!isShareTargetsEmpty_(shareTargets_.*)]]">
+        <iron-list items="[[shareTargets_]]" id="deviceList"
+            selected-item="{{selectedShareTarget}}"
+            on-selected-item-changed="onSelectedShareTargetChanged_"
+            preserve-focus selection-enabled
+            role="radiogroup" aria-live="polite"
+            aria-label="$i18n{nearbyShareDiscoveryPageSubtitle}">
+          <template>
+            <nearby-device tabindex$="[[tabIndex]]" share-target="[[item]]"
+                is-selected="[[isShareTargetSelected_(
+                                 item, selectedShareTarget)]]"
+                role="radio"
+                aria-checked$="[[isShareTargetSelectedStr_(
+                                 item, selectedShareTarget)]]">
+            </nearby-device>
+          </template>
+        </iron-list>
+      </template>
     </div>
     <div id="help">
       <iron-icon id="infoIcon" icon="nearby20:info"></iron-icon>
