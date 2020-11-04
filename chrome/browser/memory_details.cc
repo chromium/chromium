@@ -296,7 +296,7 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
 
       // If this is a RVH for a subframe; skip it to avoid double-counting the
       // WebContents.
-      if (rvh != contents->GetRenderViewHost())
+      if (rvh != contents->GetMainFrame()->GetRenderViewHost())
         continue;
 
       // The rest of this block will happen only once per WebContents.
