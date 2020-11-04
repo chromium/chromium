@@ -174,11 +174,11 @@ class CORE_EXPORT CSSParserImpl {
 
   void ConsumeDeclarationList(CSSParserTokenStream&, StyleRule::RuleType);
   void ConsumeDeclaration(CSSParserTokenStream&, StyleRule::RuleType);
-  void ConsumeDeclarationValue(CSSParserTokenRange,
+  void ConsumeDeclarationValue(const CSSTokenizedValue&,
                                CSSPropertyID,
                                bool important,
                                StyleRule::RuleType);
-  void ConsumeVariableValue(CSSParserTokenRange,
+  void ConsumeVariableValue(const CSSTokenizedValue&,
                             const AtomicString& property_name,
                             bool important,
                             bool is_animation_tainted);

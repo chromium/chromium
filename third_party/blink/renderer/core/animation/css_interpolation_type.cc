@@ -325,8 +325,9 @@ void CSSInterpolationType::ApplyCustomPropertyValue(
   bool is_animation_tainted = true;
   bool needs_variable_resolution = false;
   scoped_refptr<CSSVariableData> variable_data = CSSVariableData::Create(
-      CSSParserTokenRange(tokens), is_animation_tainted,
-      needs_variable_resolution, KURL(), WTF::TextEncoding());
+      {CSSParserTokenRange(tokens), StringView(string_value)},
+      is_animation_tainted, needs_variable_resolution, KURL(),
+      WTF::TextEncoding());
   const PropertyHandle property = GetProperty();
 
   // TODO(andruud): Avoid making the CSSCustomPropertyDeclaration by allowing

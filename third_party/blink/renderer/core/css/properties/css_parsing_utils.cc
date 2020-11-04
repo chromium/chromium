@@ -420,9 +420,10 @@ bool AddCSSPaintArgument(
     const CSSParserContext& context) {
   CSSParserTokenRange token_range(tokens);
   if (!token_range.AtEnd()) {
+    // TODO(crbug.com/661854): Pass through the original string when we have it.
     scoped_refptr<CSSVariableData> unparsed_css_variable_data =
-        CSSVariableData::Create(token_range, false, false, context.BaseURL(),
-                                context.Charset());
+        CSSVariableData::Create({token_range, StringView()}, false, false,
+                                context.BaseURL(), context.Charset());
     if (unparsed_css_variable_data.get()) {
       variable_data->push_back(std::move(unparsed_css_variable_data));
       return true;

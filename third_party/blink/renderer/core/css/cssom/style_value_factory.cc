@@ -287,7 +287,7 @@ CSSStyleValueVector StyleValueFactory::FromString(
   if ((property_id == CSSPropertyID::kVariable && !tokens.IsEmpty()) ||
       CSSVariableParser::ContainsValidVariableReferences(range)) {
     const auto variable_data = CSSVariableData::Create(
-        range, false /* is_animation_tainted */,
+        {range, StringView(css_text)}, false /* is_animation_tainted */,
         false /* needs variable resolution */, parser_context->BaseURL(),
         parser_context->Charset());
     CSSStyleValueVector values;

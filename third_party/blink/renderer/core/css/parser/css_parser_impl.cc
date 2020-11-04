@@ -83,9 +83,10 @@ MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseValue(
   else if (declaration->CssParserMode() == kCSSFontFaceRuleMode)
     rule_type = StyleRule::kFontFace;
   CSSTokenizer tokenizer(string);
-  // TODO(crbug.com/661854): Use streams instead of ranges
-  parser.ConsumeDeclarationValue(CSSParserTokenRange(tokenizer.TokenizeToEOF()),
-                                 unresolved_property, important, rule_type);
+  CSSParserTokenStream stream(tokenizer);
+  CSSTokenizedValue tokenized_value = ConsumeValue(stream);
+  parser.ConsumeDeclarationValue(tokenized_value, unresolved_property,
+                                 important, rule_type);
   bool did_parse = false;
   bool did_change = false;
   if (!parser.parsed_properties_.IsEmpty()) {
@@ -104,10 +105,9 @@ MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseVariableValue(
     bool is_animation_tainted) {
   STACK_UNINITIALIZED CSSParserImpl parser(context);
   CSSTokenizer tokenizer(value);
-  // TODO(crbug.com/661854): Use streams instead of ranges
-  const auto tokens = tokenizer.TokenizeToEOF();
-  const CSSParserTokenRange range(tokens);
-  parser.ConsumeVariableValue(range, property_name, important,
+  CSSParserTokenStream stream(tokenizer);
+  CSSTokenizedValue tokenized_value = ConsumeValue(stream);
+  parser.ConsumeVariableValue(tokenized_value, property_name, important,
                               is_animation_tainted);
   bool did_parse = false;
   bool did_change = false;
@@ -1108,9 +1108,8 @@ void CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
     if (important)  // Invalid
       return;
     atrule_id = lhs.ParseAsAtRuleDescriptorID();
-    AtRuleDescriptorParser::ParseAtRule(rule_type, atrule_id,
-                                        tokenized_value.range, *context_,
-                                        parsed_properties_);
+    AtRuleDescriptorParser::ParseAtRule(rule_type, atrule_id, tokenized_value,
+                                        *context_, parsed_properties_);
   } else {
     unresolved_property = lhs.ParseAsUnresolvedCSSPropertyID(
         context_->GetExecutionContext(), context_->Mode());
@@ -1125,14 +1124,14 @@ void CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
       return;
     AtomicString variable_name = lhs.Value().ToAtomicString();
     bool is_animation_tainted = rule_type == StyleRule::kKeyframe;
-    ConsumeVariableValue(tokenized_value.range, variable_name, important,
+    ConsumeVariableValue(tokenized_value, variable_name, important,
                          is_animation_tainted);
   } else if (unresolved_property != CSSPropertyID::kInvalid) {
     if (style_sheet_ && style_sheet_->SingleOwnerDocument())
       Deprecation::WarnOnDeprecatedProperties(
           style_sheet_->SingleOwnerDocument()->GetFrame(), unresolved_property);
-    ConsumeDeclarationValue(tokenized_value.range, unresolved_property,
-                            important, rule_type);
+    ConsumeDeclarationValue(tokenized_value, unresolved_property, important,
+                            rule_type);
   }
 
   if (observer_ &&
@@ -1145,24 +1144,28 @@ void CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
   }
 }
 
-void CSSParserImpl::ConsumeVariableValue(CSSParserTokenRange range,
-                                         const AtomicString& variable_name,
-                                         bool important,
-                                         bool is_animation_tainted) {
+void CSSParserImpl::ConsumeVariableValue(
+    const CSSTokenizedValue& tokenized_value,
+    const AtomicString& variable_name,
+    bool important,
+    bool is_animation_tainted) {
   if (CSSCustomPropertyDeclaration* value =
           CSSVariableParser::ParseDeclarationValue(
-              variable_name, range, is_animation_tainted, *context_)) {
+              variable_name, tokenized_value, is_animation_tainted,
+              *context_)) {
     parsed_properties_.push_back(
         CSSPropertyValue(CSSPropertyName(variable_name), *value, important));
     context_->Count(context_->Mode(), CSSPropertyID::kVariable);
   }
 }
 
-void CSSParserImpl::ConsumeDeclarationValue(CSSParserTokenRange range,
-                                            CSSPropertyID unresolved_property,
-                                            bool important,
-                                            StyleRule::RuleType rule_type) {
-  CSSPropertyParser::ParseValue(unresolved_property, important, range, context_,
+void CSSParserImpl::ConsumeDeclarationValue(
+    const CSSTokenizedValue& tokenized_value,
+    CSSPropertyID unresolved_property,
+    bool important,
+    StyleRule::RuleType rule_type) {
+  CSSPropertyParser::ParseValue(unresolved_property, important,
+                                tokenized_value.range, context_,
                                 parsed_properties_, rule_type);
 }
 

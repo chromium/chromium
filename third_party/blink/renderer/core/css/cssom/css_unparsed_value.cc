@@ -127,9 +127,10 @@ const CSSValue* CSSUnparsedValue::ToCSSValue() const {
   CSSTokenizer tokenizer(ToString());
   const auto tokens = tokenizer.TokenizeToEOF();
   return MakeGarbageCollected<CSSVariableReferenceValue>(
-      CSSVariableData::Create(
-          CSSParserTokenRange(tokens), false /* is_animation_tainted */,
-          false /* needs_variable_resolution */, KURL(), WTF::TextEncoding()));
+      CSSVariableData::Create({CSSParserTokenRange(tokens), StringView()},
+                              false /* is_animation_tainted */,
+                              false /* needs_variable_resolution */, KURL(),
+                              WTF::TextEncoding()));
 }
 
 String CSSUnparsedValue::ToString() const {

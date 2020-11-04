@@ -147,22 +147,24 @@ bool CSSVariableParser::ContainsValidVariableReferences(
 
 CSSCustomPropertyDeclaration* CSSVariableParser::ParseDeclarationValue(
     const AtomicString& variable_name,
-    CSSParserTokenRange range,
+    const CSSTokenizedValue& tokenized_value,
     bool is_animation_tainted,
     const CSSParserContext& context) {
-  if (range.AtEnd())
+  if (tokenized_value.range.AtEnd())
     return nullptr;
 
   bool has_references;
-  CSSValueID type = ClassifyVariableRange(range, has_references);
+  CSSValueID type =
+      ClassifyVariableRange(tokenized_value.range, has_references);
 
   if (!IsValidCSSValueID(type))
     return nullptr;
   if (type == CSSValueID::kInternalVariableValue) {
     return MakeGarbageCollected<CSSCustomPropertyDeclaration>(
         variable_name,
-        CSSVariableData::Create(range, is_animation_tainted, has_references,
-                                context.BaseURL(), context.Charset()));
+        CSSVariableData::Create(tokenized_value, is_animation_tainted,
+                                has_references, context.BaseURL(),
+                                context.Charset()));
   }
   return MakeGarbageCollected<CSSCustomPropertyDeclaration>(variable_name,
                                                             type);
@@ -184,8 +186,9 @@ CSSVariableReferenceValue* CSSVariableParser::ParseRegisteredPropertyValue(
   if (require_var_reference && !has_references)
     return nullptr;
   return MakeGarbageCollected<CSSVariableReferenceValue>(
-      CSSVariableData::Create(range, is_animation_tainted, has_references,
-                              context.BaseURL(), context.Charset()),
+      CSSVariableData::Create({range, StringView()}, is_animation_tainted,
+                              has_references, context.BaseURL(),
+                              context.Charset()),
       context);
 }
 

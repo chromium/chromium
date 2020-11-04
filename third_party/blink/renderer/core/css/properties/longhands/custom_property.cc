@@ -196,8 +196,10 @@ const CSSValue* CustomProperty::ParseUntyped(
     CSSParserTokenRange range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
+  // TODO(crbug.com/661854): Pass through the original string when we have it.
   return CSSVariableParser::ParseDeclarationValue(
-      name_, range, local_context.IsAnimationTainted(), context);
+      name_, {range, StringView()}, local_context.IsAnimationTainted(),
+      context);
 }
 
 const CSSValue* CustomProperty::ParseTyped(

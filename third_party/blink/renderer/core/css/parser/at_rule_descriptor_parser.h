@@ -15,6 +15,7 @@ namespace blink {
 class CSSParserContext;
 class CSSParserTokenRange;
 class CSSValue;
+struct CSSTokenizedValue;
 
 class AtRuleDescriptorParser {
   STATIC_ONLY(AtRuleDescriptorParser);
@@ -22,7 +23,7 @@ class AtRuleDescriptorParser {
  public:
   static bool ParseAtRule(StyleRule::RuleType,
                           AtRuleDescriptorID,
-                          CSSParserTokenRange&,
+                          const CSSTokenizedValue&,
                           const CSSParserContext&,
                           HeapVector<CSSPropertyValue, 256>&);
   static CSSValue* ParseFontFaceDescriptor(AtRuleDescriptorID,
@@ -34,7 +35,7 @@ class AtRuleDescriptorParser {
   static CSSValue* ParseFontFaceDeclaration(CSSParserTokenRange&,
                                             const CSSParserContext&);
   static CSSValue* ParseAtPropertyDescriptor(AtRuleDescriptorID,
-                                             CSSParserTokenRange&,
+                                             const CSSTokenizedValue&,
                                              const CSSParserContext&);
   static CSSValue* ParseAtScrollTimelineDescriptor(AtRuleDescriptorID,
                                                    CSSParserTokenRange&,

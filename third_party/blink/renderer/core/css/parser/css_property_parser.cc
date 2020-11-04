@@ -153,8 +153,9 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
   if (CSSVariableParser::ContainsValidVariableReferences(original_range)) {
     bool is_animation_tainted = false;
     auto* variable = MakeGarbageCollected<CSSVariableReferenceValue>(
-        CSSVariableData::Create(original_range, is_animation_tainted, true,
-                                context_->BaseURL(), context_->Charset()),
+        CSSVariableData::Create({original_range, StringView()},
+                                is_animation_tainted, true, context_->BaseURL(),
+                                context_->Charset()),
         *context_);
 
     if (is_shorthand) {
