@@ -98,8 +98,7 @@ class CORE_EXPORT LayoutShiftTracker final
     struct Geometry {
       PhysicalOffset paint_offset;
       LayoutSize size;
-      bool has_overflow_clip;
-      PhysicalRect layout_overflow_rect;
+      PhysicalRect visual_overflow_rect;
     };
     HeapHashMap<Member<const Node>, Geometry> geometries_before_detach_;
   };
