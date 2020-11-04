@@ -13,19 +13,22 @@ async_test(function(t)
     menulist.selectedIndex = 0;
     menulist.focus();
 
-    var eventCount = 0;
+    var roleToExpectedNotifications = new Map();
+    roleToExpectedNotifications.set("AXRole: AXMenuListPopup", new Set(["ActiveDescendantChanged"]));
+    roleToExpectedNotifications.set("AXRole: AXMenuListOption", new Set(["MarkDirty"]));
     accessibilityController.addNotificationListener(function listener(element, notification) {
-        if (notification == "ActiveDescendantChanged") {
-            assert_equals(element.role, "AXRole: AXMenuListPopup");
-            ++eventCount;
-        }
-        if (notification == "MarkDirty") {
-            assert_equals(element.role, "AXRole: AXMenuListOption");
-            assert_equals(element.name, "Alicia");
-            ++eventCount;
-        }
+        let expectedNotifications = roleToExpectedNotifications.get(element.role);
+        if (!expectedNotifications)
+          return;
 
-        if (eventCount == 2)
+        if (element.role == 'AXRole: AXMenuListOption' && notification == 'MarkDirty')
+          assert_equals(element.name, "Alicia");
+
+        expectedNotifications.delete(notification);
+        if (!expectedNotifications.size)
+          roleToExpectedNotifications.delete(element.role);
+
+        if (!roleToExpectedNotifications.size)
             t.done();
     });
 

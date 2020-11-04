@@ -8,13 +8,19 @@
   <div id="status" aria-label="Working"></div>
   <button>
     <p>
-      <div id="txt">Before</div>
+      <div id="txt1">Before</div>
+    </p>
+  </button>
+  <button>
+    <p>
+      <div id="txt2">Before</div>
     </p>
   </button>
 
 <script>
 setTimeout(function() {
-  document.getElementById('txt').textContent = 'After';
+  document.getElementById('txt1').textContent = 'After';
+  document.getElementById('txt2').firstChild.data = 'After';
   setTimeout(() => {
     document.getElementById('status').setAttribute('aria-label', 'Done');
   }, 0);

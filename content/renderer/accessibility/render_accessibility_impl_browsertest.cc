@@ -175,7 +175,8 @@ class RenderAccessibilityHostInterceptor
                       const std::vector<::ui::AXEvent>& events,
                       int32_t reset_token,
                       HandleAXEventsCallback callback) override {
-    handled_updates_ = updates;
+    handled_updates_.insert(handled_updates_.end(), updates.begin(),
+                            updates.end());
     std::move(callback).Run();
   }
 
@@ -750,21 +751,27 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForFixedNodeAfterScroll) {
 
   int scroll_offset_y = 50;
 
-  int32_t expected_id;
+  ui::AXNode::AXID expected_id = ui::AXNode::kInvalidAXID;
   ui::AXRelativeBounds expected_bounds;
 
   // Prepare the expected information from the tree.
-  ui::AXTreeUpdate update = GetLastAccUpdate();
-  for (ui::AXNodeData& node : update.nodes) {
-    std::string name;
-    if (node.GetStringAttribute(ax::mojom::StringAttribute::kName, &name) &&
-        name == "first") {
-      expected_id = node.id;
-      expected_bounds = node.relative_bounds;
-      expected_bounds.bounds.set_y(expected_bounds.bounds.y() +
-                                   scroll_offset_y);
-      break;
+  const std::vector<ui::AXTreeUpdate>& updates = GetHandledAccUpdates();
+  for (auto iter = updates.rbegin(); iter != updates.rend(); ++iter) {
+    const ui::AXTreeUpdate& update = *iter;
+    for (const ui::AXNodeData& node : update.nodes) {
+      std::string name;
+      if (node.GetStringAttribute(ax::mojom::StringAttribute::kName, &name) &&
+          name == "first") {
+        expected_id = node.id;
+        expected_bounds = node.relative_bounds;
+        expected_bounds.bounds.set_y(expected_bounds.bounds.y() +
+                                     scroll_offset_y);
+        break;
+      }
     }
+
+    if (expected_id != ui::AXNode::kInvalidAXID)
+      break;
   }
 
   ClearHandledUpdates();
@@ -783,7 +790,7 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForFixedNodeAfterScroll) {
   EXPECT_EQ(1, CountAccessibilityNodesSentToBrowser());
 
   // Make sure it's the root object that was updated for scrolling.
-  update = GetLastAccUpdate();
+  ui::AXTreeUpdate update = GetLastAccUpdate();
   EXPECT_EQ(root_obj.AxID(), update.nodes[0].id);
 
   // Make sure that a location change is sent for the fixed-positioned node.
@@ -814,17 +821,19 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForMultipleFixedNodeAfterScroll) {
 
   int scroll_offset_y = 50;
 
-  std::map<int32_t, ui::AXRelativeBounds> expected;
+  std::map<ui::AXNode::AXID, ui::AXRelativeBounds> expected;
 
   // Prepare the expected information from the tree.
-  ui::AXTreeUpdate update = GetLastAccUpdate();
-  for (ui::AXNodeData& node : update.nodes) {
-    std::string name;
-    node.GetStringAttribute(ax::mojom::StringAttribute::kName, &name);
-    if (name == "first" || name == "second") {
-      ui::AXRelativeBounds ax_bounds = node.relative_bounds;
-      ax_bounds.bounds.set_y(ax_bounds.bounds.y() + scroll_offset_y);
-      expected[node.id] = ax_bounds;
+  const std::vector<ui::AXTreeUpdate>& updates = GetHandledAccUpdates();
+  for (const ui::AXTreeUpdate& update : updates) {
+    for (const ui::AXNodeData& node : update.nodes) {
+      std::string name;
+      node.GetStringAttribute(ax::mojom::StringAttribute::kName, &name);
+      if (name == "first" || name == "second") {
+        ui::AXRelativeBounds ax_bounds = node.relative_bounds;
+        ax_bounds.bounds.set_y(ax_bounds.bounds.y() + scroll_offset_y);
+        expected[node.id] = ax_bounds;
+      }
     }
   }
 
@@ -844,7 +853,7 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForMultipleFixedNodeAfterScroll) {
   EXPECT_EQ(1, CountAccessibilityNodesSentToBrowser());
 
   // Make sure it's the root object that was updated for scrolling.
-  update = GetLastAccUpdate();
+  ui::AXTreeUpdate update = GetLastAccUpdate();
   EXPECT_EQ(root_obj.AxID(), update.nodes[0].id);
 
   // Make sure that a location change is sent for the fixed-positioned node.
