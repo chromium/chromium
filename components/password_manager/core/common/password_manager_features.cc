@@ -65,12 +65,7 @@ const base::Feature kPasswordChangeInSettings = {
 
 // Enables the bulk Password Check feature for signed in users.
 const base::Feature kPasswordCheck = {"PasswordCheck",
-#if defined(OS_ANDROID)
-                                      base::FEATURE_DISABLED_BY_DEFAULT
-#else
-                                      base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-};
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls the ability to import passwords from Chrome's settings page.
 const base::Feature kPasswordImport = {"PasswordImport",

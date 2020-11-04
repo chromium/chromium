@@ -69,6 +69,8 @@ constexpr char kUsername2[] = "bob";
 
 constexpr char kPassword1[] = "s3cre3t";
 
+constexpr char kTestEmail[] = "user@gmail.com";
+
 class MockPasswordCheckManagerObserver : public PasswordCheckManager::Observer {
  public:
   MOCK_METHOD(void, OnSavedPasswordsFetched, (int), (override));
@@ -217,6 +219,9 @@ class PasswordCheckManagerTest : public testing::Test {
 
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
 
+  signin::IdentityTestEnvironment& identity_test_env() {
+    return identity_test_env_;
+  }
   BulkLeakCheckService* service() { return service_; }
   TestPasswordStore& store() { return *store_; }
   MockPasswordCheckManagerObserver& mock_observer() { return mock_observer_; }
@@ -277,6 +282,7 @@ TEST_F(PasswordCheckManagerTest, OnCompromisedCredentialsChanged) {
 }
 
 TEST_F(PasswordCheckManagerTest, RunCheckAfterLastInitialization) {
+  identity_test_env().MakeAccountAvailable(kTestEmail);
   EXPECT_CALL(mock_observer(), OnPasswordCheckStatusChanged(_))
       .Times(AtLeast(1));
   EXPECT_CALL(mock_observer(), OnSavedPasswordsFetched(1));
@@ -300,6 +306,7 @@ TEST_F(PasswordCheckManagerTest, RunCheckAfterLastInitialization) {
 
 TEST_F(PasswordCheckManagerTest,
        RunCheckAfterLastInitializationAutomaticChangeOn) {
+  identity_test_env().MakeAccountAvailable(kTestEmail);
   // Enable password sync
   sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
   feature_list().InitWithFeatures(
@@ -382,6 +389,7 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForAppCredentials) {
 }
 
 TEST_F(PasswordCheckManagerTest, SetsTimestampOnSuccessfulCheck) {
+  identity_test_env().MakeAccountAvailable(kTestEmail);
   InitializeManager();
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
   RunUntilIdle();
@@ -395,6 +403,7 @@ TEST_F(PasswordCheckManagerTest, SetsTimestampOnSuccessfulCheck) {
 }
 
 TEST_F(PasswordCheckManagerTest, DoesntRecordTimestampOfUnsuccessfulCheck) {
+  identity_test_env().MakeAccountAvailable(kTestEmail);
   InitializeManager();
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
   RunUntilIdle();
@@ -569,6 +578,7 @@ TEST_F(PasswordCheckManagerTest,
 }
 
 TEST_F(PasswordCheckManagerTest, UpdatesProgressCorrectly) {
+  identity_test_env().MakeAccountAvailable(kTestEmail);
   InitializeManager();
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
   store().AddLogin(MakeSavedPassword(kExampleOrg, kUsername1, kPassword1));
