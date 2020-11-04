@@ -32,8 +32,8 @@ class SVGViewElement;
 
 class SVGViewSpec final : public GarbageCollected<SVGViewSpec> {
  public:
-  static SVGViewSpec* CreateFromFragment(const String&);
-  static SVGViewSpec* CreateForViewElement(const SVGViewElement&);
+  static const SVGViewSpec* CreateFromFragment(const String&);
+  static const SVGViewSpec* CreateForViewElement(const SVGViewElement&);
 
   SVGViewSpec();
 
