@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -14,6 +15,7 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -81,7 +83,10 @@ class TetherControllerImplTest : public testing::Test {
   class FakeTetherNetworkConnector
       : public TetherControllerImpl::TetherNetworkConnector {
    public:
-    FakeTetherNetworkConnector() = default;
+    FakeTetherNetworkConnector() {
+      chromeos::network_config::BindToInProcessInstance(
+          cros_network_config_.BindNewPipeAndPassReceiver());
+    }
     ~FakeTetherNetworkConnector() override = default;
 
     void StartConnect(const std::string& guid,
@@ -94,6 +99,31 @@ class TetherControllerImplTest : public testing::Test {
       start_disconnect_callback_ = std::move(callback);
     }
 
+    void GetNetworkStateList(network_config::mojom::NetworkFilterPtr filter,
+                             GetNetworkStateListCallback callback) override {
+      cros_network_config_->GetNetworkStateList(
+          std::move(filter),
+          base::BindOnce(
+              &FakeTetherNetworkConnector::OnVisibleTetherNetworkFetched,
+              weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    }
+
+    void SetNextConnectionStateType(ConnectionStateType connection_state) {
+      connection_state_ = connection_state;
+    }
+
+    void OnVisibleTetherNetworkFetched(
+        GetNetworkStateListCallback callback,
+        std::vector<network_config::mojom::NetworkStatePropertiesPtr>
+            networks) {
+      if (connection_state_.has_value() && networks.size() == 1) {
+        networks[0]->connection_state = *connection_state_;
+        connection_state_ = base::nullopt;
+      }
+
+      std::move(callback).Run(std::move(networks));
+    }
+
     bool DoesPendingStartConnectCallbackExist() {
       return !start_connect_callback_.is_null();
     }
@@ -102,19 +132,28 @@ class TetherControllerImplTest : public testing::Test {
       return !start_disconnect_callback_.is_null();
     }
 
-    void InvokeStartConnectCallback(network_config::mojom::StartConnectResult
-                                        result = StartConnectResult::kSuccess,
-                                    const std::string& message = "") {
+    void InvokeStartConnectCallbackWithFakeResult(
+        network_config::mojom::StartConnectResult result =
+            StartConnectResult::kSuccess,
+        const std::string& message = "") {
       std::move(start_connect_callback_).Run(result, message);
     }
 
-    void InvokeDisconnectCallback(bool success = true) {
+    void InvokeDisconnectCallbackWithRealResults(std::string service_path) {
+      cros_network_config_->StartDisconnect(
+          service_path, std::move(start_disconnect_callback_));
+    }
+
+    void InvokeDisconnectCallbackWithFakeParams(bool success = true) {
       std::move(start_disconnect_callback_).Run(success);
     }
 
    private:
+    mojo::Remote<network_config::mojom::CrosNetworkConfig> cros_network_config_;
+    base::Optional<ConnectionStateType> connection_state_;
     StartConnectCallback start_connect_callback_;
     StartDisconnectCallback start_disconnect_callback_;
+    base::WeakPtrFactory<FakeTetherNetworkConnector> weak_ptr_factory_{this};
   };
 
   // testing::Test:
@@ -210,6 +249,12 @@ class TetherControllerImplTest : public testing::Test {
                                                    feature_state);
   }
 
+  void InvokeDisconnectCallbackWithRealResults() {
+    fake_tether_network_connector()->InvokeDisconnectCallbackWithRealResults(
+        service_path_);
+    base::RunLoop().RunUntilIdle();
+  }
+
   void InvokePendingSetFeatureEnabledStateCallback(
       bool success,
       bool expected_enabled = true) {
@@ -244,6 +289,36 @@ class TetherControllerImplTest : public testing::Test {
   FakeObserver fake_observer_;
   std::unique_ptr<TetherControllerImpl> controller_;
 };
+
+TEST_F(TetherControllerImplTest,
+       DisconnectCompletesAfterOnActiveNetworksChanged) {
+  SetMultideviceSetupFeatureState(FeatureState::kEnabledByUser);
+
+  EnableTetherDevice();
+  AddVisibleTetherNetwork();
+
+  // Disconnect from a connecting state.
+  AttemptConnection();
+  EXPECT_EQ(GetStatus(), TetherController::Status::kConnecting);
+
+  SetTetherNetworkStateConnecting();
+  Disconnect();
+
+  // Simulate OnActiveNetworksChanged() being called after Disconnect()
+  // is requested when Bluetooth is on but hotspot is off, yielding a
+  // ConnectionStateType::kConnecting tether network instead of a
+  // ConnectionStateType::kDisconnected network.
+  fake_tether_network_connector()->SetNextConnectionStateType(
+      network_config::mojom::ConnectionStateType::kConnecting);
+  SetTetherNetworkStateDisconnected();
+  EXPECT_EQ(GetStatus(), TetherController::Status::kConnecting);
+
+  // Upon invoking the Disconnect callback, a refetch occurs.
+  EXPECT_TRUE(
+      fake_tether_network_connector()->DoesPendingDisconnectCallbackExist());
+  InvokeDisconnectCallbackWithRealResults();
+  EXPECT_EQ(GetStatus(), TetherController::Status::kConnectionAvailable);
+}
 
 TEST_F(TetherControllerImplTest, ExternalTetherChangesReflectToStatus) {
   EXPECT_EQ(GetStatus(), TetherController::Status::kIneligibleForFeature);
@@ -308,7 +383,7 @@ TEST_F(TetherControllerImplTest, AttemptConnectDisconnect) {
 
   // Upon completing the connection, the status should no longer be connecting.
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnecting);
-  fake_tether_network_connector()->InvokeStartConnectCallback();
+  fake_tether_network_connector()->InvokeStartConnectCallbackWithFakeResult();
   EXPECT_NE(GetStatus(), TetherController::Status::kConnecting);
 
   // Disconnect from a connected state.
@@ -316,7 +391,7 @@ TEST_F(TetherControllerImplTest, AttemptConnectDisconnect) {
   Disconnect();
   EXPECT_TRUE(
       fake_tether_network_connector()->DoesPendingDisconnectCallbackExist());
-  fake_tether_network_connector()->InvokeDisconnectCallback();
+  fake_tether_network_connector()->InvokeDisconnectCallbackWithFakeParams();
   SetTetherNetworkStateDisconnected();
 
   // Disconnect from a connecting state.
@@ -325,7 +400,7 @@ TEST_F(TetherControllerImplTest, AttemptConnectDisconnect) {
   Disconnect();
   EXPECT_TRUE(
       fake_tether_network_connector()->DoesPendingDisconnectCallbackExist());
-  fake_tether_network_connector()->InvokeDisconnectCallback();
+  fake_tether_network_connector()->InvokeDisconnectCallbackWithFakeParams();
 
   AttemptConnection();
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnecting);
@@ -335,7 +410,7 @@ TEST_F(TetherControllerImplTest, AttemptConnectDisconnect) {
       fake_tether_network_connector()->DoesPendingDisconnectCallbackExist());
   AttemptConnection();
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnecting);
-  fake_tether_network_connector()->InvokeDisconnectCallback();
+  fake_tether_network_connector()->InvokeDisconnectCallbackWithFakeParams();
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnecting);
 
   // Disconnect from a disconnected state.

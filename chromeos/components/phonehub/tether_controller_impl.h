@@ -80,8 +80,8 @@ class TetherControllerImpl
     kDisconnecting = 4,
   };
 
-  // Connector that uses CrosNetworkConfig to connect and disconnect. This class
-  // is used for testing purposes.
+  // Connector that uses CrosNetworkConfig to connect, disconnect, and get the
+  // network state list. This class is used for testing purposes.
   class TetherNetworkConnector {
    public:
     using StartConnectCallback = base::OnceCallback<void(
@@ -89,6 +89,9 @@ class TetherControllerImpl
         const std::string& message)>;
 
     using StartDisconnectCallback = base::OnceCallback<void(bool)>;
+
+    using GetNetworkStateListCallback = base::OnceCallback<void(
+        std::vector<network_config::mojom::NetworkStatePropertiesPtr>)>;
 
     TetherNetworkConnector();
     TetherNetworkConnector(const TetherNetworkConnector&) = delete;
@@ -99,6 +102,9 @@ class TetherControllerImpl
                               StartConnectCallback callback);
     virtual void StartDisconnect(const std::string& guid,
                                  StartDisconnectCallback callback);
+    virtual void GetNetworkStateList(
+        network_config::mojom::NetworkFilterPtr filter,
+        GetNetworkStateListCallback callback);
 
    private:
     mojo::Remote<network_config::mojom::CrosNetworkConfig> cros_network_config_;

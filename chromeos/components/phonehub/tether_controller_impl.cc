@@ -44,6 +44,13 @@ void TetherControllerImpl::TetherNetworkConnector::StartDisconnect(
   cros_network_config_->StartDisconnect(guid, std::move(callback));
 }
 
+void TetherControllerImpl::TetherNetworkConnector::GetNetworkStateList(
+    network_config::mojom::NetworkFilterPtr filter,
+    GetNetworkStateListCallback callback) {
+  cros_network_config_->GetNetworkStateList(std::move(filter),
+                                            std::move(callback));
+}
+
 TetherControllerImpl::TetherControllerImpl(
     PhoneModel* phone_model,
     MultiDeviceSetupClient* multidevice_setup_client)
@@ -197,7 +204,7 @@ void TetherControllerImpl::OnStartConnectCompleted(StartConnectResult result,
     return;
   }
 
-  // Note that OnVisibleTetherNetworkFetched() has not called
+  // Note that OnVisibleTetherNetworkFetched() may not have called
   // SetConnectDisconnectStatus() with kIdle at this point, so this should go
   // ahead and do it.
   SetConnectDisconnectStatus(ConnectDisconnectStatus::kIdle);
@@ -236,6 +243,14 @@ void TetherControllerImpl::OnDisconnectCompleted(bool success) {
 
   SetConnectDisconnectStatus(ConnectDisconnectStatus::kIdle);
 
+  // Fetch the tether network and its updated connection state, if it exists.
+  // By the time OnDisconnectCompleted() is called, the connection state is
+  // properly updated to ConnectionStateType::kDisconnected, so a fetch may be
+  // necessary to promptly update |tether_network_|, as neither
+  // OnActiveNetworksChanged() nor OnNetworkStateListChanged() may be called
+  // shortly afterwards with the latest network information.
+  FetchVisibleTetherNetwork();
+
   if (!success)
     PA_LOG(WARNING) << "Failed to disconnect tether network";
 }
@@ -243,9 +258,19 @@ void TetherControllerImpl::OnDisconnectCompleted(bool success) {
 void TetherControllerImpl::OnActiveNetworksChanged(
     std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks) {
   // Active networks either changed externally (e.g via OS Settings or a new
-  // actve network added), or as a result of a call to AttemptConnection().
-  // This is needed for the case of ConnectionStateType::kConnecting in
-  // ComputeStatus().
+  // actve network added), or as a result of a call to AttemptConnection() or
+  // Disconnect(). This is needed for the case of
+  // ConnectionStateType::kConnecting in ComputeStatus().
+  //
+  // Note: When OnActiveNetworksChanged() is called shortly after starting a
+  // disconnect to a ConnectionStateType::kConnecting |tether_network_|, the
+  // |tether_network_|'s ConnectionStateType may still remain in the
+  // ConnectionStateType::kConnecting state. This may happen if on the phone,
+  // hotspot is off but bluetooth tethering is on, and a connection attempt is
+  // made, but the user does not acknowledge the notification to connect on
+  // their phone, and subsequently decides to disconnect while
+  // |tether_network_|'s ConnectionStateType is still
+  // ConnectionStateType::kConnecting.
   FetchVisibleTetherNetwork();
 }
 
@@ -292,7 +317,7 @@ void TetherControllerImpl::OnGetDeviceStateList(
 
 void TetherControllerImpl::FetchVisibleTetherNetwork() {
   // Return the connected, connecting, or connectable Tether network.
-  cros_network_config_->GetNetworkStateList(
+  connector_->GetNetworkStateList(
       network_config::mojom::NetworkFilter::New(FilterType::kVisible,
                                                 NetworkType::kTether,
                                                 /*limit=*/0),
