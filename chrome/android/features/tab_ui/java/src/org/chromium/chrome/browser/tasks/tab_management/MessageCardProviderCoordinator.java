@@ -8,6 +8,8 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.Supplier;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,9 +23,10 @@ public class MessageCardProviderCoordinator {
     private final MessageCardProviderMediator mMediator;
     private final List<MessageService> mMessageServices = new ArrayList<>();
 
-    MessageCardProviderCoordinator(
-            Context context, MessageCardView.DismissActionProvider uiDismissActionProvider) {
-        mMediator = new MessageCardProviderMediator(context, uiDismissActionProvider);
+    MessageCardProviderCoordinator(Context context, Supplier<Boolean> isIncognitoSupplier,
+            MessageCardView.DismissActionProvider uiDismissActionProvider) {
+        mMediator = new MessageCardProviderMediator(
+                context, isIncognitoSupplier, uiDismissActionProvider);
     }
 
     /**

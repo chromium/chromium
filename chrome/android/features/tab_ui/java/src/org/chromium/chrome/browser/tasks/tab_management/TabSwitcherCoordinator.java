@@ -206,8 +206,8 @@ public class TabSwitcherCoordinator
             });
         }
 
-        mMessageCardProviderCoordinator =
-                new MessageCardProviderCoordinator(context, (identifier) -> {
+        mMessageCardProviderCoordinator = new MessageCardProviderCoordinator(
+                context, tabModelSelector::isIncognitoSelected, (identifier) -> {
                     mTabListCoordinator.removeSpecialListItem(
                             TabProperties.UiType.MESSAGE, identifier);
                     appendNextMessage(identifier);

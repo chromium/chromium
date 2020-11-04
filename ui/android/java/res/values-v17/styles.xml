@@ -317,6 +317,10 @@
         tools:ignore="UnusedResources">
         <item name="android:textColor">@color/blue_when_enabled</item>
     </style>
+    <style name="TextAppearance.Button.Text.Blue.Dark" parent="TextAppearance.TextAccentMediumThick"
+        tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/blue_when_enabled_dark</item>
+    </style>
     <style name="TextAppearance.Button.Text.Filled" parent="TextAppearance.TextAccentMediumThick">
         <item name="android:textColor">@color/default_text_color_inverse</item>
     </style>

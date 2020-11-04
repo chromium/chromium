@@ -180,4 +180,51 @@ public class TabUiColorProvider {
                 isIncognito ? R.color.hovered_tab_grid_card_background_color_incognito
                             : R.color.hovered_tab_grid_card_background_color);
     }
+
+    /**
+     * Returns the message card background resource id based on the incognito mode.
+     *
+     * @param isIncognito Whether the resource is used for incognito mode.
+     * @return The background resource id for message card view.
+     */
+    public static int getMessageCardBackgroundResourceId(boolean isIncognito) {
+        return isIncognito ? R.drawable.message_card_background_with_inset_incognito
+                           : R.drawable.message_card_background_with_inset;
+    }
+
+    /**
+     * Returns the text appearance for the message card description based on the incognito mode.
+     *
+     * @param isIncognito Whether the text appearance is used for incognito mode.
+     * @return The text appearance for the message card description.
+     */
+    public static int getMessageCardDescriptionTextAppearance(boolean isIncognito) {
+        return isIncognito ? R.style.TextAppearance_TextMedium_Primary_Light
+                           : R.style.TextAppearance_TextMedium_Primary;
+    }
+
+    /**
+     * Returns the text appearance for the message card action button based on the incognito mode.
+     *
+     * @param isIncognito Whether the text appearance is used for incognito mode.
+     * @return The text appearance for the message card action button.
+     */
+    public static int getMessageCardActionButtonTextAppearance(boolean isIncognito) {
+        return isIncognito ? R.style.TextAppearance_Button_Text_Blue_Dark
+                           : R.style.TextAppearance_Button_Text_Blue;
+    }
+
+    /**
+     * Returns the {@link ColorStateList} to use for the message card close button based on
+     * incognito mode.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @return The {@link ColorStateList} for message card close button.
+     */
+    public static ColorStateList getMessageCardCloseButtonTintList(
+            Context context, boolean isIncognito) {
+        return AppCompatResources.getColorStateList(context,
+                isIncognito ? R.color.default_icon_color_inverse : R.color.default_icon_color);
+    }
 }

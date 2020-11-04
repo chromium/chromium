@@ -11,6 +11,7 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -39,15 +40,18 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
     }
 
     private final Context mContext;
+    private final Supplier<Boolean> mIsIncognitoSupplier;
     private Map<Integer, List<Message>> mMessageItems = new LinkedHashMap<>();
     private Map<Integer, Message> mShownMessageItems = new LinkedHashMap<>();
     private MessageCardView.DismissActionProvider mUiDismissActionProvider;
 
-    public MessageCardProviderMediator(
-            Context context, MessageCardView.DismissActionProvider uiDismissActionProvider) {
+    public MessageCardProviderMediator(Context context, Supplier<Boolean> isIncognitoSupplier,
+            MessageCardView.DismissActionProvider uiDismissActionProvider) {
         mContext = context;
+        mIsIncognitoSupplier = isIncognitoSupplier;
         mUiDismissActionProvider = uiDismissActionProvider;
     }
+
     /**
      * @return A list of {@link Message} that can be shown.
      */
@@ -64,22 +68,28 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
             if (messages.size() == 0) it.remove();
         }
 
+        for (Message message : mShownMessageItems.values()) {
+            message.model.set(MessageCardViewProperties.IS_INCOGNITO, mIsIncognitoSupplier.get());
+        }
+
         return new ArrayList<>(mShownMessageItems.values());
     }
 
     Message getNextMessageItemForType(@MessageService.MessageType int messageType) {
-        if (mShownMessageItems.containsKey(messageType)) return mShownMessageItems.get(messageType);
+        if (!mShownMessageItems.containsKey(messageType)) {
+            if (!mMessageItems.containsKey(messageType)) return null;
 
-        if (!mMessageItems.containsKey(messageType)) return null;
+            List<Message> messages = mMessageItems.get(messageType);
 
-        List<Message> messages = mMessageItems.get(messageType);
+            assert messages.size() > 0;
+            mShownMessageItems.put(messageType, messages.remove(0));
 
-        assert messages.size() > 0;
-        mShownMessageItems.put(messageType, messages.remove(0));
+            if (messages.size() == 0) mMessageItems.remove(messageType);
+        }
 
-        if (messages.size() == 0) mMessageItems.remove(messageType);
-
-        return mShownMessageItems.get(messageType);
+        Message message = mShownMessageItems.get(messageType);
+        message.model.set(MessageCardViewProperties.IS_INCOGNITO, mIsIncognitoSupplier.get());
+        return message;
     }
 
     private PropertyModel buildModel(int messageType, MessageService.MessageData data) {
@@ -94,7 +104,9 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
                 return IphMessageCardViewModel.create(mContext, this::invalidateShownMessage,
                         (IphMessageService.IphMessageData) data);
             default:
-                return new PropertyModel();
+                return new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
+                        .with(MessageCardViewProperties.IS_INCOGNITO, false)
+                        .build();
         }
     }
 

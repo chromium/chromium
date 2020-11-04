@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView;
 import org.chromium.ui.widget.ButtonCompat;
@@ -143,5 +144,53 @@ class MessageCardView extends LinearLayout {
             removeView(mIcon);
             params.setMargins(margin, 0, 0, 0);
         }
+    }
+
+    /**
+     * Set background resource.
+     * @param isIncognito Whether the resource is used for incognito mode.
+     */
+    private void setBackground(boolean isIncognito) {
+        setBackgroundResource(TabUiColorProvider.getMessageCardBackgroundResourceId(isIncognito));
+    }
+
+    /**
+     * Set text appearance for description.
+     * @param isIncognito Whether the text appearance is used for incognito mode.
+     */
+    private void setDescriptionTextAppearance(boolean isIncognito) {
+        ApiCompatibilityUtils.setTextAppearance(mDescription,
+                TabUiColorProvider.getMessageCardDescriptionTextAppearance(isIncognito));
+    }
+
+    /**
+     * Set text appearance for action button.
+     * @param isIncognito Whether the text appearance is used for incognito mode.
+     */
+    private void setActionButtonTextAppearance(boolean isIncognito) {
+        ApiCompatibilityUtils.setTextAppearance(mActionButton,
+                TabUiColorProvider.getMessageCardActionButtonTextAppearance(isIncognito));
+    }
+
+    /**
+     * Set tint for close button.
+     * @param isIncognito Whether the tint is used for incognito mode.
+     */
+    private void setCloseButtonTint(boolean isIncognito) {
+        ApiCompatibilityUtils.setImageTintList(mCloseButton,
+                TabUiColorProvider.getMessageCardCloseButtonTintList(
+                        mCloseButton.getContext(), isIncognito));
+    }
+
+    /**
+     * Update Message Card when switching between normal mode and incognito mode.
+     * @param isIncognito Whether it is in the incognito mode.
+     */
+    void updateMessageCardColor(boolean isIncognito) {
+        setBackground(isIncognito);
+        setDescriptionTextAppearance(isIncognito);
+        setActionButtonTextAppearance(isIncognito);
+        // TODO(crbug.com/1139194): Set action button ripple color.
+        setCloseButtonTint(isIncognito);
     }
 }

@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestion;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
@@ -45,12 +46,17 @@ public class MessageCardProviderMediatorUnitTest {
     @Mock
     private TabSuggestionMessageService.TabSuggestionMessageData mTabSuggestionMessageData;
 
+    @Mock
+    private Supplier<Boolean> mIsIncognitoSupplier;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        doReturn(false).when(mIsIncognitoSupplier).get();
         doNothing().when(mUiDismissActionProvider).dismiss(anyInt());
-        mMediator = new MessageCardProviderMediator(mContext, mUiDismissActionProvider);
+        mMediator = new MessageCardProviderMediator(
+                mContext, mIsIncognitoSupplier, mUiDismissActionProvider);
     }
 
     private void enqueueMessageItem(@MessageService.MessageType int type, int tabSuggestionAction) {
@@ -286,5 +292,35 @@ public class MessageCardProviderMediatorUnitTest {
                 model.get(MessageCardViewProperties.MESSAGE_TYPE));
         Assert.assertEquals(groupingTabSuggestionMessage,
                 model.get(MessageCardViewProperties.DESCRIPTION_TEXT_TEMPLATE));
+    }
+
+    @Test
+    public void getMessageItemsTest_UpdateIncognito() {
+        enqueueMessageItem(
+                MessageService.MessageType.TAB_SUGGESTION, TabSuggestion.TabSuggestionAction.CLOSE);
+
+        PropertyModel messageModel = mMediator.getMessageItems().get(0).model;
+        Assert.assertFalse(messageModel.get(MessageCardViewProperties.IS_INCOGNITO));
+
+        doReturn(true).when(mIsIncognitoSupplier).get();
+        messageModel = mMediator.getMessageItems().get(0).model;
+        Assert.assertTrue(messageModel.get(MessageCardViewProperties.IS_INCOGNITO));
+    }
+
+    @Test
+    public void getNextMessageItemForTypeTest_UpdateIncognito() {
+        enqueueMessageItem(
+                MessageService.MessageType.TAB_SUGGESTION, TabSuggestion.TabSuggestionAction.CLOSE);
+
+        PropertyModel messageModel =
+                mMediator.getNextMessageItemForType(MessageService.MessageType.TAB_SUGGESTION)
+                        .model;
+        Assert.assertFalse(messageModel.get(MessageCardViewProperties.IS_INCOGNITO));
+
+        doReturn(true).when(mIsIncognitoSupplier).get();
+        messageModel =
+                mMediator.getNextMessageItemForType(MessageService.MessageType.TAB_SUGGESTION)
+                        .model;
+        Assert.assertTrue(messageModel.get(MessageCardViewProperties.IS_INCOGNITO));
     }
 }

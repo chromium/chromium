@@ -44,10 +44,12 @@ class MessageCardViewProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_ICON_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey IS_INCOGNITO =
+            new PropertyModel.WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {ACTION_TEXT, DESCRIPTION_TEXT,
             DESCRIPTION_TEXT_TEMPLATE, MESSAGE_TYPE, ICON_PROVIDER, UI_ACTION_PROVIDER,
             UI_DISMISS_ACTION_PROVIDER, MESSAGE_SERVICE_ACTION_PROVIDER,
             MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER, DISMISS_BUTTON_CONTENT_DESCRIPTION,
-            SHOULD_KEEP_AFTER_REVIEW, IS_ICON_VISIBLE, CARD_TYPE, CARD_ALPHA};
+            SHOULD_KEEP_AFTER_REVIEW, IS_ICON_VISIBLE, CARD_TYPE, CARD_ALPHA, IS_INCOGNITO};
 }

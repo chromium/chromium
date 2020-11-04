@@ -4,18 +4,23 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -158,6 +163,37 @@ public class MessageCardViewBinderTest extends DummyUiActivityTestCase {
         mItemViewModel.set(MessageCardViewProperties.IS_ICON_VISIBLE, true);
         assertEquals(4, mItemView.getChildCount());
         assertEquals(0, params.leftMargin);
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testUpdateMessageCardColor() {
+        TextView description = (TextView) mItemView.findViewById(R.id.description);
+        TextView actionButton = (TextView) mItemView.findViewById(R.id.action_button);
+        ImageView closeButton = (ImageView) mItemView.findViewById(R.id.close_button);
+
+        mItemViewModel.set(MessageCardViewProperties.IS_INCOGNITO, false);
+        assertThat(description.getCurrentTextColor(),
+                equalTo(ApiCompatibilityUtils.getColor(
+                        mItemView.getResources(), R.color.default_text_color_list)));
+        assertThat(actionButton.getCurrentTextColor(),
+                equalTo(ApiCompatibilityUtils.getColor(
+                        mItemView.getResources(), R.color.default_text_color_link)));
+        assertThat(closeButton.getImageTintList(),
+                equalTo(AppCompatResources.getColorStateList(
+                        getActivity(), R.color.default_icon_color)));
+
+        mItemViewModel.set(MessageCardViewProperties.IS_INCOGNITO, true);
+        assertThat(description.getCurrentTextColor(),
+                equalTo(ApiCompatibilityUtils.getColor(
+                        mItemView.getResources(), R.color.default_text_color_light_list)));
+        assertThat(actionButton.getCurrentTextColor(),
+                equalTo(ApiCompatibilityUtils.getColor(
+                        mItemView.getResources(), R.color.default_text_color_link_light)));
+        assertThat(closeButton.getImageTintList(),
+                equalTo(AppCompatResources.getColorStateList(
+                        getActivity(), R.color.default_icon_color_inverse)));
     }
 
     @Override

@@ -133,7 +133,8 @@ public class MessageCardProviderTest extends DummyUiActivityTestCase {
             view.addView(mRecyclerView);
         });
 
-        mCoordinator = new MessageCardProviderCoordinator(getActivity(), mUiDismissActionProvider);
+        mCoordinator = new MessageCardProviderCoordinator(
+                getActivity(), () -> false, mUiDismissActionProvider);
         mCoordinator.subscribeMessageService(mTestingService);
         mCoordinator.subscribeMessageService(mSuggestionService);
 
