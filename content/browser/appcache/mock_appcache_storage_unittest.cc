@@ -6,12 +6,12 @@
 #include <stdint.h>
 
 #include "base/run_loop.h"
-#include "base/test/task_environment.h"
 #include "content/browser/appcache/appcache.h"
 #include "content/browser/appcache/appcache_group.h"
 #include "content/browser/appcache/appcache_response_info.h"
 #include "content/browser/appcache/appcache_storage.h"
 #include "content/browser/appcache/mock_appcache_service.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/appcache/appcache_info.mojom.h"
 
@@ -85,7 +85,7 @@ class MockAppCacheStorageTest : public testing::Test {
   };
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(MockAppCacheStorageTest, LoadCache_Miss) {
