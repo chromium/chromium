@@ -57,6 +57,9 @@ class WebState;
 // Reloads the content of the NewTabPage.
 - (void)reload;
 
+// Calls when the visibility of the NTP changes.
+- (void)ntpDidChangeVisibility:(BOOL)visible;
+
 // The location bar has lost focus.
 - (void)locationBarDidResignFirstResponder;
 

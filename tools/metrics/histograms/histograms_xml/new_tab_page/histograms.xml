@@ -1446,10 +1446,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="NewTabPage.TimeSpent" units="ms" expires_after="2021-07-01">
   <owner>freedjm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <summary>
     The time spent on the new tab page as measured from when it was loaded or
     last brought to the foreground until it was navigated away from or hidden.
-    Only measured on Android.
+    Only measured on Android and iOS.
   </summary>
 </histogram>
 

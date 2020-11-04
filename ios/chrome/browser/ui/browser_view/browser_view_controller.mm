@@ -2413,6 +2413,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     if (NTPHelper && NTPHelper->IsActive()) {
       UIViewController* viewController =
           _ntpCoordinatorsForWebStates[webState].viewController;
+      [_ntpCoordinatorsForWebStates[webState] ntpDidChangeVisibility:YES];
       viewController.view.frame = [self ntpFrameForWebState:webState];
       [viewController.view layoutIfNeeded];
       // TODO(crbug.com/873729): For a newly created WebState, the session will
@@ -4437,6 +4438,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (oldWebState) {
     oldWebState->WasHidden();
     oldWebState->SetKeepRenderProcessAlive(false);
+    [_ntpCoordinatorsForWebStates[oldWebState] ntpDidChangeVisibility:NO];
     [self dismissPopups];
   }
   // NOTE: webStateSelected expects to always be called with a
@@ -4445,6 +4447,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     return;
 
   self.currentWebState->GetWebViewProxy().scrollViewProxy.clipsToBounds = NO;
+  [_ntpCoordinatorsForWebStates[newWebState] ntpDidChangeVisibility:YES];
 
   [self webStateSelected:newWebState notifyToolbar:YES];
 }
