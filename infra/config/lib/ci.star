@@ -701,15 +701,6 @@ def fyi_windows_builder(
         **kwargs
     )
 
-gpu_ci_resultdb_exports = [
-    resultdb.export_test_results(
-        bq_table = "luci-resultdb.chromium.gpu_ci_test_results",
-        predicate = resultdb.test_result_predicate(
-            test_id_regexp = "ninja://chrome/test:telemetry_gpu_integration_test/.+",
-        ),
-    ),
-]
-
 def gpu_fyi_builder(*, name, **kwargs):
     return ci.builder(
         name = name,
@@ -719,7 +710,6 @@ def gpu_fyi_builder(*, name, **kwargs):
         properties = {
             "perf_dashboard_machine_group": "ChromiumGPUFYI",
         },
-        resultdb_bigquery_exports = gpu_ci_resultdb_exports,
         **kwargs
     )
 
@@ -784,7 +774,6 @@ def gpu_builder(*, name, tree_closing = True, notifies = None, **kwargs):
         builder_group = "chromium.gpu",
         tree_closing = tree_closing,
         notifies = notifies,
-        resultdb_bigquery_exports = gpu_ci_resultdb_exports,
         **kwargs
     )
 
