@@ -11,12 +11,9 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/extensions/bookmark_app_file_handler_manager.h"
-#include "chrome/browser/web_applications/extensions/bookmark_app_icon_manager.h"
-#include "chrome/browser/web_applications/extensions/bookmark_app_registrar.h"
-#include "chrome/browser/web_applications/extensions/bookmark_app_registry_controller.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/web_application_info.h"
 
@@ -24,6 +21,13 @@ namespace syncer {
 class ModelError;
 class MetadataBatch;
 }  // namespace syncer
+
+namespace extensions {
+class BookmarkAppRegistrar;
+class BookmarkAppRegistryController;
+class BookmarkAppIconManager;
+class BookmarkAppFileHandlerManager;
+}  // namespace extensions
 
 namespace web_app {
 
@@ -77,10 +81,13 @@ class WebAppMigrationManager {
   void ScheduleDestructDatabaseAndCallCallback(bool success);
   void DestructDatabaseAndCallCallback(bool success);
 
-  extensions::BookmarkAppRegistrar bookmark_app_registrar_;
-  extensions::BookmarkAppRegistryController bookmark_app_registry_controller_;
-  extensions::BookmarkAppIconManager bookmark_app_icon_manager_;
-  extensions::BookmarkAppFileHandlerManager bookmark_app_file_handler_manager_;
+  std::unique_ptr<extensions::BookmarkAppRegistrar> bookmark_app_registrar_;
+  std::unique_ptr<extensions::BookmarkAppRegistryController>
+      bookmark_app_registry_controller_;
+  std::unique_ptr<extensions::BookmarkAppIconManager>
+      bookmark_app_icon_manager_;
+  std::unique_ptr<extensions::BookmarkAppFileHandlerManager>
+      bookmark_app_file_handler_manager_;
 
   AbstractWebAppDatabaseFactory* const database_factory_;
   WebAppIconManager* const web_app_icon_manager_;
