@@ -50,7 +50,7 @@ const base::Feature kPercentBasedScrolling = {
 
 // Allows requesting unadjusted movement when entering pointerlock.
 const base::Feature kPointerLockOptions = {"PointerLockOptions",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Allows system caption style for WebVTT Captions.
 const base::Feature kSystemCaptionStyle{"SystemCaptionStyle",
