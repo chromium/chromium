@@ -15,6 +15,8 @@ namespace commander {
 
 namespace {
 
+size_t constexpr kMaxResults = 8;
+
 CommanderController::CommandSources CreateDefaultSources() {
   CommanderController::CommandSources sources;
   sources.push_back(std::make_unique<SimpleCommandSource>());
@@ -58,7 +60,8 @@ void CommanderController::OnTextChanged(const base::string16& text,
                const std::unique_ptr<CommandItem>& right) {
               return left->score > right->score;
             });
-  // TODO(lgrey): Threshold this at some kind of max items.
+  if (items.size() > kMaxResults)
+    items.resize(kMaxResults);
   current_items_ = std::move(items);
   CommanderViewModel vm;
   vm.result_set_id = ++current_result_set_id_;
