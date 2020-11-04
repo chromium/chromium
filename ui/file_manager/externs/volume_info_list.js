@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {VolumeInfo} from './volume_info.m.js';
+
 /**
  * The container of the VolumeInfo for each mounted volume.
  * @interface
  */
-class VolumeInfoList {
+/* #export */ class VolumeInfoList {
   constructor() {
     /** @const {number} */
     this.length;

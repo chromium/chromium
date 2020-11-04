@@ -2,11 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {EntryLocation} from './entry_location.m.js';
+// #import {VolumeInfo} from './volume_info.m.js';
+// #import {VolumeInfoList} from './volume_info_list.m.js';
+// #import {FilesAppEntry, FilesAppDirEntry} from './files_app_entry_interfaces.m.js';
+// #import * as wrappedVolumeManagerCommon from '../base/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
+// clang-format on
+
 /**
  * VolumeManager is responsible for tracking list of mounted volumes.
  * @interface
  */
-class VolumeManager {
+/* #export */ class VolumeManager {
   constructor() {
     /**
      * The list of VolumeInfo instances for each mounted volume.

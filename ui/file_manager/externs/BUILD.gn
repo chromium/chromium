@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_library("file_manager_private") {
   sources = []
@@ -17,12 +18,76 @@ js_library("file_manager_private") {
   ]
 }
 
+js_library("entry_location.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/externs/entry_location.m.js" ]
+
+  deps = [
+    ":volume_info.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("files_app_entry_interfaces.m") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/externs/files_app_entry_interfaces.m.js",
+  ]
+
+  deps = [ "//ui/file_manager/base/js:volume_manager_types.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("volume_manager") {
   sources = []
 
   # Encapsulate volume_manager.js and its dependencies. Note this should really
   # depend on volume_manager_types.js as well, but that's not an extern.
   externs_list = [
+    "entry_location.js",
+    "files_app_entry_interfaces.js",
+    "volume_info.js",
+    "volume_info_list.js",
+    "volume_manager.js",
+  ]
+}
+
+js_library("volume_manager.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/externs/volume_manager.m.js" ]
+
+  deps = [
+    ":entry_location.m",
+    ":files_app_entry_interfaces.m",
+    ":volume_info.m",
+    ":volume_info_list.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("volume_info.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/externs/volume_info.m.js" ]
+
+  deps = [
+    ":files_app_entry_interfaces.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("volume_info_list.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/externs/volume_info_list.m.js" ]
+
+  deps = [ ":volume_info.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_modulizer("modulize") {
+  input_files = [
     "entry_location.js",
     "files_app_entry_interfaces.js",
     "volume_info.js",
