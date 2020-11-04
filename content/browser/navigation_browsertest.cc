@@ -3693,4 +3693,151 @@ IN_PROC_BROWSER_TEST_F(DocumentPolicyBrowserTest,
   EXPECT_FALSE(last_metadata.is_scroll_offset_at_top);
 }
 
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, OriginToCommitBasic) {
+  GURL url = embedded_test_server()->GetURL("a.com", "/empty.html");
+  auto origin_expected = url::Origin::Create(url);
+  TestNavigationManager manager(web_contents(), url);
+  shell()->LoadURL(url);
+  EXPECT_TRUE(manager.WaitForResponse());
+  NavigationRequest* navigation = main_frame()->navigation_request();
+  url::Origin origin_to_commit = navigation->GetOriginForURLLoaderFactory();
+  manager.WaitForNavigationFinished();
+  url::Origin origin_committed = current_frame_host()->GetLastCommittedOrigin();
+
+  EXPECT_FALSE(origin_to_commit.opaque());
+  EXPECT_FALSE(origin_committed.opaque());
+  EXPECT_EQ(origin_expected, origin_to_commit);
+  EXPECT_EQ(origin_expected, origin_committed);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       OriginToCommitSandboxFromResponse) {
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/set-header?Content-Security-Policy: sandbox");
+  TestNavigationManager manager(web_contents(), url);
+  shell()->LoadURL(url);
+  EXPECT_TRUE(manager.WaitForResponse());
+  NavigationRequest* navigation = main_frame()->navigation_request();
+  url::Origin origin_to_commit = navigation->GetOriginForURLLoaderFactory();
+  manager.WaitForNavigationFinished();
+  url::Origin origin_committed = current_frame_host()->GetLastCommittedOrigin();
+
+  EXPECT_TRUE(origin_to_commit.opaque());
+  EXPECT_TRUE(origin_committed.opaque());
+  // TODO(https://crbug.com/888079). The nonce must match.
+  EXPECT_NE(origin_to_commit, origin_committed);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       OriginToCommitSandboxFromParentDocument) {
+  GURL url_top = embedded_test_server()->GetURL(
+      "a.com", "/set-header?Content-Security-Policy: sandbox allow-scripts");
+  EXPECT_TRUE(NavigateToURL(shell(), url_top));
+  GURL url_iframe = embedded_test_server()->GetURL("a.com", "/empty.html");
+  TestNavigationManager manager(web_contents(), url_iframe);
+  ExecuteScriptAsync(current_frame_host(), R"(
+    let iframe = document.createElement("iframe");
+    iframe.src = "./empty.html";
+    document.body.appendChild(iframe);
+  )");
+  EXPECT_TRUE(manager.WaitForResponse());
+  FrameTreeNode* iframe = current_frame_host()->child_at(0);
+  NavigationRequest* navigation = iframe->navigation_request();
+  url::Origin origin_to_commit = navigation->GetOriginForURLLoaderFactory();
+  manager.WaitForNavigationFinished();
+  url::Origin origin_committed =
+      iframe->current_frame_host()->GetLastCommittedOrigin();
+
+  EXPECT_TRUE(origin_to_commit.opaque());
+  EXPECT_TRUE(origin_committed.opaque());
+  // TODO(https://crbug.com/888079). The nonce must match.
+  EXPECT_NE(origin_to_commit, origin_committed);
+
+  // Both document have the same URL. Only the first sets CSP:sandbox, but both
+  // are sandboxed. They get an opaque origin different from each others.
+  EXPECT_NE(current_frame_host()->GetLastCommittedOrigin(), origin_committed);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, OriginToCommitSandboxFromFrame) {
+  GURL url = embedded_test_server()->GetURL("a.com", "/empty.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  TestNavigationManager manager(web_contents(), url);
+  ExecuteScriptAsync(current_frame_host(), R"(
+    let iframe = document.createElement("iframe");
+    iframe.src = location.href;
+    iframe.sandbox = "";
+    document.body.appendChild(iframe);
+  )");
+  EXPECT_TRUE(manager.WaitForResponse());
+  FrameTreeNode* iframe = current_frame_host()->child_at(0);
+  NavigationRequest* navigation = iframe->navigation_request();
+  url::Origin origin_to_commit = navigation->GetOriginForURLLoaderFactory();
+  manager.WaitForNavigationFinished();
+  url::Origin origin_committed =
+      iframe->current_frame_host()->GetLastCommittedOrigin();
+
+  EXPECT_TRUE(origin_to_commit.opaque());
+  EXPECT_TRUE(origin_committed.opaque());
+  // TODO(https://crbug.com/888079). Make the nonce to match.
+  EXPECT_NE(origin_to_commit, origin_committed);
+}
+
+class NetworkIsolationSplitCacheAppendIframeOrigin
+    : public NavigationBaseBrowserTest {
+ public:
+  NetworkIsolationSplitCacheAppendIframeOrigin() {
+    feature_list_.InitWithFeatures(
+        {net::features::kSplitCacheByNetworkIsolationKey,
+         net::features::kAppendFrameOriginToNetworkIsolationKey},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Make a main document, have it request a cacheable subresources. Then make a
+// same-site document in an iframe that serves the CSP:Sandbox header. Stop the
+// test server, have the sandboxed document requests the same subresource. The
+// request should fail. To make sure the request is actually in the cache, the
+// main document should be able to request it again.
+IN_PROC_BROWSER_TEST_F(NetworkIsolationSplitCacheAppendIframeOrigin,
+                       SandboxedUsesDifferentCache) {
+  auto server = std::make_unique<net::EmbeddedTestServer>();
+  server->AddDefaultHandlers(GetTestDataFilePath());
+  EXPECT_TRUE(server->Start());
+
+  GURL url_main_document = server->GetURL("a.com", "/empty.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_main_document));
+  EXPECT_TRUE(ExecJs(current_frame_host(), R"(
+    new Promise(resolve => {
+      let iframe = document.createElement("iframe");
+      iframe.onload = resolve;
+      iframe.src = "/set-header?Content-Security-Policy: sandbox allow-scripts";
+      document.body.appendChild(iframe);
+    })
+  )"));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  RenderFrameHostImpl* main_rfh = current_frame_host();
+  RenderFrameHostImpl* sub_rfh = main_rfh->child_at(0)->current_frame_host();
+
+  EXPECT_FALSE(main_rfh->GetLastCommittedOrigin().opaque());
+  EXPECT_TRUE(sub_rfh->GetLastCommittedOrigin().opaque());
+
+  const char* fetch_cacheable = R"(
+    fetch("cacheable.svg")
+      .then(() => "success")
+      .catch(() => "error")
+  )";
+
+  EXPECT_EQ("success", EvalJs(main_rfh, fetch_cacheable));
+
+  server.reset();
+
+  EXPECT_EQ("error", EvalJs(sub_rfh, fetch_cacheable));
+  EXPECT_EQ("success", EvalJs(main_rfh, fetch_cacheable));
+}
+
 }  // namespace content

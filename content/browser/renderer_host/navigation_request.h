@@ -712,9 +712,9 @@ class CONTENT_EXPORT NavigationRequest
   // called after a response has been delivered for processing, or after the
   // navigation fails with an error page.
   //
-  // TODO(lukasza, arthursonzogni): https://crbug.com/888079: Once the browser
-  // process is able to calculate the exact origin to commit, the method below
-  // should be renamed to something like GetOriginToCommit().
+  // TODO(lukasza, arthursonzogni): https://crbug.com/888079: The browser and
+  // blink are both computing the origin to commit. This method should be
+  // renamed GetOriginToCommit() and the value pushed to blink.
   url::Origin GetOriginForURLLoaderFactory();
 
   // Add information about this NavigationRequest to |traced_value| for

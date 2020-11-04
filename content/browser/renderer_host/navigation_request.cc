@@ -681,15 +681,10 @@ url::Origin GetOriginForURLLoaderFactoryUnchecked(
     return url::Origin::Create(common_params.base_url_for_data_url);
   }
 
-  // MHTML frames should commit as a opaque origin (and should not be able to
-  // make network requests on behalf of the real origin).
-  if (navigation_request->IsLoadedFromMhtmlArchive())
-    return url::Origin();
-
   // Srcdoc subframes need to inherit their origin from their parent frame.
   if (navigation_request->GetURL().IsAboutSrcdoc()) {
-    // Srcdoc navigations in main frames should be blocked before this function
-    // is called.  This should guarantee existence of a parent here.
+    // Srcdoc navigations in main frames are blocked before this function is
+    // called. This should guarantee existence of a parent here.
     RenderFrameHostImpl* parent =
         navigation_request->frame_tree_node()->parent();
     DCHECK(parent);
@@ -4350,10 +4345,33 @@ bool NavigationRequest::IsLoadDataWithBaseURL(
 }
 
 url::Origin NavigationRequest::GetOriginForURLLoaderFactory() {
-  // Calculate an approximation (sandbox/csp is ignored - see
+  DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
+
+  // Calculate an approximation of the origin. The sandbox/csp are ignored.
+  url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
+
+  // Apply sandbox flags.
+  // See https://html.spec.whatwg.org/#sandboxed-origin-browsing-context-flag
+  // ```
+  // The 'sandboxed origin browsing context flag' forces content into a unique
+  // origin, thus preventing it from accessing other content from the same
+  // origin.
+  //
+  // This flag also prevents script from reading from or writing to the
+  // document.cookie IDL attribute, and blocks access to localStorage.
+  // ```
+  const bool use_opaque_origin = (sandbox_flags_to_commit_.value() &
+                                  network::mojom::WebSandboxFlags::kOrigin) ==
+                                 network::mojom::WebSandboxFlags::kOrigin;
+  if (use_opaque_origin)
+    origin = origin.DeriveNewOpaqueOrigin();
+
+  // MHTML documents should commit as an opaque origin. They should not be able
+  // to make network request on behalf of the real origin.
+  DCHECK(!IsLoadedFromMhtmlArchive() || use_opaque_origin);
+
   // https://crbug.com/1041376) of the origin that will be committed because of
   // |this| NavigationRequest.
-  url::Origin result = GetOriginForURLLoaderFactoryUnchecked(this);
 
   // Note that GetRenderFrameHost() only allows to retrieve the RenderFrameHost
   // once it has been set for this navigation.  This will happens either at
@@ -4362,14 +4380,22 @@ url::Origin NavigationRequest::GetOriginForURLLoaderFactory() {
   RenderFrameHostImpl* target_frame = GetRenderFrameHost();
   DCHECK(target_frame);
 
-  // Check that |result| origin is allowed to be accessed from the process that
-  // is the target of this navigation.
+  // Check that |origin| is allowed to be accessed from the process that is the
+  // target of this navigation.
   if (target_frame->ShouldBypassSecurityChecksForErrorPage(this))
-    return result;
+    return origin;
+
+  // MHTML iframes can load documents from any origin, no matter the current
+  // policy of the process being used. This is because the content is loaded
+  // from the MHTML archive within the process. There are no data loaded from
+  // the network.
+  if (IsLoadedFromMhtmlArchive() && !IsInMainFrame())
+    return origin;
+
   int process_id = target_frame->GetProcess()->GetID();
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  CHECK(policy->CanAccessDataForOrigin(process_id, result));
-  return result;
+  CHECK(policy->CanAccessDataForOrigin(process_id, origin));
+  return origin;
 }
 
 void NavigationRequest::AsValueInto(

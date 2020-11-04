@@ -1,0 +1,4 @@
+HTTP/1.1 200 OK
+Content-Type: text/svg+xml
+Cache-Control: max-age=3600
+Access-Control-Allow-Origin: *
