@@ -1032,7 +1032,7 @@ void FuchsiaVideoDecoder::InitializeOutputBufferCollection(
           output_buffer_collection_id_,
           collection_token_for_gpu.Unbind().TakeChannel(),
           gfx::BufferFormat::YUV_420_BIPLANAR, gfx::BufferUsage::GPU_READ,
-          true /*register_with_image_pipe*/);
+          use_overlays_for_video_ /*register_with_image_pipe*/);
 
   // Pass new output buffer settings to the codec.
   fuchsia::media::StreamBufferPartialSettings settings;
