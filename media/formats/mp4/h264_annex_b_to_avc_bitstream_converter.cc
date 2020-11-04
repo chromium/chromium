@@ -204,6 +204,6 @@ Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
     *config_changed_out = config_changed;
 
   return Status();
-}  // namespace media
+}
 
 }  // namespace media
