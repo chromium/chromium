@@ -331,7 +331,7 @@ bool MediaRecorder::isTypeSupported(ExecutionContext* context,
   ContentType content_type(type);
   bool result = handler->CanSupportMimeType(content_type.GetType(),
                                             content_type.Parameter("codecs"));
-  if (IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+  if (IdentifiabilityStudySettings::Get()->ShouldSample(
           blink::IdentifiableSurface::Type::kMediaRecorder_IsTypeSupported)) {
     blink::IdentifiabilityMetricBuilder(context->UkmSourceID())
         .Set(blink::IdentifiableSurface::FromTypeAndToken(

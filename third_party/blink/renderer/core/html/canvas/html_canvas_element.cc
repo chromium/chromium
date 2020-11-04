@@ -268,7 +268,7 @@ void HTMLCanvasElement::RecordIdentifiabilityMetric(
 
 void HTMLCanvasElement::IdentifiabilityReportWithDigest(
     IdentifiableToken canvas_contents_token) const {
-  if (IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+  if (IdentifiabilityStudySettings::Get()->ShouldSample(
           blink::IdentifiableSurface::Type::kCanvasReadback)) {
     RecordIdentifiabilityMetric(
         blink::IdentifiableSurface::FromTypeAndToken(

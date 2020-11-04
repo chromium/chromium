@@ -98,7 +98,7 @@ constexpr int kMaxIdentifiabilityStudyMaxSurfaces = 10;
 extern const base::FeatureParam<std::string>
     kIdentifiabilityStudyPerSurfaceSettings;
 
-// Selection rate for clusters of related surfaces.
+// Selection rate for clusters of related surface types.
 //
 // Parameter name: "TypeRate"
 // Parameter type: Comma separated list of <filter-string>;<rate> pairs.
@@ -109,6 +109,27 @@ extern const base::FeatureParam<std::string>
 extern const base::FeatureParam<std::string>
     kIdentifiabilityStudyPerTypeSettings;
 
+// Sample rates for clusters of related surfaces.
+//
+// Parameter name: "SurfaceSampleRate"
+// Parameter type: Comma separated list of <filter-string>;<rate> pairs.
+//
+// E.g.:
+//   * "257;800" : Sets the selection rate to 1-in-800 for
+//                 IdentifiableSurface::FromTypeAndToken(kWebFeature, 1).
+extern const base::FeatureParam<std::string>
+    kIdentifiabilityStudyPerSurfaceSampleRates;
+
+// Sample rate for clusters of related surface types.
+//
+// Parameter name: "TypeSampleRate"
+// Parameter type: Comma separated list of <filter-string>;<rate> pairs.
+//
+// E.g.:
+//   * "2;1000" : Sets the selection rate to 1-in-1000 for *all* surfaces with
+//                type kCanvasReadback.
+extern const base::FeatureParam<std::string>
+    kIdentifiabilityStudyPerTypeSampleRates;
 }  // namespace features
 
 #endif  // CHROME_COMMON_PRIVACY_BUDGET_PRIVACY_BUDGET_FEATURES_H_

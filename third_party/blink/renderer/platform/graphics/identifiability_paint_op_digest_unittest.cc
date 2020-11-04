@@ -27,6 +27,8 @@ class ActiveSettingsProvider : public IdentifiabilityStudySettingsProvider {
   bool IsTypeAllowed(IdentifiableSurface::Type type) const override {
     return true;
   }
+  int SampleRate(IdentifiableSurface surface) const override { return 1; }
+  int SampleRate(IdentifiableSurface::Type type) const override { return 1; }
 };
 
 // An RAII class that opts into study participation using

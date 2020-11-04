@@ -491,7 +491,7 @@ void CanvasAsyncBlobCreator::CreateBlobAndReturnResult() {
 }
 
 void CanvasAsyncBlobCreator::RecordIdentifiabilityMetric() {
-  if (!IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+  if (!IdentifiabilityStudySettings::Get()->ShouldSample(
           blink::IdentifiableSurface::Type::kCanvasReadback)) {
     return;
   }

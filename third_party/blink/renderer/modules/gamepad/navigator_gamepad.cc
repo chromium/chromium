@@ -83,7 +83,7 @@ namespace {
 
 void RecordGamepadsForIdentifiabilityStudy(ExecutionContext* context,
                                            GamepadList* gamepads) {
-  if (!context || !IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(
+  if (!context || !IdentifiabilityStudySettings::Get()->ShouldSample(
                       IdentifiableSurface::FromTypeAndToken(
                           IdentifiableSurface::Type::kWebFeature,
                           WebFeature::kGetGamepads)))

@@ -105,7 +105,7 @@ DOMMimeTypeArray* NavigatorPlugins::mimeTypes(LocalFrame* frame) const {
 void NavigatorPlugins::RecordMimeTypes(LocalFrame* frame) const {
   constexpr IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(
       IdentifiableSurface::Type::kWebFeature, WebFeature::kNavigatorMimeTypes);
-  if (!IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(surface) || !frame)
+  if (!IdentifiabilityStudySettings::Get()->ShouldSample(surface) || !frame)
     return;
   Document* document = frame->GetDocument();
   if (!document)

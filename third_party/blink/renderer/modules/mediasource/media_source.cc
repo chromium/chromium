@@ -366,7 +366,7 @@ bool MediaSource::isTypeSupported(ExecutionContext* context,
 void MediaSource::RecordIdentifiabilityMetric(ExecutionContext* context,
                                               const String& type,
                                               bool result) {
-  if (!IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+  if (!IdentifiabilityStudySettings::Get()->ShouldSample(
           blink::IdentifiableSurface::Type::kMediaSource_IsTypeSupported)) {
     return;
   }
