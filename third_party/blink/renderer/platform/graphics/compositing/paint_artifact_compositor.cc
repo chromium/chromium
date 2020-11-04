@@ -1178,10 +1178,27 @@ void PaintArtifactCompositor::Update(
     int transform_id =
         property_tree_manager.EnsureCompositorTransformNode(transform);
     int clip_id = property_tree_manager.EnsureCompositorClipNode(clip);
+
     int effect_id = property_tree_manager.SwitchToEffectNodeWithSynthesizedClip(
         property_state.Effect(), clip, layer->DrawsContent());
-    blink_effects.resize(effect_id + 1);
-    blink_effects[effect_id] = &property_state.Effect();
+    if (blink_effects.size() <= static_cast<wtf_size_t>(effect_id))
+      blink_effects.resize(effect_id + 1);
+    if (!blink_effects[effect_id]) {
+      blink_effects[effect_id] = &property_state.Effect();
+      // We need additional bookkeeping for backdrop-filter mask.
+      if (property_state.Effect().RequiresCompositingForBackdropFilterMask()) {
+        static_cast<cc::PictureLayer*>(layer.get())
+            ->SetIsBackdropFilterMask(true);
+        layer->SetElementId(property_state.Effect().GetCompositorElementId());
+        auto& effect_tree = host->property_trees()->effect_tree;
+        auto* cc_node = effect_tree.Node(effect_id);
+        effect_tree.Node(cc_node->parent_id)->backdrop_mask_element_id =
+            property_state.Effect().GetCompositorElementId();
+      }
+    } else {
+      DCHECK_EQ(blink_effects[effect_id], &property_state.Effect());
+    }
+
     // The compositor scroll node is not directly stored in the property tree
     // state but can be created via the scroll offset translation node.
     const auto& scroll_translation =

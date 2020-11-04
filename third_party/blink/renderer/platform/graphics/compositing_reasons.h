@@ -44,6 +44,7 @@ using CompositingReasons = uint64_t;
      are set. */                                                              \
   V(WillChangeOther)                                                          \
   V(BackdropFilter)                                                           \
+  V(BackdropFilterMask)                                                       \
   V(RootScroller)                                                             \
   V(XrOverlay)                                                                \
   V(Viewport)                                                                 \
@@ -170,6 +171,9 @@ class PLATFORM_EXPORT CompositingReason {
         kWillChangeBackdropFilter | kActiveBackdropFilterAnimation,
     kDirectReasonsForFilterProperty =
         kActiveFilterAnimation | kWillChangeFilter,
+    kDirectReasonsForBackdropFilter = kBackdropFilter |
+                                      kActiveBackdropFilterAnimation |
+                                      kWillChangeBackdropFilter,
   };
 };
 
