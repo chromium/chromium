@@ -3989,7 +3989,10 @@ source_set("unit_tests") {
         [ "//chromeos/services/chromebox_for_meetings/public/cpp:test_support" ]
   }
 
-  data = [ "//chromeos/test/data/" ]
+  data = [
+    "//chromeos/test/data/",
+    "//third_party/private_membership/src/internal/testing/regression_test_data/cros_test_data.binarypb",
+  ]
 }
 
 proto_library("attestation_proto") {

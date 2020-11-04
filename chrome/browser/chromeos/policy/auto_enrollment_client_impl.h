@@ -127,6 +127,14 @@ class AutoEnrollmentClientImpl
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
+  // Sets the private set membership RLWE client for testing through
+  // |private_set_membership_helper_|, if the protocol is enabled. Also, the
+  // |private_set_membership_rlwe_client| has to be non-null.
+  void SetPrivateSetMembershipRlweClientForTesting(
+      std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
+          private_set_membership_rlwe_client,
+      const private_membership::rlwe::RlwePlaintextId& psm_rlwe_id);
+
  private:
   typedef bool (AutoEnrollmentClientImpl::*RequestCompletionHandler)(
       policy::DeviceManagementService::Job*,
@@ -162,14 +170,6 @@ class AutoEnrollmentClientImpl
   // enabled and progress has been made, false if the protocol is done. Also,
   // that protocol is being started only one time.
   bool PrivateSetMembershipRetryStep();
-
-  // Sets the private set membership RLWE client for testing through
-  // |private_set_membership_helper_|, if the protocol is enabled. Also, the
-  // |private_set_membership_rlwe_client| has to be non-null.
-  void SetPrivateSetMembershipRlweClientForTesting(
-      std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
-          private_set_membership_rlwe_client,
-      private_membership::rlwe::RlwePlaintextId& psm_rlwe_id);
 
   // Cleans up and invokes |progress_callback_|.
   void ReportProgress(AutoEnrollmentState state);

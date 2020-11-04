@@ -1056,7 +1056,7 @@ bool AutoEnrollmentClientImpl::PrivateSetMembershipRetryStep() {
 void AutoEnrollmentClientImpl::SetPrivateSetMembershipRlweClientForTesting(
     std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient>
         private_set_membership_rlwe_client,
-    psm_rlwe::RlwePlaintextId& psm_rlwe_id) {
+    const psm_rlwe::RlwePlaintextId& psm_rlwe_id) {
   if (!private_set_membership_helper_)
     return;
 
