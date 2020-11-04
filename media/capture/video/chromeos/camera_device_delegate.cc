@@ -530,22 +530,27 @@ void CameraDeviceDelegate::SetPhotoOptions(
                                       static_cast<int32_t>(settings->width) ||
                                   current_blob_resolution_.height() !=
                                       static_cast<int32_t>(settings->height));
-  if (!request_manager_->HasStreamsConfiguredForTakePhoto() ||
-      should_reconfigure_streams) {
-    if (is_resolution_specified) {
-      gfx::Size new_blob_resolution(static_cast<int32_t>(settings->width),
-                                    static_cast<int32_t>(settings->height));
-      request_manager_->StopPreview(
-          base::BindOnce(&CameraDeviceDelegate::OnFlushed, GetWeakPtr(),
-                         std::move(new_blob_resolution)));
-    } else {
-      request_manager_->StopPreview(base::BindOnce(
-          &CameraDeviceDelegate::OnFlushed, GetWeakPtr(), base::nullopt));
-    }
-    set_photo_option_callback_ = std::move(callback);
+  // If there is callback of SetPhotoOptions(), the streams might being
+  // reconfigured and we should notify them once the reconfiguration is done.
+  if (!pending_set_photo_option_callbacks_.empty()) {
+    pending_set_photo_option_callbacks_.push(std::move(callback));
   } else {
-    set_photo_option_callback_.Reset();
-    std::move(callback).Run(true);
+    if (!request_manager_->HasStreamsConfiguredForTakePhoto() ||
+        should_reconfigure_streams) {
+      if (is_resolution_specified) {
+        gfx::Size new_blob_resolution(static_cast<int32_t>(settings->width),
+                                      static_cast<int32_t>(settings->height));
+        request_manager_->StopPreview(
+            base::BindOnce(&CameraDeviceDelegate::OnFlushed, GetWeakPtr(),
+                           std::move(new_blob_resolution)));
+      } else {
+        request_manager_->StopPreview(base::BindOnce(
+            &CameraDeviceDelegate::OnFlushed, GetWeakPtr(), base::nullopt));
+      }
+      pending_set_photo_option_callbacks_.push(std::move(callback));
+    } else {
+      std::move(callback).Run(true);
+    }
   }
   result_metadata_frame_number_for_photo_state_ = current_request_frame_number_;
 }
@@ -1082,8 +1087,9 @@ void CameraDeviceDelegate::OnGotFpsRange(
     TakePhotoImpl();
   }
 
-  if (set_photo_option_callback_) {
-    std::move(set_photo_option_callback_).Run(true);
+  while (!pending_set_photo_option_callbacks_.empty()) {
+    std::move(pending_set_photo_option_callbacks_.front()).Run(true);
+    pending_set_photo_option_callbacks_.pop();
   }
 }
 

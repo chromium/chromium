@@ -6,6 +6,7 @@
 #define MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_DEVICE_DELEGATE_H_
 
 #include <memory>
+#include <queue>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -238,7 +239,8 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
 
   base::OnceClosure device_close_callback_;
 
-  VideoCaptureDevice::SetPhotoOptionsCallback set_photo_option_callback_;
+  std::queue<VideoCaptureDevice::SetPhotoOptionsCallback>
+      pending_set_photo_option_callbacks_;
 
   CameraAppDeviceImpl* camera_app_device_;  // Weak.
 
