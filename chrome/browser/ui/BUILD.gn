@@ -3934,8 +3934,6 @@ static_library("ui") {
       "views/tab_icon_view.h",
       "views/tab_modal_confirm_dialog_views.cc",
       "views/tab_modal_confirm_dialog_views.h",
-      "views/tab_search/tab_search_bubble_view.cc",
-      "views/tab_search/tab_search_bubble_view.h",
       "views/tab_sharing/tab_sharing_ui_views.cc",
       "views/tab_sharing/tab_sharing_ui_views.h",
       "views/tabs/alert_indicator.cc",

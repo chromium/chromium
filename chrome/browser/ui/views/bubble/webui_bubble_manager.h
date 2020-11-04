@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/scoped_observer.h"
+#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_view.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
@@ -27,7 +28,8 @@ class WebUIBubbleManagerBase : public views::WidgetObserver {
  public:
   WebUIBubbleManagerBase(views::View* anchor_view,
                          content::BrowserContext* browser_context,
-                         const GURL& webui_url);
+                         const GURL& webui_url,
+                         bool enable_extension_apis = false);
   WebUIBubbleManagerBase(const WebUIBubbleManagerBase&) = delete;
   const WebUIBubbleManagerBase& operator=(const WebUIBubbleManagerBase&) =
       delete;
@@ -42,6 +44,12 @@ class WebUIBubbleManagerBase : public views::WidgetObserver {
 
   content::BrowserContext* browser_context() { return browser_context_; }
   const GURL& webui_url() const { return webui_url_; }
+  bool enable_extension_apis() const { return enable_extension_apis_; }
+
+  void ResetWebViewForTesting();
+  base::WeakPtr<WebUIBubbleDialogView> bubble_view_for_testing() {
+    return bubble_view_;
+  }
 
  private:
   virtual std::unique_ptr<WebUIBubbleView> CreateWebView() = 0;
@@ -51,6 +59,7 @@ class WebUIBubbleManagerBase : public views::WidgetObserver {
   content::BrowserContext* browser_context_;
   GURL webui_url_;
   base::WeakPtr<WebUIBubbleDialogView> bubble_view_;
+  const bool enable_extension_apis_;
 
   // A cached WebView used to make re-triggering the UI faster. This is not set
   // when the bubble is showing. It will only be set when the bubble is
@@ -72,6 +81,12 @@ class WebUIBubbleManager : public WebUIBubbleManagerBase {
  private:
   std::unique_ptr<WebUIBubbleView> CreateWebView() override {
     auto web_view = std::make_unique<WebUIBubbleView>(browser_context());
+    if (enable_extension_apis()) {
+      // In order for the WebUI in the renderer to use extensions APIs we must
+      // add a ChromeExtensionWebContentsObserver to the WebView's WebContents.
+      extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
+          web_view->GetWebContents());
+    }
     web_view->template LoadURL<T>(webui_url());
     return web_view;
   }

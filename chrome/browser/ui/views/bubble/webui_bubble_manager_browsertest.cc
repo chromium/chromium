@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -43,6 +44,13 @@ class WebUIBubbleManagerBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     bubble_manager_ = std::make_unique<TestWebUIBubbleManager>(browser());
   }
+  void TearDownOnMainThread() override {
+    auto* widget = bubble_manager_->GetBubbleWidget();
+    if (widget)
+      widget->CloseNow();
+    bubble_manager()->ResetWebViewForTesting();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
 
   TestWebUIBubbleManager* bubble_manager() { return bubble_manager_.get(); }
 
@@ -50,11 +58,26 @@ class WebUIBubbleManagerBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<TestWebUIBubbleManager> bubble_manager_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest, CreateAndClose) {
+IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest, CreateAndCloseBubble) {
   EXPECT_EQ(nullptr, bubble_manager()->GetBubbleWidget());
   bubble_manager()->ShowBubble();
   EXPECT_NE(nullptr, bubble_manager()->GetBubbleWidget());
   EXPECT_FALSE(bubble_manager()->GetBubbleWidget()->IsClosed());
+
+  bubble_manager()->CloseBubble();
+  EXPECT_TRUE(bubble_manager()->GetBubbleWidget()->IsClosed());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest,
+                       ShowUISetsBubbleWidgetVisible) {
+  EXPECT_EQ(nullptr, bubble_manager()->GetBubbleWidget());
+  bubble_manager()->ShowBubble();
+  EXPECT_NE(nullptr, bubble_manager()->GetBubbleWidget());
+  EXPECT_FALSE(bubble_manager()->GetBubbleWidget()->IsClosed());
+  EXPECT_FALSE(bubble_manager()->GetBubbleWidget()->IsVisible());
+
+  bubble_manager()->bubble_view_for_testing()->ShowUI();
+  EXPECT_TRUE(bubble_manager()->GetBubbleWidget()->IsVisible());
 
   bubble_manager()->CloseBubble();
   EXPECT_TRUE(bubble_manager()->GetBubbleWidget()->IsClosed());

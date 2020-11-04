@@ -5,11 +5,42 @@
 #ifndef UI_VIEWS_WIDGET_WIDGET_UTILS_H_
 #define UI_VIEWS_WIDGET_WIDGET_UTILS_H_
 
+#include "base/callback.h"
+#include "base/scoped_observer.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/views_export.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace views {
 class Widget;
+
+class VIEWS_EXPORT WidgetOpenTimer : public WidgetObserver {
+ public:
+  using Callback = base::RepeatingCallback<void(base::TimeDelta)>;
+
+  explicit WidgetOpenTimer(Callback callback);
+  WidgetOpenTimer(const WidgetOpenTimer&) = delete;
+  const WidgetOpenTimer& operator=(const WidgetOpenTimer&) = delete;
+  ~WidgetOpenTimer() override;
+
+  // WidgetObserver:
+  void OnWidgetDestroying(Widget* widget) override;
+
+  // Called to start the |open_timer_|.
+  void Reset(Widget* widget);
+
+ private:
+  // Callback run when the passed in Widget is destroyed.
+  Callback callback_;
+
+  // Time the bubble has been open. Used for UMA metrics collection.
+  base::Optional<base::ElapsedTimer> open_timer_;
+
+  ScopedObserver<Widget, WidgetObserver> observed_widget_{this};
+};
 
 // Returns the root window for |widget|.  On non-Aura, this is equivalent to
 // widget->GetNativeWindow().

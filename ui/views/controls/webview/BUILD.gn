@@ -6,8 +6,6 @@ component("webview") {
   sources = [
     "unhandled_keyboard_event_handler.cc",
     "unhandled_keyboard_event_handler.h",
-    "web_bubble_dialog_view.cc",
-    "web_bubble_dialog_view.h",
     "web_contents_set_background_color.cc",
     "web_contents_set_background_color.h",
     "web_dialog_view.cc",
@@ -51,7 +49,6 @@ component("webview") {
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/views",
-    "//ui/webui",
   ]
 
   if (is_linux || is_chromeos || is_android || is_fuchsia) {

@@ -18,10 +18,12 @@ constexpr base::TimeDelta kWebViewRetentionTime =
 WebUIBubbleManagerBase::WebUIBubbleManagerBase(
     views::View* anchor_view,
     content::BrowserContext* browser_context,
-    const GURL& webui_url)
+    const GURL& webui_url,
+    bool enable_extension_apis)
     : anchor_view_(anchor_view),
       browser_context_(browser_context),
       webui_url_(webui_url),
+      enable_extension_apis_(enable_extension_apis),
       cache_timer_(std::make_unique<base::RetainingOneShotTimer>(
           FROM_HERE,
           kWebViewRetentionTime,
@@ -67,6 +69,10 @@ void WebUIBubbleManagerBase::OnWidgetDestroying(views::Widget* widget) {
   cached_web_view_ = bubble_view_->RemoveWebView();
   observed_bubble_widget_.Remove(bubble_view_->GetWidget());
   cache_timer_->Reset();
+}
+
+void WebUIBubbleManagerBase::ResetWebViewForTesting() {
+  ResetWebView();
 }
 
 void WebUIBubbleManagerBase::ResetWebView() {

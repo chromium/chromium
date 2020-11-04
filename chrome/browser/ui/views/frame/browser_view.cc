@@ -122,7 +122,6 @@
 #include "chrome/browser/ui/views/side_panel.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
-#include "chrome/browser/ui/views/tab_search/tab_search_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -2685,12 +2684,7 @@ void BrowserView::CreateTabSearchBubble() {
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
   DCHECK(GetTabSearchButton());
-  if (GetTabSearchButton()->ShowTabSearchBubble()) {
-    // Only log the open action if it resulted in creating a new instance of the
-    // Tab Search bubble.
-    base::UmaHistogramEnumeration("Tabs.TabSearch.OpenAction",
-                                  TabSearchOpenAction::kKeyboardShortcut);
-  }
+  GetTabSearchButton()->ShowTabSearchBubble(true);
 }
 
 void BrowserView::CloseTabSearchBubble() {

@@ -2088,6 +2088,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Tabs.TabSearch.WindowDisplayedDuration2" units="ms"
     expires_after="M90">
+  <obsolete>
+    Deprecated as of 2020/11. The way the metric is emitted has changed.
+  </obsolete>
   <owner>tluk@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
@@ -2096,6 +2099,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     of time between when a Tab Search bubble is opened and when it is closed. It
     does so by recording the difference in time between when the Tab Search's
     bubble is first shown and when the bubble's destructor is called.
+
+    The Tab Search UI is a bubble anchored to an element within a browser window
+    and is closed if the user switches to a tab, presses the escape key or
+    performs an action to return focus to the hosting window. The Tab Search UI
+    bubble will also close if the hosting browser window is closed or crashes.
+
+    Users may leave the bubble open for long periods of time without directly
+    interacting with the UI which could result in a long tail of displayed
+    durations.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.WindowDisplayedDuration3" units="ms"
+    expires_after="M90">
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search their browsers
+    for their desired tabs. It can be opened and closed. This records the amount
+    of time between when a Tab Search bubble is opened and when it is closed. It
+    does so by recording the difference in time between when the the hosting
+    WebUIBubbleDialogView's Widget is first created and when the widget is
+    destroyed.
 
     The Tab Search UI is a bubble anchored to an element within a browser window
     and is closed if the user switches to a tab, presses the escape key or

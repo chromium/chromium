@@ -4,14 +4,25 @@
 
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 
+#include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/views/tab_search/tab_search_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/common/webui_url_constants.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class TabSearchOpenAction {
+  kMouseClick = 0,
+  kKeyboardNavigation = 1,
+  kKeyboardShortcut = 2,
+  kTouchGesture = 3,
+  kMaxValue = kTouchGesture,
+};
 
 TabSearchOpenAction GetActionForEvent(const ui::Event& event) {
   if (event.IsMouseEvent()) {
@@ -24,7 +35,15 @@ TabSearchOpenAction GetActionForEvent(const ui::Event& event) {
 }  // namespace
 
 TabSearchButton::TabSearchButton(TabStrip* tab_strip)
-    : NewTabButton(tab_strip, PressedCallback()) {
+    : NewTabButton(tab_strip, PressedCallback()),
+      webui_bubble_manager_(this,
+                            tab_strip->controller()->GetProfile(),
+                            GURL(chrome::kChromeUITabSearchURL),
+                            true),
+      widget_open_timer_(base::BindRepeating([](base::TimeDelta time_elapsed) {
+        base::UmaHistogramMediumTimes("Tabs.TabSearch.WindowDisplayedDuration3",
+                                      time_elapsed);
+      })) {
   SetImageHorizontalAlignment(HorizontalAlignment::ALIGN_CENTER);
   SetImageVerticalAlignment(VerticalAlignment::ALIGN_MIDDLE);
 
@@ -54,18 +73,25 @@ void TabSearchButton::FrameColorsChanged() {
 }
 
 void TabSearchButton::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK_EQ(bubble_, widget);
-  observed_bubble_widget_.Remove(bubble_);
-  bubble_ = nullptr;
+  DCHECK_EQ(webui_bubble_manager_.GetBubbleWidget(), widget);
+  observed_bubble_widget_.Remove(webui_bubble_manager_.GetBubbleWidget());
   pressed_lock_.reset();
 }
 
-bool TabSearchButton::ShowTabSearchBubble() {
-  if (bubble_)
+bool TabSearchButton::ShowTabSearchBubble(bool triggered_by_keyboard_shortcut) {
+  if (!webui_bubble_manager_.ShowBubble())
     return false;
-  bubble_ = TabSearchBubbleView::CreateTabSearchBubble(
-      tab_strip()->controller()->GetProfile(), this);
-  observed_bubble_widget_.Add(bubble_);
+
+  if (triggered_by_keyboard_shortcut) {
+    base::UmaHistogramEnumeration("Tabs.TabSearch.OpenAction",
+                                  TabSearchOpenAction::kKeyboardShortcut);
+  }
+
+  // There should only ever be a single bubble widget active for the
+  // TabSearchButton.
+  DCHECK(!observed_bubble_widget_.IsObservingSources());
+  observed_bubble_widget_.Add(webui_bubble_manager_.GetBubbleWidget());
+  widget_open_timer_.Reset(webui_bubble_manager_.GetBubbleWidget());
 
   // Hold the pressed lock while the |bubble_| is active.
   pressed_lock_ = menu_button_controller_->TakeLock();
@@ -73,12 +99,7 @@ bool TabSearchButton::ShowTabSearchBubble() {
 }
 
 void TabSearchButton::CloseTabSearchBubble() {
-  if (bubble_)
-    bubble_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
-}
-
-bool TabSearchButton::IsBubbleVisible() const {
-  return bubble_ && bubble_->IsVisible();
+  webui_bubble_manager_.CloseBubble();
 }
 
 void TabSearchButton::PaintIcon(gfx::Canvas* canvas) {
@@ -88,10 +109,12 @@ void TabSearchButton::PaintIcon(gfx::Canvas* canvas) {
 }
 
 void TabSearchButton::ButtonPressed(const ui::Event& event) {
-  // Only log the open action if it resulted in creating a new instance of the
-  // Tab Search bubble.
   if (ShowTabSearchBubble()) {
+    // Only log the open action if it resulted in creating a new instance of the
+    // Tab Search bubble.
     base::UmaHistogramEnumeration("Tabs.TabSearch.OpenAction",
                                   GetActionForEvent(event));
+    return;
   }
+  CloseTabSearchBubble();
 }

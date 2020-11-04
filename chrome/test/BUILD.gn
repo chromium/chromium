@@ -2281,7 +2281,6 @@ if (!is_android) {
         "../browser/ui/views/status_bubble_views_browsertest.cc",
         "../browser/ui/views/sync/inline_login_ui_browsertest.cc",
         "../browser/ui/views/sync/profile_signin_confirmation_dialog_views_browsertest.cc",
-        "../browser/ui/views/tab_search/tab_search_bubble_view_browsertest.cc",
         "../browser/ui/views/tab_sharing/tab_sharing_ui_views_browsertest.cc",
         "../browser/ui/views/tabs/tab_group_editor_bubble_view_browsertest.cc",
         "../browser/ui/views/tabs/tab_hover_card_bubble_view_browsertest.cc",
@@ -5943,7 +5942,6 @@ test("unit_tests") {
       "//ui/web_dialogs:test_support",
     ]
     sources += [
-      "../../ui/views/controls/webview/web_bubble_dialog_view_unittest.cc",
       "../../ui/views/controls/webview/web_dialog_view_unittest.cc",
       "../../ui/views/controls/webview/webview_unittest.cc",
       "../browser/ui/media_router/media_router_ui_unittest.cc",
