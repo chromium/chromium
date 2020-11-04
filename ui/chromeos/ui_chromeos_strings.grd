@@ -761,16 +761,16 @@
         Catalan keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_CROATIAN" desc="The input method name shows in system tray menu and settings page.">
-        Croatian keyboard
+        Croatian
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_CZECH" desc="The input method name shows in system tray menu and settings page.">
-        Czech keyboard
+        Czech
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_CZECH_QWERTY" desc="The input method name shows in system tray menu and settings page.">
-        Czech QWERTY keyboard
+        Czech with Qwerty keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_DANISH" desc="The input method name shows in system tray menu and settings page.">
-        Danish keyboard
+        Danish
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_ESTONIAN" desc="The input method name shows in system tray menu and settings page.">
         Estonian keyboard
@@ -854,7 +854,7 @@
         Dutch (Netherlands) with US International PC keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_NETHERLANDS" desc="The input method name shows in system tray menu and settings page.">
-        Netherlands keyboard
+        Dutch (Netherlands)
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_NORWEGIAN" desc="The input method name shows in system tray menu and settings page.">
         Norwegian keyboard
