@@ -10,6 +10,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/util/type_safety/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/exported/web_page_popup_impl.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/platform/graphics/apply_viewport_changes.h"
@@ -18,6 +19,7 @@
 
 namespace blink {
 
+class HTMLPlugInElement;
 class WebFrameWidget;
 class WebViewImpl;
 class WebWidgetClient;
@@ -144,7 +146,20 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   gfx::Size DIPsToCeiledBlinkSpace(const gfx::Size& size);
 
  private:
-  PageWidgetEventHandler* GetPageWidgetEventHandler() override;
+  // PageWidgetEventHandler overrides:
+  void HandleMouseLeave(LocalFrame&, const WebMouseEvent&) override;
+  void HandleMouseDown(LocalFrame&, const WebMouseEvent&) override;
+  WebInputEventResult HandleMouseUp(LocalFrame&, const WebMouseEvent&) override;
+  WebInputEventResult HandleMouseWheel(LocalFrame&,
+                                       const WebMouseWheelEvent&) override;
+  WebInputEventResult HandleGestureEvent(const WebGestureEvent&) override;
+  WebInputEventResult HandleKeyEvent(const WebKeyboardEvent&) override;
+  WebInputEventResult HandleCharEvent(const WebKeyboardEvent&) override;
+
+  WebInputEventResult HandleCapturedMouseEvent(const WebCoalescedInputEvent&);
+  void MouseContextMenu(const WebMouseEvent&);
+  void MouseDoubleClick(const WebMouseEvent&);
+
   LocalFrameView* GetLocalFrameViewForAnimationScrolling() override;
   void SetWindowRectSynchronously(const gfx::Rect& new_window_rect);
 
@@ -188,6 +203,18 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   // The size of the widget in viewport coordinates. This is slightly different
   // than the WebViewImpl::size_ since isn't set in auto resize mode.
   gfx::Size size_;
+
+  // keyPress events to be suppressed if the associated keyDown event was
+  // handled.
+  bool suppress_next_keypress_event_ = false;
+
+  // If set, the (plugin) element which has mouse capture.
+  Member<HTMLPlugInElement> mouse_capture_element_;
+
+  // This stores the last hidden page popup. If a GestureTap attempts to open
+  // the popup that is closed by its previous GestureTapDown, the popup remains
+  // closed.
+  scoped_refptr<WebPagePopupImpl> last_hidden_page_popup_;
 
   SelfKeepAlive<WebViewFrameWidget> self_keep_alive_;
 

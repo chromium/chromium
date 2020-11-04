@@ -860,10 +860,6 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
   return event_result;
 }
 
-PageWidgetEventHandler* WebFrameWidgetImpl::GetPageWidgetEventHandler() {
-  return this;
-}
-
 LocalFrameView* WebFrameWidgetImpl::GetLocalFrameViewForAnimationScrolling() {
   return LocalRootImpl()->GetFrame()->View();
 }

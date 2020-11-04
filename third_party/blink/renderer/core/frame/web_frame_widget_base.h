@@ -24,6 +24,7 @@
 #include "third_party/blink/public/web/web_meaningful_layout.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/page/page_widget_delegate.h"
 #include "third_party/blink/renderer/platform/graphics/apply_viewport_changes.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -63,7 +64,8 @@ class CORE_EXPORT WebFrameWidgetBase
       public WidgetBaseClient,
       public mojom::blink::FrameWidget,
       public viz::mojom::blink::InputTargetClient,
-      public FrameWidget {
+      public FrameWidget,
+      public PageWidgetEventHandler {
  public:
   WebFrameWidgetBase(
       WebWidgetClient&,
@@ -642,8 +644,6 @@ class CORE_EXPORT WebFrameWidgetBase
 
   // The fullscreen granted status from the most recent VisualProperties update.
   bool IsFullscreenGranted();
-
-  virtual PageWidgetEventHandler* GetPageWidgetEventHandler() = 0;
 
   // Return the LocalFrameView used for animation scrolling. This is overridden
   // by WebViewFrameWidget and should eventually be removed once null does not

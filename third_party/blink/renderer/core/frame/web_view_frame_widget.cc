@@ -4,15 +4,37 @@
 
 #include "third_party/blink/renderer/core/frame/web_view_frame_widget.h"
 
+#include "build/build_config.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_view_client.h"
+#include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/events/current_input_event.h"
+#include "third_party/blink/renderer/core/events/ui_event_with_key_state.h"
+#include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
+#include "third_party/blink/renderer/core/exported/web_dev_tools_agent_impl.h"
+#include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
+#include "third_party/blink/renderer/core/exported/web_settings_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
+#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 #include "third_party/blink/renderer/core/frame/screen_metrics_emulator.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/html_plugin_element.h"
+#include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
+#include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
+#include "third_party/blink/renderer/core/loader/interactive_detector.h"
+#include "third_party/blink/renderer/core/page/context_menu_controller.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
+#include "third_party/blink/renderer/core/page/link_highlight.h"
+#include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
+#include "third_party/blink/renderer/core/paint/first_meaningful_paint_detector.h"
+#include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 
@@ -118,12 +140,146 @@ void WebViewFrameWidget::UpdateLifecycle(WebLifecycleUpdate requested_update,
 }
 
 WebInputEventResult WebViewFrameWidget::HandleInputEvent(
-    const WebCoalescedInputEvent& event) {
-  return web_view_->HandleInputEvent(event);
+    const WebCoalescedInputEvent& coalesced_event) {
+  const WebInputEvent& input_event = coalesced_event.Event();
+  CHECK(web_view_->MainFrameImpl());
+  DCHECK(!WebInputEvent::IsTouchEventType(input_event.GetType()));
+
+  GetPage()->GetVisualViewport().StartTrackingPinchStats();
+
+  TRACE_EVENT1("input,rail", "WebViewFrameWidget::handleInputEvent", "type",
+               WebInputEvent::GetName(input_event.GetType()));
+
+  // If a drag-and-drop operation is in progress, ignore input events except
+  // PointerCancel.
+  if (DoingDragAndDrop() &&
+      input_event.GetType() != WebInputEvent::Type::kPointerCancel)
+    return WebInputEventResult::kHandledSuppressed;
+
+  if (WebDevToolsAgentImpl* devtools =
+          web_view_->MainFrameDevToolsAgentImpl()) {
+    auto result = devtools->HandleInputEvent(input_event);
+    if (result != WebInputEventResult::kNotHandled)
+      return result;
+  }
+
+  // Report the event to be NOT processed by WebKit, so that the browser can
+  // handle it appropriately.
+  if (WebFrameWidgetBase::IgnoreInputEvents())
+    return WebInputEventResult::kNotHandled;
+
+  base::AutoReset<const WebInputEvent*> current_event_change(
+      &CurrentInputEvent::current_input_event_, &input_event);
+  UIEventWithKeyState::ClearNewTabModifierSetFromIsolatedWorld();
+
+  if (GetPage()->GetPointerLockController().IsPointerLocked() &&
+      WebInputEvent::IsMouseEventType(input_event.GetType())) {
+    PointerLockMouseEvent(coalesced_event);
+    return WebInputEventResult::kHandledSystem;
+  }
+
+  Document& main_frame_document =
+      *web_view_->MainFrameImpl()->GetFrame()->GetDocument();
+
+  if (input_event.GetType() != WebInputEvent::Type::kMouseMove) {
+    FirstMeaningfulPaintDetector::From(main_frame_document).NotifyInputEvent();
+  }
+
+  if (input_event.GetType() != WebInputEvent::Type::kMouseMove &&
+      input_event.GetType() != WebInputEvent::Type::kMouseEnter &&
+      input_event.GetType() != WebInputEvent::Type::kMouseLeave) {
+    InteractiveDetector* interactive_detector(
+        InteractiveDetector::From(main_frame_document));
+    if (interactive_detector) {
+      interactive_detector->OnInvalidatingInputEvent(input_event.TimeStamp());
+    }
+  }
+
+  NotifyInputObservers(coalesced_event);
+
+  // Notify the focus frame of the input. Note that the other frames are not
+  // notified as input is only handled by the focused frame.
+  Frame* frame = web_view_->FocusedCoreFrame();
+  if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
+    if (auto* content_capture_manager =
+            local_frame->LocalFrameRoot().GetContentCaptureManager()) {
+      content_capture_manager->NotifyInputEvent(input_event.GetType(),
+                                                *local_frame);
+    }
+  }
+
+  // Skip the pointerrawupdate for mouse capture case.
+  if (mouse_capture_element_ &&
+      input_event.GetType() == WebInputEvent::Type::kPointerRawUpdate)
+    return WebInputEventResult::kHandledSystem;
+
+  if (mouse_capture_element_ &&
+      WebInputEvent::IsMouseEventType(input_event.GetType()))
+    return HandleCapturedMouseEvent(coalesced_event);
+
+  // FIXME: This should take in the intended frame, not the local frame
+  // root.
+  return PageWidgetDelegate::HandleInputEvent(
+      *this, coalesced_event, web_view_->MainFrameImpl()->GetFrame());
 }
 
 WebInputEventResult WebViewFrameWidget::DispatchBufferedTouchEvents() {
   return web_view_->DispatchBufferedTouchEvents();
+}
+
+WebInputEventResult WebViewFrameWidget::HandleCapturedMouseEvent(
+    const WebCoalescedInputEvent& coalesced_event) {
+  const WebInputEvent& input_event = coalesced_event.Event();
+  TRACE_EVENT1("input", "captured mouse event", "type", input_event.GetType());
+  // Save |mouse_capture_element_| since |MouseCaptureLost()| will clear it.
+  HTMLPlugInElement* element = mouse_capture_element_;
+
+  // Not all platforms call mouseCaptureLost() directly.
+  if (input_event.GetType() == WebInputEvent::Type::kMouseUp)
+    MouseCaptureLost();
+
+  AtomicString event_type;
+  switch (input_event.GetType()) {
+    case WebInputEvent::Type::kMouseEnter:
+      event_type = event_type_names::kMouseover;
+      break;
+    case WebInputEvent::Type::kMouseMove:
+      event_type = event_type_names::kMousemove;
+      break;
+    case WebInputEvent::Type::kPointerRawUpdate:
+      // There will be no mouse event for rawupdate events.
+      event_type = event_type_names::kPointerrawupdate;
+      break;
+    case WebInputEvent::Type::kMouseLeave:
+      event_type = event_type_names::kMouseout;
+      break;
+    case WebInputEvent::Type::kMouseDown:
+      event_type = event_type_names::kMousedown;
+      LocalFrame::NotifyUserActivation(
+          element->GetDocument().GetFrame(),
+          mojom::blink::UserActivationNotificationType::kInteraction);
+      break;
+    case WebInputEvent::Type::kMouseUp:
+      event_type = event_type_names::kMouseup;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  WebMouseEvent transformed_event =
+      TransformWebMouseEvent(web_view_->MainFrameImpl()->GetFrameView(),
+                             static_cast<const WebMouseEvent&>(input_event));
+  if (LocalFrame* frame = element->GetDocument().GetFrame()) {
+    frame->GetEventHandler().HandleTargetedMouseEvent(
+        element, transformed_event, event_type,
+        TransformWebMouseEventVector(
+            web_view_->MainFrameImpl()->GetFrameView(),
+            coalesced_event.GetCoalescedEventsPointers()),
+        TransformWebMouseEventVector(
+            web_view_->MainFrameImpl()->GetFrameView(),
+            coalesced_event.GetPredictedEventsPointers()));
+  }
+  return WebInputEventResult::kHandledSystem;
 }
 
 void WebViewFrameWidget::ApplyViewportChanges(
@@ -137,6 +293,7 @@ void WebViewFrameWidget::RecordManipulationTypeCounts(
 }
 
 void WebViewFrameWidget::MouseCaptureLost() {
+  mouse_capture_element_ = nullptr;
   web_view_->MouseCaptureLost();
 }
 
@@ -250,10 +407,446 @@ void WebViewFrameWidget::ZoomToFindInPageRect(
 void WebViewFrameWidget::Trace(Visitor* visitor) const {
   WebFrameWidgetBase::Trace(visitor);
   visitor->Trace(device_emulator_);
+  visitor->Trace(mouse_capture_element_);
 }
 
-PageWidgetEventHandler* WebViewFrameWidget::GetPageWidgetEventHandler() {
-  return web_view_.get();
+WebInputEventResult WebViewFrameWidget::HandleKeyEvent(
+    const WebKeyboardEvent& event) {
+  DCHECK((event.GetType() == WebInputEvent::Type::kRawKeyDown) ||
+         (event.GetType() == WebInputEvent::Type::kKeyDown) ||
+         (event.GetType() == WebInputEvent::Type::kKeyUp));
+  TRACE_EVENT2("input", "WebViewFrameWidget::HandleKeyEvent", "type",
+               WebInputEvent::GetName(event.GetType()), "text",
+               String(event.text).Utf8());
+
+  // Please refer to the comments explaining |suppress_next_keypress_event_|.
+  //
+  // |suppress_next_keypress_event_| is set if the KeyDown is handled by
+  // Webkit. A keyDown event is typically associated with a keyPress(char)
+  // event and a keyUp event. We reset this flag here as this is a new keyDown
+  // event.
+  suppress_next_keypress_event_ = false;
+
+  // If there is a popup, it should be the one processing the event, not the
+  // page.
+  scoped_refptr<WebPagePopupImpl> page_popup = View()->GetPagePopup();
+  if (page_popup) {
+    page_popup->HandleKeyEvent(event);
+    // We need to ignore the next Char event after this otherwise pressing
+    // enter when selecting an item in the popup will go to the page.
+    if (WebInputEvent::Type::kRawKeyDown == event.GetType())
+      suppress_next_keypress_event_ = true;
+    return WebInputEventResult::kHandledSystem;
+  }
+
+  Frame* focused_frame = web_view_->FocusedCoreFrame();
+  auto* focused_local_frame = DynamicTo<LocalFrame>(focused_frame);
+  if (!focused_local_frame)
+    return WebInputEventResult::kNotHandled;
+
+  WebInputEventResult result =
+      focused_local_frame->GetEventHandler().KeyEvent(event);
+  if (result != WebInputEventResult::kNotHandled) {
+    if (WebInputEvent::Type::kRawKeyDown == event.GetType()) {
+      // Suppress the next keypress event unless the focused node is a plugin
+      // node.  (Flash needs these keypress events to handle non-US keyboards.)
+      Element* element = web_view_->FocusedElement();
+      if (element && element->GetLayoutObject() &&
+          element->GetLayoutObject()->IsEmbeddedObject()) {
+        if (event.windows_key_code == VKEY_TAB) {
+          // If the plugin supports keyboard focus then we should not send a tab
+          // keypress event.
+          WebPluginContainerImpl* plugin_view =
+              ToLayoutEmbeddedContent(element->GetLayoutObject())->Plugin();
+          if (plugin_view && plugin_view->SupportsKeyboardFocus()) {
+            suppress_next_keypress_event_ = true;
+          }
+        }
+      } else {
+        suppress_next_keypress_event_ = true;
+      }
+    }
+    return result;
+  }
+
+#if !defined(OS_MAC)
+  const WebInputEvent::Type kContextMenuKeyTriggeringEventType =
+#if defined(OS_WIN)
+      WebInputEvent::Type::kKeyUp;
+#else
+      WebInputEvent::Type::kRawKeyDown;
+#endif
+  const WebInputEvent::Type kShiftF10TriggeringEventType =
+      WebInputEvent::Type::kRawKeyDown;
+
+  bool is_unmodified_menu_key =
+      !(event.GetModifiers() & WebInputEvent::kInputModifiers) &&
+      event.windows_key_code == VKEY_APPS;
+  bool is_shift_f10 = (event.GetModifiers() & WebInputEvent::kInputModifiers) ==
+                          WebInputEvent::kShiftKey &&
+                      event.windows_key_code == VKEY_F10;
+  if ((is_unmodified_menu_key &&
+       event.GetType() == kContextMenuKeyTriggeringEventType) ||
+      (is_shift_f10 && event.GetType() == kShiftF10TriggeringEventType)) {
+    View()->SendContextMenuEvent();
+    return WebInputEventResult::kHandledSystem;
+  }
+#endif  // !defined(OS_MAC)
+
+  return WebInputEventResult::kNotHandled;
+}
+
+WebInputEventResult WebViewFrameWidget::HandleCharEvent(
+    const WebKeyboardEvent& event) {
+  DCHECK_EQ(event.GetType(), WebInputEvent::Type::kChar);
+  TRACE_EVENT1("input", "WebViewFrameWidget::HandleCharEvent", "text",
+               String(event.text).Utf8());
+
+  // Please refer to the comments explaining |suppress_next_keypress_event_|
+  // |suppress_next_keypress_event_| is set if the KeyDown is
+  // handled by Webkit. A keyDown event is typically associated with a
+  // keyPress(char) event and a keyUp event. We reset this flag here as it
+  // only applies to the current keyPress event.
+  bool suppress = suppress_next_keypress_event_;
+  suppress_next_keypress_event_ = false;
+
+  // If there is a popup, it should be the one processing the event, not the
+  // page.
+  scoped_refptr<WebPagePopupImpl> page_popup = View()->GetPagePopup();
+  if (page_popup)
+    return page_popup->HandleKeyEvent(event);
+
+  auto* frame = To<LocalFrame>(web_view_->FocusedCoreFrame());
+  if (!frame) {
+    return suppress ? WebInputEventResult::kHandledSuppressed
+                    : WebInputEventResult::kNotHandled;
+  }
+
+  EventHandler& handler = frame->GetEventHandler();
+
+  if (!event.IsCharacterKey())
+    return WebInputEventResult::kHandledSuppressed;
+
+  // Accesskeys are triggered by char events and can't be suppressed.
+  if (handler.HandleAccessKey(event))
+    return WebInputEventResult::kHandledSystem;
+
+  // Safari 3.1 does not pass off windows system key messages (WM_SYSCHAR) to
+  // the eventHandler::keyEvent. We mimic this behavior on all platforms since
+  // for now we are converting other platform's key events to windows key
+  // events.
+  if (event.is_system_key)
+    return WebInputEventResult::kNotHandled;
+
+  if (suppress)
+    return WebInputEventResult::kHandledSuppressed;
+
+  WebInputEventResult result = handler.KeyEvent(event);
+  if (result != WebInputEventResult::kNotHandled)
+    return result;
+
+  return WebInputEventResult::kNotHandled;
+}
+
+void WebViewFrameWidget::HandleMouseLeave(LocalFrame& main_frame,
+                                          const WebMouseEvent& event) {
+  web_view_->SetMouseOverURL(WebURL());
+  PageWidgetEventHandler::HandleMouseLeave(main_frame, event);
+}
+
+void WebViewFrameWidget::HandleMouseDown(LocalFrame& main_frame,
+                                         const WebMouseEvent& event) {
+  // If there is a popup open, close it as the user is clicking on the page
+  // (outside of the popup). We also save it so we can prevent a click on an
+  // element from immediately reopening the same popup.
+  //
+  // The popup would not be destroyed in this stack normally as it is owned by
+  // closership from the RenderWidget, which is owned by the browser via the
+  // Close IPC. However if a nested message loop were to happen then the browser
+  // close of the RenderWidget and WebPagePopupImpl could feasibly occur inside
+  // this method, so holding a reference here ensures we can use the
+  // |page_popup| even if it is closed.
+  scoped_refptr<WebPagePopupImpl> page_popup;
+  if (event.button == WebMouseEvent::Button::kLeft) {
+    page_popup = web_view_->GetPagePopup();
+    web_view_->CancelPagePopup();
+  }
+
+  // Take capture on a mouse down on a plugin so we can send it mouse events.
+  // If the hit node is a plugin but a scrollbar is over it don't start mouse
+  // capture because it will interfere with the scrollbar receiving events.
+  if (event.button == WebMouseEvent::Button::kLeft) {
+    HitTestLocation location(main_frame.View()->ConvertFromRootFrame(
+        FloatPoint(event.PositionInWidget())));
+    HitTestResult result(
+        main_frame.GetEventHandler().HitTestResultAtLocation(location));
+    result.SetToShadowHostIfInRestrictedShadowRoot();
+    Node* hit_node = result.InnerNodeOrImageMapImage();
+    auto* html_element = DynamicTo<HTMLElement>(hit_node);
+    if (!result.GetScrollbar() && hit_node && hit_node->GetLayoutObject() &&
+        hit_node->GetLayoutObject()->IsEmbeddedObject() && html_element &&
+        html_element->IsPluginElement()) {
+      mouse_capture_element_ = To<HTMLPlugInElement>(hit_node);
+      main_frame.Client()->SetMouseCapture(true);
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("input", "capturing mouse",
+                                        TRACE_ID_LOCAL(this));
+    }
+  }
+
+  PageWidgetEventHandler::HandleMouseDown(main_frame, event);
+
+  if (web_view_->GetPagePopup() && page_popup &&
+      web_view_->GetPagePopup()->HasSamePopupClient(page_popup.get())) {
+    // That click triggered a page popup that is the same as the one we just
+    // closed.  It needs to be closed.
+    web_view_->CancelPagePopup();
+  }
+
+  // Dispatch the contextmenu event regardless of if the click was swallowed.
+  if (!GetPage()->GetSettings().GetShowContextMenuOnMouseUp()) {
+#if defined(OS_MAC)
+    if (event.button == WebMouseEvent::Button::kRight ||
+        (event.button == WebMouseEvent::Button::kLeft &&
+         event.GetModifiers() & WebMouseEvent::kControlKey))
+      MouseContextMenu(event);
+#else
+    if (event.button == WebMouseEvent::Button::kRight)
+      MouseContextMenu(event);
+#endif
+  }
+}
+
+void WebViewFrameWidget::MouseContextMenu(const WebMouseEvent& event) {
+  if (!web_view_->MainFrameImpl() ||
+      !web_view_->MainFrameImpl()->GetFrameView())
+    return;
+
+  GetPage()->GetContextMenuController().ClearContextMenu();
+
+  WebMouseEvent transformed_event =
+      TransformWebMouseEvent(web_view_->MainFrameImpl()->GetFrameView(), event);
+  transformed_event.menu_source_type = kMenuSourceMouse;
+
+  // Find the right target frame. See issue 1186900.
+  HitTestResult result = web_view_->HitTestResultForRootFramePos(
+      FloatPoint(transformed_event.PositionInRootFrame()));
+  Frame* target_frame;
+  if (result.InnerNodeOrImageMapImage())
+    target_frame = result.InnerNodeOrImageMapImage()->GetDocument().GetFrame();
+  else
+    target_frame = GetPage()->GetFocusController().FocusedOrMainFrame();
+
+  auto* target_local_frame = DynamicTo<LocalFrame>(target_frame);
+  if (!target_local_frame)
+    return;
+
+  {
+    ContextMenuAllowedScope scope;
+    target_local_frame->GetEventHandler().SendContextMenuEvent(
+        transformed_event);
+  }
+  // Actually showing the context menu is handled by the ContextMenuController
+  // implementation...
+}
+
+WebInputEventResult WebViewFrameWidget::HandleMouseUp(
+    LocalFrame& main_frame,
+    const WebMouseEvent& event) {
+  WebInputEventResult result =
+      PageWidgetEventHandler::HandleMouseUp(main_frame, event);
+
+  if (GetPage()->GetSettings().GetShowContextMenuOnMouseUp()) {
+    // Dispatch the contextmenu event regardless of if the click was swallowed.
+    // On Mac/Linux, we handle it on mouse down, not up.
+    if (event.button == WebMouseEvent::Button::kRight)
+      MouseContextMenu(event);
+  }
+  return result;
+}
+
+WebInputEventResult WebViewFrameWidget::HandleMouseWheel(
+    LocalFrame& main_frame,
+    const WebMouseWheelEvent& event) {
+  web_view_->CancelPagePopup();
+  return PageWidgetEventHandler::HandleMouseWheel(main_frame, event);
+}
+
+WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
+    const WebGestureEvent& event) {
+  if (!web_view_->Client() || !web_view_->Client()->CanHandleGestureEvent()) {
+    return WebInputEventResult::kNotHandled;
+  }
+
+  WebInputEventResult event_result = WebInputEventResult::kNotHandled;
+  bool event_cancelled = false;  // for disambiguation
+
+  // Fling events are not sent to the renderer.
+  CHECK(event.GetType() != WebInputEvent::Type::kGestureFlingStart);
+  CHECK(event.GetType() != WebInputEvent::Type::kGestureFlingCancel);
+
+  WebGestureEvent scaled_event = TransformWebGestureEvent(
+      web_view_->MainFrameImpl()->GetFrameView(), event);
+
+  // Special handling for double tap and scroll events as we don't want to
+  // hit test for them.
+  switch (event.GetType()) {
+    case WebInputEvent::Type::kGestureDoubleTap:
+      if (web_view_->SettingsImpl()->DoubleTapToZoomEnabled() &&
+          web_view_->MinimumPageScaleFactor() !=
+              web_view_->MaximumPageScaleFactor()) {
+        if (auto* main_frame = web_view_->MainFrameImpl()) {
+          IntPoint pos_in_root_frame =
+              FlooredIntPoint(scaled_event.PositionInRootFrame());
+          WebRect block_bounds =
+              main_frame->FrameWidgetImpl()->ComputeBlockBound(
+                  pos_in_root_frame, false);
+          web_view_->AnimateDoubleTapZoom(pos_in_root_frame, block_bounds);
+        }
+      }
+      event_result = WebInputEventResult::kHandledSystem;
+      DidHandleGestureEvent(event, event_cancelled);
+      return event_result;
+    case WebInputEvent::Type::kGestureScrollBegin:
+    case WebInputEvent::Type::kGestureScrollEnd:
+    case WebInputEvent::Type::kGestureScrollUpdate:
+      // Scrolling-related gesture events invoke EventHandler recursively for
+      // each frame down the chain, doing a single-frame hit-test per frame.
+      // This matches handleWheelEvent.  Perhaps we could simplify things by
+      // rewriting scroll handling to work inner frame out, and then unify with
+      // other gesture events.
+      event_result = web_view_->MainFrameImpl()
+                         ->GetFrame()
+                         ->GetEventHandler()
+                         .HandleGestureScrollEvent(scaled_event);
+      DidHandleGestureEvent(event, event_cancelled);
+      return event_result;
+    default:
+      break;
+  }
+
+  // Hit test across all frames and do touch adjustment as necessary for the
+  // event type.
+  GestureEventWithHitTestResults targeted_event =
+      GetPage()
+          ->DeprecatedLocalMainFrame()
+          ->GetEventHandler()
+          .TargetGestureEvent(scaled_event);
+
+  // Handle link highlighting outside the main switch to avoid getting lost in
+  // the complicated set of cases handled below.
+  switch (event.GetType()) {
+    case WebInputEvent::Type::kGestureShowPress:
+      // Queue a highlight animation, then hand off to regular handler.
+      web_view_->EnableTapHighlightAtPoint(targeted_event);
+      break;
+    case WebInputEvent::Type::kGestureTapCancel:
+    case WebInputEvent::Type::kGestureTap:
+    case WebInputEvent::Type::kGestureLongPress:
+      GetPage()->GetLinkHighlight().StartHighlightAnimationIfNeeded();
+      break;
+    default:
+      break;
+  }
+
+  switch (event.GetType()) {
+    case WebInputEvent::Type::kGestureTap: {
+      {
+        ContextMenuAllowedScope scope;
+        event_result = web_view_->MainFrameImpl()
+                           ->GetFrame()
+                           ->GetEventHandler()
+                           .HandleGestureEvent(targeted_event);
+      }
+
+      if (web_view_->GetPagePopup() && last_hidden_page_popup_ &&
+          web_view_->GetPagePopup()->HasSamePopupClient(
+              last_hidden_page_popup_.get())) {
+        // The tap triggered a page popup that is the same as the one we just
+        // closed. It needs to be closed.
+        web_view_->CancelPagePopup();
+      }
+      // Don't have this value persist outside of a single tap gesture, plus
+      // we're done with it now.
+      last_hidden_page_popup_ = nullptr;
+      break;
+    }
+    case WebInputEvent::Type::kGestureTwoFingerTap:
+    case WebInputEvent::Type::kGestureLongPress:
+    case WebInputEvent::Type::kGestureLongTap: {
+      if (!web_view_->MainFrameImpl() ||
+          !web_view_->MainFrameImpl()->GetFrameView())
+        break;
+
+      if (event.GetType() == WebInputEvent::Type::kGestureLongTap) {
+        if (LocalFrame* inner_frame =
+                targeted_event.GetHitTestResult().InnerNodeFrame()) {
+          if (!inner_frame->GetEventHandler().LongTapShouldInvokeContextMenu())
+            break;
+        } else if (!web_view_->MainFrameImpl()
+                        ->GetFrame()
+                        ->GetEventHandler()
+                        .LongTapShouldInvokeContextMenu()) {
+          break;
+        }
+      }
+
+      GetPage()->GetContextMenuController().ClearContextMenu();
+      {
+        ContextMenuAllowedScope scope;
+        event_result = web_view_->MainFrameImpl()
+                           ->GetFrame()
+                           ->GetEventHandler()
+                           .HandleGestureEvent(targeted_event);
+      }
+
+      break;
+    }
+    case WebInputEvent::Type::kGestureTapDown: {
+      // Touch pinch zoom and scroll on the page (outside of a popup) must hide
+      // the popup. In case of a touch scroll or pinch zoom, this function is
+      // called with GestureTapDown rather than a GSB/GSU/GSE or GPB/GPU/GPE.
+      // When we close a popup because of a GestureTapDown, we also save it so
+      // we can prevent the following GestureTap from immediately reopening the
+      // same popup.
+      // This value should not persist outside of a gesture, so is cleared by
+      // GestureTap (where it is used) and by GestureCancel.
+      last_hidden_page_popup_ = web_view_->GetPagePopup();
+      web_view_->CancelPagePopup();
+      event_result = web_view_->MainFrameImpl()
+                         ->GetFrame()
+                         ->GetEventHandler()
+                         .HandleGestureEvent(targeted_event);
+      break;
+    }
+    case WebInputEvent::Type::kGestureTapCancel: {
+      // Don't have this value persist outside of a single tap gesture.
+      last_hidden_page_popup_ = nullptr;
+      event_result = web_view_->MainFrameImpl()
+                         ->GetFrame()
+                         ->GetEventHandler()
+                         .HandleGestureEvent(targeted_event);
+      break;
+    }
+    case WebInputEvent::Type::kGestureShowPress: {
+      event_result = web_view_->MainFrameImpl()
+                         ->GetFrame()
+                         ->GetEventHandler()
+                         .HandleGestureEvent(targeted_event);
+      break;
+    }
+    case WebInputEvent::Type::kGestureTapUnconfirmed: {
+      event_result = web_view_->MainFrameImpl()
+                         ->GetFrame()
+                         ->GetEventHandler()
+                         .HandleGestureEvent(targeted_event);
+      break;
+    }
+    default: {
+      NOTREACHED();
+    }
+  }
+  DidHandleGestureEvent(event, event_cancelled);
+  return event_result;
 }
 
 LocalFrameView* WebViewFrameWidget::GetLocalFrameViewForAnimationScrolling() {

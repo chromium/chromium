@@ -88,7 +88,6 @@ class BrowserControls;
 class DevToolsEmulator;
 class Frame;
 class FullscreenController;
-class HTMLPlugInElement;
 class PageScaleConstraintsSet;
 class WebDevToolsAgentImpl;
 class WebLocalFrame;
@@ -109,7 +108,6 @@ using PaintHoldingCommitTrigger = cc::PaintHoldingCommitTrigger;
 
 class CORE_EXPORT WebViewImpl final : public WebView,
                                       public RefCounted<WebViewImpl>,
-                                      public PageWidgetEventHandler,
                                       public mojom::blink::PageBroadcast {
  public:
   static WebViewImpl* Create(
@@ -293,10 +291,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // (local or remote) is attached, but this should not generally matter to code
   // outside this class.
   WebLocalFrameImpl* MainFrameImpl() const;
-
-  // Event related methods:
-  void MouseContextMenu(const WebMouseEvent&);
-  void MouseDoubleClick(const WebMouseEvent&);
 
   // Changes the zoom and scroll for zooming into an editable element
   // with bounds |element_bounds_in_document| and caret bounds
@@ -535,7 +529,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason);
   void ThemeChanged();
-  WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&);
   WebInputEventResult DispatchBufferedTouchEvents();
   void ApplyViewportChanges(const ApplyViewportChangesArgs& args);
   void RecordManipulationTypeCounts(cc::ManipulationInfo info);
@@ -603,18 +596,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   WebRect WidenRectWithinPageBounds(const WebRect& source,
                                     int target_margin,
                                     int minimum_margin);
-
-  // PageWidgetEventHandler functions
-  void HandleMouseLeave(LocalFrame&, const WebMouseEvent&) override;
-  void HandleMouseDown(LocalFrame&, const WebMouseEvent&) override;
-  WebInputEventResult HandleMouseUp(LocalFrame&, const WebMouseEvent&) override;
-  WebInputEventResult HandleMouseWheel(LocalFrame&,
-                                       const WebMouseWheelEvent&) override;
-  WebInputEventResult HandleGestureEvent(const WebGestureEvent&) override;
-  WebInputEventResult HandleKeyEvent(const WebKeyboardEvent&) override;
-  WebInputEventResult HandleCharEvent(const WebKeyboardEvent&) override;
-
-  WebInputEventResult HandleCapturedMouseEvent(const WebCoalescedInputEvent&);
 
   void EnablePopupMouseWheelEventListener(WebLocalFrameImpl* local_root);
   void DisablePopupMouseWheelEventListener();
@@ -739,12 +720,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   float compositor_device_scale_factor_override_ = 0.f;
   TransformationMatrix device_emulation_transform_;
 
-  // Webkit expects keyPress events to be suppressed if the associated keyDown
-  // event was handled. Safari implements this behavior by peeking out the
-  // associated WM_CHAR event if the keydown was handled. We emulate
-  // this behavior by setting this flag if the keyDown was handled.
-  bool suppress_next_keypress_event_ = false;
-
   // TODO(ekaramad): Can we remove this and make sure IME events are not called
   // when there is no page focus?
   // Represents whether or not this object should process incoming IME events.
@@ -757,18 +732,10 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // closed.
   scoped_refptr<WebPagePopupImpl> page_popup_;
 
-  // This stores the last hidden page popup. If a GestureTap attempts to open
-  // the popup that is closed by its previous GestureTapDown, the popup remains
-  // closed.
-  scoped_refptr<WebPagePopupImpl> last_hidden_page_popup_;
-
   Persistent<DevToolsEmulator> dev_tools_emulator_;
 
   // Whether the user can press tab to focus links.
   bool tabs_to_links_ = false;
-
-  // If set, the (plugin) element which has mouse capture.
-  Persistent<HTMLPlugInElement> mouse_capture_element_;
 
   // WebViews, and WebWidgets, are used to host a Page. The WidgetClient()
   // provides compositing support for the WebView.
@@ -798,11 +765,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   bool should_dispatch_first_visually_non_empty_layout_ = false;
   bool should_dispatch_first_layout_after_finished_parsing_ = false;
   bool should_dispatch_first_layout_after_finished_loading_ = false;
-
-  // TODO(bokan): Temporary debugging added to diagnose
-  // https://crbug.com/992315. Somehow we're synchronously calling
-  // WebViewImpl::Close while handling an input event.
-  bool debug_inside_input_handling_ = false;
 
   FloatSize elastic_overscroll_;
 

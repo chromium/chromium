@@ -43,7 +43,6 @@
 #include "third_party/blink/public/web/web_input_method_controller.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
-#include "third_party/blink/renderer/core/page/page_widget_delegate.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/graphics/apply_viewport_changes.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
@@ -71,8 +70,7 @@ class WebFrameWidgetImpl;
 //
 // For the main frame's WebFrameWidget implementation, see WebViewFrameWidget.
 //
-class WebFrameWidgetImpl final : public WebFrameWidgetBase,
-                                 public PageWidgetEventHandler {
+class WebFrameWidgetImpl final : public WebFrameWidgetBase {
  public:
   WebFrameWidgetImpl(
       util::PassKey<WebFrameWidget>,
@@ -187,7 +185,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase,
   WebInputEventResult HandleKeyEvent(const WebKeyboardEvent&) override;
   WebInputEventResult HandleCharEvent(const WebKeyboardEvent&) override;
 
-  PageWidgetEventHandler* GetPageWidgetEventHandler() override;
   LocalFrameView* GetLocalFrameViewForAnimationScrolling() override;
 
   LocalFrame* FocusedLocalFrameAvailableForIme() const;
