@@ -7,7 +7,6 @@
 #include <cmath>
 
 #include "third_party/blink/renderer/core/geometry/dom_point_read_only.h"
-#include "third_party/blink/renderer/modules/webgl/webgl2_compute_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_rendering_context.h"
@@ -69,11 +68,6 @@ DOMPointReadOnly* makeNormalizedQuaternion(double x,
 
 WebGLRenderingContextBase* webglRenderingContextBaseFromUnion(
     const XRWebGLRenderingContext& context) {
-#if defined(SUPPORT_WEBGL2_COMPUTE_CONTEXT)
-  if (context.IsWebGL2ComputeRenderingContext()) {
-    return context.GetAsWebGL2ComputeRenderingContext();
-  }
-#endif
   if (context.IsWebGL2RenderingContext()) {
     return context.GetAsWebGL2RenderingContext();
   } else {

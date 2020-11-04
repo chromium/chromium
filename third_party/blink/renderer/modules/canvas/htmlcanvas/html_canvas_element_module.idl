@@ -4,9 +4,6 @@
 
 // https://html.spec.whatwg.org/C/#the-canvas-element
 
-// This file is currently forked between html_canvas_element_module.idl and
-// html_canvas_element_module_support_webgl2_compute.idl. Update both files.
-
 typedef (CanvasRenderingContext2D or
          WebGLRenderingContext or
          WebGL2RenderingContext or

@@ -93,7 +93,6 @@ class WebGLProgram final : public WebGLSharedPlatform3DObject {
 
   Member<WebGLShader> vertex_shader_;
   Member<WebGLShader> fragment_shader_;
-  Member<WebGLShader> compute_shader_;
 
   bool info_valid_;
 

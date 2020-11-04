@@ -68,12 +68,6 @@ void SetRuntimeFeatureDefaultsForPlatform(
   }
 #endif
 
-#if defined(SUPPORT_WEBGL2_COMPUTE_CONTEXT)
-  if (command_line.HasSwitch(switches::kEnableWebGL2ComputeContext)) {
-    WebRuntimeFeatures::EnableWebGL2ComputeContext(true);
-  }
-#endif
-
 #if defined(OS_MAC)
   const bool enable_canvas_2d_image_chromium =
       command_line.HasSwitch(

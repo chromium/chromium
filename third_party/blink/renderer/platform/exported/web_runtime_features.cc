@@ -385,10 +385,6 @@ void WebRuntimeFeatures::EnableScrollUnification(bool enable) {
   RuntimeEnabledFeatures::SetScrollUnificationEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableWebGL2ComputeContext(bool enable) {
-  RuntimeEnabledFeatures::SetWebGL2ComputeContextEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableWebGLDraftExtensions(bool enable) {
   RuntimeEnabledFeatures::SetWebGLDraftExtensionsEnabled(enable);
 }

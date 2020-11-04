@@ -9005,8 +9005,9 @@ Called by update_bad_message_reasons.py.-->
   <int value="4" label="webgl2"/>
   <int value="5" label="bitmaprenderer"/>
   <int value="6" label="XRP present"/>
-  <int value="7" label="webgl2-compute"/>
-  <int value="8" label="unknown"/>
+  <int value="7" label="(obselete) webgl2-compute"/>
+  <int value="8" label="(webgpu) gpupresent"/>
+  <int value="9" label="unknown"/>
 </enum>
 
 <enum name="CanvasContextUsage">

@@ -86,10 +86,3 @@ modules_dependency_idl_files = [
   "webgl2_rendering_context_base.idl",
   "webgl_rendering_context_base.idl",
 ]
-
-if (support_webgl2_compute_context) {
-  modules_idl_files += [ "webgl2_compute_rendering_context.idl" ]
-
-  modules_dependency_idl_files +=
-      [ "webgl2_compute_rendering_context_base.idl" ]
-}

@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_WEBGL_LAYER_H_
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_webgl_layer_init.h"
-#include "third_party/blink/renderer/modules/webgl/webgl2_compute_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
 #include "third_party/blink/renderer/modules/xr/xr_layer.h"

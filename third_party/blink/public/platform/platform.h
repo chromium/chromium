@@ -457,8 +457,6 @@ class BLINK_PLATFORM_EXPORT Platform {
   enum ContextType {
     kWebGL1ContextType,  // WebGL 1.0 context, use only for WebGL canvases
     kWebGL2ContextType,  // WebGL 2.0 context, use only for WebGL canvases
-    kWebGL2ComputeContextType,  // WebGL 2.0 Compute context, use only for WebGL
-                                // canvases
     kGLES2ContextType,   // GLES 2.0 context, default, good for using skia
     kGLES3ContextType,   // GLES 3.0 context
     kWebGPUContextType,  // WebGPU context

@@ -2104,10 +2104,6 @@
       status: "experimental",
     },
     {
-      name: "WebGL2ComputeContext",
-      status: "experimental",
-    },
-    {
       name: "WebGLDraftExtensions",
       status: "experimental",
     },

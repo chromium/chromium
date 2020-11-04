@@ -178,7 +178,6 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void
   EnableWebBluetoothRemoteCharacteristicNewWriteValue(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebBluetoothScanning(bool);
-  BLINK_PLATFORM_EXPORT static void EnableWebGL2ComputeContext(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebGLDraftExtensions(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebGLImageChromium(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebGPU(bool);

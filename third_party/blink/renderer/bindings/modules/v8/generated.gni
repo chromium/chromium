@@ -117,22 +117,11 @@ bindings_modules_generated_union_type_files = [
   "$bindings_modules_v8_output_dir/usv_string_or_uint32_array.h",
   "$bindings_modules_v8_output_dir/usv_string_or_usv_string_sequence.cc",
   "$bindings_modules_v8_output_dir/usv_string_or_usv_string_sequence.h",
+  "$bindings_modules_v8_output_dir/webgl_rendering_context_or_webgl2_rendering_context.cc",
+  "$bindings_modules_v8_output_dir/webgl_rendering_context_or_webgl2_rendering_context.h",
   "$bindings_modules_v8_output_dir/worklet_animation_effect_or_worklet_group_effect.cc",
   "$bindings_modules_v8_output_dir/worklet_animation_effect_or_worklet_group_effect.h",
 ]
-
-# WebGL2 Compute
-if (support_webgl2_compute_context) {
-  bindings_modules_generated_union_type_files += [
-    "$bindings_modules_v8_output_dir/webgl_rendering_context_or_webgl2_rendering_context_or_webgl2_compute_rendering_context.cc",
-    "$bindings_modules_v8_output_dir/webgl_rendering_context_or_webgl2_rendering_context_or_webgl2_compute_rendering_context.h",
-  ]
-} else {
-  bindings_modules_generated_union_type_files += [
-    "$bindings_modules_v8_output_dir/webgl_rendering_context_or_webgl2_rendering_context.cc",
-    "$bindings_modules_v8_output_dir/webgl_rendering_context_or_webgl2_rendering_context.h",
-  ]
-}
 
 generated_modules_callback_function_files = [
   "$bindings_modules_v8_output_dir/v8_animate_callback.cc",

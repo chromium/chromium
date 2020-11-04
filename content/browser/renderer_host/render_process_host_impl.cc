@@ -3325,7 +3325,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kEnableUseZoomForDSF,
     switches::kEnableViewport,
     switches::kEnableVtune,
-    switches::kEnableWebGL2ComputeContext,
     switches::kEnableWebGLDraftExtensions,
     switches::kEnableWebGLImageChromium,
     switches::kFileUrlPathAlias,

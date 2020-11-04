@@ -139,9 +139,6 @@ interface PeriodicSyncManager
 interface ServiceWorkerRegistration : EventTarget
     getter periodicSync
 
-# support_webgl2_compute_context not supported on android, crbug.com/865569
-interface WebGL2ComputeRenderingContext
-
 # WebXR dependent interfaces are not supported on WebView crbug.com/1012899
 interface XRView
 interface XRViewport

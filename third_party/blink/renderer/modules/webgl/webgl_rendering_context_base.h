@@ -635,10 +635,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   scoped_refptr<StaticBitmapImage> GetImage() override;
   void SetFilterQuality(SkFilterQuality) override;
-  bool IsWebGL2OrHigher() {
-    return context_type_ == Platform::kWebGL2ContextType ||
-           context_type_ == Platform::kWebGL2ComputeContextType;
-  }
+  bool IsWebGL2() { return context_type_ == Platform::kWebGL2ContextType; }
 
   void getHTMLOrOffscreenCanvas(HTMLCanvasElementOrOffscreenCanvas&) const;
 
@@ -1162,7 +1159,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     // higher, since this should never happen for WebGL 1.0 (even though
     // the code could support it). If the image is null, that will be
     // signaled as an error later.
-    DCHECK(!*selecting_sub_rectangle || IsWebGL2OrHigher())
+    DCHECK(!*selecting_sub_rectangle || IsWebGL2())
         << "subRect = (" << sub_rect.Width() << " x " << sub_rect.Height()
         << ") @ (" << sub_rect.X() << ", " << sub_rect.Y() << "), image = ("
         << image_width << " x " << image_height << ")";

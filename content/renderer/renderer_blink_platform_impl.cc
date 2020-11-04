@@ -148,8 +148,6 @@ gpu::ContextType ToGpuContextType(blink::Platform::ContextType type) {
       return gpu::CONTEXT_TYPE_WEBGL1;
     case blink::Platform::kWebGL2ContextType:
       return gpu::CONTEXT_TYPE_WEBGL2;
-    case blink::Platform::kWebGL2ComputeContextType:
-      return gpu::CONTEXT_TYPE_WEBGL2_COMPUTE;
     case blink::Platform::kGLES2ContextType:
       return gpu::CONTEXT_TYPE_OPENGLES2;
     case blink::Platform::kGLES3ContextType:

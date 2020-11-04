@@ -2926,13 +2926,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForceEnableDevicesPageName,
      flag_descriptions::kForceEnableDevicesPageDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kForceEnableDevicesPage)},
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
-    {"enable-webgl2-compute-context",
-     flag_descriptions::kWebGL2ComputeContextName,
-     flag_descriptions::kWebGL2ComputeContextDescription,
-     kOsWin | kOsLinux | kOsCrOS,
-     SINGLE_VALUE_TYPE(switches::kEnableWebGL2ComputeContext)},
-#endif  // defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
     {"enable-webgl-draft-extensions",
      flag_descriptions::kWebglDraftExtensionsName,
      flag_descriptions::kWebglDraftExtensionsDescription, kOsAll,

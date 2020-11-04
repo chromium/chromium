@@ -19,19 +19,11 @@ modules_dictionary_idl_files = [
   "htmlcanvas/canvas_context_creation_attributes_module.idl",
 ]
 
-modules_dependency_idl_files = [ "canvas2d/canvas_path.idl" ]
-
-if (support_webgl2_compute_context) {
-  modules_dependency_idl_files += [
-    "htmlcanvas/html_canvas_element_module_support_webgl2_compute.idl",
-    "offscreencanvas/offscreen_canvas_module_support_webgl2_compute.idl",
-  ]
-} else {
-  modules_dependency_idl_files += [
-    "htmlcanvas/html_canvas_element_module.idl",
-    "offscreencanvas/offscreen_canvas_module.idl",
-  ]
-}
+modules_dependency_idl_files = [
+  "canvas2d/canvas_path.idl",
+  "htmlcanvas/html_canvas_element_module.idl",
+  "offscreencanvas/offscreen_canvas_module.idl",
+]
 
 modules_testing_dependency_idl_files =
     [ "canvas2d/testing/internals_canvas_rendering_context_2d.idl" ]

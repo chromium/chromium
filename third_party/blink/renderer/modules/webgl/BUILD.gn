@@ -158,15 +158,6 @@ blink_modules_sources("webgl") {
     "webgl_video_texture_enum.h",
   ]
 
-  if (support_webgl2_compute_context) {
-    sources += [
-      "webgl2_compute_rendering_context.cc",
-      "webgl2_compute_rendering_context.h",
-      "webgl2_compute_rendering_context_base.cc",
-      "webgl2_compute_rendering_context_base.h",
-    ]
-  }
-
   # The modules/webgl/ directly is a larger module, and
   # the implementation depends on a fair chunk of core/ --
   # include the core pch for faster Windows compilation times.

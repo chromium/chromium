@@ -2662,13 +2662,6 @@ extern const char kEnableNewBadgeOnMenuItemsDescription[];
 
 // Random platform combinations -----------------------------------------------
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
-
-extern const char kWebGL2ComputeContextName[];
-extern const char kWebGL2ComputeContextDescription[];
-
-#endif  // defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
-
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
 

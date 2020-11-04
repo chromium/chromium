@@ -64,7 +64,8 @@ class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
   // A Canvas can either be "2D" or "webgl" but never both. Requesting a context
   // with a type different from an existing will destroy the latter.
   enum ContextType {
-    // Do not change assigned numbers of existing items: add new features to the
+    // These values are mirrored in tools/metrics/histograms/enums.xml. Do
+    // not change assigned numbers of existing items and add new features to the
     // end of the list.
     kContext2D = 0,
     kContextExperimentalWebgl = 2,
@@ -72,7 +73,7 @@ class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
     kContextWebgl2 = 4,
     kContextImageBitmap = 5,
     kContextXRPresent = 6,
-    kContextWebgl2Compute = 7,
+    // WebGL2Compute used to be 7.
     kContextGPUPresent = 8,
     kContextTypeUnknown = 9,
     kMaxValue = kContextTypeUnknown,

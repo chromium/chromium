@@ -98,10 +98,6 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-#if defined(SUPPORT_WEBGL2_COMPUTE_CONTEXT)
-#include "third_party/blink/renderer/modules/webgl/webgl2_compute_rendering_context.h"
-#endif
-
 #if defined(OS_ANDROID)
 #include "third_party/blink/renderer/modules/remote_objects/remote_object_gateway_impl.h"
 #endif
@@ -137,10 +133,6 @@ void ModulesInitializer::Initialize() {
       std::make_unique<WebGLRenderingContext::Factory>());
   HTMLCanvasElement::RegisterRenderingContextFactory(
       std::make_unique<WebGL2RenderingContext::Factory>());
-#if defined(SUPPORT_WEBGL2_COMPUTE_CONTEXT)
-  HTMLCanvasElement::RegisterRenderingContextFactory(
-      std::make_unique<WebGL2ComputeRenderingContext::Factory>());
-#endif
   HTMLCanvasElement::RegisterRenderingContextFactory(
       std::make_unique<ImageBitmapRenderingContext::Factory>());
   HTMLCanvasElement::RegisterRenderingContextFactory(
@@ -155,10 +147,6 @@ void ModulesInitializer::Initialize() {
       std::make_unique<WebGL2RenderingContext::Factory>());
   OffscreenCanvas::RegisterRenderingContextFactory(
       std::make_unique<ImageBitmapRenderingContext::Factory>());
-#if defined(SUPPORT_WEBGL2_COMPUTE_CONTEXT)
-  OffscreenCanvas::RegisterRenderingContextFactory(
-      std::make_unique<WebGL2ComputeRenderingContext::Factory>());
-#endif
 }
 
 void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {

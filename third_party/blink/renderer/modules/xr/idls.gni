@@ -62,15 +62,7 @@ modules_dictionary_idl_files = [
   "xr_webgl_layer_init.idl",
 ]
 
-modules_typedefs_enums_only_idl_files = []
-
-# WebGL2 Compute
-if (support_webgl2_compute_context) {
-  modules_typedefs_enums_only_idl_files +=
-      [ "xr_webgl_context_support_webgl2_compute.idl" ]
-} else {
-  modules_typedefs_enums_only_idl_files += [ "xr_webgl_context.idl" ]
-}
+modules_typedefs_enums_only_idl_files = [ "xr_webgl_context.idl" ]
 
 modules_dependency_idl_files = [
   "element_xr.idl",

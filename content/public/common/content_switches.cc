@@ -431,9 +431,6 @@ const char kEnableVtune[]                   = "enable-vtune-support";
 const char kEnableWebAuthDeprecatedMojoTestingApi[] =
     "enable-web-auth-deprecated-mojo-testing-api";
 
-// Enable WebGL2 Compute context.
-const char kEnableWebGL2ComputeContext[] = "enable-webgl2-compute-context";
-
 // Enables WebGL extensions not yet approved by the community.
 const char kEnableWebGLDraftExtensions[] = "enable-webgl-draft-extensions";
 

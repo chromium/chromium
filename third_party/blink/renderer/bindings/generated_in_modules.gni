@@ -2269,14 +2269,6 @@ if (!is_android) {
   ]
 }
 
-# WebGL2
-if (support_webgl2_compute_context) {
-  generated_interface_sources_in_modules += [
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl2_compute_rendering_context.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl2_compute_rendering_context.h",
-  ]
-}
-
 generated_interface_sources_in_modules += [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/init_idl_interfaces.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/init_idl_interfaces.h",
