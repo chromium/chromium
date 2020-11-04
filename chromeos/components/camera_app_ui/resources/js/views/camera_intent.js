@@ -144,6 +144,10 @@ export class CameraIntent extends Camera {
     }
     return (async () => {
       await take;
+      if (this.photoResult_ === null && this.videoResultFile_ === null) {
+        // In case of take early finish without any result e.g. Timer canceled.
+        return;
+      }
 
       state.set(state.State.SUSPEND, true);
       await this.start();
@@ -153,7 +157,7 @@ export class CameraIntent extends Camera {
         } else if (this.videoResultFile_ !== null) {
           return this.reviewResult_.openVideo(this.videoResultFile_);
         } else {
-          assertNotReached('End take without intent result.');
+          assertNotReached('None of intent result.');
         }
       })();
       const result = this.photoResult_ || this.videoResult_;
