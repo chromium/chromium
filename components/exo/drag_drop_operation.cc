@@ -5,6 +5,7 @@
 #include "components/exo/drag_drop_operation.h"
 
 #include "base/barrier_closure.h"
+#include "base/check.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/exo/data_offer.h"
 #include "components/exo/data_source.h"
@@ -332,19 +333,13 @@ void DragDropOperation::OnExtendedDragSourceDestroying(
 }
 
 void DragDropOperation::OnSurfaceDestroying(Surface* surface) {
-  if (surface == origin_->get() || surface == icon_->get()) {
-    delete this;
-  } else {
-    NOTREACHED();
-  }
+  DCHECK(surface == origin_->get() || surface == icon_->get());
+  delete this;
 }
 
 void DragDropOperation::OnDataSourceDestroying(DataSource* source) {
-  if (source == source_->get()) {
-    ResetSource();
-    delete this;
-  } else {
-    NOTREACHED();
-  }
+  DCHECK_EQ(source, source_->get());
+  ResetSource();
+  delete this;
 }
 }  // namespace exo
