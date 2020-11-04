@@ -1382,36 +1382,6 @@ public class ChromePaymentRequestService
                 mPaymentRequestService.getHasEnrolledInstrument()
                 && mDelegate.prefsCanMakePayment());
 
-        if (mHideServerAutofillCards) {
-            List<PaymentApp> nonServerAutofillCards = new ArrayList<>();
-            int numberOfPendingApps = mPendingApps.size();
-            for (int i = 0; i < numberOfPendingApps; i++) {
-                if (!mPendingApps.get(i).isServerAutofillInstrument()) {
-                    nonServerAutofillCards.add(mPendingApps.get(i));
-                }
-            }
-            mPendingApps = nonServerAutofillCards;
-        }
-
-        // Load the validation rules for each unique region code in the credit card billing
-        // addresses and check for validity.
-        Set<String> uniqueCountryCodes = new HashSet<>();
-        for (int i = 0; i < mPendingApps.size(); ++i) {
-            @Nullable
-            String countryCode = mPendingApps.get(i).getCountryCode();
-            if (countryCode != null && !uniqueCountryCodes.contains(countryCode)) {
-                uniqueCountryCodes.add(countryCode);
-                PersonalDataManager.getInstance().loadRulesForAddressNormalization(countryCode);
-            }
-        }
-
-        mPaymentUiService.rankPaymentAppsForPaymentRequestUI(mPendingApps);
-
-        // Possibly pre-select the first app on the list.
-        int selection = !mPendingApps.isEmpty() && mPendingApps.get(0).canPreselect()
-                ? 0
-                : SectionInformation.NO_SELECTION;
-
         if (mIsCanMakePaymentResponsePending) {
             respondCanMakePaymentQuery();
         }
@@ -1420,18 +1390,55 @@ public class ChromePaymentRequestService
             respondHasEnrolledInstrumentQuery(mPaymentRequestService.getHasEnrolledInstrument());
         }
 
+        notifyPaymentUiOfPendingApps(mPendingApps);
+        if (mIsCurrentPaymentRequestShowing && !showAppSelector()) return;
+
+        triggerPaymentAppUiSkipIfApplicable();
+    }
+
+    private void notifyPaymentUiOfPendingApps(List<PaymentApp> pendingApps) {
+        if (mHideServerAutofillCards) {
+            List<PaymentApp> nonServerAutofillCards = new ArrayList<>();
+            int numberOfPendingApps = pendingApps.size();
+            for (int i = 0; i < numberOfPendingApps; i++) {
+                if (!pendingApps.get(i).isServerAutofillInstrument()) {
+                    nonServerAutofillCards.add(pendingApps.get(i));
+                }
+            }
+            pendingApps = nonServerAutofillCards;
+        }
+
+        // Load the validation rules for each unique region code in the credit card billing
+        // addresses and check for validity.
+        Set<String> uniqueCountryCodes = new HashSet<>();
+        for (int i = 0; i < pendingApps.size(); ++i) {
+            @Nullable
+            String countryCode = pendingApps.get(i).getCountryCode();
+            if (countryCode != null && !uniqueCountryCodes.contains(countryCode)) {
+                uniqueCountryCodes.add(countryCode);
+                PersonalDataManager.getInstance().loadRulesForAddressNormalization(countryCode);
+            }
+        }
+
+        mPaymentUiService.rankPaymentAppsForPaymentRequestUI(pendingApps);
+
+        // Possibly pre-select the first app on the list.
+        int selection = !pendingApps.isEmpty() && pendingApps.get(0).canPreselect()
+                ? 0
+                : SectionInformation.NO_SELECTION;
+
         // The list of payment apps is ready to display.
         mPaymentUiService.setPaymentMethodsSection(
                 new SectionInformation(PaymentRequestUI.DataType.PAYMENT_METHODS, selection,
-                        new ArrayList<>(mPendingApps)));
+                        new ArrayList<>(pendingApps)));
 
         // Record the number suggested payment methods and whether at least one of them was
         // complete.
-        mJourneyLogger.setNumberOfSuggestionsShown(Section.PAYMENT_METHOD, mPendingApps.size(),
-                !mPendingApps.isEmpty() && mPendingApps.get(0).isComplete());
+        mJourneyLogger.setNumberOfSuggestionsShown(Section.PAYMENT_METHOD, pendingApps.size(),
+                !pendingApps.isEmpty() && pendingApps.get(0).isComplete());
 
         int missingFields = 0;
-        if (mPendingApps.isEmpty()) {
+        if (pendingApps.isEmpty()) {
             if (mPaymentUiService.merchantSupportsAutofillCards()) {
                 // Record all fields if basic-card is supported but no card exists.
                 missingFields = AutofillPaymentInstrument.CompletionStatus.CREDIT_CARD_EXPIRED
@@ -1439,22 +1446,19 @@ public class ChromePaymentRequestService
                         | AutofillPaymentInstrument.CompletionStatus.CREDIT_CARD_NO_NUMBER
                         | AutofillPaymentInstrument.CompletionStatus.CREDIT_CARD_NO_BILLING_ADDRESS;
             }
-        } else if (mPendingApps.get(0).isAutofillInstrument()) {
-            missingFields = ((AutofillPaymentInstrument) (mPendingApps.get(0))).getMissingFields();
+        } else if (pendingApps.get(0).isAutofillInstrument()) {
+            missingFields = ((AutofillPaymentInstrument) (pendingApps.get(0))).getMissingFields();
         }
         if (missingFields != 0) {
             RecordHistogram.recordSparseHistogram(
                     "PaymentRequest.MissingPaymentFields", missingFields);
         }
 
-        mPendingApps.clear();
+        pendingApps.clear();
 
         mPaymentUiService.updateAppModifiedTotals();
 
         SettingsAutofillAndPaymentsObserver.getInstance().registerObserver(mPaymentUiService);
-
-        if (mIsCurrentPaymentRequestShowing && !showAppSelector()) return;
-        triggerPaymentAppUiSkipIfApplicable();
     }
 
     /**
