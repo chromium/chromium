@@ -604,11 +604,6 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
   return line;
 }
 
-base::FilePath::StringType
-AccessibilityTreeFormatterBlink::GetExpectedFileSuffix() {
-  return FILE_PATH_LITERAL("-expected-blink.txt");
-}
-
 const std::string AccessibilityTreeFormatterBlink::GetAllowEmptyString() {
   return "@BLINK-ALLOW-EMPTY:";
 }

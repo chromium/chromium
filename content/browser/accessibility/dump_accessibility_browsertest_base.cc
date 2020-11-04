@@ -78,6 +78,7 @@ bool AccessibilityTreeContainsLoadedDocWithUrl(BrowserAccessibility* node,
 
 using ui::AXPropertyFilter;
 
+// DumpAccessibilityTestBase
 DumpAccessibilityTestBase::DumpAccessibilityTestBase()
     : formatter_factory_(nullptr),
       event_recorder_factory_(nullptr),
@@ -236,7 +237,8 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     const base::FilePath file_path,
     const char* file_dir) {
   formatter_ = formatter_factory_();
-  DumpAccessibilityTestHelper test_helper(formatter_.get());
+  DumpAccessibilityTestHelper test_helper(
+      AccessibilityTreeFormatter::GetTestPasses()[GetParam()].name);
 
   // Disable the "hot tracked" state (set when the mouse is hovering over
   // an object) because it makes test output change based on the mouse position.

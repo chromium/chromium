@@ -77,7 +77,6 @@ class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBase {
                                        const LineIndexer* line_indexer,
                                        base::DictionaryValue* dict) const;
 
-  base::FilePath::StringType GetExpectedFileSuffix() override;
   const std::string GetAllowEmptyString() override;
   const std::string GetAllowString() override;
   const std::string GetDenyString() override;
@@ -586,11 +585,6 @@ std::string AccessibilityTreeFormatterMac::FormatAttributeValue(
     return "{" + output + "}";
   }
   return "";
-}
-
-base::FilePath::StringType
-AccessibilityTreeFormatterMac::GetExpectedFileSuffix() {
-  return FILE_PATH_LITERAL("-expected-mac.txt");
 }
 
 const string AccessibilityTreeFormatterMac::GetAllowEmptyString() {

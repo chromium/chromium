@@ -28,7 +28,6 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
-#include "base/win/windows_version.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_utils_win.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "ui/accessibility/accessibility_switches.h"
@@ -1150,19 +1149,6 @@ void AccessibilityTreeFormatterUia::ProcessValueForOutput(
       NOTREACHED();
       break;
   }
-}
-
-base::FilePath::StringType
-AccessibilityTreeFormatterUia::GetExpectedFileSuffix() {
-  return FILE_PATH_LITERAL("-expected-uia-win.txt");
-}
-
-base::FilePath::StringType
-AccessibilityTreeFormatterUia::GetVersionSpecificExpectedFileSuffix() {
-  if (base::win::GetVersion() == base::win::Version::WIN7) {
-    return FILE_PATH_LITERAL("-expected-uia-win7.txt");
-  }
-  return FILE_PATH_LITERAL("");
 }
 
 const std::string AccessibilityTreeFormatterUia::GetAllowEmptyString() {

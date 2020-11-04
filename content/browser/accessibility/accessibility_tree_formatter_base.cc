@@ -438,11 +438,6 @@ void AccessibilityTreeFormatterBase::set_show_ids(bool show_ids) {
   show_ids_ = show_ids;
 }
 
-base::FilePath::StringType
-AccessibilityTreeFormatterBase::GetVersionSpecificExpectedFileSuffix() {
-  return FILE_PATH_LITERAL("");
-}
-
 std::vector<PropertyNode>
 AccessibilityTreeFormatterBase::PropertyFilterNodesFor(
     const std::string& line_index) const {

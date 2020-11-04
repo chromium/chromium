@@ -153,7 +153,6 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBase
       const std::vector<AXPropertyFilter>& property_filters) override;
   void SetNodeFilters(const std::vector<AXNodeFilter>& node_filters) override;
   void set_show_ids(bool show_ids) override;
-  base::FilePath::StringType GetVersionSpecificExpectedFileSuffix() override;
 
  protected:
   //

@@ -64,7 +64,6 @@ class AccessibilityTreeFormatterWin : public AccessibilityTreeFormatterBase {
       LONG root_x,
       LONG root_y);
 
-  base::FilePath::StringType GetExpectedFileSuffix() override;
   const std::string GetAllowEmptyString() override;
   const std::string GetAllowString() override;
   const std::string GetDenyString() override;
@@ -1004,11 +1003,6 @@ std::string AccessibilityTreeFormatterWin::ProcessTreeForOutput(
   }
 
   return line;
-}
-
-base::FilePath::StringType
-AccessibilityTreeFormatterWin::GetExpectedFileSuffix() {
-  return FILE_PATH_LITERAL("-expected-win.txt");
 }
 
 const std::string AccessibilityTreeFormatterWin::GetAllowEmptyString() {

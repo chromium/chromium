@@ -96,7 +96,6 @@ class AccessibilityTreeFormatterAndroid
       std::vector<AXPropertyFilter>* property_filters) override;
 
  private:
-  base::FilePath::StringType GetExpectedFileSuffix() override;
   const std::string GetAllowEmptyString() override;
   const std::string GetAllowString() override;
   const std::string GetDenyString() override;
@@ -309,11 +308,6 @@ std::string AccessibilityTreeFormatterAndroid::ProcessTreeForOutput(
   }
 
   return line;
-}
-
-base::FilePath::StringType
-AccessibilityTreeFormatterAndroid::GetExpectedFileSuffix() {
-  return FILE_PATH_LITERAL("-expected-android.txt");
 }
 
 const std::string AccessibilityTreeFormatterAndroid::GetAllowEmptyString() {

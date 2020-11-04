@@ -31,8 +31,6 @@ class AccessibilityTreeFormatterUia : public AccessibilityTreeFormatterBase {
   // AccessibilityTreeFormatterBase:
   void AddDefaultFilters(
       std::vector<AXPropertyFilter>* property_filters) override;
-  base::FilePath::StringType GetExpectedFileSuffix() override;
-  base::FilePath::StringType GetVersionSpecificExpectedFileSuffix() override;
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTree(
       BrowserAccessibility* start) override;
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForWindow(

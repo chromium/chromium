@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_TEST_DUMP_ACCESSIBILITY_TEST_HELPER_H_
 #define CONTENT_PUBLIC_TEST_DUMP_ACCESSIBILITY_TEST_HELPER_H_
 
+#include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/optional.h"
 
@@ -14,13 +15,10 @@ class FilePath;
 
 namespace content {
 
-class AccessibilityTestExpectationsLocator;
-
 // A helper class for writing accessibility tree dump tests.
 class DumpAccessibilityTestHelper {
  public:
-  explicit DumpAccessibilityTestHelper(
-      AccessibilityTestExpectationsLocator* test_locator);
+  explicit DumpAccessibilityTestHelper(const char* expectation_type);
   ~DumpAccessibilityTestHelper() = default;
 
   // Returns a path to an expectation file for the current platform. If no
@@ -44,6 +42,18 @@ class DumpAccessibilityTestHelper {
       const std::vector<std::string>& expected_lines);
 
  private:
+  // Suffix of the expectation file corresponding to html file.
+  // Overridden by each platform subclass.
+  // Example:
+  // HTML test:      test-file.html
+  // Expected:       test-file-expected-mac.txt.
+  base::FilePath::StringType GetExpectedFileSuffix();
+
+  // Some Platforms expect different outputs depending on the version.
+  // Most test outputs are identical but this allows a version specific
+  // expected file to be used.
+  base::FilePath::StringType GetVersionSpecificExpectedFileSuffix();
+
   FRIEND_TEST_ALL_PREFIXES(DumpAccessibilityTestHelperTest, TestDiffLines);
 
   // Utility helper that does a comment-aware equality check.
@@ -52,7 +62,7 @@ class DumpAccessibilityTestHelper {
       const std::vector<std::string>& expected_lines,
       const std::vector<std::string>& actual_lines);
 
-  AccessibilityTestExpectationsLocator* const test_locator_;
+  std::string expectation_type_;
 };
 
 }  // namespace content

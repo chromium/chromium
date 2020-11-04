@@ -15,6 +15,10 @@
 #include "content/public/browser/accessibility_tree_formatter.h"
 #include "content/public/common/content_switches.h"
 
+#if defined(OS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -25,8 +29,8 @@ const char kMarkEndOfFile[] = "<-- End-of-file -->";
 }  // namespace
 
 DumpAccessibilityTestHelper::DumpAccessibilityTestHelper(
-    AccessibilityTestExpectationsLocator* test_locator)
-    : test_locator_(test_locator) {}
+    const char* expectation_type)
+    : expectation_type_(expectation_type) {}
 
 base::FilePath DumpAccessibilityTestHelper::GetExpectationFilePath(
     const base::FilePath& test_file_path) {
@@ -35,7 +39,7 @@ base::FilePath DumpAccessibilityTestHelper::GetExpectationFilePath(
 
   // Try to get version specific expected file.
   base::FilePath::StringType expected_file_suffix =
-      test_locator_->GetVersionSpecificExpectedFileSuffix();
+      GetVersionSpecificExpectedFileSuffix();
   if (expected_file_suffix != FILE_PATH_LITERAL("")) {
     expected_file_path = base::FilePath(
         test_file_path.RemoveExtension().value() + expected_file_suffix);
@@ -44,7 +48,7 @@ base::FilePath DumpAccessibilityTestHelper::GetExpectationFilePath(
   }
 
   // If a version specific file does not exist, get the generic one.
-  expected_file_suffix = test_locator_->GetExpectedFileSuffix();
+  expected_file_suffix = GetExpectedFileSuffix();
   expected_file_path = base::FilePath(test_file_path.RemoveExtension().value() +
                                       expected_file_suffix);
   if (base::PathExists(expected_file_path))
@@ -144,6 +148,44 @@ bool DumpAccessibilityTestHelper::ValidateAgainstExpectation(
   }
 
   return !is_different;
+}
+
+base::FilePath::StringType
+DumpAccessibilityTestHelper::GetExpectedFileSuffix() {
+  if (expectation_type_ == "android") {
+    return FILE_PATH_LITERAL("-expected-android.txt");
+  }
+  if (expectation_type_ == "blink") {
+    return FILE_PATH_LITERAL("-expected-blink.txt");
+  }
+  if (expectation_type_ == "linux") {
+    return FILE_PATH_LITERAL("-expected-auralinux.txt");
+  }
+  if (expectation_type_ == "mac") {
+    return FILE_PATH_LITERAL("-expected-mac.txt");
+  }
+  if (expectation_type_ == "content") {
+    return FILE_PATH_LITERAL("-expected.txt");
+  }
+  if (expectation_type_ == "uia") {
+    return FILE_PATH_LITERAL("-expected-uia-win.txt");
+  }
+  if (expectation_type_ == "win") {
+    return FILE_PATH_LITERAL("-expected-win.txt");
+  }
+  NOTREACHED();
+  return FILE_PATH_LITERAL("");
+}
+
+base::FilePath::StringType
+DumpAccessibilityTestHelper::GetVersionSpecificExpectedFileSuffix() {
+#if defined(OS_WIN)
+  if (expectation_type_ == "uia" &&
+      base::win::GetVersion() == base::win::Version::WIN7) {
+    return FILE_PATH_LITERAL("-expected-uia-win7.txt");
+  }
+#endif
+  return FILE_PATH_LITERAL("");
 }
 
 std::vector<int> DumpAccessibilityTestHelper::DiffLines(
