@@ -1999,6 +1999,8 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
       previous_routing_id_(MSG_ROUTING_NONE),
       selection_text_offset_(0),
       selection_range_(gfx::Range::InvalidRange()),
+      remote_interfaces_(
+          agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner()),
       render_accessibility_manager_(
           std::make_unique<RenderAccessibilityManager>(this)),
       blame_context_(nullptr),

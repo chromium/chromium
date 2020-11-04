@@ -86,7 +86,8 @@ class ServiceIPCServerTest : public ::testing::Test {
   base::Thread io_thread_;
   base::WaitableEvent shutdown_event_;
   std::unique_ptr<ServiceIPCServer> server_;
-  service_manager::InterfaceProvider remote_interfaces_;
+  service_manager::InterfaceProvider remote_interfaces_{
+      base::ThreadTaskRunnerHandle::Get()};
   mojo::Remote<chrome::mojom::ServiceProcess> service_process_;
 };
 

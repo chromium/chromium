@@ -6811,7 +6811,8 @@ void RenderFrameHostImpl::SetUpMojoIfNeeded() {
       remote_interfaces;
   frame_->GetInterfaceProvider(
       remote_interfaces.InitWithNewPipeAndPassReceiver());
-  remote_interfaces_ = std::make_unique<service_manager::InterfaceProvider>();
+  remote_interfaces_ = std::make_unique<service_manager::InterfaceProvider>(
+      base::ThreadTaskRunnerHandle::Get());
   remote_interfaces_->Bind(std::move(remote_interfaces));
 
   // Called to bind the receiver for this interface to the local frame. We need
@@ -8242,7 +8243,8 @@ service_manager::InterfaceProvider* RenderFrameHostImpl::GetJavaInterfaces() {
     mojo::PendingRemote<service_manager::mojom::InterfaceProvider> provider;
     BindInterfaceRegistryForRenderFrameHost(
         provider.InitWithNewPipeAndPassReceiver(), this);
-    java_interfaces_.reset(new service_manager::InterfaceProvider);
+    java_interfaces_.reset(new service_manager::InterfaceProvider(
+        base::ThreadTaskRunnerHandle::Get()));
     java_interfaces_->Bind(std::move(provider));
   }
   return java_interfaces_.get();

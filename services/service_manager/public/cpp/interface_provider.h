@@ -57,12 +57,16 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
   // Constructs an InterfaceProvider which is usable immediately despite not
   // being bound to any actual remote implementation. Must call Bind()
   // eventually in order for the provider to function properly.
-  InterfaceProvider();
+  // The task_runner argument is used for mojo remote connection.
+  explicit InterfaceProvider(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Constructs an InterfaceProvider which uses |interface_provider| to issue
   // remote interface requests.
-  explicit InterfaceProvider(
-      mojo::PendingRemote<mojom::InterfaceProvider> interface_provider);
+  // The task_runner argument is used for mojo remote connection.
+  InterfaceProvider(
+      mojo::PendingRemote<mojom::InterfaceProvider> interface_provider,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   ~InterfaceProvider();
 
@@ -116,6 +120,7 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
 
   mojo::Remote<mojom::InterfaceProvider> interface_provider_;
   mojo::PendingReceiver<mojom::InterfaceProvider> pending_receiver_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // A callback to receive all GetInterface() requests in lieu of the
   // InterfaceProvider pipe.

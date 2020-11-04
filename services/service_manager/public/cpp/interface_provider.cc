@@ -8,15 +8,23 @@
 
 namespace service_manager {
 
-InterfaceProvider::InterfaceProvider() {
-  pending_receiver_ = interface_provider_.BindNewPipeAndPassReceiver();
+InterfaceProvider::InterfaceProvider(
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : pending_receiver_(
+          interface_provider_.BindNewPipeAndPassReceiver(task_runner)),
+      task_runner_(std::move(task_runner)) {
+  DCHECK(task_runner_);
 }
 
 InterfaceProvider::InterfaceProvider(
-    mojo::PendingRemote<mojom::InterfaceProvider> interface_provider)
-    : interface_provider_(std::move(interface_provider)) {}
+    mojo::PendingRemote<mojom::InterfaceProvider> interface_provider,
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : interface_provider_(std::move(interface_provider), task_runner),
+      task_runner_(std::move(task_runner)) {
+  DCHECK(task_runner_);
+}
 
-InterfaceProvider::~InterfaceProvider() {}
+InterfaceProvider::~InterfaceProvider() = default;
 
 void InterfaceProvider::Close() {
   if (pending_receiver_)
@@ -32,7 +40,7 @@ void InterfaceProvider::Bind(
     mojo::FusePipes(std::move(pending_receiver_),
                     std::move(interface_provider));
   } else {
-    interface_provider_.Bind(std::move(interface_provider));
+    interface_provider_.Bind(std::move(interface_provider), task_runner_);
   }
 }
 

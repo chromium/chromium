@@ -193,7 +193,8 @@ class ServiceProcessControl : public UpgradeObserver {
 
   std::unique_ptr<mojo::IsolatedConnection> mojo_connection_;
 
-  service_manager::InterfaceProvider remote_interfaces_;
+  service_manager::InterfaceProvider remote_interfaces_{
+      base::ThreadTaskRunnerHandle::Get()};
   mojo::Remote<chrome::mojom::ServiceProcess> service_process_;
 
   // Service process launcher.

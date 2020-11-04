@@ -226,7 +226,8 @@ class DeviceService : public mojom::DeviceService {
   service_manager::InterfaceProvider* GetJavaInterfaceProvider();
 
   // InterfaceProvider that is bound to the Java-side interface registry.
-  service_manager::InterfaceProvider java_interface_provider_;
+  service_manager::InterfaceProvider java_interface_provider_{
+      base::ThreadTaskRunnerHandle::Get()};
 
   bool java_interface_provider_initialized_;
 
