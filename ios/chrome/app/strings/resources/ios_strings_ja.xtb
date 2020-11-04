@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">新しいタブを作成。</translation>
 <translation id="1145536944570833626">既存のデータを削除します。</translation>
 <translation id="1154690515305205900">選択したテキストへのリンクを作成できません。</translation>
+<translation id="1157749421655780457">位置情報へのアクセスを許可...</translation>
 <translation id="1165039591588034296">エラー</translation>
 <translation id="1172898394251786223">次の項目</translation>
 <translation id="1176932207622159128">画像を保存できません</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">アイテムなし</translation>
 <translation id="1692118695553449118">同期は有効です</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />件選択しました</translation>
+<translation id="1715940067130687605">現在地を使用する</translation>
 <translation id="1740468249224277719">ダブルタップしてインストール。</translation>
 <translation id="1746815479209538200">ウェブを閲覧するには新しいタブを追加してください。</translation>
 <translation id="1752547299766512813">パスワードの保存</translation>
@@ -374,6 +376,7 @@
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">ドライブをインストール</translation>
 <translation id="5083464117946352670">ファイルサイズが不明です。</translation>
+<translation id="5090832849094901128">このパスワードを削除しても、<ph name="WEBSITE" /> のアカウントは削除されません。</translation>
 <translation id="5094827893301452931">ツイートが完了しました。</translation>
 <translation id="5118764316110575523">オフ</translation>
 <translation id="5127805178023152808">同期は無効です</translation>

@@ -80,6 +80,14 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">您在一个不受贵单位管理的网站上输入了您的密码。为了保护您的帐号，请不要在其他应用和网站上重复使用您的密码。</translation>
 <translation id="1263231323834454256">阅读清单</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        系统不会将以下活动记录保存到此设备上：
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />您在该窗口中查看的网页
+          <ph name="LIST_ITEM" />Cookie 和网站数据
+          <ph name="LIST_ITEM" />帐号信息（<ph name="LINK_BEGIN" />退出<ph name="LINK_END" />）
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">取货方式</translation>
 <translation id="1281476433249504884">堆叠出纸器 1</translation>
 <translation id="1285320974508926690">一律不翻译此网站</translation>
@@ -547,6 +555,7 @@
 <translation id="3207960819495026254">已加书签</translation>
 <translation id="3209034400446768650">此网页可能会收取费用</translation>
 <translation id="3212581601480735796">您在 <ph name="HOSTNAME" /> 上的活动正被监控</translation>
+<translation id="3212623355668894776">请关闭所有访客窗口，以便从此设备中删除您的浏览活动记录。</translation>
 <translation id="3215092763954878852">无法使用 WebAuthn</translation>
 <translation id="3218181027817787318">相对</translation>
 <translation id="3225919329040284222">服务器提供的证书与内置预期证书不匹配。这些预期证书是针对某些高安全性网站提供的，以便为您提供保护。</translation>
@@ -901,6 +910,7 @@
 <translation id="4658638640878098064">钉装（左上角）</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">虚拟实境</translation>
+<translation id="4675657451653251260">在访客模式下，您无法查看任何 Chrome 个人资料的信息。您可<ph name="LINK_BEGIN" />登录<ph name="LINK_END" />以访问您的 Google 帐号信息（例如密码和付款方式）。</translation>
 <translation id="467662567472608290">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书有误。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="4677585247300749148"><ph name="URL" /> 想对无障碍事件做出响应</translation>
 <translation id="467809019005607715">Google 幻灯片</translation>
@@ -928,6 +938,12 @@
 <translation id="4761104368405085019">使用您的麦克风</translation>
 <translation id="4764776831041365478">网址为 <ph name="URL" /> 的网页可能暂时无法连接，或者它已永久性地移动到了新网址。</translation>
 <translation id="4766713847338118463">双钉（底部）</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        系统会将您的以下活动记录保存到此设备上：
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />您在该窗口中下载的所有文件
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">发生未知错误。</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{已拦截弹出式窗口}other{已拦截 # 个弹出式窗口}}</translation>
 <translation id="4780366598804516005">信箱 1</translation>
@@ -1381,6 +1397,7 @@
 <translation id="6587923378399804057">您复制的链接</translation>
 <translation id="6591833882275308647">您的 <ph name="DEVICE_TYPE" /> 不受管理</translation>
 <translation id="6596325263575161958">加密选项</translation>
+<translation id="6596892391065203054">您的管理员已禁止打印此内容。</translation>
 <translation id="6604181099783169992">动态传感器或光传感器</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
 <translation id="6612358246767739896">受保护的内容</translation>
@@ -1864,12 +1881,22 @@
 <translation id="8559762987265718583">您设备的日期和时间（<ph name="DATE_AND_TIME" />）不正确，因此无法与 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私密连接。</translation>
 <translation id="8564182942834072828">单独的文档/非逐份打印的副本</translation>
 <translation id="8564985650692024650">如果您在其他网站上重复使用了您的 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 密码，Chromium 建议您重置该密码。</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        系统不会将以下活动记录保存到此设备上：
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />您在该窗口中查看的网页
+          <ph name="LIST_ITEM" />Cookie 和网站数据
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">使用 Touch ID 更快地确认银行卡</translation>
 <translation id="858637041960032120">添加电话号码
 </translation>
 <translation id="8589998999637048520">最佳的质量</translation>
 <translation id="860043288473659153">持卡人姓名</translation>
 <translation id="8606726445206553943">使用您的 MIDI 设备</translation>
+<translation id="8612761427948161954">尊敬的<ph name="USERNAME" />：
+        <ph name="BR" />
+        您好！您正在以访客身份浏览</translation>
 <translation id="861775596732816396">大小：4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">没有匹配的密码。显示所有已保存的密码。</translation>
@@ -2008,6 +2035,7 @@
 <translation id="9183302530794969518">Google 文档</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> 使用了不受支持的协议。</translation>
 <translation id="9191834167571392248">打孔（左下角）</translation>
+<translation id="9199905725844810519">打印功能已被禁用</translation>
 <translation id="9205078245616868884">您的数据已使用您的同步密码加密。输入该密码即可开始同步。</translation>
 <translation id="9207861905230894330">无法添加文章。</translation>
 <translation id="9213433120051936369">自定义外观</translation>

@@ -925,7 +925,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4658638640878098064">Grapado en la parte superior izquierda</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Realidad virtual</translation>
-<translation id="4675657451653251260">Con el modo invitados no verás la información de ningún perfil de Chrome. Puedes <ph name="LINK_BEGIN" />iniciar sesión<ph name="LINK_END" /> para acceder a la información de tu cuenta de Google, como contraseñas o métodos de pago.</translation>
+<translation id="4675657451653251260">Con el modo invitados no verás ninguna información del perfil de Chrome. Puedes <ph name="LINK_BEGIN" />iniciar sesión<ph name="LINK_END" /> para acceder a la información de tu cuenta de Google, como contraseñas o métodos de pago.</translation>
 <translation id="467662567472608290">Este servidor no ha podido probar que su dominio es <ph name="DOMAIN" />, su certificado de seguridad contiene errores. El problema puede deberse a una configuración incorrecta o a que un atacante haya interceptado la conexión.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> quiere responder a eventos de accesibilidad</translation>
 <translation id="467809019005607715">Presentaciones de Google</translation>

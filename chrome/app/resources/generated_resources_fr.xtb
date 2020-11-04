@@ -2954,7 +2954,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4441124369922430666">Voulez-vous démarrer automatiquement cette application à la mise sous tension de l'ordinateur ?</translation>
 <translation id="4441147046941420429">Pour continuer, retirez la clé de sécurité de votre appareil, puis réinsérez-la et appuyez dessus</translation>
 <translation id="444134486829715816">Développer...</translation>
-<translation id="4441928470323187829">Extension épinglée par votre administrateur</translation>
+<translation id="4441928470323187829">Épinglée par votre administrateur</translation>
 <translation id="4442424173763614572">Échec de la résolution DNS.</translation>
 <translation id="4443536555189480885">&amp;Aide</translation>
 <translation id="4444304522807523469">Accéder aux scanners de documents connectés via USB ou sur le réseau local</translation>
@@ -5618,7 +5618,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7632948528260659758">Échec de la mise à jour des applications kiosque suivantes :</translation>
 <translation id="7633724038415831385">Vous n'aurez plus à attendre de mises à jour après cela. En effet, les mises à jour logicielles s'exécutent en arrière-plan sur les Chromebooks.</translation>
 <translation id="7634566076839829401">Une erreur s'est produite. Veuillez réessayer.</translation>
-<translation id="7635048370253485243">Extension épinglée par votre administrateur</translation>
+<translation id="7635048370253485243">Épinglée par votre administrateur</translation>
 <translation id="763632859238619983">Interdire à tous les sites d'installer des gestionnaires de paiement</translation>
 <translation id="7636919061354591437">Installer sur cet appareil</translation>
 <translation id="7638605456503525968">Ports série</translation>

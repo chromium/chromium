@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">创建新的标签页。</translation>
 <translation id="1145536944570833626">删除现有数据。</translation>
 <translation id="1154690515305205900">无法创建指向突出显示的文本的链接。</translation>
+<translation id="1157749421655780457">允许使用位置信息…</translation>
 <translation id="1165039591588034296">错误</translation>
 <translation id="1172898394251786223">下一个字段</translation>
 <translation id="1176932207622159128">无法保存图片</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">没有书签</translation>
 <translation id="1692118695553449118">同步功能已开启</translation>
 <translation id="1700629756560807968">已选中<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
+<translation id="1715940067130687605">使用您的当前位置</translation>
 <translation id="1740468249224277719">点按两次即可安装。</translation>
 <translation id="1746815479209538200">要浏览网页，请添加新标签页。</translation>
 <translation id="1752547299766512813">保存密码</translation>
@@ -374,6 +376,7 @@
 <translation id="5059136629401106827">知道了</translation>
 <translation id="5062321486222145940">安装Google云端硬盘</translation>
 <translation id="5083464117946352670">无法确定文件大小。</translation>
+<translation id="5090832849094901128">删除此密码不会删除您在 <ph name="WEBSITE" /> 上的帐号。</translation>
 <translation id="5094827893301452931">Tweet 信息发布已完成。</translation>
 <translation id="5118764316110575523">已关闭</translation>
 <translation id="5127805178023152808">同步功能已关闭</translation>

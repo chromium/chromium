@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">ਨਵੀਂ ਟੈਬ ਬਣਾਓ।</translation>
 <translation id="1145536944570833626">ਮੌਜੂਦਾ ਡਾਟਾ ਮਿਟਾਓ।</translation>
 <translation id="1154690515305205900">ਲਿਖਤ ਨੂੰ ਉਜਾਗਰ ਕਰਨ ਲਈ ਲਿੰਕ ਨਹੀਂ ਬਣਾਇਆ ਜਾ ਸਕਦਾ।</translation>
+<translation id="1157749421655780457">ਟਿਕਾਣਾ ਜਾਣਕਾਰੀ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ...</translation>
 <translation id="1165039591588034296">ਗੜਬੜ</translation>
 <translation id="1172898394251786223">ਅਗਲਾ ਖੇਤਰ</translation>
 <translation id="1176932207622159128">ਚਿੱਤਰ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਕਰ ਸਕਦਾ</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">ਕੋਈ ਆਈਟਮਾਂ ਨਹੀਂ</translation>
 <translation id="1692118695553449118">ਸਿੰਕ ਚਾਲੂ ਹੈ</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ਚੁਣੇ ਗਏ</translation>
+<translation id="1715940067130687605">ਆਪਣਾ ਮੌਜੂਦਾ ਟਿਕਾਣਾ ਵਰਤੋ।</translation>
 <translation id="1740468249224277719">ਸਥਾਪਤ ਕਰਨ ਲਈ ਦੋ ਵਾਰ ਟੈਪ ਕਰੋ।</translation>
 <translation id="1746815479209538200">ਵੈੱਬ ਨੂੰ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਲਈ, ਇੱਕ ਨਵੀਂ ਟੈਬ ਸ਼ਾਮਲ ਕਰੋ।</translation>
 <translation id="1752547299766512813">ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -372,6 +374,7 @@
 <translation id="5059136629401106827">ਠੀਕ ਹੈ</translation>
 <translation id="5062321486222145940">Google ਡਰਾਈਵ ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="5083464117946352670">ਫਾਈਲ ਦਾ ਆਕਾਰ ਨਿਰਧਾਰਿਤ ਨਹੀਂ ਕਰ ਸਕਦਾ।</translation>
+<translation id="5090832849094901128">ਇਸ ਪਾਸਵਰਡ ਨੂੰ ਮਿਟਾਉਣ ਨਾਲ <ph name="WEBSITE" /> 'ਤੇ ਤੁਹਾਡੇ ਖਾਤੇ ਨੂੰ ਮਿਟਾਇਆ ਨਹੀਂ ਜਾਵੇਗਾ।</translation>
 <translation id="5094827893301452931">Tweet ਪੂਰਾ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="5118764316110575523">ਬੰਦ</translation>
 <translation id="5127805178023152808">ਸਿੰਕ ਬੰਦ ਹੈ</translation>

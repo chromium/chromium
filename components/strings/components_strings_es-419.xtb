@@ -80,6 +80,14 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Ingresaste tu contraseña en un sitio que no administra tu organización. Para proteger tu cuenta, no vuelvas a usar tu contraseña en otras apps y sitios.</translation>
 <translation id="1263231323834454256">Lista de lectura</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        La actividad que no permanecerá en este dispositivo:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Las páginas que ves en esta ventana
+          <ph name="LIST_ITEM" />Las cookies ni los datos del sitio
+          <ph name="LIST_ITEM" />Información de la cuenta (<ph name="LINK_BEGIN" />salir<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Método de retiro</translation>
 <translation id="1281476433249504884">Apilador 1</translation>
 <translation id="1285320974508926690">Nunca traducir este sitio</translation>
@@ -550,6 +558,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3207960819495026254">Agregada a favoritos</translation>
 <translation id="3209034400446768650">La página puede cobrar cargos</translation>
 <translation id="3212581601480735796">Se supervisa tu actividad en <ph name="HOSTNAME" /></translation>
+<translation id="3212623355668894776">Cierra todas las ventanas de invitado para que se borre tu actividad de navegación de este dispositivo.</translation>
 <translation id="3215092763954878852">No se pudo usar WebAuthn</translation>
 <translation id="3218181027817787318">Relativo</translation>
 <translation id="3225919329040284222">El servidor mostró un certificado que no coincide con lo esperado. Estas expectativas se incluyen en determinados sitios web con un alto nivel de seguridad para garantizar tu protección.</translation>
@@ -906,6 +915,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4658638640878098064">Grapa en la esquina superior izquierda</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Realidad virtual</translation>
+<translation id="4675657451653251260">En el modo de invitado, no verás información de perfil de Chrome. Puedes <ph name="LINK_BEGIN" />acceder<ph name="LINK_END" /> para ingresar a la información de tu Cuenta de Google, como contraseñas y formas de pago.</translation>
 <translation id="467662567472608290">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; el certificado de seguridad contiene errores. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> desea responder a los eventos de accesibilidad</translation>
 <translation id="467809019005607715">Presentaciones de Google</translation>
@@ -933,6 +943,12 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4761104368405085019">Usar tu micrófono</translation>
 <translation id="4764776831041365478">Es posible que la página web en <ph name="URL" /> no funcione temporalmente o se haya trasladado de manera permanente a una nueva dirección web.</translation>
 <translation id="4766713847338118463">Grapas dobles en la parte inferior</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        La actividad que permanecerá en este dispositivo:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Los archivos que descargues en esta ventana
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Se ha producido un error desconocido.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Se bloqueó una ventana emergente}other{Se bloquearon # vent. emergentes}}</translation>
 <translation id="4780366598804516005">Buzón 1</translation>
@@ -1387,6 +1403,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6587923378399804057">Vínculo que copiaste</translation>
 <translation id="6591833882275308647">Tu <ph name="DEVICE_TYPE" /> no está administrado.</translation>
 <translation id="6596325263575161958">Opciones de encriptación</translation>
+<translation id="6596892391065203054">Tu administrador no permite imprimir este contenido.</translation>
 <translation id="6604181099783169992">Sensores de luz o movimiento</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
 <translation id="6612358246767739896">Contenido protegido</translation>
@@ -1870,12 +1887,22 @@ Detalles adicionales:
 <translation id="8559762987265718583">No se puede establecer una conexión privada a <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque la fecha y la hora del dispositivo (<ph name="DATE_AND_TIME" />) son incorrectas.</translation>
 <translation id="8564182942834072828">Documentos separados/copias sin intercalar</translation>
 <translation id="8564985650692024650">Chromium te recomienda que restablezcas la contraseña de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> si la volviste a usar en otros sitios.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        La actividad que no permanecerá en este dispositivo:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Las páginas que ves en esta ventana
+          <ph name="LIST_ITEM" />Las cookies ni los datos del sitio
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Usa Touch ID para confirmar las tarjetas más rápido</translation>
 <translation id="858637041960032120">Agregar teléfono
 </translation>
 <translation id="8589998999637048520">Mejor calidad</translation>
 <translation id="860043288473659153">Nombre del titular de la tarjeta</translation>
 <translation id="8606726445206553943">Usar tus dispositivos MIDI</translation>
+<translation id="8612761427948161954">Hola <ph name="USERNAME" />:
+        <ph name="BR" />
+        Estás navegando como invitado</translation>
 <translation id="861775596732816396">Tamaño 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">No se encontró una contraseña para este sitio. Mostrar todas las contraseñas guardadas.</translation>
@@ -2014,6 +2041,7 @@ Detalles adicionales:
 <translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> utiliza un protocolo no compatible.</translation>
 <translation id="9191834167571392248">Perforación en la esquina inferior izquierda</translation>
+<translation id="9199905725844810519">No se permite imprimir este contenido</translation>
 <translation id="9205078245616868884">Tus datos están encriptados con tu frase de contraseña para sincronización. Debes ingresarla para iniciar la sincronización.</translation>
 <translation id="9207861905230894330">Error al agregar artículo</translation>
 <translation id="9213433120051936369">Personalizar el aspecto</translation>

@@ -1141,6 +1141,7 @@
 <translation id="2307462900900812319">配置网络</translation>
 <translation id="230927227160767054">此页面想要安装一个服务处理程序。</translation>
 <translation id="2309620859903500144">此网站已被禁止使用您的动态传感器或光传感器。</translation>
+<translation id="2311497964614110326">使用 Google 助理更快速地获得更理想的解答</translation>
 <translation id="2312219318583366810">网页网址</translation>
 <translation id="2314165183524574721">当前的公开范围设置是“已隐藏”</translation>
 <translation id="2314774579020744484">翻译页面时使用的语言</translation>
@@ -1253,6 +1254,7 @@
 <translation id="2440604414813129000">查看源代码(&amp;O)</translation>
 <translation id="244231003699905658">地址无效。请检查该地址，然后重试。</translation>
 <translation id="2442916515643169563">文字阴影</translation>
+<translation id="2444469058037141906">只需说出或键入所需内容</translation>
 <translation id="2445081178310039857">必须指定扩展程序根目录。</translation>
 <translation id="2445484935443597917">创建新的个人资料</translation>
 <translation id="2448312741937722512">类型</translation>
@@ -2167,6 +2169,7 @@
 <translation id="3514373592552233661">如果有多个网络可供使用，首选网络将优先于其他已知网络</translation>
 <translation id="3515983984924808886">请再次轻触安全密钥以确认重置。安全密钥上存储的所有信息（包括它的 PIN 码）都会被删除。</translation>
 <translation id="3518985090088779359">接受并继续</translation>
+<translation id="3519564332031442870">打印后端服务</translation>
 <translation id="3521606918211282604">更改磁盘大小</translation>
 <translation id="3523642406908660543">当网站要使用插件访问您的计算机时询问您（推荐）</translation>
 <translation id="3524965460886318643">导出活动记录</translation>
@@ -2681,6 +2684,7 @@
 <translation id="4088095054444612037">代表群组接受</translation>
 <translation id="4089235344645910861">设置已保存。已开始同步。</translation>
 <translation id="4090103403438682346">允许已通过验证的访问凭证</translation>
+<translation id="4090811767089219951">Google 助理也能解答这类问题</translation>
 <translation id="4090947011087001172">要重置 <ph name="SITE" /> 的网站权限吗？</translation>
 <translation id="4093865285251893588">个人资料图片</translation>
 <translation id="4093955363990068916">本地文件：</translation>
@@ -2945,6 +2949,7 @@
 <translation id="4441124369922430666">要在设备开启时自动启动此应用吗？</translation>
 <translation id="4441147046941420429">要继续，请从您的设备上拔出安全密钥，然后重新插入并轻触它</translation>
 <translation id="444134486829715816">展开...</translation>
+<translation id="4441928470323187829">已被您的管理员固定</translation>
 <translation id="4442424173763614572">DNS 查找失败</translation>
 <translation id="4443536555189480885">帮助(&amp;H)</translation>
 <translation id="4444304522807523469">使用通过 USB 连接的或本地网络中的文档扫描仪</translation>
@@ -3666,6 +3671,7 @@
 <translation id="5315873049536339193">身份</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5319359161174645648">Google 推荐使用 Chrome</translation>
+<translation id="5320112320661303273">您似乎已在另一部设备上设置了 Google 助理。您只需开启以下设置，即可更充分地利用 Google 助理。</translation>
 <translation id="532247166573571973">可能无法连接到服务器，请稍后重试。</translation>
 <translation id="5324300749339591280">应用列表</translation>
 <translation id="5324780743567488672">使用您的位置信息自动设置时区</translation>
@@ -5481,6 +5487,7 @@
 <translation id="7475671414023905704">Netscape 忘了密码网址</translation>
 <translation id="7476454130948140105">电量太低 (<ph name="BATTERY_PERCENT" />%)，无法更新</translation>
 <translation id="7477793887173910789">控制您的音乐、视频等媒体内容</translation>
+<translation id="7478362879637727630">您必须将这部 Chrome 教育版设备注册到一个教育版帐号。若要注册新帐号，请访问 https://g.co/workspace/edusignup。</translation>
 <translation id="7478485216301680444">无法安装自助服务终端应用。</translation>
 <translation id="7479221278376295180">存储空间使用情况概览</translation>
 <translation id="7481312909269577407">前进</translation>
@@ -5605,6 +5612,7 @@
 <translation id="7632948528260659758">以下自助服务终端应用未能成功更新：</translation>
 <translation id="7633724038415831385">只有这一次，您需要等待系统完成更新。Chromebook 上的软件更新会在后台进行。</translation>
 <translation id="7634566076839829401">出了点问题，请重试。</translation>
+<translation id="7635048370253485243">已被您的管理员固定</translation>
 <translation id="763632859238619983">不允许任何网站安装付款处理程序</translation>
 <translation id="7636919061354591437">在此设备上安装</translation>
 <translation id="7638605456503525968">串行端口</translation>

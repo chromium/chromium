@@ -1141,6 +1141,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2307462900900812319">Configurar red</translation>
 <translation id="230927227160767054">Esta página quiere instalar un controlador de servicios.</translation>
 <translation id="2309620859903500144">Este sitio no tiene permiso para acceder a los sensores de movimiento y luz.</translation>
+<translation id="2311497964614110326">Obtén respuestas más rápidas y personalizadas con Asistente</translation>
 <translation id="2312219318583366810">URL de la página</translation>
 <translation id="2314165183524574721">Se estableció la configuración de visibilidad actual en Oculta</translation>
 <translation id="2314774579020744484">El idioma que se usa cuando se traducen páginas</translation>
@@ -1254,6 +1255,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2440604414813129000">Ver códig&amp;o fuente</translation>
 <translation id="244231003699905658">La dirección no es válida. Verifica la dirección y vuelve a intentarlo.</translation>
 <translation id="2442916515643169563">Sombra del texto</translation>
+<translation id="2444469058037141906">Solo di o escribe lo que necesitas</translation>
 <translation id="2445081178310039857">Se requiere un directorio de raíz de la extensión.</translation>
 <translation id="2445484935443597917">Crear un perfil nuevo</translation>
 <translation id="2448312741937722512">Tipo</translation>
@@ -2168,6 +2170,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3514373592552233661">Se utilizarán las redes preferidas en lugar de otras conocidas si hay más de una disponible</translation>
 <translation id="3515983984924808886">Vuelve a tocar tu llave de seguridad para confirmar el restablecimiento. Se borrará toda la información almacenada en la llave de seguridad, incluido su PIN.</translation>
 <translation id="3518985090088779359">Aceptar y continuar</translation>
+<translation id="3519564332031442870">Servicio de backend de impresión</translation>
 <translation id="3521606918211282604">Cambiar el tamaño del disco</translation>
 <translation id="3523642406908660543">Preguntarme cuando un sitio intente usar un complemento para acceder a la computadora (recomendado)</translation>
 <translation id="3524965460886318643">Exportar actividades</translation>
@@ -2683,6 +2686,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4088095054444612037">Aceptar la invitación realizada al grupo</translation>
 <translation id="4089235344645910861">Se guardó la configuración y comenzó la sincronización.</translation>
 <translation id="4090103403438682346">Habilitar el acceso verificado</translation>
+<translation id="4090811767089219951">También puedes usar Asistente de Google de esta manera</translation>
 <translation id="4090947011087001172">¿Quieres restablecer los permisos del sitio <ph name="SITE" />?</translation>
 <translation id="4093865285251893588">Imagen de perfil</translation>
 <translation id="4093955363990068916">Archivo local:</translation>
@@ -2947,6 +2951,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4441124369922430666">¿Quieres que esta aplicación se inicie de forma automática cuando se encienda el equipo?</translation>
 <translation id="4441147046941420429">Para continuar, quita la llave de seguridad del dispositivo y, luego, vuelve a colocarla y tócala</translation>
 <translation id="444134486829715816">Mostrar...</translation>
+<translation id="4441928470323187829">Fijado por tu administrador</translation>
 <translation id="4442424173763614572">Error al buscar DNS</translation>
 <translation id="4443536555189480885">&amp;Ayuda</translation>
 <translation id="4444304522807523469">Acceder a los escáneres de documentos conectados vía USB o en la red local</translation>
@@ -3668,6 +3673,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5315873049536339193">Identidad</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5319359161174645648">Google recomienda Chrome</translation>
+<translation id="5320112320661303273">Al parecer, ya configuraste Asistente en otro dispositivo. Activa la siguiente configuración para sacarle más provecho a tu Asistente.</translation>
 <translation id="532247166573571973">Es posible que no se pueda acceder al servidor. Vuelve a intentarlo más tarde.</translation>
 <translation id="5324300749339591280">Lista de apps</translation>
 <translation id="5324780743567488672">Configurar la zona horaria automáticamente mediante la ubicación</translation>
@@ -5483,6 +5489,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7475671414023905704">URL de contraseña perdida de Netscape</translation>
 <translation id="7476454130948140105">El nivel de la batería es demasiado bajo para la actualización (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">Controla tu música, videos y mucho más</translation>
+<translation id="7478362879637727630">Debes inscribir este dispositivo de Chrome Education en una cuenta de institución educativa. Para registrarte con una nueva cuenta, visita https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">No se pudo instalar la aplicación del kiosco.</translation>
 <translation id="7479221278376295180">Descripción general sobre el uso del almacenamiento</translation>
 <translation id="7481312909269577407">Reenviar</translation>
@@ -5607,6 +5614,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7632948528260659758">No se pudieron actualizar las siguientes aplicaciones de kiosco:</translation>
 <translation id="7633724038415831385">Esta será la única vez que esperes una actualización de software, ya que en las Chromebooks estas se realizan en segundo plano.</translation>
 <translation id="7634566076839829401">Se produjo un error. Vuelve a intentarlo.</translation>
+<translation id="7635048370253485243">Fijado por tu administrador</translation>
 <translation id="763632859238619983">No permitir que ningún sitio instale controladores de pago</translation>
 <translation id="7636919061354591437">Instalar en este dispositivo</translation>
 <translation id="7638605456503525968">Puertos en serie</translation>
