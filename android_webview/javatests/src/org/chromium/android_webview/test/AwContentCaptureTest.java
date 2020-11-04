@@ -6,6 +6,7 @@ package org.chromium.android_webview.test;
 
 import android.graphics.Rect;
 import android.net.Uri;
+import android.view.View;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
@@ -768,5 +769,28 @@ public class AwContentCaptureTest {
     @CommandLineFlags.Add({"disable-features=ContentCaptureTriggeringForExperiment"})
     public void testCantCreateExperimentConsumer() throws Throwable {
         Assert.assertNull(ExperimentContentCaptureConsumer.create(mAwContents.getWebContents()));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testHideAndShow() throws Throwable {
+        final String response = "<html><head></head><body>"
+                + "<div id='editable_id'>Hello</div>"
+                + "</div></body></html>";
+        final String url = mWebServer.setResponse(MAIN_FRAME_FILE, response, null);
+        runAndVerifyCallbacks(() -> {
+            loadUrlSync(url);
+        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+
+        // Hides and shows the WebContent and verifies the content is captured again.
+        runAndVerifyCallbacks(() -> {
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> { mContainerView.onWindowVisibilityChanged(View.INVISIBLE); });
+            AwActivityTestRule.pollInstrumentationThread(() -> !mAwContents.isPageVisible());
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> { mContainerView.onWindowVisibilityChanged(View.VISIBLE); });
+            AwActivityTestRule.pollInstrumentationThread(() -> mAwContents.isPageVisible());
+        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
     }
 }

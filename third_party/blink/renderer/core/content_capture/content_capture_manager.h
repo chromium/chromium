@@ -42,6 +42,10 @@ class CORE_EXPORT ContentCaptureManager
   // Invokes when text node content was changed.
   void OnNodeTextChanged(Node& node);
 
+  // Invokes when the LocalFrameRoot was shown/hidden.
+  void OnFrameWasShown();
+  void OnFrameWasHidden();
+
   // Invokes when the local_frame_root shutdown.
   void Shutdown();
 
@@ -66,7 +70,6 @@ class CORE_EXPORT ContentCaptureManager
     virtual void Trace(Visitor*) const;
   };
 
-  void NotifyNodeDetached(const Node& node);
   void ScheduleTask(ContentCaptureTask::ScheduleReason reason);
 
   // Returns true if the user had the input in last
