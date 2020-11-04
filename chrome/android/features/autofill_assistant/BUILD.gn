@@ -244,6 +244,7 @@ android_library("autofill_assistant_java_test_support") {
     ":java",
     ":test_support_jni_headers",
     "//base:base_java",
+    "//base:base_java_test_support",
     "//base:jni_java",
     "//components/autofill_assistant/browser:proto_java",
     "//content/public/test/android:content_java_test_support",
