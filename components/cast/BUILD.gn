@@ -5,3 +5,8 @@
 source_set("export") {
   sources = [ "cast_component_export.h" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [ "//components/cast/message_port:message_port_unittest" ]
+}

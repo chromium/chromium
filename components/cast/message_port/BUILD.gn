@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//testing/test.gni")
 
 source_set("message_port") {
   if (is_fuchsia) {
@@ -58,6 +59,21 @@ source_set("message_port_cast") {
   ]
 }
 
+source_set("message_port_unittest") {
+  testonly = true
+  deps = [
+    ":message_port",
+    ":test_message_port_receiver",
+    "//base/test:test_support",
+    "//mojo/core/embedder",
+    "//testing/gtest",
+  ]
+
+  if (is_fuchsia || is_chromecast) {
+    sources = [ "message_port_unittest.cc" ]
+  }
+}
+
 source_set("test_message_port_receiver") {
   testonly = true
   sources = [
@@ -65,7 +81,7 @@ source_set("test_message_port_receiver") {
     "test_message_port_receiver.h",
   ]
   deps = [
-    ":message_port",
+    ":public",
     "//base",
   ]
 }

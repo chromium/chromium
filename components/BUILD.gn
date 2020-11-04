@@ -233,6 +233,7 @@ test("components_unittests") {
       "//components/blocked_content:unit_tests",
       "//components/browsing_data/content:unit_tests",
       "//components/captive_portal/content:unit_tests",
+      "//components/cast:unit_tests",
       "//components/cast_certificate:unit_tests",
       "//components/cast_channel:unit_tests",
       "//components/certificate_transparency:unit_tests",
