@@ -239,7 +239,13 @@ TEST_F(ArcDataSnapshotdManagerBasicTest, UpstartFailures) {
   EXPECT_FALSE(manager.bridge());
 }
 
-TEST_F(ArcDataSnapshotdManagerBasicTest, RestoredAfterCrash) {
+#if defined(MEMORY_SANITIZER)
+// https://crbug.com/1144452
+#define MAYBE_RestoredAfterCrash DISABLED_RestoredAfterCrash
+#else
+#define MAYBE_RestoredAfterCrash RestoredAfterCrash
+#endif
+TEST_F(ArcDataSnapshotdManagerBasicTest, MAYBE_RestoredAfterCrash) {
   SetUpRestoredSessionCommandLine();
   // The attempt to stop the daemon, started before crash.
   ExpectStopDaemon(true /*success */);
