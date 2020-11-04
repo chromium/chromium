@@ -64,11 +64,9 @@ VoteReceipt OverrideVoteAggregator::SubmitVote(util::PassKey<VotingChannel>,
   }
 }
 
-VoteReceipt OverrideVoteAggregator::ChangeVote(util::PassKey<AcceptedVote>,
-                                               VoteReceipt receipt,
-                                               AcceptedVote* old_vote,
-                                               const Vote& new_vote) {
-  DCHECK(receipt.HasVote(old_vote));
+void OverrideVoteAggregator::ChangeVote(util::PassKey<AcceptedVote>,
+                                        AcceptedVote* old_vote,
+                                        const Vote& new_vote) {
   DCHECK(old_vote->IsValid());
   VoteData& vote_data = GetVoteData(old_vote)->second;
 
@@ -82,9 +80,6 @@ VoteReceipt OverrideVoteAggregator::ChangeVote(util::PassKey<AcceptedVote>,
       !vote_data.override_vote.IsValid()) {
     UpstreamVote(new_vote, &vote_data);
   }
-
-  // Pass the same receipt right back to the user.
-  return receipt;
 }
 
 void OverrideVoteAggregator::VoteInvalidated(util::PassKey<AcceptedVote>,

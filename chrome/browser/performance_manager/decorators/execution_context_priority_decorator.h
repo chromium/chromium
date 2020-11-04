@@ -28,10 +28,9 @@ class ExecutionContextPriorityDecorator : public GraphOwnedDefaultImpl,
   VoteReceipt SubmitVote(util::PassKey<VotingChannel>,
                          voting::VoterId<Vote> voter_id,
                          const Vote& vote) override;
-  VoteReceipt ChangeVote(util::PassKey<AcceptedVote>,
-                         VoteReceipt receipt,
-                         AcceptedVote* old_vote,
-                         const Vote& new_vote) override;
+  void ChangeVote(util::PassKey<AcceptedVote>,
+                  AcceptedVote* old_vote,
+                  const Vote& new_vote) override;
   void VoteInvalidated(util::PassKey<AcceptedVote>,
                        AcceptedVote* vote) override;
 

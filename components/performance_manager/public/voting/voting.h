@@ -232,12 +232,10 @@ class AcceptedVote final {
                    VoteReceipt* old_receipt,
                    VoteReceipt* new_receipt);
 
-  // Allows a VoteReceipt to change this vote. The vote receipt gives up its
-  // receipt only to be returned a new one.
-  VoteReceipt ChangeVote(util::PassKey<VoteReceipt>,
-                         VoteReceipt receipt,
-                         typename VoteImpl::VoteType vote,
-                         const char* reason);
+  // Allows a VoteReceipt to change this vote.
+  void ChangeVote(util::PassKey<VoteReceipt>,
+                  typename VoteImpl::VoteType vote,
+                  const char* reason);
 
   // Allows a VoteReceipt to invalidate this vote.
   void InvalidateVote(util::PassKey<VoteReceipt>, VoteReceipt* receipt);
@@ -372,23 +370,11 @@ class VoteConsumer {
                                            const VoteImpl& vote) = 0;
 
   // Used by an AcceptedVote to notify a consumer that a previously issued vote
-  // has been changed. Both the |new_vote| and the |receipt| are provided to the
-  // consumer, as it may be necessary for the consumer to create an entirely
-  // new vote and issue a new receipt for it (although ideally it does not do so
-  // for the sake of efficiency). Alternatively, the consumer can choose to
-  // update the |old_vote| in-place, using the data from |new_vote|. This is
-  // kept protected as it is part of a private contract between an AcceptedVote
-  // and a VoteConsumer. A naive implementation of this would be the following:
-  //
-  //   // Tear down the old vote before submitting a new one in order to prevent
-  //   // the voter from having 2 simultaneous votes for the same context.
-  //   auto voter_id = receipt.GetVoterId();
-  //   receipt.Reset();
-  //   return SubmitVote(PassKey(), voter_id, new_vote);
-  virtual VoteReceipt<VoteImpl> ChangeVote(util::PassKey<AcceptedVote>,
-                                           VoteReceipt<VoteImpl> receipt,
-                                           AcceptedVote* old_vote,
-                                           const VoteImpl& new_vote) = 0;
+  // has been changed. The consumer should update |old_vote| in-place using the
+  // data from |new_vote|.
+  virtual void ChangeVote(util::PassKey<AcceptedVote>,
+                          AcceptedVote* old_vote,
+                          const VoteImpl& new_vote) = 0;
 
   // Used by a AcceptedVote to notify a consumer that a previously issued
   // receipt has been destroyed, and the vote is now invalidated. This is kept
@@ -499,7 +485,7 @@ void VoteReceipt<VoteImpl>::ChangeVote(typename VoteImpl::VoteType new_vote,
   if (vote.value() == new_vote && vote.reason() == reason)
     return;
 
-  *this = vote_->ChangeVote(PassKey(), std::move(*this), new_vote, reason);
+  vote_->ChangeVote(PassKey(), new_vote, reason);
 }
 
 template <class VoteImpl>
@@ -644,12 +630,9 @@ void AcceptedVote<VoteImpl>::MoveReceipt(util::PassKey<VoteReceipt>,
 }
 
 template <class VoteImpl>
-VoteReceipt<VoteImpl> AcceptedVote<VoteImpl>::ChangeVote(
-    util::PassKey<VoteReceipt>,
-    VoteReceipt receipt,
-    typename VoteImpl::VoteType vote,
-    const char* reason) {
-  DCHECK_EQ(receipt_, &receipt);
+void AcceptedVote<VoteImpl>::ChangeVote(util::PassKey<VoteReceipt>,
+                                        typename VoteImpl::VoteType vote,
+                                        const char* reason) {
   DCHECK(!invalidated_);
   DCHECK(vote_.value() != vote || vote_.reason() != reason);
 
@@ -659,17 +642,7 @@ VoteReceipt<VoteImpl> AcceptedVote<VoteImpl>::ChangeVote(
 
   // Notify the consumer of the new vote.
   VoteImpl new_vote = VoteImpl(old_vote.context(), vote, reason);
-  receipt =
-      consumer_->ChangeVote(PassKey(), std::move(receipt), this, new_vote);
-
-  // Ensure that the returned receipt refers to a vote with the expected
-  // properties.
-  const VoteImpl& returned_vote = receipt.GetVote();
-  DCHECK_EQ(new_vote.context(), returned_vote.context());
-  DCHECK_EQ(new_vote.value(), returned_vote.value());
-  DCHECK_EQ(new_vote.reason(), returned_vote.reason());
-
-  return receipt;
+  consumer_->ChangeVote(PassKey(), this, new_vote);
 }
 
 template <class VoteImpl>

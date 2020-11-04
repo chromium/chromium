@@ -77,11 +77,9 @@ VoteReceipt ExecutionContextPriorityDecorator::SubmitVote(
   return accepted_vote->IssueReceipt();
 }
 
-VoteReceipt ExecutionContextPriorityDecorator::ChangeVote(
-    util::PassKey<AcceptedVote>,
-    VoteReceipt receipt,
-    AcceptedVote* old_vote,
-    const Vote& new_vote) {
+void ExecutionContextPriorityDecorator::ChangeVote(util::PassKey<AcceptedVote>,
+                                                   AcceptedVote* old_vote,
+                                                   const Vote& new_vote) {
   const auto* execution_context = new_vote.context();
   auto* accepted_vote =
       ExecutionContextPriorityAccess::GetAcceptedVote(execution_context);
@@ -90,7 +88,6 @@ VoteReceipt ExecutionContextPriorityDecorator::ChangeVote(
   accepted_vote->UpdateVote(new_vote);
   SetPriorityAndReason(execution_context,
                        PriorityAndReason(new_vote.value(), new_vote.reason()));
-  return receipt;
 }
 
 void ExecutionContextPriorityDecorator::VoteInvalidated(

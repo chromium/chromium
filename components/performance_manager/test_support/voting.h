@@ -33,10 +33,9 @@ class DummyVoteConsumer : public VoteConsumer<VoteImpl> {
   VoteReceipt<VoteImpl> SubmitVote(util::PassKey<VotingChannel>,
                                    voting::VoterId<VoteImpl> voter_id,
                                    const VoteImpl& vote) override;
-  VoteReceipt<VoteImpl> ChangeVote(util::PassKey<AcceptedVote>,
-                                   VoteReceipt<VoteImpl> receipt,
-                                   AcceptedVote* old_vote,
-                                   const VoteImpl& new_vote) override;
+  void ChangeVote(util::PassKey<AcceptedVote>,
+                  AcceptedVote* old_vote,
+                  const VoteImpl& new_vote) override;
   void VoteInvalidated(util::PassKey<AcceptedVote>,
                        AcceptedVote* vote) override;
 
@@ -108,21 +107,17 @@ VoteReceipt<VoteImpl> DummyVoteConsumer<VoteImpl>::SubmitVote(
 }
 
 template <class VoteImpl>
-VoteReceipt<VoteImpl> DummyVoteConsumer<VoteImpl>::ChangeVote(
-    util::PassKey<AcceptedVote>,
-    VoteReceipt<VoteImpl> receipt,
-    AcceptedVote* old_vote,
-    const VoteImpl& new_vote) {
+void DummyVoteConsumer<VoteImpl>::ChangeVote(util::PassKey<AcceptedVote>,
+                                             AcceptedVote* old_vote,
+                                             const VoteImpl& new_vote) {
   // We should own this vote and it should be valid.
-  EXPECT_TRUE(receipt.HasVote(old_vote));
   EXPECT_LE(votes_.data(), old_vote);
   EXPECT_LT(old_vote, votes_.data() + votes_.size());
   EXPECT_TRUE(old_vote->IsValid());
   EXPECT_LT(0u, valid_vote_count_);
 
-  // Just update the vote in-place, and return the existing receipt for it.
+  // Update the vote in-place.
   old_vote->UpdateVote(new_vote);
-  return receipt;
 }
 
 template <class VoteImpl>

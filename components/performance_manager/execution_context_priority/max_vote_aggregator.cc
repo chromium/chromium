@@ -54,11 +54,9 @@ VoteReceipt MaxVoteAggregator::SubmitVote(util::PassKey<VotingChannel>,
   return receipt;
 }
 
-VoteReceipt MaxVoteAggregator::ChangeVote(util::PassKey<AcceptedVote>,
-                                          VoteReceipt receipt,
-                                          AcceptedVote* old_vote,
-                                          const Vote& new_vote) {
-  DCHECK(receipt.HasVote(old_vote));
+void MaxVoteAggregator::ChangeVote(util::PassKey<AcceptedVote>,
+                                   AcceptedVote* old_vote,
+                                   const Vote& new_vote) {
   DCHECK(old_vote->IsValid());
   VoteData& vote_data = GetVoteData(old_vote)->second;
   size_t index = vote_data.GetVoteIndex(old_vote);
@@ -67,9 +65,6 @@ VoteReceipt MaxVoteAggregator::ChangeVote(util::PassKey<AcceptedVote>,
   old_vote->UpdateVote(new_vote);
   if (vote_data.UpdateVote(index, next_vote_id_++))
     vote_data.UpstreamVote(&channel_);
-
-  // Return the same receipt back to the user.
-  return receipt;
 }
 
 void MaxVoteAggregator::VoteInvalidated(util::PassKey<AcceptedVote>,

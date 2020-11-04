@@ -419,10 +419,9 @@ VoteReceipt BoostingVoteAggregator::SubmitVote(util::PassKey<VotingChannel>,
   return receipt;
 }
 
-VoteReceipt BoostingVoteAggregator::ChangeVote(util::PassKey<AcceptedVote>,
-                                               VoteReceipt receipt,
-                                               AcceptedVote* old_vote,
-                                               const Vote& new_vote) {
+void BoostingVoteAggregator::ChangeVote(util::PassKey<AcceptedVote>,
+                                        AcceptedVote* old_vote,
+                                        const Vote& new_vote) {
   // Remember the old and new priorities before committing any changes.
   base::TaskPriority old_priority = old_vote->vote().value();
   base::TaskPriority new_priority = new_vote.value();
@@ -448,9 +447,6 @@ VoteReceipt BoostingVoteAggregator::ChangeVote(util::PassKey<AcceptedVote>,
   }
 
   UpstreamChanges(changes);
-
-  // Return the original receipt, as its still valid.
-  return receipt;
 }
 
 void BoostingVoteAggregator::VoteInvalidated(util::PassKey<AcceptedVote>,
