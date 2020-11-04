@@ -9,16 +9,24 @@
 #include <string>
 #include <utility>
 
+#include "base/strings/abseil_string_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "third_party/abseil-cpp/absl/strings/str_cat.h"
 
 namespace quiche {
 
+inline absl::string_view MaybeStringPieceToStringView(base::StringPiece arg) {
+  return base::StringPieceToStringView(arg);
+}
+
+template <typename T>
+inline T MaybeStringPieceToStringView(const T& arg) {
+  return arg;
+}
+
 template <typename... Args>
 inline std::string QuicheStrCatImpl(const Args&... args) {
-  std::ostringstream oss;
-  int dummy[] = {1, (oss << args, 0)...};
-  static_cast<void>(dummy);
-  return oss.str();
+  return absl::StrCat(MaybeStringPieceToStringView(args)...);
 }
 
 template <typename... Args>
