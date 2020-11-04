@@ -15,7 +15,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.tab.Tab;
@@ -92,22 +91,22 @@ public abstract class PersistedTabData implements UserData {
      * At a minimum, a frozen tab with an identifier and isIncognito fields set
      * is required.
      * @param factory {@link PersistedTabDataFactory} which will create {@link PersistedTabData}
-     * @param supplier for constructing a {@link PersistedTabData} from a
-     * {@link Tab}. This will be used as a fallback in the event that the {@link PersistedTabData}
-     * cannot be found in storage.
+     * @param tabDataCreator for constructing a {@link PersistedTabData} corresponding to the passed
+     * in tab. This will be used as a fallback in the event that the {@link PersistedTabData} cannot
+     * be found in storage or needs an update.
      * @param clazz class of the {@link PersistedTabData}
      * @param callback callback to pass the {@link PersistedTabData} in
      * @return {@link PersistedTabData} from storage
      */
     protected static <T extends PersistedTabData> void from(Tab tab,
-            PersistedTabDataFactory<T> factory, OneshotSupplier<T> supplier, Class<T> clazz,
-            Callback<T> callback) {
+            PersistedTabDataFactory<T> factory, Callback<Callback<T>> tabDataCreator,
+            Class<T> clazz, Callback<T> callback) {
         ThreadUtils.assertOnUiThread();
         // TODO(crbug.com/1059602) cache callbacks
         T persistedTabDataFromTab = getUserData(tab, clazz);
         if (persistedTabDataFromTab != null) {
             if (persistedTabDataFromTab.needsUpdate()) {
-                supplier.onAvailable((tabData) -> {
+                tabDataCreator.onResult((tabData) -> {
                     updateLastUpdatedMs(tabData);
                     if (tabData != null) {
                         setUserData(tab, clazz, tabData);
@@ -129,14 +128,14 @@ public abstract class PersistedTabData implements UserData {
                 PersistedTabDataConfiguration.get(clazz, tab.isIncognito());
         config.storage.restore(tab.getId(), config.id, (data) -> {
             if (data == null) {
-                supplier.onAvailable((tabData) -> {
+                tabDataCreator.onResult((tabData) -> {
                     updateLastUpdatedMs(tabData);
                     onPersistedTabDataResult(tabData, tab, clazz, key);
                 });
             } else {
                 T persistedTabDataFromStorage = factory.create(data, config.storage, config.id);
                 if (persistedTabDataFromStorage.needsUpdate()) {
-                    supplier.onAvailable((tabData) -> {
+                    tabDataCreator.onResult((tabData) -> {
                         updateLastUpdatedMs(tabData);
                         onPersistedTabDataResult(tabData, tab, clazz, key);
                     });

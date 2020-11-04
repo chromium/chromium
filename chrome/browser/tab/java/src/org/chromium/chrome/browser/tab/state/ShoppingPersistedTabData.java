@@ -18,7 +18,6 @@ import org.json.JSONObject;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -84,22 +83,20 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         PersistedTabData.from(tab,
                 (data, storage, id)
                         -> { return new ShoppingPersistedTabData(tab, data, storage, id); },
-                new OneshotSupplierImpl<ShoppingPersistedTabData>() {
-                    @Override
-                    public void onAvailable(Callback<ShoppingPersistedTabData> supplierCallback) {
-                        ShoppingPersistedTabData previousShoppingPersistedTabData =
-                                PersistedTabData.from(tab, USER_DATA_KEY);
-                        EndpointFetcher.fetchUsingOAuth(
-                                (endpointResponse)
-                                        -> {
-                                    supplierCallback.onResult(
-                                            build(tab, endpointResponse.getResponseString(),
-                                                    previousShoppingPersistedTabData));
-                                },
-                                Profile.getLastUsedRegularProfile(), OAUTH_NAME,
-                                String.format(Locale.US, ENDPOINT, tab.getUrlString()),
-                                HTTPS_METHOD, CONTENT_TYPE, SCOPES, EMPTY_POST_DATA, TIMEOUT_MS);
-                    }
+                (supplierCallback)
+                        -> {
+                    ShoppingPersistedTabData previousShoppingPersistedTabData =
+                            PersistedTabData.from(tab, USER_DATA_KEY);
+                    EndpointFetcher.fetchUsingOAuth(
+                            (endpointResponse)
+                                    -> {
+                                supplierCallback.onResult(
+                                        build(tab, endpointResponse.getResponseString(),
+                                                previousShoppingPersistedTabData));
+                            },
+                            Profile.getLastUsedRegularProfile(), OAUTH_NAME,
+                            String.format(Locale.US, ENDPOINT, tab.getUrlString()), HTTPS_METHOD,
+                            CONTENT_TYPE, SCOPES, EMPTY_POST_DATA, TIMEOUT_MS);
                 },
                 ShoppingPersistedTabData.class, callback);
     }
