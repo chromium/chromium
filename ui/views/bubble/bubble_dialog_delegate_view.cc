@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -26,7 +25,6 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
-#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -56,7 +54,8 @@ namespace {
 //
 // TODO(tluk): Fix all cases where bubble transparency is used and have bubble
 // ClientViews always paint to a layer.
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kPaintClientToLayer, true)
+// TODO(tluk): Flip this to true for all bubbles.
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kPaintClientToLayer, false)
 
 // Override base functionality of Widget to give bubble dialogs access to the
 // theme provider of the window they're anchored to.
@@ -400,9 +399,7 @@ ClientView* BubbleDialogDelegate::CreateClientView(Widget* widget) {
   // rounded corner clip we must paint the client view to a layer. This is
   // necessary because layers do not respect the clip of a non-layer backed
   // parent.
-  if (base::FeatureList::IsEnabled(
-          features::kEnableMDRoundedCornersOnDialogs) &&
-      GetProperty(kPaintClientToLayer)) {
+  if (GetProperty(kPaintClientToLayer)) {
     client_view_->SetPaintToLayer();
     client_view_->layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(GetCornerRadius()));

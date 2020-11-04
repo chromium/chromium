@@ -14,7 +14,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "ui/base/hit_test.h"
 #include "ui/events/event_utils.h"
@@ -30,7 +29,6 @@
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
-#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -628,28 +626,14 @@ TEST_F(BubbleDialogDelegateViewTest, GetThemeProvider_FromAnchorWidget) {
             anchor_widget->GetThemeProvider());
 }
 
-// Tests whether the BubbleDialogDelegateView will create a layer backed client
-// view when prompted to do so.
-class BubbleDialogDelegateClientLayerTest : public test::WidgetTest {
- public:
-  BubbleDialogDelegateClientLayerTest() = default;
-  ~BubbleDialogDelegateClientLayerTest() override = default;
-
-  void SetUp() override {
-    WidgetTest::SetUp();
-    scoped_feature_list_.InitWithFeatures(
-        {features::kEnableMDRoundedCornersOnDialogs}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(BubbleDialogDelegateClientLayerTest, WithClientLayerTest) {
+// Tests whether the BubbleDialogDelegateView will create a layer backed
+// ClientView when SetPaintClientToLayer is set to true.
+TEST_F(BubbleDialogDelegateViewTest, WithClientLayerTest) {
   std::unique_ptr<Widget> anchor_widget =
       CreateTestWidget(Widget::InitParams::TYPE_WINDOW);
   auto bubble_delegate = std::make_unique<BubbleDialogDelegateView>(
       nullptr, BubbleBorder::TOP_LEFT);
+  bubble_delegate->SetPaintClientToLayer(true);
   bubble_delegate->set_parent_window(anchor_widget->GetNativeView());
 
   WidgetAutoclosePtr bubble_widget(
@@ -658,7 +642,9 @@ TEST_F(BubbleDialogDelegateClientLayerTest, WithClientLayerTest) {
   EXPECT_NE(nullptr, bubble_widget->client_view()->layer());
 }
 
-TEST_F(BubbleDialogDelegateClientLayerTest, WithoutClientLayerTest) {
+// Tests to ensure BubbleDialogDelegateView does not create a layer backed
+// ClientView when SetPaintClientToLayer is set to false.
+TEST_F(BubbleDialogDelegateViewTest, WithoutClientLayerTest) {
   std::unique_ptr<Widget> anchor_widget =
       CreateTestWidget(Widget::InitParams::TYPE_WINDOW);
   auto bubble_delegate = std::make_unique<BubbleDialogDelegateView>(

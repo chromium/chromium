@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -36,7 +35,6 @@
 #include "ui/views/paint_info.h"
 #include "ui/views/resources/grit/views_resources.h"
 #include "ui/views/view_class_properties.h"
-#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/client_view.h"
@@ -198,12 +196,9 @@ bool BubbleFrameView::GetClientMask(const gfx::Size& size, SkPath* path) const {
 
   // BubbleFrameView only returns a SkPath for the purpose of clipping the
   // client view's corners so that it fits within the borders of its rounded
-  // frame. With MD rounded coners if a client view is painted to a layer the
-  // rounding is handled by the |SetRoundedCornerRadius()| layer API, so we
-  // return false here.
-  if (base::FeatureList::IsEnabled(
-          features::kEnableMDRoundedCornersOnDialogs) &&
-      GetWidget()->client_view()->layer()) {
+  // frame. If a client view is painted to a layer the rounding is handled by
+  // the |SetRoundedCornerRadius()| layer API, so we return false here.
+  if (GetWidget()->client_view()->layer()) {
     return false;
   }
 
@@ -583,8 +578,6 @@ SkColor BubbleFrameView::GetBackgroundColor() const {
 }
 
 void BubbleFrameView::UpdateClientViewBackground() {
-  if (!base::FeatureList::IsEnabled(features::kEnableMDRoundedCornersOnDialogs))
-    return;
   DCHECK(GetWidget());
   DCHECK(GetWidget()->client_view());
 
@@ -884,9 +877,10 @@ int BubbleFrameView::GetHeaderHeightForFrameWidth(int frame_width) const {
 }
 
 void BubbleFrameView::UpdateClientLayerCornerRadius() {
-  if (GetWidget() && GetWidget()->client_view()->layer() &&
-      base::FeatureList::IsEnabled(
-          features::kEnableMDRoundedCornersOnDialogs)) {
+  // If the ClientView is painted to a layer we need to apply the appropriate
+  // corner radius so that the ClientView and all its child layers are masked
+  // appropriately to fit within the BubbleFrameView.
+  if (GetWidget() && GetWidget()->client_view()->layer()) {
     GetWidget()->client_view()->layer()->SetRoundedCornerRadius(
         GetClientCornerRadii());
   }

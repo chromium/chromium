@@ -50,10 +50,6 @@ View* AnyViewWithClassName(Widget* widget, const std::string& classname) {
   });
 }
 
-void WidgetTest::WidgetCloser::operator()(Widget* widget) const {
-  widget->CloseNow();
-}
-
 WidgetTest::WidgetTest() = default;
 
 WidgetTest::WidgetTest(

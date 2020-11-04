@@ -61,14 +61,6 @@ View* AnyViewWithClassName(Widget* widget, const std::string& classname);
 
 class WidgetTest : public ViewsTestBase {
  public:
-  // This class can be used as a deleter for std::unique_ptr<Widget>
-  // to call function Widget::CloseNow automatically.
-  struct WidgetCloser {
-    void operator()(Widget* widget) const;
-  };
-
-  using WidgetAutoclosePtr = std::unique_ptr<Widget, WidgetCloser>;
-
   WidgetTest();
   explicit WidgetTest(
       std::unique_ptr<base::test::TaskEnvironment> task_environment);

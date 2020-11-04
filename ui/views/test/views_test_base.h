@@ -42,6 +42,13 @@ class ViewsTestBase : public PlatformTest {
     kDesktop,
   };
 
+  // This class can be used as a deleter for std::unique_ptr<Widget>
+  // to call function Widget::CloseNow automatically.
+  struct WidgetCloser {
+    void operator()(Widget* widget) const;
+  };
+  using WidgetAutoclosePtr = std::unique_ptr<Widget, WidgetCloser>;
+
   // Constructs a ViewsTestBase with |traits| being forwarded to its
   // TaskEnvironment. MainThreadType always defaults to UI and must not be
   // specified.

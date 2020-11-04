@@ -65,6 +65,10 @@ bool InitializeVisuals() {
 
 }  // namespace
 
+void ViewsTestBase::WidgetCloser::operator()(Widget* widget) const {
+  widget->CloseNow();
+}
+
 ViewsTestBase::ViewsTestBase(
     std::unique_ptr<base::test::TaskEnvironment> task_environment)
     : task_environment_(std::move(task_environment)) {}
