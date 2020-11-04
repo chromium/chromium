@@ -27,10 +27,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 
-namespace base {
-class HistogramBase;
-}  // namespace base
-
 namespace cc {
 namespace mojo_embedder {
 
@@ -42,32 +38,6 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
       public viz::mojom::CompositorFrameSinkClient,
       public viz::ExternalBeginFrameSourceClient {
  public:
-  // This class is used to handle the graphics pipeline related metrics
-  // reporting.
-  class PipelineReporting {
-   public:
-    PipelineReporting(viz::BeginFrameArgs args,
-                      base::TimeTicks now,
-                      base::HistogramBase* submit_begin_frame_histogram);
-    ~PipelineReporting();
-
-    void Report();
-
-    int64_t trace_id() const { return trace_id_; }
-
-   private:
-    // The trace id of a BeginFrame which is used to track its progress on the
-    // client side.
-    int64_t trace_id_;
-
-    // The time stamp for the begin frame to arrive on client side.
-    base::TimeTicks frame_time_;
-
-    // Histogram metrics used to record
-    // GraphicsPipeline.ClientName.SubmitCompositorFrameAfterBeginFrame
-    base::HistogramBase* submit_begin_frame_histogram_;
-  };
-
   struct CC_MOJO_EMBEDDER_EXPORT UnboundMessagePipes {
     UnboundMessagePipes();
     ~UnboundMessagePipes();
@@ -169,16 +139,7 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   viz::LocalSurfaceId last_submitted_local_surface_id_;
   float last_submitted_device_scale_factor_ = 1.f;
   gfx::Size last_submitted_size_in_pixels_;
-  // Use this map to record the time when client received the BeginFrameArgs.
-  base::flat_map<int64_t, PipelineReporting> pipeline_reporting_frame_times_;
 
-  // Histogram metrics used to record
-  // GraphicsPipeline.ClientName.ReceivedBeginFrame
-  base::HistogramBase* const receive_begin_frame_histogram_;
-
-  // Histogram metrics used to record
-  // GraphicsPipeline.ClientName.SubmitCompositorFrameAfterBeginFrame
-  base::HistogramBase* const submit_begin_frame_histogram_;
   base::WeakPtrFactory<AsyncLayerTreeFrameSink> weak_factory_{this};
 };
 

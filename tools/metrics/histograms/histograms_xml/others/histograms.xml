@@ -5940,6 +5940,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="GraphicsPipeline.ReceivedBeginFrame" units="microseconds"
     expires_after="M85">
+  <obsolete>
+    Expired in M85.
+  </obsolete>
   <owner>yiyix@chromium.org</owner>
   <owner>chrome-gpu-metrics@google.com</owner>
   <summary>
@@ -5953,6 +5956,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="GraphicsPipeline.SubmitCompositorFrameAfterBeginFrame"
     units="microseconds" expires_after="M85">
+  <obsolete>
+    Expired in M85.
+  </obsolete>
   <owner>yiyix@chromium.org</owner>
   <owner>chrome-gpu-metrics@google.com</owner>
   <summary>
