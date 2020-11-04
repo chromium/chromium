@@ -21,7 +21,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/font.h"
@@ -32,10 +31,6 @@
 
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"
-#endif
-
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
-#include "ui/base/ui_base_features.h"
 #endif
 
 namespace webui {
@@ -226,17 +221,13 @@ void AppendWebUiCssTextDefaults(std::string* html) {
 std::string GetFontFamily() {
   std::string font_family = l10n_util::GetStringUTF8(IDS_WEB_FONT_FAMILY);
 
-// TODO(dnicoara) Remove Ozone check when PlatformFont support is introduced
-// into Ozone: crbug.com/320050
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
-  if (!features::IsUsingOzonePlatform()) {
-    std::string font_name = ui::ResourceBundle::GetSharedInstance()
-                                .GetFont(ui::ResourceBundle::BaseFont)
-                                .GetFontName();
-    // Wrap |font_name| with quotes to ensure it will always be parsed correctly
-    // in CSS.
-    font_family = "\"" + font_name + "\", " + font_family;
-  }
+  std::string font_name = ui::ResourceBundle::GetSharedInstance()
+                              .GetFont(ui::ResourceBundle::BaseFont)
+                              .GetFontName();
+  // Wrap |font_name| with quotes to ensure it will always be parsed correctly
+  // in CSS.
+  font_family = "\"" + font_name + "\", " + font_family;
 #endif
 
   return font_family;
