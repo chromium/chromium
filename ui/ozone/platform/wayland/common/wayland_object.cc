@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 #include <aura-shell-client-protocol.h>
+#include <cursor-shapes-unstable-v1-client-protocol.h>
 #include <gtk-primary-selection-client-protocol.h>
 #include <keyboard-extension-unstable-v1-client-protocol.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
@@ -246,6 +247,11 @@ const wl_interface* ObjectTraits<zaura_surface>::interface =
     &zaura_surface_interface;
 void (*ObjectTraits<zaura_surface>::deleter)(zaura_surface*) =
     &zaura_surface_destroy;
+
+const wl_interface* ObjectTraits<zcr_cursor_shapes_v1>::interface =
+    &zcr_cursor_shapes_v1_interface;
+void (*ObjectTraits<zcr_cursor_shapes_v1>::deleter)(zcr_cursor_shapes_v1*) =
+    &zcr_cursor_shapes_v1_destroy;
 
 const wl_interface* ObjectTraits<zcr_keyboard_extension_v1>::interface =
     &zcr_keyboard_extension_v1_interface;

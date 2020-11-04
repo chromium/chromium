@@ -38,6 +38,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
+#include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_linux_dmabuf.h"
 #include "ui/ozone/platform/wayland/host/xdg_foreign_wrapper.h"
 #include "ui/ozone/platform/wayland/host/zwp_primary_selection_device_manager.h"
@@ -52,6 +53,7 @@ namespace ui {
 
 namespace {
 constexpr uint32_t kMaxCompositorVersion = 4;
+constexpr uint32_t kMaxCursorShapesVersion = 1;
 constexpr uint32_t kMaxGtkPrimarySelectionDeviceManagerVersion = 1;
 constexpr uint32_t kMaxKeyboardExtensionVersion = 1;
 constexpr uint32_t kMaxLinuxDmabufVersion = 3;
@@ -392,6 +394,16 @@ void WaylandConnection::Global(void* data,
              (strcmp(interface, "wp_viewporter") == 0)) {
     connection->viewporter_ =
         wl::Bind<wp_viewporter>(registry, name, kMaxWpViewporterVersion);
+  } else if (!connection->zcr_cursor_shapes_ &&
+             strcmp(interface, "zcr_cursor_shapes_v1") == 0) {
+    auto zcr_cursor_shapes =
+        wl::Bind<zcr_cursor_shapes_v1>(registry, name, kMaxCursorShapesVersion);
+    if (!zcr_cursor_shapes) {
+      LOG(ERROR) << "Failed to bind zcr_cursor_shapes_v1";
+      return;
+    }
+    connection->zcr_cursor_shapes_ = std::make_unique<WaylandZcrCursorShapes>(
+        zcr_cursor_shapes.release(), connection);
   } else if (!connection->keyboard_extension_v1_ &&
              strcmp(interface, "zcr_keyboard_extension_v1") == 0) {
     connection->keyboard_extension_v1_ = wl::Bind<zcr_keyboard_extension_v1>(

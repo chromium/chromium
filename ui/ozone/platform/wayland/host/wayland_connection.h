@@ -32,6 +32,7 @@ class WaylandPointer;
 class WaylandShm;
 class WaylandTouch;
 class WaylandZAuraShell;
+class WaylandZcrCursorShapes;
 class WaylandZwpLinuxDmabuf;
 class WaylandDataDeviceManager;
 class WaylandCursorPosition;
@@ -119,6 +120,10 @@ class WaylandConnection {
   }
 
   WaylandZAuraShell* zaura_shell() const { return zaura_shell_.get(); }
+
+  WaylandZcrCursorShapes* zcr_cursor_shapes() const {
+    return zcr_cursor_shapes_.get();
+  }
 
   WaylandZwpLinuxDmabuf* zwp_dmabuf() const { return zwp_dmabuf_.get(); }
 
@@ -220,6 +225,7 @@ class WaylandConnection {
   std::unique_ptr<WaylandOutputManager> wayland_output_manager_;
   std::unique_ptr<WaylandCursorPosition> wayland_cursor_position_;
   std::unique_ptr<WaylandZAuraShell> zaura_shell_;
+  std::unique_ptr<WaylandZcrCursorShapes> zcr_cursor_shapes_;
   std::unique_ptr<WaylandZwpLinuxDmabuf> zwp_dmabuf_;
   std::unique_ptr<WaylandDrm> drm_;
   std::unique_ptr<WaylandShm> shm_;
