@@ -144,5 +144,8 @@ public class PageInfoContainer extends FrameLayout {
         mSubpageHeader.setVisibility(subPageTitle != null ? VISIBLE : GONE);
         mSubpageTitle.setText(subPageTitle);
         mContent.addView(view);
+        announceForAccessibility(subPageTitle != null
+                        ? subPageTitle
+                        : getResources().getString(R.string.accessibility_toolbar_btn_site_info));
     }
 }

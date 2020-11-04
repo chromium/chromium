@@ -563,6 +563,9 @@
       <message name="IDS_COOKIES_TITLE" desc="Title for the Cookies settings screen [CHAR-LIMIT=32]">
           Cookies
       </message>
+      <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_SITE_INFO" desc="Content description for the page icon that gives more site information when clicked. The icon can be a magnifier for search result pages, or other icons representing the page state.">
+        Site information
+      </message>
 
       <!-- Media Capture and Streams -->
       <message name="IDS_MEDIA_CAPTURE_NOTIFICATION_APP_NAME_SEPARATOR" desc="A separator between the app name and notification message.">
