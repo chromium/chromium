@@ -74,6 +74,18 @@ class CAPTURE_EXPORT SampleBufferTransformer {
   // Sample buffers from the camera contain byte buffers when MJPEG is used.
   void TransformSampleBuffer(CMSampleBufferRef source_sample_buffer,
                              CVPixelBufferRef destination_pixel_buffer);
+  void TransformSampleBufferFromMjpegToI420(
+      uint8_t* source_buffer_data_base_address,
+      size_t source_buffer_data_size,
+      size_t source_width,
+      size_t source_height,
+      CVPixelBufferRef destination_pixel_buffer);
+  void TransformSampleBufferFromMjpegToNV12(
+      uint8_t* source_buffer_data_base_address,
+      size_t source_buffer_data_size,
+      size_t source_width,
+      size_t source_height,
+      CVPixelBufferRef destination_pixel_buffer);
 
   Transformer transformer_;
   OSType destination_pixel_format_;
