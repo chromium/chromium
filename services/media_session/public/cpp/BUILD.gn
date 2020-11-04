@@ -44,6 +44,7 @@ component("cpp") {
     "features.h",
     "media_image_manager.cc",
     "media_image_manager.h",
+    "media_session_service.h",
     "util.cc",
     "util.h",
   ]

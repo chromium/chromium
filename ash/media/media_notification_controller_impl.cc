@@ -15,7 +15,6 @@
 #include "base/bind_helpers.h"
 #include "base/stl_util.h"
 #include "components/media_message_center/media_notification_util.h"
-#include "services/media_session/public/mojom/media_session_service.mojom.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_blocker.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -108,7 +107,7 @@ MediaNotificationControllerImpl::MediaNotificationControllerImpl()
   }
 
   // May be null in tests.
-  media_session::mojom::MediaSessionService* service =
+  media_session::MediaSessionService* service =
       Shell::Get()->shell_delegate()->GetMediaSessionService();
   if (!service)
     return;

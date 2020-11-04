@@ -21,7 +21,7 @@
 #include "components/media_message_center/media_notification_util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "services/media_session/public/cpp/util.h"
-#include "services/media_session/public/mojom/media_session_service.mojom.h"
+#include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -404,7 +404,7 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
   SetArtwork(base::nullopt);
 
   // |service| can be null in tests.
-  media_session::mojom::MediaSessionService* service =
+  media_session::MediaSessionService* service =
       Shell::Get()->shell_delegate()->GetMediaSessionService();
   if (!service)
     return;

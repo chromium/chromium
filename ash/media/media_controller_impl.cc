@@ -18,7 +18,6 @@
 #include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/constants.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
-#include "services/media_session/public/mojom/media_session_service.mojom.h"
 #include "ui/base/accelerators/media_keys_util.h"
 
 namespace ash {
@@ -361,7 +360,7 @@ MediaControllerImpl::GetMediaSessionController() {
   if (!Shell::HasInstance())
     return nullptr;
 
-  media_session::mojom::MediaSessionService* service =
+  media_session::MediaSessionService* service =
       Shell::Get()->shell_delegate()->GetMediaSessionService();
   if (!service)
     return nullptr;

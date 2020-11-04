@@ -17,12 +17,11 @@
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/audio_focus_request.h"
-#include "services/media_session/media_session_service.h"
+#include "services/media_session/media_session_service_impl.h"
 #include "services/media_session/public/cpp/test/audio_focus_test_util.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
-#include "services/media_session/public/mojom/media_session_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media_session {
@@ -48,13 +47,12 @@ class AudioFocusManagerTest
     base::PowerMonitor::Initialize(std::move(power_source));
 
     // Create an instance of the MediaSessionService.
-    service_ = std::make_unique<MediaSessionService>(
-        service_remote_.BindNewPipeAndPassReceiver());
-    service_remote_->BindAudioFocusManager(
+    service_ = std::make_unique<MediaSessionServiceImpl>();
+    service_->BindAudioFocusManager(
         audio_focus_remote_.BindNewPipeAndPassReceiver());
-    service_remote_->BindAudioFocusManagerDebug(
+    service_->BindAudioFocusManagerDebug(
         audio_focus_debug_remote_.BindNewPipeAndPassReceiver());
-    service_remote_->BindMediaControllerManager(
+    service_->BindMediaControllerManager(
         controller_manager_remote_.BindNewPipeAndPassReceiver());
 
     audio_focus_remote_->SetEnforcementMode(GetParam());
@@ -66,7 +64,6 @@ class AudioFocusManagerTest
     base::RunLoop().RunUntilIdle();
 
     service_.reset();
-    service_remote_.reset();
     base::PowerMonitor::ShutdownForTesting();
   }
 
@@ -184,7 +181,7 @@ class AudioFocusManagerTest
 
   mojo::Remote<mojom::AudioFocusManager> CreateAudioFocusManagerRemote() {
     mojo::Remote<mojom::AudioFocusManager> remote;
-    service_remote_->BindAudioFocusManager(remote.BindNewPipeAndPassReceiver());
+    service_->BindAudioFocusManager(remote.BindNewPipeAndPassReceiver());
     return remote;
   }
 
@@ -282,8 +279,7 @@ class AudioFocusManagerTest
 
   base::test::TaskEnvironment task_environment_;
 
-  std::unique_ptr<MediaSessionService> service_;
-  mojo::Remote<mojom::MediaSessionService> service_remote_;
+  std::unique_ptr<MediaSessionServiceImpl> service_;
 
   mojo::Remote<mojom::AudioFocusManager> audio_focus_remote_;
   mojo::Remote<mojom::AudioFocusManagerDebug> audio_focus_debug_remote_;
