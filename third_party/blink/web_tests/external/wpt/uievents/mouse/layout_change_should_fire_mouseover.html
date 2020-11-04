@@ -5,6 +5,9 @@
         <meta name="viewport" content="width=device-width">
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
+        <script src="/resources/testdriver.js"></script>
+        <script src="/resources/testdriver-actions.js"></script>
+        <script src="/resources/testdriver-vendor.js"></script>
         <style>
             #spacer {
                 height: 100px;
@@ -44,6 +47,7 @@
         </h4>
         <script type="text/javascript">
             var testMouseOver = async_test('Tests that the mouseover event is fired and the element has a hover effect when the element underneath the mouse cursor is changed.');
+            var actions_promise;
 
             var eventList = [];
             function addBlue() {
@@ -61,7 +65,10 @@
             function checkEventSequence() {
                 var result = eventList.join();
                 assert_equals(result, 'mouseover,mouseenter');
-                testMouseOver.done();
+                // Make sure the test finishes after all the input actions are completed.
+                actions_promise.then( () => {
+                    testMouseOver.done();
+                });
             }
 
             function run() {
@@ -78,6 +85,13 @@
                   }
               });
             }
+
+            // Inject mouse inputs.
+            actions_promise = new test_driver.Actions()
+                .pointerMove(0, 0, {origin: red})
+                .pointerDown()
+                .pointerUp()
+                .send();
         </script>
     </body>
 </html>
