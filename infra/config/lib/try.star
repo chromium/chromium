@@ -416,22 +416,12 @@ def chromium_win_builder(
         **kwargs
     )
 
-gpu_try_resultdb_exports = [
-    resultdb.export_test_results(
-        bq_table = "luci-resultdb.chromium.gpu_try_test_results",
-        predicate = resultdb.test_result_predicate(
-            test_id_regexp = "ninja://chrome/test:telemetry_gpu_integration_test/.+",
-        ),
-    ),
-]
-
 def gpu_try_builder(*, name, builderless = False, execution_timeout = 6 * time.hour, **kwargs):
     return try_builder(
         name = name,
         builderless = builderless,
         execution_timeout = execution_timeout,
         service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
-        resultdb_bigquery_exports = gpu_try_resultdb_exports,
         **kwargs
     )
 
@@ -500,5 +490,4 @@ try_ = struct(
     gpu_chromium_linux_builder = gpu_chromium_linux_builder,
     gpu_chromium_mac_builder = gpu_chromium_mac_builder,
     gpu_chromium_win_builder = gpu_chromium_win_builder,
-    gpu_try_resultdb_exports = gpu_try_resultdb_exports,
 )

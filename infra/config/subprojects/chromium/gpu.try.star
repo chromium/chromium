@@ -30,7 +30,6 @@ try_.defaults.set(
     subproject_list_view = "luci.chromium.try",
     swarming_tags = ["vpython:native-python-wrapper"],
     task_template_canary_percentage = 5,
-    resultdb_bigquery_exports = try_.gpu_try_resultdb_exports,
 )
 
 # Builders appear after the function used to define them, with all builders
