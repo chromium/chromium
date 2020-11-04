@@ -178,16 +178,14 @@ bool AndroidCacheDatabase::CreateDatabase(const base::FilePath& db_name) {
   sql::Database::Delete(db_name_);
 
   // Using a new connection, otherwise we can not create the database.
-  sql::Database connection;
-
+  //
   // The db doesn't store too much data, so we don't need that big a page
   // size or cache.
-  connection.set_page_size(2048);
-  connection.set_cache_size(32);
-
-  // Run the database in exclusive mode. Nobody else should be accessing the
+  //
+  // The database is open in exclusive mode. Nobody else should be accessing the
   // database while we're running, and this will give somewhat improved perf.
-  connection.set_exclusive_locking();
+  sql::Database connection(
+      {.exclusive_locking = true, .page_size = 2048, .cache_size = 32});
 
   if (!connection.Open(db_name_)) {
     LOG(ERROR) << connection.GetErrorMessage();
