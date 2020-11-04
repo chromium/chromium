@@ -749,7 +749,7 @@
         Bulgarian Phonetic keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_CANADIAN_ENGLISH" desc="The input method name shows in system tray menu and settings page.">
-        Canadian English keyboard
+        English (Canada)
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_CANADIAN_FRENCH" desc="The input method name shows in system tray menu and settings page.">
         Canadian French keyboard
@@ -917,40 +917,40 @@
         Turkish-F keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_UK_DVORAK" desc="The input method name shows in system tray menu and settings page.">
-        UK Dvorak keyboard
+        English (UK) with Dvorak keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_UK" desc="The input method name shows in system tray menu and settings page.">
-        UK keyboard
+        English (UK)
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_UKRAINIAN" desc="The input method name shows in system tray menu and settings page.">
         Ukrainian keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_US_COLEMAK" desc="The input method name shows in system tray menu and settings page.">
-        US Colemak keyboard
+        English (US) with Colemak keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_US_DVORAK" desc="The input method name shows in system tray menu and settings page.">
-        US Dvorak keyboard
+        English (US) with Dvorak keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_US_DVP" desc="The input method name shows in system tray menu and settings page.">
-        US Programmer Dvorak keyboard
+        English (US) with Programmer Dvorak keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_US_EXTENDED" desc="The input method name shows in system tray menu and settings page.">
-        US Extended keyboard
+        English (US) with Extended keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_US_INTERNATIONAL" desc="The input method name shows in system tray menu and settings page.">
-        US International keyboard
+        English (US) with International keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_US_INTERNATIONAL_PC" desc="The input method name shows in system tray menu and settings page.">
-        US International (PC) keyboard
+        English (US) with International PC keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_US_WORKMAN" desc="The input method name shows in system tray menu and settings page.">
-        US Workman keyboard
+        English (US) with Workman keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_US_WORKMAN_INTERNATIONAL" desc="The input method name shows in system tray menu and settings page.">
-        US Workman international keyboard
+        English (US) with Workman International keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_US" desc="The input method name shows in system tray menu and settings page.">
-        US keyboard
+        English (US)
       </message>
 
       <message name="IDS_IME_NAME_INPUTMETHOD_ARRAY" desc="The input method name shows in system tray menu, this is Array (\u884c\u5217) input method for Traditional Chinese.">
