@@ -1,5 +1,6 @@
 /client-py/
 *.bak
+*.code-workspace
 *.mk
 *.ncb
 *.opensdf
