@@ -2213,7 +2213,7 @@
       name: "WebXRMultiGpu",
       depends_on: ["WebXR"],
       // Enabled when blink::features::kWebXrMultiGpu is enabled.
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "WebXRPlaneDetection",

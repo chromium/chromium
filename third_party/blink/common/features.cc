@@ -712,7 +712,7 @@ const char kSkipTouchEventFilterFilteringProcessParamValueBrowserAndRenderer[] =
 
 // Improves support for WebXR on computers with multiple GPUs.
 const base::Feature kWebXrMultiGpu{"WebXRMultiGpu",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables dependency support in blink::MatchedPropertiesCache, which allows
 // caching of previously uncachable objects.
