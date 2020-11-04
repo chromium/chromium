@@ -90,9 +90,10 @@ class CONTENT_EXPORT AppCacheServiceImpl : public AppCacheService {
     virtual ~Observer() = default;
   };
 
-  // If not using quota management, the proxy may be NULL.
-  AppCacheServiceImpl(storage::QuotaManagerProxy* quota_manager_proxy,
-                      base::WeakPtr<StoragePartitionImpl> partition);
+  // If not using quota management, the proxy may be null.
+  AppCacheServiceImpl(
+      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
+      base::WeakPtr<StoragePartitionImpl> partition);
   ~AppCacheServiceImpl() override;
 
   void Initialize(const base::FilePath& cache_directory);

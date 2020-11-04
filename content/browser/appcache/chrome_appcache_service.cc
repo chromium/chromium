@@ -21,9 +21,10 @@
 namespace content {
 
 ChromeAppCacheService::ChromeAppCacheService(
-    storage::QuotaManagerProxy* quota_manager_proxy,
+    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     base::WeakPtr<StoragePartitionImpl> partition)
-    : AppCacheServiceImpl(quota_manager_proxy, std::move(partition)) {}
+    : AppCacheServiceImpl(std::move(quota_manager_proxy),
+                          std::move(partition)) {}
 
 void ChromeAppCacheService::Initialize(
     const base::FilePath& cache_path,

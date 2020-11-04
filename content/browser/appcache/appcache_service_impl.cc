@@ -377,13 +377,13 @@ AppCacheStorageReference::~AppCacheStorageReference() = default;
 // AppCacheServiceImpl -------
 
 AppCacheServiceImpl::AppCacheServiceImpl(
-    storage::QuotaManagerProxy* quota_manager_proxy,
+    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     base::WeakPtr<StoragePartitionImpl> partition)
     : db_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       appcache_policy_(nullptr),
-      quota_manager_proxy_(quota_manager_proxy),
+      quota_manager_proxy_(std::move(quota_manager_proxy)),
       force_keep_session_state_(false),
       partition_(std::move(partition)) {
   if (quota_manager_proxy_.get()) {

@@ -1283,7 +1283,7 @@ void StoragePartitionImpl::Initialize(
 
   if (StoragePartition::IsAppCacheEnabled()) {
     appcache_service_ = base::MakeRefCounted<ChromeAppCacheService>(
-        quota_manager_proxy.get(), weak_factory_.GetWeakPtr());
+        quota_manager_proxy, weak_factory_.GetWeakPtr());
   }
 
   dedicated_worker_service_ = std::make_unique<DedicatedWorkerServiceImpl>();

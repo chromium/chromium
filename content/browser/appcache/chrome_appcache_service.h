@@ -47,7 +47,7 @@ class CONTENT_EXPORT ChromeAppCacheService
       public AppCacheServiceImpl,
       public AppCachePolicy {
  public:
-  ChromeAppCacheService(storage::QuotaManagerProxy* proxy,
+  ChromeAppCacheService(scoped_refptr<storage::QuotaManagerProxy> proxy,
                         base::WeakPtr<StoragePartitionImpl> partition);
 
   // If |cache_path| is empty we will use in-memory structs.
