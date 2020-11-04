@@ -30,15 +30,14 @@ class DefaultProvider : public ObservableProvider {
  public:
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  DefaultProvider(PrefService* prefs,
-                  bool incognito);
+  DefaultProvider(PrefService* prefs, bool off_the_record);
   ~DefaultProvider() override;
 
   // ProviderInterface implementations.
   std::unique_ptr<RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
       const ResourceIdentifier& resource_identifier,
-      bool incognito) const override;
+      bool off_the_record) const override;
 
   bool SetWebsiteSetting(
       const ContentSettingsPattern& primary_pattern,
@@ -82,8 +81,8 @@ class DefaultProvider : public ObservableProvider {
 
   PrefService* prefs_;
 
-  // Whether this settings map is for an Incognito session.
-  const bool is_incognito_;
+  // Whether this settings map is for an off-the-record session.
+  const bool is_off_the_record_;
 
   // Used around accesses to the |default_settings_| object to guarantee
   // thread safety.

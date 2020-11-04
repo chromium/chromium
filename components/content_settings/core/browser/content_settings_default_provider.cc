@@ -136,9 +136,9 @@ void DefaultProvider::RegisterProfilePrefs(
 #endif  // !defined(OS_ANDROID)
 }
 
-DefaultProvider::DefaultProvider(PrefService* prefs, bool incognito)
+DefaultProvider::DefaultProvider(PrefService* prefs, bool off_the_record)
     : prefs_(prefs),
-      is_incognito_(incognito),
+      is_off_the_record_(off_the_record),
       updating_preferences_(false) {
   DCHECK(prefs_);
 
@@ -249,7 +249,7 @@ bool DefaultProvider::SetWebsiteSetting(
 
   // The default settings may not be directly modified for OTR sessions.
   // Instead, they are synced to the main profile's setting.
-  if (is_incognito_)
+  if (is_off_the_record_)
     return true;
 
   {
@@ -276,9 +276,9 @@ bool DefaultProvider::SetWebsiteSetting(
 std::unique_ptr<RuleIterator> DefaultProvider::GetRuleIterator(
     ContentSettingsType content_type,
     const ResourceIdentifier& resource_identifier,
-    bool incognito) const {
-  // The default provider never has incognito-specific settings.
-  if (incognito)
+    bool off_the_record) const {
+  // The default provider never has off-the-record-specific settings.
+  if (off_the_record)
     return nullptr;
 
   base::AutoLock lock(lock_);
@@ -396,7 +396,7 @@ std::unique_ptr<base::Value> DefaultProvider::ReadFromPref(
 }
 
 void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
-  if (is_incognito_)
+  if (is_off_the_record_)
     return;
   // These prefs were never stored on iOS/Android so they don't need to be
   // deleted.

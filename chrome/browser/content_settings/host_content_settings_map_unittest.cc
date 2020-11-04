@@ -1386,7 +1386,25 @@ TEST_F(HostContentSettingsMapTest, AddContentSettingsObserver) {
 
 // Guest profiles do not exist on Android, so don't run these tests there.
 #if !defined(OS_ANDROID)
-TEST_F(HostContentSettingsMapTest, GuestProfile) {
+class GuestHostContentSettingsMapTest
+    : public HostContentSettingsMapTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  GuestHostContentSettingsMapTest() : is_ephemeral_(GetParam()) {
+    // Change the value if Ephemeral is not supported.
+    is_ephemeral_ &=
+        TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+            scoped_feature_list_, is_ephemeral_);
+  }
+
+  bool is_ephemeral() const { return is_ephemeral_; }
+
+ private:
+  bool is_ephemeral_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(GuestHostContentSettingsMapTest, GuestProfile) {
   TestingProfile::Builder profile_builder;
   profile_builder.SetGuestSession();
   std::unique_ptr<Profile> profile = profile_builder.Build();
@@ -1402,7 +1420,7 @@ TEST_F(HostContentSettingsMapTest, GuestProfile) {
                 host, host, ContentSettingsType::COOKIES, std::string()));
 
   // Changing content settings should not result in any prefs being stored
-  // however the value should be set in memory.
+  // however the value should be set in memory for OTR-Guest profiles.
   host_content_settings_map->SetContentSettingDefaultScope(
       host, GURL(), ContentSettingsType::COOKIES, std::string(),
       CONTENT_SETTING_BLOCK);
@@ -1413,12 +1431,15 @@ TEST_F(HostContentSettingsMapTest, GuestProfile) {
   const base::DictionaryValue* all_settings_dictionary =
       profile->GetPrefs()->GetDictionary(
           GetPrefName(ContentSettingsType::COOKIES));
-  EXPECT_TRUE(all_settings_dictionary->empty());
+  if (is_ephemeral())
+    EXPECT_FALSE(all_settings_dictionary->empty());
+  else
+    EXPECT_TRUE(all_settings_dictionary->empty());
 }
 
-// Default settings should not be modifiable for the guest profile (there is no
+// Default settings should not be modifiable for OTR-Guest profile (there is no
 // UI to do this).
-TEST_F(HostContentSettingsMapTest, GuestProfileDefaultSetting) {
+TEST_P(GuestHostContentSettingsMapTest, GuestProfileDefaultSetting) {
   TestingProfile::Builder profile_builder;
   profile_builder.SetGuestSession();
   std::unique_ptr<Profile> profile = profile_builder.Build();
@@ -1435,10 +1456,20 @@ TEST_F(HostContentSettingsMapTest, GuestProfileDefaultSetting) {
   host_content_settings_map->SetDefaultContentSetting(
       ContentSettingsType::COOKIES, CONTENT_SETTING_BLOCK);
 
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            host_content_settings_map->GetContentSetting(
-                host, host, ContentSettingsType::COOKIES, std::string()));
+  if (is_ephemeral()) {
+    EXPECT_EQ(CONTENT_SETTING_BLOCK,
+              host_content_settings_map->GetContentSetting(
+                  host, host, ContentSettingsType::COOKIES, std::string()));
+  } else {
+    EXPECT_EQ(CONTENT_SETTING_ALLOW,
+              host_content_settings_map->GetContentSetting(
+                  host, host, ContentSettingsType::COOKIES, std::string()));
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
+                         GuestHostContentSettingsMapTest,
+                         /*is_ephemeral=*/testing::Bool());
 #endif  // !defined(OS_ANDROID)
 
 TEST_F(HostContentSettingsMapTest, InvalidPattern) {
