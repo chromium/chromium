@@ -7,6 +7,8 @@ import 'chrome://scanning/scanning_app.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+
 const FileType = {
   JPG: chromeos.scanning.mojom.FileType.kJpg,
   PDF: chromeos.scanning.mojom.FileType.kPdf,
@@ -14,11 +16,12 @@ const FileType = {
 };
 
 export function fileTypeSelectTest() {
-  /** @type {!FileTypeSelectElement} */
-  let fileTypeSelect;
+  /** @type {?FileTypeSelectElement} */
+  let fileTypeSelect = null;
 
   setup(() => {
-    fileTypeSelect = document.createElement('file-type-select');
+    fileTypeSelect = /** @type {!FileTypeSelectElement} */ (
+        document.createElement('file-type-select'));
     assertTrue(!!fileTypeSelect);
     document.body.appendChild(fileTypeSelect);
   });

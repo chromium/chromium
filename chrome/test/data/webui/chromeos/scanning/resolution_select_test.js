@@ -7,12 +7,15 @@ import 'chrome://scanning/scanning_app.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+
 export function resolutionSelectTest() {
-  /** @type {!ResolutionSelectElement} */
-  let resolutionSelect;
+  /** @type {?ResolutionSelectElement} */
+  let resolutionSelect = null;
 
   setup(() => {
-    resolutionSelect = document.createElement('resolution-select');
+    resolutionSelect = /** @type {!ResolutionSelectElement} */ (
+        document.createElement('resolution-select'));
     assertTrue(!!resolutionSelect);
     document.body.appendChild(resolutionSelect);
   });

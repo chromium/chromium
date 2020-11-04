@@ -7,6 +7,7 @@ import 'chrome://scanning/scanning_app.js';
 
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
 import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
@@ -18,17 +19,15 @@ export function scanToSelectTest() {
   /** @type {?TestScanningBrowserProxy} */
   let scanningBrowserProxy = null;
 
-  /** @const {string} */
   const myFiles = 'My files';
-
-  /** @const {string} */
   const selectFolderText = 'Select folder in Files app…';
 
   setup(() => {
     scanningBrowserProxy = new TestScanningBrowserProxy();
     ScanningBrowserProxyImpl.instance_ = scanningBrowserProxy;
 
-    scanToSelect = document.createElement('scan-to-select');
+    scanToSelect = /** @type {!ScanToSelectElement} */ (
+        document.createElement('scan-to-select'));
     assertTrue(!!scanToSelect);
     document.body.appendChild(scanToSelect);
   });

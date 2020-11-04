@@ -3,14 +3,16 @@
 // found in the LICENSE file.
 
 import 'chrome://scanning/scan_preview.js';
-import 'chrome://scanning/scanning_app.js';
+
+import {assertTrue} from '../../chai_assert.js';
 
 export function scanPreviewTest() {
   /** @type {?ScanPreviewElement} */
   let scanPreview = null;
 
   setup(() => {
-    scanPreview = document.createElement('scan-preview');
+    scanPreview = /** @type {!ScanPreviewElement} */ (
+        document.createElement('scan-preview'));
     assertTrue(!!scanPreview);
     document.body.appendChild(scanPreview);
   });

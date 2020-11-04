@@ -9,14 +9,25 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {ScannerArr} from 'chrome://scanning/scanning_app_types.js';
 import {tokenToString} from 'chrome://scanning/scanning_app_util.js';
 
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+
 import * as utils from './scanning_app_test_utils.js';
 
+const firstScannerId =
+    /** @type {!mojoBase.mojom.UnguessableToken} */ ({high: 0, low: 1});
+const firstScannerName = 'Scanner 1';
+
+const secondScannerId =
+    /** @type {!mojoBase.mojom.UnguessableToken} */ ({high: 0, low: 2});
+const secondScannerName = 'Scanner 2';
+
 export function scannerSelectTest() {
-  /** @type {!ScannerSelectElement} */
-  let scannerSelect;
+  /** @type {?ScannerSelectElement} */
+  let scannerSelect = null;
 
   setup(() => {
-    scannerSelect = document.createElement('scanner-select');
+    scannerSelect = /** @type {!ScannerSelectElement} */ (
+        document.createElement('scanner-select'));
     assertTrue(!!scannerSelect);
     scannerSelect.loaded = false;
     document.body.appendChild(scannerSelect);
@@ -37,10 +48,6 @@ export function scannerSelectTest() {
     assertTrue(!!throbber);
     assertFalse(throbber.hidden);
 
-    const firstScannerId = {high: 0, low: 1};
-    const firstScannerName = 'Scanner 1';
-    const secondScannerId = {high: 0, low: 2};
-    const secondScannerName = 'Scanner 2';
     const scannerArr = [
       utils.createScanner(firstScannerId, firstScannerName),
       utils.createScanner(secondScannerId, secondScannerName)
@@ -64,7 +71,7 @@ export function scannerSelectTest() {
     const select = scannerSelect.$$('select');
     assertTrue(!!select);
 
-    let scannerArr = [utils.createScanner({high: 0, low: 1}, 'Scanner 1')];
+    let scannerArr = [utils.createScanner(firstScannerId, firstScannerName)];
     scannerSelect.scanners = scannerArr;
     scannerSelect.loaded = true;
     flush();
@@ -74,7 +81,7 @@ export function scannerSelectTest() {
     assertTrue(select.disabled);
 
     scannerArr = scannerArr.concat(
-        [utils.createScanner({high: 0, low: 2}, 'Scanner 2')]);
+        [utils.createScanner(secondScannerId, secondScannerName)]);
     scannerSelect.scanners = scannerArr;
     flush();
 

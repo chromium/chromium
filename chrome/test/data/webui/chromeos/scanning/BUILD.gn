@@ -1,0 +1,79 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://scanning/=../../chromeos/components/scanning/resources/\"",
+                    "js_module_root=../../chrome/test/data/webui/",
+                    "js_module_root=./gen/chrome/test/data/webui/",
+                  ]
+  deps = [
+    ":color_mode_select_test",
+    ":file_type_select_test",
+    ":page_size_select_test",
+    ":resolution_select_test",
+    ":scan_preview_test",
+    ":scan_to_select_test",
+    ":scanner_select_test",
+    ":scanning_app_test_utils",
+    ":test_scanning_browser_proxy",
+  ]
+}
+
+js_library("color_mode_select_test") {
+  deps = [
+    ":scanning_app_test_utils",
+    "//chromeos/components/scanning/resources:color_mode_select",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("file_type_select_test") {
+  deps = [ "//chromeos/components/scanning/resources:file_type_select" ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("page_size_select_test") {
+  deps = [ "//chromeos/components/scanning/resources:page_size_select" ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("resolution_select_test") {
+  deps = [ "//chromeos/components/scanning/resources:resolution_select" ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("scan_preview_test") {
+  deps = [ "//chromeos/components/scanning/resources:scan_preview" ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("scan_to_select_test") {
+  deps = [
+    ":test_scanning_browser_proxy",
+    "//chromeos/components/scanning/resources:scan_to_select",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("scanner_select_test") {
+  deps = [
+    ":scanning_app_test_utils",
+    "//chromeos/components/scanning/resources:scanner_select",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("scanning_app_test_utils") {
+}
+
+js_library("test_scanning_browser_proxy") {
+  deps = [
+    "../..:test_browser_proxy.m",
+    "//chromeos/components/scanning/resources:scanning_browser_proxy",
+  ]
+}

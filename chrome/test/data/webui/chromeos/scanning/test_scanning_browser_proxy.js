@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ScanningBrowserProxy, SelectedPath} from 'chrome://scanning/scanning_browser_proxy.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
 
 /**
  * Test version of ScanningBrowserProxy.

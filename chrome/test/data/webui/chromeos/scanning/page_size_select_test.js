@@ -8,6 +8,8 @@ import 'chrome://scanning/scanning_app.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getPageSizeString} from 'chrome://scanning/scanning_app_util.js';
 
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+
 const PageSize = {
   A4: chromeos.scanning.mojom.PageSize.kIsoA4,
   Letter: chromeos.scanning.mojom.PageSize.kNaLetter,
@@ -15,11 +17,12 @@ const PageSize = {
 };
 
 export function pageSizeSelectTest() {
-  /** @type {!PageSizeSelectElement} */
-  let pageSizeSelect;
+  /** @type {?PageSizeSelectElement} */
+  let pageSizeSelect = null;
 
   setup(() => {
-    pageSizeSelect = document.createElement('page-size-select');
+    pageSizeSelect = /** @type {!PageSizeSelectElement} */ (
+        document.createElement('page-size-select'));
     assertTrue(!!pageSizeSelect);
     document.body.appendChild(pageSizeSelect);
   });

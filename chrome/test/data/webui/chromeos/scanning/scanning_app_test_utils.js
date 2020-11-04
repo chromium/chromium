@@ -18,7 +18,8 @@ export function createScanner(id, displayName) {
  * @return {!chromeos.scanning.mojom.ScanSource}
  */
 export function createScannerSource(type, name, pageSizes) {
-  return {type, name, pageSizes};
+  return /** @type {!chromeos.scanning.mojom.ScanSource} */ (
+      {type, name, pageSizes});
 }
 
 /**

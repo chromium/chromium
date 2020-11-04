@@ -8,6 +8,8 @@ import 'chrome://scanning/scanning_app.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getColorModeString} from 'chrome://scanning/scanning_app_util.js';
 
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+
 const ColorMode = {
   BLACK_AND_WHITE: chromeos.scanning.mojom.ColorMode.kBlackAndWhite,
   GRAYSCALE: chromeos.scanning.mojom.ColorMode.kGrayscale,
@@ -15,11 +17,12 @@ const ColorMode = {
 };
 
 export function colorModeSelectTest() {
-  /** @type {!ColorModeSelectElement} */
-  let colorModeSelect;
+  /** @type {?ColorModeSelectElement} */
+  let colorModeSelect = null;
 
   setup(() => {
-    colorModeSelect = document.createElement('color-mode-select');
+    colorModeSelect = /** @type {!ColorModeSelectElement} */ (
+        document.createElement('color-mode-select'));
     assertTrue(!!colorModeSelect);
     document.body.appendChild(colorModeSelect);
   });
