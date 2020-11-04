@@ -293,14 +293,13 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   // space.
   char* tag_bitmap = super_page + PartitionPageSize();
   char* quarantine_bitmaps = tag_bitmap + ReservedTagBitmapSize();
-  const size_t quarantine_bitmaps_size =
-      root->scannable ? 2 * sizeof(QuarantineBitmap) : 0;
-#if ALLOW_ENABLING_PCSCAN
-  // TODO(bartekn): Fix the assert when partition page isn't 16kB.
+  size_t quarantine_bitmaps_size = 0;
+  if (root->scannable) {
+    size_t needed_size = 2 * sizeof(QuarantineBitmap);
+    quarantine_bitmaps_size =
+        (needed_size + PartitionPageSize() - 1) & PartitionPageBaseMask();
+  }
   PA_DCHECK(quarantine_bitmaps_size % PartitionPageSize() == 0);
-#else
-  PA_DCHECK(quarantine_bitmaps_size == 0);
-#endif
   char* ret = quarantine_bitmaps + quarantine_bitmaps_size;
   root->next_partition_page = ret + total_size;
   root->next_partition_page_end = root->next_super_page - PartitionPageSize();
