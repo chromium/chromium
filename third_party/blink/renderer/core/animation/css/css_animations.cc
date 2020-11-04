@@ -525,9 +525,12 @@ bool ComputedValuesEqual(const PropertyHandle& property,
         ComputedStyleUtils::ComputedPropertyValue(property.GetCSSProperty(), a);
     const CSSValue* b_val =
         ComputedStyleUtils::ComputedPropertyValue(property.GetCSSProperty(), b);
-    DCHECK(a_val);
-    DCHECK(b_val);
-    return *a_val == *b_val;
+    // Computed values can be null if not able to parse.
+    if (a_val && b_val)
+      return *a_val == *b_val;
+    // Fallback to the zoom-unaware comparator if either value could not be
+    // parsed.
+    return CSSPropertyEquality::PropertiesEqual(property, a, b);
   }
 }
 
