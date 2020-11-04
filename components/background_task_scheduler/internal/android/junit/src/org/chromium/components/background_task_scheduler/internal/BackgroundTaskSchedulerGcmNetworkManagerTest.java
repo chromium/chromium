@@ -12,8 +12,6 @@ import static org.junit.Assert.assertTrue;
 
 import android.os.Bundle;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.OneoffTask;
 import com.google.android.gms.gcm.PeriodicTask;
@@ -25,8 +23,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadow.api.Shadow;
-import org.robolectric.shadows.gms.Shadows;
-import org.robolectric.shadows.gms.common.ShadowGoogleApiAvailability;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -35,13 +31,14 @@ import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.background_task_scheduler.TaskParameters;
+import org.chromium.gms.shadows.ShadowChromiumPlayServicesAvailability;
 
 import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link BackgroundTaskSchedulerGcmNetworkManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
-        shadows = {ShadowGcmNetworkManager.class, ShadowGoogleApiAvailability.class})
+        shadows = {ShadowGcmNetworkManager.class, ShadowChromiumPlayServicesAvailability.class})
 public class BackgroundTaskSchedulerGcmNetworkManagerTest {
     ShadowGcmNetworkManager mGcmNetworkManager;
 
@@ -59,8 +56,7 @@ public class BackgroundTaskSchedulerGcmNetworkManagerTest {
 
     @Before
     public void setUp() {
-        Shadows.shadowOf(GoogleApiAvailability.getInstance())
-                .setIsGooglePlayServicesAvailable(ConnectionResult.SUCCESS);
+        ShadowChromiumPlayServicesAvailability.setChromiumIsGooglePlayServicesAvailable(true);
         mGcmNetworkManager = (ShadowGcmNetworkManager) Shadow.extract(
                 GcmNetworkManager.getInstance(ContextUtils.getApplicationContext()));
         BackgroundTaskSchedulerGcmNetworkManager.setClockForTesting(mClock);
@@ -301,8 +297,7 @@ public class BackgroundTaskSchedulerGcmNetworkManagerTest {
     @Test
     @Feature("BackgroundTaskScheduler")
     public void testScheduleNoGooglePlayServices() {
-        Shadows.shadowOf(GoogleApiAvailability.getInstance())
-                .setIsGooglePlayServicesAvailable(ConnectionResult.SERVICE_MISSING);
+        ShadowChromiumPlayServicesAvailability.setChromiumIsGooglePlayServicesAvailable(false);
 
         TaskInfo.TimingInfo timingInfo =
                 TaskInfo.OneOffInfo.create().setWindowEndTimeMs(TIME_24_H_TO_MS).build();
@@ -332,8 +327,7 @@ public class BackgroundTaskSchedulerGcmNetworkManagerTest {
     @Feature("BackgroundTaskScheduler")
     public void testCancelNoGooglePlayServices() {
         // This simulates situation where Google Play Services is uninstalled.
-        Shadows.shadowOf(GoogleApiAvailability.getInstance())
-                .setIsGooglePlayServicesAvailable(ConnectionResult.SERVICE_MISSING);
+        ShadowChromiumPlayServicesAvailability.setChromiumIsGooglePlayServicesAvailable(false);
 
         TaskInfo.TimingInfo timingInfo =
                 TaskInfo.OneOffInfo.create().setWindowEndTimeMs(TIME_24_H_TO_MS).build();

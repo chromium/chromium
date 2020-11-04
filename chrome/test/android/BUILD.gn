@@ -309,6 +309,7 @@ android_library("chrome_java_test_support") {
     "//third_party/android_deps:androidx_fragment_fragment_java",
     "//third_party/android_deps:androidx_lifecycle_lifecycle_common_java",
     "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
+    "//third_party/android_deps:chromium_play_services_availability_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:material_design_java",

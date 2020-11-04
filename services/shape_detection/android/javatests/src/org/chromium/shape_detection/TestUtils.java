@@ -10,11 +10,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.gms.ChromiumPlayServicesAvailability;
 import org.chromium.skia.mojom.ColorType;
 import org.chromium.skia.mojom.ImageInfo;
 
@@ -29,9 +27,8 @@ public class TestUtils {
     public static final boolean IS_GMS_CORE_SUPPORTED = isGmsCoreSupported();
 
     private static boolean isGmsCoreSupported() {
-        return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
-                       ContextUtils.getApplicationContext())
-                == ConnectionResult.SUCCESS;
+        return ChromiumPlayServicesAvailability.chromiumIsGooglePlayServicesAvailable(
+                ContextUtils.getApplicationContext());
     }
 
     public static org.chromium.skia.mojom.Bitmap mojoBitmapFromBitmap(Bitmap bitmap) {

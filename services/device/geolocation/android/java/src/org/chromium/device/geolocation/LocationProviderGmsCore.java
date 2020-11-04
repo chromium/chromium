@@ -9,7 +9,6 @@ import android.location.Location;
 import android.os.Bundle;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
@@ -21,6 +20,7 @@ import com.google.android.gms.location.LocationServices;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.location.LocationUtils;
+import org.chromium.gms.ChromiumPlayServicesAvailability;
 
 /**
  * This is a LocationProvider using Google Play Services.
@@ -42,8 +42,7 @@ public class LocationProviderGmsCore implements ConnectionCallbacks, OnConnectio
     private LocationRequest mLocationRequest;
 
     public static boolean isGooglePlayServicesAvailable(Context context) {
-        return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context)
-                == ConnectionResult.SUCCESS;
+        return ChromiumPlayServicesAvailability.chromiumIsGooglePlayServicesAvailable(context);
     }
 
     LocationProviderGmsCore(Context context) {

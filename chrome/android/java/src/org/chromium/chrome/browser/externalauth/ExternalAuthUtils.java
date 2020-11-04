@@ -26,6 +26,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.gms.ChromiumPlayServicesAvailability;
 
 /**
  * Utility class for external authentication tools.
@@ -251,7 +252,7 @@ public class ExternalAuthUtils {
     protected int checkGooglePlayServicesAvailable(final Context context) {
         // TODO(crbug.com/577190): Temporarily allowing disk access until more permanent fix is in.
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context);
+            return ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(context);
         }
     }
 

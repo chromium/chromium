@@ -9,9 +9,6 @@ import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-
 import org.junit.rules.TestRule;
 import org.junit.runners.model.InitializationError;
 
@@ -26,6 +23,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.gms.ChromiumPlayServicesAvailability;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -154,9 +152,8 @@ public class ChromeJUnit4ClassRunner extends ContentJUnit4ClassRunner {
         protected boolean restrictionApplies(String restriction) {
             if (TextUtils.equals(
                         restriction, ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
-                    && (ConnectionResult.SUCCESS
-                               != GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
-                                          getTargetContext()))) {
+                    && (!ChromiumPlayServicesAvailability.chromiumIsGooglePlayServicesAvailable(
+                            getTargetContext()))) {
                 return true;
             }
             if (TextUtils.equals(restriction, ChromeRestriction.RESTRICTION_TYPE_OFFICIAL_BUILD)
