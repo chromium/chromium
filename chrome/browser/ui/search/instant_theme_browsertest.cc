@@ -82,14 +82,13 @@ class InstantThemeTest : public extensions::ExtensionBrowserTest,
   InstantThemeTest() {}
 
  protected:
-  void SetUpInProcessBrowserTestFixture() override {
+  void SetUpOnMainThread() override {
     ASSERT_TRUE(https_test_server().Start());
     GURL base_url = https_test_server().GetURL("/instant_extended.html");
     GURL ntp_url = https_test_server().GetURL("/instant_extended_ntp.html");
-    InstantTestBase::Init(base_url, ntp_url, false);
-  }
+    ASSERT_NO_FATAL_FAILURE(
+        SetupInstant(browser()->profile(), base_url, ntp_url));
 
-  void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
 
     content::URLDataSource::Add(profile(),
@@ -149,7 +148,6 @@ class InstantThemeTest : public extensions::ExtensionBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InstantThemeTest, ThemeBackgroundAccess) {
   ASSERT_NO_FATAL_FAILURE(InstallThemeAndVerify("theme", "camo theme"));
-  ASSERT_NO_FATAL_FAILURE(SetupInstant(browser()));
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeSearchLocalNtpUrl),

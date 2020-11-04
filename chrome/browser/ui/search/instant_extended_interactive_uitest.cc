@@ -41,11 +41,12 @@ class InstantExtendedTest : public InProcessBrowserTest,
         is_focused_(false) {}
 
  protected:
-  void SetUpInProcessBrowserTestFixture() override {
+  void SetUpOnMainThread() override {
     ASSERT_TRUE(https_test_server().Start());
     GURL base_url = https_test_server().GetURL("/instant_extended.html?");
     GURL ntp_url = https_test_server().GetURL("/instant_extended_ntp.html?");
-    InstantTestBase::Init(base_url, ntp_url, false);
+    ASSERT_NO_FATAL_FAILURE(
+        SetupInstant(browser()->profile(), base_url, ntp_url));
   }
 
   bool UpdateSearchState(content::WebContents* contents) WARN_UNUSED_RESULT {
@@ -63,19 +64,19 @@ class InstantExtendedTest : public InProcessBrowserTest,
   }
 
   OmniboxView* omnibox() {
-    return instant_browser()->window()->GetLocationBar()->GetOmniboxView();
+    return browser()->window()->GetLocationBar()->GetOmniboxView();
   }
 
   void FocusOmnibox() {
     // If the omnibox already has focus, just notify OmniboxTabHelper.
     if (omnibox()->model()->has_focus()) {
       content::WebContents* active_tab =
-          instant_browser()->tab_strip_model()->GetActiveWebContents();
+          browser()->tab_strip_model()->GetActiveWebContents();
       OmniboxTabHelper::FromWebContents(active_tab)
           ->OnFocusChanged(OMNIBOX_FOCUS_VISIBLE,
                            OMNIBOX_FOCUS_CHANGE_EXPLICIT);
     } else {
-      instant_browser()->window()->GetLocationBar()->FocusLocation(false);
+      browser()->window()->GetLocationBar()->FocusLocation(false);
     }
   }
 
@@ -88,7 +89,7 @@ class InstantExtendedTest : public InProcessBrowserTest,
     content::WindowedNotificationObserver nav_observer(
         content::NOTIFICATION_NAV_ENTRY_COMMITTED,
         content::NotificationService::AllSources());
-    instant_browser()->window()->GetLocationBar()->AcceptInput();
+    browser()->window()->GetLocationBar()->AcceptInput();
     nav_observer.Wait();
   }
 
@@ -96,7 +97,7 @@ class InstantExtendedTest : public InProcessBrowserTest,
     content::WindowedNotificationObserver nav_observer(
         content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
         content::NotificationService::AllSources());
-    instant_browser()->window()->GetLocationBar()->AcceptInput();
+    browser()->window()->GetLocationBar()->AcceptInput();
     nav_observer.Wait();
   }
 
@@ -114,9 +115,6 @@ class InstantExtendedTest : public InProcessBrowserTest,
 // Test to verify that switching tabs should not dispatch onmostvisitedchanged
 // events.
 IN_PROC_BROWSER_TEST_F(InstantExtendedTest, NoMostVisitedChangedOnTabSwitch) {
-  // Initialize Instant.
-  ASSERT_NO_FATAL_FAILURE(SetupInstant(browser()));
-
   // Open new tab.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabURL),
@@ -144,7 +142,6 @@ IN_PROC_BROWSER_TEST_F(InstantExtendedTest, NoMostVisitedChangedOnTabSwitch) {
 }
 
 IN_PROC_BROWSER_TEST_F(InstantExtendedTest, NavigateBackToNTP) {
-  ASSERT_NO_FATAL_FAILURE(SetupInstant(browser()));
   FocusOmnibox();
 
   // Open a new tab page.
@@ -175,8 +172,6 @@ IN_PROC_BROWSER_TEST_F(InstantExtendedTest, NavigateBackToNTP) {
 
 IN_PROC_BROWSER_TEST_F(InstantExtendedTest,
                        DispatchMVChangeEventWhileNavigatingBackToNTP) {
-  // Setup Instant.
-  ASSERT_NO_FATAL_FAILURE(SetupInstant(browser()));
   FocusOmnibox();
 
   // Open new tab.
@@ -220,7 +215,6 @@ IN_PROC_BROWSER_TEST_F(InstantExtendedTest, Referrer) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL result_url = embedded_test_server()->GetURL(
       "/referrer_policy/referrer-policy-log.html");
-  ASSERT_NO_FATAL_FAILURE(SetupInstant(browser()));
   FocusOmnibox();
 
   // Type a query and press enter to get results.
@@ -239,6 +233,6 @@ IN_PROC_BROWSER_TEST_F(InstantExtendedTest, Referrer) {
 
   EXPECT_TRUE(content::WaitForLoadStop(contents));
   std::string expected_title =
-      "Referrer is " + base_url().GetWithEmptyPath().spec();
+      "Referrer is " + https_test_server().base_url().spec();
   EXPECT_EQ(base::ASCIIToUTF16(expected_title), contents->GetTitle());
 }

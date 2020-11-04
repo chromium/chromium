@@ -139,9 +139,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNTPBrowserTest,
       https_test_server().GetURL("ntp.com", "/instant_extended.html");
   GURL ntp_url =
       https_test_server().GetURL("ntp.com", "/instant_extended_ntp.html");
-  InstantTestBase::Init(base_url, ntp_url, false);
-
-  SetupInstant(browser());
+  SetupInstant(browser()->profile(), base_url, ntp_url);
 
   // Sanity check that a SiteInstance for a generic ntp.com URL requires a
   // dedicated process.
@@ -203,9 +201,7 @@ IN_PROC_BROWSER_TEST_F(OpenWindowFromNTPBrowserTest,
       https_test_server().GetURL("ntp.com", "/instant_extended.html");
   GURL ntp_url =
       https_test_server().GetURL("ntp.com", "/instant_extended_ntp.html");
-  InstantTestBase::Init(search_url, ntp_url, false);
-
-  SetupInstant(browser());
+  SetupInstant(browser()->profile(), search_url, ntp_url);
 
   // Navigate to the NTP URL and verify that the resulting process is marked as
   // an Instant process.

@@ -49,8 +49,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, EmbeddedMostVisitedIframe) {
       https_test_server().GetURL("ntp.com", "/instant_extended.html");
   GURL ntp_url =
       https_test_server().GetURL("ntp.com", "/instant_extended_ntp.html");
-  InstantTestBase::Init(base_url, ntp_url, false);
-  SetupInstant(browser());
+  SetupInstant(browser()->profile(), base_url, ntp_url);
 
   // Navigate to the NTP URL and verify that the resulting process is marked as
   // an Instant process.
@@ -95,8 +94,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, ProcessPerSite) {
       https_test_server().GetURL("ntp.com", "/instant_extended.html");
   GURL ntp_url =
       https_test_server().GetURL("ntp.com", "/instant_extended_ntp.html");
-  InstantTestBase::Init(base_url, ntp_url, false);
-  SetupInstant(browser());
+  SetupInstant(browser()->profile(), base_url, ntp_url);
 
   // Open NTP in |tab1|.
   content::WebContents* tab1;
