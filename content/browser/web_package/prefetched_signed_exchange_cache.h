@@ -15,6 +15,10 @@
 #include "net/base/hash_value.h"
 #include "url/gurl.h"
 
+namespace net {
+class NetworkIsolationKey;
+}
+
 namespace content {
 
 class NavigationLoaderInterceptor;
@@ -55,7 +59,8 @@ class CONTENT_EXPORT PrefetchedSignedExchangeCache
   // subresource.
   std::unique_ptr<NavigationLoaderInterceptor> MaybeCreateInterceptor(
       const GURL& outer_url,
-      int frame_tree_node_id);
+      int frame_tree_node_id,
+      const net::NetworkIsolationKey& network_isolation_key);
 
   const EntryMap& GetExchanges();
 
@@ -78,7 +83,8 @@ class CONTENT_EXPORT PrefetchedSignedExchangeCache
   std::vector<mojom::PrefetchedSignedExchangeInfoPtr> GetInfoListForNavigation(
       const PrefetchedSignedExchangeCacheEntry& main_exchange,
       const base::Time& now,
-      int frame_tree_node_id);
+      int frame_tree_node_id,
+      const net::NetworkIsolationKey& network_isolation_key);
 
   EntryMap exchanges_;
 
