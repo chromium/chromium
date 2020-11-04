@@ -53,6 +53,7 @@ class PortalInterceptorForTesting final
   blink::mojom::Portal* GetForwardingInterface() override;
   void Activate(blink::TransferableMessage data,
                 base::TimeTicks activation_time,
+                uint64_t trace_id,
                 ActivateCallback callback) override;
   void Navigate(const GURL& url,
                 blink::mojom::ReferrerPtr referrer,

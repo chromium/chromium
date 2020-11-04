@@ -16,6 +16,8 @@
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
+#include "base/test/trace_event_analyzer.h"
+#include "base/trace_event/trace_config.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_item.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -36,6 +38,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/site_isolation_policy.h"
+#include "content/public/browser/tracing_controller.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -73,6 +76,9 @@
 #include "url/url_constants.h"
 
 using testing::_;
+using trace_analyzer::Query;
+using trace_analyzer::TraceAnalyzer;
+using trace_analyzer::TraceEventVector;
 
 namespace content {
 
@@ -132,6 +138,62 @@ class PortalBrowserTest : public ContentBrowserTest {
     EXPECT_EQ(expected_to_succeed, WaitForLoadStop(portal_contents));
 
     return portal;
+  }
+
+ protected:
+  // Adapted from metric_integration_test.cc.
+  void StartTracing() {
+    base::RunLoop wait_for_tracing;
+    content::TracingController::GetInstance()->StartTracing(
+        base::trace_event::TraceConfig(
+            "{\"included_categories\": [\"navigation\"]}"),
+        wait_for_tracing.QuitClosure());
+    wait_for_tracing.Run();
+  }
+
+  std::string StopTracing() {
+    base::RunLoop wait_for_tracing;
+    std::string trace_output;
+    content::TracingController::GetInstance()->StopTracing(
+        content::TracingController::CreateStringEndpoint(
+            base::BindLambdaForTesting(
+                [&](std::unique_ptr<std::string> trace_str) {
+                  trace_output = std::move(*trace_str);
+                  wait_for_tracing.Quit();
+                })));
+    wait_for_tracing.Run();
+    return trace_output;
+  }
+
+  void VerifyActivationTraceEvents(const std::string& trace_str) {
+    std::unique_ptr<TraceAnalyzer> analyzer(TraceAnalyzer::Create(trace_str));
+    TraceEventVector events;
+    auto query = Query::EventNameIs("LocalFrame::OnPortalActivated") ||
+                 Query::EventNameIs("RenderFrameHostImpl::OnPortalActivated") ||
+                 Query::EventNameIs("PortalContents::Activate");
+    size_t num_events = analyzer->FindEvents(query, &events);
+    EXPECT_EQ(7UL, num_events);
+    char phases[] = {
+        TRACE_EVENT_PHASE_COMPLETE,   TRACE_EVENT_PHASE_FLOW_BEGIN,
+        TRACE_EVENT_PHASE_COMPLETE,   TRACE_EVENT_PHASE_FLOW_END,
+        TRACE_EVENT_PHASE_FLOW_BEGIN, TRACE_EVENT_PHASE_COMPLETE,
+        TRACE_EVENT_PHASE_FLOW_END,
+    };
+
+    // TODO(crbug.com/1139541): the predecessor may terminate before all trace
+    // events are processed. Until this as addressed, the trace event for the
+    // start of activation may not be closed. If this happens, it will be
+    // TRACE_EVENT_PHASE_BEGIN rather than _COMPLETE. Will accept either
+    // TRACE_EVENT_PHASE_COMPLETE or _BEGIN to avoid flake.
+    for (size_t i = 0; i < events.size(); ++i) {
+      if (phases[i] == TRACE_EVENT_PHASE_COMPLETE) {
+        EXPECT_TRUE(events[i]->phase == TRACE_EVENT_PHASE_COMPLETE ||
+                    events[i]->phase == TRACE_EVENT_PHASE_BEGIN)
+            << "mismatch at " << i;
+      } else {
+        EXPECT_EQ(phases[i], events[i]->phase) << "mismatch at " << i;
+      }
+    }
   }
 
  private:
@@ -234,6 +296,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, NavigatePortal) {
 
 // Tests that a portal can be activated.
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, ActivatePortal) {
+  StartTracing();
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
@@ -260,10 +323,59 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, ActivatePortal) {
 
   EXPECT_EQ(blink::mojom::PortalActivateResult::kPredecessorWillUnload,
             activated_observer.WaitForActivateResult());
+
+  // Verify that we logged the correct trace events.
+  VerifyActivationTraceEvents(StopTracing());
+}
+
+// This fixture enables PortalsDefaultActivation
+class PortalDefaultActivationBrowserTest : public PortalBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PortalBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "PortalsDefaultActivation");
+  }
+};
+
+// Tests the correct trace events are generated when a portal is default
+// activated.
+IN_PROC_BROWSER_TEST_F(PortalDefaultActivationBrowserTest,
+                       DefaultActivatePortal) {
+  StartTracing();
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+
+  GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
+
+  // Ensure that the portal WebContents exists and is different from the tab's
+  // WebContents.
+  WebContents* portal_contents = portal->GetPortalContents();
+  EXPECT_NE(nullptr, portal_contents);
+  EXPECT_NE(portal_contents, shell()->web_contents());
+
+  PortalActivatedObserver activated_observer(portal);
+  ExecuteScriptAsync(main_frame, "document.querySelector('portal').click();");
+  activated_observer.WaitForActivate();
+
+  // After activation, the shell's WebContents should be the previous portal's
+  // WebContents.
+  EXPECT_EQ(portal_contents, shell()->web_contents());
+
+  EXPECT_EQ(blink::mojom::PortalActivateResult::kPredecessorWillUnload,
+            activated_observer.WaitForActivateResult());
+
+  // Verify that we logged the correct trace events.
+  VerifyActivationTraceEvents(StopTracing());
 }
 
 // Tests if a portal can be activated and the predecessor can be adopted.
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, AdoptPredecessor) {
+  StartTracing();
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
@@ -298,6 +410,9 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, AdoptPredecessor) {
               activated_observer.WaitForActivateResult());
     adoption_observer.WaitUntilPortalCreated();
   }
+
+  VerifyActivationTraceEvents(StopTracing());
+
   // After activation, the shell's WebContents should be the previous portal's
   // WebContents.
   EXPECT_EQ(portal_contents, shell()->web_contents());
@@ -1399,10 +1514,11 @@ class LocalMainFrameInterceptorBadPortalActivateResult
       mojo::PendingAssociatedRemote<blink::mojom::Portal> portal,
       mojo::PendingAssociatedReceiver<blink::mojom::PortalClient> portal_client,
       blink::TransferableMessage data,
+      uint64_t trace_id,
       OnPortalActivatedCallback callback) override {
     GetForwardingInterface()->OnPortalActivated(
         portal_token, std::move(portal), std::move(portal_client),
-        std::move(data),
+        std::move(data), trace_id,
         base::BindOnce(
             [](OnPortalActivatedCallback callback,
                blink::mojom::PortalActivateResult) {
@@ -2197,9 +2313,9 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, CallActivateOnTwoPortals) {
          blink::mojom::ReferrerPtr,
          blink::mojom::Portal::NavigateCallback callback) {
         portal_a->Activate(blink::TransferableMessage(), base::TimeTicks::Now(),
-                           base::DoNothing());
+                           0, base::DoNothing());
         portal_b->Activate(blink::TransferableMessage(), base::TimeTicks::Now(),
-                           base::DoNothing());
+                           0, base::DoNothing());
         std::move(callback).Run();
       },
       portal_a, portal_b));
@@ -2230,9 +2346,9 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, CallActivateTwice) {
       [](Portal* portal, const GURL&, blink::mojom::ReferrerPtr,
          blink::mojom::Portal::NavigateCallback callback) {
         portal->Activate(blink::TransferableMessage(), base::TimeTicks::Now(),
-                         base::DoNothing());
+                         0, base::DoNothing());
         portal->Activate(blink::TransferableMessage(), base::TimeTicks::Now(),
-                         base::DoNothing());
+                         0, base::DoNothing());
         std::move(callback).Run();
       },
       portal));
