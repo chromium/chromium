@@ -447,10 +447,7 @@ Polymer({
 
         {
           title: 'tutorial_learn_more_heading',
-          content: [
-            'tutorial_learn_more', 'next_command_reference',
-            'chrome_keyboard_shortcuts', 'touchscreen_accessibility'
-          ],
+          content: ['tutorial_learn_more'],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.RESOURCES],
         }
@@ -466,6 +463,7 @@ Polymer({
       this.numLoadedLessons += 1;
       if (this.numLoadedLessons === this.lessonData.length) {
         this.buildEarconLesson();
+        this.buildLearnMoreLesson();
         this.dispatchEvent(
             new CustomEvent('readyfortesting', {composed: true}));
       }
@@ -940,16 +938,7 @@ Polymer({
    * EarconDescription, which is defined on the Panel window.
    */
   buildEarconLesson() {
-    // Find earcon lesson.
-    let earconLesson;
-    const elements = this.$.lessonContainer.children;
-    for (const element of elements) {
-      if (element.is === 'tutorial-lesson' &&
-          element.title === 'tutorial_earcon_page_title') {
-        earconLesson = element;
-      }
-    }
-
+    const earconLesson = this.getLessonWithTitle('tutorial_earcon_page_title');
     if (!earconLesson) {
       throw new Error('Could not find the earcon lesson.');
     }
@@ -974,4 +963,60 @@ Polymer({
     this.dispatchEvent(
         new CustomEvent('requestearcon', {composed: true, detail: {earconId}}));
   },
+
+  /** @private */
+  buildLearnMoreLesson() {
+    const learnMoreLesson =
+        this.getLessonWithTitle('tutorial_learn_more_heading');
+    if (!learnMoreLesson) {
+      throw new Error('Could not find the learn more lesson');
+    }
+
+    // Add links to resources.
+    const resources = [
+      {
+        msgId: 'next_command_reference',
+        link: 'https://www.chromevox.com/next_keyboard_shortcuts.html'
+      },
+      {
+        msgId: 'chrome_keyboard_shortcuts',
+        link: 'https://support.google.com/chromebook/answer/183101?hl=en'
+      },
+      {
+        msgId: 'touchscreen_accessibility',
+        link: 'https://support.google.com/chromebook/answer/6103702?hl=en'
+      },
+    ];
+    for (const resource of resources) {
+      const link = document.createElement('a');
+      link.innerText = this.getMsg(resource.msgId);
+      link.href = resource.link;
+      link.addEventListener('click', (evt) => {
+        this.stopNudges();
+        this.dispatchEvent(new CustomEvent(
+            'openUrl', {composed: true, detail: {url: link.href}}));
+        evt.preventDefault();
+        evt.stopPropagation();
+      });
+      learnMoreLesson.contentDiv.appendChild(link);
+      const br = document.createElement('br');
+      learnMoreLesson.contentDiv.appendChild(br);
+    }
+  },
+
+  /**
+   * Find and return a lesson with the given title message id.
+   * @param {string} titleMsgId The message id of the lesson's title
+   * @return {Element}
+   * @private
+   */
+  getLessonWithTitle(titleMsgId) {
+    const elements = this.$.lessonContainer.children;
+    for (const element of elements) {
+      if (element.is === 'tutorial-lesson' && element.title === titleMsgId) {
+        return element;
+      }
+    }
+    return null;
+  }
 });

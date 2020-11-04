@@ -600,3 +600,26 @@ TEST_F('ChromeVoxTutorialTest', 'RestartNudges', function() {
     await waitForRestartNudges();
   });
 });
+
+// Tests that the tutorial closes and ChromeVox navigates to a resource link.
+TEST_F('ChromeVoxTutorialTest', 'ResourcesTest', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getPanel().iTutorial;
+    mockFeedback.expectSpeech('ChromeVox tutorial')
+        .call(() => {
+          tutorial.curriculum = 'resources';
+          tutorial.showLesson(0);
+        })
+        .expectSpeech('Learn More')
+        .call(doCmd('nextObject'))
+        .expectSpeech(/Congratulations/)
+        .call(doCmd('nextObject'))
+        .expectSpeech('ChromeVox Command Reference', 'Link')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech('tab created')
+        .expectSpeech('www.chromevox.com')
+        .replay();
+  });
+});

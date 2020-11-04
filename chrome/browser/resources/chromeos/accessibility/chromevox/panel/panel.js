@@ -1247,6 +1247,15 @@ Panel = class {
     $('i-tutorial').addEventListener('readyfortesting', () => {
       Panel.iTutorialReadyForTesting_ = true;
     });
+    $('i-tutorial').addEventListener('openUrl', (evt) => {
+      const url = evt.detail.url;
+      // Ensure UserActionMonitor is destroyed before closing tutorial.
+      const background =
+          chrome.extension.getBackgroundPage()['ChromeVoxState']['instance'];
+      background.destroyUserActionMonitor();
+      Panel.onCloseTutorial();
+      chrome.tabs.create({url});
+    });
   }
 
   /**
