@@ -246,13 +246,6 @@ class URLDatabase {
   // removed once data is collected from experiment.
   virtual bool GetVisitsForUrl2(URLID url_id, VisitVector* visits);
 
-  // Migration -----------------------------------------------------------------
-
-  // Do to a bug we were setting the favicon of about:blank. This forces
-  // about:blank to have no icon or title. Returns true on success, false if
-  // the favicon couldn't be updated.
-  bool MigrateFromVersion11ToVersion12();
-
  protected:
   friend class VisitDatabase;
 
