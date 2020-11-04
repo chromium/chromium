@@ -9,7 +9,7 @@ import static org.mockito.Mockito.doNothing;
 
 import android.app.Activity;
 
-import androidx.test.filters.SmallTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -43,7 +43,7 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testAddAndRemoveSingleActionMessage() throws Exception {
         MessageContainer container = new MessageContainer(getActivity(), null);
         PropertyModel model = createBasicSingleActionMessageModel();
@@ -71,7 +71,7 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
     }
 
     @Test(expected = IllegalStateException.class)
-    @SmallTest
+    @MediumTest
     public void testAddMultipleSingleActionMessage() {
         MessageContainer container = new MessageContainer(getActivity(), null);
         PropertyModel m1 = createBasicSingleActionMessageModel();
