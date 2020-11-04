@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.signin.account_picker;
 
-import android.content.Context;
+import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -39,7 +39,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         boolean onBackPressed();
     }
 
-    private final Context mContext;
+    private final Activity mActivity;
     private final BackPressListener mBackPressListener;
     private final View mContentView;
     private final ImageView mLogoImage;
@@ -53,11 +53,15 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     private final ButtonCompat mContinueAsButton;
     private final ButtonCompat mDismissButton;
 
-    AccountPickerBottomSheetView(Context context, BackPressListener backPressListener) {
-        mContext = context;
+    /**
+     * @param activity The activity that hosts this view. Used for inflating views.
+     * @param backPressListener The listener to be notified when the user taps the back button.
+     */
+    AccountPickerBottomSheetView(Activity activity, BackPressListener backPressListener) {
+        mActivity = activity;
         mBackPressListener = backPressListener;
 
-        mContentView = LayoutInflater.from(mContext).inflate(
+        mContentView = LayoutInflater.from(mActivity).inflate(
                 R.layout.account_picker_bottom_sheet_view, null);
         mLogoImage = mContentView.findViewById(R.id.account_picker_bottom_sheet_logo);
         mAccountPickerTitle = mContentView.findViewById(R.id.account_picker_bottom_sheet_title);
@@ -122,7 +126,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         ImageView rowEndImage = mSelectedAccountView.findViewById(R.id.account_selection_mark);
         rowEndImage.setImageResource(R.drawable.ic_expand_more_in_circle_24dp);
 
-        String continueAsButtonText = mContext.getString(R.string.signin_promo_continue_as,
+        String continueAsButtonText = mActivity.getString(R.string.signin_promo_continue_as,
                 accountProfileData.getGivenNameOrFullNameOrEmail());
         mContinueAsButton.setText(continueAsButtonText);
     }

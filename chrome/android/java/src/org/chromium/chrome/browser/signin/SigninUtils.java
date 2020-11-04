@@ -117,11 +117,11 @@ public class SigninUtils {
                 new IncognitoInterstitialDelegate(activity, regularTabModel, incognitoTabCreator,
                         HelpAndFeedback.getInstance());
 
-        AccountPickerBottomSheetCoordinator coordinator = new AccountPickerBottomSheetCoordinator(
-                windowAndroid.getContext().get(), bottomSheetController,
-                new AccountPickerDelegate(windowAndroid, activity.getActivityTab(),
-                        new WebSigninBridge.Factory(), continueUrl),
-                incognitoInterstitialDelegate);
+        AccountPickerBottomSheetCoordinator coordinator =
+                new AccountPickerBottomSheetCoordinator(activity, bottomSheetController,
+                        new AccountPickerDelegate(windowAndroid, activity.getActivityTab(),
+                                new WebSigninBridge.Factory(), continueUrl),
+                        incognitoInterstitialDelegate);
     }
 
     /**

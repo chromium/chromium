@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.signin.account_picker;
 
-import android.content.Context;
+import android.app.Activity;
 import android.view.View;
 
 import androidx.annotation.MainThread;
@@ -58,7 +58,7 @@ public class AccountPickerBottomSheetCoordinator {
      * bottom sheet on the screen.
      */
     @MainThread
-    public AccountPickerBottomSheetCoordinator(Context context,
+    public AccountPickerBottomSheetCoordinator(Activity activity,
             BottomSheetController bottomSheetController,
             AccountPickerDelegate accountPickerDelegate,
             IncognitoInterstitialDelegate incognitoInterstitialDelegate) {
@@ -66,8 +66,8 @@ public class AccountPickerBottomSheetCoordinator {
                 AccountConsistencyPromoAction.SHOWN);
 
         mAccountPickerBottomSheetMediator = new AccountPickerBottomSheetMediator(
-                context, accountPickerDelegate, this::dismissBottomSheet);
-        mView = new AccountPickerBottomSheetView(context, mAccountPickerBottomSheetMediator);
+                activity, accountPickerDelegate, this::dismissBottomSheet);
+        mView = new AccountPickerBottomSheetView(activity, mAccountPickerBottomSheetMediator);
         mAccountPickerCoordinator = new AccountPickerCoordinator(mView.getAccountListView(),
                 mAccountPickerBottomSheetMediator, null, AccountPickerAccessPoint.WEB);
         IncognitoInterstitialCoordinator incognitoInterstitialCoordinator =
