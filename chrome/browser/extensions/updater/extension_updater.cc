@@ -282,7 +282,7 @@ void ExtensionUpdater::DoCheckSoon() {
 
 void ExtensionUpdater::AddToDownloader(
     const ExtensionSet* extensions,
-    const std::list<std::string>& pending_ids,
+    const std::list<ExtensionId>& pending_ids,
     int request_id,
     ManifestFetchData::FetchPriority fetch_priority,
     ExtensionUpdateCheckParams* update_check_params) {
@@ -291,7 +291,7 @@ void ExtensionUpdater::AddToDownloader(
   for (ExtensionSet::const_iterator extension_iter = extensions->begin();
        extension_iter != extensions->end(); ++extension_iter) {
     const Extension& extension = **extension_iter;
-    const std::string& extension_id = extension.id();
+    const ExtensionId& extension_id = extension.id();
     if (!Manifest::IsAutoUpdateableLocation(extension.location())) {
       VLOG(2) << "Extension " << extension_id << " is not auto updateable";
       continue;
@@ -337,7 +337,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
   const PendingExtensionManager* pending_extension_manager =
       service_->pending_extension_manager();
 
-  std::list<std::string> pending_ids;
+  std::list<ExtensionId> pending_ids;
   ExtensionUpdateCheckParams update_check_params;
 
   if (params.ids.empty()) {
@@ -352,7 +352,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
     // If no extension ids are specified, check for updates for all extensions.
     pending_extension_manager->GetPendingIdsForUpdateCheck(&pending_ids);
 
-    for (const std::string& pending_id : pending_ids) {
+    for (const ExtensionId& pending_id : pending_ids) {
       const PendingExtensionInfo* info =
           pending_extension_manager->GetById(pending_id);
       if (!Manifest::IsAutoUpdateableLocation(info->install_source())) {
@@ -392,7 +392,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
     AddToDownloader(&remotely_disabled_extensions, pending_ids, request_id,
                     params.fetch_priority, &update_check_params);
   } else {
-    for (const std::string& id : params.ids) {
+    for (const ExtensionId& id : params.ids) {
       const Extension* extension = registry_->GetExtensionById(
           id, extensions::ExtensionRegistry::EVERYTHING);
       if (extension) {
@@ -583,7 +583,7 @@ void ExtensionUpdater::UpdatePingData(const ExtensionId& id,
 
 void ExtensionUpdater::PutExtensionInCache(const CRXFileInfo& crx_info) {
   if (extension_cache_) {
-    const std::string& extension_id = crx_info.extension_id;
+    const ExtensionId& extension_id = crx_info.extension_id;
     const base::Version& expected_version = crx_info.expected_version;
     const std::string& expected_hash = crx_info.expected_hash;
     const base::FilePath& crx_path = crx_info.path;
@@ -607,7 +607,7 @@ void ExtensionUpdater::CleanUpCrxFileIfNeeded(const base::FilePath& crx_path,
 }
 
 bool ExtensionUpdater::CanUseUpdateService(
-    const std::string& extension_id) const {
+    const ExtensionId& extension_id) const {
   if (g_force_use_update_service_for_tests)
     return true;
 

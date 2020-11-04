@@ -24,6 +24,7 @@
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/browser/updater/manifest_fetch_data.h"
 #include "extensions/browser/updater/update_service.h"
+#include "extensions/common/extension_id.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -70,7 +71,7 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
 
     // The set of extensions that should be checked for updates. If empty
     // all extensions will be included in the update check.
-    std::list<std::string> ids;
+    std::list<ExtensionId> ids;
 
     // Normally extension updates get installed only when the extension is idle.
     // Setting this to true causes any updates that are found to be installed
@@ -187,7 +188,7 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
     bool awaiting_update_service = false;
     FinishedCallback callback;
     // The ids of extensions that have in-progress update checks.
-    std::set<std::string> in_progress_ids_;
+    std::set<ExtensionId> in_progress_ids_;
   };
 
   // Ensure that we have a valid ExtensionDownloader instance referenced by
@@ -201,7 +202,7 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
   // Add fetch records for extensions that are installed to the downloader,
   // ignoring |pending_ids| so the extension isn't fetched again.
   void AddToDownloader(const ExtensionSet* extensions,
-                       const std::list<std::string>& pending_ids,
+                       const std::list<ExtensionId>& pending_ids,
                        int request_id,
                        ManifestFetchData::FetchPriority fetch_priority,
                        ExtensionUpdateCheckParams* update_check_params);
@@ -254,7 +255,7 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
   // |udpate_service_| will execute this function on finish.
   void OnUpdateServiceFinished(int request_id);
 
-  void ExtensionCheckFinished(const std::string& extension_id,
+  void ExtensionCheckFinished(const ExtensionId& extension_id,
                               FinishedCallback callback);
 
   // Callback set in the crx installer and invoked when the crx file has passed
@@ -268,7 +269,7 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
 
   // This function verifies if |extension_id| can be updated using
   // UpdateService.
-  bool CanUseUpdateService(const std::string& extension_id) const;
+  bool CanUseUpdateService(const ExtensionId& extension_id) const;
 
   // Whether Start() has been called but not Stop().
   bool alive_ = false;
