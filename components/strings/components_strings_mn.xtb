@@ -84,7 +84,7 @@
         Энэ төхөөрөмж дээр үлдэхгүй үйл ажиллагаа:
         <ph name="END_BOLD" />
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Таны энэ цонхонд үзсэн хуудсууд
+          <ph name="LIST_ITEM" />Таны энэ цонхонд үзсэн хуудаснууд
           <ph name="LIST_ITEM" />Күүки болон сайтын өгөгдөл
           <ph name="LIST_ITEM" />Бүртгэлийн мэдээлэл (<ph name="LINK_BEGIN" />гарах<ph name="LINK_END" />)
         <ph name="END_LIST" /></translation>
