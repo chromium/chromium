@@ -8,6 +8,8 @@ import 'chrome://scanning/scanning_app.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getSourceTypeString} from 'chrome://scanning/scanning_app_util.js';
 
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+
 import * as utils from './scanning_app_test_utils.js';
 
 const FileType = {
@@ -31,11 +33,12 @@ const SourceType = {
 const pageSizes = [PageSize.A4, PageSize.Letter, PageSize.Max];
 
 export function sourceSelectTest() {
-  /** @type {!SourceSelectElement} */
-  let sourceSelect;
+  /** @type {?SourceSelectElement} */
+  let sourceSelect = null;
 
   setup(() => {
-    sourceSelect = document.createElement('source-select');
+    sourceSelect = /** @type {!SourceSelectElement} */ (
+        document.createElement('source-select'));
     assertTrue(!!sourceSelect);
     document.body.appendChild(sourceSelect);
   });

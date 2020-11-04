@@ -10,6 +10,7 @@ import {setScanServiceForTesting} from 'chrome://scanning/mojo_interface_provide
 import {ScannerArr} from 'chrome://scanning/scanning_app_types.js';
 import {tokenToString} from 'chrome://scanning/scanning_app_util.js';
 
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
 import * as utils from './scanning_app_test_utils.js';
@@ -40,6 +41,7 @@ const SourceType = {
 
 const pageSizes = [PageSize.A4, PageSize.Letter, PageSize.Max];
 
+/** @implements {chromeos.scanning.mojom.ScanServiceInterface} */
 class FakeScanService {
   constructor() {
     /** @private {!Map<string, !PromiseResolver>} */
@@ -152,8 +154,8 @@ export function scanningAppTest() {
   /** @type {?ScanningAppElement} */
   let scanningApp = null;
 
-  /** @type {?chromeos.scanning.mojom.ScanServiceRemote} */
-  let fakeScanService_;
+  /** @type {?FakeScanService} */
+  let fakeScanService_ = null;
 
   suiteSetup(() => {
     fakeScanService_ = new FakeScanService();
@@ -161,7 +163,7 @@ export function scanningAppTest() {
   });
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
   });
 
   teardown(function() {
@@ -179,7 +181,8 @@ export function scanningAppTest() {
   function initializeScanningApp(scanners, capabilities) {
     fakeScanService_.setScanners(scanners);
     fakeScanService_.setCapabilities(capabilities);
-    scanningApp = document.createElement('scanning-app');
+    scanningApp = /** @type {!ScanningAppElement} */ (
+        document.createElement('scanning-app'));
     document.body.appendChild(scanningApp);
     assert(!!scanningApp);
     return fakeScanService_.whenCalled('getScanners');
@@ -190,7 +193,8 @@ export function scanningAppTest() {
    * @return {!CrButtonElement}
    */
   function getMoreSettingsButton() {
-    const button = scanningApp.$$('#moreSettingsButton');
+    const button =
+        /** @type {!CrButtonElement} */ (scanningApp.$$('#moreSettingsButton'));
     assertTrue(!!button);
     return button;
   }
@@ -213,10 +217,14 @@ export function scanningAppTest() {
   }
 
   test('Scan', () => {
-    const firstScannerId = {high: 0, low: 1};
+    const firstScannerId =
+        /** @type {!mojoBase.mojom.UnguessableToken} */ ({high: 0, low: 1});
     const firstScannerName = 'Scanner 1';
-    const secondScannerId = {high: 0, low: 2};
+
+    const secondScannerId =
+        /** @type {!mojoBase.mojom.UnguessableToken} */ ({high: 0, low: 2});
     const secondScannerName = 'Scanner 2';
+
     const expectedScanners = [
       utils.createScanner(firstScannerId, firstScannerName),
       utils.createScanner(secondScannerId, secondScannerName)
