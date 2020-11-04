@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
@@ -39,6 +40,10 @@ using version_info::Channel;
 namespace crosapi {
 namespace browser_util {
 namespace {
+
+// When this feature is enabled, Lacros will be available on stable channel.
+const base::Feature kLacrosAllowOnStableChannel{
+    "LacrosAllowOnStableChannel", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Some account types require features that aren't yet supported by lacros.
 // See https://crbug.com/1080693
@@ -131,7 +136,7 @@ bool IsLacrosAllowed(Channel channel) {
       // Developer builds can use lacros.
       return true;
     case Channel::STABLE:
-      return false;
+      return base::FeatureList::IsEnabled(kLacrosAllowOnStableChannel);
   }
 }
 
