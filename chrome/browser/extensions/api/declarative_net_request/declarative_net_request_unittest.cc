@@ -640,8 +640,7 @@ TEST_P(SingleRulesetTest, InvalidJSONRules_StrongTypes) {
 
 // Ensures that rules which can't be parsed are ignored and cause an install
 // warning.
-// Disabled due to consistent failures on some bots https://crbug.com/1113513.
-TEST_P(SingleRulesetTest, DISABLED_InvalidJSONRules_Parsed) {
+TEST_P(SingleRulesetTest, InvalidJSONRules_Parsed) {
   const char* kRules = R"(
     [
       {
