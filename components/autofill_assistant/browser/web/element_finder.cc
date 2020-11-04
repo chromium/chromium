@@ -443,18 +443,6 @@ void ElementFinder::ExecuteNextTask() {
 }
 
 bool ElementFinder::ConsumeOneMatchOrFail(std::string& object_id_out) {
-  // This logic relies on JsFilterBuilder::BuildFunction guaranteeing that
-  // arrays contain at least 2 elements to avoid having to fetch all matching
-  // elements in the common case where we just want to know whether there is at
-  // least one match.
-
-  if (!current_match_arrays_.empty()) {
-    VLOG(1) << __func__ << " Got " << current_match_arrays_.size()
-            << " arrays of 2 or more matches for " << selector_
-            << ", when only 1 match was expected.";
-    SendResult(ClientStatus(TOO_MANY_ELEMENTS));
-    return false;
-  }
   if (current_matches_.size() > 1) {
     VLOG(1) << __func__ << " Got " << current_matches_.size() << " matches for "
             << selector_ << ", when only 1 was expected.";
@@ -472,34 +460,18 @@ bool ElementFinder::ConsumeOneMatchOrFail(std::string& object_id_out) {
 }
 
 bool ElementFinder::ConsumeAnyMatchOrFail(std::string& object_id_out) {
-  // This logic relies on ApplyJsFilters guaranteeing that arrays contain at
-  // least 2 elements to avoid having to fetch all matching elements in the
-  // common case where we just want one match.
-
   if (current_matches_.size() > 0) {
     object_id_out = current_matches_[0];
     current_matches_.clear();
-    current_match_arrays_.clear();
     return true;
   }
-  if (!current_match_arrays_.empty()) {
-    std::string array_object_id = current_match_arrays_[0];
-    current_match_arrays_.clear();
-    ResolveMatchArrays({array_object_id}, /* max_count= */ 1);
-    return false;  // Caller should call again to check
-  }
+
   SendResult(ClientStatus(ELEMENT_RESOLUTION_FAILED));
   return false;
 }
 
 bool ElementFinder::ConsumeAllMatchesOrFail(
     std::vector<std::string>& matches_out) {
-  if (!current_match_arrays_.empty()) {
-    std::vector<std::string> array_object_ids =
-        std::move(current_match_arrays_);
-    ResolveMatchArrays(array_object_ids, /* max_count= */ -1);
-    return false;  // Caller should call again to check
-  }
   if (!current_matches_.empty()) {
     matches_out = std::move(current_matches_);
     current_matches_.clear();
@@ -510,68 +482,74 @@ bool ElementFinder::ConsumeAllMatchesOrFail(
 }
 
 bool ElementFinder::ConsumeMatchArrayOrFail(std::string& array_object_id) {
-  if (current_matches_.empty() && current_match_arrays_.empty()) {
+  if (!current_matches_js_array_.empty()) {
+    array_object_id = current_matches_js_array_;
+    current_matches_js_array_.clear();
+    return true;
+  }
+
+  if (current_matches_.empty()) {
     SendResult(ClientStatus(ELEMENT_RESOLUTION_FAILED));
     return false;
   }
 
-  if (current_matches_.empty() && current_match_arrays_.size() == 1) {
-    array_object_id = current_match_arrays_[0];
-    current_match_arrays_.clear();
-    return true;
+  MoveMatchesToJSArrayRecursive(/* index= */ 0);
+  return false;
+}
+
+void ElementFinder::MoveMatchesToJSArrayRecursive(size_t index) {
+  if (index >= current_matches_.size()) {
+    current_matches_.clear();
+    ExecuteNextTask();
+    return;
   }
 
-  std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
-  std::string object_id;  // Will be "this" in Javascript.
+  // Push the value at |current_matches_[index]| to |current_matches_js_array_|.
   std::string function;
-  if (current_match_arrays_.size() > 1) {
-    object_id = current_match_arrays_.back();
-    current_match_arrays_.pop_back();
-    // Merge both arrays into current_match_arrays_[0]
-    function = "function(dest) { dest.push(...this); }";
-    AddRuntimeCallArgumentObjectId(current_match_arrays_[0], &arguments);
-  } else if (!current_matches_.empty()) {
-    object_id = current_matches_.back();
-    current_matches_.pop_back();
-    if (current_match_arrays_.empty()) {
-      // Create an array containing a single element.
-      function = "function() { return [this]; }";
-    } else {
-      // Add an element to an existing array.
-      function = "function(dest) { dest.push(this); }";
-      AddRuntimeCallArgumentObjectId(current_match_arrays_[0], &arguments);
-    }
+  std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
+  if (index == 0) {
+    // Create an array containing a single element.
+    function = "function() { return [this]; }";
+  } else {
+    // Add an element to an existing array.
+    function = "function(dest) { dest.push(this); }";
+    AddRuntimeCallArgumentObjectId(current_matches_js_array_, &arguments);
   }
+
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(object_id)
+          .SetObjectId(current_matches_[index])
           .SetArguments(std::move(arguments))
           .SetFunctionDeclaration(function)
           .Build(),
       current_frame_id_,
-      base::BindOnce(&ElementFinder::OnConsumeMatchArray,
-                     weak_ptr_factory_.GetWeakPtr()));
-  return false;
+      base::BindOnce(&ElementFinder::OnMoveMatchesToJSArrayRecursive,
+                     weak_ptr_factory_.GetWeakPtr(), index));
 }
 
-void ElementFinder::OnConsumeMatchArray(
+void ElementFinder::OnMoveMatchesToJSArrayRecursive(
+    size_t index,
     const DevtoolsClient::ReplyStatus& reply_status,
     std::unique_ptr<runtime::CallFunctionOnResult> result) {
   ClientStatus status =
       CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
   if (!status.ok()) {
-    VLOG(1) << __func__ << ": Failed to get element from array for "
-            << selector_;
+    VLOG(1) << __func__ << ": Failed to push value to JS array.";
     SendResult(status);
     return;
   }
-  if (current_match_arrays_.empty()) {
-    std::string returned_object_id;
-    if (SafeGetObjectId(result->GetResult(), &returned_object_id)) {
-      current_match_arrays_.push_back(returned_object_id);
-    }
+
+  // We just created an array which contains the first element. We store its ID
+  // in |current_matches_js_array_|.
+  if (index == 0 &&
+      !SafeGetObjectId(result->GetResult(), &current_matches_js_array_)) {
+    VLOG(1) << __func__ << " Failed to get array ID.";
+    SendResult(ClientStatus(ELEMENT_RESOLUTION_FAILED));
+    return;
   }
-  ExecuteNextTask();
+
+  // Continue the recursion to push the other values into the array.
+  MoveMatchesToJSArrayRecursive(index + 1);
 }
 
 void ElementFinder::GetDocumentElement() {
@@ -645,14 +623,18 @@ void ElementFinder::OnApplyJsFilters(
     return;
   }
 
-  // The result can be empty (nothing found), a an array (multiple matches
+  // The result can be empty (nothing found), an array (multiple matches
   // found) or a single node.
   std::string object_id;
   if (SafeGetObjectId(result->GetResult(), &object_id)) {
     if (result->GetResult()->HasSubtype() &&
         result->GetResult()->GetSubtype() ==
             runtime::RemoteObjectSubtype::ARRAY) {
-      current_match_arrays_.emplace_back(object_id);
+      // Return early because ResolveMatchArrayRecursive will call
+      // DecrementResponseCountAndContinue() once it has finished processing the
+      // array.
+      ResolveMatchArrayRecursive(object_id, /* index= */ 0);
+      return;
     } else {
       current_matches_.emplace_back(object_id);
     }
@@ -978,24 +960,9 @@ void ElementFinder::OnProximityFilterJs(
   ExecuteNextTask();
 }
 
-void ElementFinder::ResolveMatchArrays(
-    const std::vector<std::string>& array_object_ids,
-    int max_count) {
-  if (array_object_ids.empty()) {
-    // Nothing to do
-    ExecuteNextTask();
-    return;
-  }
-  pending_response_count_ = array_object_ids.size();
-  for (const std::string& array_object_id : array_object_ids) {
-    ResolveMatchArrayRecursive(array_object_id, 0, max_count);
-  }
-}
-
 void ElementFinder::ResolveMatchArrayRecursive(
     const std::string& array_object_id,
-    int index,
-    int max_count) {
+    int index) {
   std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
   AddRuntimeCallArgument(index, &arguments);
   devtools_client_->GetRuntime()->CallFunctionOn(
@@ -1006,14 +973,12 @@ void ElementFinder::ResolveMatchArrayRecursive(
           .Build(),
       current_frame_id_,
       base::BindOnce(&ElementFinder::OnResolveMatchArray,
-                     weak_ptr_factory_.GetWeakPtr(), array_object_id, index,
-                     max_count));
+                     weak_ptr_factory_.GetWeakPtr(), array_object_id, index));
 }
 
 void ElementFinder::OnResolveMatchArray(
     const std::string& array_object_id,
     int index,
-    int max_count,
     const DevtoolsClient::ReplyStatus& reply_status,
     std::unique_ptr<runtime::CallFunctionOnResult> result) {
   ClientStatus status =
@@ -1024,22 +989,18 @@ void ElementFinder::OnResolveMatchArray(
     SendResult(status);
     return;
   }
+
   std::string object_id;
   if (!SafeGetObjectId(result->GetResult(), &object_id)) {
-    // We've reached the end of the array
+    // We've reached the end of the array.
     DecrementResponseCountAndContinue();
     return;
   }
 
   current_matches_.emplace_back(object_id);
-  int next_index = index + 1;
-  if (max_count != -1 && next_index >= max_count) {
-    DecrementResponseCountAndContinue();
-    return;
-  }
 
   // Fetch the next element.
-  ResolveMatchArrayRecursive(array_object_id, next_index, max_count);
+  ResolveMatchArrayRecursive(array_object_id, index + 1);
 }
 
 void ElementFinder::DecrementResponseCountAndContinue() {

@@ -200,10 +200,12 @@ class ElementFinder : public WebControllerWorker {
 
   // Make sure there's at least one match and move them all into a single array.
   //
-  // If there are no matches, call SendResult() return false. If there are
-  // matches, but they're not in a single array, move the element into the array
-  // in the background and return false. ExecuteNextTask() is called again once
-  // the background tasks have executed.
+  // If there are no matches, call SendResult() and return false.
+  //
+  // If there are matches, return false directly and move the matches into
+  // an JS array in the background. ExecuteNextTask() is called again
+  // once the background tasks have executed, and calling this will return true
+  // and write the JS array id to |array_object_id_out|.
   bool ConsumeMatchArrayOrFail(std::string& array_object_id_out);
 
   void OnConsumeMatchArray(
@@ -254,33 +256,30 @@ class ElementFinder : public WebControllerWorker {
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::CallFunctionOnResult> result);
 
-  // Get elements from |array_object_ids|, and put the result into
-  // |element_matches_|.
-  //
-  // This calls ExecuteNextTask() once all the elements of all the arrays are in
-  // |element_matches_|. If |max_count| is -1, fetch until the end of the array,
-  // otherwise fetch |max_count| elements at most in each array.
-  void ResolveMatchArrays(const std::vector<std::string>& array_object_ids,
-                          int max_count);
-
-  // ResolveMatchArrayRecursive calls itself recursively, incrementing |index|,
-  // as long as there are elements. The chain of calls end with
-  // DecrementResponseCountAndContinue() as there can be more than one such
-  // chains executing at a time.
-  void ResolveMatchArrayRecursive(const std::string& array_object_ids,
-                                  int index,
-                                  int max_count);
+  // Get all elements from |array_object_id| starting from |index| and put them
+  // into |current_matches_|, then call DecrementResponseCountAndContinue().
+  void ResolveMatchArrayRecursive(const std::string& array_object_id,
+                                  int index);
 
   void OnResolveMatchArray(
       const std::string& array_object_id,
       int index,
-      int max_count,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::CallFunctionOnResult> result);
 
   // Tracks pending_response_count_ and call ExecuteNextTask() once the count
   // has reached 0.
   void DecrementResponseCountAndContinue();
+
+  // Fill |current_matches_js_array_| with the values in |current_matches_|
+  // starting from |index|, then clear |current_matches_| and call
+  // ExecuteNextTask().
+  void MoveMatchesToJSArrayRecursive(size_t index);
+
+  void OnMoveMatchesToJSArrayRecursive(
+      size_t index,
+      const DevtoolsClient::ReplyStatus& reply_status,
+      std::unique_ptr<runtime::CallFunctionOnResult> result);
 
   content::WebContents* const web_contents_;
   DevtoolsClient* const devtools_client_;
@@ -304,16 +303,12 @@ class ElementFinder : public WebControllerWorker {
 
   // Object IDs of the current set matching elements. Cleared once it's used to
   // query or filter.
-  //
-  // More matches can be found in |current_match_arrays_|. Use one of the
-  // Consume*Match() function to current matches.
   std::vector<std::string> current_matches_;
 
-  // Object ID of arrays of at least 2 matching elements.
-  //
-  // More matches can be found in |current_matches_|. Use one of the
-  // Consume*Match() function to current matches.
-  std::vector<std::string> current_match_arrays_;
+  // Object ID of the JavaScript array of the currently matching elements. In
+  // practice, this is used by ConsumeMatchArrayOrFail() to convert
+  // |current_matches_| to a JavaScript array.
+  std::string current_matches_js_array_;
 
   // True if current_matches are pseudo-elements.
   bool matching_pseudo_elements_ = false;
