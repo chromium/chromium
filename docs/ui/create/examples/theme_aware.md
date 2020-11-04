@@ -92,8 +92,7 @@ theme changes, including when a `View` is first shown.
 
 
 ``` cpp
-class ThemeTrackingCheckbox : public views::Checkbox,
-                              public views::ButtonListener {
+class ThemeTrackingCheckbox : public views::Checkbox {
  public:
   explicit ThemeTrackingCheckbox(const base::string16& label)
       : Checkbox(label, this) {}
@@ -110,8 +109,7 @@ class ThemeTrackingCheckbox : public views::Checkbox,
     SetChecked(GetNativeTheme()->ShouldUseDarkColors());
   }
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
+  void ButtonPressed() {
     GetNativeTheme()->set_use_dark_colors(GetChecked());
 
     // An OS or Chrome theme change would do this automatically.
@@ -138,7 +136,9 @@ theme changes.
 
 ``` cpp
 AddChildView(std::make_unique<TextVectorImageButton>(
-      this, l10n_util::GetStringUTF16(IDS_COLORED_DIALOG_CHOOSER_BUTTON),
+      base::BindRepeating(&ColoredDialogChooser::ButtonPressed,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_COLORED_DIALOG_CHOOSER_BUTTON),
       views::kInfoIcon));
 ```
 
@@ -153,10 +153,10 @@ change.
 ``` cpp
 class TextVectorImageButton : public views::MdTextButton {
 public:
- TextVectorImageButton(ButtonListener* listener,
+ TextVectorImageButton(PressedCallback callback,
                        const base::string16& text,
                        const gfx::VectorIcon& icon)
-     : MdTextButton(listener, text), icon_(icon) {}
+     : MdTextButton(std::move(callback), text), icon_(icon) {}
  TextVectorImageButton(const TextVectorImageButton&) = delete;
  TextVectorImageButton& operator=(const TextVectorImageButton&) = delete;
  ~TextVectorImageButton() override = default;

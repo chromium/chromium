@@ -512,13 +512,12 @@ in clearer code.
 // |           | subtitle            |                |
 // +-----------+---------------------+----------------+
 HoverButton::HoverButton(
-    views::ButtonListener* button_listener,
+    ...
     std::unique_ptr<views::View> icon_view,
     const base::string16& title,
     const base::string16& subtitle,
     std::unique_ptr<views::View> secondary_view,
-    bool resize_row_for_secondary_view,
-    bool secondary_view_can_process_events) {
+    ...) {
   ...
   views::GridLayout* grid_layout =
       SetLayoutManager(
@@ -591,13 +590,12 @@ HoverButton::HoverButton(
 // |           | subtitle            |                |
 // +-----------+---------------------+----------------+
 HoverButton::HoverButton(
-    views::ButtonListener* button_listener,
+    ...
     std::unique_ptr<views::View> icon_view,
     const base::string16& title,
     const base::string16& subtitle,
     std::unique_ptr<views::View> secondary_view,
-    bool resize_row_for_secondary_view,
-    bool secondary_view_can_process_events) {
+    ...) {
   ...
   SetLayoutManager(
       std::make_unique<views::FlexLayout>())

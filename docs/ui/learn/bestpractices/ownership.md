@@ -289,8 +289,7 @@ destroyed:
 #####
 
 ``` cpp
-class CastDialogNoSinksView
-    : public views::View, public views::ButtonListener {
+class CastDialogNoSinksView ... {
   ...
  private:
   base::WeakPtrFactory<CastDialogNoSinksView>
@@ -313,8 +312,7 @@ CastDialogNoSinksView::CastDialogNoSinksView(
 #####
 
 ``` cpp
-class CastDialogNoSinksView
-    : public views::View, public views::ButtonListener {
+class CastDialogNoSinksView ... {
   ...
  private:
   base::OneShotTimer timer_;

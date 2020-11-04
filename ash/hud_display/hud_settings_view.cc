@@ -194,7 +194,7 @@ class AnimationSpeedControl : public views::SliderListener, public views::View {
 
   ~AnimationSpeedControl() override;
 
-  // views::ButtonListener:
+  // views::SliderListener:
   void SliderValueChanged(views::Slider* sender,
                           float value,
                           float old_value,

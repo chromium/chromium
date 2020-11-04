@@ -24,8 +24,7 @@ class ShelfButton;
 // TODO(mohsen): A better approach would be to return a value indicating the
 // type of action performed such that the button can animate the ink drop.
 // Currently, it is not possible because showing menu is synchronous and blocks
-// the call. Fix this after menu is converted to asynchronous.  Long-term, the
-// return value can be merged into ButtonListener.
+// the call. Fix this after menu is converted to asynchronous.
 class ShelfButtonDelegate {
  public:
   class ScopedActiveInkDropCount {
