@@ -160,7 +160,7 @@ function(absl_cc_library)
           set(PC_CFLAGS "${PC_CFLAGS} ${cflag}")
         endif()
       endforeach()
-      FILE(GENERATE OUTPUT "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig/absl_${_NAME}.pc" CONTENT "\
+      FILE(GENERATE OUTPUT "${CMAKE_BINARY_DIR}/lib/pkgconfig/absl_${_NAME}.pc" CONTENT "\
 prefix=${CMAKE_INSTALL_PREFIX}\n\
 exec_prefix=\${prefix}\n\
 libdir=\${prefix}/lib\n\
@@ -173,6 +173,8 @@ Version: ${PC_VERSION}\n\
 Requires.private:${PC_DEPS}\n\
 Libs: -L\${libdir} $<JOIN:${ABSL_CC_LIB_LINKOPTS}, > $<$<NOT:$<BOOL:${ABSL_CC_LIB_IS_INTERFACE}>>:-labsl_${_NAME}>\n\
 Cflags: -I\${includedir}${PC_CFLAGS}\n")
+      INSTALL(FILES "${CMAKE_BINARY_DIR}/lib/pkgconfig/absl_${_NAME}.pc"
+              DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig")
     endif()
   endif()
 

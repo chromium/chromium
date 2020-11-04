@@ -31,22 +31,23 @@
 //
 //  MutexLock - An RAII wrapper to acquire and release a `Mutex` for exclusive/
 //              write access within the current scope.
+//
 //  ReaderMutexLock
 //            - An RAII wrapper to acquire and release a `Mutex` for shared/read
 //              access within the current scope.
 //
 //  WriterMutexLock
-//            - Alias for `MutexLock` above, designed for use in distinguishing
-//              reader and writer locks within code.
+//            - Effectively an alias for `MutexLock` above, designed for use in
+//              distinguishing reader and writer locks within code.
 //
 // In addition to simple mutex locks, this file also defines ways to perform
 // locking under certain conditions.
 //
-//  Condition   - (Preferred) Used to wait for a particular predicate that
-//                depends on state protected by the `Mutex` to become true.
-//  CondVar     - A lower-level variant of `Condition` that relies on
-//                application code to explicitly signal the `CondVar` when
-//                a condition has been met.
+//  Condition - (Preferred) Used to wait for a particular predicate that
+//              depends on state protected by the `Mutex` to become true.
+//  CondVar   - A lower-level variant of `Condition` that relies on
+//              application code to explicitly signal the `CondVar` when
+//              a condition has been met.
 //
 // See below for more information on using `Condition` or `CondVar`.
 //
@@ -506,20 +507,34 @@ class ABSL_LOCKABLE Mutex {
 // Example:
 //
 // Class Foo {
-//
+//  public:
 //   Foo::Bar* Baz() {
-//     MutexLock l(&lock_);
+//     MutexLock lock(&mu_);
 //     ...
 //     return bar;
 //   }
 //
 // private:
-//   Mutex lock_;
+//   Mutex mu_;
 // };
 class ABSL_SCOPED_LOCKABLE MutexLock {
  public:
+  // Constructors
+
+  // Calls `mu->Lock()` and returns when that call returns. That is, `*mu` is
+  // guaranteed to be locked when this object is constructed. Requires that
+  // `mu` be dereferenceable.
   explicit MutexLock(Mutex *mu) ABSL_EXCLUSIVE_LOCK_FUNCTION(mu) : mu_(mu) {
     this->mu_->Lock();
+  }
+
+  // Like above, but calls `mu->LockWhen(cond)` instead. That is, in addition to
+  // the above, the condition given by `cond` is also guaranteed to hold when
+  // this object is constructed.
+  explicit MutexLock(Mutex *mu, const Condition &cond)
+      ABSL_EXCLUSIVE_LOCK_FUNCTION(mu)
+      : mu_(mu) {
+    this->mu_->LockWhen(cond);
   }
 
   MutexLock(const MutexLock &) = delete;  // NOLINT(runtime/mutex)
@@ -543,6 +558,12 @@ class ABSL_SCOPED_LOCKABLE ReaderMutexLock {
     mu->ReaderLock();
   }
 
+  explicit ReaderMutexLock(Mutex *mu, const Condition &cond)
+      ABSL_SHARED_LOCK_FUNCTION(mu)
+      : mu_(mu) {
+    mu->ReaderLockWhen(cond);
+  }
+
   ReaderMutexLock(const ReaderMutexLock&) = delete;
   ReaderMutexLock(ReaderMutexLock&&) = delete;
   ReaderMutexLock& operator=(const ReaderMutexLock&) = delete;
@@ -563,6 +584,12 @@ class ABSL_SCOPED_LOCKABLE WriterMutexLock {
   explicit WriterMutexLock(Mutex *mu) ABSL_EXCLUSIVE_LOCK_FUNCTION(mu)
       : mu_(mu) {
     mu->WriterLock();
+  }
+
+  explicit WriterMutexLock(Mutex *mu, const Condition &cond)
+      ABSL_EXCLUSIVE_LOCK_FUNCTION(mu)
+      : mu_(mu) {
+    mu->WriterLockWhen(cond);
   }
 
   WriterMutexLock(const WriterMutexLock&) = delete;
@@ -603,16 +630,26 @@ class ABSL_SCOPED_LOCKABLE WriterMutexLock {
 // `noexcept`; until then this requirement cannot be enforced in the
 // type system.)
 //
-// Note: to use a `Condition`, you need only construct it and pass it within the
-// appropriate `Mutex' member function, such as `Mutex::Await()`.
+// Note: to use a `Condition`, you need only construct it and pass it to a
+// suitable `Mutex' member function, such as `Mutex::Await()`, or to the
+// constructor of one of the scope guard classes.
 //
-// Example:
+// Example using LockWhen/Unlock:
 //
 //   // assume count_ is not internal reference count
 //   int count_ ABSL_GUARDED_BY(mu_);
+//   Condition count_is_zero(+[](int *count) { return *count == 0; }, &count_);
 //
-//   mu_.LockWhen(Condition(+[](int* count) { return *count == 0; },
-//         &count_));
+//   mu_.LockWhen(count_is_zero);
+//   // ...
+//   mu_.Unlock();
+//
+// Example using a scope guard:
+//
+//   {
+//     MutexLock lock(&mu_, count_is_zero);
+//     // ...
+//   }
 //
 // When multiple threads are waiting on exactly the same condition, make sure
 // that they are constructed with the same parameters (same pointer to function
@@ -844,6 +881,15 @@ class ABSL_SCOPED_LOCKABLE MutexLockMaybe {
       this->mu_->Lock();
     }
   }
+
+  explicit MutexLockMaybe(Mutex *mu, const Condition &cond)
+      ABSL_EXCLUSIVE_LOCK_FUNCTION(mu)
+      : mu_(mu) {
+    if (this->mu_ != nullptr) {
+      this->mu_->LockWhen(cond);
+    }
+  }
+
   ~MutexLockMaybe() ABSL_UNLOCK_FUNCTION() {
     if (this->mu_ != nullptr) { this->mu_->Unlock(); }
   }
@@ -866,6 +912,13 @@ class ABSL_SCOPED_LOCKABLE ReleasableMutexLock {
       : mu_(mu) {
     this->mu_->Lock();
   }
+
+  explicit ReleasableMutexLock(Mutex *mu, const Condition &cond)
+      ABSL_EXCLUSIVE_LOCK_FUNCTION(mu)
+      : mu_(mu) {
+    this->mu_->LockWhen(cond);
+  }
+
   ~ReleasableMutexLock() ABSL_UNLOCK_FUNCTION() {
     if (this->mu_ != nullptr) { this->mu_->Unlock(); }
   }

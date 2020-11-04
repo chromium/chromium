@@ -211,7 +211,9 @@ void ClearCurrentThreadIdentity();
 #define ABSL_THREAD_IDENTITY_MODE ABSL_FORCE_THREAD_IDENTITY_MODE
 #elif defined(_WIN32) && !defined(__MINGW32__)
 #define ABSL_THREAD_IDENTITY_MODE ABSL_THREAD_IDENTITY_MODE_USE_CPP11
-#elif ABSL_PER_THREAD_TLS && defined(__GOOGLE_GRTE_VERSION__) && \
+#elif defined(__APPLE__) && defined(ABSL_HAVE_THREAD_LOCAL)
+#define ABSL_THREAD_IDENTITY_MODE ABSL_THREAD_IDENTITY_MODE_USE_CPP11
+#elif ABSL_PER_THREAD_TLS && defined(__GOOGLE_GRTE_VERSION__) &&        \
     (__GOOGLE_GRTE_VERSION__ >= 20140228L)
 // Support for async-safe TLS was specifically added in GRTEv4.  It's not
 // present in the upstream eglibc.

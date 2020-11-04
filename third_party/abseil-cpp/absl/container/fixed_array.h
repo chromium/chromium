@@ -232,8 +232,8 @@ class FixedArray {
 
   // FixedArray::at
   //
-  // Bounds-checked access.  Returns a reference to the ith element of the
-  // fiexed array, or throws std::out_of_range
+  // Bounds-checked access.  Returns a reference to the ith element of the fixed
+  // array, or throws std::out_of_range
   reference at(size_type i) {
     if (ABSL_PREDICT_FALSE(i >= size())) {
       base_internal::ThrowStdOutOfRange("FixedArray::at failed bounds check");

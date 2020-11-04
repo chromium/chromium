@@ -69,7 +69,6 @@ for std in ${STD}; do
         --cap-add=SYS_PTRACE \
         --rm \
         -e CC="/opt/llvm/clang/bin/clang" \
-        -e BAZEL_COMPILER="llvm" \
         -e BAZEL_CXXOPTS="-std=${std}:-nostdinc++" \
         -e BAZEL_LINKOPTS="-L/opt/llvm/libcxx-tsan/lib:-lc++:-lc++abi:-lm:-Wl,-rpath=/opt/llvm/libcxx-tsan/lib" \
         -e CPLUS_INCLUDE_PATH="/opt/llvm/libcxx-tsan/include/c++/v1" \

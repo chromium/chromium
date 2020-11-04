@@ -16,73 +16,6 @@ MSVC_BIG_WARNING_FLAGS = [
     "/W3",
 ]
 
-LLVM_BIG_WARNING_FLAGS = [
-    "-Wall",
-    "-Wextra",
-    "-Weverything",
-]
-
-# Docs on single flags is preceded by a comment.
-# Docs on groups of flags is preceded by ###.
-LLVM_DISABLE_WARNINGS_FLAGS = [
-    # Abseil does not support C++98
-    "-Wno-c++98-compat-pedantic",
-    # Turns off all implicit conversion warnings. Most are re-enabled below.
-    "-Wno-conversion",
-    "-Wno-covered-switch-default",
-    "-Wno-deprecated",
-    "-Wno-disabled-macro-expansion",
-    "-Wno-double-promotion",
-    ###
-    # Turned off as they include valid C++ code.
-    "-Wno-comma",
-    "-Wno-extra-semi",
-    "-Wno-extra-semi-stmt",
-    "-Wno-packed",
-    "-Wno-padded",
-    ###
-    "-Wno-float-conversion",
-    "-Wno-float-equal",
-    "-Wno-format-nonliteral",
-    # Too aggressive: warns on Clang extensions enclosed in Clang-only
-    # compilation paths.
-    "-Wno-gcc-compat",
-    ###
-    # Some internal globals are necessary. Don't do this at home.
-    "-Wno-global-constructors",
-    "-Wno-exit-time-destructors",
-    ###
-    "-Wno-non-modular-include-in-module",
-    "-Wno-old-style-cast",
-    # Warns on preferred usage of non-POD types such as string_view
-    "-Wno-range-loop-analysis",
-    "-Wno-reserved-id-macro",
-    "-Wno-shorten-64-to-32",
-    "-Wno-switch-enum",
-    "-Wno-thread-safety-negative",
-    "-Wno-unknown-warning-option",
-    "-Wno-unreachable-code",
-    # Causes warnings on include guards
-    "-Wno-unused-macros",
-    "-Wno-weak-vtables",
-    # Causes warnings on usage of types/compare.h comparison operators.
-    "-Wno-zero-as-null-pointer-constant",
-    ###
-    # Implicit conversion warnings turned off by -Wno-conversion
-    # which are re-enabled below.
-    "-Wbitfield-enum-conversion",
-    "-Wbool-conversion",
-    "-Wconstant-conversion",
-    "-Wenum-conversion",
-    "-Wint-conversion",
-    "-Wliteral-conversion",
-    "-Wnon-literal-null-conversion",
-    "-Wnull-conversion",
-    "-Wobjc-literal-conversion",
-    "-Wno-sign-conversion",
-    "-Wstring-conversion",
-]
-
 LLVM_TEST_DISABLE_WARNINGS_FLAGS = [
     "-Wno-c99-extensions",
     "-Wno-deprecated-declarations",
@@ -121,6 +54,7 @@ COPT_VARS = {
         "-Wextra",
         "-Wcast-qual",
         "-Wconversion-null",
+        "-Wformat-security",
         "-Wmissing-declarations",
         "-Woverlength-strings",
         "-Wpointer-arith",
@@ -130,10 +64,6 @@ COPT_VARS = {
         "-Wvarargs",
         "-Wvla",  # variable-length array
         "-Wwrite-strings",
-        # gcc-4.x has spurious missing field initializer warnings.
-        # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=36750
-        # Remove when gcc-4.x is no longer supported.
-        "-Wno-missing-field-initializers",
         # Don't define min and max macros (Build on Windows using gcc)
         "-DNOMINMAX",
     ],
@@ -146,15 +76,48 @@ COPT_VARS = {
         "-Wno-unused-parameter",
         "-Wno-unused-private-field",
     ],
-    "ABSL_LLVM_FLAGS":
-        LLVM_BIG_WARNING_FLAGS + LLVM_DISABLE_WARNINGS_FLAGS + [
-            # Don't define min and max macros (Build on Windows using clang)
-            "-DNOMINMAX",
-        ],
+    "ABSL_LLVM_FLAGS": [
+        "-Wall",
+        "-Wextra",
+        "-Wcast-qual",
+        "-Wconversion",
+        "-Wfloat-overflow-conversion",
+        "-Wfloat-zero-conversion",
+        "-Wfor-loop-analysis",
+        "-Wformat-security",
+        "-Wgnu-redeclared-enum",
+        "-Winfinite-recursion",
+        "-Wliteral-conversion",
+        "-Wmissing-declarations",
+        "-Woverlength-strings",
+        "-Wpointer-arith",
+        "-Wself-assign",
+        "-Wshadow",
+        "-Wstring-conversion",
+        "-Wtautological-overlap-compare",
+        "-Wundef",
+        "-Wuninitialized",
+        "-Wunreachable-code",
+        "-Wunused-comparison",
+        "-Wunused-local-typedefs",
+        "-Wunused-result",
+        "-Wvla",
+        "-Wwrite-strings",
+        # Warnings that are enabled by group warning flags like -Wall that we
+        # explicitly disable.
+        "-Wno-float-conversion",
+        "-Wno-implicit-float-conversion",
+        "-Wno-implicit-int-float-conversion",
+        "-Wno-implicit-int-conversion",
+        "-Wno-shorten-64-to-32",
+        "-Wno-sign-conversion",
+        # Don't define min and max macros (Build on Windows using clang)
+        "-DNOMINMAX",
+    ],
     "ABSL_LLVM_TEST_FLAGS":
         LLVM_TEST_DISABLE_WARNINGS_FLAGS,
     "ABSL_CLANG_CL_FLAGS":
-        (MSVC_BIG_WARNING_FLAGS + LLVM_DISABLE_WARNINGS_FLAGS + MSVC_DEFINES),
+        (MSVC_BIG_WARNING_FLAGS + MSVC_DEFINES),
     "ABSL_CLANG_CL_TEST_FLAGS":
         LLVM_TEST_DISABLE_WARNINGS_FLAGS,
     "ABSL_MSVC_FLAGS":

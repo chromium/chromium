@@ -12,19 +12,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-
-load(
-    ":compiler_config_setting.bzl",
-    "create_llvm_config",
-)
 
 package(default_visibility = ["//visibility:public"])
 
 licenses(["notice"])
 
-create_llvm_config(
-    name = "llvm_compiler",
+config_setting(
+    name = "clang_compiler",
+    flag_values = {
+        "@bazel_tools//tools/cpp:compiler": "clang",
+    },
     visibility = [":__subpackages__"],
 )
 

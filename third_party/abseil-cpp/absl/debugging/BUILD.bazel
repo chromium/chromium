@@ -239,7 +239,7 @@ cc_library(
 # These targets exists for use in tests only, explicitly configuring the
 # LEAK_SANITIZER macro. It must be linked with -fsanitize=leak for lsan.
 ABSL_LSAN_LINKOPTS = select({
-    "//absl:llvm_compiler": ["-fsanitize=leak"],
+    "//absl:clang_compiler": ["-fsanitize=leak"],
     "//conditions:default": [],
 })
 
@@ -249,7 +249,7 @@ cc_library(
     srcs = ["leak_check.cc"],
     hdrs = ["leak_check.h"],
     copts = select({
-        "//absl:llvm_compiler": ["-DLEAK_SANITIZER"],
+        "//absl:clang_compiler": ["-DLEAK_SANITIZER"],
         "//conditions:default": [],
     }),
     linkopts = ABSL_DEFAULT_LINKOPTS,
@@ -276,7 +276,7 @@ cc_test(
     name = "leak_check_test",
     srcs = ["leak_check_test.cc"],
     copts = select({
-        "//absl:llvm_compiler": ["-DABSL_EXPECT_LEAK_SANITIZER"],
+        "//absl:clang_compiler": ["-DABSL_EXPECT_LEAK_SANITIZER"],
         "//conditions:default": [],
     }),
     linkopts = ABSL_LSAN_LINKOPTS + ABSL_DEFAULT_LINKOPTS,

@@ -707,6 +707,40 @@ TEST(Mutex, LockWhen) {
   t.join();
 }
 
+TEST(Mutex, LockWhenGuard) {
+  absl::Mutex mu;
+  int n = 30;
+  bool done = false;
+
+  // We don't inline the lambda because the conversion is ambiguous in MSVC.
+  bool (*cond_eq_10)(int *) = [](int *p) { return *p == 10; };
+  bool (*cond_lt_10)(int *) = [](int *p) { return *p < 10; };
+
+  std::thread t1([&mu, &n, &done, cond_eq_10]() {
+    absl::ReaderMutexLock lock(&mu, absl::Condition(cond_eq_10, &n));
+    done = true;
+  });
+
+  std::thread t2[10];
+  for (std::thread &t : t2) {
+    t = std::thread([&mu, &n, cond_lt_10]() {
+      absl::WriterMutexLock lock(&mu, absl::Condition(cond_lt_10, &n));
+      ++n;
+    });
+  }
+
+  {
+    absl::MutexLock lock(&mu);
+    n = 0;
+  }
+
+  for (std::thread &t : t2) t.join();
+  t1.join();
+
+  EXPECT_TRUE(done);
+  EXPECT_EQ(n, 10);
+}
+
 // --------------------------------------------------------
 // The following test requires Mutex::ReaderLock to be a real shared
 // lock, which is not the case in all builds.

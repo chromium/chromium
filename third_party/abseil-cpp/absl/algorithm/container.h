@@ -188,7 +188,7 @@ bool c_any_of(const C& c, Pred&& pred) {
 // c_none_of()
 //
 // Container-based version of the <algorithm> `std::none_of()` function to
-// test if no elements in a container fulfil a condition.
+// test if no elements in a container fulfill a condition.
 template <typename C, typename Pred>
 bool c_none_of(const C& c, Pred&& pred) {
   return std::none_of(container_algorithm_internal::c_begin(c),
