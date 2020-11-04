@@ -9,11 +9,9 @@
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/download/external_app_util.h"
 #import "ios/chrome/test/fakes/fake_download_manager_consumer.h"
-#include "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "net/base/net_errors.h"
@@ -103,9 +101,6 @@ TEST_F(DownloadManagerMediatorTest, StartTempDownload) {
 // file writer is configured to write into Chrome's Documents download
 // directory.
 TEST_F(DownloadManagerMediatorTest, StartDownload) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(web::features::kEnablePersistentDownloads);
-
   task()->SetSuggestedFilename(
       base::SysNSStringToUTF16(kTestSuggestedFileName));
   mediator_.SetDownloadTask(task());

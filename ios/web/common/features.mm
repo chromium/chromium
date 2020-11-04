@@ -32,9 +32,6 @@ const base::Feature kClearOldNavigationRecordsWorkaround{
 const base::Feature kSSLCommittedInterstitials{
     "SSLCommittedInterstitials", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kEnablePersistentDownloads{
-    "EnablePersistentDownloads", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kUseJSForErrorPage{"UseJSForErrorPage",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 

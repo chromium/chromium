@@ -11,7 +11,6 @@
 #include "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
@@ -54,9 +53,7 @@ class BrowserCoordinatorTest : public PlatformTest {
 TEST_F(BrowserCoordinatorTest, ShowDownloadsFolder) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{kOpenDownloadsInFilesApp, {}},
-       {fullscreen::features::kFullscreenControllerBrowserScoped, {}}},
-      {});
+      {{fullscreen::features::kFullscreenControllerBrowserScoped, {}}}, {});
 
   base::FilePath download_dir;
   GetDownloadsDirectory(&download_dir);

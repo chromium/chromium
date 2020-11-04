@@ -236,10 +236,6 @@ const char kEnableNativeContextMenusDescription[] =
     "Enables the new iOS 13 context menus on various pieces of UI in native "
     "Chrome (e.g. History, Bookmarks).";
 
-const char kEnablePersistentDownloadsName[] = "Enable persistent downloads";
-const char kEnablePersistentDownloadsDescription[] =
-    "Enables the new, experimental implementation of persistent downloads";
-
 const char kExpandedTabStripName[] = "Enable expanded tabstrip";
 const char kExpandedTabStripDescription[] =
     "Enables the new expanded tabstrip. Activated by swiping down the tabstrip"
@@ -379,12 +375,6 @@ const char kOmniboxOnFocusSuggestionsDescription[] =
     "Configures Omnibox on-focus suggestions - suggestions displayed on-focus "
     "before the user has typed any input. This provides overrides for the "
     "default suggestion locations.";
-
-const char kOpenDownloadsInFilesAppName[] = "Open Downloads in Files.app";
-const char kOpenDownloadsInFilesAppDescription[] =
-    "Allows user to open Files.app after pressing the 'Downloads' button from "
-    "the tools menu or after pressing the 'Open in downloads' button invoked "
-    "by pressing 'Open In...' after download completes.";
 
 const char kPageInfoRefactoringName[] = "New design of the page info";
 const char kPageInfoRefactoringDescription[] =

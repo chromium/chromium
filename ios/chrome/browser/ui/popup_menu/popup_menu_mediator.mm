@@ -1061,14 +1061,10 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
       CreateTableViewItem(IDS_IOS_TOOLS_MENU_SETTINGS, PopupMenuActionSettings,
                           @"popup_menu_settings", kToolsMenuSettingsId);
 
-  // If downloads manager's flag is enabled, displays Downloads.
-  if (base::FeatureList::IsEnabled(web::features::kEnablePersistentDownloads)) {
-    return @[
-      bookmarks, self.readingListItem, recentTabs, history, downloadsFolder,
-      settings
-    ];
-  }
-  return @[ bookmarks, self.readingListItem, recentTabs, history, settings ];
+  return @[
+    bookmarks, self.readingListItem, recentTabs, history, downloadsFolder,
+    settings
+  ];
 }
 
 // Creates the section for enterprise info.

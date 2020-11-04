@@ -3374,22 +3374,6 @@
             ]
         }
     ],
-    "IOSEnablePersistentDownloads": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnablePersistentDownloads",
-                        "OpenDownloadsInFilesApp"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSFullPageScreenshot": [
         {
             "platforms": [

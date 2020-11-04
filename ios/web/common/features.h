@@ -37,9 +37,6 @@ extern const base::Feature kClearOldNavigationRecordsWorkaround;
 // Used to enable committed interstitials for SSL errors.
 extern const base::Feature kSSLCommittedInterstitials;
 
-// Feature flag enabling persistent downloads.
-extern const base::Feature kEnablePersistentDownloads;
-
 // Feature flag for the new error page workflow, using JavaScript.
 extern const base::Feature kUseJSForErrorPage;
 

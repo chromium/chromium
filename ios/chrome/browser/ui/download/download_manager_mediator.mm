@@ -16,7 +16,6 @@
 #include "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/download/external_app_util.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/web/common/features.h"
 #import "ios/web/public/download/download_task.h"
 #include "net/base/net_errors.h"
 #include "net/url_request/url_fetcher_response_writer.h"
@@ -125,16 +124,12 @@ void DownloadManagerMediator::UpdateConsumer() {
   if (state == kDownloadManagerStateSucceeded) {
     download_path_ = task_->GetResponseWriter()->AsFileWriter()->file_path();
 
-    if (base::FeatureList::IsEnabled(
-            web::features::kEnablePersistentDownloads)) {
-      base::ThreadPool::PostTaskAndReplyWithResult(
-          FROM_HERE,
-          {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-          base::BindOnce(base::PathExists, download_path_),
-          base::BindOnce(
-              &DownloadManagerMediator::MoveToUserDocumentsIfFileExists,
-              weak_ptr_factory_.GetWeakPtr(), download_path_));
-    }
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+        base::Bind(base::PathExists, download_path_),
+        base::Bind(&DownloadManagerMediator::MoveToUserDocumentsIfFileExists,
+                   weak_ptr_factory_.GetWeakPtr(), download_path_));
   }
 
   if (state == kDownloadManagerStateSucceeded && !IsGoogleDriveAppInstalled()) {
@@ -157,7 +152,7 @@ void DownloadManagerMediator::UpdateConsumer() {
 void DownloadManagerMediator::MoveToUserDocumentsIfFileExists(
     base::FilePath download_path_,
     bool file_exists) {
-  if (!file_exists)
+  if (!file_exists || !task_)
     return;
 
   base::FilePath user_download_path;

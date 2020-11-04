@@ -302,11 +302,11 @@ TEST_F(PopupMenuMediatorTest, TestToolsMenuItemsCount) {
 
   // Checks that Tools Menu has the right number of items in each section.
   CheckMediatorSetItems(@[
-    // Stop/Reload, New Tab, New Incognito Tab
+    // Stop/Reload, New Tab, New Incognito Tab.
     @(3),
-    // 4 collections + Settings
-    @(5),
-    // Other actions, depending on configuration
+    // 4 collections, Downloads, Settings.
+    @(6),
+    // Other actions, depending on configuration.
     @(number_of_action_items)
   ]);
 }

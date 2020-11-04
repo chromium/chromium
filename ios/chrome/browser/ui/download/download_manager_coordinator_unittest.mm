@@ -25,6 +25,8 @@
 #include "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_overlay.h"
+#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/download/download_manager_view_controller.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -442,13 +444,17 @@ TEST_F(DownloadManagerCoordinatorTest, OpenIn) {
       base_view_controller_.childViewControllers.firstObject;
   ASSERT_EQ([DownloadManagerViewController class], [view_controller class]);
 
+  id download_view_controller_mock = OCMPartialMock(view_controller);
+  id dispatcher_mock = OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:dispatcher_mock
+                   forProtocol:@protocol(BrowserCoordinatorCommands)];
+
   // Start the download.
   base::FilePath path;
   ASSERT_TRUE(base::GetTempDir(&path));
   task->Start(std::make_unique<net::URLFetcherFileWriter>(
       base::ThreadTaskRunnerHandle::Get(), path));
-
-  id download_view_controller_mock = OCMPartialMock(view_controller);
 
   // Stub UIActivityViewController.
   OCMStub([download_view_controller_mock presentViewController:[OCMArg any]

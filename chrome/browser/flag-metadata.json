@@ -1933,11 +1933,6 @@
     // it can badly break pages under test.
     "expiry_milestone": -1
   },
-  {
-    "name": "enable-persistent-downloads",
-    "owners": [ "ewannpv", "gambard", "bling-flags" ],
-    "expiry_milestone": 87
-  },
   { "name": "enable-phone-hub",
     "owners": [ "better-together-dev@google.com", "tjohnsonkanu", "khorimoto" ],
     "expiry_milestone": 90
@@ -3623,11 +3618,6 @@
     "name": "omnibox-webui-omnibox-popup",
     "owners": [ "tommycli", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 99
-  },
-  {
-    "name": "open-downloads-in-files.app",
-    "owners": [ "ewannpv", "gambard", "bling-flags" ],
-    "expiry_milestone": 87
   },
   {
     "name": "os-settings-deep-linking",

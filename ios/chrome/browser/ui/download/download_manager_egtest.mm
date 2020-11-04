@@ -15,7 +15,6 @@
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ios/testing/embedded_test_server_handlers.h"
-#include "ios/web/common/features.h"
 #include "ios/web/public/test/element_selector.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -95,12 +94,6 @@ bool WaitForOpenInDownloadsButton() {
 @end
 
 @implementation DownloadManagerTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(web::features::kEnablePersistentDownloads);
-  return config;
-}
 
 - (void)setUp {
   [super setUp];

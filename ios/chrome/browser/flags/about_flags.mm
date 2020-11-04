@@ -65,7 +65,6 @@
 #include "ios/chrome/browser/screen_time/screen_time_buildflags.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
-#import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/page_info/features.h"
@@ -451,10 +450,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillSaveCardDismissOnNavigation)},
-    {"enable-persistent-downloads",
-     flag_descriptions::kEnablePersistentDownloadsName,
-     flag_descriptions::kEnablePersistentDownloadsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(web::features::kEnablePersistentDownloads)},
     {"force-unstacked-tabstrip", flag_descriptions::kForceUnstackedTabstripName,
      flag_descriptions::kForceUnstackedTabstripDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kForceUnstackedTabstrip)},
@@ -489,10 +484,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          fullscreen::features::kFullscreenControllerBrowserScoped)},
-    {"open-downloads-in-files.app",
-     flag_descriptions::kOpenDownloadsInFilesAppName,
-     flag_descriptions::kOpenDownloadsInFilesAppDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kOpenDownloadsInFilesApp)},
     {"ios-lookalike-url-navigation-suggestions-ui",
      flag_descriptions::kIOSLookalikeUrlNavigationSuggestionsUIName,
      flag_descriptions::kIOSLookalikeUrlNavigationSuggestionsUIDescription,

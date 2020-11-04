@@ -201,10 +201,6 @@ extern const char kEnableMyGoogleDescription[];
 extern const char kEnableNativeContextMenusName[];
 extern const char kEnableNativeContextMenusDescription[];
 
-// Title and description for the flag to enable persistent downloads.
-extern const char kEnablePersistentDownloadsName[];
-extern const char kEnablePersistentDownloadsDescription[];
-
 // Title and description for the flag to enable an expanded tab strip.
 extern const char kExpandedTabStripName[];
 extern const char kExpandedTabStripDescription[];
@@ -333,10 +329,6 @@ extern const char kOmniboxOnDeviceHeadSuggestionsNonIncognitoDescription[];
 // Title and description for the flag to control Omnibox on-focus suggestions.
 extern const char kOmniboxOnFocusSuggestionsName[];
 extern const char kOmniboxOnFocusSuggestionsDescription[];
-
-// Title and description for the flag to open Downloaded files in Files.app.
-extern const char kOpenDownloadsInFilesAppName[];
-extern const char kOpenDownloadsInFilesAppDescription[];
 
 // Title and description for the flag to enable the new design of the page info.
 extern const char kPageInfoRefactoringName[];

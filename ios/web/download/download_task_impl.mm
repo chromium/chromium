@@ -8,11 +8,9 @@
 #import <WebKit/WebKit.h>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
 #import "ios/net/cookies/system_cookie_util.h"
-#include "ios/web/common/features.h"
 #import "ios/web/net/cookies/wk_cookie_util.h"
 #include "ios/web/public/browser_state.h"
 #import "ios/web/public/download/download_task_observer.h"
@@ -488,8 +486,7 @@ void DownloadTaskImpl::OnDownloadFinished(int error_code) {
   // when the current download is finished.
   // Check if writer_->AsFileWriter() is necessary because in some cases the
   // writer isn't a fileWriter as for Passkit downloads for example.
-  if (base::FeatureList::IsEnabled(web::features::kEnablePersistentDownloads) &&
-      writer_->AsFileWriter())
+  if (writer_->AsFileWriter())
     writer_->AsFileWriter()->DisownFile();
   error_code_ = error_code;
   state_ = State::kComplete;

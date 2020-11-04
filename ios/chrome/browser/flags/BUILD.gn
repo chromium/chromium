@@ -54,7 +54,6 @@ source_set("flags") {
     "//ios/chrome/browser/screen_time:buildflags",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
-    "//ios/chrome/browser/ui/download:features",
     "//ios/chrome/browser/ui/fullscreen:feature_flags",
     "//ios/chrome/browser/ui/infobars:feature_flags",
     "//ios/chrome/browser/ui/page_info:features",

@@ -89,7 +89,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/download",
     "//ios/chrome/browser/network_activity",
     "//ios/chrome/test/fakes",
-    "//ios/web/common:features",
     "//ios/web/public",
     "//ios/web/public/download",
     "//ios/web/public/test",
