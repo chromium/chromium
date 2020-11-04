@@ -41,6 +41,7 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.gms.ChromiumPlayServicesAvailability;
 
 import java.io.IOException;
 
@@ -90,7 +91,7 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     protected void checkCanUseGooglePlayServices() throws AccountManagerDelegateException {
         Context context = ContextUtils.getApplicationContext();
         final int resultCode =
-                GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context);
+                ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(context);
         if (resultCode == ConnectionResult.SUCCESS) {
             return;
         }
@@ -263,9 +264,8 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     public boolean isGooglePlayServicesAvailable() {
         // TODO(http://crbug.com/577190): Remove StrictMode override.
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            int resultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
+            return ChromiumPlayServicesAvailability.chromiumIsGooglePlayServicesAvailable(
                     ContextUtils.getApplicationContext());
-            return resultCode == ConnectionResult.SUCCESS;
         }
     }
 

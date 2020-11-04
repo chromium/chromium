@@ -15,8 +15,6 @@ import static org.mockito.Mockito.verify;
 
 import android.os.Build;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.gcm.GcmNetworkManager;
 
 import org.junit.Before;
@@ -27,8 +25,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadow.api.Shadow;
-import org.robolectric.shadows.gms.Shadows;
-import org.robolectric.shadows.gms.common.ShadowGoogleApiAvailability;
 import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.ContextUtils;
@@ -37,13 +33,14 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
+import org.chromium.gms.shadows.ShadowChromiumPlayServicesAvailability;
 
 import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link BackgroundTaskScheduler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
-        shadows = {ShadowGcmNetworkManager.class, ShadowGoogleApiAvailability.class})
+        shadows = {ShadowGcmNetworkManager.class, ShadowChromiumPlayServicesAvailability.class})
 public class BackgroundTaskSchedulerImplTest {
     @Mock
     private BackgroundTaskSchedulerDelegate mDelegate;
@@ -66,8 +63,7 @@ public class BackgroundTaskSchedulerImplTest {
         TestBackgroundTask.reset();
 
         // Initialize Google Play Services and GCM Network Manager for upgrade testing.
-        Shadows.shadowOf(GoogleApiAvailability.getInstance())
-                .setIsGooglePlayServicesAvailable(ConnectionResult.SUCCESS);
+        ShadowChromiumPlayServicesAvailability.setChromiumIsGooglePlayServicesAvailable(true);
         mGcmNetworkManager = (ShadowGcmNetworkManager) Shadow.extract(
                 GcmNetworkManager.getInstance(ContextUtils.getApplicationContext()));
 

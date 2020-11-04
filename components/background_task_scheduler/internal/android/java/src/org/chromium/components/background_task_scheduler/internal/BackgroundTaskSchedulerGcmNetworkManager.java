@@ -10,8 +10,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.OneoffTask;
 import com.google.android.gms.gcm.PeriodicTask;
@@ -22,6 +20,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.background_task_scheduler.TaskParameters;
+import org.chromium.gms.ChromiumPlayServicesAvailability;
 
 import java.util.concurrent.TimeUnit;
 
@@ -246,8 +245,7 @@ class BackgroundTaskSchedulerGcmNetworkManager implements BackgroundTaskSchedule
     }
 
     private GcmNetworkManager getGcmNetworkManager(Context context) {
-        if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context)
-                == ConnectionResult.SUCCESS) {
+        if (ChromiumPlayServicesAvailability.chromiumIsGooglePlayServicesAvailable(context)) {
             return GcmNetworkManager.getInstance(context);
         }
         return null;

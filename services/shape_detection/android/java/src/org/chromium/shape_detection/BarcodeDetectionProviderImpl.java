@@ -8,11 +8,11 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.gms.ChromiumPlayServicesAvailability;
 import org.chromium.mojo.bindings.InterfaceRequest;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.shape_detection.mojom.BarcodeDetection;
@@ -55,8 +55,7 @@ public class BarcodeDetectionProviderImpl implements BarcodeDetectionProvider {
 
     public static BarcodeDetectionProvider create() {
         Context ctx = ContextUtils.getApplicationContext();
-        if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(ctx)
-                != ConnectionResult.SUCCESS) {
+        if (!ChromiumPlayServicesAvailability.chromiumIsGooglePlayServicesAvailable(ctx)) {
             Log.w(TAG, "Google Play Services not available");
             return null;
         }

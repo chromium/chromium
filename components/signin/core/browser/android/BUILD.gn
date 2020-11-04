@@ -22,6 +22,7 @@ android_library("java") {
     "//net/android:net_java",
     "//third_party/android_deps:android_support_v4_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/android_deps:chromium_play_services_availability_java",
     "//ui/android:ui_java",
   ]
 

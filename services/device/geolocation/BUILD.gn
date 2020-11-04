@@ -164,6 +164,7 @@ if (is_android) {
       "//components/location/android:location_java",
       "//services/device/public/java:geolocation_java",
       "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/android_deps:chromium_play_services_availability_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }

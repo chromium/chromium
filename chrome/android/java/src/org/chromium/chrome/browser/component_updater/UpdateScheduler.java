@@ -6,9 +6,6 @@ package org.chromium.chrome.browser.component_updater;
 
 import android.os.Build;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -17,6 +14,7 @@ import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFini
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
+import org.chromium.gms.ChromiumPlayServicesAvailability;
 
 /** Java-side implementation of the component update scheduler using the BackgroundTaskScheduler. */
 @JNINamespace("component_updater")
@@ -37,9 +35,8 @@ public class UpdateScheduler {
     @CalledByNative
     /* package */ static boolean isAvailable() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                || GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
-                           ContextUtils.getApplicationContext())
-                == ConnectionResult.SUCCESS;
+                || ChromiumPlayServicesAvailability.chromiumIsGooglePlayServicesAvailable(
+                        ContextUtils.getApplicationContext());
     }
 
     /* package */ void onStartTaskBeforeNativeLoaded(TaskFinishedCallback callback) {

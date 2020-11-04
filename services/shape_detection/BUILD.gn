@@ -124,6 +124,7 @@ if (is_android) {
       "//mojo/public/java/system:system_impl_java",
       "//services/shape_detection/public/mojom:mojom_java",
       "//skia/public/mojom:mojom_java",
+      "//third_party/android_deps:chromium_play_services_availability_java",
       "//ui/gfx/geometry/mojom:mojom_java",
     ]
   }
