@@ -57,9 +57,6 @@ FakeCryptohomeClient::FakeCryptohomeClient() {
             base::PathExists(cache_path);
   if (locked_)
     LoadInstallAttributes();
-
-  set_tpm_attestation_public_key(
-      TpmAttestationDataResult{true, "fake_public_key_for_test"});
 }
 
 FakeCryptohomeClient::~FakeCryptohomeClient() {
@@ -359,72 +356,6 @@ void FakeCryptohomeClient::AsyncTpmAttestationFinishCertRequest(
   ReturnAsyncMethodData(std::move(callback), std::string());
 }
 
-void FakeCryptohomeClient::TpmAttestationDoesKeyExist(
-    attestation::AttestationKeyType key_type,
-    const cryptohome::AccountIdentifier& cryptohome_id,
-    const std::string& key_name,
-    DBusMethodCallback<bool> callback) {
-  if (!service_is_available_ ||
-      !tpm_attestation_does_key_exist_should_succeed_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
-    return;
-  }
-
-  bool result = false;
-  switch (key_type) {
-    case attestation::KEY_DEVICE:
-      result = base::Contains(device_certificate_map_, key_name);
-      break;
-    case attestation::KEY_USER:
-      result = base::Contains(user_certificate_map_,
-                              std::make_pair(cryptohome_id, key_name));
-      break;
-  }
-
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
-}
-
-void FakeCryptohomeClient::TpmAttestationGetCertificate(
-    attestation::AttestationKeyType key_type,
-    const cryptohome::AccountIdentifier& cryptohome_id,
-    const std::string& key_name,
-    DBusMethodCallback<TpmAttestationDataResult> callback) {
-  TpmAttestationDataResult result;
-  switch (key_type) {
-    case attestation::KEY_DEVICE: {
-      const auto it = device_certificate_map_.find(key_name);
-      if (it != device_certificate_map_.end()) {
-        result.success = true;
-        result.data = it->second;
-      }
-      break;
-    }
-    case attestation::KEY_USER: {
-      const auto it = user_certificate_map_.find({cryptohome_id, key_name});
-      if (it != user_certificate_map_.end()) {
-        result.success = true;
-        result.data = it->second;
-      }
-      break;
-    }
-  }
-
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
-}
-
-void FakeCryptohomeClient::TpmAttestationGetPublicKey(
-    attestation::AttestationKeyType key_type,
-    const cryptohome::AccountIdentifier& cryptohome_id,
-    const std::string& key_name,
-    DBusMethodCallback<TpmAttestationDataResult> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), tpm_attestation_public_key_));
-}
-
 void FakeCryptohomeClient::TpmGetVersion(
     DBusMethodCallback<TpmVersionInfo> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -701,19 +632,6 @@ void FakeCryptohomeClient::ReportServiceIsNotAvailable() {
   callbacks.swap(pending_wait_for_service_to_be_available_callbacks_);
   for (auto& callback : callbacks)
     std::move(callback).Run(false);
-}
-
-void FakeCryptohomeClient::SetTpmAttestationUserCertificate(
-    const cryptohome::AccountIdentifier& cryptohome_id,
-    const std::string& key_name,
-    const std::string& certificate) {
-  user_certificate_map_[std::make_pair(cryptohome_id, key_name)] = certificate;
-}
-
-void FakeCryptohomeClient::SetTpmAttestationDeviceCertificate(
-    const std::string& key_name,
-    const std::string& certificate) {
-  device_certificate_map_[key_name] = certificate;
 }
 
 void FakeCryptohomeClient::NotifyLowDiskSpace(uint64_t disk_free_bytes) {

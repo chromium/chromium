@@ -367,37 +367,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
       const std::string& key_name,
       AsyncMethodCallback callback) = 0;
 
-  // Checks if an attestation key already exists.  If the key specified by
-  // |key_type| and |key_name| exists, then the result sent to the callback will
-  // be true.  If |key_type| is KEY_USER, a |id| must be provided.
-  // Otherwise |id| is ignored.
-  virtual void TpmAttestationDoesKeyExist(
-      attestation::AttestationKeyType key_type,
-      const cryptohome::AccountIdentifier& id,
-      const std::string& key_name,
-      DBusMethodCallback<bool> callback) = 0;
-
-  // Gets the attestation certificate for the key specified by |key_type| and
-  // |key_name|.  |callback| will be called when the operation completes.  If
-  // the key does not exist the callback |result| parameter will be false.  If
-  // |key_type| is KEY_USER, a |id| must be provided.  Otherwise |id| is
-  // ignored.
-  virtual void TpmAttestationGetCertificate(
-      attestation::AttestationKeyType key_type,
-      const cryptohome::AccountIdentifier& id,
-      const std::string& key_name,
-      DBusMethodCallback<TpmAttestationDataResult> callback) = 0;
-
-  // Gets the public key for the key specified by |key_type| and |key_name|.
-  // |callback| will be called when the operation completes.  If the key does
-  // not exist the callback |result| parameter will be false.  If |key_type| is
-  // KEY_USER, a |id| must be provided.  Otherwise |id| is ignored.
-  virtual void TpmAttestationGetPublicKey(
-      attestation::AttestationKeyType key_type,
-      const cryptohome::AccountIdentifier& id,
-      const std::string& key_name,
-      DBusMethodCallback<TpmAttestationDataResult> callback) = 0;
-
   // Asynchronously gets the underlying TPM version information and passes it to
   // the given callback.
   virtual void TpmGetVersion(DBusMethodCallback<TpmVersionInfo> callback) = 0;

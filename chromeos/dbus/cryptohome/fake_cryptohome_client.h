@@ -117,21 +117,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
       const cryptohome::AccountIdentifier& cryptohome_id,
       const std::string& key_name,
       AsyncMethodCallback callback) override;
-  void TpmAttestationDoesKeyExist(
-      attestation::AttestationKeyType key_type,
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      const std::string& key_name,
-      DBusMethodCallback<bool> callback) override;
-  void TpmAttestationGetCertificate(
-      attestation::AttestationKeyType key_type,
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      const std::string& key_name,
-      DBusMethodCallback<TpmAttestationDataResult> callback) override;
-  void TpmAttestationGetPublicKey(
-      attestation::AttestationKeyType key_type,
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      const std::string& key_name,
-      DBusMethodCallback<TpmAttestationDataResult> callback) override;
   void TpmGetVersion(DBusMethodCallback<TpmVersionInfo> callback) override;
   void GetKeyDataEx(
       const cryptohome::AccountIdentifier& cryptohome_id,
@@ -267,15 +252,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
     cryptohome_error_ = error;
   }
 
-  void set_tpm_attestation_does_key_exist_should_succeed(bool should_succeed) {
-    tpm_attestation_does_key_exist_should_succeed_ = should_succeed;
-  }
-
-  void set_tpm_attestation_public_key(
-      base::Optional<TpmAttestationDataResult> value) {
-    tpm_attestation_public_key_ = value;
-  }
-
   void set_supports_low_entropy_credentials(bool supports) {
     supports_low_entropy_credentials_ = supports;
   }
@@ -287,14 +263,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
   void set_rsu_device_id(const std::string& rsu_device_id) {
     rsu_device_id_ = rsu_device_id;
   }
-
-  void SetTpmAttestationUserCertificate(
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      const std::string& key_name,
-      const std::string& certificate);
-
-  void SetTpmAttestationDeviceCertificate(const std::string& key_name,
-                                          const std::string& certificate);
 
   // Calls TpmInitStatusUpdated() on Observer instances.
   void NotifyTpmInitStatusUpdated(bool ready,
@@ -412,25 +380,16 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
            std::map<std::string, cryptohome::Key>>
       key_data_map_;
 
-  // User attestation certificate mapped by cryptohome_id and key_name.
-  std::map<std::pair<cryptohome::AccountIdentifier, std::string>, std::string>
-      user_certificate_map_;
-
-  // Device attestation certificate mapped by key_name.
-  std::map<std::string, std::string> device_certificate_map_;
-
   base::RepeatingTimer dircrypto_migration_progress_timer_;
   uint64_t dircrypto_migration_progress_ = 0;
 
   bool needs_dircrypto_migration_ = false;
   bool run_default_dircrypto_migration_ = true;
-  bool tpm_attestation_does_key_exist_should_succeed_ = true;
   bool supports_low_entropy_credentials_ = false;
   // Controls if CheckKeyEx actually checks the key.
   bool enable_auth_check_ = false;
   bool tpm_is_ready_ = true;
   bool tpm_is_enabled_ = true;
-  base::Optional<TpmAttestationDataResult> tpm_attestation_public_key_;
 
   // Reply to GetRsuDeviceId().
   std::string rsu_device_id_;

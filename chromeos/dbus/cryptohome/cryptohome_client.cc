@@ -540,62 +540,6 @@ class CryptohomeClientImpl : public CryptohomeClient {
   }
 
   // CryptohomeClient override.
-  void TpmAttestationDoesKeyExist(attestation::AttestationKeyType key_type,
-                                  const cryptohome::AccountIdentifier& id,
-                                  const std::string& key_name,
-                                  DBusMethodCallback<bool> callback) override {
-    dbus::MethodCall method_call(
-        cryptohome::kCryptohomeInterface,
-        cryptohome::kCryptohomeTpmAttestationDoesKeyExist);
-    dbus::MessageWriter writer(&method_call);
-    bool is_user_specific = (key_type == attestation::KEY_USER);
-    writer.AppendBool(is_user_specific);
-    writer.AppendString(id.account_id());
-    writer.AppendString(key_name);
-    CallBoolMethod(&method_call, std::move(callback));
-  }
-
-  // CryptohomeClient override.
-  void TpmAttestationGetCertificate(
-      attestation::AttestationKeyType key_type,
-      const cryptohome::AccountIdentifier& id,
-      const std::string& key_name,
-      DBusMethodCallback<TpmAttestationDataResult> callback) override {
-    dbus::MethodCall method_call(
-        cryptohome::kCryptohomeInterface,
-        cryptohome::kCryptohomeTpmAttestationGetCertificate);
-    dbus::MessageWriter writer(&method_call);
-    bool is_user_specific = (key_type == attestation::KEY_USER);
-    writer.AppendBool(is_user_specific);
-    writer.AppendString(id.account_id());
-    writer.AppendString(key_name);
-    proxy_->CallMethod(
-        &method_call, kTpmDBusTimeoutMs,
-        base::BindOnce(&CryptohomeClientImpl::OnTpmAttestationDataMethod,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  // CryptohomeClient override.
-  void TpmAttestationGetPublicKey(
-      attestation::AttestationKeyType key_type,
-      const cryptohome::AccountIdentifier& id,
-      const std::string& key_name,
-      DBusMethodCallback<TpmAttestationDataResult> callback) override {
-    dbus::MethodCall method_call(
-        cryptohome::kCryptohomeInterface,
-        cryptohome::kCryptohomeTpmAttestationGetPublicKey);
-    dbus::MessageWriter writer(&method_call);
-    bool is_user_specific = (key_type == attestation::KEY_USER);
-    writer.AppendBool(is_user_specific);
-    writer.AppendString(id.account_id());
-    writer.AppendString(key_name);
-    proxy_->CallMethod(
-        &method_call, kTpmDBusTimeoutMs,
-        base::BindOnce(&CryptohomeClientImpl::OnTpmAttestationDataMethod,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  // CryptohomeClient override.
   void TpmGetVersion(DBusMethodCallback<TpmVersionInfo> callback) override {
     dbus::MethodCall method_call(
         cryptohome::kCryptohomeInterface,
