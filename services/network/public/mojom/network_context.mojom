@@ -963,13 +963,15 @@ interface NetworkContext {
       => (bool is_upper_bound, int64 size_or_error);
 
   // Notifies the HttpCache of a renderer-level cache hit with |url|
-  // and |http_method|, with the top-level frame of the containing page
-  // being on origin |top_frame_origin|.
+  // and |http_method|, with the network isolation key |key| and
+  // |is_subframe_document_resource| is true if this is a subframe navigation
+  // resource.
   //
   // This is being proxied by the browser because the renderer is unable to
   // directly interact with NetworkContext.
   NotifyExternalCacheHit(url.mojom.Url url, string http_method,
-                         NetworkIsolationKey key);
+                         NetworkIsolationKey key,
+                         bool is_subframe_document_resource);
 
   // Clears the host cache. This will affect all NetworkContexts that share the
   // same HostResolved as the NetworkContext this is called on.

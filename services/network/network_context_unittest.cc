@@ -1549,7 +1549,9 @@ TEST_F(NetworkContextTest, NotifyExternalCacheHit) {
     GURL test_url(entry_urls[i]);
 
     net::NetworkIsolationKey key;
-    network_context->NotifyExternalCacheHit(test_url, test_url.scheme(), key);
+    network_context->NotifyExternalCacheHit(
+        test_url, test_url.scheme(), key,
+        false /* is_subframe_document_resource */);
     EXPECT_EQ(i + 1, mock_cache.disk_cache()->GetExternalCacheHits().size());
 
     // Note: if this breaks check HttpCache::GenerateCacheKey() for changes.
@@ -1586,12 +1588,22 @@ TEST_F(NetworkContextTest, NotifyExternalCacheHit_Split) {
     GURL test_url(entry_urls[i]);
 
     net::NetworkIsolationKey key = net::NetworkIsolationKey(origin_a, origin_a);
-    network_context->NotifyExternalCacheHit(test_url, test_url.scheme(), key);
+
+    bool is_subframe_document_resource = false;
+    std::string subframe_prefix;
+    if (i / 2) {
+      is_subframe_document_resource = true;
+      subframe_prefix = "s_";
+    }
+
+    network_context->NotifyExternalCacheHit(test_url, test_url.scheme(), key,
+                                            is_subframe_document_resource);
     EXPECT_EQ(i + 1, mock_cache.disk_cache()->GetExternalCacheHits().size());
 
     // Since this is splitting the cache, the key also includes the network
-    // isolation key.
-    EXPECT_EQ(base::StrCat({"_dk_", key.ToString(), " ", test_url.spec()}),
+    // isolation key and optionally, the subframe prefix.
+    EXPECT_EQ(base::StrCat({"_dk_", subframe_prefix, key.ToString(), " ",
+                            test_url.spec()}),
               mock_cache.disk_cache()->GetExternalCacheHits().back());
   }
 }

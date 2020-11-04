@@ -2630,6 +2630,21 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoForNavigation(
                                       request_type);
 }
 
+net::IsolationInfo RenderFrameHostImpl::GetIsolationInfoForViewSource() const {
+  // Make sure a subframe has the mode set accordingly so that the
+  // cache can match it correctly.
+  net::IsolationInfo::RequestType view_source_request_type =
+      is_main_frame() ? net::IsolationInfo::RequestType::kMainFrame
+                      : net::IsolationInfo::RequestType::kSubFrame;
+
+  // Use fields from isolation_info_ to avoid computing them again.
+  DCHECK(!isolation_info_.IsEmpty());
+  return net::IsolationInfo::Create(view_source_request_type,
+                                    isolation_info_.top_frame_origin().value(),
+                                    isolation_info_.frame_origin().value(),
+                                    isolation_info_.site_for_cookies());
+}
+
 net::SiteForCookies RenderFrameHostImpl::ComputeSiteForCookies() {
   return isolation_info_.site_for_cookies();
 }

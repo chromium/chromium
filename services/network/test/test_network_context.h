@@ -194,7 +194,8 @@ class TestNetworkContext : public mojom::NetworkContext {
       mojo::PendingReceiver<mojom::HostResolver> receiver) override {}
   void NotifyExternalCacheHit(const GURL& url,
                               const std::string& http_method,
-                              const net::NetworkIsolationKey& key) override {}
+                              const net::NetworkIsolationKey& key,
+                              bool is_subframe_document_resource) override {}
   void VerifyCertForSignedExchange(
       const scoped_refptr<net::X509Certificate>& certificate,
       const GURL& url,

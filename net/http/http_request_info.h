@@ -37,6 +37,9 @@ struct NET_EXPORT HttpRequestInfo {
   // shared network resources like the cache.
   NetworkIsolationKey network_isolation_key;
 
+  // True if it is a subframe's document resource.
+  bool is_subframe_document_resource;
+
   // Any extra request headers (including User-Agent).
   HttpRequestHeaders extra_headers;
 

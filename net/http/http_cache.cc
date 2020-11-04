@@ -68,6 +68,7 @@ bool g_enable_split_cache = false;
 
 const char HttpCache::kDoubleKeyPrefix[] = "_dk_";
 const char HttpCache::kDoubleKeySeparator[] = " ";
+const char HttpCache::kSubframeDocumentResourcePrefix[] = "s_";
 
 HttpCache::DefaultBackend::DefaultBackend(CacheType type,
                                           BackendType backend_type,
@@ -373,7 +374,8 @@ void HttpCache::CloseIdleConnections(const char* net_log_reason_utf8) {
 void HttpCache::OnExternalCacheHit(
     const GURL& url,
     const std::string& http_method,
-    const NetworkIsolationKey& network_isolation_key) {
+    const NetworkIsolationKey& network_isolation_key,
+    bool is_subframe_document_resource) {
   if (!disk_cache_.get() || mode_ == DISABLE)
     return;
 
@@ -381,6 +383,8 @@ void HttpCache::OnExternalCacheHit(
   request_info.url = url;
   request_info.method = http_method;
   request_info.network_isolation_key = network_isolation_key;
+  request_info.is_subframe_document_resource = is_subframe_document_resource;
+
   std::string key = GenerateCacheKey(&request_info);
   disk_cache_->OnExternalCacheHit(key);
 }
@@ -574,9 +578,12 @@ std::string HttpCache::GenerateCacheKey(const HttpRequestInfo* request) {
     // confused with a single-keyed entry). Separate the origin and url
     // with invalid whitespace character |kDoubleKeySeparator|.
     DCHECK(request->network_isolation_key.IsFullyPopulated());
-    isolation_key = base::StrCat({kDoubleKeyPrefix,
-                                  request->network_isolation_key.ToString(),
-                                  kDoubleKeySeparator});
+    std::string subframe_document_resource_prefix =
+        request->is_subframe_document_resource ? kSubframeDocumentResourcePrefix
+                                               : "";
+    isolation_key = base::StrCat(
+        {kDoubleKeyPrefix, subframe_document_resource_prefix,
+         request->network_isolation_key.ToString(), kDoubleKeySeparator});
   }
 
   // Strip out the reference, username, and password sections of the URL and
@@ -657,7 +664,8 @@ int HttpCache::AsyncDoomEntry(const std::string& key,
 }
 
 void HttpCache::DoomMainEntryForUrl(const GURL& url,
-                                    const NetworkIsolationKey& isolation_key) {
+                                    const NetworkIsolationKey& isolation_key,
+                                    bool is_subframe_document_resource) {
   if (!disk_cache_)
     return;
 
@@ -665,6 +673,7 @@ void HttpCache::DoomMainEntryForUrl(const GURL& url,
   temp_info.url = url;
   temp_info.method = "GET";
   temp_info.network_isolation_key = isolation_key;
+  temp_info.is_subframe_document_resource = is_subframe_document_resource;
   std::string key = GenerateCacheKey(&temp_info);
 
   // Defer to DoomEntry if there is an active entry, otherwise call

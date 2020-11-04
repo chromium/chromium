@@ -1428,11 +1428,13 @@ void NetworkContext::ParseHeaders(
 void NetworkContext::NotifyExternalCacheHit(
     const GURL& url,
     const std::string& http_method,
-    const net::NetworkIsolationKey& key) {
+    const net::NetworkIsolationKey& key,
+    bool is_subframe_document_resource) {
   net::HttpCache* cache =
       url_request_context_->http_transaction_factory()->GetCache();
   if (cache) {
-    cache->OnExternalCacheHit(url, http_method, key);
+    cache->OnExternalCacheHit(url, http_method, key,
+                              is_subframe_document_resource);
   }
 }
 

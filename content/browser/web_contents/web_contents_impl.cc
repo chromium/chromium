@@ -156,6 +156,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
@@ -5438,8 +5439,11 @@ void WebContentsImpl::DidLoadResourceFromMemoryCache(
 
   if (url.is_valid() && url.SchemeIsHTTPOrHTTPS()) {
     StoragePartition* partition = source->GetProcess()->GetStoragePartition();
+
+    DCHECK(!blink::IsRequestDestinationFrame(request_destination));
     partition->GetNetworkContext()->NotifyExternalCacheHit(
-        url, http_method, source->GetNetworkIsolationKey());
+        url, http_method, source->GetNetworkIsolationKey(),
+        false /* is_subframe_document_resource */);
   }
 }
 
@@ -5562,8 +5566,8 @@ void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
   const GURL url(content::kViewSourceScheme + std::string(":") +
                  frame_entry->url().spec());
   navigation_entry->SetVirtualURL(url);
-  navigation_entry->set_isolation_info(
-      frame->GetIsolationInfoForSubresources());
+
+  navigation_entry->set_isolation_info(frame->GetIsolationInfoForViewSource());
 
   // Do not restore scroller position.
   // TODO(creis, lukasza, arthursonzogni): Do not reuse the original PageState,

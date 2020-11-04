@@ -604,6 +604,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   net::IsolationInfo ComputeIsolationInfoForNavigation(
       const GURL& destination) const;
 
+  net::IsolationInfo GetIsolationInfoForViewSource() const;
+
   // Computes site_for_cookies for this frame. A non-empty result denotes which
   // domains are considered first-party to the top-level site when resources are
   // loaded inside this frame. An empty result means that nothing will be

@@ -1833,7 +1833,8 @@ int HttpCache::Transaction::DoSuccessfulSendRequest() {
       NonErrorResponse(new_response_->headers->response_code()) &&
       (!HttpCache::IsSplitCacheEnabled() ||
        request_->network_isolation_key.IsFullyPopulated())) {
-    cache_->DoomMainEntryForUrl(request_->url, request_->network_isolation_key);
+    cache_->DoomMainEntryForUrl(request_->url, request_->network_isolation_key,
+                                request_->is_subframe_document_resource);
   }
 
   RecordNoStoreHeaderHistogram(request_->load_flags, new_response_);
