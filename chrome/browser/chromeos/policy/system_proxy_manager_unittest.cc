@@ -14,8 +14,10 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/system_proxy/system_proxy_client.h"
 #include "chromeos/dbus/system_proxy/system_proxy_service.pb.h"
+#include "chromeos/network/network_handler.h"
 #include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
@@ -39,8 +41,6 @@ using testing::Invoke;
 using testing::WithArg;
 
 namespace {
-constexpr char kSystemServicesUsername[] = "test_username";
-constexpr char kSystemServicesPassword[] = "test_password";
 constexpr char kBrowserUsername[] = "browser_username";
 constexpr char kBrowserPassword[] = "browser_password";
 constexpr char kKerberosActivePrincipalName[] = "kerberos_princ_name";
@@ -86,6 +86,9 @@ class SystemProxyManagerTest : public testing::Test {
   // testing::Test
   void SetUp() override {
     testing::Test::SetUp();
+    chromeos::shill_clients::InitializeFakes();
+    chromeos::NetworkHandler::Initialize();
+
     profile_ = std::make_unique<TestingProfile>();
     chromeos::SystemProxyClient::InitializeFake();
     system_proxy_manager_ = std::make_unique<SystemProxyManager>(
@@ -96,7 +99,10 @@ class SystemProxyManagerTest : public testing::Test {
 
   void TearDown() override {
     system_proxy_manager_->StopObservingPrimaryProfilePrefs();
+    system_proxy_manager_.reset();
     chromeos::SystemProxyClient::Shutdown();
+    chromeos::NetworkHandler::Shutdown();
+    chromeos::shill_clients::Shutdown();
   }
 
  protected:
@@ -126,28 +132,6 @@ class SystemProxyManagerTest : public testing::Test {
   chromeos::ScopedDeviceSettingsTestHelper device_settings_test_helper_;
   chromeos::ScopedStubInstallAttributes test_install_attributes_;
 };
-
-// Verifies that System-proxy is configured with the system traffic credentials
-// set by |kSystemProxySettings| policy.
-TEST_F(SystemProxyManagerTest, SetAuthenticationDetails) {
-  EXPECT_EQ(0, client_test_interface()->GetSetAuthenticationDetailsCallCount());
-
-  SetPolicy(true /* system_proxy_enabled */, "" /* system_services_username */,
-            "" /* system_services_password */);
-  // Don't send empty credentials.
-  EXPECT_EQ(1, client_test_interface()->GetSetAuthenticationDetailsCallCount());
-
-  SetPolicy(true /* system_proxy_enabled */, kSystemServicesUsername,
-            kSystemServicesPassword);
-  EXPECT_EQ(2, client_test_interface()->GetSetAuthenticationDetailsCallCount());
-
-  system_proxy::SetAuthenticationDetailsRequest request =
-      client_test_interface()->GetLastAuthenticationDetailsRequest();
-
-  ASSERT_TRUE(request.has_credentials());
-  EXPECT_EQ(kSystemServicesUsername, request.credentials().username());
-  EXPECT_EQ(kSystemServicesPassword, request.credentials().password());
-}
 
 // Verifies requests to shut down are sent to System-proxy according to the
 // |kSystemProxySettings| policy.

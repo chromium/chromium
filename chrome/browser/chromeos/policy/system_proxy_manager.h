@@ -13,10 +13,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chromeos/dbus/system_proxy/system_proxy_service.pb.h"
+#include "chromeos/network/network_state_handler_observer.h"
 #include "net/base/auth.h"
 
 namespace chromeos {
+class NetworkState;
 class RequestSystemProxyCredentialsView;
 class SystemProxyNotification;
 }  // namespace chromeos
@@ -43,7 +46,9 @@ namespace policy {
 // also listens for the |WorkerActive| dbus signal sent by the System-proxy
 // daemon and stores connection information regarding the active worker
 // processes.
-class SystemProxyManager {
+// TODO(acostinas, https://crbug.com/1145174): Move the logic that tracks
+// managed network changes to another class.
+class SystemProxyManager : public chromeos::NetworkStateHandlerObserver {
  public:
   SystemProxyManager(chromeos::CrosSettings* cros_settings,
                      PrefService* local_state);
@@ -51,7 +56,7 @@ class SystemProxyManager {
 
   SystemProxyManager& operator=(const SystemProxyManager&) = delete;
 
-  ~SystemProxyManager();
+  ~SystemProxyManager() override;
 
   // If System-proxy is enabled by policy, it returns the URL of the local proxy
   // instance that authenticates system services, in PAC format, e.g.
@@ -76,6 +81,18 @@ class SystemProxyManager {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
  private:
+  // NetworkStateHandlerObserver implementation
+  void DefaultNetworkChanged(const chromeos::NetworkState* network) override;
+  // Called when the proxy configurations may have changed either by updates to
+  // the kProxy policy or updates to the default network.
+  void OnProxyConfigChanged();
+  // Returns true if there's a policy configured proxy on the default network
+  // (via device or user ONC policy, user policy or force installed extension).
+  bool IsManagedProxyConfigured();
+  // Returns true if the `kProxy` preference set by an extension can be changed
+  // by the user.
+  bool IsProxyConfiguredByUserViaExtension();
+
   void OnSetAuthenticationDetails(
       const system_proxy::SetAuthenticationDetailsResponse& response);
   void OnShutDownProcess(const system_proxy::ShutDownResponse& response);
@@ -95,6 +112,14 @@ class SystemProxyManager {
       const system_proxy::ProtectionSpace& protection_space,
       const std::string& username,
       const std::string& password);
+
+  // Sends policy set credentials to System-proxy via D-Bus. Credentials are
+  // sent only if `username` and `password` are different than
+  // `last_sent_username_` and `last_sent_password_` or if `force_send` is true.
+  void SendPolicyAuthenticationCredentials(const std::string& username,
+                                           const std::string& password,
+                                           bool force_send);
+
   // Send the Kerberos enabled state and active principal name to System-proxy
   // via D-Bus.
   void SendKerberosAuthenticationDetails();
@@ -153,6 +178,15 @@ class SystemProxyManager {
   // The authority URI in the format host:port of the local proxy worker for
   // system services.
   std::string system_services_address_;
+  std::string system_services_username_;
+  std::string system_services_password_;
+  // The credentials which were last sent to System-proxy. They can differ from
+  // `system_services_username_` and `system_services_username_` if the proxy
+  // configuration is not managed; in this case `last_sent_username_` and
+  // `last_sent_password_` are both empty even if credentials were specified by
+  // policy.
+  std::string last_sent_username_;
+  std::string last_sent_password_;
 
   // Local state prefs, not owned.
   PrefService* local_state_ = nullptr;
@@ -168,6 +202,7 @@ class SystemProxyManager {
 
   // Primary profile, not owned.
   Profile* primary_profile_ = nullptr;
+  std::unique_ptr<extensions::PrefsUtil> extension_prefs_util_;
 
   // Observer for Kerberos-related prefs.
   std::unique_ptr<PrefChangeRegistrar> local_state_pref_change_registrar_;
