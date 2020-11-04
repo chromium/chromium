@@ -8,6 +8,7 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shelf/shelf.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_tray_icon_item.h"
 #include "ash/system/tray/tray_constants.h"
@@ -21,11 +22,13 @@
 
 namespace ash {
 
-HoldingSpaceTrayIcon::HoldingSpaceTrayIcon() {
+HoldingSpaceTrayIcon::HoldingSpaceTrayIcon(Shelf* shelf) : shelf_(shelf) {
   InitLayout();
 
   if (features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled())
     controller_observer_.Add(HoldingSpaceController::Get());
+
+  shell_observer_.Add(Shell::Get());
 }
 
 HoldingSpaceTrayIcon::~HoldingSpaceTrayIcon() = default;
@@ -136,17 +139,31 @@ void HoldingSpaceTrayIcon::OnHoldingSpaceItemFinalized(
   NOTIMPLEMENTED();
 }
 
-// TODO(crbug.com/1142572): Handle side shelf.
+void HoldingSpaceTrayIcon::OnShelfAlignmentChanged(
+    aura::Window* root_window,
+    ShelfAlignment old_alignment) {
+  removed_icon_items_.clear();
+
+  for (const auto& icon_item : icon_items_)
+    icon_item->OnShelfAlignmentChanged(old_alignment, shelf_->alignment());
+
+  UpdatePreferredSize();
+}
+
 void HoldingSpaceTrayIcon::UpdatePreferredSize() {
   const int num_visible_items = std::min(kHoldingSpaceTrayIconMaxVisibleItems,
                                          static_cast<int>(icon_items_.size()));
 
-  int preferred_width = kTrayItemSize;
+  int primary_axis_size = kTrayItemSize;
   if (num_visible_items > 1)
-    preferred_width += (num_visible_items - 1) * kTrayItemSize / 2;
+    primary_axis_size += (num_visible_items - 1) * kTrayItemSize / 2;
 
-  if (preferred_width != GetPreferredSize().width())
-    SetPreferredSize(gfx::Size(preferred_width, kTrayItemSize));
+  gfx::Size preferred_size = shelf_->PrimaryAxisValue(
+      /*horizontal=*/gfx::Size(primary_axis_size, kTrayItemSize),
+      /*vertical=*/gfx::Size(kTrayItemSize, primary_axis_size));
+
+  if (preferred_size != GetPreferredSize())
+    SetPreferredSize(preferred_size);
 }
 
 void HoldingSpaceTrayIcon::OnHoldingSpaceTrayIconItemAnimatedOut(

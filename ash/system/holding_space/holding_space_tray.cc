@@ -41,9 +41,9 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   SetVisible(false);
 
   // Icon.
-  auto* container = tray_container();
-  icon_ = container->AddChildView(std::make_unique<HoldingSpaceTrayIcon>());
-  container->SetMargin(icon_->GetPreferredMainAxisMargin(), 0);
+  icon_ = tray_container()->AddChildView(
+      std::make_unique<HoldingSpaceTrayIcon>(shelf));
+  tray_container()->SetMargin(icon_->GetPreferredMainAxisMargin(), 0);
 }
 
 HoldingSpaceTray::~HoldingSpaceTray() = default;

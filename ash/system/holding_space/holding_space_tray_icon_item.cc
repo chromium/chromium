@@ -8,6 +8,7 @@
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/shelf/shelf.h"
 #include "ash/system/holding_space/holding_space_tray_icon.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ui/compositor/layer.h"
@@ -46,6 +47,18 @@ gfx::Rect GetContentsBounds() {
   contents_bounds.ClampToCenteredSize(contents_size);
 
   return contents_bounds;
+}
+
+// Returns whether the specified `shelf_alignment` is horizontal.
+bool IsHorizontal(ShelfAlignment shelf_alignment) {
+  switch (shelf_alignment) {
+    case ShelfAlignment::kBottom:
+    case ShelfAlignment::kBottomLocked:
+      return true;
+    case ShelfAlignment::kLeft:
+    case ShelfAlignment::kRight:
+      return false;
+  }
 }
 
 // Performs set up of the specified `animation_settings`.
@@ -149,7 +162,6 @@ HoldingSpaceTrayIconItem::HoldingSpaceTrayIconItem(HoldingSpaceTrayIcon* icon,
 
 HoldingSpaceTrayIconItem::~HoldingSpaceTrayIconItem() = default;
 
-// TODO(crbug.com/1142572): Handle side shelf.
 void HoldingSpaceTrayIconItem::AnimateIn() {
   CreateLayer();
 
@@ -165,7 +177,6 @@ void HoldingSpaceTrayIconItem::AnimateIn() {
   layer_->SetTransform(transform_);
 }
 
-// TODO(crbug.com/1142572): Handle side shelf.
 void HoldingSpaceTrayIconItem::AnimateOut(
     base::OnceClosure animate_out_closure) {
   animate_out_closure_ = std::move(animate_out_closure);
@@ -183,9 +194,11 @@ void HoldingSpaceTrayIconItem::AnimateOut(
   layer_->SetVisible(false);
 }
 
-// TODO(crbug.com/1142572): Handle side shelf and RTL.
+// TODO(crbug.com/1142572): Handle RTL.
 void HoldingSpaceTrayIconItem::AnimateShift() {
-  transform_.Translate(kTrayItemSize / 2, 0);
+  transform_.Translate(icon_->shelf()->PrimaryAxisValue(
+      /*horizontal=*/gfx::Vector2dF(kTrayItemSize / 2, 0),
+      /*vertical=*/gfx::Vector2dF(0, kTrayItemSize / 2)));
 
   if (!layer_)
     return;
@@ -202,9 +215,13 @@ void HoldingSpaceTrayIconItem::AnimateShift() {
   }
 }
 
-// TODO(crbug.com/1142572): Handle side shelf and RTL.
+// TODO(crbug.com/1142572): Handle RTL.
 void HoldingSpaceTrayIconItem::AnimateUnshift() {
-  transform_.Translate(-kTrayItemSize / 2, 0);
+  const gfx::Vector2dF translation = icon_->shelf()->PrimaryAxisValue(
+      /*horizontal=*/gfx::Vector2dF(-kTrayItemSize / 2, 0),
+      /*vertical=*/gfx::Vector2dF(0, -kTrayItemSize / 2));
+
+  transform_.Translate(translation);
 
   if (!layer_ && !NeedsLayer())
     return;
@@ -213,7 +230,7 @@ void HoldingSpaceTrayIconItem::AnimateUnshift() {
     CreateLayer();
 
     gfx::Transform pre_transform(transform_);
-    pre_transform.Translate(kTrayItemSize / 2, 0);
+    pre_transform.Translate(-translation);
     layer_->SetTransform(pre_transform);
 
     layer_->SetOpacity(0.f);
@@ -229,6 +246,37 @@ void HoldingSpaceTrayIconItem::AnimateUnshift() {
 
   layer_->SetTransform(transform_);
   layer_->SetOpacity(1.f);
+}
+
+// TODO(crbug.com/1142572): Handle RTL.
+void HoldingSpaceTrayIconItem::OnShelfAlignmentChanged(
+    ShelfAlignment old_shelf_alignment,
+    ShelfAlignment new_shelf_alignment) {
+  // If shelf orientation has not changed, no action needs to be taken.
+  if (IsHorizontal(old_shelf_alignment) == IsHorizontal(new_shelf_alignment))
+    return;
+
+  // Since shelf orientation has changed, the target `transform_` needs to be
+  // updated. First stop the current animation to immediately advance to target
+  // end values.
+  const auto& weak_ptr = weak_factory_.GetWeakPtr();
+  if (layer_ && layer_->GetAnimator()->is_animating())
+    layer_->GetAnimator()->StopAnimating();
+
+  // This instance may have been deleted as a result of stopping the current
+  // animation if it was in the process of animating out.
+  if (!weak_ptr)
+    return;
+
+  // Swap x-coordinate and y-coordinate of the target `transform_` since the
+  // shelf has changed orientation from horizontal to vertical or vice versa.
+  gfx::Vector2dF translation = transform_.To2dTranslation();
+  gfx::Transform swapped_transform;
+  swapped_transform.Translate(translation.y(), translation.x());
+  transform_ = swapped_transform;
+
+  if (layer_)
+    layer_->SetTransform(transform_);
 }
 
 // TODO(crbug.com/1142572): Support theming.
@@ -282,10 +330,13 @@ void HoldingSpaceTrayIconItem::CreateLayer() {
   layer_->set_delegate(this);
 }
 
-// TODO(crbug.com/1142572): Handle side shelf.
+// TODO(crbug.com/1142572): Handle RTL.
 bool HoldingSpaceTrayIconItem::NeedsLayer() const {
-  const float x = transform_.To2dTranslation().x();
-  return x < kHoldingSpaceTrayIconMaxVisibleItems * kTrayItemSize / 2;
+  const float primary_axis_translation = icon_->shelf()->PrimaryAxisValue(
+      /*horizontal=*/transform_.To2dTranslation().x(),
+      /*vertical=*/transform_.To2dTranslation().y());
+  return primary_axis_translation <
+         kHoldingSpaceTrayIconMaxVisibleItems * kTrayItemSize / 2;
 }
 
 void HoldingSpaceTrayIconItem::InvalidateLayer() {

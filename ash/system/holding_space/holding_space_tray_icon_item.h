@@ -25,6 +25,7 @@ namespace ash {
 
 class HoldingSpaceItem;
 class HoldingSpaceTrayIcon;
+enum class ShelfAlignment;
 
 // Class to visually represent a single holding space item within the holding
 // space tray icon in the shelf. While determined to be within the icon's
@@ -49,6 +50,11 @@ class ASH_EXPORT HoldingSpaceTrayIconItem
 
   // Animates an unshift of this item.
   void AnimateUnshift();
+
+  // Invoked when the shelf associated with `icon_` has changed from
+  // `old_shelf_alignment` to `new_shelf_alignment`.
+  void OnShelfAlignmentChanged(ShelfAlignment old_shelf_alignment,
+                               ShelfAlignment new_shelf_alignment);
 
   // Returns the holding space `item_` visually represented by this instance.
   const HoldingSpaceItem* item() const { return item_; }
@@ -97,6 +103,8 @@ class ASH_EXPORT HoldingSpaceTrayIconItem
   // Closure to invoke on completion of `AnimateOut()`. It is expected that this
   // instance may be deleted during invocation.
   base::OnceClosure animate_out_closure_;
+
+  base::WeakPtrFactory<HoldingSpaceTrayIconItem> weak_factory_{this};
 };
 
 }  // namespace ash
