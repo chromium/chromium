@@ -17,13 +17,13 @@ const base::Feature kPdfHonorJsContentSettings = {
 
 // "Incremental loading" refers to loading the PDF as it arrives.
 // TODO(crbug.com/1064175): Remove this once incremental loading is fixed.
-const base::Feature kPdfIncrementalLoading = {"PdfIncrementalLoading",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kPdfIncrementalLoading = {
+    "PdfIncrementalLoading", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // "Partial loading" refers to loading only specific parts of the PDF.
 // TODO(crbug.com/1064175): Remove this once partial loading is fixed.
 const base::Feature kPdfPartialLoading = {"PdfPartialLoading",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kPDFViewerUpdate = {"PDFViewerUpdate",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

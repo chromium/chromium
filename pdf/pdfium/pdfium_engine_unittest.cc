@@ -382,7 +382,7 @@ TEST_F(PDFiumEngineTest, GetBadPdfVersion) {
 }
 
 TEST_F(PDFiumEngineTest, IncrementalLoadingFeatureDefault) {
-  EXPECT_TRUE(TryLoadIncrementally());
+  EXPECT_FALSE(TryLoadIncrementally());
 }
 
 TEST_F(PDFiumEngineTest, IncrementalLoadingFeatureEnabled) {
@@ -417,6 +417,9 @@ TEST_F(PDFiumEngineTest, RequestThumbnail) {
 }
 
 TEST_F(PDFiumEngineTest, RequestThumbnailLinearized) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kPdfIncrementalLoading);
+
   NiceMock<MockTestClient> client;
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("linearized.pdf"));
@@ -460,6 +463,8 @@ using PDFiumEngineDeathTest = PDFiumEngineTest;
 
 TEST_F(PDFiumEngineDeathTest, RequestThumbnailRedundant) {
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kPdfIncrementalLoading);
 
   NiceMock<MockTestClient> client;
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
