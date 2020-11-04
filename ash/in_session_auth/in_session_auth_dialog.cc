@@ -49,12 +49,14 @@ std::unique_ptr<views::Widget> CreateAuthDialogWidget(
 InSessionAuthDialog::InSessionAuthDialog(
     uint32_t auth_methods,
     aura::Window* parent_window,
+    const std::string& origin_name,
     const AuthDialogContentsView::AuthMethodsMetadata& auth_metadata,
     const UserAvatar& avatar)
     : auth_methods_(auth_methods) {
-  widget_ = CreateAuthDialogWidget(std::make_unique<AuthDialogContentsView>(
-                                       auth_methods, auth_metadata, avatar),
-                                   parent_window);
+  widget_ = CreateAuthDialogWidget(
+      std::make_unique<AuthDialogContentsView>(auth_methods, origin_name,
+                                               auth_metadata, avatar),
+      parent_window);
   gfx::Rect bounds = parent_window->GetBoundsInScreen();
   gfx::Size preferred_size = widget_->GetContentsView()->GetPreferredSize();
   int horizontal_inset_dp = (bounds.width() - preferred_size.width()) / 2;

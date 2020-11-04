@@ -34,10 +34,7 @@
 namespace ash {
 namespace {
 
-// TODO(b/164195709): Move these strings to a grd file.
-const char kTitle[] = "Verify it's you";
-
-const int kContainerPreferredWidth = 512;
+const int kContainerPreferredWidth = 340;
 const int kSpacingAfterAvatar = 18;
 const int kSpacingAfterTitle = 16;
 
@@ -259,9 +256,12 @@ class AuthDialogContentsView::FingerprintView : public views::View {
 
 AuthDialogContentsView::AuthDialogContentsView(
     uint32_t auth_methods,
+    const std::string& origin_name,
     const AuthMethodsMetadata& auth_metadata,
     const UserAvatar& avatar)
-    : auth_methods_(auth_methods), auth_metadata_(auth_metadata) {
+    : auth_methods_(auth_methods),
+      origin_name_(origin_name),
+      auth_metadata_(auth_metadata) {
   DCHECK(auth_methods_ & kAuthPassword);
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -281,6 +281,8 @@ AuthDialogContentsView::AuthDialogContentsView(
   AddAvatarView(avatar);
   AddVerticalSpacing(kSpacingAfterAvatar);
   AddTitleView();
+  AddVerticalSpacing(kSpacingAfterTitle);
+  AddOriginNameView();
   AddVerticalSpacing(kSpacingAfterTitle);
   if (auth_methods_ & kAuthPin) {
     if (LoginPinInputView::IsAutosubmitSupported(
@@ -337,13 +339,33 @@ void AuthDialogContentsView::AddTitleView() {
   title_->SetFontList(base_font_list.Derive(kTitleFontSizeDeltaDp,
                                             gfx::Font::FontStyle::NORMAL,
                                             gfx::Font::Weight::NORMAL));
-  title_->SetText(base::UTF8ToUTF16(kTitle));
+  title_->SetText(l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_TITLE));
   title_->SetMaximumWidth(kContainerPreferredWidth);
   title_->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
 
   title_->SetPreferredSize(
       gfx::Size(kContainerPreferredWidth, title_->height()));
-  title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+}
+
+void AuthDialogContentsView::AddOriginNameView() {
+  origin_name_view_ =
+      container_->AddChildView(std::make_unique<views::Label>());
+  origin_name_view_->SetEnabledColor(SK_ColorBLACK);
+  origin_name_view_->SetSubpixelRenderingEnabled(false);
+  origin_name_view_->SetAutoColorReadabilityEnabled(false);
+  origin_name_view_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+
+  origin_name_view_->SetText(
+      l10n_util::GetStringFUTF16(IDS_ASH_IN_SESSION_AUTH_ORIGIN_NAME_PROMPT,
+                                 base::UTF8ToUTF16(origin_name_)));
+  origin_name_view_->SetMaximumWidth(kContainerPreferredWidth);
+  origin_name_view_->SetMultiLine(true);
+
+  origin_name_view_->SetPreferredSize(gfx::Size(
+      kContainerPreferredWidth,
+      origin_name_view_->GetHeightForWidth(kContainerPreferredWidth)));
+  origin_name_view_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
 }
 
 void AuthDialogContentsView::AddPinTextInputView() {
@@ -449,7 +471,9 @@ void AuthDialogContentsView::OnFingerprintAuthComplete(
 void AuthDialogContentsView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::View::GetAccessibleNodeData(node_data);
   node_data->role = ax::mojom::Role::kDialog;
-  node_data->SetName(base::UTF8ToUTF16(kTitle));
+  node_data->SetName(
+      l10n_util::GetStringFUTF16(IDS_ASH_IN_SESSION_AUTH_ACCESSIBLE_TITLE,
+                                 base::UTF8ToUTF16(origin_name_)));
 }
 
 }  // namespace ash

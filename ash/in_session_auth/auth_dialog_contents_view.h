@@ -42,6 +42,7 @@ class AuthDialogContentsView : public views::View {
   };
 
   AuthDialogContentsView(uint32_t auth_methods,
+                         const std::string& origin_name,
                          const AuthMethodsMetadata& auth_metadata,
                          const UserAvatar& avatar);
   AuthDialogContentsView(const AuthDialogContentsView&) = delete;
@@ -65,8 +66,8 @@ class AuthDialogContentsView : public views::View {
   // Add a view for dialog title.
   void AddTitleView();
 
-  // Add a view for the prompt message.
-  void AddPromptView();
+  // Add a view that shows which website/app we are authenticating for.
+  void AddOriginNameView();
 
   // Add a view for entering PIN (if autosubmit is off).
   void AddPinTextInputView();
@@ -109,7 +110,7 @@ class AuthDialogContentsView : public views::View {
   views::Label* title_ = nullptr;
 
   // Prompt message to the user.
-  views::Label* prompt_ = nullptr;
+  views::Label* origin_name_view_ = nullptr;
 
   // Whether PIN can be auto submitted.
   bool pin_autosubmit_on_ = false;
@@ -127,6 +128,8 @@ class AuthDialogContentsView : public views::View {
 
   // Flags of auth methods that should be visible.
   uint32_t auth_methods_ = 0u;
+
+  const std::string origin_name_;
 
   // Extra parameters to control the UI.
   AuthMethodsMetadata auth_metadata_;

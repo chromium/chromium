@@ -41,6 +41,7 @@ class InSessionAuthDialogControllerImpl
   // InSessionAuthDialogController overrides
   void SetClient(InSessionAuthDialogClient* client) override;
   void ShowAuthenticationDialog(aura::Window* source_window,
+                                const std::string& origin_name,
                                 FinishCallback finish_callback) override;
   void DestroyAuthenticationDialog() override;
   void AuthenticateUserWithPin(const std::string& pin,
@@ -58,9 +59,11 @@ class InSessionAuthDialogControllerImpl
   void OnStartFingerprintAuthSession(AccountId account_id,
                                      uint32_t auth_methods,
                                      aura::Window* source_window,
+                                     const std::string& origin_name,
                                      bool success);
   void OnPinCanAuthenticate(uint32_t auth_methods,
                             aura::Window* source_window,
+                            const std::string& origin_name,
                             bool pin_auth_available);
 
   // Callback to execute when auth on ChromeOS side completes.

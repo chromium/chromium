@@ -41,6 +41,7 @@ class FakeInSessionAuthDialogController
   // ash::InSessionAuthDialogController:
   void SetClient(ash::InSessionAuthDialogClient* client) override {}
   void ShowAuthenticationDialog(aura::Window* source_window,
+                                const std::string& origin_name,
                                 FinishCallback callback) override {}
   void DestroyAuthenticationDialog() override {}
   void AuthenticateUserWithPin(const std::string& pin,

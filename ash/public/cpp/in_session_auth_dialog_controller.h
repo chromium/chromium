@@ -32,8 +32,9 @@ class ASH_PUBLIC_EXPORT InSessionAuthDialogController {
   // Sets the client that will handle authentication.
   virtual void SetClient(InSessionAuthDialogClient* client) = 0;
 
-  // Displays the authentication dialog.
+  // Displays the authentication dialog for the website/app name in |app_id|.
   virtual void ShowAuthenticationDialog(aura::Window* source_window,
+                                        const std::string& origin_name,
                                         FinishCallback finish_callback) = 0;
 
   // Destroys the authentication dialog.

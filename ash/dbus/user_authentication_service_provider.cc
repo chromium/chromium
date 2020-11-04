@@ -44,9 +44,9 @@ void UserAuthenticationServiceProvider::ShowAuthDialog(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
   dbus::MessageReader reader(method_call);
-  std::string rp_id;
-  if (!reader.PopString(&rp_id)) {
-    LOG(ERROR) << "Unable to parse rp_id";
+  std::string origin_name;
+  if (!reader.PopString(&origin_name)) {
+    LOG(ERROR) << "Unable to parse origin name";
     OnAuthFlowComplete(method_call, std::move(response_sender), false);
     return;
   }
@@ -74,7 +74,7 @@ void UserAuthenticationServiceProvider::ShowAuthDialog(
 
   auto* auth_dialog_controller = InSessionAuthDialogController::Get();
   auth_dialog_controller->ShowAuthenticationDialog(
-      source_window,
+      source_window, origin_name,
       base::BindOnce(&UserAuthenticationServiceProvider::OnAuthFlowComplete,
                      weak_ptr_factory_.GetWeakPtr(), method_call,
                      std::move(response_sender)));
