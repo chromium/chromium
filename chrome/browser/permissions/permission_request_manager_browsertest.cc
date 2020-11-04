@@ -14,7 +14,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/custom_handlers/register_protocol_handler_permission_request.h"
+#include "chrome/browser/download/download_permission_request.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/permissions/attestation_permission_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -44,6 +46,8 @@
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -216,6 +220,8 @@ class PermissionDialogTest
   permissions::PermissionRequest* MakePermissionRequest(
       ContentSettingsType permission);
 
+  void AddRequestForContentSetting(const std::string& name);
+
   // TestBrowserDialog:
   void ShowUi(const std::string& name) override;
   void DismissUi() override;
@@ -267,7 +273,8 @@ permissions::PermissionRequest* PermissionDialogTest::MakePermissionRequest(
   return owned_requests_.back().get();
 }
 
-void PermissionDialogTest::ShowUi(const std::string& name) {
+void PermissionDialogTest::AddRequestForContentSetting(
+    const std::string& name) {
   constexpr const char* kMultipleName = "multiple";
   constexpr struct {
     const char* name;
@@ -282,6 +289,7 @@ void PermissionDialogTest::ShowUi(const std::string& name) {
       {"protocol_handlers", ContentSettingsType::PROTOCOL_HANDLERS},
       {"midi", ContentSettingsType::MIDI_SYSEX},
       {"storage_access", ContentSettingsType::STORAGE_ACCESS},
+      {"downloads", ContentSettingsType::AUTOMATIC_DOWNLOADS},
       {kMultipleName, ContentSettingsType::DEFAULT}};
   const auto* it = std::begin(kNameToType);
   for (; it != std::end(kNameToType); ++it) {
@@ -300,7 +308,9 @@ void PermissionDialogTest::ShowUi(const std::string& name) {
       manager->AddRequest(source_frame, MakeRegisterProtocolHandlerRequest());
       break;
     case ContentSettingsType::AUTOMATIC_DOWNLOADS:
-      // TODO(tapted): Prompt for downloading multiple files.
+      manager->AddRequest(source_frame,
+                          new DownloadPermissionRequest(
+                              nullptr, url::Origin::Create(GetUrl())));
       break;
     case ContentSettingsType::DURABLE_STORAGE:
       // TODO(tapted): Prompt for quota request.
@@ -331,6 +341,18 @@ void PermissionDialogTest::ShowUi(const std::string& name) {
     default:
       ADD_FAILURE() << "Not a permission type, or one that doesn't prompt.";
       return;
+  }
+}
+
+void PermissionDialogTest::ShowUi(const std::string& name) {
+  if (name == "security_key") {
+    // This one doesn't have a ContentSettingsType.
+    GetPermissionRequestManager()->AddRequest(
+        GetActiveMainFrame(),
+        NewAttestationPermissionRequest(url::Origin::Create(GetUrl()),
+                                        base::BindOnce([](bool) {})));
+  } else {
+    AddRequestForContentSetting(name);
   }
   base::RunLoop().RunUntilIdle();
 }
@@ -1007,6 +1029,16 @@ IN_PROC_BROWSER_TEST_F(PermissionDialogTest, InvokeUi_midi) {
 
 // Host wants to access storage from the site in which it's embedded.
 IN_PROC_BROWSER_TEST_F(PermissionDialogTest, InvokeUi_storage_access) {
+  ShowAndVerifyUi();
+}
+
+// Host wants to trigger multiple downloads.
+IN_PROC_BROWSER_TEST_F(PermissionDialogTest, InvokeUi_downloads) {
+  ShowAndVerifyUi();
+}
+
+// Host wants to access data about your security key.
+IN_PROC_BROWSER_TEST_F(PermissionDialogTest, InvokeUi_security_key) {
   ShowAndVerifyUi();
 }
 
