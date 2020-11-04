@@ -111,6 +111,8 @@ crbug.com/762529 http/tests/devtools/network/network-datareceived.js [ Failure ]
 crbug.com/759632 http/tests/devtools/network/network-datasaver-warning.js [ Failure ]
 # ====== Browserside navigation until here ======
 
+crbug.com/1138757 http/tests/devtools/copy-network-request.js [ Pass Failure ]
+
 # ====== Paint team owned tests from here ======
 # The paint team tracks and triages its test failures, and keeping them colocated
 # makes tracking much easier.
