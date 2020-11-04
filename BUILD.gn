@@ -154,6 +154,7 @@ group("gn_all") {
       "//third_party/pdfium/samples:pdfium_test",
       "//tools/perf/clear_system_cache",
       "//tools/polymer:polymer_tools_python_unittests",
+      "//tools/privacy_budget:privacy_budget_tools",
       "//ui/accessibility:accessibility_perftests",
       "//ui/accessibility:accessibility_unittests",
       "//ui/accessibility/extensions:extension_tests",

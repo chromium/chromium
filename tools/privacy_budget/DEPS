@@ -1,0 +1,6 @@
+include_rules = [
+  "+base",
+  "+content/public",
+  "+mojo/core/embedder",
+  "+third_party/blink",
+]

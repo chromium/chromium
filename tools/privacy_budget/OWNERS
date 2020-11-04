@@ -1,0 +1,4 @@
+file://third_party/blink/public/common/privacy_budget/OWNERS
+
+# TEAM: privacy-sandbox-dev@chromium.org
+# COMPONENT: Privacy>Fingerprinting

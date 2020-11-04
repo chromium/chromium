@@ -253,6 +253,7 @@ component("platform") {
     "//services/device/public/mojom:mojom_blink",
     "//services/media_session/public/mojom:mojom_blink",
     "//third_party/blink/*",
+    "//tools/privacy_budget/font_indexer:*",
     "//url/mojom:url_mojom_gurl_blink",
     "//url/mojom:url_mojom_origin_blink",
   ]
@@ -1773,7 +1774,10 @@ component("platform") {
 }
 
 static_library("test_support") {
-  visibility += [ "//third_party/blink/*" ]
+  visibility += [
+    "//third_party/blink/*",
+    "//tools/privacy_budget/font_indexer:*",
+  ]
   testonly = true
 
   sources = [

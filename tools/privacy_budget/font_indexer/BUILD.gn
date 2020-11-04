@@ -1,0 +1,28 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("tools_lib") {
+  sources = [
+    "font_indexer.cc",
+    "font_indexer.h",
+  ]
+  deps = [
+    "//base:base",
+    "//content/public/browser:browser",
+    "//third_party/blink/renderer/platform:platform",
+  ]
+}
+
+executable("font_indexer") {
+  testonly = true
+  sources = [ "font_indexer_main.cc" ]
+  deps = [
+    ":tools_lib",
+    "//base:base",
+    "//base/test:test_support",
+    "//content/public/browser:browser",
+    "//mojo/core/embedder",
+    "//third_party/blink/renderer/platform:test_support",
+  ]
+}
