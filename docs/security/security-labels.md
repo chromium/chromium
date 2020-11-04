@@ -33,22 +33,8 @@ that.)
 * **Security_Impact-**{**Head**, **Beta**, **Stable**, **None**}: Designates
 which branch(es) were impacted by the bug. Only apply the label corresponding
 with the earliest affected branch. **None** means that a security bug is in a
-disabled feature, or otherwise doesn't impact Chrome. A disabled feature does
-not _guarantee_ impact **None**:
-    * The feature really must be disabled on 100% of devices. Specifically,
-      if the feature is controlled by field trials or some other network
-      configuration service, the feature must also be disabled by default in
-      the code, such that the code is inactive even on devices that can't
-      access the network configuration service.
-    * The feature control check must be somewhere that the attacker could not
-      have influenced. For example a privilege escalation from a lower-
-      privileged process to a higher-privileged process assumes that the lower-
-      privileged process is already compromised. The attacker could overwrite
-      memory for any feature checks performed within that lower-privileged
-      process; the bug only qualifies as impact **None** if checks are
-      performed in the higher-privileged process. (For example, in a
-      privilege escalation from the renderer to the browser process, the
-      checks would need to be in the browser process.)
+disabled feature, or otherwise doesn't impact Chrome: see the section below
+for more detail.
     * Note that **Security_Severity** should still be set on
       **Security_Impact-None** issues, as if the feature were enabled or the
       code reachable.
@@ -77,7 +63,7 @@ guidelines are as follows:
     decisions made externally, such as:
       * We receive advance notice of security bugs from an upstream open source
         project or Google partner and they organize a coordinated disclosure
-        process. We'd remove the restriction label if/when the embarge gets
+        process. We'd remove the restriction label if/when the embargo gets
         lifted.
       * The reporter indicates a preference to remain anonymous an the bug
         history would give away the reporter's identity (if they file using an
@@ -115,6 +101,47 @@ appropriate bug(s) with the label for easy searching.
 **Type-Bug-Security** bugs should always have **Security_Severity**,
 **Security_Impact**, **OS**, **Pri**, **M**, **Component**, and an
 **owner** set.
+
+### When to use Security_Impact-None {#TOC-Security_Impact-None}
+
+**Security_Impact-None** says that the bug can't affect any users running the
+default configuration of Chrome. It's most commonly used for cases where
+code is entirely disabled or absent in the production build.
+
+Other cases where it's OK to set **Security_Impact-None**:
+
+* The impacted code runs behind a feature flag which is *disabled by default*,
+  and the field trial configuration has not been switched on.
+* The impacted code only runs behind a command-line flag or `chrome://flags`
+  entry. (In particular, if a bug can only affect those who have
+  set `#enable-experimental-web-platform-features`, it is **Security_Impact-None**.
+* It's a V8 feature behind flags such as `--future`, `--es-staging` or
+  `--wasm-staging` or other experimental flags that are disabled by default.
+
+Cases where it's *not* OK to set **Security_Impact-None**:
+
+* Features enabled via normal UI or settings which users might happen across
+  in normal usage. For instance, accessibility features.
+* Origin trials. Origin trials are only active on some websites, but the
+  affected code does run for Chrome users with the default Chrome configuration.
+* The impacted code runs behind a feature flag which is *enabled by default*,
+  even if that field trial configuration has been switched off. That's because
+  the code may be active for devices which can't access the field trial
+  configuration service.
+* The feature is turned on only for a small percent of users, e.g. 1%.
+* Feature or flag checks are done somewhere that the attacker could influence.
+  For example a privilege escalation from a lower-privileged process
+  (e.g. renderer) to a higher-privileged process (e.g. browser)
+  assumes that the lower-privileged process is already compromised. The
+  attacker could overwrite memory for any feature checks performed within
+  that lower-privileged process; the bug only qualifies as impact **None**
+  if checks are performed in the higher-privileged process.
+
+It's important to get this right, because this label influences how rapidly
+we merge and release the fix. Ask for help if you're not sure.
+
+Some **Security_Impact-None** bugs may still be subject to VRP rewards, if
+those bugs are found in found in code that we're likely to enable in the future.
 
 ### OS Labels
 

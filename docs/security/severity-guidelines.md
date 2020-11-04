@@ -154,6 +154,15 @@ Example bugs:
 ([128163](https://crbug.com/128163)).
 
 
+## Can't impact Chrome users by default {#TOC-No-impact}
+
+If the bug can't impact Chrome users by default, this is denoted instead by
+the **Security-Impact_None** label. See
+[the security labels document](security-labels.md#TOC-Security_Impact-None)
+for more information. The bug should still have a severity set according
+to these guidelines.
+
+
 ## Not a security bug {#TOC-Not-a-security-bug}
 
 The [security FAQ](faq.md) covers many of the cases that we do not consider to
