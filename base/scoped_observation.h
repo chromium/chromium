@@ -9,6 +9,8 @@
 
 #include "base/check_op.h"
 
+namespace base {
+
 // ScopedObservation is used to keep track of a single observation.
 // When ScopedObservation is destroyed, it removes the registered observation,
 // if any. Basic example (as a member variable):
@@ -73,5 +75,7 @@ class ScopedObservation {
   // The observed source, if any.
   Source* source_ = nullptr;
 };
+
+}  // namespace base
 
 #endif  // BASE_SCOPED_OBSERVATION_H_

@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/scoped_observation.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 
@@ -37,8 +38,10 @@ class ServiceWorkerContextAdapter::RunningServiceWorker
   // The adapter that owns |this|. Notified when RenderProcessExited() is
   // called.
   ServiceWorkerContextAdapter* const adapter_;
-  // The render process host this instance is observing.
-  content::RenderProcessHost* observing_ = nullptr;
+
+  base::ScopedObservation<content::RenderProcessHost,
+                          content::RenderProcessHostObserver>
+      scoped_observation_{this};
 };
 
 ServiceWorkerContextAdapter::RunningServiceWorker::RunningServiceWorker(
@@ -47,20 +50,19 @@ ServiceWorkerContextAdapter::RunningServiceWorker::RunningServiceWorker(
     : version_id_(version_id), adapter_(adapter) {}
 
 ServiceWorkerContextAdapter::RunningServiceWorker::~RunningServiceWorker() {
-  DCHECK_EQ(observing_, nullptr);
+  DCHECK(!scoped_observation_.IsObserving());
 }
 
 void ServiceWorkerContextAdapter::RunningServiceWorker::Subscribe(
     content::RenderProcessHost* worker_process_host) {
-  DCHECK_EQ(observing_, nullptr);
-  worker_process_host->AddObserver(this);
-  observing_ = worker_process_host;
+  DCHECK(!scoped_observation_.IsObserving());
+  scoped_observation_.Observe(worker_process_host);
 }
 
 void ServiceWorkerContextAdapter::RunningServiceWorker::Unsubscribe() {
-  DCHECK_NE(observing_, nullptr);
-  observing_->RemoveObserver(this);
-  observing_ = nullptr;
+  DCHECK(scoped_observation_.IsObserving());
+
+  scoped_observation_.RemoveObservation();
 }
 
 void ServiceWorkerContextAdapter::RunningServiceWorker::RenderProcessExited(
