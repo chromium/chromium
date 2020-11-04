@@ -3,6 +3,9 @@
 <title>Mouseover/mouseout handling</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <style>
 #outer,
 #inner,
@@ -53,6 +56,7 @@
 var t = async_test("Mouseover/out events");
 var outer = document.getElementById("outer");
 var inner = document.getElementById("inner");
+var actions_promise;
 
 var inner_over = 0;
 var inner_out = 0;
@@ -61,7 +65,6 @@ var outer_own_over = 0;
 var outer_own_out = 0;
 var outer_over = 0;
 var outer_out = 0;
-
 
 inner.addEventListener("mouseover", t.step_func(function(e) {
   assert_equals(inner_over, inner_out, "mouseover is received before mouseout");
@@ -112,7 +115,10 @@ outer.addEventListener('mouseout', t.step_func(function(e) {
     assert_equals(outer_own_over, outer_own_out + 1, "outer: mouseout is received after mouseover");
     if (outer_own_out == 1) {
       assert_equals(inner_out, 2, "inner should be done now");
-      t.done();
+      // Make sure the test finishes after all the input actions are completed.
+      actions_promise.then( () => {
+        t.done();
+      });
     }
 
     outer_own_out++;
@@ -122,4 +128,14 @@ outer.addEventListener('mouseout', t.step_func(function(e) {
 
   outer_out++;
 }), false);
+
+// Inject mouse inputs.
+actions_promise = new test_driver.Actions()
+    .pointerMove(0, 0, {origin: outer})
+    .pointerMove(0, 0, {origin: inner})
+    .pointerMove(0, 0, {origin: released})
+    .pointerMove(0, 0, {origin: inner})
+    .pointerMove(0, 0, {origin: outer})
+    .pointerMove(0, 0)
+    .send();
 </script>
