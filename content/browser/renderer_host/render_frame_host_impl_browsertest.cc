@@ -4122,19 +4122,31 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(
       shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
 
+  GURL url = InsecureURL(*embedded_test_server(), "/empty.html");
+
+  content::TestNavigationManager child_navigation_manager(web_contents(), url);
+
   EXPECT_TRUE(ExecJs(root_frame_host(), R"(
     const iframe = document.createElement("iframe");
-    iframe.src = "empty.html";
+    iframe.src = "/empty.html";
     document.body.appendChild(iframe);
   )"));
 
-  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  child_navigation_manager.WaitForNavigationFinished();
 
   // Check that the child iframe failed to fetch.
+  EXPECT_FALSE(child_navigation_manager.was_successful());
+
   ASSERT_EQ(1ul, root_frame_host()->child_count());
   auto* child_frame = root_frame_host()->child_at(0)->current_frame_host();
-  EXPECT_EQ(0, child_frame->last_http_status_code());
-  EXPECT_EQ(GURL(), child_frame->last_successful_url());
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            EvalJs(child_frame, "document.location.href"));
+
+  // The frame committed an error page but retains the original URL so that
+  // reloading the page does the right thing. The committed origin on the other
+  // hand is opaque, which it would not be if the navigation had succeeded.
+  EXPECT_EQ(url, child_frame->GetLastCommittedURL());
+  EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
 }
 
 // Similar to IframeFromInsecureTreatAsPublicToLocalIsBlocked, but in
@@ -4147,20 +4159,26 @@ IN_PROC_BROWSER_TEST_F(
                            "/set-header?Content-Security-Policy-Report-Only: "
                            "treat-as-public-address")));
 
+  GURL url = InsecureURL(*embedded_test_server(), "/empty.html");
+
+  content::TestNavigationManager child_navigation_manager(web_contents(), url);
+
   EXPECT_TRUE(ExecJs(root_frame_host(), R"(
     const iframe = document.createElement("iframe");
-    iframe.src = "empty.html";
+    iframe.src = "/empty.html";
     document.body.appendChild(iframe);
   )"));
 
-  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  child_navigation_manager.WaitForNavigationFinished();
 
-  // Check that the child iframe wasn't blocked.
+  // Check that the child iframe was not blocked.
+  EXPECT_TRUE(child_navigation_manager.was_successful());
+
   ASSERT_EQ(1ul, root_frame_host()->child_count());
   auto* child_frame = root_frame_host()->child_at(0)->current_frame_host();
-  EXPECT_EQ(200, child_frame->last_http_status_code());
-  EXPECT_EQ(InsecureURL(*embedded_test_server(), "/empty.html"),
-            child_frame->last_successful_url());
+  EXPECT_EQ(url, EvalJs(child_frame, "document.location.href"));
+  EXPECT_EQ(url, child_frame->GetLastCommittedURL());
+  EXPECT_FALSE(child_frame->GetLastCommittedOrigin().opaque());
 }
 
 // TODO(https://crbug.com/1134601): `about:` URLs are all treated as `kUnknown`
