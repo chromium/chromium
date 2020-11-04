@@ -17,6 +17,7 @@
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
 #include "content/browser/service_worker/service_worker_registration.h"
+#include "content/browser/service_worker/service_worker_registration_object_host.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/render_frame_host.h"
@@ -209,6 +210,24 @@ class ServiceWorkerObjectHostTest : public testing::Test {
     // the object host.
     object_host->receivers_.Clear();
     object_host->OnConnectionError();
+  }
+
+  void CallOnConnectionErrorForRegistrationObjectHost(
+      ServiceWorkerContainerHost* container_host,
+      int64_t version_id,
+      int64_t registration_id) {
+    ServiceWorkerObjectHost* object_host =
+        GetServiceWorkerObjectHost(container_host, version_id);
+    ServiceWorkerRegistrationObjectHost* registration_object_host =
+        container_host->registration_object_hosts_[registration_id].get();
+    EXPECT_FALSE(object_host->version_->HasOneRef());
+
+    object_host->receivers_.Clear();
+    object_host->OnConnectionError();
+
+    EXPECT_TRUE(registration_object_host->registration_->HasOneRef());
+    registration_object_host->receivers_.Clear();
+    registration_object_host->OnConnectionError();
   }
 
   BrowserTaskEnvironment task_environment_;
@@ -442,6 +461,40 @@ TEST_F(ServiceWorkerObjectHostTest, OnConnectionError) {
   // Simulate the connection error that induces the object host destruction.
   // This shouldn't crash.
   CallOnConnectionError(container_host, version_rawptr->version_id());
+  base::RunLoop().RunUntilIdle();
+}
+
+// This is a regression test for https://crbug.com/1135070
+TEST_F(ServiceWorkerObjectHostTest,
+       OnConnectionErrorForRegistrationObjectHost) {
+  const GURL scope("https://www.example.com/");
+  const GURL script_url("https://www.example.com/service_worker.js");
+  Initialize(std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath()));
+  SetUpRegistration(scope, script_url);
+
+  // Make sure ServiceWorkerRegistration holds a reference to
+  // ServiceWorkerVersion.
+  registration_->SetActiveVersion(version_);
+
+  // Create the provider host.
+  ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            StartServiceWorker(version_.get()));
+
+  // Set up the case where ServiceWorkerObjectHost and
+  // ServiceWorkerRegistration owned by ServiceWorkerRegistrationObjectHost
+  // hold the last two references to ServiceWorkerVersion.
+  ServiceWorkerContainerHost* container_host =
+      version_->worker_host()->container_host();
+  auto registration_id = registration_->id();
+  auto version_id = version_->version_id();
+  version_ = nullptr;
+  registration_ = nullptr;
+
+  // Simulate the connection error that induces the container host destruction
+  // from ServiceWorkerContainerHost::RemoveServiceWorkerRegistrationObjectHost.
+  // This shouldn't crash.
+  CallOnConnectionErrorForRegistrationObjectHost(container_host, version_id,
+                                                 registration_id);
   base::RunLoop().RunUntilIdle();
 }
 

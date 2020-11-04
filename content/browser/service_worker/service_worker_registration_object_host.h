@@ -22,6 +22,10 @@ class ServiceWorkerContainerHost;
 class ServiceWorkerContextCore;
 class ServiceWorkerVersion;
 
+namespace service_worker_object_host_unittest {
+class ServiceWorkerObjectHostTest;
+}  // namespace service_worker_object_host_unittest
+
 // ServiceWorkerRegistrationObjectHost has a 1:1 correspondence to
 // blink::ServiceWorkerRegistration in the renderer process.
 // The host stays alive while the blink::ServiceWorkerRegistration is alive.
@@ -45,6 +49,7 @@ class CONTENT_EXPORT ServiceWorkerRegistrationObjectHost
 
  private:
   friend class ServiceWorkerRegistrationObjectHostTest;
+  friend class service_worker_object_host_unittest::ServiceWorkerObjectHostTest;
 
   using StatusCallback =
       base::OnceCallback<void(blink::ServiceWorkerStatusCode status)>;
