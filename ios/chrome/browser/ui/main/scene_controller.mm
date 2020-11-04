@@ -1178,6 +1178,11 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   [self startSigninCoordinatorWithCompletion:nil];
 }
 
+- (void)showSigninAccountNotificationFromViewController:
+    (UIViewController*)baseViewController {
+  // TODO(crbug.com/1145592): Add toast for sign-in reminder.
+}
+
 - (void)setIncognitoContentVisible:(BOOL)incognitoContentVisible {
   self.sceneState.incognitoContentVisible = incognitoContentVisible;
 }

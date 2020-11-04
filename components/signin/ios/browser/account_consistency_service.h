@@ -72,11 +72,11 @@ class AccountConsistencyService : public KeyedService,
 
   // Checks for the presence of Gaia cookies and if they have been deleted
   // notifies the AccountReconcilor (the class responsible for rebuilding Gaia
-  // cookies if needed).
+  // cookies if needed). Calls callback if Gaia cookies were restored.
   //
   // Applies a one hour time restriction in between updates to avoid too many
   // |GetAllCookies| calls on the cookie manager.
-  void SetGaiaCookiesIfDeleted();
+  void SetGaiaCookiesIfDeleted(base::OnceClosure cookies_restored_callback);
 
   // Enqueues a request to set the CHROME_CONNECTED cookie for the domain of the
   // |url|. The cookie is set if it is not already on the domain.
@@ -130,8 +130,10 @@ class AccountConsistencyService : public KeyedService,
   // Adds CHROME_CONNECTED cookies on all the main Google domains.
   void AddChromeConnectedCookies();
 
-  // Triggers a Gaia cookie update on the Google domain.
+  // Triggers a Gaia cookie update on the Google domain. Calls
+  // |cookies_restored_callback| if the Gaia cookies were restored.
   void TriggerGaiaCookieChangeIfDeleted(
+      base::OnceClosure cookies_restored_callback,
       const net::CookieAccessResultList& cookie_list,
       const net::CookieAccessResultList& excluded_cookies);
 

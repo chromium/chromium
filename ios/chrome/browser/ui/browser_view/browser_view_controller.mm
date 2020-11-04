@@ -4926,6 +4926,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - ManageAccountsDelegate
 
+- (void)onRestoreGaiaCookies {
+  signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
+      ios::AccountReconcilorFactory::GetForBrowserState(self.browserState)
+          ->GetState());
+  [self.dispatcher showSigninAccountNotificationFromViewController:self];
+}
+
 - (void)onManageAccounts {
   signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
       ios::AccountReconcilorFactory::GetForBrowserState(self.browserState)

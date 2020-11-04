@@ -149,6 +149,10 @@ enum class KeyRetrievalTriggerForUMA;
 - (void)showConsistencyPromoFromViewController:
     (UIViewController*)baseViewController;
 
+// Shows a notification with the signed-in user account.
+- (void)showSigninAccountNotificationFromViewController:
+    (UIViewController*)baseViewController;
+
 // Sets whether the UI is displaying incognito content.
 - (void)setIncognitoContentVisible:(BOOL)incognitoContentVisible;
 

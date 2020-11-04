@@ -159,7 +159,11 @@ void AccountConsistencyHandler::ShouldAllowResponse(
   if (google_util::IsGoogleDomainUrl(
           url, google_util::ALLOW_SUBDOMAIN,
           google_util::DISALLOW_NON_STANDARD_PORTS)) {
-    account_consistency_service_->SetGaiaCookiesIfDeleted();
+    account_consistency_service_->SetGaiaCookiesIfDeleted(base::BindOnce(
+        [](id<ManageAccountsDelegate> delegate) {
+          [delegate onRestoreGaiaCookies];
+        },
+        delegate_));
   }
 
   if (!gaia::IsGaiaSignonRealm(url.GetOrigin())) {
@@ -301,7 +305,8 @@ void AccountConsistencyService::RemoveWebStateHandler(
   web_state_handlers_.erase(web_state);
 }
 
-void AccountConsistencyService::SetGaiaCookiesIfDeleted() {
+void AccountConsistencyService::SetGaiaCookiesIfDeleted(
+    base::OnceClosure cookies_restored_callback) {
   // We currently enforce a time threshold to update the Gaia cookie
   // for signed-in users to prevent calling the expensive method
   // |GetAllCookies| in the cookie manager.
@@ -317,11 +322,12 @@ void AccountConsistencyService::SetGaiaCookiesIfDeleted() {
       net::CookieOptions::MakeAllInclusive(),
       base::BindOnce(
           &AccountConsistencyService::TriggerGaiaCookieChangeIfDeleted,
-          base::Unretained(this)));
+          base::Unretained(this), std::move(cookies_restored_callback)));
   last_gaia_cookie_verification_time_ = base::Time::Now();
 }
 
 void AccountConsistencyService::TriggerGaiaCookieChangeIfDeleted(
+    base::OnceClosure cookies_restored_callback,
     const net::CookieAccessResultList& cookie_list,
     const net::CookieAccessResultList& unused_excluded_cookies) {
   for (const auto& cookie : cookie_list) {
@@ -338,8 +344,12 @@ void AccountConsistencyService::TriggerGaiaCookieChangeIfDeleted(
   if (!base::FeatureList::IsEnabled(signin::kRestoreGaiaCookiesIfDeleted)) {
     return;
   }
+
   // Re-generate cookie to ensure that the user is properly signed in.
   identity_manager_->GetAccountsCookieMutator()->ForceTriggerOnCookieChange();
+  if (!cookies_restored_callback.is_null()) {
+    std::move(cookies_restored_callback).Run();
+  }
 }
 
 void AccountConsistencyService::LogIOSGaiaCookiesPresentOnNavigation(

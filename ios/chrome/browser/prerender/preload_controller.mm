@@ -517,6 +517,10 @@ const base::Feature kPreloadDelayWebStateReset{
 
 #pragma mark - ManageAccountsDelegate
 
+- (void)onRestoreGaiaCookies {
+  [self schedulePrerenderCancel];
+}
+
 - (void)onManageAccounts {
   [self schedulePrerenderCancel];
 }

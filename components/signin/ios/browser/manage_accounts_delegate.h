@@ -9,6 +9,10 @@ class GURL;
 
 @protocol ManageAccountsDelegate<NSObject>
 
+// Called when Gaia cookies have been regenerated for a specific user sign-in.
+// This occurs when a SAPISID cookie has been deleted by the operating system.
+- (void)onRestoreGaiaCookies;
+
 // Called when the user taps on a manage accounts button in a Google web
 // property.
 - (void)onManageAccounts;
