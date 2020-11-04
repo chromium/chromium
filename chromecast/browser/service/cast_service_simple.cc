@@ -40,10 +40,8 @@ GURL GetStartupURL() {
 }  // namespace
 
 CastServiceSimple::CastServiceSimple(content::BrowserContext* browser_context,
-                                     PrefService* pref_service,
                                      CastWindowManager* window_manager)
-    : CastService(browser_context, pref_service),
-      web_view_factory_(std::make_unique<CastWebViewFactory>(browser_context)),
+    : web_view_factory_(std::make_unique<CastWebViewFactory>(browser_context)),
       web_service_(std::make_unique<CastWebService>(browser_context,
                                                     web_view_factory_.get(),
                                                     window_manager)) {

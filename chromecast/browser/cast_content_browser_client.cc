@@ -198,8 +198,7 @@ std::unique_ptr<CastService> CastContentBrowserClient::CreateCastService(
     PrefService* pref_service,
     media::VideoPlaneController* video_plane_controller,
     CastWindowManager* window_manager) {
-  return std::make_unique<CastServiceSimple>(browser_context, pref_service,
-                                             window_manager);
+  return std::make_unique<CastServiceSimple>(browser_context, window_manager);
 }
 
 media::VideoModeSwitcher* CastContentBrowserClient::GetVideoModeSwitcher() {

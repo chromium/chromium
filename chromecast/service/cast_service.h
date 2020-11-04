@@ -10,14 +10,8 @@
 #include "base/callback.h"
 #include "base/macros.h"
 
-class PrefService;
-
 namespace base {
 class ThreadChecker;
-}
-
-namespace content {
-class BrowserContext;
 }
 
 namespace chromecast {
@@ -38,8 +32,7 @@ class CastService {
   virtual void AccessibilityStateChanged(bool enabled);
 
  protected:
-  CastService(content::BrowserContext* browser_context,
-              PrefService* pref_service);
+  CastService();
 
   // Implementation-specific initialization. Initialization of cast service's
   // sub-components, and anything that requires IO operations should go here.
@@ -60,12 +53,7 @@ class CastService {
   // StartInternal() should be finalized here.
   virtual void StopInternal() = 0;
 
-  content::BrowserContext* browser_context() const { return browser_context_; }
-  PrefService* pref_service() const { return pref_service_; }
-
  private:
-  content::BrowserContext* const browser_context_;
-  PrefService* const pref_service_;
   bool stopped_;
   const std::unique_ptr<base::ThreadChecker> thread_checker_;
 

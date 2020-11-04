@@ -14,6 +14,10 @@
 #include "chromecast/service/cast_service.h"
 #include "url/gurl.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace chromecast {
 
 class CastWebService;
@@ -25,7 +29,6 @@ namespace shell {
 class CastServiceSimple : public CastService, public CastWebView::Delegate {
  public:
   CastServiceSimple(content::BrowserContext* browser_context,
-                    PrefService* pref_service,
                     CastWindowManager* window_manager);
   ~CastServiceSimple() override;
 
