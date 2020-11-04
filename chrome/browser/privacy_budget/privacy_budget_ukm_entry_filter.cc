@@ -12,6 +12,7 @@
 #include "base/stl_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/privacy_budget/encountered_surface_tracker.h"
+#include "chrome/browser/privacy_budget/identifiability_study_state.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
@@ -61,6 +62,16 @@ bool PrivacyBudgetUkmEntryFilter::FilterEntry(
                                     v.ToUkmMetricHash());
   }
 
+  if (!metadata_reported_) {
+    entry->metrics.insert_or_assign(
+        ukm::builders::Identifiability::kStudyGeneration_626NameHash,
+        identifiability_study_state_->generation());
+    entry->metrics.insert_or_assign(
+        ukm::builders::Identifiability::kGeneratorVersion_926NameHash,
+        IdentifiabilityStudyState::kGeneratorVersion);
+    metadata_reported_ = true;
+  }
+
   // Identifiability metrics can leak information simply by being measured.
   // Hence the metrics that are filtered out aren't returned in
   // |removed_metric_hashes|.
@@ -69,4 +80,5 @@ bool PrivacyBudgetUkmEntryFilter::FilterEntry(
 
 void PrivacyBudgetUkmEntryFilter::OnStoreRecordingsInReport() const {
   identifiability_study_state_->ResetRecordedSurfaces();
+  metadata_reported_ = false;
 }

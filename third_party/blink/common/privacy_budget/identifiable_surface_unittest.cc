@@ -20,6 +20,11 @@ static_assert(IdentifiableSurface::FromMetricHash(
                       .GetType() ==
                   IdentifiableSurface::Type::kReservedInternal,
               "");
+static_assert(IdentifiableSurface::FromMetricHash(
+                  ukm::builders::Identifiability::kGeneratorVersion_926NameHash)
+                      .GetType() ==
+                  IdentifiableSurface::Type::kReservedInternal,
+              "");
 
 TEST(IdentifiableSurfaceTest, FromTypeAndTokenIsConstexpr) {
   constexpr uint64_t kTestInputHash = 5u;
