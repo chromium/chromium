@@ -54,7 +54,7 @@
             <div hidden="[[isLowSpaceAvailable_]]" id="recommended-size">
               $i18n{crostiniDiskResizeRecommended}
             </div>
-            <div hidden="[[!isLowSpaceAvailable_]]" 
+            <div hidden="[[!isLowSpaceAvailable_]]"
                 id="recommended-size-warning">
               <iron-icon id="warningIcon" icon="cr:warning"></iron-icon>
               $i18n{crostiniDiskResizeRecommendedWarning}
@@ -63,7 +63,7 @@
           <div id="resize-block">
             <cr-slider id="diskSlider" pin="true"
                 value="[[defaultDiskSizeTick_]]" ticks="[[diskSizeTicks_]]"
-                disabled="[[resizing_]]">
+                disabled="[[resizing_]]" max="[[maxDiskSizeTick_]]">
             </cr-slider>
             <div id="disk-labels" aria-hidden="true">
               <div id="label-begin">[[minDiskSize_]]</div>

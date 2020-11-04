@@ -56,6 +56,11 @@ Polymer({
     },
 
     /** @private */
+    maxDiskSizeTick_: {
+      type: Number,
+    },
+
+    /** @private */
     isLowSpaceAvailable_: {
       type: Boolean,
       value: false,
@@ -118,6 +123,7 @@ Polymer({
               } else {
                 this.displayState_ = DisplayState.RESIZE;
 
+                this.maxDiskSizeTick = diskInfo.ticks.length - 1;
                 this.defaultDiskSizeTick_ = diskInfo.defaultIndex;
                 this.diskSizeTicks_ = diskInfo.ticks;
                 this.minDiskSize_ = diskInfo.ticks[0].label;
