@@ -2772,11 +2772,6 @@ False (yanlış) olarak ayarlanırsa veya hiç ayarlanmazsa, hiçbir sertifika o
 <translation id="5306186200045823863">Symantec Corporation'ın Eski PKI Altyapısına güveni etkinleştir</translation>
 <translation id="5307432759655324440">Gizli modun kullanılabilirliği</translation>
 <translation id="5311275381462687162">Varsayılan eski <ph name="ATTRIBUTE_SAMESITE_NAME" /> çerez davranışı ayarı</translation>
-<translation id="5315324986365616322">Politika, Etkin değerine ayarlanırsa Fast Transition, kablosuz erişim noktası tarafından desteklendiğinde kullanılır. Bu, cihazdaki tüm arayüzler ve kullanıcılar için geçerlidir.
-
-      Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa Fast Transition kullanılmaz.
-
-      Not: Fast Transition'ı kullanabilmek için ağ başına ONC özelliğini de etkinleştirin.</translation>
 <translation id="5315367501385698459">Politikanın ayarlanması, giriş ekranında sağlanan tedarikçi ve ürün kimliklerine sahip USB cihazlarına erişmesine otomatik olarak izin verilen siteleri belirten URL kalıplarının listesini oluşturmanıza olanak tanır. Politikanın geçerli olabilmesi için listedeki her öğe hem <ph name="DEVICES_FIELD_NAME" /> hem de <ph name="URLS_FIELD_NAME" /> alanlarını gerektirir. <ph name="DEVICES_FIELD_NAME" /> alanındaki her öğe, <ph name="VENDOR_ID_FIELD_NAME" /> ve <ph name="PRODUCT_ID_FIELD_NAME" /> alanı içerebilir. <ph name="VENDOR_ID_FIELD_NAME" /> alanının atlanması her cihazla eşleşen bir politika oluşturur. <ph name="PRODUCT_ID_FIELD_NAME" /> alanının atlanması belirtilen satıcı kimliğiyle her cihazla eşleşen bir politika oluşturur. <ph name="PRODUCT_ID_FIELD_NAME" /> alanı olup <ph name="VENDOR_ID_FIELD_NAME" /> alanı olmayan politika geçersizdir.
 
       USB izin modeli, istekte bulunan URL'nin USB cihazına erişmesine izin vermek için istekte bulunan URL'yi ve yerleştirme URL'sini kullanır. İstekte bulunan site bir iFrame içinde yüklendiğinde, istekte bulunan URL yerleştirme URL'sinden farklı olabilir. Dolayısıyla, <ph name="URLS_FIELD_NAME" /> alanı, sırasıyla istekte bulunan URL'yi ve yerleştirme URL'sini belirtmek için virgülle sınırlandırılmış en fazla 2 URL dizesi içerebilir. Yalnızca bir URL belirtilirse yerleştirme durumundan bağımsız olarak bu URL ile eşleşen istekte bulunan sitenin URL'sine karşılık gelen USB cihazlarına erişim izni verilir. URL'ler geçerli olmalıdır; aksi halde, politika yok sayılır.
@@ -2940,7 +2935,6 @@ False (yanlış) olarak ayarlanırsa veya hiç ayarlanmazsa, hiçbir sertifika o
 <translation id="5475361623548884387">Yazdırmayı etkinleştir</translation>
 <translation id="547601067149622666">Arayan giren reklamların yer aldığı sitelerde reklamlara izin verme</translation>
 <translation id="5483065054530244863">Yerel güven bağlantıları tarafından yayınlanan SHA-1 imzalı sertifikalara izin ver</translation>
-<translation id="5494917047563607689">1 MB'tan daha düşük bir değere ayarlandığında veya ayarlanmamış olarak bırakıldığında, <ph name="PRODUCT_OS_NAME" /> tek bir cihazın birden fazla kullanıcısı tarafından yüklenmek üzere uygulamaları ve uzantıları önbelleğe almak için varsayılan boyutu kullanır. Bu şekilde, uygulamaları ve uzantıları her kullanıcı için yeniden indirme ihtiyacını ortadan kaldırır.</translation>
 <translation id="5499375345075963939">Bu politika yalnızca mağaza modunda etkindir.
 
       Bu politika için 0 dışında bir değer ayarlandığında, belirtilen sürede herhangi bir etkinlik gerçekleştirilmezse giriş yapmış olan tanıtım kullanıcısının oturumu otomatik olarak kapanır.
@@ -3818,9 +3812,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       75 sürümünden önce, birden fazla virgülle ayrılmış uzantı kimliğinin kullanılması desteklenmez ve atlanır. Politikanın geri kalanı geçerlidir.
 
       Not: Bu politika ayrıca <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> kullanılarak zorunlu yüklenmiş uzantıları ve uygulamaları da etkiler.</translation>
-<translation id="672496466524161417">Politikayı None (Yok) değerine ayarlamak veya ayarlamadan bırakmak, kullanıcıların sertifikaları yönetmelerine izin verir. Politikayı 2 değerine ayarlamak, kullanıcıların sertifikaları yalnızca görüntüleyebilecekleri (yönetemezler) anlamına gelir.
-
-      Politikayı 1 değerine ayarlamak, kullanıcıların kullanıcı sertifikalarını yönetmelerine izin verir ancak cihaz genelindeki sertifikaları yönetmelerine izin vermez.</translation>
 <translation id="6731757988219967594">Üst düzey siteleri (ancak yerleştirilmiş iframe'leri değil) yetişkinlere yönelik içerik için filtrele</translation>
 <translation id="6734521799274931721">ChromeOS için Ağ Üzerinde Dosya Paylaşımı'nın kullanılabilirliğini kontrol eder</translation>
 <translation id="6735701345096330595">Yazım denetimi dillerini etkinleştirmeye zorla</translation>
@@ -3905,11 +3896,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Başlatıldığında <ph name="PRODUCT_NAME" /> ürününe uygulanacak işaretleri belirtir. Belirtilen işaretler, yalnızca giriş ekranında uygulanır. Bu politika aracılığıyla ayarlanan işaretler, kullanıcı oturumlarına yayılmaz.</translation>
 <translation id="685769593149966548">YouTube için Yüksek Düzey Kısıtlı Mod'u zorunlu kıl</translation>
 <translation id="686079137349561371">Microsoft Windows 7 veya sonraki sürümler</translation>
-<translation id="6863342574191774334">Bu ayar etkinleştirilirse kullanıcıların Yakındakilerle Paylaş özelliğini etkinleştirmesine izin verilir. Böylece kullanıcılar yakınlardaki kişilere dosya gönderip bu kişilerden dosya alabilirler.
-
-      Bu ayar devre dışı bırakılırsa kullanıcıların Yakındakilerle Paylaş özelliğini etkinleştirmelerine izin verilmez.
-
-      Bu politika ayarlanmadan bırakılırsa hem kurumsal olarak yönetilen kullanıcılar hem de yönetilmeyen kullanıcılar için varsayılana izin verilir.</translation>
 <translation id="6889123056995503704">Kanal sürümü değiştirme davranışına kullanıcı karar verir</translation>
 <translation id="6894178810167845842">Yeni Sekme sayfasının URL'si</translation>
 <translation id="6897730193187922386"><ph name="CLOUD_PRINT_NAME" /> kullanımdan kaldırma mesajlarını gizle</translation>

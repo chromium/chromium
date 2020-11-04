@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">已封鎖外掛程式</translation>
 <translation id="1145593918056169051">印表機已停止運作</translation>
 <translation id="114721135501989771">在 Chrome 中體驗 Google 智慧功能</translation>
+<translation id="1147322039136785890">現在可交由「<ph name="SUPERVISED_USER_NAME" />」使用</translation>
 <translation id="1147991416141538220">如需要求存取權限，請與這個裝置的系統管理員聯絡。</translation>
 <translation id="1149401351239820326">到期月份</translation>
 <translation id="1149725087019908252">正在掃描「<ph name="FILE_NAME" />」</translation>
@@ -6586,6 +6587,7 @@
 <translation id="8736288397686080465">這個網站已在背景更新。</translation>
 <translation id="8737685506611670901">開啟<ph name="PROTOCOL" />連結 (取代 <ph name="REPLACED_HANDLER_TITLE" />)</translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">你可以將這部 Chromebook 交給「<ph name="SUPERVISED_USER_NAME" />」。設定即將完成，完成後即可開始探索。</translation>
 <translation id="8742998548129056176">這個頁面會顯示裝置和裝置使用情況的一般資訊 (例如電池電量、系統和應用程式活動，以及錯誤資訊)。這些資料將用於改善 Android，且部分匯總資訊還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提高應用程式和產品的服務品質。</translation>
 <translation id="8743390665131937741">全螢幕縮放比例：</translation>
 <translation id="8743864605301774756">1 小時前更新</translation>

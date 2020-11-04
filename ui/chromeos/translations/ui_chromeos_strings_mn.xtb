@@ -142,7 +142,6 @@
 <translation id="247772113373397749">Канадын олон хэлний гар</translation>
 <translation id="2494837236724268445">Гужарати хэлний гар (дуудлагын)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">АНУ-ын хэлний гар</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> зүйлийг устгасан</translation>
 <translation id="2541377937973966830">Энэ фолдерын контентуудыг зөвхөн уншиж болно. Зарим үйл ажиллагааг дэмждэггүй.</translation>
 <translation id="2542049655219295786">Google-ийн хүснэгт</translation>
@@ -196,10 +195,8 @@
 <translation id="3067790092342515856">Windows-н файлууд</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" />-тай хуваалцах</translation>
 <translation id="3083975830683400843">Chromebit</translation>
-<translation id="3116361045094675131">Их Британийн гар</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ДУУССАН</translation>
-<translation id="3157729859914172001">АНУ-н олон улсын (PC) гар</translation>
 <translation id="3187212781151025377">Еврей хэлний гар</translation>
 <translation id="3188257591659621405">Миний файл</translation>
 <translation id="3197563288998582412">UK Dvorak</translation>
@@ -311,7 +308,6 @@
 <translation id="4465830120256509958">Бразили хэлний гар</translation>
 <translation id="4470564870223067757">Хангыль 2 Багц</translation>
 <translation id="4477219268485577442">Болгарын авиа зүй</translation>
-<translation id="4479812471636796472">АНУ-ын Dvorak гар</translation>
 <translation id="4522570452068850558">дэлгэрэнгүй мэдээлэл</translation>
 <translation id="4527800702232535228">Энэ фолдерыг Parallels Desktop-тай хуваалцсан байна</translation>
 <translation id="4552678318981539154">Нэмэлт мэдээлэл хадгах зай худалдан авах</translation>
@@ -564,7 +560,6 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> олдсон</translation>
 <translation id="6935521024859866267">180 хэм эргэсэн</translation>
-<translation id="6939777852457331078">US Workman гар</translation>
 <translation id="696203921837389374">Гар утасны мэдээллийн синкийг идэвхжүүл</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Болгар хэл</translation>
@@ -584,7 +579,6 @@
 <translation id="7172053773111046550">Эстон хэлний гар</translation>
 <translation id="7180611975245234373">Дахин сэргээх</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ГБ</translation>
-<translation id="719009910964971313">US Programmer Dvorak гар</translation>
 <translation id="7191454237977785534">Файлыг ...хэлбэрээр хадгалах</translation>
 <translation id="7222624196722476520">Болгарь хэлний дуудлагын гар</translation>
 <translation id="7238097264433196391">Драйвын нэр</translation>
@@ -593,7 +587,6 @@
 <translation id="7283041136720745563">Таны Google Драйвын багтаамж бага байна.</translation>
 <translation id="7295662345261934369">Бусадтай хуваалцах</translation>
 <translation id="7339898014177206373">Шинэ цонх</translation>
-<translation id="7348749398828259943">US Workman олон улсын гар</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> зүйлийг хуулж байна...</translation>
 <translation id="7375951387215729722">Файлын жагсаалтыг <ph name="COLUMN_NAME" />-н дагуу буурах дарааллаар эрэмбэлсэн.</translation>
 <translation id="7389722738210761877">Тайланд хэлний гар (TIS 820-2531)</translation>
@@ -601,9 +594,7 @@
 <translation id="7417453074306512035">Этиоп хэлний гар</translation>
 <translation id="7417705661718309329">Google-ийн газрын зураг</translation>
 <translation id="7419631653042041064">Каталан хэлний гар</translation>
-<translation id="7434823369735508263">Их Британийн Dvorak гар</translation>
 <translation id="7460898608667578234">Украйн</translation>
-<translation id="7474889694310679759">Канадын Англи хэлний гар</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> олдсон
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google Драйвт<ph name="END_LINK" /> нөөцлөхөд бэлэн</translation>
@@ -656,7 +647,6 @@
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" />-д хадгалж чадсангүй. Бүх засварыг Татаж авсан файлын фолдерын <ph name="DOWNLOADS_FOLDER" />-д хадгална.</translation>
 <translation id="7881969471599061635">Хадмалыг цуцлах</translation>
 <translation id="78946041517601018">Дундын драйв</translation>
-<translation id="7896906914454843592">АНУ өргөтгөсөн гар</translation>
 <translation id="7898607018410277265">Гужарати гар (Шинэ авиа зүйн)</translation>
 <translation id="7908793776359722643">Хуваарилалтыг форматалснаар үүнд хадгалсан бүх өгөгдлийг устгана. Энэ үйлдлийг буцаах боломжгүй.</translation>
 <translation id="7917972308273378936">Литва хэлний гар</translation>
@@ -713,7 +703,6 @@
 <translation id="8395901698320285466">Хэмжээ</translation>
 <translation id="8412586565681117057">Түргэн оролтын арга</translation>
 <translation id="8418113698656761985">Рум хэлний гар</translation>
-<translation id="8432745813735585631">АНУ-ын Colemak гар</translation>
 <translation id="8437209419043462667">АНУ</translation>
 <translation id="8456681095658380701">Хүчин төгөлдөр бус нэр</translation>
 <translation id="8466234950814670489">Архивыг нэгтгэх</translation>
@@ -734,7 +723,6 @@
 <translation id="8698464937041809063">Google-ийн зураг</translation>
 <translation id="8714406895390098252">Унадаг дугуй</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> сонгогдсон.</translation>
-<translation id="8722421161699219904">АНУ-ын олон улсын гар</translation>
 <translation id="872537912056138402">Хорват</translation>
 <translation id="874420130893181774">Уламжлалт пиньин оролтын арга</translation>
 <translation id="8770002329960263418">АНУ-ын олон улсын компьютерын гартай голланд (Нидерланд)</translation>

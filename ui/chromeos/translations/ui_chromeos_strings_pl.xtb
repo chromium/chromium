@@ -142,7 +142,6 @@
 <translation id="247772113373397749">Kanadyjska klawiatura wielojęzyczna</translation>
 <translation id="2494837236724268445">Klawiatura gudżarati (fonetyczna)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">Klawiatura amerykańska</translation>
 <translation id="2534155362429831547">Usunięte elementy: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2541377937973966830">Zawartość tego folderu jest tylko do odczytu. Niektóre działania nie są obsługiwane.</translation>
 <translation id="2542049655219295786">Tabela Google</translation>
@@ -196,10 +195,9 @@
 <translation id="3067790092342515856">Pliki systemu Windows</translation>
 <translation id="3078461028045006476">Udostępnij w rozszerzeniu <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebity</translation>
-<translation id="3116361045094675131">Klawiatura brytyjska</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">GOTOWE</translation>
-<translation id="3157729859914172001">Klawiatura amerykańska międzynarodowa (PC)</translation>
+<translation id="3182237543071236785">angielski (Wielka Brytania)</translation>
 <translation id="3187212781151025377">Klawiatura hebrajska</translation>
 <translation id="3188257591659621405">Moje pliki</translation>
 <translation id="3197563288998582412">brytyjska klawiatura Dvoraka</translation>
@@ -311,7 +309,6 @@
 <translation id="4465830120256509958">Klawiatura brazylijska</translation>
 <translation id="4470564870223067757">Zestaw Hangul 2</translation>
 <translation id="4477219268485577442">bułgarska klawiatura fonetyczna</translation>
-<translation id="4479812471636796472">Klawiatura amerykańska (Dvorak)</translation>
 <translation id="4522570452068850558">Szczegóły</translation>
 <translation id="4527800702232535228">Ten folder jest udostępniany Parallels Desktop</translation>
 <translation id="4552678318981539154">Kup więcej miejsca</translation>
@@ -567,7 +564,6 @@
     <ph name="LINE_BREAK1" />
     Znaleziono <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Do góry nogami</translation>
-<translation id="6939777852457331078">Amerykańska klawiatura Workman</translation>
 <translation id="696203921837389374">Włącz synchronizację przy użyciu komórkowej transmisji danych.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Bułgarski</translation>
@@ -587,7 +583,6 @@
 <translation id="7172053773111046550">Klawiatura estońska</translation>
 <translation id="7180611975245234373">Odśwież</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
-<translation id="719009910964971313">Klawiatura amerykańska dewelopera (Dvorak)</translation>
 <translation id="7191454237977785534">Zapisz plik jako</translation>
 <translation id="7222624196722476520">Klawiatura bułgarska fonetyczna</translation>
 <translation id="7238097264433196391">Nazwa dysku</translation>
@@ -596,7 +591,6 @@
 <translation id="7283041136720745563">Twój limit na Dysku Google nie jest wystarczająco duży.</translation>
 <translation id="7295662345261934369">Udostępnij innym</translation>
 <translation id="7339898014177206373">Nowe okno</translation>
-<translation id="7348749398828259943">Amerykańska klawiatura międzynarodowa Workman</translation>
 <translation id="7359359531237882347">Kopiuję elementy (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="7375951387215729722">Lista plików posortowana według kolumny <ph name="COLUMN_NAME" /> w kolejności malejącej.</translation>
 <translation id="7389722738210761877">Klawiatura tajska (TIS 820-2531)</translation>
@@ -604,9 +598,7 @@
 <translation id="7417453074306512035">Klawiatura etiopska</translation>
 <translation id="7417705661718309329">Mapa Google</translation>
 <translation id="7419631653042041064">Klawiatura katalońska</translation>
-<translation id="7434823369735508263">Klawiatura brytyjska (Dvorak)</translation>
 <translation id="7460898608667578234">Ukraiński</translation>
-<translation id="7474889694310679759">Klawiatura kanadyjska (angielski)</translation>
 <translation id="7489215562877293245">Znaleziono <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Wszystko gotowe do utworzenia kopii zapasowej na <ph name="BEGIN_LINK" />Dysku Google<ph name="END_LINK" /></translation>
@@ -659,7 +651,6 @@
 <translation id="7873831373602885875">Nie można zapisać w folderze <ph name="FOLDER_NAME" />. Wszystkie zmiany będą zapisywane w folderze <ph name="DOWNLOADS_FOLDER" /> znajdującym się w folderze Pobrane pliki.</translation>
 <translation id="7881969471599061635">Wyłącz napisy</translation>
 <translation id="78946041517601018">Dyski współdzielone</translation>
-<translation id="7896906914454843592">Klawiatura rozszerzona USA</translation>
 <translation id="7898607018410277265">Klawiatura gudżarati (nowa fonetyczna)</translation>
 <translation id="7908793776359722643">Sformatowanie partycji usunie wszystkie zapisane na niej dane. Tej czynności nie będzie można cofnąć.</translation>
 <translation id="7917972308273378936">Klawiatura litewska</translation>
@@ -716,7 +707,6 @@
 <translation id="8395901698320285466">Wymiary</translation>
 <translation id="8412586565681117057">Szybka metoda wprowadzania</translation>
 <translation id="8418113698656761985">Klawiatura rumuńska</translation>
-<translation id="8432745813735585631">Klawiatura amerykańska (Colemak)</translation>
 <translation id="8437209419043462667">amerykański</translation>
 <translation id="8456681095658380701">Nieprawidłowa nazwa</translation>
 <translation id="8466234950814670489">Archiwum Tar</translation>
@@ -737,7 +727,6 @@
 <translation id="8698464937041809063">Rysunek Google</translation>
 <translation id="8714406895390098252">Rower</translation>
 <translation id="8719721339511222681">Zaznaczono element <ph name="ENTRY_NAME" />.</translation>
-<translation id="8722421161699219904">Amerykańska klawiatura międzynarodowa</translation>
 <translation id="872537912056138402">Chorwacki</translation>
 <translation id="874420130893181774">Tradycyjna metoda wprowadzania Pinyin</translation>
 <translation id="8770002329960263418">niderlandzki (Holandia) z klawiaturą amerykańską międzynarodową (PC)</translation>

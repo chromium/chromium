@@ -142,7 +142,6 @@
 <translation id="247772113373397749">Bàn phím đa ngôn ngữ của Canada</translation>
 <translation id="2494837236724268445">Bàn phím tiếng Gujarat (Ngữ âm)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">Bàn phím Anh-Mỹ</translation>
 <translation id="2534155362429831547">Đã xóa <ph name="NUMBER_OF_ITEMS" /> mục</translation>
 <translation id="2541377937973966830">Nội dung trong thư mục này đang ở chế độ chỉ có thể đọc. Vì thế, một số hoạt động sẽ không được hỗ trợ.</translation>
 <translation id="2542049655219295786">Bảng Google</translation>
@@ -196,10 +195,9 @@
 <translation id="3067790092342515856">Tệp Windows</translation>
 <translation id="3078461028045006476">Chia sẻ với <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit</translation>
-<translation id="3116361045094675131">Bàn phím Vương quốc Anh</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">XONG</translation>
-<translation id="3157729859914172001">Bàn phím quốc tế Hoa Kỳ (PC)</translation>
+<translation id="3182237543071236785">Tiếng Anh (Anh)</translation>
 <translation id="3187212781151025377">Bàn phím tiếng Do Thái</translation>
 <translation id="3188257591659621405">Tệp của tôi</translation>
 <translation id="3197563288998582412">Dvorak Vương quốc Anh</translation>
@@ -311,7 +309,6 @@
 <translation id="4465830120256509958">Bàn phím tiếng Braxin</translation>
 <translation id="4470564870223067757">Hangul 2 bộ</translation>
 <translation id="4477219268485577442">Ngữ âm tiếng Bungary</translation>
-<translation id="4479812471636796472">Bàn phím Dvorak Hoa Kỳ</translation>
 <translation id="4522570452068850558">Chi tiết</translation>
 <translation id="4527800702232535228">Thư mục này được chia sẻ với Parallels Desktop</translation>
 <translation id="4552678318981539154">Mua thêm dung lượng lưu trữ</translation>
@@ -567,7 +564,6 @@
     <ph name="LINE_BREAK1" />
     Đã tìm thấy <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Lộn ngược</translation>
-<translation id="6939777852457331078">Bàn phím Workman Hoa Kỳ</translation>
 <translation id="696203921837389374">Bật đồng bộ hóa qua dữ liệu di động</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Tiếng Bungary</translation>
@@ -587,7 +583,6 @@
 <translation id="7172053773111046550">Bàn phím tiếng Estonia</translation>
 <translation id="7180611975245234373">Làm mới</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
-<translation id="719009910964971313">Bàn phím US Programmer Dvorak</translation>
 <translation id="7191454237977785534">Lưu tệp dưới dạng</translation>
 <translation id="7222624196722476520">Bàn phím ngữ âm tiếng Bungari</translation>
 <translation id="7238097264433196391">Tên ổ</translation>
@@ -596,7 +591,6 @@
 <translation id="7283041136720745563">Hạn mức Google Drive của bạn không đủ lớn.</translation>
 <translation id="7295662345261934369">Chia sẻ với những người khác</translation>
 <translation id="7339898014177206373">Cửa sổ mới</translation>
-<translation id="7348749398828259943">Bàn phím quốc tế Workman Hoa Kỳ</translation>
 <translation id="7359359531237882347">Đang sao chép <ph name="NUMBER_OF_ITEMS" /> mục...</translation>
 <translation id="7375951387215729722">Danh sách tệp được sắp xếp giảm dần theo <ph name="COLUMN_NAME" />.</translation>
 <translation id="7389722738210761877">Bàn phím tiếng Thái (TIS 820-2531)</translation>
@@ -604,9 +598,7 @@
 <translation id="7417453074306512035">Bàn phím tiếng Ethiopic</translation>
 <translation id="7417705661718309329">Bản đồ Google</translation>
 <translation id="7419631653042041064">Bàn phím tiếng Catalan</translation>
-<translation id="7434823369735508263">Bàn phím Dvorak Vương quốc Anh</translation>
 <translation id="7460898608667578234">Tiếng Ukraina</translation>
-<translation id="7474889694310679759">Bàn phím tiếng Anh ở Canada</translation>
 <translation id="7489215562877293245">Đã tìm thấy <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Đã sẵn sàng sao lưu vào <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
@@ -659,7 +651,6 @@
 <translation id="7873831373602885875">Không thể lưu vào <ph name="FOLDER_NAME" />. Tất cả các mục chỉnh sửa sẽ được lưu vào <ph name="DOWNLOADS_FOLDER" /> trong thư mục Tệp đã tải xuống.</translation>
 <translation id="7881969471599061635">Tắt phụ đề</translation>
 <translation id="78946041517601018">Bộ nhớ dùng chung</translation>
-<translation id="7896906914454843592">Bàn phím Hoa Kỳ mở rộng</translation>
 <translation id="7898607018410277265">Bàn phím tiếng Gujarat (Phiên âm mới)</translation>
 <translation id="7908793776359722643">Thao tác định dạng một phân vùng sẽ xóa toàn bộ dữ liệu lưu trữ trên phân vùng đó. Bạn không thể hủy thao tác này sau khi thực hiện.</translation>
 <translation id="7917972308273378936">Bàn phím tiếng Lithuania</translation>
@@ -716,7 +707,6 @@
 <translation id="8395901698320285466">Kích thước</translation>
 <translation id="8412586565681117057">Phương thức nhập nhanh</translation>
 <translation id="8418113698656761985">Bàn phím tiếng Rumani</translation>
-<translation id="8432745813735585631">Bàn phím Colemak Hoa Kỳ</translation>
 <translation id="8437209419043462667">Hoa Kỳ</translation>
 <translation id="8456681095658380701">Tên không hợp lệ</translation>
 <translation id="8466234950814670489">Lưu trữ tar</translation>
@@ -737,7 +727,6 @@
 <translation id="8698464937041809063">Bản vẽ Google</translation>
 <translation id="8714406895390098252">Xe đạp</translation>
 <translation id="8719721339511222681">Đã chọn <ph name="ENTRY_NAME" />.</translation>
-<translation id="8722421161699219904">Bàn phím quốc tế Hoa Kỳ</translation>
 <translation id="872537912056138402">Tiếng Croatia</translation>
 <translation id="874420130893181774">Phương thức nhập Bính âm truyền thống</translation>
 <translation id="8770002329960263418">Nhập tiếng Hà Lan (Hà Lan) bằng bàn phím quốc tế Hoa Kỳ cho máy tính để bàn</translation>

@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">απόκρυψη μενού υποτίτλων</translation>
 <translation id="1729654308190250600">Καταχωρίστε μια διεύθυνση ηλεκτρονικού ταχυδρομείου.</translation>
 <translation id="1758486001363313524">Άλλες…</translation>
-<translation id="1774577460079229490">τρέχουσα <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">συνολικός χρόνος: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">παράθυρο διαλόγου ειδοποιήσεων</translation>
 <translation id="1821985195704844674">πλέγμα δέντρου</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">Η τιμή πρέπει να είναι <ph name="MINIMUM_DATE_OR_TIME" /> ή μεταγενέστερη.</translation>
 <translation id="2759744352195237655">αναδυόμενο κουμπί</translation>
 <translation id="2761667185364618470">Αν θέλετε να συνεχίσετε, επιλέξτε αυτό το πλαίσιο.</translation>
-<translation id="2838616441696617235">βήμα</translation>
 <translation id="2844350028562914727">λεπτομέρειες</translation>
 <translation id="2896972712917208084">ομάδα κουμπιών επιλογής</translation>
 <translation id="2908441821576996758">Εισαγάγετε μια λίστα διευθύνσεων ηλεκτρονικού ταχυδρομείου διαχωρισμένη με κόμματα.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">βιβλιογραφική καταχώριση</translation>
 <translation id="4915360478455618802">Εμφάνιση εργαλείου επιλογής ώρας</translation>
 <translation id="492244087561876220">σχόλιο</translation>
-<translation id="4934662370368414994">στοιχείο</translation>
 <translation id="4950364064308314478">Εμφάνιση εργαλείου επιλογής τοπικής ημερομηνίας και ώρας</translation>
 <translation id="4971739861736909480">Επιλέχθηκε <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Επιλέχτηκαν <ph name="SELECTED_COUNT" /></translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">ρυθμιστικό έντασης ήχου</translation>
 <translation id="6015796118275082299">Έτος</translation>
 <translation id="6023896073578205740">πλαίσιο λίστας</translation>
-<translation id="6131824478727057281">τοποθεσία</translation>
 <translation id="6150588977291308318">βιβλιογραφία</translation>
 <translation id="6164829606128959761">μετρητής</translation>
 <translation id="6166809985690652833">επίλογος</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">σίγαση</translation>
 <translation id="6885760532393684712">κατάλογος</translation>
 <translation id="689129560213475294">εκδοτικό σήμα</translation>
-<translation id="6901540140423170855">ημερομηνία</translation>
 <translation id="6934078000481955284">blockquote</translation>
 <translation id="693476918119313863">κεφαλίδα</translation>
 <translation id="6941933287844615239">λήψη μέσων</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">παραπομπή</translation>
 <translation id="811583516810654505">Λήψη περιγραφής…</translation>
 <translation id="8117451130807776954">Αυτήν την εβδομάδα</translation>
-<translation id="8180239481735238521">σελίδα</translation>
 <translation id="8199524924445686405">εεεε</translation>
 <translation id="8208673686607688524">επιλογέας τοπικής ώρας και ημερομηνίας</translation>
 <translation id="8261464734335370856">Μη έγκυρη ορθογραφία</translation>

@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Приставката е блокирана</translation>
 <translation id="1145593918056169051">Принтерът спря</translation>
 <translation id="114721135501989771">Chrome с интелекта на Google</translation>
+<translation id="1147322039136785890">Сега е ред на <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">За да поискате достъп, обърнете се към администратора на това устройство.</translation>
 <translation id="1149401351239820326">Месец на валидност</translation>
 <translation id="1149725087019908252">„<ph name="FILE_NAME" />“ се сканира</translation>
@@ -6589,6 +6590,7 @@
 <translation id="8736288397686080465">Този сайт бе актуализиран на заден план.</translation>
 <translation id="8737685506611670901">Да отваря връзки от типа „<ph name="PROTOCOL" />“ вместо <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">Можете да дадете този Chromebook на <ph name="SUPERVISED_USER_NAME" />. Настройването почти завърши и устройството скоро ще е готово за използване.</translation>
 <translation id="8742998548129056176">Това е обща информация за устройството ви и употребата му (например за нивото на батерията, активността на системата и приложенията, както и за грешките). Тези данни ще се използват за подобряването на Android, а част от обобщената информация ще помогне и на приложенията и партньорите ни, например програмисти за Android, да усъвършенстват приложенията и продуктите си.</translation>
 <translation id="8743390665131937741">Ниво на мащаба при увеличаване на целия екран:</translation>
 <translation id="8743864605301774756">Актуализирано преди 1 ч</translation>

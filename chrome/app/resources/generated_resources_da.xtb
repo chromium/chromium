@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Pluginnet blev blokeret</translation>
 <translation id="1145593918056169051">Printeren er stoppet</translation>
 <translation id="114721135501989771">Få Googles smarte funktioner i Chrome</translation>
+<translation id="1147322039136785890">Nu er enheden klar til <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Hvis du vil anmode om adgang, skal du kontakte administratoren af denne enhed.</translation>
 <translation id="1149401351239820326">Udløbsmåned</translation>
 <translation id="1149725087019908252">Scanner <ph name="FILE_NAME" /></translation>
@@ -6589,6 +6590,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8736288397686080465">Dette website er blevet opdateret i baggrunden.</translation>
 <translation id="8737685506611670901">Åbne <ph name="PROTOCOL" />-links i stedet for <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">Nu er denne Chromebook klar til <ph name="SUPERVISED_USER_NAME" />. Konfigurationen er næsten gennemført, og det er snart tid til at gå på opdagelse.</translation>
 <translation id="8742998548129056176">Dette er generelle oplysninger om din enhed og din brug af den (f.eks. batteriniveau, system- og appaktivitet samt fejl). Dataene bruges til at forbedre Android, og visse samlede oplysninger kan også hjælpe Google-apps og -partnere som f.eks. Android-udviklere med at forbedre deres apps og produkter.</translation>
 <translation id="8743390665131937741">Zoomniveau i fuld skærm:</translation>
 <translation id="8743864605301774756">Opdateret for én time siden</translation>

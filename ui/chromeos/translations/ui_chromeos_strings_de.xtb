@@ -142,7 +142,6 @@
 <translation id="247772113373397749">Kanadische mehrsprachige Tastatur</translation>
 <translation id="2494837236724268445">Gujarati-Tastatur (phonetisch)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">US-amerikanische Tastatur</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> Einträge gelöscht</translation>
 <translation id="2541377937973966830">Inhalte in diesem Ordner sind schreibgeschützt. Einige Aktivitäten werden nicht unterstützt.</translation>
 <translation id="2542049655219295786">Google-Tabelle</translation>
@@ -196,10 +195,9 @@
 <translation id="3067790092342515856">Windows-Dateien</translation>
 <translation id="3078461028045006476">Teilen mit <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebits</translation>
-<translation id="3116361045094675131">UK-Englische Tastatur </translation>
 <translation id="3126026824346185272">Strg</translation>
 <translation id="3144126448740580210">Fertig</translation>
-<translation id="3157729859914172001">Internationale US-amerikanische PC-Tastatur</translation>
+<translation id="3182237543071236785">Englisch (UK)</translation>
 <translation id="3187212781151025377">Hebräische Tastatur</translation>
 <translation id="3188257591659621405">Meine Dateien</translation>
 <translation id="3197563288998582412">UK – Dvorak</translation>
@@ -311,7 +309,6 @@
 <translation id="4465830120256509958">Brasilianische Tastatur</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
 <translation id="4477219268485577442">Bulgarisch – phonetisch</translation>
-<translation id="4479812471636796472">US-amerikanische Dvorak-Tastatur</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4527800702232535228">Dieser Ordner ist für Parallels Desktop freigegeben</translation>
 <translation id="4552678318981539154">Mehr Speicherplatz erwerben</translation>
@@ -567,7 +564,6 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> gefunden</translation>
 <translation id="6935521024859866267">Auf dem Kopf</translation>
-<translation id="6939777852457331078">US-amerikanische Workman-Tastatur</translation>
 <translation id="696203921837389374">Synchronisierung über mobile Daten aktivieren</translation>
 <translation id="6965382102122355670">Ok</translation>
 <translation id="6970230597523682626">Bulgarisch</translation>
@@ -587,7 +583,6 @@
 <translation id="7172053773111046550">Estnische Tastatur</translation>
 <translation id="7180611975245234373">Aktualisieren</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
-<translation id="719009910964971313">US-amerikanische "Programmer Dvorak"-Tastatur</translation>
 <translation id="7191454237977785534">Datei speichern unter</translation>
 <translation id="7222624196722476520">Bulgarische Tastatur (phonetisch)</translation>
 <translation id="7238097264433196391">Name des Laufwerks</translation>
@@ -596,7 +591,6 @@
 <translation id="7283041136720745563">Ihr Google Drive-Kontingent ist zu klein.</translation>
 <translation id="7295662345261934369">Mit anderen teilen</translation>
 <translation id="7339898014177206373">Neues Fenster</translation>
-<translation id="7348749398828259943">Internationale US-amerikanische Workman-Tastatur</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> Elemente werden kopiert...</translation>
 <translation id="7375951387215729722">Die Dateiliste wurde in absteigender Reihenfolge nach "<ph name="COLUMN_NAME" />" sortiert.</translation>
 <translation id="7389722738210761877">Thailändische Tastatur (TIS 820-2531)</translation>
@@ -604,9 +598,7 @@
 <translation id="7417453074306512035">Äthiopische Tastatur</translation>
 <translation id="7417705661718309329">Google-Karte</translation>
 <translation id="7419631653042041064">Katalanische Tastatur</translation>
-<translation id="7434823369735508263">Englische Dvorak-Tastatur</translation>
 <translation id="7460898608667578234">Ukrainisch</translation>
-<translation id="7474889694310679759">Kanadisch-englische Tastatur</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> gefunden
     <ph name="LINE_BREAK1" />
     Bereit für die Sicherung auf <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
@@ -659,7 +651,6 @@
 <translation id="7873831373602885875">Speichern in "<ph name="FOLDER_NAME" />" nicht möglich. Alle Änderungen werden im Ordner "Downloads" in <ph name="DOWNLOADS_FOLDER" /> gespeichert.</translation>
 <translation id="7881969471599061635">Untertitel deaktivieren</translation>
 <translation id="78946041517601018">Geteilte Ablagen</translation>
-<translation id="7896906914454843592">US-amerikanische erweiterte Tastatur</translation>
 <translation id="7898607018410277265">Gujarati-Tastatur (neue Phonetik)</translation>
 <translation id="7908793776359722643">Durch die Formatierung einer Partition werden alle darauf gespeicherten Daten gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
 <translation id="7917972308273378936">Litauische Tastatur</translation>
@@ -716,7 +707,6 @@
 <translation id="8395901698320285466">Abmessungen</translation>
 <translation id="8412586565681117057">Schnelle Eingabemethode</translation>
 <translation id="8418113698656761985">Rumänische Tastatur</translation>
-<translation id="8432745813735585631">US-amerikanische Colemak-Tastatur</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8456681095658380701">Ungültiger Name</translation>
 <translation id="8466234950814670489">Tar-Archiv</translation>
@@ -737,7 +727,6 @@
 <translation id="8698464937041809063">Google-Zeichnung</translation>
 <translation id="8714406895390098252">Fahrrad</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> wurde ausgewählt.</translation>
-<translation id="8722421161699219904">Internationale US-amerikanische Tastatur</translation>
 <translation id="872537912056138402">Kroatisch</translation>
 <translation id="874420130893181774">Traditionelle Pinyin-Eingabemethode</translation>
 <translation id="8770002329960263418">Niederländisch (Niederlande) mit internationaler US-amerikanischer PC-Tastatur</translation>

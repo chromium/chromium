@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Plug-in blockiert</translation>
 <translation id="1145593918056169051">Drucker hat aufgehört</translation>
 <translation id="114721135501989771">Mit Google-Anmeldung Chrome besser nutzen</translation>
+<translation id="1147322039136785890">Jetzt ist <ph name="SUPERVISED_USER_NAME" /> an der Reihe</translation>
 <translation id="1147991416141538220">Wenn Sie Zugriff benötigen, wenden Sie sich an den Administrator dieses Geräts.</translation>
 <translation id="1149401351239820326">Ablaufmonat</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> wird gescannt</translation>
@@ -6584,6 +6585,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8736288397686080465">Diese Website wurde im Hintergrund aktualisiert.</translation>
 <translation id="8737685506611670901"><ph name="PROTOCOL" />-Links anstelle von <ph name="REPLACED_HANDLER_TITLE" /> öffnen</translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">Sie können dieses Chromebook nun <ph name="SUPERVISED_USER_NAME" /> geben. Die Einrichtung ist fast abgeschlossen, jetzt ist es an der Zeit, auf Entdeckungstour zu gehen.</translation>
 <translation id="8742998548129056176">Dies sind allgemeine Informationen zu Ihrem Gerät und dessen Nutzung, zum Beispiel der Akkustand, System- und App-Aktivitäten und Fehler. Die Daten werden dazu verwendet, Android zu verbessern. Einige aggregierte Daten helfen auch Apps und Partnern von Google, beispielsweise Android-Entwicklern, ihre Apps und Produkte weiter zu verbessern.</translation>
 <translation id="8743390665131937741">Zoomstufe für Vollbildlupe:</translation>
 <translation id="8743864605301774756">Vor einer Stunde aktualisiert</translation>

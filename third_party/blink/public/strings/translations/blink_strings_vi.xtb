@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">ẩn menu phụ đề chi tiết</translation>
 <translation id="1729654308190250600">Vui lòng nhập địa chỉ email không trống.</translation>
 <translation id="1758486001363313524">Khác...</translation>
-<translation id="1774577460079229490"><ph name="TYPE" /> hiện tại</translation>
 <translation id="1787192514241997742">tổng thời gian: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">lưới dạng cây</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">Giá trị phải là <ph name="MINIMUM_DATE_OR_TIME" /> hoặc muộn hơn.</translation>
 <translation id="2759744352195237655">nút cửa sổ bật lên</translation>
 <translation id="2761667185364618470">Vui lòng chọn hộp kiểm này nếu bạn muốn tiếp tục.</translation>
-<translation id="2838616441696617235">bước</translation>
 <translation id="2844350028562914727">chi tiết</translation>
 <translation id="2896972712917208084">nhóm radio</translation>
 <translation id="2908441821576996758">Vui lòng nhập danh sách địa chỉ email được phân cách bằng dấu phẩy.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">mục nhập danh mục</translation>
 <translation id="4915360478455618802">Hiển thị bộ chọn giờ</translation>
 <translation id="492244087561876220">nhận xét</translation>
-<translation id="4934662370368414994">mục</translation>
 <translation id="4950364064308314478">Hiển thị bộ chọn ngày và giờ địa phương</translation>
 <translation id="4971739861736909480">Đã chọn <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Đã chọn <ph name="SELECTED_COUNT" /></translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">thanh trượt âm lượng</translation>
 <translation id="6015796118275082299">Năm</translation>
 <translation id="6023896073578205740">hộp danh sách</translation>
-<translation id="6131824478727057281">vị trí</translation>
 <translation id="6150588977291308318">danh mục</translation>
 <translation id="6164829606128959761">thước đo</translation>
 <translation id="6166809985690652833">lời bạt</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">tắt tiếng</translation>
 <translation id="6885760532393684712">thư mục</translation>
 <translation id="689129560213475294">lời ghi cuối sách</translation>
-<translation id="6901540140423170855">ngày</translation>
 <translation id="6934078000481955284">khung trích dẫn</translation>
 <translation id="693476918119313863">tiêu đề</translation>
 <translation id="6941933287844615239">tải xuống phương tiện</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">tham chiếu chú thích</translation>
 <translation id="811583516810654505">Đang tải nội dung mô tả...</translation>
 <translation id="8117451130807776954">Tuần này</translation>
-<translation id="8180239481735238521">trang</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8208673686607688524">bộ chọn ngày và giờ địa phương</translation>
 <translation id="8261464734335370856">Chính tả không hợp lệ</translation>

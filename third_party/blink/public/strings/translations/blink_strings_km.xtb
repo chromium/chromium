@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">លាក់​ម៉ឺនុយចំណង​ជើង​បន្ថែម</translation>
 <translation id="1729654308190250600">សូមបញ្ចូលអាសយដ្ឋានអ៊ីម៉ែលដែលមិនទទេ</translation>
 <translation id="1758486001363313524">ផ្សេងទៀត...</translation>
-<translation id="1774577460079229490"><ph name="TYPE" /> បច្ចុប្បន្ន</translation>
 <translation id="1787192514241997742">រយៈពេល​សរុប៖ <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">ក្រឡាជាមែងធាង</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">តម្លៃត្រូវតែ <ph name="MINIMUM_DATE_OR_TIME" /> ឬក្រោយពេលនេះ។</translation>
 <translation id="2759744352195237655">ប៊ូតុងលេចឡើង</translation>
 <translation id="2761667185364618470">សូមធីកក្នុងប្រអប់នេះប្រសិនបើអ្នកចង់ដំណើរការ។</translation>
-<translation id="2838616441696617235">ជំហាន</translation>
 <translation id="2844350028562914727">ព័ត៌មានលម្អិត</translation>
 <translation id="2896972712917208084">ក្រុមវិទ្យុ</translation>
 <translation id="2908441821576996758">សូមបញ្ចូលសញ្ញាក្បៀស ដែលបែងចែកបញ្ជីអាសយដ្ឋានអ៊ីម៉ែល។</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">ធាតុគន្ថនិទ្ទេស</translation>
 <translation id="4915360478455618802">បង្ហាញ​ផ្ទាំង​ជ្រើសរើស​ម៉ោង</translation>
 <translation id="492244087561876220">មតិ</translation>
-<translation id="4934662370368414994">ធាតុ</translation>
 <translation id="4950364064308314478">បង្ហាញ​ផ្ទាំង​ជ្រើសរើស​ម៉ោង និង​កាលបរិច្ឆេទ​ក្នុងស្រុក</translation>
 <translation id="4971739861736909480">បាន​ជ្រើសរើស <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> បានជ្រើសរើស</translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">របារកម្រិតសំឡេង</translation>
 <translation id="6015796118275082299">ឆ្នាំ</translation>
 <translation id="6023896073578205740">ប្រអប់បញ្ជី</translation>
-<translation id="6131824478727057281">ទីតាំង</translation>
 <translation id="6150588977291308318">គន្ថនិទ្ទេស</translation>
 <translation id="6164829606128959761">ម៉ែត្រ</translation>
 <translation id="6166809985690652833">សេចក្ដី​បញ្ចប់</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">បិទសម្លេង</translation>
 <translation id="6885760532393684712">ថត</translation>
 <translation id="689129560213475294">ឈ្មោះ​ក្រុមហ៊ុន​បោះពុម្ព​ផ្សាយ</translation>
-<translation id="6901540140423170855">កាលបរិច្ឆេទ</translation>
 <translation id="6934078000481955284">សម្រង់បណ្តុំ</translation>
 <translation id="693476918119313863">ក្បាលទំព័រ</translation>
 <translation id="6941933287844615239">ទាញយកមេឌៀ</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">ឯកសារយោង​នៃចំណាំ</translation>
 <translation id="811583516810654505">កំពុង​ទាញយក​ការពណ៌នា...</translation>
 <translation id="8117451130807776954">អាទិត្យនេះ</translation>
-<translation id="8180239481735238521">ទំព័រ</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8208673686607688524">កម្មវិធី​ជ្រើសរើស​ម៉ោង និងកាលបរិច្ឆេទក្នុងស្រុក</translation>
 <translation id="8261464734335370856">ខុស​អក្ខរាវិរុទ្ធ</translation>

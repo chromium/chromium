@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">プラグインをブロックしました</translation>
 <translation id="1145593918056169051">プリンタが停止しました</translation>
 <translation id="114721135501989771">Chrome で Google の最先端技術を活用</translation>
+<translation id="1147322039136785890">お待たせしました、<ph name="SUPERVISED_USER_NAME" /> さん</translation>
 <translation id="1147991416141538220">アクセスをリクエストするには、このデバイスの管理者にご連絡ください。</translation>
 <translation id="1149401351239820326">有効期限（月）</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> をスキャンしています</translation>
@@ -6589,6 +6590,7 @@
 <translation id="8736288397686080465">このサイトはバックグラウンドで更新されました。</translation>
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> の代わりに「<ph name="PROTOCOL" />」リンクを開く</translation>
 <translation id="8737709691285775803">サクラ</translation>
+<translation id="8740247629089392745">この Chromebook を <ph name="SUPERVISED_USER_NAME" /> に渡す準備ができました。設定はあと少しで完了です。</translation>
 <translation id="8742998548129056176">これは、お使いのデバイスと使用状況に関する一般的な情報（電池残量、システムやアプリのアクティビティ、エラーなど）です。このデータは Android の改善に使用され、統計情報の一部は、Google アプリや、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。</translation>
 <translation id="8743390665131937741">全画面のズームレベル:</translation>
 <translation id="8743864605301774756">1 時間前に更新されました</translation>

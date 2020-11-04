@@ -2803,11 +2803,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="5306186200045823863">Cho phép tin cậy Cơ sở hạ tầng khóa công khai (PKI) cũ của Symantec Corporation</translation>
 <translation id="5307432759655324440">Tính khả dụng của chế độ ẩn danh</translation>
 <translation id="5311275381462687162">Tùy chọn cài đặt mặc định cho hành vi <ph name="ATTRIBUTE_SAMESITE_NAME" /> cũ của cookie</translation>
-<translation id="5315324986365616322">Nếu bạn đặt chính sách này thành Bật, người dùng có thể sử dụng tính năng Chuyển đổi nhanh khi điểm truy cập không dây hỗ trợ tính năng đó. Chính sách này áp dụng cho mọi người dùng và giao diện trên thiết bị.
-
-      Nếu bạn không đặt hoặc đặt chính sách này thành Tắt, thì người dùng không thể sử dụng tính năng Chuyển đổi nhanh.
-
-      Lưu ý: Để người dùng sử dụng được tính năng Chuyển đổi nhanh, bạn cũng cần bật thuộc tính ONC trên mỗi mạng.</translation>
 <translation id="5315367501385698459">Nếu đặt chính sách này, bạn có thể thiết lập danh sách các mẫu URL chỉ định những trang web được hệ thống tự động cấp quyền truy cập vào thiết bị USB bằng mã sản phẩm và mã nhà cung cấp đã cho trên màn hình đăng nhập. Mỗi mục trên danh sách này phải có cả trường <ph name="DEVICES_FIELD_NAME" /> lẫn trường <ph name="URLS_FIELD_NAME" /> thì chính sách mới hợp lệ. Mỗi mục trong trường <ph name="DEVICES_FIELD_NAME" /> có thể chứa trường <ph name="VENDOR_ID_FIELD_NAME" /> và <ph name="PRODUCT_ID_FIELD_NAME" />. Nếu bạn bỏ qua trường <ph name="VENDOR_ID_FIELD_NAME" />, một chính sách áp dụng cho mọi thiết bị sẽ được tạo. Nếu bạn bỏ qua trường <ph name="PRODUCT_ID_FIELD_NAME" />, một chính sách áp dụng cho mọi thiết bị có mã nhà cung cấp đã cho sẽ được tạo. Nếu có trường <ph name="PRODUCT_ID_FIELD_NAME" /> mà không có trường <ph name="VENDOR_ID_FIELD_NAME" /> thì chính sách sẽ không hợp lệ.
 
       Mô hình quản lý quyền của USB sử dụng URL yêu cầu và URL nhúng để cấp cho URL yêu cầu quyền truy cập vào thiết bị USB. URL yêu cầu có thể khác với URL nhúng khi trang web yêu cầu được tải trong một iframe. Do đó, trường <ph name="URLS_FIELD_NAME" /> có thể chứa tối đa 2 chuỗi URL được phân tách bằng dấu phẩy để chỉ định URL yêu cầu và URL nhúng tương ứng. Nếu chỉ có duy nhất một URL được chỉ định, thì hệ thống sẽ cấp quyền truy cập vào các thiết bị USB tương ứng khi URL của trang web yêu cầu khớp với URL này, bất kể trạng thái nhúng là gì. Các URL phải hợp lệ. Nếu không, chính sách sẽ bị bỏ qua.
@@ -2972,7 +2967,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="5475361623548884387">Bật tính năng in</translation>
 <translation id="547601067149622666">Không cho phép quảng cáo trên các trang web chứa quảng cáo xâm nhập</translation>
 <translation id="5483065054530244863">Cho phép các chứng chỉ SHA-1 có chữ ký do neo tin cậy cục bộ phát hành</translation>
-<translation id="5494917047563607689">Nếu bạn đặt giá trị nhỏ hơn 1 MB hoặc không đặt giá trị, thì <ph name="PRODUCT_OS_NAME" /> sẽ sử dụng kích thước mặc định để lưu ứng dụng và tiện ích vào bộ nhớ đệm nhằm giúp nhiều người dùng trên một thiết bị có thể cài đặt. Nhờ đó, người dùng không phải tải xuống lại từng ứng dụng/tiện ích.</translation>
 <translation id="5499375345075963939">Chính sách này chỉ hoạt động trong chế độ bán lẻ.
 
       Khi giá trị của chính sách này được đặt và giá trị đó khác 0, người dùng hiện được đăng nhập vào bản trình diễn sẽ tự động bị đăng xuất sau khi thời gian không hoạt động của khoảng thời gian đã chỉ định trôi qua.
@@ -3856,9 +3850,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Những phiên bản trước phiên bản 75 sử dụng nhiều mã tiện ích phân tách bằng dấu phẩy sẽ không được hỗ trợ và bị bỏ qua. Phần còn lại của chính sách này sẽ tiếp tục được áp dụng.
 
       Lưu ý: Chính sách này cũng ảnh hưởng đến các tiện ích và ứng dụng buộc cài đặt qua <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.</translation>
-<translation id="672496466524161417">Nếu bạn đặt chính sách này thành None hoặc không đặt chính sách này, thì người dùng có thể quản lý chứng chỉ. Nếu bạn đặt chính sách này thành 2, thì người dùng chỉ có thể xem (nhưng không quản lý được) chứng chỉ.
-
-      Nếu bạn đặt chính sách này thành 1, thì người dùng có thể quản lý các chứng chỉ người dùng nhưng không quản lý được các chứng chỉ cho toàn bộ thiết bị.</translation>
 <translation id="6731757988219967594">Lọc các trang web cấp cao nhất (không phải iframe được nhúng) có nội dung người lớn</translation>
 <translation id="6734521799274931721">Kiểm soát khả năng sử dụng của ứng dụng Chia sẻ tệp trong mạng trên Chrome OS</translation>
 <translation id="6735701345096330595">Buộc bật tính năng kiểm tra chính tả ngôn ngữ</translation>
@@ -3943,11 +3934,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Chỉ định cờ sẽ được áp dụng cho <ph name="PRODUCT_NAME" /> khi khởi động. Cờ được chỉ định sẽ chỉ được áp dụng trên màn hình đăng nhập. Các cờ được đặt qua chính sách này không phản ánh trong các phiên của người dùng.</translation>
 <translation id="685769593149966548">Buộc sử dụng Chế độ hạn chế nghiêm ngặt cho YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 trở lên</translation>
-<translation id="6863342574191774334">Nếu bạn bật tùy chọn cài đặt này, thì người dùng sẽ được phép chọn sử dụng tính năng Chia sẻ lân cận. Tính năng này cho phép họ gửi và nhận tệp từ những người ở gần.
-
-      Nếu bạn tắt tùy chọn cài đặt này, thì người dùng sẽ không được phép chọn sử dụng tính năng Chia sẻ lân cận.
-
-      Nếu bạn không đặt chính sách này, thì tùy chọn mặc định sẽ được phép áp dụng cho cả người dùng do doanh nghiệp quản lý và người dùng không được quản lý.</translation>
 <translation id="6889123056995503704">Người dùng sẽ quyết định chế độ hạ cấp kênh</translation>
 <translation id="6894178810167845842">URL trang Thẻ mới</translation>
 <translation id="6897730193187922386">Ngăn chặn các thông báo về việc ngừng cung cấp <ph name="CLOUD_PRINT_NAME" /></translation>

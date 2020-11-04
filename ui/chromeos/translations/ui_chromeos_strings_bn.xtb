@@ -142,7 +142,6 @@
 <translation id="247772113373397749">কানাডিয়ান বহুভাষিক কীবোর্ড</translation>
 <translation id="2494837236724268445">গুজরাটি কীবোর্ড (ফোনেটিক)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">ইউএস কীবোর্ড</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />টি আইটেম মোছা হয়েছে</translation>
 <translation id="2541377937973966830">এই ফোল্ডারের কন্টেন্ট 'রিড-ওনলি' মোডে রয়েছে। কিছু অ্যাক্টিভিটি এখানে কাজ করবে না।</translation>
 <translation id="2542049655219295786">Google টেবিল</translation>
@@ -196,10 +195,9 @@
 <translation id="3067790092342515856">Windows ফাইল</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> এর সাথে শেয়ার করুন</translation>
 <translation id="3083975830683400843">Chromebits</translation>
-<translation id="3116361045094675131">ইউকে কীবোর্ড</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">সম্পন্ন হয়েছে</translation>
-<translation id="3157729859914172001">US ইন্টারন্যাশনাল (PC) কীবোর্ড</translation>
+<translation id="3182237543071236785">ইংরাজী (UK)</translation>
 <translation id="3187212781151025377">হিব্রু কীবোর্ড</translation>
 <translation id="3188257591659621405">আমার ফাইল</translation>
 <translation id="3197563288998582412">যুক্তরাজ্যের দভোরাক</translation>
@@ -311,7 +309,6 @@
 <translation id="4465830120256509958">ব্রাজিলিয় কীবোর্ড</translation>
 <translation id="4470564870223067757">হাঙ্গুল ২ সেট</translation>
 <translation id="4477219268485577442">বুলগেরিয়ান ফনেটিক</translation>
-<translation id="4479812471636796472">ইউএস দভোরাক কীবোর্ড</translation>
 <translation id="4522570452068850558">বিশদ বিবরণ</translation>
 <translation id="4527800702232535228">এই ফোল্ডার Parallels Desktop-এর সাথে শেয়ার করা হয়েছে</translation>
 <translation id="4552678318981539154">আরও সঞ্চয়স্থান কিনুন</translation>
@@ -566,7 +563,6 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" />টি পাওয়া যায়</translation>
 <translation id="6935521024859866267">ওলট পালট</translation>
-<translation id="6939777852457331078">মার্কিন ওয়ার্কম্যান কীবোর্ড</translation>
 <translation id="696203921837389374">মোবাইল ডেটার মাধ্যমে সিঙ্ক করা সক্ষম করুন</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6970230597523682626">বুলগেরীয়</translation>
@@ -586,7 +582,6 @@
 <translation id="7172053773111046550">এস্তোনীয় কীবোর্ড</translation>
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> জিবি</translation>
-<translation id="719009910964971313">মার্কিন যুক্তরাষ্ট্র প্রোগ্রামার ডিভোরাক কীবোর্ড</translation>
 <translation id="7191454237977785534">ফাইল এই রূপে সেভ করুন</translation>
 <translation id="7222624196722476520">বুলগেরিয় ফোনেটিক কীবোর্ড</translation>
 <translation id="7238097264433196391">ড্রাইভের নাম</translation>
@@ -595,7 +590,6 @@
 <translation id="7283041136720745563">আপনার Google ড্রাইভের কোটা যথেষ্ট নয়।</translation>
 <translation id="7295662345261934369">অন্যদের সাথে শেয়ার করুন</translation>
 <translation id="7339898014177206373">নতুন উইন্ডো</translation>
-<translation id="7348749398828259943">মার্কিন ওয়ার্কম্যান আন্তর্জাতিক কীবোর্ড</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" />টি আইটেম কপি করা হচ্ছে…</translation>
 <translation id="7375951387215729722">ফাইলের তালিকা <ph name="COLUMN_NAME" />-এর মানের উপর নির্ভর করে বড় থেকে ছোট ক্রমানুযায়ী সাজানো আছে।</translation>
 <translation id="7389722738210761877">থাই কীবোর্ড (TIS 820-2531)</translation>
@@ -603,9 +597,7 @@
 <translation id="7417453074306512035">ইথিওপিক কীবোর্ড</translation>
 <translation id="7417705661718309329">Google ম্যাপ</translation>
 <translation id="7419631653042041064">ক্যাটালান কীবোর্ড</translation>
-<translation id="7434823369735508263">ইউকে দভোরাক কীবোর্ড</translation>
 <translation id="7460898608667578234">ইউক্রেনীয়</translation>
-<translation id="7474889694310679759">কানাডিয় ইংরাজি কীবোর্ড</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" />টি পাওয়া গেছে
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google ড্রাইভ<ph name="END_LINK" />-এ ব্যাক-আপ করার জন্য প্রস্তুত</translation>
@@ -658,7 +650,6 @@
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" />-এ সেভ করা যাচ্ছে না। সব এডিট ডাউনলোড ফোল্ডারের মধ্যে <ph name="DOWNLOADS_FOLDER" />-এ সেভ করা হবে।</translation>
 <translation id="7881969471599061635">সাবটাইটেল বন্ধ করুন</translation>
 <translation id="78946041517601018">শেয়ার করা ডিভাইস</translation>
-<translation id="7896906914454843592">মার্কিন প্রসারিত কীবোর্ড</translation>
 <translation id="7898607018410277265">গুজরাতি কীবোর্ড (নতুন ফোনেটিক)</translation>
 <translation id="7908793776359722643">পার্টিশন ফর্ম্যাট করলে তাতে সেভ থাকা সব ডেটা মুছে যাবে। সেটি আর আগের অবস্থায় ফেরানো যাবে না।</translation>
 <translation id="7917972308273378936">লিথুয়ানিয়ান কীবোর্ড</translation>
@@ -715,7 +706,6 @@
 <translation id="8395901698320285466">আয়তন</translation>
 <translation id="8412586565681117057">দ্রুত ইনপুট পদ্ধতি</translation>
 <translation id="8418113698656761985">রোমানিয় কীবোর্ড</translation>
-<translation id="8432745813735585631">ইউএস কোলেম্যাক কীবোর্ড</translation>
 <translation id="8437209419043462667">মার্কিন যুক্তরাষ্ট্রীয়</translation>
 <translation id="8456681095658380701">ভুল নাম</translation>
 <translation id="8466234950814670489">Tar আর্কাইভ</translation>
@@ -736,7 +726,6 @@
 <translation id="8698464937041809063">Google অঙ্কন</translation>
 <translation id="8714406895390098252">সাইকেল</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> বেছে নেওয়া হয়েছে।</translation>
-<translation id="8722421161699219904">মার্কিন আন্তর্জাতিক কীবোর্ড</translation>
 <translation id="872537912056138402">ক্রোয়েশিয়</translation>
 <translation id="874420130893181774">ঐতিহ্যবাহি পিনয়িন ইনপুট পদ্ধতি</translation>
 <translation id="8770002329960263418">US আন্তর্জাতিক কীবোর্ডের সাথে ডাচ (নেদারল্যান্ড) ভাষা</translation>

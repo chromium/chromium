@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Плагинге тыйым салынған</translation>
 <translation id="1145593918056169051">Принтер тоқтады</translation>
 <translation id="114721135501989771">Chrome-дағы Google ақылды функциялары</translation>
+<translation id="1147322039136785890">Енді <ph name="SUPERVISED_USER_NAME" /> құрылғыны пайдалана алады</translation>
 <translation id="1147991416141538220">Пайдалану рұқсатын алу үшін құрылғының әкімшісіне хабарласыңыз.</translation>
 <translation id="1149401351239820326">Жарамдылық мерзімі бітетін ай</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> файлын сканерлеу</translation>
@@ -6585,6 +6586,7 @@
 <translation id="8736288397686080465">Бұл сайт фонда жаңартылды.</translation>
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> орнына <ph name="PROTOCOL" /> сілтемелерін ашу</translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">Бұл Chromebook-ты енді <ph name="SUPERVISED_USER_NAME" /> пайдалана алады. Реттеулер аяқталайын деп қалды, сосын мазмұнды зерттей беруге болады.</translation>
 <translation id="8742998548129056176">Ондай дерекке құрылғыңыз бен оны пайдалану туралы жалпы ақпарат (мысалы, батарея зарядының деңгейі, жүйе мен қолданбаларды пайдалану тарихы, қателер) жатады. Мәлімет Android жүйесін жақсарту үшін пайдаланылады, ал кейбір ақпарат Google қолданбаларына және Android әзірлеушілері сияқты серіктестерге көмектеседі әрі олардың қолданбалары мен өнімдерін жақсарта түседі.</translation>
 <translation id="8743390665131937741">Толық экран масштабының деңгейі:</translation>
 <translation id="8743864605301774756">1 сағат бұрын жаңартылды</translation>

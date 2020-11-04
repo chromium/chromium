@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Плагин заблокирован</translation>
 <translation id="1145593918056169051">Сбой в работе принтера</translation>
 <translation id="114721135501989771">Интеллектуальные функции Google в Chrome</translation>
+<translation id="1147322039136785890">Передайте устройство пользователю <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Чтобы запросить доступ, обратитесь к администратору устройства.</translation>
 <translation id="1149401351239820326">Месяц окончания срока действия</translation>
 <translation id="1149725087019908252">Сканирование файла "<ph name="FILE_NAME" />"</translation>
@@ -6586,6 +6587,7 @@
 <translation id="8736288397686080465">Этот сайт был обновлен в фоновом режиме</translation>
 <translation id="8737685506611670901">обработку всех ссылок типа "<ph name="PROTOCOL" />" вместо сервиса <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">Когда настройка будет завершена, <ph name="SUPERVISED_USER_NAME" /> сможет пользоваться устройством Chromebook.</translation>
 <translation id="8742998548129056176">Мы будем получать общие сведения о работе устройства, например об уровне заряда батареи, ошибках и действиях в системе и приложениях. Они помогут нам усовершенствовать Android, а наши партнеры смогут использовать некоторые агрегированные данные, чтобы улучшать свои приложения и другие продукты.</translation>
 <translation id="8743390665131937741">Масштаб полноэкранной лупы:</translation>
 <translation id="8743864605301774756">Обновлено 1 час назад</translation>

@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Complemento bloqueado</translation>
 <translation id="1145593918056169051">Se detuvo la impresora</translation>
 <translation id="114721135501989771">Obtén las mejores funciones de Google en Chrome</translation>
+<translation id="1147322039136785890">Ahora es el turno de <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Para solicitar el acceso, comunícate con el administrador de este dispositivo.</translation>
 <translation id="1149401351239820326">Mes de vencimiento</translation>
 <translation id="1149725087019908252">Escaneando <ph name="FILE_NAME" /></translation>
@@ -6586,6 +6587,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8736288397686080465">Este sitio se actualizó en segundo plano.</translation>
 <translation id="8737685506611670901">Abrir vínculos de <ph name="PROTOCOL" /> en lugar de <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">Puedes pasarle esta Chromebook a <ph name="SUPERVISED_USER_NAME" />. La configuración está casi lista. Luego, podrán comenzar a explorar.</translation>
 <translation id="8742998548129056176">Aquí se muestra información general sobre tu dispositivo y cómo lo usas (como el nivel de batería, la actividad de las apps y el sistema, y errores). Los datos se usarán para mejorar Android, y la información agregada también permitirá que las apps y los socios de Google, como los desarrolladores de Android, mejoren sus apps y productos.</translation>
 <translation id="8743390665131937741">Nivel de zoom en pantalla completa:</translation>
 <translation id="8743864605301774756">Se actualizó hace 1 h</translation>

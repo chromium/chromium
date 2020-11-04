@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">플러그인 차단됨</translation>
 <translation id="1145593918056169051">프린터가 중지됨</translation>
 <translation id="114721135501989771">Google로 Chrome을 더욱 스마트하게</translation>
+<translation id="1147322039136785890"><ph name="SUPERVISED_USER_NAME" />님의 차례입니다</translation>
 <translation id="1147991416141538220">액세스 권한을 요청하려면 기기 관리자에게 문의하세요.</translation>
 <translation id="1149401351239820326">유효기간 월</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> 검사 중</translation>
@@ -6587,6 +6588,7 @@
 <translation id="8736288397686080465">이 사이트는 백그라운드에서 업데이트되었습니다.</translation>
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> 대신 <ph name="PROTOCOL" /> 링크 열기</translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">이 Chromebook을 <ph name="SUPERVISED_USER_NAME" />님에게 전달할 수 있습니다. 설정이 거의 끝났습니다. 기기를 살펴보세요.</translation>
 <translation id="8742998548129056176">기기 및 기기 사용 방식에 관한 일반적인 정보(배터리 수준, 시스템 및 앱 활동, 오류 등)입니다. 데이터는 Android를 개선하는 데 사용되며 일부 수집 정보는 Google 앱과 파트너(Android 개발자 등)가 앱 및 제품을 개선하는 데도 도움이 됩니다.</translation>
 <translation id="8743390665131937741">전체화면 돋보기 확대/축소 수준:</translation>
 <translation id="8743864605301774756">1시간 전에 업데이트되었습니다.</translation>

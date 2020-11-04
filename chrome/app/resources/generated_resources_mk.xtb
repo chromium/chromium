@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Приклучокот е блокиран</translation>
 <translation id="1145593918056169051">Печатачот запре</translation>
 <translation id="114721135501989771">Добијте ги паметните опции на Google во Chrome</translation>
+<translation id="1147322039136785890">Сега <ph name="SUPERVISED_USER_NAME" /> е на ред</translation>
 <translation id="1147991416141538220">За да побарате пристап, контактирајте со администраторот на уредов.</translation>
 <translation id="1149401351239820326">Месец на истекување</translation>
 <translation id="1149725087019908252">Се скенира <ph name="FILE_NAME" /></translation>
@@ -6591,6 +6592,7 @@
 <translation id="8736288397686080465">Локацијава се ажурираше во заднина.</translation>
 <translation id="8737685506611670901">Отвори <ph name="PROTOCOL" /> врски наместо <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">Може да му го предадете овој Chromebook на<ph name="SUPERVISED_USER_NAME" />. Поставувањето речиси е готово, а потоа е време за истражување.</translation>
 <translation id="8742998548129056176">Ова се општи податоци за уредов и неговата употреба (како нивото на батеријата, активноста на системот и апликациите и грешките). Податоците ќе се користат за подобрување на Android, а дел од збирните податоци ќе им помогнат и на апликациите и партнерите на Google, како што се програмерите на Android, да ги подобрат своите апликации и производи.</translation>
 <translation id="8743390665131937741">Ниво на зумирање на лупата за цел екран:</translation>
 <translation id="8743864605301774756">Се ажурираше пред 1 ч.</translation>

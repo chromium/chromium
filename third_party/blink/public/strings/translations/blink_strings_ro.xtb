@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">ascunde meniul de subtitrări</translation>
 <translation id="1729654308190250600">Introduceți o adresă de e-mail concretă.</translation>
 <translation id="1758486001363313524">Altele...</translation>
-<translation id="1774577460079229490"><ph name="TYPE" /> actual</translation>
 <translation id="1787192514241997742">Durată totală: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">dialog de alertă</translation>
 <translation id="1821985195704844674">grilă arbore</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">Valoarea pentru dată/oră trebuie să fie <ph name="MINIMUM_DATE_OR_TIME" /> sau una ulterioară.</translation>
 <translation id="2759744352195237655">buton pop-up</translation>
 <translation id="2761667185364618470">Bifeză caseta dacă vrei să continui.</translation>
-<translation id="2838616441696617235">pas</translation>
 <translation id="2844350028562914727">detalii</translation>
 <translation id="2896972712917208084">grup butoane radio</translation>
 <translation id="2908441821576996758">Introdu o listă de adrese de e-mail separate prin virgulă.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">intrare bibliografică</translation>
 <translation id="4915360478455618802">Afișează selectorul pentru oră</translation>
 <translation id="492244087561876220">comentariu</translation>
-<translation id="4934662370368414994">articol</translation>
 <translation id="4950364064308314478">Afișează selectorul pentru data și ora locală</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> selectat</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> selectate</translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">glisor de volum</translation>
 <translation id="6015796118275082299">An</translation>
 <translation id="6023896073578205740">casetă listă</translation>
-<translation id="6131824478727057281">locație</translation>
 <translation id="6150588977291308318">bibliografie</translation>
 <translation id="6164829606128959761">instrument de măsurare</translation>
 <translation id="6166809985690652833">postfață</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">dezactivați sunetul</translation>
 <translation id="6885760532393684712">director</translation>
 <translation id="689129560213475294">colofon</translation>
-<translation id="6901540140423170855">dată</translation>
 <translation id="6934078000481955284">blockquote</translation>
 <translation id="693476918119313863">antet</translation>
 <translation id="6941933287844615239">descarcă conținut media</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">trimitere la notă</translation>
 <translation id="811583516810654505">Se așteaptă descrierea…</translation>
 <translation id="8117451130807776954">Săptămâna aceasta</translation>
-<translation id="8180239481735238521">pagină</translation>
 <translation id="8199524924445686405">aaaa</translation>
 <translation id="8208673686607688524">selector pentru data și ora locală</translation>
 <translation id="8261464734335370856">Ortografie nevalidă</translation>

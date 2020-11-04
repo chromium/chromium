@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">сакријте мени опционалног титла</translation>
 <translation id="1729654308190250600">Унесите имејл адресу која није празна.</translation>
 <translation id="1758486001363313524">Друго...</translation>
-<translation id="1774577460079229490">актуелан/на <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">укупно време: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">дијалог обавештења</translation>
 <translation id="1821985195704844674">мрежа стабла</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">Вредност мора да буде <ph name="MINIMUM_DATE_OR_TIME" /> или новија.</translation>
 <translation id="2759744352195237655">искачуће дугме</translation>
 <translation id="2761667185364618470">Потврдите избор у овом пољу за потврду уколико желите да наставите.</translation>
-<translation id="2838616441696617235">корак</translation>
 <translation id="2844350028562914727">детаљи</translation>
 <translation id="2896972712917208084">група дугмади за избор</translation>
 <translation id="2908441821576996758">Унесите листу имејл адреса раздвојених зарезима.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">библиографска ставка</translation>
 <translation id="4915360478455618802">Приказуј бирач времена</translation>
 <translation id="492244087561876220">коментар</translation>
-<translation id="4934662370368414994">ставка</translation>
 <translation id="4950364064308314478">Приказуј бирач локалног датума и времена</translation>
 <translation id="4971739861736909480">Изабрано: <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Изабрано: <ph name="SELECTED_COUNT" /></translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">клизач за јачину звука</translation>
 <translation id="6015796118275082299">Година</translation>
 <translation id="6023896073578205740">оквир са листом</translation>
-<translation id="6131824478727057281">локација</translation>
 <translation id="6150588977291308318">библиографија</translation>
 <translation id="6164829606128959761">мерач</translation>
 <translation id="6166809985690652833">поговор</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">искључи звук</translation>
 <translation id="6885760532393684712">каталог</translation>
 <translation id="689129560213475294">знак издавача</translation>
-<translation id="6901540140423170855">датум</translation>
 <translation id="6934078000481955284">издвојени цитат</translation>
 <translation id="693476918119313863">заглавље</translation>
 <translation id="6941933287844615239">преузми медије</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">референца напомене</translation>
 <translation id="811583516810654505">Преузима се опис...</translation>
 <translation id="8117451130807776954">Ова недеља</translation>
-<translation id="8180239481735238521">страница</translation>
 <translation id="8199524924445686405">гггг</translation>
 <translation id="8208673686607688524">бирач локалног датума и времена</translation>
 <translation id="8261464734335370856">Нетачан правопис</translation>

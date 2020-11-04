@@ -125,6 +125,7 @@
 <translation id="2127372758936585790">저출력 충전기</translation>
 <translation id="2132302418721800944">화면 전체 녹화</translation>
 <translation id="2135456203358955318">고정 돋보기</translation>
+<translation id="2144487987174258011">Adobe Flash Player를 업데이트하려면 다시 시작하세요.</translation>
 <translation id="2208323208084708176">통합 바탕화면 모드</translation>
 <translation id="2220572644011485463">PIN 또는 비밀번호</translation>
 <translation id="2222338659135520253">로그인 필요</translation>
@@ -281,6 +282,7 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> 관리 사용자</translation>
 <translation id="3702846122927433391">나이지리아의 인구</translation>
 <translation id="3705722231355495246">-</translation>
+<translation id="370665806235115550">로드 중...</translation>
 <translation id="3712407551474845318">영역 캡처</translation>
 <translation id="371370241367527062">전면 마이크</translation>
 <translation id="3771549900096082774">고대비 모드</translation>
@@ -625,6 +627,7 @@
 <translation id="7098389117866926363">USB-C 기기(좌측 후면 포트)</translation>
 <translation id="7131634465328662194">자동으로 로그아웃됩니다.</translation>
 <translation id="7143207342074048698">연결 중</translation>
+<translation id="7144878232160441200">다시 시도</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />초 후 기존 해상도로 돌아갑니다.</translation>
 <translation id="7180611975245234373">새로고침</translation>

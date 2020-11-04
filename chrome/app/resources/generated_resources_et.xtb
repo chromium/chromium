@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Pistikprogramm on blokeeritud</translation>
 <translation id="1145593918056169051">Printer on peatunud</translation>
 <translation id="114721135501989771">Google'i nutikus Chrome'is</translation>
+<translation id="1147322039136785890">Nüüd on kasutaja <ph name="SUPERVISED_USER_NAME" /> kord</translation>
 <translation id="1147991416141538220">Juurdepääsu palumiseks võtke ühendust selle seadme administraatoriga.</translation>
 <translation id="1149401351239820326">Aegumiskuu</translation>
 <translation id="1149725087019908252">Faili <ph name="FILE_NAME" /> skannimine</translation>
@@ -6589,6 +6590,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8736288397686080465">Saiti värskendati taustal.</translation>
 <translation id="8737685506611670901">Ava protokolli <ph name="PROTOCOL" /> lingid teenuse <ph name="REPLACED_HANDLER_TITLE" /> asemel</translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">Võite selle Chromebooki anda kasutajale <ph name="SUPERVISED_USER_NAME" />. Seadistamine on peaaegu valmis, seejärel saate avastada.</translation>
 <translation id="8742998548129056176">See on üldteave seadme ja selle kasutamise kohta (nt aku laetuse tase, süsteemi ja rakenduste tegevused ning vead). Neid andmeid kasutatakse Androidi täiustamiseks ning teatud koondandmed on abiks ka Google'i rakendustele ja partneritele (nt Androidi arendajatele), aidates neil rakendusi ning teenuseid paremaks muuta.</translation>
 <translation id="8743390665131937741">Täisekraani suumitase:</translation>
 <translation id="8743864605301774756">Värskendatud 1 tund tagasi</translation>

@@ -142,7 +142,6 @@
 <translation id="247772113373397749">صفحه‌کلید چندزبانه کانادایی</translation>
 <translation id="2494837236724268445">صفحه‌کلید گجراتی (آوایی)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">صفحه‌کلید آمریکایی</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> مورد حذف شد</translation>
 <translation id="2541377937973966830">محتوای این پوشه فقط خواندنی است. برخی از فعالیت‌ها پشتیبانی نمی‌شوند.</translation>
 <translation id="2542049655219295786">‏جدول Google </translation>
@@ -196,10 +195,9 @@
 <translation id="3067790092342515856">‏فایل‌های Windows</translation>
 <translation id="3078461028045006476">اشتراک‌گذاری با <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">‏دستگاه‌های Chromebit</translation>
-<translation id="3116361045094675131">صفحه‌کلید انگلیسی</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">تمام</translation>
-<translation id="3157729859914172001">صفحه‌کلید بین‌المللی آمریکایی (رایانه)</translation>
+<translation id="3182237543071236785">انگلیسی (انگلستان)</translation>
 <translation id="3187212781151025377">صفحه‌کلید عبری</translation>
 <translation id="3188257591659621405">فایل‌های من</translation>
 <translation id="3197563288998582412">دووارک بریتانیایی</translation>
@@ -311,7 +309,6 @@
 <translation id="4465830120256509958">صفحه‌کلید برزیلی</translation>
 <translation id="4470564870223067757">مجموعه هانگول ۲</translation>
 <translation id="4477219268485577442">آوایی بلغاری</translation>
-<translation id="4479812471636796472">صفحه‌کلید دووراک آمریکایی</translation>
 <translation id="4522570452068850558">جزئیات</translation>
 <translation id="4527800702232535228">‏این پوشه با Parallels Desktop هم‌رسانی می‌شود</translation>
 <translation id="4552678318981539154">خرید فضای ذخیره بیشتر</translation>
@@ -567,7 +564,6 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> مورد پیدا شد</translation>
 <translation id="6935521024859866267">وارونه</translation>
-<translation id="6939777852457331078">‏صفحه‌کلید US Workman</translation>
 <translation id="696203921837389374">فعال کردن همگام‌سازی از طریق داده تلفن همراه</translation>
 <translation id="6965382102122355670">قبول</translation>
 <translation id="6970230597523682626">بلغاری</translation>
@@ -587,7 +583,6 @@
 <translation id="7172053773111046550">صفحه‌کلید استونیایی</translation>
 <translation id="7180611975245234373">بازخوانی</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> گیگابایت</translation>
-<translation id="719009910964971313">استفاده از دووراک آمریکایی برنامه‌نویس‌ها</translation>
 <translation id="7191454237977785534">ذخیره فایل به‌عنوان</translation>
 <translation id="7222624196722476520">صفحه‌کلید آوایی بلغاری</translation>
 <translation id="7238097264433196391">نام درایو</translation>
@@ -596,7 +591,6 @@
 <translation id="7283041136720745563">‏سهمیه Google Drive شما به اندازه کافی بزرگ نیست.</translation>
 <translation id="7295662345261934369">هم‌رسانی با دیگران</translation>
 <translation id="7339898014177206373">پنجرهٔ جدید</translation>
-<translation id="7348749398828259943">‏صفحه‌کلید بین‌المللی US Workman</translation>
 <translation id="7359359531237882347">در حال کپی کردن <ph name="NUMBER_OF_ITEMS" /> مورد…</translation>
 <translation id="7375951387215729722">فهرست فایل براساس <ph name="COLUMN_NAME" /> به‌ترتیب نزولی مرتب شد.</translation>
 <translation id="7389722738210761877">‏صفحه‌کلید تایلندی (TIS 820-2531)</translation>
@@ -604,9 +598,7 @@
 <translation id="7417453074306512035">صفحه‌کلید اتیوپیایی</translation>
 <translation id="7417705661718309329">‏نقشه Google</translation>
 <translation id="7419631653042041064">صفحه‌کلید کاتالان</translation>
-<translation id="7434823369735508263">صفحه‌کلید دووراک انگلیسی</translation>
 <translation id="7460898608667578234">اوکراینی</translation>
-<translation id="7474889694310679759">صفحه‌کلید کانادایی انگلیسی</translation>
 <translation id="7489215562877293245">‏<ph name="FILE_COUNT" /> مورد پیدا شد
     <ph name="LINE_BREAK1" />
     آماده برای پشتیبان‌گیری در <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
@@ -659,7 +651,6 @@
 <translation id="7873831373602885875">در <ph name="FOLDER_NAME" /> ذخیره نشد. همه ویرایش‌ها در <ph name="DOWNLOADS_FOLDER" /> در پوشه «بارگیری‌ها» ذخیره می‌شوند.</translation>
 <translation id="7881969471599061635">غیرفعال کردن زیرنویس</translation>
 <translation id="78946041517601018">درایوهای هم‌رسانی‌شده</translation>
-<translation id="7896906914454843592">صفحه‌کلید گسترش یافته آمریکایی</translation>
 <translation id="7898607018410277265">صفحه‌کلید گجراتی (آوایی جدید)</translation>
 <translation id="7908793776359722643">با قالب‌بندی پارتیشن، همه داده‌های ذخیره‌شده در آن حذف خواهد شد. این کنش واگردشدنی نیست.</translation>
 <translation id="7917972308273378936">صفحه‌کلید لیتوانیایی</translation>
@@ -716,7 +707,6 @@
 <translation id="8395901698320285466">ابعاد</translation>
 <translation id="8412586565681117057">روش ورودی سریع</translation>
 <translation id="8418113698656761985">صفحه‌کلید رومانیایی</translation>
-<translation id="8432745813735585631">صفحه‌کلید کلماک آمریکایی</translation>
 <translation id="8437209419043462667">آمریکایی</translation>
 <translation id="8456681095658380701">نام نامعتبر</translation>
 <translation id="8466234950814670489">تار نوار</translation>
@@ -737,7 +727,6 @@
 <translation id="8698464937041809063">‏طراحی Google </translation>
 <translation id="8714406895390098252">دوچرخه</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> انتخاب شد.</translation>
-<translation id="8722421161699219904">صفحه‌کلید بین‌المللی آمریکایی</translation>
 <translation id="872537912056138402">کرواسی</translation>
 <translation id="874420130893181774">روش ورودی پین‌یین سنتی</translation>
 <translation id="8770002329960263418">هلندی (هلند) با صفحه‌کلید بین‌المللی آمریکایی رایانه</translation>

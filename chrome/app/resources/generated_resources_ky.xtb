@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Плагин бөгөттөлдү</translation>
 <translation id="1145593918056169051">Принтер токтотулду</translation>
 <translation id="114721135501989771">Google'дун акылдуу жөндөөлөрүн Chrome'до колдонуңуз</translation>
+<translation id="1147322039136785890">Эми түзмөктү <ph name="SUPERVISED_USER_NAME" /> алсын</translation>
 <translation id="1147991416141538220">Кирүү мүмкүнчүлүгүн алуу үчүн түзмөктүн администраторуна кайрылыңыз.</translation>
 <translation id="1149401351239820326">Колдонуу мөөнөтү аяктаган ай</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> скандалууда</translation>
@@ -6588,6 +6589,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8736288397686080465">Бул сайт фондо жаңыртылган.</translation>
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> ордуна <ph name="PROTOCOL" /> шилтемелерин ачуу</translation>
 <translation id="8737709691285775803">Жалган</translation>
+<translation id="8740247629089392745">Бул Chromebook'ту <ph name="SUPERVISED_USER_NAME" /> алса болот. Жөндөө аягына чыгып калды. Андан кийин изилдөөгө убакыт келет.</translation>
 <translation id="8742998548129056176">Бул жерде түзмөгүңүз жана анын колдонулушу (мисалы, батареянын деңгээли, тутум жана колдонмонун иштетилиши жана каталар) тууралуу жалпы маалымат берилген. Маалымат Android кызматтарын жакшыртууга жана айрым маалыматтар тобу Google колдонмолоруна жана Android иштеп чыгуучулары сыяктуу өнөктөштөрүнө да колдонмолорун жана кызматтарын жакшыртууга жардам берет.</translation>
 <translation id="8743390665131937741">Толук экран режиминдеги лупанын масштабы:</translation>
 <translation id="8743864605301774756">1 с. мурун жаңырган</translation>

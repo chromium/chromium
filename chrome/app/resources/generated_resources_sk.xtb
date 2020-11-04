@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Doplnok je blokovaný</translation>
 <translation id="1145593918056169051">Tlačiareň sa zastavila</translation>
 <translation id="114721135501989771">Získajte inteligentné doplnky Googlu v Chrome</translation>
+<translation id="1147322039136785890">Na rade je <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Ak chcete požiadať o prístup, kontaktujte správcu tohto zariadenia.</translation>
 <translation id="1149401351239820326">Mesiac vypršania platnosti</translation>
 <translation id="1149725087019908252">Kontrolujte sa <ph name="FILE_NAME" /></translation>
@@ -6587,6 +6588,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8736288397686080465">Tieto webové stránky boli aktualizované na pozadí.</translation>
 <translation id="8737685506611670901">Otvárať odkazy protokolu <ph name="PROTOCOL" /> a nie aplikáciu <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">Tento Chromebook môžete odovzdať používateľovi <ph name="SUPERVISED_USER_NAME" />. Nastavenie je takmer hotové. Nastal čas na preskúmavanie.</translation>
 <translation id="8742998548129056176">Toto sú všeobecné informácie o zariadení a jeho používaní (napríklad stav batérie, aktivita v systéme a aplikáciách a chyby). Údaje sa použijú na zlepšenie Androidu a niektoré súhrnné informácie pomôžu tiež aplikáciám Google a partnerom (napríklad vývojárom pre Android) zlepšiť svoje aplikácie a produkty.</translation>
 <translation id="8743390665131937741">Úroveň priblíženia lupy celej obrazovky:</translation>
 <translation id="8743864605301774756">Aktualizované pred 1 hodinou</translation>

@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Letiltott beépülő modul</translation>
 <translation id="1145593918056169051">A nyomtató leállt</translation>
 <translation id="114721135501989771">Google-funkciók a Chrome-ban</translation>
+<translation id="1147322039136785890">Most <ph name="SUPERVISED_USER_NAME" /> jön</translation>
 <translation id="1147991416141538220">Hozzáférés kéréséhez forduljon az eszköz adminisztrátorához.</translation>
 <translation id="1149401351239820326">Lejárat hónapja</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> ellenőrzése…</translation>
@@ -6590,6 +6591,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8736288397686080465">Ez a webhely frissült a háttérben.</translation>
 <translation id="8737685506611670901"><ph name="PROTOCOL" /> linkek megnyitása a(z) <ph name="REPLACED_HANDLER_TITLE" /> helyett</translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">Átadhatja a Chromebookot <ph name="SUPERVISED_USER_NAME" /> számára. A beállítás majdnem kész, eljött a felfedezés ideje.</translation>
 <translation id="8742998548129056176">Ez általános információ az eszközről és használatáról (például az akkumulátor töltöttségi szintjéről, a rendszer- és alkalmazástevékenységekről, valamint a hibákról). Az adatokat arra használjuk fel, hogy továbbfejlesszük az Androidot, bizonyos összesített adatok pedig a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek segítenek alkalmazásaik és termékeik fejlesztésében.</translation>
 <translation id="8743390665131937741">Teljes képernyős nagyítás szintje:</translation>
 <translation id="8743864605301774756">Frissítve: 1 órával ezelőtt</translation>

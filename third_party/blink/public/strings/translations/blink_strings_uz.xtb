@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">taglavha menyusini yopish</translation>
 <translation id="1729654308190250600">Bo‘sh bo‘lmagan e-pochta manzilini kiriting.</translation>
 <translation id="1758486001363313524">Boshqa...</translation>
-<translation id="1774577460079229490">joriy <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">umimiy vaqt: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">ogohlantirish muloqot oynasi</translation>
 <translation id="1821985195704844674">daraxtsimon jadval</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">Eng kichik qiymati <ph name="MINIMUM_DATE_OR_TIME" /> bo‘lishi kerak.</translation>
 <translation id="2759744352195237655">qalqib chiquvchi tugma</translation>
 <translation id="2761667185364618470">Davom etish uchun ushbu katakchani belgilang.</translation>
-<translation id="2838616441696617235">qadam</translation>
 <translation id="2844350028562914727">batafsil</translation>
 <translation id="2896972712917208084">tanlash tugmalari guruhi</translation>
 <translation id="2908441821576996758">Elektron pochta manzillarini bir vergul bilan ajratilgan holda kiriting.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">bibliografiya yozuvi</translation>
 <translation id="4915360478455618802">Vaqt tanlash oynasini chiqarish</translation>
 <translation id="492244087561876220">fikr</translation>
-<translation id="4934662370368414994">element</translation>
 <translation id="4950364064308314478">Mahalliy sana va vaqt tanlash oynasini chiqarish</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> tanlandi</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ta element tanlandi</translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">tovush balandligi slayderi</translation>
 <translation id="6015796118275082299">Yil</translation>
 <translation id="6023896073578205740">ro‘yxat</translation>
-<translation id="6131824478727057281">joylashuv</translation>
 <translation id="6150588977291308318">bibliografiya</translation>
 <translation id="6164829606128959761">hisoblagich</translation>
 <translation id="6166809985690652833">xotima</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">ovozsiz qilish</translation>
 <translation id="6885760532393684712">katalog</translation>
 <translation id="689129560213475294">nashriyot ramzi</translation>
-<translation id="6901540140423170855">date</translation>
 <translation id="6934078000481955284">iqtibos</translation>
 <translation id="693476918119313863">sarlavha</translation>
 <translation id="6941933287844615239">faylni yuklab olish</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">qayd havolasi</translation>
 <translation id="811583516810654505">Tavsif yuklanmoqda...</translation>
 <translation id="8117451130807776954">Shu hafta</translation>
-<translation id="8180239481735238521">sahifa</translation>
 <translation id="8199524924445686405">kkkk</translation>
 <translation id="8208673686607688524">mahalliy sana va vaqt tanlagich</translation>
 <translation id="8261464734335370856">Imloviy xato</translation>

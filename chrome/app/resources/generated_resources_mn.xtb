@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Нэмэлт өргөтгөлийг хориглосон байна</translation>
 <translation id="1145593918056169051">Хэвлэгч зогсчихлоо</translation>
 <translation id="114721135501989771">Chrome-д Google smarts авах</translation>
+<translation id="1147322039136785890">Одоо <ph name="SUPERVISED_USER_NAME" />-н ээлж</translation>
 <translation id="1147991416141538220">Хандалт хүсэхийн тулд энэ төхөөрөмжийн администратортай холбоо барина уу.</translation>
 <translation id="1149401351239820326">Хугацаа дуусах сар</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" />-г скан хийж байна</translation>
@@ -6579,6 +6580,7 @@
 <translation id="8736288397686080465">Энэ сайтыг шинэчлэсэн байна.</translation>
 <translation id="8737685506611670901"><ph name="PROTOCOL" /> холбоосуудыг <ph name="REPLACED_HANDLER_TITLE" />-ний оронд нээх</translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">Та энэ Chromebook-г <ph name="SUPERVISED_USER_NAME" />-д өгч болно. Тохируулга бараг дуусаж, одоо судлах цаг боллоо.</translation>
 <translation id="8742998548129056176">Энэ нь таны төхөөрөмжийн болон та түүнийг хэрхэн ашигладаг тухай (батарейн түвшин, систем болон аппын үйл ажиллагаа, алдаа зэрэг) ерөнхий мэдээлэл юм. Энэ өгөгдлийг Android-г сайжруулах зорилгоор ашиглах бөгөөд хуримтлуулсан зарим мэдээлэл нь Google-н аппууд болон Android хөгжүүлэгч зэрэг түншүүдэд апп болон бүтээгдэхүүнээ сайжруулахад нь мөн тусална.</translation>
 <translation id="8743390665131937741">Бүтэн дэлгэцийн томруулалтын түвшин:</translation>
 <translation id="8743864605301774756">1 цагийн өмнө шинэчилсэн</translation>

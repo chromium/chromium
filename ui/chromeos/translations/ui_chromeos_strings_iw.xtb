@@ -142,7 +142,6 @@
 <translation id="247772113373397749">מקלדת רב-לשונית קנדית</translation>
 <translation id="2494837236724268445">מקלדת גוג'אראטי (פונטית)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">מקלדת אנגלית (ארה"ב)</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> פריטים נמחקו</translation>
 <translation id="2541377937973966830">התכנים בתיקייה הזו הם לקריאה בלבד. לא ניתן לבצע פעולות מסוימות.</translation>
 <translation id="2542049655219295786">‏טבלה של Google</translation>
@@ -196,10 +195,9 @@
 <translation id="3067790092342515856">‏קובצי Windows</translation>
 <translation id="3078461028045006476">שיתוף באמצעות <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">‏מכשירי Chromebit</translation>
-<translation id="3116361045094675131">מקלדת אנגלית (בריטניה)</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">בוצע</translation>
-<translation id="3157729859914172001">‏מקלדת בינלאומית (ארה"ב) ל-PC</translation>
+<translation id="3182237543071236785">אנגלית (בריטניה)</translation>
 <translation id="3187212781151025377">מקלדת עברית</translation>
 <translation id="3188257591659621405">הקבצים שלי</translation>
 <translation id="3197563288998582412">‏בריטניה - Dvorak</translation>
@@ -311,7 +309,6 @@
 <translation id="4465830120256509958">מקלדת פורטוגזית (ברזיל) </translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
 <translation id="4477219268485577442">בולגרית פונטית</translation>
-<translation id="4479812471636796472">‏מקלדת Dvorak אנגלית (ארה"ב)</translation>
 <translation id="4522570452068850558">פרטים</translation>
 <translation id="4527800702232535228">‏התיקייה הזו משותפת עם Parallels Desktop</translation>
 <translation id="4552678318981539154">לרכישת עוד נפח אחסון</translation>
@@ -568,7 +565,6 @@
     <ph name="LINE_BREAK1" />
     נמצאו <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">פרפר הפוך</translation>
-<translation id="6939777852457331078">‏מקלדת US Workman</translation>
 <translation id="696203921837389374">הפעלת סנכרון של חבילת הגלישה</translation>
 <translation id="6965382102122355670">אישור</translation>
 <translation id="6970230597523682626">בולגרית</translation>
@@ -588,7 +584,6 @@
 <translation id="7172053773111046550">מקלדת אסטונית</translation>
 <translation id="7180611975245234373">רענון</translation>
 <translation id="7189874332498648577">‎<ph name="NUMBER_OF_GB" /> GB</translation>
-<translation id="719009910964971313">‏מקלדת US Programmer Dvorak</translation>
 <translation id="7191454237977785534">שמירה בשם</translation>
 <translation id="7222624196722476520">מקלדת בולגרית פונטית</translation>
 <translation id="7238097264433196391">שם התקן האחסון</translation>
@@ -597,7 +592,6 @@
 <translation id="7283041136720745563">‏המכסה שלך ב-Google Drive לא גדולה מספיק.</translation>
 <translation id="7295662345261934369">שיתוף עם אחרים</translation>
 <translation id="7339898014177206373">חלון חדש</translation>
-<translation id="7348749398828259943">‏מקלדת US Workman בינלאומית</translation>
 <translation id="7359359531237882347">המערכת מעתיקה <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
 <translation id="7375951387215729722">רשימת הקבצים ממוינת לפי <ph name="COLUMN_NAME" /> בסדר יורד.</translation>
 <translation id="7389722738210761877">‏מקלדת תאילנדית (TIS 820-2531)</translation>
@@ -605,9 +599,7 @@
 <translation id="7417453074306512035">מקלדת אתיופית</translation>
 <translation id="7417705661718309329">‏מפת Google</translation>
 <translation id="7419631653042041064">מקלדת קטלאנית</translation>
-<translation id="7434823369735508263">‏מקלדת Dvorak אנגלית (בריטניה)</translation>
 <translation id="7460898608667578234">אוקראינית</translation>
-<translation id="7474889694310679759">מקלדת אנגלית (קנדה)</translation>
 <translation id="7489215562877293245">‏נמצאו <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     הקבצים מוכנים לגיבוי ב-<ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
@@ -660,7 +652,6 @@
 <translation id="7873831373602885875">לא ניתן לשמור בתיקייה <ph name="FOLDER_NAME" />. כל העריכות יישמרו בתיקייה<ph name="DOWNLOADS_FOLDER" /> שנמצאת בתיקיית ההורדות.</translation>
 <translation id="7881969471599061635">השבתת כתוביות</translation>
 <translation id="78946041517601018">‏כונני Drive משותפים</translation>
-<translation id="7896906914454843592">מקלדת מורחבת של ארה"ב</translation>
 <translation id="7898607018410277265">מקלדת גוג'אראטי (פונטית חדשה)</translation>
 <translation id="7908793776359722643">פרמוט מחיצה ימחק את כל הנתונים המאוחסנים בה. לא ניתן לבטל פעולה זו.</translation>
 <translation id="7917972308273378936">מקלדת ליטאית </translation>
@@ -717,7 +708,6 @@
 <translation id="8395901698320285466">מידות</translation>
 <translation id="8412586565681117057">‏שיטת קלט Quick</translation>
 <translation id="8418113698656761985">מקלדת רומנית</translation>
-<translation id="8432745813735585631">‏מקלדת Colemak אנגלית (ארה"ב)</translation>
 <translation id="8437209419043462667">ארה"ב</translation>
 <translation id="8456681095658380701">שם לא חוקי</translation>
 <translation id="8466234950814670489">‏ארכיון TAR</translation>
@@ -738,7 +728,6 @@
 <translation id="8698464937041809063">‏איור של Google</translation>
 <translation id="8714406895390098252">אופניים</translation>
 <translation id="8719721339511222681">בחרת את <ph name="ENTRY_NAME" />.</translation>
-<translation id="8722421161699219904">מקלדת בינ"ל של ארה"ב</translation>
 <translation id="872537912056138402">קרואטית</translation>
 <translation id="874420130893181774">‏שיטת קלט Traditional Pinyin</translation>
 <translation id="8770002329960263418">‏הולנדית (הולנד) עם מקלדת בינלאומית של ארה"ב ל-PC</translation>

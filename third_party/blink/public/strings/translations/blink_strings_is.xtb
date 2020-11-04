@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">fela valmynd skjátexta</translation>
 <translation id="1729654308190250600">Sláðu inn gilt netfang.</translation>
 <translation id="1758486001363313524">Annað...</translation>
-<translation id="1774577460079229490">núverandi <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">heildartími: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">viðvörunargluggi</translation>
 <translation id="1821985195704844674">trjátafla</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">Gildið verður að vera <ph name="MINIMUM_DATE_OR_TIME" /> eða síðar.</translation>
 <translation id="2759744352195237655">sprettihnappur</translation>
 <translation id="2761667185364618470">Merktu í þennan gátreit ef þú vilt halda áfram.</translation>
-<translation id="2838616441696617235">skref</translation>
 <translation id="2844350028562914727">upplýsingar</translation>
 <translation id="2896972712917208084">valhnappahópur</translation>
 <translation id="2908441821576996758">Sláðu inn lista yfir netföng, aðskilin með kommum.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">færsla í heimildaskrá</translation>
 <translation id="4915360478455618802">Sýna tímaval</translation>
 <translation id="492244087561876220">athugasemd</translation>
-<translation id="4934662370368414994">atriði</translation>
 <translation id="4950364064308314478">Sýna val á dagsetningu og tíma viðkomandi staðar</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> valið</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> valin</translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">sleði fyrir hljóð</translation>
 <translation id="6015796118275082299">Ár</translation>
 <translation id="6023896073578205740">listareitur</translation>
-<translation id="6131824478727057281">staðsetning</translation>
 <translation id="6150588977291308318">heimildaskrá</translation>
 <translation id="6164829606128959761">mælir</translation>
 <translation id="6166809985690652833">eftirmáli</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">þagga</translation>
 <translation id="6885760532393684712">skráasafn</translation>
 <translation id="689129560213475294">baktitill</translation>
-<translation id="6901540140423170855">dagsetning</translation>
 <translation id="6934078000481955284">tilvitnun</translation>
 <translation id="693476918119313863">haus</translation>
 <translation id="6941933287844615239">sækja miðlaefni</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">tilvísun í athugasemd</translation>
 <translation id="811583516810654505">Sækir lýsingu...</translation>
 <translation id="8117451130807776954">Þessi vika</translation>
-<translation id="8180239481735238521">síða</translation>
 <translation id="8199524924445686405">áááá</translation>
 <translation id="8208673686607688524">val á staðbundinni dagsetningu og tíma</translation>
 <translation id="8261464734335370856">Stafsetningarvilla</translation>

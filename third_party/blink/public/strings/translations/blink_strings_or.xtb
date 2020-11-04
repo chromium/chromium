@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">ବନ୍ଦ ଥିବା କ୍ୟାପ୍‌ସନ୍ ମେନୁକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="1729654308190250600">ଦୟାକରି ଏକ ଖାଲି ନଥିବା ଇମେଲ୍ ଠିକଣା ଲେଖନ୍ତୁ।</translation>
 <translation id="1758486001363313524">ଅନ୍ୟ...</translation>
-<translation id="1774577460079229490">ବର୍ତ୍ତମାନର <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">ମୋଟ ସମୟ: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">ଆଲର୍ଟ ଡାୟଲଗ୍‌</translation>
 <translation id="1821985195704844674">ଟ୍ରୀ ଗ୍ରିଡ୍</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">ମୂଲ୍ୟ <ph name="MINIMUM_DATE_OR_TIME" /> କିମ୍ବା ତା’ପର ହେବା ଉଚିତ।</translation>
 <translation id="2759744352195237655">ପପ୍ ଅପ୍ ବଟନ୍</translation>
 <translation id="2761667185364618470">ଯଦି ଆପଣ ଆଗକୁ ବଢ଼ିବାକୁ ଚାହାନ୍ତି, ତେବେ ଦୟାକରି ଏହି ବକ୍ସରେ ଠିକ୍ ଚିହ୍ନ ଦିଅନ୍ତୁ।</translation>
-<translation id="2838616441696617235">ଷ୍ଟେପ୍</translation>
 <translation id="2844350028562914727">ବିବରଣୀ</translation>
 <translation id="2896972712917208084">ରେଡିଓ ଗ୍ରୁପ୍</translation>
 <translation id="2908441821576996758">ଦୟାକରି ଇମେଲ୍ ଠିକଣାଗୁଡ଼ିକର ଏକ କମା ଦ୍ୱାରା ଅଲଗା କରାଯାଇଥିବା ତାଲିକା ଲେଖନ୍ତୁ।</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">ଗ୍ରନ୍ଥସୂଚୀ ଏଣ୍ଟ୍ରି</translation>
 <translation id="4915360478455618802">ସମୟ ପିକର୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="492244087561876220">ମନ୍ତବ୍ୟ</translation>
-<translation id="4934662370368414994">ଆଇଟମ୍</translation>
 <translation id="4950364064308314478">ସ୍ଥାନୀୟ ତାରିଖ ଏବଂ ସମୟ ପିକର୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> ଚୟନ କରାଯାଇଛି</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" />ଟି ଚୟନ କରାଯାଇଛି</translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">ଭଲ୍ୟୁମ୍‍ ସ୍ଲାଇଡର୍‍</translation>
 <translation id="6015796118275082299">ବର୍ଷ</translation>
 <translation id="6023896073578205740">ତାଲିକା ବାକ୍ସ</translation>
-<translation id="6131824478727057281">ଲୋକେସନ୍</translation>
 <translation id="6150588977291308318">ଗ୍ରନ୍ଥସୂଚୀ</translation>
 <translation id="6164829606128959761">ମିଟର୍</translation>
 <translation id="6166809985690652833">ଉପସଂହାର</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">ମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>
 <translation id="6885760532393684712">ଡିରେକ୍ଟୋରୀ</translation>
 <translation id="689129560213475294">colophon</translation>
-<translation id="6901540140423170855">ତାରିଖ</translation>
 <translation id="6934078000481955284">ବ୍ଲକ୍‌କୋଟ୍</translation>
 <translation id="693476918119313863">ହେଡର୍</translation>
 <translation id="6941933287844615239">ମିଡିଆ ଡାଉନ୍‍‍ଲୋଡ୍ କରନ୍ତୁ</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">ନୋଟ୍ ସନ୍ଦର୍ଭ</translation>
 <translation id="811583516810654505">ଡେସ୍କ୍ରିପସନ୍ ପାଉଛି...</translation>
 <translation id="8117451130807776954">ଏହି ସପ୍ତାହ</translation>
-<translation id="8180239481735238521">ପୃଷ୍ଠା</translation>
 <translation id="8199524924445686405">ବର୍ଷ</translation>
 <translation id="8208673686607688524">ସ୍ଥାନୀୟ ଡାଟା ଏବଂ ସମୟ ପିକର୍</translation>
 <translation id="8261464734335370856">ଅବୈଧ ବନାନ</translation>

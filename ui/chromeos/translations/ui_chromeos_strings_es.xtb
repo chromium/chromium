@@ -142,7 +142,6 @@
 <translation id="247772113373397749">Teclado multilingüe canadiense</translation>
 <translation id="2494837236724268445">Teclado gujarati (fonético)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">Teclado de EE. UU.</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> elementos eliminados</translation>
 <translation id="2541377937973966830">El contenido de esta carpeta es de solo lectura. No se admiten algunas acciones.</translation>
 <translation id="2542049655219295786">Tabla de Google</translation>
@@ -196,10 +195,9 @@
 <translation id="3067790092342515856">Archivos de Windows</translation>
 <translation id="3078461028045006476">Compartir con <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebits</translation>
-<translation id="3116361045094675131">Teclado del Reino Unido</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">LISTO</translation>
-<translation id="3157729859914172001">Teclado de EE. UU. internacional (PC)</translation>
+<translation id="3182237543071236785">inglés (Reino Unido)</translation>
 <translation id="3187212781151025377">Teclado hebreo</translation>
 <translation id="3188257591659621405">Mis archivos</translation>
 <translation id="3197563288998582412">Reino Unido (Dvorak)</translation>
@@ -311,7 +309,6 @@
 <translation id="4465830120256509958">Teclado brasileño</translation>
 <translation id="4470564870223067757">Hangul de doble alternancia</translation>
 <translation id="4477219268485577442">Búlgaro fonético</translation>
-<translation id="4479812471636796472">Teclado de EE.UU. Dvorak</translation>
 <translation id="4522570452068850558">Detalles</translation>
 <translation id="4527800702232535228">Esta carpeta se comparte con Parallels Desktop</translation>
 <translation id="4552678318981539154">Comprar más almacenamiento</translation>
@@ -567,7 +564,6 @@
     <ph name="LINE_BREAK1" />
     Archivos encontrados: <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Boca abajo</translation>
-<translation id="6939777852457331078">Teclado estilo Workman (EE. UU.)</translation>
 <translation id="696203921837389374">Habilitar sincronización a través de redes de datos móviles</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6970230597523682626">Búlgaro</translation>
@@ -587,7 +583,6 @@
 <translation id="7172053773111046550">Teclado estonio</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
-<translation id="719009910964971313">Teclado Programmer Dvorak de EE. UU.</translation>
 <translation id="7191454237977785534">Guardar archivo como</translation>
 <translation id="7222624196722476520">Teclado búlgaro fonético</translation>
 <translation id="7238097264433196391">Nombre de la unidad</translation>
@@ -596,7 +591,6 @@
 <translation id="7283041136720745563">No hay espacio suficiente en tu cuota de Google Drive.</translation>
 <translation id="7295662345261934369">Compartir con otros usuarios</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
-<translation id="7348749398828259943">Teclado internacional estilo Workman (EE. UU.)</translation>
 <translation id="7359359531237882347">Se están copiando <ph name="NUMBER_OF_ITEMS" /> elementos...</translation>
 <translation id="7375951387215729722">Lista de archivos ordenados por <ph name="COLUMN_NAME" /> en orden descendente.</translation>
 <translation id="7389722738210761877">Teclado tailandés (TIS 820-2531)</translation>
@@ -604,9 +598,7 @@
 <translation id="7417453074306512035">Teclado etíope</translation>
 <translation id="7417705661718309329">Mapa de Google</translation>
 <translation id="7419631653042041064">Teclado catalán</translation>
-<translation id="7434823369735508263">Teclado de Reino Unido Dvorak</translation>
 <translation id="7460898608667578234">Ucraniano</translation>
-<translation id="7474889694310679759">Teclado inglés canadiense</translation>
 <translation id="7489215562877293245">Archivos encontrados: <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Ya puedes crear una copia de seguridad en <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
@@ -659,7 +651,6 @@
 <translation id="7873831373602885875">No se puede guardar en <ph name="FOLDER_NAME" />. Todos los cambios se guardarán en <ph name="DOWNLOADS_FOLDER" />, en la carpeta Descargas.</translation>
 <translation id="7881969471599061635">Inhabilitar subtítulos</translation>
 <translation id="78946041517601018">Unidades compartidas</translation>
-<translation id="7896906914454843592">Teclado ampliado de EE. UU.</translation>
 <translation id="7898607018410277265">Teclado guyaratí (nueva fonética)</translation>
 <translation id="7908793776359722643">Al formatear una partición, se borrarán todos los datos almacenados en ella. Esta acción no se puede deshacer.</translation>
 <translation id="7917972308273378936">Teclado lituano</translation>
@@ -716,7 +707,6 @@
 <translation id="8395901698320285466">Dimensiones</translation>
 <translation id="8412586565681117057">Método de entrada abreviado</translation>
 <translation id="8418113698656761985">Teclado rumano</translation>
-<translation id="8432745813735585631">Teclado EE.UU. Colemak</translation>
 <translation id="8437209419043462667">EE. UU.</translation>
 <translation id="8456681095658380701">El nombre no es válido</translation>
 <translation id="8466234950814670489">Archivo tar</translation>
@@ -737,7 +727,6 @@
 <translation id="8698464937041809063">Dibujo de Google</translation>
 <translation id="8714406895390098252">Bicicleta</translation>
 <translation id="8719721339511222681">Se ha seleccionado <ph name="ENTRY_NAME" />.</translation>
-<translation id="8722421161699219904">Teclado internacional de EE. UU.</translation>
 <translation id="872537912056138402">Croata</translation>
 <translation id="874420130893181774">Método de introducción de pinyin tradicional</translation>
 <translation id="8770002329960263418">Neerlandés (Países Bajos) con teclado de EE. UU. internacional (PC)</translation>

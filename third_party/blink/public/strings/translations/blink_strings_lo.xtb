@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">ເຊື່ອງເມນູຄໍາອະທິບາຍພາບ</translation>
 <translation id="1729654308190250600">ກະ​ລຸ​ນາ​ໃສ່​ທີ່​ຢູ່​ອີ​ເມວທີ່​ບໍ່​ວ່າງ​ເປົ່າ​.</translation>
 <translation id="1758486001363313524">ອື່ນ...</translation>
-<translation id="1774577460079229490"><ph name="TYPE" /> ປັດຈຸບັນ</translation>
 <translation id="1787192514241997742">ເວລາທັງໝົດ: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">ກ່ອງໂຕ້ຕອບການເຕືອນ</translation>
 <translation id="1821985195704844674">ຕາໜ່າງຕົ້ນໄມ້</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">ມູນຄ່າຕ້ອງ <ph name="MINIMUM_DATE_OR_TIME" /> ຫຼື​ຕໍ່​ມາ​.</translation>
 <translation id="2759744352195237655">ປຸ່ມປັອບອັບ</translation>
 <translation id="2761667185364618470">ກະລຸນາໝາຍຕິກໃສ່ຫ້ອງນີ້ ຖ້າທ່ານຕ້ອງການດໍາເນີນຕໍ່.</translation>
-<translation id="2838616441696617235">ຂັ້ນຕອນ</translation>
 <translation id="2844350028562914727">ລາຍລະອຽດ</translation>
 <translation id="2896972712917208084">ກຸ່ມວິທະຍຸ</translation>
 <translation id="2908441821576996758">ກະລຸນາໃສ່ລາຍຊື່ທີ່ຢູ່ອີເມວທີ່​ແຍກ​ກັນ​ດ້ວຍ​ໝາຍ​ຈຸດ.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">ລາຍການບັນນານຸກົມ</translation>
 <translation id="4915360478455618802">ສະແດງຕົວເລືອກເວລາ</translation>
 <translation id="492244087561876220">ຄຳເຫັນ</translation>
-<translation id="4934662370368414994">ລາຍການ</translation>
 <translation id="4950364064308314478">ສະແດງຕົວເລືອກວັນທີ ແລະ ເວລາທ້ອງຖິ່ນ</translation>
 <translation id="4971739861736909480">ເລືອກ <ph name="ACCNAME" /> ແລ້ວ</translation>
 <translation id="4975562563186953947">ເລືອກ <ph name="SELECTED_COUNT" /> ແລ້ວ</translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">ຕົວເລື່ອນປັບລະດັບສຽງ</translation>
 <translation id="6015796118275082299">ປີ</translation>
 <translation id="6023896073578205740">ກ່ອງລາຍການ</translation>
-<translation id="6131824478727057281">ສະຖານທີ່</translation>
 <translation id="6150588977291308318">ບັນນານຸກົມ</translation>
 <translation id="6164829606128959761">ແມັດ</translation>
 <translation id="6166809985690652833">ຄຳກ່າວທ້າຍບົດ</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">ປິດສຽງ</translation>
 <translation id="6885760532393684712">ແຟ້ມ</translation>
 <translation id="689129560213475294">ຂໍ້ມູນບັນນານຸກົມ</translation>
-<translation id="6901540140423170855">ວັນ​ທີ</translation>
 <translation id="6934078000481955284">ວົງຢືມ</translation>
 <translation id="693476918119313863">ຫົວເຈ້ຍ</translation>
 <translation id="6941933287844615239">ດາວໂຫຼດສື່</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">ການອ້າງອີງບັນທຶກ</translation>
 <translation id="811583516810654505">ກຳລັງຮັບເອົາລາຍລະອຽດ...</translation>
 <translation id="8117451130807776954">ອາ​ທິດ​ນີ້</translation>
-<translation id="8180239481735238521">ຫນ້າ</translation>
 <translation id="8199524924445686405">ປປປປ</translation>
 <translation id="8208673686607688524">ຕົວເລືອກວັນທີ ແລະ ເວລາທ້ອງຖິ່ນ</translation>
 <translation id="8261464734335370856">ການສະກົດຄຳບໍ່ຖືກຕ້ອງ</translation>

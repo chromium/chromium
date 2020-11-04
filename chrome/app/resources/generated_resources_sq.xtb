@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Përbërësi shtesë u bllokua</translation>
 <translation id="1145593918056169051">Printeri ka ndaluar</translation>
 <translation id="114721135501989771">Merr funksionet inteligjente të Google në Chrome</translation>
+<translation id="1147322039136785890">Tani është radha e <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Për të kërkuar qasjen, kontakto me administratorin e kësaj pajisjeje.</translation>
 <translation id="1149401351239820326">Muaji i skadimit</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> po skanohet</translation>
@@ -6576,6 +6577,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8736288397686080465">Ky sajt është përditësuar në sfond.</translation>
 <translation id="8737685506611670901">Hap lidhjet e <ph name="PROTOCOL" /> në vend të <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Promovuesi</translation>
+<translation id="8740247629089392745">Këtë Chromebook mund t'ia dorëzosh <ph name="SUPERVISED_USER_NAME" />. Konfigurimi pothuajse mbaroi, më pas është koha për eksplorim.</translation>
 <translation id="8742998548129056176">Këto janë informacione të përgjithshme për pajisjen tënde dhe se si e përdor ti atë (si p.sh. niveli i baterisë, aktiviteti i sistemit dhe aplikacioneve dhe gabimet). Të dhënat do të përdoren për të përmirësuar Android dhe disa informacionet të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android, të përmirësojnë aplikacionet dhe produktet e tyre.</translation>
 <translation id="8743390665131937741">Niveli i zmadhimit të ekranit të plotë:</translation>
 <translation id="8743864605301774756">Përditësuar 1 orë më parë</translation>

@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">ప్లగ్ఇన్‌ బ్లాక్ చేయబడింది</translation>
 <translation id="1145593918056169051">ప్రింటర్ ఆపివేయబడింది</translation>
 <translation id="114721135501989771">Chromeలో Google స్మార్ట్‌లను పొందండి</translation>
+<translation id="1147322039136785890">ఇప్పుడు దీనిని <ph name="SUPERVISED_USER_NAME" /> ఉపయోగించవచ్చు</translation>
 <translation id="1147991416141538220">యాక్సెస్‌ను అడగడానికి, ఈ పరికరం యొక్క నిర్వాహకులను సంప్రదించండి.</translation>
 <translation id="1149401351239820326">గడువు ముగింపు నెల</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" />ను స్కాన్ చేస్తోంది</translation>
@@ -6585,6 +6586,7 @@
 <translation id="8736288397686080465">ఈ సైట్ నేపథ్యంలో అప్‌డేట్ చేయబడింది.</translation>
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" />కి బదులుగా <ph name="PROTOCOL" /> లింక్‌లను తెరవాలనుకుంటోంది</translation>
 <translation id="8737709691285775803">షిల్</translation>
+<translation id="8740247629089392745">మీరు ఈ Chromebookను <ph name="SUPERVISED_USER_NAME" />కు ఇవ్వవచ్చు. సెటప్ దాదాపు పూర్తయింది, మరిన్ని విషయాలను తెలుసుకునే సమయం ఆసన్నమైంది.</translation>
 <translation id="8742998548129056176">మీ పరికరం గురించి, మీరు దానిని ఉపయోగించే పద్ధతి గురించి (బ్యాటరీ స్థాయి, సిస్టమ్, యాప్‌ల కార్యకలాపం, ఎర్రర్‌ల లాంటివి) తెలియజేసే సాధారణ సమాచారం. Androidను మెరుగుపరచడం కోసం ఈ డేటా ఉపయోగించబడుతుంది. కొంత ఏకీకృత సమాచారం- Google యాప్‌లు, Android డెవలపర్‌ల వంటి భాగస్వాముల యాప్‌లను, ఉత్పత్తులను మెరుగుపరచడంలో సహాయపడుతుంది.</translation>
 <translation id="8743390665131937741">పూర్తిస్క్రీన్ జూమ్ స్థాయి:</translation>
 <translation id="8743864605301774756">1గంట క్రితం నవీకరించబడింది</translation>

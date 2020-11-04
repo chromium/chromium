@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Плагін заблоковано</translation>
 <translation id="1145593918056169051">Збій у роботі принтера</translation>
 <translation id="114721135501989771">Розумні функції в Chrome</translation>
+<translation id="1147322039136785890">Тепер <ph name="SUPERVISED_USER_NAME" /> може отримати пристрій</translation>
 <translation id="1147991416141538220">Щоб отримати доступ, зверніться до адміністратора цього пристрою.</translation>
 <translation id="1149401351239820326">Місяць закінчення терміну дії</translation>
 <translation id="1149725087019908252">Сканування файлу "<ph name="FILE_NAME" />"</translation>
@@ -6589,6 +6590,7 @@
 <translation id="8736288397686080465">Цей сайт оновлено у фоновому режимі.</translation>
 <translation id="8737685506611670901">Відкривати посилання протоколу <ph name="PROTOCOL" />, а не обробника <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745"><ph name="SUPERVISED_USER_NAME" /> може отримати цей пристрій Chromebook. Налаштування майже завершено.</translation>
 <translation id="8742998548129056176">Це загальна інформація про пристрій і його використання (як-от дані про рівень заряду акумулятора, систему, історію додатків і помилки). Ці відомості використовуватимуться, щоб покращити Android, а деякі зведені дані корисні для додатків і партнерів Google, як-от розробників Android.</translation>
 <translation id="8743390665131937741">Рівень масштабування лупи для всього екрана:</translation>
 <translation id="8743864605301774756">Оновлено 1 год тому</translation>

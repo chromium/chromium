@@ -142,7 +142,6 @@
 <translation id="247772113373397749">Canadisk tastatur til flere sprog</translation>
 <translation id="2494837236724268445">Gujarati-tastatur (fonetisk)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">Amerikansk tastatur</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> elementer blev slettet</translation>
 <translation id="2541377937973966830">Indholdet i denne mappe er skrivebeskyttet. Det er ikke alle aktiviteter, der understøttes.</translation>
 <translation id="2542049655219295786">Google-tabel</translation>
@@ -196,10 +195,9 @@
 <translation id="3067790092342515856">Windows-filer</translation>
 <translation id="3078461028045006476">Del med <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebits</translation>
-<translation id="3116361045094675131">Britisk tastatur</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">UDFØR</translation>
-<translation id="3157729859914172001">Amerikansk internationalt tastatur (pc)</translation>
+<translation id="3182237543071236785">Engelsk (Storbritannien)</translation>
 <translation id="3187212781151025377">Hebraisk tastatur</translation>
 <translation id="3188257591659621405">Mine filer</translation>
 <translation id="3197563288998582412">Britisk (Dvorak)</translation>
@@ -311,7 +309,6 @@
 <translation id="4465830120256509958">Brasiliansk tastatur</translation>
 <translation id="4470564870223067757">Hangul 2-sæt</translation>
 <translation id="4477219268485577442">Bulgarsk (fonetisk)</translation>
-<translation id="4479812471636796472">Amerikansk (Dvorak) tastatur</translation>
 <translation id="4522570452068850558">Detaljer</translation>
 <translation id="4527800702232535228">Denne mappe er delt med Parallels Desktop</translation>
 <translation id="4552678318981539154">Køb mere lagerplads</translation>
@@ -567,7 +564,6 @@
     <ph name="LINE_BREAK1" />
     Der blev fundet <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">På hovedet</translation>
-<translation id="6939777852457331078">Amerikansk Workman-tastatur</translation>
 <translation id="696203921837389374">Aktivér synkronisering via mobildata</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Bulgarsk</translation>
@@ -587,7 +583,6 @@
 <translation id="7172053773111046550">Estisk tastatur</translation>
 <translation id="7180611975245234373">Opdater</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
-<translation id="719009910964971313">Amerikansk (Programmer Dvorak) tastatur</translation>
 <translation id="7191454237977785534">Gem fil som</translation>
 <translation id="7222624196722476520">Bulgarsk tastatur (fonetisk)</translation>
 <translation id="7238097264433196391">Navn på drev</translation>
@@ -596,7 +591,6 @@
 <translation id="7283041136720745563">Dine Google Drev-kvote er ikke stor nok.</translation>
 <translation id="7295662345261934369">Del med andre</translation>
 <translation id="7339898014177206373">Nyt vindue</translation>
-<translation id="7348749398828259943">Internationalt amerikansk Workman-tastatur</translation>
 <translation id="7359359531237882347">Kopierer <ph name="NUMBER_OF_ITEMS" /> elementer...</translation>
 <translation id="7375951387215729722">Listen med filer er sorteret efter <ph name="COLUMN_NAME" /> i faldende rækkefølge.</translation>
 <translation id="7389722738210761877">Thailandsk tastatur (TIS 820-2531)</translation>
@@ -604,9 +598,7 @@
 <translation id="7417453074306512035">Etiopisk tastatur</translation>
 <translation id="7417705661718309329">Google-kort</translation>
 <translation id="7419631653042041064">Catalansk tastatur</translation>
-<translation id="7434823369735508263">Britisk (Dvorak) tastatur</translation>
 <translation id="7460898608667578234">ukrainsk</translation>
-<translation id="7474889694310679759">Canadisk (engelsk) tastatur</translation>
 <translation id="7489215562877293245">Der blev fundet <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Klar til at sikkerhedskopiere til <ph name="BEGIN_LINK" />Google Drev<ph name="END_LINK" /></translation>
@@ -659,7 +651,6 @@
 <translation id="7873831373602885875">Der er ikke muligt at gemme i <ph name="FOLDER_NAME" />. Alle redigeringer gemmes i <ph name="DOWNLOADS_FOLDER" /> i mappen Downloads.</translation>
 <translation id="7881969471599061635">Deaktiver undertekster</translation>
 <translation id="78946041517601018">Fællesdrev</translation>
-<translation id="7896906914454843592">Udvidet amerikansk tastatur</translation>
 <translation id="7898607018410277265">Gujarati-tastatur (nyt fonetisk)</translation>
 <translation id="7908793776359722643">Formatering af en partition sletter alle de data, der er gemt på den. Denne handling kan ikke fortrydes.</translation>
 <translation id="7917972308273378936">Litauisk tastatur</translation>
@@ -716,7 +707,6 @@
 <translation id="8395901698320285466">Mål</translation>
 <translation id="8412586565681117057">Hurtig indtastningsmetode</translation>
 <translation id="8418113698656761985">Rumænsk tastatur</translation>
-<translation id="8432745813735585631">Amerikansk (Colemak) tastatur</translation>
 <translation id="8437209419043462667">Amerikansk</translation>
 <translation id="8456681095658380701">Ugyldigt navn</translation>
 <translation id="8466234950814670489">Tar-arkiv</translation>
@@ -737,7 +727,6 @@
 <translation id="8698464937041809063">Google-tegning</translation>
 <translation id="8714406895390098252">Cykel</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> er valgt.</translation>
-<translation id="8722421161699219904">Internationalt amerikansk tastatur</translation>
 <translation id="872537912056138402">Kroatisk</translation>
 <translation id="874420130893181774">Traditionel Pinyin-indtastningsmetode</translation>
 <translation id="8770002329960263418">Hollandsk (Holland) med amerikansk internationalt computertastatur</translation>

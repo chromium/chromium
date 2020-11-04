@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">سب ٹائٹلز مینو چھپائیں</translation>
 <translation id="1729654308190250600">براہ کرم ایک غیر خالی ای میل پتہ درج کریں</translation>
 <translation id="1758486001363313524">دیگر…</translation>
-<translation id="1774577460079229490">حالیہ <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">کل وقت: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">ٹری گرڈ</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">قدر <ph name="MINIMUM_DATE_OR_TIME" /> یا اس کے بعد کی ہونا ضروری ہے۔</translation>
 <translation id="2759744352195237655">پاپ اپ بٹن</translation>
 <translation id="2761667185364618470">اگر آپ آگے بڑھنا چاہتے ہیں تو براہ کرم یہ باکس نشان زد کریں۔</translation>
-<translation id="2838616441696617235">مرحلہ</translation>
 <translation id="2844350028562914727">تفصيلات</translation>
 <translation id="2896972712917208084">ریڈیو گروپ</translation>
 <translation id="2908441821576996758">براہ کرم کوما سے الگ کردہ ای میل پتوں کی ایک فہرست درج کریں۔</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">کتابیات کا اندراج</translation>
 <translation id="4915360478455618802">وقت منتخب کرنے والا دکھائیں</translation>
 <translation id="492244087561876220">تبصرہ</translation>
-<translation id="4934662370368414994">آئٹم</translation>
 <translation id="4950364064308314478">مقامی تاریخ اور وقت منتخب کرنے والا دکھائيں</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> منتخب کیا گيا</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> منتخب کر لیا گیا</translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">والیوم سلائیڈر</translation>
 <translation id="6015796118275082299">سال</translation>
 <translation id="6023896073578205740">فہرست باکس</translation>
-<translation id="6131824478727057281">مقام</translation>
 <translation id="6150588977291308318">کتابیات</translation>
 <translation id="6164829606128959761">میٹر</translation>
 <translation id="6166809985690652833">پسِ نوشت</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">خاموش کریں</translation>
 <translation id="6885760532393684712">ڈائریکٹری</translation>
 <translation id="689129560213475294">خاتمہ کتاب</translation>
-<translation id="6901540140423170855">تاریخ</translation>
 <translation id="6934078000481955284">بلاک کوٹ</translation>
 <translation id="693476918119313863">ہیڈر</translation>
 <translation id="6941933287844615239">میڈیا ڈاؤن لوڈ کریں</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">نوٹ کا حوالہ</translation>
 <translation id="811583516810654505">تفصیل حاصل ہو رہی ہے...</translation>
 <translation id="8117451130807776954">یہ ہفتہ</translation>
-<translation id="8180239481735238521">صفحہ</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8208673686607688524">مقامی تاریخ اور وقت کا منتخب کنندہ</translation>
 <translation id="8261464734335370856">غلط املا</translation>

@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">બંધ કરેલું ઉપશીર્ષક મેનૂ છુપાવો</translation>
 <translation id="1729654308190250600">કૃપા કરીને ખાલી ન હોય એવું ઇમેઇલ ઍડ્રેસ દાખલ કરો.</translation>
 <translation id="1758486001363313524">અન્ય...</translation>
-<translation id="1774577460079229490">વર્તમાન <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">કુલ સમય: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">ચેતવણી_સંવાદ</translation>
 <translation id="1821985195704844674">ટ્રી ગ્રિડ</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">મૂલ્ય <ph name="MINIMUM_DATE_OR_TIME" /> અથવા પછીનું હોવું આવશ્યક છે.</translation>
 <translation id="2759744352195237655">પૉપ-અપ બટન</translation>
 <translation id="2761667185364618470">જો તમે આગળ વધવા માંગતા હો તો કૃપા કરીને આ બૉક્સને ચેક કરો.</translation>
-<translation id="2838616441696617235">પગલું</translation>
 <translation id="2844350028562914727">વિગતો</translation>
 <translation id="2896972712917208084">રેડિઓ જૂથ</translation>
 <translation id="2908441821576996758">કૃપા કરીને અલ્પવિરામથી વિભાજિત ઇમેઇલ સરનામાંઓની સૂચિ દાખલ કરો.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">ગ્રંથસૂચિની એન્ટ્રી</translation>
 <translation id="4915360478455618802">સમય પિકર બતાવો</translation>
 <translation id="492244087561876220">કૉમેન્ટ</translation>
-<translation id="4934662370368414994">આઇટમ</translation>
 <translation id="4950364064308314478">સ્થાનિક તારીખ અને સમય પિકર બતાવો</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" />ની પસંદગી કરી</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> પસંદ કર્યા</translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">વોલ્યુમ સ્લાઇડર</translation>
 <translation id="6015796118275082299">વર્ષ</translation>
 <translation id="6023896073578205740">સૂચિ બૉક્સ</translation>
-<translation id="6131824478727057281">સ્થાન</translation>
 <translation id="6150588977291308318">ગ્રંથસૂચિ</translation>
 <translation id="6164829606128959761">મીટર</translation>
 <translation id="6166809985690652833">સમાપન ભાષણ</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">બંધ કરો</translation>
 <translation id="6885760532393684712">ડિરેક્ટરી</translation>
 <translation id="689129560213475294">પ્રકાશકની માહિતી</translation>
-<translation id="6901540140423170855">તારીખ</translation>
 <translation id="6934078000481955284">બ્લૉકક્વોટ</translation>
 <translation id="693476918119313863">હેડર</translation>
 <translation id="6941933287844615239">મીડિયા ડાઉનલોડ કરો</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">નોંધ સંદર્ભ</translation>
 <translation id="811583516810654505">વર્ણન મેળવી રહ્યાં છીએ…</translation>
 <translation id="8117451130807776954">આ અઠવાડિયે</translation>
-<translation id="8180239481735238521"> પૃષ્ઠ</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8208673686607688524">સ્થાનિક તારીખ અને સમય પિકર</translation>
 <translation id="8261464734335370856">અમાન્ય જોડણી</translation>

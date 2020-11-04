@@ -142,7 +142,6 @@
 <translation id="247772113373397749">Канадская многоязычная раскладка клавиатуры</translation>
 <translation id="2494837236724268445">Раскладка гуджарати (фонетическая)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">Американская раскладка</translation>
 <translation id="2534155362429831547">Удалено записей: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2541377937973966830">Содержимое этой папки доступно только для чтения. Некоторые действия не поддерживаются.</translation>
 <translation id="2542049655219295786">Таблица Google</translation>
@@ -196,10 +195,9 @@
 <translation id="3067790092342515856">Файлы Windows</translation>
 <translation id="3078461028045006476">Поделиться с помощью приложения "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3083975830683400843">Устройства Chromebit</translation>
-<translation id="3116361045094675131">Английская раскладка</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ГОТОВО</translation>
-<translation id="3157729859914172001">Американская международная раскладка (ПК)</translation>
+<translation id="3182237543071236785">английская раскладка (Великобритания)</translation>
 <translation id="3187212781151025377">Раскладка для иврита</translation>
 <translation id="3188257591659621405">Мои файлы</translation>
 <translation id="3197563288998582412">Британская (раскладка Дворака)</translation>
@@ -311,7 +309,6 @@
 <translation id="4465830120256509958">Бразильская раскладка</translation>
 <translation id="4470564870223067757">Корейская раскладка (Dubeolsik)</translation>
 <translation id="4477219268485577442">Болгарская (фонетическая)</translation>
-<translation id="4479812471636796472">Американская раскладка (Дворак)</translation>
 <translation id="4522570452068850558">Подробнее</translation>
 <translation id="4527800702232535228">Доступ к этой папке предоставлен Parallels Desktop.</translation>
 <translation id="4552678318981539154">Приобретите дополнительное пространство</translation>
@@ -567,7 +564,6 @@
     <ph name="LINE_BREAK1" />
     Обнаружены файлы (<ph name="FILE_COUNT" />).</translation>
 <translation id="6935521024859866267">Вверх ногами</translation>
-<translation id="6939777852457331078">Раскладка США (Workman)</translation>
 <translation id="696203921837389374">Синхронизировать по мобильной сети</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6970230597523682626">Болгарский</translation>
@@ -587,7 +583,6 @@
 <translation id="7172053773111046550">Эстонская раскладка</translation>
 <translation id="7180611975245234373">Обновить</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ГБ</translation>
-<translation id="719009910964971313">Клавиатура Дворака для программистов (США)</translation>
 <translation id="7191454237977785534">Сохранить файл как</translation>
 <translation id="7222624196722476520">Болгарская раскладка (фонетическая)</translation>
 <translation id="7238097264433196391">Название диска</translation>
@@ -596,7 +591,6 @@
 <translation id="7283041136720745563">На Google Диске недостаточно места</translation>
 <translation id="7295662345261934369">Предоставить доступ</translation>
 <translation id="7339898014177206373">Новое окно</translation>
-<translation id="7348749398828259943">Раскладка США (Workman, международная)</translation>
 <translation id="7359359531237882347">Копирование объектов (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="7375951387215729722">Данные в столбце "<ph name="COLUMN_NAME" />" отсортированы по убыванию.</translation>
 <translation id="7389722738210761877">Тайская раскладка (TIS 820-2531)</translation>
@@ -604,9 +598,7 @@
 <translation id="7417453074306512035">Эфиопская раскладка</translation>
 <translation id="7417705661718309329">Карта Google</translation>
 <translation id="7419631653042041064">Каталанская раскладка</translation>
-<translation id="7434823369735508263">Английская раскладка (Дворак)</translation>
 <translation id="7460898608667578234">Украинский</translation>
-<translation id="7474889694310679759">Канадская раскладка (английский)</translation>
 <translation id="7489215562877293245">Обнаружены файлы (<ph name="FILE_COUNT" />).
     <ph name="LINE_BREAK1" />
     Файлы готовы к сохранению на <ph name="BEGIN_LINK" />Google Диске<ph name="END_LINK" />.</translation>
@@ -659,7 +651,6 @@
 <translation id="7873831373602885875">Не удается сохранить файлы в папке "<ph name="FOLDER_NAME" />". Изменения будут сохранены здесь: "Загрузки" &gt; <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="7881969471599061635">Отключить субтитры</translation>
 <translation id="78946041517601018">Общие диски</translation>
-<translation id="7896906914454843592">Раскладка США (расширенная)</translation>
 <translation id="7898607018410277265">Клавиатура гуджарати (фонетическая, новая версия)</translation>
 <translation id="7908793776359722643">При форматировании раздела все хранящиеся в нем данные будут удалены. Это действие нельзя отменить.</translation>
 <translation id="7917972308273378936">Литовская раскладка</translation>
@@ -716,7 +707,6 @@
 <translation id="8395901698320285466">Размеры</translation>
 <translation id="8412586565681117057">Быстрое письмо</translation>
 <translation id="8418113698656761985">Румынская раскладка</translation>
-<translation id="8432745813735585631">Американская раскладка (Colemak)</translation>
 <translation id="8437209419043462667">США</translation>
 <translation id="8456681095658380701">Недопустимое название</translation>
 <translation id="8466234950814670489">Архив TAR</translation>
@@ -737,7 +727,6 @@
 <translation id="8698464937041809063">Рисунок Google</translation>
 <translation id="8714406895390098252">Велосипед</translation>
 <translation id="8719721339511222681">Выбран объект "<ph name="ENTRY_NAME" />".</translation>
-<translation id="8722421161699219904">Раскладка США (международная)</translation>
 <translation id="872537912056138402">Хорватский</translation>
 <translation id="874420130893181774">Пиньинь</translation>
 <translation id="8770002329960263418">Нидерландский (Нидерланды) в американской международной раскладке (ПК)</translation>

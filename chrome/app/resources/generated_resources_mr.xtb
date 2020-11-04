@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">प्लग-इन ब्लॉक केले</translation>
 <translation id="1145593918056169051">प्रिंटर थांबला आहे</translation>
 <translation id="114721135501989771">Chrome मध्ये Google स्मार्ट मिळवा</translation>
+<translation id="1147322039136785890">आता <ph name="SUPERVISED_USER_NAME" /> ची पाळी आहे</translation>
 <translation id="1147991416141538220">अ‍ॅक्सेसची विनंती करण्यासाठी या डिव्हाइसच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="1149401351239820326">कालबाह्य होण्याचा महिना:</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> स्कॅन करत आहे</translation>
@@ -6577,6 +6578,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8736288397686080465">ही साइट पार्श्वभूमीमध्ये अपडेट केली गेली आहे.</translation>
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> ऐवजी <ph name="PROTOCOL" /> लिंक उघडा</translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">तुम्ही हे Chromebook <ph name="SUPERVISED_USER_NAME" /> कडे सोपवू शकता. सेट करणे जवळपास पूर्ण झाले आहे, त्यानंतर एक्सप्लोर करण्याची वेळ आहे.</translation>
 <translation id="8742998548129056176">तुमचे डिव्हाइस आणि तुम्ही ते कसे वापरता याबद्दल ही सर्वसाधारण माहिती आहे (जसे की, बॅटरी पातळी, सिस्टम आणि ॲप ॲक्टिव्हिटी व एरर). डेटा Android मध्ये सुधारणा करण्यासाठी वापरला जाईल आणि काही एकत्रित केलेली माहिती Google ॲप्स आणि Android डेव्हलपरसारख्या भागीदारांनादेखील त्यांची ॲप्स आणि उत्पादने आणखी चांगली बनवण्यात मदत करेल.</translation>
 <translation id="8743390665131937741">क्षेत्रे झूम पातळी:</translation>
 <translation id="8743864605301774756">1 तासापूर्वी अपडेट करण्यात आले</translation>

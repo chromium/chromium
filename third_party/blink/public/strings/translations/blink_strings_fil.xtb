@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">itago ang menu ng mga nakasarang caption</translation>
 <translation id="1729654308190250600">Mangyaring maglagay ng isang non-empty na email address.</translation>
 <translation id="1758486001363313524">Iba pa...</translation>
-<translation id="1774577460079229490">kasalukuyang <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">kabuuang oras: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">tree grid</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">Dapat <ph name="MINIMUM_DATE_OR_TIME" /> o mas bago ang value.</translation>
 <translation id="2759744352195237655">pop up na button</translation>
 <translation id="2761667185364618470">Pakitingnan ang kahon na ito kung gusto mong magpatuloy.</translation>
-<translation id="2838616441696617235">hakbang</translation>
 <translation id="2844350028562914727">mga detalye</translation>
 <translation id="2896972712917208084">pangkat ng radyo</translation>
 <translation id="2908441821576996758">Mangyaring magpasok ng listahan ng email address na pinaghihiwalay ng kuwit.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">entry sa bibliograpiya</translation>
 <translation id="4915360478455618802">Ipakita ang picker ng oras</translation>
 <translation id="492244087561876220">komento</translation>
-<translation id="4934662370368414994">item</translation>
 <translation id="4950364064308314478">Ipakita ang picker ng lokal na petsa at oras</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> ang napili</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ang napili</translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">slider ng volume</translation>
 <translation id="6015796118275082299">Taon</translation>
 <translation id="6023896073578205740">kahon ng listahan</translation>
-<translation id="6131824478727057281">lokasyon</translation>
 <translation id="6150588977291308318">bibliograpiya</translation>
 <translation id="6164829606128959761">metro</translation>
 <translation id="6166809985690652833">afterword</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">i-mute</translation>
 <translation id="6885760532393684712">direktoryo</translation>
 <translation id="689129560213475294">colophon</translation>
-<translation id="6901540140423170855">date</translation>
 <translation id="6934078000481955284">blockquote</translation>
 <translation id="693476918119313863">header</translation>
 <translation id="6941933287844615239">i-download ang media</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">sanggunian sa tala</translation>
 <translation id="811583516810654505">Kinukuha ang paglalarawan...</translation>
 <translation id="8117451130807776954">Linggong ito</translation>
-<translation id="8180239481735238521">pahina</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8208673686607688524">picker ng lokal na petsa at oras</translation>
 <translation id="8261464734335370856">Invalid na spelling</translation>

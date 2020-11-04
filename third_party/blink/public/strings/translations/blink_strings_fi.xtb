@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">sulje tekstitysvalikko</translation>
 <translation id="1729654308190250600">Kirjoita ei-tyhjä sähköpostiosoite.</translation>
 <translation id="1758486001363313524">Muu...</translation>
-<translation id="1774577460079229490">nykyinen <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">kokonaisaika: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">ilmoitusvalintaikkuna</translation>
 <translation id="1821985195704844674">puuruudukko</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">Arvon on oltava <ph name="MINIMUM_DATE_OR_TIME" /> tai myöhempi.</translation>
 <translation id="2759744352195237655">ponnahduspainike</translation>
 <translation id="2761667185364618470">Valitse tämä ruutu jatkaaksesi.</translation>
-<translation id="2838616441696617235">vaihe</translation>
 <translation id="2844350028562914727">tiedot</translation>
 <translation id="2896972712917208084">valintapainikeryhmä</translation>
 <translation id="2908441821576996758">Anna pilkuilla erotettu sähköpostiosoitteiden luettelo.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">lähdeluettelomerkintä</translation>
 <translation id="4915360478455618802">Näytä ajan valitsin</translation>
 <translation id="492244087561876220">kommentti</translation>
-<translation id="4934662370368414994">kohde</translation>
 <translation id="4950364064308314478">Näytä paikallinen päivämäärän ja ajan valitsin</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> valittu</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> valittu</translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">äänenvoimakkuuden liukusäädin</translation>
 <translation id="6015796118275082299">Vuosi</translation>
 <translation id="6023896073578205740">luetteloruutu</translation>
-<translation id="6131824478727057281">sijainti</translation>
 <translation id="6150588977291308318">lähdeluettelo</translation>
 <translation id="6164829606128959761">mittari</translation>
 <translation id="6166809985690652833">jälkipuhe</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">äänetön</translation>
 <translation id="6885760532393684712">hakemisto</translation>
 <translation id="689129560213475294">kolofoni</translation>
-<translation id="6901540140423170855">pvm</translation>
 <translation id="6934078000481955284">muotoiltu lainaus</translation>
 <translation id="693476918119313863">otsikko</translation>
 <translation id="6941933287844615239">lataa media</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">muistiinpanoviittaus</translation>
 <translation id="811583516810654505">Haetaan kuvausta…</translation>
 <translation id="8117451130807776954">Tällä viikolla</translation>
-<translation id="8180239481735238521">sivu</translation>
 <translation id="8199524924445686405">vvvv</translation>
 <translation id="8208673686607688524">paikallisen päivämäärän ja ajan valitsin</translation>
 <translation id="8261464734335370856">Kirjoitusvirhe</translation>

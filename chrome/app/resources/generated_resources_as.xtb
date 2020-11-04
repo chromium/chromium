@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">প্লাগইন অৱৰোধ কৰা হ'ল</translation>
 <translation id="1145593918056169051">প্ৰিণ্টাৰটো বন্ধ হৈছে</translation>
 <translation id="114721135501989771">Chromeত Googleৰ সেৱা পাওক</translation>
+<translation id="1147322039136785890">এতিয়া <ph name="SUPERVISED_USER_NAME" />ৰ পাল</translation>
 <translation id="1147991416141538220">এক্সেছ বিচাৰিবলৈ এই ডিভাইচটোৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="1149401351239820326">ম্যাদ উকলা মাহ</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" />ক স্কেন কৰি থকা হৈছে</translation>
@@ -6571,6 +6572,7 @@
 <translation id="8736288397686080465">নেপথ্যত ছাইটটোক আপডে’ট কৰা হ’ল।</translation>
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" />ৰ সলনি <ph name="PROTOCOL" /> লিংকসমূহ খোলক</translation>
 <translation id="8737709691285775803">শ্বিল</translation>
+<translation id="8740247629089392745">আপুনি এই Chromebookটো <ph name="SUPERVISED_USER_NAME" />ক গতাই দিব পাৰে। ছেটআপ প্ৰায় সম্পূৰ্ণ হৈছে, তাৰ পাছত আপুনি অন্বেষণ কৰা আৰম্ভ কৰিব পাৰে।</translation>
 <translation id="8742998548129056176">এইয়া হৈছে আপোনাৰ ডিভাইচটো আৰু আপুনি এইটো কেনেদৰে ব্যৱহাৰ কৰে সেই বিষয়ে কিছুমান সাধাৰণ তথ্য (যেনে, বেটাৰীৰ স্তৰ, ছিষ্টেম আৰু এপৰ কাৰ্যকলাপ আৰু আসোঁৱাহসমূহ)। এই ডেটাসমূহ Androidক উন্নত কৰিবলৈ ব্যৱহাৰ কৰা হ'ব, লগতে কিছুমান একত্ৰিত ডেটাই Google এপ্‌সমূহ আৰু অংশীদাৰসকল, যেনে Android বিকাশকৰ্তাসকলক তেওঁলোকৰ এপ্ আৰু অইন প্ৰডাক্টসমূহ অধিক উন্নত কৰাত সহায় কৰিব।</translation>
 <translation id="8743390665131937741">সম্পূর্ণ স্ক্ৰীণৰ জুমৰ স্তৰ:</translation>
 <translation id="8743864605301774756">১ ঘণ্টা আগত আপডে’ট কৰা হ’ল</translation>

@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">إخفاء قائمة مقاطع الترجمة والشرح</translation>
 <translation id="1729654308190250600">يُرجى إدخال عنوان البريد الإلكتروني وعدم ترك الحق فارغًا.</translation>
 <translation id="1758486001363313524">آخر...</translation>
-<translation id="1774577460079229490"><ph name="TYPE" /> الحالي</translation>
 <translation id="1787192514241997742">الوقت الإجمالي: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">مربع حوار_للتنبيه</translation>
 <translation id="1821985195704844674">شبكة متفرعة</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">يجب أن تكون القيمة <ph name="MINIMUM_DATE_OR_TIME" /> أو بعد ذلك.</translation>
 <translation id="2759744352195237655">زر بقائمة منبثقة</translation>
 <translation id="2761667185364618470">يُرجى وضع علامة في هذا المربع إذا أردت المتابعة.</translation>
-<translation id="2838616441696617235">خطوة</translation>
 <translation id="2844350028562914727">التفاصيل</translation>
 <translation id="2896972712917208084">مجموعة أزرار الاختيار</translation>
 <translation id="2908441821576996758">يُرجى إدخال قائمة مفصولة بفواصل لعناوين البريد الإلكتروني.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">إدخال قائمة مراجع</translation>
 <translation id="4915360478455618802">عرض منتقي الوقت</translation>
 <translation id="492244087561876220">تعليق</translation>
-<translation id="4934662370368414994">عنصر</translation>
 <translation id="4950364064308314478">عرض منتقي الوقت والتاريخ المحلييَن</translation>
 <translation id="4971739861736909480">تم اختيار <ph name="ACCNAME" />.</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> محددة</translation>
@@ -177,7 +174,6 @@
 <translation id="6011459053400940133">شريط تمرير مستوى الصوت</translation>
 <translation id="6015796118275082299">عام</translation>
 <translation id="6023896073578205740">مربع القائمة</translation>
-<translation id="6131824478727057281">الموقع الجغرافي</translation>
 <translation id="6150588977291308318">قائمة مراجع</translation>
 <translation id="6164829606128959761">متر</translation>
 <translation id="6166809985690652833">كلمة ختامية</translation>
@@ -209,7 +205,6 @@
 <translation id="6843725295806269523">كتم الصوت</translation>
 <translation id="6885760532393684712">الدليل</translation>
 <translation id="689129560213475294">إشارة ناشر</translation>
-<translation id="6901540140423170855">التاريخ</translation>
 <translation id="6934078000481955284">علامة اقتباس فقرة</translation>
 <translation id="693476918119313863">عنوان</translation>
 <translation id="6941933287844615239">تنزيل وسائط</translation>
@@ -256,7 +251,6 @@
 <translation id="8105797009065549151">ملاحظة مرجعية</translation>
 <translation id="811583516810654505">جارٍ الحصول على وصف...</translation>
 <translation id="8117451130807776954">هذا الأسبوع</translation>
-<translation id="8180239481735238521">صفحة</translation>
 <translation id="8199524924445686405">سنة</translation>
 <translation id="8208673686607688524">منتقي الوقت والتاريخ المحليان</translation>
 <translation id="8261464734335370856">تدقيق إملائي غير صالح</translation>

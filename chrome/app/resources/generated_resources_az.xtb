@@ -132,6 +132,7 @@
 <translation id="1145292499998999162">Plaqin bloklandı</translation>
 <translation id="1145593918056169051">Printer dayanıb</translation>
 <translation id="114721135501989771">Chrome'da Google yenilikləri əldə edin</translation>
+<translation id="1147322039136785890">İndi <ph name="SUPERVISED_USER_NAME" /> adlı istifadəçinin növbəsidir</translation>
 <translation id="1147991416141538220">Giriş tələb etmək üçün bu cihazın administratoru ilə əlaqə saxlayın.</translation>
 <translation id="1149401351239820326">Bitmə ayı</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> skan edilir</translation>
@@ -6579,6 +6580,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8736288397686080465">Bu sayt arxa fonda güncəlləşdi.</translation>
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> əvəzinə <ph name="PROTOCOL" /> linklərini açın</translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">Bu Chromebook'u <ph name="SUPERVISED_USER_NAME" /> adlı istifadəçiyə verə bilərsiniz. Ayarlama tamamlanmaq üzrədir, bundan sonra araşdırmağa başlaya bilərsiniz.</translation>
 <translation id="8742998548129056176">Bu ümumi məlumat cihazınız və ondan istifadə haqqındadır (məsələn, batareya səviyyəsi, sistem və tətbiq fəaliyyəti və xətalar). Data Android məhsullarını təkmilləşdirmək məqsədilə istifadə olunacaq. Bəzi ümumiləşdirilmiş məlumatlar Google tətbiqlərinə və Android tərtibatçıları kimi partnyorlara tətbiq və məhsullarını təkmilləşdirməkdə kömək edəcək.</translation>
 <translation id="8743390665131937741">Tam ekran miqyas səviyyəsi:</translation>
 <translation id="8743864605301774756">1 saat əvvəl yenilənib</translation>

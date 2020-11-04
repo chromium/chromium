@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">sembunyikan menu sari kata</translation>
 <translation id="1729654308190250600">Sila masukkan alamat e-mel bukan kosong.</translation>
 <translation id="1758486001363313524">Lain-lain...</translation>
-<translation id="1774577460079229490"><ph name="TYPE" /> semasa</translation>
 <translation id="1787192514241997742">jumlah masa: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">dialog_makluman</translation>
 <translation id="1821985195704844674">grid pohon</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">Nilai mestilah <ph name="MINIMUM_DATE_OR_TIME" /> atau kemudian.</translation>
 <translation id="2759744352195237655">butang timbul</translation>
 <translation id="2761667185364618470">Sila tandakan kotak ini jika anda mahu teruskan.</translation>
-<translation id="2838616441696617235">langkah</translation>
 <translation id="2844350028562914727">butiran</translation>
 <translation id="2896972712917208084">kumpulan radio</translation>
 <translation id="2908441821576996758">Sila masukkan senarai alamat e-mel yang dipisahkan dengan koma.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">masukan bibliografi</translation>
 <translation id="4915360478455618802">Paparkan pemilih masa</translation>
 <translation id="492244087561876220">ulasan</translation>
-<translation id="4934662370368414994">item</translation>
 <translation id="4950364064308314478">Paparkan pemilih tarikh dan masa tempatan</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> dipilih</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> dipilih</translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">peluncur kelantangan</translation>
 <translation id="6015796118275082299">Tahun</translation>
 <translation id="6023896073578205740">kotak senarai</translation>
-<translation id="6131824478727057281">lokasi</translation>
 <translation id="6150588977291308318">bibliografi</translation>
 <translation id="6164829606128959761">meter</translation>
 <translation id="6166809985690652833">kata hujungan</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">redam</translation>
 <translation id="6885760532393684712">direktori</translation>
 <translation id="689129560213475294">kolofon</translation>
-<translation id="6901540140423170855">tarikh</translation>
 <translation id="6934078000481955284">petikan blok</translation>
 <translation id="693476918119313863">pengepala</translation>
 <translation id="6941933287844615239">muat turun media</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">rujukan nota</translation>
 <translation id="811583516810654505">Mendapatkan perihalan...</translation>
 <translation id="8117451130807776954">Minggu ini</translation>
-<translation id="8180239481735238521">halaman</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8208673686607688524">pemilih tarikh dan masa setempat</translation>
 <translation id="8261464734335370856">Ejaan tidak sah</translation>

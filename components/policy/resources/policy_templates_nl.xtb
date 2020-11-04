@@ -2765,11 +2765,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="5306186200045823863">De verouderde PKI-infrastructuur van Symantec Corporation vertrouwen</translation>
 <translation id="5307432759655324440">Beschikbaarheid van incognitomodus</translation>
 <translation id="5311275381462687162">Instelling voor standaardgedrag voor verouderde cookies van <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
-<translation id="5315324986365616322">Als je het beleid inschakelt, wordt Fast Transition gebruikt als het draadloze toegangspunt dit ondersteunt. Dit is van toepassing op alle gebruikers en interfaces op het apparaat.
-
-      Als je het beleid uitschakelt of niet instelt, wordt Fast Transition niet gebruikt.
-
-      Opmerking: Als je Fast Transition wilt gebruiken, moet je ook de ONC-eigenschap per netwerk inschakelen.</translation>
 <translation id="5315367501385698459">Als je het beleid instelt, kun je een lijst met URL-patronen opgeven met de sites die op het inlogscherm automatisch toegangsrechten krijgen voor een USB-apparaat met de opgegeven leveranciers- en product-ID's. Het beleid is alleen geldig als elk item in de lijst de velden <ph name="DEVICES_FIELD_NAME" /> en <ph name="URLS_FIELD_NAME" /> bevat. Elk item in het veld <ph name="DEVICES_FIELD_NAME" /> kan een veld <ph name="VENDOR_ID_FIELD_NAME" /> en een veld <ph name="PRODUCT_ID_FIELD_NAME" /> hebben. Als je het veld <ph name="VENDOR_ID_FIELD_NAME" /> weglaat, wordt een beleid gemaakt dat geschikt is voor elk apparaat. Als je het veld <ph name="PRODUCT_ID_FIELD_NAME" /> weglaat, wordt een beleid gemaakt dat geschikt is voor elk apparaat met de opgegeven leveranciers-ID. Een beleid dat het veld <ph name="PRODUCT_ID_FIELD_NAME" /> heeft zonder het veld <ph name="VENDOR_ID_FIELD_NAME" /> is ongeldig.
 
       Het USB-rechtenmodel gebruikt de aanvragende URL en de insluitings-URL om de aanvragende URL toegang te geven tot het USB-apparaat. Als de aanvragende site in een iframe wordt geladen, kan de aanvragende URL anders zijn dan de insluitings-URL. Daarom kan het veld <ph name="URLS_FIELD_NAME" /> maximaal 2 door een komma gescheiden tekenreeksen bevatten om de aanvragende URL en de insluitings-URL op te geven. Als er maar één URL wordt opgegeven, wordt toegang tot de bijbehorende USB-apparaten gegeven als de URL van de aanvragende site overeenkomt met deze URL, ongeacht de insluitingsstatus. De URL's moeten geldig zijn, anders wordt het beleid genegeerd.
@@ -2935,7 +2930,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="5475361623548884387">Afdrukken inschakelen</translation>
 <translation id="547601067149622666">Geen advertenties toestaan op sites met opdringerige advertenties</translation>
 <translation id="5483065054530244863">Door lokale vertrouwensinstanties verstrekte, met SHA-1 ondertekende certificaten toestaan</translation>
-<translation id="5494917047563607689">Als je het beleid instelt op een waarde lager dan 1 MB of als dit beleid niet wordt ingesteld, gebruikt <ph name="PRODUCT_OS_NAME" /> de standaardgrootte voor het opslaan van apps en extensies in het cachegeheugen voor installaties door meerdere gebruikers van één apparaat. Hierdoor is het niet nodig om elke app of extensie voor elke gebruiker opnieuw te downloaden.</translation>
 <translation id="5499375345075963939">Dit beleid is alleen actief in de commerciële modus.
 
       Wanneer de waarde van dit beleid is ingesteld en niet 0 is, wordt de momenteel ingelogde demogebruiker automatisch uitgelogd nadat een inactiviteitsperiode met de opgegeven duur is verstreken.
@@ -3813,9 +3807,6 @@ Als je ervoor kiest het volgende te gebruiken:
       Versies vóór 75 die gebruikmaken van meerdere, door komma's gescheiden extensie-ID's worden niet ondersteund en worden overgeslagen. De rest van het beleid is van toepassing.
 
       Opmerking: Dit beleid is ook van invloed op extensies en apps die afgedwongen geïnstalleerd worden met <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.</translation>
-<translation id="672496466524161417">Als je het beleid instelt op 'None' of niet instelt, kunnen gebruikers certificaten beheren. Als je het beleid instelt op '2', kunnen gebruikers de certificaten alleen bekijken (en niet beheren).
-
-      Als je het beleid instelt op '1', kunnen gebruikers gebruikerscertificaten beheren, maar geen certificaten voor het hele apparaat.</translation>
 <translation id="6731757988219967594">Sites op hoofdniveau (maar geen ingesloten iframes) filteren op content voor volwassenen</translation>
 <translation id="6734521799274931721">Beheert netwerkfileshares voor Chrome OS-beschikbaarheid</translation>
 <translation id="6735701345096330595">Inschakelen van spellingcontrole voor talen afdwingen</translation>
@@ -3900,11 +3891,6 @@ Als je ervoor kiest het volgende te gebruiken:
       Hiermee worden de markeringen gespecificeerd die bij het starten moeten worden toegepast op <ph name="PRODUCT_NAME" />. De opgegeven markeringen worden alleen toegepast op het inlogscherm. Markeringen die worden ingesteld via dit beleid, worden niet doorgevoerd in gebruikerssessies.</translation>
 <translation id="685769593149966548">Strenge 'Beperkte modus' voor YouTube afdwingen</translation>
 <translation id="686079137349561371">Microsoft Windows 7 of later</translation>
-<translation id="6863342574191774334">Als deze instelling ingeschakeld is, kunnen gebruikers zich aanmelden voor 'Dichtbij delen'. Daarmee kunnen ze bestanden sturen naar en ontvangen van mensen in de buurt.
-
-      Als deze instelling uitgeschakeld is, kunnen gebruikers zich niet aanmelden voor 'Dichtbij delen'.
-
-      Als je dit beleid niet instelt, is de standaardoptie toegestaan voor zowel zakelijk beheerde gebruikers als niet-beheerde gebruikers.</translation>
 <translation id="6889123056995503704">De gebruiker bepaalt het downgradegedrag voor kanalen</translation>
 <translation id="6894178810167845842">URL van pagina 'Nieuw tabblad'</translation>
 <translation id="6897730193187922386">Berichten over beëindiging van <ph name="CLOUD_PRINT_NAME" /> onderdrukken</translation>

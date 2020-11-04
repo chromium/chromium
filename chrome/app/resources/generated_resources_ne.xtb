@@ -132,6 +132,7 @@
 <translation id="1145292499998999162">प्लगइन रोकियो</translation>
 <translation id="1145593918056169051">प्रिन्टरले काम गरेको छैन</translation>
 <translation id="114721135501989771">Chrome मा Google स्मार्ट प्राप्त गर्नुहोस्‌</translation>
+<translation id="1147322039136785890">अब <ph name="SUPERVISED_USER_NAME" /> को पालो</translation>
 <translation id="1147991416141538220">पहुँच माग्न यस यन्त्रका प्रशासकलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="1149401351239820326">म्याद सकिने महिना</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> स्क्यान गरिँदै</translation>
@@ -6575,6 +6576,7 @@
 <translation id="8736288397686080465">यो साइट पृष्ठभूमिमा अद्यावधिक गरिएको छ।</translation>
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> को सट्टामा <ph name="PROTOCOL" /> लिंक खोल्नुहोस्</translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">तपाईं यो Chromebook <ph name="SUPERVISED_USER_NAME" /> लाई दिन सक्नुहुन्छ। सेटअप गर्ने काम लगभग सकियो, अब उनी यो यन्त्र चलाउन थाल्न सक्छन्।</translation>
 <translation id="8742998548129056176">यो जानकारी तपाईंको यन्त्र र तपाईंले यसलाई प्रयोग गर्ने तरिकासम्बन्धी सामान्य जानकारी हो (जस्तै ब्याट्रीको स्तर, प्रणाली तथा एपका गतिविधि र त्रुटिहरू)। यो डेटा Android मा सुधार ल्याउने प्रयोजनका लागि प्रयोग गरिने छ र केही समग्र जानकारीले Google का एप तथा Android का विकासकर्ताहरू जस्ता साझेदारहरूलाई तिनका एप र उत्पादनहरू अझ राम्रा बनाउन पनि मद्दत गर्ने छन्।</translation>
 <translation id="8743390665131937741">पूर्ण स्क्रिनको जुमको स्तर:</translation>
 <translation id="8743864605301774756">१ घन्टाअघि अद्यावधिक गरिएको</translation>

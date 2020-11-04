@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">प्लग इन अवरोधित</translation>
 <translation id="1145593918056169051">प्रिंटर बंद हो गया है</translation>
 <translation id="114721135501989771">Chrome में Google स्मार्ट पाएं</translation>
+<translation id="1147322039136785890">अब <ph name="SUPERVISED_USER_NAME" /> इस डिवाइस का इस्तेमाल कर सकते हैं</translation>
 <translation id="1147991416141538220">ऐक्सेस मांगने के लिए, इस डिवाइस के एडमिन से संपर्क करें.</translation>
 <translation id="1149401351239820326">समाप्ति माह</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> स्कैन हो रही है</translation>
@@ -6587,6 +6588,7 @@
 <translation id="8736288397686080465">इस साइट को पृष्‍ठभूमि में अपडेट किया गया है.</translation>
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> के बजाय <ph name="PROTOCOL" /> लिंक खोलें</translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">आप यह Chromebook <ph name="SUPERVISED_USER_NAME" /> को इस्तेमाल करने के लिए दे सकते हैं. सेट अप करीब-करीब पूरा हो गया है, अब इसका कॉन्टेंट देखा जा सकता है.</translation>
 <translation id="8742998548129056176">यह आपके डिवाइस और इसके इस्तेमाल से जुड़ी सामान्य जानकारी है, जैसे कि जैसे कि बैटरी कितनी चार्ज है, सिस्टम और ऐप्लिकेशन की गतिविधि, और गड़बड़ियां. डिवाइस से जुड़े इस डेटा का इस्तेमाल Android काे बेहतर बनाने के लिए किया जाएगा. साथ ही, इकट्ठा की गई कुछ जानकारी की मदद से Android डेवलपर जैसे पार्टनर और Google के ऐप्लिकेशन अपने प्रॉडक्ट को बेहतर बना पाएंगे.</translation>
 <translation id="8743390665131937741">फ़ुलस्क्रीन ज़ूम स्तर:</translation>
 <translation id="8743864605301774756">1 घंटे पहले अपडेट किया गया</translation>

@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">不要顯示隱藏式輔助字幕選單</translation>
 <translation id="1729654308190250600">請輸入電子郵件地址。</translation>
 <translation id="1758486001363313524">其他...</translation>
-<translation id="1774577460079229490">目前<ph name="TYPE" /></translation>
 <translation id="1787192514241997742">總時間：<ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">警示對話方塊</translation>
 <translation id="1821985195704844674">樹狀目錄網格</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">必須輸入 <ph name="MINIMUM_DATE_OR_TIME" /> 或之後的值。</translation>
 <translation id="2759744352195237655">彈出式按鈕</translation>
 <translation id="2761667185364618470">如果你要繼續執行，請勾選這個核取方塊。</translation>
-<translation id="2838616441696617235">步驟</translation>
 <translation id="2844350028562914727">詳細資料</translation>
 <translation id="2896972712917208084">圓形按鈕群組</translation>
 <translation id="2908441821576996758">請輸入以逗號分隔的電子郵件地址清單。</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">參考書目</translation>
 <translation id="4915360478455618802">顯示時間挑選器</translation>
 <translation id="492244087561876220">評論</translation>
-<translation id="4934662370368414994">項目</translation>
 <translation id="4950364064308314478">顯示當地日期和時間挑選器</translation>
 <translation id="4971739861736909480">已選取「<ph name="ACCNAME" />」</translation>
 <translation id="4975562563186953947">已選取 <ph name="SELECTED_COUNT" /> 個項目</translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">音量滑桿</translation>
 <translation id="6015796118275082299">年</translation>
 <translation id="6023896073578205740">清單方塊</translation>
-<translation id="6131824478727057281">位置</translation>
 <translation id="6150588977291308318">參考書目</translation>
 <translation id="6164829606128959761">計量器</translation>
 <translation id="6166809985690652833">後記</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">靜音</translation>
 <translation id="6885760532393684712">目錄</translation>
 <translation id="689129560213475294">版權頁標記</translation>
-<translation id="6901540140423170855">日期</translation>
 <translation id="6934078000481955284">引用標記</translation>
 <translation id="693476918119313863">頁首</translation>
 <translation id="6941933287844615239">下載媒體</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">附註參考資料</translation>
 <translation id="811583516810654505">正在取得說明...</translation>
 <translation id="8117451130807776954">本週</translation>
-<translation id="8180239481735238521">頁面</translation>
 <translation id="8199524924445686405"> 年 </translation>
 <translation id="8208673686607688524">當地日期和時間挑選器</translation>
 <translation id="8261464734335370856">拼字錯誤</translation>

@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Plugin bị chặn</translation>
 <translation id="1145593918056169051">Máy in đã dừng</translation>
 <translation id="114721135501989771">Trải nghiệm Google thông minh trong Chrome</translation>
+<translation id="1147322039136785890">Bây giờ, <ph name="SUPERVISED_USER_NAME" /> có thể dùng thiết bị</translation>
 <translation id="1147991416141538220">Để yêu cầu quyền truy cập, hãy liên hệ với quản trị viên của thiết bị này.</translation>
 <translation id="1149401351239820326">Tháng hết hạn</translation>
 <translation id="1149725087019908252">Đang quét <ph name="FILE_NAME" /></translation>
@@ -6589,6 +6590,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8736288397686080465">Trang web này đã được cập nhật trong nền.</translation>
 <translation id="8737685506611670901">Mở liên kết <ph name="PROTOCOL" /> thay vì <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">Bạn có thể đưa lại Chromebook này cho <ph name="SUPERVISED_USER_NAME" />. Sắp thiết lập xong. Hãy chuẩn bị khám phá.</translation>
 <translation id="8742998548129056176">Đây là thông tin chung về thiết bị và cách bạn sử dụng thiết bị (như mức pin, hoạt động của ứng dụng và hệ thống cũng như các lỗi). Dữ liệu này sẽ dùng để cải thiện Android và một số thông tin tổng hợp cũng sẽ giúp các ứng dụng và đối tác của Google, chẳng hạn như nhà phát triển Android, cải thiện ứng dụng và sản phẩm của họ.</translation>
 <translation id="8743390665131937741">Mức thu phóng toàn bộ màn hình:</translation>
 <translation id="8743864605301774756">Đã cập nhật 1 giờ trước</translation>

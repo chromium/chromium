@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">skjul menuen for undertekster</translation>
 <translation id="1729654308190250600">Angiv en mailadresse, der ikke er tom.</translation>
 <translation id="1758486001363313524">Andet...</translation>
-<translation id="1774577460079229490">aktuelt <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">tid i alt: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">trægitter</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">Værdien må ikke være tidligere end <ph name="MINIMUM_DATE_OR_TIME" />.</translation>
 <translation id="2759744352195237655">pop op-knap</translation>
 <translation id="2761667185364618470">Markér dette felt, hvis du vil fortsætte.</translation>
-<translation id="2838616441696617235">trin</translation>
 <translation id="2844350028562914727">detaljer</translation>
 <translation id="2896972712917208084">gruppe af alternativknapper</translation>
 <translation id="2908441821576996758">Angiv en kommasepareret liste over mailadresser.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">bibliografipost</translation>
 <translation id="4915360478455618802">Vis tidsvælger</translation>
 <translation id="492244087561876220">kommentar</translation>
-<translation id="4934662370368414994">element</translation>
 <translation id="4950364064308314478">Vis lokal dato- og tidsvælger</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> er valgt</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> er valgt</translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">lydstyrkeskyder</translation>
 <translation id="6015796118275082299">År</translation>
 <translation id="6023896073578205740">listefelt</translation>
-<translation id="6131824478727057281">placering</translation>
 <translation id="6150588977291308318">bibliografi</translation>
 <translation id="6164829606128959761">måler</translation>
 <translation id="6166809985690652833">efterskrift</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">slå lyden fra</translation>
 <translation id="6885760532393684712">indeks</translation>
 <translation id="689129560213475294">slutskrift</translation>
-<translation id="6901540140423170855">dato</translation>
 <translation id="6934078000481955284">blockquote</translation>
 <translation id="693476918119313863">header</translation>
 <translation id="6941933287844615239">download medier</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">reference i noter</translation>
 <translation id="811583516810654505">Henter beskrivelsen...</translation>
 <translation id="8117451130807776954">Denne uge</translation>
-<translation id="8180239481735238521">side</translation>
 <translation id="8199524924445686405">åååå</translation>
 <translation id="8208673686607688524">lokal dato- og tidsvælger</translation>
 <translation id="8261464734335370856">Ugyldig stavning</translation>

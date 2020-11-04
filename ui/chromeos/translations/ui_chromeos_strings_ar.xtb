@@ -142,7 +142,6 @@
 <translation id="247772113373397749">لوحة المفاتيح الكندية متعددة اللغات</translation>
 <translation id="2494837236724268445">لوحة المفاتيح الغوغاراتية (صوتية)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">لوحة المفاتيح الأمريكية</translation>
 <translation id="2534155362429831547">تم حذف <ph name="NUMBER_OF_ITEMS" /> من العناصر</translation>
 <translation id="2541377937973966830">محتوى هذا الملف للقراءة فقط. وبعض النشاطات غير متاحة فيه.</translation>
 <translation id="2542049655219295786">‏جدول من Google</translation>
@@ -196,10 +195,9 @@
 <translation id="3067790092342515856">‏ملفات نظام التشغيل Windows</translation>
 <translation id="3078461028045006476">مشاركة مع <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">‏أجهزة Chromebit</translation>
-<translation id="3116361045094675131">لوحة المفاتيح البريطانية</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">تم</translation>
-<translation id="3157729859914172001">لوحة المفاتيح (الكمبيوتر الشخصي) الأمريكية الدولية</translation>
+<translation id="3182237543071236785">الإنجليزية (المملكة المتحدة)</translation>
 <translation id="3187212781151025377">لوحة المفاتيح العبرية</translation>
 <translation id="3188257591659621405">ملفاتي</translation>
 <translation id="3197563288998582412">‏البريطانية Dvorak</translation>
@@ -311,7 +309,6 @@
 <translation id="4465830120256509958">لوحة المفاتيح البرازيلية</translation>
 <translation id="4470564870223067757">المجموعة رقم 2 الهانغولية</translation>
 <translation id="4477219268485577442">بلغارية صوتية</translation>
-<translation id="4479812471636796472">‏لوحة المفاتيح الأمريكية Dvorak</translation>
 <translation id="4522570452068850558">التفاصيل</translation>
 <translation id="4527800702232535228">‏تمّت مشاركة هذا المجلد مع نظام Parallels Desktop.</translation>
 <translation id="4552678318981539154">شراء المزيد من مساحة التخزين</translation>
@@ -567,7 +564,6 @@
     <ph name="LINE_BREAK1" />
     تم العثور على <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">رأسًا على عقب</translation>
-<translation id="6939777852457331078">‏لوحة مفاتيح US Workman</translation>
 <translation id="696203921837389374">تفعيل المزامنة عبر بيانات الجوّال</translation>
 <translation id="6965382102122355670">حسنًا</translation>
 <translation id="6970230597523682626">البلغارية</translation>
@@ -587,7 +583,6 @@
 <translation id="7172053773111046550">لوحة المفاتيح الإستونية</translation>
 <translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> غيغابايت</translation>
-<translation id="719009910964971313">‏لوحة مفاتيح المطور الأمريكية Dvorak</translation>
 <translation id="7191454237977785534">حفظ الملف باسم</translation>
 <translation id="7222624196722476520">لوحة المفاتيح الصوتية البلغارية</translation>
 <translation id="7238097264433196391">اسم محرك الأقراص</translation>
@@ -596,7 +591,6 @@
 <translation id="7283041136720745563">‏حصة Google Drive ليست كبيرة بشكلٍ كافٍ.</translation>
 <translation id="7295662345261934369">المشاركة مع الآخرين</translation>
 <translation id="7339898014177206373">نافذة جديدة</translation>
-<translation id="7348749398828259943">‏لوحة مفاتيح US Workman الدولية</translation>
 <translation id="7359359531237882347">جارٍ نسخ <ph name="NUMBER_OF_ITEMS" /> من العناصر...</translation>
 <translation id="7375951387215729722">تم ترتيب قائمة الملف تنازليًا حسب <ph name="COLUMN_NAME" />.</translation>
 <translation id="7389722738210761877">‏لوحة المفاتيح التايلاندية (TIS 820-2531)</translation>
@@ -604,9 +598,7 @@
 <translation id="7417453074306512035">لوحة المفاتيح الإثيوبية</translation>
 <translation id="7417705661718309329">‏خريطة Google</translation>
 <translation id="7419631653042041064">لوحة المفاتيح الكتالانية</translation>
-<translation id="7434823369735508263">‏لوحة المفاتيح البريطانية Dvorak</translation>
 <translation id="7460898608667578234">الأوكرانية</translation>
-<translation id="7474889694310679759">لوحة المفاتيح الكندية الإنجليزية</translation>
 <translation id="7489215562877293245">‏تم العثور على <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     جاهز للاحتفاظ بنسخة احتياطية في <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
@@ -659,7 +651,6 @@
 <translation id="7873831373602885875">يتعذَّر الحفظ في <ph name="FOLDER_NAME" />. وسيتم حفظ جميع التعديلات في <ph name="DOWNLOADS_FOLDER" /> في مجلَّد مجلد "المحتوى الذي تم تنزيله".</translation>
 <translation id="7881969471599061635">إيقاف الترجمات المصاحبة</translation>
 <translation id="78946041517601018">‏مساحات Drive المشتركة</translation>
-<translation id="7896906914454843592">لوحة المفاتيح الأمريكية الموسعة</translation>
 <translation id="7898607018410277265">لوحة المفاتيح الغوجاراتية (صوتية جديدة)</translation>
 <translation id="7908793776359722643">ستؤدي تهيئة قسم إلى محو جميع البيانات المخزَّنة فيه. ولا يمكن التراجع عن هذا الإجراء.</translation>
 <translation id="7917972308273378936">لوحة المفاتيح الليتوانية</translation>
@@ -716,7 +707,6 @@
 <translation id="8395901698320285466">الأبعاد</translation>
 <translation id="8412586565681117057">أسلوب الإدخال السريع</translation>
 <translation id="8418113698656761985">لوحة المفاتيح الرومانية</translation>
-<translation id="8432745813735585631">‏لوحة المفاتيح الأمريكية Colemak</translation>
 <translation id="8437209419043462667">الأمريكية</translation>
 <translation id="8456681095658380701">اسم غير صالح</translation>
 <translation id="8466234950814670489">‏أرشيف Tar</translation>
@@ -737,7 +727,6 @@
 <translation id="8698464937041809063">‏رسم Google</translation>
 <translation id="8714406895390098252">دراجة</translation>
 <translation id="8719721339511222681">تم اختيار <ph name="ENTRY_NAME" />.</translation>
-<translation id="8722421161699219904">لوحة المفاتيح الأمريكية الدولية</translation>
 <translation id="872537912056138402">الكرواتية</translation>
 <translation id="874420130893181774">‏أسلوب إدخال Pinyin التقليدي</translation>
 <translation id="8770002329960263418">الهولندية (هولندا) باستخدام لوحة مفاتيح الكمبيوتر الشخصي الأمريكية الدولية</translation>

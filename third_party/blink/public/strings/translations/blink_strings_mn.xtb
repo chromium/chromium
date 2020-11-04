@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">хаалттай тайлбаруудын цэсийг нуух</translation>
 <translation id="1729654308190250600">Заавал имэйл хаяг оруулах ёстой.</translation>
 <translation id="1758486001363313524">Бусад ...</translation>
-<translation id="1774577460079229490">одоогийн <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">нийт хугацаа: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">анхааруулах_мэдэгдэл</translation>
 <translation id="1821985195704844674">шаталсан хүснэгт</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">Утга нь <ph name="MINIMUM_DATE_OR_TIME" />-тай адил эсвэл үүнээс дараа байх ёстой.</translation>
 <translation id="2759744352195237655">үзэгдэх товчлуур</translation>
 <translation id="2761667185364618470">Цааш нь үргэлжлүүлэхийг хүсвэл энэ хайрцгийг зөвлөнө үү.</translation>
-<translation id="2838616441696617235">алхам</translation>
 <translation id="2844350028562914727">дэлгэрэнгүй</translation>
 <translation id="2896972712917208084">радио бүлэг</translation>
 <translation id="2908441821576996758">Цэгээр тусгаарлагдсан и-мэйл хаягуудын жагсаалтыг оруулна уу.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">ном зүйн хэсэг</translation>
 <translation id="4915360478455618802">Цаг сонгогчийг харуулах</translation>
 <translation id="492244087561876220">тайлбар</translation>
-<translation id="4934662370368414994">зүйл</translation>
 <translation id="4950364064308314478">Орон нутгийн огноо болон цаг сонгогчийг харуулах</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" />-г сонголоо</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> сонгогдсон</translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">дууны түвшин тохируулагч</translation>
 <translation id="6015796118275082299">Жил</translation>
 <translation id="6023896073578205740">жагсаалтын хайрцаг</translation>
-<translation id="6131824478727057281">байршил</translation>
 <translation id="6150588977291308318">ном зүй</translation>
 <translation id="6164829606128959761">метр</translation>
 <translation id="6166809985690652833">төгсгөлийн үг</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">дууг хаах</translation>
 <translation id="6885760532393684712">лавлагаа</translation>
 <translation id="689129560213475294">колофон</translation>
-<translation id="6901540140423170855">огноо</translation>
 <translation id="6934078000481955284">бүлэг тэмдэглэгээ</translation>
 <translation id="693476918119313863">толгой хэсэг</translation>
 <translation id="6941933287844615239">медиа татах</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">тэмдэглэлийн лавлагаа</translation>
 <translation id="811583516810654505">Тайлбарыг авч байна...</translation>
 <translation id="8117451130807776954">Энэ долоо хоног</translation>
-<translation id="8180239481735238521">хуудас</translation>
 <translation id="8199524924445686405">жжжж</translation>
 <translation id="8208673686607688524">орон нутгийн огноо ба цаг сонгогч</translation>
 <translation id="8261464734335370856">Буруу бичсэн байна</translation>

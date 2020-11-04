@@ -2768,11 +2768,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 <translation id="5306186200045823863">Ativar confiança na infraestrutura de ICP legada da Symantec Corporation</translation>
 <translation id="5307432759655324440">Disponibilidade do modo de navegação anônima</translation>
 <translation id="5311275381462687162">Configuração padrão do comportamento de cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado.</translation>
-<translation id="5315324986365616322">Se a política for definida como "Ativada", a transição rápida será usada quando for compatível com o ponto de acesso sem fio. Isso se aplica a todos os usuários e interfaces no dispositivo.
-
-      Se a política for definida como "Desativada" ou não for definida, a transição rápida não será usada.
-
-      Observação: o uso da transição rápida ativa também a propriedade ONC por rede.</translation>
 <translation id="5315367501385698459">Definir a política permite criar uma lista de padrões de URL que especifica quais sites recebem permissão automaticamente para acessar um dispositivo USB com os IDs de produto e de fornecedor especificados na tela de login. Cada item na lista precisa ter os campos "<ph name="DEVICES_FIELD_NAME" />" e "<ph name="URLS_FIELD_NAME" />" para que a política seja válida. Cada item no campo "<ph name="DEVICES_FIELD_NAME" />" pode ter os campos "<ph name="VENDOR_ID_FIELD_NAME" />" e "<ph name="PRODUCT_ID_FIELD_NAME" />". A omissão do campo "<ph name="VENDOR_ID_FIELD_NAME" />" criará uma política válida para qualquer dispositivo. A omissão do campo "<ph name="PRODUCT_ID_FIELD_NAME" />" criará uma política válida para qualquer dispositivo com o ID de fornecedor especificado. Uma política com um campo "<ph name="PRODUCT_ID_FIELD_NAME" />" que não tiver um campo "<ph name="VENDOR_ID_FIELD_NAME" />" será inválida.
 
       O modelo de permissão de USB usa o URL solicitante e o de incorporação para permitir que o URL solicitante acesse o dispositivo USB. O URL solicitante pode ser diferente do URL de incorporação quando o site solicitante está carregado em um iframe. Portanto, o campo "<ph name="URLS_FIELD_NAME" />" pode conter até duas strings delimitadas por vírgula para especificar o URL solicitante e o de incorporação, respectivamente. Se apenas um URL for especificado, o acesso aos dispositivos USB correspondentes será concedido quando o URL do site solicitante coincidir com esse URL, independentemente do status de incorporação. Os URLs precisam ser válidos. Caso contrário, a política será ignorada.
@@ -2932,7 +2927,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 <translation id="5475361623548884387">Ativar impressão</translation>
 <translation id="547601067149622666">Não permitir anúncios em sites com anúncios invasivos</translation>
 <translation id="5483065054530244863">Permitir certificados SHA-1 assinados emitidos pelas âncoras de confiança locais</translation>
-<translation id="5494917047563607689">Definir como menos de 1 MB ou não definir significa que o <ph name="PRODUCT_OS_NAME" /> usará o tamanho padrão no cache de apps e extensões para instalações feitas por vários usuários em um mesmo dispositivo, evitando a necessidade de um novo download para cada usuário.</translation>
 <translation id="5499375345075963939">Esta política só fica ativada em modo de varejo.
 
       Quando o valor desta política está definido e não é 0, o usuário conectado no momento é desconectado automaticamente após um tempo de inatividade de duração especificada.
@@ -3810,9 +3804,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Versões anteriores à 75 que usam vários IDs de extensão separados por vírgulas não são compatíveis e serão ignoradas. O restante da política estará em vigor.
 
       Observação: esta política também afeta extensões e apps de instalação forçada que usam <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.</translation>
-<translation id="672496466524161417">Se a política for definida como "Nenhuma" ou não for definida, os usuários poderão gerenciar certificados. Se ela for definida como "2", os usuários só poderão ver os certificados, não gerenciar.
-
-      Se a política for definida como "1", os usuários poderão gerenciar os próprios certificados, mas não todos os certificados do dispositivo.</translation>
 <translation id="6731757988219967594">Filtrar sites de nível superior (exceto iframes incorporados) com conteúdo adulto</translation>
 <translation id="6734521799274931721">Controla o compartilhamento de arquivos de rede para disponibilidade do Chrome OS</translation>
 <translation id="6735701345096330595">Forçar a ativação da correção ortográfica de idiomas</translation>
@@ -3897,11 +3888,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Especifica os sinalizadores a serem aplicados ao <ph name="PRODUCT_NAME" /> quando ele for iniciado. Os sinalizadores especificados são aplicados apenas na tela de login. Os sinalizadores definidos por meio desta política não são propagados em sessões de usuário.</translation>
 <translation id="685769593149966548">Aplicar o Modo restrito rigoroso para o YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 ou versão posterior</translation>
-<translation id="6863342574191774334">Se esta configuração estiver ativada, os usuários poderão usar o recurso "Compartilhar por proximidade", que permite que eles enviem e recebam arquivos de pessoas próximas.
-
-      Se esta configuração estiver desativada, os usuários não terão permissão para usar o recurso "Compartilhar por proximidade".
-
-      Se esta política não for definida, o padrão será permitido tanto para usuários gerenciados por empresas quanto para usuários não gerenciados.</translation>
 <translation id="6889123056995503704">O usuário decide o comportamento de downgrade de canal</translation>
 <translation id="6894178810167845842">URL da página "Nova guia"</translation>
 <translation id="6897730193187922386">Suprimir mensagens de suspensão de uso do <ph name="CLOUD_PRINT_NAME" /></translation>

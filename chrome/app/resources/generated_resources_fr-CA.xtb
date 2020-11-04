@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Plugiciel bloqué</translation>
 <translation id="1145593918056169051">L'imprimante s'est arrêtée</translation>
 <translation id="114721135501989771">Fonctionnalités intelligentes Google dans Chrome</translation>
+<translation id="1147322039136785890">C'est maintenant au tour de <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Pour demander l'accès, communiquez avec l'administrateur de cet appareil.</translation>
 <translation id="1149401351239820326">Mois d'expiration</translation>
 <translation id="1149725087019908252">Analyse du fichier <ph name="FILE_NAME" /> en cours…</translation>
@@ -6589,6 +6590,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8736288397686080465">Ce site a été mis à jour en arrière-plan.</translation>
 <translation id="8737685506611670901">Ouvrir les liens <ph name="PROTOCOL" /> à la place de <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">Vous pouvez remettre ce Chromebook à <ph name="SUPERVISED_USER_NAME" />. La configuration est presque terminée. Après cela, c'est l'heure d'explorer.</translation>
 <translation id="8742998548129056176">Il s'agit de données générales concernant votre appareil et l'usage que vous en faites (comme le niveau de la pile, l'activité système, l'activité des applications et les erreurs). Ces données seront utilisées pour améliorer Android, et certaines données collectées contribueront aussi à améliorer les applications Google et aideront nos partenaires, comme les concepteurs Android, à améliorer leurs applications et leurs produits.</translation>
 <translation id="8743390665131937741">Niveau de zoom en mode plein écran :</translation>
 <translation id="8743864605301774756">Mise à jour il y a 1 heure</translation>

@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">ซ่อนเมนูคำอธิบายภาพ</translation>
 <translation id="1729654308190250600">โปรดป้อนที่อยู่อีเมลที่ไม่ว่างเปล่า</translation>
 <translation id="1758486001363313524">อื่นๆ...</translation>
-<translation id="1774577460079229490"><ph name="TYPE" />ปัจจุบัน</translation>
 <translation id="1787192514241997742">เวลารวม: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">แผนผังต้นไม้</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">ค่าต้องเป็น <ph name="MINIMUM_DATE_OR_TIME" /> หรือหลังจากนั้น</translation>
 <translation id="2759744352195237655">ปุ่มป๊อปอัป</translation>
 <translation id="2761667185364618470">โปรดเลือกช่องนี้หากคุณต้องการดำเนินการต่อ</translation>
-<translation id="2838616441696617235">ขั้นตอน</translation>
 <translation id="2844350028562914727">รายละเอียด</translation>
 <translation id="2896972712917208084">กลุ่มตัวเลือก</translation>
 <translation id="2908441821576996758">โปรดป้อนรายการที่อยู่อีเมลโดยคั่นด้วยเครื่องหมายจุลภาค</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">รายการบรรณานุกรม</translation>
 <translation id="4915360478455618802">แสดงเครื่องมือเลือกเวลา</translation>
 <translation id="492244087561876220">ความคิดเห็น</translation>
-<translation id="4934662370368414994">รายการ</translation>
 <translation id="4950364064308314478">แสดงเครื่องมือเลือกวันที่และเวลาท้องถิ่น</translation>
 <translation id="4971739861736909480">เลือก <ph name="ACCNAME" /> ไว้</translation>
 <translation id="4975562563186953947">เลือกไว้ <ph name="SELECTED_COUNT" /> รายการ</translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">แถบเลื่อนปรับระดับเสียง</translation>
 <translation id="6015796118275082299">ปี</translation>
 <translation id="6023896073578205740">ช่องรายการ</translation>
-<translation id="6131824478727057281">ตำแหน่ง</translation>
 <translation id="6150588977291308318">บรรณานุกรม</translation>
 <translation id="6164829606128959761">เมตร</translation>
 <translation id="6166809985690652833">คำแถลงท้ายเล่ม</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">ปิดเสียง</translation>
 <translation id="6885760532393684712">ไดเรกทอรี</translation>
 <translation id="689129560213475294">ข้อมูลทางบรรณานุกรม</translation>
-<translation id="6901540140423170855">วันที่</translation>
 <translation id="6934078000481955284">ข้อความที่ยกมา</translation>
 <translation id="693476918119313863">ส่วนหัว</translation>
 <translation id="6941933287844615239">ดาวน์โหลดสื่อ</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">ข้อมูลอ้างอิงหมายเหตุ</translation>
 <translation id="811583516810654505">กำลังโหลดคำอธิบาย...</translation>
 <translation id="8117451130807776954">สัปดาห์นี้</translation>
-<translation id="8180239481735238521">หน้า</translation>
 <translation id="8199524924445686405">ปปปป</translation>
 <translation id="8208673686607688524">เครื่องมือเลือกวันที่และเวลาในท้องถิ่น</translation>
 <translation id="8261464734335370856">มีการสะกดผิด</translation>

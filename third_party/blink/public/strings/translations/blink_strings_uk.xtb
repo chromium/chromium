@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">сховати меню субтитрів</translation>
 <translation id="1729654308190250600">Введіть електронну адресу.</translation>
 <translation id="1758486001363313524">Інші...</translation>
-<translation id="1774577460079229490">поточне значення: "<ph name="TYPE" />"</translation>
 <translation id="1787192514241997742">загальний час: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">вікно сповіщення</translation>
 <translation id="1821985195704844674">сітка дерева</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">Має бути <ph name="MINIMUM_DATE_OR_TIME" /> або пізніша дата.</translation>
 <translation id="2759744352195237655">кнопка спливаючої підказки</translation>
 <translation id="2761667185364618470">Поставте тут прапорець, якщо хочете продовжити.</translation>
-<translation id="2838616441696617235">крок</translation>
 <translation id="2844350028562914727">деталі</translation>
 <translation id="2896972712917208084">група перемикачів</translation>
 <translation id="2908441821576996758">Введіть список електронних адрес, розділених комою.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">бібліографічний запис</translation>
 <translation id="4915360478455618802">Засіб вибору часу</translation>
 <translation id="492244087561876220">коментар</translation>
-<translation id="4934662370368414994">елемент</translation>
 <translation id="4950364064308314478">Показувати засіб вибору місцевих дати й часу</translation>
 <translation id="4971739861736909480">Вибрано <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Вибрано <ph name="SELECTED_COUNT" /></translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">повзунок гучності</translation>
 <translation id="6015796118275082299">Рік</translation>
 <translation id="6023896073578205740">вікно списку</translation>
-<translation id="6131824478727057281">місце</translation>
 <translation id="6150588977291308318">бібліографія</translation>
 <translation id="6164829606128959761">вимірювач</translation>
 <translation id="6166809985690652833">післямова</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">вимкнути звук</translation>
 <translation id="6885760532393684712">каталог</translation>
 <translation id="689129560213475294">емблема видавництва</translation>
-<translation id="6901540140423170855">дата</translation>
 <translation id="6934078000481955284">цитата</translation>
 <translation id="693476918119313863">заголовок</translation>
 <translation id="6941933287844615239">завантажити медіафайл</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">посилання на примітку</translation>
 <translation id="811583516810654505">Завантажується опис…</translation>
 <translation id="8117451130807776954">Цей тиждень</translation>
-<translation id="8180239481735238521">сторінка</translation>
 <translation id="8199524924445686405">рррр</translation>
 <translation id="8208673686607688524">засіб вибору місцевих дати й часу</translation>
 <translation id="8261464734335370856">Орфографічна помилка</translation>

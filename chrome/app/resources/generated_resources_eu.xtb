@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Plugina blokeatu da</translation>
 <translation id="1145593918056169051">Inprimagailua gelditu egin da</translation>
 <translation id="114721135501989771">Lortu Google eginbide aurreratuak Chrome-n</translation>
+<translation id="1147322039136785890"><ph name="SUPERVISED_USER_NAME" /> erabiltzailearen txanda da orain</translation>
 <translation id="1147991416141538220">Atzitzeko baimena eskatzeko, jarri gailuaren administratzailearekin harremanetan.</translation>
 <translation id="1149401351239820326">Iraungitze-hilabetea</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> aztertzen</translation>
@@ -6588,6 +6589,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8736288397686080465">Webgunea atzeko planoan eguneratu da.</translation>
 <translation id="8737685506611670901">Ireki <ph name="PROTOCOL" /> estekak <ph name="REPLACED_HANDLER_TITLE" /> maneiatzailearen ordez</translation>
 <translation id="8737709691285775803">Bateragarritasun-zuzenketa</translation>
+<translation id="8740247629089392745">Eman Chromebook-a <ph name="SUPERVISED_USER_NAME" /> erabiltzaileari. Ia amaitu duzue konfiguratzen. Arakatzen hasteko moduan izango zara laster.</translation>
 <translation id="8742998548129056176">Gailuari eta hura erabiltzeko moduari buruzko informazio orokorra da hau (adibidez, bateria-maila, sistemako eta aplikazioetako jarduerak, eta erroreak). Android hobetzeko erabiliko dira datuok. Gainera, multzokatutako datu batzuk oso baliagarriak dira Google-ren aplikazioak hobetzeko eta bazkideei (adibidez, Android-en garatzaileei) euren aplikazio eta produktuak hobetzen laguntzeko.</translation>
 <translation id="8743390665131937741">Pantaila osoaren zoom-maila:</translation>
 <translation id="8743864605301774756">Duela ordubete eguneratu da</translation>

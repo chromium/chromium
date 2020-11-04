@@ -2798,11 +2798,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="5306186200045823863">Mengaktifkan kepercayaan pada Infrastruktur IKP Lama milik Symantec Corporation</translation>
 <translation id="5307432759655324440">Ketersediaan mode samaran</translation>
 <translation id="5311275381462687162">Setelan default perilaku cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>
-<translation id="5315324986365616322">Jika kebijakan disetel ke Aktif, Transisi Cepat akan digunakan saat titik akses nirkabel mendukungnya. Ini berlaku untuk semua pengguna dan antarmuka di perangkat.
-
-      Jika kebijakan disetel ke Nonaktif atau tidak disetel, Transisi Cepat tidak akan digunakan.
-
-      Catatan: Untuk menggunakan Transisi Cepat, aktifkan juga properti ONC untuk tiap jaringan.</translation>
 <translation id="5315367501385698459">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang otomatis diizinkan untuk mengakses perangkat USB dengan ID vendor dan produk yang ditetapkan di layar login. Setiap item dalam daftar memerlukan kolom <ph name="DEVICES_FIELD_NAME" /> dan <ph name="URLS_FIELD_NAME" /> agar kebijakan menjadi valid. Setiap item di kolom <ph name="DEVICES_FIELD_NAME" /> dapat memiliki kolom <ph name="VENDOR_ID_FIELD_NAME" /> dan <ph name="PRODUCT_ID_FIELD_NAME" />. Jika kolom <ph name="VENDOR_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun. Jika kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun yang memiliki ID vendor yang ditetapkan. Kebijakan yang memiliki kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tanpa kolom <ph name="VENDOR_ID_FIELD_NAME" /> menjadi tidak valid.
 
       Model izin USB menggunakan URL peminta dan sematan untuk mengizinkan URL peminta mengakses perangkat USB. URL peminta dapat berbeda dengan URL sematan saat situs peminta dimuat dalam iframe. Jadi, kolom <ph name="URLS_FIELD_NAME" /> dapat memiliki hingga dua string URL yang dipisahkan dengan koma untuk menentukan URL peminta dan URL sematan masing-masing. Jika hanya ada satu URL yang ditentukan, akses ke perangkat USB yang sesuai akan diberikan saat URL situs peminta cocok dengan URL ini, terlepas dari status sematannya. URL harus valid. Jika tidak, kebijakan akan diabaikan.
@@ -2966,7 +2961,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="5475361623548884387">Aktifkan pencetakan</translation>
 <translation id="547601067149622666">Jangan izinkan iklan di situs yang menayangkan iklan mengganggu</translation>
 <translation id="5483065054530244863">Mengizinkan sertifikat bertanda tangan SHA-1 yang dikeluarkan oleh sumber tepercaya setempat</translation>
-<translation id="5494917047563607689">Jika ditetapkan di bawah 1 MB atau tidak ditetapkan, <ph name="PRODUCT_OS_NAME" /> akan menggunakan ukuran default untuk menyimpan cache aplikasi dan ekstensi yang akan diinstal oleh beberapa pengguna di satu perangkat, sehingga setiap pengguna tidak perlu mendownload ulang satu per satu aplikasi dan ekstensi tersebut.</translation>
 <translation id="5499375345075963939">Kebijakan ini hanya aktif pada mode ritel.
 
       Saat nilai kebijakan ini disetel dan tidak 0, maka pengguna demo yang saat ini telah masuk akan dikeluarkan secara otomatis setelah waktu tidak aktif selama durasi yang ditentukan telah habis.
@@ -3850,9 +3844,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Versi lebih lama dari 75 yang menggunakan beberapa ID ekstensi yang dipisahkan koma tidak didukung dan akan dilewati. Kebijakan lainnya akan berlaku.
 
       Catatan: Kebijakan ini juga memengaruhi ekstensi dan aplikasi yang akan diinstal otomatis menggunakan <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.</translation>
-<translation id="672496466524161417">Jika kebijakan ditetapkan ke Tidak Ada (None) atau tidak ditetapkan, pengguna akan dapat mengelola sertifikat. Jika kebijakan ditetapkan ke 2, pengguna hanya dapat melihat (tidak mengelola) sertifikat.
-
-      Jika kebijakan ini ditetapkan ke 1, pengguna akan dapat mengelola sertifikat pengguna, tetapi bukan sertifikat seluruh perangkat.</translation>
 <translation id="6731757988219967594">Filter konten khusus dewasa dari situs level teratas (namun bukan iframe yang tersemat)</translation>
 <translation id="6734521799274931721">Mengontrol fitur Berbagi File Jaringan untuk ketersediaan ChromeOS</translation>
 <translation id="6735701345096330595">Mengaktifkan paksa pemeriksaan ejaan bahasa</translation>
@@ -3937,11 +3928,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Menentukan tanda yang harus diterapkan ke <ph name="PRODUCT_NAME" /> saat dimulai. Tanda yang ditentukan hanya diterapkan di layar login. Tanda yang disetel melalui kebijakan ini tidak diterapkan ke dalam sesi pengguna.</translation>
 <translation id="685769593149966548">Terapkan Mode Terbatas Ketat untuk YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 atau lebih baru</translation>
-<translation id="6863342574191774334">Jika setelan ini diaktifkan, pengguna akan diizinkan memilih untuk menggunakan Berbagi Langsung yang memungkinkan mereka mengirim dan menerima file dari pengguna terdekat.
-
-      Jika setelan ini dinonaktifkan, pengguna tidak diizinkan memilih untuk menggunakan Berbagi Langsung.
-
-      Jika kebijakan ini tidak disetel, baik pengguna yang dikelola maupun tidak dikelola perusahaan akan diizinkan secara default.</translation>
 <translation id="6889123056995503704">Pengguna akan menentukan perilaku downgrade saluran rilis</translation>
 <translation id="6894178810167845842">URL halaman Tab Baru</translation>
 <translation id="6897730193187922386">Sembunyikan pesan penghentian <ph name="CLOUD_PRINT_NAME" /></translation>

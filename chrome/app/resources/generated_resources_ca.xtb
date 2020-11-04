@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Connector bloquejat</translation>
 <translation id="1145593918056169051">La impressora s'ha aturat</translation>
 <translation id="114721135501989771">Eines intel·ligents a Chrome</translation>
+<translation id="1147322039136785890">Ara és el torn de: <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Per demanar accés, contacta amb l'administrador d'aquest dispositiu.</translation>
 <translation id="1149401351239820326">Mes de caducitat</translation>
 <translation id="1149725087019908252">S'està analitzant <ph name="FILE_NAME" /></translation>
@@ -6589,6 +6590,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8736288397686080465">El lloc s'ha actualitzat en segon pla.</translation>
 <translation id="8737685506611670901">Obrir els enllaços del protocol <ph name="PROTOCOL" /> en lloc del gestor <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">Pots donar aquest Chromebook a <ph name="SUPERVISED_USER_NAME" />. Ja queda poc per finalitzar la configuració. És hora d'explorar.</translation>
 <translation id="8742998548129056176">Es tracta d'informació general sobre el dispositiu i sobre com el fas servir, com ara els errors, el nivell de bateria i l'activitat al sistema i en aplicacions. Les dades s'utilitzaran per millorar Android i part de la informació agregada també ajudarà les aplicacions i els partners de Google, com ara els desenvolupadors d'Android, a millorar les seves aplicacions i els seus productes.</translation>
 <translation id="8743390665131937741">Nivell de zoom de la pantalla completa:</translation>
 <translation id="8743864605301774756">S'ha actualitzat fa 1 hora</translation>

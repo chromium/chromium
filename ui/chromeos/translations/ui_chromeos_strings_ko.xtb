@@ -142,7 +142,6 @@
 <translation id="247772113373397749">캐나다 다국어 키보드</translation>
 <translation id="2494837236724268445">구자라트어 키보드(음역)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">영어(미국식) 키보드</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />개 항목 삭제함</translation>
 <translation id="2541377937973966830">이 폴더의 콘텐츠는 읽기 전용입니다. 일부 활동이 지원되지 않습니다.</translation>
 <translation id="2542049655219295786">Google 표</translation>
@@ -196,10 +195,9 @@
 <translation id="3067790092342515856">Windows 파일</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" />와(과) 공유</translation>
 <translation id="3083975830683400843">Chromebit</translation>
-<translation id="3116361045094675131">영어(영국식) 키보드</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">완료</translation>
-<translation id="3157729859914172001">영어(미국식) 국제(PC) 키보드</translation>
+<translation id="3182237543071236785">영어(영국)</translation>
 <translation id="3187212781151025377">히브리어 키보드</translation>
 <translation id="3188257591659621405">내 파일</translation>
 <translation id="3197563288998582412">영어(영국) 드보락</translation>
@@ -311,7 +309,6 @@
 <translation id="4465830120256509958">브라질어 키보드</translation>
 <translation id="4470564870223067757">한글 두벌식</translation>
 <translation id="4477219268485577442">불가리아어 표음</translation>
-<translation id="4479812471636796472">영어(미국식) 드보락 키보드</translation>
 <translation id="4522570452068850558">세부정보</translation>
 <translation id="4527800702232535228">Parallels Desktop과 공유된 폴더</translation>
 <translation id="4552678318981539154">추가 저장용량 구입</translation>
@@ -567,7 +564,6 @@
     <ph name="LINE_BREAK1" />
     파일 <ph name="FILE_COUNT" />개 있음</translation>
 <translation id="6935521024859866267">180도 회전</translation>
-<translation id="6939777852457331078">영어(미국식) 워크맨 키보드</translation>
 <translation id="696203921837389374">모바일 데이터를 이용한 동기화 사용 설정</translation>
 <translation id="6965382102122355670">확인</translation>
 <translation id="6970230597523682626">불가리아어</translation>
@@ -587,7 +583,6 @@
 <translation id="7172053773111046550">에스토니아어 키보드</translation>
 <translation id="7180611975245234373">새로고침</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" />GB</translation>
-<translation id="719009910964971313">영어(미국식) 프로그래머 드보락 키보드</translation>
 <translation id="7191454237977785534">다른 이름으로 저장</translation>
 <translation id="7222624196722476520">불가리아어 표음식 키보드</translation>
 <translation id="7238097264433196391">드라이브 이름</translation>
@@ -596,7 +591,6 @@
 <translation id="7283041136720745563">Google 드라이브 용량이 부족합니다.</translation>
 <translation id="7295662345261934369">다른 사용자와 공유</translation>
 <translation id="7339898014177206373">새 창</translation>
-<translation id="7348749398828259943">영어(미국식) 워크맨 국제 키보드</translation>
 <translation id="7359359531237882347">항목 <ph name="NUMBER_OF_ITEMS" />개 복사 중...</translation>
 <translation id="7375951387215729722">파일 목록이 <ph name="COLUMN_NAME" /> 기준 내림차순으로 정렬되어 있습니다.</translation>
 <translation id="7389722738210761877">태국어 키보드(TIS 820-2531)</translation>
@@ -604,9 +598,7 @@
 <translation id="7417453074306512035">에티오피아어 키보드</translation>
 <translation id="7417705661718309329">Google 지도</translation>
 <translation id="7419631653042041064">카탈로니아어 키보드</translation>
-<translation id="7434823369735508263">영어(영국식) 드보락 키보드</translation>
 <translation id="7460898608667578234">우크라이나어</translation>
-<translation id="7474889694310679759">캐나다 영어 키보드</translation>
 <translation id="7489215562877293245">파일 <ph name="FILE_COUNT" />개 있음
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google 드라이브<ph name="END_LINK" /> 백업 준비 완료</translation>
@@ -659,7 +651,6 @@
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" />에 저장할 수 없습니다. 모든 수정사항은 다운로드 폴더의 <ph name="DOWNLOADS_FOLDER" />에 저장됩니다.</translation>
 <translation id="7881969471599061635">자막 사용 중지</translation>
 <translation id="78946041517601018">공유 드라이브</translation>
-<translation id="7896906914454843592">영어(미국식) 확장 키보드</translation>
 <translation id="7898607018410277265">구자라트어 키보드(새 음역 방식)</translation>
 <translation id="7908793776359722643">파티션을 포맷하면 파티션에 저장된 모든 데이터가 삭제됩니다. 이 작업은 되돌릴 수 없습니다.</translation>
 <translation id="7917972308273378936">리투아니아어 키보드</translation>
@@ -716,7 +707,6 @@
 <translation id="8395901698320285466">크기</translation>
 <translation id="8412586565681117057">빠른 입력 방법</translation>
 <translation id="8418113698656761985">루마니아어 키보드</translation>
-<translation id="8432745813735585631">영어(미국식) 콜맥 키보드</translation>
 <translation id="8437209419043462667">영어(미국)</translation>
 <translation id="8456681095658380701">잘못된 이름입니다.</translation>
 <translation id="8466234950814670489">Tar 압축 파일</translation>
@@ -737,7 +727,6 @@
 <translation id="8698464937041809063">Google 드로잉</translation>
 <translation id="8714406895390098252">자전거</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> 항목이 선택되었습니다.</translation>
-<translation id="8722421161699219904">영어(미국식) 국제 키보드</translation>
 <translation id="872537912056138402">크로아티아어</translation>
 <translation id="874420130893181774">번체 병음 입력 방법</translation>
 <translation id="8770002329960263418">영어(미국식) 국제 PC 키보드로 네덜란드어(네덜란드) 입력</translation>

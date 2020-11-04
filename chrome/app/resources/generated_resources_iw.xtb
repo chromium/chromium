@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">הפלאגין חסום</translation>
 <translation id="1145593918056169051">המדפסת הפסיקה לפעול</translation>
 <translation id="114721135501989771">‏תכונות חכמות של Google</translation>
+<translation id="1147322039136785890">עכשיו התור של <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">כדי לבקש גישה, צריך לפנות למנהל של המכשיר הזה.</translation>
 <translation id="1149401351239820326">חודש פקיעת התוקף</translation>
 <translation id="1149725087019908252">מתבצעת סריקה של <ph name="FILE_NAME" /></translation>
@@ -6588,6 +6589,7 @@
 <translation id="8736288397686080465">האתר הזה עודכן ברקע.</translation>
 <translation id="8737685506611670901">פתיחת קישורי <ph name="PROTOCOL" /> במקום <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">‏אפשר להעביר את ה-Chromebook הזה אל <ph name="SUPERVISED_USER_NAME" />. ההתקנה כמעט הסתיימה. מיד ניתן יהיה לחקור ולהתנסות.</translation>
 <translation id="8742998548129056176">‏זהו מידע כללי בנוגע למכשיר ולאופן השימוש בו (כמו רמת הסוללה, פעילות המערכת, פעילות באפליקציות ושגיאות). הנתונים ישמשו כדי לשפר את Android. חלק מהמידע הנצבר יעזור גם לשפר אפליקציות של Google וכן יעזור לשותפים של Google (למשל למפתחים של Android) לשפר את האפליקציות והמוצרים שלהם.</translation>
 <translation id="8743390665131937741">רמת זום למסך מלא:</translation>
 <translation id="8743864605301774756">עודכנה לפני שעה</translation>

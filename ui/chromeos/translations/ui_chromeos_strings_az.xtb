@@ -142,7 +142,6 @@
 <translation id="247772113373397749">Çoxdilli Kanada klaviaturası</translation>
 <translation id="2494837236724268445">Qucarat klaviaturası (Fonetik)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">ABŞ klaviaturası</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> element silindi</translation>
 <translation id="2541377937973966830">Bu qovluğun məzmunları yalnız oxunandır. Bəzi fəaliyyətlər dəstəklənmir.</translation>
 <translation id="2542049655219295786">Google cədvəl</translation>
@@ -196,10 +195,8 @@
 <translation id="3067790092342515856">Windows faylları</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> ilə paylaşın</translation>
 <translation id="3083975830683400843">Chromebit cihazları</translation>
-<translation id="3116361045094675131">Böyük Britaniya klaviaturası</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">TAMAMDIR</translation>
-<translation id="3157729859914172001">Beynəlxalq ABŞ (PC) klaviaturası</translation>
 <translation id="3187212781151025377">İvrit klaviaturası</translation>
 <translation id="3188257591659621405">Fayllarım</translation>
 <translation id="3197563288998582412">UK Dvorak</translation>
@@ -311,7 +308,6 @@
 <translation id="4465830120256509958">Braziliya klaviaturası</translation>
 <translation id="4470564870223067757">Hangul 2 Dəsti</translation>
 <translation id="4477219268485577442">Bolqar fonetikası</translation>
-<translation id="4479812471636796472">ABŞ Dvorak klaviaturası</translation>
 <translation id="4522570452068850558">Detallar</translation>
 <translation id="4527800702232535228">Bu qovluq Parallels Desktop ilə paylaşılır</translation>
 <translation id="4552678318981539154">Əlavə yaddaş ehtiyatı alın</translation>
@@ -566,7 +562,6 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> nəticə</translation>
 <translation id="6935521024859866267">Alt tərəfi aşağı</translation>
-<translation id="6939777852457331078">ABŞ İşçi klaviaturası</translation>
 <translation id="696203921837389374">Mobil data üzərindən sinxronlaşmanı aktiv edin</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Bolqar</translation>
@@ -586,7 +581,6 @@
 <translation id="7172053773111046550">Estoniya klaviaturası</translation>
 <translation id="7180611975245234373">Yeniləyin</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
-<translation id="719009910964971313">US Programmer Dvorak klaviaturası</translation>
 <translation id="7191454237977785534">Faylın saxlanma formatı:</translation>
 <translation id="7222624196722476520">Bolqar Fonetik Klaviaturası</translation>
 <translation id="7238097264433196391">Cihazın adı</translation>
@@ -595,7 +589,6 @@
 <translation id="7283041136720745563">Google Disk kvotanız kifayət qədər böyük deyil.</translation>
 <translation id="7295662345261934369">Başqaları ilə paylaşın</translation>
 <translation id="7339898014177206373">Yeni pəncərə</translation>
-<translation id="7348749398828259943">ABŞ Beynəlxalq İşçi klaviaturası</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> element kopyalanır...</translation>
 <translation id="7375951387215729722">Fayllar <ph name="COLUMN_NAME" /> üzrə artan sıra ilə çeşidlənib.</translation>
 <translation id="7389722738210761877">Tay klaviaturası (TIS 820-2531)</translation>
@@ -603,9 +596,7 @@
 <translation id="7417453074306512035">Efiop klaviaturası</translation>
 <translation id="7417705661718309329">Google xəritə</translation>
 <translation id="7419631653042041064">Katalan klaviaturası</translation>
-<translation id="7434823369735508263">Böyük Britaniya Dvorak klaviaturası</translation>
 <translation id="7460898608667578234">Ukrayna</translation>
-<translation id="7474889694310679759">Kanada İngiliscəsi klaviaturası</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> nəticə
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google Diskə<ph name="END_LINK" /> yedəkləmək üçün hazırdır</translation>
@@ -656,7 +647,6 @@
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" /> qovluğuna yadda saxlamaq alınmadı. Bütün düzəlişlər Endirmələr bölməsindəki <ph name="DOWNLOADS_FOLDER" /> qovluğunda yadda saxlanılacaq.</translation>
 <translation id="7881969471599061635">Subtitri deaktiv edin</translation>
 <translation id="78946041517601018">Paylaşılmış disklər</translation>
-<translation id="7896906914454843592">Genişləndirilmiş ABŞ klaviaturası</translation>
 <translation id="7898607018410277265">Qucarat klaviaturası (Yeni Fonetik)</translation>
 <translation id="7908793776359722643">Hissənin format edilməsi ilə orada saxlanılan bütün data silinəcək. Bu əməliyyat geri qaytarıla bilməz.</translation>
 <translation id="7917972308273378936">Litva klaviaturası</translation>
@@ -713,7 +703,6 @@
 <translation id="8395901698320285466">Ölçülər</translation>
 <translation id="8412586565681117057">Sürətli daxiletmə metodu</translation>
 <translation id="8418113698656761985">Rumın klaviaturası</translation>
-<translation id="8432745813735585631">ABŞ Kolemak klaviaturası</translation>
 <translation id="8437209419043462667">ABŞ</translation>
 <translation id="8456681095658380701">Yanlış ad</translation>
 <translation id="8466234950814670489">Tar arxivi</translation>
@@ -734,7 +723,6 @@
 <translation id="8698464937041809063">Google çertyoj</translation>
 <translation id="8714406895390098252">Velosiped</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> seçildi.</translation>
-<translation id="8722421161699219904">Beynəlxalq ABŞ klaviaturası</translation>
 <translation id="872537912056138402">Xorvat</translation>
 <translation id="874420130893181774">Ənənəvi Pinyin daxiletmə metodu</translation>
 <translation id="8770002329960263418">ABŞ Beynəlxalq kompüter klaviaturası ilə Niderland dili (Niderland)</translation>

@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">ปลั๊กอินถูกบล็อก</translation>
 <translation id="1145593918056169051">เครื่องพิมพ์หยุดทำงาน</translation>
 <translation id="114721135501989771">ใช้ฟีเจอร์เจ๋งๆ จาก Google ใน Chrome</translation>
+<translation id="1147322039136785890">คราวนี้ถึงเวลาของ <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">หากต้องการสิทธิ์เข้าถึง ให้ติดต่อผู้ดูแลระบบของอุปกรณ์นี้</translation>
 <translation id="1149401351239820326">เดือนที่หมดอายุ</translation>
 <translation id="1149725087019908252">กำลังสแกน <ph name="FILE_NAME" /></translation>
@@ -6589,6 +6590,7 @@
 <translation id="8736288397686080465">มีการอัปเดตไซต์นี้ในพื้นหลัง</translation>
 <translation id="8737685506611670901">เปิดลิงก์ <ph name="PROTOCOL" /> แทน <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">คุณส่งมอบ Chromebook เครื่องนี้ให้ <ph name="SUPERVISED_USER_NAME" /> ได้ การตั้งค่าใกล้เสร็จแล้ว จากนั้นก็ได้เวลาแห่งการสำรวจ</translation>
 <translation id="8742998548129056176">นี่คือข้อมูลทั่วไปเกี่ยวกับอุปกรณ์และวิธีที่คุณใช้งานอุปกรณ์ (เช่น ระดับแบตเตอรี่ กิจกรรมในระบบและแอป ตลอดจนข้อผิดพลาด) ระบบจะใช้ข้อมูลเพื่อปรับปรุง Android และข้อมูลที่รวบรวมมาบางส่วนจะช่วยให้แอปและพาร์ทเนอร์ของ Google เช่น นักพัฒนาซอฟต์แวร์ Android พัฒนาแอปและผลิตภัณฑ์ของตนให้ดีขึ้น</translation>
 <translation id="8743390665131937741">ระดับการซูมทั้งหน้าจอ:</translation>
 <translation id="8743864605301774756">อัปเดตเมื่อ 1 ชั่วโมงที่ผ่านมา</translation>

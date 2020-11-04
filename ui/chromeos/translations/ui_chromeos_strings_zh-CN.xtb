@@ -142,7 +142,6 @@
 <translation id="247772113373397749">加拿大多语言键盘</translation>
 <translation id="2494837236724268445">古吉拉特语键盘（注音）</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">英语（美国）键盘</translation>
 <translation id="2534155362429831547">删除了 <ph name="NUMBER_OF_ITEMS" /> 项</translation>
 <translation id="2541377937973966830">此文件夹中的内容都是处于只读状态，所以不支持某些活动。</translation>
 <translation id="2542049655219295786">Google 表格</translation>
@@ -196,10 +195,9 @@
 <translation id="3067790092342515856">Windows 文件</translation>
 <translation id="3078461028045006476">使用“<ph name="EXTENSION_NAME" />”分享</translation>
 <translation id="3083975830683400843">Chromebit</translation>
-<translation id="3116361045094675131">英语（英国）键盘</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">完成</translation>
-<translation id="3157729859914172001">美式国际 (PC) 键盘</translation>
+<translation id="3182237543071236785">英语（英国）</translation>
 <translation id="3187212781151025377">希伯来语键盘</translation>
 <translation id="3188257591659621405">我的文件</translation>
 <translation id="3197563288998582412">英国英语(Dvorak)</translation>
@@ -311,7 +309,6 @@
 <translation id="4465830120256509958">葡萄牙语（巴西）键盘</translation>
 <translation id="4470564870223067757">韩语(2 Set)</translation>
 <translation id="4477219268485577442">保加利亚语（注音）</translation>
-<translation id="4479812471636796472">英语（美国）德沃夏克键盘</translation>
 <translation id="4522570452068850558">详细信息</translation>
 <translation id="4527800702232535228">已与 Parallels Desktop 共享此文件夹</translation>
 <translation id="4552678318981539154">购买更多存储空间</translation>
@@ -562,7 +559,6 @@
     <ph name="LINE_BREAK1" />
     找到了 <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">倒栽葱蝴蝶</translation>
-<translation id="6939777852457331078">美式 Workman 键盘</translation>
 <translation id="696203921837389374">在移动数据网络中启用同步功能</translation>
 <translation id="6965382102122355670">确定</translation>
 <translation id="6970230597523682626">保加利亚语</translation>
@@ -582,7 +578,6 @@
 <translation id="7172053773111046550">爱沙尼亚语键盘</translation>
 <translation id="7180611975245234373">刷新</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
-<translation id="719009910964971313">美式 Programmer Dvorak 键盘</translation>
 <translation id="7191454237977785534">文件另存为</translation>
 <translation id="7222624196722476520">保加利亚语注音键盘</translation>
 <translation id="7238097264433196391">驱动器名称</translation>
@@ -591,7 +586,6 @@
 <translation id="7283041136720745563">您的 Google 云端硬盘配额不足。</translation>
 <translation id="7295662345261934369">与他人共享</translation>
 <translation id="7339898014177206373">打开新的窗口</translation>
-<translation id="7348749398828259943">美式 Workman 国际键盘</translation>
 <translation id="7359359531237882347">正在复制 <ph name="NUMBER_OF_ITEMS" /> 项内容…</translation>
 <translation id="7375951387215729722">文件列表按<ph name="COLUMN_NAME" />降序排列。</translation>
 <translation id="7389722738210761877">泰语键盘(TIS 820-2531)</translation>
@@ -599,9 +593,7 @@
 <translation id="7417453074306512035">埃塞俄比亚语键盘</translation>
 <translation id="7417705661718309329">Google 地图</translation>
 <translation id="7419631653042041064">加泰罗尼亚语键盘</translation>
-<translation id="7434823369735508263">英语（英国）德沃夏克键盘</translation>
 <translation id="7460898608667578234">乌克兰语</translation>
-<translation id="7474889694310679759">英语（加拿大）键盘</translation>
 <translation id="7489215562877293245">找到了 <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     可以开始备份到 <ph name="BEGIN_LINK" />Google 云端硬盘<ph name="END_LINK" />了</translation>
@@ -654,7 +646,6 @@
 <translation id="7873831373602885875">无法保存到<ph name="FOLDER_NAME" />。所有修改都会保存到“下载内容”文件夹中的<ph name="DOWNLOADS_FOLDER" />。</translation>
 <translation id="7881969471599061635">停用字幕</translation>
 <translation id="78946041517601018">共享云端硬盘</translation>
-<translation id="7896906914454843592">美式扩展键盘</translation>
 <translation id="7898607018410277265">古吉拉特语键盘（新注音）</translation>
 <translation id="7908793776359722643">将分区格式化会清空其中存储的所有数据。此操作无法撤消。</translation>
 <translation id="7917972308273378936">立陶宛语键盘</translation>
@@ -711,7 +702,6 @@
 <translation id="8395901698320285466">尺寸</translation>
 <translation id="8412586565681117057">速成输入法</translation>
 <translation id="8418113698656761985">罗马尼亚语键盘</translation>
-<translation id="8432745813735585631">英语（美国）Colemak 键盘</translation>
 <translation id="8437209419043462667">美国英语</translation>
 <translation id="8456681095658380701">名称无效</translation>
 <translation id="8466234950814670489">Tar 归档</translation>
@@ -732,7 +722,6 @@
 <translation id="8698464937041809063">Google 绘图</translation>
 <translation id="8714406895390098252">自行车</translation>
 <translation id="8719721339511222681">已选择<ph name="ENTRY_NAME" />。</translation>
-<translation id="8722421161699219904">美式国标键盘</translation>
 <translation id="872537912056138402">克罗地亚语</translation>
 <translation id="874420130893181774">传统拼音输入法</translation>
 <translation id="8770002329960263418">荷兰语（荷兰），美式国际 PC 键盘</translation>

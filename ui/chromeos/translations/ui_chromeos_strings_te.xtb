@@ -142,7 +142,6 @@
 <translation id="247772113373397749">కెనడియన్ బహుభాషా కీబోర్డ్</translation>
 <translation id="2494837236724268445">గుజరాతీ కీబోర్డ్ (ఫొనెటిక్)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">US కీబోర్డ్</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> అంశాలు తొలగించబడ్డాయి</translation>
 <translation id="2541377937973966830">ఈ ఫోల్డర్‌లో ఉన్న కంటెంట్‌లు కేవలం చదవడానికి మాత్రమే. కొన్ని యాక్టివిటీలకు సపోర్ట్ ఉండదు.</translation>
 <translation id="2542049655219295786">Google పట్టిక</translation>
@@ -196,10 +195,9 @@
 <translation id="3067790092342515856">Windows ఫైల్‌లు</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" />తో భాగస్వామ్యం చేయండి</translation>
 <translation id="3083975830683400843">Chromebitలు</translation>
-<translation id="3116361045094675131">UK కీబోర్డ్</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">పూర్తయింది</translation>
-<translation id="3157729859914172001">US అంతర్జాతీయ (PC) కీబోర్డ్</translation>
+<translation id="3182237543071236785">ఇంగ్లీష్ (యుకె)</translation>
 <translation id="3187212781151025377">హెబ్ర్యు కీబోర్డ్</translation>
 <translation id="3188257591659621405">నా ఫైల్‌లు</translation>
 <translation id="3197563288998582412">యుకె డ్వోరక్</translation>
@@ -311,7 +309,6 @@
 <translation id="4465830120256509958">బ్రెజిలియన్ కీబోర్డ్</translation>
 <translation id="4470564870223067757">హాంగుల్ 2 సెట్</translation>
 <translation id="4477219268485577442">బల్గేరియన్ ఫోనెటిక్</translation>
-<translation id="4479812471636796472">US డ్వొరక్ కీబోర్డ్</translation>
 <translation id="4522570452068850558">వివరాలు</translation>
 <translation id="4527800702232535228">ఈ ఫోల్డర్ Parallels Desktopతో షేర్ చేయబడింది</translation>
 <translation id="4552678318981539154">మరింత నిల్వను కొనుగోలు చేయండి</translation>
@@ -567,7 +564,6 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" />కనుగొనబడ్డాయి</translation>
 <translation id="6935521024859866267">తలక్రిందులుగా</translation>
-<translation id="6939777852457331078">US వర్క్‌మాన్ కీబోర్డ్</translation>
 <translation id="696203921837389374">మొబైల్ డేటా ఉపయోగించి సింక్ చేయడం ప్రారంభించు</translation>
 <translation id="6965382102122355670">సరే</translation>
 <translation id="6970230597523682626">బల్గేరియన్</translation>
@@ -587,7 +583,6 @@
 <translation id="7172053773111046550">ఎస్టోనియన్ కీబోర్డ్</translation>
 <translation id="7180611975245234373">రిఫ్రెష్ చేయి</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
-<translation id="719009910964971313">US ప్రోగ్రామర్ డ్వోరక్ కీబోర్డ్</translation>
 <translation id="7191454237977785534">ఫైల్‌ను ఇలా సేవ్ చేయి</translation>
 <translation id="7222624196722476520">బల్గేరియన్ ఫొనెటిక్ కీబోర్డ్</translation>
 <translation id="7238097264433196391">డ్రైవ్ పేరు</translation>
@@ -596,7 +591,6 @@
 <translation id="7283041136720745563">Google డిస్క్ కోటా తగినంత పెద్దది కాదు.</translation>
 <translation id="7295662345261934369">ఇతరులతో భాగస్వామ్యం చేయి</translation>
 <translation id="7339898014177206373">కొత్త విండో</translation>
-<translation id="7348749398828259943">US వర్క్‌మాన్ అంతర్జాతీయ కీబోర్డ్</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> అంశాలను కాపీ చేస్తోంది...</translation>
 <translation id="7375951387215729722">ఫైల్ జాబితా <ph name="COLUMN_NAME" /> ప్రకారం అవరోహణ క్రమంలో వర్గీకరించబడింది.</translation>
 <translation id="7389722738210761877">థాయ్ కీబోర్డ్ (TIS 820-2531)</translation>
@@ -604,9 +598,7 @@
 <translation id="7417453074306512035">ఇథియోపిక్ కీబోర్డ్</translation>
 <translation id="7417705661718309329">Google మ్యాప్</translation>
 <translation id="7419631653042041064">కెటలాన్ కీబోర్డ్</translation>
-<translation id="7434823369735508263">UK డ్వొరక్ కీబోర్డ్</translation>
 <translation id="7460898608667578234">ఉక్రెయినియన్</translation>
-<translation id="7474889694310679759">కెనెడియన్ ఇంగ్లీష్ కీబోర్డ్</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> కనుగొనబడ్డాయి
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google డిస్క్<ph name="END_LINK" />కు బ్యాకప్ చేయడానికి సిద్ధంగా ఉంది</translation>
@@ -659,7 +651,6 @@
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" />లో సేవ్ చేయడం సాధ్యపడలేదు. అన్ని సవరణలు డౌన్‌లోడ్‌లు ఫోల్డర్‌లోని<ph name="DOWNLOADS_FOLDER" />లో సేవ్ చేయబడతాయి.</translation>
 <translation id="7881969471599061635">ఉపశీర్షికలను నిలిపివేయి</translation>
 <translation id="78946041517601018">షేర్ చేసిన డ్రైవ్‌లు</translation>
-<translation id="7896906914454843592">US విస్తారిత కీబోర్డ్</translation>
 <translation id="7898607018410277265">గుజరాతీ కీబోర్డ్ (కొత్త ఫొనెటిక్)</translation>
 <translation id="7908793776359722643">విభజనను ఫార్మాట్ చేయడం వలన దానిలో స్టోర్ చేయబడిన మొత్తం డేటా తొలగించబడుతుంది. ఈ చర్యను రద్దు చేయలేరు.</translation>
 <translation id="7917972308273378936">లిథ్వెనియన్ కీబోర్డ్</translation>
@@ -716,7 +707,6 @@
 <translation id="8395901698320285466">కొలతలు</translation>
 <translation id="8412586565681117057">Quick ఇన్‌పుట్ పద్ధతి</translation>
 <translation id="8418113698656761985">రోమనియన్ కీబోర్డ్</translation>
-<translation id="8432745813735585631">US సొలెమక్ కీబోర్డ్</translation>
 <translation id="8437209419043462667">యుఎస్</translation>
 <translation id="8456681095658380701">చెల్లని పేరు</translation>
 <translation id="8466234950814670489">Tar ఆర్కైవ్</translation>
@@ -737,7 +727,6 @@
 <translation id="8698464937041809063">Google డ్రాయింగ్</translation>
 <translation id="8714406895390098252">సైకిల్</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ఎంపిక చేయబడింది.</translation>
-<translation id="8722421161699219904">US అంతర్జాతీయ కీబోర్డ్</translation>
 <translation id="872537912056138402">క్రోవేషియన్</translation>
 <translation id="874420130893181774">సంప్రదాయ Pinyin ఇన్‌పుట్ పద్ధతి</translation>
 <translation id="8770002329960263418">US అంతర్జాతీయ PC కీబోర్డ్‌తో డచ్ (నెదర్లాండ్స్)</translation>

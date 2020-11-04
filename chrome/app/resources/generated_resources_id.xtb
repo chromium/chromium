@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Plugin diblokir</translation>
 <translation id="1145593918056169051">Printer telah berhenti</translation>
 <translation id="114721135501989771">Dapatkan kecanggihan Google di Chrome</translation>
+<translation id="1147322039136785890">Sekarang saatnya <ph name="SUPERVISED_USER_NAME" /> yang menggunakan perangkat</translation>
 <translation id="1147991416141538220">Untuk meminta akses, hubungi administrator perangkat ini.</translation>
 <translation id="1149401351239820326">Bulan akhir masa berlaku</translation>
 <translation id="1149725087019908252">Memindai <ph name="FILE_NAME" /></translation>
@@ -6589,6 +6590,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8736288397686080465">Situs ini diperbarui di latar belakang.</translation>
 <translation id="8737685506611670901">Membuka link <ph name="PROTOCOL" /> sebagai ganti <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">Anda dapat menyerahkan Chromebook ini ke <ph name="SUPERVISED_USER_NAME" />. Sebentar lagi penyiapan selesai, dan konten bisa segera dijelajahi.</translation>
 <translation id="8742998548129056176">Ini adalah informasi umum tentang perangkat Anda dan cara Anda menggunakannya (seperti tingkat daya baterai, aktivitas sistem dan aplikasi, serta error). Data ini akan digunakan untuk menyempurnakan Android. Beberapa informasi gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android, membuat aplikasi dan produk mereka menjadi lebih baik.</translation>
 <translation id="8743390665131937741">Tingkat zoom layar penuh:</translation>
 <translation id="8743864605301774756">Diupdate 1 jam yang lalu</translation>

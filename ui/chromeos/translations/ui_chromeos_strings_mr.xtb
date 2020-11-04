@@ -142,7 +142,6 @@
 <translation id="247772113373397749">कॅनडियन बहुभाषिक कीबोर्ड</translation>
 <translation id="2494837236724268445">गुजराती कीबोर्ड (Phonetic)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">यूएस कीबोर्ड</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> आयटम हटवले</translation>
 <translation id="2541377937973966830">या फोल्डरमधील आशय रीड-ओन्ली आहेत. काही अ‍ॅक्टिव्हिटींना सपोर्ट नाही.</translation>
 <translation id="2542049655219295786">Google सारणी</translation>
@@ -196,10 +195,9 @@
 <translation id="3067790092342515856">Windows फाइल</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> सह शेअर करा</translation>
 <translation id="3083975830683400843">Chromebits</translation>
-<translation id="3116361045094675131">यूके कीबोर्ड</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">पूर्ण झाले</translation>
-<translation id="3157729859914172001">युएस इंटरनॅशनल (PC) कीबोर्ड</translation>
+<translation id="3182237543071236785">इंग्रजी (यूके)</translation>
 <translation id="3187212781151025377">हिब्रू कीबोर्ड</translation>
 <translation id="3188257591659621405">माझ्या फाइल</translation>
 <translation id="3197563288998582412">यूके द्वोराक</translation>
@@ -311,7 +309,6 @@
 <translation id="4465830120256509958">ब्राझिलियन कीबोर्ड</translation>
 <translation id="4470564870223067757">हँगल 2 संच</translation>
 <translation id="4477219268485577442">बल्गेरियन ध्वन्यात्मक</translation>
-<translation id="4479812471636796472">यूएस दवोराक कीबोर्ड</translation>
 <translation id="4522570452068850558">तपशील</translation>
 <translation id="4527800702232535228">हे फोल्डर Parallels Desktop सह शेअर केलेले आहे</translation>
 <translation id="4552678318981539154">अधिक स्टोरेज खरेदी करा</translation>
@@ -567,7 +564,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" />आढळले</translation>
 <translation id="6935521024859866267">उलट सुलट</translation>
-<translation id="6939777852457331078">यूएस कामगार कीबोर्ड</translation>
 <translation id="696203921837389374">मोबाइल डेटावर सिंक सुरू करा</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
 <translation id="6970230597523682626">बल्गेरियन</translation>
@@ -587,7 +583,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7172053773111046550">एस्टोनियन कीबोर्ड</translation>
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
-<translation id="719009910964971313">यूएस प्रोग्रामर द्वोराक कीबोर्ड</translation>
 <translation id="7191454237977785534">या फॉरमॅटमध्ये फाइल सेव्ह करा</translation>
 <translation id="7222624196722476520">बल्गेरियन Phonetic कीबोर्ड</translation>
 <translation id="7238097264433196391">ड्राइव्हचे नाव</translation>
@@ -596,7 +591,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7283041136720745563">तुमचा Google ड्राइव्ह कोटा पुरेसा मोठा नाही.</translation>
 <translation id="7295662345261934369">इतरांशी शेअर करा</translation>
 <translation id="7339898014177206373">नवीन विंडो</translation>
-<translation id="7348749398828259943">यूएस कामगार आंतरराष्ट्रीय कीबोर्ड</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> आयटम कॉपी करत आहे...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> नुसार उतरत्या क्रमाने क्रमवारी लावलेली फाइल सूची.</translation>
 <translation id="7389722738210761877">थाई कीबोर्ड (TIS 820-2531)</translation>
@@ -604,9 +598,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7417453074306512035">इथिओपिक कीबोर्ड</translation>
 <translation id="7417705661718309329">Google नकाशा</translation>
 <translation id="7419631653042041064">कॅटलान कीबोर्ड</translation>
-<translation id="7434823369735508263">यूके दवोराक कीबोर्ड</translation>
 <translation id="7460898608667578234">यूक्रेनियन</translation>
-<translation id="7474889694310679759">कॅनेडियन इंग्रजी कीबोर्ड</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> आढळले
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google ड्राइव्ह<ph name="END_LINK" /> वर बॅकअप करण्यास तयार</translation>
@@ -659,7 +651,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" /> वर सेव्ह करू शकत नाही. सर्व संपादने डाउनलोड फोल्‍डरमधील <ph name="DOWNLOADS_FOLDER" /> मध्ये सेव्ह केली जातील.</translation>
 <translation id="7881969471599061635">उपशीर्षके अक्षम करा</translation>
 <translation id="78946041517601018">शेअर केलेली ड्राइव्ह</translation>
-<translation id="7896906914454843592">यूएस विस्तृत कीबोर्ड</translation>
 <translation id="7898607018410277265">गुजराती कीबोर्ड (नवीन फोनेटिक)</translation>
 <translation id="7908793776359722643">पार्टिशन फॉरमॅट केल्याने त्यावर स्टोअर केलेला सर्व डेटा मिटवला जाईल. ही कृती पहिल्यासारखी केली जाऊ शकत नाही.</translation>
 <translation id="7917972308273378936">लिथुआनियन कीबोर्ड</translation>
@@ -716,7 +707,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8395901698320285466">परिमाण</translation>
 <translation id="8412586565681117057">द्रुत इनपुट पद्धत</translation>
 <translation id="8418113698656761985">रोमानियन कीबोर्ड</translation>
-<translation id="8432745813735585631">यूएस कोलमॅक कीबोर्ड</translation>
 <translation id="8437209419043462667">यूएस</translation>
 <translation id="8456681095658380701">चुकीचे नाव</translation>
 <translation id="8466234950814670489">Tar संग्रहण</translation>
@@ -737,7 +727,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8698464937041809063">Google रेखांकन</translation>
 <translation id="8714406895390098252">सायकल</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> निवडले.</translation>
-<translation id="8722421161699219904">यूएस आंतरराष्ट्रीय कीबोर्ड</translation>
 <translation id="872537912056138402">क्रोएशियन</translation>
 <translation id="874420130893181774">पारंपारिक पिनयिन इनपुट पद्धत</translation>
 <translation id="8770002329960263418">यू.एस. आंतरराष्ट्रीय पीसी कीबोर्डसह डच (नेदरलँड)</translation>

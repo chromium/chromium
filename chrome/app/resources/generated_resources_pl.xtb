@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Wtyczka została zablokowana</translation>
 <translation id="1145593918056169051">Drukarka przestała działać</translation>
 <translation id="114721135501989771">Inteligentne rozwiązania Google w Chrome</translation>
+<translation id="1147322039136785890"><ph name="SUPERVISED_USER_NAME" /> może teraz odebrać urządzenie</translation>
 <translation id="1147991416141538220">Aby uzyskać dostęp, skontaktuj się z administratorem tego urządzenia.</translation>
 <translation id="1149401351239820326">Miesiąc utraty ważności</translation>
 <translation id="1149725087019908252">Skanuję plik <ph name="FILE_NAME" /></translation>
@@ -6585,6 +6586,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8736288397686080465">Ta witryna została zaktualizowana w tle.</translation>
 <translation id="8737685506611670901">Otwieranie linków protokołu <ph name="PROTOCOL" /> zamiast modułu <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Menedżer połączeń</translation>
+<translation id="8740247629089392745">Możesz przekazać tego Chromebooka użytkownikowi <ph name="SUPERVISED_USER_NAME" />. Prawie wszystko zostało skonfigurowane i można korzystać z urządzenia.</translation>
 <translation id="8742998548129056176">Są to ogólne informacje o tym urządzeniu i o jego używaniu (takie jak poziom naładowania baterii, aktywność w systemie i aplikacjach oraz błędy). Wykorzystamy je do ulepszania Androida. Niektóre informacje zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida, do tworzenia lepszych aplikacji i produktów.</translation>
 <translation id="8743390665131937741">Poziom powiększenia lupy pełnego ekranu:</translation>
 <translation id="8743864605301774756">Zaktualizowano przed godziną</translation>

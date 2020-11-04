@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">تم حظر المكوّن الإضافي</translation>
 <translation id="1145593918056169051">توقفت الطابعة</translation>
 <translation id="114721135501989771">‏الحصول على ميزات Google الذكية في Chrome</translation>
+<translation id="1147322039136785890">يستطيع <ph name="SUPERVISED_USER_NAME" /> الآن استخدام الجهاز</translation>
 <translation id="1147991416141538220">لطلب إذن الوصول إلى التطبيق، يُرجى التواصل مع مشرف هذا الجهاز.</translation>
 <translation id="1149401351239820326">شهر انتهاء الصلاحية</translation>
 <translation id="1149725087019908252">جارٍ فحص ملف <ph name="FILE_NAME" /></translation>
@@ -6589,6 +6590,7 @@
 <translation id="8736288397686080465">تم تحديث هذا الموقع في الخلفية.</translation>
 <translation id="8737685506611670901">فتح روابط <ph name="PROTOCOL" /> بدلاً من <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">‏يمكنك تسليم جهاز Chromebook هذا إلى <ph name="SUPERVISED_USER_NAME" />. أوشك الإعداد على الانتهاء. بعد ذلك، يمكنك استكشاف محتوى الجهاز.</translation>
 <translation id="8742998548129056176">‏هذه معلومات عامة حول جهازك وطريقة استخدامك له (مثل مستوى البطارية، ونشاط النظام والتطبيقات، والأخطاء). ويتم استخدام هذه البيانات من أجل تحسين Android، كما سيستفيد مطوّرو التطبيقات والشركاء في Google، مثل مطوّري البرامج المتوافقة مع Android، من بعض المعلومات المجمّعة لتحسين أداء تطبيقاتهم ومنتجاتهم.</translation>
 <translation id="8743390665131937741">مستوى التكبير بملء الشاشة:</translation>
 <translation id="8743864605301774756">تم التحديث قبل ساعة واحدة</translation>

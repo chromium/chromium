@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">versteek kieslys vir geslote onderskrifte</translation>
 <translation id="1729654308190250600">Voer 'n nie-leë e-posadres in.</translation>
 <translation id="1758486001363313524">Ander …</translation>
-<translation id="1774577460079229490">tans <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">totale tyd: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">waarskuwing_dialoog</translation>
 <translation id="1821985195704844674">boomrooster</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">Waarde moet <ph name="MINIMUM_DATE_OR_TIME" /> of later wees.</translation>
 <translation id="2759744352195237655">opspringerknoppie</translation>
 <translation id="2761667185364618470">Merk asseblief hierdie blokkie as jy wil voortgaan.</translation>
-<translation id="2838616441696617235">stap</translation>
 <translation id="2844350028562914727">besonderhede</translation>
 <translation id="2896972712917208084">klinkknoppiegroep</translation>
 <translation id="2908441821576996758">Voer asseblief 'n kommageskeide lys e-posadresse in.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">bibliografie-inskrywing</translation>
 <translation id="4915360478455618802">Wys tydkieser</translation>
 <translation id="492244087561876220">opmerking</translation>
-<translation id="4934662370368414994">item</translation>
 <translation id="4950364064308314478">Wys plaaslike datum- en tydkieser</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> gekies</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> gekies</translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">volumeglyer</translation>
 <translation id="6015796118275082299">Jaar</translation>
 <translation id="6023896073578205740">lyskassie</translation>
-<translation id="6131824478727057281">ligging</translation>
 <translation id="6150588977291308318">bibliografie</translation>
 <translation id="6164829606128959761">meter</translation>
 <translation id="6166809985690652833">nawoord</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">demp</translation>
 <translation id="6885760532393684712">gids</translation>
 <translation id="689129560213475294">eindtitel</translation>
-<translation id="6901540140423170855">datum</translation>
 <translation id="6934078000481955284">blokaanhaling</translation>
 <translation id="693476918119313863">opskrif</translation>
 <translation id="6941933287844615239">laai media af</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">notaverwysing</translation>
 <translation id="811583516810654505">Kry tans beskrywing …</translation>
 <translation id="8117451130807776954">Vandeesweek</translation>
-<translation id="8180239481735238521">bladsy</translation>
 <translation id="8199524924445686405">jjjj</translation>
 <translation id="8208673686607688524">plaaslike datum- en tydkieser</translation>
 <translation id="8261464734335370856">Ongeldige spelling</translation>

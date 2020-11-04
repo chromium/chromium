@@ -142,7 +142,6 @@
 <translation id="247772113373397749">Ikhibhodi yezilimi eziningi ye-Canadian</translation>
 <translation id="2494837236724268445">Ikhibhodi ye-Gujarati (Ifonetiki)</translation>
 <translation id="2515586267016047495">I-Alt</translation>
-<translation id="2529133382850673012">Ikhibhodi ye-US</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> izinto ezisusiwe</translation>
 <translation id="2541377937973966830">Okuqukethwe kwale folda okokufunda kuphela. Eminye imisebenzi ayisekelwa.</translation>
 <translation id="2542049655219295786">Ithebula le-Google</translation>
@@ -196,10 +195,8 @@
 <translation id="3067790092342515856">Amafayela e-Windows</translation>
 <translation id="3078461028045006476">Yabelana nge-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Ama-Chromebit</translation>
-<translation id="3116361045094675131">Ikhibhodi ye-UK</translation>
 <translation id="3126026824346185272">I-Ctrl</translation>
 <translation id="3144126448740580210">KWENZIWE</translation>
-<translation id="3157729859914172001">Ikhibhodi yase-US International (PC)</translation>
 <translation id="3187212781151025377">Ikhibhodi ye-Hebrew</translation>
 <translation id="3188257591659621405">Amafayela ami</translation>
 <translation id="3197563288998582412">I-UK Dvorak</translation>
@@ -311,7 +308,6 @@
 <translation id="4465830120256509958">Ikhobhodi ye-Brazil</translation>
 <translation id="4470564870223067757">Isethi ye-Hangul 2</translation>
 <translation id="4477219268485577442">Ifonethikhi yesi-Bulgarian</translation>
-<translation id="4479812471636796472">Ikhibhodi ye-US Dvorak</translation>
 <translation id="4522570452068850558">Imininingwane</translation>
 <translation id="4527800702232535228">Le folda yabiwa Nedeskithophu ye-Parallels</translation>
 <translation id="4552678318981539154">Thenga isitoreji esiningi</translation>
@@ -566,7 +562,6 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> itholakele</translation>
 <translation id="6935521024859866267">Kubheke phansi</translation>
-<translation id="6939777852457331078">Ikhibhodi ye-US Workman</translation>
 <translation id="696203921837389374">Nika amandla ukuvumelanisa ngaphezulu kwedatha yeselula</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Isi-Bulgarian</translation>
@@ -586,7 +581,6 @@
 <translation id="7172053773111046550">Ikhibhodi ye-Estonian</translation>
 <translation id="7180611975245234373">Qala kabusha</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
-<translation id="719009910964971313">Ikhibhodi yomhleli wase-US u-Dvorak</translation>
 <translation id="7191454237977785534">Londoloza ifayela njenge-</translation>
 <translation id="7222624196722476520">Ikhibhodi yefonotiki ye-Bulgarian</translation>
 <translation id="7238097264433196391">Igama ledrayivu</translation>
@@ -595,7 +589,6 @@
 <translation id="7283041136720745563">Isikhala sakho se-Google Drayivu asisikhulu ngokwanele.</translation>
 <translation id="7295662345261934369">Yabelana nabanye</translation>
 <translation id="7339898014177206373">Iwindi elisha</translation>
-<translation id="7348749398828259943">Ikhibhodi ye-US Workman International</translation>
 <translation id="7359359531237882347">Ukukopisha izinto ezingu-<ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="7375951387215729722">Uhlu lwefayela luhlungwe nge-<ph name="COLUMN_NAME" /> nge-oda eyehlayo.</translation>
 <translation id="7389722738210761877">Ikhibhodi ye-Thai (TIS 820-2531)</translation>
@@ -603,9 +596,7 @@
 <translation id="7417453074306512035">Ikhibhodi ye-Ethiopic</translation>
 <translation id="7417705661718309329">Imephu ye-Google</translation>
 <translation id="7419631653042041064">Ikhibhodi ye-Catalan</translation>
-<translation id="7434823369735508263">Ikhibhodi ye-UK Dvorak</translation>
 <translation id="7460898608667578234">Isi-Ukrainian</translation>
-<translation id="7474889694310679759">Ikhbhodi ye-Canadian English</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> itholakele
     <ph name="LINE_BREAK1" />
     Ilungele ukwenza isipele ku-<ph name="BEGIN_LINK" />Google Drayivu<ph name="END_LINK" /></translation>
@@ -658,7 +649,6 @@
 <translation id="7873831373602885875">Ayikwazi ukulondoloza ku-<ph name="FOLDER_NAME" />. Konke ukuhlelwa kuzolondolozwa ku-<ph name="DOWNLOADS_FOLDER" /> kufolda yokulandiwe.</translation>
 <translation id="7881969471599061635">Khubaza imibhalo engezansi</translation>
 <translation id="78946041517601018">Amadrayivu abiwayo</translation>
-<translation id="7896906914454843592">Ikhibhodi enwetshisiwe ye-US</translation>
 <translation id="7898607018410277265">Ikhibhodi yesi-Gujarati (New Phonetic)</translation>
 <translation id="7908793776359722643">Ukufometha ingxenye kuzosula yonke idatha egcinwe kuyo. Lesi senzo asikwazi ukuhlehliswa.</translation>
 <translation id="7917972308273378936">Ikhibhodi ye-Lithuanian</translation>
@@ -715,7 +705,6 @@
 <translation id="8395901698320285466">Ubukhulu</translation>
 <translation id="8412586565681117057">Indlela yokufaka esheshayo</translation>
 <translation id="8418113698656761985">Ikhibhodi ye-Romanian</translation>
-<translation id="8432745813735585631">Ikhibhodi ye-US Colemak</translation>
 <translation id="8437209419043462667">I-US</translation>
 <translation id="8456681095658380701">Igama elingavumelekile</translation>
 <translation id="8466234950814670489">Ingobo yomlando yotiyela</translation>
@@ -736,7 +725,6 @@
 <translation id="8698464937041809063">Ukudweba kwe-Google</translation>
 <translation id="8714406895390098252">Ibhayisikili</translation>
 <translation id="8719721339511222681">Okukhethiwe <ph name="ENTRY_NAME" />.</translation>
-<translation id="8722421161699219904">Ikhibhodi ye-US International</translation>
 <translation id="872537912056138402">Isi-Croatian</translation>
 <translation id="874420130893181774">Indlela yokufaka ye-Traditional Pinyin</translation>
 <translation id="8770002329960263418">Isi-Dutch (Netherlands) nge-US International PC keyboard</translation>

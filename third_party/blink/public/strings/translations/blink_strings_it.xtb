@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">nascondi menu sottotitoli</translation>
 <translation id="1729654308190250600">Inserisci un indirizzo email valido.</translation>
 <translation id="1758486001363313524">Altro...</translation>
-<translation id="1774577460079229490"><ph name="TYPE" /> attuale</translation>
 <translation id="1787192514241997742">tempo totale: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">griglia ad albero</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">Il valore deve essere <ph name="MINIMUM_DATE_OR_TIME" /> o successivo.</translation>
 <translation id="2759744352195237655">pulsante popup</translation>
 <translation id="2761667185364618470">Seleziona questa casella se intendi procedere.</translation>
-<translation id="2838616441696617235">passaggio</translation>
 <translation id="2844350028562914727">dettagli</translation>
 <translation id="2896972712917208084">gruppo pulsanti di opzione</translation>
 <translation id="2908441821576996758">Inserisci un elenco di indirizzi email separati da virgola.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">voce bibliografica</translation>
 <translation id="4915360478455618802">Mostra selettore ora</translation>
 <translation id="492244087561876220">commento</translation>
-<translation id="4934662370368414994">voce</translation>
 <translation id="4950364064308314478">Mostra selettore di data e ora locali</translation>
 <translation id="4971739861736909480">Elemento <ph name="ACCNAME" /> selezionato</translation>
 <translation id="4975562563186953947">Elementi selezionati: <ph name="SELECTED_COUNT" /></translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">dispositivo di scorrimento del volume</translation>
 <translation id="6015796118275082299">Anno</translation>
 <translation id="6023896073578205740">casella di riepilogo</translation>
-<translation id="6131824478727057281">posizione</translation>
 <translation id="6150588977291308318">bibliografia</translation>
 <translation id="6164829606128959761">indicatore</translation>
 <translation id="6166809985690652833">postfazione</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">disattiva audio</translation>
 <translation id="6885760532393684712">directory</translation>
 <translation id="689129560213475294">colophon</translation>
-<translation id="6901540140423170855">date</translation>
 <translation id="6934078000481955284">citazione lunga</translation>
 <translation id="693476918119313863">intestazione</translation>
 <translation id="6941933287844615239">scarica contenuti multimediali</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">riferimento note</translation>
 <translation id="811583516810654505">Recupero descrizione…</translation>
 <translation id="8117451130807776954">Questa settimana</translation>
-<translation id="8180239481735238521">pagina</translation>
 <translation id="8199524924445686405">aaaa</translation>
 <translation id="8208673686607688524">selettore di data e ora locali</translation>
 <translation id="8261464734335370856">Ortografia non valida</translation>

@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Plug-in bloqueado</translation>
 <translation id="1145593918056169051">A impressora parou</translation>
 <translation id="114721135501989771">A tecnologia Google no Chrome</translation>
+<translation id="1147322039136785890">Agora, entregue o dispositivo para <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Para solicitar acesso, entre em contato com o administrador deste dispositivo.</translation>
 <translation id="1149401351239820326">Mês de expiração</translation>
 <translation id="1149725087019908252">Verificando <ph name="FILE_NAME" /></translation>
@@ -6592,6 +6593,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8736288397686080465">Este site foi atualizado em segundo plano.</translation>
 <translation id="8737685506611670901">Abrir links de <ph name="PROTOCOL" /> em vez de <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">Você pode entregar este Chromebook para <ph name="SUPERVISED_USER_NAME" />. A configuração está quase concluída, então a criança poderá conhecer o dispositivo.</translation>
 <translation id="8742998548129056176">Estas são informações gerais sobre seu dispositivo e a forma como ele é usado (como nível da bateria, atividade de apps e do sistema e erros). Esses dados serão usados para melhorar o Android, e algumas informações agregadas também ajudarão os apps e parceiros do Google, como os desenvolvedores Android, a melhorar os apps e produtos deles.</translation>
 <translation id="8743390665131937741">Nível de zoom em tela cheia:</translation>
 <translation id="8743864605301774756">Atualizada 1 hora atrás</translation>

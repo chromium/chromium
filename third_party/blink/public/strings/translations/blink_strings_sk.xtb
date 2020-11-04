@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">skryť ponuku skrytých titulkov</translation>
 <translation id="1729654308190250600">Zadajte e-mailovú adresu, ktorá nie je prázdna hodnota.</translation>
 <translation id="1758486001363313524">Iné...</translation>
-<translation id="1774577460079229490">aktuál. <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">celkový čas: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">dialóg_upozornenia</translation>
 <translation id="1821985195704844674">stromová mriežka</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">Hodnota musí byť <ph name="MINIMUM_DATE_OR_TIME" /> alebo neskôr.</translation>
 <translation id="2759744352195237655">kontextové tlačidlo</translation>
 <translation id="2761667185364618470">Ak chcete pokračovať, začiarknite toto políčko.</translation>
-<translation id="2838616441696617235">krok</translation>
 <translation id="2844350028562914727">podrobnosti</translation>
 <translation id="2896972712917208084">skupina prepínačov</translation>
 <translation id="2908441821576996758">Zadajte zoznam e-mailových adries oddelených čiarkou.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">bibliografický záznam</translation>
 <translation id="4915360478455618802">Zobraziť výber času</translation>
 <translation id="492244087561876220">komentár</translation>
-<translation id="4934662370368414994">položka</translation>
 <translation id="4950364064308314478">Zobraziť výber miestneho dátumu a času</translation>
 <translation id="4971739861736909480">Vybrané: <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Počet vybraných položiek: <ph name="SELECTED_COUNT" /></translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">posúvač hlasitosti</translation>
 <translation id="6015796118275082299">Rok</translation>
 <translation id="6023896073578205740">zoznamové pole</translation>
-<translation id="6131824478727057281">poloha</translation>
 <translation id="6150588977291308318">bibliografia</translation>
 <translation id="6164829606128959761">meter</translation>
 <translation id="6166809985690652833">doslov</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">stlmiť</translation>
 <translation id="6885760532393684712">adresár</translation>
 <translation id="689129560213475294">kolofón</translation>
-<translation id="6901540140423170855">dátum</translation>
 <translation id="6934078000481955284">značka blockquote</translation>
 <translation id="693476918119313863">hlavička</translation>
 <translation id="6941933287844615239">stiahnuť médiá</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">odkaz na poznámku</translation>
 <translation id="811583516810654505">Načítava sa popis…</translation>
 <translation id="8117451130807776954">Tento týždeň</translation>
-<translation id="8180239481735238521">strana</translation>
 <translation id="8199524924445686405">rrrr</translation>
 <translation id="8208673686607688524">výber miestneho dátumu a času</translation>
 <translation id="8261464734335370856">Neplatný pravopis</translation>

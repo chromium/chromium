@@ -2793,11 +2793,6 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> ignore toutes les opti
 <translation id="5306186200045823863">Faire confiance à l'ancienne infrastructure PKI de Symantec Corporation</translation>
 <translation id="5307432759655324440">Disponibilité du mode navigation privée</translation>
 <translation id="5311275381462687162">Rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour tous les cookies</translation>
-<translation id="5315324986365616322">Si cette règle est activée, la transition rapide est utilisée lorsque le point d'accès sans fil accepte cette fonctionnalité. Cette règle s'applique à l'ensemble des utilisateurs et des interfaces de l'appareil.
-
-      Si cette règle est désactivée ou qu'elle n'est pas configurée, la transition rapide n'est pas utilisée.
-
-      Remarque : Pour utiliser la transition rapide, activez également la propriété ONC par réseau.</translation>
 <translation id="5315367501385698459">Cette règle permet d'établir la liste des formats d'URL pour lesquels les sites sont automatiquement autorisés à se connecter à un appareil USB à l'aide des identifiants du produit et du fournisseur indiqués sur l'écran de connexion. Pour que la règle soit valide, chaque élément de la liste doit contenir un champ "<ph name="DEVICES_FIELD_NAME" />" et un champ "<ph name="URLS_FIELD_NAME" />". Chaque élément du champ "<ph name="DEVICES_FIELD_NAME" />" peut contenir à son tour un champ "<ph name="VENDOR_ID_FIELD_NAME" />" et un champ "<ph name="PRODUCT_ID_FIELD_NAME" />". Si vous ne renseignez pas le champ "<ph name="VENDOR_ID_FIELD_NAME" />", la règle qui est créée correspond à tous les appareils. Si vous ne renseignez pas le champ "<ph name="PRODUCT_ID_FIELD_NAME" />", la règle qui est créée correspond à tous les appareils ayant l'ID de fournisseur donné. Une règle contenant un champ "<ph name="PRODUCT_ID_FIELD_NAME" />", mais pas de champ "<ph name="VENDOR_ID_FIELD_NAME" />" n'est pas valide.
 
       Le modèle d'autorisation USB utilise l'URL de requête et l'URL d'intégration pour permettre à l'URL de requête d'accéder à l'appareil USB. L'URL de requête peut être différente de l'URL d'intégration si le site à l'origine de la demande est chargé dans un iFrame. Le champ "<ph name="URLS_FIELD_NAME" />" peut de ce fait contenir jusqu'à deux chaînes d'URL séparées par une virgule afin d'indiquer l'URL de requête et l'URL d'intégration, respectivement. Si une seule URL est spécifiée, l'accès aux appareils USB concernés est autorisé si l'URL du site à l'origine de la demande correspond à cette URL, quel que soit l'état d'intégration. Si les URL ne sont pas valides, la règle est ignorée.
@@ -2964,7 +2959,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="5475361623548884387">Activer l'impression</translation>
 <translation id="547601067149622666">Ne pas autoriser les annonces sur les sites présentant des annonces intrusives</translation>
 <translation id="5483065054530244863">Autoriser les certificats signés SHA-1 émis par les ancres d'approbation locales</translation>
-<translation id="5494917047563607689">Si cette règle est définie sur une valeur inférieure à 1 Mo ou qu'elle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> utilise la taille de cache par défaut pour mettre en cache les applications et les extensions installées par plusieurs utilisateurs d'un même appareil, ce qui évite à chacun d'eux de les télécharger de nouveau.</translation>
 <translation id="5499375345075963939">Cette règle n'est active qu'en mode "point de vente".
 
       Lorsque sa valeur est configurée, et si elle ne correspond pas à 0, l'utilisateur connecté en mode démonstration est déconnecté automatiquement après la durée d'inactivité définie.
@@ -3841,9 +3835,6 @@ Si vous sélectionnez les options suivantes :
       Avant la version 75, la spécification de plusieurs ID d'extension séparés par une virgule n'est pas possible et est donc ignorée. En revanche, le reste de la règle est appliqué.
 
       Remarque : cette règle concerne également les extensions et les applications à installer d'office via la règle <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.</translation>
-<translation id="672496466524161417">Si cette règle est définie sur "None" ou qu'elle n'est pas configurée, les utilisateurs gèrent les certificats. Si cette règle est définie sur "2", les utilisateurs peuvent uniquement consulter les certificats (sans pouvoir les gérer).
-
-      Si cette règle est définie sur "1", les utilisateurs gèrent les certificats utilisateur, mais pas ceux au niveau de l'appareil.</translation>
 <translation id="6731757988219967594">Filtrer les sites de premier niveau (mais pas les iFrame intégrés) présentant des contenus réservés aux adultes</translation>
 <translation id="6734521799274931721">Vérifie la disponibilité de la fonctionnalité Partages de fichiers en réseau pour Chrome OS</translation>
 <translation id="6735701345096330595">Forcer l'activation des langues de la vérification orthographique</translation>
@@ -3928,11 +3919,6 @@ Si vous sélectionnez les options suivantes :
       Spécifie les indicateurs à appliquer à <ph name="PRODUCT_NAME" /> au démarrage. Ceux-ci ne sont appliqués que sur l'écran de connexion. Les indicateurs définis par cette règle ne sont pas répercutés dans les sessions utilisateur.</translation>
 <translation id="685769593149966548">Appliquer le mode restreint strict sur YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 ou version ultérieure</translation>
-<translation id="6863342574191774334">Si ce paramètre est activé, les utilisateurs seront autorisés à activer le Partage à proximité, qui leur permet d'envoyer des fichiers aux personnes à proximité et d'en recevoir.
-
-      Si ce paramètre est désactivé, les utilisateurs ne seront pas autorisés à activer le Partage à proximité.
-
-      Si cette règle n'est pas définie, le Partage à proximité est autorisé par défaut pour les utilisateurs gérés par une entreprise et pour les utilisateurs non gérés.</translation>
 <translation id="6889123056995503704">L'utilisateur détermine le comportement de retour à une version antérieure</translation>
 <translation id="6894178810167845842">URL de la page "Nouvel onglet"</translation>
 <translation id="6897730193187922386">Supprimer les messages d'abandon de <ph name="CLOUD_PRINT_NAME" /></translation>

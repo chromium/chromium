@@ -144,7 +144,6 @@
 <translation id="247772113373397749">Καναδικό πολύγλωσσο πληκτρολόγιο</translation>
 <translation id="2494837236724268445">Πληκτρολόγιο Γκουγιαράτι (Φωνητικό)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">Πληκτρολόγιο με αγγλικούς χαρακτήρες (ΗΠΑ)</translation>
 <translation id="2534155362429831547">Διαγράφηκαν <ph name="NUMBER_OF_ITEMS" /> στοιχεία</translation>
 <translation id="2541377937973966830">Τα περιεχόμενα αυτού του φακέλου είναι μόνο για ανάγνωση. Δεν υποστηρίζονται ορισμένες δραστηριότητες.</translation>
 <translation id="2542049655219295786">Πίνακας Google</translation>
@@ -200,10 +199,9 @@
 <translation id="3067790092342515856">Αρχεία Windows</translation>
 <translation id="3078461028045006476">Μοιραστείτε με την επέκταση <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit</translation>
-<translation id="3116361045094675131">Πληκτρολόγιο με αγγλικούς χαρακτήρες (ΗΒ)</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ΤΕΛΟΣ</translation>
-<translation id="3157729859914172001">Διεθνές πληκτρολόγιο ΗΠΑ (υπολογιστή)</translation>
+<translation id="3182237543071236785">Αγγλικά (Η.Β.)</translation>
 <translation id="3187212781151025377">Πληκτρολόγιο με εβραϊκούς χαρακτήρες</translation>
 <translation id="3188257591659621405">Τα αρχεία μου</translation>
 <translation id="3197563288998582412">Dvorak ΗΒ</translation>
@@ -319,7 +317,6 @@
 <translation id="4465830120256509958">Πληκτρολόγιο με βραζιλιάνικους χαρακτήρες</translation>
 <translation id="4470564870223067757">Σύνολο Χανγκίλ 2</translation>
 <translation id="4477219268485577442">Φωνητικό Βουλγαρικά</translation>
-<translation id="4479812471636796472">Πληκτρολόγιο Dvorak (ΗΠΑ)</translation>
 <translation id="4522570452068850558">Λεπτομέρειες</translation>
 <translation id="4527800702232535228">Αυτός ο φάκελος χρησιμοποιείται από κοινού με το Parallels Desktop.</translation>
 <translation id="4552678318981539154">Αγοράστε περισσότερο αποθηκευτικό χώρο</translation>
@@ -581,7 +578,6 @@
     <ph name="LINE_BREAK1" />
     Βρέθηκαν <ph name="FILE_COUNT" /> αρχεία</translation>
 <translation id="6935521024859866267">Ανάποδα</translation>
-<translation id="6939777852457331078">Πληκτρολόγιο ΗΠΑ Workman</translation>
 <translation id="696203921837389374">Ενεργοποίηση συγχρονισμού μέσω δεδομένων κινητής τηλεφωνίας</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Βουλγαρικά</translation>
@@ -601,7 +597,6 @@
 <translation id="7172053773111046550">Πληκτρολόγιο με εσθονικούς χαρακτήρες</translation>
 <translation id="7180611975245234373">Ανανέωση</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
-<translation id="719009910964971313">Πληκτρολόγιο US Programmer Dvorak</translation>
 <translation id="7191454237977785534">Αποθήκευση αρχείου ως</translation>
 <translation id="7222624196722476520">Φωνητικό πληκτρολόγιο με βουλγαρικούς χαρακτήρες</translation>
 <translation id="7238097264433196391">Όνομα δίσκου</translation>
@@ -610,7 +605,6 @@
 <translation id="7283041136720745563">Το όριό σας στο Google Drive δεν είναι αρκετά μεγάλο.</translation>
 <translation id="7295662345261934369">Κοινοποίηση σε άλλα άτομα</translation>
 <translation id="7339898014177206373">Νέο παράθυρο</translation>
-<translation id="7348749398828259943">Διεθνές πληκτρολόγιο ΗΠΑ Workman</translation>
 <translation id="7359359531237882347">Αντιγραφή <ph name="NUMBER_OF_ITEMS" /> στοιχείων…</translation>
 <translation id="7375951387215729722">Η λίστα αρχείων ταξινομήθηκε κατά <ph name="COLUMN_NAME" /> σε φθίνουσα σειρά.</translation>
 <translation id="7389722738210761877">Πληκτρολόγιο Ταϊλανδικών (TIS 820-2531)</translation>
@@ -618,10 +612,8 @@
 <translation id="7417453074306512035">Πληκτρολόγιο Αιθιοπικών</translation>
 <translation id="7417705661718309329">Χάρτης Google</translation>
 <translation id="7419631653042041064">Πληκτρολόγιο με καταλανικούς χαρακτήρες</translation>
-<translation id="7434823369735508263">Πληκτρολόγιο Dvorak ΗΒ</translation>
 <translation id="7460898608667578234">Ουκρανικά
 </translation>
-<translation id="7474889694310679759">Πληκτρολόγιο με αγγλικούς χαρακτήρες (Καναδά)</translation>
 <translation id="7489215562877293245">Βρέθηκαν <ph name="FILE_COUNT" /> αρχεία
     <ph name="LINE_BREAK1" />
     Έτοιμα για δημιουργία αντιγράφων ασφαλείας στο <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
@@ -676,7 +668,6 @@
 <translation id="7873831373602885875">Δεν είναι δυνατή η αποθήκευση στο <ph name="FOLDER_NAME" />. Όλες οι τροποποιήσεις θα αποθηκεύονται στο <ph name="DOWNLOADS_FOLDER" />, στον φάκελο Λήψεις.</translation>
 <translation id="7881969471599061635">Απενεργοποίηση υπότιτλων</translation>
 <translation id="78946041517601018">Κοινά Drive</translation>
-<translation id="7896906914454843592">Εκτεταμένο πληκτρολόγιο ΗΠΑ</translation>
 <translation id="7898607018410277265">Πληκτρολόγιο γκουγιαράτι (Νέο φωνητικό)</translation>
 <translation id="7908793776359722643">Η μορφοποίηση ενός διαμερίσματος θα διαγράψει όλα τα δεδομένα που είναι αποθηκευμένα σε αυτό. Δεν είναι δυνατή η αναίρεση αυτής της ενέργειας.</translation>
 <translation id="7917972308273378936">Πληκτρολόγιο με λιθουανικούς χαρακτήρες</translation>
@@ -735,7 +726,6 @@
 <translation id="8395901698320285466">Διαστάσεις</translation>
 <translation id="8412586565681117057">Μέθοδος εισαγωγής Quick</translation>
 <translation id="8418113698656761985">Πληκτρολόγιο με ρουμανικούς χαρακτήρες</translation>
-<translation id="8432745813735585631">Πληκτρολόγιο Colemak ΗΠΑ</translation>
 <translation id="8437209419043462667">ΗΠΑ</translation>
 <translation id="8456681095658380701">Μη έγκυρο όνομα</translation>
 <translation id="8466234950814670489">Αρχείο Tar</translation>
@@ -757,7 +747,6 @@
 <translation id="8698464937041809063">Σχέδιο Google</translation>
 <translation id="8714406895390098252">Ποδήλατο</translation>
 <translation id="8719721339511222681">Επιλογή <ph name="ENTRY_NAME" />.</translation>
-<translation id="8722421161699219904">Διεθνές πληκτρολόγιο ΗΠΑ</translation>
 <translation id="872537912056138402">Κροατικά
 </translation>
 <translation id="874420130893181774">Μέθοδος εισαγωγής παραδοσιακών Πινγίν</translation>

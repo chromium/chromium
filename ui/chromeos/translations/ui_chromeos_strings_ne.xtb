@@ -142,7 +142,6 @@
 <translation id="247772113373397749">क्यानाडा बहुभाषी किबोर्ड</translation>
 <translation id="2494837236724268445">गुजराती किबोर्ड (ध्वन्यात्मक)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">अमेरिकी किबोर्ड</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू मेटाइए</translation>
 <translation id="2541377937973966830">यो फोल्डरका सामग्री रिड गर्न मात्र मिल्छ। केही क्रियाकलापहरू गर्न मिल्दैन।</translation>
 <translation id="2542049655219295786">Google तालिका</translation>
@@ -196,10 +195,8 @@
 <translation id="3067790092342515856">Windows फाइलहरू</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> मार्फत सेयर गर्नुहोस्</translation>
 <translation id="3083975830683400843">Chromebit</translation>
-<translation id="3116361045094675131">बेलायत किबोर्ड</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">सम्पन्न  भयो</translation>
-<translation id="3157729859914172001">अमेरिकी अन्तर्राष्ट्रिय (PC) किबोर्ड</translation>
 <translation id="3187212781151025377">हिब्रू किबोर्ड</translation>
 <translation id="3188257591659621405">मेरा फाइलहरू</translation>
 <translation id="3197563288998582412">बेलायत ड्भोराक</translation>
@@ -311,7 +308,6 @@
 <translation id="4465830120256509958">ब्राजिलियन किबोर्ड</translation>
 <translation id="4470564870223067757">हंगुल 2 सेट</translation>
 <translation id="4477219268485577442">बुल्गेरियन फोनेटिक</translation>
-<translation id="4479812471636796472">अमेरिकी ड्भोराक किबोर्ड</translation>
 <translation id="4522570452068850558">विवरणहरू</translation>
 <translation id="4527800702232535228">यो फोल्डर Parallels Desktop सँग सेयर गरिएको छ</translation>
 <translation id="4552678318981539154">थप भण्डारण खरीद गर्नुहोस्</translation>
@@ -566,7 +562,6 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> फेला पर्‍यो</translation>
 <translation id="6935521024859866267">उल्टो</translation>
-<translation id="6939777852457331078">US Workman किबोर्ड</translation>
 <translation id="696203921837389374">मोबाइल डेटामा सिंक सक्षम गर्नुहोस्</translation>
 <translation id="6965382102122355670">ठिक छ</translation>
 <translation id="6970230597523682626">बुल्गेरियन</translation>
@@ -586,7 +581,6 @@
 <translation id="7172053773111046550">इस्तोनियन किबोर्ड</translation>
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> जि.बि.</translation>
-<translation id="719009910964971313">अमेरिकी प्रोग्रामर भोराक किबोर्ड</translation>
 <translation id="7191454237977785534">यसको रूपमा फाइल बचत गर्नुहोस्</translation>
 <translation id="7222624196722476520">बुल्गेरियन फोनेटिक किबोर्ड</translation>
 <translation id="7238097264433196391">यन्त्रको नाम</translation>
@@ -595,7 +589,6 @@
 <translation id="7283041136720745563">तपाईंको Google ड्राइभको कोटा पर्याप्त ठुलो छैन।</translation>
 <translation id="7295662345261934369">अरूसँग सेयर गर्नुहोस्</translation>
 <translation id="7339898014177206373">नयाँ विन्डो</translation>
-<translation id="7348749398828259943">US Workman अन्तर्राष्ट्रिय किबोर्ड</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू प्रतिलिपि गर्दै...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> का आधारमा घट्दो क्रममा क्रमबद्ध गरिएको फाइलको सूची।</translation>
 <translation id="7389722738210761877">थाई किबोर्ड (TIS 820-2531)</translation>
@@ -603,9 +596,7 @@
 <translation id="7417453074306512035">इथियोपिक किबोर्ड</translation>
 <translation id="7417705661718309329">Google नक्सा</translation>
 <translation id="7419631653042041064">कातालान किबोर्ड</translation>
-<translation id="7434823369735508263">बेलायत ड्भोराक किबोर्ड</translation>
 <translation id="7460898608667578234">युक्रेनियन</translation>
-<translation id="7474889694310679759">क्यानाडा अंग्रेजी किबोर्ड</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> फेला पर्‍यो
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google ड्राइभ<ph name="END_LINK" /> मा ब्याकअप गर्न तयार</translation>
@@ -658,7 +649,6 @@
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" /> मा सुरक्षित गर्न सकिँदैन। सबै सम्पादनहरू डाउनलोडहरू नामक फोल्डरमा रहेको <ph name="DOWNLOADS_FOLDER" /> मा सुरक्षित हुने छन्।</translation>
 <translation id="7881969471599061635">उपशीर्षकहरूलाई असक्षम गर्नुहोस्</translation>
 <translation id="78946041517601018">साझा ड्राइभहरू</translation>
-<translation id="7896906914454843592">अमेरिकी विस्तारित किबोर्ड</translation>
 <translation id="7898607018410277265">गुजराती किबोर्ड (नयाँ फोनेटिक)</translation>
 <translation id="7908793776359722643">तपाईंले कुनै पार्टिसन फर्म्याट गर्नुभयो भने उक्त पार्टिसनमा भण्डारण गरिएको सम्पूर्ण डेटा मेटिने छ। यो कार्य अन्डू गर्न सकिँदैन।</translation>
 <translation id="7917972308273378936">लिथुएनियन किबोर्ड</translation>
@@ -715,7 +705,6 @@
 <translation id="8395901698320285466">उचाइ तथा चौडाइ</translation>
 <translation id="8412586565681117057">छिटो आगत विधि</translation>
 <translation id="8418113698656761985">रोमानियन किबोर्ड</translation>
-<translation id="8432745813735585631">अमेरिकी कोलमाक किबोर्ड</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">अवैध नाम</translation>
 <translation id="8466234950814670489">टार सङ्ग्रह</translation>
@@ -736,7 +725,6 @@
 <translation id="8698464937041809063">Google ड्रइङ</translation>
 <translation id="8714406895390098252">साइकल</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> चयन गरियो।</translation>
-<translation id="8722421161699219904">अमेरिकी अन्तर्राष्ट्रिय किबोर्ड</translation>
 <translation id="872537912056138402">क्रोएसियाली</translation>
 <translation id="874420130893181774">परम्परागत पिनयीन आगत विधि</translation>
 <translation id="8770002329960263418">अमेरिकी अन्तर्राष्ट्रिय पिसी किबोर्डसहितको डच (नेदरल्यान्ड्स) इनपुट विधि</translation>

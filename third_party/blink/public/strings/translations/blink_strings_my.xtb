@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">စာတန်းများမီနူးကို ဖျောက်ရန်</translation>
 <translation id="1729654308190250600">ကျေးဇူးပြု၍ ဗလာမဟုတ်သည့် အီးမေးလ် လိပ်စာ ရိုက်ထည့်ပါ။</translation>
 <translation id="1758486001363313524">အခြား...</translation>
-<translation id="1774577460079229490">လက်ရှိ <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">စုစုပေါင်းအချိန်- <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">သတိပေးချက် ဒိုင်ယာလော့</translation>
 <translation id="1821985195704844674">သစ်ပင်ပုံစံဇယားကွက်</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">တန်ဖိုးမှာ <ph name="MINIMUM_DATE_OR_TIME" /> သို့မဟုတ် ပိုနောက်ကျတာ ဖြစ်ရမည်။</translation>
 <translation id="2759744352195237655">အကွက်အသစ်ဖြင့်ပေါ်လာသည့် ခလုတ်</translation>
 <translation id="2761667185364618470">သင်သည် ဆက်လုပ်ကိုင် လိုလျှင် ကျေးဇူးပြုပြီး ဒီအကွက်ကို ခြစ်ပါ။</translation>
-<translation id="2838616441696617235">အဆင့်</translation>
 <translation id="2844350028562914727">အသေးစိတ်</translation>
 <translation id="2896972712917208084">ရေဒီယိုအုပ်စု</translation>
 <translation id="2908441821576996758">ကျေးဇူးပြုပြီး ကော်မာဖြင့် ခြားထားသည့် အီးမေးလ် လိပ်စာများ စာရင်းကို ထည့်သွင်းပါ။</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">ကျမ်းကိုးစာရင်း အကြောင်းအရာ</translation>
 <translation id="4915360478455618802">အချိန်ရွေးချယ်ရေးစနစ် ပြရန်</translation>
 <translation id="492244087561876220">မှတ်ချက်</translation>
-<translation id="4934662370368414994">အကြောင်းအရာ</translation>
 <translation id="4950364064308314478">စက်အတွင်း ရက်စွဲနှင့် အချိန်ရွေးချယ်ရေးစနစ် ပြရန်</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> ကို ရွေးထားသည်</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ရွေးထား</translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">အသံအတိုးအကျယ်ချိန်သည့် ဆလိုက်ဒါ</translation>
 <translation id="6015796118275082299">နှစ်</translation>
 <translation id="6023896073578205740">စာရင်းအကွက်</translation>
-<translation id="6131824478727057281">တည်နေရာ</translation>
 <translation id="6150588977291308318">ကျမ်းကိုးစာရင်း</translation>
 <translation id="6164829606128959761">မီတာ</translation>
 <translation id="6166809985690652833">စာအုပ်ဖတ်ပြီးနောက် သုံးသပ်ချက်</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">တိတ်ရန်</translation>
 <translation id="6885760532393684712">ဖိုင်လမ်းညွှန်</translation>
 <translation id="689129560213475294">အမှတ်တံဆိပ်</translation>
-<translation id="6901540140423170855">ရက်စွဲ</translation>
 <translation id="6934078000481955284">စာပိုဒ်အဖွင့်အပိတ်</translation>
 <translation id="693476918119313863">ခေါင်းစီး</translation>
 <translation id="6941933287844615239">မီဒီယာကို ဒေါင်းလုဒ်လုပ်ပါ</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">မှတ်ချက် အညွှန်း</translation>
 <translation id="811583516810654505">အကြောင်းအရာ ရယူနေသည်...</translation>
 <translation id="8117451130807776954">ဤအပတ်</translation>
-<translation id="8180239481735238521">စာမျက်နှာ</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8208673686607688524">စက်အတွင်း ရက်စွဲနှင့် အချိန် ရွေးချယ်ရေးစနစ်</translation>
 <translation id="8261464734335370856">စာလုံးပေါင်း မမှန်ကန်ပါ</translation>

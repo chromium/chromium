@@ -142,7 +142,6 @@
 <translation id="247772113373397749">Կանադական բազմալեզու ստեղնաշար</translation>
 <translation id="2494837236724268445">Գուջարաթիի ստեղնաշար (հնչյունաբանական)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">ԱՄՆ ստեղնաշար</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> տարր ջնջվեց</translation>
 <translation id="2541377937973966830">Այս պանակի բովանդակությունը հասանելի է միայն կարդալու համար։ Որոշ գործողություններ չեն աջակցվում։</translation>
 <translation id="2542049655219295786">Google աղյուսակ</translation>
@@ -196,10 +195,8 @@
 <translation id="3067790092342515856">Windows-ի ֆայլեր</translation>
 <translation id="3078461028045006476">Ուղարկել <ph name="EXTENSION_NAME" />-ի միջոցով</translation>
 <translation id="3083975830683400843">Chromebit սարքեր</translation>
-<translation id="3116361045094675131">ՄԹ ստեղնաշար</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ՊԱՏՐԱՍՏ Է</translation>
-<translation id="3157729859914172001">ԱՄՆ միջազգային ստեղնաշար (PC)</translation>
 <translation id="3187212781151025377">Եբրայերենի ստեղնաշար</translation>
 <translation id="3188257591659621405">Իմ ֆայլերը</translation>
 <translation id="3197563288998582412">ՄԹ Դվորակ</translation>
@@ -311,7 +308,6 @@
 <translation id="4465830120256509958">Բրազիլական պորտուգալերենի ստեղնաշար</translation>
 <translation id="4470564870223067757">Հանգուլ 2 Set</translation>
 <translation id="4477219268485577442">Բուլղարական հնչյունային</translation>
-<translation id="4479812471636796472">ԱՄՆ Դվորակի ստեղնաշար</translation>
 <translation id="4522570452068850558">Մանրամասներ</translation>
 <translation id="4527800702232535228">Այս պանակը հասանելի է Parallels Desktop-ին</translation>
 <translation id="4552678318981539154">Գնեք լրացուցիչ պահեստ</translation>
@@ -566,7 +562,6 @@
     <ph name="LINE_BREAK1" />
     Գտնվել է <ph name="FILE_COUNT" /> ֆայլ</translation>
 <translation id="6935521024859866267">Գլխիվայր</translation>
-<translation id="6939777852457331078">US Workman ստեղնաշար</translation>
 <translation id="696203921837389374">Թույլատրել շարժական տվյալների միջոցով համաժամացումը</translation>
 <translation id="6965382102122355670">Եղավ</translation>
 <translation id="6970230597523682626">Բուլղարական</translation>
@@ -586,7 +581,6 @@
 <translation id="7172053773111046550">Էստոներենի ստեղնաշար</translation>
 <translation id="7180611975245234373">Թարմացնել</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ԳԲ</translation>
-<translation id="719009910964971313">ԱՄՆ ծրագրավորող Դվորակ ստեղնաշար</translation>
 <translation id="7191454237977785534">Պահել ֆայլը որպես</translation>
 <translation id="7222624196722476520">Բուլղարերենի հնչյունային ստեղնաշար</translation>
 <translation id="7238097264433196391">Կրիչի անունը</translation>
@@ -595,7 +589,6 @@
 <translation id="7283041136720745563">Ձեր Google Drive-ում բավարար տարածք չկա։</translation>
 <translation id="7295662345261934369">Կիսվել այլ օգտատերերի հետ</translation>
 <translation id="7339898014177206373">Նոր պատուհան</translation>
-<translation id="7348749398828259943">US Workman միջազգային ստեղնաշար</translation>
 <translation id="7359359531237882347">Պատճենվում է <ph name="NUMBER_OF_ITEMS" /> տարր...</translation>
 <translation id="7375951387215729722">Ֆայլերի ցանկը տեսակավորված է ըստ «<ph name="COLUMN_NAME" />» ցուցանիշի՝ նվազման կարգով։</translation>
 <translation id="7389722738210761877">Թայերենի ստեղնաշար (TIS 820-2531)</translation>
@@ -603,9 +596,7 @@
 <translation id="7417453074306512035">Եթովպերենի ստեղնաշար</translation>
 <translation id="7417705661718309329">Google քարտեզ</translation>
 <translation id="7419631653042041064">Կատալոներենի ստեղնաշար</translation>
-<translation id="7434823369735508263">ՄԹ Դվորակի ստեղնաշար</translation>
 <translation id="7460898608667578234">Ուկրաինական</translation>
-<translation id="7474889694310679759">Կանադական անգլերենի ստեղնաշար</translation>
 <translation id="7489215562877293245">Գտնվել է <ph name="FILE_COUNT" /> ֆայլ
     <ph name="LINE_BREAK1" />
     Ֆայլերը պատրաստ են պահուստավորման <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />-ում</translation>
@@ -658,7 +649,6 @@
 <translation id="7873831373602885875">Չհաջողվեց պահել «<ph name="FOLDER_NAME" />» պանակում։ Բոլոր փոփոխությունները կպահվեն «<ph name="DOWNLOADS_FOLDER" />» պանակում:</translation>
 <translation id="7881969471599061635">Անջատել ենթագրերը</translation>
 <translation id="78946041517601018">Ընդհանուր պանակներ</translation>
-<translation id="7896906914454843592">ԱՄՆ ընդլայնված ստեղնաշար</translation>
 <translation id="7898607018410277265">գուջարաթի ստեղնաշար (հնչյունային)</translation>
 <translation id="7908793776359722643">Եթե բաժինը ֆորմատավորեք, դրա մեջ պահված բոլոր տվյալները կջնջվեն։ Գործողությունը հնարավոր չէ հետարկել։</translation>
 <translation id="7917972308273378936">Լիտվերենի ստեղնաշար</translation>
@@ -715,7 +705,6 @@
 <translation id="8395901698320285466">Չափեր</translation>
 <translation id="8412586565681117057">Արագ ներածման եղանակ</translation>
 <translation id="8418113698656761985">Ռումիներենի ստեղնաշար</translation>
-<translation id="8432745813735585631">ԱՄՆ Colemak ստեղնաշար</translation>
 <translation id="8437209419043462667">ԱՄՆ</translation>
 <translation id="8456681095658380701">Սխալ անուն</translation>
 <translation id="8466234950814670489">Tar արխիվ</translation>
@@ -736,7 +725,6 @@
 <translation id="8698464937041809063">Google գծագիր</translation>
 <translation id="8714406895390098252">Հեծանիվ</translation>
 <translation id="8719721339511222681">Ընտրվեց «<ph name="ENTRY_NAME" />» գրառումը:</translation>
-<translation id="8722421161699219904">ԱՄՆ միջազգային ստեղնաշար</translation>
 <translation id="872537912056138402">Խորվաթական</translation>
 <translation id="874420130893181774">Ավանդական փինյինի ներածման եղանակ</translation>
 <translation id="8770002329960263418">հոլանդերեն (Նիդեռլանդներ)՝ ԱՄՆ միջազգային համակարգչային ստեղնաշարի հետ</translation>

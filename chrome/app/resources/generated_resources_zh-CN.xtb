@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">插件已被拦截</translation>
 <translation id="1145593918056169051">打印机已停止运行</translation>
 <translation id="114721135501989771">在 Chrome 中畅享 Google 的智能技术</translation>
+<translation id="1147322039136785890">现在轮到<ph name="SUPERVISED_USER_NAME" />使用了</translation>
 <translation id="1147991416141538220">要申请访问权限，请与此设备的管理员联系。</translation>
 <translation id="1149401351239820326">过期月份</translation>
 <translation id="1149725087019908252">正在扫描 <ph name="FILE_NAME" /></translation>
@@ -6583,6 +6584,7 @@
 <translation id="8736288397686080465">此网站已在后台更新。</translation>
 <translation id="8737685506611670901">打开<ph name="PROTOCOL" />链接而非“<ph name="REPLACED_HANDLER_TITLE" />”</translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">您可将这部 Chromebook 交给<ph name="SUPERVISED_USER_NAME" />。即将设置完毕，然后就能尽情探索了。</translation>
 <translation id="8742998548129056176">这是关于您的设备及其使用情况（例如电池电量、系统与应用活动以及错误）的一般信息。我们会使用这些数据来改善 Android，部分汇总信息还会有助于改善 Google 应用，并会协助我们的合作伙伴（例如 Android 开发者）改善其应用和产品。</translation>
 <translation id="8743390665131937741">全屏放大镜的缩放级别：</translation>
 <translation id="8743864605301774756">上次更新时间：1 小时前</translation>

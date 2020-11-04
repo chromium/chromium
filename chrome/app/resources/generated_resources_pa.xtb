@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">ਪਲੱਗਇਨ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1145593918056169051">ਪ੍ਰਿੰਟਰ ਰੁਕ ਗਿਆ ਹੈ</translation>
 <translation id="114721135501989771">Chrome ਵਿੱਚ Google ਸਮਾਰਟ ਲਓ</translation>
+<translation id="1147322039136785890">ਹੁਣ <ph name="SUPERVISED_USER_NAME" /> ਦੀ ਵਾਰੀ ਹੈ</translation>
 <translation id="1147991416141538220">ਪਹੁੰਚ ਦੀ ਬੇਨਤੀ ਕਰਨ ਲਈ, ਇਸ ਡੀਵਾਈਸ ਦੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="1149401351239820326">ਮਿਆਦ ਸਮਾਪਤੀ ਦਾ ਮਹੀਨਾ</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> ਨੂੰ ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -6584,6 +6585,7 @@
 <translation id="8736288397686080465">ਇਹ ਸਾਈਟ ਬੈਕਗ੍ਰਾਊਂਡ ਵਿੱਚ ਅੱਪਡੇਟ ਕੀਤੀ ਗਈ ਹੈ।</translation>
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> ਦੀ ਬਜਾਏ <ph name="PROTOCOL" /> ਲਿੰਕਾਂ ਨੂੰ ਖੋਲ੍ਹੋ</translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">ਤੁਸੀਂ ਇਹ Chromebook <ph name="SUPERVISED_USER_NAME" /> ਨੂੰ ਦੇ ਸਕਦੇ ਹੋ। ਸੈੱਟਅੱਪ ਲਗਭਗ ਹੋ ਗਿਆ ਹੈ, ਉਸ ਤੋਂ ਬਾਅਦ ਪੜਚੋਲ ਕਰਨ ਦਾ ਸਮਾਂ ਹੈ।</translation>
 <translation id="8742998548129056176">ਇਹ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਅਤੇ ਉਸਦੀ ਵਰਤੋਂ ਬਾਰੇ ਆਮ ਜਾਣਕਾਰੀ ਹੈ (ਜਿਵੇਂ ਕਿ ਬੈਟਰੀ ਪੱਧਰ, ਸਿਸਟਮ ਅਤੇ ਐਪ ਸਰਗਰਮੀ, ਅਤੇ ਗੜਬੜੀਆਂ)। ਡਾਟਾ Android ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਵਰਤਿਆ ਜਾਵੇਗਾ, ਅਤੇ ਕੁਝ ਏਕੀਕ੍ਰਿਤ ਜਾਣਕਾਰੀ Google ਐਪਾਂ ਅਤੇ ਪਾਰਟਨਰਾਂ, ਜਿਵੇਂ ਕਿ Android ਵਿਕਾਸਕਾਰਾਂ ਦੀਆਂ ਐਪਾਂ ਅਤੇ ਉਤਪਾਦਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਵੀ ਉਹਨਾਂ ਦੀ ਮਦਦ ਕਰੇਗੀ।</translation>
 <translation id="8743390665131937741">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਜ਼ੂਮ ਪੱਧਰ:</translation>
 <translation id="8743864605301774756">1 ਘੰਟੇ ਪਹਿਲਾਂ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ</translation>

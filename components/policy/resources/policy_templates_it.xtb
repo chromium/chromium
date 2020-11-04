@@ -2779,11 +2779,6 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 <translation id="5306186200045823863">Considera attendibile l'infrastruttura PKI precedente di Symantec Corporation</translation>
 <translation id="5307432759655324440">Disponibilità della modalità di navigazione in incognito</translation>
 <translation id="5311275381462687162">Impostazione del comportamento precedente predefinito <ph name="ATTRIBUTE_SAMESITE_NAME" /> per i cookie</translation>
-<translation id="5315324986365616322">Se il criterio viene impostato su Attivato, la funzionalità Fast Transition viene utilizzata quando il punto di accesso wireless la supporta. Viene applicato a tutti gli utenti e a tutte le interfacce del dispositivo.
-
-      Se il criterio viene impostato su Disattivato o se non viene configurato, la funzionalità Fast Transition non viene utilizzata.
-
-      Nota: per utilizzare Fast Transition, è necessario attivare anche la proprietà ONC per ogni rete.</translation>
 <translation id="5315367501385698459">La configurazione del criterio consente di elencare i pattern URL che specificano i siti a cui viene concessa automaticamente l'autorizzazione di accesso a un dispositivo USB con gli ID fornitore e prodotto indicati nella schermata di accesso. Perché il criterio sia valido, ogni elemento nell'elenco richiede entrambi i campi <ph name="DEVICES_FIELD_NAME" /> e <ph name="URLS_FIELD_NAME" />. Ogni elemento nel campo <ph name="DEVICES_FIELD_NAME" /> può avere un campo <ph name="VENDOR_ID_FIELD_NAME" /> e un campo <ph name="PRODUCT_ID_FIELD_NAME" />. Se il campo <ph name="VENDOR_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo. Se il campo <ph name="PRODUCT_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo con l'ID fornitore specificato. Un criterio con un campo <ph name="PRODUCT_ID_FIELD_NAME" /> senza un campo <ph name="VENDOR_ID_FIELD_NAME" /> non è valido.
 
       Il modello di autorizzazioni USB utilizza l'URL richiedente e l'URL di incorporamento per consentire all'URL richiedente di accedere al dispositivo USB. L'URL richiedente può essere diverso dall'URL di incorporamento quando il sito richiedente viene caricato in un iframe. Pertanto, il campo <ph name="URLS_FIELD_NAME" /> può contenere fino a 2 stringhe URL delimitate da una virgola per specificare rispettivamente l'URL richiedente e l'URL di incorporamento. Se viene specificato un solo URL, l'accesso ai dispositivi USB corrispondenti viene concesso quando l'URL del sito richiedente corrisponde all'URL in questione, a prescindere dallo stato di incorporamento. Se gli URL non sono validi, il criterio viene ignorato.
@@ -2947,7 +2942,6 @@ Se questa impostazione viene disattivata o non viene impostata, sia gli utenti l
 <translation id="5475361623548884387">Attiva la stampa</translation>
 <translation id="547601067149622666">Non consentire gli annunci su siti con annunci invasivi</translation>
 <translation id="5483065054530244863">Consenti i certificati SHA-1 firmati emessi dai trust anchor locali</translation>
-<translation id="5494917047563607689">L'impostazione del criterio su valori inferiori a 1 MB o la sua mancata impostazione implica l'utilizzo da parte di <ph name="PRODUCT_OS_NAME" /> della dimensione predefinita per le estensioni e le app di memorizzazione nella cache per l'installazione da parte di più utenti di un singolo dispositivo. In questo modo, non sarà necessario scaricare nuovamente ogni app o estensione per ciascun utente.</translation>
 <translation id="5499375345075963939">Questa norma è attiva soltanto in modalità retail.
 
       Quando il valore di questa norma è impostato e non è 0, l'utente Demo correntemente connesso verrà disconnesso automaticamente dopo che sarà trascorso il tempo di inattività della durata specificata.
@@ -3830,9 +3824,6 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
       Nelle versioni precedenti alla 75, l'utilizzo di diversi ID estensione separati da virgole non è supportato e verrà ignorato. Si applica il resto del criterio.
 
       Nota: questo criterio riguarda anche le estensioni e le app con installazione forzata tramite <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.</translation>
-<translation id="672496466524161417">Se il criterio è impostato su None o se non viene configurato, gli utenti possono gestire i certificati. Se il criterio è impostato su 2, gli utenti possono solo visualizzare i certificati senza gestirli.
-
-      Se il criterio è impostato su 1, gli utenti possono gestire i certificati, ma non quelli a livello di dispositivo.</translation>
 <translation id="6731757988219967594">Filtra i siti di contenuti per adulti di primo livello (ma non gli iframe incorporati)</translation>
 <translation id="6734521799274931721">Consente di controllare la disponibilità della funzione Condivisioni file di rete per Chrome OS</translation>
 <translation id="6735701345096330595">Forza attivazione lingue per controllo ortografico</translation>
@@ -3917,11 +3908,6 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
       Consente di specificare i flag da applicare all'avvio di <ph name="PRODUCT_NAME" />. I flag specificati vengono applicati soltanto alla schermata di accesso. I flag impostati tramite questa norma non vengono applicati anche alle sessioni utente.</translation>
 <translation id="685769593149966548">Imponi il livello massimo della Modalità con restrizioni per YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versioni successive</translation>
-<translation id="6863342574191774334">Se questa impostazione viene attivata, gli utenti possono scegliere di utilizzare la funzionalità Condivisione nelle vicinanze, che consente di inviare e ricevere file dalle persone nelle vicinanze.
-
-      Se viene disattivata, gli utenti non possono attivare la funzionalità.
-
-      Se questo criterio non viene configurato, per impostazione predefinita la funzionalità è consentita sia per gli utenti gestiti a livello aziendale sia per quelli non gestiti.</translation>
 <translation id="6889123056995503704">Gli utenti decidono il comportamento del downgrade del canale</translation>
 <translation id="6894178810167845842">URL della pagina Nuova scheda</translation>
 <translation id="6897730193187922386">Elimina messaggi relativi al ritiro di <ph name="CLOUD_PRINT_NAME" /></translation>

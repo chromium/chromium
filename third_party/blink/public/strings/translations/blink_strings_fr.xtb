@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">masquer le menu des sous-titres</translation>
 <translation id="1729654308190250600">Veuillez saisir une adresse e-mail dans le champ correspondant.</translation>
 <translation id="1758486001363313524">Autre…</translation>
-<translation id="1774577460079229490"><ph name="TYPE" /> en cours</translation>
 <translation id="1787192514241997742">Durée totale : <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">arborescence</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">La date ou l'heure doit être égale ou postérieure à "<ph name="MINIMUM_DATE_OR_TIME" />".</translation>
 <translation id="2759744352195237655">bouton pop-up</translation>
 <translation id="2761667185364618470">Veuillez cocher cette case si vous souhaitez continuer.</translation>
-<translation id="2838616441696617235">étape</translation>
 <translation id="2844350028562914727">détails</translation>
 <translation id="2896972712917208084">groupe de cases d'option</translation>
 <translation id="2908441821576996758">Veuillez saisir une liste d'adresses e-mail séparées par une virgule.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">entrée bibliographique</translation>
 <translation id="4915360478455618802">Afficher l'outil de sélection de l'heure</translation>
 <translation id="492244087561876220">commentaire</translation>
-<translation id="4934662370368414994">élément</translation>
 <translation id="4950364064308314478">Afficher l'outil de sélection de la date et de l'heure locales</translation>
 <translation id="4971739861736909480">L'élément "<ph name="ACCNAME" />" est sélectionné</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> élément(s) sélectionné(s)</translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">curseur de volume</translation>
 <translation id="6015796118275082299">Année</translation>
 <translation id="6023896073578205740">zone de liste</translation>
-<translation id="6131824478727057281">position</translation>
 <translation id="6150588977291308318">bibliographie</translation>
 <translation id="6164829606128959761">outil de mesure</translation>
 <translation id="6166809985690652833">postface</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">muet</translation>
 <translation id="6885760532393684712">annuaire</translation>
 <translation id="689129560213475294">achevé d'imprimer</translation>
-<translation id="6901540140423170855">date</translation>
 <translation id="6934078000481955284">bloc de citation</translation>
 <translation id="693476918119313863">en-tête</translation>
 <translation id="6941933287844615239">télécharger des contenus multimédias</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">référence de note</translation>
 <translation id="811583516810654505">Récupération de la description…</translation>
 <translation id="8117451130807776954">Cette semaine</translation>
-<translation id="8180239481735238521">page</translation>
 <translation id="8199524924445686405">aaaa</translation>
 <translation id="8208673686607688524">outil de sélection de la date et de l'heure locales</translation>
 <translation id="8261464734335370856">Orthographe non valide</translation>

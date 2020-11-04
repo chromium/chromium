@@ -142,7 +142,6 @@
 <translation id="247772113373397749">കനേഡിയൻ ബഹുഭാഷാ കീബോർഡ്</translation>
 <translation id="2494837236724268445">ഗുജറാത്തി കീബോർഡ് (സ്വരസൂചകം)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">യുഎസ് കീബോര്‍ഡ്</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ ഇല്ലാതാക്കി</translation>
 <translation id="2541377937973966830">ഈ ഫോൾഡറിലെ ഉള്ളടക്കങ്ങൾ വായിക്കാൻ മാത്രമുള്ളതാണ്. ചില ആക്റ്റിവിറ്റികൾക്ക് പിന്തുണയില്ല.</translation>
 <translation id="2542049655219295786">Google പട്ടിക</translation>
@@ -196,10 +195,9 @@
 <translation id="3067790092342515856">Windows ഫയലുകൾ</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> എന്നതുമായി പങ്കിടുക</translation>
 <translation id="3083975830683400843">Chromebit-കൾ</translation>
-<translation id="3116361045094675131">യുകെ കീബോര്‍ഡ്</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">പൂർത്തിയായി</translation>
-<translation id="3157729859914172001">യുഎസ് അന്തര്‍ദേശീയ (PC) കീബോര്‍ഡ്</translation>
+<translation id="3182237543071236785">ഇംഗ്ലീഷ് (യുകെ)</translation>
 <translation id="3187212781151025377">ഹിബ്രു കീബോര്‍ഡ്</translation>
 <translation id="3188257591659621405">എൻ്റെ ഫയലുകൾ</translation>
 <translation id="3197563288998582412">യുകെ ദ്വരോക്ക്</translation>
@@ -311,7 +309,6 @@
 <translation id="4465830120256509958">ബ്രസീലിയന്‍ കീബോര്‍ഡ്</translation>
 <translation id="4470564870223067757">ഹാംഗുൽ 2 സെറ്റ് മോഡ്</translation>
 <translation id="4477219268485577442">ബൾഗേറിയൻ സ്വരസൂചകം</translation>
-<translation id="4479812471636796472">യുഎസ് ഡൊറാക്ക് കീബോര്‍ഡ്</translation>
 <translation id="4522570452068850558">വിശദാംശങ്ങൾ‌</translation>
 <translation id="4527800702232535228">Parallels Desktop-മായി ഈ ഫോൾഡർ പങ്കിട്ടു</translation>
 <translation id="4552678318981539154">കൂടുതൽ സംഭരണം വാങ്ങുക</translation>
@@ -567,7 +564,6 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> കണ്ടെത്തി</translation>
 <translation id="6935521024859866267">അപ്‌സൈഡ് ഡൗൺ</translation>
-<translation id="6939777852457331078">യുഎസ് വർക്ക്‌മാൻ കീബോർഡ്</translation>
 <translation id="696203921837389374">മൊബൈൽ ഡാറ്റയിലൂടെയുള്ള സമന്വയം പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="6965382102122355670">ശരി</translation>
 <translation id="6970230597523682626">ബള്‍ഗേറിയന്‍</translation>
@@ -587,7 +583,6 @@
 <translation id="7172053773111046550">എസ്റ്റോണിയന്‍ കീബോര്‍ഡ്</translation>
 <translation id="7180611975245234373">പുതുക്കുക</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
-<translation id="719009910964971313">യുഎസ് പ്രോഗ്രാമർ ഡൊറാക്ക് കീബോർഡ്</translation>
 <translation id="7191454237977785534">ഇതായി ഫയൽ സംരക്ഷിക്കുക</translation>
 <translation id="7222624196722476520">ബൾഗേറിയൻ ഫൊണറ്റിക് കീബോർഡ്</translation>
 <translation id="7238097264433196391">ഡ്രൈവിൻ്റെ പേര്</translation>
@@ -596,7 +591,6 @@
 <translation id="7283041136720745563">നിങ്ങളുടെ Google ഡ്രൈവ് ക്വോട്ടയ്ക്ക് ആവശ്യമായ വലിപ്പമില്ല.</translation>
 <translation id="7295662345261934369">മറ്റുള്ളവരുമായി പങ്കിടുക</translation>
 <translation id="7339898014177206373">പുതിയ വിന്‍ഡോ</translation>
-<translation id="7348749398828259943">യുഎസ് വർക്ക്മാൻ ഇന്റർനാഷണൽ കീബോർഡ്</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ പകർത്തുന്നു...</translation>
 <translation id="7375951387215729722">അവരോഹണ ക്രമത്തിൽ <ph name="COLUMN_NAME" /> അടുക്കിയ ഫയൽ ലിസ്‌റ്റ്.</translation>
 <translation id="7389722738210761877">തായ് കീബോർഡ് (TIS 820-2531)</translation>
@@ -604,9 +598,7 @@
 <translation id="7417453074306512035">എത്യോപിക് കീബോർഡ്</translation>
 <translation id="7417705661718309329">Google മാപ്പ്</translation>
 <translation id="7419631653042041064">കാറ്റലൻ കീബോര്‍ഡ്</translation>
-<translation id="7434823369735508263">യുകെ ഡൊറാക്ക് കീബോര്‍ഡ്</translation>
 <translation id="7460898608667578234">ഉക്രേനിയന്‍</translation>
-<translation id="7474889694310679759">കനേഡിയന്‍ ഇംഗ്ലീഷ് കീബോര്‍ഡ്</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> കണ്ടെത്തി
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google ഡ്രൈവിലേക്ക്<ph name="END_LINK" /> ബാക്കപ്പ് ചെയ്യാൻ തയ്യാർ</translation>
@@ -659,7 +651,6 @@
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" /> എന്നതിൽ സംരക്ഷിക്കാനാവില്ല. എല്ലാ എഡിറ്റുകളും 'ഡൗൺലോഡുകൾ' ഫോൾഡറിലെ <ph name="DOWNLOADS_FOLDER" /> എന്നതിൽ സംരക്ഷിക്കും.</translation>
 <translation id="7881969471599061635">സബ്‌ടൈറ്റിലുകൾ പ്രവർത്തനരഹിതമാക്കുക</translation>
 <translation id="78946041517601018">പങ്കിട്ട ഡ്രൈവുകൾ</translation>
-<translation id="7896906914454843592">യുഎസ് വിപുലീകൃത കീബോർഡ്</translation>
 <translation id="7898607018410277265">ഗുജറാത്തി കീബോർഡ് (പുതിയ സ്വരസൂചകം)</translation>
 <translation id="7908793776359722643">ഒരു ഭാഗം ഫോർമാറ്റ് ചെയ്യുന്നത് അതിൽ സംഭരിച്ചിരിക്കുന്ന എല്ലാ ഡാറ്റയും മായ്‌ക്കും. ഈ പ്രവർത്തനം പഴയപടിയാക്കാനാകില്ല.</translation>
 <translation id="7917972308273378936">ലിത്വാനിയന്‍ കീബോര്‍ഡ്</translation>
@@ -716,7 +707,6 @@
 <translation id="8395901698320285466">തലങ്ങൾ</translation>
 <translation id="8412586565681117057">Quick ഇൻപുട്ട് രീതി</translation>
 <translation id="8418113698656761985">റൊമാനിയന്‍ കീബോര്‍ഡ്</translation>
-<translation id="8432745813735585631">യുഎസ് കോള്‍മാക്ക് കീബോര്‍ഡ്</translation>
 <translation id="8437209419043462667">യുഎസ്</translation>
 <translation id="8456681095658380701">അസാധുവായ പേര്</translation>
 <translation id="8466234950814670489">Tar ആർക്കൈവ്</translation>
@@ -737,7 +727,6 @@
 <translation id="8698464937041809063">Google ഡ്രോയിംഗ്</translation>
 <translation id="8714406895390098252">സൈക്കിള്‍</translation>
 <translation id="8719721339511222681">തിരഞ്ഞെടുത്ത <ph name="ENTRY_NAME" />.</translation>
-<translation id="8722421161699219904">യുഎസ് ഇന്റർനാഷണൽ കീബോർഡ്</translation>
 <translation id="872537912056138402">ക്രൊയേഷ്യന്‍</translation>
 <translation id="874420130893181774">Traditional Pinyin ഇൻപുട്ട് രീതി</translation>
 <translation id="8770002329960263418">യു.എസ് അന്താരാഷ്ട്ര PC കീബോർഡ് ഉപയോഗിക്കുന്ന ഡച്ച് (നെതർലാൻഡ്‌സ്)</translation>

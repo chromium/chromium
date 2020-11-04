@@ -142,7 +142,6 @@
 <translation id="247772113373397749">கனடியன் பன்மொழி விசைப்பலகை</translation>
 <translation id="2494837236724268445">குஜராத்தி விசைப்பலகை (ஒலிப்புமுறை)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">யுஎஸ் விசைப்பலகை</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> வரலாற்று உள்ளடக்கங்கள் நீக்கப்பட்டன</translation>
 <translation id="2541377937973966830">இந்தக் கோப்புறையில் உள்ள உள்ளடக்கத்தைப் படிக்க மட்டுமே முடியும். சில செயல்பாடுகள் ஆதரிக்கப்படாது.</translation>
 <translation id="2542049655219295786">Google அட்டவணை</translation>
@@ -196,10 +195,9 @@
 <translation id="3067790092342515856">Windows கோப்புகள்</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> மூலம் பகிர்</translation>
 <translation id="3083975830683400843">Chromebits</translation>
-<translation id="3116361045094675131">யுகே விசைப்பலகை</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">முடிந்தது</translation>
-<translation id="3157729859914172001">யுஎஸ் சர்வதேச (PC) விசைப்பலகை</translation>
+<translation id="3182237543071236785">ஆங்கிலம் (யூகே)</translation>
 <translation id="3187212781151025377">ஹீப்ரு விசைப்பலகை</translation>
 <translation id="3188257591659621405">எனது கோப்புகள்</translation>
 <translation id="3197563288998582412">யு.கே. டிவாரக்</translation>
@@ -311,7 +309,6 @@
 <translation id="4465830120256509958">பிரேசிலியன் விசைப்பலகை</translation>
 <translation id="4470564870223067757">ஹாங்குல் 2 செட்</translation>
 <translation id="4477219268485577442">பல்கேரியன் ஒலிப்புமுறை</translation>
-<translation id="4479812471636796472">அமெரிக்க துவோரக் விசைப்பலகை</translation>
 <translation id="4522570452068850558">விவரங்கள்</translation>
 <translation id="4527800702232535228">Parallels Desktopபுடன் இந்தக் கோப்புறை பகிரப்பட்டுள்ளது</translation>
 <translation id="4552678318981539154">கூடுதல் சேமிப்பிடத்தை வாங்கு</translation>
@@ -567,7 +564,6 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> உள்ளது</translation>
 <translation id="6935521024859866267">தலைகீழ்</translation>
-<translation id="6939777852457331078">யுஎஸ் ஒர்க்மேன் விசைப்பலகை</translation>
 <translation id="696203921837389374">மொபைல் டேட்டாவுடன் ஒத்திசை</translation>
 <translation id="6965382102122355670">சரி</translation>
 <translation id="6970230597523682626">பல்கேரியன்</translation>
@@ -587,7 +583,6 @@
 <translation id="7172053773111046550">எஸ்தோனியன் விசைப்பலகை</translation>
 <translation id="7180611975245234373">புதுப்பி</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ஜி.பை.</translation>
-<translation id="719009910964971313">US புரோகிராமர் டிவோரக் விசைப்பலகை</translation>
 <translation id="7191454237977785534">கோப்பை இவ்வாறு சேமி </translation>
 <translation id="7222624196722476520">பல்கேரியன் ஒலிப்புமுறை விசைப்பலகை</translation>
 <translation id="7238097264433196391">இயக்ககத்தின் பெயர்</translation>
@@ -596,7 +591,6 @@
 <translation id="7283041136720745563">உங்கள் Google இயக்கக ஒதுக்கீடு போதுமானதாக இல்லை.</translation>
 <translation id="7295662345261934369">பிறருடன் பகிர்</translation>
 <translation id="7339898014177206373">புதிய சாளரம்</translation>
-<translation id="7348749398828259943">யுஎஸ் ஒர்க்மேன் இன்டர்நேஷனல் விசைப்பலகை</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> உள்ளடக்கங்களை நகலெடுக்கிறது...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> அடிப்படையில் கோப்புப் பட்டியல் இறங்கு வரிசையில் காட்டப்பட்டுள்ளது.</translation>
 <translation id="7389722738210761877">தாய் விசைப்பலகை (TIS 820-2531)</translation>
@@ -604,9 +598,7 @@
 <translation id="7417453074306512035">எத்தியோபிக் விசைப்பலகை</translation>
 <translation id="7417705661718309329">Google Maps</translation>
 <translation id="7419631653042041064">கேட்டலன் விசைப்பலகை</translation>
-<translation id="7434823369735508263">யுகே துவோராக் விசைப்பலகை</translation>
 <translation id="7460898608667578234">உக்ரைனியன்</translation>
-<translation id="7474889694310679759">கனேடியன் ஆங்கில விசைப்பலகை</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> உள்ளது
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google இயக்ககத்திற்குக்<ph name="END_LINK" /> காப்புப் பிரதி எடுக்கத் தயாராக உள்ளது</translation>
@@ -659,7 +651,6 @@
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" /> இல் சேமிக்க முடியவில்லை. அனைத்து மாற்றங்களும் ‘பதிவிறக்கங்கள்’ கோப்புறையில் உள்ள <ph name="DOWNLOADS_FOLDER" /> கோப்புறையில் சேமிக்கப்படும்.</translation>
 <translation id="7881969471599061635">வசனங்களை முடக்கு</translation>
 <translation id="78946041517601018">பகிர்ந்த இயக்ககங்கள்</translation>
-<translation id="7896906914454843592">விரிவாக்கப்பட்ட யுஎஸ் விசைப்பலகை</translation>
 <translation id="7898607018410277265">குஜராத்தி விசைப்பலகை (புதிய ஒலிப்புமுறை)</translation>
 <translation id="7908793776359722643">பார்ட்டிஷனை ஃபார்மேட் செய்தால் அதிலுள்ள தரவுகள் அனைத்தும் அழிக்கப்படும். இதைச் செயல்தவிர்க்க முடியாது.</translation>
 <translation id="7917972308273378936">லிதுவேனியன் விசைப்பலகை</translation>
@@ -716,7 +707,6 @@
 <translation id="8395901698320285466">பரிமாணங்கள்</translation>
 <translation id="8412586565681117057">விரைவு உள்ளீட்டு முறை</translation>
 <translation id="8418113698656761985">ரோமானியன் விசைப்பலகை</translation>
-<translation id="8432745813735585631">யுஎஸ் கோல்மேக் விசைப்பலகை</translation>
 <translation id="8437209419043462667">யு.எஸ்.</translation>
 <translation id="8456681095658380701">தவறான பெயர்</translation>
 <translation id="8466234950814670489">Tar archive</translation>
@@ -737,7 +727,6 @@
 <translation id="8698464937041809063">Google வரைதல்</translation>
 <translation id="8714406895390098252">சைக்கிள்</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> தேர்ந்தெடுக்கப்பட்டுள்ளது.</translation>
-<translation id="8722421161699219904">யுஎஸ் சர்வதேச விசைப்பலகை</translation>
 <translation id="872537912056138402">குரோஷியன்</translation>
 <translation id="874420130893181774">பாரம்பரிய பின்யின் உள்ளீட்டு முறை</translation>
 <translation id="8770002329960263418">அமெரிக்க சர்வதேசத் தளவமைப்புடன் கூடிய டச்சு (நெதர்லாந்து) PC கீபோர்டு</translation>

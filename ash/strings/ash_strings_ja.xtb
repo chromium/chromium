@@ -125,6 +125,7 @@
 <translation id="2127372758936585790">低電力の充電器</translation>
 <translation id="2132302418721800944">全画面を録画</translation>
 <translation id="2135456203358955318">ドッキング拡大鏡</translation>
+<translation id="2144487987174258011">Adobe Flash Player を更新するには再起動してください</translation>
 <translation id="2208323208084708176">デスクトップ統合モード</translation>
 <translation id="2220572644011485463">PIN またはパスワード</translation>
 <translation id="2222338659135520253">ログインしてください</translation>
@@ -281,6 +282,7 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> の管理対象ユーザー</translation>
 <translation id="3702846122927433391">ナイジェリアの人口を教えて</translation>
 <translation id="3705722231355495246">-</translation>
+<translation id="370665806235115550">読み込んでいます...</translation>
 <translation id="3712407551474845318">一部分をキャプチャ</translation>
 <translation id="371370241367527062">前方のマイク</translation>
 <translation id="3771549900096082774">ハイ コントラスト モード</translation>
@@ -625,6 +627,7 @@
 <translation id="7098389117866926363">USB-C デバイス（背面左のポート）</translation>
 <translation id="7131634465328662194">制限時間になると自動的にログアウトします。</translation>
 <translation id="7143207342074048698">接続中</translation>
+<translation id="7144878232160441200">再読み込み</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> 秒後に元の解像度に戻ります</translation>
 <translation id="7180611975245234373">更新</translation>

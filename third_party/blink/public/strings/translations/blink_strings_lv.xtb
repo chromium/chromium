@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">paslēpt subtitru izvēlni</translation>
 <translation id="1729654308190250600">Lūdzu, ievadiet e-pasta adresi.</translation>
 <translation id="1758486001363313524">Cits...</translation>
-<translation id="1774577460079229490"><ph name="TYPE" /> pašlaik</translation>
 <translation id="1787192514241997742">Kopējais laiks: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">brīdinājuma dialoglodziņš</translation>
 <translation id="1821985195704844674">koka režģis</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">Vērtībai ir jābūt “<ph name="MINIMUM_DATE_OR_TIME" />” vai vēlākam datumam vai laikam.</translation>
 <translation id="2759744352195237655">uznirstoša poga</translation>
 <translation id="2761667185364618470">Lai turpinātu, atzīmējiet šo izvēles rūtiņu.</translation>
-<translation id="2838616441696617235">darbība</translation>
 <translation id="2844350028562914727">detalizēta informācija</translation>
 <translation id="2896972712917208084">radiopogu grupa</translation>
 <translation id="2908441821576996758">Lūdzu, ievadiet ar komatu atdalītu e-pasta adrešu sarakstu.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">bibliogrāfijas ieraksts</translation>
 <translation id="4915360478455618802">Rādīt laika atlasītāju</translation>
 <translation id="492244087561876220">komentārs</translation>
-<translation id="4934662370368414994">vienums</translation>
 <translation id="4950364064308314478">Rādīt vietējo datuma un laika atlasītāju</translation>
 <translation id="4971739861736909480">Atlasīts: <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Atlasīti <ph name="SELECTED_COUNT" /></translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">skaļuma slīdnis</translation>
 <translation id="6015796118275082299">Gads</translation>
 <translation id="6023896073578205740">sarakstlodziņš</translation>
-<translation id="6131824478727057281">atrašanās vieta</translation>
 <translation id="6150588977291308318">bibliogrāfija</translation>
 <translation id="6164829606128959761">mērītājs</translation>
 <translation id="6166809985690652833">pēcvārds</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">izslēgt skaņu</translation>
 <translation id="6885760532393684712">katalogs</translation>
 <translation id="689129560213475294">izdošanas ziņas</translation>
-<translation id="6901540140423170855">datums</translation>
 <translation id="6934078000481955284">citāta bloks</translation>
 <translation id="693476918119313863">galvene</translation>
 <translation id="6941933287844615239">lejupielādēt multivides failus</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">vēres atsauce</translation>
 <translation id="811583516810654505">Notiek apraksta iegūšana...</translation>
 <translation id="8117451130807776954">Šī nedēļa</translation>
-<translation id="8180239481735238521">Lapa</translation>
 <translation id="8199524924445686405">gggg</translation>
 <translation id="8208673686607688524">vietējā datuma un laika atlasītājs</translation>
 <translation id="8261464734335370856">Nederīga pareizrakstība</translation>

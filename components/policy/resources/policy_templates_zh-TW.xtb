@@ -2741,11 +2741,6 @@
 <translation id="5306186200045823863">信任 Symantec 公司的舊版 PKI 基礎架構</translation>
 <translation id="5307432759655324440">無痕模式適用性</translation>
 <translation id="5311275381462687162">預設的舊版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> Cookie 行為設定</translation>
-<translation id="5315324986365616322">如果將這項政策設為啟用，當有無線存取點可用時，系統會使用「快速轉換」功能。這項政策會套用至這部裝置的所有使用者及介面。
-
-      如果將這項政策設為停用或不設定，則系統不會使用「快速轉換」功能。
-
-      注意：如要使用「快速轉換」功能，請同時開啟個別網路 ONC 屬性。</translation>
 <translation id="5315367501385698459">你可以透過這項政策設定網址模式清單，指定哪些網站會自動取得權限，能夠存取具備登入畫面中所指定廠商和產品 ID 的 USB 裝置。清單中的每個項目都必須包含 <ph name="DEVICES_FIELD_NAME" /> 和 <ph name="URLS_FIELD_NAME" /> 欄位，這項政策才會生效。<ph name="DEVICES_FIELD_NAME" /> 欄位中的每個項目皆可包含 <ph name="VENDOR_ID_FIELD_NAME" /> 和 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位。如果略過 <ph name="VENDOR_ID_FIELD_NAME" /> 欄位，系統建立的政策將涵蓋所有裝置。如果略過 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位，系統建立的政策將涵蓋所有具備指定廠商 ID 的裝置。要是政策包含 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位，但缺少 <ph name="VENDOR_ID_FIELD_NAME" /> 欄位，將無法生效。
 
       USB 權限模型會使用要求網址和嵌入網址，授予要求網址存取 USB 裝置的權限。如果要求網站是透過 iframe 載入，要求網址可能會與嵌入網址有所不同。因此，<ph name="URLS_FIELD_NAME" /> 欄位最多可包含兩個網址字串 (以半形逗號分隔)，以分別指定要求網址和嵌入網址。如果只指定一個網址，當要求網站的網址與這個網址相符時，不論其是否為嵌入網址，系統都會授予相應 USB 裝置的存取權。網址必須是有效網址，否則系統會忽略這項政策。
@@ -2908,7 +2903,6 @@
 <translation id="5475361623548884387">啟用列印功能</translation>
 <translation id="547601067149622666">禁止含侵入式廣告的網站顯示廣告</translation>
 <translation id="5483065054530244863">允許本機信任錨點核發的 SHA-1 簽署憑證</translation>
-<translation id="5494917047563607689">如果設為 1 MB 以下的值或不設定，<ph name="PRODUCT_OS_NAME" />會為擁有多位使用者的單一裝置，使用預設大小快取要安裝的應用程式和擴充功能，讓每位使用者不必重新下載每個應用程式和擴充功能。</translation>
 <translation id="5499375345075963939">這項政策僅於零售模式中有效。
 
       如果這項政策設為 0 以外的值，則系統會在指定的閒置時間過後，自動登出目前登入示範模式的使用者。
@@ -3779,9 +3773,6 @@
       系統不支援 (且會略過) 在 75 版以前使用多個擴充功能 ID (並以半形逗號分隔) 的版本。系統會套用政策中的其他部分。
 
       注意：這項政策也會影響使用 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 強制安裝的擴充功能和應用程式。</translation>
-<translation id="672496466524161417">如果將這項政策設為 None 或不設定，使用者將可管理憑證。如果將這項政策設為 2，使用者只能檢視憑證，而無法進行管理。
-
-      如果將這項政策設為 1，使用者將可管理使用者憑證，但無法管理裝置通用的憑證。</translation>
 <translation id="6731757988219967594">針對成人內容篩選頂層網站 (但不篩選嵌入的 iframe)</translation>
 <translation id="6734521799274931721">控管是否允許在 Chrome 作業系統使用網路檔案共用功能</translation>
 <translation id="6735701345096330595">強制執行拼字檢查的語言</translation>
@@ -3866,11 +3857,6 @@
       指定要在 <ph name="PRODUCT_NAME" /> 啟動時套用的設定。系統僅會在進入登入畫面時套用指定的設定。透過這個政策所指定的設定不會反映在使用者工作階段中。</translation>
 <translation id="685769593149966548">強制執行 YouTube 高度嚴格篩選模式</translation>
 <translation id="686079137349561371">Microsoft Windows 7 以上版本</translation>
-<translation id="6863342574191774334">如果啟用這項設定，使用者將可使用「鄰近分享」功能，與附近的使用者互相傳送檔案。
-
-      如果停用這項設定，使用者就無法使用「鄰近分享」功能。
-
-      如果不設定這項政策，預設值是允許受企業管理以及未受管理的使用者執行這項功能。</translation>
 <translation id="6889123056995503704">使用者決定版本降級行為</translation>
 <translation id="6894178810167845842">新分頁網址</translation>
 <translation id="6897730193187922386">禁止顯示 <ph name="CLOUD_PRINT_NAME" />淘汰訊息</translation>

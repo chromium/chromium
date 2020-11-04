@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">ఉపశీర్షికల మెనూని దాచు</translation>
 <translation id="1729654308190250600">దయచేసి ఖాళీ-కాని ఇమెయిల్ చిరునామాను నమోదు చేయండి.</translation>
 <translation id="1758486001363313524">ఇతర...</translation>
-<translation id="1774577460079229490">ప్రస్తుత <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">మొత్తం సమయం: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">వృక్షాంశ గ్రిడ్</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">విలువ తప్పనిసరిగా <ph name="MINIMUM_DATE_OR_TIME" /> లేదా అంతకంటే తదుపరిది అయి ఉండాలి.</translation>
 <translation id="2759744352195237655">పాప్ అప్ బటన్</translation>
 <translation id="2761667185364618470">మీరు కొనసాగాలనుకుంటే దయచేసి ఈ బాక్స్‌కి టిక్కు పెట్టండి.</translation>
-<translation id="2838616441696617235">స్టెప్</translation>
 <translation id="2844350028562914727">వివరాలు</translation>
 <translation id="2896972712917208084">రేడియో సమూహం</translation>
 <translation id="2908441821576996758">దయచేసి కామాతో వేరు చేసిన ఇమెయిల్ చిరునామాల జాబితాను నమోదు చేయండి.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">వివరణపట్టి నమోదు</translation>
 <translation id="4915360478455618802">టైమ్ పికర్‌ను చూపుతుంది</translation>
 <translation id="492244087561876220">కామెంట్‌</translation>
-<translation id="4934662370368414994">ఐటెమ్</translation>
 <translation id="4950364064308314478">స్థానిక తేదీ, టైమ్ పికర్‌ను చూపుతుంది</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> ఎంచుకోబడింది</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ఎంచుకోబడ్డాయి</translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">వాల్యూమ్ స్లయిడర్</translation>
 <translation id="6015796118275082299">సంవత్సరం</translation>
 <translation id="6023896073578205740">జాబితా పెట్టె</translation>
-<translation id="6131824478727057281">లొకేషన్</translation>
 <translation id="6150588977291308318">వివరణపట్టి</translation>
 <translation id="6164829606128959761">మీటర్</translation>
 <translation id="6166809985690652833">చివరిమాట</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">మ్యూట్ చేయి</translation>
 <translation id="6885760532393684712">డైరెక్టరీ</translation>
 <translation id="689129560213475294">ఆఖరిమాట</translation>
-<translation id="6901540140423170855">తేదీ</translation>
 <translation id="6934078000481955284">బ్లాక్‌కోట్</translation>
 <translation id="693476918119313863">ముఖ్య శీర్షిక</translation>
 <translation id="6941933287844615239">మీడియా అంశం డౌన్‌లోడ్ చేయి</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">గమనిక సూచన</translation>
 <translation id="811583516810654505">వివరణను పొందుతోంది...</translation>
 <translation id="8117451130807776954">ఈ వారం</translation>
-<translation id="8180239481735238521"> పేజీ</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8208673686607688524">స్థానిక తేదీ మరియు సమయం ఎంపిక</translation>
 <translation id="8261464734335370856">చెల్లని అక్షరక్రమం</translation>

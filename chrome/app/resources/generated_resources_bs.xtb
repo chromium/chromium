@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">Dodatak je blokiran</translation>
 <translation id="1145593918056169051">Štampač je prestao raditi</translation>
 <translation id="114721135501989771">Preuzmite pametne Google funkcije za Chrome</translation>
+<translation id="1147322039136785890">Sada je na redu <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Da zatražite pristup, kontaktirajte administratora ovog uređaja.</translation>
 <translation id="1149401351239820326">Mjesec isteka</translation>
 <translation id="1149725087019908252">Skeniranje fajla <ph name="FILE_NAME" /></translation>
@@ -6589,6 +6590,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8736288397686080465">Ova web lokacija je ažurirana u pozadini.</translation>
 <translation id="8737685506611670901">Otvaranje linkova protokola <ph name="PROTOCOL" /> umjesto obrađivača <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">Ovaj Chromebook možete predati korisniku <ph name="SUPERVISED_USER_NAME" />. Postavljanje je skoro gotovo, nakon čega možete početi istraživati.</translation>
 <translation id="8742998548129056176">Ovo su opće informacije o vašem uređaju i načinu korištenja (kao što su nivo napunjenosti baterije, aktivnosti sistema i aplikacija te greške). Ti podaci će se koristiti za poboljšanje Androida, a neke zbirne informacije će također pomoći Googleovim aplikacijama i partnerima, kao što su Android programeri, da poboljšaju svoje aplikacije i proizvode.</translation>
 <translation id="8743390665131937741">Nivo zumiranja cijelog ekrana:</translation>
 <translation id="8743864605301774756">Ažurirano prije 1 sat</translation>

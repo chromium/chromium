@@ -142,7 +142,6 @@
 <translation id="247772113373397749">Keyboard Multibahasa Kanada</translation>
 <translation id="2494837236724268445">Keyboard Gujarati (Fonetik)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">Keyboard AS</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> item dihapus</translation>
 <translation id="2541377937973966830">Konten dalam folder ini bersifat hanya baca. Beberapa aktivitas tidak didukung.</translation>
 <translation id="2542049655219295786">Tabel Google</translation>
@@ -196,10 +195,9 @@
 <translation id="3067790092342515856">File Windows</translation>
 <translation id="3078461028045006476">Bagikan dengan <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit</translation>
-<translation id="3116361045094675131">Keyboard Inggris</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">SELESAI</translation>
-<translation id="3157729859914172001">Keyboard Internasional AS (PC)</translation>
+<translation id="3182237543071236785">Bahasa Inggris (Inggris)</translation>
 <translation id="3187212781151025377">Keyboard untuk bahasa Ibrani</translation>
 <translation id="3188257591659621405">File saya</translation>
 <translation id="3197563288998582412">Dvorak Inggris</translation>
@@ -311,7 +309,6 @@
 <translation id="4465830120256509958">Keyboard untuk bahasa Portugis Brasil</translation>
 <translation id="4470564870223067757">2 Himpunan Hangul</translation>
 <translation id="4477219268485577442">Fonetik Bulgaria</translation>
-<translation id="4479812471636796472">Keyboard Dvorak AS</translation>
 <translation id="4522570452068850558">Detail</translation>
 <translation id="4527800702232535228">Folder ini dibagikan ke Parallels Desktop</translation>
 <translation id="4552678318981539154">Beli penyimpanan lagi</translation>
@@ -567,7 +564,6 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> ditemukan</translation>
 <translation id="6935521024859866267">Terbalik</translation>
-<translation id="6939777852457331078">Keyboard Workman AS</translation>
 <translation id="696203921837389374">Aktifkan sinkronisasi melalui data seluler</translation>
 <translation id="6965382102122355670">Oke</translation>
 <translation id="6970230597523682626">Bulgaria</translation>
@@ -587,7 +583,6 @@
 <translation id="7172053773111046550">Keyboard untuk bahasa Estonia</translation>
 <translation id="7180611975245234373">Perbarui</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
-<translation id="719009910964971313">Keyboard Programmer Dvorak AS</translation>
 <translation id="7191454237977785534">Simpan file sebagai</translation>
 <translation id="7222624196722476520">Keyboard Fonetik Bulgaria</translation>
 <translation id="7238097264433196391">Nama drive</translation>
@@ -596,7 +591,6 @@
 <translation id="7283041136720745563">Kuota Google Drive Anda kurang banyak.</translation>
 <translation id="7295662345261934369">Bagikan dengan yang lain</translation>
 <translation id="7339898014177206373">Jendela baru</translation>
-<translation id="7348749398828259943">Keyboard internasional Workman AS</translation>
 <translation id="7359359531237882347">Menyalin <ph name="NUMBER_OF_ITEMS" /> item...</translation>
 <translation id="7375951387215729722">Daftar file diurutkan berdasarkan <ph name="COLUMN_NAME" /> dari bawah ke atas.</translation>
 <translation id="7389722738210761877">Keyboard Thai (TIS 820-2531)</translation>
@@ -604,9 +598,7 @@
 <translation id="7417453074306512035">Keyboard Ethiopia</translation>
 <translation id="7417705661718309329">Peta Google</translation>
 <translation id="7419631653042041064">Keyboard untuk bahasa Katalana</translation>
-<translation id="7434823369735508263">Keyboard Dvorak Inggris</translation>
 <translation id="7460898608667578234">Ukraina</translation>
-<translation id="7474889694310679759">Keyboard untuk bahasa Inggris Kanada</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> ditemukan
     <ph name="LINE_BREAK1" />
     Siap untuk mencadangkan ke <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
@@ -659,7 +651,6 @@
 <translation id="7873831373602885875">Tidak dapat menyimpan ke <ph name="FOLDER_NAME" />. Semua pengeditan akan disimpan ke <ph name="DOWNLOADS_FOLDER" /> dalam folder Download.</translation>
 <translation id="7881969471599061635">Nonaktifkan subtitel</translation>
 <translation id="78946041517601018">Drive bersama</translation>
-<translation id="7896906914454843592">Keyboard Perluasan AS</translation>
 <translation id="7898607018410277265">Keyboard Gujarati (Fonetik Baru)</translation>
 <translation id="7908793776359722643">Memformat partisi akan menghapus semua data yang tersimpan di dalamnya. Tindakan ini tidak dapat diurungkan.</translation>
 <translation id="7917972308273378936">Keyboard untuk bahasa Lituania</translation>
@@ -716,7 +707,6 @@
 <translation id="8395901698320285466">Dimensi</translation>
 <translation id="8412586565681117057">Metode masukan Quick</translation>
 <translation id="8418113698656761985">Keyboard untuk bahasa Rumania</translation>
-<translation id="8432745813735585631">Keyboard Colemak AS</translation>
 <translation id="8437209419043462667">AS</translation>
 <translation id="8456681095658380701">Nama tidak valid</translation>
 <translation id="8466234950814670489">Arsip Tar</translation>
@@ -737,7 +727,6 @@
 <translation id="8698464937041809063">Gambar Google</translation>
 <translation id="8714406895390098252">Sepeda</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> dipilih.</translation>
-<translation id="8722421161699219904">Keyboard Internasional AS</translation>
 <translation id="872537912056138402">Kroat</translation>
 <translation id="874420130893181774">Metode masukan Pinyin Tradisional</translation>
 <translation id="8770002329960263418">Belanda (Belanda) dengan keyboard PC Internasional AS</translation>

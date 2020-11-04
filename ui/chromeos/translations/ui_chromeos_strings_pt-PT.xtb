@@ -142,7 +142,6 @@
 <translation id="247772113373397749">Teclado multilingue canadiano</translation>
 <translation id="2494837236724268445">Teclado gujarati (fonético)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">Teclado americano</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> itens eliminados</translation>
 <translation id="2541377937973966830">O conteúdo desta pasta é só de leitura. Algumas atividades não são suportadas.</translation>
 <translation id="2542049655219295786">Tabela do Google</translation>
@@ -196,10 +195,9 @@
 <translation id="3067790092342515856">Ficheiros do Windows</translation>
 <translation id="3078461028045006476">Partilhar com <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebits</translation>
-<translation id="3116361045094675131">Teclado inglês</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">CONCLUÍDO</translation>
-<translation id="3157729859914172001">Teclado americano internacional (PC)</translation>
+<translation id="3182237543071236785">Inglês (Reino Unido)</translation>
 <translation id="3187212781151025377">Teclado hebraico</translation>
 <translation id="3188257591659621405">Os meus ficheiros</translation>
 <translation id="3197563288998582412">Reino Unido Dvorak</translation>
@@ -311,7 +309,6 @@
 <translation id="4465830120256509958">Teclado brasileiro</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
 <translation id="4477219268485577442">Fonético búlgaro</translation>
-<translation id="4479812471636796472">Teclado americano (Dvorak)</translation>
 <translation id="4522570452068850558">Detalhes</translation>
 <translation id="4527800702232535228">Esta pasta é partilhada com o Parallels Desktop.</translation>
 <translation id="4552678318981539154">Comprar mais armazenamento</translation>
@@ -567,7 +564,6 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> encontrada(s)</translation>
 <translation id="6935521024859866267">Ao Contrário</translation>
-<translation id="6939777852457331078">Teclado Workman dos EUA</translation>
 <translation id="696203921837389374">Ativar a sincronização através de dados móveis</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Búlgaro</translation>
@@ -587,7 +583,6 @@
 <translation id="7172053773111046550">Teclado estónio</translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
-<translation id="719009910964971313">Teclado Dvorak de programador americano</translation>
 <translation id="7191454237977785534">Guardar ficheiro como</translation>
 <translation id="7222624196722476520">Teclado búlgaro fonético</translation>
 <translation id="7238097264433196391">Nome da unidade</translation>
@@ -596,7 +591,6 @@
 <translation id="7283041136720745563">A sua quota do Google Drive não é suficientemente grande.</translation>
 <translation id="7295662345261934369">Partilhar com outros</translation>
 <translation id="7339898014177206373">Nova janela</translation>
-<translation id="7348749398828259943">Teclado Workman internacional dos EUA</translation>
 <translation id="7359359531237882347">A copiar <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
 <translation id="7375951387215729722">Lista de ficheiros ordenada por <ph name="COLUMN_NAME" /> por ordem descendente.</translation>
 <translation id="7389722738210761877">Teclado tailandês (TIS 820-2531)</translation>
@@ -604,9 +598,7 @@
 <translation id="7417453074306512035">Teclado etíope</translation>
 <translation id="7417705661718309329">Mapa Google</translation>
 <translation id="7419631653042041064">Teclado catalão</translation>
-<translation id="7434823369735508263">Teclado inglês (Dvorak)</translation>
 <translation id="7460898608667578234">Ucraniano</translation>
-<translation id="7474889694310679759">Teclado canadiano (inglês)</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> encontrada(s)
     <ph name="LINE_BREAK1" />
     Pronto para fazer uma cópia de segurança para o <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
@@ -659,7 +651,6 @@
 <translation id="7873831373602885875">Não é possível guardar em <ph name="FOLDER_NAME" />. Todas as edições serão guardadas em <ph name="DOWNLOADS_FOLDER" /> na pasta Transferências.</translation>
 <translation id="7881969471599061635">Desativar legendas</translation>
 <translation id="78946041517601018">Unidades partilhadas</translation>
-<translation id="7896906914454843592">Teclado americano alargado</translation>
 <translation id="7898607018410277265">Teclado guzerate (nova fonética)</translation>
 <translation id="7908793776359722643">A formatação de uma partição elimina todos os dados armazenados na mesma. Não é possível anular esta ação.</translation>
 <translation id="7917972308273378936">Teclado lituano</translation>
@@ -716,7 +707,6 @@
 <translation id="8395901698320285466">Dimensões</translation>
 <translation id="8412586565681117057">Método de introdução rápido</translation>
 <translation id="8418113698656761985">Teclado romeno</translation>
-<translation id="8432745813735585631">Teclado americano (Colemak)</translation>
 <translation id="8437209419043462667">EUA</translation>
 <translation id="8456681095658380701">Nome inválido</translation>
 <translation id="8466234950814670489">Arquivo tar</translation>
@@ -737,7 +727,6 @@
 <translation id="8698464937041809063">Desenho do Google</translation>
 <translation id="8714406895390098252">Bicicleta</translation>
 <translation id="8719721339511222681">Selecionou <ph name="ENTRY_NAME" />.</translation>
-<translation id="8722421161699219904">Teclado americano internacional</translation>
 <translation id="872537912056138402">Croata</translation>
 <translation id="874420130893181774">Método de introdução pinyin tradicional</translation>
 <translation id="8770002329960263418">Neerlandês (Países Baixos) com o teclado de PC americano internacional</translation>

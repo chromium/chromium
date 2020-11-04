@@ -26,7 +26,6 @@
 <translation id="1727886345390570319">დახურული სუბტიტრების მენიუს დამალვა</translation>
 <translation id="1729654308190250600">გთხოვთ შეიყვანოთ შევსებული ელექტრონული ფოსტის მისამართი.</translation>
 <translation id="1758486001363313524">სხვა…</translation>
-<translation id="1774577460079229490">ამჟამად არის <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">საერთო დრო: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">გაფრთხილების დიალოგი</translation>
 <translation id="1821985195704844674">ხისებრი ბადე</translation>
@@ -70,7 +69,6 @@
 <translation id="2746543609216772311">მნიშვნელობა უნდა იყოს <ph name="MINIMUM_DATE_OR_TIME" /> ან მეტი.</translation>
 <translation id="2759744352195237655">კონტექსტური ღილაკი</translation>
 <translation id="2761667185364618470">გთხოვთ შეამოწმოთ ეს ყუთი, თუ გსურთ გაგრძელება.</translation>
-<translation id="2838616441696617235">ნაბიჯი</translation>
 <translation id="2844350028562914727">დეტალები</translation>
 <translation id="2896972712917208084">რადიო ღილაკების ჯგუფი</translation>
 <translation id="2908441821576996758">შეიყვანეთ მძიმეებით გამოყოფილი ელფოსტის მისამართების სია.</translation>
@@ -131,7 +129,6 @@
 <translation id="4912536737030637138">ბიბლიოგრაფიის ჩანაწერი</translation>
 <translation id="4915360478455618802">დროის ამომრჩევის ჩვენება</translation>
 <translation id="492244087561876220">კომენტარი</translation>
-<translation id="4934662370368414994">ერთეული</translation>
 <translation id="4950364064308314478">ადგილობრივი თარიღისა და დროის ამომრჩევის ჩვენება</translation>
 <translation id="4971739861736909480">არჩეულია <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> არჩეულია</translation>
@@ -176,7 +173,6 @@
 <translation id="6011459053400940133">ხმის სლაიდერი</translation>
 <translation id="6015796118275082299">წელი</translation>
 <translation id="6023896073578205740">სიის ველი</translation>
-<translation id="6131824478727057281">მდებარეობა</translation>
 <translation id="6150588977291308318">ბიბლიოგრაფია</translation>
 <translation id="6164829606128959761">მთვლელი</translation>
 <translation id="6166809985690652833">ბოლოსიტყვაობა</translation>
@@ -208,7 +204,6 @@
 <translation id="6843725295806269523">დადუმება</translation>
 <translation id="6885760532393684712">კატალოგი</translation>
 <translation id="689129560213475294">კოლოფონი</translation>
-<translation id="6901540140423170855">თარიღი</translation>
 <translation id="6934078000481955284">ციტატა</translation>
 <translation id="693476918119313863">ზედა კოლონტიტული</translation>
 <translation id="6941933287844615239">მედია-ფაილის ჩამოტვირთვა</translation>
@@ -255,7 +250,6 @@
 <translation id="8105797009065549151">მითითება შენიშვნაზე</translation>
 <translation id="811583516810654505">მიმდინარეობს აღწერილობის მიღება…</translation>
 <translation id="8117451130807776954">ეს კვირა</translation>
-<translation id="8180239481735238521">გვერდი</translation>
 <translation id="8199524924445686405">წწწწ</translation>
 <translation id="8208673686607688524">ადგილობრივი თარიღისა და დროის ამომრჩევი</translation>
 <translation id="8261464734335370856">მართლწერა არასწორია</translation>

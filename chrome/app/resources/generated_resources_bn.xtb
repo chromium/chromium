@@ -134,6 +134,7 @@
 <translation id="1145292499998999162">প্লাগ-ইন ব্লক করা আছে</translation>
 <translation id="1145593918056169051">প্রিন্টার বন্ধ হয়ে গেছে</translation>
 <translation id="114721135501989771">Chrome-এ Google স্মার্ট পান</translation>
+<translation id="1147322039136785890">এবার <ph name="SUPERVISED_USER_NAME" /> ব্যবহার করতে পারবেন</translation>
 <translation id="1147991416141538220">অ্যাক্সেস করার অনুমতি চাইতে এই ডিভাইস অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="1149401351239820326">মেয়াদ শেষের মাস</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> স্ক্যান করা হচ্ছে</translation>
@@ -6587,6 +6588,7 @@
 <translation id="8736288397686080465">পটভূমিতে এই সাইটটি আপডেট করা হয়েছে৷</translation>
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" />-এর পরিবর্তে <ph name="PROTOCOL" /> লিঙ্কসমূহ খুলুন</translation>
 <translation id="8737709691285775803">শিল</translation>
+<translation id="8740247629089392745">আপনি এই Chromebook <ph name="SUPERVISED_USER_NAME" />-কে ফেরত দিতে পারেন। সেটআপ প্রায় হয়ে গেছে, তারপর আপনি সব সুবিধা চেক করে দেখতে পারবেন।</translation>
 <translation id="8742998548129056176">আপনার ডিভাইস এবং সেটি কীভাবে ব্যবহার করবেন (যেমন, ব্যাটারি লেভেল, সিস্টেম ও অ্যাপ অ্যাক্টিভিটি এবং সমস্যা) সেই বিষয়ে কিছু সাধারণ তথ্য এখানে দেওয়া হয়েছে। এই ডেটা Android পরিষেবাকে আরও ভাল করতে ব্যবহার করা হবে। এছাড়া, কিছু একত্রিত তথ্য Google অ্যাপ এবং Android ডেভেলপারদের মতন পার্টনারদের অ্যাপ ও প্রোডাক্টের মান আরও ভাল করতে সাহায্য করবে।</translation>
 <translation id="8743390665131937741">ফুলস্ক্রিন জুম লেভেল:</translation>
 <translation id="8743864605301774756">১ঘণ্টা আগে আপডেট করা হয়েছে</translation>

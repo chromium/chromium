@@ -142,7 +142,6 @@
 <translation id="247772113373397749">የካናዳ ባለብዙ ቋንቋ ቁልፍ ሰሌዳ</translation>
 <translation id="2494837236724268445">የጉጃራቲ ቁልፍ ሰሌዳ (ፎነቲክ)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">የአሜሪካ ቁልፍ ሰሌዳ</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ንጥሎች ተሰርዟል</translation>
 <translation id="2541377937973966830">የዚህ አቃፊ ይዘቶች ተነባቢ-ብቻ ናቸው። አንዳንድ እንቅስቃሴዎች አይደገፉም።</translation>
 <translation id="2542049655219295786">Google ሠንጠረዥ</translation>
@@ -196,10 +195,8 @@
 <translation id="3067790092342515856">የWindows ፋይሎች</translation>
 <translation id="3078461028045006476">ለ<ph name="EXTENSION_NAME" /> አጋራ</translation>
 <translation id="3083975830683400843">Chromebits</translation>
-<translation id="3116361045094675131">የዩናይትድ ኪንግደም ቁልፍ ሰሌዳ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ተከናውኗል</translation>
-<translation id="3157729859914172001">የአሜሪካ ዓለምአቀፍ (ፒሲ) ቁልፍ ሰሌዳ</translation>
 <translation id="3187212781151025377">የዕብራይስጥ ሰሌዳ ቁልፍ</translation>
 <translation id="3188257591659621405">የእኔ ፋይሎች</translation>
 <translation id="3197563288998582412">ዩኬ ድቮራክ</translation>
@@ -311,7 +308,6 @@
 <translation id="4465830120256509958">የብራዚል ቁልፍ ሰሌዳ</translation>
 <translation id="4470564870223067757">ሃንጉል 2 ስብስብ</translation>
 <translation id="4477219268485577442">የቡልጋሪያኛ ፎነቲክ</translation>
-<translation id="4479812471636796472">የአሜሪካ ድቮራክ ቁልፍ ሰሌዳ</translation>
 <translation id="4522570452068850558">ዝርዝሮች</translation>
 <translation id="4527800702232535228">ይህ አቃፊ ለParallels ዴስክቶፕ ተጋርቷል</translation>
 <translation id="4552678318981539154">ተጨማሪ ማከማቻ ይግዙ</translation>
@@ -566,7 +562,6 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> ተገኝቷል</translation>
 <translation id="6935521024859866267">ወደ ታች የተገለበጠ</translation>
-<translation id="6939777852457331078">የአሜሪካ ዎርክማን ቁልፍ ሰሌዳ</translation>
 <translation id="696203921837389374">በሞባይል ውሂብ ላይ ማመሳሰልን አንቃ</translation>
 <translation id="6965382102122355670">እሺ</translation>
 <translation id="6970230597523682626">ቡልጋሪኛ</translation>
@@ -586,7 +581,6 @@
 <translation id="7172053773111046550">የኤስቶኒያኛ ቁልፍ ሰሌዳ</translation>
 <translation id="7180611975245234373">አድስ</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ጊባ</translation>
-<translation id="719009910964971313">የአሜሪካ Dvorak ፕሮግራመር ቁልፍ ሰሌዳ</translation>
 <translation id="7191454237977785534">ፋይል አስቀምጥ እንደ</translation>
 <translation id="7222624196722476520">የቡልጋሪያ ፎነቲክ ቁልፍ ሰሌዳ</translation>
 <translation id="7238097264433196391">የአንጻፊ ስም</translation>
@@ -595,7 +589,6 @@
 <translation id="7283041136720745563">የእርስዎ Google Drive ኮታ ያን ያህል በቂ አይደለም።</translation>
 <translation id="7295662345261934369">ከሌሎች ጋር ተጋራ</translation>
 <translation id="7339898014177206373">አዲሰ መስኮት</translation>
-<translation id="7348749398828259943">የአሜሪካ ዎርክማን ዓለምአቀፍ ቁልፍ ሰሌዳ</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> ንጥሎችን በመቅዳት ላይ...</translation>
 <translation id="7375951387215729722">የፋይል ዝርዝር በ<ph name="COLUMN_NAME" /> በቁልቁለት ተደርድሯል።</translation>
 <translation id="7389722738210761877">የታይ ቁልፍ ሰሌዳ (TIS 820-2531)</translation>
@@ -603,9 +596,7 @@
 <translation id="7417453074306512035">የግዕዝ ቁልፍ ሰሌዳ</translation>
 <translation id="7417705661718309329">Google ካርታ</translation>
 <translation id="7419631653042041064">የካታላን ቁልፍ ሰሌዳ</translation>
-<translation id="7434823369735508263">የዩናይትድ ኪንግደም ድቮራክ ቁልፍ ሰሌዳ</translation>
 <translation id="7460898608667578234">ዩክረኒኛ</translation>
-<translation id="7474889694310679759">የካናዳ እንግሊዝኛ ቁልፍ ሰሌዳ</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> ተገኝቷል
     <ph name="LINE_BREAK1" />
     ምትኬ ወደ <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> ለማስቀመጥ ዝግጁ</translation>
@@ -658,7 +649,6 @@
 <translation id="7873831373602885875">ወደ <ph name="FOLDER_NAME" /> ማስቀመጥ አልተቻለም። ሁሉም አርትዖቶች በውርዶች አቃፊው ውስጥ ወደ <ph name="DOWNLOADS_FOLDER" /> ይቀመጣሉ።</translation>
 <translation id="7881969471599061635">የግርጌ ጽሑፎችን አሰናክል</translation>
 <translation id="78946041517601018">የተጋሩ Drives</translation>
-<translation id="7896906914454843592">የተቀጠለ የአሜሪካ ቁልፍ ሰሌዳ</translation>
 <translation id="7898607018410277265">የጉጃራቲኛ ቁልፍ ሰሌዳ (አዲስ ፎነቲክ)</translation>
 <translation id="7908793776359722643">በክፍልፍል ላይ ቅርጸት መስራት በእሱ ላይ የተከማቸውን ሁሉም ውሂብ ያጠፋል። ይህ እርምጃ ሊቀለበስ አይችልም።</translation>
 <translation id="7917972308273378936">የሊቱዌኒያ ቁልፍ ሰሌዳ</translation>
@@ -715,7 +705,6 @@
 <translation id="8395901698320285466">ልኬቶች</translation>
 <translation id="8412586565681117057">ፈጣን የግቤት ስልት</translation>
 <translation id="8418113698656761985">የሮማኒያኛ ቁልፍ ሰሌዳ</translation>
-<translation id="8432745813735585631">የአሜሪካ ኮልማክ ቁልፍ ሰሌዳ</translation>
 <translation id="8437209419043462667">አሜሪካ</translation>
 <translation id="8456681095658380701">ልክ ያልሆነ ስም</translation>
 <translation id="8466234950814670489">የTar ማህደር</translation>
@@ -736,7 +725,6 @@
 <translation id="8698464937041809063">Google ስዕል</translation>
 <translation id="8714406895390098252">ቢስክሌት</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ተመርጧል።</translation>
-<translation id="8722421161699219904">የአሜሪካ ዓለምአቀፍ ቁልፍ ሰሌዳ</translation>
 <translation id="872537912056138402">ክሮሽያንኛ</translation>
 <translation id="874420130893181774">ተለምዷዊ የፒንዪን ግቤት ስልት</translation>
 <translation id="8770002329960263418">ደች (ኔዘርላንድስ) በአሜሪካ ዓለም አቀፍ ፒሲ ቁልፍ ሰሌዳ አማካኝነት</translation>
