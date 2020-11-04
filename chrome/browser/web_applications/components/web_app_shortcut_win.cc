@@ -15,6 +15,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/hash/md5.h"
+#include "base/i18n/file_util_icu.h"
 #include "base/macros.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -314,6 +315,12 @@ base::FilePath GetChromeProxyPath() {
 }
 
 namespace internals {
+
+base::FilePath GetSanitizedFileName(const base::string16& name) {
+  base::string16 file_name = name;
+  base::i18n::ReplaceIllegalCharactersInPath(&file_name, '_');
+  return base::FilePath(file_name);
+}
 
 std::vector<base::FilePath> FindAppShortcutsByProfileAndTitle(
     const base::FilePath& shortcut_path,

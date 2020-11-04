@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/i18n/file_util_icu.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -213,16 +212,6 @@ scoped_refptr<base::TaskRunner> GetShortcutIOTaskRunner() {
 #else
   return base::ThreadPool::CreateTaskRunner(traits);
 #endif
-}
-
-base::FilePath GetSanitizedFileName(const base::string16& name) {
-#if defined(OS_WIN)
-  base::string16 file_name = name;
-#else
-  std::string file_name = base::UTF16ToUTF8(name);
-#endif
-  base::i18n::ReplaceIllegalCharactersInPath(&file_name, '_');
-  return base::FilePath(file_name);
 }
 
 base::FilePath GetShortcutDataDir(const ShortcutInfo& shortcut_info) {

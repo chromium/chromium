@@ -15,6 +15,10 @@ base::FilePath GetChromeProxyPath();
 
 namespace internals {
 
+// Sanitizes |name| and returns a version of it that is safe to use as an
+// on-disk file name.
+base::FilePath GetSanitizedFileName(const base::string16& name);
+
 // Returns the Windows user-level shortcut paths that are specified in
 // |creation_locations|.
 std::vector<base::FilePath> GetShortcutPaths(
