@@ -4,7 +4,6 @@
 
 #include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
 
-#include "base/allocator/allocator_shim.h"
 #include "base/allocator/allocator_shim_internals.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -14,9 +13,11 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 
-#if defined(OS_POSIX) && !defined(OS_APPLE)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include <malloc.h>
 #endif
+
+using base::allocator::AllocatorDispatch;
 
 namespace {
 
@@ -85,10 +86,17 @@ base::ThreadSafePartitionRoot* Allocator() {
     return root;
   }
 
-  auto* new_root = new (g_allocator_buffer) base::ThreadSafePartitionRoot(
-      {base::PartitionOptions::Alignment::kRegular,
-       base::PartitionOptions::ThreadCache::kEnabled,
-       base::PartitionOptions::PCScan::kDisabledByDefault});
+  auto* new_root = new (g_allocator_buffer) base::ThreadSafePartitionRoot({
+    base::PartitionOptions::Alignment::kRegular,
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+        base::PartitionOptions::ThreadCache::kEnabled,
+#else
+        // Other tests, such as the ThreadCache tests create a thread cache, and
+        // only one is supported at a time.
+        base::PartitionOptions::ThreadCache::kDisabled,
+#endif
+        base::PartitionOptions::PCScan::kDisabledByDefault
+  });
   g_root_.store(new_root, std::memory_order_release);
 
   // Semantically equivalent to base::Lock::Release().
@@ -96,7 +104,20 @@ base::ThreadSafePartitionRoot* Allocator() {
   return new_root;
 }
 
-using base::allocator::AllocatorDispatch;
+base::ThreadSafePartitionRoot* AlignedAllocator() {
+  // Since the general-purpose allocator uses the thread cache, this one cannot.
+  static base::NoDestructor<base::ThreadSafePartitionRoot> aligned_allocator(
+      base::PartitionOptions{
+          base::PartitionOptions::Alignment::kAlignedAlloc,
+          base::PartitionOptions::ThreadCache::kDisabled,
+          base::PartitionOptions::PCScan::kDisabledByDefault});
+  return aligned_allocator.get();
+}
+
+}  // namespace
+
+namespace base {
+namespace internal {
 
 void* PartitionMalloc(const AllocatorDispatch*, size_t size, void* context) {
   return Allocator()->AllocFlagsNoHooks(0, size);
@@ -113,16 +134,6 @@ void* PartitionCalloc(const AllocatorDispatch*,
                       size_t size,
                       void* context) {
   return Allocator()->AllocFlagsNoHooks(base::PartitionAllocZeroFill, n * size);
-}
-
-base::ThreadSafePartitionRoot* AlignedAllocator() {
-  // Since the general-purpose allocator uses the thread cache, this one cannot.
-  static base::NoDestructor<base::ThreadSafePartitionRoot> aligned_allocator(
-      base::PartitionOptions{
-          base::PartitionOptions::Alignment::kAlignedAlloc,
-          base::PartitionOptions::ThreadCache::kDisabled,
-          base::PartitionOptions::PCScan::kDisabledByDefault});
-  return aligned_allocator.get();
 }
 
 void* PartitionMemalign(const AllocatorDispatch*,
@@ -196,11 +207,6 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
   return base::ThreadSafePartitionRoot::GetUsableSize(address);
 }
 
-}  // namespace
-
-namespace base {
-namespace internal {
-
 // static
 ThreadSafePartitionRoot* PartitionAllocMalloc::Allocator() {
   return ::Allocator();
@@ -214,36 +220,36 @@ ThreadSafePartitionRoot* PartitionAllocMalloc::AlignedAllocator() {
 }  // namespace internal
 }  // namespace base
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
 namespace base {
 namespace allocator {
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 void EnablePCScanIfNeeded() {
   if (!features::IsPartitionAllocPCScanEnabled())
     return;
   Allocator()->EnablePCScan();
   AlignedAllocator()->EnablePCScan();
 }
-#endif
 
 }  // namespace allocator
 }  // namespace base
 
 constexpr AllocatorDispatch AllocatorDispatch::default_dispatch = {
-    &PartitionMalloc,          /* alloc_function */
-    &PartitionMallocUnchecked, /* alloc_unchecked_function */
-    &PartitionCalloc,          /* alloc_zero_initialized_function */
-    &PartitionMemalign,        /* alloc_aligned_function */
-    &PartitionRealloc,         /* realloc_function */
-    &PartitionFree,            /* free_function */
-    &PartitionGetSizeEstimate, /* get_size_estimate_function */
-    nullptr,                   /* batch_malloc_function */
-    nullptr,                   /* batch_free_function */
-    nullptr,                   /* free_definite_size_function */
-    &PartitionAlignedAlloc,    /* aligned_malloc_function */
-    &PartitionAlignedRealloc,  /* aligned_realloc_function */
-    &PartitionFree,            /* aligned_free_function */
-    nullptr,                   /* next */
+    &base::internal::PartitionMalloc,           // alloc_function
+    &base::internal::PartitionMallocUnchecked,  // alloc_unchecked_function
+    &base::internal::PartitionCalloc,    // alloc_zero_initialized_function
+    &base::internal::PartitionMemalign,  // alloc_aligned_function
+    &base::internal::PartitionRealloc,   // realloc_function
+    &base::internal::PartitionFree,      // free_function
+    &base::internal::PartitionGetSizeEstimate,  // get_size_estimate_function
+    nullptr,                                    // batch_malloc_function
+    nullptr,                                    // batch_free_function
+    nullptr,                                    // free_definite_size_function
+    &base::internal::PartitionAlignedAlloc,     // aligned_malloc_function
+    &base::internal::PartitionAlignedRealloc,   // aligned_realloc_function
+    &base::internal::PartitionFree,             // aligned_free_function
+    nullptr,                                    // next
 };
 
 // Intercept diagnostics symbols as well, even though they are not part of the
@@ -263,8 +269,7 @@ SHIM_ALWAYS_EXPORT int mallopt(int cmd, int value) __THROW {
 
 #endif  // !defined(OS_APPLE)
 
-// mallinfo is not a POSIX API and OS_APPLE doesn't support it.
-#if defined(OS_POSIX) && !defined(OS_APPLE)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
   base::SimplePartitionStatsDumper allocator_dumper;
   Allocator()->DumpStats("malloc", true, &allocator_dumper);
@@ -288,6 +293,8 @@ SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
 
   return info;
 }
-#endif  // defined(OS_POSIX) && !defined(OS_APPLE)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 }  // extern "C"
+
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

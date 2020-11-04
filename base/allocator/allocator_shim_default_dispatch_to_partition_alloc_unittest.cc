@@ -2,18 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
+
+#include <cstdlib>
+#include <cstring>
+
 #include "base/allocator/buildflags.h"
 #include "base/compiler_specific.h"
+#include "base/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_POSIX) && !defined(OS_APPLE)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include <malloc.h>
-#include <stdlib.h>
 #endif
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && BUILDFLAG(USE_PARTITION_ALLOC)
+namespace base {
+namespace internal {
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 // Platforms on which we override weak libc symbols.
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -64,5 +72,91 @@ TEST(PartitionAllocAsMalloc, Mallinfo) {
 
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-        // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+// Note: the tests below are quite simple, they are used as simple smoke tests
+// for PartitionAlloc-Everywhere. Most of these directly dispatch to
+// PartitionAlloc, which has much more extensive tests.
+TEST(PartitionAllocAsMalloc, Simple) {
+  void* data = PartitionMalloc(nullptr, 10, nullptr);
+  EXPECT_TRUE(data);
+  PartitionFree(nullptr, data, nullptr);
+}
+
+TEST(PartitionAllocAsMalloc, MallocUnchecked) {
+  void* data = PartitionMallocUnchecked(nullptr, 10, nullptr);
+  EXPECT_TRUE(data);
+  PartitionFree(nullptr, data, nullptr);
+
+  void* too_large = PartitionMallocUnchecked(nullptr, 4e9, nullptr);
+  EXPECT_FALSE(too_large);  // No crash.
+}
+
+TEST(PartitionAllocAsMalloc, Calloc) {
+  constexpr size_t alloc_size = 100;
+  void* data = PartitionCalloc(nullptr, 1, alloc_size, nullptr);
+  EXPECT_TRUE(data);
+
+  char* zeroes[alloc_size];
+  memset(zeroes, 0, alloc_size);
+
+  EXPECT_EQ(0, memcmp(zeroes, data, alloc_size));
+  PartitionFree(nullptr, data, nullptr);
+}
+
+TEST(PartitionAllocAsMalloc, Memalign) {
+  constexpr size_t alloc_size = 100;
+  constexpr size_t alignment = 1024;
+  void* data = PartitionMemalign(nullptr, alignment, alloc_size, nullptr);
+  EXPECT_TRUE(data);
+  EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(data) % alignment);
+  PartitionFree(nullptr, data, nullptr);
+}
+
+TEST(PartitionAllocAsMalloc, AlignedAlloc) {
+  constexpr size_t alloc_size = 100;
+  constexpr size_t alignment = 1024;
+  void* data = PartitionAlignedAlloc(nullptr, alloc_size, alignment, nullptr);
+  EXPECT_TRUE(data);
+  EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(data) % alignment);
+  PartitionFree(nullptr, data, nullptr);
+}
+
+TEST(PartitionAllocAsMalloc, AlignedRealloc) {
+  constexpr size_t alloc_size = 100;
+  constexpr size_t alignment = 1024;
+  void* data = PartitionAlignedAlloc(nullptr, alloc_size, alignment, nullptr);
+  EXPECT_TRUE(data);
+
+  void* data2 = PartitionAlignedRealloc(nullptr, data, alloc_size + 1,
+                                        alignment, nullptr);
+  EXPECT_TRUE(data2);
+
+  EXPECT_NE(reinterpret_cast<uintptr_t>(data),
+            reinterpret_cast<uintptr_t>(data2));
+  PartitionFree(nullptr, data2, nullptr);
+}
+
+TEST(PartitionAllocAsMalloc, Realloc) {
+  constexpr size_t alloc_size = 100;
+  void* data = PartitionMalloc(nullptr, alloc_size, nullptr);
+  EXPECT_TRUE(data);
+  void* data2 = PartitionMalloc(nullptr, 2 * alloc_size, nullptr);
+  EXPECT_TRUE(data2);
+  EXPECT_NE(data2, data);
+  PartitionFree(nullptr, data2, nullptr);
+}
+
+// crbug.com/1141752
+TEST(PartitionAllocAsMalloc, Alignment) {
+  EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(PartitionAllocMalloc::Allocator()) %
+                    alignof(ThreadSafePartitionRoot));
+  EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(
+                    PartitionAllocMalloc::AlignedAllocator()) %
+                    alignof(ThreadSafePartitionRoot));
+}
+
+}  // namespace internal
+}  // namespace base
+#endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&
+        // BUILDFLAG(USE_PARTITION_ALLOC)

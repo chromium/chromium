@@ -1295,6 +1295,8 @@ component("base") {
     sources += [
       "allocator/allocator_shim.cc",
       "allocator/allocator_shim.h",
+      "allocator/allocator_shim_default_dispatch_to_partition_alloc.cc",
+      "allocator/allocator_shim_default_dispatch_to_partition_alloc.h",
       "allocator/allocator_shim_internals.h",
     ]
     if (is_android) {
@@ -1322,12 +1324,7 @@ component("base") {
       ]
     }
 
-    if (use_allocator == "partition") {
-      sources += [
-        "allocator/allocator_shim_default_dispatch_to_partition_alloc.cc",
-        "allocator/allocator_shim_default_dispatch_to_partition_alloc.h",
-      ]
-    } else if (use_allocator == "tcmalloc") {
+    if (use_allocator == "tcmalloc") {
       sources += [ "allocator/allocator_shim_default_dispatch_to_tcmalloc.cc" ]
       deps += [ "//base/allocator:tcmalloc" ]
     } else if (use_allocator == "none") {
@@ -3411,9 +3408,7 @@ test("base_unittests") {
       sources += [ "allocator/winheap_stubs_win_unittest.cc" ]
     }
 
-    if (use_allocator == "partition") {
-      sources += [ "allocator/allocator_shim_default_dispatch_to_partition_alloc_unittest.cc" ]
-    }
+    sources += [ "allocator/allocator_shim_default_dispatch_to_partition_alloc_unittest.cc" ]
   }
 
   if (enable_base_tracing) {
