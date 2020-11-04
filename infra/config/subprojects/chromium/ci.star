@@ -2332,28 +2332,6 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
-    name = "android-marshmallow-arm64-16-core",
-    console_view_entry = ci.console_view_entry(
-        category = "experimental|android",
-        short_name = "16",
-    ),
-    builderless = False,
-    cores = None,
-    goma_jobs = goma.jobs.J300,
-)
-
-ci.fyi_builder(
-    name = "android-marshmallow-arm64-32-core",
-    console_view_entry = ci.console_view_entry(
-        category = "experimental|android",
-        short_name = "32",
-    ),
-    builderless = False,
-    cores = None,
-    goma_jobs = goma.jobs.J300,
-)
-
-ci.fyi_builder(
     name = "chromeos-amd64-generic-lacros-rel",
     console_view_entry = ci.console_view_entry(
         category = "chromeos",
@@ -2495,46 +2473,6 @@ ci.fyi_builder(
     notifies = ["linux-blink-heap-verification"],
 )
 
-# For testing impact of builderful: https://crbug.com/1123673
-# remove by 2020-10-05 gatong
-ci.fyi_builder(
-    name = "linux-builderful-fast-fyi-rel",
-    console_view_entry = ci.console_view_entry(
-        category = "build test",
-        short_name = "bff",
-    ),
-    builderless = False,
-)
-
-ci.fyi_builder(
-    name = "linux-builderful-slow-fyi-rel",
-    console_view_entry = ci.console_view_entry(
-        category = "build test",
-        short_name = "bfs",
-    ),
-    builderless = False,
-    schedule = "with 2h interval",
-    triggered_by = [],
-)
-
-ci.fyi_builder(
-    name = "linux-builderless-fast-fyi-rel",
-    console_view_entry = ci.console_view_entry(
-        category = "build test",
-        short_name = "blf",
-    ),
-)
-
-ci.fyi_builder(
-    name = "linux-builderless-slow-fyi-rel",
-    console_view_entry = ci.console_view_entry(
-        category = "build test",
-        short_name = "bls",
-    ),
-    schedule = "with 2h interval",
-    triggered_by = [],
-)
-
 ci.fyi_builder(
     name = "linux-chromium-tests-staging-builder",
     console_view_entry = ci.console_view_entry(
@@ -2613,39 +2551,6 @@ ci.fyi_builder(
     ),
     experimental = True,
     goma_backend = goma.backend.RBE_PROD,
-)
-
-ci.fyi_builder(
-    name = "linux-8-core",
-    console_view_entry = ci.console_view_entry(
-        category = "experimental|linux",
-        short_name = "8",
-    ),
-    builderless = False,
-    cores = None,
-    goma_jobs = goma.jobs.J150,
-)
-
-ci.fyi_builder(
-    name = "linux-16-core",
-    console_view_entry = ci.console_view_entry(
-        category = "experimental|linux",
-        short_name = "16",
-    ),
-    builderless = False,
-    cores = None,
-    goma_jobs = goma.jobs.J150,
-)
-
-ci.fyi_builder(
-    name = "linux-32-core",
-    console_view_entry = ci.console_view_entry(
-        category = "experimental|linux",
-        short_name = "32",
-    ),
-    builderless = False,
-    cores = None,
-    goma_jobs = goma.jobs.J150,
 )
 
 # This is launching & collecting entirely isolated tests.
@@ -2804,39 +2709,6 @@ ci.fyi_builder(
     os = os.WINDOWS_DEFAULT,
     schedule = "with 3h interval",
     triggered_by = [],
-)
-
-ci.fyi_windows_builder(
-    name = "win-8-core",
-    console_view_entry = ci.console_view_entry(
-        category = "experimental|win",
-        short_name = "8",
-    ),
-    builderless = False,
-    cores = None,
-    goma_jobs = goma.jobs.J150,
-)
-
-ci.fyi_windows_builder(
-    name = "win-16-core",
-    console_view_entry = ci.console_view_entry(
-        category = "experimental|win",
-        short_name = "16",
-    ),
-    builderless = False,
-    cores = None,
-    goma_jobs = goma.jobs.J150,
-)
-
-ci.fyi_windows_builder(
-    name = "win-32-core",
-    console_view_entry = ci.console_view_entry(
-        category = "experimental|win",
-        short_name = "32",
-    ),
-    builderless = False,
-    cores = None,
-    goma_jobs = goma.jobs.J150,
 )
 
 ci.fyi_celab_builder(

@@ -241,38 +241,6 @@
       "use_static_angle": true
     }
   },
-  "android-marshmallow-arm64-16-core": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "disable_android_lint": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
-      "target_os": "android",
-      "use_errorprone_java_compiler": false,
-      "use_goma": true,
-      "use_static_angle": true
-    }
-  },
-  "android-marshmallow-arm64-32-core": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "disable_android_lint": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
-      "target_os": "android",
-      "use_errorprone_java_compiler": false,
-      "use_goma": true,
-      "use_static_angle": true
-    }
-  },
   "chromeos-amd64-generic-lacros-rel": {
     "args_file": "//build/args/chromeos/amd64-generic.gni",
     "gn_args": {
@@ -489,39 +457,6 @@
       "use_goma": true
     }
   },
-  "linux-16-core": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "use_goma": true
-    }
-  },
-  "linux-32-core": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "use_goma": true
-    }
-  },
-  "linux-8-core": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "use_goma": true
-    }
-  },
   "linux-annotator-rel": {
     "gn_args": {
       "is_component_build": false,
@@ -562,42 +497,6 @@
     "gn_args": {
       "dcheck_always_on": true,
       "enable_blink_heap_verification": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "use_goma": true
-    }
-  },
-  "linux-builderful-fast-fyi-rel": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "use_goma": true
-    }
-  },
-  "linux-builderful-slow-fyi-rel": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "use_goma": true
-    }
-  },
-  "linux-builderless-fast-fyi-rel": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "use_goma": true
-    }
-  },
-  "linux-builderless-slow-fyi-rel": {
-    "gn_args": {
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -754,39 +653,6 @@
     "gn_args": {
       "is_component_build": false,
       "is_debug": false,
-      "use_goma": true
-    }
-  },
-  "win-16-core": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
-  "win-32-core": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
-  "win-8-core": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
       "use_goma": true
     }
   },

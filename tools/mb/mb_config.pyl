@@ -273,8 +273,6 @@
       'Win 10 Fast Ring': 'release_trybot',
       'android-code-coverage': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_java_coverage',
       'android-code-coverage-native': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_native_coverage',
-      'android-marshmallow-arm64-16-core': 'gpu_tests_android_release_trybot_arm64_fastbuild',
-      'android-marshmallow-arm64-32-core': 'gpu_tests_android_release_trybot_arm64_fastbuild',
       'chromeos-amd64-generic-lacros-rel': 'chromeos_amd64-generic_lacros_rel',
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
       'fuchsia-fyi-arm64-rel': 'release_bot_fuchsia_arm64',
@@ -292,17 +290,10 @@
       'ios-simulator-cronet': 'ios_cronet_xctest',
       'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_multi_window_xctest',
       'ios-webkit-tot': 'ios_simulator_debug_static_rbe_bot_xctest',
-      'linux-8-core': 'gpu_tests_release_trybot_no_symbols',
-      'linux-16-core': 'gpu_tests_release_trybot_no_symbols',
-      'linux-32-core': 'gpu_tests_release_trybot_no_symbols',
       'linux-annotator-rel': 'release_bot',
       'linux-blink-animation-use-time-delta': 'debug_bot_enable_blink_animation_use_time_delta',
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_tsan',
       'linux-blink-heap-verification': 'release_bot_enable_blink_heap_verification_dcheck_always_on',
-      'linux-builderful-fast-fyi-rel': 'gpu_tests_release_bot',
-      'linux-builderful-slow-fyi-rel': 'gpu_tests_release_bot',
-      'linux-builderless-fast-fyi-rel': 'gpu_tests_release_bot',
-      'linux-builderless-slow-fyi-rel': 'gpu_tests_release_bot',
       'linux-chromeos-code-coverage': 'chromeos_with_codecs_release_bot_coverage',
       'linux-chromeos-js-code-coverage': 'chromeos_with_codecs_release_bot',
       'linux-chromium-tests-staging-builder': 'release_bot',
@@ -317,9 +308,6 @@
       'mac-hermetic-upgrade-rel': 'release_bot',
       'mac-omaha-builder-rel': 'updater_release_bot',
       'mac-upload-perfetto': 'release_bot',
-      'win-8-core': 'gpu_tests_release_trybot',
-      'win-16-core': 'gpu_tests_release_trybot',
-      'win-32-core': 'gpu_tests_release_trybot',
       'win-annotator-rel': 'release_bot',
       'win-celab-builder-rel': 'release_bot_minimal_symbols',
       'win-omaha-builder-rel': 'updater_release_bot',
@@ -2013,10 +2001,6 @@
     'gpu_tests_release_trybot_resource_whitelisting_code_coverage': [
       'gpu_tests', 'release_trybot', 'resource_whitelisting',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
-    ],
-
-    'gpu_tests_release_trybot_no_symbols': [
-      'gpu_tests', 'release_trybot', 'no_symbols',
     ],
 
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange': [
