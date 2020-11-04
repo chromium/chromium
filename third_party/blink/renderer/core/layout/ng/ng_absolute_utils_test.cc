@@ -16,13 +16,12 @@ namespace {
 
 class NGAbsoluteUtilsTest : public RenderingTest {
  protected:
-  NGConstraintSpace CreateConstraintSpace(TextDirection direction,
-                                          WritingMode out_writing_mode) {
-    NGConstraintSpaceBuilder builder(
-        WritingMode::kHorizontalTb, out_writing_mode,
-        /* is_new_fc */ true);
+  NGConstraintSpace CreateConstraintSpace(
+      WritingDirectionMode writing_direction) {
+    NGConstraintSpaceBuilder builder(WritingMode::kHorizontalTb,
+                                     writing_direction,
+                                     /* is_new_fc */ true);
     builder.SetAvailableSize({LayoutUnit(200), LayoutUnit(300)});
-    builder.SetTextDirection(direction);
     return builder.ToConstraintSpace();
   }
 
@@ -42,14 +41,14 @@ class NGAbsoluteUtilsTest : public RenderingTest {
     RunDocumentLifecycle();
 
     element_ = GetDocument().getElementById("target");
-    ltr_space_ =
-        CreateConstraintSpace(TextDirection::kLtr, WritingMode::kHorizontalTb);
-    rtl_space_ =
-        CreateConstraintSpace(TextDirection::kRtl, WritingMode::kHorizontalTb);
+    ltr_space_ = CreateConstraintSpace(
+        {WritingMode::kHorizontalTb, TextDirection::kLtr});
+    rtl_space_ = CreateConstraintSpace(
+        {WritingMode::kHorizontalTb, TextDirection::kRtl});
     vlr_space_ =
-        CreateConstraintSpace(TextDirection::kLtr, WritingMode::kVerticalLr);
+        CreateConstraintSpace({WritingMode::kVerticalLr, TextDirection::kLtr});
     vrl_space_ =
-        CreateConstraintSpace(TextDirection::kLtr, WritingMode::kVerticalRl);
+        CreateConstraintSpace({WritingMode::kVerticalRl, TextDirection::kLtr});
   }
 
   void SetHorizontalStyle(const String& left,

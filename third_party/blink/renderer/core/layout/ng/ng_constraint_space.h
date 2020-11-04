@@ -1264,13 +1264,15 @@ class CORE_EXPORT NGConstraintSpace final {
     DISALLOW_NEW();
 
    public:
-    Bitfields() : Bitfields(WritingMode::kHorizontalTb) {}
+    Bitfields()
+        : Bitfields({WritingMode::kHorizontalTb, TextDirection::kLtr}) {}
 
-    explicit Bitfields(WritingMode writing_mode)
+    explicit Bitfields(WritingDirectionMode writing_direction)
         : has_rare_data(false),
           adjoining_object_types(static_cast<unsigned>(kAdjoiningNone)),
-          writing_mode(static_cast<unsigned>(writing_mode)),
-          direction(static_cast<unsigned>(TextDirection::kLtr)),
+          writing_mode(
+              static_cast<unsigned>(writing_direction.GetWritingMode())),
+          direction(static_cast<unsigned>(writing_direction.Direction())),
           is_table_cell(false),
           is_legacy_table_cell(false),
           is_anonymous(false),
@@ -1356,8 +1358,8 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned replaced_percentage_block_storage : 2;   // NGPercentageStorage
   };
 
-  explicit NGConstraintSpace(WritingMode writing_mode)
-      : bfc_offset_(), bitfields_(writing_mode) {}
+  explicit NGConstraintSpace(WritingDirectionMode writing_direction)
+      : bfc_offset_(), bitfields_(writing_direction) {}
 
   inline bool HasRareData() const { return bitfields_.has_rare_data; }
 

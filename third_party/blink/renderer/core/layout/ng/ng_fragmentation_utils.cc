@@ -738,7 +738,7 @@ NGConstraintSpace CreateConstraintSpaceForColumns(
     bool allow_discard_start_margin,
     bool balance_columns) {
   NGConstraintSpaceBuilder space_builder(
-      parent_space, parent_space.GetWritingMode(), /* is_new_fc */ true);
+      parent_space, parent_space.GetWritingDirection(), /* is_new_fc */ true);
   space_builder.SetAvailableSize(column_size);
   space_builder.SetPercentageResolutionSize(percentage_resolution_size);
 

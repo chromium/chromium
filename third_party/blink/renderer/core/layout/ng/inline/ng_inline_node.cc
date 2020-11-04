@@ -1531,14 +1531,13 @@ static LayoutUnit ComputeContentSize(
     base::Optional<LayoutUnit>* max_size_out,
     bool* depends_on_percentage_block_size_out) {
   const ComputedStyle& style = node.Style();
-  WritingMode writing_mode = style.GetWritingMode();
   LayoutUnit available_inline_size =
       mode == NGLineBreakerMode::kMaxContent ? LayoutUnit::Max() : LayoutUnit();
 
-  NGConstraintSpaceBuilder builder(/* parent_writing_mode */ writing_mode,
-                                   /* out_writing_mode */ writing_mode,
-                                   /* is_new_fc */ false);
-  builder.SetTextDirection(style.Direction());
+  NGConstraintSpaceBuilder builder(
+      /* parent_writing_mode */ style.GetWritingMode(),
+      style.GetWritingDirection(),
+      /* is_new_fc */ false);
   builder.SetAvailableSize({available_inline_size, kIndefiniteSize});
   builder.SetPercentageResolutionSize({LayoutUnit(), LayoutUnit()});
   builder.SetReplacedPercentageResolutionSize({LayoutUnit(), LayoutUnit()});

@@ -49,9 +49,10 @@ class NGLineBreakerTest : public NGLayoutTest {
 
     node.PrepareLayoutIfNeeded();
 
-    NGConstraintSpaceBuilder builder(WritingMode::kHorizontalTb,
-                                     WritingMode::kHorizontalTb,
-                                     /* is_new_fc */ false);
+    NGConstraintSpaceBuilder builder(
+        WritingMode::kHorizontalTb,
+        {WritingMode::kHorizontalTb, TextDirection::kLtr},
+        /* is_new_fc */ false);
     builder.SetAvailableSize({available_width, kIndefiniteSize});
     NGConstraintSpace space = builder.ToConstraintSpace();
 

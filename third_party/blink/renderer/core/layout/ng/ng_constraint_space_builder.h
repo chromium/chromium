@@ -24,10 +24,10 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
  public:
   // The setters on this builder are in the writing mode of parent_space.
   NGConstraintSpaceBuilder(const NGConstraintSpace& parent_space,
-                           WritingMode out_writing_mode,
+                           WritingDirectionMode writing_direction,
                            bool is_new_fc)
       : NGConstraintSpaceBuilder(parent_space.GetWritingMode(),
-                                 out_writing_mode,
+                                 writing_direction,
                                  is_new_fc) {
     if (parent_space.IsInsideBalancedColumns())
       space_.EnsureRareData()->is_inside_balanced_columns = true;
@@ -41,12 +41,13 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   // When this occurs we would miss setting the kOrthogonalWritingModeRoot flag
   // unless we force it.
   NGConstraintSpaceBuilder(WritingMode parent_writing_mode,
-                           WritingMode out_writing_mode,
+                           WritingDirectionMode writing_direction,
                            bool is_new_fc,
                            bool force_orthogonal_writing_mode_root = false)
-      : space_(out_writing_mode),
+      : space_(writing_direction),
         is_in_parallel_flow_(
-            IsParallelWritingMode(parent_writing_mode, out_writing_mode)),
+            IsParallelWritingMode(parent_writing_mode,
+                                  writing_direction.GetWritingMode())),
         is_new_fc_(is_new_fc),
         force_orthogonal_writing_mode_root_(
             force_orthogonal_writing_mode_root) {
@@ -118,10 +119,6 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
 #endif
     if (offset != LayoutUnit())
       space_.EnsureRareData()->fragmentainer_offset_at_bfc = offset;
-  }
-
-  void SetTextDirection(TextDirection direction) {
-    space_.bitfields_.direction = static_cast<unsigned>(direction);
   }
 
   void SetIsFixedInlineSize(bool b) {

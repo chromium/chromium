@@ -186,11 +186,10 @@ MinMaxSizes LayoutNGMixin<Base>::ComputeIntrinsicLogicalWidths() const {
 template <typename Base>
 NGConstraintSpace LayoutNGMixin<Base>::ConstraintSpaceForMinMaxSizes() const {
   const ComputedStyle& style = Base::StyleRef();
-  const WritingMode writing_mode = style.GetWritingMode();
 
-  NGConstraintSpaceBuilder builder(writing_mode, writing_mode,
+  NGConstraintSpaceBuilder builder(style.GetWritingMode(),
+                                   style.GetWritingDirection(),
                                    /* is_new_fc */ true);
-  builder.SetTextDirection(style.Direction());
   builder.SetAvailableSize(
       {Base::ContainingBlockLogicalWidthForContent(), kIndefiniteSize});
 

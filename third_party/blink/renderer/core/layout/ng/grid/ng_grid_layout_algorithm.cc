@@ -451,14 +451,14 @@ NGGridLayoutAlgorithm::GridItemData NGGridLayoutAlgorithm::MeasureGridItem(
 NGConstraintSpace NGGridLayoutAlgorithm::BuildSpaceForGridItem(
     const NGBlockNode node) const {
   const auto& style = node.Style();
-  NGConstraintSpaceBuilder builder(ConstraintSpace(), style.GetWritingMode(),
+  NGConstraintSpaceBuilder builder(ConstraintSpace(),
+                                   style.GetWritingDirection(),
                                    /* is_new_fc */ true);
   SetOrthogonalFallbackInlineSizeIfNeeded(Style(), node, &builder);
   builder.SetCacheSlot(NGCacheSlot::kMeasure);
   builder.SetIsPaintedAtomically(true);
   builder.SetAvailableSize(ChildAvailableSize());
   builder.SetPercentageResolutionSize(child_percentage_size_);
-  builder.SetTextDirection(style.Direction());
   builder.SetIsShrinkToFit(style.LogicalWidth().IsAuto());
   return builder.ToConstraintSpace();
 }
@@ -1200,13 +1200,13 @@ void NGGridLayoutAlgorithm::PlaceGridItem(const GridItemData& grid_item,
                                           LogicalOffset offset,
                                           LogicalSize size) {
   const auto& item_style = grid_item.node.Style();
-  NGConstraintSpaceBuilder builder(
-      ConstraintSpace(), item_style.GetWritingMode(), /* is_new_fc */ true);
+  NGConstraintSpaceBuilder builder(ConstraintSpace(),
+                                   item_style.GetWritingDirection(),
+                                   /* is_new_fc */ true);
   SetOrthogonalFallbackInlineSizeIfNeeded(Style(), grid_item.node, &builder);
   builder.SetIsPaintedAtomically(true);
   builder.SetAvailableSize(size);
   builder.SetPercentageResolutionSize(size);
-  builder.SetTextDirection(item_style.Direction());
 
   // TODO(ikilpatrick): We need a slightly different constraint space API now.
   // Instead of a "shrink-to-fit" bit, we should have a "is-stretched" bit to

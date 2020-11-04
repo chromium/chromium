@@ -567,7 +567,7 @@ MinMaxSizesResult NGTableLayoutAlgorithm::ComputeMinMaxSizes(
     text_autosizer.emplace(layout_table);
 
   const LogicalSize border_spacing = Style().TableBorderSpacing();
-  const WritingMode table_writing_mode = Style().GetWritingMode();
+  const auto table_writing_direction = Style().GetWritingDirection();
   NGTableGroupedChildren grouped_children(Node());
   const scoped_refptr<const NGTableBorders> table_borders =
       Node().GetTableBorders();
@@ -597,8 +597,8 @@ MinMaxSizesResult NGTableLayoutAlgorithm::ComputeMinMaxSizes(
                              /* depends_on_percentage_block_size */ false};
   }
 
-  NGConstraintSpaceBuilder min_space_builder(ConstraintSpace(),
-                                             table_writing_mode, true);
+  NGConstraintSpaceBuilder min_space_builder(
+      ConstraintSpace(), table_writing_direction, /* is_new_fc */ true);
   min_space_builder.SetAvailableSize({LayoutUnit(), kIndefiniteSize});
   LayoutUnit min_measure_table_css_min_inline_size;
   base::Optional<LayoutUnit> min_measure_table_css_inline_size;
@@ -623,8 +623,8 @@ MinMaxSizesResult NGTableLayoutAlgorithm::ComputeMinMaxSizes(
   //   min_max_sizes.max_size is std::max(
   //     grid_min_max.max_size, caption_constraint.min_size)
   if (min_measure_table_css_inline_size) {
-    NGConstraintSpaceBuilder max_space_builder(ConstraintSpace(),
-                                               table_writing_mode, true);
+    NGConstraintSpaceBuilder max_space_builder(
+        ConstraintSpace(), table_writing_direction, /* is_new_fc */ true);
     max_space_builder.SetAvailableSize(
         {grid_min_max.max_size, kIndefiniteSize});
     LayoutUnit max_measure_table_css_min_inline_size;
@@ -775,30 +775,33 @@ void NGTableLayoutAlgorithm::GenerateCaptionFragments(
     LayoutUnit* table_block_offset) {
   const LogicalSize available_size = {table_inline_size, kIndefiniteSize};
   for (NGBlockNode caption : grouped_children.captions) {
-    if (caption.Style().CaptionSide() != caption_side)
+    const auto& caption_style = caption.Style();
+    if (caption_style.CaptionSide() != caption_side)
       continue;
+
     NGConstraintSpaceBuilder builder(ConstraintSpace(),
-                                     caption.Style().GetWritingMode(),
+                                     caption_style.GetWritingDirection(),
                                      /* is_new_fc */ true);
     SetOrthogonalFallbackInlineSizeIfNeeded(Style(), caption, &builder);
-    builder.SetTextDirection(caption.Style().Direction());
     builder.SetAvailableSize(available_size);
     builder.SetPercentageResolutionSize(available_size);
     NGConstraintSpace caption_constraint_space = builder.ToConstraintSpace();
+
     scoped_refptr<const NGLayoutResult> caption_result =
         caption.Layout(caption_constraint_space);
-    NGBoxStrut margins = ComputeMarginsFor(caption_constraint_space,
-                                           caption.Style(), ConstraintSpace());
     NGFragment fragment(ConstraintSpace().GetWritingDirection(),
                         caption_result->PhysicalFragment());
-    ResolveInlineMargins(caption.Style(), Style(), table_inline_size,
+    NGBoxStrut margins = ComputeMarginsFor(caption_constraint_space,
+                                           caption_style, ConstraintSpace());
+    ResolveInlineMargins(caption_style, Style(), table_inline_size,
                          fragment.InlineSize(), &margins);
+    caption.StoreMargins(
+        margins.ConvertToPhysical(ConstraintSpace().GetWritingDirection()));
+
     *table_block_offset += margins.block_start;
     container_builder_.AddResult(
         *caption_result,
         LogicalOffset(margins.inline_start, *table_block_offset));
-    caption.StoreMargins(
-        margins.ConvertToPhysical(ConstraintSpace().GetWritingDirection()));
     *table_block_offset += fragment.BlockSize() + margins.block_end;
   }
 }
@@ -825,7 +828,7 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::GenerateFragment(
     const NGTableTypes::Sections& sections,
     const NGTableBorders& table_borders,
     const LogicalSize& border_spacing) {
-  WritingDirectionMode table_writing_direction = Style().GetWritingDirection();
+  const auto table_writing_direction = Style().GetWritingDirection();
   scoped_refptr<NGTableConstraintSpaceData> constraint_space_data =
       CreateConstraintSpaceData(Style(), column_locations, sections, rows,
                                 cell_block_constraints, table_inline_size,
@@ -844,15 +847,13 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::GenerateFragment(
                                                border_spacing.inline_size * 2,
                                            kIndefiniteSize};
   DCHECK_GE(section_available_size.inline_size, LayoutUnit());
-  auto CreateSectionConstraintSpace = [this, &table_writing_direction,
+  auto CreateSectionConstraintSpace = [&table_writing_direction,
                                        &section_available_size,
                                        &constraint_space_data](
                                           wtf_size_t section_index) {
     NGConstraintSpaceBuilder section_space_builder(
-        table_writing_direction.GetWritingMode(),
-        table_writing_direction.GetWritingMode(),
+        table_writing_direction.GetWritingMode(), table_writing_direction,
         /* is_new_fc */ true);
-    section_space_builder.SetTextDirection(Style().Direction());
     section_space_builder.SetAvailableSize(section_available_size);
     section_space_builder.SetIsFixedInlineSize(true);
     section_space_builder.SetPercentageResolutionSize(section_available_size);

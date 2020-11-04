@@ -111,8 +111,7 @@ const NGPhysicalBoxFragment* FragmentChildIterator::NextChild(
 }
 
 NGConstraintSpace ConstructBlockLayoutTestConstraintSpace(
-    WritingMode writing_mode,
-    TextDirection direction,
+    WritingDirectionMode writing_direction,
     LogicalSize size,
     bool shrink_to_fit,
     bool is_new_formatting_context,
@@ -122,11 +121,11 @@ NGConstraintSpace ConstructBlockLayoutTestConstraintSpace(
           ? NGFragmentationType::kFragmentColumn
           : NGFragmentationType::kFragmentNone;
 
-  NGConstraintSpaceBuilder builder(writing_mode, writing_mode,
+  NGConstraintSpaceBuilder builder(writing_direction.GetWritingMode(),
+                                   writing_direction,
                                    is_new_formatting_context);
   builder.SetAvailableSize(size);
   builder.SetPercentageResolutionSize(size);
-  builder.SetTextDirection(direction);
   builder.SetIsShrinkToFit(shrink_to_fit);
   builder.SetFragmentainerBlockSize(fragmentainer_space_available);
   builder.SetFragmentationType(block_fragmentation);

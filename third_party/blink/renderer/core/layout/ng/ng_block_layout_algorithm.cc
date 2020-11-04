@@ -2470,7 +2470,7 @@ NGBoxStrut NGBlockLayoutAlgorithm::CalculateMargins(
   // inline size first.
   if (!is_new_fc && needs_inline_size) {
     NGConstraintSpaceBuilder builder(ConstraintSpace(),
-                                     child_style.GetWritingMode(),
+                                     child_style.GetWritingDirection(),
                                      /* is_new_fc */ false);
     builder.SetAvailableSize(ChildAvailableSize());
     builder.SetPercentageResolutionSize(child_percentage_size_);
@@ -2500,15 +2500,16 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     LayoutUnit block_start_annotation_space) {
   const ComputedStyle& style = Style();
   const ComputedStyle& child_style = child.Style();
-  WritingMode child_writing_mode =
-      child.IsInline() ? style.GetWritingMode() : child_style.GetWritingMode();
+  const auto child_writing_direction = child.IsInline()
+                                           ? style.GetWritingDirection()
+                                           : child_style.GetWritingDirection();
 
-  NGConstraintSpaceBuilder builder(ConstraintSpace(), child_writing_mode,
+  NGConstraintSpaceBuilder builder(ConstraintSpace(), child_writing_direction,
                                    is_new_fc);
   SetOrthogonalFallbackInlineSizeIfNeeded(Style(), child, &builder);
 
   if (!IsParallelWritingMode(ConstraintSpace().GetWritingMode(),
-                             child_writing_mode))
+                             child_writing_direction.GetWritingMode()))
     builder.SetIsShrinkToFit(child_style.LogicalWidth().IsAuto());
   if (child_style.LogicalWidth().IsAuto() &&
       child.GetLayoutBox()->AutoWidthShouldFitContent())
@@ -2586,14 +2587,11 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     LayoutUnit child_clearance_offset =
         exclusion_space_.ClearanceOffset(child_style.Clear(Style()));
     clearance_offset = std::max(clearance_offset, child_clearance_offset);
-    builder.SetTextDirection(child_style.Direction());
 
     // |PositionListMarker()| requires a baseline.
     builder.SetNeedsBaseline(ConstraintSpace().NeedsBaseline() ||
                              container_builder_.UnpositionedListMarker());
     builder.SetBaselineAlgorithmType(ConstraintSpace().BaselineAlgorithmType());
-  } else {
-    builder.SetTextDirection(style.Direction());
   }
   builder.SetClearanceOffset(clearance_offset);
 
@@ -2884,8 +2882,8 @@ void NGBlockLayoutAlgorithm::HandleRubyText(NGBlockNode ruby_text_child) {
   }
 
   const ComputedStyle& rt_style = ruby_text_child.Style();
-  NGConstraintSpaceBuilder builder(ConstraintSpace(), rt_style.GetWritingMode(),
-                                   true);
+  NGConstraintSpaceBuilder builder(ConstraintSpace(),
+                                   rt_style.GetWritingDirection(), true);
   SetOrthogonalFallbackInlineSizeIfNeeded(Style(), ruby_text_child, &builder);
   if (!IsParallelWritingMode(Style().GetWritingMode(),
                              rt_style.GetWritingMode()))

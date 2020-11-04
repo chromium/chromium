@@ -25,7 +25,7 @@ NGConstraintSpace CreateConstraintSpaceForMathChild(
   const ComputedStyle& child_style = child.Style();
   DCHECK(child.CreatesNewFormattingContext());
   NGConstraintSpaceBuilder space_builder(parent_constraint_space,
-                                         child_style.GetWritingMode(),
+                                         child_style.GetWritingDirection(),
                                          true /* is_new_fc */);
   SetOrthogonalFallbackInlineSizeIfNeeded(parent_style, child, &space_builder);
 
@@ -37,7 +37,6 @@ NGConstraintSpace CreateConstraintSpaceForMathChild(
 
   // TODO(crbug.com/1124301): add target stretch sizes.
   // TODO(crbug.com/1125137): add ink metrics.
-  space_builder.SetTextDirection(child_style.Direction());
   space_builder.SetNeedsBaseline(true);
   return space_builder.ToConstraintSpace();
 }

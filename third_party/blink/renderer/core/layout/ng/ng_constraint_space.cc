@@ -69,10 +69,10 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
   }
 
   const ComputedStyle& style = block.StyleRef();
-  auto writing_mode = style.GetWritingMode();
+  const auto writing_mode = style.GetWritingMode();
   bool parallel_containing_block = IsParallelWritingMode(
       cb ? cb->StyleRef().GetWritingMode() : writing_mode, writing_mode);
-  NGConstraintSpaceBuilder builder(writing_mode, writing_mode,
+  NGConstraintSpaceBuilder builder(writing_mode, style.GetWritingDirection(),
                                    /* is_new_fc */ true,
                                    !parallel_containing_block);
 
@@ -128,7 +128,6 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
   builder.SetIsShrinkToFit(
       style.LogicalWidth().IsAuto() &&
       block.SizesLogicalWidthToFitContent(style.LogicalWidth()));
-  builder.SetTextDirection(style.Direction());
   return builder.ToConstraintSpace();
 }
 

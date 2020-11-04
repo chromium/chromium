@@ -45,9 +45,10 @@ TEST_F(NGInlineLayoutAlgorithmTest, BreakToken) {
   NGInlineNode inline_node(block_flow);
   LogicalSize size(LayoutUnit(50), LayoutUnit(20));
 
-  NGConstraintSpaceBuilder builder(WritingMode::kHorizontalTb,
-                                   WritingMode::kHorizontalTb,
-                                   /* is_new_fc */ false);
+  NGConstraintSpaceBuilder builder(
+      WritingMode::kHorizontalTb,
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      /* is_new_fc */ false);
   builder.SetAvailableSize(size);
   NGConstraintSpace constraint_space = builder.ToConstraintSpace();
 

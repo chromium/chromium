@@ -220,9 +220,8 @@ NGConstraintSpace CreateConstraintSpaceForMinMax(
     const NGBlockNode& node,
     const MinMaxSizesInput& input) {
   NGConstraintSpaceBuilder builder(node.Style().GetWritingMode(),
-                                   node.Style().GetWritingMode(),
+                                   node.Style().GetWritingDirection(),
                                    node.CreatesNewFormattingContext());
-  builder.SetTextDirection(node.Style().Direction());
   builder.SetAvailableSize(LogicalSize());
   builder.SetPercentageResolutionSize(
       {LayoutUnit(), input.percentage_resolution_block_size});
@@ -1606,8 +1605,9 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::LayoutAtomicInline(
     const ComputedStyle& parent_style,
     bool use_first_line_style,
     NGBaselineAlgorithmType baseline_algorithm_type) {
-  NGConstraintSpaceBuilder builder(
-      parent_constraint_space, Style().GetWritingMode(), /* is_new_fc */ true);
+  NGConstraintSpaceBuilder builder(parent_constraint_space,
+                                   Style().GetWritingDirection(),
+                                   /* is_new_fc */ true);
   SetOrthogonalFallbackInlineSizeIfNeeded(parent_style, *this, &builder);
 
   builder.SetIsPaintedAtomically(true);
@@ -1622,7 +1622,6 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::LayoutAtomicInline(
       parent_constraint_space.PercentageResolutionSize());
   builder.SetReplacedPercentageResolutionSize(
       parent_constraint_space.ReplacedPercentageResolutionSize());
-  builder.SetTextDirection(Style().Direction());
   NGConstraintSpace constraint_space = builder.ToConstraintSpace();
   scoped_refptr<const NGLayoutResult> result = Layout(constraint_space);
   // TODO(kojii): Investigate why ClearNeedsLayout() isn't called automatically

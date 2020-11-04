@@ -148,7 +148,7 @@ class NGGridLayoutAlgorithmTest
       Element* element) {
     NGBlockNode container(ToLayoutBox(element->GetLayoutObject()));
     NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
-        WritingMode::kHorizontalTb, TextDirection::kLtr,
+        {WritingMode::kHorizontalTb, TextDirection::kLtr},
         LogicalSize(LayoutUnit(1000), kIndefiniteSize));
     return NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
   }
@@ -300,7 +300,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmMeasuring) {
   NGBlockNode node(ToLayoutBox(GetLayoutObjectByElementId("grid1")));
 
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
-      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(200), LayoutUnit(200)), false, true);
 
   NGFragmentGeometry fragment_geometry =
@@ -375,7 +375,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRanges) {
   NGBlockNode node(ToLayoutBox(GetLayoutObjectByElementId("grid1")));
 
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
-      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(100), LayoutUnit(100)), false, true);
 
   NGFragmentGeometry fragment_geometry =
@@ -430,7 +430,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesWithAutoRepeater) {
   NGBlockNode node(ToLayoutBox(GetLayoutObjectByElementId("grid1")));
 
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
-      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(100), LayoutUnit(100)), false, true);
 
   NGFragmentGeometry fragment_geometry =
@@ -515,7 +515,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicit) {
   NGBlockNode node(ToLayoutBox(GetLayoutObjectByElementId("grid1")));
 
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
-      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(100), LayoutUnit(100)), false, true);
 
   NGFragmentGeometry fragment_geometry =
@@ -584,7 +584,7 @@ TEST_F(NGGridLayoutAlgorithmTest,
   NGBlockNode node(ToLayoutBox(GetLayoutObjectByElementId("grid1")));
 
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
-      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(100), LayoutUnit(100)), false, true);
 
   NGFragmentGeometry fragment_geometry =
@@ -650,7 +650,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicitAutoRows) {
   NGBlockNode node(ToLayoutBox(GetLayoutObjectByElementId("grid1")));
 
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
-      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(100), LayoutUnit(100)), false, true);
 
   NGFragmentGeometry fragment_geometry =
@@ -708,7 +708,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicitMixed) {
   NGBlockNode node(ToLayoutBox(GetLayoutObjectByElementId("grid1")));
 
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
-      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(100), LayoutUnit(100)), false, true);
 
   NGFragmentGeometry fragment_geometry =
@@ -795,7 +795,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmAutoGridPositions) {
   NGBlockNode node(ToLayoutBox(GetLayoutObjectByElementId("grid")));
 
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
-      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(500), LayoutUnit(500)), false, true);
 
   NGFragmentGeometry fragment_geometry =
@@ -922,7 +922,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmAutoDense) {
   NGBlockNode node(ToLayoutBox(GetLayoutObjectByElementId("grid")));
 
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
-      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(500), LayoutUnit(500)), false, true);
 
   NGFragmentGeometry fragment_geometry =
@@ -1005,7 +1005,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmGridPositions) {
   NGBlockNode node(ToLayoutBox(GetLayoutObjectByElementId("grid")));
 
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
-      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(500), LayoutUnit(500)), false, true);
 
   NGFragmentGeometry fragment_geometry =
@@ -1056,7 +1056,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmResolveFixedTrackSizes) {
 
   NGBlockNode node(ToLayoutBox(GetLayoutObjectByElementId("grid")));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
-      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(100), kIndefiniteSize), false, true);
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
@@ -1134,7 +1134,7 @@ TEST_F(NGGridLayoutAlgorithmTest,
 
   NGBlockNode node(ToLayoutBox(GetLayoutObjectByElementId("grid")));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
-      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(100), kIndefiniteSize), false, true);
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);

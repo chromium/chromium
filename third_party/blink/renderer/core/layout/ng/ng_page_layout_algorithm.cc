@@ -80,7 +80,7 @@ MinMaxSizesResult NGPageLayoutAlgorithm::ComputeMinMaxSizes(
 NGConstraintSpace NGPageLayoutAlgorithm::CreateConstraintSpaceForPages(
     const LogicalSize& page_size) const {
   NGConstraintSpaceBuilder space_builder(
-      ConstraintSpace(), Style().GetWritingMode(), /* is_new_fc */ true);
+      ConstraintSpace(), Style().GetWritingDirection(), /* is_new_fc */ true);
   space_builder.SetAvailableSize(page_size);
   space_builder.SetPercentageResolutionSize(page_size);
 

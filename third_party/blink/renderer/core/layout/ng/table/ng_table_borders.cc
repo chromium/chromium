@@ -468,8 +468,7 @@ NGBoxStrut NGTableBorders::CellBorder(
   }
   return ComputeBorders(
       NGConstraintSpaceBuilder(table_writing_direction.GetWritingMode(),
-                               table_writing_direction.GetWritingMode(),
-                               /* is_new_fc */ false)
+                               table_writing_direction, /* is_new_fc */ false)
           .ToConstraintSpace(),
       cell);
 }
@@ -483,7 +482,7 @@ NGBoxStrut NGTableBorders::CellPaddingForMeasure(
     return NGBoxStrut();
   return ComputePadding(
       NGConstraintSpaceBuilder(table_writing_direction.GetWritingMode(),
-                               table_writing_direction.GetWritingMode(),
+                               table_writing_direction,
                                /* is_new_fc */ false)
           .ToConstraintSpace(),
       cell_style);

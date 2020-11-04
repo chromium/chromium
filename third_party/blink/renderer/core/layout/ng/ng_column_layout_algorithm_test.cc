@@ -30,7 +30,7 @@ class NGColumnLayoutAlgorithmTest
       Element* element) {
     NGBlockNode container(ToLayoutBox(element->GetLayoutObject()));
     NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
-        WritingMode::kHorizontalTb, TextDirection::kLtr,
+        {WritingMode::kHorizontalTb, TextDirection::kLtr},
         LogicalSize(LayoutUnit(1000), kIndefiniteSize));
     return NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
   }
@@ -70,7 +70,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, EmptyMulticol) {
 
   NGBlockNode container(ToLayoutBox(GetLayoutObjectByElementId("container")));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
-      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
   scoped_refptr<const NGPhysicalBoxFragment> parent_fragment =
       NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
@@ -110,7 +110,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, EmptyBlock) {
 
   NGBlockNode container(ToLayoutBox(GetLayoutObjectByElementId("container")));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
-      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
   scoped_refptr<const NGPhysicalBoxFragment> parent_fragment =
       NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
@@ -159,7 +159,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, BlockInOneColumn) {
 
   NGBlockNode container(ToLayoutBox(GetLayoutObjectByElementId("container")));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
-      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
   scoped_refptr<const NGPhysicalBoxFragment> parent_fragment =
       NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
@@ -2710,7 +2710,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, MinMax) {
       ComputedStyle::Clone(layout_object->StyleRef());
   layout_object->SetStyle(style);
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
-      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);

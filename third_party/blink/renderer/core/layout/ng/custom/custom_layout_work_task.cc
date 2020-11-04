@@ -72,7 +72,8 @@ void CustomLayoutWorkTask::RunLayoutFragmentTask(
   DCHECK_EQ(type_, CustomLayoutWorkTask::TaskType::kLayoutFragment);
   DCHECK(options_ && resolver_);
 
-  NGConstraintSpaceBuilder builder(parent_space, child.Style().GetWritingMode(),
+  NGConstraintSpaceBuilder builder(parent_space,
+                                   child.Style().GetWritingDirection(),
                                    /* is_new_fc */ true);
   SetOrthogonalFallbackInlineSizeIfNeeded(parent_style, child, &builder);
 
@@ -127,7 +128,6 @@ void CustomLayoutWorkTask::RunLayoutFragmentTask(
     percentage_size.block_size = kIndefiniteSize;
   }
 
-  builder.SetTextDirection(child.Style().Direction());
   builder.SetAvailableSize(available_size);
   builder.SetPercentageResolutionSize(percentage_size);
   builder.SetReplacedPercentageResolutionSize(percentage_size);

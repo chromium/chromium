@@ -591,10 +591,8 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutCandidate(
               {candidate_writing_direction, container_physical_content_size});
 
   // Need a constraint space to resolve offsets.
-  NGConstraintSpaceBuilder builder(writing_mode_,
-                                   candidate_writing_direction.GetWritingMode(),
+  NGConstraintSpaceBuilder builder(writing_mode_, candidate_writing_direction,
                                    /* is_new_fc */ true);
-  builder.SetTextDirection(candidate_writing_direction.Direction());
   builder.SetAvailableSize(container_content_size);
   builder.SetPercentageResolutionSize(container_content_size);
   NGConstraintSpace candidate_constraint_space = builder.ToConstraintSpace();
@@ -698,11 +696,9 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendant(
               {descendant_writing_direction, container_physical_content_size});
 
   // Need a constraint space to resolve offsets.
-  NGConstraintSpaceBuilder builder(
-      default_writing_direction.GetWritingMode(),
-      descendant_writing_direction.GetWritingMode(),
-      /* is_new_fc */ true);
-  builder.SetTextDirection(descendant_writing_direction.Direction());
+  NGConstraintSpaceBuilder builder(default_writing_direction.GetWritingMode(),
+                                   descendant_writing_direction,
+                                   /* is_new_fc */ true);
   builder.SetAvailableSize(container_content_size);
   builder.SetPercentageResolutionSize(container_content_size);
   NGConstraintSpace descendant_constraint_space = builder.ToConstraintSpace();
@@ -1051,9 +1047,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::GenerateFragment(
     const LayoutUnit block_offset,
     const NGBlockBreakToken* break_token,
     const NGConstraintSpace* fragmentainer_constraint_space) {
-  // As the |block_estimate| is always in the node's writing mode, we build the
-  // constraint space in the node's writing mode.
-  WritingMode writing_mode = node.Style().GetWritingMode();
+  const auto& style = node.Style();
 
   LayoutUnit inline_size = node_dimensions.size.inline_size;
   LayoutUnit block_size = block_estimate.value_or(
@@ -1061,11 +1055,12 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::GenerateFragment(
 
   LogicalSize available_size(inline_size, block_size);
 
-  // TODO(atotic) will need to be adjusted for scrollbars.
-  NGConstraintSpaceBuilder builder(writing_mode, writing_mode,
+  // As the |block_estimate| is always in the node's writing mode, we build the
+  // constraint space in the node's writing mode.
+  NGConstraintSpaceBuilder builder(style.GetWritingMode(),
+                                   style.GetWritingDirection(),
                                    /* is_new_fc */ true);
   builder.SetAvailableSize(available_size);
-  builder.SetTextDirection(node.Style().Direction());
   builder.SetPercentageResolutionSize(
       container_content_size_in_candidate_writing_mode);
   builder.SetIsFixedInlineSize(true);

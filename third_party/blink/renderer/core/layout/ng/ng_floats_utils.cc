@@ -62,7 +62,7 @@ NGConstraintSpace CreateConstraintSpaceForFloat(
     base::Optional<LayoutUnit> origin_block_offset = base::nullopt) {
   const ComputedStyle& style = unpositioned_float.node.Style();
   const NGConstraintSpace& parent_space = unpositioned_float.parent_space;
-  NGConstraintSpaceBuilder builder(parent_space, style.GetWritingMode(),
+  NGConstraintSpaceBuilder builder(parent_space, style.GetWritingDirection(),
                                    /* is_new_fc */ true);
   SetOrthogonalFallbackInlineSizeIfNeeded(unpositioned_float.parent_style,
                                           unpositioned_float.node, &builder);
@@ -90,7 +90,6 @@ NGConstraintSpace CreateConstraintSpaceForFloat(
   builder.SetReplacedPercentageResolutionSize(
       unpositioned_float.replaced_percentage_size);
   builder.SetIsShrinkToFit(style.LogicalWidth().IsAuto());
-  builder.SetTextDirection(style.Direction());
   return builder.ToConstraintSpace();
 }
 

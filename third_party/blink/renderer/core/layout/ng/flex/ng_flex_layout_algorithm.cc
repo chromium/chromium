@@ -349,7 +349,7 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
         kIndefiniteSize, kIndefiniteSize}) const {
   const ComputedStyle& child_style = flex_item.Style();
   NGConstraintSpaceBuilder space_builder(ConstraintSpace(),
-                                         child_style.GetWritingMode(),
+                                         child_style.GetWritingDirection(),
                                          /* is_new_fc */ true);
   SetOrthogonalFallbackInlineSizeIfNeeded(Style(), flex_item, &space_builder);
   space_builder.SetCacheSlot(NGCacheSlot::kMeasure);
@@ -389,15 +389,14 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
   // TODO(dgrogan): The SetReplacedPercentageResolutionSize calls in this file
   // may be untested. Write a test or determine why they're unnecessary.
   space_builder.SetReplacedPercentageResolutionSize(child_percentage_size);
-  space_builder.SetTextDirection(child_style.Direction());
   return space_builder.ToConstraintSpace();
 }
 
 NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForFlexBasis(
     const NGBlockNode& flex_item) const {
-  NGConstraintSpaceBuilder space_builder(ConstraintSpace(),
-                                         flex_item.Style().GetWritingMode(),
-                                         /* is_new_fc */ true);
+  NGConstraintSpaceBuilder space_builder(
+      ConstraintSpace(), flex_item.Style().GetWritingDirection(),
+      /* is_new_fc */ true);
   SetOrthogonalFallbackInlineSizeIfNeeded(Style(), flex_item, &space_builder);
 
   // This space is only used for resolving lengths, not for layout. We only
@@ -1064,11 +1063,10 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
 
       const ComputedStyle& child_style = flex_item.ng_input_node_.Style();
       NGConstraintSpaceBuilder space_builder(ConstraintSpace(),
-                                             child_style.GetWritingMode(),
+                                             child_style.GetWritingDirection(),
                                              /* is_new_fc */ true);
       SetOrthogonalFallbackInlineSizeIfNeeded(Style(), flex_item.ng_input_node_,
                                               &space_builder);
-      space_builder.SetTextDirection(child_style.Direction());
       space_builder.SetIsPaintedAtomically(true);
 
       LogicalSize available_size;
@@ -1220,7 +1218,7 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
 void NGFlexLayoutAlgorithm::ApplyStretchAlignmentToChild(FlexItem& flex_item) {
   const ComputedStyle& child_style = flex_item.ng_input_node_.Style();
   NGConstraintSpaceBuilder space_builder(ConstraintSpace(),
-                                         child_style.GetWritingMode(),
+                                         child_style.GetWritingDirection(),
                                          /* is_new_fc */ true);
   SetOrthogonalFallbackInlineSizeIfNeeded(Style(), flex_item.ng_input_node_,
                                           &space_builder);
@@ -1242,7 +1240,6 @@ void NGFlexLayoutAlgorithm::ApplyStretchAlignmentToChild(FlexItem& flex_item) {
       FlexLayoutAlgorithm::AlignmentForChild(Style(), child_style) ==
           ItemPosition::kBaseline);
 
-  space_builder.SetTextDirection(child_style.Direction());
   space_builder.SetAvailableSize(available_size);
   space_builder.SetPercentageResolutionSize(child_percentage_size_);
   space_builder.SetReplacedPercentageResolutionSize(child_percentage_size_);

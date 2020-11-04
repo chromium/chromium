@@ -404,14 +404,14 @@ NGFieldsetLayoutAlgorithm::CreateConstraintSpaceForLegend(
     NGBlockNode legend,
     LogicalSize available_size,
     LogicalSize percentage_size) {
-  NGConstraintSpaceBuilder builder(
-      ConstraintSpace(), legend.Style().GetWritingMode(), /* is_new_fc */ true);
+  NGConstraintSpaceBuilder builder(ConstraintSpace(),
+                                   legend.Style().GetWritingDirection(),
+                                   /* is_new_fc */ true);
   SetOrthogonalFallbackInlineSizeIfNeeded(Style(), legend, &builder);
 
   builder.SetAvailableSize(available_size);
   builder.SetPercentageResolutionSize(percentage_size);
   builder.SetIsShrinkToFit(legend.Style().LogicalWidth().IsAuto());
-  builder.SetTextDirection(legend.Style().Direction());
   return builder.ToConstraintSpace();
 }
 
@@ -421,10 +421,9 @@ NGFieldsetLayoutAlgorithm::CreateConstraintSpaceForFieldsetContent(
     LogicalSize padding_box_size,
     LayoutUnit block_offset) {
   DCHECK(fieldset_content.CreatesNewFormattingContext());
-  NGConstraintSpaceBuilder builder(ConstraintSpace(),
-                                   ConstraintSpace().GetWritingMode(),
-                                   /* is_new_fc */ true);
-  builder.SetTextDirection(fieldset_content.Style().Direction());
+  NGConstraintSpaceBuilder builder(
+      ConstraintSpace(), fieldset_content.Style().GetWritingDirection(),
+      /* is_new_fc */ true);
   builder.SetAvailableSize(padding_box_size);
   // We pass the container's PercentageResolutionSize because percentage
   // padding for the fieldset content should be computed as they are in

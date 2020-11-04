@@ -48,9 +48,8 @@ scoped_refptr<const NGLayoutResult> NGTableSectionLayoutAlgorithm::Layout() {
                              table_data.sections[section_index].rowspan);
     NGConstraintSpaceBuilder row_space_builder(
         table_data.table_writing_direction.GetWritingMode(),
-        table_data.table_writing_direction.GetWritingMode(),
+        table_data.table_writing_direction,
         /* is_new_fc */ true);
-    row_space_builder.SetTextDirection(row.Style().Direction());
     row_space_builder.SetAvailableSize(
         {container_builder_.InlineSize(), kIndefiniteSize});
     row_space_builder.SetIsFixedInlineSize(true);

@@ -377,13 +377,12 @@ NGConstraintSpace NGTableAlgorithmUtils::CreateTableCellConstraintSpace(
     NGCacheSlot cache_slot) {
   const auto& cell_style = cell.Style();
   const auto table_writing_mode = table_writing_direction.GetWritingMode();
-  const auto cell_writing_mode = cell_style.GetWritingMode();
-  NGConstraintSpaceBuilder builder(table_writing_mode, cell_writing_mode,
+  NGConstraintSpaceBuilder builder(table_writing_mode,
+                                   cell_style.GetWritingDirection(),
                                    /* is_new_fc */ true);
   builder.SetIsTableCell(true, /* is_legacy_table_cell */ false);
-  builder.SetTextDirection(cell_style.Direction());
 
-  if (!IsParallelWritingMode(table_writing_mode, cell_writing_mode)) {
+  if (!IsParallelWritingMode(table_writing_mode, cell_style.GetWritingMode())) {
     const PhysicalSize icb_size = cell.InitialContainingBlockSize();
     builder.SetOrthogonalFallbackInlineSize(
         table_writing_direction.IsHorizontal() ? icb_size.height

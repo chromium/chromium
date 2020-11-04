@@ -26,7 +26,8 @@ static NGConstraintSpace ConstructConstraintSpace(
     WritingMode writing_mode = WritingMode::kHorizontalTb) {
   LogicalSize size = {LayoutUnit(inline_size), LayoutUnit(block_size)};
 
-  NGConstraintSpaceBuilder builder(writing_mode, writing_mode,
+  NGConstraintSpaceBuilder builder(writing_mode,
+                                   {writing_mode, TextDirection::kLtr},
                                    /* is_new_fc */ false);
   builder.SetAvailableSize(size);
   builder.SetPercentageResolutionSize(size);

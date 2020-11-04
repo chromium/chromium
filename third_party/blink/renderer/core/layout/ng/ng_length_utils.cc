@@ -263,7 +263,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
   WritingMode child_writing_mode = style.GetWritingMode();
   // Synthesize a zero-sized constraint space for resolving sizes against.
   NGConstraintSpace space =
-      NGConstraintSpaceBuilder(child_writing_mode, child_writing_mode,
+      NGConstraintSpaceBuilder(child_writing_mode, style.GetWritingDirection(),
                                /* is_new_fc */ false)
           .ToConstraintSpace();
   NGBoxStrut border_padding =
