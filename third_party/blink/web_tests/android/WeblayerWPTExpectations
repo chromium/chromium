@@ -10,6 +10,9 @@
 crbug.com/1126079 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/reporting-observer.html [ Failure timeout ]
 crbug.com/1126079 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-openee_coop-ro.https.html [ Pass CRASH timeout ]
 
+# https://crbug.com/1145401
+crbug.com/1050754 external/wpt/presentation-api/controlling-ua/getAvailability.https.html [ Failure ]
+
 # Add untriaged failures in this block
 crbug.com/1050754 external/wpt/FileAPI/file/File-constructor.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/FileAPI/historical.https.html [ Failure Pass ]
@@ -3697,18 +3700,6 @@ crbug.com/1050754 external/wpt/preload/preload-with-type.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/preload/reflected-as-value.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/preload/single-download-preload.html [ Pass Timeout ]
 crbug.com/1050754 external/wpt/preload/subresource-integrity.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/presentation-api/controlling-ua/PresentationRequest_error.https.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/presentation-api/controlling-ua/PresentationRequest_mixedcontent.https.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/presentation-api/controlling-ua/PresentationRequest_mixedcontent_multiple.https.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/presentation-api/controlling-ua/PresentationRequest_sandboxing_error.https.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/presentation-api/controlling-ua/PresentationRequest_sandboxing_success.https.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/presentation-api/controlling-ua/PresentationRequest_success.https.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/presentation-api/controlling-ua/defaultRequest.https.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/presentation-api/controlling-ua/getAvailability.https.html [ Failure ]
-crbug.com/1050754 external/wpt/presentation-api/controlling-ua/getAvailability_sandboxing_success.https.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/presentation-api/controlling-ua/idlharness.https.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/presentation-api/controlling-ua/reconnectToPresentation_sandboxing_success.https.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/presentation-api/controlling-ua/startNewPresentation_error.https.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/priority-hints/fetch-api-request.tentative.any.html [ Failure ]
 crbug.com/1050754 external/wpt/priority-hints/fetch-api-request.tentative.any.worker.html [ Failure ]
 crbug.com/1050754 external/wpt/priority-hints/img-attr-named-constructor.tentative.html [ Failure ]
