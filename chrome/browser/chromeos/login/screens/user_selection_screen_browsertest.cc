@@ -13,6 +13,7 @@
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/test/test_predicate_waiter.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "content/public/test/browser_test.h"
 
@@ -48,8 +49,9 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenTest, ShowDircryptoMigrationBanner) {
 
   std::unique_ptr<base::HistogramTester> histogram_tester =
       std::make_unique<base::HistogramTester>();
-  // Change the needs dircrypto migration response.
-  FakeCryptohomeClient::Get()->set_needs_dircrypto_migration(true);
+  FakeCryptohomeClient::Get()->SetEcryptfsUserHome(
+      cryptohome::CreateAccountIdentifierFromAccountId(users[1].account_id),
+      true);
 
   // Focus the 2nd user pod (consumer).
   ASSERT_TRUE(ash::LoginScreenTestApi::FocusUser(users[1].account_id));
@@ -62,8 +64,9 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenTest, ShowDircryptoMigrationBanner) {
   histogram_tester->ExpectBucketCount("Ash.Login.Login.MigrationBanner", true,
                                       1);
 
-  // Change the needs dircrypto migration response.
-  FakeCryptohomeClient::Get()->set_needs_dircrypto_migration(false);
+  FakeCryptohomeClient::Get()->SetEcryptfsUserHome(
+      cryptohome::CreateAccountIdentifierFromAccountId(users[2].account_id),
+      false);
   histogram_tester = std::make_unique<base::HistogramTester>();
   // Focus the 3rd user pod (consumer).
   ASSERT_TRUE(ash::LoginScreenTestApi::FocusUser(users[2].account_id));
@@ -76,8 +79,9 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenTest, ShowDircryptoMigrationBanner) {
   histogram_tester->ExpectBucketCount("Ash.Login.Login.MigrationBanner", false,
                                       1);
 
-  // Change the needs dircrypto migration response.
-  FakeCryptohomeClient::Get()->set_needs_dircrypto_migration(true);
+  FakeCryptohomeClient::Get()->SetEcryptfsUserHome(
+      cryptohome::CreateAccountIdentifierFromAccountId(users[3].account_id),
+      true);
   histogram_tester = std::make_unique<base::HistogramTester>();
 
   // Focus to the 4th user pod (enterprise).

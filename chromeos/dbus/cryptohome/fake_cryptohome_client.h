@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -234,10 +235,10 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
   // format used by SystemSaltGetter::ConvertRawSaltToHexString()).
   static std::vector<uint8_t> GetStubSystemSalt();
 
-  // Sets the needs dircrypto migration value.
-  void set_needs_dircrypto_migration(bool needs_migration) {
-    needs_dircrypto_migration_ = needs_migration;
-  }
+  // Marks |cryptohome_id| as using ecryptfs (|use_ecryptfs|=true) or dircrypto
+  // (|use_ecryptfs|=false).
+  void SetEcryptfsUserHome(const cryptohome::AccountIdentifier& cryptohome_id,
+                           bool use_ecryptfs);
 
   // Sets whether dircrypto migration update should be run automatically.
   // If set to false, the client will not send any dircrypto migration progress
@@ -350,6 +351,10 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
   // Loads install attributes from the stub file.
   bool LoadInstallAttributes();
 
+  // Returns true if |cryptohome_id| has been marked as being an ecryptfs user
+  // home using SetEcryptfsUserHome.
+  bool IsEcryptfsUserHome(const cryptohome::AccountIdentifier& cryptohome_id);
+
   // Finds a key matching the given label. Wildcard labels are supported.
   std::map<std::string, cryptohome::Key>::const_iterator FindKey(
       const std::map<std::string, cryptohome::Key>& keys,
@@ -380,10 +385,13 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
            std::map<std::string, cryptohome::Key>>
       key_data_map_;
 
+  // Set of account identifiers whose user homes use ecryptfs. User homes not
+  // mentioned here use dircrypto.
+  std::set<cryptohome::AccountIdentifier> ecryptfs_user_homes_;
+
   base::RepeatingTimer dircrypto_migration_progress_timer_;
   uint64_t dircrypto_migration_progress_ = 0;
 
-  bool needs_dircrypto_migration_ = false;
   bool run_default_dircrypto_migration_ = true;
   bool supports_low_entropy_credentials_ = false;
   // Controls if CheckKeyEx actually checks the key.

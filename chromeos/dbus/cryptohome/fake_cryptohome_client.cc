@@ -424,7 +424,8 @@ void FakeCryptohomeClient::MountEx(
   cryptohome::MountReply* mount =
       reply.MutableExtension(cryptohome::MountReply::reply);
   mount->set_sanitized_username(GetStubSanitizedUsername(cryptohome_id));
-  if (!request.to_migrate_from_ecryptfs() &&
+  if (IsEcryptfsUserHome(cryptohome_id) &&
+      !request.to_migrate_from_ecryptfs() &&
       request.force_dircrypto_if_available()) {
     error = cryptohome::CRYPTOHOME_ERROR_MOUNT_OLD_ENCRYPTION;
   }
@@ -563,7 +564,7 @@ void FakeCryptohomeClient::NeedsDircryptoMigration(
     DBusMethodCallback<bool> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), needs_dircrypto_migration_));
+      base::BindOnce(std::move(callback), IsEcryptfsUserHome(cryptohome_id)));
 }
 
 void FakeCryptohomeClient::GetSupportedKeyPolicies(
@@ -646,6 +647,15 @@ std::vector<uint8_t> FakeCryptohomeClient::GetStubSystemSalt() {
       kStubSystemSalt, kStubSystemSalt + base::size(kStubSystemSalt) - 1);
 }
 
+void FakeCryptohomeClient::SetEcryptfsUserHome(
+    const cryptohome::AccountIdentifier& cryptohome_id,
+    bool use_ecryptfs) {
+  if (use_ecryptfs)
+    ecryptfs_user_homes_.insert(cryptohome_id);
+  else
+    ecryptfs_user_homes_.erase(cryptohome_id);
+}
+
 void FakeCryptohomeClient::ReturnProtobufMethodCallback(
     const cryptohome::BaseReply& reply,
     DBusMethodCallback<cryptohome::BaseReply> callback) {
@@ -699,6 +709,7 @@ void FakeCryptohomeClient::OnDircryptoMigrationProgressUpdated() {
     NotifyDircryptoMigrationProgress(cryptohome::DIRCRYPTO_MIGRATION_SUCCESS,
                                      dircrypto_migration_progress_,
                                      kDircryptoMigrationMaxProgress);
+    SetEcryptfsUserHome(id_for_disk_migrated_to_dircrypto_, false);
     dircrypto_migration_progress_timer_.Stop();
     return;
   }
@@ -765,6 +776,11 @@ bool FakeCryptohomeClient::LoadInstallAttributes() {
   }
 
   return true;
+}
+
+bool FakeCryptohomeClient::IsEcryptfsUserHome(
+    const cryptohome::AccountIdentifier& cryptohome_id) {
+  return base::Contains(ecryptfs_user_homes_, cryptohome_id);
 }
 
 std::map<std::string, cryptohome::Key>::const_iterator

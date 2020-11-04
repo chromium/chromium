@@ -76,6 +76,8 @@ class EncryptionMigrationTest : public OobeBaseTest {
   void SetUpOnMainThread() override {
     OobeBaseTest::SetUpOnMainThread();
 
+    FakeCryptohomeClient::Get()->SetEcryptfsUserHome(GetTestCryptohomeId(),
+                                                     true);
     FakeCryptohomeClient::Get()->set_run_default_dircrypto_migration(false);
 
     // Configure encryption migration screen for test.
