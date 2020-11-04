@@ -44,13 +44,13 @@ import org.mockito.stubbing.OngoingStubbing;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.blink.mojom.AndroidFontLookup;
 import org.chromium.blink.mojom.AndroidFontLookup.GetUniqueNameLookupTableResponse;
 import org.chromium.blink.mojom.AndroidFontLookup.MatchLocalFontByUniqueNameResponse;
 import org.chromium.content.browser.font.AndroidFontLookupImpl.FetchFontName;
 import org.chromium.content.browser.font.AndroidFontLookupImpl.FetchFontResult;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.mojo.MojoTestRule;
 
 import java.util.Map;
