@@ -523,7 +523,10 @@ def clang_mac_builder(*, name, cores = 24, **kwargs):
         os = builders.os.MAC_10_15,
         ssd = True,
         properties = {
-            "xcode_build_version": "11a1027",
+            # The Chromium build doesn't need system Xcode, but the ToT clang
+            # bots also build clang and llvm and that build does need system
+            # Xcode.
+            "xcode_build_version": "12a7209",
         },
         **kwargs
     )
