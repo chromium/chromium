@@ -495,10 +495,6 @@ This file contains the strings for ash.
         Restart to update
       </message>
 
-      <message name="IDS_ASH_STATUS_TRAY_UPDATE_FLASH" desc="The label used in the tray popup to notify that the user should restart to update Adobe Flash Player.">
-        Restart to update Adobe Flash Player
-      </message>
-
       <message name="IDS_ASH_STATUS_TRAY_RESTART_AND_POWERWASH_TO_UPDATE" desc="The label used in the tray popup to notify that the user should restart and powerwash the device to get system updates.">
         Restart and powerwash to update
       </message>
