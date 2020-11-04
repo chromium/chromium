@@ -900,6 +900,7 @@ junit_binary("chrome_junit_tests") {
     "//content/public/test/android:content_java_test_support",
     "//mojo/public/java:bindings_java",
     "//mojo/public/java:system_java",
+    "//mojo/public/mojom/base:base_java",
     "//net/android:net_java",
     "//services/device/public/mojom:mojom_java",
     "//services/media_session/public/cpp/android:media_session_java",

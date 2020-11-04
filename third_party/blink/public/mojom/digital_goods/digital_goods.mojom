@@ -22,6 +22,12 @@ interface DigitalGoods {
   // permanent upgrade).
   Acknowledge(string purchase_token, bool make_available_again)
       => (BillingResponseCode code);
+
+  // Queries the associated backend for information on all items that are
+  // currently owned by the user.
+  ListPurchases()
+      => (BillingResponseCode code,
+          array<PurchaseDetails> purchase_details_list);
 };
 
 // Allow the renderer to request a |DigitalGoods| instance. DigitalGoods
@@ -63,4 +69,20 @@ enum CreateDigitalGoodsResponseCode {
   kError,
   kUnsupportedPaymentMethod,
   kUnsupportedContext,
+};
+
+struct PurchaseDetails {
+  string item_id;
+  string purchase_token;
+  bool acknowledged;
+  PurchaseState purchase_state;
+  // Microseconds since the Unix epoch.
+  mojo_base.mojom.TimeDelta purchase_time;
+  bool will_auto_renew;
+};
+
+enum PurchaseState {
+  kUnknown,
+  kPurchased,
+  kPending,
 };

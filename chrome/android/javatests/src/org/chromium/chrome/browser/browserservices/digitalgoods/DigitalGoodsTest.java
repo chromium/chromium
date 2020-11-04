@@ -10,7 +10,6 @@ import static org.chromium.chrome.browser.browserservices.TestTrustedWebActivity
 import static org.chromium.chrome.browser.browserservices.TestTrustedWebActivityService.SET_RESPONSE_BUNDLE;
 import static org.chromium.chrome.browser.browserservices.TestTrustedWebActivityService.SET_RESPONSE_NAME;
 import static org.chromium.chrome.browser.browserservices.digitalgoods.AcknowledgeConverter.RESPONSE_ACKNOWLEDGE;
-import static org.chromium.chrome.browser.browserservices.digitalgoods.GetDetailsConverter.RESPONSE_GET_DETAILS;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -115,7 +114,7 @@ public class DigitalGoodsTest {
     public void twaServiceConnected() throws TimeoutException {
         DigitalGoodsImpl impl = createFixedDigitalGoods();
 
-        setTwaServiceResponse(RESPONSE_GET_DETAILS,
+        setTwaServiceResponse(GetDetailsConverter.RESPONSE_COMMAND,
                 GetDetailsConverter.createResponseBundle(0,
                         GetDetailsConverter.createItemDetailsBundle(
                                 "id1", "Item 1", "Desc 1", "GBP", "10")));
@@ -146,7 +145,7 @@ public class DigitalGoodsTest {
 
         // Note: The response code much be 0 for success otherwise it doesn't propagate through to
         // JS.
-        setTwaServiceResponse(RESPONSE_GET_DETAILS,
+        setTwaServiceResponse(GetDetailsConverter.RESPONSE_COMMAND,
                 GetDetailsConverter.createResponseBundle(0,
                         GetDetailsConverter.createItemDetailsBundle(
                                 "id1", "Item 1", "Desc 1", "GBP", "10")));

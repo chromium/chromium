@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.browserservices.digitalgoods;
 
-import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.convertResponseCodes;
+import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.convertResponseCode;
 
 import android.os.Bundle;
 
@@ -60,7 +60,7 @@ class AcknowledgeConverter {
                 }
 
                 int code = args.getInt(RESPONSE_ACKNOWLEDGE_RESPONSE_CODE);
-                callback.call(convertResponseCodes(code));
+                callback.call(convertResponseCode(code));
             }
         };
     }

@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.browserservices.digitalgoods;
 
-import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.convertResponseCodes;
+import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.checkField;
+import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.convertParcelableArray;
+import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.convertResponseCode;
 
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -20,9 +22,6 @@ import org.chromium.payments.mojom.DigitalGoods.GetDetailsResponse;
 import org.chromium.payments.mojom.ItemDetails;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * A converter that deals with the parameters and result for GetDetails calls.
  */
@@ -30,9 +29,9 @@ public class GetDetailsConverter {
     private static final String TAG = "DigitalGoods";
 
     static final String PARAM_GET_DETAILS_ITEM_IDS = "getDetails.itemIds";
-    public static final String RESPONSE_GET_DETAILS = "getDetails.response";
-    static final String RESPONSE_GET_DETAILS_RESPONSE_CODE = "getDetails.responseCode";
-    static final String RESPONSE_GET_DETAILS_DETAILS_LIST = "getDetails.detailsList";
+    public static final String RESPONSE_COMMAND = "getDetails.response";
+    static final String KEY_RESPONSE_CODE = "getDetails.responseCode";
+    static final String KEY_DETAILS_LIST = "getDetails.detailsList";
 
     static final String KEY_ID = "itemDetails.id";
     static final String KEY_TITLE = "itemDetails.title";
@@ -66,7 +65,7 @@ public class GetDetailsConverter {
         return new TrustedWebActivityCallback() {
             @Override
             public void onExtraCallback(@NonNull String callbackName, @Nullable Bundle args) {
-                if (!RESPONSE_GET_DETAILS.equals(callbackName)) {
+                if (!RESPONSE_COMMAND.equals(callbackName)) {
                     Log.w(TAG, "Wrong callback name given: " + callbackName + ".");
                     returnClientAppError(callback);
                     return;
@@ -78,39 +77,26 @@ public class GetDetailsConverter {
                     return;
                 }
 
-                if (!(args.get(RESPONSE_GET_DETAILS_RESPONSE_CODE) instanceof Integer)
-                        || !(args.get(RESPONSE_GET_DETAILS_DETAILS_LIST) instanceof Parcelable[])) {
-                    Log.w(TAG, "Poorly formed args provided.");
+                if (!checkField(args, KEY_RESPONSE_CODE, Integer.class)
+                        || !checkField(args, KEY_DETAILS_LIST, Parcelable[].class)) {
                     returnClientAppError(callback);
                     return;
                 }
 
-                int code = args.getInt(RESPONSE_GET_DETAILS_RESPONSE_CODE);
-                ItemDetails[] details = convertItemDetailsList(
-                        args.getParcelableArray(RESPONSE_GET_DETAILS_DETAILS_LIST));
-                callback.call(convertResponseCodes(code), details);
+                int code = args.getInt(KEY_RESPONSE_CODE);
+                Parcelable[] array = args.getParcelableArray(KEY_DETAILS_LIST);
+
+                ItemDetails[] details =
+                        convertParcelableArray(array, GetDetailsConverter::convertItemDetails)
+                                .toArray(new ItemDetails[0]);
+                callback.call(convertResponseCode(code), details);
             }
         };
     }
 
-    private static ItemDetails[] convertItemDetailsList(Parcelable[] list) {
-        List<ItemDetails> details = new ArrayList<>();
-        for (Parcelable item : list) {
-            details.add(convertItemDetails(item));
-        }
-        return details.toArray(new ItemDetails[0]);
-    }
-
     /** Extracts an {@link ItemDetails} from a {@link Parcelable}. */
     @Nullable
-    static ItemDetails convertItemDetails(Parcelable itemAsParcelable) {
-        if (!(itemAsParcelable instanceof Bundle)) {
-            Log.w(TAG, "Item is not a Bundle.");
-            return null;
-        }
-
-        Bundle item = (Bundle) itemAsParcelable;
-
+    static ItemDetails convertItemDetails(Bundle item) {
         for (String field : REQUIRED_FIELDS) {
             if (item.containsKey(field) && (item.get(field) instanceof String)) continue;
             Log.w(TAG, "Item does not contain field String " + field + ".");
@@ -146,11 +132,11 @@ public class GetDetailsConverter {
         return result;
     }
 
-    public static void returnClientAppUnavailable(GetDetailsResponse callback) {
+    static void returnClientAppUnavailable(GetDetailsResponse callback) {
         callback.call(BillingResponseCode.CLIENT_APP_UNAVAILABLE, new ItemDetails[0]);
     }
 
-    public static void returnClientAppError(GetDetailsResponse callback) {
+    static void returnClientAppError(GetDetailsResponse callback) {
         callback.call(BillingResponseCode.CLIENT_APP_ERROR, new ItemDetails[0]);
     }
 
@@ -159,10 +145,10 @@ public class GetDetailsConverter {
      * This would be used by the client app and is here only to help testing.
      */
     @VisibleForTesting
-    public static Bundle createItemDetailsBundle(String id, String title, String desc,
-            String currency, String value, @Nullable String subsPeriod,
-            @Nullable String freeTrialPeriod, @Nullable String introPriceCurrency,
-            @Nullable String introPriceValue, @Nullable String intoPricePeriod) {
+    static Bundle createItemDetailsBundle(String id, String title, String desc, String currency,
+            String value, @Nullable String subsPeriod, @Nullable String freeTrialPeriod,
+            @Nullable String introPriceCurrency, @Nullable String introPriceValue,
+            @Nullable String intoPricePeriod) {
         Bundle bundle = createItemDetailsBundle(id, title, desc, currency, value);
 
         bundle.putString(KEY_SUBS_PERIOD, subsPeriod);
@@ -178,7 +164,7 @@ public class GetDetailsConverter {
      * Like the above method, but provides {@code null} for all optional parameters.
      */
     @VisibleForTesting
-    public static Bundle createItemDetailsBundle(
+    static Bundle createItemDetailsBundle(
             String id, String title, String desc, String currency, String value) {
         Bundle bundle = new Bundle();
 
@@ -196,11 +182,11 @@ public class GetDetailsConverter {
      * carried out by the client app and is only here to help testing.
      */
     @VisibleForTesting
-    public static Bundle createResponseBundle(int responseCode, Bundle... itemDetails) {
+    static Bundle createResponseBundle(int responseCode, Bundle... itemDetails) {
         Bundle bundle = new Bundle();
 
-        bundle.putInt(RESPONSE_GET_DETAILS_RESPONSE_CODE, responseCode);
-        bundle.putParcelableArray(RESPONSE_GET_DETAILS_DETAILS_LIST, itemDetails);
+        bundle.putInt(KEY_RESPONSE_CODE, responseCode);
+        bundle.putParcelableArray(KEY_DETAILS_LIST, itemDetails);
 
         return bundle;
     }

@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.payments.mojom.DigitalGoods.AcknowledgeResponse;
 import org.chromium.payments.mojom.DigitalGoods.GetDetailsResponse;
+import org.chromium.payments.mojom.DigitalGoods.ListPurchasesResponse;
 
 /**
  * This class uses the {@link DigitalGoodsConverter} to convert data types between mojo types and
@@ -26,6 +27,7 @@ public class DigitalGoodsAdapter {
 
     public static final String COMMAND_ACKNOWLEDGE = "acknowledge";
     public static final String COMMAND_GET_DETAILS = "getDetails";
+    public static final String COMMAND_LIST_PURCHASES = "listPurchases";
     public static final String KEY_SUCCESS = "success";
 
     private final TrustedWebActivityClient mClient;
@@ -51,6 +53,15 @@ public class DigitalGoodsAdapter {
         Runnable onUnavailable = () -> AcknowledgeConverter.returnClientAppUnavailable(response);
 
         execute(scope, COMMAND_ACKNOWLEDGE, args, callback, onError, onUnavailable);
+    }
+
+    public void listPurchases(Uri scope, ListPurchasesResponse response) {
+        Bundle args = new Bundle();
+        TrustedWebActivityCallback callback = ListPurchasesConverter.convertCallback(response);
+        Runnable onError = () -> ListPurchasesConverter.returnClientAppError(response);
+        Runnable onUnavailable = () -> ListPurchasesConverter.returnClientAppUnavailable(response);
+
+        execute(scope, COMMAND_LIST_PURCHASES, args, callback, onError, onUnavailable);
     }
 
     private void execute(Uri scope, String command, Bundle args,

@@ -191,6 +191,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/browserservices/digitalgoods/DigitalGoodsFactoryImpl.java",
   "java/src/org/chromium/chrome/browser/browserservices/digitalgoods/DigitalGoodsImpl.java",
   "java/src/org/chromium/chrome/browser/browserservices/digitalgoods/GetDetailsConverter.java",
+  "java/src/org/chromium/chrome/browser/browserservices/digitalgoods/ListPurchasesConverter.java",
   "java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/InstalledWebappBridge.java",
   "java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/InstalledWebappGeolocationBridge.java",
   "java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/LocationPermissionUpdater.java",

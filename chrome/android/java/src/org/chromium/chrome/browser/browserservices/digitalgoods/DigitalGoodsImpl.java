@@ -12,6 +12,7 @@ import org.chromium.mojo.system.MojoException;
 import org.chromium.payments.mojom.DigitalGoods;
 import org.chromium.payments.mojom.DigitalGoods.AcknowledgeResponse;
 import org.chromium.payments.mojom.DigitalGoods.GetDetailsResponse;
+import org.chromium.payments.mojom.DigitalGoods.ListPurchasesResponse;
 
 /**
  * An implementation of the {@link DigitalGoods} mojo interface that communicates with Trusted Web
@@ -47,6 +48,12 @@ public class DigitalGoodsImpl implements DigitalGoods {
         if (url != null) {
             mAdapter.acknowledge(Uri.parse(url), purchaseToken, makeAvailableAgain, callback);
         }
+    }
+
+    @Override
+    public void listPurchases(ListPurchasesResponse callback) {
+        String url = mDelegate.getUrl();
+        if (url != null) mAdapter.listPurchases(Uri.parse(mDelegate.getUrl()), callback);
     }
 
     @Override
