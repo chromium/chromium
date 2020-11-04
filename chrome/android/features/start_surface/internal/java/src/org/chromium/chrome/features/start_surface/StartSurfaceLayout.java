@@ -52,7 +52,7 @@ import java.util.Locale;
 /**
  * A {@link Layout} that shows all tabs in one grid or carousel view.
  */
-public class StartSurfaceLayout extends Layout implements StartSurface.OverviewModeObserver {
+public class StartSurfaceLayout extends Layout {
     private static final String TAG = "SSLayout";
 
     // Duration of the transition animation
@@ -66,6 +66,7 @@ public class StartSurfaceLayout extends Layout implements StartSurface.OverviewM
     private TabListSceneLayer mSceneLayer;
     private final StartSurface mStartSurface;
     private final StartSurface.Controller mController;
+    private final StartSurface.OverviewModeObserver mStartSurfaceObserver;
     private final TabSwitcher.TabListDelegate mTabListDelegate;
     // To force Toolbar finishes its animation when this Layout finished hiding.
     private final LayoutTab mDummyLayoutTab;
@@ -97,7 +98,51 @@ public class StartSurfaceLayout extends Layout implements StartSurface.OverviewM
         mStartSurface = startSurface;
         mStartSurface.setOnTabSelectingListener(this::onTabSelecting);
         mController = mStartSurface.getController();
-        mController.addOverviewModeObserver(this);
+
+        mStartSurfaceObserver = new StartSurface.OverviewModeObserver() {
+            @Override
+            public void startedShowing() {
+                mAndroidViewFinishedShowing = false;
+            }
+
+            @Override
+            public void finishedShowing() {
+                mAndroidViewFinishedShowing = true;
+                doneShowing();
+                // The Tab-to-GTS animation is done, and it's time to renew the thumbnail without
+                // causing janky frames. When animation is off, the thumbnail is already updated
+                // when showing the GTS.
+                if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled()) {
+                    // Delay thumbnail taking a bit more to make it less likely to happen before the
+                    // thumbnail taking triggered by ThumbnailFetcher. See crbug.com/996385 for
+                    // details.
+                    new Handler().postDelayed(() -> {
+                        Tab currentTab = mTabModelSelector.getCurrentTab();
+                        if (currentTab != null) mTabContentManager.cacheTabThumbnail(currentTab);
+                    }, ZOOMING_DURATION);
+                }
+            }
+
+            @Override
+            public void startedHiding() {}
+
+            @Override
+            public void finishedHiding() {
+                // The Android View version of GTS overview is hidden.
+                // If not doing GTS-to-Tab transition animation, we show the fade-out instead, which
+                // was already done.
+                if (!TabUiFeatureUtilities.isTabToGtsAnimationEnabled()) {
+                    postHiding();
+                    return;
+                }
+                // If we are doing GTS-to-Tab transition animation, we start showing the Bitmap
+                // version of the GTS overview in the background while expanding the thumbnail to
+                // the viewport.
+                expandTab(mTabListDelegate.getThumbnailLocationOfCurrentTab(true));
+            }
+        };
+
+        mController.addOverviewModeObserver(mStartSurfaceObserver);
         mTabListDelegate = mStartSurface.getTabListDelegate();
         if (TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()) {
             mThumbnailAspectRatio = (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
@@ -113,46 +158,6 @@ public class StartSurfaceLayout extends Layout implements StartSurface.OverviewM
         mStartSurface.initWithNative();
         ensureSceneLayerCreated();
         mSceneLayer.setTabModelSelector(mTabModelSelector);
-    }
-
-    // StartSurface.OverviewModeObserver implementation.
-    @Override
-    public void startedShowing() {
-        mAndroidViewFinishedShowing = false;
-    }
-
-    @Override
-    public void finishedShowing() {
-        mAndroidViewFinishedShowing = true;
-        doneShowing();
-        // The Tab-to-GTS animation is done, and it's time to renew the thumbnail without causing
-        // janky frames.
-        // When animation is off, the thumbnail is already updated when showing the GTS.
-        if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled()) {
-            // Delay thumbnail taking a bit more to make it less likely to happen before the
-            // thumbnail taking triggered by ThumbnailFetcher. See crbug.com/996385 for details.
-            new Handler().postDelayed(() -> {
-                Tab currentTab = mTabModelSelector.getCurrentTab();
-                if (currentTab != null) mTabContentManager.cacheTabThumbnail(currentTab);
-            }, ZOOMING_DURATION);
-        }
-    }
-
-    @Override
-    public void startedHiding() {}
-
-    @Override
-    public void finishedHiding() {
-        // The Android View version of GTS overview is hidden.
-        // If not doing GTS-to-Tab transition animation, we show the fade-out instead, which was
-        // already done.
-        if (!TabUiFeatureUtilities.isTabToGtsAnimationEnabled()) {
-            postHiding();
-            return;
-        }
-        // If we are doing GTS-to-Tab transition animation, we start showing the Bitmap version of
-        // the GTS overview in the background while expanding the thumbnail to the viewport.
-        expandTab(mTabListDelegate.getThumbnailLocationOfCurrentTab(true));
     }
 
     // Layout implementation.
@@ -172,7 +177,7 @@ public class StartSurfaceLayout extends Layout implements StartSurface.OverviewM
     @Override
     public void destroy() {
         if (mController != null) {
-            mController.removeOverviewModeObserver(this);
+            mController.removeOverviewModeObserver(mStartSurfaceObserver);
         }
     }
 
