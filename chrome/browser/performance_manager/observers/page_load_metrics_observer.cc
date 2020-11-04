@@ -179,8 +179,12 @@ bool PageLoadMetricsWebContentsObserver::IsDevTools() const {
 }
 
 void PageLoadMetricsWebContentsObserver::DidStartLoading() {
-  DCHECK(!is_loading_);
   DCHECK(web_contents()->IsLoading());
+
+  // TODO(crbug.com/1145572): Uncomment this DCHECK once there is a guarantee
+  // that DidStartLoading and DidStopLoading are invoked in alternance.
+  // DCHECK(!is_loading_);
+
   is_loading_ = true;
 }
 
