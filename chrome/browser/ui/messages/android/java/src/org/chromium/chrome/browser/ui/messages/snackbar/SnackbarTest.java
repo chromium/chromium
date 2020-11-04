@@ -13,10 +13,10 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 import java.util.concurrent.TimeUnit;
