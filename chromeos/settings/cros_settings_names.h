@@ -273,6 +273,8 @@ COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kSystemProxySettingsKeySystemServicesUsername[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kSystemProxySettingsKeySystemServicesPassword[];
+COMPONENT_EXPORT(CHROMEOS_SETTINGS)
+extern const char kSystemProxySettingsKeyAuthSchemes[];
 
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kDeviceCrostiniArcAdbSideloadingAllowed[];

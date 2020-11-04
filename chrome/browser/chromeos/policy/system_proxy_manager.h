@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
@@ -180,6 +181,10 @@ class SystemProxyManager : public chromeos::NetworkStateHandlerObserver {
   std::string system_services_address_;
   std::string system_services_username_;
   std::string system_services_password_;
+  // List of proxy authentication schemes for which the policy set credentials
+  // can be used.
+  std::vector<std::string> policy_credentials_auth_schemes_;
+
   // The credentials which were last sent to System-proxy. They can differ from
   // `system_services_username_` and `system_services_username_` if the proxy
   // configuration is not managed; in this case `last_sent_username_` and

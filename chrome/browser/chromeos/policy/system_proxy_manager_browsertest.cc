@@ -134,7 +134,11 @@ constexpr char kSystemProxyPolicyJson[] =
        "system_proxy_enabled": true,
        "system_services_username": "%s",
        "system_services_password": "%s",
+       %s
     })";
+
+constexpr char kAuthSchemesPolicyEntry[] =
+    R"("policy_credentials_auth_schemes": [%s],)";
 
 void RunUntilIdle() {
   DCHECK(base::CurrentThread::Get());
@@ -355,9 +359,15 @@ class SystemProxyManagerPolicyCredentialsBrowserTest
 
  protected:
   void SetPolicyCredentials(const std::string& username,
-                            const std::string& password) {
-    const std::string policy_value = base::StringPrintf(
-        kSystemProxyPolicyJson, username.c_str(), password.c_str());
+                            const std::string& password,
+                            const std::string& auth_schemes = "") {
+    const std::string schemes_json_entry =
+        auth_schemes.empty()
+            ? ""
+            : base::StringPrintf(kAuthSchemesPolicyEntry, auth_schemes.c_str());
+    const std::string policy_value =
+        base::StringPrintf(kSystemProxyPolicyJson, username.c_str(),
+                           password.c_str(), schemes_json_entry.c_str());
     enterprise_management::ChromeDeviceSettingsProto& proto(
         policy_helper_.device_policy()->payload());
     proto.mutable_system_proxy_settings()->set_system_proxy_settings(
@@ -415,12 +425,20 @@ class SystemProxyManagerPolicyCredentialsBrowserTest
                                                      *network);
   }
 
-  void ExpectSystemCredentialsSent(const std::string& username,
-                                   const std::string& password) {
+  void ExpectSystemCredentialsSent(
+      const std::string& username,
+      const std::string& password,
+      const std::vector<std::string>& auth_schemes = {}) {
     system_proxy::SetAuthenticationDetailsRequest request =
         client_test_interface()->GetLastAuthenticationDetailsRequest();
     EXPECT_EQ(username, request.credentials().username());
     EXPECT_EQ(password, request.credentials().password());
+    ASSERT_EQ(auth_schemes.size(),
+              request.credentials().policy_credentials_auth_schemes().size());
+    for (int i = 0; i < auth_schemes.size(); ++i) {
+      EXPECT_EQ(request.credentials().policy_credentials_auth_schemes()[i],
+                auth_schemes[i]);
+    }
     EXPECT_EQ(system_proxy::TrafficOrigin::SYSTEM, request.traffic_type());
   }
 
@@ -571,6 +589,30 @@ IN_PROC_BROWSER_TEST_F(SystemProxyManagerPolicyCredentialsBrowserTest,
   EXPECT_EQ(++set_auth_details_call_count,
             client_test_interface()->GetSetAuthenticationDetailsCallCount());
   ExpectSystemCredentialsSent("", "");
+}
+
+// Tests that the SystemProxyManager forwards the authentication schemes set by
+// policy to System-proxy via D-Bus.
+IN_PROC_BROWSER_TEST_F(SystemProxyManagerPolicyCredentialsBrowserTest,
+                       PolicySetAuthSchemes) {
+  int set_auth_details_call_count = 0;
+  SetPolicyCredentials(kUsername, kPassword, R"("basic","digest")");
+  EXPECT_EQ(++set_auth_details_call_count,
+            client_test_interface()->GetSetAuthenticationDetailsCallCount());
+  ExpectSystemCredentialsSent("", "", {"basic", "digest"});
+  DisconnectNetworkService(kDefaultServicePath);
+  // Configure a proxy via user ONC policy and expect that credentials were
+  // forwarded to System-proxy.
+  SetOncPolicy(kONCPolicyWifi0Proxy, policy::POLICY_SCOPE_USER);
+  ConnectWifiNetworkService(kWifiServicePath, kWifiGuid, kWifiSsid);
+  EXPECT_EQ(++set_auth_details_call_count,
+            client_test_interface()->GetSetAuthenticationDetailsCallCount());
+  ExpectSystemCredentialsSent(kUsername, kPassword, {"basic", "digest"});
+
+  SetPolicyCredentials(kUsername, kPassword, R"("ntlm")");
+  EXPECT_EQ(++set_auth_details_call_count,
+            client_test_interface()->GetSetAuthenticationDetailsCallCount());
+  ExpectSystemCredentialsSent(kUsername, kPassword, {"ntlm"});
 }
 
 }  // namespace policy

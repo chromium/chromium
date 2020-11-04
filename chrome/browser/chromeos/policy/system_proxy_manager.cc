@@ -177,6 +177,15 @@ void SystemProxyManager::OnSystemProxySettingsPolicyChanged() {
   const std::string* password = proxy_settings->FindStringKey(
       chromeos::kSystemProxySettingsKeySystemServicesPassword);
 
+  const base::Value* auth_schemes =
+      proxy_settings->FindListKey(chromeos::kSystemProxySettingsKeyAuthSchemes);
+
+  policy_credentials_auth_schemes_.clear();
+  if (auth_schemes) {
+    for (const auto& auth_scheme : auth_schemes->GetList())
+      policy_credentials_auth_schemes_.push_back(auth_scheme.GetString());
+  }
+
   if (!username || username->empty() || !password || password->empty()) {
     NET_LOG(DEBUG) << "Proxy credentials for system traffic not set: "
                    << kSystemProxyService;
@@ -185,6 +194,8 @@ void SystemProxyManager::OnSystemProxySettingsPolicyChanged() {
     system_services_password_ = *password;
   }
   if (IsManagedProxyConfigured()) {
+    // Force send the configuration in case the credentials hand't changed, but
+    // `policy_credentials_auth_schemes_` has.
     SendPolicyAuthenticationCredentials(system_services_username_,
                                         system_services_password_,
                                         /*force_send=*/true);
@@ -297,6 +308,9 @@ void SystemProxyManager::SendPolicyAuthenticationCredentials(
   system_proxy::Credentials credentials;
   credentials.set_username(username);
   credentials.set_password(password);
+  for (const auto& auth_scheme : policy_credentials_auth_schemes_) {
+    credentials.add_policy_credentials_auth_schemes(auth_scheme);
+  }
   *request.mutable_credentials() = credentials;
 
   request.set_traffic_type(system_proxy::TrafficOrigin::SYSTEM);

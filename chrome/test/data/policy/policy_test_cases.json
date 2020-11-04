@@ -7884,7 +7884,8 @@
        "SystemProxySettings": {
         "system_proxy_enabled": "true",
         "system_services_username": "test_user",
-        "system_services_password": "0000"
+        "system_services_password": "0000",
+        "policy_credentials_auth_schemes": ["basic","digest"]
        }
       },
       "prefs": {
