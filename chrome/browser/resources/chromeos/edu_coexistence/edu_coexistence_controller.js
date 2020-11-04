@@ -63,16 +63,18 @@ function constructEduCoexistenceUrl(params) {
  */
 export class EduCoexistenceController extends PostMessageAPIServer {
   /**
+   * @param {!Element} ui Polymer object edu-coexistence-ui
    * @param {!Element} webview  The <webview> element to listen to as a
    *     client.
    * @param {!EduCoexistenceParams} params  The params for the flow.
    */
-  constructor(webview, params) {
+  constructor(ui, webview, params) {
     const flowURL = constructEduCoexistenceUrl(params);
     const protocol = flowURL.hostname === 'localhost' ? 'http://' : 'https://';
     const originURLPrefix = protocol + flowURL.host;
     super(webview, METHOD_LIST, originURLPrefix, originURLPrefix);
 
+    this.ui = ui;
     this.flowURL_ = flowURL;
     this.originURLPrefix_ = originURLPrefix;
     this.webview_ = webview;
@@ -264,8 +266,10 @@ export class EduCoexistenceController extends PostMessageAPIServer {
    *     index 0.
    */
   reportError_(error) {
-    // TODO(yilkal): Pass the error to the browser proxy.
-    // TODO(danan): Show the error ui (possibly using the error message).
-    this.browserProxy_.error();
+    // Notify the app to switch to error screen.
+    this.ui.fire('go-error');
+
+    // Send the error strings to C++ handler so they are logged.
+    this.browserProxy_.onError(error);
   }
 }

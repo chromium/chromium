@@ -84,6 +84,10 @@ Polymer({
 
   /** @override */
   ready() {
+    this.addWebUIListener('show-error-screen', () => {
+      this.onError_();
+    });
+
     window.addEventListener('online', () => {
       if (this.currentScreen_ !== Screens.ERROR) {
         this.switchToScreen_(Screens.ONLINE_FLOW);

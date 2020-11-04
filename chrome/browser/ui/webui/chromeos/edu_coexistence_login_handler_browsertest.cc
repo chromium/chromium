@@ -136,7 +136,41 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
   VerifyJavascriptCallResolved(second_call, callback_id, kResponseCallback);
 }
 
-// TODO(yilkal): Add test to cover for when OauthAccessTokenFetchFails.
+IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
+                       ErrorCallsFromWebUI) {
+  std::unique_ptr<EduCoexistenceLoginHandler> handler = SetUpHandler();
+
+  base::ListValue call_args;
+  call_args.Append("error message 1");
+  call_args.Append("error message 2");
+  web_ui()->HandleReceivedMessage("error", &call_args);
+
+  EXPECT_TRUE(handler->in_error_state());
+}
+
+IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
+                       OAuth2AccessTokensFetchFailed) {
+  std::unique_ptr<EduCoexistenceLoginHandler> handler = SetUpHandler();
+
+  SimulateAccessTokenFetched(handler.get(), /* success */ false);
+
+  // Error messages are not sent until initialize message is sent from js to
+  // C++ handler.
+  EXPECT_EQ(web_ui()->call_data().size(), 0u);
+
+  base::ListValue call_args;
+  call_args.Append("coexistence-data-init");
+  web_ui()->HandleReceivedMessage("initializeEduArgs", &call_args);
+
+  EXPECT_EQ(web_ui()->call_data().size(), 1u);
+  EXPECT_EQ(web_ui()->call_data()[0]->function_name(),
+            "cr.webUIListenerCallback");
+  const base::Value* arg1 = web_ui()->call_data()[0]->arg1();
+  std::string method_call = arg1 ? arg1->GetString() : std::string();
+
+  constexpr char kWebUICallErrorCallback[] = "show-error-screen";
+  EXPECT_EQ(method_call, kWebUICallErrorCallback);
+}
 
 IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
                        HandleConsentLogged) {

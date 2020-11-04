@@ -6,6 +6,7 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
 
 import {AuthCompletedCredentials} from '../../gaia_auth_host/authenticator.m.js';
 
+/** TODO(yilkal): Improve the naming of methods in the proxy. */
 
 /** @interface */
 export class EduCoexistenceBrowserProxy {
@@ -48,15 +49,20 @@ export class EduCoexistenceBrowserProxy {
    * the parental consent is valid.
    * @param {string} account Added account email.
    * @param {string} eduCoexistenceToSVersion The terms of service version.
-   * @return {!Promise<boolean>}
+   * @return {!Promise<boolean>} Returns a promise which will resolve to true
+   *     when the account has successfully been added. The promise will be used
+   *     by the server flow to show "Account added" page.
    */
   consentLogged(account, eduCoexistenceToSVersion) {}
 
   /** Sends 'dialogClose' message to close the login dialog. */
   dialogClose() {}
 
-  /** Sends 'error' message to handler. */
-  error() {}
+  /**
+   * Sends 'error' message to handler.
+   * @param {Array<string>} msg Error messages.
+   */
+  onError(msg) {}
 }
 
 /**
@@ -106,8 +112,8 @@ export class EduCoexistenceBrowserProxyImpl {
   }
 
   /** @override */
-  error() {
-    chrome.send('error');
+  onError(msg) {
+    chrome.send('error', msg);
   }
 }
 

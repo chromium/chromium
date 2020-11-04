@@ -134,12 +134,15 @@ Polymer({
         (data) => {
           this.webview_ =
               /** @type {!WebView} */ (this.$.signinFrame);
-          this.controller_ = new EduCoexistenceController(this.webview_, data);
+          this.controller_ =
+              new EduCoexistenceController(this, this.webview_, data);
 
           EduCoexistenceBrowserProxyImpl.getInstance().initializeLogin();
         },
         (err) => {
-          console.error('There was an error getting edu coexistence data');
+          this.fire('go-error');
+          EduCoexistenceBrowserProxyImpl.getInstance().onError(
+              ['There was an error getting edu coexistence data']);
         });
   },
 });

@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
@@ -53,6 +54,7 @@ constexpr char kEduCoexistenceLoginDefaultURL[] =
     "https://families.google.com/supervision/coexistence";
 constexpr char kOobe[] = "oobe";
 constexpr char kInSession[] = "in_session";
+constexpr char kOnErrorWebUIListener[] = "show-error-screen";
 
 constexpr char kFetchAccessTokenResultHistogram[] =
     "AccountManager.EduCoexistence.FetchAccessTokenResult";
@@ -219,7 +221,10 @@ void EduCoexistenceLoginHandler::OnOAuthAccessTokensFetched(
                                 GoogleServiceAuthError::NUM_STATES);
 
   if (error.state() != GoogleServiceAuthError::State::NONE) {
-    // TODO(yilkal) call on to the ui to show error screen.
+    if (initialize_edu_args_callback_.has_value()) {
+      FireWebUIListener(kOnErrorWebUIListener);
+    }
+    in_error_state_ = true;
     return;
   }
 
@@ -234,6 +239,11 @@ void EduCoexistenceLoginHandler::InitializeEduArgs(
   AllowJavascript();
 
   initialize_edu_args_callback_ = args->GetList()[0].GetString();
+
+  if (in_error_state_) {
+    FireWebUIListener(kOnErrorWebUIListener);
+    return;
+  }
 
   // If the access token is not fetched yet, wait for access token.
   if (!oauth_access_token_.has_value()) {
@@ -290,12 +300,15 @@ void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
 
 void EduCoexistenceLoginHandler::ConsentValid(const base::ListValue* args) {
   AllowJavascript();
+  DCHECK(!in_error_state_);
   // TODO(yilkal): Have a state enum to record the progress.
 }
 
 void EduCoexistenceLoginHandler::ConsentLogged(const base::ListValue* args) {
   if (!args || args->GetList().size() == 0)
     return;
+
+  DCHECK(!in_error_state_);
 
   account_added_callback_ = args->GetList()[0].GetString();
 
@@ -309,7 +322,15 @@ void EduCoexistenceLoginHandler::ConsentLogged(const base::ListValue* args) {
 }
 
 void EduCoexistenceLoginHandler::OnError(const base::ListValue* args) {
-  // TODO(yilkal): Handle error appropriately.
+  AllowJavascript();
+  if (!args || args->GetList().size() == 0)
+    return;
+  in_error_state_ = true;
+  const base::Value::ConstListView& arguments = args->GetList();
+  for (const base::Value& message : arguments) {
+    DCHECK(message.is_string());
+    LOG(ERROR) << message.GetString();
+  }
 }
 
 }  // namespace chromeos
