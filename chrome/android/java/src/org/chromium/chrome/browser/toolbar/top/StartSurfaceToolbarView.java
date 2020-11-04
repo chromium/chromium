@@ -260,7 +260,7 @@ class StartSurfaceToolbarView extends RelativeLayout {
 
         if (mVisibilityAnimator != null) {
             mVisibilityAnimator.cancel();
-            mVisibilityAnimator = null;
+            finishAnimation(showStartSurfaceToolbar);
         }
 
         mIsShowing = showStartSurfaceToolbar;
