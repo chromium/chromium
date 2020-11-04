@@ -32,8 +32,6 @@ TabStatsDataStore::TabsStats::TabsStats()
       max_tab_per_window(0U),
       window_count(0U),
       window_count_max(0U) {
-  tab_discard_counts.fill(0U);
-  tab_reload_counts.fill(0U);
 }
 TabStatsDataStore::TabsStats::TabsStats(const TabsStats& other) = default;
 
@@ -166,20 +164,6 @@ void TabStatsDataStore::ResetIntervalData(
   interval_map->clear();
   for (auto& iter : existing_tabs_)
     AddTabToIntervalMap(iter.first, GetTabID(iter.first), true, interval_map);
-}
-
-void TabStatsDataStore::OnTabDiscardStateChange(
-    LifecycleUnitDiscardReason discard_reason,
-    bool is_discarding) {
-  if (is_discarding)
-    tab_stats_.tab_discard_counts[static_cast<size_t>(discard_reason)]++;
-  else
-    tab_stats_.tab_reload_counts[static_cast<size_t>(discard_reason)]++;
-}
-
-void TabStatsDataStore::ClearTabDiscardAndReloadCounts() {
-  tab_stats_.tab_discard_counts.fill(0U);
-  tab_stats_.tab_reload_counts.fill(0U);
 }
 
 base::Optional<TabStatsDataStore::TabID> TabStatsDataStore::GetTabIDForTesting(

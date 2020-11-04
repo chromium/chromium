@@ -3618,6 +3618,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Discarding.DiscardsPer10Minutes" units="tabs"
     expires_after="M85">
+  <obsolete>
+    Removed 11/2020. Not actively used because reported values are 0 most of the
+    time. It would be more useful to report number of discards per day.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="DiscardReason" -->
 
   <owner>fdoray@chromium.org</owner>
@@ -3733,6 +3737,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Discarding.ReloadsPer10Minutes" units="tabs"
     expires_after="M85">
+  <obsolete>
+    Removed 11/2020. Not actively used because reported values are 0 most of the
+    time. It would be more useful to report number of reloads per day.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="DiscardReason" -->
 
   <owner>fdoray@chromium.org</owner>
