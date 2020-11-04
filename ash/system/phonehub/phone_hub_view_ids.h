@@ -35,7 +35,6 @@ enum PhoneHubViewID {
   // Bluetooth disabled view and its components.
   kBluetoothDisabledView,
   kBluetoothDisabledLearnMoreButton,
-  kBluetoothDisabledConfirmButton,
 
   kPhoneConnectedView,
   kInitialConnectingView,

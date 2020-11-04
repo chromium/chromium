@@ -10,8 +10,6 @@
 
 namespace ash {
 
-class PhoneHubInterstitialView;
-
 // An interstitial view representing an error state where the Phone Hub
 // feature is not available because Bluetooth is turned off on this device.
 class ASH_EXPORT BluetoothDisabledView : public PhoneHubContentView {
@@ -28,9 +26,6 @@ class ASH_EXPORT BluetoothDisabledView : public PhoneHubContentView {
 
  private:
   void LearnMoreButtonPressed();
-  void ConfirmButtonPressed();
-
-  PhoneHubInterstitialView* content_view_ = nullptr;
 };
 
 }  // namespace ash

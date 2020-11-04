@@ -140,11 +140,6 @@ class PhoneHubTrayTest : public AshTestBase {
         PhoneHubViewID::kBluetoothDisabledLearnMoreButton));
   }
 
-  views::Button* bluetooth_disabled_confirm_button() {
-    return static_cast<views::Button*>(bubble_view()->GetViewByID(
-        PhoneHubViewID::kBluetoothDisabledConfirmButton));
-  }
-
  protected:
   PhoneHubTray* phone_hub_tray_ = nullptr;
   chromeos::phonehub::FakePhoneHubManager phone_hub_manager_;
@@ -393,7 +388,7 @@ TEST_F(PhoneHubTrayTest, ClickButtonsOnDisconnectedView) {
   ClickOnAndWait(disconnected_learn_more_button());
 }
 
-TEST_F(PhoneHubTrayTest, ClickButtonsOnBluetoothDisabledView) {
+TEST_F(PhoneHubTrayTest, ClickButtonOnBluetoothDisabledView) {
   // Simulate a Bluetooth unavailable state.
   GetFeatureStatusProvider()->SetStatus(
       chromeos::phonehub::FeatureStatus::kUnavailableBluetoothOff);
@@ -411,12 +406,6 @@ TEST_F(PhoneHubTrayTest, ClickButtonsOnBluetoothDisabledView) {
       });
   // Simulate a click on "Learn more" button.
   ClickOnAndWait(bluetooth_disabled_learn_more_button());
-
-  // Simulate a click on "Ok, got it" button.
-  ClickOnAndWait(bluetooth_disabled_confirm_button());
-
-  // Clicking "Ok, got it" button should dimiss the bubble.
-  EXPECT_FALSE(phone_hub_tray_->GetBubbleView());
 }
 
 }  // namespace ash
