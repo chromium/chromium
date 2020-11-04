@@ -4,20 +4,19 @@
 
 #include "third_party/blink/renderer/modules/storage/dom_window_storage_controller.h"
 
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/storage/dom_window_storage.h"
 
 namespace blink {
 
-DOMWindowStorageController::DOMWindowStorageController(Document& document)
-    : Supplement<Document>(document) {
-  document.domWindow()->RegisterEventListenerObserver(this);
+DOMWindowStorageController::DOMWindowStorageController(LocalDOMWindow& window)
+    : Supplement<LocalDOMWindow>(window) {
+  window.RegisterEventListenerObserver(this);
 }
 
 void DOMWindowStorageController::Trace(Visitor* visitor) const {
-  Supplement<Document>::Trace(visitor);
+  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 // static
@@ -26,12 +25,12 @@ const char DOMWindowStorageController::kSupplementName[] =
 
 // static
 DOMWindowStorageController& DOMWindowStorageController::From(
-    Document& document) {
+    LocalDOMWindow& window) {
   DOMWindowStorageController* controller =
-      Supplement<Document>::From<DOMWindowStorageController>(document);
+      Supplement<LocalDOMWindow>::From<DOMWindowStorageController>(window);
   if (!controller) {
-    controller = MakeGarbageCollected<DOMWindowStorageController>(document);
-    ProvideTo(document, controller);
+    controller = MakeGarbageCollected<DOMWindowStorageController>(window);
+    ProvideTo(window, controller);
   }
   return *controller;
 }

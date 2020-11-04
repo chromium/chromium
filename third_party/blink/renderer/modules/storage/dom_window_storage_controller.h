@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_DOM_WINDOW_STORAGE_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_DOM_WINDOW_STORAGE_CONTROLLER_H_
 
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -13,20 +12,17 @@
 
 namespace blink {
 
-class Document;
-
 class MODULES_EXPORT DOMWindowStorageController final
     : public GarbageCollected<DOMWindowStorageController>,
-      public Supplement<Document>,
+      public Supplement<LocalDOMWindow>,
       public LocalDOMWindow::EventListenerObserver {
  public:
   static const char kSupplementName[];
 
-  explicit DOMWindowStorageController(Document&);
+  explicit DOMWindowStorageController(LocalDOMWindow&);
+  static DOMWindowStorageController& From(LocalDOMWindow&);
 
   void Trace(Visitor*) const override;
-
-  static DOMWindowStorageController& From(Document&);
 
   // Inherited from LocalDOMWindow::EventListenerObserver
   void DidAddEventListener(LocalDOMWindow*, const AtomicString&) override;

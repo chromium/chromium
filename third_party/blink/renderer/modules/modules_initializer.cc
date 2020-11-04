@@ -240,7 +240,7 @@ void ModulesInitializer::OnClearWindowObjectInMainWorld(
   if (!document.IsInitialEmptyDocument())
     NavigatorServiceWorker::From(window);
 
-  DOMWindowStorageController::From(document);
+  DOMWindowStorageController::From(window);
   if (RuntimeEnabledFeatures::PresentationEnabled() &&
       settings.GetPresentationReceiver()) {
     // We eagerly create PresentationReceiver so that the frame creating the
@@ -250,7 +250,7 @@ void ModulesInitializer::OnClearWindowObjectInMainWorld(
   ManifestManager::From(window);
 
 #if defined(OS_ANDROID)
-  LocalFrame* frame = document.GetFrame();
+  LocalFrame* frame = window.GetFrame();
   DCHECK(frame);
   if (auto* gateway = RemoteObjectGatewayImpl::From(*frame))
     gateway->OnClearWindowObjectInMainWorld();
