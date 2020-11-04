@@ -4,7 +4,6 @@
 
 #include "ui/aura_extra/window_occlusion_impl_win.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "base/win/scoped_gdi_object.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/gfx/geometry/rect.h"
@@ -174,19 +173,20 @@ ComputeNativeWindowOcclusionStatusImpl(
     const std::vector<aura::WindowTreeHost*>& windows,
     std::unique_ptr<NativeWindowIterator> iterator,
     std::unique_ptr<WindowBoundsDelegate> bounds_delegate) {
-  base::TimeTicks calculation_start_time = base::TimeTicks::Now();
+  // Time to execute this method, according to 28 days of Stable data
+  // ending on June 15, 2020:
+  //
+  //  50th percentile: 156 us
+  //  75th percentile: 273 us
+  //  95th percentile: 647 us
+  //  99th percentile: 1939 us
+  //  99.5th percentile: 5592 us
 
   WindowEvaluatorImpl window_evaluator(windows, std::move(bounds_delegate));
 
   // Only compute occlusion if there was at least one window that is visible.
   if (window_evaluator.HasAtLeastOneVisibleWindow())
     iterator->Iterate(&window_evaluator);
-
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Windows.ComputeNativeWindowOcclusionTime",
-      base::TimeTicks::Now() - calculation_start_time,
-      base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(10),
-      50);
 
   return window_evaluator.TakeResult();
 }

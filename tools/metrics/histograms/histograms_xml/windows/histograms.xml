@@ -43,6 +43,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Windows.ComputeNativeWindowOcclusionTime" units="microseconds"
     expires_after="M83">
+  <obsolete>
+    Removed 11/2020. As of June 15, 2020, data indicates that computing
+    occlusion is fast enough at all percentiles.
+  </obsolete>
   <owner>fdoray@chromium.org</owner>
   <summary>
     The amount of CPU time a call to ComputeNativeWindowOcclusionStatus() takes.
