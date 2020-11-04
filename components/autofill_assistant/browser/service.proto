@@ -1065,7 +1065,7 @@ message SelectorProto {
       // - this filter only detects overlays in the current frame. To detect
       // overlays that cover the frame element itself, apply this filter on the
       // frame element before calling enter_frame.
-      EmptyFilter on_top = 13;
+      OnTopFilter on_top = 13;
     }
   }
 
@@ -1180,6 +1180,26 @@ message SelectorProto {
     // just to allow that one slow selector. This is a value that must be
     // maintained by the team responsible for keeping clients running properly.
     optional int32 max_pairs = 5 [default = 50];
+  }
+
+  // Filter out elements covered by other elements, such as overlays.
+  message OnTopFilter {
+    // If true, scroll the element into view before checking whether
+    // it's on top.
+    //
+    // The logic for checking whether an element is on top only works on
+    // elements that are positioned within the current viewport. Setting it to
+    // false turns off automatic scrolling to make the element visible, so the
+    // caller must make sure it's already the case.
+    optional bool scroll_into_view_if_needed = 1 [default = true];
+
+    // If true and the element cannot be scrolled into view, so the filter
+    // cannot check whether the element is on top, keep the element in the match
+    // set.
+    //
+    // This can be combined with scroll_into_view_if_needed=false to make
+    // this filter best effort and only check elements that are already in view.
+    optional bool accept_element_if_not_in_view = 2;
   }
 
   message EmptyFilter {}

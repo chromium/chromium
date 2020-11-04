@@ -63,11 +63,16 @@ bool operator<(const SelectorProto::Filter& a, const SelectorProto::Filter& b) {
                              b.css_style().pseudo_element(),
                              b.css_style().value());
 
+    case SelectorProto::Filter::kOnTop:
+      return std::make_tuple(a.on_top().scroll_into_view_if_needed(),
+                             a.on_top().accept_element_if_not_in_view()) <
+             std::make_tuple(b.on_top().scroll_into_view_if_needed(),
+                             b.on_top().accept_element_if_not_in_view());
+
     case SelectorProto::Filter::kBoundingBox:
     case SelectorProto::Filter::kEnterFrame:
     case SelectorProto::Filter::kPickOne:
     case SelectorProto::Filter::kLabelled:
-    case SelectorProto::Filter::kOnTop:
       return false;
 
     case SelectorProto::Filter::kClosest: {
@@ -383,6 +388,12 @@ std::ostream& operator<<(std::ostream& out, const SelectorProto::Filter& f) {
 
     case SelectorProto::Filter::kOnTop:
       out << "on_top";
+      if (!f.on_top().scroll_into_view_if_needed()) {
+        out << "(no scroll)";
+      }
+      if (f.on_top().accept_element_if_not_in_view()) {
+        out << "(accept not in view)";
+      }
       return out;
 
     case SelectorProto::Filter::FILTER_NOT_SET:

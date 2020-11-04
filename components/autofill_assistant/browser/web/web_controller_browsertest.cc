@@ -2347,16 +2347,45 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, OnTop) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, OnTopNeedsScrolling) {
-  TestScrollIntoView(0, 0);
+  // Scroll button out of the viewport.
+  double target_bottom = content::EvalJs(shell(),
+                                         R"(
+const target = document.getElementById("touch_area_one");
+const box = target.getBoundingClientRect();
+window.scrollBy(0, box.bottom + 10);
+target.getBoundingClientRect().bottom
+)")
+                             .ExtractDouble();
 
-  Selector button({"#scroll_item_5"});
-  RunLaxElementCheck(button, true);
+  // Before running the test, verify that the target is outside of the viewport,
+  // as we wanted. full_height_section guarantees that this is never a problem.
+  ASSERT_LE(target_bottom, 0);
 
-  button.proto.add_filters()->mutable_on_top();
-  RunLaxElementCheck(button, true);
+  Selector target({"#touch_area_one"});
+  RunLaxElementCheck(target, true);
+
+  auto* on_top = target.proto.add_filters()->mutable_on_top();
+
+  // Apply on_top without scrolling.
+  on_top->set_scroll_into_view_if_needed(false);
+  RunLaxElementCheck(target, false);
+  on_top->set_accept_element_if_not_in_view(true);
+  RunLaxElementCheck(target, true);
+
+  // Allow on_top to scroll.
+  on_top->set_scroll_into_view_if_needed(true);
+  on_top->set_accept_element_if_not_in_view(false);
+  RunLaxElementCheck(target, true);
+
+  ASSERT_GE(content::EvalJs(shell(),
+                            R"(
+document.getElementById("touch_area_one").getBoundingClientRect().bottom
+)")
+                .ExtractDouble(),
+            0);
 
   ShowOverlay();
-  RunLaxElementCheck(button, false);
+  RunLaxElementCheck(target, false);
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ALabelIsNotAnOverlay) {

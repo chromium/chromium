@@ -191,8 +191,11 @@ bool ElementFinder::JsFilterBuilder::AddFilter(
       AddLine(R"(elements = elements.filter((e) => {
   if (e.getClientRects().length == 0) {
     return false;
-  }
-  e.scrollIntoViewIfNeeded(false);
+  })");
+      if (filter.on_top().scroll_into_view_if_needed()) {
+        AddLine("e.scrollIntoViewIfNeeded(false);");
+      }
+      AddLine(R"(
   const bounds = e.getBoundingClientRect();
   const x = bounds.x + bounds.width / 2;
   const y = bounds.y + bounds.height / 2;
@@ -205,7 +208,15 @@ bool ElementFinder::JsFilterBuilder::AddFilter(
   let root = document;
   while (root) {
     const atPoint = root.elementFromPoint(x, y);
-    if (!atPoint) return false;
+    if (!atPoint) {
+  )");
+      if (filter.on_top().accept_element_if_not_in_view()) {
+        AddLine("return true;");
+      } else {
+        AddLine("return false;");
+      }
+      AddLine(R"(
+    }
     for (const target of targets) {
       if (target === atPoint || target.contains(atPoint)) {
         return true;
