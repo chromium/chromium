@@ -5646,7 +5646,7 @@ crbug.com/1046784 http/tests/devtools/bindings/navigator-frame-attach-detach.js 
 crbug.com/1046784 http/tests/devtools/forced-layout-in-microtask.js [ Pass Timeout ]
 crbug.com/1046784 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Pass Timeout ]
 crbug.com/1046784 http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Pass Timeout ]
-crbug.com/1046784 http/tests/inspector-protocol/service-worker/target-reloaded-after-crash.js [ Pass Timeout ]
+crbug.com/1046784 http/tests/inspector-protocol/service-worker/target-reloaded-after-crash.js [ Pass Failure Timeout ]
 crbug.com/1046784 http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Pass Timeout ]
 
 # Sheriff 2020-01-28
