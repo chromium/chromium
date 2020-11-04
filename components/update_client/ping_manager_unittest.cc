@@ -103,7 +103,7 @@ void PingManagerTest::PingSentCallback(int error, const std::string& response) {
 scoped_refptr<UpdateContext> PingManagerTest::MakeMockUpdateContext() const {
   return base::MakeRefCounted<UpdateContext>(
       config_, false, std::vector<std::string>(),
-      UpdateClient::CrxDataCallback(), UpdateClient::CrxStateChangeCallback(),
+      UpdateClient::CrxStateChangeCallback(),
       UpdateEngine::NotifyObserversCallback(), UpdateEngine::Callback(),
       nullptr);
 }

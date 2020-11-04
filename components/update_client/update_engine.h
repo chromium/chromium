@@ -127,7 +127,6 @@ struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
       scoped_refptr<Configurator> config,
       bool is_foreground,
       const std::vector<std::string>& ids,
-      UpdateClient::CrxDataCallback crx_data_callback,
       UpdateClient::CrxStateChangeCallback crx_state_change_callback,
       const UpdateEngine::NotifyObserversCallback& notify_observers_callback,
       UpdateEngine::Callback callback,
@@ -149,9 +148,6 @@ struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
 
   // Contains the map of ids to components for all the CRX in this context.
   IdToComponentPtrMap components;
-
-  // Called before an update check, when update metadata is needed.
-  UpdateEngine::CrxDataCallback crx_data_callback;
 
   // Called when the observable state of the CRX component has changed.
   UpdateClient::CrxStateChangeCallback crx_state_change_callback;

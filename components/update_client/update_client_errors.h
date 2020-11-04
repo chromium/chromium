@@ -18,6 +18,7 @@ enum class Error {
   UPDATE_CHECK_ERROR = 5,
   CRX_NOT_FOUND = 6,
   INVALID_ARGUMENT = 7,
+  BAD_CRX_DATA_CALLBACK = 8,
   MAX_VALUE,
 };
 

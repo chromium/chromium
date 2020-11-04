@@ -4587,4 +4587,60 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
 
   EXPECT_EQ(1, observer.calls);
 }
+
+// Tests the scenario where `CrxDataCallback` returns a vector whose elements
+// don't include a value for one of the component ids specified by the `ids`
+// parameter of the `UpdateClient::Update` function. Expects the completion
+// callback to include a specific error, and no other events and pings be
+// generated, since the update engine rejects the UpdateClient::Update call.
+TEST_F(UpdateClientTest, BadCrxDataCallback) {
+  class CompletionCallbackMock {
+   public:
+    static void Callback(base::OnceClosure quit_closure, Error error) {
+      EXPECT_EQ(Error::BAD_CRX_DATA_CALLBACK, error);
+      std::move(quit_closure).Run();
+    }
+  };
+
+  class MockPingManager : public MockPingManagerImpl {
+   public:
+    explicit MockPingManager(scoped_refptr<Configurator> config)
+        : MockPingManagerImpl(config) {}
+
+   protected:
+    ~MockPingManager() override { EXPECT_TRUE(ping_data().empty()); }
+  };
+
+  scoped_refptr<UpdateClient> update_client =
+      base::MakeRefCounted<UpdateClientImpl>(
+          config(), base::MakeRefCounted<MockPingManager>(config()),
+          UpdateChecker::Factory{});
+
+  MockObserver observer;
+
+  std::vector<CrxUpdateItem> items;
+  auto receiver = base::MakeRefCounted<MockCrxStateChangeReceiver>();
+  EXPECT_CALL(*receiver, Receive(_))
+      .WillRepeatedly(
+          [&items](const CrxUpdateItem& item) { items.push_back(item); });
+
+  update_client->AddObserver(&observer);
+  const std::vector<std::string> ids = {"jebgalgnebhfojomionfpkfelancnnkf",
+                                        "gjpmebpgbhcamgdgjcmnjfhggjpgcimm"};
+  // The `CrxDataCallback` argument only returns a value for the first
+  // component id. This means that its result is ill formed, and the `Update`
+  // call completes with an error.
+  update_client->Update(
+      ids, base::BindOnce([](const std::vector<std::string>& ids) {
+        EXPECT_EQ(ids.size(), size_t{2});
+        return std::vector<base::Optional<CrxComponent>>{base::nullopt};
+      }),
+      base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver), true,
+      base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
+  RunThreads();
+
+  EXPECT_TRUE(items.empty());
+  update_client->RemoveObserver(&observer);
+}
+
 }  // namespace update_client

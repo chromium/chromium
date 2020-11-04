@@ -331,6 +331,12 @@ using Callback = base::OnceCallback<void(Error error)>;
 // the browser process has gone single-threaded.
 class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
  public:
+  // Returns `CrxComponent` instances corresponding to the component ids
+  // passed as an argument to the callback. The order of components in the input
+  // and output vectors must match. If the instance of the `CrxComponent` is not
+  // available for some reason, implementors of the callback must not skip
+  // skip the component, and instead, they must insert a `nullopt` value in
+  // the output vector.
   using CrxDataCallback =
       base::OnceCallback<std::vector<base::Optional<CrxComponent>>(
           const std::vector<std::string>& ids)>;
