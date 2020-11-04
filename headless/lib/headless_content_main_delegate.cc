@@ -309,6 +309,10 @@ void HeadlessContentMainDelegate::InitLogging(
     log_path = base::FilePath::FromUTF8Unsafe(filename);
   }
 
+  // On Windows, having non canonical forward slashes in log file name causes
+  // problems with sandbox filters, see https://crbug.com/859676
+  log_path = log_path.NormalizePathSeparators();
+
   settings.logging_dest = log_mode;
   settings.log_file_path = log_path.value().c_str();
   settings.lock_log = logging::DONT_LOCK_LOG_FILE;
@@ -317,7 +321,6 @@ void HeadlessContentMainDelegate::InitLogging(
   bool success = logging::InitLogging(settings);
   DCHECK(success);
 }
-
 
 void HeadlessContentMainDelegate::InitCrashReporter(
     const base::CommandLine& command_line) {
