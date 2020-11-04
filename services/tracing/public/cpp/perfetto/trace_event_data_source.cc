@@ -360,15 +360,17 @@ void TraceEventMetadataSource::GenerateMetadata(
     generator.Run(chrome_metadata, privacy_filtering_enabled);
   }
 
-  if (privacy_filtering_enabled) {
-    return;
+  if (!privacy_filtering_enabled) {
+    ChromeEventBundle* event_bundle = trace_packet->set_chrome_events();
+    for (auto& generator : *json_generators) {
+      GenerateJsonMetadataFromGenerator(generator, event_bundle);
+    }
   }
 
-  ChromeEventBundle* event_bundle = trace_packet->set_chrome_events();
-
-  for (auto& generator : *json_generators) {
-    GenerateJsonMetadataFromGenerator(generator, event_bundle);
-  }
+  // Force flush the packet since the default flush happens at end of
+  // trace, and the packet can be discarded then.
+  trace_packet->Finalize();
+  trace_writer->Flush();
 }
 
 void TraceEventMetadataSource::StartTracing(
