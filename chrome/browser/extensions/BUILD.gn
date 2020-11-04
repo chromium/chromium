@@ -748,7 +748,6 @@ static_library("extensions") {
     "//chrome/common/extensions/api",
     "//components/omnibox/browser",
     "//components/safe_browsing/core:csd_proto",
-    "//components/safe_browsing/core:webprotect_proto",
     "//components/safe_browsing/core/db:util",
     "//components/signin/core/browser",
     "//components/translate/content/browser",

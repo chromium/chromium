@@ -21,7 +21,6 @@ static_library("web_ui") {
     "//components/safe_browsing/core:features",
     "//components/safe_browsing/core:public",
     "//components/safe_browsing/core:realtimeapi_proto",
-    "//components/safe_browsing/core:webprotect_proto",
     "//components/safe_browsing/core/browser:network_context",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//components/safe_browsing/core/common:safe_browsing_prefs",

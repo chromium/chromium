@@ -35,7 +35,6 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "components/safe_browsing/core/proto/webprotect.pb.h"
 #endif
 #include "components/safe_browsing/core/web_ui/constants.h"
 #include "components/strings/grit/components_strings.h"
@@ -259,25 +258,6 @@ void WebUIInfoSingleton::ClearReportingEvents() {
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 void WebUIInfoSingleton::AddToDeepScanRequests(
-    const DeepScanningClientRequest& request) {
-  if (!HasListener())
-    return;
-
-  // Only update the request time the first time we see a token.
-  if (deep_scan_requests_.find(request.request_token()) ==
-      deep_scan_requests_.end()) {
-    deep_scan_requests_[request.request_token()].request_time =
-        base::Time::Now();
-  }
-
-  deep_scan_requests_[request.request_token()].request = request;
-
-  for (auto* webui_listener : webui_instances_)
-    webui_listener->NotifyDeepScanJsListener(
-        request.request_token(), deep_scan_requests_[request.request_token()]);
-}
-
-void WebUIInfoSingleton::AddToDeepScanRequests(
     const GURL& tab_url,
     const enterprise_connectors::ContentAnalysisRequest& request) {
   if (!HasListener())
@@ -291,27 +271,11 @@ void WebUIInfoSingleton::AddToDeepScanRequests(
   }
 
   deep_scan_requests_[request.request_token()].tab_url = tab_url;
-  deep_scan_requests_[request.request_token()].content_analysis_request =
-      request;
+  deep_scan_requests_[request.request_token()].request = request;
 
   for (auto* webui_listener : webui_instances_)
     webui_listener->NotifyDeepScanJsListener(
         request.request_token(), deep_scan_requests_[request.request_token()]);
-}
-
-void WebUIInfoSingleton::AddToDeepScanResponses(
-    const std::string& token,
-    const std::string& status,
-    const DeepScanningClientResponse& response) {
-  if (!HasListener())
-    return;
-
-  deep_scan_requests_[token].response_time = base::Time::Now();
-  deep_scan_requests_[token].response_status = status;
-  deep_scan_requests_[token].response = response;
-
-  for (auto* webui_listener : webui_instances_)
-    webui_listener->NotifyDeepScanJsListener(token, deep_scan_requests_[token]);
 }
 
 void WebUIInfoSingleton::AddToDeepScanResponses(
@@ -323,7 +287,7 @@ void WebUIInfoSingleton::AddToDeepScanResponses(
 
   deep_scan_requests_[token].response_time = base::Time::Now();
   deep_scan_requests_[token].response_status = status;
-  deep_scan_requests_[token].content_analysis_response = response;
+  deep_scan_requests_[token].response = response;
 
   for (auto* webui_listener : webui_instances_)
     webui_listener->NotifyDeepScanJsListener(token, deep_scan_requests_[token]);
@@ -1436,64 +1400,6 @@ std::string SerializeContentAnalysisRequest(
   return request_serialized;
 }
 
-std::string SerializeDeepScanningRequest(
-    const DeepScanningClientRequest& request) {
-  base::DictionaryValue request_dict;
-
-  request_dict.SetKey("dm_token", base::Value(request.dm_token()));
-  request_dict.SetKey("fcm_notification_token",
-                      base::Value(request.fcm_notification_token()));
-
-  if (request.has_malware_scan_request()) {
-    base::DictionaryValue malware_request;
-
-    switch (request.malware_scan_request().population()) {
-      case MalwareDeepScanningClientRequest::POPULATION_UNKNOWN:
-        malware_request.SetStringKey("population", "POPULATION_UNKNOWN");
-        break;
-      case MalwareDeepScanningClientRequest::POPULATION_ENTERPRISE:
-        malware_request.SetStringKey("population", "POPULATION_ENTERPRISE");
-        break;
-      case MalwareDeepScanningClientRequest::POPULATION_TITANIUM:
-        malware_request.SetStringKey("population", "POPULATION_TITANIUM");
-        break;
-    }
-
-    request_dict.SetKey("malware_scan_request", std::move(malware_request));
-  }
-
-  if (request.has_dlp_scan_request()) {
-    base::DictionaryValue dlp_request;
-
-    switch (request.dlp_scan_request().content_source()) {
-      case DlpDeepScanningClientRequest::CONTENT_SOURCE_UNKNOWN:
-        dlp_request.SetStringKey("content_source", "CONTENT_SOURCE_UNKNOWN");
-        break;
-      case DlpDeepScanningClientRequest::FILE_DOWNLOAD:
-        dlp_request.SetStringKey("content_source", "FILE_DOWNLOAD");
-        break;
-      case DlpDeepScanningClientRequest::FILE_UPLOAD:
-        dlp_request.SetStringKey("content_source", "FILE_UPLOAD");
-        break;
-      case DlpDeepScanningClientRequest::WEB_CONTENT_UPLOAD:
-        dlp_request.SetStringKey("content_source", "WEB_CONTENT_UPLOAD");
-        break;
-    }
-
-    request_dict.SetKey("dlp_scan_request", std::move(dlp_request));
-  }
-
-  request_dict.SetKey("request_token", base::Value(request.request_token()));
-  request_dict.SetKey("filename", base::Value(request.filename()));
-  request_dict.SetKey("digest", base::Value(request.digest()));
-
-  std::string request_serialized;
-  JSONStringValueSerializer serializer(&request_serialized);
-  serializer.set_pretty_print(true);
-  serializer.Serialize(request_dict);
-  return request_serialized;
-}
-
 std::string SerializeContentAnalysisResponse(
     const enterprise_connectors::ContentAnalysisResponse& response) {
   base::DictionaryValue response_dict;
@@ -1552,103 +1458,6 @@ std::string SerializeContentAnalysisResponse(
   return response_serialized;
 }
 
-std::string SerializeDeepScanningResponse(
-    const DeepScanningClientResponse& response) {
-  base::DictionaryValue response_dict;
-
-  response_dict.SetStringKey("token", response.token());
-
-  if (response.has_malware_scan_verdict()) {
-    base::DictionaryValue malware_verdict;
-
-    switch (response.malware_scan_verdict().verdict()) {
-      case MalwareDeepScanningVerdict::VERDICT_UNSPECIFIED:
-        malware_verdict.SetStringKey("verdict", "VERDICT_UNSPECIFIED");
-        break;
-      case MalwareDeepScanningVerdict::CLEAN:
-        malware_verdict.SetStringKey("verdict", "CLEAN");
-        break;
-      case MalwareDeepScanningVerdict::UWS:
-        malware_verdict.SetStringKey("verdict", "UWS");
-        break;
-      case MalwareDeepScanningVerdict::MALWARE:
-        malware_verdict.SetStringKey("verdict", "MALWARE");
-        break;
-      case MalwareDeepScanningVerdict::SCAN_FAILURE:
-        malware_verdict.SetStringKey("verdict", "SCAN_FAILURE");
-        break;
-    }
-
-    response_dict.SetKey("malware_scan_verdict", std::move(malware_verdict));
-  }
-
-  if (response.has_dlp_scan_verdict()) {
-    base::DictionaryValue dlp_verdict;
-
-    switch (response.dlp_scan_verdict().status()) {
-      case DlpDeepScanningVerdict::STATUS_UNKNOWN:
-        dlp_verdict.SetStringKey("status", "STATUS_UNKNOWN");
-        break;
-      case DlpDeepScanningVerdict::SUCCESS:
-        dlp_verdict.SetStringKey("status", "SUCCESS");
-        break;
-      case DlpDeepScanningVerdict::FAILURE:
-        dlp_verdict.SetStringKey("status", "FAILURE");
-        break;
-    }
-
-    base::ListValue triggered_rules;
-    for (const DlpDeepScanningVerdict::TriggeredRule& rule :
-         response.dlp_scan_verdict().triggered_rules()) {
-      base::DictionaryValue rule_value;
-
-      switch (rule.action()) {
-        case DlpDeepScanningVerdict::TriggeredRule::ACTION_UNKNOWN:
-          rule_value.SetStringKey("action", "ACTION_UNKNOWN");
-          break;
-        case DlpDeepScanningVerdict::TriggeredRule::REPORT_ONLY:
-          rule_value.SetStringKey("action", "REPORT_ONLY");
-          break;
-        case DlpDeepScanningVerdict::TriggeredRule::WARN:
-          rule_value.SetStringKey("action", "WARN");
-          break;
-        case DlpDeepScanningVerdict::TriggeredRule::BLOCK:
-          rule_value.SetStringKey("action", "BLOCK");
-          break;
-      }
-
-      rule_value.SetStringKey("rule_name", rule.rule_name());
-      rule_value.SetDoubleKey("rule_id", rule.rule_id());
-      rule_value.SetStringKey("rule_resource_name", rule.rule_resource_name());
-      rule_value.SetStringKey("rule_severity", rule.rule_severity());
-
-      base::ListValue matched_detectors;
-      for (const DlpDeepScanningVerdict::MatchedDetector& detector :
-           rule.matched_detectors()) {
-        base::DictionaryValue detector_value;
-        detector_value.SetStringKey("detector_id", detector.detector_id());
-        detector_value.SetStringKey("display_name", detector.display_name());
-        detector_value.SetStringKey("detector_type", detector.detector_type());
-        matched_detectors.Append(std::move(detector_value));
-      }
-
-      rule_value.SetKey("matched_detectors", std::move(matched_detectors));
-
-      triggered_rules.Append(std::move(rule_value));
-    }
-
-    dlp_verdict.SetKey("triggered_rules", std::move(triggered_rules));
-
-    response_dict.SetKey("dlp_scan_verdict", std::move(dlp_verdict));
-  }
-
-  std::string response_serialized;
-  JSONStringValueSerializer serializer(&response_serialized);
-  serializer.set_pretty_print(true);
-  serializer.Serialize(response_dict);
-  return response_serialized;
-}
-
 base::Value SerializeDeepScanDebugData(const std::string& token,
                                        const DeepScanDebugData& data) {
   base::DictionaryValue value;
@@ -1659,12 +1468,8 @@ base::Value SerializeDeepScanDebugData(const std::string& token,
   }
 
   if (data.request.has_value()) {
-    value.SetStringKey("request",
-                       SerializeDeepScanningRequest(data.request.value()));
-  } else if (data.content_analysis_request.has_value()) {
-    value.SetStringKey(
-        "request", SerializeContentAnalysisRequest(
-                       data.tab_url, data.content_analysis_request.value()));
+    value.SetStringKey("request", SerializeContentAnalysisRequest(
+                                      data.tab_url, data.request.value()));
   }
 
   if (!data.response_time.is_null()) {
@@ -1677,10 +1482,7 @@ base::Value SerializeDeepScanDebugData(const std::string& token,
 
   if (data.response.has_value()) {
     value.SetStringKey("response",
-                       SerializeDeepScanningResponse(data.response.value()));
-  } else if (data.content_analysis_response.has_value()) {
-    value.SetStringKey("response", SerializeContentAnalysisResponse(
-                                       data.content_analysis_response.value()));
+                       SerializeContentAnalysisResponse(data.response.value()));
   }
 
   return std::move(value);

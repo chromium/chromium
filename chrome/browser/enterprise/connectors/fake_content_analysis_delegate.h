@@ -13,7 +13,6 @@
 #include "chrome/browser/enterprise/connectors/content_analysis_delegate.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "components/safe_browsing/core/proto/webprotect.pb.h"
 
 namespace content {
 class WebContents;

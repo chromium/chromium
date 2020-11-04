@@ -40,10 +40,6 @@ proto_library("realtimeapi_proto") {
   deps = [ ":csd_proto" ]
 }
 
-proto_library("webprotect_proto") {
-  sources = [ "proto/webprotect.proto" ]
-}
-
 proto_library("client_model_proto") {
   proto_in_dir = "//"
   sources = [ "proto/client_model.proto" ]

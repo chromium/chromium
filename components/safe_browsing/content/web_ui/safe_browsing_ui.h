@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/safe_browsing_network_context.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
@@ -23,7 +22,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-#include "components/safe_browsing/core/proto/webprotect.pb.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #endif
 
 namespace base {
@@ -43,16 +42,12 @@ struct DeepScanDebugData {
   ~DeepScanDebugData();
 
   base::Time request_time;
-  base::Optional<DeepScanningClientRequest> request;
-  base::Optional<enterprise_connectors::ContentAnalysisRequest>
-      content_analysis_request;
+  base::Optional<enterprise_connectors::ContentAnalysisRequest> request;
   GURL tab_url;
 
   base::Time response_time;
   std::string response_status;
-  base::Optional<DeepScanningClientResponse> response;
-  base::Optional<enterprise_connectors::ContentAnalysisResponse>
-      content_analysis_response;
+  base::Optional<enterprise_connectors::ContentAnalysisResponse> response;
 };
 #endif
 
@@ -331,16 +326,12 @@ class WebUIInfoSingleton {
   // chrome://safe-browsing tabs. Uses |request.request_token()| as an
   // identifier that can be used in |AddToDeepScanResponses| to correlate a ping
   // and response.
-  void AddToDeepScanRequests(const DeepScanningClientRequest& request);
   void AddToDeepScanRequests(
       const GURL& tab_url,
       const enterprise_connectors::ContentAnalysisRequest& request);
 
   // Add the new response to |deep_scan_requests_| and send it to all the open
   // chrome://safe-browsing tabs.
-  void AddToDeepScanResponses(const std::string& token,
-                              const std::string& status,
-                              const DeepScanningClientResponse& response);
   void AddToDeepScanResponses(
       const std::string& token,
       const std::string& status,
