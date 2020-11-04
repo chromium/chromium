@@ -45,18 +45,24 @@ class OnboardingMainView : public PhoneHubInterstitialView {
  public:
   OnboardingMainView(
       chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker,
-      OnboardingView* parent_view)
+      OnboardingView* parent_view,
+      OnboardingView::OnboardingFlow onboarding_flow)
       : PhoneHubInterstitialView(/*show_progress=*/false),
         onboarding_ui_tracker_(onboarding_ui_tracker),
-        parent_view_(parent_view) {
+        parent_view_(parent_view),
+        onboarding_flow_(onboarding_flow) {
     SetID(PhoneHubViewID::kOnboardingMainView);
     InitLayout();
   }
 
   // PhoneHubInterstitialView:
   Screen GetScreenForMetrics() const override {
-    // TODO(tengs): Distinguish between the two different onboarding flows.
-    return Screen::kOnboardingNewMultideviceUser;
+    switch (onboarding_flow_) {
+      case OnboardingView::kExistingMultideviceUser:
+        return Screen::kOnboardingExistingMultideviceUser;
+      case OnboardingView::kNewMultideviceUser:
+        return Screen::kOnboardingNewMultideviceUser;
+    }
   }
 
  private:
@@ -105,6 +111,7 @@ class OnboardingMainView : public PhoneHubInterstitialView {
 
   chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker_ = nullptr;
   OnboardingView* parent_view_ = nullptr;
+  const OnboardingView::OnboardingFlow onboarding_flow_;
 };
 
 // OnboardingDismissPromptView ------------------------------------------------
@@ -166,13 +173,14 @@ class OnboardingDismissPromptView : public PhoneHubInterstitialView {
 // OnboardingView -------------------------------------------------------------
 OnboardingView::OnboardingView(
     chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker,
-    TrayBubbleView* bubble_view)
+    TrayBubbleView* bubble_view,
+    OnboardingFlow onboarding_flow)
     : onboarding_ui_tracker_(onboarding_ui_tracker), bubble_view_(bubble_view) {
   SetID(PhoneHubViewID::kOnboardingView);
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  main_view_ = AddChildView(
-      std::make_unique<OnboardingMainView>(onboarding_ui_tracker_, this));
+  main_view_ = AddChildView(std::make_unique<OnboardingMainView>(
+      onboarding_ui_tracker_, this, onboarding_flow));
 
   LogInterstitialScreenEvent(InterstitialScreenEvent::kShown);
 }

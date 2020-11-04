@@ -56,9 +56,13 @@ std::unique_ptr<PhoneHubContentView> PhoneHubUiController::CreateContentView(
     case UiState::kHidden:
       return nullptr;
     case UiState::kOnboardingWithoutPhone:
+      return std::make_unique<OnboardingView>(
+          phone_hub_manager_->GetOnboardingUiTracker(), bubble_view,
+          OnboardingView::kNewMultideviceUser);
     case UiState::kOnboardingWithPhone:
       return std::make_unique<OnboardingView>(
-          phone_hub_manager_->GetOnboardingUiTracker(), bubble_view);
+          phone_hub_manager_->GetOnboardingUiTracker(), bubble_view,
+          OnboardingView::kExistingMultideviceUser);
     case UiState::kBluetoothDisabled:
       return std::make_unique<BluetoothDisabledView>();
     case UiState::kInitialConnecting:

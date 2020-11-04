@@ -31,8 +31,12 @@ class ASH_EXPORT OnboardingView : public PhoneHubContentView {
  public:
   METADATA_HEADER(OnboardingView);
 
+  // The different onboarding flows that are supported.
+  enum OnboardingFlow { kExistingMultideviceUser = 0, kNewMultideviceUser };
+
   OnboardingView(chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker,
-                 TrayBubbleView* bubble_view);
+                 TrayBubbleView* bubble_view,
+                 OnboardingFlow onboarding_flow);
   OnboardingView(const OnboardingView&) = delete;
   OnboardingView& operator=(const OnboardingView&) = delete;
   ~OnboardingView() override;
