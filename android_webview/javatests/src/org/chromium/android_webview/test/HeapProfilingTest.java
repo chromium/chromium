@@ -44,6 +44,7 @@ public class HeapProfilingTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "http://crbug.com/1145008")
     public void testModeBrowserDynamicPseudo() {
         HeapProfilingTestShim shim = new HeapProfilingTestShim();
         Assert.assertTrue(shim.runTestForMode("browser", true, "pseudo", false, false));
@@ -51,6 +52,7 @@ public class HeapProfilingTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "http://crbug.com/1145008")
     public void testModeBrowserDynamicPseudoSampleEverything() {
         HeapProfilingTestShim shim = new HeapProfilingTestShim();
         Assert.assertTrue(shim.runTestForMode("browser", true, "pseudo", true, true));
@@ -58,6 +60,7 @@ public class HeapProfilingTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "http://crbug.com/1145008")
     public void testModeBrowserDynamicPseudoSamplePartial() {
         HeapProfilingTestShim shim = new HeapProfilingTestShim();
         Assert.assertTrue(shim.runTestForMode("browser", true, "pseudo", true, false));
