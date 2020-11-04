@@ -279,6 +279,16 @@ public class TabListContainerViewBinderTest extends DummyUiActivityTestCase {
                 INCREASED_CONTAINER_HEIGHT, shadowImageView.getTranslationY(), MathUtils.EPSILON);
     }
 
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testBottomPaddingSetsBottomPadding() {
+        assertThat(mRecyclerView.getPaddingBottom(), equalTo(0));
+
+        mContainerModel.set(TabListContainerProperties.BOTTOM_PADDING, CONTAINER_HEIGHT);
+        assertThat(mRecyclerView.getPaddingBottom(), equalTo(CONTAINER_HEIGHT));
+    }
+
     @Override
     public void tearDownTest() throws Exception {
         mMCP.destroy();

@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -782,6 +783,23 @@ public class TabSwitcherMediatorUnitTest {
                 0, 0, 0, 0, false);
         assertEquals(0, mModel.get(TabListContainerProperties.TOP_MARGIN));
         assertEquals(0, mModel.get(TabListContainerProperties.SHADOW_TOP_OFFSET));
+    }
+
+    @Test
+    public void updatesBottomPaddingOnlyInGridMode() {
+        doReturn(16f).when(mResources).getDimension(R.dimen.tab_grid_bottom_padding);
+
+        assertEquals(0, mModel.get(TabListContainerProperties.BOTTOM_PADDING));
+        new TabSwitcherMediator(mContext, mResetHandler, mModel, mTabModelSelector,
+                mBrowserControlsStateProvider, mCompositorViewHolder, null, mMessageItemsController,
+                mMultiWindowModeStateDispatcher, TabListCoordinator.TabListMode.GRID);
+        assertEquals(16, mModel.get(TabListContainerProperties.BOTTOM_PADDING));
+
+        mModel.set(TabListContainerProperties.BOTTOM_PADDING, 0);
+        new TabSwitcherMediator(mContext, mResetHandler, mModel, mTabModelSelector,
+                mBrowserControlsStateProvider, mCompositorViewHolder, null, mMessageItemsController,
+                mMultiWindowModeStateDispatcher, TabListCoordinator.TabListMode.STRIP);
+        assertEquals(0, mModel.get(TabListContainerProperties.BOTTOM_PADDING));
     }
 
     @Test
