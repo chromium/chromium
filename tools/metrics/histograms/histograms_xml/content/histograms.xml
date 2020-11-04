@@ -37,11 +37,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentCapture.CaptureContentTime" units="microseconds"
-    expires_after="2021-04-04">
+    expires_after="M87">
+  <obsolete>
+    Replaced by ContentCapture.CaptureContentTime2 since M87, the new histogram
+    records the grouping time additionally.
+  </obsolete>
   <owner>michaelbai@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
   <summary>
     The time taken to capture the on-screen content.
+
+    Note that this metrics is only recorded on clients on which a
+    high-resolution clock is available.
+  </summary>
+</histogram>
+
+<histogram name="ContentCapture.CaptureContentTime2" units="microseconds"
+    expires_after="2021-04-04">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
+  <summary>
+    The time taken to capture the on-screen content and group them by document.
 
     Note that this metrics is only recorded on clients on which a
     high-resolution clock is available.
@@ -88,6 +104,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Note: The time of task that was scheduled for the retry wasn't measured
     because it is always 500ms.
+  </summary>
+</histogram>
+
+<histogram name="ContentCapture.TaskRunsPerCapture" units="runs"
+    expires_after="2021-04-04">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
+  <summary>
+    The number of the times the task runs for a content capture session.
+
+    A content capture session begins with capturing on-screen content and ends
+    in sending all changes.
   </summary>
 </histogram>
 

@@ -642,7 +642,8 @@ TEST_P(ContentCaptureTest, TaskHistogramReporter) {
       ContentCaptureTaskHistogramReporter::kCaptureContentDelayTime, 0u);
   histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kSentContentCount, 0u);
-
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kTaskRunsPerCapture, 0u);
   histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kTaskDelayInMs, 1u);
 
@@ -695,6 +696,13 @@ TEST_P(ContentCaptureTest, TaskHistogramReporter) {
   histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kTaskDelayInMs, 1u);
 
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kTaskRunsPerCapture, 1u);
+  // Verify the task ran 4 times, first run stopped before capturing content
+  // and 2nd run captured content, 3rd and 4th run sent the content out.
+  histograms.ExpectBucketCount(
+      ContentCaptureTaskHistogramReporter::kTaskRunsPerCapture, 4u, 1u);
+
   // Create a node and run task until it stops.
   CreateTextNodeAndNotifyManager();
   GetContentCaptureTask()->SetTaskStopState(
@@ -708,6 +716,13 @@ TEST_P(ContentCaptureTest, TaskHistogramReporter) {
       ContentCaptureTaskHistogramReporter::kCaptureContentDelayTime, 2u);
   histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kSentContentCount, 0u);
+
+  histograms.ExpectTotalCount(
+      ContentCaptureTaskHistogramReporter::kTaskRunsPerCapture, 2u);
+  // Verify the task ran 1 times for this session because we didn't explicitly
+  // stop it.
+  histograms.ExpectBucketCount(
+      ContentCaptureTaskHistogramReporter::kTaskRunsPerCapture, 1u, 1u);
 
   GetContentCaptureTask()->ClearDocumentSessionsForTesting();
   ThreadState::Current()->CollectAllGarbageForTesting();

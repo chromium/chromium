@@ -103,10 +103,10 @@ bool ContentCaptureTask::CaptureContent() {
   if (histogram_reporter_)
     histogram_reporter_->OnCaptureContentStarted();
   bool result = CaptureContent(buffer);
-  if (histogram_reporter_)
-    histogram_reporter_->OnCaptureContentEnded(buffer.size());
   if (!buffer.IsEmpty())
     task_session_->SetCapturedContent(buffer);
+  if (histogram_reporter_)
+    histogram_reporter_->OnCaptureContentEnded(buffer.size());
   return result;
 }
 
@@ -230,8 +230,15 @@ void ContentCaptureTask::Run(TimerBase*) {
   task_delay_->IncreaseDelayExponent();
   if (histogram_reporter_)
     histogram_reporter_->OnTaskRun();
-  if (!RunInternal()) {
+  bool completed = RunInternal();
+  if (!completed) {
     ScheduleInternal(ScheduleReason::kRetryTask);
+  }
+  if (histogram_reporter_ &&
+      (completed || task_state_ == TaskState::kCaptureContent)) {
+    // The current capture session ends if the task indicates it completed or
+    // is about to capture the new changes.
+    histogram_reporter_->OnAllCapturedContentSent();
   }
 }
 
