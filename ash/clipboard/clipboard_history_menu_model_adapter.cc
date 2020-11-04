@@ -68,9 +68,12 @@ void ClipboardHistoryMenuModelAdapter::Run(
 
     // Enable or disable the command depending on whether its corresponding
     // clipboard history item is allowed to read or not.
-    model_->SetEnabledAt(
-        model_->GetIndexOfCommandId(command_id),
-        IsDataReadAllowed(item.data().source(), /*data_dst=*/nullptr));
+    // This clipboard read isn't initiated by the user, that's why it shouldn't
+    // notify if the clipboard is restricted.
+    ui::DataTransferEndpoint data_dst(ui::EndpointType::kDefault,
+                                      /*notify_if_restricted=*/false);
+    model_->SetEnabledAt(model_->GetIndexOfCommandId(command_id),
+                         IsDataReadAllowed(item.data().source(), &data_dst));
 
     item_snapshots_.emplace(command_id, item);
     ++command_id;
