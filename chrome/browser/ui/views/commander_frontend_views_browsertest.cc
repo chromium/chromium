@@ -26,6 +26,9 @@ class CommanderFrontendViewsTest : public InProcessBrowserTest {
     void OnCommandSelected(size_t command_index, int result_set_id) override {
       command_selected_invocations_.push_back(command_index);
     }
+    void OnCompositeCommandCancelled() override {
+      composite_command_cancelled_invocation_count_++;
+    }
     void SetUpdateCallback(commander::CommanderBackend::ViewModelUpdateCallback
                                callback) override {
       callback_ = std::move(callback);
@@ -46,12 +49,16 @@ class CommanderFrontendViewsTest : public InProcessBrowserTest {
       return command_selected_invocations_;
     }
 
+    int composite_command_cancelled_invocation_count() {
+      return composite_command_cancelled_invocation_count_;
+    }
     int reset_invocation_count() { return reset_invocation_count_; }
 
    private:
     commander::CommanderBackend::ViewModelUpdateCallback callback_;
     std::vector<base::string16> text_changed_invocations_;
     std::vector<size_t> command_selected_invocations_;
+    int composite_command_cancelled_invocation_count_ = 0;
     int reset_invocation_count_ = 0;
   };
 
@@ -261,5 +268,17 @@ IN_PROC_BROWSER_TEST_F(CommanderFrontendViewsTest, PassesOnTextChanged) {
   frontend->OnTextChanged(input);
   ASSERT_EQ(backend_->text_changed_invocations().size(), 1u);
   EXPECT_EQ(backend_->text_changed_invocations().back(), input);
+  frontend->Hide();
+}
+
+IN_PROC_BROWSER_TEST_F(CommanderFrontendViewsTest,
+                       PassesOnCompositeCommandCancelled) {
+  auto frontend = std::make_unique<CommanderFrontendViews>(backend_.get());
+  frontend->Show(browser());
+  ignore_result(WaitForCommanderWidgetAttachedTo(browser()));
+
+  EXPECT_EQ(backend_->composite_command_cancelled_invocation_count(), 0);
+  frontend->OnCompositeCommandCancelled();
+  EXPECT_EQ(backend_->composite_command_cancelled_invocation_count(), 1);
   frontend->Hide();
 }

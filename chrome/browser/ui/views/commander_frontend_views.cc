@@ -206,6 +206,11 @@ void CommanderFrontendViews::OnOptionSelected(size_t option_index,
   backend_->OnCommandSelected(option_index, result_set_id);
 }
 
+void CommanderFrontendViews::OnCompositeCommandCancelled() {
+  DCHECK(is_showing());
+  backend_->OnCompositeCommandCancelled();
+}
+
 void CommanderFrontendViews::OnDismiss() {
   Hide();
 }

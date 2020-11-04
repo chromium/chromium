@@ -50,6 +50,7 @@ class CommanderFrontendViews : public commander::CommanderFrontend,
   // CommanderHandler::Delegate overrides
   void OnTextChanged(const base::string16& text) override;
   void OnOptionSelected(size_t option_index, int result_set_id) override;
+  void OnCompositeCommandCancelled() override;
   void OnDismiss() override;
   void OnHeightChanged(int new_height) override;
   void OnHandlerEnabled(bool is_enabled) override;

@@ -14,6 +14,8 @@ constexpr char kTextChangedMessage[] = "textChanged";
 constexpr char kOptionSelectedMessage[] = "optionSelected";
 constexpr char kDismissMessage[] = "dismiss";
 constexpr char kHeightChangedMessage[] = "heightChanged";
+constexpr char kCompositeCommandCancelledMessage[] =
+    "compositeCommandCancelled";
 // WebUI event keys.
 constexpr char kViewModelUpdatedEvent[] = "view-model-updated";
 constexpr char kInitializeEvent[] = "initialize";
@@ -38,6 +40,10 @@ void CommanderHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       kOptionSelectedMessage,
       base::BindRepeating(&CommanderHandler::HandleOptionSelected,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      kCompositeCommandCancelledMessage,
+      base::BindRepeating(&CommanderHandler::HandleCompositeCommandCancelled,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       kDismissMessage, base::BindRepeating(&CommanderHandler::HandleDismiss,
@@ -73,6 +79,14 @@ void CommanderHandler::HandleOptionSelected(const base::ListValue* args) {
   int result_set_id = args->GetList()[1].GetInt();
   if (delegate_)
     delegate_->OnOptionSelected(index, result_set_id);
+}
+
+void CommanderHandler::HandleCompositeCommandCancelled(
+    const base::ListValue* args) {
+  if (!delegate_)
+    return;
+  AllowJavascript();
+  delegate_->OnCompositeCommandCancelled();
 }
 
 void CommanderHandler::HandleDismiss(const base::ListValue* args) {

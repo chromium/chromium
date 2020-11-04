@@ -65,6 +65,10 @@ class CommanderUITest : public InProcessBrowserTest,
     option_selected_invocations_.emplace_back(option_index, result_set_id);
   }
 
+  void OnCompositeCommandCancelled() override {
+    composite_command_cancelled_invocation_count_++;
+  }
+
   void OnDismiss() override { dismiss_invocation_count_++; }
 
   void OnHeightChanged(int new_height) override {
@@ -82,20 +86,24 @@ class CommanderUITest : public InProcessBrowserTest,
     return height_changed_invocations_;
   }
 
-  size_t dismiss_invocation_count() { return dismiss_invocation_count_; }
+  int composite_command_cancelled_invocation_count() {
+    return composite_command_cancelled_invocation_count_;
+  }
+  int dismiss_invocation_count() { return dismiss_invocation_count_; }
 
  private:
   std::unique_ptr<content::WebContents> contents_;
-  size_t dismiss_invocation_count_ = 0;
+  int dismiss_invocation_count_ = 0;
+  int composite_command_cancelled_invocation_count_ = 0;
   std::vector<base::string16> text_changed_invocations_;
   std::vector<std::pair<size_t, int>> option_selected_invocations_;
   std::vector<int> height_changed_invocations_;
 };
 
 IN_PROC_BROWSER_TEST_F(CommanderUITest, Dismiss) {
-  EXPECT_EQ(dismiss_invocation_count(), 0u);
+  EXPECT_EQ(dismiss_invocation_count(), 0);
   ExecuteJS("chrome.send('dismiss')");
-  EXPECT_EQ(dismiss_invocation_count(), 1u);
+  EXPECT_EQ(dismiss_invocation_count(), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(CommanderUITest, HeightChanged) {
@@ -118,6 +126,12 @@ IN_PROC_BROWSER_TEST_F(CommanderUITest, OptionSelected) {
   ASSERT_EQ(option_selected_invocations().size(), 1u);
   std::pair<size_t, int> expected({13, 586});
   ASSERT_EQ(option_selected_invocations().back(), expected);
+}
+
+IN_PROC_BROWSER_TEST_F(CommanderUITest, CompositeCommandCancelled) {
+  EXPECT_EQ(composite_command_cancelled_invocation_count(), 0);
+  ExecuteJS("chrome.send('compositeCommandCancelled')");
+  EXPECT_EQ(composite_command_cancelled_invocation_count(), 1);
 }
 
 TEST(CommanderHandlerTest, ViewModelPassed) {
