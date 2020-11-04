@@ -9,18 +9,21 @@
 
 #include "base/i18n/rtl.h"
 #include "base/strings/string16.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service_delegate.h"
 #include "chrome/browser/ui/views/sharesheet/sharesheet_expand_button.h"
 #include "chrome/browser/ui/views/sharesheet/sharesheet_target_button.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
@@ -130,6 +133,11 @@ void SharesheetBubbleView::ShowBubble(
   title->SetProperty(views::kMarginsKey, gfx::Insets(kSpacing));
 
   if (targets.empty()) {
+    auto* image =
+        main_view_->AddChildView(std::make_unique<views::ImageView>());
+    image->SetImage(*ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+        IDR_SHARESHEET_EMPTY));
+    image->SetProperty(views::kMarginsKey, gfx::Insets(0, 0, kSpacing, 0));
     // TODO(crbug.com/1138037) Update label typography.
     main_view_->AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_SHARESHEET_ZERO_STATE_LABEL)));

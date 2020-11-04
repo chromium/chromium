@@ -279,6 +279,7 @@
         <structure type="chrome_scaled_image" name="IDR_SETTINGS_FAVICON" file="common/favicon_settings.png" />
       </if>
       <if expr="chromeos">
+        <structure type="chrome_scaled_image" name="IDR_SHARESHEET_EMPTY" file="cros/sharesheet_empty.png" />
         <structure type="chrome_scaled_image" name="IDR_SMB_ICON" file="cros/smb_icon.png" />
         <structure type="chrome_scaled_image" name="IDR_LOGO_AVATAR_CIRCLE_BLUE_COLOR" file="cros/logo_avatar_circle_blue_color.png" />
         <structure type="chrome_scaled_image" name="IDR_LOGO_GOOGLE_COLOR_90" file="cros/logo_google_color_90.png" />
