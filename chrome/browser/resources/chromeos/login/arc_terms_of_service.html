@@ -115,11 +115,11 @@
           <p>[[i18nDynamic(locale, 'arcTermsOfServiceError')]]</p>
         </div>
       </div>
-      <div slot="bottom-buttons" class="flex layout horizontal">
+      <div slot="back-navigation">
         <oobe-back-button id="arcTosBackButton" hidden="[[!demoMode]]"
             on-click="onBack_"></oobe-back-button>
-        <div class="flex">
-        </div>
+      </div>
+      <div slot="bottom-buttons">
         <oobe-text-button id="arcTosRetryButton"
             inverse on-click="onRetry_"
             disabled="[[arcTosButtonsDisabled]]"

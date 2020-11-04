@@ -46,8 +46,11 @@
           </pin-keyboard>
         </div>
       </div>
-      <div slot="bottom-buttons" class="layout horizontal justified">
-        <oobe-back-button id="back" on-click="onBackClicked_"></oobe-back-button>
+      <div slot="back-navigation">
+        <oobe-back-button id="back" on-click="onBackClicked_">
+        </oobe-back-button>
+      </div>
+      <div slot="bottom-buttons">
         <oobe-next-button id="submit" on-click="onSubmit_"
             disabled="[[!canSubmit_]]"></oobe-next-button>
       </div>

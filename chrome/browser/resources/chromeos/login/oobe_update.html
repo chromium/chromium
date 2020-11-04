@@ -46,9 +46,11 @@
             srcset="images/1x/updating_1x.svg 1x,
                     images/2x/updating_2x.svg 2x">
       </div>
-      <div slot="bottom-buttons" class="layout horizontal justified">
+      <div slot="back-navigation">
         <oobe-back-button id="cellular-permission-back" inverse
             on-click="onBackClicked_"></oobe-back-button>
+      </div>
+      <div slot="bottom-buttons">
         <oobe-next-button id="cellular-permission-next" inverse
             on-click="onNextClicked_"></oobe-next-button>
       </div>

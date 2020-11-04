@@ -107,7 +107,9 @@
         </div>
         <template is="dom-if" if="[[hasButtons]]">
           <div id="oobe-bottom" hideShadow$="[[hideShadow]]"
-              class="slot-container layout horizontal center">
+              class="slot-container layout horizontal">
+            <slot name="back-navigation"></slot>
+            <div class="flex"></div>
             <slot name="bottom-buttons"></slot>
           </div>
         </template>

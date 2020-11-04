@@ -67,11 +67,11 @@
           </div>
         </div>
       </div>
-      <div slot="bottom-buttons" class="flex layout horizontal">
+      <div slot="back-navigation">
         <oobe-back-button
             on-click="onEulaBackButtonPressed_"></oobe-back-button>
-        <div class="flex">
-        </div>
+      </div>
+      <div slot="bottom-buttons">
         <oobe-text-button id="acceptButton" inverse on-click="eulaAccepted_"
             class="focus-on-show"
             disabled="[[acceptButtonDisabled]]"

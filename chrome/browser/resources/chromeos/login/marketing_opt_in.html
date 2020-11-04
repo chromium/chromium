@@ -108,9 +108,11 @@
           </span>
         </oobe-a11y-option>
       </div>
-      <div slot="bottom-buttons" class="layout horizontal justified">
+      <div slot="back-navigation">
         <oobe-back-button on-click="onToggleAccessibilityPage_"
             id="final-accessibility-back-button"></oobe-back-button>
+      </div>
+      <div slot="bottom-buttons">
         <oobe-text-button on-click="onGetStarted_" class="focus-on-show"
             id="final-accessibility-next-button" inverse
             text-key="finalA11yPageDoneButtonTitle">

@@ -128,10 +128,6 @@
   padding: unset;
 }
 
-#oobe-bottom ::slotted(*) {
-  width: 100%;
-}
-
 #oobe-icon-div ::slotted(hd-iron-icon),
 #oobe-icon-div ::slotted(iron-icon) {
   --iron-icon-height: 32px;

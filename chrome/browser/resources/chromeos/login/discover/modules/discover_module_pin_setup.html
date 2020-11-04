@@ -109,11 +109,12 @@
             srcset="images/pin_illustration_1x.svg 1x,
                     images/pin_illustration_2x.svg 2x">
       </div>
-      <div slot="bottom-buttons" class="flex layout horizontal end-justified">
+      <div slot="back-navigation">
         <oobe-back-button
             hidden="[[isStepHidden_(step_, 'confirm')]]"
             on-click="onBackButton_"></oobe-back-button>
-        <div class="flex"></div>
+      </div>
+      <div slot="bottom-buttons">
         <oobe-text-button id="setupSkipButton" on-click="onSkipButton_"
             text-key="discoverPinSetupSkip"
             hidden="[[!isStepHidden_(step_, 'done')]]">

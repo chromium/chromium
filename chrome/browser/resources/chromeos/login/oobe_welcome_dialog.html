@@ -125,7 +125,7 @@
           </a>
         </div>
       </div>
-      <div slot="bottom-buttons" class="layout horizontal center">
+      <div slot="back-navigation">
         <oobe-welcome-secondary-button id="languageSelectionButton"
             icon1x="oobe-welcome-dialog-20:language"
             icon2x="oobe-welcome-dialog-40:language"
@@ -145,7 +145,8 @@
             icon2x="oobe-welcome-64:timezone"
             on-click="onTimezoneClicked_"
             hidden="[[!timezoneButtonVisible]]"></oobe-welcome-secondary-button>
-        <div class="flex"></div>
+      </div>
+      <div slot="bottom-buttons">
         <oobe-next-button id="welcomeNextButton"
             inverse on-click="onNextClicked_" text-key="welcomeNextButtonText">
         </oobe-text-button>

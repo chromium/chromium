@@ -44,31 +44,28 @@
               name="signin-frame"></webview>
         </div>
       </div>
-      <div id="gaia-screen-navigation-buttons"
-          slot="bottom-buttons" class="relative flex layout horizontal">
-        <div id="buttons-container" class="flex layout horizontal center">
-          <oobe-back-button id="signin-back-button"
-              disabled="[[!navigationEnabled_]]"
-              on-click="onBackButtonClicked_">
-          </oobe-back-button>
-          <div class="flex">
-          </div>
-          <oobe-text-button id="secondary-action-button"
-              label-for-aria="[[secondaryActionButtonLabel_]]"
-              on-click="onSecondaryActionButtonClicked_"
-              hidden="[[!secondaryActionButtonLabel_]]"
-              disabled="[[!secondaryActionButtonEnabled_]]">
-            <div slot="text">[[secondaryActionButtonLabel_]]</div>
-          </oobe-text-button>
-          <oobe-text-button id="primary-action-button"
-              label-for-aria="[[primaryActionButtonLabel_]]"
-              on-click="onPrimaryActionButtonClicked_"
-              hidden="[[!primaryActionButtonLabel_]]"
-              disabled="[[!primaryActionButtonEnabled_]]"
-              inverse>
-              <div slot="text">[[primaryActionButtonLabel_]]</div>
-          </oobe-text-button>
-        </div>
+      <div slot="back-navigation">
+        <oobe-back-button id="signin-back-button"
+            disabled="[[!navigationEnabled_]]"
+            on-click="onBackButtonClicked_">
+        </oobe-back-button>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button id="secondary-action-button"
+            label-for-aria="[[secondaryActionButtonLabel_]]"
+            on-click="onSecondaryActionButtonClicked_"
+            hidden="[[!secondaryActionButtonLabel_]]"
+            disabled="[[!secondaryActionButtonEnabled_]]">
+          <div slot="text">[[secondaryActionButtonLabel_]]</div>
+        </oobe-text-button>
+        <oobe-text-button id="primary-action-button"
+            label-for-aria="[[primaryActionButtonLabel_]]"
+            on-click="onPrimaryActionButtonClicked_"
+            hidden="[[!primaryActionButtonLabel_]]"
+            disabled="[[!primaryActionButtonEnabled_]]"
+            inverse>
+            <div slot="text">[[primaryActionButtonLabel_]]</div>
+        </oobe-text-button>
       </div>
     </oobe-dialog>
     <offline-gaia id="offline-gaia" class="gaia-dialog"
@@ -95,11 +92,11 @@
           </a>
         </p>
       </div>
-      <div slot="bottom-buttons" class="flex layout horizontal">
-        <oobe-back-button id="interstitial-back" on-click="onBackButtonClicked_">
-        </oobe-back-button>
-        <div class="flex">
-        </div>
+      <div slot="back-navigation">
+        <oobe-back-button id="interstitial-back"
+            on-click="onBackButtonClicked_"></oobe-back-button>
+      </div>
+      <div slot="bottom-buttons">
         <oobe-next-button on-click="onSamlInterstitialNext_"
             id="interstitial-next" class="focus-on-show"></oobe-next-button>
       </div>

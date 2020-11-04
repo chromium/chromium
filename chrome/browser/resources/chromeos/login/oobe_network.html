@@ -26,8 +26,10 @@
             is-network-connected="{{isConnected_}}">
         </network-select-login>
       </div>
-      <div slot="bottom-buttons" class="layout horizontal justified">
+      <div slot="back-navigation">
         <oobe-back-button on-click="onBackClicked_"></oobe-back-button>
+      </div>
+      <div slot="bottom-buttons">
         <oobe-next-button id="nextButton" disabled="[[!isConnected_]]"
             on-click="onNextClicked_"></oobe-next-button>
       </div>

@@ -138,12 +138,13 @@
           </div>
         </div>
       </div>
-      <div slot="bottom-buttons" class="layout horizontal" hidden="[[loading]]">
+      <div slot="back-navigation" hidden="[[loading]]">
         <oobe-back-button id="backToUnlockButton" on-click="onBackToUnlock_"
             disabled="[[disabled]]" hidden></oobe-back-button>
         <oobe-back-button id="backButton" on-click="onBackButton_"
             hidden="[[isDomainJoin]]"></oobe-back-button>
-        <div class="flex"></div>
+      </div>
+      <div slot="bottom-buttons" hidden="[[loading]]">
         <oobe-next-button id="nextButton" on-click="onSubmit_"
             disabled="[[disabled]]"></oobe-next-button>
       </div>

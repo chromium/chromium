@@ -105,11 +105,12 @@ found in the LICENSE file. -->
         </cr-radio-group>
         </div>
       </div>
-      <div slot="bottom-buttons" class="layout horizontal">
+      <div slot="back-navigation">
         <oobe-back-button id="backButton" on-click="onBackClicked_"
             hidden="[[!isBackButtonVisible_]]">
         </oobe-back-button>
-        <div class="flex"></div>
+      </div>
+      <div slot="bottom-buttons">
         <oobe-next-button id="nextButton" class="focus-on-show"
             on-click="onNextClicked_">
         </oobe-next-button>
@@ -161,9 +162,11 @@ found in the LICENSE file. -->
           [[i18nDynamic(locale, 'childSignInParentNotificationText')]]
         </div>
       </div>
-      <div slot="bottom-buttons" class="layout horizontal justified">
+      <div slot="back-navigation">
         <oobe-back-button id="childBackButton" on-click="onBackClicked_">
         </oobe-back-button>
+      </div>
+      <div slot="bottom-buttons">
         <oobe-next-button id="childNextButton" on-click="onNextClicked_"
             disabled="[[!selectedSignInMethod]]">
         </oobe-next-button>

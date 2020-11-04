@@ -37,7 +37,7 @@
             </div>
             <webview id="authView" class="flex" name="authView"></webview>
           </div>
-          <div slot="bottom-buttons" class="layout horizontal start-justified">
+          <div slot="back-navigation">
             <oobe-back-button id="signinBackButton"
                 disabled="[[authenticatorDialogDisplayed_]]"
                 on-click="onBackButtonClicked_"></oobe-back-button>
@@ -92,16 +92,16 @@
                   'enrollmentErrorIllustrationTitle')]]"
               class="oobe-illustration">
         </div>
-        <div slot="bottom-buttons" class="layout horizontal end-justified">
+        <div slot="back-navigation">
+           <!-- BACK - Shown when the generic cancel button is hidden -->
+           <oobe-back-button id="errorCancelBackButton"
+              hidden$="[[isGenericCancel_(isAutoEnroll_, isForced_)]]"
+              on-click="cancel"></oobe-back-button>
+        </div>
+        <div slot="bottom-buttons">
           <!-- BOTTOM BUTTONS: GENERIC ERROR -->
           <div id="genericErrorBottomButtons"
               class="flex layout horizontal end-justified" for-step="error">
-
-            <!-- BACK - Shown when the generic cancel button is hidden -->
-            <oobe-back-button id="errorCancelBackButton"
-                hidden$="[[isGenericCancel_(isAutoEnroll_, isForced_)]]"
-                on-click="cancel" style="margin-right: auto"></oobe-back-button>
-
             <!-- GENERAL CANCEL BUTTON (SKIP / ENROLL MANUALLY) -->
             <oobe-text-button id="errorGenericCancelButton"
                 hidden$="[[!isGenericCancel_(isAutoEnroll_, isForced_)]]"

@@ -26,10 +26,12 @@
         hidden="[[!isInErrorState_(uiState)]]" has-buttons>
       <iron-icon icon="cr:warning" slot="oobe-icon" class="warning">
       </iron-icon>
-      <div slot="bottom-buttons" class="flex layout horizontal">
+      <div slot="back-navigation">
         <oobe-back-button id="errorBackButton"
             disabled="[[backButtonDisabled_]]"
             on-click="onTosBackButtonPressed_"></oobe-back-button>
+      </div>
+      <div slot="bottom-buttons">
         <oobe-text-button id="retryButton" inverse
             text-key="termsOfServiceRetryButton"
             disabled="[[retryButtonDisabled_]]"
@@ -67,9 +69,11 @@
             class="focus-on-show flex oobe-tos-webview">
         </webview>
       </div>
-      <div slot="bottom-buttons" class="flex layout horizontal end-justified">
+      <div slot="back-navigation">
         <oobe-back-button id="backButton" disabled="[[backButtonDisabled_]]"
             on-click="onTosBackButtonPressed_"></oobe-back-button>
+      </div>
+      <div slot="bottom-buttons">
         <oobe-text-button id="acceptButton" inverse
             text-key="termsOfServiceAcceptButton"
             disabled="[[acceptButtonDisabled_]]"
