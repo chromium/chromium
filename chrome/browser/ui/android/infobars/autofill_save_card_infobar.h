@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/android/infobars/chrome_confirm_infobar.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
 namespace autofill {
 class AutofillSaveCardInfoBarDelegateMobile;
@@ -20,8 +21,9 @@ class AutofillSaveCardInfoBarDelegateMobile;
 class AutofillSaveCardInfoBar : public ChromeConfirmInfoBar {
  public:
   explicit AutofillSaveCardInfoBar(
-      std::unique_ptr<autofill::AutofillSaveCardInfoBarDelegateMobile>
-          delegate);
+      std::unique_ptr<autofill::AutofillSaveCardInfoBarDelegateMobile> delegate,
+      base::Optional<AccountInfo> account_info);
+
   ~AutofillSaveCardInfoBar() override;
 
   // Called when a link in the legal message text was clicked.
@@ -39,6 +41,8 @@ class AutofillSaveCardInfoBar : public ChromeConfirmInfoBar {
   // of autofill_save_card_infobar_delegate_mobile.cc as Android icon .xmls
   // are stored in /chrome and /components cannot depend on /chrome.
   int GetGooglePayBrandingIconId();
+
+  base::Optional<AccountInfo> account_info_;
 
   DISALLOW_COPY_AND_ASSIGN(AutofillSaveCardInfoBar);
 };

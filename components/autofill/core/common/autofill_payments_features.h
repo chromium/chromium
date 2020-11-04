@@ -30,6 +30,8 @@ extern const base::Feature kAutofillEnableCardNicknameUpstream;
 extern const base::Feature kAutofillEnableFixedPaymentsBubbleLogging;
 extern const base::Feature kAutofillEnableGoogleIssuedCard;
 extern const base::Feature kAutofillEnableOffersInDownstream;
+extern const base::Feature
+    kAutofillEnableSaveCardInfoBarAccountIndicationFooter;
 extern const base::Feature kAutofillEnableStickyPaymentsBubble;
 extern const base::Feature kAutofillEnableToolbarStatusChip;
 extern const base::Feature kAutofillEnableVirtualCard;
