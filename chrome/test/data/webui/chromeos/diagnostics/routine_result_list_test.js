@@ -6,16 +6,18 @@ import 'chrome://diagnostics/routine_result_list.js';
 
 import {RoutineName, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.m.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
 export function routineResultListTestSuite() {
-  /** @type {?HTMLElement} */
+  /** @type {?RoutineResultListElement} */
   let routineResultListElement = null;
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
   });
 
   teardown(function() {
@@ -34,7 +36,8 @@ export function routineResultListTestSuite() {
     assertFalse(!!routineResultListElement);
 
     // Add the entry to the DOM.
-    routineResultListElement = document.createElement('routine-result-list');
+    routineResultListElement = /** @type {!RoutineResultListElement} */ (
+        document.createElement('routine-result-list'));
     assertTrue(!!routineResultListElement);
     document.body.appendChild(routineResultListElement);
 
@@ -55,7 +58,7 @@ export function routineResultListTestSuite() {
 
   /**
    * Returns an array of the entries in the list.
-   * @return {!Array<!RoutineResultEntry>}
+   * @return {!NodeList<!RoutineResultEntryElement>}
    */
   function getEntries() {
     return dx_utils.getResultEntries(routineResultListElement);

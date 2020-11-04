@@ -6,6 +6,8 @@ import {RoutineName, RoutineResultInfo, StandardRoutineResult} from 'chrome://di
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {ExecutionProgress, ResultStatusItem, RoutineListExecutor} from 'chrome://diagnostics/routine_list_executor.js';
 
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
+
 export function fakeRoutineListExecutorTestSuite() {
   /** @type {?FakeSystemRoutineController} */
   let controller = null;
@@ -61,7 +63,7 @@ export function fakeRoutineListExecutorTestSuite() {
     /** @type {!function(!ResultStatusItem)} */
     let statusCallback = (status) => {
       assertTrue(upto < expectedCallbacks.length);
-      assertEquals(expectedCallbacks[upto].name, status.name);
+      assertEquals(expectedCallbacks[upto].routine, status.routine);
       assertEquals(expectedCallbacks[upto].progress, status.progress);
       if (status.progress === ExecutionProgress.kRunning) {
         assertEquals(null, status.result);

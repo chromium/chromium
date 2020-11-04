@@ -4,14 +4,15 @@
 
 import 'chrome://diagnostics/data_point.js';
 
-import {flushTasks} from 'chrome://test/test_util.m.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.m.js';
 
 export function dataPointTestSuite() {
-  /** @type {?HTMLElement} */
+  /** @type {?DataPointElement} */
   let dataPointElement = null;
 
   setup(() => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
   });
 
   teardown(() => {
@@ -29,7 +30,8 @@ export function dataPointTestSuite() {
     assertFalse(!!dataPointElement);
 
     // Add the data point to the DOM.
-    dataPointElement = document.createElement('data-point');
+    dataPointElement =
+        /** @type {!DataPointElement} */ (document.createElement('data-point'));
     assertTrue(!!dataPointElement);
     dataPointElement.header = header;
     dataPointElement.value = value;

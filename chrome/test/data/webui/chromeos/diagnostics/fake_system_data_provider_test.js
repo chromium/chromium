@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BatteryChargeStatusObserver, BatteryHealthObserver, CpuUsageObserver, DeviceCapabilities, MemoryUsageObserver, SystemInfo, VersionInfo} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeBatteryInfo2, fakeCpuUsage, fakeMemoryUsage} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
 export function fakeSystemDataProviderTestSuite() {
   /** @type {?FakeSystemDataProvider} */
@@ -32,10 +35,10 @@ export function fakeSystemDataProviderTestSuite() {
     /** @type {!SystemInfo} */
     const expected = {
       board_name: 'BestBoard',
-      cpu_model: 'SuperFast CPU',
+      cpu_model_name: 'SuperFast CPU',
       total_memory_kib: 9999,
-      cores_number: 4,
-      version_info: version,
+      cpu_threads_count: 4,
+      version: version,
       device_capabilities: capabilities,
     };
 

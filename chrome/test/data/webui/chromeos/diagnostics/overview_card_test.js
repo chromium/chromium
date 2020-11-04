@@ -4,13 +4,16 @@
 
 import 'chrome://diagnostics/overview_card.js';
 
+import {SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeSystemInfo} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.m.js';
 
 export function overviewCardTestSuite() {
-  /** @type {?HTMLElement} */
+  /** @type {?OverviewCardElement} */
   let overviewElement = null;
 
   /** @type {?FakeSystemDataProvider} */
@@ -22,7 +25,7 @@ export function overviewCardTestSuite() {
   });
 
   setup(() => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
   });
 
   teardown(() => {
@@ -31,7 +34,7 @@ export function overviewCardTestSuite() {
     provider.reset();
   });
 
-  /** @param {!SystemInfo} */
+  /** @param {!SystemInfo} fakeSystemInfo */
   function initializeOverviewCard(fakeSystemInfo) {
     assertFalse(!!overviewElement);
 
@@ -39,7 +42,8 @@ export function overviewCardTestSuite() {
     provider.setFakeSystemInfo(fakeSystemInfo);
 
     // Add the overview card to the DOM.
-    overviewElement = document.createElement('overview-card');
+    overviewElement = /** @type {!OverviewCardElement} */ (
+        document.createElement('overview-card'));
     assertTrue(!!overviewElement);
     document.body.appendChild(overviewElement);
 

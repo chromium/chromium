@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {RoutineName, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
+import {RoutineName, RoutineRunner, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
 export function fakeSystemRoutineContollerTestSuite() {
   /** @type {?FakeSystemRoutineController} */

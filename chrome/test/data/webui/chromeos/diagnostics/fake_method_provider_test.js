@@ -4,6 +4,8 @@
 
 import {FakeMethodResolver} from 'chrome://diagnostics/fake_method_resolver.js';
 
+import {assertEquals} from '../../chai_assert.js';
+
 export function fakeMethodResolverTestSuite() {
   /** @type {?FakeMethodResolver} */
   let resolver = null;

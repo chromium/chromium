@@ -1,0 +1,232 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://diagnostics/=../../chromeos/components/diagnostics_ui/resources/\"",
+                    "js_module_root=../../chrome/test/data/webui/",
+                    "js_module_root=./gen/chrome/test/data/webui/",
+                  ]
+  deps = [
+    ":battery_status_card_test",
+    ":cpu_card_test",
+    ":data_point_test",
+    ":diagnostics_app_test",
+    ":diagnostics_app_unified_test",
+    ":diagnostics_test_utils",
+    ":fake_method_provider_test",
+    ":fake_observables_test",
+    ":fake_system_data_provider_test",
+    ":fake_system_routine_controller_test",
+    ":memory_card_test",
+    ":mojo_interface_provider_test",
+    ":overview_card_test",
+    ":percent_bar_chart_test",
+    ":realtime_cpu_chart_test",
+    ":routine_list_executor_test",
+    ":routine_result_entry_test",
+    ":routine_result_list_test",
+    ":routine_section_test",
+  ]
+}
+
+js_library("battery_status_card_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/diagnostics_ui/resources:battery_status_card",
+    "//chromeos/components/diagnostics_ui/resources:diagnostics_types",
+    "//chromeos/components/diagnostics_ui/resources:fake_data",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("cpu_card_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/diagnostics_ui/resources:cpu_card",
+    "//chromeos/components/diagnostics_ui/resources:diagnostics_types",
+    "//chromeos/components/diagnostics_ui/resources:routine_section",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("data_point_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/diagnostics_ui/resources:data_point",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("diagnostics_app_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/diagnostics_ui/resources:diagnostics_app",
+    "//chromeos/components/diagnostics_ui/resources:diagnostics_types",
+    "//chromeos/components/diagnostics_ui/resources:fake_data",
+    "//chromeos/components/diagnostics_ui/resources:fake_method_resolver",
+    "//chromeos/components/diagnostics_ui/resources:fake_observables",
+    "//chromeos/components/diagnostics_ui/resources:fake_system_data_provider",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("diagnostics_app_unified_test") {
+  deps = []
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("diagnostics_test_utils") {
+  deps = [
+    "../..:chai_assert",
+    "//chromeos/components/diagnostics_ui/resources:battery_status_card",
+    "//chromeos/components/diagnostics_ui/resources:cpu_card",
+    "//chromeos/components/diagnostics_ui/resources:data_point",
+    "//chromeos/components/diagnostics_ui/resources:memory_card",
+    "//chromeos/components/diagnostics_ui/resources:percent_bar_chart",
+    "//chromeos/components/diagnostics_ui/resources:realtime_cpu_chart",
+    "//chromeos/components/diagnostics_ui/resources:routine_result_entry",
+    "//chromeos/components/diagnostics_ui/resources:routine_result_list",
+    "//chromeos/components/diagnostics_ui/resources:routine_section",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+  ]
+}
+
+js_library("fake_method_provider_test") {
+  deps = [
+    "../..:chai_assert",
+    "//chromeos/components/diagnostics_ui/resources:fake_method_resolver",
+  ]
+}
+
+js_library("fake_observables_test") {
+  deps = [
+    "../..:chai_assert",
+    "//chromeos/components/diagnostics_ui/resources:fake_observables",
+  ]
+}
+
+js_library("fake_system_data_provider_test") {
+  deps = [
+    "../..:chai_assert",
+    "//chromeos/components/diagnostics_ui/resources:diagnostics_types",
+    "//chromeos/components/diagnostics_ui/resources:fake_data",
+    "//chromeos/components/diagnostics_ui/resources:fake_system_data_provider",
+  ]
+}
+
+js_library("fake_system_routine_controller_test") {
+  deps = [
+    "../..:chai_assert",
+    "//chromeos/components/diagnostics_ui/resources:diagnostics_types",
+    "//chromeos/components/diagnostics_ui/resources:fake_system_routine_controller",
+  ]
+}
+
+js_library("memory_card_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/diagnostics_ui/resources:diagnostics_types",
+    "//chromeos/components/diagnostics_ui/resources:fake_data",
+    "//chromeos/components/diagnostics_ui/resources:fake_system_data_provider",
+    "//chromeos/components/diagnostics_ui/resources:memory_card",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+  ]
+}
+
+js_library("mojo_interface_provider_test") {
+  deps = [
+    "../..:chai_assert",
+    "//chromeos/components/diagnostics_ui/resources:diagnostics_types",
+    "//chromeos/components/diagnostics_ui/resources:fake_system_routine_controller",
+    "//chromeos/components/diagnostics_ui/resources:mojo_interface_provider",
+  ]
+}
+
+js_library("overview_card_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/diagnostics_ui/resources:diagnostics_types",
+    "//chromeos/components/diagnostics_ui/resources:fake_data",
+    "//chromeos/components/diagnostics_ui/resources:fake_system_data_provider",
+    "//chromeos/components/diagnostics_ui/resources:overview_card",
+  ]
+}
+
+js_library("percent_bar_chart_test") {
+  deps = [
+    ":diagnostics_test_utils",
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/diagnostics_ui/resources:percent_bar_chart",
+  ]
+}
+
+js_library("realtime_cpu_chart_test") {
+  deps = [
+    ":diagnostics_test_utils",
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/diagnostics_ui/resources:realtime_cpu_chart",
+  ]
+}
+
+js_library("routine_list_executor_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/diagnostics_ui/resources:diagnostics_types",
+    "//chromeos/components/diagnostics_ui/resources:fake_system_routine_controller",
+    "//chromeos/components/diagnostics_ui/resources:routine_list_executor",
+  ]
+}
+
+js_library("routine_result_entry_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/diagnostics_ui/resources:diagnostics_types",
+    "//chromeos/components/diagnostics_ui/resources:fake_system_routine_controller",
+    "//chromeos/components/diagnostics_ui/resources:routine_list_executor",
+    "//chromeos/components/diagnostics_ui/resources:routine_result_entry",
+  ]
+}
+
+js_library("routine_result_list_test") {
+  deps = [
+    ":diagnostics_test_utils",
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/diagnostics_ui/resources:diagnostics_types",
+    "//chromeos/components/diagnostics_ui/resources:fake_system_routine_controller",
+    "//chromeos/components/diagnostics_ui/resources:routine_list_executor",
+    "//chromeos/components/diagnostics_ui/resources:routine_result_entry",
+    "//chromeos/components/diagnostics_ui/resources:routine_result_list",
+  ]
+}
+
+js_library("routine_section_test") {
+  deps = [
+    ":diagnostics_test_utils",
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/diagnostics_ui/resources:diagnostics_types",
+    "//chromeos/components/diagnostics_ui/resources:fake_system_routine_controller",
+    "//chromeos/components/diagnostics_ui/resources:mojo_interface_provider",
+    "//chromeos/components/diagnostics_ui/resources:routine_list_executor",
+    "//chromeos/components/diagnostics_ui/resources:routine_list_executor",
+    "//chromeos/components/diagnostics_ui/resources:routine_result_entry",
+    "//chromeos/components/diagnostics_ui/resources:routine_section",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+  ]
+}

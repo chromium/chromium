@@ -4,14 +4,18 @@
 
 import 'chrome://diagnostics/battery_status_card.js';
 
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, SystemDataProviderInterface} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.m.js';
+
 import * as dx_utils from './diagnostics_test_utils.js';
 
 export function batteryStatusCardTestSuite() {
-  /** @type {?HTMLElement} */
+  /** @type {?BatteryStatusCardElement} */
   let batteryStatusElement = null;
 
   /** @type {?FakeSystemDataProvider} */
@@ -23,7 +27,7 @@ export function batteryStatusCardTestSuite() {
   });
 
   setup(() => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
   });
 
   teardown(() => {
@@ -31,13 +35,14 @@ export function batteryStatusCardTestSuite() {
       batteryStatusElement.remove();
     }
     batteryStatusElement = null;
+
     provider.reset();
   });
 
   /**
    * @param {!BatteryInfo} batteryInfo
-   * @param {!BatteryChargeStatus} batteryChargeStatus
-   * @param {!BatteryHealth} batteryHealth
+   * @param {!Array<!BatteryChargeStatus>} batteryChargeStatus
+   * @param {!Array<!BatteryHealth>} batteryHealth
    * @return {!Promise}
    */
   function initializeBatteryStatusCard(
@@ -50,7 +55,8 @@ export function batteryStatusCardTestSuite() {
     provider.setFakeBatteryInfo(batteryInfo);
 
     // Add the battery status card to the DOM.
-    batteryStatusElement = document.createElement('battery-status-card');
+    batteryStatusElement = /** @type {!BatteryStatusCardElement} */ (
+        document.createElement('battery-status-card'));
     assertTrue(!!batteryStatusElement);
     document.body.appendChild(batteryStatusElement);
 

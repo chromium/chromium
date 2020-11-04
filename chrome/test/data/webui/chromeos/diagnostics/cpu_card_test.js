@@ -4,14 +4,18 @@
 
 import 'chrome://diagnostics/cpu_card.js';
 
+import {CpuUsage, RoutineName, SystemDataProviderInterface} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeCpuUsage} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.m.js';
+
 import * as dx_utils from './diagnostics_test_utils.js';
 
 export function cpuCardTestSuite() {
-  /** @type {?HTMLElement} */
+  /** @type {?CpuCardElement} */
   let cpuElement = null;
 
   /** @type {?FakeSystemDataProvider} */
@@ -23,7 +27,7 @@ export function cpuCardTestSuite() {
   });
 
   setup(() => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
   });
 
   teardown(() => {
@@ -35,7 +39,7 @@ export function cpuCardTestSuite() {
   });
 
   /**
-   * @param {!CpuUsage} cpuUsage
+   * @param {!Array<!CpuUsage>} cpuUsage
    * @return {!Promise}
    */
   function initializeCpuCard(cpuUsage) {
@@ -45,7 +49,8 @@ export function cpuCardTestSuite() {
     provider.setFakeCpuUsage(cpuUsage);
 
     // Add the CPU card to the DOM.
-    cpuElement = document.createElement('cpu-card');
+    cpuElement =
+        /** @type {!CpuCardElement} */ (document.createElement('cpu-card'));
     assertTrue(!!cpuElement);
     document.body.appendChild(cpuElement);
 
@@ -54,17 +59,19 @@ export function cpuCardTestSuite() {
 
   /**
    * Returns the routine-section from the card.
-   * @return {!RoutineSection}
+   * @return {!RoutineSectionElement}
    */
   function getRoutineSection() {
-    const routineSection = cpuElement.$$('routine-section');
+    const routineSection =
+        /** @type {!RoutineSectionElement} */ (
+            cpuElement.$$('routine-section'));
     assertTrue(!!routineSection);
     return routineSection;
   }
 
   /**
    * Returns the Run Tests button from inside the routine-section.
-   * @return {!CrButton}
+   * @return {!HTMLElement}
    */
   function getRunTestsButton() {
     const button = dx_utils.getRunTestsButtonFromSection(getRoutineSection());
@@ -74,7 +81,7 @@ export function cpuCardTestSuite() {
 
   /**
    * Returns whether the run tests button is disabled.
-   * @return {bool}
+   * @return {boolean}
    */
   function isRunTestsButtonDisabled() {
     return getRunTestsButton().disabled;

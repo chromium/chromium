@@ -9,19 +9,20 @@ import {RoutineName} from 'chrome://diagnostics/diagnostics_types.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {ExecutionProgress} from 'chrome://diagnostics/routine_list_executor.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.m.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
 export function routineSectionTestSuite() {
-  /** @type {?HTMLElement} */
+  /** @type {?RoutineSectionElement} */
   let routineSectionElement = null;
 
   /** @type {!FakeSystemRoutineController} */
   let routineController;
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
 
     // Setup a fake routine controller so that nothing resolves unless
     // done explicitly.
@@ -45,7 +46,8 @@ export function routineSectionTestSuite() {
     assertFalse(!!routineSectionElement);
 
     // Add the entry to the DOM.
-    routineSectionElement = document.createElement('routine-section');
+    routineSectionElement = /** @type {!RoutineSectionElement} */ (
+        document.createElement('routine-section'));
     assertTrue(!!routineSectionElement);
     document.body.appendChild(routineSectionElement);
 
@@ -57,7 +59,7 @@ export function routineSectionTestSuite() {
 
   /**
    * Returns the result list element.
-   * @return {!RoutineList}
+   * @return {!RoutineResultListElement}
    */
   function getResultList() {
     const resultList = dx_utils.getResultList(routineSectionElement);
@@ -67,7 +69,7 @@ export function routineSectionTestSuite() {
 
   /**
    * Returns the Run Tests button.
-   * @return {!CrButton}
+   * @return {!CrButtonElement}
    */
   function getRunTestsButton() {
     const button = dx_utils.getRunTestsButtonFromSection(routineSectionElement);
@@ -77,7 +79,7 @@ export function routineSectionTestSuite() {
 
   /**
    * Returns whether the run tests button is disabled.
-   * @return {bool}
+   * @return {boolean}
    */
   function isRunTestsButtonDisabled() {
     return getRunTestsButton().disabled;
@@ -94,7 +96,7 @@ export function routineSectionTestSuite() {
 
   /**
    * Returns an array of the entries in the list.
-   * @return {!Array<!RoutineResultEntry>}
+   * @return {!NodeList<!RoutineResultEntryElement>}
    */
   function getEntries() {
     return dx_utils.getResultEntries(getResultList());

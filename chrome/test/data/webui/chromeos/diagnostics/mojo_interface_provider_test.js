@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SystemDataProviderInterface} from 'chrome://diagnostics/diagnostics_types.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {getSystemDataProvider, getSystemRoutineController, setSystemDataProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+
+import {assertEquals} from '../../chai_assert.js';
 
 export function fakeMojoProviderTestSuite() {
   test('SettingGettingTestProvider', () => {

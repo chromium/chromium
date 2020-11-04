@@ -23,6 +23,7 @@ group("closure_compile") {
   if (is_chromeos) {
     public_deps += [
       "account_manager:closure_compile",
+      "diagnostics:closure_compile",
       "gaia_action_buttons:closure_compile",
       "scanning:closure_compile",
     ]

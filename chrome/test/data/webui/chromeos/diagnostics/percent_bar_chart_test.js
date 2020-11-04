@@ -4,15 +4,17 @@
 
 import 'chrome://diagnostics/percent_bar_chart.js';
 
-import {flushTasks} from 'chrome://test/test_util.m.js';
-import * as diagnostics_test_utils from './diagnostics_test_utils.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.m.js';
+
+import * as dx_utils from './diagnostics_test_utils.js';
 
 export function percentBarChartTestSuite() {
-  /** @type {?HTMLElement} */
+  /** @type {?PercentBarChartElement} */
   let percentBarChartElement = null;
 
   setup(() => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
   });
 
   teardown(() => {
@@ -32,7 +34,8 @@ export function percentBarChartTestSuite() {
     assertFalse(!!percentBarChartElement);
 
     // Add the element to the DOM.
-    percentBarChartElement = document.createElement('percent-bar-chart');
+    percentBarChartElement = /** @type {!PercentBarChartElement} */ (
+        document.createElement('percent-bar-chart'));
     assertTrue(!!percentBarChartElement);
     percentBarChartElement.header = header;
     percentBarChartElement.value = value;
@@ -55,8 +58,10 @@ export function percentBarChartTestSuite() {
 
       assertEquals(
           header, percentBarChartElement.$$('#chartName').textContent.trim());
-      diagnostics_test_utils.assertElementContainsText(
-          percentBarChartElement.$$('#percentageLabel'), `${percent}`);
+      dx_utils.assertElementContainsText(
+          /** @type {!HTMLElement} */ (
+              percentBarChartElement.$$('#percentageLabel')),
+          `${percent}`);
 
       assertFalse(!!percentBarChartElement.$$('#headerIcon'));
     });

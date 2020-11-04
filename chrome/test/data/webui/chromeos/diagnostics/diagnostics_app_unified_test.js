@@ -26,7 +26,7 @@ import {routineSectionTestSuite} from './routine_section_test.js';
 window.test_suites_list = [];
 
 function runSuite(suiteName, testFn) {
-  test_suites_list.push(suiteName);
+  window.test_suites_list.push(suiteName);
   suite(suiteName, testFn);
 }
 

@@ -57,12 +57,10 @@ Polymer({
         });
   },
 
-  /**
-   * @return {!HTMLElement}
-   * @private
-   **/
+  /** @private */
   getResultListElem_() {
-    return /** @type {!HTMLElement} */ (this.$$('routine-result-list'));
+    return /** @type {!RoutineResultListElement} */ (
+        this.$$('routine-result-list'));
   },
 
   /** @override */

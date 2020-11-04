@@ -6,14 +6,16 @@ import 'chrome://diagnostics/routine_result_entry.js';
 
 import {RoutineName, RoutineResult, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.m.js';
 
 export function routineResultEntryTestSuite() {
-  /** @type {?HTMLElement} */
+  /** @type {?RoutineResultEntryElement} */
   let routineResultEntryElement = null;
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
   });
 
   teardown(function() {
@@ -27,7 +29,8 @@ export function routineResultEntryTestSuite() {
     assertFalse(!!routineResultEntryElement);
 
     // Add the entry to the DOM.
-    routineResultEntryElement = document.createElement('routine-result-entry');
+    routineResultEntryElement = /** @type {!RoutineResultEntryElement} */ (
+        document.createElement('routine-result-entry'));
     assertTrue(!!routineResultEntryElement);
     document.body.appendChild(routineResultEntryElement);
 

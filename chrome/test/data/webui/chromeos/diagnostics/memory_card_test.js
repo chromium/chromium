@@ -4,14 +4,18 @@
 
 import 'chrome://diagnostics/memory_card.js';
 
+import {MemoryUsage} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeMemoryUsage} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
-import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+import {setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.m.js';
+
 import * as dx_utils from './diagnostics_test_utils.js';
 
 export function memoryCardTestSuite() {
-  /** @type {?HTMLElement} */
+  /** @type {?MemoryCardElement} */
   let memoryElement = null;
 
   /** @type {?FakeSystemDataProvider} */
@@ -23,7 +27,7 @@ export function memoryCardTestSuite() {
   });
 
   setup(() => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
   });
 
   teardown(() => {
@@ -35,7 +39,7 @@ export function memoryCardTestSuite() {
   });
 
   /**
-   * @param {!MemoryUsage} memoryUsage
+   * @param {!Array<MemoryUsage>} memoryUsage
    * @return {!Promise}
    */
   function initializeMemoryCard(memoryUsage) {
@@ -45,7 +49,8 @@ export function memoryCardTestSuite() {
     provider.setFakeMemoryUsage(memoryUsage);
 
     // Add the memory card to the DOM.
-    memoryElement = document.createElement('memory-card');
+    memoryElement = /** @type {!MemoryCardElement} */ (
+        document.createElement('memory-card'));
     assertTrue(!!memoryElement);
     document.body.appendChild(memoryElement);
 
@@ -54,17 +59,18 @@ export function memoryCardTestSuite() {
 
   /**
    * Returns the routine-section from the card.
-   * @return {!RoutineSection}
+   * @return {!RoutineSectionElement}
    */
   function getRoutineSection() {
-    const routineSection = memoryElement.$$('routine-section');
+    const routineSection = /** @type {!RoutineSectionElement} */ (
+        memoryElement.$$('routine-section'));
     assertTrue(!!routineSection);
     return routineSection;
   }
 
   /**
    * Returns the Run Tests button from inside the routine-section.
-   * @return {!CrButton}
+   * @return {!CrButtonElement}
    */
   function getRunTestsButton() {
     const button = dx_utils.getRunTestsButtonFromSection(getRoutineSection());
@@ -74,7 +80,7 @@ export function memoryCardTestSuite() {
 
   /**
    * Returns whether the run tests button is disabled.
-   * @return {bool}
+   * @return {boolean}
    */
   function isRunTestsButtonDisabled() {
     return getRunTestsButton().disabled;

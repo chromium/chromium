@@ -5,6 +5,8 @@
 import {FakeObservables} from 'chrome://diagnostics/fake_observables.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
+import {assertEquals} from '../../chai_assert.js';
+
 export function fakeObservablesTestSuite() {
   /** @type {?FakeObservables} */
   let observables = null;

@@ -4,13 +4,16 @@
 
 import 'chrome://diagnostics/diagnostics_app.js';
 
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, MemoryUsage, SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage, fakeSystemInfo, fakeSystemInfoWithoutBattery} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.m.js';
 
 export function appTestSuite() {
-  /** @type {?DiagnosticsApp} */
+  /** @type {?DiagnosticsAppElement} */
   let page = null;
 
   /** @type {?FakeSystemDataProvider} */
@@ -22,7 +25,7 @@ export function appTestSuite() {
   });
 
   setup(() => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
   });
 
   teardown(() => {
@@ -36,11 +39,11 @@ export function appTestSuite() {
   /**
    *
    * @param {!SystemInfo} systemInfo
-   * @param {!BatteryChargeStatus} batteryChargeStatus
-   * @param {!BatteryHealth} batteryHealth
+   * @param {!Array<!BatteryChargeStatus>} batteryChargeStatus
+   * @param {!Array<!BatteryHealth>} batteryHealth
    * @param {!BatteryInfo} batteryInfo
-   * @param {!CpuUsage} cpuUsage
-   * @param {!MemoryUsage} memoryUsage
+   * @param {!Array<!CpuUsage>} cpuUsage
+   * @param {!Array<!MemoryUsage>} memoryUsage
    */
   function initializeDiagnosticsApp(
       systemInfo, batteryChargeStatus, batteryHealth, batteryInfo, cpuUsage,
@@ -55,7 +58,8 @@ export function appTestSuite() {
     provider.setFakeCpuUsage(cpuUsage);
     provider.setFakeMemoryUsage(memoryUsage);
 
-    page = document.createElement('diagnostics-app');
+    page = /** @type {!DiagnosticsAppElement} */ (
+        document.createElement('diagnostics-app'));
     assertTrue(!!page);
     document.body.appendChild(page);
     return flushTasks();

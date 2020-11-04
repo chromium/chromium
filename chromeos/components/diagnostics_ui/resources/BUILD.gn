@@ -150,12 +150,14 @@ js_library("routine_result_entry") {
 
 js_library("routine_result_list") {
   deps = [
+    ":routine_list_executor",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
 js_library("routine_section") {
   deps = [
+    ":routine_result_list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, CpuUsageObserver, ExternalPowerSource, MemoryUsage, MemoryUsageObserver, SystemInfo} from './diagnostics_types.js';
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, CpuUsageObserver, ExternalPowerSource, MemoryUsage, MemoryUsageObserver, SystemDataProviderInterface, SystemInfo} from './diagnostics_types.js';
 import {FakeMethodResolver} from './fake_method_resolver.js';
 import {FakeObservables} from './fake_observables.js';
 
@@ -11,6 +11,7 @@ import {FakeObservables} from './fake_observables.js';
  * Implements a fake version of the SystemDataProvider mojo interface.
  */
 
+/** @implements {SystemDataProviderInterface} */
 export class FakeSystemDataProvider {
   constructor() {
     /** @private {!FakeMethodResolver} */
@@ -206,7 +207,7 @@ export class FakeSystemDataProvider {
    */
   registerObservables() {
     this.observables_.register(
-    'BatteryChargeStatusObserver_onBatteryChargeStatusUpdated');
+        'BatteryChargeStatusObserver_onBatteryChargeStatusUpdated');
     this.observables_.register('BatteryHealthObserver_onBatteryHealthUpdated');
     this.observables_.register('CpuUsageObserver_onCpuUsageUpdated');
     this.observables_.register('MemoryUsageObserver_onMemoryUsageUpdated');
