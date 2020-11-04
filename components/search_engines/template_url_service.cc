@@ -1643,29 +1643,28 @@ bool TemplateURLService::Update(TemplateURL* existing_turl,
   Scoper scoper(this);
   model_mutated_notification_pending_ = true;
 
-  base::string16 old_keyword = existing_turl->keyword();
   TemplateURLID previous_id = existing_turl->id();
   RemoveFromMaps(existing_turl);
 
-  // Check if new keyword conflicts with another normal engine.
+  // Check for new keyword conflicts with another normal engine.
   // This is possible when autogeneration of the keyword for a Google default
   // search provider at load time causes it to conflict with an existing
-  // keyword. In this case we delete the existing keyword if it's replaceable,
-  // or else undo the change in keyword for |existing_turl|.
-  // Conflicts with extension engines are handled in AddToMaps/RemoveFromMaps
-  // functions.
-  // Search for conflicting keyword turl before updating values of
-  // existing_turl.
-  const TemplateURL* conflicting_keyword_turl =
-      FindNonExtensionTemplateURLForKeyword(new_values.keyword());
-
-  bool keep_old_keyword = false;
-  if (conflicting_keyword_turl && conflicting_keyword_turl != existing_turl) {
-    if (CanReplace(conflicting_keyword_turl))
-      Remove(conflicting_keyword_turl);
-    else
-      keep_old_keyword = true;
+  // keyword. If the conflicting engines are replaceable, we delete them.
+  // If they're not replaceable, we leave them alone, and trust AddToMaps() to
+  // choose the best engine to assign the keyword.
+  std::vector<TemplateURL*> turls_to_remove;
+  for (const auto& turl : template_urls_) {
+    // TODO(tommycli): Investigate also replacing TemplateURL::LOCAL engines.
+    if (turl.get() != existing_turl && (turl->type() == TemplateURL::NORMAL) &&
+        (turl->keyword() == new_values.keyword()) && CanReplace(turl.get())) {
+      // Remove() invalidates iterators.
+      turls_to_remove.push_back(turl.get());
+    }
   }
+  for (TemplateURL* turl : turls_to_remove) {
+    Remove(turl);
+  }
+
   // Update existing turl with new values. This must happen after calling
   // Remove(conflicting_keyword_turl) above, since otherwise during that
   // function RemoveFromMaps() may find |existing_turl| as an alternate engine
@@ -1675,10 +1674,6 @@ bool TemplateURLService::Update(TemplateURL* existing_turl,
   // calling AddToMaps() below).
   existing_turl->CopyFrom(new_values);
   existing_turl->data_.id = previous_id;
-  if (keep_old_keyword) {
-    CHECK_NE(old_keyword, new_values.keyword());
-    existing_turl->data_.SetKeyword(old_keyword);
-  }
 
   AddToMaps(existing_turl);
 
@@ -1696,7 +1691,6 @@ bool TemplateURLService::Update(TemplateURL* existing_turl,
   if (default_search_provider_source_ != DefaultSearchManager::FROM_FALLBACK)
     MaybeUpdateDSEViaPrefs(existing_turl);
 
-  CHECK(!HasDuplicateKeywords());
   return true;
 }
 
@@ -1974,7 +1968,6 @@ TemplateURL* TemplateURLService::Add(std::unique_ptr<TemplateURL> template_url,
   if (template_url_ptr)
     model_mutated_notification_pending_ = true;
 
-  CHECK(!HasDuplicateKeywords());
   return template_url_ptr;
 }
 
@@ -2326,19 +2319,4 @@ TemplateURL* TemplateURLService::FindMatchingDefaultExtensionTemplateURL(
       return turl.get();
   }
   return nullptr;
-}
-
-bool TemplateURLService::HasDuplicateKeywords() const {
-  std::map<base::string16, TemplateURL*> keyword_to_template_url;
-  for (const auto& template_url : template_urls_) {
-    // Validate no duplicate normal engines with same keyword.
-    if (!IsCreatedByExtension(template_url.get())) {
-      if (keyword_to_template_url.find(template_url->keyword()) !=
-          keyword_to_template_url.end()) {
-        return true;
-      }
-      keyword_to_template_url[template_url->keyword()] = template_url.get();
-    }
-  }
-  return false;
 }

@@ -718,11 +718,6 @@ class TemplateURLService : public WebDataServiceConsumer,
   TemplateURL* FindMatchingDefaultExtensionTemplateURL(
       const TemplateURLData& data);
 
-  // Returns whether |template_urls_| contains more than one normal engine with
-  // same keyword. Used to validate state after search engines are
-  // added/updated.
-  bool HasDuplicateKeywords() const;
-
   // ---------- Browser state related members ---------------------------------
   PrefService* prefs_ = nullptr;
 
