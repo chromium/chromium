@@ -769,7 +769,7 @@ public class WebLayerShellActivity extends AppCompatActivity {
     private void updateFavicon(@NonNull Tab tab) {
         if (tab == mBrowser.getActiveTab()) {
             assert mTabToPerTabState.containsKey(tab);
-            ((ImageView) findViewById(R.id.favicon_image_view))
+            ((ImageView) mTopContentsContainer.findViewById(R.id.favicon_image_view))
                     .setImageBitmap(mTabToPerTabState.get(tab)
                                             .mFaviconFetcher.getFaviconForCurrentNavigation());
         }
