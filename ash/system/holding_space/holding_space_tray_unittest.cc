@@ -856,6 +856,170 @@ TEST_F(HoldingSpaceTrayTest, PinnedFilesContainerWithFinalizedItemsOnly) {
     items.pop_front();
     pinned_files.pop_back();
   }
+  test_api()->Close();
+}
+
+// Tests that as nearby shared files are added to the model, they show on the
+// downloads container.
+TEST_F(HoldingSpaceTrayTest, DownloadsContainerWithNearbySharedFiles) {
+  StartSession();
+
+  test_api()->Show();
+  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
+  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+
+  EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
+  ASSERT_TRUE(test_api()->GetDownloadChips().empty());
+
+  // Add a nearby share item and verify recent file container gets shown.
+  HoldingSpaceItem* item_1 = AddItem(HoldingSpaceItem::Type::kNearbyShare,
+                                     base::FilePath("/tmp/fake_1"));
+  ASSERT_TRUE(item_1->IsFinalized());
+
+  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
+  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+
+  EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
+  EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
+  ASSERT_EQ(1u, test_api()->GetDownloadChips().size());
+
+  // Add a download item, and verify it's also shown in the UI in the order they
+  // were added.
+  HoldingSpaceItem* item_2 =
+      AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_2"));
+
+  EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
+  EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
+  std::vector<views::View*> download_chips = test_api()->GetDownloadChips();
+  ASSERT_EQ(2u, download_chips.size());
+  EXPECT_EQ(item_2->id(),
+            HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
+  EXPECT_EQ(item_1->id(),
+            HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
+
+  // Remove the first item, and verify the container gets updated.
+  model()->RemoveItem(item_1->id());
+
+  EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
+  EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
+  download_chips = test_api()->GetDownloadChips();
+  ASSERT_EQ(1u, download_chips.size());
+  EXPECT_EQ(item_2->id(),
+            HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
+
+  test_api()->Close();
+}
+
+// Tests that a partially initialized nearby share item does not get shown if a
+// full download item gets removed from the holding space.
+TEST_F(HoldingSpaceTrayTest, PartialNearbyShareItemWithExistingDownloadItems) {
+  StartSession();
+  test_api()->Show();
+
+  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  ASSERT_TRUE(test_api()->GetDownloadChips().empty());
+
+  // Add partially initialized nearby share item - verify it doesn't get shown
+  // in the UI yet.
+  HoldingSpaceItem* item_1 = AddPartiallyInitializedItem(
+      HoldingSpaceItem::Type::kNearbyShare, base::FilePath("/tmp/fake_1"));
+  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->GetDownloadChips().empty());
+
+  // Add two download items.
+  HoldingSpaceItem* item_2 =
+      AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_2"));
+  HoldingSpaceItem* item_3 =
+      AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_3"));
+  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
+  EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
+  std::vector<views::View*> download_chips = test_api()->GetDownloadChips();
+  ASSERT_EQ(2u, download_chips.size());
+  EXPECT_EQ(item_3->id(),
+            HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
+  EXPECT_EQ(item_2->id(),
+            HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
+
+  // Finalize the nearby share item and verify it is not shown.
+  model()->FinalizeOrRemoveItem(item_1->id(), GURL("filesystem:fake_1"));
+
+  EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
+  EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
+  download_chips = test_api()->GetDownloadChips();
+  ASSERT_EQ(2u, download_chips.size());
+  EXPECT_EQ(item_3->id(),
+            HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
+  EXPECT_EQ(item_2->id(),
+            HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
+
+  // Remove one of the fully initialized items, and verify the partially
+  // initialized item is not shown.
+  model()->RemoveItem(item_2->id());
+
+  download_chips = test_api()->GetDownloadChips();
+  ASSERT_EQ(2u, download_chips.size());
+  EXPECT_EQ(item_3->id(),
+            HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
+  EXPECT_EQ(item_1->id(),
+            HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
+
+  test_api()->Close();
+}
+
+// Tests that a partially initialized download item does not get shown if a
+// full download item gets removed from the holding space.
+TEST_F(HoldingSpaceTrayTest, PartialDownloadItemWithExistingNearbyShareItems) {
+  StartSession();
+  test_api()->Show();
+
+  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  ASSERT_TRUE(test_api()->GetDownloadChips().empty());
+
+  // Add partially initialized download item - verify it doesn't get shown
+  // in the UI yet.
+  HoldingSpaceItem* item_1 = AddPartiallyInitializedItem(
+      HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_1"));
+  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->GetDownloadChips().empty());
+
+  // Add two nearby share items.
+  HoldingSpaceItem* item_2 = AddItem(HoldingSpaceItem::Type::kNearbyShare,
+                                     base::FilePath("/tmp/fake_2"));
+  HoldingSpaceItem* item_3 = AddItem(HoldingSpaceItem::Type::kNearbyShare,
+                                     base::FilePath("/tmp/fake_3"));
+  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
+  EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
+  std::vector<views::View*> download_chips = test_api()->GetDownloadChips();
+  ASSERT_EQ(2u, download_chips.size());
+  EXPECT_EQ(item_3->id(),
+            HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
+  EXPECT_EQ(item_2->id(),
+            HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
+
+  // Finalize the download item and verify it is not shown.
+  model()->FinalizeOrRemoveItem(item_1->id(), GURL("filesystem:fake_1"));
+
+  EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
+  EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
+  download_chips = test_api()->GetDownloadChips();
+  ASSERT_EQ(2u, download_chips.size());
+  EXPECT_EQ(item_3->id(),
+            HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
+  EXPECT_EQ(item_2->id(),
+            HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
+
+  // Remove one of the fully initialized items, and verify the partially
+  // initialized item is not shown.
+  model()->RemoveItem(item_2->id());
+
+  download_chips = test_api()->GetDownloadChips();
+  ASSERT_EQ(2u, download_chips.size());
+  EXPECT_EQ(item_3->id(),
+            HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
+  EXPECT_EQ(item_1->id(),
+            HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
 
   test_api()->Close();
 }

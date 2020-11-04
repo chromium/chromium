@@ -46,6 +46,18 @@ void SetupLabel(views::Label* label) {
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 }
 
+bool BelongsToDownloadsSection(HoldingSpaceItem::Type type) {
+  return type == HoldingSpaceItem::Type::kDownload ||
+         type == HoldingSpaceItem::Type::kNearbyShare;
+}
+
+bool ItemsBelongsToSameSection(HoldingSpaceItem::Type candidate_type,
+                               HoldingSpaceItem::Type item_type) {
+  return candidate_type == item_type ||
+         (BelongsToDownloadsSection(candidate_type) &&
+          BelongsToDownloadsSection(candidate_type));
+}
+
 // DownloadsHeader--------------------------------------------------------------
 
 class DownloadsHeader : public views::Button {
@@ -151,7 +163,7 @@ void RecentFilesContainer::AddHoldingSpaceItemView(const HoldingSpaceItem* item,
   DCHECK(item->IsFinalized());
 
   if (item->type() != HoldingSpaceItem::Type::kScreenshot &&
-      item->type() != HoldingSpaceItem::Type::kDownload) {
+      !BelongsToDownloadsSection(item->type())) {
     return;
   }
 
@@ -163,14 +175,16 @@ void RecentFilesContainer::AddHoldingSpaceItemView(const HoldingSpaceItem* item,
          base::Reversed(HoldingSpaceController::Get()->model()->items())) {
       if (candidate->id() == item->id())
         break;
-      if (candidate->IsFinalized() && candidate->type() == item->type())
+      if (candidate->IsFinalized() &&
+          ItemsBelongsToSameSection(candidate->type(), item->type())) {
         ++index;
+      }
     }
   }
 
   if (item->type() == HoldingSpaceItem::Type::kScreenshot)
     AddHoldingSpaceScreenCaptureView(item, index);
-  else if (item->type() == HoldingSpaceItem::Type::kDownload)
+  else if (BelongsToDownloadsSection(item->type()))
     AddHoldingSpaceDownloadView(item, index);
 }
 
@@ -184,7 +198,7 @@ void RecentFilesContainer::RemoveHoldingSpaceItemView(
     const HoldingSpaceItem* item) {
   if (item->type() == HoldingSpaceItem::Type::kScreenshot)
     RemoveHoldingSpaceScreenCaptureView(item);
-  else if (item->type() == HoldingSpaceItem::Type::kDownload)
+  else if (BelongsToDownloadsSection(item->type()))
     RemoveHoldingSpaceDownloadView(item);
 }
 
@@ -247,7 +261,7 @@ void RecentFilesContainer::RemoveHoldingSpaceScreenCaptureView(
 void RecentFilesContainer::AddHoldingSpaceDownloadView(
     const HoldingSpaceItem* item,
     size_t index) {
-  DCHECK_EQ(item->type(), HoldingSpaceItem::Type::kDownload);
+  DCHECK(BelongsToDownloadsSection(item->type()));
   DCHECK(!base::Contains(views_by_item_id_, item->id()));
 
   if (index >= kMaxDownloads)
@@ -268,7 +282,7 @@ void RecentFilesContainer::AddHoldingSpaceDownloadView(
 
 void RecentFilesContainer::RemoveHoldingSpaceDownloadView(
     const HoldingSpaceItem* item) {
-  DCHECK_EQ(item->type(), HoldingSpaceItem::Type::kDownload);
+  DCHECK(BelongsToDownloadsSection(item->type()));
 
   auto it = views_by_item_id_.find(item->id());
   if (it == views_by_item_id_.end())
@@ -286,8 +300,7 @@ void RecentFilesContainer::RemoveHoldingSpaceDownloadView(
   // back in order to maintain sort by recency.
   for (const auto& candidate :
        base::Reversed(HoldingSpaceController::Get()->model()->items())) {
-    if (candidate->IsFinalized() &&
-        candidate->type() == HoldingSpaceItem::Type::kDownload &&
+    if (candidate->IsFinalized() && BelongsToDownloadsSection(item->type()) &&
         !base::Contains(views_by_item_id_, candidate->id())) {
       views_by_item_id_[candidate->id()] = downloads_container_->AddChildView(
           std::make_unique<HoldingSpaceItemChipView>(delegate_,
