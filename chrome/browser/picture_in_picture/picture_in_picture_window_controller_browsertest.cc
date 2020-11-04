@@ -622,9 +622,8 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Tests that when closing a Picture-in-Picture window from the Web API, the
 // video element is not paused.
-// Flaky on Linux and Windows: http://crbug.com/1001538
 IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
-                       DISABLED_CloseWindowFromWebAPIWhilePlaying) {
+                       CloseWindowFromWebAPIWhilePlaying) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kPictureInPictureWindowSizePage));
