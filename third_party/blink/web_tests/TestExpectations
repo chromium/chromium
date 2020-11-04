@@ -6239,3 +6239,7 @@ crbug.com/997202 [ Mac ] virtual/transform-interop/external/wpt/css/css-transfor
 crbug.com/1144273 http/tests/devtools/sources/debugger-ui/continue-to-location-markers-in-top-level-function.js [ Pass Failure ]
 crbug.com/1145424 [ Linux ] http/tests/devtools/sources/debugger-ui/reveal-execution-line.js [ Pass Timeout ]
 crbug.com/1145424 [ Win ] http/tests/devtools/sources/debugger-ui/reveal-execution-line.js [ Pass Timeout ]
+
+# DevTools roll
+crbug.com/1011811 http/tests/devtools/tracing/timeline-misc/timeline-user-timings.js [ Skip ]
+crbug.com/1011811 http/tests/devtools/tracing/timeline-misc/timeline-aggregated-details.js [ Skip ]
