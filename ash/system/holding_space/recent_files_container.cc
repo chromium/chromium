@@ -46,16 +46,17 @@ void SetupLabel(views::Label* label) {
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 }
 
+// Returns if an item of the specified `type` belongs in the downloads section.
 bool BelongsToDownloadsSection(HoldingSpaceItem::Type type) {
   return type == HoldingSpaceItem::Type::kDownload ||
          type == HoldingSpaceItem::Type::kNearbyShare;
 }
 
-bool ItemsBelongsToSameSection(HoldingSpaceItem::Type candidate_type,
-                               HoldingSpaceItem::Type item_type) {
-  return candidate_type == item_type ||
-         (BelongsToDownloadsSection(candidate_type) &&
-          BelongsToDownloadsSection(candidate_type));
+// Returns if items of the specified types belong to the same section.
+bool BelongToSameSection(HoldingSpaceItem::Type type,
+                         HoldingSpaceItem::Type other_type) {
+  return type == other_type || (BelongsToDownloadsSection(type) &&
+                                BelongsToDownloadsSection(other_type));
 }
 
 // DownloadsHeader--------------------------------------------------------------
@@ -176,7 +177,7 @@ void RecentFilesContainer::AddHoldingSpaceItemView(const HoldingSpaceItem* item,
       if (candidate->id() == item->id())
         break;
       if (candidate->IsFinalized() &&
-          ItemsBelongsToSameSection(candidate->type(), item->type())) {
+          BelongToSameSection(candidate->type(), item->type())) {
         ++index;
       }
     }
