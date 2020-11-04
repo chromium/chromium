@@ -58,6 +58,8 @@ class ClipboardWriter : public GarbageCollected<ClipboardWriter>,
   ClipboardWriter(RawSystemClipboard* raw_system_clipboard,
                   ClipboardPromise* promise);
 
+  // Decodes and writes `raw_data`. Decoding is done off the main thread
+  // whenever possible, by calling DecodeOnBackgroundThread.
   virtual void StartWrite(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       DOMArrayBuffer* raw_data) = 0;

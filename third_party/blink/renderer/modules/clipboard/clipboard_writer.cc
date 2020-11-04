@@ -209,6 +209,7 @@ class ClipboardSvgWriter final : public ClipboardWriter {
     promise_->CompleteWriteRepresentation();
   }
 };
+
 // Writes a blob with arbitrary, unsanitized content to the System Clipboard.
 class ClipboardRawDataWriter final : public ClipboardWriter {
  public:
@@ -223,25 +224,14 @@ class ClipboardRawDataWriter final : public ClipboardWriter {
                   DOMArrayBuffer* raw_data) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    worker_pool::PostTask(
-        FROM_HERE,
-        CrossThreadBindOnce(&ClipboardRawDataWriter::DecodeOnBackgroundThread,
-                            WrapCrossThreadPersistent(this), task_runner,
-                            WrapCrossThreadPersistent(raw_data)));
+    // Raw Data is written directly, and doesn't require decoding.
+    Write(raw_data);
   }
 
-  // Unfortunately, in order to use the same ClipboardWriter base,
-  // ClipboardRawDataWriter does need to have these extra 2 thread hops.
   void DecodeOnBackgroundThread(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       DOMArrayBuffer* raw_data) override {
-    DCHECK(!IsMainThread());
-
-    PostCrossThreadTask(
-        *task_runner, FROM_HERE,
-        CrossThreadBindOnce(&ClipboardRawDataWriter::Write,
-                            WrapCrossThreadPersistent(this),
-                            WrapCrossThreadPersistent(raw_data)));
+    NOTREACHED() << "Raw Data doesn't require decoding.";
   }
 
   void Write(DOMArrayBuffer* raw_data) {
