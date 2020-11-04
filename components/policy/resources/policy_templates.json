@@ -7719,7 +7719,7 @@
         'dynamic_refresh': True,
       },
       'example_value': 3600000,
-      'default': 3 * 60 * 60 * 1000,
+      'default': 10800000,
       'id': 90,
       'caption': '''Refresh rate for Device Policy''',
       'tags': [],
