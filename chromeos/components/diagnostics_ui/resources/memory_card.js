@@ -6,12 +6,13 @@ import './data_point.js';
 import './diagnostics_card.js';
 import './diagnostics_shared_css.js';
 import './percent_bar_chart.js';
+import './routine_section.js'
 import './strings.m.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MemoryUsage, SystemDataProviderInterface} from './diagnostics_types.js'
+import {MemoryUsage, RoutineName, SystemDataProviderInterface} from './diagnostics_types.js'
 import {getSystemDataProvider} from './mojo_interface_provider.js';
 
 /**
@@ -31,6 +32,16 @@ Polymer({
   systemDataProvider_: null,
 
   properties: {
+    /** @private {!Array<!RoutineName>} */
+    routines_: {
+      type: Array,
+      value: () => {
+        return [
+          RoutineName.kMemory,
+        ];
+      }
+    },
+
     /** @private {!MemoryUsage} */
     memoryUsage_: {
       type: Object,

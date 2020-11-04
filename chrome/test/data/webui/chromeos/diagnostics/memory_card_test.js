@@ -52,6 +52,34 @@ export function memoryCardTestSuite() {
     return flushTasks();
   }
 
+  /**
+   * Returns the routine-section from the card.
+   * @return {!RoutineSection}
+   */
+  function getRoutineSection() {
+    const routineSection = memoryElement.$$('routine-section');
+    assertTrue(!!routineSection);
+    return routineSection;
+  }
+
+  /**
+   * Returns the Run Tests button from inside the routine-section.
+   * @return {!CrButton}
+   */
+  function getRunTestsButton() {
+    const button = dx_utils.getRunTestsButtonFromSection(getRoutineSection());
+    assertTrue(!!button);
+    return button;
+  }
+
+  /**
+   * Returns whether the run tests button is disabled.
+   * @return {bool}
+   */
+  function isRunTestsButtonDisabled() {
+    return getRunTestsButton().disabled;
+  }
+
   test('MemoryCardPopulated', () => {
     return initializeMemoryCard(fakeMemoryUsage).then(() => {
       const dataPoints = dx_utils.getDataPointElements(memoryElement);
@@ -64,6 +92,11 @@ export function memoryCardTestSuite() {
           fakeMemoryUsage[0].available_memory_kib;
       assertEquals(fakeMemoryUsage[0].total_memory_kib, barChart.max);
       assertEquals(memInUse, barChart.value);
+
+      // Verify the routine section is in the card.
+      assertTrue(!!getRoutineSection());
+      assertTrue(!!getRunTestsButton());
+      assertFalse(isRunTestsButtonDisabled());
     });
   });
 }
