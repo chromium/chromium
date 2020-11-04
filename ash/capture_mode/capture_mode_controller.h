@@ -30,6 +30,7 @@ class Time;
 namespace ash {
 
 class CaptureModeSession;
+class VideoRecordingWatcher;
 
 // Controls starting and ending a Capture Mode session and its behavior.
 class ASH_EXPORT CaptureModeController {
@@ -78,6 +79,10 @@ class ASH_EXPORT CaptureModeController {
 
   // Called when the feedback button on the capture bar is pressed.
   void OpenFeedbackDialog();
+
+  // Skips the 3-second count down, and IsCaptureAllowed() checks, and starts
+  // video recording right away for testing purposes.
+  void StartVideoRecordingImmediatelyForTesting();
 
  private:
   // Returns true if doing a screen capture is currently allowed, false
@@ -187,6 +192,9 @@ class ASH_EXPORT CaptureModeController {
 
   // True when video recording is in progress.
   bool is_recording_in_progress_ = false;
+
+  // Watches events that lead to ending video recording.
+  std::unique_ptr<VideoRecordingWatcher> video_recording_watcher_;
 
   // Timers used to schedule recording of the number of screenshots taken.
   base::RepeatingTimer num_screenshots_taken_in_last_day_scheduler_;

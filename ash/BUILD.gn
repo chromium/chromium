@@ -289,6 +289,8 @@ component("ash") {
     "capture_mode/stop_recording_button_tray.h",
     "capture_mode/video_file_handler.cc",
     "capture_mode/video_file_handler.h",
+    "capture_mode/video_recording_watcher.cc",
+    "capture_mode/video_recording_watcher.h",
     "capture_mode/view_with_ink_drop.h",
     "child_accounts/parent_access_controller_impl.cc",
     "child_accounts/parent_access_controller_impl.h",

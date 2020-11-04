@@ -8,6 +8,10 @@
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace gfx {
 class Point;
 class Rect;
@@ -22,10 +26,14 @@ ASH_EXPORT gfx::Point GetLocationForFineTunePosition(const gfx::Rect& rect,
                                                      FineTunePosition position);
 
 // Return whether |position| is a corner.
-ASH_EXPORT bool IsCornerFineTunePosition(FineTunePosition position);
+bool IsCornerFineTunePosition(FineTunePosition position);
 
 // Return whether drag affordance circles should be hidden.
-ASH_EXPORT bool ShouldHideDragAffordance(FineTunePosition position);
+bool ShouldHideDragAffordance(FineTunePosition position);
+
+// Sets the visibility of the stop-recording button in the Shelf's status area
+// widget of the given |root| window.
+void SetStopRecordingButtonVisibility(aura::Window* root, bool visible);
 
 }  // namespace capture_mode_util
 

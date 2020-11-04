@@ -9,14 +9,14 @@
 #include <utility>
 
 #include "ash/capture_mode/capture_mode_session.h"
-#include "ash/capture_mode/stop_recording_button_tray.h"
+#include "ash/capture_mode/capture_mode_util.h"
+#include "ash/capture_mode/video_recording_watcher.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/capture_mode_delegate.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget.h"
@@ -234,18 +234,6 @@ void CopyImageToClipboard(const gfx::Image& image) {
   clipboard->WriteClipboardData(std::move(clipboard_data));
 }
 
-// Shows the stop-recording button in the Shelf's status area widget. Note that
-// the button hides itself when clicked.
-void ShowStopRecordingButton(aura::Window* root) {
-  DCHECK(root);
-  DCHECK(root->IsRootWindow());
-
-  auto* stop_recording_button = RootWindowController::ForWindow(root)
-                                    ->GetStatusAreaWidget()
-                                    ->stop_recording_button_tray();
-  stop_recording_button->SetVisiblePreferred(true);
-}
-
 }  // namespace
 
 CaptureModeController::CaptureModeController(
@@ -344,6 +332,10 @@ void CaptureModeController::EndVideoRecording() {
   // with all the frames.
   is_recording_in_progress_ = false;
   Shell::Get()->UpdateCursorCompositingEnabled();
+  capture_mode_util::SetStopRecordingButtonVisibility(
+      video_recording_watcher_->window_being_recorded()->GetRootWindow(),
+      false);
+  video_recording_watcher_.reset();
   delegate_->StopObservingRestrictedContent();
 
   DCHECK(video_file_handler_);
@@ -354,6 +346,12 @@ void CaptureModeController::EndVideoRecording() {
 
 void CaptureModeController::OpenFeedbackDialog() {
   delegate_->OpenFeedbackDialog();
+}
+
+void CaptureModeController::StartVideoRecordingImmediatelyForTesting() {
+  DCHECK(IsActive());
+  DCHECK_EQ(type_, CaptureModeType::kVideo);
+  OnVideoRecordCountDownFinished();
 }
 
 bool CaptureModeController::IsCaptureAllowed() const {
@@ -624,6 +622,8 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
   // to be able to record it.
   is_recording_in_progress_ = true;
   Shell::Get()->UpdateCursorCompositingEnabled();
+  video_recording_watcher_ =
+      std::make_unique<VideoRecordingWatcher>(this, capture_params->window);
 
   // TODO(afakhry): Choose a real buffer capacity when the recording service is
   // in.
@@ -643,7 +643,8 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
       base::BindOnce(&CaptureModeController::InterruptVideoRecording,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  ShowStopRecordingButton(capture_params->window->GetRootWindow());
+  capture_mode_util::SetStopRecordingButtonVisibility(
+      capture_params->window->GetRootWindow(), true);
 }
 
 void CaptureModeController::InterruptVideoRecording() {

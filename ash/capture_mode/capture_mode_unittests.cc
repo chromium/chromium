@@ -237,6 +237,19 @@ class CaptureModeTest : public AshTestBase {
     }
   }
 
+  void RemoveSecondaryDisplay() {
+    const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
+    display::ManagedDisplayInfo primary_info =
+        display_manager()->GetDisplayInfo(primary_id);
+    std::vector<display::ManagedDisplayInfo> display_info_list;
+    display_info_list.push_back(primary_info);
+    display_manager()->OnNativeDisplaysChanged(display_info_list);
+
+    // Spin the run loop so that we get a signal that the associated root window
+    // of the removed display is destroyed.
+    base::RunLoop().RunUntilIdle();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -801,17 +814,7 @@ TEST_F(CaptureModeTest, DisplayRemoval) {
                   .Contains(GetCaptureModeBarView()->GetBoundsInScreen()));
   ASSERT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
 
-  // Remove secondary display.
-  const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
-  display::ManagedDisplayInfo primary_info =
-      display_manager()->GetDisplayInfo(primary_id);
-  std::vector<display::ManagedDisplayInfo> display_info_list;
-  display_info_list.push_back(primary_info);
-  display_manager()->OnNativeDisplaysChanged(display_info_list);
-
-  // Spin the run loop so that we get a signal that the associated root window
-  // of the removed display is destroyed.
-  base::RunLoop().RunUntilIdle();
+  RemoveSecondaryDisplay();
 
   // Tests that the capture mode bar is now on the primary display.
   EXPECT_TRUE(gfx::Rect(800, 800).Contains(
@@ -1117,6 +1120,104 @@ TEST_F(CaptureModeTest, CaptureModeEntryPointHistograms) {
   controller->Start(ash::CaptureModeEntryType::kAccelTakePartialScreenshot);
   histogram_tester.ExpectBucketCount(
       kTabletHistogram, CaptureModeEntryType::kAccelTakePartialScreenshot, 2);
+}
+
+TEST_F(CaptureModeTest, ClosingWindowBeingRecorded) {
+  auto window = CreateTestWindow(gfx::Rect(200, 200));
+  StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseToCenterOf(window.get());
+  auto* controller = CaptureModeController::Get();
+  controller->StartVideoRecordingImmediatelyForTesting();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+
+  // Closing the window being recorded should end video recording.
+  window.reset();
+
+  auto* stop_recording_button = Shell::GetPrimaryRootWindowController()
+                                    ->GetStatusAreaWidget()
+                                    ->stop_recording_button_tray();
+  EXPECT_FALSE(stop_recording_button->visible_preferred());
+  EXPECT_FALSE(controller->is_recording_in_progress());
+}
+
+TEST_F(CaptureModeTest, DetachDisplayWhileWindowRecording) {
+  UpdateDisplay("400x400,401+0-400x400");
+  // Create a window on the second display.
+  auto window = CreateTestWindow(gfx::Rect(450, 20, 200, 200));
+  auto roots = Shell::GetAllRootWindows();
+  ASSERT_EQ(2u, roots.size());
+  EXPECT_EQ(window->GetRootWindow(), roots[1]);
+  StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
+
+  auto* event_generator = GetEventGenerator();
+  MoveMouseToAndUpdateCursorDisplay(window->GetBoundsInScreen().CenterPoint(),
+                                    event_generator);
+  auto* controller = CaptureModeController::Get();
+  controller->StartVideoRecordingImmediatelyForTesting();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+
+  auto* stop_recording_button = RootWindowController::ForWindow(roots[1])
+                                    ->GetStatusAreaWidget()
+                                    ->stop_recording_button_tray();
+  EXPECT_TRUE(stop_recording_button->visible_preferred());
+
+  // Disconnecting the display, on which the window being recorded is located,
+  // should not end the recording. The window should be reparented to another
+  // display, and the stop-recording button should move with to that display.
+  RemoveSecondaryDisplay();
+  roots = Shell::GetAllRootWindows();
+  ASSERT_EQ(1u, roots.size());
+
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  stop_recording_button = RootWindowController::ForWindow(roots[0])
+                              ->GetStatusAreaWidget()
+                              ->stop_recording_button_tray();
+  EXPECT_TRUE(stop_recording_button->visible_preferred());
+}
+
+TEST_F(CaptureModeTest, ClosingDisplayBeingFullscreenRecorded) {
+  UpdateDisplay("400x400,401+0-400x400");
+  auto roots = Shell::GetAllRootWindows();
+  ASSERT_EQ(2u, roots.size());
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+
+  auto* event_generator = GetEventGenerator();
+  MoveMouseToAndUpdateCursorDisplay(roots[1]->GetBoundsInScreen().CenterPoint(),
+                                    event_generator);
+  auto* controller = CaptureModeController::Get();
+  controller->StartVideoRecordingImmediatelyForTesting();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+
+  auto* stop_recording_button = RootWindowController::ForWindow(roots[1])
+                                    ->GetStatusAreaWidget()
+                                    ->stop_recording_button_tray();
+  EXPECT_TRUE(stop_recording_button->visible_preferred());
+
+  // Disconnecting the display being fullscreen recorded should end the
+  // recording and remove the stop recording button.
+  RemoveSecondaryDisplay();
+  roots = Shell::GetAllRootWindows();
+  ASSERT_EQ(1u, roots.size());
+
+  EXPECT_FALSE(controller->is_recording_in_progress());
+  stop_recording_button = RootWindowController::ForWindow(roots[0])
+                              ->GetStatusAreaWidget()
+                              ->stop_recording_button_tray();
+  EXPECT_FALSE(stop_recording_button->visible_preferred());
+}
+
+TEST_F(CaptureModeTest, ShuttingDownWhileRecording) {
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+
+  auto* controller = CaptureModeController::Get();
+  controller->StartVideoRecordingImmediatelyForTesting();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+
+  // Exiting the test now will shut down ash while recording is in progress,
+  // there should be no crashes when
+  // VideoRecordingWatcher::OnChromeTerminating() terminates the recording.
 }
 
 }  // namespace ash

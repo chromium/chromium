@@ -36,10 +36,8 @@ bool StopRecordingButtonTray::PerformAction(const ui::Event& event) {
   DCHECK(event.type() == ui::ET_MOUSE_RELEASED ||
          event.type() == ui::ET_GESTURE_TAP);
 
-  // Stop recording and hide this button.
   base::RecordAction(base::UserMetricsAction("Tray_StopRecording"));
   CaptureModeController::Get()->EndVideoRecording();
-  SetVisiblePreferred(false);
   return true;
 }
 
