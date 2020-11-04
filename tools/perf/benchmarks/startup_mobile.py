@@ -276,8 +276,7 @@ class _MobileStartupStorySet(story_module.StorySet):
     self.AddStory(_MapsPwaStartupStory())
 
 
-@benchmark.Info(emails=['pasko@chromium.org',
-                        'chrome-android-perf-status@chromium.org'],
+@benchmark.Info(emails=['pasko@chromium.org', 'lizeb@chromium.org'],
                 component='Speed>Metrics>SystemHealthRegressions')
 class MobileStartupBenchmark(perf_benchmark.PerfBenchmark):
   """Startup benchmark for Chrome on Android."""

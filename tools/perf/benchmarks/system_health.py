@@ -164,10 +164,9 @@ MEMORY_DEBUGGING_BLURB = "See https://bit.ly/2CpMhze for more information" \
                          " on debugging memory metrics."
 
 
-@benchmark.Info(
-    emails=['pasko@chromium.org', 'chrome-android-perf-status@chromium.org'],
-    documentation_url='https://bit.ly/system-health-benchmarks',
-    info_blurb=MEMORY_DEBUGGING_BLURB)
+@benchmark.Info(emails=['pasko@chromium.org', 'lizeb@chromium.org'],
+                documentation_url='https://bit.ly/system-health-benchmarks',
+                info_blurb=MEMORY_DEBUGGING_BLURB)
 class DesktopMemorySystemHealth(_MemorySystemHealthBenchmark):
   """Desktop Chrome Memory System Health Benchmark."""
   PLATFORM = 'desktop'
@@ -182,10 +181,9 @@ class DesktopMemorySystemHealth(_MemorySystemHealthBenchmark):
     return 'system_health.memory_desktop'
 
 
-@benchmark.Info(
-    emails=['pasko@chromium.org', 'chrome-android-perf-status@chromium.org'],
-    documentation_url='https://bit.ly/system-health-benchmarks',
-    info_blurb=MEMORY_DEBUGGING_BLURB)
+@benchmark.Info(emails=['pasko@chromium.org', 'lizeb@chromium.org'],
+                documentation_url='https://bit.ly/system-health-benchmarks',
+                info_blurb=MEMORY_DEBUGGING_BLURB)
 class MobileMemorySystemHealth(_MemorySystemHealthBenchmark):
   """Mobile Chrome Memory System Health Benchmark."""
   PLATFORM = 'mobile'
