@@ -8,7 +8,35 @@
 #include <memory>
 #include <string>
 
+#include "chrome/updater/constants.h"
+
 namespace updater {
+
+// Updates are suppressed if the current time falls between the start time and
+// the duration. The duration does not account for daylight savings time.
+// For instance, if the start time is 22:00 hours, and with a duration of 8
+// hours, the updates will be suppressed for 8 hours regardless of whether
+// daylight savings time changes happen in between.
+struct UpdatesSuppressedTimes {
+  int start_hour = kPolicyNotSet;
+  int start_minute = kPolicyNotSet;
+  int duration_minute = kPolicyNotSet;
+
+  bool operator==(const UpdatesSuppressedTimes& other) const {
+    return start_hour == other.start_hour &&
+           start_minute == other.start_minute &&
+           duration_minute == other.duration_minute;
+  }
+
+  bool operator!=(const UpdatesSuppressedTimes& other) const {
+    return !(*this == other);
+  }
+
+  bool valid() const {
+    return start_hour != kPolicyNotSet && start_minute != kPolicyNotSet &&
+           duration_minute != kPolicyNotSet;
+  }
+};
 
 // The Policy Manager Interface is implemented by policy managers such as Group
 // Policy and Device Management.
@@ -32,15 +60,10 @@ class PolicyManagerInterface {
   virtual bool GetLastCheckPeriodMinutes(int* minutes) const = 0;
 
   // For domain-joined machines, checks the current time against the times that
-  // updates are suppressed. Updates are suppressed if the current time falls
-  // between the start time and the duration.
-  // The duration does not account for daylight savings time. For instance, if
-  // the start time is 22:00 hours, and with a duration of 8 hours, the updates
-  // will be suppressed for 8 hours regardless of whether daylight savings time
-  // changes happen in between.
-  virtual bool GetUpdatesSuppressedTimes(int* start_hour,
-                                         int* start_min,
-                                         int* duration_min) const = 0;
+  // updates are suppressed.
+  virtual bool GetUpdatesSuppressedTimes(
+      UpdatesSuppressedTimes* suppressed_times) const = 0;
+
   // Returns the policy for the download preference.
   virtual bool GetDownloadPreferenceGroupPolicy(
       std::string* download_preference) const = 0;

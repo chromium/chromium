@@ -24,9 +24,8 @@ class DefaultPolicyManager : public PolicyManagerInterface {
   bool IsManaged() const override;
 
   bool GetLastCheckPeriodMinutes(int* minutes) const override;
-  bool GetUpdatesSuppressedTimes(int* start_hour,
-                                 int* start_min,
-                                 int* duration_min) const override;
+  bool GetUpdatesSuppressedTimes(
+      UpdatesSuppressedTimes* suppressed_times) const override;
   bool GetDownloadPreferenceGroupPolicy(
       std::string* download_preference) const override;
   bool GetPackageCacheSizeLimitMBytes(int* cache_size_limit) const override;
@@ -53,7 +52,7 @@ DefaultPolicyManager::DefaultPolicyManager() = default;
 DefaultPolicyManager::~DefaultPolicyManager() = default;
 
 bool DefaultPolicyManager::IsManaged() const {
-  return false;
+  return true;
 }
 
 std::string DefaultPolicyManager::source() const {
@@ -64,9 +63,8 @@ bool DefaultPolicyManager::GetLastCheckPeriodMinutes(int* minutes) const {
   return false;
 }
 
-bool DefaultPolicyManager::GetUpdatesSuppressedTimes(int* start_hour,
-                                                     int* start_min,
-                                                     int* duration_min) const {
+bool DefaultPolicyManager::GetUpdatesSuppressedTimes(
+    UpdatesSuppressedTimes* suppressed_times) const {
   return false;
 }
 

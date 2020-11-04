@@ -191,15 +191,11 @@ TEST(DMStorage, ReadCachedOmahaPolicy) {
   EXPECT_TRUE(policy_manager->GetLastCheckPeriodMinutes(&check_interval));
   EXPECT_EQ(check_interval, 111);
 
-  int suppressed_start_hour = 0;
-  int suppressed_start_minute = 0;
-  int suppressed_duration_minute = 0;
-  EXPECT_TRUE(policy_manager->GetUpdatesSuppressedTimes(
-      &suppressed_start_hour, &suppressed_start_minute,
-      &suppressed_duration_minute));
-  EXPECT_EQ(suppressed_start_hour, 8);
-  EXPECT_EQ(suppressed_start_minute, 8);
-  EXPECT_EQ(suppressed_duration_minute, 47);
+  UpdatesSuppressedTimes suppressed_times;
+  EXPECT_TRUE(policy_manager->GetUpdatesSuppressedTimes(&suppressed_times));
+  EXPECT_EQ(suppressed_times.start_hour, 8);
+  EXPECT_EQ(suppressed_times.start_minute, 8);
+  EXPECT_EQ(suppressed_times.duration_minute, 47);
 
   // Proxy policies.
   std::string proxy_mode;

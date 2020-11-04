@@ -6,6 +6,7 @@
 
 #include "base/mac/scoped_nsobject.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/policy_manager.h"
 
 // Constants for managed preference policy keys.
 static NSString* kGlobalPolicyKey = @"global";
@@ -66,7 +67,8 @@ base::scoped_nsobject<NSString> ReadPolicyString(id value) {
 @property(nonatomic, readonly, nullable) NSString* proxyMode;
 @property(nonatomic, readonly, nullable) NSString* proxyServer;
 @property(nonatomic, readonly, nullable) NSString* proxyPacURL;
-@property(nonatomic, readonly) CRUUpdatesSuppressed updatesSuppressed;
+@property(nonatomic, readonly)
+    updater::UpdatesSuppressedTimes updatesSuppressed;
 
 @end
 
@@ -93,7 +95,7 @@ base::scoped_nsobject<NSString> ReadPolicyString(id value) {
 
 - (int)lastCheckPeriodMinutes {
   // LastCheckPeriodMinutes is not supported in Managed Preference policy.
-  return kPolicyNotSet;
+  return updater::kPolicyNotSet;
 }
 
 - (NSString*)downloadPreference {
@@ -235,14 +237,14 @@ base::scoped_nsobject<NSString> ReadPolicyString(id value) {
   return [_globalPolicy defaultUpdatePolicy];
 }
 
-- (CRUUpdatesSuppressed)updatesSuppressed {
+- (updater::UpdatesSuppressedTimes)updatesSuppressed {
   return [_globalPolicy updatesSuppressed];
 }
 
 - (int)appUpdatePolicy:(NSString*)appid {
   appid = appid.lowercaseString;
   if (![_appPolicies objectForKey:appid])
-    return kPolicyNotSet;
+    return updater::kPolicyNotSet;
   return [_appPolicies objectForKey:appid].updatePolicy;
 }
 
@@ -259,7 +261,7 @@ base::scoped_nsobject<NSString> ReadPolicyString(id value) {
 - (int)rollbackToTargetVersion:(NSString*)appid {
   appid = appid.lowercaseString;
   if (![_appPolicies objectForKey:appid])
-    return kPolicyNotSet;
+    return updater::kPolicyNotSet;
   return [_appPolicies objectForKey:appid].rollbackToTargetVersion;
 }
 

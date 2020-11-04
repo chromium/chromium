@@ -194,6 +194,7 @@ extern const char kProxyModeSystem[];
 
 extern const char kDownloadPreferenceCacheable[];
 
+constexpr int kPolicyNotSet = -1;
 constexpr int kPolicyDisabled = 0;
 constexpr int kPolicyEnabled = 1;
 constexpr int kPolicyEnabledMachineOnly = 4;

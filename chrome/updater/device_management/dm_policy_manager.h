@@ -29,9 +29,8 @@ class DMPolicyManager : public PolicyManagerInterface {
   bool IsManaged() const override;
 
   bool GetLastCheckPeriodMinutes(int* minutes) const override;
-  bool GetUpdatesSuppressedTimes(int* start_hour,
-                                 int* start_min,
-                                 int* duration_min) const override;
+  bool GetUpdatesSuppressedTimes(
+      UpdatesSuppressedTimes* suppressed_times) const override;
   bool GetDownloadPreferenceGroupPolicy(
       std::string* download_preference) const override;
   bool GetProxyMode(std::string* proxy_mode) const override;

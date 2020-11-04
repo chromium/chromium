@@ -7,6 +7,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/win_util.h"
+#include "chrome/updater/policy_manager.h"
 #include "chrome/updater/win/constants.h"
 
 namespace updater {
@@ -70,12 +71,14 @@ bool GroupPolicyManager::GetLastCheckPeriodMinutes(int* minutes) const {
   return ReadValueDW(kRegValueAutoUpdateCheckPeriodOverrideMinutes, minutes);
 }
 
-bool GroupPolicyManager::GetUpdatesSuppressedTimes(int* start_hour,
-                                                   int* start_min,
-                                                   int* duration_min) const {
-  return ReadValueDW(kRegValueUpdatesSuppressedStartHour, start_hour) &&
-         ReadValueDW(kRegValueUpdatesSuppressedStartMin, start_min) &&
-         ReadValueDW(kRegValueUpdatesSuppressedDurationMin, duration_min);
+bool GroupPolicyManager::GetUpdatesSuppressedTimes(
+    UpdatesSuppressedTimes* suppressed_times) const {
+  return ReadValueDW(kRegValueUpdatesSuppressedStartHour,
+                     &suppressed_times->start_hour) &&
+         ReadValueDW(kRegValueUpdatesSuppressedStartMin,
+                     &suppressed_times->start_minute) &&
+         ReadValueDW(kRegValueUpdatesSuppressedDurationMin,
+                     &suppressed_times->duration_minute);
 }
 
 bool GroupPolicyManager::GetDownloadPreferenceGroupPolicy(

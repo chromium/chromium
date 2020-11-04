@@ -8,6 +8,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/policy_manager.h"
 
 namespace updater {
 
@@ -69,9 +70,8 @@ bool DMPolicyManager::GetLastCheckPeriodMinutes(int* minutes) const {
   return true;
 }
 
-bool DMPolicyManager::GetUpdatesSuppressedTimes(int* start_hour,
-                                                int* start_min,
-                                                int* duration_min) const {
+bool DMPolicyManager::GetUpdatesSuppressedTimes(
+    UpdatesSuppressedTimes* suppressed_times) const {
   if (!omaha_settings_.has_updates_suppressed())
     return false;
 
@@ -81,9 +81,9 @@ bool DMPolicyManager::GetUpdatesSuppressedTimes(int* start_hour,
       !updates_suppressed.has_duration_min())
     return false;
 
-  *start_hour = updates_suppressed.start_hour();
-  *start_min = updates_suppressed.start_minute();
-  *duration_min = updates_suppressed.duration_min();
+  suppressed_times->start_hour = updates_suppressed.start_hour();
+  suppressed_times->start_minute = updates_suppressed.start_minute();
+  suppressed_times->duration_minute = updates_suppressed.duration_min();
   return true;
 }
 

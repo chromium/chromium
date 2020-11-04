@@ -114,11 +114,8 @@ TEST(DMPolicyManager, PolicyManagerFromEmptyProto) {
   EXPECT_FALSE(
       policy_manager->GetLastCheckPeriodMinutes(&last_check_period_minutes));
 
-  int start_hour = 0;
-  int start_minute = 0;
-  int duration_minute = 0;
-  EXPECT_FALSE(policy_manager->GetUpdatesSuppressedTimes(
-      &start_hour, &start_minute, &duration_minute));
+  UpdatesSuppressedTimes suppressed_times;
+  EXPECT_FALSE(policy_manager->GetUpdatesSuppressedTimes(&suppressed_times));
 
   std::string download_preference;
   EXPECT_FALSE(
@@ -192,14 +189,11 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
       policy_manager->GetLastCheckPeriodMinutes(&last_check_period_minutes));
   EXPECT_EQ(last_check_period_minutes, 111);
 
-  int start_hour = 0;
-  int start_minute = 0;
-  int duration_minute = 0;
-  EXPECT_TRUE(policy_manager->GetUpdatesSuppressedTimes(
-      &start_hour, &start_minute, &duration_minute));
-  EXPECT_EQ(start_hour, 9);
-  EXPECT_EQ(start_minute, 30);
-  EXPECT_EQ(duration_minute, 120);
+  UpdatesSuppressedTimes suppressed_times;
+  EXPECT_TRUE(policy_manager->GetUpdatesSuppressedTimes(&suppressed_times));
+  EXPECT_EQ(suppressed_times.start_hour, 9);
+  EXPECT_EQ(suppressed_times.start_minute, 30);
+  EXPECT_EQ(suppressed_times.duration_minute, 120);
 
   std::string download_preference;
   EXPECT_TRUE(
@@ -284,11 +278,8 @@ TEST(DMPolicyManager, PolicyManagerFromDMResponse) {
   EXPECT_FALSE(
       policy_manager->GetLastCheckPeriodMinutes(&last_check_period_minutes));
 
-  int start_hour = 0;
-  int start_minute = 0;
-  int duration_minute = 0;
-  EXPECT_FALSE(policy_manager->GetUpdatesSuppressedTimes(
-      &start_hour, &start_minute, &duration_minute));
+  UpdatesSuppressedTimes suppressed_times;
+  EXPECT_FALSE(policy_manager->GetUpdatesSuppressedTimes(&suppressed_times));
 
   std::string download_preference;
   EXPECT_FALSE(

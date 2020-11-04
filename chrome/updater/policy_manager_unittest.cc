@@ -9,7 +9,7 @@ namespace updater {
 
 TEST(PolicyManager, GetPolicyManager) {
   std::unique_ptr<PolicyManagerInterface> policy_manager(GetPolicyManager());
-  ASSERT_FALSE(policy_manager->IsManaged());
+  ASSERT_TRUE(policy_manager->IsManaged());
 }
 
 }  // namespace updater

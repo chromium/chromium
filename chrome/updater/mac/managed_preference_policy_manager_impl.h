@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include "chrome/updater/policy_manager.h"
+
 // TODO: crbug/1073980
 //     Add a doc link for the managed preferences dictionary format.
 //
@@ -38,18 +40,9 @@
 //    </dict>
 //  </dict>
 
-constexpr int kPolicyNotSet = -1;
-
 using CRUAppPolicyDictionary = NSDictionary<NSString*, id>;
 using CRUUpdatePolicyDictionary =
     NSDictionary<NSString*, CRUAppPolicyDictionary*>;
-
-// Structure describes time window when update check is suppressed.
-struct CRUUpdatesSuppressed {
-  int start_hour = kPolicyNotSet;
-  int start_minute = kPolicyNotSet;
-  int duration_minute = kPolicyNotSet;
-};
 
 @interface CRUManagedPreferencePolicyManager : NSObject
 
@@ -60,7 +53,8 @@ struct CRUUpdatesSuppressed {
 @property(nonatomic, readonly) int lastCheckPeriodMinutes;
 @property(nonatomic, readonly) int defaultUpdatePolicy;
 @property(nonatomic, readonly, nullable) NSString* downloadPreference;
-@property(nonatomic, readonly) CRUUpdatesSuppressed updatesSuppressed;
+@property(nonatomic, readonly)
+    updater::UpdatesSuppressedTimes updatesSuppressed;
 @property(nonatomic, readonly, nullable) NSString* proxyMode;
 @property(nonatomic, readonly, nullable) NSString* proxyServer;
 @property(nonatomic, readonly, nullable) NSString* proxyPacURL;

@@ -85,8 +85,10 @@ update_client::CrxComponent Installer::MakeCrxComponent() {
   // |component.channel| is an empty string. Possible failure cases are if the
   // machine is not managed, the policy was not set or any other unexpected
   // error.
-  if (!GetUpdaterPolicyService()->GetTargetChannel(app_id_, &component.channel))
+  if (!GetUpdaterPolicyService()->GetTargetChannel(app_id_, nullptr,
+                                                   &component.channel)) {
     component.channel.clear();
+  }
   return component;
 }
 
