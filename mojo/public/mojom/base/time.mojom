@@ -11,10 +11,12 @@ struct Time {
   int64 internal_value;
 };
 
+[Stable]
 struct TimeDelta {
   int64 microseconds;
 };
 
+[Stable]
 struct TimeTicks {
   // The internal value is expressed in terms of microseconds since a fixed but
   // intentionally unspecified epoch.
