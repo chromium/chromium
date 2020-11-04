@@ -21,7 +21,7 @@ base::Value* TestUtils::GetContentSettingValue(
     bool include_incognito) {
   return HostContentSettingsMap::GetContentSettingValueAndPatterns(
              provider, primary_url, secondary_url, content_type,
-             resource_identifier, include_incognito, nullptr, nullptr)
+             include_incognito, nullptr, nullptr)
       .release();
 }
 

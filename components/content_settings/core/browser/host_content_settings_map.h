@@ -369,16 +369,15 @@ class HostContentSettingsMap : public content_settings::Observer,
   // Collect UMA data of exceptions.
   void RecordExceptionMetrics();
 
-  // Adds content settings for |content_type| and |resource_identifier|,
-  // provided by |provider|, into |settings|. If |incognito| is true, adds only
-  // the content settings which are applicable to the incognito mode and differ
-  // from the normal mode. Otherwise, adds the content settings for the normal
-  // mode (applying inheritance rules if |is_off_the_record_|).
+  // Adds content settings for |content_type| provided by |provider|, into
+  // |settings|. If |incognito| is true, adds only the content settings which
+  // are applicable to the incognito mode and differ from the normal mode.
+  // Otherwise, adds the content settings for the normal mode (applying
+  // inheritance rules if |is_off_the_record_|).
   void AddSettingsForOneType(
       const content_settings::ProviderInterface* provider,
       ProviderType provider_type,
       ContentSettingsType content_type,
-      const std::string& resource_identifier,
       ContentSettingsForOneType* settings,
       bool incognito,
       base::Optional<content_settings::SessionModel> session_model) const;
@@ -395,7 +394,6 @@ class HostContentSettingsMap : public content_settings::Observer,
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,
-      const std::string& resource_identifier,
       ProviderType first_provider_to_search,
       content_settings::SettingInfo* info) const;
 
@@ -409,7 +407,6 @@ class HostContentSettingsMap : public content_settings::Observer,
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,
-      const std::string& resource_identifier,
       bool include_incognito,
       ContentSettingsPattern* primary_pattern,
       ContentSettingsPattern* secondary_pattern);
