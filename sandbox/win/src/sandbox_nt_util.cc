@@ -404,6 +404,21 @@ bool IsValidImageSection(HANDLE section,
   if (!(basic_info.Attributes & SEC_IMAGE))
     return false;
 
+  // Windows 10 2009+ may open PEs as SEC_IMAGE_NO_EXECUTE in non-dll-loading
+  // paths which looks identical to dll-loading unless we check if the section
+  // handle has execute rights.
+  // Avoid memset inserted by -ftrivial-auto-var-init=pattern.
+  STACK_UNINITIALIZED OBJECT_BASIC_INFORMATION obj_info;
+  ULONG obj_size_returned;
+  ret = g_nt.QueryObject(section, ObjectBasicInformation, &obj_info,
+                         sizeof(obj_info), &obj_size_returned);
+
+  if (!NT_SUCCESS(ret) || sizeof(obj_info) != obj_size_returned)
+    return false;
+
+  if (!(obj_info.GrantedAccess & SECTION_MAP_EXECUTE))
+    return false;
+
   return true;
 }
 
