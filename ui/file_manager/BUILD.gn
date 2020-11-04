@@ -61,6 +61,7 @@ group("unit_test_data") {
     "base/js:js_test_gen_html",
     "file_manager/background/js:js_test_gen_html",
     "file_manager/common/js:js_test_gen_html",
+    "file_manager/common/js:js_test_gen_html_modules",
     "file_manager/foreground/elements:js_test_gen_html",
     "file_manager/foreground/js:js_test_gen_html",
     "file_manager/foreground/js/metadata:js_test_gen_html",

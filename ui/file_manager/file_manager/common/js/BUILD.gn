@@ -16,6 +16,7 @@ group("closure_compile") {
   deps = [
     ":closure_compile_jsmodules",
     ":closure_compile_module",
+    ":js_test_gen_html_modules_type_check_auto",
     ":js_test_gen_html_type_check_auto",
     ":test_support_type_check",
   ]
@@ -65,12 +66,14 @@ js_library("files_app_entry_types") {
   ]
 }
 
-js_unittest("files_app_entry_types_unittest") {
+js_unittest("files_app_entry_types_unittest.m") {
   deps = [
-    ":files_app_entry_types",
-    ":mock_entry",
-    "//ui/file_manager/base/js:test_error_reporting",
-    "//ui/file_manager/base/js:volume_manager_types",
+    ":files_app_entry_types.m",
+    ":mock_entry.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/file_manager/externs:volume_info.m",
+    "//ui/webui/resources/js:assert.m",
   ]
 }
 
@@ -240,10 +243,22 @@ js_library("util.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_test_gen_html("js_test_gen_html_modules") {
+  js_module = true
+  deps = [ ":files_app_entry_types_unittest.m" ]
+
+  closure_flags =
+      strict_error_checking_closure_args + [
+        "js_module_root=./gen/ui",
+        "js_module_root=../../ui",
+        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+        "hide_warnings_for=third_party/",
+      ]
+}
+
 js_test_gen_html("js_test_gen_html") {
   deps = [
     ":file_type_unittest",
-    ":files_app_entry_types_unittest",
     ":importer_common_unittest",
     ":lru_cache_unittest",
     ":util_unittest",

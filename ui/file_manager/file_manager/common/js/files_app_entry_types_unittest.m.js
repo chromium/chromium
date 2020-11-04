@@ -2,7 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+// clang-format off
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+
+import * as wrappedVolumeManagerCommon from '../../../base/js/volume_manager_types.m.js';
+const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
+
+import {MockFileSystem} from './mock_entry.m.js';
+import {reportPromise, waitUntil} from '../../../base/js/test_error_reporting.m.js';
+import {VolumeEntry, EntryList, StaticReader, CombinedReaders, FakeEntryImpl} from './files_app_entry_types.m.js';
+import {VolumeInfo} from '../../../externs/volume_info.m.js';
+// clang-format on
+
 
 function notreached(error) {
   assertTrue(false, 'NOTREACHED(): ' + (error.stack || error));
@@ -31,7 +43,7 @@ function fakeVolumeEntry(volumeType, displayRoot, additionalProperties) {
 }
 
 /**  Test constructor and default public attributes. */
-function testEntryList(testReportCallback) {
+export function testEntryList(testReportCallback) {
   const entryList =
       new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
   assertEquals('My files', entryList.label);
@@ -76,7 +88,7 @@ function testEntryList(testReportCallback) {
 }
 
 /** Tests method EntryList.getParent. */
-function testEntryListGetParent(testReportCallback) {
+export function testEntryListGetParent(testReportCallback) {
   const entryList =
       new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
   let callbackTriggered = false;
@@ -90,7 +102,7 @@ function testEntryListGetParent(testReportCallback) {
 }
 
 /** Tests method EntryList.addEntry. */
-function testEntryListAddEntry() {
+export function testEntryListAddEntry() {
   const entryList =
       new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
   assertEquals(0, entryList.getUIChildren().length);
@@ -105,7 +117,7 @@ function testEntryListAddEntry() {
  * Tests EntryList's methods addEntry, findIndexByVolumeInfo,
  * removeByVolumeType, removeByRootType, removeChildEntry.
  */
-function testEntryFindIndex() {
+export function testEntryFindIndex() {
   const entryList =
       new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
 
@@ -153,7 +165,7 @@ function testEntryFindIndex() {
  * removeByRootType, removeChildEntry.
  * @suppress {accessControls} to be able to access private properties.
  */
-function testVolumeEntryFindIndex() {
+export function testVolumeEntryFindIndex() {
   const fakeRootEntry = createFakeDisplayRoot();
   const volumeEntry =
       fakeVolumeEntry(VolumeManagerCommon.VolumeType.DOWNLOADS, fakeRootEntry);
@@ -202,7 +214,7 @@ function testVolumeEntryFindIndex() {
 }
 
 /** Tests method EntryList.getMetadata. */
-function testEntryListGetMetadata(testReportCallback) {
+export function testEntryListGetMetadata(testReportCallback) {
   const entryList =
       new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
 
@@ -225,7 +237,7 @@ function testEntryListGetMetadata(testReportCallback) {
 }
 
 /** Tests StaticReader.readEntries. */
-function testStaticReader(testReportCallback) {
+export function testStaticReader(testReportCallback) {
   const reader = new StaticReader(['file1', 'file2']);
   const testResults = [];
   // How many times the reader callback |accumulateResults| has been called?
@@ -256,7 +268,7 @@ function testStaticReader(testReportCallback) {
 }
 
 /** Tests CombinedReader.readEntries. */
-function testCombinedReader(testReportCallback) {
+export function testCombinedReader(testReportCallback) {
   const innerReaders = [
     new StaticReader(['file1']),
     new StaticReader(['file2']),
@@ -290,7 +302,7 @@ function testCombinedReader(testReportCallback) {
       testReportCallback);
 }
 
-function testCombinedReaderError(testReportCallback) {
+export function testCombinedReaderError(testReportCallback) {
   const expectedError = new Error('a fake error');
   const alwaysFailReader = {
     readEntries: (success, error) => {
@@ -349,7 +361,7 @@ function createFakeDisplayRoot() {
 /**
  * Tests VolumeEntry constructor and default public attributes/getter/methods.
  */
-function testVolumeEntry() {
+export function testVolumeEntry() {
   const fakeRootEntry = createFakeDisplayRoot();
   const volumeEntry =
       fakeVolumeEntry(VolumeManagerCommon.VolumeType.DOWNLOADS, fakeRootEntry);
@@ -366,7 +378,7 @@ function testVolumeEntry() {
   assertFalse(volumeEntry.isFile);
 }
 
-function testVolumeEntryCreateReader(testReportCallback) {
+export function testVolumeEntryCreateReader(testReportCallback) {
   const fakeRootEntry = createFakeDisplayRoot();
   fakeRootEntry.createReader = () => new StaticReader(['file1']);
   const volumeEntry =
@@ -402,7 +414,7 @@ function testVolumeEntryCreateReader(testReportCallback) {
 }
 
 /** Tests VolumeEntry createReader when root entry isn't resolved yet. */
-function testVolumeEntryCreateReaderUnresolved(testReportCallback) {
+export function testVolumeEntryCreateReaderUnresolved(testReportCallback) {
   // A VolumeInfo that doesn't resolve the display root.
   const fakeVolumeInfo = /** @type{!VolumeInfo} */ ({
     displayRoot: null,
@@ -452,7 +464,7 @@ function testVolumeEntryCreateReaderUnresolved(testReportCallback) {
 /**
  * Tests VolumeEntry getFile and getDirectory methods.
  */
-function testVolumeEntryGetDirectory(testReportCallback) {
+export function testVolumeEntryGetDirectory(testReportCallback) {
   const root = createFakeDisplayRoot();
   root.filesystem.populate(['/bla/', '/bla.txt']);
 
@@ -476,7 +488,7 @@ function testVolumeEntryGetDirectory(testReportCallback) {
 /**
  * Tests VolumeEntry which initially doesn't have displayRoot.
  */
-function testVolumeEntryDelayedDisplayRoot(testReportCallback) {
+export function testVolumeEntryDelayedDisplayRoot(testReportCallback) {
   let callbackTriggered = false;
   const fakeRootEntry = createFakeDisplayRoot();
 
@@ -502,7 +514,7 @@ function testVolumeEntryDelayedDisplayRoot(testReportCallback) {
 }
 
 /** Tests VolumeEntry.getParent */
-function testVolumeEntryGetParent(testReportCallback) {
+export function testVolumeEntryGetParent(testReportCallback) {
   const volumeEntry = fakeVolumeEntry(null);
   let callbackTriggered = false;
   volumeEntry.getParent(parentEntry => {
@@ -515,7 +527,7 @@ function testVolumeEntryGetParent(testReportCallback) {
 }
 
 /**  Tests VolumeEntry.getMetadata */
-function testVolumeEntryGetMetadata(testReportCallback) {
+export function testVolumeEntryGetMetadata(testReportCallback) {
   const volumeEntry = fakeVolumeEntry(null);
   let modificationTime = null;
   volumeEntry.getMetadata(metadata => {
@@ -533,7 +545,7 @@ function testVolumeEntryGetMetadata(testReportCallback) {
 /**
  * Test EntryList.addEntry sets prefix on VolumeEntry.
  */
-function testEntryListAddEntrySetsPrefix() {
+export function testEntryListAddEntrySetsPrefix() {
   const volumeEntry = fakeVolumeEntry(null);
   const entryList =
       new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
@@ -547,7 +559,7 @@ function testEntryListAddEntrySetsPrefix() {
 /**
  * Test FakeEntry, which is only static data.
  */
-function testFakeEntry(testReportCallback) {
+export function testFakeEntry(testReportCallback) {
   let fakeEntry =
       new FakeEntryImpl('label', VolumeManagerCommon.RootType.CROSTINI);
 

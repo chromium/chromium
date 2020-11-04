@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileOperationManagerTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FilesAppEntryTypes) {
-  RunTestURL("common/js/files_app_entry_types_unittest_gen.html");
+  RunTestURL("common/js/files_app_entry_types_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FilesDisplayPanel) {
