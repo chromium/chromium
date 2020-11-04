@@ -409,37 +409,32 @@ public class ChromePaymentRequestService
 
         mJourneyLogger.setTriggerTime();
         if (disconnectIfNoPaymentMethodsSupported()) return;
+        if (mIsFinishedQueryingPaymentApps && !showAppSelector()) return;
 
+        triggerPaymentAppUiSkipIfApplicable();
+    }
+
+    /**
+     * Shows the payment apps selector.
+     * @return Whether the showing is successful.
+     */
+    private boolean showAppSelector() {
+        // Send AppListReady signal when all apps are created and request.show() is called.
+        if (PaymentRequestService.getNativeObserverForTest() != null) {
+            PaymentRequestService.getNativeObserverForTest().onAppListReady(
+                    mPaymentUiService.getPaymentMethodsSection().getItems(), mSpec.getRawTotal());
+        }
+        // Calculate skip ui and build ui only after all payment apps are ready and
+        // request.show() is called.
+        mPaymentUiService.calculateWhetherShouldSkipShowingPaymentRequestUi(mIsUserGestureShow,
+                mURLPaymentMethodIdentifiersSupported, mDelegate.skipUiForBasicCard(),
+                mPaymentOptions);
         ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
-        if (chromeActivity == null) {
-            mJourneyLogger.setNotShown(NotShownReason.OTHER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.ACTIVITY_NOT_FOUND);
-            if (PaymentRequestService.getObserverForTest() != null) {
-                PaymentRequestService.getObserverForTest().onPaymentRequestServiceShowFailed();
-            }
-            return;
+        if (quitShowIfActivityNotFound(chromeActivity) || !buildUI(chromeActivity)) return false;
+        if (!mPaymentUiService.shouldSkipShowingPaymentRequestUi() && mSkipToGPayHelper == null) {
+            mPaymentUiService.getPaymentRequestUI().show();
         }
-
-        if (mIsFinishedQueryingPaymentApps) {
-            // Send AppListReady signal when all apps are created and request.show() is called.
-            if (PaymentRequestService.getNativeObserverForTest() != null) {
-                PaymentRequestService.getNativeObserverForTest().onAppListReady(
-                        mPaymentUiService.getPaymentMethodsSection().getItems(),
-                        mSpec.getRawTotal());
-            }
-            // Calculate skip ui and build ui only after all payment apps are ready and
-            // request.show() is called.
-            mPaymentUiService.calculateWhetherShouldSkipShowingPaymentRequestUi(mIsUserGestureShow,
-                    mURLPaymentMethodIdentifiersSupported, mDelegate.skipUiForBasicCard(),
-                    mPaymentOptions);
-            if (!buildUI(chromeActivity)) return;
-            if (!mPaymentUiService.shouldSkipShowingPaymentRequestUi()
-                    && mSkipToGPayHelper == null) {
-                mPaymentUiService.getPaymentRequestUI().show();
-            }
-        }
-
-        triggerPaymentAppUiSkipIfApplicable(chromeActivity);
+        return true;
     }
 
     private void dimBackgroundIfNotBottomSheetPaymentHandler(PaymentApp selectedApp) {
@@ -458,7 +453,20 @@ public class ChromePaymentRequestService
         mPaymentUiService.getPaymentRequestUI().dimBackground();
     }
 
-    private void triggerPaymentAppUiSkipIfApplicable(ChromeActivity chromeActivity) {
+    /** @return True if show() is quited. */
+    private boolean quitShowIfActivityNotFound(@Nullable ChromeActivity chromeActivity) {
+        if (chromeActivity == null) {
+            mJourneyLogger.setNotShown(NotShownReason.OTHER);
+            disconnectFromClientWithDebugMessage(ErrorStrings.ACTIVITY_NOT_FOUND);
+            if (PaymentRequestService.getObserverForTest() != null) {
+                PaymentRequestService.getObserverForTest().onPaymentRequestServiceShowFailed();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private void triggerPaymentAppUiSkipIfApplicable() {
         // If we are skipping showing the Payment Request UI, we should call into the payment app
         // immediately after we determine the apps are ready and UI is shown.
         if ((mPaymentUiService.shouldSkipShowingPaymentRequestUi() || mSkipToGPayHelper != null)
@@ -468,6 +476,8 @@ public class ChromePaymentRequestService
             assert mPaymentUiService.getPaymentRequestUI() != null;
 
             if (isMinimalUiApplicable()) {
+                ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
+                if (quitShowIfActivityNotFound(chromeActivity)) return;
                 if (mPaymentUiService.triggerMinimalUI(chromeActivity, mSpec.getRawTotal(),
                             this::onMinimalUIReady, this::onMinimalUiConfirmed,
                             /*dismissObserver=*/
@@ -867,7 +877,7 @@ public class ChromePaymentRequestService
                     mSpec.getRawTotal().amount.value, false /*completed*/);
         }
 
-        triggerPaymentAppUiSkipIfApplicable(chromeActivity);
+        triggerPaymentAppUiSkipIfApplicable();
 
         if (mIsFinishedQueryingPaymentApps
                 && !mPaymentUiService.shouldSkipShowingPaymentRequestUi()) {
@@ -1410,16 +1420,6 @@ public class ChromePaymentRequestService
             respondHasEnrolledInstrumentQuery(mPaymentRequestService.getHasEnrolledInstrument());
         }
 
-        ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
-        if (chromeActivity == null) {
-            mJourneyLogger.setNotShown(NotShownReason.OTHER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.ACTIVITY_NOT_FOUND);
-            if (PaymentRequestService.getObserverForTest() != null) {
-                PaymentRequestService.getObserverForTest().onPaymentRequestServiceShowFailed();
-            }
-            return;
-        }
-
         // The list of payment apps is ready to display.
         mPaymentUiService.setPaymentMethodsSection(
                 new SectionInformation(PaymentRequestUI.DataType.PAYMENT_METHODS, selection,
@@ -1453,28 +1453,8 @@ public class ChromePaymentRequestService
 
         SettingsAutofillAndPaymentsObserver.getInstance().registerObserver(mPaymentUiService);
 
-        if (mIsCurrentPaymentRequestShowing) {
-            // Send AppListReady signal when all apps are created and request.show() is called.
-            if (PaymentRequestService.getNativeObserverForTest() != null) {
-                PaymentRequestService.getNativeObserverForTest().onAppListReady(
-                        mPaymentUiService.getPaymentMethodsSection().getItems(),
-                        mSpec.getRawTotal());
-            }
-            // Calculate skip ui and build ui only after all payment apps are ready and
-            // request.show() is called, since only then whether or not should skip payment sheet UI
-            // is determined.
-            assert mIsFinishedQueryingPaymentApps;
-            mPaymentUiService.calculateWhetherShouldSkipShowingPaymentRequestUi(mIsUserGestureShow,
-                    mURLPaymentMethodIdentifiersSupported, mDelegate.skipUiForBasicCard(),
-                    mPaymentOptions);
-            if (!buildUI(chromeActivity)) return;
-            if (!mPaymentUiService.shouldSkipShowingPaymentRequestUi()
-                    && mSkipToGPayHelper == null) {
-                mPaymentUiService.getPaymentRequestUI().show();
-            }
-        }
-
-        triggerPaymentAppUiSkipIfApplicable(chromeActivity);
+        if (mIsCurrentPaymentRequestShowing && !showAppSelector()) return;
+        triggerPaymentAppUiSkipIfApplicable();
     }
 
     /**
