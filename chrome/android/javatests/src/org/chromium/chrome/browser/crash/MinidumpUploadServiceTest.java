@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.base.SplitCompatIntentService;
 import org.chromium.components.background_task_scheduler.TaskIds;
@@ -35,7 +36,6 @@ import org.chromium.components.minidump_uploader.CrashTestRule.MockCrashReportin
 import org.chromium.components.minidump_uploader.MinidumpUploadCallable;
 import org.chromium.components.minidump_uploader.MinidumpUploadCallable.MinidumpUploadStatus;
 import org.chromium.components.minidump_uploader.util.CrashReportingPermissionManager;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.net.NetworkChangeNotifier;
 
 import java.io.File;
