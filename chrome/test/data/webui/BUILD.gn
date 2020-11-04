@@ -490,8 +490,7 @@ group("closure_compile") {
   ]
   if (is_chromeos) {
     deps += [
-      "chromeos/account_manager:closure_compile",
-      "chromeos/gaia_action_buttons:closure_compile",
+      "chromeos:closure_compile",
       "nearby_share:closure_compile",
       "nearby_share/shared:closure_compile",
     ]
