@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/pickle.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -20,6 +21,7 @@
 #include "components/exo/data_offer_delegate.h"
 #include "components/exo/data_offer_observer.h"
 #include "components/exo/file_helper.h"
+#include "net/base/filename_util.h"
 #include "third_party/skia/include/core/SkEncodedImageFormat.h"
 #include "third_party/skia/include/core/SkImageEncoder.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -38,6 +40,7 @@ constexpr char kTextMimeTypeUtf16[] = "text/plain;charset=utf-16";
 constexpr char kTextHtmlMimeTypeUtf8[] = "text/html;charset=utf-8";
 constexpr char kTextHtmlMimeTypeUtf16[] = "text/html;charset=utf-16";
 constexpr char kTextRtfMimeType[] = "text/rtf";
+constexpr char kTextUriListMimeType[] = "text/uri-list";
 constexpr char kImagePngMimeType[] = "image/png";
 constexpr char kUriListSeparator[] = "\r\n";
 
@@ -262,6 +265,22 @@ void DataOffer::SetSourceActions(
 void DataOffer::SetDropData(FileHelper* file_helper,
                             const ui::OSExchangeData& data) {
   DCHECK_EQ(0u, data_callbacks_.size());
+
+  std::string filenames_content;
+  // TODO(crbug.com/1144138): If we are dropping this in a VM, we must
+  //  translate paths, and share paths at the time when data is received.
+  if (data.HasFile()) {
+    std::vector<ui::FileInfo> files;
+    std::vector<std::string> lines;
+    data.GetFilenames(&files);
+    for (const auto& file : files)
+      lines.emplace_back(net::FilePathToFileURL(file.path).spec());
+    filenames_content = base::JoinString(lines, kUriListSeparator);
+    data_callbacks_.emplace(
+        kTextUriListMimeType,
+        AsyncSend(base::RefCountedString::TakeString(&filenames_content)));
+    delegate_->OnOffer(kTextUriListMimeType);
+  }
 
   const std::string uri_list_mime_type = file_helper->GetMimeTypeForUriList();
   base::string16 url_list_string;

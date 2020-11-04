@@ -96,6 +96,8 @@ class DragDropOperation : public DataSourceObserver,
 
   void OnTextRead(const std::string& mime_type, base::string16 data);
   void OnHTMLRead(const std::string& mime_type, base::string16 data);
+  void OnFilenamesRead(const std::string& mime_type,
+                       const std::vector<uint8_t>& data);
 
   void ScheduleStartDragDropOperation();
 

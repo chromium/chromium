@@ -31,6 +31,7 @@ namespace {
 constexpr char kTextPlain[] = "text/plain";
 constexpr char kTextRTF[] = "text/rtf";
 constexpr char kTextHTML[] = "text/html";
+constexpr char kTextUriList[] = "text/uri-list";
 
 constexpr char kUtfPrefix[] = "UTF";
 constexpr char kEncoding16[] = "16";
@@ -240,8 +241,9 @@ void DataSource::GetDataForPreferredMimeTypes(
     ReadDataCallback rtf_reader,
     ReadTextDataCallback html_reader,
     ReadDataCallback image_reader,
+    ReadDataCallback filenames_reader,
     base::RepeatingClosure failure_callback) {
-  std::string text_mime, rtf_mime, html_mime, image_mime;
+  std::string text_mime, rtf_mime, html_mime, image_mime, filenames_mime;
 
   int text_rank = std::numeric_limits<int>::max();
   int html_rank = std::numeric_limits<int>::max();
@@ -286,6 +288,11 @@ void DataSource::GetDataForPreferredMimeTypes(
         image_mime = mime_type;
         image_rank = new_rank;
       }
+    } else if (net::MatchesMimeType(std::string(kTextUriList), mime_type)) {
+      if (filenames_reader.is_null())
+        continue;
+
+      filenames_mime = mime_type;
     }
   }
 
@@ -301,6 +308,7 @@ void DataSource::GetDataForPreferredMimeTypes(
                           std::move(html_reader)),
            failure_callback);
   ReadData(image_mime, std::move(image_reader), failure_callback);
+  ReadData(filenames_mime, std::move(filenames_reader), failure_callback);
 }
 
 void DataSource::OnTextRead(ReadTextDataCallback callback,

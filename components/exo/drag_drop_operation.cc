@@ -6,6 +6,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/strings/string_split.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/exo/data_offer.h"
 #include "components/exo/data_source.h"
@@ -16,6 +17,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/file_info/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -23,6 +25,7 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/transform_util.h"
+#include "url/gurl.h"
 
 #if defined(OS_CHROMEOS)
 #include "ash/drag_drop/drag_drop_controller.h"
@@ -146,7 +149,10 @@ DragDropOperation::DragDropOperation(DataSource* source,
       DataSource::ReadDataCallback(),
       base::BindOnce(&DragDropOperation::OnHTMLRead,
                      weak_ptr_factory_.GetWeakPtr()),
-      DataSource::ReadDataCallback(), counter_);
+      DataSource::ReadDataCallback(),
+      base::BindOnce(&DragDropOperation::OnFilenamesRead,
+                     weak_ptr_factory_.GetWeakPtr()),
+      counter_);
 
   if (icon) {
     origin_->get()->window()->AddChild(host_window());
@@ -189,6 +195,28 @@ void DragDropOperation::OnHTMLRead(const std::string& mime_type,
                                    base::string16 data) {
   DCHECK(os_exchange_data_);
   os_exchange_data_->SetHtml(std::move(data), GURL());
+  mime_type_ = mime_type;
+  counter_.Run();
+}
+
+void DragDropOperation::OnFilenamesRead(const std::string& mime_type,
+                                        const std::vector<uint8_t>& data) {
+  DCHECK(os_exchange_data_);
+  std::string lines(data.begin(), data.end());
+  std::vector<ui::FileInfo> filenames;
+  for (const base::StringPiece& line : base::SplitStringPiece(
+           lines, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+    if (line[0] == '#')
+      continue;
+    GURL url(line);
+    // TODO(crbug.com/1144138): We must translate the path if this was received
+    // from a VM. E.g. if this was from crostini as
+    // file:///home/username/file.txt, we translate to
+    // file:///media/fuse/crostini_<hash>_termina_penguin/file.txt.
+    filenames.emplace_back(
+        ui::FileInfo(base::FilePath(url.path()), base::FilePath()));
+  }
+  os_exchange_data_->SetFilenames(std::move(filenames));
   mime_type_ = mime_type;
   counter_.Run();
 }

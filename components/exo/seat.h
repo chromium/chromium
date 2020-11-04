@@ -38,8 +38,8 @@ class Surface;
 class XkbTracker;
 
 // The maximum number of different data types that we will write to the
-// clipboard (plain text, RTF, HTML, image)
-constexpr int kMaxClipboardDataTypes = 4;
+// clipboard (plain text, RTF, HTML, image, text/uri-list)
+constexpr int kMaxClipboardDataTypes = 5;
 
 // Seat object represent a group of input devices such as keyboard, pointer and
 // touch devices and keeps track of input focus.
@@ -158,6 +158,10 @@ class Seat : public aura::client::FocusChangeObserver,
                       scoped_refptr<RefCountedScopedClipboardWriter> writer,
                       const SkBitmap& bitmap);
 #endif  // defined(OS_CHROMEOS)
+  void OnFilenamesRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
+                       base::OnceClosure callback,
+                       const std::string& mime_type,
+                       const std::vector<uint8_t>& data);
 
   void OnAllReadsFinished(
       scoped_refptr<RefCountedScopedClipboardWriter> writer);

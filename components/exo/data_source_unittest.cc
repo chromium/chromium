@@ -68,11 +68,12 @@ void IncrementCounter(base::RepeatingClosure counter) {
   std::move(counter).Run();
 }
 
-void CheckMimeTypesRecieved(DataSource* data_source,
+void CheckMimeTypesReceived(DataSource* data_source,
                             const std::string& text_mime,
                             const std::string& rtf_mime,
                             const std::string& html_mime,
-                            const std::string& image_mime) {
+                            const std::string& image_mime,
+                            const std::string& filenames_mime) {
   base::RunLoop run_loop;
   base::RepeatingClosure counter =
       base::BarrierClosure(4, run_loop.QuitClosure());
@@ -81,6 +82,7 @@ void CheckMimeTypesRecieved(DataSource* data_source,
       base::BindOnce(&CheckMimeType, rtf_mime, counter),
       base::BindOnce(&CheckTextMimeType, html_mime, counter),
       base::BindOnce(&CheckMimeType, image_mime, counter),
+      base::BindOnce(&CheckMimeType, filenames_mime, counter),
       base::BindRepeating(&IncrementCounter, counter));
   run_loop.Run();
 }
@@ -170,11 +172,12 @@ TEST_F(DataSourceTest, PreferredMimeTypeUTF16) {
   data_source.Offer("text/html;charset=UTF-16");
   data_source.Offer("text/html;charset=utf-8");
 
-  CheckMimeTypesRecieved(
+  CheckMimeTypesReceived(
       &data_source,
       "text/plain;charset=utf-16",
       "",
       "text/html;charset=UTF-16",
+      "",
       "");
 }
 
@@ -186,11 +189,12 @@ TEST_F(DataSourceTest, PreferredMimeTypeUTF16LE) {
   data_source.Offer("text/html;charset=utf16le");
   data_source.Offer("text/html;charset=utf-8");
 
-  CheckMimeTypesRecieved(
+  CheckMimeTypesReceived(
       &data_source,
       "text/plain;charset=utf-16le",
       "",
       "text/html;charset=utf16le",
+      "",
       "");
 }
 
@@ -202,11 +206,12 @@ TEST_F(DataSourceTest, PreferredMimeTypeUTF16BE) {
   data_source.Offer("text/html;charset=UTF16be");
   data_source.Offer("text/html;charset=utf-8");
 
-  CheckMimeTypesRecieved(
+  CheckMimeTypesReceived(
       &data_source,
       "text/plain;charset=utf-16be",
       "",
       "text/html;charset=UTF16be",
+      "",
       "");
 }
 
@@ -218,11 +223,12 @@ TEST_F(DataSourceTest, PreferredMimeTypeUTFToOther) {
   data_source.Offer("text/html;charset=utf-8");
   data_source.Offer("text/html;charset=iso-8859-1");
 
-  CheckMimeTypesRecieved(
+  CheckMimeTypesReceived(
       &data_source,
       "text/plain;charset=utf-8",
       "",
       "text/html;charset=utf-8",
+      "",
       "");
 }
 
@@ -232,9 +238,10 @@ TEST_F(DataSourceTest, RecogniseUTF8Legaccy) {
   data_source.Offer("UTF8_STRING");
   data_source.Offer("text/plain;charset=iso-8859-1");
 
-  CheckMimeTypesRecieved(
+  CheckMimeTypesReceived(
       &data_source,
       "UTF8_STRING",
+      "",
       "",
       "",
       "");
@@ -248,11 +255,12 @@ TEST_F(DataSourceTest, PreferredMimeTypeOtherToAscii) {
   data_source.Offer("text/html;charset=iso-8859-1");
   data_source.Offer("text/html;charset=ascii");
 
-  CheckMimeTypesRecieved(
+  CheckMimeTypesReceived(
       &data_source,
       "text/plain;charset=iso-8859-1",
       "",
       "text/html;charset=iso-8859-1",
+      "",
       "");
 }
 
@@ -264,11 +272,12 @@ TEST_F(DataSourceTest, PreferredMimeTypeOtherToUnspecified) {
   data_source.Offer("text/html;charset=iso-8859-1");
   data_source.Offer("text/html");
 
-  CheckMimeTypesRecieved(
+  CheckMimeTypesReceived(
       &data_source,
       "text/plain;charset=iso-8859-1",
       "",
       "text/html;charset=iso-8859-1",
+      "",
       "");
 }
 
@@ -277,10 +286,11 @@ TEST_F(DataSourceTest, PreferredMimeTypeRTF) {
   DataSource data_source(&delegate);
   data_source.Offer("text/rtf");
 
-  CheckMimeTypesRecieved(
+  CheckMimeTypesReceived(
       &data_source,
       "",
       "text/rtf",
+      "",
       "",
       "");
 }
@@ -291,12 +301,13 @@ TEST_F(DataSourceTest, PreferredMimeTypeBitmapToPNG) {
   data_source.Offer("image/bmp");
   data_source.Offer("image/png");
 
-  CheckMimeTypesRecieved(
+  CheckMimeTypesReceived(
       &data_source,
       "",
       "",
       "",
-      "image/bmp");
+      "image/bmp",
+      "");
 }
 
 TEST_F(DataSourceTest, PreferredMimeTypePNGToJPEG) {
@@ -306,12 +317,27 @@ TEST_F(DataSourceTest, PreferredMimeTypePNGToJPEG) {
   data_source.Offer("image/jpeg");
   data_source.Offer("image/jpg");
 
-  CheckMimeTypesRecieved(
+  CheckMimeTypesReceived(
       &data_source,
       "",
       "",
       "",
-      "image/png");
+      "image/png",
+      "");
+}
+
+TEST_F(DataSourceTest, PreferredMimeTypeTextUriList) {
+  TestDataSourceDelegate delegate;
+  DataSource data_source(&delegate);
+  data_source.Offer("text/uri-list");
+
+  CheckMimeTypesReceived(
+      &data_source,
+      "",
+      "",
+      "",
+      "",
+      "text/uri-list");
 }
 
 }  // namespace

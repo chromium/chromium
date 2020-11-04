@@ -60,8 +60,9 @@ class DataSource {
   void DndFinished();
 
   // Search the set of offered MIME types for the most preferred of each of the
-  // following categories: text/plain*, text/rtf, text/html*, image/*. If any
-  // usable MIME types in a given category are available, the corresponding
+  // following categories: text/plain*, text/rtf, text/html*, image/*,
+  // text/uri-list. If any usable MIME types in a given category are available,
+  // the corresponding
   // |*_reader| input callback will be called with the best one and the
   // corresponding data. For any category that has no available MIME types,
   // |failure_callback| is run. |failure_callback| may therefore be run as many
@@ -74,6 +75,7 @@ class DataSource {
                                     ReadDataCallback rtf_reader,
                                     ReadTextDataCallback html_reader,
                                     ReadDataCallback image_reader,
+                                    ReadDataCallback filenames_reader,
                                     base::RepeatingClosure failure_callback);
 
   void ReadDataForTesting(const std::string& mime_type,

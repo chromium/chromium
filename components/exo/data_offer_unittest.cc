@@ -308,9 +308,9 @@ TEST_F(DataOfferTest, ReceiveUriList) {
   ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
 
   data_offer.Receive("text/uri-list", std::move(write_pipe));
-  base::string16 result;
-  ASSERT_TRUE(ReadString16(std::move(read_pipe), &result));
-  EXPECT_EQ(base::ASCIIToUTF16("file:///test/downloads/file"), result);
+  std::string result;
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &result));
+  EXPECT_EQ("file:///test/downloads/file", result);
 }
 
 TEST_F(DataOfferTest, ReceiveUriListFromPickle_ReceiveBeforeUrlIsResolved) {

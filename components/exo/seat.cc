@@ -153,6 +153,8 @@ void Seat::SetSelection(DataSource* source) {
                      data_read_callback),
       base::BindOnce(&Seat::OnImageRead, weak_ptr_factory_.GetWeakPtr(), writer,
                      data_read_callback),
+      base::BindOnce(&Seat::OnFilenamesRead, weak_ptr_factory_.GetWeakPtr(),
+                     writer, data_read_callback),
       data_read_callback);
 }
 
@@ -219,6 +221,14 @@ void Seat::OnImageDecoded(base::OnceClosure callback,
   std::move(callback).Run();
 }
 #endif  // defined(OS_CHROMEOS)
+
+void Seat::OnFilenamesRead(
+    scoped_refptr<RefCountedScopedClipboardWriter> writer,
+    base::OnceClosure callback,
+    const std::string& mime_type,
+    const std::vector<uint8_t>& data) {
+  std::move(callback).Run();
+}
 
 void Seat::OnAllReadsFinished(
     scoped_refptr<RefCountedScopedClipboardWriter> writer) {
