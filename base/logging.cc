@@ -392,17 +392,19 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
 
 #if defined(OS_FUCHSIA)
   if (g_logging_destination & LOG_TO_SYSTEM_DEBUG_LOG) {
-    fx_logger_config_t config;
-    config.min_severity = FX_LOG_INFO;
-    config.console_fd = -1;
-    config.log_service_channel = ZX_HANDLE_INVALID;
     std::string log_tag = base::CommandLine::ForCurrentProcess()
                               ->GetProgram()
                               .BaseName()
                               .AsUTF8Unsafe();
     const char* log_tag_data = log_tag.data();
-    config.tags = &log_tag_data;
-    config.num_tags = 1;
+
+    fx_logger_config_t config = {
+        .min_severity = FX_LOG_INFO,
+        .console_fd = -1,
+        .log_service_channel = ZX_HANDLE_INVALID,
+        .tags = &log_tag_data,
+        .num_tags = 1,
+    };
     fx_log_reconfigure(&config);
   }
 #endif
