@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 571 tests; 534 PASS, 37 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 562 tests; 526 PASS, 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL [["forwarddelete",""]] "<ol><li>foo[<li>]bar</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foobar</li></ol>" but got "<ol><li>foo</li><li>bar</li></ol>"
 PASS [["forwarddelete",""]] "<ol><li>foo[<li>]bar</ol>" queryCommandIndeterm("forwarddelete") before
 PASS [["forwarddelete",""]] "<ol><li>foo[<li>]bar</ol>" queryCommandState("forwarddelete") before
@@ -562,14 +562,5 @@ PASS [["forwarddelete",""]] "<div>abc[]  </div> <div>  def</div>" queryCommandVa
 PASS [["forwarddelete",""]] "<div>abc[]  </div> <div>  def</div>" queryCommandIndeterm("forwarddelete") after
 PASS [["forwarddelete",""]] "<div>abc[]  </div> <div>  def</div>" queryCommandState("forwarddelete") after
 PASS [["forwarddelete",""]] "<div>abc[]  </div> <div>  def</div>" queryCommandValue("forwarddelete") after
-PASS [["forwarddelete",""]] "foo[]<img contenteditable=false src=/img/lion.svg>bar": execCommand("forwarddelete", false, "") return value
-PASS [["forwarddelete",""]] "foo[]<img contenteditable=false src=/img/lion.svg>bar" checks for modifications to non-editable content
-FAIL [["forwarddelete",""]] "foo[]<img contenteditable=false src=/img/lion.svg>bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobar" but got "foo<img contenteditable=\"false\" src=\"/img/lion.svg\">bar"
-PASS [["forwarddelete",""]] "foo[]<img contenteditable=false src=/img/lion.svg>bar" queryCommandIndeterm("forwarddelete") before
-PASS [["forwarddelete",""]] "foo[]<img contenteditable=false src=/img/lion.svg>bar" queryCommandState("forwarddelete") before
-PASS [["forwarddelete",""]] "foo[]<img contenteditable=false src=/img/lion.svg>bar" queryCommandValue("forwarddelete") before
-PASS [["forwarddelete",""]] "foo[]<img contenteditable=false src=/img/lion.svg>bar" queryCommandIndeterm("forwarddelete") after
-PASS [["forwarddelete",""]] "foo[]<img contenteditable=false src=/img/lion.svg>bar" queryCommandState("forwarddelete") after
-PASS [["forwarddelete",""]] "foo[]<img contenteditable=false src=/img/lion.svg>bar" queryCommandValue("forwarddelete") after
 Harness: the test ran to completion.
 

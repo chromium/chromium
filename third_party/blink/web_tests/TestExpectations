@@ -6222,7 +6222,6 @@ crbug.com/1143720 [ Win7 ] external/wpt/media-source/mediasource-detach.html [ P
 crbug.com/1144677 external/wpt/css/css-backgrounds/border-radius-clip-001.html [ Pass Failure ]
 crbug.com/1144677 external/wpt/css/css-backgrounds/border-radius-clip-002.htm [ Pass Failure ]
 crbug.com/1144677 external/wpt/infrastructure/reftest/reftest.www.sub.html [ Failure ]
-crbug.com/1144677 external/wpt/paint-timing/fcp-only/fcp-ensure-update-the-rendering-step.html [ Pass Failure ]
 
 crbug.com/1144537 external/wpt/xhr/responsexml-document-properties.htm [ Pass Failure ]
 

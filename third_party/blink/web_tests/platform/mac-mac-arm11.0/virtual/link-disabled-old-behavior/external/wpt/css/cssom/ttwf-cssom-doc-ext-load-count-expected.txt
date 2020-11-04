@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS stylesheet.css should be loaded and styleSheets.length === 1
+PASS stylesheet.css should be unloaded and styleSheets.length === 0
+FAIL stylesheet-1.css should be loaded and styleSheets.length === 1 assert_equals: styleSheets.length is incorrect: expected 1 but got 0
+Harness: the test ran to completion.
+

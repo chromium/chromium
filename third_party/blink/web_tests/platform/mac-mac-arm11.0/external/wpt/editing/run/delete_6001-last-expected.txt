@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 904 tests; 866 PASS, 38 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 895 tests; 858 PASS, 37 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["defaultparagraphseparator","div"],["delete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandState("delete") before
 PASS [["defaultparagraphseparator","div"],["delete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandValue("delete") before
 PASS [["defaultparagraphseparator","div"],["delete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandIndeterm("delete") after
@@ -895,14 +895,5 @@ PASS [["delete",""]] "<div>abc  </div> <div>  []def</div>" queryCommandValue("de
 PASS [["delete",""]] "<div>abc  </div> <div>  []def</div>" queryCommandIndeterm("delete") after
 PASS [["delete",""]] "<div>abc  </div> <div>  []def</div>" queryCommandState("delete") after
 PASS [["delete",""]] "<div>abc  </div> <div>  []def</div>" queryCommandValue("delete") after
-PASS [["delete",""]] "foo<img contenteditable=false src=/img/lion.svg>[]bar": execCommand("delete", false, "") return value
-PASS [["delete",""]] "foo<img contenteditable=false src=/img/lion.svg>[]bar" checks for modifications to non-editable content
-FAIL [["delete",""]] "foo<img contenteditable=false src=/img/lion.svg>[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobar" but got "foo<img contenteditable=\"false\" src=\"/img/lion.svg\">bar"
-PASS [["delete",""]] "foo<img contenteditable=false src=/img/lion.svg>[]bar" queryCommandIndeterm("delete") before
-PASS [["delete",""]] "foo<img contenteditable=false src=/img/lion.svg>[]bar" queryCommandState("delete") before
-PASS [["delete",""]] "foo<img contenteditable=false src=/img/lion.svg>[]bar" queryCommandValue("delete") before
-PASS [["delete",""]] "foo<img contenteditable=false src=/img/lion.svg>[]bar" queryCommandIndeterm("delete") after
-PASS [["delete",""]] "foo<img contenteditable=false src=/img/lion.svg>[]bar" queryCommandState("delete") after
-PASS [["delete",""]] "foo<img contenteditable=false src=/img/lion.svg>[]bar" queryCommandValue("delete") after
 Harness: the test ran to completion.
 

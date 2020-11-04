@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+PASS Loading data…
+PASS Input † with encoding big5
+PASS Input † with encoding euc-kr
+PASS Input † with encoding utf-8
+PASS Input † with encoding windows-1252
+PASS Input A with encoding big5
+FAIL Input A with encoding iso-2022-jp assert_equals: query expected "?%26%2365533%3BA" but got "?%0EA"
+PASS Input A with encoding utf-8
+PASS Input ‾\ with encoding iso-2022-jp
+PASS Input ‾\ with encoding utf-8
+PASS Input  with encoding gb18030
+PASS Input  with encoding utf-8
+PASS Input − with encoding shift_jis
+PASS Input − with encoding utf-8
+PASS Input á| with encoding utf-8
+Harness: the test ran to completion.
+
