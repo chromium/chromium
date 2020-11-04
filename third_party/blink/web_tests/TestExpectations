@@ -6235,3 +6235,6 @@ crbug.com/997202 [ Mac ] external/wpt/css/css-transforms/animation/transform-int
 crbug.com/997202 [ Mac ] virtual/composite-relative-keyframes/external/wpt/css/css-transforms/animation/transform-interpolation-rotate-slerp.html [ Failure ]
 crbug.com/997202 [ Mac ] virtual/threaded/external/wpt/css/css-transforms/animation/transform-interpolation-rotate-slerp.html [ Failure ]
 crbug.com/997202 [ Mac ] virtual/transform-interop/external/wpt/css/css-transforms/animation/transform-interpolation-rotate-slerp.html [ Failure ]
+
+# Sheriff 2020-11-04
+crbug.com/1144273 http/tests/devtools/sources/debugger-ui/continue-to-location-markers-in-top-level-function.js [ Pass Failure ]
