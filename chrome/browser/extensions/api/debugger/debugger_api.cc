@@ -92,6 +92,10 @@ bool ExtensionMayAttachToURL(const Extension& extension,
                              const GURL& url,
                              Profile* profile,
                              std::string* error) {
+  // Allow the extension to attach to about:blank and empty URLs.
+  if (url.is_empty() || url == "about:")
+    return true;
+
   if (url == content::kUnreachableWebDataURL)
     return true;
 
@@ -400,9 +404,6 @@ bool ExtensionDevToolsClientHost::MayAttachToURL(const GURL& url,
                                                  bool is_webui) {
   if (is_webui)
     return false;
-  // Allow the extension to attach to about:blank.
-  if (url.is_empty() || url == "about:")
-    return true;
   std::string error;
   if (!ExtensionMayAttachToURL(*extension_, url, profile_, &error))
     return false;

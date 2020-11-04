@@ -360,6 +360,10 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest,
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, AttachToEmptyUrls) {
+  ASSERT_TRUE(RunExtensionTest("debugger_attach_to_empty_urls")) << message_;
+}
+
 class SitePerProcessDebuggerExtensionApiTest : public DebuggerExtensionApiTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
