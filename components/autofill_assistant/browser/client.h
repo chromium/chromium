@@ -86,6 +86,9 @@ class Client {
   // Whether this client has had an UI.
   virtual bool HasHadUI() const = 0;
 
+  // Returns whether the user has seen a trigger script before or not.
+  virtual bool IsFirstTimeTriggerScriptUser() const = 0;
+
  protected:
   Client() = default;
 };

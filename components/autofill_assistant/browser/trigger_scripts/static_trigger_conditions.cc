@@ -4,21 +4,51 @@
 
 #include "components/autofill_assistant/browser/trigger_scripts/static_trigger_conditions.h"
 
+#include "base/callback.h"
+#include "base/strings/string_number_conversions.h"
+
 namespace autofill_assistant {
 
 StaticTriggerConditions::StaticTriggerConditions() = default;
 StaticTriggerConditions::~StaticTriggerConditions() = default;
 
+void StaticTriggerConditions::Init(Client* client,
+                                   const GURL& url,
+                                   TriggerContext* trigger_context,
+                                   base::OnceCallback<void(void)> callback) {
+  DCHECK(!callback_)
+      << "Call to Init while another call to Init was still pending";
+  if (callback_) {
+    return;
+  }
+  is_first_time_user_ = client->IsFirstTimeTriggerScriptUser();
+  trigger_context_ = trigger_context;
+  has_stored_login_credentials_ = false;
+
+  callback_ = std::move(callback);
+  client->GetWebsiteLoginManager()->GetLoginsForUrl(
+      url, base::BindOnce(&StaticTriggerConditions::OnGetLogins,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
 bool StaticTriggerConditions::is_first_time_user() const {
-  return false;
+  return is_first_time_user_;
 }
 
 bool StaticTriggerConditions::has_stored_login_credentials() const {
-  return false;
+  return has_stored_login_credentials_;
 }
 
 bool StaticTriggerConditions::is_in_experiment(int experiment_id) const {
-  return false;
+  DCHECK(trigger_context_);
+  return trigger_context_->HasExperimentId(base::NumberToString(experiment_id));
+}
+
+void StaticTriggerConditions::OnGetLogins(
+    std::vector<WebsiteLoginManager::Login> logins) {
+  has_stored_login_credentials_ = !logins.empty();
+  DCHECK(callback_);
+  std::move(callback_).Run();
 }
 
 }  // namespace autofill_assistant

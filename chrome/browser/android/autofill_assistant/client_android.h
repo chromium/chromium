@@ -113,6 +113,7 @@ class ClientAndroid : public Client,
   void Shutdown(Metrics::DropOutReason reason) override;
   void RecordDropOut(Metrics::DropOutReason reason) override;
   bool HasHadUI() const override;
+  bool IsFirstTimeTriggerScriptUser() const override;
 
   // Overrides AccessTokenFetcher
   void FetchAccessToken(

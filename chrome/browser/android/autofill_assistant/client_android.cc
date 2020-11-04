@@ -514,6 +514,11 @@ bool ClientAndroid::HasHadUI() const {
   return has_had_ui_;
 }
 
+bool ClientAndroid::IsFirstTimeTriggerScriptUser() const {
+  return Java_AutofillAssistantClient_isFirstTimeTriggerScriptUser(
+      AttachCurrentThread());
+}
+
 void ClientAndroid::Shutdown(Metrics::DropOutReason reason) {
   if (!controller_)
     return;

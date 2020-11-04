@@ -37,6 +37,7 @@ class MockClient : public Client {
   MOCK_METHOD0(AttachUI, void());
   MOCK_METHOD0(DestroyUI, void());
   MOCK_CONST_METHOD0(HasHadUI, bool());
+  MOCK_CONST_METHOD0(IsFirstTimeTriggerScriptUser, bool());
 
  private:
   std::unique_ptr<MockPersonalDataManager> mock_personal_data_manager_;
