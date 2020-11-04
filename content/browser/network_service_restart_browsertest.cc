@@ -1138,8 +1138,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, Plugin) {
   ASSERT_TRUE(NavigateToURL(web_contents,
                             embedded_test_server()->GetURL("/title1.html")));
 
-  // Load the test plugin (see ppapi::RegisterFlashTestPlugin and
-  // ppapi/tests/power_saver_test_plugin.cc).
+  // Load the test plugin (see ppapi::RegisterCorbTestPlugin).
   const char kLoadingScript[] = R"(
       var obj = document.createElement('object');
       obj.id = 'plugin';

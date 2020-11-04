@@ -93,18 +93,6 @@ struct PPB_Testing_Private_1_0 {
    */
   PP_Bool (*IsOutOfProcess)(void);
   /**
-   * Posts the plugin's current Power Saver status to JavaScript. The plugin
-   * itself does not recieve anything. This is not idiomatic for Pepper,
-   * but convenient for testing.
-   */
-  void (*PostPowerSaverStatus)(PP_Instance instance);
-  /**
-   * Subscribes to changes to the plugin's Power Saver status. The status
-   * changes are not forwarded to the plugin itself, but posted to JavaScript.
-   * This is not idiomatic for Pepper, but conveienent for testing.
-   */
-  void (*SubscribeToPowerSaverNotifications)(PP_Instance instance);
-  /**
    * Passes the input event to the browser, which sends it back to the
    * plugin. The plugin should implement PPP_InputEvent and register for
    * the input event type.

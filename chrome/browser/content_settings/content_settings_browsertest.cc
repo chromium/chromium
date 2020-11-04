@@ -1218,8 +1218,6 @@ class PepperContentSettingsSpecialCasesTest : public ContentSettingsTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ASSERT_TRUE(ppapi::RegisterFlashTestPlugin(command_line));
-
 #if BUILDFLAG(ENABLE_NACL)
     // Ensure NaCl can run.
     command_line->AppendSwitch(switches::kEnableNaCl);
@@ -1330,18 +1328,6 @@ class PepperContentSettingsSpecialCasesJavaScriptBlockedTest
   }
 };
 
-// A sanity check to verify that the plugin that is used as a baseline below
-// can be loaded.
-IN_PROC_BROWSER_TEST_F(PepperContentSettingsSpecialCasesTest, Flash) {
-  GURL server_root = https_server_.GetURL("/");
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->SetContentSettingDefaultScope(server_root, server_root,
-                                      ContentSettingsType::PLUGINS,
-                                      std::string(), CONTENT_SETTING_ALLOW);
-
-  RunLoadPepperPluginTest("application/x-shockwave-flash", true);
-}
-
 // The following tests verify that Pepper plugins that use JavaScript settings
 // instead of Plugins settings still work when Plugins are blocked.
 
@@ -1354,12 +1340,6 @@ IN_PROC_BROWSER_TEST_F(PepperContentSettingsSpecialCasesPluginsBlockedTest,
 
 // The following tests verify that those same Pepper plugins do not work when
 // JavaScript is blocked.
-
-// Flash is not blocked when JavaScript is blocked.
-IN_PROC_BROWSER_TEST_F(PepperContentSettingsSpecialCasesJavaScriptBlockedTest,
-                       Flash) {
-  RunJavaScriptBlockedTest("/load_flash_no_js.html", false);
-}
 
 #if BUILDFLAG(ENABLE_NACL)
 IN_PROC_BROWSER_TEST_F(PepperContentSettingsSpecialCasesJavaScriptBlockedTest,

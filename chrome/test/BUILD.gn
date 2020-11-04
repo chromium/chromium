@@ -881,7 +881,6 @@ if (!is_android) {
       # content_browsertests uses the non-copied files instead.
       "//ppapi:copy_test_files",
       "//ppapi:copy_test_files2",
-      "//ppapi:power_saver_test_plugin",
       "//ppapi:ppapi_tests",
       "//testing/buildbot/filters:browser_tests_filters",
       "//testing/buildbot/filters:linux_trusty_rel_browser_tests_filters",

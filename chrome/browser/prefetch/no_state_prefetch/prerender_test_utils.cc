@@ -435,11 +435,6 @@ PrerenderInProcessBrowserTest::PrerenderInProcessBrowserTest()
 
 PrerenderInProcessBrowserTest::~PrerenderInProcessBrowserTest() {}
 
-void PrerenderInProcessBrowserTest::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  ASSERT_TRUE(ppapi::RegisterFlashTestPlugin(command_line));
-}
-
 void PrerenderInProcessBrowserTest::TearDownInProcessBrowserTestFixture() {
   safe_browsing::SafeBrowsingService::RegisterFactory(nullptr);
 }

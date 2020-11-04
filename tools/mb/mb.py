@@ -1348,7 +1348,6 @@ class MetaBuildWrapper(object):
               'blink_test_plugin.plugin/',
               'corb_test_plugin.plugin/',
               'obj/tools/grit/brotli_mac_asan_workaround/',
-              'power_saver_test_plugin.plugin/',
               'ppapi_tests.plugin/',
               'ui_unittests Framework.framework/',
           ))):

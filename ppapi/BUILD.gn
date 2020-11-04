@@ -219,20 +219,6 @@ target(ppapi_tests_target_type, "ppapi_tests") {
   deps = [ ":ppapi_tests_sources" ]
 }
 
-# Test plugin for power saver tests.
-# See also ppapi::RegisterFlashTestPlugin.
-source_set("power_saver_test_plugin_sources") {
-  sources = [
-    "tests/power_saver_test_plugin.cc",
-    "tests/test_utils.cc",
-  ]
-
-  deps = [
-    "//ppapi/cpp",
-    "//ppapi/shared_impl",
-  ]
-}
-
 # Test plugin for Cross-Origin Read Blocking.
 # See also ppapi::RegisterCorbTestPlugin.
 source_set("corb_test_plugin_sources") {
@@ -251,15 +237,9 @@ if (!is_mac) {
   shared_library("corb_test_plugin") {
     deps = [ ":corb_test_plugin_sources" ]
   }
-  shared_library("power_saver_test_plugin") {
-    deps = [ ":power_saver_test_plugin_sources" ]
-  }
 } else {
   mac_plugin_bundle("corb_test_plugin") {
     deps = [ ":corb_test_plugin_sources" ]
-  }
-  mac_plugin_bundle("power_saver_test_plugin") {
-    deps = [ ":power_saver_test_plugin_sources" ]
   }
 }
 

@@ -114,20 +114,6 @@ bool RegisterCorbTestPlugin(base::CommandLine* command_line) {
   return RegisterFlashTestPluginLibrary(command_line, library_name);
 }
 
-bool RegisterFlashTestPlugin(base::CommandLine* command_line) {
-  // Power Saver plugin requires Pepper testing API.
-  command_line->AppendSwitch(switches::kEnablePepperTesting);
-
-  // The Power Saver plugin ignores the data attribute and just draws a
-  // checkerboard pattern - while providing some Plugin Power Saver diagnostics.
-  //
-  // It was originally designed just for Plugin Power Saver tests, but is
-  // useful for testing as a fake Flash plugin in a variety of tests.
-  StringType library_name =
-      base::FilePath::FromUTF8Unsafe(ppapi::kPowerSaverTestPluginName).value();
-  return RegisterFlashTestPluginLibrary(command_line, library_name);
-}
-
 bool RegisterBlinkTestPlugin(base::CommandLine* command_line) {
 #if defined(OS_WIN)
   static const CharType kPluginLibrary[] = L"blink_test_plugin.dll";

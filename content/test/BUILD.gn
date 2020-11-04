@@ -1350,7 +1350,6 @@ test("content_browsertests") {
     ]
     data_deps += [
       "//ppapi:corb_test_plugin",
-      "//ppapi:power_saver_test_plugin",
       "//ppapi:ppapi_tests",
     ]
     if (is_mac) {

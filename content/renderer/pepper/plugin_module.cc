@@ -229,10 +229,6 @@ uint32_t GetLiveObjectsForInstance(PP_Instance instance_id) {
 
 PP_Bool IsOutOfProcess() { return PP_FALSE; }
 
-void PostPowerSaverStatus(PP_Instance instance_id) {
-}
-void SubscribeToPowerSaverNotifications(PP_Instance instance_id) {
-}
 void SimulateInputEvent(PP_Instance instance, PP_Resource input_event) {
   PepperPluginInstanceImpl* plugin_instance =
       host_globals->GetInstance(instance);
@@ -283,8 +279,6 @@ const PPB_Testing_Private testing_interface = {
     &QuitMessageLoop,
     &GetLiveObjectsForInstance,
     &IsOutOfProcess,
-    &PostPowerSaverStatus,
-    &SubscribeToPowerSaverNotifications,
     &SimulateInputEvent,
     &GetDocumentURL,
     &GetLiveVars,

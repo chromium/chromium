@@ -3534,16 +3534,6 @@ static PP_Bool Pnacl_M33_PPB_Testing_Private_IsOutOfProcess(void) {
   return iface->IsOutOfProcess();
 }
 
-static void Pnacl_M33_PPB_Testing_Private_PostPowerSaverStatus(PP_Instance instance) {
-  const struct PPB_Testing_Private_1_0 *iface = Pnacl_WrapperInfo_PPB_Testing_Private_1_0.real_iface;
-  iface->PostPowerSaverStatus(instance);
-}
-
-static void Pnacl_M33_PPB_Testing_Private_SubscribeToPowerSaverNotifications(PP_Instance instance) {
-  const struct PPB_Testing_Private_1_0 *iface = Pnacl_WrapperInfo_PPB_Testing_Private_1_0.real_iface;
-  iface->SubscribeToPowerSaverNotifications(instance);
-}
-
 static void Pnacl_M33_PPB_Testing_Private_SimulateInputEvent(PP_Instance instance, PP_Resource input_event) {
   const struct PPB_Testing_Private_1_0 *iface = Pnacl_WrapperInfo_PPB_Testing_Private_1_0.real_iface;
   iface->SimulateInputEvent(instance, input_event);
@@ -4714,8 +4704,6 @@ static const struct PPB_Testing_Private_1_0 Pnacl_Wrappers_PPB_Testing_Private_1
     .QuitMessageLoop = (void (*)(PP_Instance instance))&Pnacl_M33_PPB_Testing_Private_QuitMessageLoop,
     .GetLiveObjectsForInstance = (uint32_t (*)(PP_Instance instance))&Pnacl_M33_PPB_Testing_Private_GetLiveObjectsForInstance,
     .IsOutOfProcess = (PP_Bool (*)(void))&Pnacl_M33_PPB_Testing_Private_IsOutOfProcess,
-    .PostPowerSaverStatus = (void (*)(PP_Instance instance))&Pnacl_M33_PPB_Testing_Private_PostPowerSaverStatus,
-    .SubscribeToPowerSaverNotifications = (void (*)(PP_Instance instance))&Pnacl_M33_PPB_Testing_Private_SubscribeToPowerSaverNotifications,
     .SimulateInputEvent = (void (*)(PP_Instance instance, PP_Resource input_event))&Pnacl_M33_PPB_Testing_Private_SimulateInputEvent,
     .GetDocumentURL = (struct PP_Var (*)(PP_Instance instance, struct PP_URLComponents_Dev* components))&Pnacl_M33_PPB_Testing_Private_GetDocumentURL,
     .GetLiveVars = (uint32_t (*)(struct PP_Var live_vars[], uint32_t array_size))&Pnacl_M33_PPB_Testing_Private_GetLiveVars,
