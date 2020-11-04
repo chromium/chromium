@@ -1831,13 +1831,24 @@ bool RenderFrameHostImpl::OnMessageReceived(const IPC::Message& msg) {
 void RenderFrameHostImpl::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {
-  ContentBrowserClient* browser_client = GetContentClient()->browser();
-  if (!associated_registry_->TryBindInterface(interface_name, &handle) &&
-      !browser_client->BindAssociatedReceiverFromFrame(this, interface_name,
-                                                       &handle)) {
-    delegate_->OnAssociatedInterfaceRequest(this, interface_name,
-                                            std::move(handle));
+  // TODO(https://crbug.com/1123438) It is not understood why
+  // OnAssociatedInterfaceRequest can be received after resetting
+  // `associated_registry_`. This is reset in InvalidateMojoConnection(), which
+  // means we want to stop receiving messages on behalf of the frame. Ignoring
+  // this request sounded like the right way to handle this.
+  if (!associated_registry_)
+    return;
+
+  if (associated_registry_->TryBindInterface(interface_name, &handle))
+    return;
+
+  if (GetContentClient()->browser()->BindAssociatedReceiverFromFrame(
+          this, interface_name, &handle)) {
+    return;
   }
+
+  delegate_->OnAssociatedInterfaceRequest(this, interface_name,
+                                          std::move(handle));
 }
 
 void RenderFrameHostImpl::AccessibilityPerformAction(
