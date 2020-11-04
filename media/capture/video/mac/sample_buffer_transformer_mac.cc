@@ -335,7 +335,20 @@ void SampleBufferTransformer::Reconfigure(
 
 base::ScopedCFTypeRef<CVPixelBufferRef> SampleBufferTransformer::Transform(
     CMSampleBufferRef sample_buffer) {
-  DCHECK(destination_pixel_buffer_pool_);
+  DCHECK(transformer_ != Transformer::kNotConfigured);
+  CVPixelBufferRef source_pixel_buffer =
+      CMSampleBufferGetImageBuffer(sample_buffer);
+  // Fast path: If source and destination formats are identical, return the
+  // source pixel buffer.
+  if (source_pixel_buffer &&
+      destination_width_ == CVPixelBufferGetWidth(source_pixel_buffer) &&
+      destination_height_ == CVPixelBufferGetHeight(source_pixel_buffer) &&
+      destination_pixel_format_ ==
+          CVPixelBufferGetPixelFormatType(source_pixel_buffer)) {
+    return base::ScopedCFTypeRef<CVPixelBufferRef>(source_pixel_buffer,
+                                                   base::scoped_policy::RETAIN);
+  }
+  // Create destination buffer from pool.
   base::ScopedCFTypeRef<CVPixelBufferRef> destination_pixel_buffer =
       destination_pixel_buffer_pool_->CreateBuffer();
   if (!destination_pixel_buffer) {
@@ -344,20 +357,7 @@ base::ScopedCFTypeRef<CVPixelBufferRef> SampleBufferTransformer::Transform(
     LOG(ERROR) << "Maximum destination buffers exceeded";
     return base::ScopedCFTypeRef<CVPixelBufferRef>();
   }
-  if (CVPixelBufferRef source_pixel_buffer =
-          CMSampleBufferGetImageBuffer(sample_buffer)) {
-    size_t source_width = CVPixelBufferGetWidth(source_pixel_buffer);
-    size_t source_height = CVPixelBufferGetHeight(source_pixel_buffer);
-    OSType source_pixel_format =
-        CVPixelBufferGetPixelFormatType(source_pixel_buffer);
-    // Fast path: If source and destination formats are identical, return the
-    // source pixel buffer.
-    if (destination_width_ == source_width &&
-        destination_height_ == source_height &&
-        destination_pixel_format_ == source_pixel_format) {
-      return base::ScopedCFTypeRef<CVPixelBufferRef>(
-          source_pixel_buffer, base::scoped_policy::RETAIN);
-    }
+  if (source_pixel_buffer) {
     // Pixel buffer path. Do pixel transfer or libyuv conversion + rescale.
     TransformPixelBuffer(source_pixel_buffer, destination_pixel_buffer);
     return destination_pixel_buffer;
