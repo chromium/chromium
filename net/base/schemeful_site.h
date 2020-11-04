@@ -29,6 +29,15 @@ namespace net {
 
 // Class which represents a scheme and etld+1 for an origin, as specified by
 // https://html.spec.whatwg.org/multipage/origin.html#obtain-a-site.
+//
+// A SchemefulSite is obtained from an input origin by normalizing, such that:
+// 1. Opaque origins have distinct SchemefulSites.
+// 2. http(s) origins have the same SchemefulSite iff they share a scheme, and
+//    share a hostname or registrable domain.
+// 3. Non-http(s) origins have the same SchemefulSite iff they share a scheme
+//    and host.
+// 4. Origins which differ only by port have the same SchemefulSite.
+// 5. Websocket origins cannot have a SchemefulSite (they trigger a DCHECK).
 class NET_EXPORT SchemefulSite {
  public:
   SchemefulSite() = default;
