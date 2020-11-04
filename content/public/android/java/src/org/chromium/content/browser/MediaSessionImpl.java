@@ -69,7 +69,7 @@ public class MediaSessionImpl extends MediaSession {
 
     @Override
     public void seek(long millis) {
-        assert millis == 0 : "Attempted to seek by an unspecified number of milliseconds";
+        assert millis != 0 : "Attempted to seek by an unspecified number of milliseconds";
         MediaSessionImplJni.get().seek(mNativeMediaSessionAndroid, MediaSessionImpl.this, millis);
     }
 
