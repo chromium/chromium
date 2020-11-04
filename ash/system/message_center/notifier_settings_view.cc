@@ -320,8 +320,8 @@ NotifierSettingsView::NotifierButton::NotifierButton(
       base::BindRepeating(
           [](NotifierButton* button, const ui::Event& event) {
             // The checkbox state has already changed at this point, but we'll
-            // update the state on NotifierSettingsView::ButtonPressed() too, so
-            // here change back to the previous state.
+            // update the state on NotifierSettingsView::NotifierButtonPressed()
+            // too, so here change back to the previous state.
             button->checkbox_->SetChecked(!button->checkbox_->GetChecked());
             button->NotifyClick(event);
           },

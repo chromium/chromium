@@ -18,6 +18,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
+#include "ui/views/test/button_test_api.h"
 #include "url/gurl.h"
 
 namespace {
@@ -107,16 +108,16 @@ TEST_F(NotificationSwipeControlViewTest, DeleteOnSettingsButtonPressed) {
   swipe_control_view->ShowButtons(
       NotificationSwipeControlView::ButtonPosition::LEFT,
       /*has_settings_button=*/true, /*has_snooze_button=*/true);
-  swipe_control_view->ButtonPressed(swipe_control_view->settings_button_,
-                                    press);
+  views::test::ButtonTestApi(swipe_control_view->settings_button_)
+      .NotifyClick(press);
   EXPECT_TRUE(swipe_control_view);
 
   // Second click deletes |swipe_control_view| in the handler.
   swipe_control_view->ShowButtons(
       NotificationSwipeControlView::ButtonPosition::LEFT,
       /*has_settings_button=*/true, /*has_snooze_button=*/true);
-  swipe_control_view->ButtonPressed(swipe_control_view->settings_button_,
-                                    press);
+  views::test::ButtonTestApi(swipe_control_view->settings_button_)
+      .NotifyClick(press);
   EXPECT_FALSE(swipe_control_view);
 }
 
@@ -137,14 +138,16 @@ TEST_F(NotificationSwipeControlViewTest, DeleteOnSnoozeButtonPressed) {
   swipe_control_view->ShowButtons(
       NotificationSwipeControlView::ButtonPosition::LEFT,
       /*has_settings_button=*/true, /*has_snooze_button=*/true);
-  swipe_control_view->ButtonPressed(swipe_control_view->snooze_button_, press);
+  views::test::ButtonTestApi(swipe_control_view->snooze_button_)
+      .NotifyClick(press);
   EXPECT_TRUE(swipe_control_view);
 
   // Second click deletes |swipe_control_view| in the handler.
   swipe_control_view->ShowButtons(
       NotificationSwipeControlView::ButtonPosition::LEFT,
       /*has_settings_button=*/true, /*has_snooze_button=*/true);
-  swipe_control_view->ButtonPressed(swipe_control_view->snooze_button_, press);
+  views::test::ButtonTestApi(swipe_control_view->snooze_button_)
+      .NotifyClick(press);
   EXPECT_FALSE(swipe_control_view);
 }
 

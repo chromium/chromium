@@ -13,7 +13,6 @@
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/focus/focus_manager.h"
@@ -29,7 +28,6 @@ namespace ash {
 // notifications. There are currently two UI implementations toggled by the
 // NotificationStackedBarRedesign feature flag.
 class StackedNotificationBar : public views::View,
-                               public views::ButtonListener,
                                public message_center::MessageCenterObserver {
  public:
   explicit StackedNotificationBar(
@@ -58,9 +56,6 @@ class StackedNotificationBar : public views::View,
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
   const char* GetClassName() const override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // message_center::MessageCenterObserver:
   void OnNotificationAdded(const std::string& id) override;

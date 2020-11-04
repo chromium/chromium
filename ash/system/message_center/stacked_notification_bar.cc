@@ -35,10 +35,10 @@ namespace {
 // or "See all notifications" button.
 class StackingBarLabelButton : public views::LabelButton {
  public:
-  StackingBarLabelButton(views::ButtonListener* listener,
+  StackingBarLabelButton(PressedCallback callback,
                          const base::string16& text,
                          UnifiedMessageCenterView* message_center_view)
-      : views::LabelButton(listener, text),
+      : views::LabelButton(std::move(callback), text),
         message_center_view_(message_center_view) {
     SetEnabledTextColors(message_center_style::kUnifiedMenuButtonColorActive);
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
@@ -241,12 +241,14 @@ StackedNotificationBar::StackedNotificationBar(
     : message_center_view_(message_center_view),
       count_label_(new views::Label),
       clear_all_button_(new StackingBarLabelButton(
-          this,
+          base::BindRepeating(&UnifiedMessageCenterView::ClearAllNotifications,
+                              base::Unretained(message_center_view_)),
           l10n_util::GetStringUTF16(
               IDS_ASH_MESSAGE_CENTER_CLEAR_ALL_BUTTON_LABEL),
           message_center_view)),
       expand_all_button_(new StackingBarLabelButton(
-          this,
+          base::BindRepeating(&UnifiedMessageCenterView::ExpandMessageCenter,
+                              base::Unretained(message_center_view_)),
           l10n_util::GetStringUTF16(
               IDS_ASH_MESSAGE_CENTER_EXPAND_ALL_NOTIFICATIONS_BUTTON_LABEL),
           message_center_view)) {
@@ -504,15 +506,6 @@ void StackedNotificationBar::UpdateVisibility() {
       SetVisible(stacked_notification_count_ || show_clear_all ||
                  expand_all_button_->GetVisible());
       break;
-  }
-}
-
-void StackedNotificationBar::ButtonPressed(views::Button* sender,
-                                           const ui::Event& event) {
-  if (sender == clear_all_button_) {
-    message_center_view_->ClearAllNotifications();
-  } else if (sender == expand_all_button_) {
-    message_center_view_->ExpandMessageCenter();
   }
 }
 

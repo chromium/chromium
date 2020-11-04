@@ -115,7 +115,9 @@ void NotificationSwipeControlView::UpdateCornerRadius(int top_radius,
 
 void NotificationSwipeControlView::ShowSettingsButton(bool show) {
   if (show && !settings_button_) {
-    settings_button_ = new views::ImageButton(this);
+    settings_button_ = new views::ImageButton(
+        base::BindRepeating(&NotificationSwipeControlView::ButtonPressed,
+                            base::Unretained(this), ButtonId::kSettings));
     settings_button_->SetImage(
         views::Button::STATE_NORMAL,
         gfx::CreateVectorIcon(
@@ -149,7 +151,9 @@ void NotificationSwipeControlView::ShowSettingsButton(bool show) {
 
 void NotificationSwipeControlView::ShowSnoozeButton(bool show) {
   if (show && !snooze_button_) {
-    snooze_button_ = new views::ImageButton(this);
+    snooze_button_ = new views::ImageButton(
+        base::BindRepeating(&NotificationSwipeControlView::ButtonPressed,
+                            base::Unretained(this), ButtonId::kSnooze));
     snooze_button_->SetImage(
         views::Button::STATE_NORMAL,
         gfx::CreateVectorIcon(
@@ -184,18 +188,17 @@ const char* NotificationSwipeControlView::GetClassName() const {
   return kViewClassName;
 }
 
-void NotificationSwipeControlView::ButtonPressed(views::Button* sender,
+void NotificationSwipeControlView::ButtonPressed(ButtonId button,
                                                  const ui::Event& event) {
-  DCHECK(sender);
-  std::string notification_id = message_view_->notification_id();
   auto weak_this = weak_factory_.GetWeakPtr();
 
-  if (sender == settings_button_) {
+  const std::string notification_id = message_view_->notification_id();
+  if (button == ButtonId::kSettings) {
     message_view_->OnSettingsButtonPressed(event);
     metrics_utils::LogSettingsShown(notification_id,
                                     /*is_slide_controls=*/true,
                                     /*is_popup=*/false);
-  } else if (sender == snooze_button_) {
+  } else {
     message_view_->OnSnoozeButtonPressed(event);
     metrics_utils::LogSnoozed(notification_id,
                               /*is_slide_controls=*/true,
