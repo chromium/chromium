@@ -10,11 +10,12 @@
 
 namespace blink {
 
-struct LogicalSize;
-enum class NGCacheSlot;
+class NGBlockNode;
+class NGBoxFragment;
 class NGConstraintSpace;
 class NGTableBorders;
-class NGBlockNode;
+enum class NGCacheSlot;
+struct LogicalSize;
 
 // Table size distribution algorithms.
 class NGTableAlgorithmUtils {
@@ -100,6 +101,36 @@ class NGColspanCellTabulator {
  private:
   unsigned current_column_ = 0;
   Vector<Cell> colspanned_cells_;
+};
+
+// NGRowBaselineTabulator computes baseline information for row.
+// Standard: https://www.w3.org/TR/css-tables-3/#row-layout
+// Baseline is either max-baseline of baseline-aligned cells,
+// or bottom content edge of non-baseline-aligned cells.
+class NGRowBaselineTabulator {
+ public:
+  void ProcessCell(const NGBoxFragment& fragment,
+                   const LayoutUnit cell_min_block_size,
+                   bool is_baseline_aligned,
+                   bool is_parallel,
+                   bool descendant_depends_on_percentage_block_size);
+
+  LayoutUnit ComputeRowBlockSize(const LayoutUnit max_cell_block_size);
+
+  LayoutUnit ComputeBaseline(const LayoutUnit row_block_size);
+
+  bool ComputeBaselineDependsOnPercentageBlockDescendant();
+
+ private:
+  // Cell baseline is computed from baseline-aligned cells.
+  base::Optional<LayoutUnit> max_cell_ascent_;
+  base::Optional<LayoutUnit> max_cell_descent_;
+  bool max_cell_baseline_depends_on_percentage_block_descendant_ = false;
+
+  // Non-baseline aligned cells are used to compute baseline if baseline
+  // cells are not available.
+  base::Optional<LayoutUnit> fallback_cell_descent_;
+  bool fallback_cell_depends_on_percentage_block_descendant_ = false;
 };
 
 }  // namespace blink
