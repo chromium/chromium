@@ -72,7 +72,7 @@
     TestRunner.addResult('');
     TestRunner.addResult(type);
     const tree = getTreeView(type);
-    const rootNode = tree._dataGrid.rootNode();
+    const rootNode = tree.dataGrid.rootNode();
     for (const node of rootNode.children)
       printEventTree(1, node._profileNode, node._treeView);
   }

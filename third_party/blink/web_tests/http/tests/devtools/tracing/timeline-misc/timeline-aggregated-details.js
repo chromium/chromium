@@ -588,7 +588,7 @@
     } else {
       TestRunner.addResult(type);
     }
-    var rootNode = tree._dataGrid.rootNode();
+    var rootNode = tree.dataGrid.rootNode();
     for (var node of rootNode.children)
       printEventTree(1, node._profileNode, node._treeView);
   }

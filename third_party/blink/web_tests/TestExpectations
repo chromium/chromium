@@ -6240,10 +6240,6 @@ crbug.com/1144273 http/tests/devtools/sources/debugger-ui/continue-to-location-m
 crbug.com/1145424 [ Linux ] http/tests/devtools/sources/debugger-ui/reveal-execution-line.js [ Pass Timeout ]
 crbug.com/1145424 [ Win ] http/tests/devtools/sources/debugger-ui/reveal-execution-line.js [ Pass Timeout ]
 
-# DevTools roll
-crbug.com/1011811 http/tests/devtools/tracing/timeline-misc/timeline-user-timings.js [ Skip ]
-crbug.com/1011811 http/tests/devtools/tracing/timeline-misc/timeline-aggregated-details.js [ Skip ]
-
 # Disabled until CL with fix gets merged https://chromium-review.googlesource.com/c/chromium/src/+/2504259
 crbug.com/1127115 inspector-protocol/runtime/runtime-console-log-node-letter-case.js [ Failure ]
 crbug.com/1127115 inspector-protocol/runtime/runtime-console-log-node-document-type.js [ Failure ]
