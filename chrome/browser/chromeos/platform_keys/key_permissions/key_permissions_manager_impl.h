@@ -15,7 +15,6 @@
 #include "base/observer_list_types.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/arc_key_permissions_manager_delegate.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 
@@ -28,11 +27,10 @@ namespace platform_keys {
 
 class PlatformKeysService;
 
-class KeyPermissionsManagerImpl : public KeyPermissionsManager,
-                                  public ArcKpmDelegate::Observer {
+class KeyPermissionsManagerImpl : public KeyPermissionsManager {
  public:
-  // Updates chaps with the current "arc" and "corporate" flags for keys on a
-  // certain token.
+  // Updates chaps with the current "corporate" flag for keys on a certain
+  // token.
   class KeyPermissionsInChapsUpdater {
    public:
     // The updater possible modes.
@@ -40,11 +38,7 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
       // Used for the one-time key permissions migration step. For more
       // information regarding the one-time migration step, please refer to
       // KeyPermissionsManager documentation.
-      kMigratePermissionsFromPrefs,
-      // Used for updating ARC usage flag in chaps after the one-time key
-      // permissions migration step is done and when ARC usage allowance
-      // changes for keys on a token.
-      kUpdateArcUsageFlag
+      kMigratePermissionsFromPrefs
     };
 
     // |key_permissions_manager| must not be null and must outlive the updater
@@ -118,11 +112,9 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
   // Don't use this constructor directly. Use
   // GetSystemTokenKeyPermissionsManager or
   // GetUserPrivateTokenKeyPermissionsManager instead.
-  KeyPermissionsManagerImpl(
-      TokenId token_id,
-      std::unique_ptr<ArcKpmDelegate> arc_usage_manager_delegate,
-      PlatformKeysService* platform_keys_service,
-      PrefService* pref_service);
+  KeyPermissionsManagerImpl(TokenId token_id,
+                            PlatformKeysService* platform_keys_service,
+                            PrefService* pref_service);
   KeyPermissionsManagerImpl(const KeyPermissionsManagerImpl&) = delete;
   KeyPermissionsManagerImpl& operator=(const KeyPermissionsManagerImpl&) =
       delete;
@@ -134,20 +126,10 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
   void IsKeyAllowedForUsage(IsKeyAllowedForUsageCallback callback,
                             KeyUsage usage,
                             const std::string& public_key_spki_der) override;
-  bool AreCorporateKeysAllowedForArcUsage() const override;
 
  private:
-  // ArcKpmDelegate::Observer
-  void OnArcUsageAllowanceForCorporateKeysChanged(bool allowed) override;
-
   void OnGotTokens(std::unique_ptr<std::vector<TokenId>> token_ids,
                    Status status);
-
-  // Updates the permissions of the keys residing on |token_id| in chaps. If
-  // this method is called while an update is already running, it will cancel
-  // the running update and start a new one.
-  void UpdateKeyPermissionsInChaps();
-  void OnKeyPermissionsInChapsUpdated(Status update_status);
 
   void StartOneTimeMigration();
   void OnOneTimeMigrationDone(Status migration_status);
@@ -180,9 +162,6 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
 
   // The token for which the key permissions manager instance is responsible.
   const TokenId token_id_;
-  // True if ARC usage is allowed for corporate keys according to
-  // |arc_usage_manager_delegate_|.
-  bool arc_usage_allowed_for_corporate_keys_ = false;
   // True if the token is ready and the one-time migration is done.
   // List of queries waiting for the token to be ready and the one-time
   // migration to be done.
@@ -193,12 +172,8 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
   // If not nullptr, then this is the only updater running.
   std::unique_ptr<KeyPermissionsInChapsUpdater>
       key_permissions_in_chaps_updater_;
-  // The ARC usage manager delegate for |token_id_|.
-  std::unique_ptr<ArcKpmDelegate> arc_usage_manager_delegate_;
   PlatformKeysService* const platform_keys_service_ = nullptr;
   PrefService* const pref_service_ = nullptr;
-  ScopedObserver<ArcKpmDelegate, ArcKpmDelegate::Observer>
-      arc_usage_manager_delegate_observer_{this};
   base::WeakPtrFactory<KeyPermissionsManagerImpl> weak_ptr_factory_{this};
 };
 

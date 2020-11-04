@@ -268,9 +268,6 @@ class ArcAppListPrefs : public KeyedService,
   std::unique_ptr<PackageInfo> GetPackage(
       const std::string& package_name) const;
 
-  // Returns true if a package with |package_name| is installed.
-  bool IsPackageInstalled(const std::string& package_name) const;
-
   // Constructs path to app local data.
   base::FilePath GetAppPath(const std::string& app_id) const;
 
