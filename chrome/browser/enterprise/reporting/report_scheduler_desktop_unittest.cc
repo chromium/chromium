@@ -12,14 +12,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/enterprise/reporting/report_scheduler_desktop.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -95,8 +93,6 @@ class ReportSchedulerTest : public ::testing::Test {
         profile_manager_(TestingBrowserProcess::GetGlobal(), &local_state_) {}
   ~ReportSchedulerTest() override = default;
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kEnterpriseRealtimeExtensionRequest);
     ASSERT_TRUE(profile_manager_.SetUp());
     client_ptr_ = std::make_unique<policy::MockCloudPolicyClient>();
     client_ = client_ptr_.get();
@@ -186,10 +182,8 @@ class ReportSchedulerTest : public ::testing::Test {
   }
 
   void TriggerExtensionRequestReport() {
-    ASSERT_TRUE(ExtensionRequestReportThrottler::Get());
-    ASSERT_TRUE(ExtensionRequestReportThrottler::Get()->IsEnabled());
-    ExtensionRequestReportThrottler::Get()->AddProfile(
-        profile_manager_.CreateTestingProfile("profile")->GetPath());
+    static_cast<ReportSchedulerDesktop*>(scheduler_->GetDelegateForTesting())
+        ->OnExtensionRequest();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -604,39 +598,6 @@ TEST_F(ReportSchedulerTest, OnExtensionRequest) {
   ExpectLastUploadTimestampUpdated(false);
 
   histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 4, 1);
-}
-
-TEST_F(ReportSchedulerTest, OnExtensionRequestWithPersistentError) {
-  base::TimeDelta last_report = base::TimeDelta::FromHours(23);
-  SetLastUploadInHour(last_report);
-
-  EXPECT_CALL_SetupRegistration();
-  EXPECT_CALL(*generator_, OnGenerate(ReportType::kExtensionRequest, _))
-      .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
-  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
-      .WillOnce(RunOnceCallback<1>(ReportUploader::kPersistentError));
-
-  CreateScheduler();
-
-  TriggerExtensionRequestReport();
-
-  task_environment_.RunUntilIdle();
-
-  ExpectLastUploadTimestampUpdated(false);
-  EXPECT_FALSE(ExtensionRequestReportThrottler::Get()->IsEnabled());
-  histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 4, 1);
-
-  ::testing::Mock::VerifyAndClearExpectations(uploader_);
-  ::testing::Mock::VerifyAndClearExpectations(generator_);
-
-  EXPECT_CALL(*generator_, OnGenerate(_, _)).Times(0);
-  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _)).Times(0);
-
-  // Persistent error also stops regular reports.
-  task_environment_.FastForwardBy(kDefaultUploadInterval);
-
-  ::testing::Mock::VerifyAndClearExpectations(uploader_);
-  ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
 #if !defined(OS_CHROMEOS)

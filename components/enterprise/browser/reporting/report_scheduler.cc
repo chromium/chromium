@@ -105,6 +105,10 @@ void ReportScheduler::OnDMTokenUpdated() {
   OnReportEnabledPrefChanged();
 }
 
+ReportScheduler::Delegate* ReportScheduler::GetDelegateForTesting() {
+  return delegate_.get();
+}
+
 void ReportScheduler::RegisterPrefObserver() {
   pref_change_registrar_.Init(delegate_->GetLocalState());
   pref_change_registrar_.Add(
@@ -138,7 +142,6 @@ void ReportScheduler::OnReportEnabledPrefChanged() {
 
   delegate_->StartWatchingUpdatesIfNeeded(last_upload_timestamp,
                                           kDefaultUploadInterval);
-  delegate_->StartWatchingExtensionRequestIfNeeded();
 }
 
 void ReportScheduler::Stop() {
