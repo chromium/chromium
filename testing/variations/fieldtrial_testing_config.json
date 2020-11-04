@@ -7822,24 +7822,6 @@
             ]
         }
     ],
-    "WebRTC-VideoRateControl": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "linux",
-                "ios",
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "pacing_factor:1.0,trust_vp8:true,trust_vp9:true,video_hysteresis:1.2,bitrate_adjuster:true,vp8_s0_boost:false"
-                }
-            ]
-        }
-    ],
     "WebRTC-Vp9ExternalRefCtrl": [
         {
             "platforms": [
