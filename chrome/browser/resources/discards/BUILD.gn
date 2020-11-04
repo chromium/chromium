@@ -7,6 +7,8 @@ import("//tools/polymer/polymer.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
+  closure_flags = default_closure_args + mojom_js_args +
+                  [ "js_module_root=" + rebase_path(".", root_build_dir) ]
   deps = [
     ":database_tab",
     ":discards",
@@ -15,7 +17,6 @@ js_type_check("closure_compile") {
     ":graph_doc",
     ":graph_tab_template",
   ]
-  closure_flags = mojom_js_args
 }
 
 js_library("discards") {

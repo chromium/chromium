@@ -6,6 +6,11 @@
 // resources. The only communication to and from this implementation and the
 // WebUI is through postMessage.
 
+// Note that these imports are stripped by a build step before being packaged.
+// They're only present to help Closure compiler do type checks and must be
+// referenced only within Closure annotations.
+import {FavIconInfo, FrameInfo, GraphChangeStreamInterface, PageInfo, ProcessInfo, WorkerInfo} from './chrome/browser/ui/webui/discards/discards.mojom-webui.js';
+
 // Radius of a node circle.
 const /** number */ kNodeRadius = 6;
 

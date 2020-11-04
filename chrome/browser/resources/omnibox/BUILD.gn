@@ -8,7 +8,8 @@ import("//tools/grit/grit_rule.gni")
 
 js_type_check("closure_compile") {
   uses_js_modules = true
-  closure_flags = mojom_js_args
+  closure_flags = default_closure_args + mojom_js_args +
+                  [ "js_module_root=" + rebase_path(".", root_build_dir) ]
   deps = [
     ":omnibox",
     ":omnibox_element",

@@ -613,15 +613,16 @@ class Generator(generator.Generator):
       if mojom.IsEnumKind(kind):
         return "number"
       prefix = "" if mojom.IsNullableKind(kind) else "!"
-      if mojom.IsStructKind(kind) or mojom.IsUnionKind(kind):
-        return prefix + "Object"
       if mojom.IsArrayKind(kind):
         return prefix + ("Array<%s>" % get_type_name(kind.kind))
-      if mojom.IsMapKind(kind):
-        return "%sMap<%s, %s>|%sObject<%s, %s>" % (
+      if mojom.IsMapKind(kind) and self._IsStringableKind(kind.key_kind):
+        return "(%sMap<%s, %s>|%sObject<%s, %s>)" % (
             prefix, get_type_name(kind.key_kind), get_type_name(
                 kind.value_kind), prefix, get_type_name(
                     kind.key_kind), get_type_name(kind.value_kind))
+      if mojom.IsMapKind(kind):
+        return "{}Map<{}, {}>".format(prefix, get_type_name(kind.key_kind),
+                                      get_type_name(kind.value_kind))
       return prefix + self._GetTypeNameForNewBindings(kind,
                                                       for_module=for_module)
 

@@ -72,8 +72,8 @@ preprocess_grit("preprocess") {
   in_files = [
     "browser_proxy.js",
     "constants.js",
+    "data.js",
     "downloads.js",
-    "externs.js",
     "icon_loader.js",
     "search_service.js",
   ]
@@ -127,15 +127,22 @@ grit("downloads_resources") {
 
 js_type_check("closure_compile") {
   is_polymer3 = true
+  closure_flags =
+      default_closure_args + mojom_js_args + [
+        "js_module_root=" + rebase_path(".", root_build_dir),
+        "js_module_root=" + rebase_path(
+                "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/downloads",
+                root_build_dir),
+      ]
   deps = [
     ":browser_proxy",
     ":constants",
+    ":data",
     ":item",
     ":manager",
     ":search_service",
     ":toolbar",
   ]
-  closure_flags = mojom_js_args
 }
 
 js_library("browser_proxy") {
@@ -143,10 +150,13 @@ js_library("browser_proxy") {
     "//chrome/browser/ui/webui/downloads:mojo_bindings_webui_js",
     "//ui/webui/resources/js:cr.m",
   ]
-  externs_list = [ "externs.js" ]
 }
 
 js_library("constants") {
+}
+
+js_library("data") {
+  deps = [ "//chrome/browser/ui/webui/downloads:mojo_bindings_webui_js" ]
 }
 
 js_library("icon_loader") {
@@ -162,6 +172,7 @@ js_library("item") {
   deps = [
     ":browser_proxy",
     ":constants",
+    ":data",
     ":icon_loader",
     "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager.m",
     "//ui/webui/resources/js:assert.m",
@@ -175,6 +186,7 @@ js_library("item") {
 js_library("manager") {
   deps = [
     ":browser_proxy",
+    ":data",
     ":item",
     ":search_service",
     ":toolbar",

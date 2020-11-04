@@ -23,6 +23,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {BrowserProxy} from './browser_proxy.js';
 import {States} from './constants.js';
+import {Data} from './data.js';
 import {PageCallbackRouter, PageHandlerInterface} from './downloads.mojom-webui.js';
 import {SearchService} from './search_service.js';
 
@@ -55,7 +56,7 @@ Polymer({
       value: false,
     },
 
-    /** @private {!Array<!downloads.Data>} */
+    /** @private {!Array<!Data>} */
     items_: {
       type: Array,
       value() {
@@ -168,7 +169,7 @@ Polymer({
 
   /**
    * @param {number} index
-   * @param {!Array<downloads.Data>} items
+   * @param {!Array<Data>} items
    * @private
    */
   insertItems_(index, items) {
@@ -339,7 +340,7 @@ Polymer({
 
   /**
    * @param {number} index
-   * @param {!downloads.Data} data
+   * @param {!Data} data
    * @private
    */
   updateItem_(index, data) {

@@ -18,6 +18,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
+import {Data} from './data.js';
 import {PageHandlerInterface} from './downloads.mojom-webui.js';
 import {SearchService} from './search_service.js';
 
@@ -33,7 +34,7 @@ Polymer({
       observer: 'updateClearAll_',
     },
 
-    /** @type {!Array<!downloads.Data>} */
+    /** @type {!Array<!Data>} */
     items: {
       type: Array,
       value: Array,

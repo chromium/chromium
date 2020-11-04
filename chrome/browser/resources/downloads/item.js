@@ -26,6 +26,7 @@ import {beforeNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/p
 
 import {BrowserProxy} from './browser_proxy.js';
 import {DangerType, States} from './constants.js';
+import {Data} from './data.js';
 import {PageHandlerInterface} from './downloads.mojom-webui.js';
 import {IconLoader} from './icon_loader.js';
 
@@ -42,7 +43,7 @@ Polymer({
   overrideCustomEquivalent: true,
 
   properties: {
-    /** @type {!downloads.Data} */
+    /** @type {!Data} */
     data: Object,
 
     /** @private */
