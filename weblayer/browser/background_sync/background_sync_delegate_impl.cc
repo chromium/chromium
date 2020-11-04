@@ -86,6 +86,12 @@ bool BackgroundSyncDelegateImpl::ShouldDisableBackgroundSync() {
   // Android L.
   return false;
 }
+
+bool BackgroundSyncDelegateImpl::ShouldDisableAndroidNetworkDetection() {
+  // TODO(crbug.com/1141778): Remove this once waking up the WebLayer
+  // embedder is supported.
+  return true;
+}
 #endif  // defined(OS_ANDROID)
 
 }  // namespace weblayer

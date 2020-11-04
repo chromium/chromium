@@ -107,6 +107,10 @@ bool BackgroundSyncDelegateImpl::ShouldDisableBackgroundSync() {
   return BackgroundSyncLauncherAndroid::ShouldDisableBackgroundSync();
 }
 
+bool BackgroundSyncDelegateImpl::ShouldDisableAndroidNetworkDetection() {
+  return false;
+}
+
 #endif  // defined(OS_ANDROID)
 
 void BackgroundSyncDelegateImpl::OnEngagementEvent(

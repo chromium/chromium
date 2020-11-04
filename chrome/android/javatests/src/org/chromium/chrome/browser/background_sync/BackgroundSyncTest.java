@@ -58,6 +58,8 @@ public final class BackgroundSyncTest {
             "/chrome/test/data/background_sync/background_sync_test.html";
     private static final int TITLE_UPDATE_TIMEOUT_SECONDS = (int) scaleTimeout(10);
     private static final long WAIT_TIME_MS = scaleTimeout(5000);
+    private static final String DISABLE_ANDROID_NETWORK_DETECTION =
+            "BackgroundSync.RelyOnAndroidNetworkDetection:rely_on_android_network_detection/false";
 
     private CountDownLatch mScheduleLatch;
     private CountDownLatch mCancelLatch;
@@ -95,6 +97,7 @@ public final class BackgroundSyncTest {
     @Test
     @MediumTest
     @Feature({"BackgroundSync"})
+    @CommandLineFlags.Add({"force-fieldtrial-params=" + DISABLE_ANDROID_NETWORK_DETECTION})
     public void onSyncCalledWithNetworkConnectivity() throws Exception {
         forceConnectionType(ConnectionType.CONNECTION_NONE);
 

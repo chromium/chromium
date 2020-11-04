@@ -67,6 +67,9 @@ class BackgroundSyncDelegate {
 
   // Whether Background Sync should be disabled.
   virtual bool ShouldDisableBackgroundSync() = 0;
+
+  // Whether to disable Android network detection for connectivity checks.
+  virtual bool ShouldDisableAndroidNetworkDetection() = 0;
 #endif
 };
 

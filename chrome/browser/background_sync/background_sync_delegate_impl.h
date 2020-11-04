@@ -47,6 +47,7 @@ class BackgroundSyncDelegateImpl
       base::TimeDelta delay) override;
   void CancelBrowserWakeup(blink::mojom::BackgroundSyncType sync_type) override;
   bool ShouldDisableBackgroundSync() override;
+  bool ShouldDisableAndroidNetworkDetection() override;
 #endif  // defined(OS_ANDROID)
 
   // SiteEngagementObserver overrides.
