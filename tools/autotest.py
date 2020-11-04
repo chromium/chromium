@@ -57,13 +57,16 @@ _OTHER_TEST_TARGETS = [
 ]
 
 TEST_FILE_NAME_REGEX = re.compile(r'(.*Test\.java)|(.*_[a-z]*test\.cc)')
-GTEST_INCLUDE_REGEX = re.compile(r'#include.*gtest\.h"')
+
+# Some tests don't directly include gtest.h and instead include it via gmock.h
+# or a test_utils.h file, so make sure these cases are captured. Also include
+# files that use <...> for #includes instead of quotes.
+GTEST_INCLUDE_REGEX = re.compile(r'#include.*(gtest|gmock|_test_utils)\.h("|>)')
 
 
 def ExitWithMessage(*args):
   print(*args, file=sys.stderr)
   sys.exit(1)
-
 
 def IsTestFile(file_path):
   if not TEST_FILE_NAME_REGEX.match(file_path):
@@ -72,7 +75,7 @@ def IsTestFile(file_path):
     # Try a bit harder to remove non-test files for c++. Without this,
     # 'autotest.py base/' finds non-test files.
     try:
-      with open(file_path, 'r') as f:
+      with open(file_path, 'r', encoding='utf-8') as f:
         if GTEST_INCLUDE_REGEX.search(f.read()) is not None:
           return True
     except IOError:
@@ -160,10 +163,14 @@ def RecursiveMatchFilename(folder, filename):
 
 def FindTestFilesInDirectory(directory):
   test_files = []
+  if DEBUG:
+    print('Test files:')
   for root, dirs, files in os.walk(directory):
     for f in files:
       path = os.path.join(root, f)
       if IsTestFile(path):
+        if DEBUG:
+          print(path)
         test_files.append(path)
   return test_files
 
@@ -321,7 +328,10 @@ def RunTestTargets(out_dir, targets, gtest_filter, extra_args, dry_run):
 
 
 def BuildCppTestFilter(filenames, line):
-  make_filter_command = [os.path.join(SRC_DIR, 'tools', 'make-gtest-filter.py')]
+  make_filter_command = [
+      sys.executable,
+      os.path.join(SRC_DIR, 'tools', 'make-gtest-filter.py')
+  ]
   if line:
     make_filter_command += ['--line', str(line)]
   else:
