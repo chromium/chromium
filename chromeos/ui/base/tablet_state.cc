@@ -29,28 +29,13 @@ TabletState::~TabletState() {
   display::Screen::GetScreen()->RemoveObserver(this);
 }
 
-void TabletState::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void TabletState::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 bool TabletState::InTabletMode() const {
   return state_ == display::TabletState::kInTabletMode ||
          state_ == display::TabletState::kEnteringTabletMode;
 }
 
-void TabletState::SetState(display::TabletState state) {
-  state_ = state;
-
-  for (auto& observer : observers_)
-    observer.OnTabletStateChanged(state_);
-}
-
 void TabletState::OnDisplayTabletStateChanged(display::TabletState state) {
-  SetState(state);
+  state_ = state;
 }
 
 }  // namespace chromeos

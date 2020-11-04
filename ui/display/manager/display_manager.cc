@@ -36,6 +36,7 @@
 #include "ui/display/manager/display_util.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/rect.h"
@@ -2190,6 +2191,12 @@ void DisplayManager::NotifyDisplayAdded(const Display& display) {
 void DisplayManager::NotifyDisplayRemoved(const Display& display) {
   for (auto& observer : observers_)
     observer.OnDisplayRemoved(display);
+}
+
+void DisplayManager::NotifyDisplayTabletStateChanged(
+    const TabletState& tablet_state) {
+  for (auto& observer : observers_)
+    observer.OnDisplayTabletStateChanged(tablet_state);
 }
 
 void DisplayManager::AddObserver(DisplayObserver* observer) {

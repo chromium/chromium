@@ -6,41 +6,25 @@
 #define CHROMEOS_UI_BASE_TABLET_STATE_H_
 
 #include "base/component_export.h"
-#include "base/observer_list.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/tablet_state.h"
-
-namespace ash {
-class TabletModeController;
-}
 
 namespace chromeos {
 
 // Class is a singleton and holds the tablet mode state.
 //
-// The idea is that only the creator of this class in Ash or Lacros/Ozone code
-// is able to set the state.
+// TODO(crbug.com/1113900): Move the logic to display::Screen::GetTabletState()
+// and implement it for Ash and Ozone child classes.
 class COMPONENT_EXPORT(CHROMEOS_UI_BASE) TabletState
     : public display::DisplayObserver {
  public:
   // Returns the singleton instance.
   static TabletState* Get();
 
-  class COMPONENT_EXPORT(CHROMEOS_UI_BASE) Observer {
-   public:
-    virtual void OnTabletStateChanged(display::TabletState state) = 0;
-
-   protected:
-    virtual ~Observer() = default;
-  };
-
   TabletState();
   TabletState(const TabletState&) = delete;
   TabletState& operator=(const TabletState&) = delete;
   ~TabletState() override;
-
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
 
   // Returns true if the system is in tablet mode.
   bool InTabletMode() const;
@@ -51,14 +35,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_BASE) TabletState
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
  private:
-  // The friend class declaration here is used to control classes that can set
-  // the tablet state.
-  friend class ash::TabletModeController;
-
-  void SetState(display::TabletState state);
-
-  base::ObserverList<Observer>::Unchecked observers_;
-
   display::TabletState state_ = display::TabletState::kInClamshellMode;
 };
 

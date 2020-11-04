@@ -50,6 +50,7 @@ class DisplayLayoutStore;
 class DisplayObserver;
 class NativeDisplayDelegate;
 class Screen;
+enum class TabletState;
 
 namespace test {
 class DisplayManagerTestApi;
@@ -492,6 +493,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   void NotifyMetricsChanged(const Display& display, uint32_t metrics);
   void NotifyDisplayAdded(const Display& display);
   void NotifyDisplayRemoved(const Display& display);
+  void NotifyDisplayTabletStateChanged(const TabletState& tablet_state);
 
   // Delegated from the Screen implementation.
   void AddObserver(DisplayObserver* observer);

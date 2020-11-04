@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -47,6 +48,7 @@
 #include "ui/aura/env.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/layout.h"
+#include "ui/display/screen.h"
 #include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
@@ -94,7 +96,7 @@ BrowserNonClientFrameViewAsh::BrowserNonClientFrameViewAsh(
 }
 
 BrowserNonClientFrameViewAsh::~BrowserNonClientFrameViewAsh() {
-  chromeos::TabletState::Get()->RemoveObserver(this);
+  display::Screen::GetScreen()->RemoveObserver(this);
 
   ImmersiveModeController* immersive_controller =
       browser_view()->immersive_mode_controller();
@@ -133,7 +135,7 @@ void BrowserNonClientFrameViewAsh::Init() {
   if (browser->profile()->IsOffTheRecord())
     window->SetProperty(ash::kBlockedForAssistantSnapshotKey, true);
 
-  chromeos::TabletState::Get()->AddObserver(this);
+  display::Screen::GetScreen()->AddObserver(this);
 
   if (frame()->ShouldDrawFrameHeader())
     frame_header_ = CreateFrameHeader();
@@ -414,7 +416,7 @@ gfx::ImageSkia BrowserNonClientFrameViewAsh::GetFrameHeaderOverlayImage(
                                      : BrowserFrameActiveState::kInactive);
 }
 
-void BrowserNonClientFrameViewAsh::OnTabletStateChanged(
+void BrowserNonClientFrameViewAsh::OnDisplayTabletStateChanged(
     display::TabletState state) {
   switch (state) {
     case display::TabletState::kInTabletMode:
