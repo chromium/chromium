@@ -172,6 +172,9 @@ TEST_F(LoginPasswordViewTest, PasswordSubmitIncludesPasswordText) {
 
   ASSERT_TRUE(password_.has_value());
   EXPECT_EQ(base::ASCIIToUTF16("abc1"), *password_);
+
+  // Expect the password field to be read only after submitting.
+  EXPECT_EQ(test_api.textfield()->GetReadOnly(), true);
 }
 
 // Verifies that password submit works when clicking the submit button.
@@ -189,6 +192,9 @@ TEST_F(LoginPasswordViewTest, PasswordSubmitViaButton) {
 
   ASSERT_TRUE(password_.has_value());
   EXPECT_EQ(base::ASCIIToUTF16("abc1"), *password_);
+
+  // Expect the password field to be read only after submitting.
+  EXPECT_EQ(test_api.textfield()->GetReadOnly(), true);
 }
 
 // Verifies that pressing 'Return' on the password field triggers an
@@ -227,6 +233,7 @@ TEST_F(LoginPasswordViewTest, PasswordSubmitClearsPassword) {
   // Clear password.
   password_.reset();
   view_->Clear();
+  view_->SetReadOnly(false);
   EXPECT_TRUE(is_password_field_empty_);
 
   // Submit 'b' password.

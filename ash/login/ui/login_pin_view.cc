@@ -21,6 +21,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -432,6 +433,12 @@ void LoginPinView::TestApi::SetBackspaceTimers(
     std::unique_ptr<base::RepeatingTimer> repeat_timer) {
   view_->backspace_->SetTimersForTesting(std::move(delay_timer),
                                          std::move(repeat_timer));
+}
+
+void LoginPinView::TestApi::ClickOnDigit(int number) const {
+  ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                       ui::EventTimeForNow(), 0, 0);
+  GetButton(number)->OnEvent(&event);
 }
 
 LoginPinView::LoginPinView(Style keyboard_style,

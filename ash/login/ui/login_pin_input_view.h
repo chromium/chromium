@@ -43,6 +43,7 @@ class ASH_EXPORT LoginPinInputView : public views::View {
     ~TestApi();
 
     views::View* code_input();
+    base::Optional<std::string> GetCode();
 
    private:
     LoginPinInputView* const view_;
