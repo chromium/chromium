@@ -29,6 +29,7 @@ class BorealisContextManagerImpl : public BorealisContextManager {
 
   // BorealisContextManager:
   void StartBorealis(ResultCallback callback) override;
+  void ShutDownBorealis() override;
 
   // Public due to testing.
   virtual base::queue<std::unique_ptr<BorealisTask>> GetTasks();
@@ -37,7 +38,12 @@ class BorealisContextManagerImpl : public BorealisContextManager {
   void AddCallback(ResultCallback callback);
   void NextTask();
   void TaskCallback(Status status, std::string error);
-  void OnQueueComplete();
+
+  // Completes the startup with the given |status| and error messgae, invoking
+  // all callbacks with the result. For any status except kSuccess the state of
+  // the system will be as though StartBorealis() had not been called.
+  void Complete(BorealisContextManager::Status status,
+                std::string error_or_empty);
 
   // Returns the result of the startup (i.e. the context if it succeeds, or an
   // error if it doesn't).

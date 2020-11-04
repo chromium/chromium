@@ -11,6 +11,8 @@
 #include "chrome/browser/chromeos/borealis/borealis_context.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
 #include "chrome/browser/chromeos/borealis/borealis_task.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chromeos/dbus/dbus_thread_manager.h"
 
 namespace {
 
@@ -23,6 +25,8 @@ std::ostream& operator<<(std::ostream& stream,
   switch (status) {
     case borealis::BorealisContextManager::Status::kSuccess:
       return stream << "Success";
+    case borealis::BorealisContextManager::Status::kCancelled:
+      return stream << "Cancelled";
     case borealis::BorealisContextManager::Status::kMountFailed:
       return stream << "Mount Failed";
     case borealis::BorealisContextManager::Status::kDiskImageFailed:
@@ -57,6 +61,30 @@ void BorealisContextManagerImpl::StartBorealis(ResultCallback callback) {
   }
 }
 
+void BorealisContextManagerImpl::ShutDownBorealis() {
+  // TODO(b/172178036): This could have been a task-sequence but that
+  // abstraction is proving insufficient.
+  vm_tools::concierge::StopVmRequest request;
+  request.set_owner_id(
+      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
+  request.set_name(context_->vm_name());
+  chromeos::DBusThreadManager::Get()->GetConciergeClient()->StopVm(
+      std::move(request),
+      base::BindOnce(
+          [](base::Optional<vm_tools::concierge::StopVmResponse> response) {
+            // We don't have a good way to deal with a vm failing to stop (and
+            // this would be a very rare occurrence anyway). We log an error if
+            // it actually wasn't successful.
+            if (!response.has_value()) {
+              LOG(ERROR) << "Failed to stop Borealis VM: No response";
+            } else if (!response.value().success()) {
+              LOG(ERROR) << "Failed to stop Borealis VM: "
+                         << response.value().failure_reason();
+            }
+          }));
+  Complete(BorealisContextManager::Status::kCancelled, "shut down");
+}
+
 base::queue<std::unique_ptr<BorealisTask>>
 BorealisContextManagerImpl::GetTasks() {
   base::queue<std::unique_ptr<BorealisTask>> task_queue;
@@ -74,8 +102,7 @@ void BorealisContextManagerImpl::AddCallback(ResultCallback callback) {
 
 void BorealisContextManagerImpl::NextTask() {
   if (task_queue_.empty()) {
-    startup_status_ = Status::kSuccess;
-    OnQueueComplete();
+    Complete(Status::kSuccess, "");
     return;
   }
   task_queue_.front()->Run(
@@ -86,23 +113,31 @@ void BorealisContextManagerImpl::NextTask() {
 void BorealisContextManagerImpl::TaskCallback(Status status,
                                               std::string error) {
   task_queue_.pop();
-  startup_status_ = status;
-  if (startup_status_ == Status::kSuccess) {
+  if (status == Status::kSuccess) {
     NextTask();
     return;
   }
-  startup_error_ = error;
-  LOG(ERROR) << "Startup failed: failure=" << startup_status_
-             << " message=" << startup_error_;
-  OnQueueComplete();
+  LOG(ERROR) << "Startup failed: failure=" << status << " message=" << error;
+  Complete(status, std::move(error));
 }
 
-void BorealisContextManagerImpl::OnQueueComplete() {
+void BorealisContextManagerImpl::Complete(BorealisContextManager::Status status,
+                                          std::string error_or_empty) {
+  startup_status_ = status;
+  startup_error_ = error_or_empty;
+
   while (!callback_queue_.empty()) {
     ResultCallback callback = std::move(callback_queue_.front());
     callback_queue_.pop();
     std::move(callback).Run(GetResult());
   }
+
+  if (startup_status_ == BorealisContextManager::Status::kSuccess)
+    return;
+
+  task_queue_ = {};
+  // TODO(b/172178467): handle races better when doing this.
+  context_.reset();
 }
 
 BorealisContextManager::Result BorealisContextManagerImpl::GetResult() {

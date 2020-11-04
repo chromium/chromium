@@ -52,7 +52,11 @@ class BorealisContextManagerMock : public borealis::BorealisContextManager {
   BorealisContextManagerMock& operator=(const BorealisContextManagerMock&) =
       delete;
 
-  MOCK_METHOD1(StartBorealis, void(BorealisContextManager::ResultCallback));
+  MOCK_METHOD(void,
+              StartBorealis,
+              (BorealisContextManager::ResultCallback),
+              ());
+  MOCK_METHOD(void, ShutDownBorealis, (), ());
 };
 
 class BorealisInstallerViewBrowserTest : public DialogBrowserTest {

@@ -19,6 +19,7 @@ class BorealisContextManager : public KeyedService {
   // A list of possible outcomes for an attempt to startup borealis.
   enum class Status {
     kSuccess,
+    kCancelled,
     kMountFailed,
     kDiskImageFailed,
     kStartVmFailed,
@@ -67,6 +68,11 @@ class BorealisContextManager : public KeyedService {
 
   // Starts the Borealis VM and/or runs the callback when it is running.
   virtual void StartBorealis(ResultCallback callback) = 0;
+
+  // Stop the current running state, re-initializing the context manager
+  // to the state it was in prior to being started. All pending callbacks are
+  // invoked with kCancelled status.
+  virtual void ShutDownBorealis() = 0;
 };
 
 }  // namespace borealis

@@ -6,13 +6,16 @@
 
 #include <memory>
 
+#include "base/bind_helpers.h"
 #include "base/containers/queue.h"
+#include "base/test/bind_test_util.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager_factory.h"
 #include "chrome/browser/chromeos/borealis/borealis_task.h"
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/fake_concierge_client.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -198,6 +201,44 @@ TEST_F(BorealisContextManagerTest,
   context_manager.StartBorealis(callback_expectation_1.GetCallback());
   context_manager.StartBorealis(callback_expectation_2.GetCallback());
   task_environment_.RunUntilIdle();
+}
+
+class NeverCompletingContextManager : public BorealisContextManagerImpl {
+ public:
+  explicit NeverCompletingContextManager(Profile* profile)
+      : BorealisContextManagerImpl(profile) {}
+
+ private:
+  class NeverCompletingTask : public BorealisTask {
+   public:
+    void Run(BorealisContext* context,
+             CompletionStatusCallback callback) override {}
+  };
+
+  base::queue<std::unique_ptr<BorealisTask>> GetTasks() override {
+    base::queue<std::unique_ptr<BorealisTask>> queue;
+    queue.push(std::make_unique<NeverCompletingTask>());
+    return queue;
+  }
+};
+
+TEST_F(BorealisContextManagerTest, ShutDownCancelsRequestsAndTerminatesVm) {
+  testing::StrictMock<ResultCallbackHandler> callback_expectation;
+  EXPECT_CALL(callback_expectation, Callback(testing::_))
+      .WillOnce(testing::Invoke([](BorealisContextManager::Result result) {
+        EXPECT_FALSE(result.Ok());
+        EXPECT_EQ(result.Failure(), BorealisContextManager::Status::kCancelled);
+      }));
+
+  NeverCompletingContextManager context_manager(profile_.get());
+  context_manager.StartBorealis(callback_expectation.GetCallback());
+  context_manager.ShutDownBorealis();
+  task_environment_.RunUntilIdle();
+
+  chromeos::FakeConciergeClient* fake_concierge_client =
+      static_cast<chromeos::FakeConciergeClient*>(
+          chromeos::DBusThreadManager::Get()->GetConciergeClient());
+  EXPECT_TRUE(fake_concierge_client->stop_vm_called());
 }
 
 class BorealisContextManagerFactoryTest : public testing::Test {
