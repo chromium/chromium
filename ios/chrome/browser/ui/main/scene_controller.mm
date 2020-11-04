@@ -11,9 +11,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
+#include "components/prefs/pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/url_formatter/url_formatter.h"
+#include "components/web_resource/web_resource_pref_names.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #include "ios/chrome/app/application_delegate/tab_opening.h"
@@ -23,6 +25,7 @@
 #include "ios/chrome/app/application_mode.h"
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
+#include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_remover.h"
@@ -38,6 +41,7 @@
 #include "ios/chrome/browser/crash_report/crash_report_helper.h"
 #import "ios/chrome/browser/crash_report/crash_restore_helper.h"
 #import "ios/chrome/browser/first_run/first_run.h"
+#include "ios/chrome/browser/geolocation/omnibox_geolocation_controller.h"
 #import "ios/chrome/browser/geolocation/omnibox_geolocation_controller.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
@@ -837,6 +841,12 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
          selector:@selector(handleFirstRunUIWillFinish)
              name:kChromeFirstRunUIWillFinishNotification
            object:nil];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(handleFirstRunUIDidFinish)
+             name:kChromeFirstRunUIDidFinishNotification
+           object:nil];
+
   Browser* browser = self.mainInterface.browser;
   id<ApplicationCommands, BrowsingDataCommands> welcomeHandler =
       static_cast<id<ApplicationCommands, BrowsingDataCommands>>(
@@ -860,7 +870,17 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                                                 completion:nil];
 }
 
+// Sets a LocalState pref marking the TOS EULA as accepted.
+- (void)markEulaAsAccepted {
+  PrefService* prefs = GetApplicationContext()->GetLocalState();
+  if (!prefs->GetBoolean(prefs::kEulaAccepted))
+    prefs->SetBoolean(prefs::kEulaAccepted, true);
+  prefs->CommitPendingWrite();
+}
+
 - (void)handleFirstRunUIWillFinish {
+  [self markEulaAsAccepted];
+
   DCHECK(self.sceneState.presentingFirstRunUI);
   _firstRunUIBlocker.reset();
   self.sceneState.presentingFirstRunUI = NO;
@@ -871,6 +891,19 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   if (self.sceneState.activationLevel >= SceneActivationLevelForegroundActive) {
     [self handleExternalIntents];
   }
+}
+
+// Handles the notification that first run modal dialog UI completed.
+- (void)handleFirstRunUIDidFinish {
+  [[NSNotificationCenter defaultCenter]
+      removeObserver:self
+                name:kChromeFirstRunUIDidFinishNotification
+              object:nil];
+
+  // As soon as First Run has finished, give OmniboxGeolocationController an
+  // opportunity to present the iOS system location alert.
+  [[OmniboxGeolocationController sharedInstance]
+      triggerSystemPromptForNewUser:YES];
 }
 
 // Presents the sign-in upgrade promo if is relevant and possible.
