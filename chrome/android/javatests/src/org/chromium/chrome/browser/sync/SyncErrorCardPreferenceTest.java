@@ -24,7 +24,6 @@ import org.mockito.Mock;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -50,7 +49,6 @@ import org.chromium.ui.test.util.NightModeTestUtils;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-@DisabledTest(message = "https://crbug.com/1139399")
 public class SyncErrorCardPreferenceTest {
     // FakeProfileDataSource is required to create the ProfileDataCache entry with sync_error badge
     // for Sync error card.
