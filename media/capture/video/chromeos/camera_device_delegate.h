@@ -124,6 +124,10 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
 
   friend class CameraDeviceDelegateTest;
 
+  // Reconfigures the streams to include photo stream according to |settings|.
+  // Returns true if the reconfigure process is triggered.
+  bool MaybeReconfigureForPhotoStream(mojom::PhotoSettingsPtr settings);
+
   void TakePhotoImpl();
 
   // Mojo connection error handler.
@@ -239,8 +243,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
 
   base::OnceClosure device_close_callback_;
 
-  std::queue<VideoCaptureDevice::SetPhotoOptionsCallback>
-      pending_set_photo_option_callbacks_;
+  std::queue<base::OnceClosure> on_reconfigured_callbacks_;
 
   CameraAppDeviceImpl* camera_app_device_;  // Weak.
 
