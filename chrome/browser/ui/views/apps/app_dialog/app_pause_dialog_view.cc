@@ -42,7 +42,7 @@ AppPauseDialogView::AppPauseDialogView(
   SetTitle(l10n_util::GetStringFUTF16(IDS_APP_PAUSE_PROMPT_TITLE,
                                       base::UTF8ToUTF16(app_name)));
 
-  SetAcceptCallback(std::move(closed_callback));
+  closed_callback_ = std::move(closed_callback);
 
   const int cutoff = pause_data.minutes == 0 || pause_data.hours == 0 ? 0 : -1;
   base::string16 heading_text = l10n_util::GetStringFUTF16(
@@ -63,6 +63,8 @@ AppPauseDialogView::AppPauseDialogView(
 
 AppPauseDialogView::~AppPauseDialogView() {
   g_app_pause_dialog_view = nullptr;
+  if (closed_callback_)
+    std::move(closed_callback_).Run();
 }
 
 // static
