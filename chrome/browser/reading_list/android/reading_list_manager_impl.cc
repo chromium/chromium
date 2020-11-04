@@ -65,7 +65,7 @@ void ReadingListManagerImpl::ReadingListModelLoaded(
   // Constructs the bookmark tree.
   root_->DeleteAll();
   for (const auto& url : model->Keys())
-    AddBookmark(model->GetEntryByURL(url));
+    AddOrUpdateBookmark(model->GetEntryByURL(url));
 
   loaded_ = true;
 
@@ -77,7 +77,22 @@ void ReadingListManagerImpl::ReadingListDidAddEntry(
     const ReadingListModel* model,
     const GURL& url,
     reading_list::EntrySource source) {
-  AddBookmark(model->GetEntryByURL(url));
+  AddOrUpdateBookmark(model->GetEntryByURL(url));
+}
+
+void ReadingListManagerImpl::ReadingListWillRemoveEntry(
+    const ReadingListModel* model,
+    const GURL& url) {
+  RemoveBookmark(url);
+}
+
+void ReadingListManagerImpl::ReadingListDidMoveEntry(
+    const ReadingListModel* model,
+    const GURL& url) {
+  DCHECK(reading_list_model_->loaded());
+  const auto* moved_entry = reading_list_model_->GetEntryByURL(url);
+  DCHECK(moved_entry);
+  AddOrUpdateBookmark(moved_entry);
 }
 
 void ReadingListManagerImpl::AddObserver(Observer* observer) {
@@ -96,7 +111,8 @@ const BookmarkNode* ReadingListManagerImpl::Add(const GURL& url,
   const auto& new_entry = reading_list_model_->AddEntry(
       url, title, reading_list::ADDED_VIA_CURRENT_APP);
   const auto* node = FindBookmarkByURL(new_entry.URL());
-  DCHECK(node) << "Bookmark node should have been created.";
+  DCHECK(node)
+      << "Bookmark node should have been create in ReadingListDidAddEntry().";
   return node;
 }
 
@@ -128,8 +144,6 @@ bool ReadingListManagerImpl::IsReadingListBookmark(
 
 void ReadingListManagerImpl::Delete(const GURL& url) {
   DCHECK(reading_list_model_->loaded());
-
-  RemoveBookmark(url);
   reading_list_model_->RemoveEntryByURL(url);
 }
 
@@ -201,8 +215,7 @@ void ReadingListManagerImpl::RemoveBookmark(const GURL& url) {
     root_->Remove(root_->GetIndexOf(node));
 }
 
-// Adds a reading list entry to the bookmark tree.
-const BookmarkNode* ReadingListManagerImpl::AddBookmark(
+const BookmarkNode* ReadingListManagerImpl::AddOrUpdateBookmark(
     const ReadingListEntry* entry) {
   if (!entry)
     return nullptr;

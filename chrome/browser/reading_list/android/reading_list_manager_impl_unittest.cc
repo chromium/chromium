@@ -197,8 +197,8 @@ TEST_F(ReadingListManagerImplTest, ReadStatus) {
   EXPECT_FALSE(manager()->GetReadStatus(manager()->GetRoot()));
 }
 
-// Verifies ReadingListDidAddEntry() API that is being called after
-// ReadingListModel::AddEntry() is called.
+// Verifies the bookmark node is added when sync or other source adds the
+// reading list entry from |reading_list_model_|.
 TEST_F(ReadingListManagerImplTest, ReadingListDidAddEntry) {
   GURL url(kURL);
   reading_list_model()->AddEntry(url, kTitle, reading_list::ADDED_VIA_SYNC);
@@ -207,6 +207,40 @@ TEST_F(ReadingListManagerImplTest, ReadingListDidAddEntry) {
   EXPECT_TRUE(node);
   EXPECT_EQ(url, node->url());
   EXPECT_EQ(1u, manager()->size());
+}
+
+// Verifies the bookmark node is deleted when sync or other source deletes the
+// reading list entry from |reading_list_model_|.
+TEST_F(ReadingListManagerImplTest, ReadingListWillRemoveEntry) {
+  GURL url(kURL);
+
+  // Adds a node.
+  manager()->Add(url, kTitle);
+  const auto* node = manager()->Get(url);
+  EXPECT_TRUE(node);
+  EXPECT_EQ(url, node->url());
+  EXPECT_EQ(1u, manager()->size());
+
+  // Removes it from |reading_list_model_|.
+  reading_list_model()->RemoveEntryByURL(url);
+  node = manager()->Get(url);
+  EXPECT_FALSE(node);
+  EXPECT_EQ(0u, manager()->size());
+}
+
+// Verifies the bookmark node is updated when sync or other source updates the
+// reading list entry from |reading_list_model_|.
+TEST_F(ReadingListManagerImplTest, ReadingListWillMoveEntry) {
+  GURL url(kURL);
+
+  // Adds a node.
+  manager()->Add(url, kTitle);
+  const auto* node = manager()->Get(url);
+  EXPECT_TRUE(node);
+  EXPECT_FALSE(manager()->GetReadStatus(node));
+
+  reading_list_model()->SetReadStatus(url, true);
+  EXPECT_TRUE(manager()->GetReadStatus(node));
 }
 
 }  // namespace
