@@ -30,6 +30,9 @@ source_set("heap_unsanitized") {
   # std::atomic<>:: functions must be inlined.
   configs -= [ "//build/config/compiler:default_optimization" ]
   configs += [ "//build/config/compiler:optimize_max" ]
+  if (using_mismatched_sample_profile) {
+    configs -= [ "//build/config/compiler:afdo_optimize_size" ]
+  }
 
   if (!enable_blink_heap_use_v8_oilpan) {
     sources = [
@@ -165,6 +168,8 @@ blink_platform_sources("heap") {
   if (!is_debug && !optimize_for_size) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
+  } else if (using_mismatched_sample_profile) {
+    configs -= [ "//build/config/compiler:afdo_optimize_size" ]
   }
 
   visibility = [
