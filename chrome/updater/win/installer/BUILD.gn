@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
 import("//build/timestamp.gni")
 import("//chrome/process_version_rc_template.gni")
 import("//testing/test.gni")
@@ -52,7 +53,8 @@ template("generate_installer") {
   archive_name = target_name + "_archive"
   staging_dir = "$target_gen_dir/$target_name"
 
-  action(archive_name) {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action(archive_name) {
     script = "create_installer_archive.py"
 
     release_file = "updater.release"

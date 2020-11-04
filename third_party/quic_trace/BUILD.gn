@@ -1,8 +1,10 @@
+import("//build/config/python.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 # Since most of the Chromium uses proto_lite, modify the source proto file to
 # use the lite runtime.
-action("quic_trace_proto_lite_runtime") {
+# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+python2_action("quic_trace_proto_lite_runtime") {
   script = "append_lite_runtime.py"
   inputs = [ "src/lib/quic_trace.proto" ]
   outputs = [ "$target_gen_dir/quic_trace.proto" ]
@@ -18,6 +20,9 @@ proto_library("quic_trace_proto") {
     "//net:quic_test_tools",
     "//net/third_party/quiche:quic_test_tools_core",
   ]
+
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  run_under_python2 = true
 
   sources = [ "$target_gen_dir/quic_trace.proto" ]
   proto_deps = [ ":quic_trace_proto_lite_runtime" ]

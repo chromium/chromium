@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/arm.gni")
+import("//build/config/python.gni")
 import("//testing/test.gni")
 
 # If fixed point implementation shall be used (otherwise float).
@@ -21,7 +22,8 @@ use_opus_x86_optimization =
 # If OPUS Run Time CPU Detections (RTCD) shall be used.
 # Based on the conditions in celt/arm/armcpu.c:
 # defined(_MSC_VER) || defined(__linux__).
-use_opus_arm_rtcd = current_cpu == "arm" && (is_win || is_android || is_linux || is_chromeos)
+use_opus_arm_rtcd =
+    current_cpu == "arm" && (is_win || is_android || is_linux || is_chromeos)
 
 config("opus_config") {
   include_dirs = [ "src/include" ]
@@ -168,7 +170,8 @@ config("opus_test_no_nonnull_config") {
 }
 
 if (use_opus_arm_rtcd) {
-  action("convert_rtcd_assembler") {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action("convert_rtcd_assembler") {
     script = "convert_rtcd_assembler.py"
     outputs = [ "$target_gen_dir/celt_pitch_xcorr_arm_gnu.S" ]
     args = [
@@ -372,8 +375,8 @@ static_library("opus") {
     "src/src/opus_multistream_decoder.c",
     "src/src/opus_multistream_encoder.c",
     "src/src/opus_private.h",
-    "src/src/opus_projection_encoder.c",
     "src/src/opus_projection_decoder.c",
+    "src/src/opus_projection_encoder.c",
     "src/src/repacketizer.c",
     "src/src/tansig_table.h",
   ]

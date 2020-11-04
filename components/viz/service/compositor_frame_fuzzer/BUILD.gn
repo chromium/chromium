@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -19,7 +20,8 @@ proto_library("compositor_frame_fuzzer_proto") {
 # The messages must be of type RenderPass, as defined in the proto2 file
 # compositor_frame_fuzzer.proto (these assumptions are all hardcoded into
 # generate_renderpass_binary.py)
-action_foreach("generate_seed_corpus") {
+# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+python2_action_foreach("generate_seed_corpus") {
   script = "generate_renderpass_binary.py"
   pyproto_path = "$root_out_dir/pyproto"
 

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
+
 import("//third_party/closure_compiler/closure_args.gni")
 
 declare_args() {
@@ -53,7 +55,8 @@ polymer_externs = "$externs_path/polymer-1.0.js"
 #   }
 
 template("js_library") {
-  action(target_name) {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action(target_name) {
     script = "$script_path/js_library.py"
     forward_variables_from(invoker,
                            [
@@ -153,7 +156,8 @@ template("js_library") {
 #   }
 
 template("js_binary") {
-  action(target_name) {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action(target_name) {
     script = "$script_path/js_binary.py"
     forward_variables_from(invoker,
                            [

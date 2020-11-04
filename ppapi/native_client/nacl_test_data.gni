@@ -4,6 +4,7 @@
 
 import("//build/config/nacl/config.gni")
 import("//build/config/nacl/rules.gni")
+import("//build/config/python.gni")
 import("//components/nacl/features.gni")
 
 assert(enable_nacl)
@@ -182,7 +183,8 @@ template("nacl_test_data") {
     # This is a template so it can be invoked twice in the
     # defined(extra_tc_cpu) case below.
     template("nacl_test_data_pretranslate_pexe") {
-      action(target_name) {
+      # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+      python2_action(target_name) {
         translate_cpu = invoker.translate_cpu
 
         visibility = [ ":$nexe_copy_target_name" ]

@@ -6278,6 +6278,9 @@ proto_library("permissions_proto") {
 }
 
 grit("resources") {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  run_under_python2 = true
+
   source = "browser_resources.grd"
 
   # Required due to flattenhtml = "true" on a generated file.

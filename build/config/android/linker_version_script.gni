@@ -16,6 +16,9 @@ import("//build/config/python.gni")
 #
 template("generate_linker_version_script") {
   action_with_pydeps(target_name) {
+    # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+    run_under_python2 = true
+
     script = "//build/android/gyp/generate_linker_version_script.py"
     outputs = [ invoker.linker_script ]
     inputs = []

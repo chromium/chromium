@@ -2,10 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
+
 # TODO(nparker): reduce the duplication between these two, somehow.
 
 # Generate the binary proto form of "file_types" from the ascii proto.
-action("make_file_types_protobuf") {
+# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+python2_action("make_file_types_protobuf") {
   script = "gen_file_type_proto.py"
 
   # The output goes in $target_gen_dir since that's where
@@ -63,7 +66,8 @@ action("make_file_types_protobuf") {
 
 # Generate the binary proto for ALL platforms.  This is only run manually
 # when pushing the files to GCS for the component-updater to pick up.
-action("make_all_file_types_protobuf") {
+# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+python2_action("make_all_file_types_protobuf") {
   script = "gen_file_type_proto.py"
 
   input_filename = "download_file_types.asciipb"

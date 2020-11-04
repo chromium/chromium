@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
 import("//tools/grit/grit_rule.gni")
 
 # generate_about_tracing puts its files in this directory
@@ -11,7 +12,8 @@ tracing_gen_dir = "$root_gen_dir/content/browser/tracing"
 # this file to be in the same directory as the inputs.
 tracing_grd = "$tracing_gen_dir/tracing_resources.grd"
 
-action("generate_tracing_grd") {
+# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+python2_action("generate_tracing_grd") {
   visibility = [ ":*" ]  # Depend on ":resources" to get this.
   script = "generate_trace_viewer_grd.py"
 

@@ -5,6 +5,7 @@
 import("//build/config/chrome_build.gni")
 import("//build/config/features.gni")
 import("//build/config/mac/base_rules.gni")
+import("//build/config/python.gni")
 import("//build/toolchain/toolchain.gni")
 import("//components/policy/resources/policy_templates.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
@@ -97,7 +98,8 @@ constants_source_path = "$target_gen_dir/policy_constants.cc"
 app_restrictions_path = "$target_gen_dir/app_restrictions.xml"
 risk_tag_header_path = "$target_gen_dir/risk_tag.h"
 
-action("policy_code_generate") {
+# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+python2_action("policy_code_generate") {
   script = "tools/generate_policy_source.py"
   chrome_version_abspath = "//chrome/VERSION"
   chrome_version_path = rebase_path(chrome_version_abspath, root_build_dir)
@@ -141,7 +143,8 @@ action("policy_code_generate") {
   ]
 }
 
-action("full_runtime_code_generate") {
+# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+python2_action("full_runtime_code_generate") {
   script = "tools/generate_policy_source.py"
   chrome_version_abspath = "//chrome/VERSION"
   chrome_version_path = rebase_path(chrome_version_abspath, root_build_dir)
@@ -187,7 +190,8 @@ grit("translate_policy_templates") {
 }
 
 # Generate the various templates and docs (admx, doc, json, etc.)
-action("policy_templates") {
+# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+python2_action("policy_templates") {
   script = "tools/template_writers/template_formatter.py"
   chrome_version_abspath = "//chrome/VERSION"
   chrome_version_path = rebase_path(chrome_version_abspath, root_build_dir)

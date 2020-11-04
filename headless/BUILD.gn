@@ -4,6 +4,7 @@
 
 import("//build/config/c++/c++.gni")
 import("//build/config/chrome_build.gni")
+import("//build/config/python.gni")
 import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
 import("//headless/headless.gni")
@@ -77,7 +78,8 @@ repack("pak") {
   output = "$root_out_dir/headless_lib.pak"
 }
 
-action("embed_resources") {
+# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+python2_action("embed_resources") {
   # TODO(altimin): Consider zipping file here, it can reduce size up to 80%.
   script = "lib/embed_data.py"
 

@@ -17,7 +17,8 @@ import("//third_party/blink/renderer/modules/modules_idl_files.gni")
 
 visibility = [ "//third_party/blink/renderer/*" ]
 
-action("interfaces_info") {
+# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+python2_action("interfaces_info") {
   script = "$bindings_scripts_dir/compute_interfaces_info_overall.py"
 
   inputs = [
@@ -65,6 +66,9 @@ if (use_blink_v8_binding_new_idl_interface) {
 
 template("collect_idl_files") {
   action_with_pydeps(target_name) {
+    # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+    run_under_python2 = true
+
     script = "${bindings_scripts_dir}/collect_idl_files.py"
 
     inputs = invoker.inputs
@@ -139,6 +143,9 @@ collect_idl_files("web_idl_in_modules_for_testing") {
 }
 
 action_with_pydeps("web_idl_database") {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  run_under_python2 = true
+
   script = "${bindings_scripts_dir}/build_web_idl_database.py"
 
   input_data_files = get_target_outputs(":web_idl_in_core") +
@@ -168,6 +175,9 @@ action_with_pydeps("web_idl_database") {
 
 template("generate_bindings") {
   action_with_pydeps(target_name) {
+    # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+    run_under_python2 = true
+
     script = "${bindings_scripts_dir}/generate_bindings.py"
 
     if (defined(invoker.pool)) {
@@ -232,6 +242,9 @@ generate_bindings("generate_bindings_all") {
 }
 
 action_with_pydeps("generate_high_entropy_list") {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  run_under_python2 = true
+
   script = "${bindings_scripts_dir}/generate_high_entropy_list.py"
 
   web_idl_database_outputs = get_target_outputs(":web_idl_database")

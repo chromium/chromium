@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/closure_compiler/closure_args.gni")
 import("//third_party/closure_compiler/compile_js.gni")
@@ -9,7 +10,8 @@ import("//tools/grit/grit_rule.gni")
 
 interfaces_bindings_gen_dir = "$root_gen_dir/mojo/public/interfaces/bindings"
 
-action("bindings") {
+# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+python2_action("bindings") {
   bindings_js_files = [
     # This must be the first file in the list, because it initializes global
     # variable |mojo| that the others need to refer to.
@@ -50,7 +52,8 @@ action("bindings") {
 }
 
 template("concatenate_files") {
-  action(target_name) {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action(target_name) {
     script = "//mojo/public/tools/bindings/concatenate-files.py"
     inputs = invoker.inputs
     output = "$target_gen_dir/${invoker.output}"
@@ -175,6 +178,8 @@ js_library("bindings_uncompiled") {
 }
 
 grit("resources") {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  run_under_python2 = true
   source = "mojo_bindings_resources.grd"
 
   outputs = [

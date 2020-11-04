@@ -2,7 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-action("usb_gadget") {
+import("//build/config/python.gni")
+
+# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+python2_action("usb_gadget") {
   script = "//tools/usb_gadget/package.py"
   inputs = [
     "__init__.py",

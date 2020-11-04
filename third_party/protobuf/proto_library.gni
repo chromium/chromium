@@ -303,10 +303,20 @@ template("proto_library") {
       ":$javascript_name",
       ":$source_set_name",
     ]
-    script = "//tools/protoc_wrapper/protoc_wrapper.py"
+    if ((defined(invoker.run_under_python2) && invoker.run_under_python2) ||
+        true) {
+      # TODO(crbug.com/1112471) - get all users of this to run cleanly under
+      # Python 3 and then remove this option.
+      script = "//build/util/python2_action.py"
+      args = [ rebase_path("//tools/protoc_wrapper/protoc_wrapper.py",
+                           root_build_dir) ] + protos
+    } else {
+      script = "//tools/protoc_wrapper/protoc_wrapper.py"
+      args = protos
+    }
+
     sources = proto_sources
     outputs = get_path_info(protogens + protogens_cc + protogens_js, "abspath")
-    args = protos
 
     if (defined(invoker.testonly)) {
       testonly = invoker.testonly

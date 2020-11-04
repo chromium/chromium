@@ -64,6 +64,9 @@ if (is_android) {
 }
 
 grit("generated_resources") {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  run_under_python2 = true
+
   source = "generated_resources.grd"
   defines = chrome_grit_defines
   output_dir = "$root_gen_dir/chrome"

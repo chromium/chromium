@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
 import("//third_party/blink/renderer/bindings/bindings.gni")
 import("//third_party/blink/renderer/bindings/generated_in_modules.gni")
 import("//third_party/blink/renderer/bindings/modules/v8/generated.gni")
@@ -247,7 +248,8 @@ blink_modules_sources("bindings_modules_impl") {
   ]
 }
 
-action("generate_v8_context_snapshot_external_references") {
+# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+python2_action("generate_v8_context_snapshot_external_references") {
   script = "$bindings_scripts_dir/generate_v8_context_snapshot_external_references.py"
   idl_files =
       core_interface_idl_files_core_only +

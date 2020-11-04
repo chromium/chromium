@@ -5,6 +5,7 @@
 import("//build/config/chrome_build.gni")
 import("//build/config/ios/asset_catalog.gni")
 import("//build/config/ios/rules.gni")
+import("//build/config/python.gni")
 import("//remoting/build/config/remoting_build.gni")
 import("//remoting/remoting_locales.gni")
 
@@ -87,7 +88,8 @@ appiconset("remoting_icons") {
 
 # i18n
 
-action("infoplist_strings") {
+# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+python2_action("infoplist_strings") {
   _source = "InfoPlist.strings.jinja2"
   sources = [ _source ]
 

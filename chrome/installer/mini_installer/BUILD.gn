@@ -4,6 +4,7 @@
 
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
+import("//build/config/python.gni")
 import("//build/config/ui.gni")
 import("//chrome/process_version_rc_template.gni")
 import("//components/nacl/features.gni")
@@ -134,7 +135,8 @@ template("generate_mini_installer") {
   archive_name = target_name + "_archive"
   staging_dir = "$target_gen_dir/$target_name"
 
-  action(archive_name) {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action(archive_name) {
     script = "//chrome/tools/build/win/create_installer_archive.py"
 
     release_file = "chrome.release"

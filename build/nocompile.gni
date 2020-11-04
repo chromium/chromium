@@ -59,6 +59,7 @@
 # least processed when things go right.
 
 import("//build/config/clang/clang.gni")
+import("//build/config/python.gni")
 import("//build/toolchain/toolchain.gni")
 import("//testing/test.gni")
 
@@ -74,7 +75,8 @@ if (enable_nocompile_tests) {
   template("nocompile_test") {
     nocompile_target = target_name + "_run_nocompile"
 
-    action_foreach(nocompile_target) {
+    # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+    python2_action_foreach(nocompile_target) {
       testonly = true
       script = "//tools/nocompile_driver.py"
       sources = invoker.sources

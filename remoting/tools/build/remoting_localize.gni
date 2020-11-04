@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
+
 # Calls the remoting_localize script with a jinja2 template.
 #
 # Arguments
@@ -33,7 +35,8 @@
 #   deps (optional)
 #   visibility (optional)
 template("remoting_localize") {
-  action_foreach(target_name) {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action_foreach(target_name) {
     if (defined(invoker.visibility)) {
       visibility = invoker.visibility
     }

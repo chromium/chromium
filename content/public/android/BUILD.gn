@@ -57,6 +57,9 @@ android_resources("content_java_resources") {
 }
 
 action_with_pydeps("generate_sandboxed_service_srcjar") {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  run_under_python2 = true
+
   script = "//content/public/android/generate_child_service.py"
 
   _srcjar_path = "${target_gen_dir}/${target_name}.srcjar"

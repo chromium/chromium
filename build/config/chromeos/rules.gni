@@ -5,6 +5,7 @@
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/args.gni")
 import("//build/config/gclient_args.gni")
+import("//build/config/python.gni")
 
 assert(is_chromeos)
 
@@ -97,7 +98,8 @@ template("generate_runner_script") {
          "Tast tests are invoked from binaries shipped with the VM image. " +
              "There should be no locally built binary needed.")
 
-  action(target_name) {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action(target_name) {
     if (defined(runtime_deps_file)) {
       write_runtime_deps = runtime_deps_file
     }

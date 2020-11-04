@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
 import("//build/toolchain/toolchain.gni")
 import("//third_party/blink/renderer/config.gni")
 
@@ -91,7 +92,8 @@ make_core_generated_deps = [
 #  - //third_party/blink/renderer/build/scripts
 #  - //third_party
 template("blink_python_runner") {
-  action(target_name) {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action(target_name) {
     script = "$_scripts_dir/run_with_pythonpath.py"
     sources = [ invoker.script ]
     if (defined(invoker.sources)) {

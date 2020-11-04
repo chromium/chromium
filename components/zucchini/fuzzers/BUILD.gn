@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -71,7 +72,8 @@ proto_library("zucchini_file_pair_proto") {
 # Disabled on Windows due to crbug/844826.
 if (current_toolchain == host_toolchain && !is_win) {
   # Raw Apply Fuzzer Seed:
-  action("zucchini_raw_apply_seed") {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action("zucchini_raw_apply_seed") {
     script = "generate_fuzzer_data.py"
 
     args = [
@@ -107,7 +109,8 @@ if (current_toolchain == host_toolchain && !is_win) {
   }
 
   # ZTF Apply Fuzzer Seed:
-  action("zucchini_ztf_apply_seed") {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action("zucchini_ztf_apply_seed") {
     script = "generate_fuzzer_data.py"
 
     # *.ztf files are expected to be valid ZTF format.

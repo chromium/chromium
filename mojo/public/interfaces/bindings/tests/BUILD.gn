@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
 import("../../../tools/bindings/mojom.gni")
 
 group("test_data_deps") {
@@ -254,7 +255,8 @@ copy("validation_test_data") {
   outputs = [ "$root_gen_dir/layout_test_data/{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
-action_foreach("validation_test_data_list") {
+# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+python2_action_foreach("validation_test_data_list") {
   testonly = true
   script = "//mojo/public/tools/bindings/gen_data_files_list.py"
   inputs = mojom_generator_sources

@@ -921,16 +921,22 @@ blink_python_runner("make_core_generated_css_tokenizer_codepoints") {
 blink_python_runner("make_core_generated_css_primitive_value_unit_trie") {
   visibility = []  # Allow re-assignment of list.
   visibility = [ ":*" ]
-  script = "../build/scripts/core/css/make_css_primitive_value_unit_trie.py"
+
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  script = "//build/util/python2_action.py"
 
   input_file = "css/css_primitive_value_units.json5"
   inputs = make_trie_helpers_files + [
              input_file,
+             "../build/scripts/core/css/make_css_primitive_value_unit_trie.py",
              "../build/scripts/core/css/templates/css_primitive_value_unit_trie.cc.tmpl",
            ]
   outputs = [ "$blink_core_output_dir/css/css_primitive_value_unit_trie.cc" ]
 
   args = [
+    rebase_path(
+        "../build/scripts/core/css/make_css_primitive_value_unit_trie.py",
+        root_build_dir),
     rebase_path(input_file, root_build_dir),
     "--output_dir",
     "$rel_blink_core_gen_dir/css",
@@ -1003,6 +1009,7 @@ blink_python_runner("make_core_generated_origin_trials") {
     "$rel_blink_core_gen_dir/origin_trials",
   ]
 }
+
 blink_python_runner("make_core_generated_web_origin_trials") {
   script = "../build/scripts/make_web_origin_trials.py"
 

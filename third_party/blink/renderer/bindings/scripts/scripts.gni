@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/core/core_idl_files.gni")
 import("//third_party/blink/renderer/modules/modules_idl_files.gni")
@@ -65,7 +66,8 @@ idl_compiler_files = get_path_info(
 #   component_info_file = output pickle file for component wide info.
 #   deps = dependencies
 template("compute_interfaces_info") {
-  action(target_name) {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action(target_name) {
     script = "$bindings_scripts_dir/compute_interfaces_info_individual.py"
     if (defined(invoker.visibility)) {
       visibility = invoker.visibility
@@ -112,7 +114,8 @@ template("compute_interfaces_info") {
 #   output_file = The .in file to write, relative to the blink_gen_dir.
 #   suffix = (Optional) String to be passed to script via --suffix
 template("generate_event_interfaces") {
-  action(target_name) {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action(target_name) {
     # Write the file list to a unique temp file to avoid blowing out the
     # command line length limit.
     idl_files_list = "$target_gen_dir/${target_name}_file_list.tmp"
@@ -196,7 +199,8 @@ template("idl_compiler") {
 
   # Spawning a python process per IDL file is slow. Use a single action
   # instead (crbug.com/821256).
-  action(target_name) {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action(target_name) {
     script = _script
     inputs = _inputs
     public_deps = _public_deps
@@ -245,7 +249,8 @@ template("idl_compiler") {
 template("idl_impl") {
   dictionary_impl_output_dir = "$root_gen_dir/third_party/blink/renderer/"
 
-  action(target_name) {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action(target_name) {
     script = "//third_party/blink/renderer/bindings/scripts/idl_compiler.py"
     idl_files_list = "$target_gen_dir/${target_name}_file_list.tmp"
     write_file(idl_files_list, rebase_path(invoker.dict_idls, root_build_dir))
@@ -439,7 +444,8 @@ template("generate_global_constructors") {
 #   deps = dependencies
 #
 template("generate_origin_trial_features") {
-  action(target_name) {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action(target_name) {
     script = "//third_party/blink/renderer/bindings/scripts/generate_origin_trial_features.py"
 
     # Write the file list to a unique temp file to avoid blowing out the

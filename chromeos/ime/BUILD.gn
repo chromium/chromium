@@ -2,7 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-action("gencode") {
+import("//build/config/python.gni")
+
+# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+python2_action("gencode") {
   script = "gen_input_methods.py"
   sources = [ "//chromeos/ime/input_methods.txt" ]
   outputs = [ "$target_gen_dir/input_methods.h" ]

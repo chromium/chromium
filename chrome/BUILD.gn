@@ -7,6 +7,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
 import("//build/config/locales.gni")
+import("//build/config/python.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/config/win/console_app.gni")
@@ -59,7 +60,8 @@ if (enable_resource_allowlist_generation) {
 }
 
 if (is_win) {
-  action("reorder_imports") {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action("reorder_imports") {
     script = "//build/win/reorder-imports.py"
 
     # See comment in chrome_dll.gypi in the hardlink_to_output

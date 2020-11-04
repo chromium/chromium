@@ -685,7 +685,8 @@ group("jni_headers") {
   ]
 }
 
-action("chrome_android_java_google_api_keys_srcjar") {
+# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+python2_action("chrome_android_java_google_api_keys_srcjar") {
   script = "//build/android/gyp/java_google_api_keys.py"
   _output_path = "$target_gen_dir/$target_name.srcjar"
   outputs = [ _output_path ]

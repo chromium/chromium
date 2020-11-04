@@ -180,6 +180,9 @@ template("write_build_config") {
   }
 
   action_with_pydeps(target_name) {
+    # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+    run_under_python2 = true
+
     forward_variables_from(invoker,
                            [
                              "deps",
@@ -633,6 +636,9 @@ template("generate_android_wrapper") {
 
 template("generate_r_java") {
   action_with_pydeps(target_name) {
+    # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+    run_under_python2 = true
+
     forward_variables_from(invoker,
                            [
                              "deps",
@@ -986,6 +992,9 @@ template("test_runner_script") {
 if (enable_java_templates) {
   template("android_lint") {
     action_with_pydeps(target_name) {
+      # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+      run_under_python2 = true
+
       forward_variables_from(invoker, [ "testonly" ])
       if (!defined(deps)) {
         deps = []
@@ -1291,6 +1300,9 @@ if (enable_java_templates) {
       _expectations_target =
           "${invoker.top_target_name}_validate_proguard_config"
       action_with_pydeps(_expectations_target) {
+        # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+        run_under_python2 = true
+
         script = _script
 
         # Need to depend on all deps so that proguard.txt within .aar files get
@@ -1334,6 +1346,9 @@ if (enable_java_templates) {
       _deps += [ ":$_expectations_target" ]
     }
     action_with_pydeps(target_name) {
+      # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+      run_under_python2 = true
+
       script = _script
       deps = _deps
       inputs = _inputs
@@ -1363,6 +1378,9 @@ if (enable_java_templates) {
   #
   template("java_binary_script") {
     action_with_pydeps(target_name) {
+      # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+      run_under_python2 = true
+
       forward_variables_from(invoker,
                              [
                                "deps",
@@ -1569,6 +1587,9 @@ if (enable_java_templates) {
         _main_dex_list_path = invoker.output + ".main_dex_list"
         _main_dex_list_target_name = "${target_name}__main_dex_list"
         action_with_pydeps(_main_dex_list_target_name) {
+          # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+          run_under_python2 = true
+
           forward_variables_from(invoker, [ "testonly" ])
 
           script = "//build/android/gyp/main_dex_list.py"
@@ -1643,6 +1664,9 @@ if (enable_java_templates) {
       }
 
       action_with_pydeps(target_name) {
+        # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+        run_under_python2 = true
+
         forward_variables_from(invoker,
                                [
                                  "data",
@@ -2220,6 +2244,9 @@ if (enable_java_templates) {
   #
   template("prepare_resources") {
     action_with_pydeps(target_name) {
+      # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+      run_under_python2 = true
+
       forward_variables_from(invoker,
                              [
                                "deps",
@@ -2711,6 +2738,9 @@ if (enable_java_templates) {
       _expectations_target =
           "${invoker.top_target_name}_validate_android_manifest"
       action_with_pydeps(_expectations_target) {
+        # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+        run_under_python2 = true
+
         _actual_file = "${invoker.android_manifest}.normalized"
         _failure_file =
             "$_expectations_failure_dir/" +
@@ -2753,6 +2783,9 @@ if (enable_java_templates) {
     }
 
     action_with_pydeps(target_name) {
+      # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+      run_under_python2 = true
+
       script = _script
       depfile = "$target_gen_dir/${target_name}.d"
       inputs = _inputs
@@ -2775,6 +2808,9 @@ if (enable_java_templates) {
   #
   template("create_size_info_files") {
     action_with_pydeps(target_name) {
+      # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+      run_under_python2 = true
+
       forward_variables_from(invoker,
                              [
                                "testonly",
@@ -2996,6 +3032,8 @@ if (enable_java_templates) {
       _expectations_target =
           "${invoker.top_target_name}_validate_libs_and_assets"
       action_with_pydeps(_expectations_target) {
+        # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+        run_under_python2 = true
         _actual_file = "$target_gen_dir/$target_name.libs_and_assets"
         _failure_file =
             "$_expectations_failure_dir/" +
@@ -3033,6 +3071,8 @@ if (enable_java_templates) {
       _deps += [ ":$_expectations_target" ]
     }
     action_with_pydeps(target_name) {
+      # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+      run_under_python2 = true
       depfile = "$target_gen_dir/$target_name.d"
       inputs = _inputs
       deps = _deps
@@ -3139,6 +3179,9 @@ if (enable_java_templates) {
     }
 
     action_with_pydeps(target_name) {
+      # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+      run_under_python2 = true
+
       if (invoker.use_turbine) {
         script = "//build/android/gyp/turbine.py"
       } else {
@@ -4267,6 +4310,8 @@ template("create_android_app_bundle_module") {
   if (defined(invoker.expected_libs_and_assets)) {
     _expectations_target = "${invoker.top_target_name}_validate_libs_and_assets"
     action_with_pydeps(_expectations_target) {
+      # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+      run_under_python2 = true
       _actual_file = "$target_gen_dir/$target_name.libs_and_assets"
       _failure_file = "$_expectations_failure_dir/" +
                       string_replace(invoker.expected_libs_and_assets, "/", "_")
@@ -4312,6 +4357,8 @@ template("create_android_app_bundle_module") {
   }
 
   action_with_pydeps(target_name) {
+    # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+    run_under_python2 = true
     deps = _deps
     inputs = _inputs
     outputs = _outputs

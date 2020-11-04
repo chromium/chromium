@@ -9,6 +9,7 @@
 #    sources = [ "foo.xml" ]
 #  }
 
+import("//build/config/python.gni")
 import("//third_party/wayland/features.gni")
 
 template("wayland_protocol") {
@@ -33,7 +34,8 @@ template("wayland_protocol") {
   source_set_name = "${target_name}"
 
   # Action which runs wayland-scanner to generate the code.
-  action(action_name) {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action(action_name) {
     visibility = [ ":$source_set_name" ]
     script = "//third_party/wayland/wayland_scanner_wrapper.py"
     sources = invoker.sources

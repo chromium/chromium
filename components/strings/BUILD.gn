@@ -57,6 +57,11 @@ if (is_android) {
 }
 
 grit("components_chromium_strings") {
+  # TODO(crbug.com/1112471). For reasons I don't understand,
+  # IDS_ERRORPAGES_SUGGESTION_PROXY_DISABLE_PLATFORM is not defined
+  # on desktop linux when this is run under Python3. Fix this.
+  run_under_python2 = true
+
   source = "../components_chromium_strings.grd"
   outputs = [ "grit/components_chromium_strings.h" ]
   foreach(locale, locales_with_fake_bidi) {

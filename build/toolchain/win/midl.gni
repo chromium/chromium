@@ -89,7 +89,7 @@ template("midl") {
   proxy_file = "{{source_name_part}}_p.c"
   type_library_file = "{{source_name_part}}.tlb"
 
-  # TODO(crbug.com/1112471): Get this working directly under Python 3.
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
   python2_action_foreach(action_name) {
     visibility = [ ":$source_set_name" ]
     script = "//build/toolchain/win/midl.py"

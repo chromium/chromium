@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
 import("//build/util/process_version.gni")
 import("//remoting/build/config/remoting_build.gni")
 
@@ -644,7 +645,8 @@ if (enable_remoting_host) {
     }
   }
 
-  action_foreach("remoting_native_messaging_manifests") {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action_foreach("remoting_native_messaging_manifests") {
     if (is_mac) {
       me2me_host_path = "/Library/PrivilegedHelperTools/$me2me_host_bundle_name/Contents/MacOS/$native_messaging_host_bundle_name/Contents/MacOS/native_messaging_host"
       it2me_host_path = "/Library/PrivilegedHelperTools/$me2me_host_bundle_name/Contents/MacOS/$remote_assistance_host_bundle_name/Contents/MacOS/remote_assistance_host"
@@ -686,7 +688,8 @@ if (enable_remoting_host) {
     ]
   }
 
-  action_foreach("remoting_infoplist_strings") {
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action_foreach("remoting_infoplist_strings") {
     sources = [
       "it2me/remote_assistance_host-InfoPlist.strings.jinja2",
       "remoting_me2me_host-InfoPlist.strings.jinja2",
