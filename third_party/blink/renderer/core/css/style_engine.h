@@ -179,9 +179,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     DCHECK(global_rule_set_);
     return global_rule_set_->WatchedSelectorsRuleSet();
   }
-  bool HasStyleSheets() const {
-    return GetDocumentStyleSheetCollection().HasStyleSheets();
-  }
 
   RuleSet* RuleSetForSheet(CSSStyleSheet&);
   void MediaQueryAffectingValueChanged(MediaValueChange change);

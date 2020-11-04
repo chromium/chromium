@@ -58,15 +58,6 @@ void TreeScopeStyleSheetCollection::ApplyActiveStyleSheetChanges(
   new_collection.Swap(*this);
 }
 
-bool TreeScopeStyleSheetCollection::HasStyleSheets() const {
-  for (Node* node : style_sheet_candidate_nodes_) {
-    StyleSheetCandidate candidate(*node);
-    if (candidate.Sheet() || candidate.IsEnabledAndLoading())
-      return true;
-  }
-  return false;
-}
-
 void TreeScopeStyleSheetCollection::UpdateStyleSheetList() {
   if (!sheet_list_dirty_)
     return;
