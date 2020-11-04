@@ -3911,7 +3911,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBackdropFilter) {
   EXPECT_EQ(gfx::RRectF(),
             mask_isolation_1.mask_filter_info.rounded_corner_bounds());
 
-  EXPECT_EQ(t0_id, clip_mask1->transform_tree_index());
+  EXPECT_EQ(t1_id, clip_mask1->transform_tree_index());
   EXPECT_EQ(c2_id, clip_mask1->clip_tree_index());
   const cc::EffectNode& mask =
       *GetPropertyTrees().effect_tree.Node(clip_mask1->effect_tree_index());

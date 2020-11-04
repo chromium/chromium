@@ -666,16 +666,16 @@ void PropertyTreeManager::EmitClipMaskLayer() {
 
   cc::PictureLayer* mask_layer = clip.Layer();
 
-  const auto& clip_space = current_.clip->LocalTransformSpace().Unalias();
   layer_list_builder_.Add(mask_layer);
   mask_layer->set_property_tree_sequence_number(
       root_layer_.property_tree_sequence_number());
-  mask_layer->SetTransformTreeIndex(EnsureCompositorTransformNode(clip_space));
+  mask_layer->SetTransformTreeIndex(
+      EnsureCompositorTransformNode(*current_.transform));
   // TODO(pdr): This could be a performance issue because it crawls up the
   // transform tree for each pending layer. If this is on profiles, we should
   // cache a lookup of transform node to scroll translation transform node.
-  int scroll_id =
-      EnsureCompositorScrollNode(clip_space.NearestScrollTranslationNode());
+  int scroll_id = EnsureCompositorScrollNode(
+      current_.transform->NearestScrollTranslationNode());
   mask_layer->SetScrollTreeIndex(scroll_id);
   mask_layer->SetClipTreeIndex(mask_effect.clip_id);
   mask_layer->SetEffectTreeIndex(mask_effect.id);
