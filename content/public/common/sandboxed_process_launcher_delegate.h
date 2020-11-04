@@ -55,7 +55,11 @@ class CONTENT_EXPORT SandboxedProcessLauncherDelegate
   // Whether or not to disclaim TCC responsibility for the process, defaults to
   // false. See base::LaunchOptions::disclaim_responsibility.
   virtual bool DisclaimResponsibility();
-#endif
+
+#if defined(ARCH_CPU_ARM64)
+  virtual bool LaunchX86_64();
+#endif  // ARCH_CPU_ARM64
+#endif  // OS_MAC
 };
 
 }  // namespace content
