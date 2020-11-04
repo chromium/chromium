@@ -150,6 +150,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   // A message was added to to the console.
   virtual bool DidAddMessageToConsole(
+      RenderFrameHost* source_frame,
       blink::mojom::ConsoleMessageLevel log_level,
       const base::string16& message,
       int32_t line_no,

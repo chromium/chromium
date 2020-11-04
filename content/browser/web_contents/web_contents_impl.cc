@@ -7530,6 +7530,7 @@ void WebContentsImpl::OnFocusedElementChangedInFrame(
 }
 
 bool WebContentsImpl::DidAddMessageToConsole(
+    RenderFrameHost* source_frame,
     blink::mojom::ConsoleMessageLevel log_level,
     const base::string16& message,
     int32_t line_no,
@@ -7538,7 +7539,8 @@ bool WebContentsImpl::DidAddMessageToConsole(
                         "message", base::trace_event::ValueToString(message));
 
   observers_.ForEachObserver([&](WebContentsObserver* observer) {
-    observer->OnDidAddMessageToConsole(log_level, message, line_no, source_id);
+    observer->OnDidAddMessageToConsole(source_frame, log_level, message,
+                                       line_no, source_id);
   });
 
   if (!delegate_)

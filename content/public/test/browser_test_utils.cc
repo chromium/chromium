@@ -3056,11 +3056,13 @@ std::string WebContentsConsoleObserver::GetMessageAt(size_t index) const {
 }
 
 void WebContentsConsoleObserver::OnDidAddMessageToConsole(
+    RenderFrameHost* source_frame,
     blink::mojom::ConsoleMessageLevel log_level,
     const base::string16& message_contents,
     int32_t line_no,
     const base::string16& source_id) {
-  Message message({log_level, message_contents, line_no, source_id});
+  Message message(
+      {source_frame, log_level, message_contents, line_no, source_id});
   if (filter_ && !filter_.Run(message))
     return;
 

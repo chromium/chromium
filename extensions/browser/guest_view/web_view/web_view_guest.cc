@@ -1046,6 +1046,7 @@ void WebViewGuest::OnAudioStateChanged(bool audible) {
 }
 
 void WebViewGuest::OnDidAddMessageToConsole(
+    content::RenderFrameHost* source_frame,
     blink::mojom::ConsoleMessageLevel log_level,
     const base::string16& message,
     int32_t line_no,

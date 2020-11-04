@@ -1592,6 +1592,7 @@ class NavigationHandleCommitObserver : public content::WebContentsObserver {
 class WebContentsConsoleObserver : public WebContentsObserver {
  public:
   struct Message {
+    RenderFrameHost* source_frame;
     blink::mojom::ConsoleMessageLevel log_level;
     base::string16 message;
     int32_t line_no;
@@ -1626,7 +1627,8 @@ class WebContentsConsoleObserver : public WebContentsObserver {
 
  private:
   // WebContentsObserver:
-  void OnDidAddMessageToConsole(blink::mojom::ConsoleMessageLevel log_level,
+  void OnDidAddMessageToConsole(RenderFrameHost* source_frame,
+                                blink::mojom::ConsoleMessageLevel log_level,
                                 const base::string16& message,
                                 int32_t line_no,
                                 const base::string16& source_id) override;

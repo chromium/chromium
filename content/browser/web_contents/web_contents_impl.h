@@ -784,7 +784,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                             int error_code) override;
   void RenderViewDeleted(RenderViewHost* render_view_host) override;
   void Close(RenderViewHost* render_view_host) override;
-  bool DidAddMessageToConsole(blink::mojom::ConsoleMessageLevel log_level,
+  bool DidAddMessageToConsole(RenderFrameHost* source_frame,
+                              blink::mojom::ConsoleMessageLevel log_level,
                               const base::string16& message,
                               int32_t line_no,
                               const base::string16& source_id) override;

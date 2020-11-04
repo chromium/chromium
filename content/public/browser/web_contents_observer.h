@@ -535,6 +535,7 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // Called when a message is added to the console of the WebContents. This is
   // invoked before forwarding the message to the WebContents' delegate.
   virtual void OnDidAddMessageToConsole(
+      RenderFrameHost* source_frame,
       blink::mojom::ConsoleMessageLevel log_level,
       const base::string16& message,
       int32_t line_no,

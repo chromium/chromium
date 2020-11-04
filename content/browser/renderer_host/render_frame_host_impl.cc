@@ -2497,7 +2497,7 @@ void RenderFrameHostImpl::DidAddMessageToConsole(
     const base::string16& message,
     int32_t line_no,
     const base::string16& source_id) {
-  if (delegate_->DidAddMessageToConsole(log_level, message, line_no,
+  if (delegate_->DidAddMessageToConsole(this, log_level, message, line_no,
                                         source_id)) {
     return;
   }
