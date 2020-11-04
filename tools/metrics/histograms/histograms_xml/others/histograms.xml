@@ -1497,6 +1497,34 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.Count.OnProfileLoad.DuplicateUrlAndTitle"
+    units="bookmarks" expires_after="2021-04-04">
+  <owner>mastiz@chromium.org</owner>
+  <owner>sky@chromium.org</owner>
+  <summary>
+    The number of bookmarks a user has saved with a URL and title pair that is
+    also present in at least one other bookmark. This excludes not only folders
+    (which don't have a URL) but it also excludes one bookmark per unique URL
+    and title pair (that is, all except one are considered duplicates). Recorded
+    when bookmarks are loaded into storage from disk if there is at least one
+    duplicate.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.Count.OnProfileLoad.DuplicateUrlAndTitleAndParent"
+    units="bookmarks" expires_after="2021-04-04">
+  <owner>mastiz@chromium.org</owner>
+  <owner>sky@chromium.org</owner>
+  <summary>
+    The number of bookmarks a user has saved with a URL, title and parent triple
+    that is also present in at least one other bookmark. This excludes not only
+    folders (which don't have a URL) but it also excludes one bookmark per
+    unique URL, title and parent triple (that is, all except one are considered
+    duplicates). Recorded when bookmarks are loaded into storage from disk if
+    there is at least one duplicate.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.Count.OpenInIncognito" units="bookmarks"
     expires_after="M82">
   <owner>twellington@google.com</owner>

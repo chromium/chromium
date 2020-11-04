@@ -90,6 +90,20 @@ void LoadBookmarks(const base::FilePath& path,
         "Bookmarks.Count.OnProfileLoad.DuplicateUrl2",
         base::saturated_cast<int>(stats.duplicate_url_bookmark_count));
   }
+
+  if (stats.duplicate_url_and_title_bookmark_count != 0) {
+    base::UmaHistogramCounts100000(
+        "Bookmarks.Count.OnProfileLoad.DuplicateUrlAndTitle",
+        base::saturated_cast<int>(
+            stats.duplicate_url_and_title_bookmark_count));
+  }
+
+  if (stats.duplicate_url_and_title_and_parent_bookmark_count != 0) {
+    base::UmaHistogramCounts100000(
+        "Bookmarks.Count.OnProfileLoad.DuplicateUrlAndTitleAndParent",
+        base::saturated_cast<int>(
+            stats.duplicate_url_and_title_and_parent_bookmark_count));
+  }
 }
 
 }  // namespace
