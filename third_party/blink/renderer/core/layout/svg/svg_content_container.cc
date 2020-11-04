@@ -111,67 +111,50 @@ bool SVGContentContainer::HitTest(HitTestResult& result,
 // box.
 static inline void UpdateObjectBoundingBox(FloatRect& object_bounding_box,
                                            bool& object_bounding_box_valid,
-                                           LayoutObject* other,
                                            FloatRect other_bounding_box) {
-  auto* svg_container = DynamicTo<LayoutSVGContainer>(other);
-  bool other_valid =
-      svg_container ? svg_container->IsObjectBoundingBoxValid() : true;
-  if (!other_valid)
-    return;
-
   if (!object_bounding_box_valid) {
     object_bounding_box = other_bounding_box;
     object_bounding_box_valid = true;
     return;
   }
-
   object_bounding_box.UniteEvenIfEmpty(other_bounding_box);
 }
 
-static bool HasValidBoundingBoxForContainer(const LayoutObject* object) {
-  if (object->IsSVGShape())
-    return !ToLayoutSVGShape(object)->IsShapeEmpty();
+static bool HasValidBoundingBoxForContainer(const LayoutObject& object) {
+  if (object.IsSVGShape())
+    return !ToLayoutSVGShape(object).IsShapeEmpty();
 
-  if (object->IsSVGText())
-    return ToLayoutSVGText(object)->IsObjectBoundingBoxValid();
+  if (object.IsSVGText())
+    return ToLayoutSVGText(object).IsObjectBoundingBoxValid();
 
-  if (object->IsSVGHiddenContainer())
-    return false;
+  if (auto* svg_container = DynamicTo<LayoutSVGContainer>(object)) {
+    return svg_container->IsObjectBoundingBoxValid() &&
+           !svg_container->IsSVGHiddenContainer();
+  }
 
   if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(object))
     return foreign_object->IsObjectBoundingBoxValid();
 
-  if (object->IsSVGImage())
-    return ToLayoutSVGImage(object)->IsObjectBoundingBoxValid();
+  if (object.IsSVGImage())
+    return ToLayoutSVGImage(object).IsObjectBoundingBoxValid();
 
-  // TODO(fs): Can we refactor this code to include the container case
-  // in a more natural way?
-  return true;
+  return false;
 }
 
 bool SVGContentContainer::UpdateBoundingBoxes(bool& object_bounding_box_valid) {
   object_bounding_box_valid = false;
 
-  // When computing the strokeBoundingBox, we use the visualRects of
-  // the container's children so that the container's stroke includes the
-  // resources applied to the children (such as clips and filters). This allows
-  // filters applied to containers to correctly bound the children, and also
-  // improves inlining of SVG content, as the stroke bound is used in that
-  // situation also.
   FloatRect object_bounding_box;
   FloatRect stroke_bounding_box;
   for (LayoutObject* current = children_.FirstChild(); current;
        current = current->NextSibling()) {
-    // Don't include elements that are not rendered in the union.
-    if (!HasValidBoundingBoxForContainer(current))
+    // Don't include elements that are not rendered.
+    if (!HasValidBoundingBoxForContainer(*current))
       continue;
-
     const AffineTransform& transform = current->LocalToSVGParentTransform();
     UpdateObjectBoundingBox(object_bounding_box, object_bounding_box_valid,
-                            current,
                             transform.MapRect(current->ObjectBoundingBox()));
-    stroke_bounding_box.Unite(
-        transform.MapRect(current->VisualRectInLocalSVGCoordinates()));
+    stroke_bounding_box.Unite(transform.MapRect(current->StrokeBoundingBox()));
   }
 
   bool changed = false;
