@@ -780,12 +780,12 @@ IN_PROC_BROWSER_TEST_F(
                         GetFakeServer());
 
   EXPECT_TRUE(
-      PassphraseRequiredStateChecker(GetSyncService(1), /*desired_state=*/true)
+      PassphraseRequiredStateChecker(GetSyncService(0), /*desired_state=*/true)
           .Wait());
-  EXPECT_TRUE(GetSyncService(1)->GetUserSettings()->SetDecryptionPassphrase(
+  EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->SetDecryptionPassphrase(
       kCustomPassphraseKeyParams.password));
   EXPECT_TRUE(
-      PassphraseRequiredStateChecker(GetSyncService(1), /*desired_state=*/false)
+      PassphraseRequiredStateChecker(GetSyncService(0), /*desired_state=*/false)
           .Wait());
 
   // Ensure that client can decrypt with both |kTrustedVaultKeyParams|

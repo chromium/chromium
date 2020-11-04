@@ -490,12 +490,12 @@ Profile* SyncTest::MakeTestProfile(base::FilePath profile_path, int index) {
 }
 
 Profile* SyncTest::GetProfile(int index) {
-  EXPECT_FALSE(profiles_.empty()) << "SetupClients() has not yet been called.";
-  EXPECT_FALSE(index < 0 || index >= static_cast<int>(profiles_.size()))
-      << "GetProfile(): Index is out of bounds.";
+  DCHECK(!profiles_.empty()) << "SetupClients() has not yet been called.";
+  DCHECK(index >= 0 && index < static_cast<int>(profiles_.size()))
+      << "GetProfile(): Index is out of bounds: " << index;
 
   Profile* profile = profiles_[index];
-  EXPECT_NE(nullptr, profile) << "No profile found at index: " << index;
+  DCHECK(profile) << "No profile found at index: " << index;
 
   return profile;
 }
@@ -513,12 +513,12 @@ std::vector<Profile*> SyncTest::GetAllProfiles() {
 
 #if !defined(OS_ANDROID)
 Browser* SyncTest::GetBrowser(int index) {
-  EXPECT_FALSE(browsers_.empty()) << "SetupClients() has not yet been called.";
-  EXPECT_FALSE(index < 0 || index >= static_cast<int>(browsers_.size()))
-      << "GetBrowser(): Index is out of bounds.";
+  DCHECK(!browsers_.empty()) << "SetupClients() has not yet been called.";
+  DCHECK(index >= 0 && index < static_cast<int>(browsers_.size()))
+      << "GetBrowser(): Index is out of bounds: " << index;
 
   Browser* browser = browsers_[index];
-  EXPECT_NE(browser, nullptr);
+  DCHECK(browser);
 
   return browsers_[index];
 }
@@ -527,6 +527,7 @@ Browser* SyncTest::AddBrowser(int profile_index) {
   Profile* profile = GetProfile(profile_index);
   browsers_.push_back(Browser::Create(Browser::CreateParams(profile, true)));
   profiles_.push_back(profile);
+  DCHECK_EQ(browsers_.size(), profiles_.size());
 
   return browsers_[browsers_.size() - 1];
 }
@@ -687,7 +688,8 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
 
   SetUpInvalidations(index);
 #if !defined(OS_ANDROID)
-  AddBrowser(index);
+  browsers_.push_back(Browser::Create(Browser::CreateParams(profile, true)));
+  DCHECK_EQ(static_cast<size_t>(index), browsers_.size() - 1);
 #endif
 
   // Make sure the ProfileSyncService has been created before creating the
