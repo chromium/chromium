@@ -13,8 +13,9 @@ Still reading?
   local as possible, i.e. by warning message or by file.
 - When adding new issues, please keep the issue ids in sorted order.
 -->
+  <!-- Ignore all lint errors in clank code. -->
   <issue id="all">
-    <ignore regexp="^../../clank/"/>
+    <ignore regexp="^\.\./\.\./clank/"/>
     <ignore regexp="^gen/clank/"/>
     <!-- obj can be a subdirectory under gen. -->
     <ignore regexp="/obj/clank/"/>
