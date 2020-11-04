@@ -705,7 +705,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void RegisterProtocolHandler(RenderFrameHostImpl* source,
                                const std::string& protocol,
                                const GURL& url,
-                               const base::string16& title,
                                bool user_gesture) override;
   void UnregisterProtocolHandler(RenderFrameHostImpl* source,
                                  const std::string& protocol,

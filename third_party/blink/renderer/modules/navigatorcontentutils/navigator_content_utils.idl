@@ -23,6 +23,6 @@
 [
     ImplementedAs=NavigatorContentUtils
 ] partial interface Navigator {
-    [RuntimeEnabled=NavigatorContentUtils, RaisesException, SecureContext] void registerProtocolHandler(DOMString scheme, USVString url, DOMString title);
+    [RuntimeEnabled=NavigatorContentUtils, RaisesException, SecureContext] void registerProtocolHandler(DOMString scheme, USVString url);
     [RuntimeEnabled=NavigatorContentUtils, RaisesException, SecureContext] void unregisterProtocolHandler(DOMString scheme, USVString url);
 };

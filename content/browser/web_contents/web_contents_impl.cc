@@ -5863,7 +5863,6 @@ void WebContentsImpl::EnumerateDirectory(
 void WebContentsImpl::RegisterProtocolHandler(RenderFrameHostImpl* source,
                                               const std::string& protocol,
                                               const GURL& url,
-                                              const base::string16& title,
                                               bool user_gesture) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::RegisterProtocolHandler",
                         "render_frame_host",

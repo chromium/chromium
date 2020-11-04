@@ -70,7 +70,6 @@ class MODULES_EXPORT NavigatorContentUtils final
   static void registerProtocolHandler(Navigator&,
                                       const String& scheme,
                                       const String& url,
-                                      const String& title,
                                       ExceptionState&);
   static void unregisterProtocolHandler(Navigator&,
                                         const String& scheme,

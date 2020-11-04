@@ -2563,13 +2563,11 @@ TEST_F(WebContentsImplTest, RegisterProtocolHandlerDifferentOrigin) {
 
   {
     contents()->RegisterProtocolHandler(main_test_rfh(), "mailto", handler_url1,
-                                        base::string16(),
                                         /*user_gesture=*/true);
   }
 
   {
     contents()->RegisterProtocolHandler(main_test_rfh(), "mailto", handler_url2,
-                                        base::string16(),
                                         /*user_gesture=*/true);
   }
 
@@ -2588,13 +2586,11 @@ TEST_F(WebContentsImplTest, RegisterProtocolHandlerDifferentOrigin) {
 
   {
     contents()->RegisterProtocolHandler(main_test_rfh(), "mailto", handler_url1,
-                                        base::string16(),
                                         /*user_gesture=*/true);
   }
 
   {
     contents()->RegisterProtocolHandler(main_test_rfh(), "mailto", handler_url2,
-                                        base::string16(),
                                         /*user_gesture=*/true);
   }
 
@@ -2617,7 +2613,6 @@ TEST_F(WebContentsImplTest, RegisterProtocolHandlerDataURL) {
 
   {
     contents()->RegisterProtocolHandler(main_test_rfh(), "mailto", data_handler,
-                                        base::string16(),
                                         /*user_gesture=*/true);
   }
 

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1467 tests; 1384 PASS, 83 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1467 tests; 1385 PASS, 82 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -1039,7 +1039,7 @@ FAIL Navigator interface: attribute oscpu assert_true: The prototype object must
 PASS Navigator interface: attribute language
 PASS Navigator interface: attribute languages
 PASS Navigator interface: attribute onLine
-FAIL Navigator interface: operation registerProtocolHandler(DOMString, USVString) assert_equals: property has wrong .length expected 2 but got 3
+PASS Navigator interface: operation registerProtocolHandler(DOMString, USVString)
 PASS Navigator interface: operation unregisterProtocolHandler(DOMString, USVString)
 PASS Navigator interface: attribute cookieEnabled
 PASS Navigator interface: attribute plugins

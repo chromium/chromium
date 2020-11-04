@@ -1602,7 +1602,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void FullscreenStateChanged(bool is_fullscreen) override;
   void RegisterProtocolHandler(const std::string& scheme,
                                const GURL& url,
-                               const base::string16& title,
                                bool user_gesture) override;
   void UnregisterProtocolHandler(const std::string& scheme,
                                  const GURL& url,

@@ -176,7 +176,6 @@ void NavigatorContentUtils::registerProtocolHandler(
     Navigator& navigator,
     const String& scheme,
     const String& url,
-    const String& title,
     ExceptionState& exception_state) {
   LocalDOMWindow* window = navigator.DomWindow();
   if (!window)
@@ -210,7 +209,7 @@ void NavigatorContentUtils::registerProtocolHandler(
 
   NavigatorContentUtils::From(navigator, *window->GetFrame())
       .Client()
-      ->RegisterProtocolHandler(scheme, window->CompleteURL(url), title);
+      ->RegisterProtocolHandler(scheme, window->CompleteURL(url));
 }
 
 void NavigatorContentUtils::unregisterProtocolHandler(

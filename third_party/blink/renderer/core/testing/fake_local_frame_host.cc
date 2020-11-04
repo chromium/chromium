@@ -29,7 +29,6 @@ void FakeLocalFrameHost::FullscreenStateChanged(bool is_fullscreen) {}
 
 void FakeLocalFrameHost::RegisterProtocolHandler(const WTF::String& scheme,
                                                  const ::blink::KURL& url,
-                                                 const ::WTF::String& title,
                                                  bool user_gesture) {}
 
 void FakeLocalFrameHost::UnregisterProtocolHandler(const WTF::String& scheme,

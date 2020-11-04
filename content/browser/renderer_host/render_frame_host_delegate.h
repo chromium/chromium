@@ -510,7 +510,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void RegisterProtocolHandler(RenderFrameHostImpl* host,
                                        const std::string& scheme,
                                        const GURL& url,
-                                       const base::string16& title,
                                        bool user_gesture) {}
 
   // Unregisters a given URL handler for the given protocol.

@@ -4080,9 +4080,8 @@ void RenderFrameHostImpl::FullscreenStateChanged(bool is_fullscreen) {
 
 void RenderFrameHostImpl::RegisterProtocolHandler(const std::string& scheme,
                                                   const GURL& url,
-                                                  const base::string16& title,
                                                   bool user_gesture) {
-  delegate_->RegisterProtocolHandler(this, scheme, url, title, user_gesture);
+  delegate_->RegisterProtocolHandler(this, scheme, url, user_gesture);
 }
 
 void RenderFrameHostImpl::UnregisterProtocolHandler(const std::string& scheme,
