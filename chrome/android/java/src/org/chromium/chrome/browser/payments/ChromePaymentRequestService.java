@@ -70,7 +70,6 @@ import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequest;
 import org.chromium.payments.mojom.PaymentResponse;
 import org.chromium.payments.mojom.PaymentShippingOption;
-import org.chromium.payments.mojom.PaymentShippingType;
 import org.chromium.payments.mojom.PaymentValidationErrors;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
@@ -981,7 +980,6 @@ public class ChromePaymentRequestService
     @Override
     public boolean invokePaymentApp(EditableOption selectedShippingAddress,
             EditableOption selectedShippingOption, PaymentApp selectedPaymentApp) {
-        mJourneyLogger.recordCheckoutStep(CheckoutFunnelStep.PAYMENT_HANDLER_INVOKED);
         mInvokedPaymentApp = selectedPaymentApp;
 
         EditableOption selectedContact = mPaymentUiService.getContactSection() != null
@@ -991,26 +989,6 @@ public class ChromePaymentRequestService
                 selectedShippingOption, selectedContact, mInvokedPaymentApp, mPaymentOptions,
                 mSkipToGPayHelper != null, this);
 
-        // Create maps that are subsets of mMethodData and mModifiers, that contain the payment
-        // methods supported by the selected payment app. If the intersection of method data
-        // contains more than one payment method, the payment app is at liberty to choose (or have
-        // the user choose) one of the methods.
-        Map<String, PaymentMethodData> methodData = new HashMap<>();
-        Map<String, PaymentDetailsModifier> modifiers = new HashMap<>();
-        boolean isGooglePaymentApp = false;
-        for (String paymentMethodName : mInvokedPaymentApp.getInstrumentMethodNames()) {
-            if (mSpec.getMethodData().containsKey(paymentMethodName)) {
-                methodData.put(paymentMethodName, mSpec.getMethodData().get(paymentMethodName));
-            }
-            if (mSpec.getModifiers().containsKey(paymentMethodName)) {
-                modifiers.put(paymentMethodName, mSpec.getModifiers().get(paymentMethodName));
-            }
-            if (paymentMethodName.equals(MethodStrings.ANDROID_PAY)
-                    || paymentMethodName.equals(MethodStrings.GOOGLE_PAY)) {
-                isGooglePaymentApp = true;
-            }
-        }
-
         mInvokedPaymentApp.setPaymentHandlerHost(getPaymentHandlerHost());
         // Only native apps can use PaymentDetailsUpdateService.
         if (mInvokedPaymentApp.getPaymentAppType() == PaymentAppType.NATIVE_MOBILE_APP) {
@@ -1018,44 +996,8 @@ public class ChromePaymentRequestService
                     ((AndroidPaymentApp) mInvokedPaymentApp).packageName(),
                     this /* PaymentApp.PaymentRequestUpdateEventListener */);
         }
-
-        // Create payment options for the invoked payment app.
-        PaymentOptions paymentOptions = new PaymentOptions();
-        paymentOptions.requestShipping =
-                mRequestShipping && mInvokedPaymentApp.handlesShippingAddress();
-        paymentOptions.requestPayerName =
-                mRequestPayerName && mInvokedPaymentApp.handlesPayerName();
-        paymentOptions.requestPayerPhone =
-                mRequestPayerPhone && mInvokedPaymentApp.handlesPayerPhone();
-        paymentOptions.requestPayerEmail =
-                mRequestPayerEmail && mInvokedPaymentApp.handlesPayerEmail();
-        paymentOptions.shippingType =
-                mRequestShipping && mInvokedPaymentApp.handlesShippingAddress()
-                ? mShippingType
-                : PaymentShippingType.SHIPPING;
-
-        // Redact shipping options if the selected app cannot handle shipping.
-        List<PaymentShippingOption> redactedShippingOptions =
-                mInvokedPaymentApp.handlesShippingAddress()
-                ? mSpec.getRawShippingOptions()
-                : Collections.unmodifiableList(new ArrayList<>());
-        mInvokedPaymentApp.invokePaymentApp(mSpec.getId(), mMerchantName, mTopLevelOrigin,
-                mPaymentRequestOrigin, mCertificateChain, Collections.unmodifiableMap(methodData),
-                mSpec.getRawTotal(), mSpec.getRawLineItems(),
-                Collections.unmodifiableMap(modifiers), paymentOptions, redactedShippingOptions,
-                this);
-
-        mJourneyLogger.setEventOccurred(Event.PAY_CLICKED);
-        boolean isAutofillCard = mInvokedPaymentApp.isAutofillInstrument();
-        // Record what type of app was selected when "Pay" was clicked.
-        if (isAutofillCard) {
-            mJourneyLogger.setEventOccurred(Event.SELECTED_CREDIT_CARD);
-        } else if (isGooglePaymentApp) {
-            mJourneyLogger.setEventOccurred(Event.SELECTED_GOOGLE);
-        } else {
-            mJourneyLogger.setEventOccurred(Event.SELECTED_OTHER);
-        }
-        return !isAutofillCard;
+        mPaymentRequestService.invokePaymentApp(mInvokedPaymentApp, /*callback=*/this);
+        return !mInvokedPaymentApp.isAutofillInstrument();
     }
 
     private PaymentHandlerHost getPaymentHandlerHost() {

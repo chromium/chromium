@@ -15,6 +15,7 @@ import org.chromium.base.Log;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.page_info.CertificateChainHelper;
 import org.chromium.components.payments.BrowserPaymentRequest.Factory;
+import org.chromium.components.payments.PaymentApp.InstrumentDetailsCallback;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -23,6 +24,7 @@ import org.chromium.mojo.system.MojoException;
 import org.chromium.payments.mojom.PayerDetail;
 import org.chromium.payments.mojom.PaymentAddress;
 import org.chromium.payments.mojom.PaymentDetails;
+import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentErrorReason;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -30,9 +32,12 @@ import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequest;
 import org.chromium.payments.mojom.PaymentRequestClient;
 import org.chromium.payments.mojom.PaymentResponse;
+import org.chromium.payments.mojom.PaymentShippingOption;
+import org.chromium.payments.mojom.PaymentShippingType;
 import org.chromium.payments.mojom.PaymentValidationErrors;
 import org.chromium.url.Origin;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -72,6 +77,8 @@ public class PaymentRequestService {
     private final boolean mRequestPayerPhone;
     private final boolean mRequestPayerEmail;
     private final Delegate mDelegate;
+    private final int mShippingType;
+    private PaymentRequestSpec mSpec;
     private boolean mHasClosed;
 
     // mClient is null only when it has closed.
@@ -331,6 +338,7 @@ public class PaymentRequestService {
         mRequestPayerName = mPaymentOptions.requestPayerName;
         mRequestPayerPhone = mPaymentOptions.requestPayerPhone;
         mRequestPayerEmail = mPaymentOptions.requestPayerEmail;
+        mShippingType = mPaymentOptions.shippingType;
 
         mMerchantName = mWebContents.getTitle();
         mCertificateChain = CertificateChainHelper.getCertificateChain(mWebContents);
@@ -392,11 +400,9 @@ public class PaymentRequestService {
         Map<String, PaymentMethodData> methodData = getValidatedMethodData(rawMethodData);
         mBrowserPaymentRequest.modifyMethodData(methodData);
         if (methodData == null) {
-            mJourneyLogger.setAborted(
-                    org.chromium.components.payments.AbortReason.INVALID_DATA_FROM_RENDERER);
+            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
-                    org.chromium.components.payments.ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
-                    PaymentErrorReason.USER_CANCEL);
+                    ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA, PaymentErrorReason.USER_CANCEL);
             return false;
         }
         methodData = Collections.unmodifiableMap(methodData);
@@ -405,11 +411,9 @@ public class PaymentRequestService {
         mBrowserPaymentRequest.onQueryForQuotaCreated(mQueryForQuota);
 
         if (!PaymentValidator.validatePaymentDetails(details)) {
-            mJourneyLogger.setAborted(
-                    org.chromium.components.payments.AbortReason.INVALID_DATA_FROM_RENDERER);
+            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
-                    org.chromium.components.payments.ErrorStrings.INVALID_PAYMENT_DETAILS,
-                    PaymentErrorReason.USER_CANCEL);
+                    ErrorStrings.INVALID_PAYMENT_DETAILS, PaymentErrorReason.USER_CANCEL);
             return false;
         }
 
@@ -421,15 +425,74 @@ public class PaymentRequestService {
         PaymentRequestSpec spec = new PaymentRequestSpec(mPaymentOptions, details,
                 methodData.values(), LocaleUtils.getDefaultLocaleString());
         if (spec.getRawTotal() == null) {
-            mJourneyLogger.setAborted(
-                    org.chromium.components.payments.AbortReason.INVALID_DATA_FROM_RENDERER);
+            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
-                    org.chromium.components.payments.ErrorStrings.TOTAL_REQUIRED,
-                    PaymentErrorReason.USER_CANCEL);
+                    ErrorStrings.TOTAL_REQUIRED, PaymentErrorReason.USER_CANCEL);
             return false;
         }
-        mBrowserPaymentRequest.onSpecValidated(spec);
+        mSpec = spec;
+        mBrowserPaymentRequest.onSpecValidated(mSpec);
         return true;
+    }
+
+    /**
+     * Invokes the given payment app.
+     * @param paymentApp The payment app to be invoked.
+     * @param callback The callback of the invocation.
+     */
+    public void invokePaymentApp(PaymentApp paymentApp, InstrumentDetailsCallback callback) {
+        mJourneyLogger.recordCheckoutStep(CheckoutFunnelStep.PAYMENT_HANDLER_INVOKED);
+        // Create maps that are subsets of mMethodData and mModifiers, that contain the payment
+        // methods supported by the selected payment app. If the intersection of method data
+        // contains more than one payment method, the payment app is at liberty to choose (or have
+        // the user choose) one of the methods.
+        Map<String, PaymentMethodData> methodData = new HashMap<>();
+        Map<String, PaymentDetailsModifier> modifiers = new HashMap<>();
+        for (String paymentMethodName : paymentApp.getInstrumentMethodNames()) {
+            if (mSpec.getMethodData().containsKey(paymentMethodName)) {
+                methodData.put(paymentMethodName, mSpec.getMethodData().get(paymentMethodName));
+            }
+            if (mSpec.getModifiers().containsKey(paymentMethodName)) {
+                modifiers.put(paymentMethodName, mSpec.getModifiers().get(paymentMethodName));
+            }
+        }
+
+        // Create payment options for the invoked payment app.
+        PaymentOptions paymentOptions = new PaymentOptions();
+        paymentOptions.requestShipping = mRequestShipping && paymentApp.handlesShippingAddress();
+        paymentOptions.requestPayerName = mRequestPayerName && paymentApp.handlesPayerName();
+        paymentOptions.requestPayerPhone = mRequestPayerPhone && paymentApp.handlesPayerPhone();
+        paymentOptions.requestPayerEmail = mRequestPayerEmail && paymentApp.handlesPayerEmail();
+        paymentOptions.shippingType = mRequestShipping && paymentApp.handlesShippingAddress()
+                ? mShippingType
+                : PaymentShippingType.SHIPPING;
+
+        // Redact shipping options if the selected app cannot handle shipping.
+        List<PaymentShippingOption> redactedShippingOptions = paymentApp.handlesShippingAddress()
+                ? mSpec.getRawShippingOptions()
+                : Collections.unmodifiableList(new ArrayList<>());
+        paymentApp.invokePaymentApp(mSpec.getId(), mMerchantName, mTopLevelOrigin,
+                mPaymentRequestOrigin, mCertificateChain, Collections.unmodifiableMap(methodData),
+                mSpec.getRawTotal(), mSpec.getRawLineItems(),
+                Collections.unmodifiableMap(modifiers), paymentOptions, redactedShippingOptions,
+                callback);
+        mJourneyLogger.setEventOccurred(Event.PAY_CLICKED);
+        boolean isAutofillCard = paymentApp.isAutofillInstrument();
+        // Record what type of app was selected when "Pay" was clicked.
+        boolean isGooglePaymentApp = false;
+        for (String paymentMethodName : paymentApp.getInstrumentMethodNames()) {
+            if (paymentMethodName.equals(MethodStrings.ANDROID_PAY)
+                    || paymentMethodName.equals(MethodStrings.GOOGLE_PAY)) {
+                isGooglePaymentApp = true;
+            }
+        }
+        if (isAutofillCard) {
+            mJourneyLogger.setEventOccurred(Event.SELECTED_CREDIT_CARD);
+        } else if (isGooglePaymentApp) {
+            mJourneyLogger.setEventOccurred(Event.SELECTED_GOOGLE);
+        } else {
+            mJourneyLogger.setEventOccurred(Event.SELECTED_OTHER);
+        }
     }
 
     /**
