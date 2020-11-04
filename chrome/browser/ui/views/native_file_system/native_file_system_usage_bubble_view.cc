@@ -39,7 +39,6 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/style/platform_style.h"
 
 namespace {
 
@@ -168,9 +167,6 @@ class CollapsibleListView : public views::View {
         l10n_util::GetStringUTF16(IDS_NATIVE_FILE_SYSTEM_USAGE_EXPAND));
     button->SetToggledTooltipText(
         l10n_util::GetStringUTF16(IDS_NATIVE_FILE_SYSTEM_USAGE_COLLAPSE));
-    // TODO(weili): remove this once ToggleImageButton has the default platform
-    // focus behavior.
-    button->SetFocusBehavior(views::PlatformStyle::DefaultFocusBehavior());
     expand_collapse_button_ = label_container->AddChildView(std::move(button));
     if (model->RowCount() < 3)
       expand_collapse_button_->SetVisible(false);

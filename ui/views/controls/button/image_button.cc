@@ -218,7 +218,6 @@ const gfx::Point ImageButton::ComputeImagePaintPosition(
 
 ToggleImageButton::ToggleImageButton(PressedCallback callback)
     : ImageButton(std::move(callback)) {
-  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
 
 ToggleImageButton::~ToggleImageButton() = default;

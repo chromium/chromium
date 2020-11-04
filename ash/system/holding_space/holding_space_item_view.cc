@@ -211,6 +211,7 @@ views::ToggleImageButton* HoldingSpaceItemView::AddPin(views::View* parent) {
   DCHECK(!pin_);
 
   pin_ = parent->AddChildView(std::make_unique<views::ToggleImageButton>());
+  pin_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   pin_->SetVisible(false);
 
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
