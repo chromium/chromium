@@ -6,13 +6,16 @@
 
 #include <utility>
 
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/usb/usb_blocklist.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/device_service.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -23,12 +26,14 @@ constexpr char kHidProductIdKey[] = "product-id";
 constexpr char kHidSerialNumberKey[] = "serial-number";
 
 bool CanStorePersistentEntry(const device::mojom::HidDeviceInfo& device) {
-  return !device.serial_number.empty();
+  return !device.serial_number.empty() && !device.product_name.empty();
 }
 
 base::Value DeviceInfoToValue(const device::mojom::HidDeviceInfo& device) {
   base::Value value(base::Value::Type::DICTIONARY);
-  value.SetStringKey(kHidDeviceNameKey, device.product_name);
+  value.SetStringKey(
+      kHidDeviceNameKey,
+      base::UTF16ToUTF8(HidChooserContext::DisplayNameFromDeviceInfo(device)));
   value.SetIntKey(kHidVendorIdKey, device.vendor_id);
   value.SetIntKey(kHidProductIdKey, device.product_id);
   if (CanStorePersistentEntry(device)) {
@@ -68,6 +73,22 @@ HidChooserContext::~HidChooserContext() {
     DCHECK(!device_observer_list_.HasObserver(&observer));
   }
   DCHECK(!permission_observer_list_.might_have_observers());
+}
+
+// static
+base::string16 HidChooserContext::DisplayNameFromDeviceInfo(
+    const device::mojom::HidDeviceInfo& device) {
+  auto vendor_id_string =
+      base::ASCIIToUTF16(base::StringPrintf("0x%04x", device.vendor_id));
+  auto product_id_string =
+      base::ASCIIToUTF16(base::StringPrintf("0x%04x", device.product_id));
+  if (device.product_name.empty()) {
+    return l10n_util::GetStringFUTF16(IDS_HID_CHOOSER_ITEM_WITHOUT_NAME,
+                                      vendor_id_string, product_id_string);
+  }
+  return l10n_util::GetStringFUTF16(IDS_HID_CHOOSER_ITEM_WITH_NAME,
+                                    base::UTF8ToUTF16(device.product_name),
+                                    vendor_id_string, product_id_string);
 }
 
 base::string16 HidChooserContext::GetObjectDisplayName(

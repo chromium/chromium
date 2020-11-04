@@ -33,11 +33,6 @@ class Value;
 class HidChooserContext : public permissions::ChooserContextBase,
                           public device::mojom::HidManagerClient {
  public:
-  explicit HidChooserContext(Profile* profile);
-  HidChooserContext(const HidChooserContext&) = delete;
-  HidChooserContext& operator=(const HidChooserContext&) = delete;
-  ~HidChooserContext() override;
-
   // This observer can be used to be notified when HID devices are connected or
   // disconnected.
   class DeviceObserver : public base::CheckedObserver {
@@ -50,6 +45,15 @@ class HidChooserContext : public permissions::ChooserContextBase,
     // themselves before returning.
     virtual void OnHidChooserContextShutdown() = 0;
   };
+
+  explicit HidChooserContext(Profile* profile);
+  HidChooserContext(const HidChooserContext&) = delete;
+  HidChooserContext& operator=(const HidChooserContext&) = delete;
+  ~HidChooserContext() override;
+
+  // Returns a human-readable string identifier for |device|.
+  static base::string16 DisplayNameFromDeviceInfo(
+      const device::mojom::HidDeviceInfo& device);
 
   // permissions::ChooserContextBase implementation:
   bool IsValidObject(const base::Value& object) override;

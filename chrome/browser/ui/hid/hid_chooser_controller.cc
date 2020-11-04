@@ -57,8 +57,6 @@ HidChooserController::HidChooserController(
 
   chooser_context_->GetHidManager()->GetDevices(base::BindOnce(
       &HidChooserController::OnGotDevices, weak_factory_.GetWeakPtr()));
-
-  // TODO(mattreynolds): Register to receive device added and removed events.
 }
 
 HidChooserController::~HidChooserController() {
@@ -86,16 +84,7 @@ base::string16 HidChooserController::GetOption(size_t index) const {
   DCHECK_LT(index, items_.size());
   DCHECK(base::Contains(device_map_, items_[index]));
   const auto& device = *device_map_.find(items_[index])->second.front();
-  if (device.product_name.empty()) {
-    return l10n_util::GetStringFUTF16(
-        IDS_HID_CHOOSER_ITEM_WITHOUT_NAME,
-        base::ASCIIToUTF16(base::StringPrintf("0x%04x", device.vendor_id)),
-        base::ASCIIToUTF16(base::StringPrintf("0x%04x", device.product_id)));
-  }
-  return l10n_util::GetStringFUTF16(
-      IDS_HID_CHOOSER_ITEM_WITH_NAME, base::UTF8ToUTF16(device.product_name),
-      base::ASCIIToUTF16(base::StringPrintf("0x%04x", device.vendor_id)),
-      base::ASCIIToUTF16(base::StringPrintf("0x%04x", device.product_id)));
+  return HidChooserContext::DisplayNameFromDeviceInfo(device);
 }
 
 bool HidChooserController::IsPaired(size_t index) const {
