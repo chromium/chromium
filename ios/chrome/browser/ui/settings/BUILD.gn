@@ -210,6 +210,7 @@ source_set("constants") {
     "settings_table_view_controller_constants.mm",
   ]
   frameworks = [ "Foundation.framework" ]
+  deps = [ "//ios/chrome/browser/ui/list_model" ]
 }
 
 source_set("test_support") {
@@ -270,6 +271,7 @@ source_set("unit_tests") {
     "search_engine_table_view_controller_unittest.mm",
     "settings_navigation_controller_unittest.mm",
     "settings_root_table_view_controller_unittest.mm",
+    "settings_table_view_controller_unittest.mm",
     "translate_table_view_controller_unittest.mm",
     "voice_search_table_view_controller_unittest.mm",
   ]
@@ -289,6 +291,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/search_engines",
     "//components/strings",
+    "//components/sync/driver:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//components/translate/core/browser",
@@ -311,9 +314,12 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync:test_support",
     "//ios/chrome/browser/translate",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/icons",
+    "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:test_support",
@@ -324,6 +330,7 @@ source_set("unit_tests") {
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/app:test_support",
     "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
     "//ios/public/provider/chrome/browser/voice",
     "//ios/web/public/test",
     "//net",
