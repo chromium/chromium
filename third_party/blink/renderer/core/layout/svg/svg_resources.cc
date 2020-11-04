@@ -237,37 +237,6 @@ std::unique_ptr<SVGResources> SVGResources::BuildResources(
                                                        : std::move(resources);
 }
 
-void SVGResources::LayoutIfNeeded() {
-  if (clipper_filter_masker_data_) {
-    if (LayoutSVGResourceClipper* clipper =
-            clipper_filter_masker_data_->clipper)
-      clipper->LayoutIfNeeded();
-    if (LayoutSVGResourceMasker* masker = clipper_filter_masker_data_->masker)
-      masker->LayoutIfNeeded();
-    if (LayoutSVGResourceFilter* filter = clipper_filter_masker_data_->filter)
-      filter->LayoutIfNeeded();
-  }
-
-  if (marker_data_) {
-    if (LayoutSVGResourceMarker* marker = marker_data_->marker_start)
-      marker->LayoutIfNeeded();
-    if (LayoutSVGResourceMarker* marker = marker_data_->marker_mid)
-      marker->LayoutIfNeeded();
-    if (LayoutSVGResourceMarker* marker = marker_data_->marker_end)
-      marker->LayoutIfNeeded();
-  }
-
-  if (fill_stroke_data_) {
-    if (LayoutSVGResourcePaintServer* fill = fill_stroke_data_->fill)
-      fill->LayoutIfNeeded();
-    if (LayoutSVGResourcePaintServer* stroke = fill_stroke_data_->stroke)
-      stroke->LayoutIfNeeded();
-  }
-
-  if (linked_resource_)
-    linked_resource_->LayoutIfNeeded();
-}
-
 void SVGResources::ResourceDestroyed(LayoutSVGResourceContainer* resource) {
   DCHECK(resource);
   if (!HasResourceData())

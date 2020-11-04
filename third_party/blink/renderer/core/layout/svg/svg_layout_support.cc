@@ -245,13 +245,6 @@ bool SVGLayoutSupport::ScreenScaleFactorChanged(const LayoutObject* ancestor) {
   return false;
 }
 
-void SVGLayoutSupport::LayoutResourcesIfNeeded(const LayoutObject& object) {
-  SVGResources* resources =
-      SVGResourcesCache::CachedResourcesForLayoutObject(object);
-  if (resources)
-    resources->LayoutIfNeeded();
-}
-
 bool SVGLayoutSupport::IsOverflowHidden(const LayoutObject& object) {
   // LayoutSVGRoot should never query for overflow state - it should always clip
   // itself to the initial viewport size.

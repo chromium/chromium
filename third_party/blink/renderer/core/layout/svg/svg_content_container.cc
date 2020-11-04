@@ -7,12 +7,27 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_marker.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_shape.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
-#include "third_party/blink/renderer/core/svg/svg_element.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 
 namespace blink {
+
+static void LayoutMarkerResourcesIfNeeded(LayoutObject& layout_object) {
+  SVGResources* resources =
+      SVGResourcesCache::CachedResourcesForLayoutObject(layout_object);
+  if (!resources)
+    return;
+  if (LayoutSVGResourceMarker* marker = resources->MarkerStart())
+    marker->LayoutIfNeeded();
+  if (LayoutSVGResourceMarker* marker = resources->MarkerMid())
+    marker->LayoutIfNeeded();
+  if (LayoutSVGResourceMarker* marker = resources->MarkerEnd())
+    marker->LayoutIfNeeded();
+}
 
 void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
   for (LayoutObject* child = children_.FirstChild(); child;
@@ -54,11 +69,10 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
     // SVGSVGElement::svgAttributeChange() or at a higher SubtreeLayoutScope (in
     // LayoutView::layout()). We do not create a SubtreeLayoutScope for
     // resources because their ability to reference each other leads to circular
-    // layout. We protect against that within the layout code for resources, but
-    // it causes assertions if we use a SubTreeLayoutScope for them.
+    // layout. We protect against that within the layout code for marker
+    // resources, but it causes assertions if we use a SubtreeLayoutScope for
+    // them.
     if (child->IsSVGResourceContainer()) {
-      // Lay out any referenced resources before the child.
-      SVGLayoutSupport::LayoutResourcesIfNeeded(*child);
       child->LayoutIfNeeded();
     } else {
       SubtreeLayoutScope layout_scope(*child);
@@ -68,7 +82,7 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
       }
 
       // Lay out any referenced resources before the child.
-      SVGLayoutSupport::LayoutResourcesIfNeeded(*child);
+      LayoutMarkerResourcesIfNeeded(*child);
       child->LayoutIfNeeded();
     }
   }

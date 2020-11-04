@@ -47,9 +47,6 @@ class CORE_EXPORT SVGLayoutSupport {
   STATIC_ONLY(SVGLayoutSupport);
 
  public:
-  // Layout resources used by this node.
-  static void LayoutResourcesIfNeeded(const LayoutObject&);
-
   // Helper function determining whether overflow is hidden.
   static bool IsOverflowHidden(const LayoutObject&);
   static bool IsOverflowHidden(const ComputedStyle&);

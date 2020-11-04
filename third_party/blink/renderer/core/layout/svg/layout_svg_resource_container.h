@@ -100,8 +100,6 @@ class LayoutSVGResourceContainer : public LayoutSVGHiddenContainer {
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   void WillBeDestroyed() override;
 
-  bool is_in_layout_;
-
  private:
   // Track global (markAllClientsForInvalidation) invalidations to avoid
   // redundant crawls.

@@ -80,6 +80,7 @@ class LayoutSVGResourceMarker final : public LayoutSVGResourceContainer {
   AffineTransform local_to_parent_transform_;
   FloatSize viewport_size_;
   bool needs_transform_update_;
+  bool is_in_layout_;
 };
 
 DEFINE_LAYOUT_SVG_RESOURCE_TYPE_CASTS(LayoutSVGResourceMarker,

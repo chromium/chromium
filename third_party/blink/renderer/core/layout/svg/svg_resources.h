@@ -70,8 +70,6 @@ class SVGResources {
                             const ComputedStyle&);
   static void ClearMarkers(SVGElement&, const ComputedStyle*);
 
-  void LayoutIfNeeded();
-
   static bool SupportsMarkers(const SVGElement&);
 
   // Ordinary resources

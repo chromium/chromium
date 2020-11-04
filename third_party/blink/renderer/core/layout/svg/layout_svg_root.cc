@@ -233,8 +233,6 @@ void LayoutSVGRoot::UpdateLayout() {
   did_screen_scale_factor_change_ =
       transform_change == SVGTransformChange::kFull;
 
-  SVGLayoutSupport::LayoutResourcesIfNeeded(*this);
-
   // selfNeedsLayout() will cover changes to one (or more) of viewBox,
   // current{Scale,Translate}, decorations and 'overflow'.
   const bool viewport_may_have_changed =

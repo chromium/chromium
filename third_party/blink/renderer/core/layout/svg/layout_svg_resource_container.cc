@@ -19,7 +19,6 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 
-#include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources_cycle_solver.h"
@@ -42,7 +41,6 @@ LocalSVGResource* ResourceForContainer(
 
 LayoutSVGResourceContainer::LayoutSVGResourceContainer(SVGElement* node)
     : LayoutSVGHiddenContainer(node),
-      is_in_layout_(false),
       completed_invalidations_mask_(0),
       is_invalidating_(false) {}
 
@@ -50,17 +48,10 @@ LayoutSVGResourceContainer::~LayoutSVGResourceContainer() = default;
 
 void LayoutSVGResourceContainer::UpdateLayout() {
   NOT_DESTROYED();
-  // FIXME: Investigate a way to detect and break resource layout dependency
-  // cycles early. Then we can remove this method altogether, and fall back onto
-  // LayoutSVGHiddenContainer::layout().
+  // TODO(fs): This is only here to clear the invalidation mask, without that
+  // we wouldn't need to override LayoutSVGHiddenContainer::UpdateLayout().
   DCHECK(NeedsLayout());
-  if (is_in_layout_)
-    return;
-
-  base::AutoReset<bool> in_layout_change(&is_in_layout_, true);
-
   LayoutSVGHiddenContainer::UpdateLayout();
-
   ClearInvalidationMask();
 }
 
