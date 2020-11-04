@@ -808,7 +808,7 @@ js_library("web_ui_mojo_test_js") {
 js_type_check("web_ui_mojo_test_js_type_check") {
   uses_js_modules = true
   deps = [ ":web_ui_mojo_test_js" ]
-  closure_flags = mojom_js_args
+  closure_flags = default_closure_args + mojom_js_args
 }
 
 mojom("mojo_web_test_bindings") {
