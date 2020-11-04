@@ -6,6 +6,9 @@
         <meta name="viewport" content="width=device-width">
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
+        <script src="/resources/testdriver.js"></script>
+        <script src="/resources/testdriver-actions.js"></script>
+        <script src="/resources/testdriver-vendor.js"></script>
         <style>
             div.box {
                 border: 2px solid lightgray;
@@ -41,6 +44,7 @@
         <script>
             var test = async_test("mouse events fired without button state");
             var button = -1;
+            var actions_promise;
 
             function run() {
                 var lightgreen = document.getElementById("lightgreen");
@@ -77,9 +81,21 @@
                 on_event(lightblue, "mouseup", function (event) {
                     if (button != -1) {
                         test.step(function() {assert_equals(event.button, button, "Button must be the same as mousedown.");});
-                        test.done();
+                        // Make sure the test finishes after all the input actions are completed.
+                        actions_promise.then( () => {
+                            test.done();
+                        });
                     }
                 });
+
+                // Inject mouse inputs.
+                var actions = new test_driver.Actions();
+                actions_promise = actions.pointerMove(0, 0, {origin: lightgreen})
+                    .pointerDown({button: actions.ButtonType.MIDDLE})
+                    .pointerMove(0, 0, {origin: lightyellow})
+                    .pointerMove(0, 0, {origin: lightblue})
+                    .pointerUp({button: actions.ButtonType.MIDDLE})
+                    .send();
             }
         </script>
     </body>
