@@ -7,6 +7,9 @@
     <message name="IDS_PDF_DOWNLOAD_EDITED" desc="The label for the menu option to download the edited PDF document (with user's changes).">
       With your changes
     </message>
+    <message name="IDS_PDF_FULLSCREEN" desc="The label for the menu option to switch to fullscreen mode.">
+      Full screen
+    </message>
     <message name="IDS_PDF_NEED_PASSWORD" desc="A message asking the user for a password to open a PDF file.">
       This document is password protected.  Please enter a password.
     </message>

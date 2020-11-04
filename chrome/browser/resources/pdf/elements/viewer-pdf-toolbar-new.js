@@ -223,6 +223,12 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
     // </if>
   }
 
+  /** @private */
+  onFullscreenClick_() {
+    this.getMenu_().close();
+    this.dispatchEvent(new CustomEvent('fullscreen-click'));
+  }
+
   /**
    * @param {boolean} checked
    * @return {string}

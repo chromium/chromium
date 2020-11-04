@@ -168,6 +168,11 @@
     margin-inline-end: 12px;
     width: 16px;
   }
+
+  cr-action-menu hr {
+    border: none;
+    border-top: var(--cr-separator-line);
+  }
 </style>
 <div id="toolbar">
   <div id="start">
@@ -265,6 +270,13 @@
       <iron-icon icon="pdf:check" hidden="[[!displayAnnotations_]]"></iron-icon>
     </span>
     $i18n{annotationsShowToggle}
+  </button>
+
+  <hr>
+  <button id="fullscreen-button" class="dropdown-item"
+      on-click="onFullscreenClick_">
+    <span class="check-container" aria-hidden="true"></span>
+    $i18n{fullscreen}
   </button>
 </cr-action-menu>
 

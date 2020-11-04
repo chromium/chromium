@@ -19,6 +19,7 @@ js_type_check("closure_compile") {
     ":beep_test",
     ":bookmarks_test",
     ":download_controls_test",
+    ":fullscreen_test",
     ":gesture_detector_test",
     ":layout_test",
     ":material_elements_test",
@@ -123,6 +124,14 @@ js_library("download_controls_test") {
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
     "//ui/webui/resources/js:util.m",
+  ]
+  externs_list = [ "$externs_path/test.js" ]
+}
+
+js_library("fullscreen_test") {
+  deps = [
+    "../webui:test_util.m",
+    "//chrome/browser/resources/pdf:pdf_viewer",
   ]
   externs_list = [ "$externs_path/test.js" ]
 }

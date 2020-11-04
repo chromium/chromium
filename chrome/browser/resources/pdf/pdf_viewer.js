@@ -678,6 +678,11 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     }
   }
 
+  /** @private */
+  onFullscreenClick_() {
+    this.shadowRoot.querySelector('#main').requestFullscreen();
+  }
+
   /**
    * Changes two up view mode for the controller. Controller will trigger
    * layout update later, which will update the viewport accordingly.

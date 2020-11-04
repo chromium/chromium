@@ -297,6 +297,14 @@ const tests = [
         'sidenav-toggle-click', () => chrome.test.succeed());
     toggleButton.click();
   },
+
+  function testEnterFullscreenButton() {
+    const toolbar = createToolbar();
+    const button = toolbar.shadowRoot.querySelector('#fullscreen-button');
+    const whenFired = eventToPromise('fullscreen-click', toolbar);
+    button.click();
+    whenFired.then(() => chrome.test.succeed());
+  },
 ];
 
 chrome.test.runTests(tests);
