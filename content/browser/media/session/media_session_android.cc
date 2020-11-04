@@ -223,7 +223,7 @@ void MediaSessionAndroid::SeekTo(
     const base::android::JavaParamRef<jobject>& j_obj,
     const jlong millis) {
   DCHECK(media_session_);
-  DCHECK_GT(millis, 0) << "Attempted to seek to a negative position";
+  DCHECK_GE(millis, 0) << "Attempted to seek to a negative position";
   media_session_->SeekTo(base::TimeDelta::FromMilliseconds(millis));
 }
 
