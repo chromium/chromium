@@ -5,6 +5,8 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
+import("//ui/webui/resources/js/cr.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 
 # TODO(tapted): This entire folder should move to //ui/file_manager/base.
 visibility = [ "//ui/file_manager/*" ]
@@ -12,6 +14,7 @@ visibility = [ "//ui/file_manager/*" ]
 group("closure_compile") {
   testonly = true
   deps = [
+    ":closure_compile_jsmodules",
     ":closure_compile_module",
     ":js_test_gen_html_type_check_auto",
     ":test_support_type_check",
@@ -31,6 +34,15 @@ js_type_check("closure_compile_module") {
     ":progress_center_common",
     ":util",
     "//ui/file_manager/base/js:volume_manager_types",
+  ]
+}
+
+js_type_check("closure_compile_jsmodules") {
+  uses_js_modules = true
+  deps = [
+    ":files_app_entry_types.m",
+    ":mock_entry.m",
+    ":util.m",
   ]
 }
 
@@ -60,6 +72,16 @@ js_unittest("files_app_entry_types_unittest") {
     "//ui/file_manager/base/js:test_error_reporting",
     "//ui/file_manager/base/js:volume_manager_types",
   ]
+}
+
+js_library("files_app_entry_types.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/common/js/files_app_entry_types.m.js" ]
+  deps = [
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:volume_info.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("file_type") {
@@ -143,6 +165,14 @@ js_library("mock_entry") {
   ]
 }
 
+js_library("mock_entry.m") {
+  sources =
+      [ "$root_gen_dir/ui/file_manager/file_manager/common/js/mock_entry.m.js" ]
+  deps = [ ":util.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("progress_center_common") {
 }
 
@@ -190,6 +220,26 @@ js_unittest("util_unittest") {
   ]
 }
 
+js_library("util.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/common/js/util.m.js" ]
+
+  deps = [
+    ":files_app_entry_types.m",
+    "//ui/file_manager/externs:entry_location.m",
+    "//ui/file_manager/externs:file_manager_private",
+    "//ui/file_manager/externs:files_app_entry_interfaces.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+
+  externs_list = [
+    "//ui/file_manager/externs/platform.js",
+    "//ui/file_manager/externs/app_window_common.js",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_test_gen_html("js_test_gen_html") {
   deps = [
     ":file_type_unittest",
@@ -198,4 +248,14 @@ js_test_gen_html("js_test_gen_html") {
     ":lru_cache_unittest",
     ":util_unittest",
   ]
+}
+
+js_modulizer("modulize") {
+  input_files = [
+    "files_app_entry_types.js",
+    "mock_entry.js",
+    "util.js",
+  ]
+
+  namespace_rewrites = cr_namespace_rewrites
 }

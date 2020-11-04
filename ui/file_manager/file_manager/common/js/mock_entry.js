@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import * as wrappedUtil from './util.m.js'; const {util} = wrappedUtil;
+
 /**
  * Joins paths so that the two paths are connected by only 1 '/'.
  * @param {string} a Path.
@@ -17,7 +19,7 @@ function joinPath(a, b) {
  *
  * @extends {FileSystem}
  */
-class MockFileSystem {
+/* #export */ class MockFileSystem {
   /**
    * @param {string} volumeId Volume ID.
    * @param {string=} opt_rootURL URL string of root which is used in
@@ -105,7 +107,7 @@ class MockFileSystem {
 }
 
 /** @interface */
-class MockEntryInterface {
+/* #export */ class MockEntryInterface {
   /**
    * Clones the entry with the new fullpath.
    *
@@ -122,7 +124,7 @@ class MockEntryInterface {
  * @extends {Entry}
  * @implements {MockEntryInterface}
  */
-class MockEntry {
+/* #export */ class MockEntry {
   /**
    * @param {FileSystem} filesystem File system where the entry is located.
    * @param {string} fullPath Full path of the entry.
@@ -290,7 +292,7 @@ class MockEntry {
  *
  * @implements {MockEntryInterface}
  */
-class MockFileEntry extends MockEntry {
+/* #export */ class MockFileEntry extends MockEntry {
   /**
    * @param {FileSystem} filesystem File system where the entry is located.
    * @param {string} fullPath Full path for the entry.
@@ -365,7 +367,7 @@ class MockFileEntry extends MockEntry {
  * Mock class for FileWriter.
  * @extends {FileWriter}
  */
-class MockFileWriter {
+/* #export */ class MockFileWriter {
   /**
    * @param {!MockFileEntry} entry
    */
@@ -390,7 +392,7 @@ class MockFileWriter {
  *
  * @implements {MockEntryInterface}
  */
-class MockDirectoryEntry extends MockEntry {
+/* #export */ class MockDirectoryEntry extends MockEntry {
   /**
    * @param {FileSystem} filesystem File system where the entry is located.
    * @param {string} fullPath Full path for the entry.
@@ -518,7 +520,7 @@ class MockDirectoryEntry extends MockEntry {
  * Mock class for DirectoryReader.
  * @extends {DirectoryReader}
  */
-class MockDirectoryReader {
+/* #export */ class MockDirectoryReader {
   /**
    * @param {!Array<!Entry>} entries
    */
