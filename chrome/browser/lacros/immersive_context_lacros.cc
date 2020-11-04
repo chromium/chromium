@@ -5,6 +5,9 @@
 #include "chrome/browser/lacros/immersive_context_lacros.h"
 
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/views/widget/widget.h"
 
 ImmersiveContextLacros::ImmersiveContextLacros() = default;
 
@@ -18,8 +21,10 @@ void ImmersiveContextLacros::OnEnteringOrExitingImmersive(
 
 gfx::Rect ImmersiveContextLacros::GetDisplayBoundsInScreen(
     views::Widget* widget) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return gfx::Rect();
+  display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(
+          widget->GetNativeWindow());
+  return display.bounds();
 }
 
 bool ImmersiveContextLacros::DoesAnyWindowHaveCapture() {
