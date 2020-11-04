@@ -177,13 +177,11 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   // EmptyAccountId() if GetUser() returns nullptr.
   AccountId GetAccountId() const;
 
-  // Actually prepares a key after all checks are passed and if |can_continue|
+  // Actually prepares a key after all checks are passed and if `can_continue`
   // is true.
   void PrepareKey(bool can_continue);
-  // Returns a public key (or an error) via |prepare_key_callback_|.
-  void PrepareKeyFinished(
-      base::Optional<CryptohomeClient::TpmAttestationDataResult>
-          prepare_key_result);
+  // Returns a public key (or an error) via `callback_`.
+  void PrepareKeyFinished(const ::attestation::GetKeyInfoReply& reply);
 
   void SignChallengeCallback(
       const ::attestation::SignEnterpriseChallengeReply& reply);
@@ -201,7 +199,7 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   void GetEnrollmentPreparationsCallback(
       const ::attestation::GetEnrollmentPreparationsReply& reply);
   void PrepareKeyErrorHandlerCallback(base::Optional<bool> is_tpm_enabled);
-  void DoesKeyExistCallback(base::Optional<bool> result);
+  void DoesKeyExistCallback(const ::attestation::GetKeyInfoReply& reply);
   void AskForUserConsent(base::OnceCallback<void(bool)> callback) const;
   void AskForUserConsentCallback(bool result);
   void GetCertificateCallback(AttestationStatus status,

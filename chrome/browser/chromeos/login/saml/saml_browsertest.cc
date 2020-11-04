@@ -1874,6 +1874,13 @@ INSTANTIATE_TEST_SUITE_P(All, SAMLPasswordAttributesTest, testing::Bool());
 
 void FakeGetCertificateCallbackTrue(
     attestation::AttestationFlow::CertificateCallback callback) {
+  // In reality, attestation service holds the certificate after a successful
+  // attestation flow.
+  AttestationClient::Get()
+      ->GetTestInterface()
+      ->GetMutableKeyInfoReply(/*username=*/"",
+                               attestation::kEnterpriseMachineKey)
+      ->set_certificate("certificate");
   std::move(callback).Run(attestation::ATTESTATION_SUCCESS, "certificate");
 }
 

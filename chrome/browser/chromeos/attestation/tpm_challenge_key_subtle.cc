@@ -26,6 +26,8 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/cryptohome/async_method_caller.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
+#include "chromeos/dbus/attestation/attestation_client.h"
+#include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/tpm/install_attributes.h"
@@ -402,13 +404,14 @@ void TpmChallengeKeySubtleImpl::GetEnrollmentPreparationsCallback(
     return;
   }
 
-  // Attestation is available, see if the key we need already exists.
-  CryptohomeClient::Get()->TpmAttestationDoesKeyExist(
-      key_type_,
-      cryptohome::CreateAccountIdentifierFromAccountId(GetAccountId()),
-      key_name_,
-      base::BindOnce(&TpmChallengeKeySubtleImpl::DoesKeyExistCallback,
-                     weak_factory_.GetWeakPtr()));
+  ::attestation::GetKeyInfoRequest request;
+  request.set_username(
+      cryptohome::CreateAccountIdentifierFromAccountId(GetAccountId())
+          .account_id());
+  request.set_key_label(key_name_);
+  AttestationClient::Get()->GetKeyInfo(
+      request, base::BindOnce(&TpmChallengeKeySubtleImpl::DoesKeyExistCallback,
+                              weak_factory_.GetWeakPtr()));
 }
 
 void TpmChallengeKeySubtleImpl::PrepareKeyErrorHandlerCallback(
@@ -430,17 +433,21 @@ void TpmChallengeKeySubtleImpl::PrepareKeyErrorHandlerCallback(
 }
 
 void TpmChallengeKeySubtleImpl::DoesKeyExistCallback(
-    base::Optional<bool> result) {
+    const ::attestation::GetKeyInfoReply& reply) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!result.has_value()) {
-    std::move(callback_).Run(Result::MakeError(ResultCode::kDbusError));
+  if (reply.status() != ::attestation::STATUS_SUCCESS &&
+      reply.status() != ::attestation::STATUS_INVALID_PARAMETER) {
+    std::move(callback_).Run(
+        Result::MakeError(reply.status() == ::attestation::STATUS_DBUS_ERROR
+                              ? ResultCode::kDbusError
+                              : ResultCode::kAttestationServiceInternalError));
     return;
   }
 
-  if (result.value()) {
+  if (reply.status() == ::attestation::STATUS_SUCCESS) {
     // The key exists. Do nothing more.
-    GetPublicKey();
+    PrepareKeyFinished(reply);
     return;
   }
 
@@ -501,30 +508,31 @@ void TpmChallengeKeySubtleImpl::GetCertificateCallback(
 void TpmChallengeKeySubtleImpl::GetPublicKey() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  CryptohomeClient::Get()->TpmAttestationGetPublicKey(
-      key_type_,
-      cryptohome::CreateAccountIdentifierFromAccountId(GetAccountId()),
-      key_name_,
-      base::BindOnce(&TpmChallengeKeySubtleImpl::PrepareKeyFinished,
-                     weak_factory_.GetWeakPtr()));
+  ::attestation::GetKeyInfoRequest request;
+  request.set_username(
+      cryptohome::CreateAccountIdentifierFromAccountId(GetAccountId())
+          .account_id());
+  request.set_key_label(key_name_);
+  AttestationClient::Get()->GetKeyInfo(
+      request, base::BindOnce(&TpmChallengeKeySubtleImpl::PrepareKeyFinished,
+                              weak_factory_.GetWeakPtr()));
 }
 
 void TpmChallengeKeySubtleImpl::PrepareKeyFinished(
-    base::Optional<CryptohomeClient::TpmAttestationDataResult>
-        prepare_key_result) {
+    const ::attestation::GetKeyInfoReply& reply) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!prepare_key_result.has_value() || !prepare_key_result->success) {
+  if (reply.status() != ::attestation::STATUS_SUCCESS) {
     std::move(callback_).Run(
         Result::MakeError(ResultCode::kGetPublicKeyFailedError));
     return;
   }
 
   if (profile_ && will_register_key_) {
-    public_key_ = prepare_key_result->data;
+    public_key_ = reply.public_key();
   }
 
-  std::move(callback_).Run(Result::MakePublicKey(prepare_key_result->data));
+  std::move(callback_).Run(Result::MakePublicKey(reply.public_key()));
 }
 
 void TpmChallengeKeySubtleImpl::StartSignChallengeStep(
