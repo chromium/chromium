@@ -10,10 +10,10 @@ import android.os.Build;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.TabThemeColorHelper;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.concurrent.ExecutionException;

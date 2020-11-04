@@ -6,12 +6,12 @@ package org.chromium.chrome.test.util;
 
 import android.app.Instrumentation;
 
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 
 /**
  * A utility class that contains methods generic to all TabStrip test classes.

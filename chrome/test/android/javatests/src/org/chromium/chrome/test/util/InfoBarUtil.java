@@ -6,9 +6,9 @@ package org.chromium.chrome.test.util;
 
 import android.view.View;
 
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.components.infobars.InfoBar;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.List;

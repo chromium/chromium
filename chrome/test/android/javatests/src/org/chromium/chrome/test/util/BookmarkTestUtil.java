@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.test.util;
 
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
