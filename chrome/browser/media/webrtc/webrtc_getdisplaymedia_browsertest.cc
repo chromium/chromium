@@ -66,17 +66,22 @@ class WebRtcGetDisplayMediaBrowserTestWithPicker
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
+#if defined(OS_CHROMEOS)
+    command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
+                                    "Display");
+#else
     command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
                                     "Entire screen");
+#endif
   }
 };
 
 // Real desktop capture is flaky on below platforms.
-#if defined(OS_CHROMEOS) || defined(OS_WIN)
+#if defined(OS_WIN)
 #define MAYBE_GetDisplayMediaVideo DISABLED_GetDisplayMediaVideo
 #else
 #define MAYBE_GetDisplayMediaVideo GetDisplayMediaVideo
-#endif  // defined(OS_CHROMEOS) || defined(OS_WIN)
+#endif  // defined(OS_WIN)
 IN_PROC_BROWSER_TEST_F(WebRtcGetDisplayMediaBrowserTestWithPicker,
                        MAYBE_GetDisplayMediaVideo) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -87,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetDisplayMediaBrowserTestWithPicker,
 }
 
 // Real desktop capture is flaky on below platforms.
-#if defined(OS_CHROMEOS) || defined(OS_WIN)
+#if defined(OS_WIN)
 #define MAYBE_GetDisplayMediaVideoAndAudio DISABLED_GetDisplayMediaVideoAndAudio
 // On linux debug bots, it's flaky as well.
 #elif (defined(OS_LINUX) && !defined(NDEBUG))
@@ -97,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetDisplayMediaBrowserTestWithPicker,
 #define MAYBE_GetDisplayMediaVideoAndAudio DISABLED_GetDisplayMediaVideoAndAudio
 #else
 #define MAYBE_GetDisplayMediaVideoAndAudio GetDisplayMediaVideoAndAudio
-#endif  // defined(OS_CHROMEOS) || defined(OS_WIN)
+#endif  // defined(OS_WIN)
 IN_PROC_BROWSER_TEST_F(WebRtcGetDisplayMediaBrowserTestWithPicker,
                        MAYBE_GetDisplayMediaVideoAndAudio) {
   ASSERT_TRUE(embedded_test_server()->Start());
