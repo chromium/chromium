@@ -1243,11 +1243,6 @@
     "expiry_milestone": 78
   },
   {
-    "name": "enable-autofill-save-card-info-bar-account-indication-footer",
-    "owners": [ "annelim@google.com, mdjones@chromium.org"],
-    "expiry_milestone": 95
-  },
-  {
     "name": "enable-autofill-upi-vpa",
     "owners": [ "cfroussios" ],
     "expiry_milestone": 88
