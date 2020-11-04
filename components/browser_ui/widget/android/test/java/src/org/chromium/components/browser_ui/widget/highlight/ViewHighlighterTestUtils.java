@@ -8,7 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.base.test.util.CriteriaHelper;
 
 /**
  * Allows for testing of views which are highlightable via ViewHighlighter.

@@ -22,8 +22,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 
 import java.io.File;
 import java.io.FileDescriptor;

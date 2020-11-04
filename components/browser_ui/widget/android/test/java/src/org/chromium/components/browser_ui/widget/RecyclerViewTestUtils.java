@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.hamcrest.Matchers;
 
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
