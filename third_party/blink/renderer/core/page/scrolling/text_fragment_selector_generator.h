@@ -48,7 +48,9 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
 
     kUnknown,
 
-    kMaxValue = kUnknown
+    kIFrame,
+
+    kMaxValue = kIFrame
   };
   explicit TextFragmentSelectorGenerator() = default;
 

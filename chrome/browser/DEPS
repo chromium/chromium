@@ -242,6 +242,7 @@ include_rules = [
   "+components/safe_browsing",
   "+components/safe_search_api",
   "+components/schema_org",
+  "+components/shared_highlighting/core/common",
   "+components/search",
   "+components/search_engines",
   "+components/search_provider_logos",

@@ -19,3 +19,7 @@ static void JNI_LinkToTextMetricsBridge_LogGenerateErrorOmniboxNavigation(
 static void JNI_LinkToTextMetricsBridge_LogGenerateErrorTabCrash(JNIEnv* env) {
   shared_highlighting::LogGenerateErrorTabCrash();
 }
+
+static void JNI_LinkToTextMetricsBridge_LogGenerateErrorIFrame(JNIEnv* env) {
+  shared_highlighting::LogGenerateErrorIFrame();
+}

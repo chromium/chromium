@@ -4029,6 +4029,7 @@ static_library("browser") {
       "//components/services/app_service/public/cpp:intents",
       "//components/services/app_service/public/cpp:preferred_apps",
       "//components/services/app_service/public/cpp:publisher",
+      "//components/shared_highlighting/core/common",
       "//components/soda:constants",
       "//components/ukm/content",
       "//components/web_modal",
