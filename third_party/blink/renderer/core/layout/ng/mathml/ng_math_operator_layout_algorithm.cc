@@ -64,6 +64,11 @@ scoped_refptr<const NGLayoutResult> NGMathOperatorLayoutAlgorithm::Layout() {
   scoped_refptr<const ShapeResultView> shape_result_view =
       ShapeResultView::Create(shape_result.get());
 
+  if (metrics.italic_correction) {
+    container_builder_.SetMathItalicCorrection(
+        LayoutUnit(metrics.italic_correction));
+  }
+
   LayoutUnit operator_ascent = LayoutUnit::FromFloatFloor(metrics.ascent);
   LayoutUnit operator_descent = LayoutUnit::FromFloatFloor(metrics.descent);
 

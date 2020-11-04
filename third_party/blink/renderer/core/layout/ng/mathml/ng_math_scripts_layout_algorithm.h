@@ -43,6 +43,7 @@ class CORE_EXPORT NGMathScriptsLayoutAlgorithm
     LayoutUnit ascent;
     LayoutUnit descent;
     LayoutUnit inline_size;
+    LayoutUnit base_italic_correction;
     NGBoxStrut margins;
     NGBlockNode node = nullptr;
   };

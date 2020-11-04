@@ -604,6 +604,13 @@ void NGBoxFragmentBuilder::SetLastBaselineToBlockEndMarginEdgeIfNeeded() {
   SetLastBaseline(FragmentBlockSize() + margins.block_end);
 }
 
+void NGBoxFragmentBuilder::SetMathItalicCorrection(
+    LayoutUnit italic_correction) {
+  if (!math_data_)
+    math_data_.emplace();
+  math_data_->italic_correction_ = italic_correction;
+}
+
 #if DCHECK_IS_ON()
 
 void NGBoxFragmentBuilder::CheckNoBlockFragmentation() const {

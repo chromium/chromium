@@ -551,6 +551,8 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // any baselines, OOFs, etc, are also moved by the appropriate amount).
   void MoveChildrenInBlockDirection(LayoutUnit offset);
 
+  void SetMathItalicCorrection(LayoutUnit italic_correction);
+
  private:
   // Update whether we have fragmented in this flow.
   void PropagateBreak(const NGLayoutResult&);
@@ -626,6 +628,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   base::Optional<int> lines_until_clamp_;
 
   std::unique_ptr<NGMathMLPaintInfo> mathml_paint_info_;
+  base::Optional<NGLayoutResult::MathData> math_data_;
 
   scoped_refptr<const NGBlockBreakToken> previous_break_token_;
 

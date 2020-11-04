@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS Null Italic Correction
-FAIL NonNull Italic Correction (MathGlyphVariantRecord) assert_approx_equals: msub expected 30 +/- 1 but got 0
-FAIL NonNull Italic Correction (GlyphAssembly) assert_approx_equals: msub expected 50 +/- 1 but got 0
-Harness: the test ran to completion.
-

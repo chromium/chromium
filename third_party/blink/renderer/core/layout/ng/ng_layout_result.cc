@@ -106,6 +106,8 @@ NGLayoutResult::NGLayoutResult(
   }
   if (builder->table_column_count_)
     EnsureRareData()->table_column_count_ = *builder->table_column_count_;
+  if (builder->math_data_.has_value())
+    EnsureRareData()->math_layout_data_ = builder->math_data_;
 }
 
 NGLayoutResult::NGLayoutResult(
