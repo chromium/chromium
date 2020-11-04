@@ -946,7 +946,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     NOTREACHED() << "The done button should not be configured based on the "
                     "contents of the recent tabs page.";
   }
-  self.doneButton.enabled = !gridViewController.gridEmpty;
+  // The Done button should have the same behavior as the other buttons on the
+  // top Toolbar.
+  self.doneButton.enabled = !gridViewController.gridEmpty &&
+                            self.topToolbar.pageControl.userInteractionEnabled;
 }
 
 - (void)configureCloseAllButtonForCurrentPageAndUndoAvailability {
