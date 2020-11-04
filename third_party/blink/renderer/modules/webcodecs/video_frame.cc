@@ -348,11 +348,13 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  if ((local_frame->IsMappable() || local_frame->HasTextures()) &&
-      (local_frame->format() == media::PIXEL_FORMAT_I420 ||
-       (local_frame->HasTextures() &&
-        (local_frame->format() == media::PIXEL_FORMAT_NV12 ||
-         local_frame->format() == media::PIXEL_FORMAT_ABGR)))) {
+  if ((local_frame->IsMappable() &&
+       (local_frame->format() == media::PIXEL_FORMAT_I420)) ||
+      (local_frame->HasTextures() &&
+       (local_frame->format() == media::PIXEL_FORMAT_I420 ||
+        local_frame->format() == media::PIXEL_FORMAT_NV12 ||
+        local_frame->format() == media::PIXEL_FORMAT_ABGR ||
+        local_frame->format() == media::PIXEL_FORMAT_XRGB))) {
     scoped_refptr<StaticBitmapImage> image;
     gfx::ColorSpace gfx_color_space = local_frame->ColorSpace();
     gfx_color_space = gfx_color_space.GetWithMatrixAndRange(
