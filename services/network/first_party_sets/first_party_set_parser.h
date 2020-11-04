@@ -30,6 +30,8 @@ class FirstPartySetParser {
   // specified in this document: https://github.com/privacycg/first-party-sets.
   // This function does not check versions or assertions, since it is intended
   // only for *preloaded* sets.
+  //
+  // Returns nullptr if parsing or validation of any set failed.
   static std::unique_ptr<base::flat_map<std::string, std::string>>
   ParsePreloadedSets(base::StringPiece raw_sets);
 

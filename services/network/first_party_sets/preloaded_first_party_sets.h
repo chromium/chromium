@@ -27,11 +27,14 @@ class PreloadedFirstPartySets {
 
   void SetManuallySpecifiedSet(const std::string& flag_value);
 
-  // Overwrites the current owners-to-sets map with the values in |raw_sets|,
+  // Overwrites the current members-to-owners map with the values in |raw_sets|,
   // which should be the JSON-encoded string representation of a collection of
   // set declarations according to the format specified in this document:
   // https://github.com/privacycg/first-party-sets. Returns a pointer to the
-  // set, for testing.
+  // mapping, for testing.
+  //
+  // In case of invalid input, clears the current members-to-owners map, but
+  // keeps any manually-specified set (i.e. a set provided on the command line).
   base::flat_map<std::string, std::string>* ParseAndSet(
       base::StringPiece raw_sets);
 
@@ -40,11 +43,10 @@ class PreloadedFirstPartySets {
  private:
   // We must ensure there's no intersection between the manually-specified set
   // and the sets that came from Component Updater. (When reconciling the
-  // manually-specified set and `sets`, entries in the manually-specified set
-  // always win.) We must also ensure that `sets` includes the set described by
+  // manually-specified set and `sets_`, entries in the manually-specified set
+  // always win.) We must also ensure that `sets_` includes the set described by
   // `manually_specified_set_`.
-  void ApplyManuallySpecifiedSet(
-      base::flat_map<std::string, std::string>& sets) const;
+  void ApplyManuallySpecifiedSet();
 
   base::flat_map<std::string, std::string> sets_;
   base::Optional<std::pair<std::string, base::flat_set<std::string>>>

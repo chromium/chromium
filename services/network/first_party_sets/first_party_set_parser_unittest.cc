@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::IsEmpty;
+using ::testing::IsNull;
 using ::testing::Pair;
 using ::testing::Pointee;
 using ::testing::UnorderedElementsAre;
@@ -72,8 +73,7 @@ TEST(FirstPartySetParser, RejectsMissingOwner) {
   // Sanity check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
-              Pointee(IsEmpty()));
+  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input), IsNull());
 }
 
 TEST(FirstPartySetParser, RejectsTypeUnsafeOwner) {
@@ -83,8 +83,7 @@ TEST(FirstPartySetParser, RejectsTypeUnsafeOwner) {
   // Sanity check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
-              Pointee(IsEmpty()));
+  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input), IsNull());
 }
 
 TEST(FirstPartySetParser, RejectsNonHTTPSOwner) {
@@ -97,8 +96,7 @@ TEST(FirstPartySetParser, RejectsNonHTTPSOwner) {
   // Sanity check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
-              Pointee(IsEmpty()));
+  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input), IsNull());
 }
 
 TEST(FirstPartySetParser, RejectsNonOriginOwner) {
@@ -111,8 +109,7 @@ TEST(FirstPartySetParser, RejectsNonOriginOwner) {
   // Sanity check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
-              Pointee(IsEmpty()));
+  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input), IsNull());
 }
 
 TEST(FirstPartySetParser, RejectsOwnerWithoutRegisteredDomain) {
@@ -125,8 +122,7 @@ TEST(FirstPartySetParser, RejectsOwnerWithoutRegisteredDomain) {
   // Sanity check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
-              Pointee(IsEmpty()));
+  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input), IsNull());
 }
 
 TEST(FirstPartySetParser, RejectsMissingMembers) {
@@ -135,8 +131,7 @@ TEST(FirstPartySetParser, RejectsMissingMembers) {
   // Sanity check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
-              Pointee(IsEmpty()));
+  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input), IsNull());
 }
 
 TEST(FirstPartySetParser, RejectsTypeUnsafeMembers) {
@@ -149,8 +144,7 @@ TEST(FirstPartySetParser, RejectsTypeUnsafeMembers) {
   // Sanity check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
-              Pointee(UnorderedElementsAre(Pair("aaaa.test", "example.test"))));
+  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input), IsNull());
 }
 
 TEST(FirstPartySetParser, RejectsNonHTTPSMember) {
@@ -163,8 +157,7 @@ TEST(FirstPartySetParser, RejectsNonHTTPSMember) {
   // Sanity check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
-              Pointee(IsEmpty()));
+  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input), IsNull());
 }
 
 TEST(FirstPartySetParser, RejectsNonOriginMember) {
@@ -177,8 +170,7 @@ TEST(FirstPartySetParser, RejectsNonOriginMember) {
   // Sanity check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
-              Pointee(IsEmpty()));
+  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input), IsNull());
 }
 
 TEST(FirstPartySetParser, RejectsMemberWithoutRegisteredDomain) {
@@ -191,8 +183,7 @@ TEST(FirstPartySetParser, RejectsMemberWithoutRegisteredDomain) {
   // Sanity check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
-              Pointee(IsEmpty()));
+  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input), IsNull());
 }
 
 TEST(FirstPartySetParser, TruncatesSubdomain_Owner) {
@@ -245,7 +236,7 @@ TEST(FirstPartySetParser, AcceptsMultipleSets) {
                                            Pair("member2.test", "foo.test"))));
 }
 
-TEST(FirstPartySetParser, IgnoresInvalidSets_InvalidOwner) {
+TEST(FirstPartySetParser, RejectsInvalidSets_InvalidOwner) {
   const std::string input = R"(
   [
     {
@@ -262,11 +253,10 @@ TEST(FirstPartySetParser, IgnoresInvalidSets_InvalidOwner) {
   // Sanity check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
-              Pointee(UnorderedElementsAre(Pair("member2.test", "foo.test"))));
+  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input), IsNull());
 }
 
-TEST(FirstPartySetParser, IgnoresInvalidSets_InvalidMember) {
+TEST(FirstPartySetParser, RejectsInvalidSets_InvalidMember) {
   const std::string input = R"(
   [
     {
@@ -283,8 +273,7 @@ TEST(FirstPartySetParser, IgnoresInvalidSets_InvalidMember) {
   // Sanity check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
-              Pointee(UnorderedElementsAre(Pair("member2.test", "foo.test"))));
+  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input), IsNull());
 }
 
 TEST(FirstPartySetParser, AllowsTrailingCommas) {
@@ -306,7 +295,7 @@ TEST(FirstPartySetParser, AllowsTrailingCommas) {
       Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"))));
 }
 
-TEST(FirstPartySetParser, IgnoresSubsequent_SameOwner) {
+TEST(FirstPartySetParser, Rejects_SameOwner) {
   const std::string input = R"(
   [
     {
@@ -323,12 +312,10 @@ TEST(FirstPartySetParser, IgnoresSubsequent_SameOwner) {
   // Sanity check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(
-      FirstPartySetParser::ParsePreloadedSets(input),
-      Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"))));
+  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input), IsNull());
 }
 
-TEST(FirstPartySetParser, IgnoresSubsequent_MemberAsOwner) {
+TEST(FirstPartySetParser, Rejects_MemberAsOwner) {
   const std::string input = R"(
   [
     {
@@ -345,12 +332,10 @@ TEST(FirstPartySetParser, IgnoresSubsequent_MemberAsOwner) {
   // Sanity check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(
-      FirstPartySetParser::ParsePreloadedSets(input),
-      Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"))));
+  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input), IsNull());
 }
 
-TEST(FirstPartySetParser, IgnoresSubsequent_SameMember) {
+TEST(FirstPartySetParser, Rejects_SameMember) {
   const std::string input = R"(
   [
     {
@@ -367,12 +352,10 @@ TEST(FirstPartySetParser, IgnoresSubsequent_SameMember) {
   // Sanity check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
-              Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"),
-                                           Pair("member2.test", "foo.test"))));
+  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input), IsNull());
 }
 
-TEST(FirstPartySetParser, IgnoresSubsequent_OwnerAsMember) {
+TEST(FirstPartySetParser, Rejects_OwnerAsMember) {
   const std::string input = R"(
   [
     {
@@ -389,10 +372,7 @@ TEST(FirstPartySetParser, IgnoresSubsequent_OwnerAsMember) {
   // Sanity check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(
-      FirstPartySetParser::ParsePreloadedSets(input),
-      Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"),
-                                   Pair("member2.test", "example2.test"))));
+  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input), IsNull());
 }
 
 }  // namespace network

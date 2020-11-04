@@ -55,6 +55,29 @@ TEST(PreloadedFirstPartySets, AcceptsMultipleSets) {
                                            Pair("member2.test", "foo.test"))));
 }
 
+TEST(PreloadedFirstPartySets, ClearsPreloadedOnError) {
+  const std::string input = R"(
+  [
+    {
+      "owner": "https://example.test",
+      "members": ["https://member1.test"]
+    },
+    {
+      "owner": "https://foo.test",
+      "members": ["https://member2.test"]
+    }
+  ]
+  )";
+  ASSERT_TRUE(base::JSONReader::Read(input));
+
+  PreloadedFirstPartySets sets;
+  EXPECT_THAT(sets.ParseAndSet(input),
+              Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"),
+                                           Pair("member2.test", "foo.test"))));
+
+  EXPECT_THAT(sets.ParseAndSet("{}"), Pointee(IsEmpty()));
+}
+
 TEST(PreloadedFirstPartySets, OwnerIsOnlyMember) {
   const std::string input = R"(
   [
@@ -70,8 +93,7 @@ TEST(PreloadedFirstPartySets, OwnerIsOnlyMember) {
   )";
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(PreloadedFirstPartySets().ParseAndSet(input),
-              Pointee(UnorderedElementsAre(Pair("member2.test", "foo.test"))));
+  EXPECT_THAT(PreloadedFirstPartySets().ParseAndSet(input), Pointee(IsEmpty()));
 }
 
 TEST(PreloadedFirstPartySets, OwnerIsMember) {
@@ -89,9 +111,7 @@ TEST(PreloadedFirstPartySets, OwnerIsMember) {
   )";
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(PreloadedFirstPartySets().ParseAndSet(input),
-              Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"),
-                                           Pair("member2.test", "foo.test"))));
+  EXPECT_THAT(PreloadedFirstPartySets().ParseAndSet(input), Pointee(IsEmpty()));
 }
 
 TEST(PreloadedFirstPartySets, RepeatedMember) {
@@ -113,10 +133,7 @@ TEST(PreloadedFirstPartySets, RepeatedMember) {
   )";
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(PreloadedFirstPartySets().ParseAndSet(input),
-              Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"),
-                                           Pair("member2.test", "example.test"),
-                                           Pair("member3.test", "foo.test"))));
+  EXPECT_THAT(PreloadedFirstPartySets().ParseAndSet(input), Pointee(IsEmpty()));
 }
 
 TEST(PreloadedFirstPartySets, SetsManuallySpecified_Invalid_TooSmall) {
@@ -266,8 +283,8 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_DeduplicatesMemberOwner) {
       "members": ["https://member1.test", "https://member2.test"]
     },
     {
-      "owner": "member3.test",
-      "members": ["member4.test"]
+      "owner": "https://member3.test",
+      "members": ["https://member4.test"]
     }
   ]
   )";
@@ -305,6 +322,31 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_DeduplicatesMemberMember) {
                                            Pair("member2.test", "example.test"),
                                            Pair("member3.test", "foo.test"),
                                            Pair("member4.test", "bar.test"))));
+}
+
+TEST(PreloadedFirstPartySets, SetsManuallySpecified_ClearsPreloadedOnError) {
+  const std::string input = R"(
+  [
+    {
+      "owner": "https://bar.test",
+      "members": ["https://member3.test"]
+    }
+  ]
+  )";
+  ASSERT_TRUE(base::JSONReader::Read(input));
+
+  PreloadedFirstPartySets sets;
+  sets.SetManuallySpecifiedSet(
+      "https://example.test,https://member1.test,https://member2.test");
+  EXPECT_THAT(sets.ParseAndSet(input),
+              Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"),
+                                           Pair("member2.test", "example.test"),
+                                           Pair("member3.test", "bar.test"))));
+
+  EXPECT_THAT(
+      sets.ParseAndSet("{}"),
+      Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"),
+                                   Pair("member2.test", "example.test"))));
 }
 
 }  // namespace network

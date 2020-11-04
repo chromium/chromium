@@ -59,7 +59,7 @@ void PreloadedFirstPartySets::SetManuallySpecifiedSet(
   manually_specified_set_ = CanonicalizeSet(base::SplitString(
       flag_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
 
-  ApplyManuallySpecifiedSet(sets_);
+  ApplyManuallySpecifiedSet();
 }
 
 base::flat_map<std::string, std::string>* PreloadedFirstPartySets::ParseAndSet(
@@ -67,14 +67,17 @@ base::flat_map<std::string, std::string>* PreloadedFirstPartySets::ParseAndSet(
   std::unique_ptr<base::flat_map<std::string, std::string>> parsed =
       FirstPartySetParser::ParsePreloadedSets(raw_sets);
   if (parsed) {
-    ApplyManuallySpecifiedSet(*parsed);
     sets_.swap(*parsed);
+  } else {
+    // On any error, we clear the sets, to avoid using the old data and to make
+    // the failure as obvious as possible.
+    sets_.clear();
   }
+  ApplyManuallySpecifiedSet();
   return &sets_;
 }
 
-void PreloadedFirstPartySets::ApplyManuallySpecifiedSet(
-    base::flat_map<std::string, std::string>& sets) const {
+void PreloadedFirstPartySets::ApplyManuallySpecifiedSet() {
   if (!manually_specified_set_)
     return;
 
@@ -82,18 +85,19 @@ void PreloadedFirstPartySets::ApplyManuallySpecifiedSet(
   const base::flat_set<std::string>& manual_members =
       manually_specified_set_->second;
 
-  sets.erase(base::ranges::remove_if(
-                 sets,
-                 [&manual_members, &manual_owner](const auto& p) {
-                   return p.first == manual_owner || p.second == manual_owner ||
-                          manual_members.contains(p.first) ||
-                          manual_members.contains(p.second);
-                 }),
-             sets.end());
+  sets_.erase(
+      base::ranges::remove_if(sets_,
+                              [&manual_members, &manual_owner](const auto& p) {
+                                return p.first == manual_owner ||
+                                       p.second == manual_owner ||
+                                       manual_members.contains(p.first) ||
+                                       manual_members.contains(p.second);
+                              }),
+      sets_.end());
 
   // Next, we must add the manually-added set to the parsed value.
   for (const std::string& member : manual_members) {
-    sets.emplace(member, manual_owner);
+    sets_.emplace(member, manual_owner);
   }
 }
 

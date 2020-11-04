@@ -62,54 +62,57 @@ const char kFirstPartySetMembersField[] = "members";
 // Parses a single First-Party Set into a map from member to owner (not
 // including the owner). Note that this is intended for use *only* on sets that
 // were preloaded via the component updater, so this does not check assertions
-// or versions. It does not handle non-disjoint sets (i.e. sets which have
-// non-empty intersections of owners and/or members)..
-void ParsePreloadedSet(
-    const base::Value& value,
-    std::vector<std::pair<std::string, std::string>>& map_storage,
-    base::flat_set<std::string>& owners,
-    base::flat_set<std::string>& members) {
+// or versions. It rejects sets which are non-disjoint with
+// previously-encountered sets (i.e. sets which have non-empty intersections
+// with `elements`).
+//
+// Uses `elements` to check disjointness of sets; builds the mapping in `map`;
+// and augments `elements` to include the elements of the set that was parsed.
+//
+// Returns true if parsing and validation were successful, false otherwise.
+bool ParsePreloadedSet(const base::Value& value,
+                       base::flat_map<std::string, std::string>& map,
+                       base::flat_set<std::string>& elements) {
   if (!value.is_dict())
-    return;
+    return false;
 
   // Confirm that the set has an owner, and the owner is a string.
   const std::string* maybe_owner =
       value.FindStringKey(kFirstPartySetOwnerField);
   if (!maybe_owner)
-    return;
+    return false;
 
   base::Optional<std::string> canonical_owner =
       Canonicalize(std::move(*maybe_owner), false /* emit_errors */);
   if (!canonical_owner.has_value())
-    return;
+    return false;
 
-  // An owner may only be listed once, and may not be a member of another set.
-  if (members.contains(*canonical_owner) || owners.contains(*canonical_owner))
-    return;
+  // An owner may not be a member of another set.
+  if (elements.contains(*canonical_owner))
+    return false;
 
-  owners.insert(*canonical_owner);
+  elements.insert(*canonical_owner);
 
   // Confirm that the members field is present, and is an array of strings.
   const base::Value* maybe_members_list =
       value.FindListKey(kFirstPartySetMembersField);
   if (!maybe_members_list)
-    return;
+    return false;
 
   // Add each member to our mapping (assuming the member is a string).
   for (const auto& item : maybe_members_list->GetList()) {
     // Members may not be a member of another set, and may not be an owner of
     // another set.
-    if (item.is_string()) {
-      base::Optional<std::string> member =
-          Canonicalize(item.GetString(), false /* emit_errors */);
-      if (!member.has_value() || members.contains(*member) ||
-          owners.contains(*member)) {
-        continue;
-      }
-      map_storage.emplace_back(*member, *canonical_owner);
-      members.insert(std::move(*member));
-    }
+    if (!item.is_string())
+      return false;
+    base::Optional<std::string> member =
+        Canonicalize(item.GetString(), false /* emit_errors */);
+    if (!member.has_value() || elements.contains(*member))
+      return false;
+    map.emplace(*member, *canonical_owner);
+    elements.insert(std::move(*member));
   }
+  return true;
 }
 
 }  // namespace
@@ -129,15 +132,14 @@ FirstPartySetParser::ParsePreloadedSets(base::StringPiece raw_sets) {
   if (!maybe_value->is_list())
     return nullptr;
 
-  std::vector<std::pair<std::string, std::string>> map_storage;
-  base::flat_set<std::string> owners;
-  base::flat_set<std::string> members;
+  auto map = std::make_unique<base::flat_map<std::string, std::string>>();
+  base::flat_set<std::string> elements;
   for (const auto& value : maybe_value->GetList()) {
-    ParsePreloadedSet(value, map_storage, owners, members);
+    if (!ParsePreloadedSet(value, *map, elements))
+      return nullptr;
   }
 
-  return std::make_unique<base::flat_map<std::string, std::string>>(
-      std::move(map_storage));
+  return map;
 }
 
 }  // namespace network
