@@ -195,7 +195,7 @@ void OmniboxResult::Remove() {
   autocomplete_controller_->DeleteMatch(match_);
 }
 
-void OmniboxResult::InvokeAction(int action_index, int event_flags) {
+void OmniboxResult::InvokeAction(int action_index) {
   DCHECK(is_zero_suggestion_);
   switch (ash::GetOmniBoxZeroStateAction(action_index)) {
     case ash::OmniBoxZeroStateAction::kRemoveSuggestion:

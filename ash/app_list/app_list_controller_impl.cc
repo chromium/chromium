@@ -1156,10 +1156,9 @@ void AppListControllerImpl::LogSearchAbandonHistogram() {
 
 void AppListControllerImpl::InvokeSearchResultAction(
     const std::string& result_id,
-    int action_index,
-    int event_flags) {
+    int action_index) {
   if (client_)
-    client_->InvokeSearchResultAction(result_id, action_index, event_flags);
+    client_->InvokeSearchResultAction(result_id, action_index);
 }
 
 void AppListControllerImpl::GetSearchResultContextMenuModel(

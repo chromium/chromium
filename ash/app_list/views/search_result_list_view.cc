@@ -241,13 +241,12 @@ void SearchResultListView::SearchResultActivated(SearchResultView* view,
 }
 
 void SearchResultListView::SearchResultActionActivated(SearchResultView* view,
-                                                       size_t action_index,
-                                                       int event_flags) {
+                                                       size_t action_index) {
   if (view_delegate_ && view->result()) {
     OmniBoxZeroStateAction action = GetOmniBoxZeroStateAction(action_index);
     if (action == OmniBoxZeroStateAction::kRemoveSuggestion) {
       view_delegate_->InvokeSearchResultAction(view->result()->id(),
-                                               action_index, event_flags);
+                                               action_index);
     } else if (action == OmniBoxZeroStateAction::kAppendSuggestion) {
       main_view_->search_box_view()->UpdateQuery(view->result()->title());
     }

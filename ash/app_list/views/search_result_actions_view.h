@@ -10,7 +10,6 @@
 #include "ash/app_list/app_list_export.h"
 #include "ash/app_list/model/search/search_result.h"
 #include "base/macros.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -20,8 +19,7 @@ class SearchResultView;
 
 // SearchResultActionsView displays a SearchResult::Actions in a button
 // strip. Each action is presented as a button and horizontally laid out.
-class APP_LIST_EXPORT SearchResultActionsView : public views::View,
-                                                public views::ButtonListener {
+class APP_LIST_EXPORT SearchResultActionsView : public views::View {
  public:
   explicit SearchResultActionsView(SearchResultActionsViewDelegate* delegate);
   ~SearchResultActionsView() override;
@@ -77,13 +75,10 @@ class APP_LIST_EXPORT SearchResultActionsView : public views::View,
   // views::View overrides:
   void ChildVisibilityChanged(views::View* child) override;
 
-  // views::ButtonListener overrides:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // If an action is currently selected, the selected action index.
   base::Optional<int> selected_action_;
 
-  SearchResultActionsViewDelegate* delegate_;  // Not owned.
+  SearchResultActionsViewDelegate* const delegate_;  // Not owned.
   std::list<views::PropertyChangedSubscription> subscriptions_;
 
   DISALLOW_COPY_AND_ASSIGN(SearchResultActionsView);

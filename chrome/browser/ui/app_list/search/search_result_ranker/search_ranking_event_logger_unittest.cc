@@ -87,7 +87,6 @@ class TestSearchResult : public ChromeSearchResult {
 
   // ChromeSearchResult overrides:
   void Open(int event_flags) override {}
-  void InvokeAction(int action_index, int event_flags) override {}
 
  private:
   static int instantiation_count;

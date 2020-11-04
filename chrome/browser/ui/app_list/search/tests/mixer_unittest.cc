@@ -49,7 +49,6 @@ class TestSearchResult : public ChromeSearchResult {
 
   // ChromeSearchResult overrides:
   void Open(int event_flags) override {}
-  void InvokeAction(int action_index, int event_flags) override {}
 
   // For reference equality testing. (Addresses cannot be used to test reference
   // equality because it is possible that an object will be allocated at the

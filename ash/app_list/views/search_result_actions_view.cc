@@ -75,9 +75,7 @@ class SearchResultImageButton : public views::ImageButton {
 SearchResultImageButton::SearchResultImageButton(
     SearchResultActionsView* parent,
     const SearchResult::Action& action)
-    : ImageButton(parent),
-      parent_(parent),
-      visible_on_hover_(action.visible_on_hover) {
+    : parent_(parent), visible_on_hover_(action.visible_on_hover) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   // Avoid drawing default dashed focus and draw customized focus in
   // OnPaintBackground();
@@ -181,6 +179,7 @@ const char* SearchResultImageButton::GetClassName() const {
 SearchResultActionsView::SearchResultActionsView(
     SearchResultActionsViewDelegate* delegate)
     : delegate_(delegate) {
+  DCHECK(delegate_);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       kActionButtonBetweenSpacing));
@@ -284,6 +283,9 @@ void SearchResultActionsView::CreateImageButton(
     int action_index) {
   auto* const button =
       AddChildView(std::make_unique<SearchResultImageButton>(this, action));
+  button->SetCallback(base::BindRepeating(
+      &SearchResultActionsViewDelegate::OnSearchResultActionActivated,
+      base::Unretained(delegate_), action_index));
   button->set_tag(action_index);
   subscriptions_.push_back(button->AddStateChangedCallback(
       base::BindRepeating(&SearchResultActionsView::UpdateButtonsOnStateChanged,
@@ -296,16 +298,6 @@ size_t SearchResultActionsView::GetActionCount() const {
 
 void SearchResultActionsView::ChildVisibilityChanged(views::View* child) {
   PreferredSizeChanged();
-}
-
-void SearchResultActionsView::ButtonPressed(views::Button* sender,
-                                            const ui::Event& event) {
-  if (!delegate_)
-    return;
-
-  DCHECK_GE(sender->tag(), 0);
-  DCHECK_LT(sender->tag(), static_cast<int>(GetActionCount()));
-  delegate_->OnSearchResultActionActivated(sender->tag(), event.flags());
 }
 
 }  // namespace ash

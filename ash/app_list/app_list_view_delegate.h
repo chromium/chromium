@@ -92,8 +92,7 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // |action_index| corresponds to the index of an icon in
   // |result.action_icons()|.
   virtual void InvokeSearchResultAction(const std::string& result_id,
-                                        int action_index,
-                                        int event_flags) = 0;
+                                        int action_index) = 0;
 
   // Returns the context menu model for a ChromeSearchResult with |result_id|,
   // or nullptr if there is currently no menu for the result.

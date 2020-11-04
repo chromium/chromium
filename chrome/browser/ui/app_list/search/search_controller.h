@@ -54,9 +54,7 @@ class SearchController {
   void ViewClosing();
 
   void OpenResult(ChromeSearchResult* result, int event_flags);
-  void InvokeResultAction(ChromeSearchResult* result,
-                          int action_index,
-                          int event_flags);
+  void InvokeResultAction(ChromeSearchResult* result, int action_index);
 
   // Adds a new mixer group. See Mixer::AddGroup.
   size_t AddGroup(size_t max_results);

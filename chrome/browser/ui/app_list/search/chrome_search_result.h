@@ -129,7 +129,7 @@ class ChromeSearchResult {
   }
 
   // Invokes a custom action on the result. It does nothing by default.
-  virtual void InvokeAction(int action_index, int event_flags);
+  virtual void InvokeAction(int action_index);
 
   // Opens the result. Clients should use AppListViewDelegate::OpenSearchResult.
   virtual void Open(int event_flags) = 0;

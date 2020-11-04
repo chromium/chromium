@@ -13,7 +13,7 @@ class SearchResultActionsViewDelegate {
  public:
   // Invoked when the action button represent the action at |index| is pressed
   // in SearchResultActionsView.
-  virtual void OnSearchResultActionActivated(size_t index, int event_flags) = 0;
+  virtual void OnSearchResultActionActivated(size_t index) = 0;
 
   // Returns true if the associated search result is hovered by mouse, or
   // or selected by keyboard.

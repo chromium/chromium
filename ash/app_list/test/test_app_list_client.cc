@@ -12,8 +12,7 @@ TestAppListClient::TestAppListClient() = default;
 TestAppListClient::~TestAppListClient() = default;
 
 void TestAppListClient::InvokeSearchResultAction(const std::string& result_id,
-                                                 int action_index,
-                                                 int event_flags) {
+                                                 int action_index) {
   invoked_result_actions_.push_back(std::make_pair(result_id, action_index));
 }
 

@@ -52,7 +52,7 @@ class TestResultViewWithActions : public TestResultView,
   TestResultViewWithActions* AsResultViewWithActions() override { return this; }
 
   // SearchResultActionsViewDelegate:
-  void OnSearchResultActionActivated(size_t index, int event_flags) override {}
+  void OnSearchResultActionActivated(size_t index) override {}
   bool IsSearchResultHoveredOrSelected() override { return selected(); }
 
   SearchResultActionsView* GetActionsView() {

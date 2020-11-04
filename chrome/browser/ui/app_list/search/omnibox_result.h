@@ -39,7 +39,7 @@ class OmniboxResult : public ChromeSearchResult {
 
   // ChromeSearchResult overrides:
   void Open(int event_flags) override;
-  void InvokeAction(int action_index, int event_flags) override;
+  void InvokeAction(int action_index) override;
 
   // Returns the URL that will be navigated to by this search result.
   GURL DestinationURL() const;

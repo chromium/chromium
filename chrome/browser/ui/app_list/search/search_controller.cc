@@ -130,10 +130,9 @@ void SearchController::OpenResult(ChromeSearchResult* result, int event_flags) {
 }
 
 void SearchController::InvokeResultAction(ChromeSearchResult* result,
-                                          int action_index,
-                                          int event_flags) {
+                                          int action_index) {
   // TODO(xiyuan): Hook up with user learning.
-  result->InvokeAction(action_index, event_flags);
+  result->InvokeAction(action_index);
 }
 
 size_t SearchController::AddGroup(size_t max_results) {

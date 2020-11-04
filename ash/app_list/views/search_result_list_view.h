@@ -35,9 +35,7 @@ class APP_LIST_EXPORT SearchResultListView : public SearchResultContainerView {
                              int event_flags,
                              bool by_button_press);
 
-  void SearchResultActionActivated(SearchResultView* view,
-                                   size_t action_index,
-                                   int event_flags);
+  void SearchResultActionActivated(SearchResultView* view, size_t action_index);
 
   void OnSearchResultInstalled(SearchResultView* view);
 

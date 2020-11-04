@@ -67,7 +67,7 @@ class APP_LIST_EXPORT SearchResultView
   void CreateDetailsRenderText();
 
   // Callback for query suggstion removal confirmation.
-  void OnQueryRemovalAccepted(int event_flags, bool accepted);
+  void OnQueryRemovalAccepted(bool accepted);
 
   // views::View overrides:
   const char* GetClassName() const override;
@@ -104,7 +104,7 @@ class APP_LIST_EXPORT SearchResultView
                     const int icon_dimension);
 
   // SearchResultActionsViewDelegate overrides:
-  void OnSearchResultActionActivated(size_t index, int event_flags) override;
+  void OnSearchResultActionActivated(size_t index) override;
   bool IsSearchResultHoveredOrSelected() override;
 
   // Invoked when the context menu closes.
