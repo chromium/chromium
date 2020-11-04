@@ -260,7 +260,8 @@ DnsResponse::DnsResponse(
     const std::vector<DnsResourceRecord>& authority_records,
     const std::vector<DnsResourceRecord>& additional_records,
     const base::Optional<DnsQuery>& query,
-    uint8_t rcode) {
+    uint8_t rcode,
+    bool validate_answers_match_query) {
   bool has_query = query.has_value();
   dns_protocol::Header header;
   header.id = id;
@@ -309,7 +310,8 @@ DnsResponse::DnsResponse(
   }
   // Start the Answer section.
   for (const auto& answer : answers) {
-    success &= WriteAnswer(&writer, answer, query);
+    success &=
+        WriteAnswer(&writer, answer, query, validate_answers_match_query);
     DCHECK(success);
   }
   // Start the Authority section.
@@ -615,10 +617,12 @@ bool DnsResponse::WriteRecord(base::BigEndianWriter* writer,
 
 bool DnsResponse::WriteAnswer(base::BigEndianWriter* writer,
                               const DnsResourceRecord& answer,
-                              const base::Optional<DnsQuery>& query) {
+                              const base::Optional<DnsQuery>& query,
+                              bool validate_answer_matches_query) {
   // Generally assumed to be a mistake if we write answers that don't match the
   // query type, except CNAME answers which can always be added.
-  if (query.has_value() && answer.type != query.value().qtype() &&
+  if (validate_answer_matches_query && query.has_value() &&
+      answer.type != query.value().qtype() &&
       answer.type != dns_protocol::kTypeCNAME) {
     VLOG(1) << "Mismatched answer resource record type and qtype.";
     return false;

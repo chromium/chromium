@@ -99,6 +99,55 @@ DnsResourceRecord BuildTestAddressRecord(std::string name,
       net::IPAddressToPackedString(ip), ttl);
 }
 
+DnsResourceRecord BuildTestHttpsAliasRecord(std::string name,
+                                            base::StringPiece alias_name,
+                                            base::TimeDelta ttl) {
+  DCHECK(!name.empty());
+
+  std::string rdata("\000\000", 2);
+
+  std::string alias_domain;
+  CHECK(DNSDomainFromDot(alias_name, &alias_domain));
+  rdata.append(alias_domain);
+
+  return BuildTestDnsRecord(std::move(name), dns_protocol::kTypeHttps,
+                            std::move(rdata), ttl);
+}
+
+DnsResourceRecord BuildTestHttpsServiceRecord(
+    std::string name,
+    uint16_t priority,
+    base::StringPiece service_name,
+    const std::map<uint16_t, std::string>& params,
+    base::TimeDelta ttl) {
+  DCHECK(!name.empty());
+  DCHECK_NE(priority, 0);
+
+  std::string rdata;
+
+  char num_buffer[2];
+  base::WriteBigEndian(num_buffer, priority);
+  rdata.append(num_buffer, 2);
+
+  std::string service_domain;
+  CHECK(DNSDomainFromDot(service_name, &service_domain));
+  rdata.append(service_domain);
+
+  for (auto& param : params) {
+    base::WriteBigEndian(num_buffer, param.first);
+    rdata.append(num_buffer, 2);
+
+    base::WriteBigEndian(num_buffer,
+                         base::checked_cast<uint16_t>(param.second.size()));
+    rdata.append(num_buffer, 2);
+
+    rdata.append(param.second);
+  }
+
+  return BuildTestDnsRecord(std::move(name), dns_protocol::kTypeHttps,
+                            std::move(rdata), ttl);
+}
+
 DnsResponse BuildTestDnsResponse(
     std::string name,
     uint16_t type,
@@ -111,7 +160,8 @@ DnsResponse BuildTestDnsResponse(
   base::Optional<DnsQuery> query(base::in_place, 0, std::move(dns_name), type);
   return DnsResponse(0, true /* is_authoritative */, answers,
                      {} /* authority_records */, {} /* additional_records */,
-                     query);
+                     query, dns_protocol::kRcodeNOERROR /* rcode */,
+                     false /* validate_answers_match_query */);
 }
 
 DnsResponse BuildTestDnsAddressResponse(std::string name,

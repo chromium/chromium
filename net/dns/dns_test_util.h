@@ -203,6 +203,21 @@ DnsResourceRecord BuildTestAddressRecord(
     const IPAddress& ip,
     base::TimeDelta ttl = base::TimeDelta::FromDays(1));
 
+DnsResourceRecord BuildTestHttpsAliasRecord(
+    std::string name,
+    base::StringPiece alias_name,
+    base::TimeDelta ttl = base::TimeDelta::FromDays(1));
+
+// `params` is a mapping from service param keys to a string containing the
+// encoded bytes of a service param value (without the value length prefix which
+// this method will automatically add).
+DnsResourceRecord BuildTestHttpsServiceRecord(
+    std::string name,
+    uint16_t priority,
+    base::StringPiece service_name,
+    const std::map<uint16_t, std::string>& params,
+    base::TimeDelta ttl = base::TimeDelta::FromDays(1));
+
 DnsResponse BuildTestDnsResponse(std::string name,
                                  uint16_t type,
                                  const std::vector<DnsResourceRecord>& answers);

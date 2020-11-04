@@ -77,7 +77,7 @@ class FailingRequestImpl : public HostResolver::ResolveHostRequest,
 }  // namespace
 
 const base::Optional<std::vector<bool>>&
-HostResolver::ResolveHostRequest::GetIntegrityResultsForTesting() const {
+HostResolver::ResolveHostRequest::GetExperimentalResultsForTesting() const {
   IMMEDIATE_CRASH();
 }
 

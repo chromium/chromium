@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "net/dns/dns_response.h"
+#include "net/dns/https_record_rdata.h"
 #include "net/dns/record_rdata.h"
 
 namespace net {
@@ -64,6 +65,9 @@ std::unique_ptr<const RecordParsed> RecordParsed::CreateFrom(
       break;
     case IntegrityRecordRdata::kType:
       rdata = IntegrityRecordRdata::Create(record.rdata);
+      break;
+    case HttpsRecordRdata::kType:
+      rdata = HttpsRecordRdata::Parse(record.rdata);
       break;
     default:
       DVLOG(1) << "Unknown RData type for received record: " << record.type;

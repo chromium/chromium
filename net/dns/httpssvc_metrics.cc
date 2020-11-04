@@ -118,6 +118,7 @@ void HttpssvcMetrics::SaveForIntegrity(
 
 void HttpssvcMetrics::SaveForHttps(base::Optional<std::string> doh_provider_id,
                                    enum HttpssvcDnsRcode rcode,
+                                   const std::vector<bool>& condensed_records,
                                    base::TimeDelta https_resolve_time) {
   // TODO(crbug.com/1138620): Implement.
 }

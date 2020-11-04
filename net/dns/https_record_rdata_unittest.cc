@@ -27,6 +27,7 @@ TEST(HttpsRecordRdataTest, ParsesAlias) {
   std::unique_ptr<HttpsRecordRdata> rdata =
       HttpsRecordRdata::Parse(base::StringPiece(kRdata, sizeof(kRdata) - 1));
   ASSERT_TRUE(rdata);
+  EXPECT_FALSE(rdata->IsMalformed());
 
   AliasFormHttpsRecordRdata expected("chromium.org");
   EXPECT_TRUE(rdata->IsEqual(&expected));
@@ -106,6 +107,7 @@ TEST(HttpsRecordRdataTest, ParsesService) {
   std::unique_ptr<HttpsRecordRdata> rdata =
       HttpsRecordRdata::Parse(base::StringPiece(kRdata, sizeof(kRdata) - 1));
   ASSERT_TRUE(rdata);
+  EXPECT_FALSE(rdata->IsMalformed());
 
   IPAddress expected_ipv6;
   ASSERT_TRUE(expected_ipv6.AssignFromIPLiteral("2001:4860:4860::8888"));
@@ -149,7 +151,9 @@ TEST(HttpsRecordRdataTest, RejectCorruptRdata) {
 
   std::unique_ptr<HttpsRecordRdata> rdata =
       HttpsRecordRdata::Parse(base::StringPiece(kRdata, sizeof(kRdata) - 1));
-  EXPECT_FALSE(rdata);
+  ASSERT_TRUE(rdata);
+
+  EXPECT_TRUE(rdata->IsMalformed());
 }
 
 }  // namespace

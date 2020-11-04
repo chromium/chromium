@@ -98,12 +98,11 @@ class NET_EXPORT HostResolver {
     virtual const base::Optional<std::vector<HostPortPair>>&
     GetHostnameResults() const = 0;
 
-    // INTEGRITY results for an initial experiment related to HTTPSSVC. Each
-    // boolean value indicates the intactness of an INTEGRITY record.
-    // TODO(crbug.com/1138620): Generalize to be used for other experimental
-    // records.
+    // Result of an experimental query. Meaning depends on the specific query
+    // type, but each boolean value generally refers to a valid or invalid
+    // record of the experimental type.
     NET_EXPORT virtual const base::Optional<std::vector<bool>>&
-    GetIntegrityResultsForTesting() const;
+    GetExperimentalResultsForTesting() const;
 
     // Error info for the request.
     //

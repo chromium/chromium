@@ -82,6 +82,7 @@
 #include "net/dns/host_resolver_mdns_listener_impl.h"
 #include "net/dns/host_resolver_mdns_task.h"
 #include "net/dns/host_resolver_proc.h"
+#include "net/dns/https_record_rdata.h"
 #include "net/dns/httpssvc_metrics.h"
 #include "net/dns/mdns_client.h"
 #include "net/dns/public/dns_protocol.h"
@@ -576,12 +577,12 @@ class HostResolverManager::RequestImpl
     return results_ ? results_.value().hostnames() : *nullopt_result;
   }
 
-  const base::Optional<std::vector<bool>>& GetIntegrityResultsForTesting()
+  const base::Optional<std::vector<bool>>& GetExperimentalResultsForTesting()
       const override {
     DCHECK(complete_);
     static const base::NoDestructor<base::Optional<std::vector<bool>>>
         nullopt_result;
-    return results_ ? results_.value().integrity_data() : *nullopt_result;
+    return results_ ? results_.value().experimental_results() : *nullopt_result;
   }
 
   net::ResolveErrorInfo GetResolveErrorInfo() const override {
@@ -1206,7 +1207,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
           break;
         case dns_protocol::kTypeHttps:
           httpssvc_metrics_->SaveForHttps(
-              doh_provider_id, HttpssvcDnsRcode::kTimedOut, elapsed_time);
+              doh_provider_id, HttpssvcDnsRcode::kTimedOut, {}, elapsed_time);
           break;
         default:
           // The experimental query timer is only started when all other
@@ -1308,15 +1309,18 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     if (httpssvc_metrics_) {
       if (dns_query_type == DnsQueryType::INTEGRITY) {
         const base::Optional<std::vector<bool>>& condensed =
-            results.integrity_data();
+            results.experimental_results();
         CHECK(condensed.has_value());
         // INTEGRITY queries can time out the normal way (here), or when the
         // experimental query timer runs out (OnExperimentalQueryTimeout).
         httpssvc_metrics_->SaveForIntegrity(doh_provider_id, rcode_for_httpssvc,
                                             *condensed, elapsed_time);
       } else if (dns_query_type == DnsQueryType::HTTPS) {
+        const base::Optional<std::vector<bool>>& condensed =
+            results.experimental_results();
+        CHECK(condensed.has_value());
         httpssvc_metrics_->SaveForHttps(doh_provider_id, rcode_for_httpssvc,
-                                        elapsed_time);
+                                        *condensed, elapsed_time);
       } else {
         httpssvc_metrics_->SaveForNonIntegrity(doh_provider_id, elapsed_time,
                                                rcode_for_httpssvc);
@@ -1342,11 +1346,10 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
               std::move(results), std::move(saved_results_).value());
           break;
         case DnsQueryType::INTEGRITY:
+        case DnsQueryType::HTTPS:
+          // No particular importance to order.
           results = HostCache::Entry::MergeEntries(
               std::move(results), std::move(saved_results_).value());
-          break;
-        case DnsQueryType::HTTPS:
-          results = std::move(saved_results_).value();
           break;
         default:
           // Only expect address query types with multiple transactions.
@@ -1552,10 +1555,45 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
   DnsResponse::Result ParseHttpsDnsResponse(const DnsResponse* response,
                                             HostCache::Entry* out_results) {
-    // TODO(crbug.com/1138620): Add actual parse implementation.
-    *out_results = HostCache::Entry(
-        ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS, base::nullopt);
-    return DnsResponse::Result::DNS_PARSE_OK;
+    base::Optional<base::TimeDelta> response_ttl;
+    HostCache::Entry default_entry(ERR_NAME_NOT_RESOLVED, std::vector<bool>(),
+                                   HostCache::Entry::SOURCE_DNS, response_ttl);
+
+    // As HTTPS is currently only used for experimental queries, request
+    // failures are not treated as critical, and flow may reach here without a
+    // response.
+    //
+    // TODO(crbug.com/1138620): As HTTPS becomes less experimental, reevaluate
+    // request failures and consider making having a response required to call
+    // this method.
+    if (response == nullptr) {
+      *out_results = std::move(default_entry);
+      return DnsResponse::Result::DNS_PARSE_OK;
+    }
+
+    std::vector<std::unique_ptr<const RecordParsed>> records;
+    DnsResponse::Result parse_result = ParseAndFilterResponseRecords(
+        response, dns_protocol::kTypeHttps, &records, &response_ttl);
+
+    // If the response couldn't be parsed, assume no HTTPS records.
+    if (parse_result != DnsResponse::DNS_PARSE_OK) {
+      *out_results = std::move(default_entry);
+      return DnsResponse::Result::DNS_PARSE_OK;
+    }
+
+    // Condense results into a list of booleans. We do not cache the results,
+    // but this enables us to write some unit tests.
+    std::vector<bool> condensed_results;
+    for (const auto& record : records) {
+      const HttpsRecordRdata& rdata = *record->rdata<HttpsRecordRdata>();
+      condensed_results.push_back(!rdata.IsMalformed());
+    }
+
+    *out_results =
+        HostCache::Entry(ERR_NAME_NOT_RESOLVED, std::move(condensed_results),
+                         HostCache::Entry::SOURCE_DNS, response_ttl);
+    DCHECK_EQ(parse_result, DnsResponse::DNS_PARSE_OK);
+    return parse_result;
   }
 
   // Sort service targets per RFC2782.  In summary, sort first by |priority|,

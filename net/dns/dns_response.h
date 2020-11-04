@@ -139,7 +139,8 @@ class NET_EXPORT_PRIVATE DnsResponse {
               const std::vector<DnsResourceRecord>& authority_records,
               const std::vector<DnsResourceRecord>& additional_records,
               const base::Optional<DnsQuery>& query,
-              uint8_t rcode = dns_protocol::kRcodeNOERROR);
+              uint8_t rcode = dns_protocol::kRcodeNOERROR,
+              bool validate_answers_match_query = true);
 
   // Constructs a response buffer of given length. Used for TCP transactions.
   explicit DnsResponse(size_t length);
@@ -219,7 +220,8 @@ class NET_EXPORT_PRIVATE DnsResponse {
                    const DnsResourceRecord& record);
   bool WriteAnswer(base::BigEndianWriter* writer,
                    const DnsResourceRecord& answer,
-                   const base::Optional<DnsQuery>& query);
+                   const base::Optional<DnsQuery>& query,
+                   bool validate_answer_matches_query);
 
   // Convenience for header access.
   const dns_protocol::Header* header() const;

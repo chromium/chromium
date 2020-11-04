@@ -161,11 +161,12 @@ class NET_EXPORT HostCache {
     void set_hostnames(base::Optional<std::vector<HostPortPair>> hostnames) {
       hostnames_ = std::move(hostnames);
     }
-    const base::Optional<std::vector<bool>>& integrity_data() const {
-      return integrity_data_;
+    const base::Optional<std::vector<bool>>& experimental_results() const {
+      return experimental_results_;
     }
-    void set_integrity_data(base::Optional<std::vector<bool>> integrity_data) {
-      integrity_data_ = std::move(integrity_data);
+    void set_experimental_results(
+        base::Optional<std::vector<bool>> experimental_results) {
+      experimental_results_ = std::move(experimental_results);
     }
 
     Source source() const { return source_; }
@@ -208,7 +209,7 @@ class NET_EXPORT HostCache {
           const base::Optional<AddressList>& addresses,
           base::Optional<std::vector<std::string>>&& text_results,
           base::Optional<std::vector<HostPortPair>>&& hostnames,
-          base::Optional<std::vector<bool>>&& integrity_data,
+          base::Optional<std::vector<bool>>&& experimental_results,
           Source source,
           base::TimeTicks expires,
           int network_changes);
@@ -222,8 +223,8 @@ class NET_EXPORT HostCache {
     void SetResult(std::vector<HostPortPair> hostnames) {
       hostnames_ = std::move(hostnames);
     }
-    void SetResult(std::vector<bool> integrity_data) {
-      integrity_data_ = std::move(integrity_data);
+    void SetResult(std::vector<bool> experimental_results) {
+      experimental_results_ = std::move(experimental_results);
     }
 
     int total_hits() const { return total_hits_; }
@@ -249,7 +250,7 @@ class NET_EXPORT HostCache {
     base::Optional<AddressList> addresses_;
     base::Optional<std::vector<std::string>> text_records_;
     base::Optional<std::vector<HostPortPair>> hostnames_;
-    base::Optional<std::vector<bool>> integrity_data_;
+    base::Optional<std::vector<bool>> experimental_results_;
     // Where results were obtained (e.g. DNS lookup, hosts file, etc).
     Source source_ = SOURCE_UNKNOWN;
     // TTL obtained from the nameserver. Negative if unknown.

@@ -160,7 +160,7 @@ HostCache::Entry HostCache::Entry::MergeEntries(Entry front, Entry back) {
   front.MergeAddressesFrom(back);
   MergeLists(&front.text_records_, back.text_records());
   MergeLists(&front.hostnames_, back.hostnames());
-  MergeLists(&front.integrity_data_, back.integrity_data());
+  MergeLists(&front.experimental_results_, back.experimental_results());
 
   // Use canonical name from |back| iff empty in |front|.
   if (front.addresses() && front.addresses().value().canonical_name().empty() &&
@@ -234,31 +234,32 @@ HostCache::Entry::Entry(const HostCache::Entry& entry,
       addresses_(entry.addresses()),
       text_records_(entry.text_records()),
       hostnames_(entry.hostnames()),
-      integrity_data_(entry.integrity_data()),
+      experimental_results_(entry.experimental_results()),
       source_(entry.source()),
       ttl_(entry.ttl()),
       expires_(now + ttl),
       network_changes_(network_changes) {}
 
-HostCache::Entry::Entry(int error,
-                        const base::Optional<AddressList>& addresses,
-                        base::Optional<std::vector<std::string>>&& text_records,
-                        base::Optional<std::vector<HostPortPair>>&& hostnames,
-                        base::Optional<std::vector<bool>>&& integrity_data,
-                        Source source,
-                        base::TimeTicks expires,
-                        int network_changes)
+HostCache::Entry::Entry(
+    int error,
+    const base::Optional<AddressList>& addresses,
+    base::Optional<std::vector<std::string>>&& text_records,
+    base::Optional<std::vector<HostPortPair>>&& hostnames,
+    base::Optional<std::vector<bool>>&& experimental_results,
+    Source source,
+    base::TimeTicks expires,
+    int network_changes)
     : error_(error),
       addresses_(addresses),
       text_records_(std::move(text_records)),
       hostnames_(std::move(hostnames)),
-      integrity_data_(std::move(integrity_data)),
+      experimental_results_(std::move(experimental_results)),
       source_(source),
       expires_(expires),
       network_changes_(network_changes) {}
 
 void HostCache::Entry::PrepareForCacheInsertion() {
-  integrity_data_.reset();
+  experimental_results_.reset();
 }
 
 bool HostCache::Entry::IsStale(base::TimeTicks now, int network_changes) const {
@@ -782,8 +783,8 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
       }
     }
 
-    // We do not intend to serialize INTEGRITY records with the host cache.
-    base::Optional<std::vector<bool>> integrity_data;
+    // We do not intend to serialize experimental results with the host cache.
+    base::Optional<std::vector<bool>> experimental_results;
 
     // Assume an empty address list if we have an address type and no results.
     if (IsAddressType(dns_query_type) && !address_list && !text_records &&
@@ -800,10 +801,11 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
     // replace the entry.
     auto found = entries_.find(key);
     if (found == entries_.end()) {
-      AddEntry(key, Entry(error, address_list, std::move(text_records),
-                          std::move(hostname_records),
-                          std::move(integrity_data), Entry::SOURCE_UNKNOWN,
-                          expiration_time, network_changes_ - 1));
+      AddEntry(
+          key,
+          Entry(error, address_list, std::move(text_records),
+                std::move(hostname_records), std::move(experimental_results),
+                Entry::SOURCE_UNKNOWN, expiration_time, network_changes_ - 1));
       restore_size_++;
     }
   }
