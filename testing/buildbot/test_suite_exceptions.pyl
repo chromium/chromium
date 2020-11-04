@@ -1196,13 +1196,6 @@
       },
     },
   },
-  'cros_browser_sanity_test': {
-    'modifications': {
-      'chromeos-eve-arc-r-chrome': {
-        'experiment_percentage': 100,  # https://crbug.com/1114741
-      },
-    },
-  },
   'dawn_end2end_tests': {
     'remove_from': [
       'Linux FYI Release (AMD R7 240)', # https://crbug.com/915430

@@ -449,12 +449,6 @@
           'enable': False,
         },
       },
-      'cros_browser_sanity_test': {
-        # TODO(crbug.com/1140593): Re-enable resultdb.
-        'resultdb': {
-          'enable': False,
-        }
-      },
       'disk_usage_tast_test': {
         "args": [
           # Stripping gives more accurate disk usage data.

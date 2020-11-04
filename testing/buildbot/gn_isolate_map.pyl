@@ -723,14 +723,6 @@
     "label": "//components/cronet/ios:cronet_unittests_ios",
     "type": "console_test_launcher",
   },
-  "cros_browser_sanity_test": {
-    "label": "//chromeos:cros_browser_sanity_test",
-    "type": "generated_script",
-    "args": [
-      "--logs-dir=${ISOLATED_OUTDIR}",
-      "cros_browser_sanity_test",
-    ],
-  },
   "crypto_unittests": {
     "label": "//crypto:crypto_unittests",
     "type": "console_test_launcher",
