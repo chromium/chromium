@@ -81,8 +81,8 @@ public class SigninUtilsStartActivityTest {
                 SigninUtils.startSigninActivityIfAllowed(mContext, SigninAccessPoint.SETTINGS));
         verify(SigninActivityLauncherImpl.get(), never())
                 .launchActivity(any(Context.class), anyInt());
-        Assert.assertEquals(
+        Assert.assertTrue(ShadowToast.showedCustomToast(
                 mContext.getResources().getString(R.string.managed_by_your_organization),
-                ShadowToast.getTextOfLatestToast());
+                R.id.toast_text));
     }
 }

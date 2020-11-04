@@ -103,8 +103,9 @@ public class ConfirmImportSyncDataDialogTest {
         when(mSigninManagerMock.getManagementDomain()).thenReturn(TEST_DOMAIN);
         AlertDialog dialog = getConfirmImportSyncDataDialog();
         dialog.findViewById(R.id.sync_confirm_import_choice).performClick();
-        Assert.assertEquals(dialog.getContext().getString(R.string.managed_by_your_organization),
-                ShadowToast.getTextOfLatestToast());
+        Assert.assertTrue(ShadowToast.showedCustomToast(
+                dialog.getContext().getString(R.string.managed_by_your_organization),
+                R.id.toast_text));
     }
 
     private AlertDialog getConfirmImportSyncDataDialog() {

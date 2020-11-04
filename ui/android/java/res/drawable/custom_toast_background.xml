@@ -5,7 +5,7 @@
 
 <shape
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <corners android:radius="20dp"/>
+    <corners android:radius="200dp"/>
     <padding
         android:left="20dp"
         android:right="20dp"/>

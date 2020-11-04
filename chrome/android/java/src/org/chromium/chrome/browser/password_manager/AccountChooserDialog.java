@@ -255,10 +255,9 @@ public class AccountChooserDialog
         final int xGravity = view.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL ? Gravity.END
                                                                                     : Gravity.START;
 
-        Toast toast = new Toast(context);
+        Toast toast = new Toast(context, text);
         toast.setGravity(Gravity.TOP | xGravity, xOffset, yOffset);
         toast.setDuration(Toast.LENGTH_SHORT);
-        toast.setView(text);
         toast.show();
     }
 

@@ -8,7 +8,6 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable-ldrtl/text_icon.xml",
     "java/res/drawable/camera_img.xml",
-    "java/res/drawable/custom_toast_background.xml",
     "java/res/drawable/delete_icon.xml",
     "java/res/drawable/edit_icon.xml",
     "java/res/drawable/generic_favicon.xml",
@@ -19,7 +18,6 @@ android_resources("java_resources") {
     "java/res/drawable/save_icon.xml",
     "java/res/drawable/share_icon.xml",
     "java/res/drawable/text_icon.xml",
-    "java/res/layout/custom_toast_layout.xml",
     "java/res/layout/qrcode_camera_error_layout.xml",
     "java/res/layout/qrcode_dialog.xml",
     "java/res/layout/qrcode_open_settings_layout.xml",

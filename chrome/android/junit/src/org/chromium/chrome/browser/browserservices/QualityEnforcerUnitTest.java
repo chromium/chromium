@@ -140,10 +140,8 @@ public class QualityEnforcerUnitTest {
     @Test
     public void trigger_offline() {
         navigateToUrlInternet(TRUSTED_ORIGIN_PAGE);
-        Assert.assertEquals(ContextUtils.getApplicationContext().getString(
-                                    R.string.twa_quality_enforcement_violation_offline,
-                                    TRUSTED_ORIGIN_PAGE.getSpec()),
-                ShadowToast.getTextOfLatestToast());
+        verifyToastShown(ContextUtils.getApplicationContext().getString(
+                R.string.twa_quality_enforcement_violation_offline, TRUSTED_ORIGIN_PAGE.getSpec()));
         verifyNotifyClientApp();
     }
 
@@ -173,11 +171,8 @@ public class QualityEnforcerUnitTest {
     public void trigger_digitalAssetLinkFailed() {
         when(mIntentDataProvider.getUrlToLoad()).thenReturn(UNTRUSTED_PAGE.getSpec());
         mQualityEnforcer.onFinishNativeInitialization();
-
-        Assert.assertEquals(ContextUtils.getApplicationContext().getString(
-                                    R.string.twa_quality_enforcement_violation_asset_link,
-                                    UNTRUSTED_PAGE.getSpec()),
-                ShadowToast.getTextOfLatestToast());
+        verifyToastShown(ContextUtils.getApplicationContext().getString(
+                R.string.twa_quality_enforcement_violation_asset_link, UNTRUSTED_PAGE.getSpec()));
         verifyNotifyClientApp();
     }
 
@@ -216,10 +211,9 @@ public class QualityEnforcerUnitTest {
     }
 
     private void verifyTriggered404() {
-        Assert.assertEquals(ContextUtils.getApplicationContext().getString(
-                                    R.string.twa_quality_enforcement_violation_error,
-                                    HTTP_ERROR_NOT_FOUND, TRUSTED_ORIGIN_PAGE.getSpec()),
-                ShadowToast.getTextOfLatestToast());
+        verifyToastShown(ContextUtils.getApplicationContext().getString(
+                R.string.twa_quality_enforcement_violation_error, HTTP_ERROR_NOT_FOUND,
+                TRUSTED_ORIGIN_PAGE.getSpec()));
         verifyNotifyClientApp();
     }
 
@@ -259,5 +253,9 @@ public class QualityEnforcerUnitTest {
         for (CustomTabTabObserver tabObserver : mTabObserverCaptor.getAllValues()) {
             tabObserver.onDidFinishNavigation(mTab, navigation);
         }
+    }
+
+    private void verifyToastShown(String message) {
+        Assert.assertTrue(ShadowToast.showedCustomToast(message, R.id.toast_text));
     }
 }
