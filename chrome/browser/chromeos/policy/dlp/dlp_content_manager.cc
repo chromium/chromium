@@ -187,7 +187,9 @@ DlpContentRestrictionSet DlpContentManager::GetRestrictionSetForURL(
                          {DlpRulesManager::Restriction::kPrivacyScreen,
                           DlpContentRestriction::kPrivacyScreen},
                          {DlpRulesManager::Restriction::kPrinting,
-                          DlpContentRestriction::kPrint}});
+                          DlpContentRestriction::kPrint},
+                         {DlpRulesManager::Restriction::kScreenShare,
+                          DlpContentRestriction::kScreenShare}});
 
   for (const auto& restriction : *kRestrictionsList) {
     if (dlp_rules_manager->IsRestricted(url, restriction.first) ==

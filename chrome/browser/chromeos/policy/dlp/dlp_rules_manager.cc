@@ -32,6 +32,7 @@ const char kClipboardRestriction[] = "CLIPBOARD";
 const char kScreenshotRestriction[] = "SCREENSHOT";
 const char kPrintingRestriction[] = "PRINTING";
 const char kPrivacyScreenRestriction[] = "PRIVACY_SCREEN";
+const char kScreenShareRestriction[] = "SCREEN_SHARE";
 
 const char kArc[] = "ARC";
 const char kCrostini[] = "CROSTINI";
@@ -54,7 +55,9 @@ DlpRulesManager::Restriction GetClassMapping(const std::string& restriction) {
             DlpRulesManager::Restriction::kScreenshot},
            {dlp::kPrintingRestriction, DlpRulesManager::Restriction::kPrinting},
            {dlp::kPrivacyScreenRestriction,
-            DlpRulesManager::Restriction::kPrivacyScreen}});
+            DlpRulesManager::Restriction::kPrivacyScreen},
+           {dlp::kScreenShareRestriction,
+            DlpRulesManager::Restriction::kScreenShare}});
 
   auto it = kRestrictionsMap->find(restriction);
   return (it == kRestrictionsMap->end())
@@ -167,7 +170,8 @@ DlpRulesManager::Level DlpRulesManager::IsRestricted(
   DCHECK(src_url_matcher_);
   DCHECK(restriction == Restriction::kPrinting ||
          restriction == Restriction::kPrivacyScreen ||
-         restriction == Restriction::kScreenshot);
+         restriction == Restriction::kScreenshot ||
+         restriction == Restriction::kScreenShare);
 
   const std::set<RuleId> source_rules_ids = MatchUrlAndGetRulesMapping(
       source, src_url_matcher_.get(), src_url_rules_mapping_);

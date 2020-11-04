@@ -33,6 +33,8 @@ const DlpContentRestrictionSet kPrivacyScreenEnforced(
 const DlpContentRestrictionSet kPrintRestricted(DlpContentRestriction::kPrint);
 const DlpContentRestrictionSet kVideoCaptureRestricted(
     DlpContentRestriction::kVideoCapture);
+const DlpContentRestrictionSet kScreenShareRestricted(
+    DlpContentRestriction::kScreenShare);
 }  // namespace
 
 class DlpContentManagerBrowserTest : public InProcessBrowserTest {
@@ -240,6 +242,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerPolicyBrowserTest,
   const std::string kUrl1 = "https://example1.com";
   const std::string kUrl2 = "https://example2.com";
   const std::string kUrl3 = "https://example3.com";
+  const std::string kUrl4 = "https://example4.com";
 
   base::Value rules(base::Value::Type::LIST);
 
@@ -276,6 +279,17 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerPolicyBrowserTest,
       /*dst_components=*/base::Value(base::Value::Type::LIST),
       std::move(restrictions3)));
 
+  base::Value src_urls4(base::Value::Type::LIST);
+  src_urls4.Append(kUrl4);
+  base::Value restrictions4(base::Value::Type::LIST);
+  restrictions4.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kScreenShareRestriction, dlp::kBlockLevel));
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #4", "Block", std::move(src_urls4),
+      /*dst_urls=*/base::Value(base::Value::Type::LIST),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions4)));
+
   PolicyMap policies;
   policies.Set(key::kDataLeakPreventionRulesList, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, std::move(rules),
@@ -291,6 +305,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerPolicyBrowserTest,
             DlpContentManager::Get()->GetRestrictionSetForURL(GURL(kUrl2)));
   EXPECT_EQ(kPrintRestricted,
             DlpContentManager::Get()->GetRestrictionSetForURL(GURL(kUrl3)));
+  EXPECT_EQ(kScreenShareRestricted,
+            DlpContentManager::Get()->GetRestrictionSetForURL(GURL(kUrl4)));
   EXPECT_EQ(
       DlpContentRestrictionSet(),
       DlpContentManager::Get()->GetRestrictionSetForURL(GURL(kAllowedUrl)));

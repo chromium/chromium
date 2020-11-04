@@ -8086,7 +8086,7 @@
           "DataLeakPreventionRulesList": [
             {
               "name": "Support agent work flows",
-              "description": "Allow copy and paste for work purposes but block screenshots and printing",
+              "description": "Allow copy and paste for work purposes but block screenshots, screen share and printing",
               "sources": {
                 "urls": [
                   "salesforce.com",
@@ -8121,6 +8121,10 @@
                 },
                 {
                   "class": "PRIVACY_SCREEN",
+                  "level": "BLOCK"
+                },
+                {
+                  "class": "SCREEN_SHARE",
                   "level": "BLOCK"
                 }
               ]

@@ -23020,7 +23020,8 @@ If you disable this policy, web page scrolling to specific text fragments via UR
                       'CLIPBOARD',
                       'SCREENSHOT',
                       'PRINTING',
-                      'PRIVACY_SCREEN'
+                      'PRIVACY_SCREEN',
+                      'SCREEN_SHARE'
                     ]
                   },
                   'level': {
@@ -23045,7 +23046,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'example_value': [
         {
           'name': 'Support agent work flows',
-          'description': 'Allow copy and paste for work purposes but block screenshots and printing',
+          'description': 'Allow copy and paste for work purposes but block screenshots, screen share and printing',
           'sources': {
             'urls': [
               'salesforce.com',
@@ -23079,6 +23080,10 @@ If you disable this policy, web page scrolling to specific text fragments via UR
             },
             {
               'class': 'PRIVACY_SCREEN',
+              'level': 'BLOCK'
+            },
+            {
+              'class': 'SCREEN_SHARE',
               'level': 'BLOCK'
             }
           ]
@@ -23126,6 +23131,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       - Control taking screenshots of any of the sources.
       - Control printing of any of the sources.
       - Control the privacy screen when any of the sources is visible.
+      - Control screen sharing of any of the sources.
 
       The restriction level can be set to BLOCK, ALLOW.
       - If the restriction is set to BLOCK, the action won't be allowed.
