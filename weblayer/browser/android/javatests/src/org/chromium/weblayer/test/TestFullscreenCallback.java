@@ -6,8 +6,8 @@ package org.chromium.weblayer.test;
 
 import org.hamcrest.Matchers;
 
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.weblayer.FullscreenCallback;
 
 /**
