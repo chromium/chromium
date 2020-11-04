@@ -172,7 +172,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                 && bottomSheetController.getSheetState()
                         == BottomSheetController.SheetState.HIDDEN) {
             TabGroupUtils.maybeShowIPH(FeatureConstants.TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE,
-                    mTabStripCoordinator.getContainerView());
+                    mTabStripCoordinator.getContainerView(),
+                    TabUiFeatureUtilities.isLaunchBugFixEnabled() ? bottomSheetController : null);
         }
         mTabStripCoordinator.resetWithListOfTabs(tabs);
     }
