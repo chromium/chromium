@@ -267,11 +267,12 @@ std::string ParseFirstMiddleLastNameExpression() {
   return CaptureTypeWithPattern(
       NAME_FULL,
       {CaptureTypeWithPattern(NAME_HONORIFIC_PREFIX, kHonorificPrefixRe,
-                              {.quantifier = MATCH_OPTIONAL}),
+                              CaptureOptions{.quantifier = MATCH_OPTIONAL}),
        CaptureTypeWithPattern(NAME_FIRST, kSingleWordRe,
-                              {.quantifier = MATCH_OPTIONAL}),
-       CaptureTypeWithPattern(NAME_MIDDLE, kMultipleLazyWordsRe,
-                              {.quantifier = MATCH_LAZY_OPTIONAL}),
+                              CaptureOptions{.quantifier = MATCH_OPTIONAL}),
+       CaptureTypeWithPattern(
+           NAME_MIDDLE, kMultipleLazyWordsRe,
+           CaptureOptions{.quantifier = MATCH_LAZY_OPTIONAL}),
        CaptureTypeWithPattern(NAME_LAST,
                               {kOptionalLastNamePrefixRe, kSingleWordRe}),
        kOptionalLastNameSuffixRe});
@@ -288,14 +289,15 @@ std::string ParseLastCommaFirstMiddleExpression() {
   return CaptureTypeWithPattern(
       NAME_FULL,
       {CaptureTypeWithPattern(NAME_HONORIFIC_PREFIX, kHonorificPrefixRe,
-                              {.quantifier = MATCH_OPTIONAL}),
+                              CaptureOptions{.quantifier = MATCH_OPTIONAL}),
        CaptureTypeWithPattern(NAME_LAST,
                               {kOptionalLastNamePrefixRe, kSingleWordRe},
                               {.separator = "\\s*,\\s*"}),
        CaptureTypeWithPattern(NAME_FIRST, kSingleWordRe,
-                              {.quantifier = MATCH_OPTIONAL}),
-       CaptureTypeWithPattern(NAME_MIDDLE, kMultipleLazyWordsRe,
-                              {.quantifier = MATCH_LAZY_OPTIONAL})});
+                              CaptureOptions{.quantifier = MATCH_OPTIONAL}),
+       CaptureTypeWithPattern(
+           NAME_MIDDLE, kMultipleLazyWordsRe,
+           CaptureOptions{.quantifier = MATCH_LAZY_OPTIONAL})});
 }
 
 // Returns an expression to parse an Hispanic/Latinx last name.
@@ -313,7 +315,7 @@ std::string ParseHispanicLastNameExpression() {
                               {kOptionalLastNamePrefixRe, kSingleWordRe}),
        CaptureTypeWithPattern(NAME_LAST_CONJUNCTION,
                               kHispanicLastNameConjunctionsRe,
-                              {.quantifier = MATCH_OPTIONAL}),
+                              CaptureOptions{.quantifier = MATCH_OPTIONAL}),
        CaptureTypeWithPattern(NAME_LAST_SECOND,
                               {kOptionalLastNamePrefixRe, kSingleWordRe})});
 }
@@ -325,9 +327,10 @@ std::string ParseHispanicFullNameExpression() {
   return CaptureTypeWithPattern(
       NAME_FULL,
       {CaptureTypeWithPattern(NAME_HONORIFIC_PREFIX, kHonorificPrefixRe,
-                              {.quantifier = MATCH_OPTIONAL}),
-       CaptureTypeWithPattern(NAME_FIRST, kMultipleLazyWordsRe,
-                              {.quantifier = MATCH_LAZY_OPTIONAL}),
+                              CaptureOptions{.quantifier = MATCH_OPTIONAL}),
+       CaptureTypeWithPattern(
+           NAME_FIRST, kMultipleLazyWordsRe,
+           CaptureOptions{.quantifier = MATCH_LAZY_OPTIONAL}),
        ParseHispanicLastNameExpression()});
 }
 
@@ -358,14 +361,15 @@ std::string ParseStreetNameHouseNumberExpression() {
        CaptureTypeWithPattern(
            ADDRESS_HOME_SUBPREMISE,
            {
-               CaptureTypeWithPrefixedPattern(ADDRESS_HOME_FLOOR, kFloorAffixRe,
-                                              "(?:(\\d{0,3}\\w?))",
-                                              {.quantifier = MATCH_OPTIONAL}),
+               CaptureTypeWithPrefixedPattern(
+                   ADDRESS_HOME_FLOOR, kFloorAffixRe, "(?:(\\d{0,3}\\w?))",
+                   CaptureOptions{.quantifier = MATCH_OPTIONAL}),
                CaptureTypeWithPrefixedPattern(
                    ADDRESS_HOME_APT_NUM, kApartmentNumberPrefix,
-                   "(?:(\\d{0,3}\\w?))", {.quantifier = MATCH_OPTIONAL}),
+                   "(?:(\\d{0,3}\\w?))",
+                   CaptureOptions{.quantifier = MATCH_OPTIONAL}),
            },
-           {.quantifier = MATCH_OPTIONAL})});
+           CaptureOptions{.quantifier = MATCH_OPTIONAL})});
 }
 
 // Returns an expression to parse a street address into the street name, the
@@ -392,12 +396,13 @@ std::string ParseStreetNameHouseNumberExpressionSuffixedFloor() {
               {
                   CaptureTypeWithSuffixedPattern(
                       ADDRESS_HOME_FLOOR, "(?:(\\d{0,3}\\w?))", kFloorAffixRe,
-                      {.quantifier = MATCH_OPTIONAL}),
+                      CaptureOptions{.quantifier = MATCH_OPTIONAL}),
                   CaptureTypeWithPrefixedPattern(
                       ADDRESS_HOME_APT_NUM, kApartmentNumberPrefix,
-                      "(?:(\\d{0,3}\\w?))", {.quantifier = MATCH_OPTIONAL}),
+                      "(?:(\\d{0,3}\\w?))",
+                      CaptureOptions{.quantifier = MATCH_OPTIONAL}),
               },
-              {.quantifier = MATCH_OPTIONAL})});
+              CaptureOptions{.quantifier = MATCH_OPTIONAL})});
 }
 
 // Returns an expression to parse a street address into the street name, the
@@ -417,14 +422,15 @@ std::string ParseHouseNumberStreetNameExpression() {
        CaptureTypeWithPattern(
            ADDRESS_HOME_SUBPREMISE,
            {
-               CaptureTypeWithPrefixedPattern(ADDRESS_HOME_FLOOR, kFloorAffixRe,
-                                              "(?:(\\d{0,3}\\w?))",
-                                              {.quantifier = MATCH_OPTIONAL}),
+               CaptureTypeWithPrefixedPattern(
+                   ADDRESS_HOME_FLOOR, kFloorAffixRe, "(?:(\\d{0,3}\\w?))",
+                   CaptureOptions{.quantifier = MATCH_OPTIONAL}),
                CaptureTypeWithPrefixedPattern(
                    ADDRESS_HOME_APT_NUM, kApartmentNumberPrefix,
-                   "(?:(\\d{0,3}\\w?))", {.quantifier = MATCH_OPTIONAL}),
+                   "(?:(\\d{0,3}\\w?))",
+                   CaptureOptions{.quantifier = MATCH_OPTIONAL}),
            },
-           {.quantifier = MATCH_OPTIONAL})});
+           CaptureOptions{.quantifier = MATCH_OPTIONAL})});
 }
 
 }  // namespace
