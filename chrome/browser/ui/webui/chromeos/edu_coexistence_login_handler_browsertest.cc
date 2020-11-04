@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/child_accounts/edu_coexistence_tos_store_utils.h"
 #include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -37,16 +38,6 @@ namespace chromeos {
 namespace {
 
 constexpr char kResponseCallback[] = "cr.webUIResponse";
-
-std::string GetAcceptedTosVersionForAccount(const std::string& user_gaia_id) {
-  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
-
-  const base::Value* accepted_values =
-      prefs->Get(chromeos::prefs::kEduCoexistenceToSAcceptedVersion);
-
-  const std::string* entry = accepted_values->FindStringKey(user_gaia_id);
-  return entry ? *entry : std::string();
-}
 
 }  // namespace
 
@@ -120,11 +111,10 @@ class EduCoexistenceLoginHandlerBrowserTest
 
 IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
                        HandleInitializeEduCoexistenceArgs) {
+  constexpr char kCallbackId[] = "coexistence-data-init";
   std::unique_ptr<EduCoexistenceLoginHandler> handler = SetUpHandler();
-
-  constexpr char callback_id[] = "coexistence-data-init";
   base::ListValue list_args;
-  list_args.Append(callback_id);
+  list_args.Append(kCallbackId);
   web_ui()->HandleReceivedMessage("initializeEduArgs", &list_args);
   SimulateAccessTokenFetched(handler.get());
 
@@ -133,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
   const content::TestWebUI::CallData& second_call = *web_ui()->call_data()[0];
 
   // TODO(yilkal): verify the exact the call arguments.
-  VerifyJavascriptCallResolved(second_call, callback_id, kResponseCallback);
+  VerifyJavascriptCallResolved(second_call, kCallbackId, kResponseCallback);
 }
 
 IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
@@ -174,13 +164,13 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
                        HandleConsentLogged) {
-  std::unique_ptr<EduCoexistenceLoginHandler> handler = SetUpHandler();
   constexpr char kConsentLoggedCallback[] = "consent-logged-callback";
-  constexpr char kAcceptedTosVersion[] = "12345678";
+  constexpr char kToSVersion[] = "12345678";
+  std::unique_ptr<EduCoexistenceLoginHandler> handler = SetUpHandler();
 
   base::ListValue call_args;
   call_args.Append(FakeGaiaMixin::kFakeUserEmail);
-  call_args.Append(kAcceptedTosVersion);
+  call_args.Append(kToSVersion);
 
   base::ListValue list_args;
   list_args.Append(kConsentLoggedCallback);
@@ -203,9 +193,9 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
   account.gaia = FakeGaiaMixin::kFakeUserGaiaId;
   handler->OnRefreshTokenUpdatedForAccount(account);
 
-  const std::string& accepted_tos =
-      GetAcceptedTosVersionForAccount(FakeGaiaMixin::kFakeUserGaiaId);
-  EXPECT_EQ(accepted_tos, std::string(kAcceptedTosVersion));
+  const std::string& accepted_tos = edu_coexistence::GetAcceptedToSVersion(
+      ProfileManager::GetActiveUserProfile(), FakeGaiaMixin::kFakeUserGaiaId);
+  EXPECT_EQ(accepted_tos, std::string(kToSVersion));
 
   EXPECT_EQ(web_ui()->call_data().size(), 1u);
   const content::TestWebUI::CallData& second_call = *web_ui()->call_data()[0];
@@ -213,6 +203,46 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
   // TODO(yilkal): verify the exact the call arguments.
   VerifyJavascriptCallResolved(second_call, kConsentLoggedCallback,
                                kResponseCallback);
+}
+
+IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
+                       TestUpdateAcceptedToSVersionPrefAccount) {
+  constexpr char kVersion1[] = "123";
+  constexpr char kVersion2[] = "234";
+  constexpr char kUser1GaiaId[] = "user1-gaia-id";
+  constexpr char kUser2GaiaId[] = "user2-gaia-id";
+  constexpr char kUser3GaiaId[] = "user3-gaia-id";
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+
+  edu_coexistence::UpdateAcceptedToSVersionPref(
+      profile, edu_coexistence::UserConsentInfo(kUser1GaiaId, kVersion1));
+  EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile, kUser1GaiaId),
+            std::string(kVersion1));
+
+  edu_coexistence::UpdateAcceptedToSVersionPref(
+      profile, edu_coexistence::UserConsentInfo(kUser2GaiaId, kVersion1));
+  EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile, kUser2GaiaId),
+            std::string(kVersion1));
+
+  edu_coexistence::UpdateAcceptedToSVersionPref(
+      profile, edu_coexistence::UserConsentInfo(kUser3GaiaId, kVersion1));
+  EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile, kUser3GaiaId),
+            std::string(kVersion1));
+
+  edu_coexistence::UpdateAcceptedToSVersionPref(
+      profile, edu_coexistence::UserConsentInfo(kUser2GaiaId, kVersion2));
+  EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile, kUser2GaiaId),
+            std::string(kVersion2));
+  EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile, kUser1GaiaId),
+            std::string(kVersion1));
+  EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile, kUser3GaiaId),
+            std::string(kVersion1));
+
+  edu_coexistence::UpdateAcceptedToSVersionPref(
+      profile, edu_coexistence::UserConsentInfo(kUser1GaiaId, kVersion2));
+  EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile, kUser1GaiaId),
+            std::string(kVersion2));
 }
 
 }  // namespace chromeos

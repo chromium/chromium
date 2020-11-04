@@ -92,20 +92,6 @@ void SecondaryAccountConsentLogger::RegisterPrefs(
   registry->RegisterStringPref(
       chromeos::prefs::kEduCoexistenceSecondaryAccountsInvalidationVersion,
       "iv2153049" /* default_value, the first invalidation version */);
-
-  // |kEduCoexistenceToSVersion| is derived from Google3 cl that introduced new
-  // ToS version. We use string here for the ToS version to be more future
-  // proof. In the future we might add a prefix to indicate the flow where the
-  // ToS were accepted (OOBE or Settings flow).
-  registry->RegisterStringPref(chromeos::prefs::kEduCoexistenceToSVersion,
-                               std::string());
-
-  // |kEduCoexistenceToSAcceptedVersion| is a dictionary associating the
-  // edu accounts present in account manager to the accepted terms of service
-  // version.
-  registry->RegisterDictionaryPref(
-      chromeos::prefs::kEduCoexistenceToSAcceptedVersion,
-      base::Value(base::Value::Type::DICTIONARY));
 }
 
 // static

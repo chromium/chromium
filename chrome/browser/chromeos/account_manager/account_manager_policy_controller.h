@@ -24,6 +24,7 @@ class Profile;
 namespace chromeos {
 
 class AccountManager;
+class EduCoexistenceConsentInvalidationController;
 
 class AccountManagerPolicyController : public KeyedService {
  public:
@@ -73,6 +74,9 @@ class AccountManagerPolicyController : public KeyedService {
 
   std::unique_ptr<chromeos::ChildAccountTypeChangedSubscription>
       child_account_type_changed_subscription_;
+
+  std::unique_ptr<EduCoexistenceConsentInvalidationController>
+      edu_coexistence_consent_invalidation_controller_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

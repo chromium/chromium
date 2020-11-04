@@ -37,6 +37,8 @@ class SharedURLLoaderFactory;
 // logs consent with provided parent id, rapt, coexistence id and text version.
 // EduCoexistenceId identifies the profile and is created if it's not present
 // yet. Text version specifies the version of the text on the information page.
+// TODO(crbug.com/1145246): Remove this code when the educoexistence v2 flow is
+// stable.
 class SecondaryAccountConsentLogger {
  public:
   // NOTE: This enum is persisted to histograms. Do not change or reorder
