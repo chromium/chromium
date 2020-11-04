@@ -60,8 +60,28 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
   }
 
   void EnableDeepScanning(bool enable, bool scan_succeeds) {
-    SetScanPolicies(enable ? safe_browsing::CHECK_UPLOADS
-                           : safe_browsing::CHECK_NONE);
+    if (enable) {
+      static constexpr char kEnabled[] = R"(
+          {
+              "service_provider": "google",
+              "enable": [
+                {
+                  "url_list": ["*"],
+                  "tags": ["dlp"]
+                }
+              ],
+              "block_until_verdict": 1
+          })";
+      safe_browsing::SetAnalysisConnector(enterprise_connectors::FILE_ATTACHED,
+                                          kEnabled);
+      safe_browsing::SetAnalysisConnector(
+          enterprise_connectors::BULK_DATA_ENTRY, kEnabled);
+    } else {
+      safe_browsing::ClearAnalysisConnector(
+          enterprise_connectors::FILE_ATTACHED);
+      safe_browsing::ClearAnalysisConnector(
+          enterprise_connectors::BULK_DATA_ENTRY);
+    }
 
     run_loop_.reset(new base::RunLoop());
 
@@ -132,12 +152,6 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
   std::string small_text() const { return "random small text"; }
 
  private:
-  void SetScanPolicies(safe_browsing::CheckContentComplianceValues state) {
-    safe_browsing::SetDlpPolicyForConnectors(state);
-    safe_browsing::SetDelayDeliveryUntilVerdictPolicyForConnectors(
-        safe_browsing::DELAY_UPLOADS);
-  }
-
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
