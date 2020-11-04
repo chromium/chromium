@@ -105,9 +105,17 @@ using NotSafeToConcurrentlyTraceWorklist =
 
 class WeakContainersWorklist {
  public:
-  void Push(const HeapObjectHeader*);
-  void Erase(const HeapObjectHeader*);
-  bool Contains(const HeapObjectHeader*);
+  inline void Push(const HeapObjectHeader* object) {
+    DCHECK(object);
+    WTF::MutexLocker locker(lock_);
+    objects_.insert(object);
+  }
+
+  inline bool Contains(const HeapObjectHeader* object) {
+    // This method is called only during atomic pause, so lock is not needed.
+    DCHECK(object);
+    return objects_.find(object) != objects_.end();
+  }
 
  private:
   WTF::Mutex lock_;

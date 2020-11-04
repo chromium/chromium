@@ -59,24 +59,6 @@
 
 namespace blink {
 
-void WeakContainersWorklist::Push(const HeapObjectHeader* object) {
-  DCHECK(object);
-  WTF::MutexLocker locker(lock_);
-  objects_.insert(object);
-}
-
-void WeakContainersWorklist::Erase(const HeapObjectHeader* object) {
-  // This method is called only during atomic pause, so lock is not needed.
-  DCHECK(object);
-  objects_.erase(object);
-}
-
-bool WeakContainersWorklist::Contains(const HeapObjectHeader* object) {
-  // This method is called only during atomic pause, so lock is not needed.
-  DCHECK(object);
-  return objects_.find(object) != objects_.end();
-}
-
 HeapAllocHooks::AllocationHook* HeapAllocHooks::allocation_hook_ = nullptr;
 HeapAllocHooks::FreeHook* HeapAllocHooks::free_hook_ = nullptr;
 

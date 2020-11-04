@@ -228,6 +228,24 @@ void MarkingVisitor::TraceMarkedBackingStoreSlow(const void* value) {
       .trace(thread_state->CurrentVisitor(), value);
 }
 
+constexpr size_t MarkingVisitor::RecentlyRetracedWeakContainers::kMaxCacheSize;
+
+bool MarkingVisitor::RecentlyRetracedWeakContainers::Contains(
+    const HeapObjectHeader* header) {
+  return std::find(recently_retraced_cache_.begin(),
+                   recently_retraced_cache_.end(),
+                   header) != recently_retraced_cache_.end();
+}
+
+void MarkingVisitor::RecentlyRetracedWeakContainers::Insert(
+    const HeapObjectHeader* header) {
+  last_used_index_ = (last_used_index_ + 1) % kMaxCacheSize;
+  if (recently_retraced_cache_.size() <= last_used_index_)
+    recently_retraced_cache_.push_back(header);
+  else
+    recently_retraced_cache_[last_used_index_] = header;
+}
+
 MarkingVisitor::MarkingVisitor(ThreadState* state, MarkingMode marking_mode)
     : MarkingVisitorBase(state, marking_mode, WorklistTaskId::MutatorThread) {
   DCHECK(state->InAtomicMarkingPause());
@@ -252,11 +270,11 @@ void MarkingVisitor::ConservativelyMarkAddress(BasePage* page,
     // retraced strongly now. Previously marked/traced weak containers are
     // marked using the |weak_containers_worklist_|. Other marked object can be
     // skipped.
-    if (weak_containers_worklist_->Contains(header)) {
+    if (weak_containers_worklist_->Contains(header) &&
+        !recently_retraced_weak_containers_.Contains(header)) {
       DCHECK(!header->IsInConstruction());
-      // Remove from the set so multiple iterators don't cause multiple
-      // retracings of the backing store.
-      weak_containers_worklist_->Erase(header);
+      // Record the weak container backing store to avoid retracing it again.
+      recently_retraced_weak_containers_.Insert(header);
       marking_worklist_.Push(
           {header->Payload(), GCInfo::From(header->GcInfoIndex()).trace});
     }

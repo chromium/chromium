@@ -174,6 +174,22 @@ class PLATFORM_EXPORT MarkingVisitor : public MarkingVisitorBase {
   static bool MarkValue(void*, BasePage*, ThreadState*);
   static void TraceMarkedBackingStoreSlow(const void*);
 
+  // Weak containers are strongly retraced during conservative stack scanning.
+  // Stack scanning happens once per GC at the start of the atomic pause.
+  // Because the visitor is not retained between GCs, there is no need to clear
+  // the set at the end of GC.
+  class RecentlyRetracedWeakContainers {
+    static constexpr size_t kMaxCacheSize = 8;
+
+   public:
+    bool Contains(const HeapObjectHeader*);
+    void Insert(const HeapObjectHeader*);
+
+   private:
+    std::vector<const HeapObjectHeader*> recently_retraced_cache_;
+    size_t last_used_index_ = -1;
+  } recently_retraced_weak_containers_;
+
   friend class HeapAllocator;
   template <typename T, TracenessMemberConfiguration tracenessConfiguration>
   friend class MemberBase;
