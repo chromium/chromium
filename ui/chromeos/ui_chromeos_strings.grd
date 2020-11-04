@@ -724,10 +724,10 @@
         Kazakh
       </message>
 
-      <message name="IDS_IME_NAME_KEYBOARD_ARMENIAN_PHONETIC" desc="The input method name shows in system tray menu, this shows [Armenian Phonetic keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_ARMENIAN_PHONETIC" desc="The input method name shows in system tray menu and settings page.">
         Armenian Phonetic keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_BELARUSIAN" desc="The input method name shows in system tray menu, this shows [Belarusian keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_BELARUSIAN" desc="The input method name shows in system tray menu and settings page.">
         Belarusian keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_BELGIAN_DUTCH" desc="The input method name shows in system tray menu and settings page.">
@@ -739,130 +739,130 @@
       <message name="IDS_IME_NAME_KEYBOARD_BELGIAN_GERMAN" desc="The input method name shows in system tray menu and settings page.">
         German (Belgium)
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_BRAZILIAN" desc="The input method name shows in system tray menu, this shows [Brazilian keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_BRAZILIAN" desc="The input method name shows in system tray menu and settings page.">
         Brazilian keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_BULGARIAN" desc="The input method name shows in system tray menu, this shows [Bulgarian keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_BULGARIAN" desc="The input method name shows in system tray menu and settings page.">
         Bulgarian keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_BULGARIAN_PHONETIC" desc="The input method name shows in system tray menu, this shows [Bulgarian Phonetic keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_BULGARIAN_PHONETIC" desc="The input method name shows in system tray menu and settings page.">
         Bulgarian Phonetic keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_CANADIAN_ENGLISH" desc="The input method name shows in system tray menu, this shows [Canadian English keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_CANADIAN_ENGLISH" desc="The input method name shows in system tray menu and settings page.">
         Canadian English keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_CANADIAN_FRENCH" desc="The input method name shows in system tray menu, this shows [Canadian French keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_CANADIAN_FRENCH" desc="The input method name shows in system tray menu and settings page.">
         Canadian French keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_CANADIAN_MULTILINGUAL" desc="The input method name shows in system tray menu, this shows [Canadian Multilingual keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_CANADIAN_MULTILINGUAL" desc="The input method name shows in system tray menu and settings page.">
         Canadian Multilingual keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_CATALAN" desc="The input method name shows in system tray menu, this shows [Catalan keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_CATALAN" desc="The input method name shows in system tray menu and settings page.">
         Catalan keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_CROATIAN" desc="The input method name shows in system tray menu, this shows [Croatian keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_CROATIAN" desc="The input method name shows in system tray menu and settings page.">
         Croatian keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_CZECH" desc="The input method name shows in system tray menu, this shows [Czech keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_CZECH" desc="The input method name shows in system tray menu and settings page.">
         Czech keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_CZECH_QWERTY" desc="The input method name shows in system tray menu, this shows [Czech QWERTY keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_CZECH_QWERTY" desc="The input method name shows in system tray menu and settings page.">
         Czech QWERTY keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_DANISH" desc="The input method name shows in system tray menu, this shows [Danish keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_DANISH" desc="The input method name shows in system tray menu and settings page.">
         Danish keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_ESTONIAN" desc="The input method name shows in system tray menu, this shows [Estonian keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_ESTONIAN" desc="The input method name shows in system tray menu and settings page.">
         Estonian keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_FAROESE" desc="The input method name shows in system tray menu, this shows [Faroese keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_FAROESE" desc="The input method name shows in system tray menu and settings page.">
         Faroese keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_FILIPINO" desc="The input method name shows in system tray menu and settings page.">
         Filipino
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_FINNISH" desc="The input method name shows in system tray menu, this shows [Finnish keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_FINNISH" desc="The input method name shows in system tray menu and settings page.">
         Finnish keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_FRENCH_BEPO" desc="The input method name shows in system tray menu, this shows [French BÉPO keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_FRENCH_BEPO" desc="The input method name shows in system tray menu and settings page.">
         French BÉPO keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_FRENCH" desc="The input method name shows in system tray menu, this shows [French keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_FRENCH" desc="The input method name shows in system tray menu and settings page.">
         French keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_GEORGIAN" desc="The input method name shows in system tray menu, this shows [Georgian keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_GEORGIAN" desc="The input method name shows in system tray menu and settings page.">
         Georgian keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_GERMAN" desc="The input method name shows in system tray menu, this shows [German keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_GERMAN" desc="The input method name shows in system tray menu and settings page.">
         German keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_GERMAN_NEO_2" desc="The input method name shows in system tray menu, this shows [German NEO 2 keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_GERMAN_NEO_2" desc="The input method name shows in system tray menu and settings page.">
         German NEO 2 keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_GREEK" desc="The input method name shows in system tray menu, this shows [Greek keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_GREEK" desc="The input method name shows in system tray menu and settings page.">
         Greek keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_HEBREW" desc="The input method name shows in system tray menu, this shows [Hebrew keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_HEBREW" desc="The input method name shows in system tray menu and settings page.">
         Hebrew keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_HUNGARIAN" desc="The input method name shows in system tray menu, this shows [Hungarian keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_HUNGARIAN" desc="The input method name shows in system tray menu and settings page.">
         Hungarian keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_HUNGARIAN_QWERTY" desc="The input method name shows in system tray menu, this shows [Hungarian QWERTY keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_HUNGARIAN_QWERTY" desc="The input method name shows in system tray menu and settings page.">
         Hungarian QWERTY keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_ICELANDIC" desc="The input method name shows in system tray menu, this shows [Icelandic keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_ICELANDIC" desc="The input method name shows in system tray menu and settings page.">
         Icelandic keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_INDONESIAN" desc="The input method name shows in system tray menu and settings page.">
         Indonesian
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_IRISH" desc="The input method name shows in system tray menu, this shows [Irish keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_IRISH" desc="The input method name shows in system tray menu and settings page.">
         Irish keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_ITALIAN" desc="The input method name shows in system tray menu, this shows [Italian keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_ITALIAN" desc="The input method name shows in system tray menu and settings page.">
         Italian keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_JAPANESE" desc="The input method name shows in system tray menu, this shows [Alphanumeric input (for Japanese keyboard)]. Native name in Japanese is '英数入力（日本語キーボード用）'. This refers to the keyboard with Japanese JIS layout that types Latin alphanumeric and symbol characters.">
+      <message name="IDS_IME_NAME_KEYBOARD_JAPANESE" desc="The input method name shows in system tray menu and settings page. Native name in Japanese is '英数入力（日本語キーボード用）'. This refers to the keyboard with Japanese JIS layout that types Latin alphanumeric and symbol characters.">
         Alphanumeric input (for Japanese keyboard)
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_KAZAKH" desc="The input method name shows in system tray menu, this shows [Kazakh keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_KAZAKH" desc="The input method name shows in system tray menu and settings page.">
         Kazakh keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_LATIN_AMERICAN" desc="The input method name shows in system tray menu, this shows [Latin American keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_LATIN_AMERICAN" desc="The input method name shows in system tray menu and settings page.">
         Latin American keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_LATVIAN" desc="The input method name shows in system tray menu, this shows [Latvian keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_LATVIAN" desc="The input method name shows in system tray menu and settings page.">
         Latvian keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_LITHUANIAN" desc="The input method name shows in system tray menu, this shows [Lithuanian keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_LITHUANIAN" desc="The input method name shows in system tray menu and settings page.">
         Lithuanian keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_MACEDONIAN" desc="The input method name shows in system tray menu, this shows [Macedonian keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_MACEDONIAN" desc="The input method name shows in system tray menu and settings page.">
         Macedonian keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_MALAY" desc="The input method name shows in system tray menu and settings page.">
         Malay
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_MALTESE" desc="The input method name shows in system tray menu, this shows [Maltese keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_MALTESE" desc="The input method name shows in system tray menu and settings page.">
         Maltese keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_MONGOLIAN" desc="The input method name shows in system tray menu, this shows [Mongolian keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_MONGOLIAN" desc="The input method name shows in system tray menu and settings page.">
         Mongolian keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_NETHERLANDS_US_INTERNATIONAL_PC" desc="The input method name shows in system tray menu and settings page.">
         Dutch (Netherlands) with US International PC keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_NETHERLANDS" desc="The input method name shows in system tray menu, this shows [Netherlands keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_NETHERLANDS" desc="The input method name shows in system tray menu and settings page.">
         Netherlands keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_NORWEGIAN" desc="The input method name shows in system tray menu, this shows [Norwegian keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_NORWEGIAN" desc="The input method name shows in system tray menu and settings page.">
         Norwegian keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_POLISH" desc="The input method name shows in system tray menu, this shows [Polish keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_POLISH" desc="The input method name shows in system tray menu and settings page.">
         Polish keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_PORTUGUESE" desc="The input method name shows in system tray menu, this shows [Portuguese keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_PORTUGUESE" desc="The input method name shows in system tray menu and settings page.">
         Portuguese keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_PORTUGUESE_US_INTERNATIONAL" desc="The input method name shows in system tray menu and settings page.">
@@ -871,85 +871,85 @@
       <message name="IDS_IME_NAME_KEYBOARD_PORTUGUESE_US_INTERNATIONAL_PC" desc="The input method name shows in system tray menu and settings page.">
         Portuguese with US International PC keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_ROMANIAN" desc="The input method name shows in system tray menu, this shows [Romanian keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_ROMANIAN" desc="The input method name shows in system tray menu and settings page.">
         Romanian keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_ROMANIAN_STANDARD" desc="The input method name shows in system tray menu, this shows [Romanian standard keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_ROMANIAN_STANDARD" desc="The input method name shows in system tray menu and settings page.">
         Romanian standard keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_RUSSIAN" desc="The input method name shows in system tray menu, this shows [Russian keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_RUSSIAN" desc="The input method name shows in system tray menu and settings page.">
         Russian keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_RUSSIAN_PHONETIC" desc="The input method name shows in system tray menu, this shows [Russian Phonetic keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_RUSSIAN_PHONETIC" desc="The input method name shows in system tray menu and settings page.">
         Russian Phonetic keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_RUSSIAN_PHONETIC_AATSEEL" desc="The input method name shows in system tray menu, this shows [Russian Phonetic (AATSEEL) keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_RUSSIAN_PHONETIC_AATSEEL" desc="The input method name shows in system tray menu and settings page.">
         Russian Phonetic (AATSEEL) keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_RUSSIAN_PHONETIC_YAZHERT" desc="The input method name shows in system tray menu, this shows [Russian Phonetic (YaZHert) keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_RUSSIAN_PHONETIC_YAZHERT" desc="The input method name shows in system tray menu and settings page.">
         Russian Phonetic (YaZHert) keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_SERBIAN" desc="The input method name shows in system tray menu, this shows [Serbian keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_SERBIAN" desc="The input method name shows in system tray menu and settings page.">
         Serbian keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_SLOVAK" desc="The input method name shows in system tray menu, this shows [Slovak keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_SLOVAK" desc="The input method name shows in system tray menu and settings page.">
         Slovak keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_SLOVENIAN" desc="The input method name shows in system tray menu, this shows [Slovenian keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_SLOVENIAN" desc="The input method name shows in system tray menu and settings page.">
         Slovenian keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_SPANISH" desc="The input method name shows in system tray menu, this shows [Spanish keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_SPANISH" desc="The input method name shows in system tray menu and settings page.">
         Spanish keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_SWEDISH" desc="The input method name shows in system tray menu, this shows [Swedish keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_SWEDISH" desc="The input method name shows in system tray menu and settings page.">
         Swedish keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_SWISS_FRENCH" desc="The input method name shows in system tray menu, this shows [Swiss French keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_SWISS_FRENCH" desc="The input method name shows in system tray menu and settings page.">
         Swiss French keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_SWISS" desc="The input method name shows in system tray menu, this shows [Swiss keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_SWISS" desc="The input method name shows in system tray menu and settings page.">
         Swiss keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_TURKISH" desc="The input method name shows in system tray menu, this shows [Turkish keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_TURKISH" desc="The input method name shows in system tray menu and settings page.">
         Turkish keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_TURKISH_F" desc="The input method name shows in system tray menu, this shows [Turkish-F keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_TURKISH_F" desc="The input method name shows in system tray menu and settings page.">
         Turkish-F keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_UK_DVORAK" desc="The input method name shows in system tray menu, this shows [UK Dvorak keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_UK_DVORAK" desc="The input method name shows in system tray menu and settings page.">
         UK Dvorak keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_UK" desc="The input method name shows in system tray menu, this shows [UK keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_UK" desc="The input method name shows in system tray menu and settings page.">
         UK keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_UKRAINIAN" desc="The input method name shows in system tray menu, this shows [Ukrainian keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_UKRAINIAN" desc="The input method name shows in system tray menu and settings page.">
         Ukrainian keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_US_COLEMAK" desc="The input method name shows in system tray menu, this shows [US Colemak keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_US_COLEMAK" desc="The input method name shows in system tray menu and settings page.">
         US Colemak keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_US_DVORAK" desc="The input method name shows in system tray menu, this shows [US Dvorak keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_US_DVORAK" desc="The input method name shows in system tray menu and settings page.">
         US Dvorak keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_US_DVP" desc="The input method name shows in system tray menu, this shows [US Programmer Dvorak keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_US_DVP" desc="The input method name shows in system tray menu and settings page.">
         US Programmer Dvorak keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_US_EXTENDED" desc="The input method name shows in system tray menu, this shows [US Extended keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_US_EXTENDED" desc="The input method name shows in system tray menu and settings page.">
         US Extended keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_US_INTERNATIONAL" desc="The input method name shows in system tray menu, this shows [US International keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_US_INTERNATIONAL" desc="The input method name shows in system tray menu and settings page.">
         US International keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_US_INTERNATIONAL_PC" desc="The input method name shows in system tray menu, this shows [US International (PC) keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_US_INTERNATIONAL_PC" desc="The input method name shows in system tray menu and settings page.">
         US International (PC) keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_US_WORKMAN" desc="The input method name shows in system tray menu, this shows [US Workman keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_US_WORKMAN" desc="The input method name shows in system tray menu and settings page.">
         US Workman keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_US_WORKMAN_INTERNATIONAL" desc="The input method name shows in system tray menu, this shows [US Workman international keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_US_WORKMAN_INTERNATIONAL" desc="The input method name shows in system tray menu and settings page.">
         US Workman international keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_US" desc="The input method name shows in system tray menu, this shows [US keyboard].">
+      <message name="IDS_IME_NAME_KEYBOARD_US" desc="The input method name shows in system tray menu and settings page.">
         US keyboard
       </message>
 
