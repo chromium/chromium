@@ -33,9 +33,7 @@ const DELEGATE = {
         Message.ADD_OR_UPDATE_SEARCH_INDEX, data);
   },
   async clearSearchIndex() {
-    // TODO(b/166047521): Send the message when clear search index has been
-    // implemented. the index when that method is available.
-    return;
+    await parentMessagePipe.sendMessage(Message.CLEAR_SEARCH_INDEX);
   },
   /**
    * @override

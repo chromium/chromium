@@ -9,11 +9,32 @@ GUEST_TEST('GuestHasLang', () => {
   assertEquals(document.documentElement.lang, 'en-US');
 });
 
-// Test that search works when called from the guest frame, and it works for
-// searchable items with and without subheadings.
-GUEST_TEST('GuestCanSearchWithHeadings', async () => {
+/**
+ * Waits for the app's initial index update to complete. This prevents it from
+ * interfering with test code. After the update completes, there will be at
+ * least one search result for the query "Chrome".
+ *
+ * Returns the app's client API delegate.
+ */
+async function waitForInitialIndexUpdate() {
   const delegate = /** @type {!helpApp.ClientApi} */ (
-      document.querySelector('showoff-app')).getDelegate();
+    document.querySelector('showoff-app')).getDelegate();
+
+  for (let numTries = 0; numTries < 50; numTries++) {
+    // 'Chrome' appears in the mock app's fake search results, and should appear
+    // in the real app's search results.
+    const response = await delegate.findInSearchIndex('Chrome');
+    if (response && response.results && response.results.length > 0) break;
+    await new Promise(resolve => {setTimeout(resolve, 50)});
+  }
+  return delegate;
+}
+
+// Test that search (add, find) works when called from the guest frame,
+// and it works for searchable items with and without subheadings.
+GUEST_TEST('GuestCanSearchWithHeadings', async () => {
+  const delegate = await waitForInitialIndexUpdate();
+
   await delegate.addOrUpdateSearchIndex([{
     // Title match. No subheadings.
     id: 'test-id-1',
@@ -45,9 +66,11 @@ GUEST_TEST('GuestCanSearchWithHeadings', async () => {
   // Keep polling until the index finishes updating or too much time has passed.
   /** @type {?helpApp.FindResponse} */
   let response = null;
-  for (let numTries = 0; numTries < 100; numTries++) {
+  for (let numTries = 0; numTries < 50; numTries++) {
+    // This search query was chosen because it is unlikely to show any search
+    // results for the real app's data.
     response = await delegate.findInSearchIndex('verycomplicatedsearchtoken');
-    if (response && response.results) break;
+    if (response && response.results && response.results.length > 0) break;
     await new Promise(resolve => {setTimeout(resolve, 50)});
   }
 
@@ -73,4 +96,16 @@ GUEST_TEST('GuestCanSearchWithHeadings', async () => {
       bodyPositions: [],
     },
   ]);
+});
+
+// Test that the guest frame can clear the search index.
+GUEST_TEST('GuestCanClearSearchIndex', async () => {
+  const delegate = await waitForInitialIndexUpdate();
+
+  // Clear resolves after the index finishes clearing, so we don't need to try
+  // finding multiple times.
+  await delegate.clearSearchIndex();
+
+  const res = await delegate.findInSearchIndex('Chrome');
+  assertDeepEquals(res, {results: null});
 });

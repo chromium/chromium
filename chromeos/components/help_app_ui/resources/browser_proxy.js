@@ -109,7 +109,7 @@ guestMessagePipe.registerHandler(Message.CLEAR_SEARCH_INDEX, async () => {
   if (!(await isLssEnabled)) {
     return;
   }
-  // TODO(b/166047521): Clear the index when that method is available.
+  return indexRemote.clearIndex();
 });
 
 guestMessagePipe.registerHandler(

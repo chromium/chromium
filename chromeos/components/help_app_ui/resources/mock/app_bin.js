@@ -20,11 +20,34 @@ class ShowoffApp extends HTMLElement {
   /** @override */
   setDelegate(delegate) {
     this.delegate = delegate;
+
+    // Note: This is intended to mimic how the real app initializes the search
+    // index once on startup. But the real app does this in firstUpdated, not
+    // setDelegate.
+    this.initSearchIndex();
   }
 
   /** @override */
   getDelegate() {
     return /** @type {!helpApp.ClientApiDelegate} */ (this.delegate);
+  }
+
+  /**
+   * Mimics the way the real app initializes the search index. Adds one fake
+   * search result.
+   */
+  async initSearchIndex() {
+    await this.delegate.clearSearchIndex();
+    await this.delegate.addOrUpdateSearchIndex([
+      {
+        id: 'mock-app-test-id',
+        title: 'Get help with Chrome',
+        body: 'Test body',
+        mainCategoryName: 'Help',
+        locale: 'en-US',
+      }
+    ]);
+    this.toggleAttribute('loaded', true);
   }
 }
 

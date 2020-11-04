@@ -90,7 +90,12 @@ TEST_F('HelpAppUIBrowserTest', 'GuestHasLang', async () => {
   testDone();
 });
 
-TEST_F('HelpAppUIBrowserTest', 'GuestCanSearchWithSubheadings', async () => {
+TEST_F('HelpAppUIBrowserTest', 'GuestCanSearchWithHeadings', async () => {
   await runTestInGuest('GuestCanSearchWithHeadings');
+  testDone();
+});
+
+TEST_F('HelpAppUIBrowserTest', 'GuestCanClearSearchIndex', async () => {
+  await runTestInGuest('GuestCanClearSearchIndex');
   testDone();
 });
