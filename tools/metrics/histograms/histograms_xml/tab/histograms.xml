@@ -558,6 +558,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tab.Visibility{Visibility}" units="ms" expires_after="M85">
+  <obsolete>
+    Removed 11/2020. Not actively used now that occlusion tracking is shipped to
+    stable on Windows, Mac and ChromeOS.
+  </obsolete>
   <owner>fdoray@chromium.org</owner>
   <summary>
     Time spent by a tab in a given visibility state. Recorded when the

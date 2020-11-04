@@ -245,7 +245,6 @@ class TabStatsTracker::WebContentsUsageObserver
                            TabStatsTracker* tab_stats_tracker)
       : content::WebContentsObserver(web_contents),
         tab_stats_tracker_(tab_stats_tracker),
-        visibility_(web_contents->GetVisibility()),
         ukm_source_id_(ukm::GetSourceIdForWebContentsDocument(web_contents)) {}
 
   // content::WebContentsObserver:
@@ -277,18 +276,11 @@ class TabStatsTracker::WebContentsUsageObserver
   }
 
   void OnVisibilityChanged(content::Visibility visibility) override {
-    // Record Tab.Visibility.* histogram and do associated bookkeeping.
-    // Recording is done at every visibility state change rather than just when
-    // the WebContents is destroyed to reduce data loss on session end.
-    RecordVisibilityHistogram(visibility);
-
     if (visibility == content::Visibility::VISIBLE)
       tab_stats_tracker_->tab_stats_data_store()->OnTabVisible(web_contents());
   }
 
   void WebContentsDestroyed() override {
-    RecordVisibilityHistogram(visibility_);
-
     if (ukm_source_id_) {
       ukm::builders::TabManager_TabLifetime(ukm_source_id_)
           .SetTimeSinceNavigation(
@@ -303,44 +295,10 @@ class TabStatsTracker::WebContentsUsageObserver
 
  private:
   TabStatsTracker* tab_stats_tracker_;
-  // Current tab visibility.
-  content::Visibility visibility_;
-  // The last time at which |visibility_| changed.
-  base::TimeTicks last_visibility_change_time_ = base::TimeTicks::Now();
   // The last navigation time associated with this tab.
   base::TimeTicks navigation_time_ = base::TimeTicks::Now();
   // Updated when a navigation is finished.
   ukm::SourceId ukm_source_id_ = 0;
-
-  void RecordVisibilityHistogram(content::Visibility new_visibility) {
-    const base::TimeTicks now = base::TimeTicks::Now();
-    const base::TimeDelta duration = now - last_visibility_change_time_;
-    switch (visibility_) {
-      case content::Visibility::VISIBLE: {
-        UMA_HISTOGRAM_CUSTOM_TIMES("Tab.Visibility.Visible", duration,
-                                   base::TimeDelta::FromMilliseconds(1),
-                                   base::TimeDelta::FromDays(1), 50);
-        break;
-      }
-
-      case content::Visibility::OCCLUDED: {
-        UMA_HISTOGRAM_CUSTOM_TIMES("Tab.Visibility.Occluded", duration,
-                                   base::TimeDelta::FromMilliseconds(1),
-                                   base::TimeDelta::FromDays(1), 50);
-        break;
-      }
-
-      case content::Visibility::HIDDEN: {
-        UMA_HISTOGRAM_CUSTOM_TIMES("Tab.Visibility.Hidden", duration,
-                                   base::TimeDelta::FromMilliseconds(1),
-                                   base::TimeDelta::FromDays(1), 50);
-        break;
-      }
-    }
-
-    visibility_ = new_visibility;
-    last_visibility_change_time_ = now;
-  }
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsUsageObserver);
 };
