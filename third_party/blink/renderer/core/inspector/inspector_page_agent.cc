@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_timing.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -1089,6 +1090,28 @@ CreateProtocolCrossOriginIsolatedContextType(ExecutionContext* context) {
   return protocol::Page::CrossOriginIsolatedContextTypeEnum::
       NotIsolatedFeatureDisabled;
 }
+std::unique_ptr<std::vector<protocol::Page::GatedAPIFeatures>>
+CreateGatedAPIFeaturesArray(LocalDOMWindow* window) {
+  auto features =
+      std::make_unique<std::vector<protocol::Page::GatedAPIFeatures>>();
+  // SABs are available if at least one of the following is true:
+  //  - features::kWebAssemblyThreads enabled
+  //  - features::kSharedArrayBuffer enabled
+  //  - agent has the cross-origin isolated bit (but not necessarily the
+  //    capability)
+  if (RuntimeEnabledFeatures::SharedArrayBufferEnabled(window) ||
+      Agent::IsCrossOriginIsolated()) {
+    features->push_back(
+        protocol::Page::GatedAPIFeaturesEnum::SharedArrayBuffers);
+  }
+  if (window->SharedArrayBufferTransferAllowed()) {
+    features->push_back(protocol::Page::GatedAPIFeaturesEnum::
+                            SharedArrayBuffersTransferAllowed);
+  }
+  // TODO(chromium:1139899): Report availablility of performance.measureMemory()
+  // and performance.profile() once they are gated/available, respectively.
+  return features;
+}
 }  // namespace
 
 std::unique_ptr<protocol::Page::Frame> InspectorPageAgent::BuildObjectForFrame(
@@ -1112,6 +1135,7 @@ std::unique_ptr<protocol::Page::Frame> InspectorPageAgent::BuildObjectForFrame(
                   .GetSecureContextModeExplanation()))
           .setCrossOriginIsolatedContextType(
               CreateProtocolCrossOriginIsolatedContextType(frame->DomWindow()))
+          .setGatedAPIFeatures(CreateGatedAPIFeaturesArray(frame->DomWindow()))
           .build();
   if (loader->Url().HasFragmentIdentifier())
     frame_object->setUrlFragment("#" + loader->Url().FragmentIdentifier());

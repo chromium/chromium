@@ -5941,6 +5941,13 @@ domain Page
       # The cross-origin isolation feature is disabled.
       NotIsolatedFeatureDisabled
 
+  experimental type GatedAPIFeatures extends string
+    enum
+      SharedArrayBuffers
+      SharedArrayBuffersTransferAllowed
+      PerformanceMeasureMemory
+      PerformanceProfile
+
   # Information about the Frame on the page.
   type Frame extends object
     properties
@@ -5973,6 +5980,8 @@ domain Page
       experimental SecureContextType secureContextType
       # Indicates whether this is a cross origin isolated context.
       experimental CrossOriginIsolatedContextType crossOriginIsolatedContextType
+      # Indicated which gated APIs / features are available.
+      experimental array of GatedAPIFeatures gatedAPIFeatures
 
   # Information about the Resource on the page.
   experimental type FrameResource extends object
