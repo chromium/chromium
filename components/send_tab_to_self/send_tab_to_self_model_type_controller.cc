@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/sync/driver/sync_auth_util.h"
 #include "components/sync/driver/sync_service.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -15,9 +16,17 @@ namespace send_tab_to_self {
 
 SendTabToSelfModelTypeController::SendTabToSelfModelTypeController(
     syncer::SyncService* sync_service,
-    std::unique_ptr<syncer::ModelTypeControllerDelegate> delegate)
-    : ModelTypeController(syncer::SEND_TAB_TO_SELF, std::move(delegate)),
+    std::unique_ptr<syncer::ModelTypeControllerDelegate>
+        delegate_for_full_sync_mode,
+    std::unique_ptr<syncer::ModelTypeControllerDelegate>
+        delegate_for_transport_mode)
+    : ModelTypeController(syncer::SEND_TAB_TO_SELF,
+                          std::move(delegate_for_full_sync_mode),
+                          std::move(delegate_for_transport_mode)),
       sync_service_(sync_service) {
+  DCHECK_EQ(base::FeatureList::IsEnabled(
+                send_tab_to_self::kSendTabToSelfWhenSignedIn),
+            ShouldRunInTransportOnlyMode());
   // TODO(crbug.com/906995): Remove this observing mechanism once all sync
   // datatypes are stopped by ProfileSyncService, when sync is paused.
   sync_service_->AddObserver(this);

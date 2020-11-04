@@ -27,6 +27,7 @@
 #include "components/password_manager/core/browser/sync/password_model_type_controller.h"
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/features/reading_list_switches.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_type_controller.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/sync/base/legacy_directory_deletion.h"
@@ -362,13 +363,22 @@ ProfileSyncComponentsFactoryImpl::CreateCommonDataTypeControllers(
   }
 
   if (!disabled_types.Has(syncer::SEND_TAB_TO_SELF)) {
+    syncer::ModelTypeControllerDelegate* delegate =
+        sync_client_->GetSendTabToSelfSyncService()
+            ->GetControllerDelegate()
+            .get();
     controllers.push_back(
         std::make_unique<send_tab_to_self::SendTabToSelfModelTypeController>(
             sync_service,
+            /*delegate_for_full_sync_mode=*/
             std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-                sync_client_->GetSendTabToSelfSyncService()
-                    ->GetControllerDelegate()
-                    .get())));
+                delegate),
+            /*delegate_for_transport_mode=*/
+            base::FeatureList::IsEnabled(
+                send_tab_to_self::kSendTabToSelfWhenSignedIn)
+                ? std::make_unique<
+                      syncer::ForwardingModelTypeControllerDelegate>(delegate)
+                : nullptr));
   }
 
   if (!disabled_types.Has(syncer::USER_CONSENTS)) {

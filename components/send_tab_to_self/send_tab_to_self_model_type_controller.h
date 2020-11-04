@@ -19,11 +19,15 @@ namespace send_tab_to_self {
 class SendTabToSelfModelTypeController : public syncer::ModelTypeController,
                                          public syncer::SyncServiceObserver {
  public:
-  // The |delegate| and |sync_service| must not be null. Furthermore,
-  // |sync_service| must outlive this object.
+  // The |delegate_for_full_sync_mode| and |sync_service| must not be null.
+  // |delegate_for_transport_mode| can be null. |sync_service| must outlive this
+  // object.
   SendTabToSelfModelTypeController(
       syncer::SyncService* sync_service,
-      std::unique_ptr<syncer::ModelTypeControllerDelegate> delegate);
+      std::unique_ptr<syncer::ModelTypeControllerDelegate>
+          delegate_for_full_sync_mode,
+      std::unique_ptr<syncer::ModelTypeControllerDelegate>
+          delegate_for_transport_mode);
   ~SendTabToSelfModelTypeController() override;
 
   // DataTypeController overrides.
