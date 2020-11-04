@@ -1606,6 +1606,16 @@ ci.clang_builder(
 )
 
 ci.clang_builder(
+    name = "ToTWindowsCoverage",
+    console_view_entry = ci.console_view_entry(
+        category = "Tot Code Coverage",
+        short_name = "win",
+    ),
+    executable = "recipe:chromium_clang_coverage_tot",
+    os = os.WINDOWS_ANY,
+)
+
+ci.clang_builder(
     name = "linux-win_cross-rel",
     console_view_entry = ci.console_view_entry(
         category = "ToT Windows",
