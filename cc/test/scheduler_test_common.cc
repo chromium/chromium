@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include <string>
-#include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "base/time/tick_clock.h"
@@ -40,9 +39,7 @@ FakeCompositorTimingHistory::FakeCompositorTimingHistory(
                               reporting_controller.get()),
       rendering_stats_instrumentation_owned_(
           std::move(rendering_stats_instrumentation)),
-      reporting_controller_owned_(std::move(reporting_controller)) {
-  reporting_controller_owned_->SetDroppedFrameCounter(&dropped_counter);
-}
+      reporting_controller_owned_(std::move(reporting_controller)) {}
 
 FakeCompositorTimingHistory::~FakeCompositorTimingHistory() = default;
 

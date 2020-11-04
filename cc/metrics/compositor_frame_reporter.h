@@ -148,8 +148,7 @@ class CC_EXPORT CompositorFrameReporter {
                           LatencyUkmReporter* latency_ukm_reporter,
                           bool should_report_metrics,
                           SmoothThread smooth_thread,
-                          int layer_tree_host_id,
-                          DroppedFrameCounter* dropped_frame_counter);
+                          int layer_tree_host_id);
   ~CompositorFrameReporter();
 
   CompositorFrameReporter(const CompositorFrameReporter& reporter) = delete;
@@ -198,6 +197,10 @@ class CC_EXPORT CompositorFrameReporter {
   void set_tick_clock(const base::TickClock* tick_clock) {
     DCHECK(tick_clock);
     tick_clock_ = tick_clock;
+  }
+
+  void SetDroppedFrameCounter(DroppedFrameCounter* counter) {
+    dropped_frame_counter_ = counter;
   }
 
   bool has_partial_update() const { return has_partial_update_; }

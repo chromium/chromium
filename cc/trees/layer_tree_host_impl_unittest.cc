@@ -14054,21 +14054,20 @@ TEST_F(LayerTreeHostImplTest, FrameCounterReset) {
   dropped_frame_counter->AddGoodFrame();
   EXPECT_EQ(dropped_frame_counter->total_frames(), 1u);
 
+  dropped_frame_counter->AddDroppedFrameAffectingSmoothness();
+  // FCP not received, so the total_smoothness_dropped_ won't increase.
+  EXPECT_EQ(dropped_frame_counter->total_smoothness_dropped(), 0u);
+
   auto interval = base::TimeDelta::FromMilliseconds(16);
   base::TimeTicks now = base::TimeTicks::Now();
   auto deadline = now + interval;
   viz::BeginFrameArgs args = viz::BeginFrameArgs::Create(
-      BEGINFRAME_FROM_HERE, 1u /*source_id*/, 2u /*sequence_number*/, now,
+      BEGINFRAME_FROM_HERE, 1u /*source_id*/, 1u /*sequence_number*/, now,
       deadline, interval, viz::BeginFrameArgs::NORMAL);
-
-  dropped_frame_counter->OnEndFrame(args, true);
-  // FCP not received, so the total_smoothness_dropped_ won't increase.
-  EXPECT_EQ(dropped_frame_counter->total_smoothness_dropped(), 0u);
-
   BeginMainFrameMetrics begin_frame_metrics;
   begin_frame_metrics.should_measure_smoothness = true;
   host_impl_->ReadyToCommit(args, &begin_frame_metrics);
-  dropped_frame_counter->OnEndFrame(args, true);
+  dropped_frame_counter->AddDroppedFrameAffectingSmoothness();
   EXPECT_EQ(dropped_frame_counter->total_smoothness_dropped(), 1u);
 
   total_frame_counter->set_total_frames_for_testing(1u);

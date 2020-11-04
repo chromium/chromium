@@ -84,11 +84,11 @@ void CompositorFrameReportingController::WillBeginImplFrame(
   }
   auto reporter = std::make_unique<CompositorFrameReporter>(
       active_trackers_, args, latency_ukm_reporter_.get(),
-      should_report_metrics_, GetSmoothThread(), layer_tree_host_id_,
-      dropped_frame_counter_);
+      should_report_metrics_, GetSmoothThread(), layer_tree_host_id_);
   reporter->set_tick_clock(tick_clock_);
   reporter->StartStage(StageType::kBeginImplFrameToSendBeginMainFrame,
                        begin_time);
+  reporter->SetDroppedFrameCounter(dropped_frame_counter_);
   reporters_[PipelineStage::kBeginImplFrame] = std::move(reporter);
 }
 
@@ -111,10 +111,10 @@ void CompositorFrameReportingController::WillBeginMainFrame(
     // deadline yet). So will start a new reporter at BeginMainFrame.
     auto reporter = std::make_unique<CompositorFrameReporter>(
         active_trackers_, args, latency_ukm_reporter_.get(),
-        should_report_metrics_, GetSmoothThread(), layer_tree_host_id_,
-        dropped_frame_counter_);
+        should_report_metrics_, GetSmoothThread(), layer_tree_host_id_);
     reporter->set_tick_clock(tick_clock_);
     reporter->StartStage(StageType::kSendBeginMainFrameToCommit, Now());
+    reporter->SetDroppedFrameCounter(dropped_frame_counter_);
     reporters_[PipelineStage::kBeginMainFrame] = std::move(reporter);
   }
 }
@@ -495,11 +495,11 @@ void CompositorFrameReportingController::CreateReportersForDroppedFrames(
         viz::BeginFrameArgs::NORMAL);
     auto reporter = std::make_unique<CompositorFrameReporter>(
         active_trackers_, args, latency_ukm_reporter_.get(),
-        should_report_metrics_, GetSmoothThread(), layer_tree_host_id_,
-        dropped_frame_counter_);
+        should_report_metrics_, GetSmoothThread(), layer_tree_host_id_);
     reporter->set_tick_clock(tick_clock_);
     reporter->StartStage(StageType::kBeginImplFrameToSendBeginMainFrame,
                          timestamp);
+    reporter->SetDroppedFrameCounter(dropped_frame_counter_);
     reporter->TerminateFrame(FrameTerminationStatus::kDidNotPresentFrame,
                              args.deadline);
   }
