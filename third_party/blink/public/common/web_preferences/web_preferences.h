@@ -255,9 +255,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool disable_features_depending_on_viz;
   // Don't accelerate small canvases to avoid crashes TODO(crbug.com/1004304)
   bool disable_accelerated_small_canvases;
-  // Re-enable Web Components v0 on Webview, temporarily. This should get
-  // removed when crbug.com/1021631 gets fixed.
-  bool reenable_web_components_v0;
 #endif  // defined(OS_ANDROID)
 
   // Enable forcibly modifying content rendering to result in a light on dark

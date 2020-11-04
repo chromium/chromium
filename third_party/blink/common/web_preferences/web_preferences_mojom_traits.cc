@@ -316,7 +316,6 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       data.disable_features_depending_on_viz();
   out->disable_accelerated_small_canvases =
       data.disable_accelerated_small_canvases();
-  out->reenable_web_components_v0 = data.reenable_web_components_v0();
 #endif
   out->force_dark_mode_enabled = data.force_dark_mode_enabled();
   out->default_minimum_page_scale_factor =

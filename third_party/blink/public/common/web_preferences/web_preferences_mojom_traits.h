@@ -673,11 +673,6 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
       const blink::web_pref::WebPreferences& r) {
     return r.disable_accelerated_small_canvases;
   }
-
-  static bool reenable_web_components_v0(
-      const blink::web_pref::WebPreferences& r) {
-    return r.reenable_web_components_v0;
-  }
 #endif
 
   static bool force_dark_mode_enabled(

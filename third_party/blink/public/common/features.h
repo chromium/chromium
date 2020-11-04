@@ -87,8 +87,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kFileHandlingAPI;
 BLINK_COMMON_EXPORT extern const base::Feature kAllowSyncXHRInPageDismissal;
 BLINK_COMMON_EXPORT extern const base::Feature kPrefetchPrivacyChanges;
 
-BLINK_COMMON_EXPORT extern const base::Feature kWebComponentsV0;
-
 BLINK_COMMON_EXPORT extern const char kMixedContentAutoupgradeModeParamName[];
 BLINK_COMMON_EXPORT extern const char kMixedContentAutoupgradeModeAllPassive[];
 

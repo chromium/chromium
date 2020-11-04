@@ -91,9 +91,6 @@ public final class ProductionSupportedFlagList {
                             + "of the total screen size. Depending on the number of WebViews and "
                             + "the size of the screen this might be expensive so hidden behind a "
                             + "feature flag until the true runtime cost can be measured."),
-            Flag.baseFeature(BlinkFeatures.WEB_COMPONENTS_V0,
-                    "Re-enables the deprecated Web Components v0 features (Shadow DOM v0, Custom "
-                            + "Elements v0, and HTML Imports)."),
             Flag.baseFeature(AwFeatures.WEBVIEW_DISPLAY_CUTOUT,
                     "Enables display cutout (notch) support in WebView for Android P and above."),
             Flag.baseFeature(AwFeatures.WEBVIEW_CPU_AFFINITY_RESTRICT_TO_LITTLE_CORES,
