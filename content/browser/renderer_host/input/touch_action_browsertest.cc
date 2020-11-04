@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
@@ -837,6 +838,7 @@ class TouchActionBrowserTestEnableCursorControl
 // scroll, and changes the selection.
 IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
                        BasicCursorControl) {
+  base::HistogramTester histograms;
   LoadURL(kContentEditableDataURL.c_str());
 
   EXPECT_EQ(32,
@@ -855,6 +857,10 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
 
   EXPECT_EQ(anchor_offset, focus_offset);
   EXPECT_GT(32, anchor_offset);
+  histograms.ExpectBucketCount("Blink.Input.GestureScrollBeginAsCursorControl",
+                               true, 1);
+  histograms.ExpectBucketCount("Blink.Input.GestureScrollBeginAsCursorControl",
+                               false, 0);
 }
 
 // Perform a horizontal swipe over an editable element from right to left (the
@@ -863,6 +869,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
 // changed and scroll should happen.
 IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
                        NoCursorControlForHorizontalScrollable) {
+  base::HistogramTester histograms;
   LoadURL(kContentEditableHorizontalScrollableDataURL.c_str());
 
   EXPECT_EQ(32,
@@ -883,6 +890,10 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
   EXPECT_EQ(32, anchor_offset);
   EXPECT_LT(0.f, ExecuteScriptAndExtractDouble(
                      "document.getElementById('scroller').scrollLeft"));
+  histograms.ExpectBucketCount("Blink.Input.GestureScrollBeginAsCursorControl",
+                               true, 0);
+  histograms.ExpectBucketCount("Blink.Input.GestureScrollBeginAsCursorControl",
+                               false, 1);
 }
 
 // Perform a horizontal swipe over an editable element from right to left
@@ -914,6 +925,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
 // scroll, and changes the selection.
 IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
                        CursorControlOnInput) {
+  base::HistogramTester histograms;
   // input size larger than the text size, not horizontally scrollable.
   LoadURL(base::StringPrintf(kInputTagCursorControl.c_str(), 40).c_str());
 
@@ -931,12 +943,17 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
 
   EXPECT_EQ(selection_start, selection_end);
   EXPECT_GT(32, selection_start);
+  histograms.ExpectBucketCount("Blink.Input.GestureScrollBeginAsCursorControl",
+                               true, 1);
+  histograms.ExpectBucketCount("Blink.Input.GestureScrollBeginAsCursorControl",
+                               false, 0);
 }
 
 // Perform a horizontal swipe over an horizontal scrollable input element from
 // right to left. Ensure the swipe is doing scrolling other than cursor control.
 IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
                        NoCursorControlOnHorizontalScrollableInput) {
+  base::HistogramTester histograms;
   // Make the input size smaller than the text size, so it horizontally
   // scrollable.
   LoadURL(base::StringPrintf(kInputTagCursorControl.c_str(), 20).c_str());
@@ -955,6 +972,10 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
 
   EXPECT_EQ(selection_start, selection_end);
   EXPECT_EQ(32, selection_start);
+  histograms.ExpectBucketCount("Blink.Input.GestureScrollBeginAsCursorControl",
+                               true, 0);
+  histograms.ExpectBucketCount("Blink.Input.GestureScrollBeginAsCursorControl",
+                               false, 1);
 }
 
 }  // namespace content

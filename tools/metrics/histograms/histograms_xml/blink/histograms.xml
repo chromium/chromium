@@ -1042,6 +1042,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Blink.Input.GestureScrollBeginAsCursorControl"
+    enum="BooleanSuccess" expires_after="M89">
+  <owner>ctzsm@chromium.org</owner>
+  <owner>changwan@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>Records if a GestureScrollBegin is for cursor control.</summary>
+</histogram>
+
 <histogram name="Blink.IntersectionObservation.UpdateTime" units="microseconds"
     expires_after="2021-03-21">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
