@@ -43,15 +43,17 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(html_source,
                               base::make_span(kNearbyShareDialogResources,
                                               kNearbyShareDialogResourcesSize),
-                              kNearbyShareGeneratedPath,
-                              IDR_NEARBY_SHARE_NEARBY_SHARE_DIALOG_HTML);
+                              /*generated_path=*/std::string(),
+                              IDR_NEARBY_SHARE_DIALOG_NEARBY_SHARE_DIALOG_HTML);
 
-  html_source->AddResourcePath("nearby_share.mojom-lite.js",
-                               IDR_NEARBY_SHARE_MOJO_JS);
-  html_source->AddResourcePath("nearby_share_target_types.mojom-lite.js",
-                               IDR_NEARBY_SHARE_TARGET_TYPES_MOJO_JS);
+  // To use lottie, the worker-src CSP needs to be updated for the web ui that
+  // is using it. Since as of now there are only a couple of webuis using
+  // lottie animations, this update has to be performed manually. As the usage
+  // increases, set this as the default so manual override is no longer
+  // required.
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 
-  RegisterNearbySharedResources(html_source);
   RegisterNearbySharedStrings(html_source);
   html_source->UseStringsJs();
 

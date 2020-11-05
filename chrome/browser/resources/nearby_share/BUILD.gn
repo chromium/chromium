@@ -2,15 +2,98 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_grit.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos, "Nearby Share is CrOS only")
 
+preprocess_src_manifest = "preprocessed_src_manifest.json"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
 preprocess_folder = "preprocessed"
+
+grit("nearby_share_dialog_resources") {
+  grit_flags = [
+    "-E",
+    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    "-E",
+    "root_src_dir=" + rebase_path("//", root_build_dir),
+  ]
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  defines +=
+      [ "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_gen_dir, root_build_dir) ]
+  source = "$target_gen_dir/nearby_share_dialog_resources.grd"
+  deps = [ ":build_grd" ]
+  outputs = [
+    "grit/nearby_share_dialog_resources.h",
+    "grit/nearby_share_dialog_resources_map.cc",
+    "grit/nearby_share_dialog_resources_map.h",
+    "nearby_share_dialog_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "nearby_share_dialog"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  deps = [
+    ":build_mojo_grdp",
+    ":preprocess_gen",
+    ":preprocess_src",
+    "shared:build_v2_grdp",
+    "shared:build_v3_grdp",
+  ]
+  grdp_files = [
+    "$target_gen_dir/nearby_share_mojo_resources.grdp",
+    "$target_gen_dir/shared/nearby_share_resources_v2.grdp",
+    "$target_gen_dir/shared/nearby_share_resources_v3.grdp",
+  ]
+  input_files = [ "nearby_share_pulse_animation.json" ]
+  input_files_base_dir = rebase_path("shared", "//")
+  manifest_files = [
+    "$target_gen_dir/$preprocess_src_manifest",
+    "$target_gen_dir/$preprocess_gen_manifest",
+  ]
+  resource_path_rewrites = [
+    "chrome/browser/ui/webui/nearby_share/nearby_share.mojom-lite.js|mojo/nearby_share.mojom-lite.js",
+    "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom-lite.js|mojo/nearby_share_settings.mojom-lite.js",
+    "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom-lite.js|mojo/nearby_share_settings.mojom-lite.js",
+  ]
+}
+
+preprocess_grit("preprocess_src") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_src_manifest"
+  in_files = [
+    "nearby_share_dialog.html",
+    "discovery_manager.js",
+  ]
+}
+
+preprocess_grit("preprocess_gen") {
+  deps = [ ":web_components" ]
+  in_folder = "$target_gen_dir"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [
+    "app.js",
+    "icons.js",
+    "nearby_confirmation_page.js",
+    "nearby_device.js",
+    "nearby_device_icon.js",
+    "nearby_discovery_page.js",
+    "nearby_preview.js",
+    "nearby_progress.js",
+  ]
+}
 
 generate_grd("build_mojo_grdp") {
   grd_prefix = "nearby_share"

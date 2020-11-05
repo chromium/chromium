@@ -7,7 +7,7 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
 
 import 'chrome://nearby/nearby_device_icon.js';
-import 'chrome://nearby/nearby_share.mojom-lite.js';
+import 'chrome://nearby/mojo/nearby_share.mojom-lite.js';
 
 import {assertEquals} from '../chai_assert.js';
 
