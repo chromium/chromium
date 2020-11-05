@@ -115,7 +115,7 @@ class RuntimeError : public ExtensionError {
                const StackTrace& stack_trace,
                const GURL& context_url,
                logging::LogSeverity level,
-               int render_view_id,
+               int render_frame_id,
                int render_process_id);
   ~RuntimeError() override;
 
