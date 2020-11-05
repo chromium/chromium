@@ -99,8 +99,9 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostBrowserTest,
   target->set_hash(hash);
   target->set_dimension_size(48);
   MatchRule* match_rule = target->mutable_match_config()->add_match_rule();
-  // The actual hash distance is 76, so set the distance to 100 for safety.
-  match_rule->set_hash_distance(100);
+  // The actual hash distance is 76, so set the distance to 200 for safety. A
+  // completely random bitstring would expect a Hamming distance of 1152.
+  match_rule->set_hash_distance(200);
 
   fake_csd_service.SetModel(model);
 
@@ -134,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostBrowserTest,
       fake_csd_service.saved_request().vision_match(0).matched_target_digest(),
       "target1_digest");
 
-  // Expect an interstitail to be shown
+  // Expect an interstitial to be shown
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback()).Run(page_url, true);
 }
