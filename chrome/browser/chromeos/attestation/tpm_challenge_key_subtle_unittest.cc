@@ -24,8 +24,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/attestation/mock_attestation_flow.h"
-#include "chromeos/cryptohome/async_method_caller.h"
-#include "chromeos/cryptohome/mock_async_method_caller.h"
+#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
@@ -193,7 +192,6 @@ class TpmChallengeKeySubtleTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   StrictMock<MockableFakeAttestationFlow> mock_attestation_flow_;
-  cryptohome::MockAsyncMethodCaller* mock_async_method_caller_ = nullptr;
   chromeos::FakeCryptohomeClient cryptohome_client_;
   std::unique_ptr<platform_keys::MockKeyPermissionsManager>
       system_token_key_permissions_manager_;
@@ -213,13 +211,6 @@ TpmChallengeKeySubtleTest::TpmChallengeKeySubtleTest()
   ::chromeos::AttestationClient::InitializeFake();
   CHECK(testing_profile_manager_.SetUp());
 
-  mock_async_method_caller_ =
-      new StrictMock<cryptohome::MockAsyncMethodCaller>();
-  // Ownership of mock_async_method_caller_ is transferred to
-  // AsyncMethodCaller::InitializeForTesting.
-  cryptohome::AsyncMethodCaller::InitializeForTesting(
-      mock_async_method_caller_);
-
   challenge_key_subtle_ = std::make_unique<TpmChallengeKeySubtleImpl>(
       &mock_attestation_flow_, &mock_cert_uploader_);
 
@@ -229,7 +220,6 @@ TpmChallengeKeySubtleTest::TpmChallengeKeySubtleTest()
 }
 
 TpmChallengeKeySubtleTest::~TpmChallengeKeySubtleTest() {
-  cryptohome::AsyncMethodCaller::Shutdown();
   ::chromeos::AttestationClient::Shutdown();
 }
 
