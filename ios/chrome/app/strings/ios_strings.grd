@@ -2100,6 +2100,12 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SIGN_TRUSTED_VAULT_ERROR_DIALOG_MESSAGE" desc="Alert message to display an error after a reauthentication, related to IDS_IOS_SIGN_TRUSTED_VAULT_ERROR_DIALOG_TITLE [iOS only]">
         Error code: <ph name="ERROR_CODE">$1<ex>2</ex></ph>
       </message>
+      <message name="IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE" desc="Notification title for the user's signed-in state [iOS only]">
+      Signed in to Chrome
+      </message>
+      <message name="IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE_WITH_USERNAME" desc="Notification title for the user's signed-in state that includes the user's full name [iOS only]">
+      Signed in as <ph name="USER">$1<ex>Jane Doe</ex></ph>
+      </message>
       <message name="IDS_IOS_SPOTLIGHT_KEYWORD_EIGHT" desc="Keyword used in Spotlight that will be linked to the Chrome App. [iOS only]">
         Online
       </message>
