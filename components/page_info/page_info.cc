@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/command_line.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
@@ -61,7 +60,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
@@ -181,16 +179,8 @@ bool ShouldShowPermission(const PageInfo::PermissionInfo& info,
     return true;
   }
 
-  // Camera PTZ is shown only if Experimental Web Platform features are enabled.
-  base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
-  if (info.type == ContentSettingsType::CAMERA_PAN_TILT_ZOOM &&
-      !cmd->HasSwitch(switches::kEnableExperimentalWebPlatformFeatures)) {
-    return false;
-  }
-
   // Hide camera if camera PTZ is granted or blocked.
-  if (info.type == ContentSettingsType::MEDIASTREAM_CAMERA &&
-      cmd->HasSwitch(switches::kEnableExperimentalWebPlatformFeatures)) {
+  if (info.type == ContentSettingsType::MEDIASTREAM_CAMERA) {
     std::unique_ptr<base::Value> value = content_settings->GetWebsiteSetting(
         site_url, site_url, ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
         std::string(), nullptr);
