@@ -90,8 +90,6 @@ TEST_F(LayoutObjectTest, DisplayInlineBlockCreateObject) {
 }
 
 TEST_F(LayoutObjectTest, BackdropFilterAsGroupingProperty) {
-  ScopedTransformInteropForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <style> div { transform-style: preserve-3d; } </style>
     <div id=target1 style="backdrop-filter: blur(2px)"></div>
@@ -114,8 +112,6 @@ TEST_F(LayoutObjectTest, BackdropFilterAsGroupingProperty) {
 }
 
 TEST_F(LayoutObjectTest, BlendModeAsGroupingProperty) {
-  ScopedTransformInteropForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <style> div { transform-style: preserve-3d; } </style>
     <div id=target1 style="mix-blend-mode: multiply"></div>
@@ -133,8 +129,6 @@ TEST_F(LayoutObjectTest, BlendModeAsGroupingProperty) {
 }
 
 TEST_F(LayoutObjectTest, CSSClipAsGroupingProperty) {
-  ScopedTransformInteropForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <style> div { transform-style: preserve-3d; } </style>
     <div id=target1 style="clip: rect(1px, 2px, 3px, 4px)"></div>
@@ -158,8 +152,6 @@ TEST_F(LayoutObjectTest, CSSClipAsGroupingProperty) {
 }
 
 TEST_F(LayoutObjectTest, ClipPathAsGroupingProperty) {
-  ScopedTransformInteropForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <style> div { transform-style: preserve-3d; } </style>
     <div id=target1 style="clip-path: circle(40%)"></div>
@@ -177,8 +169,6 @@ TEST_F(LayoutObjectTest, ClipPathAsGroupingProperty) {
 }
 
 TEST_F(LayoutObjectTest, IsolationAsGroupingProperty) {
-  ScopedTransformInteropForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <style> div { transform-style: preserve-3d; } </style>
     <div id=target1 style="isolation: isolate"></div>
@@ -196,8 +186,6 @@ TEST_F(LayoutObjectTest, IsolationAsGroupingProperty) {
 }
 
 TEST_F(LayoutObjectTest, MaskAsGroupingProperty) {
-  ScopedTransformInteropForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <style> div { transform-style: preserve-3d; } </style>
     <div id=target1 style="-webkit-mask:linear-gradient(black,transparent)">
@@ -213,18 +201,6 @@ TEST_F(LayoutObjectTest, MaskAsGroupingProperty) {
                    ->StyleRef()
                    .HasGroupingPropertyForUsedTransformStyle3D());
   EXPECT_TRUE(GetLayoutObjectByElementId("target2")->StyleRef().Preserves3D());
-}
-
-TEST_F(LayoutObjectTest, UseCountBackdropFilterAsGroupingProperty) {
-  SetBodyInnerHTML(R"HTML(
-    <style> div { transform-style: preserve-3d; } </style>
-    <div id=target style="backdrop-filter: blur(2px)"></div>
-  )HTML");
-  EXPECT_FALSE(GetLayoutObjectByElementId("target")
-                   ->StyleRef()
-                   .HasGroupingPropertyForUsedTransformStyle3D());
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kAdditionalGroupingPropertiesForCompat));
 }
 
 TEST_F(LayoutObjectTest, UseCountContainWithoutContentVisibility) {

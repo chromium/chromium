@@ -2376,16 +2376,9 @@ class ComputedStyle : public ComputedStyleBase,
   // Grouping requires creating a flattened representation of the descendant
   // elements before they can be applied, and therefore force the element to
   // have a used style of flat for preserve-3d.
-  // Until |RuntimeEnabledFeatures::TransformInteropEnabled()| launches, the
-  // approach is different from the spec to maintain backwards compatibility.
-  // TODO(chrishtr): replace this with |HasGroupingProperty()|.
   CORE_EXPORT bool HasGroupingPropertyForUsedTransformStyle3D() const {
-    if (RuntimeEnabledFeatures::TransformInteropEnabled()) {
-      return HasGroupingProperty(BoxReflect()) ||
-             !IsOverflowVisibleAlongBothAxes();
-    }
-    return !IsOverflowVisibleAlongBothAxes() || HasFilterInducingProperty() ||
-           HasNonInitialOpacity();
+    return HasGroupingProperty(BoxReflect()) ||
+           !IsOverflowVisibleAlongBothAxes();
   }
 
   // Return true if any transform related property (currently

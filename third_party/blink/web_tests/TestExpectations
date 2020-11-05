@@ -5644,7 +5644,7 @@ crbug.com/1008483 external/wpt/css/css-transforms/3d-rendering-context-behavior.
 crbug.com/1008483 external/wpt/css/css-transforms/backface-visibility-hidden-004.tentative.html [ Failure ]
 crbug.com/1008483 external/wpt/css/css-transforms/backface-visibility-hidden-005.tentative.html [ Failure ]
 crbug.com/1008483 external/wpt/css/css-transforms/backface-visibility-hidden-animated-002.html [ Failure ]
-crbug.com/1008483 external/wpt/css/css-transforms/preserve-3d-flat-grouping-properties.tentative.html [ Failure ]
+crbug.com/1008483 external/wpt/css/css-transforms/preserve-3d-flat-grouping-properties-containing-block.tentative.html [ Failure ]
 
 crbug.com/1008483 virtual/transform-interop/external/wpt/css/css-transforms/3d-rendering-context-behavior.tentative.html [ Pass ]
 crbug.com/1008483 virtual/transform-interop/external/wpt/css/css-transforms/backface-visibility-hidden-004.tentative.html [ Pass ]

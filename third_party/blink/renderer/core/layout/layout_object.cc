@@ -2645,15 +2645,6 @@ static void ClearAncestorScrollAnchors(LayoutObject* layout_object) {
 void LayoutObject::StyleDidChange(StyleDifference diff,
                                   const ComputedStyle* old_style) {
   NOT_DESTROYED();
-  if (style_->TransformStyle3D() == ETransformStyle3D::kPreserve3d) {
-    if (style_->HasNonInitialBackdropFilter() || style_->HasBlendMode() ||
-        !style_->HasAutoClip() || style_->ClipPath() ||
-        style_->HasIsolation() || style_->HasMask()) {
-      UseCounter::Count(GetDocument(),
-                        WebFeature::kAdditionalGroupingPropertiesForCompat);
-    }
-  }
-
   if (HasHiddenBackface()) {
     bool preserve_3d =
         (Parent() && Parent()->StyleRef().UsedTransformStyle3D() ==
