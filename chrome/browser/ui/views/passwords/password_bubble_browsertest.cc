@@ -27,20 +27,8 @@ class PasswordBubbleBrowserTest
       public testing::WithParamInterface<bool> {
  public:
   PasswordBubbleBrowserTest() {
-    if (GetParam()) {
-      // |kEnablePasswordsAccountStorage|, |kCompromisedPasswordsReengagement|
-      // are both enabled.
-      scoped_feature_list_.InitWithFeatures(
-          {password_manager::features::kEnablePasswordsAccountStorage,
-           password_manager::features::kCompromisedPasswordsReengagement},
-          {});
-    } else {
-      // |kCompromisedPasswordsReengagement| enabled,
-      // |kEnablePasswordsAccountStorage| disabled.
-      scoped_feature_list_.InitWithFeatures(
-          {password_manager::features::kCompromisedPasswordsReengagement},
-          {password_manager::features::kEnablePasswordsAccountStorage});
-    }
+    scoped_feature_list_.InitWithFeatureState(
+        password_manager::features::kEnablePasswordsAccountStorage, GetParam());
   }
 
   ~PasswordBubbleBrowserTest() override = default;

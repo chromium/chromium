@@ -104,8 +104,6 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
                  password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX ||
              model_state ==
                  password_manager::ui::PASSWORD_UPDATED_UNSAFE_STATE) {
-    DCHECK(base::FeatureList::IsEnabled(
-        password_manager::features::kCompromisedPasswordsReengagement));
     view = new PostSaveCompromisedBubbleView(web_contents, anchor_view);
   } else {
     NOTREACHED();

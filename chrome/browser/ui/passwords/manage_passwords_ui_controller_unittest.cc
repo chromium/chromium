@@ -1489,9 +1489,6 @@ TEST_F(ManagePasswordsUIControllerTest, OpenBubbleForMovableForm) {
 }
 
 TEST_F(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kCompromisedPasswordsReengagement);
   profile()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
       (base::Time::Now() - base::TimeDelta::FromMinutes(1)).ToDoubleT());
@@ -1529,9 +1526,6 @@ TEST_F(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
 }
 
 TEST_F(ManagePasswordsUIControllerTest, OpenMoreToFixBubble) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kCompromisedPasswordsReengagement);
   submitted_form() = test_local_form();
   submitted_form().password_value = base::ASCIIToUTF16("new_password");
 
@@ -1566,10 +1560,6 @@ TEST_F(ManagePasswordsUIControllerTest, OpenMoreToFixBubble) {
 }
 
 TEST_F(ManagePasswordsUIControllerTest, OpenUnsafeStateBubble) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kCompromisedPasswordsReengagement);
-
   std::vector<const PasswordForm*> best_matches = {&test_local_form()};
   auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
   MockPasswordFormManagerForUI* test_form_manager_raw = test_form_manager.get();
@@ -1600,10 +1590,6 @@ TEST_F(ManagePasswordsUIControllerTest, OpenUnsafeStateBubble) {
 }
 
 TEST_F(ManagePasswordsUIControllerTest, NoUnsafeStateBubbleIfPromoStillOpen) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kCompromisedPasswordsReengagement);
-
   std::vector<const PasswordForm*> best_matches = {&test_local_form()};
   auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
   MockPasswordFormManagerForUI* test_form_manager_raw = test_form_manager.get();

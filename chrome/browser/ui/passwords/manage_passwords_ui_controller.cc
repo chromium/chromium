@@ -521,21 +521,19 @@ void ManagePasswordsUIController::SavePassword(const base::string16& username,
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kCompromisedPasswordsReengagement)) {
-    post_save_compromised_helper_ =
-        std::make_unique<password_manager::PostSaveCompromisedHelper>(
-            passwords_data_.form_manager()->GetCompromisedCredentials(),
-            username);
-    post_save_compromised_helper_->AnalyzeLeakedCredentials(
-        passwords_data_.client()->GetProfilePasswordStore(),
-        passwords_data_.client()->GetAccountPasswordStore(),
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext())
-            ->GetPrefs(),
-        base::Bind(
-            &ManagePasswordsUIController::OnTriggerPostSaveCompromisedBubble,
-            weak_ptr_factory_.GetWeakPtr()));
-  }
+  post_save_compromised_helper_ =
+      std::make_unique<password_manager::PostSaveCompromisedHelper>(
+          passwords_data_.form_manager()->GetCompromisedCredentials(),
+          username);
+  post_save_compromised_helper_->AnalyzeLeakedCredentials(
+      passwords_data_.client()->GetProfilePasswordStore(),
+      passwords_data_.client()->GetAccountPasswordStore(),
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext())
+          ->GetPrefs(),
+      base::Bind(
+          &ManagePasswordsUIController::OnTriggerPostSaveCompromisedBubble,
+          weak_ptr_factory_.GetWeakPtr()));
+
   passwords_data_.TransitionToState(password_manager::ui::MANAGE_STATE);
   // The icon is to be updated after the bubble (either "Save password" or "Sign
   // in to Chrome") is closed.

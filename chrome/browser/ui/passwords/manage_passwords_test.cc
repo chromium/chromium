@@ -124,8 +124,6 @@ void ManagePasswordsTest::SetupAutoSignin(
 }
 
 void ManagePasswordsTest::SetupSafeState() {
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kCompromisedPasswordsReengagement));
   browser()->profile()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
       (base::Time::Now() - base::TimeDelta::FromMinutes(1)).ToDoubleT());
@@ -140,8 +138,6 @@ void ManagePasswordsTest::SetupSafeState() {
 }
 
 void ManagePasswordsTest::SetupMoreToFixState() {
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kCompromisedPasswordsReengagement));
   scoped_refptr<password_manager::PasswordStore> password_store =
       PasswordStoreFactory::GetForProfile(browser()->profile(),
                                           ServiceAccessType::IMPLICIT_ACCESS);
@@ -162,8 +158,6 @@ void ManagePasswordsTest::SetupMoreToFixState() {
 }
 
 void ManagePasswordsTest::SetupUnsafeState() {
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kCompromisedPasswordsReengagement));
   scoped_refptr<password_manager::PasswordStore> password_store =
       PasswordStoreFactory::GetForProfile(browser()->profile(),
                                           ServiceAccessType::IMPLICIT_ACCESS);
