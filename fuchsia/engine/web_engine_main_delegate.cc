@@ -28,6 +28,8 @@ WebEngineMainDelegate* g_current_web_engine_main_delegate = nullptr;
 void InitializeResources() {
   constexpr char kWebEnginePakPath[] = "web_engine.pak";
   constexpr char kWebUiResourcesPakPath[] = "ui/resources/webui_resources.pak";
+  constexpr char kWebUiGeneratedResourcesPakPath[] =
+      "ui/resources/webui_generated_resources.pak";
 
   base::FilePath asset_root;
   bool result = base::PathService::Get(base::DIR_ASSETS, &asset_root);
@@ -41,6 +43,13 @@ void InitializeResources() {
   if (base::PathExists(webui_resources_path)) {
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         webui_resources_path, ui::SCALE_FACTOR_NONE);
+  }
+
+  base::FilePath webui_generated_resources_path =
+      asset_root.Append(kWebUiGeneratedResourcesPakPath);
+  if (base::PathExists(webui_generated_resources_path)) {
+    ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+        webui_generated_resources_path, ui::SCALE_FACTOR_NONE);
   }
 }
 
