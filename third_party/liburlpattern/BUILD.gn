@@ -10,10 +10,14 @@ component("liburlpattern") {
     "//base:base",
     "//third_party/abseil-cpp:absl",
   ]
+
+  # Note, also update the local modifications in README.chromium.
   sources = [
     "parse.cc",
     "parse.h",
     "pattern.h",
+    "tokenize.cc",
+    "tokenize.h",
   ]
 }
 
@@ -23,6 +27,11 @@ test("liburlpattern_unittests") {
     "//base/test:run_all_unittests",
     "//testing/gtest",
   ]
-  sources = [ "liburlpattern_unittest.cc" ]
+
+  # Note, also update the local modifications in README.chromium.
+  sources = [
+    "liburlpattern_unittest.cc",
+    "tokenize_unittest.cc",
+  ]
   testonly = true
 }
