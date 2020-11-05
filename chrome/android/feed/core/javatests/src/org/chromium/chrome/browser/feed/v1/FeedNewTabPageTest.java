@@ -94,8 +94,8 @@ import java.util.List;
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "disable-features=IPH_FeedHeaderMenu"})
 @Features.EnableFeatures(ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS)
-@Features.
-DisableFeatures({ChromeFeatureList.REPORT_FEED_USER_ACTIONS, ChromeFeatureList.QUERY_TILES})
+@Features.DisableFeatures({ChromeFeatureList.REPORT_FEED_USER_ACTIONS,
+        ChromeFeatureList.QUERY_TILES, ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD})
 public class FeedNewTabPageTest {
     private static final int ARTICLE_SECTION_HEADER_POSITION = 1;
     private static final int SIGNIN_PROMO_POSITION = 2;
@@ -307,7 +307,6 @@ public class FeedNewTabPageTest {
     @Features.DisableFeatures(ChromeFeatureList.INTEREST_FEED_V2)
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @ParameterAnnotations.UseMethodParameter(SigninPromoParams.class)
-    @DisabledTest(message = "https://crbug.com/1143974")
     public void testArticleSectionHeaderWithMenu(boolean disableSigninPromoCard) throws Exception {
         openNewTabPage();
         // Scroll to the article section header in case it is not visible.
