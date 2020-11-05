@@ -377,6 +377,10 @@ void AudioDecoderBroker::Reset(base::OnceClosure reset_cb) {
 }
 
 bool AudioDecoderBroker::NeedsBitstreamConversion() const {
+  // No known scenarios where this is needed by WebCodecs. See
+  // https://crbug.com/1119947
+  DCHECK(!decoder_details_ || !decoder_details_->needs_bitstream_conversion);
+
   return decoder_details_ ? decoder_details_->needs_bitstream_conversion
                           : false;
 }

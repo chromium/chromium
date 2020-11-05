@@ -84,6 +84,7 @@ class MODULES_EXPORT AudioDecoderBroker : public media::AudioDecoder,
   void Decode(scoped_refptr<media::DecoderBuffer> buffer,
               DecodeCB decode_cb) override;
   void Reset(base::OnceClosure reset_cb) override;
+  // Should always be false. See https://crbug.com/1119947
   bool NeedsBitstreamConversion() const override;
 
  private:
