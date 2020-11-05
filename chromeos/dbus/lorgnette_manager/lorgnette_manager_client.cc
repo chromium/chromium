@@ -321,7 +321,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     GetNextImage(response_proto.scan_uuid());
   }
 
-  // Callend when a response to a GetNextImage request is received from
+  // Called when a response to a GetNextImage request is received from
   // lorgnette. Handles stopping the scan if the request failed.
   void OnGetNextImageResponse(std::string uuid, dbus::Response* response) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
