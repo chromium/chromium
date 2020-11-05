@@ -1168,6 +1168,7 @@ if (is_win) {
       "fullscreen_win.cc",
       "fullscreen_win.h",
     ]
+    deps = [ ":base" ]
   }
 }
 

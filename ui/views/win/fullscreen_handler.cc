@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/win/win_util.h"
+#include "base/win/windows_version.h"
 #include "ui/base/win/shell.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/win/scoped_fullscreen_visibility.h"
@@ -71,8 +72,18 @@ void FullscreenHandler::SetFullscreenImpl(bool fullscreen) {
   fullscreen_ = fullscreen;
 
   if (fullscreen_) {
+    LONG styles_to_remove = WS_CAPTION;
+
+    // Not removing WS_THICKFRAME causes an issue with full screen in older
+    // versions of Windows. See crbug.com/1141059 and crbug.com/1014720. The
+    // version here must match the version checked in
+    // ui/base/fullscreen_win.cc's IsFullScreenWindowMode.
+    if (base::win::GetVersion() < base::win::Version::WIN10_19H1)
+      styles_to_remove |= WS_THICKFRAME;
+
     // Set new window style and size.
-    SetWindowLong(hwnd_, GWL_STYLE, saved_window_info_.style & ~WS_CAPTION);
+    SetWindowLong(hwnd_, GWL_STYLE,
+                  saved_window_info_.style & ~styles_to_remove);
     SetWindowLong(
         hwnd_, GWL_EXSTYLE,
         saved_window_info_.ex_style & ~(WS_EX_DLGMODALFRAME | WS_EX_WINDOWEDGE |
