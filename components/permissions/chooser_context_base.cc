@@ -62,7 +62,7 @@ bool ChooserContextBase::CanRequestObjectPermission(
   ContentSetting content_setting =
       host_content_settings_map_->GetContentSetting(
           requesting_origin.GetURL(), embedding_origin.GetURL(),
-          guard_content_settings_type_, std::string());
+          guard_content_settings_type_);
   DCHECK(content_setting == CONTENT_SETTING_ASK ||
          content_setting == CONTENT_SETTING_BLOCK);
   return content_setting == CONTENT_SETTING_ASK;
@@ -96,8 +96,8 @@ ChooserContextBase::GetGrantedObjects(const url::Origin& requesting_origin,
 std::vector<std::unique_ptr<ChooserContextBase::Object>>
 ChooserContextBase::GetAllGrantedObjects() {
   ContentSettingsForOneType content_settings;
-  host_content_settings_map_->GetSettingsForOneType(
-      data_content_settings_type_, std::string(), &content_settings);
+  host_content_settings_map_->GetSettingsForOneType(data_content_settings_type_,
+                                                    &content_settings);
 
   std::vector<std::unique_ptr<Object>> results;
   for (const ContentSettingPatternSource& content_setting : content_settings) {
@@ -223,7 +223,7 @@ base::Value ChooserContextBase::GetWebsiteSetting(
   std::unique_ptr<base::Value> value =
       host_content_settings_map_->GetWebsiteSetting(
           requesting_origin.GetURL(), embedding_origin.GetURL(),
-          data_content_settings_type_, std::string(), info);
+          data_content_settings_type_, info);
   if (value)
     return base::Value::FromUniquePtrValue(std::move(value));
   return base::Value(base::Value::Type::DICTIONARY);
@@ -234,7 +234,7 @@ void ChooserContextBase::SetWebsiteSetting(const url::Origin& requesting_origin,
                                            base::Value value) {
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
       requesting_origin.GetURL(), embedding_origin.GetURL(),
-      data_content_settings_type_, std::string(),
+      data_content_settings_type_,
       base::Value::ToUniquePtrValue(std::move(value)));
 }
 

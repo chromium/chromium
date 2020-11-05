@@ -218,8 +218,8 @@ namespace {
 bool ShouldShowPluginExplanation(content::WebContents* web_contents,
                                  HostContentSettingsMap* map) {
   const GURL& url = web_contents->GetURL();
-  ContentSetting setting = map->GetContentSetting(
-      url, url, ContentSettingsType::PLUGINS, std::string());
+  ContentSetting setting =
+      map->GetContentSetting(url, url, ContentSettingsType::PLUGINS);
 
   // For plugins, show the animated explanation in these cases:
   //  - The plugin is blocked despite the user having content setting ALLOW.

@@ -113,19 +113,16 @@ class HostContentSettingsMap : public content_settings::Observer,
   // If there is no content setting, returns CONTENT_SETTING_DEFAULT.
   //
   // May be called on any thread.
-  ContentSetting GetContentSetting(
-      const GURL& primary_url,
-      const GURL& secondary_url,
-      ContentSettingsType content_type,
-      const std::string& resource_identifier) const;
+  ContentSetting GetContentSetting(const GURL& primary_url,
+                                   const GURL& secondary_url,
+                                   ContentSettingsType content_type) const;
 
   // This is the same as GetContentSetting() but ignores providers which are not
   // user-controllable (e.g. policy and extensions).
   ContentSetting GetUserModifiableContentSetting(
       const GURL& primary_url,
       const GURL& secondary_url,
-      ContentSettingsType content_type,
-      const std::string& resource_identifier) const;
+      ContentSettingsType content_type) const;
 
   // Returns a single content setting |Value| which applies to the given URLs.
   // If |info| is not NULL, then the |source| field of |info| is set to the
@@ -143,7 +140,6 @@ class HostContentSettingsMap : public content_settings::Observer,
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,
-      const std::string& resource_identifier,
       content_settings::SettingInfo* info) const;
 
   // For a given content type, returns all patterns with a non-default setting,
@@ -157,7 +153,6 @@ class HostContentSettingsMap : public content_settings::Observer,
   //
   // This may be called on any thread.
   void GetSettingsForOneType(ContentSettingsType content_type,
-                             const std::string& resource_identifier,
                              ContentSettingsForOneType* settings,
                              base::Optional<content_settings::SessionModel>
                                  session_model = base::nullopt) const;
@@ -167,7 +162,6 @@ class HostContentSettingsMap : public content_settings::Observer,
   // won't have any effect because they are deprecated.
   void GetDiscardedSettingsForOneType(
       ContentSettingsType content_type,
-      const std::string& resource_identifier,
       ContentSettingsForOneType* settings) const;
 
   // Sets the default setting for a particular content type. This method must
@@ -177,12 +171,12 @@ class HostContentSettingsMap : public content_settings::Observer,
   void SetDefaultContentSetting(ContentSettingsType content_type,
                                 ContentSetting setting);
 
-  // Sets the content |setting| for the given patterns, |content_type| and
-  // |resource_identifier| applying any provided |constraints|. Setting the
-  // value to CONTENT_SETTING_DEFAULT causes the default setting for that type
-  // to be used when loading pages matching this pattern. Unless adding a
-  // custom-scoped setting, most developers will want to use
-  // SetContentSettingDefaultScope() instead.
+  // Sets the content |setting| for the given patterns and|content_type|
+  // applying any provided |constraints|. Setting the value to
+  // CONTENT_SETTING_DEFAULT causes the default setting for that type to be used
+  // when loading pages matching this pattern. Unless adding a custom-scoped
+  // setting, most developers will want to use SetContentSettingDefaultScope()
+  // instead.
   //
   // NOTICE: This is just a convenience method for content types that use
   // |CONTENT_SETTING| as their data type. For content types that use other
@@ -193,14 +187,13 @@ class HostContentSettingsMap : public content_settings::Observer,
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
-      const std::string& resource_identifier,
       ContentSetting setting,
       const content_settings::ContentSettingConstraints& constraints = {});
 
   // Sets the content |setting| for the default scope of the url that is
-  // appropriate for the given |content_type| and |resource_identifier| applying
-  // any provided |constraints|. Setting the value to CONTENT_SETTING_DEFAULT
-  // causes the default setting for that type to be used.
+  // appropriate for the given |content_type| applying any provided
+  // |constraints|. Setting the value to CONTENT_SETTING_DEFAULT causes the
+  // default setting for that type to be used.
   //
   // NOTICE: This is just a convenience method for content types that use
   // |CONTENT_SETTING| as their data type. For content types that use other
@@ -216,14 +209,12 @@ class HostContentSettingsMap : public content_settings::Observer,
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,
-      const std::string& resource_identifier,
       ContentSetting setting,
       const content_settings::ContentSettingConstraints& constraints = {});
 
   // Sets the |value| for the default scope of the url that is appropriate for
-  // the given |content_type| and |resource_identifier| applying any provided
-  // |constraints|. Setting the value to null removes the default pattern pair
-  // for this content type.
+  // the given |content_type| applying any provided |constraints|. Setting the
+  // value to null removes the default pattern pair for this content type.
   //
   // Internally this will call SetWebsiteSettingCustomScope() with the default
   // scope patterns for the given |content_type|. Developers will generally want
@@ -233,20 +224,17 @@ class HostContentSettingsMap : public content_settings::Observer,
       const GURL& requesting_url,
       const GURL& top_level_url,
       ContentSettingsType content_type,
-      const std::string& resource_identifier,
       std::unique_ptr<base::Value> value,
       const content_settings::ContentSettingConstraints& constraints = {});
 
   // Sets a rule to apply the |value| for all sites matching |pattern|,
-  // |content_type| and |resource_identifier| applying any provided
-  // |constraints|. Setting the value to null removes the given pattern pair.
-  // Unless adding a custom-scoped setting, most developers will want to use
-  // SetWebsiteSettingDefaultScope() instead.
+  // |content_type| applying any provided |constraints|. Setting the value to
+  // null removes the given pattern pair. Unless adding a custom-scoped setting,
+  // most developers will want to use SetWebsiteSettingDefaultScope() instead.
   void SetWebsiteSettingCustomScope(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
-      const std::string& resource_identifier,
       std::unique_ptr<base::Value> value,
       const content_settings::ContentSettingConstraints& constraints = {});
 

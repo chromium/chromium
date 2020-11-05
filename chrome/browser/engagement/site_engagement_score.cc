@@ -46,8 +46,7 @@ std::unique_ptr<base::DictionaryValue> GetSiteEngagementScoreDictForSettings(
 
   std::unique_ptr<base::DictionaryValue> value =
       base::DictionaryValue::From(settings->GetWebsiteSetting(
-          origin_url, origin_url, ContentSettingsType::SITE_ENGAGEMENT,
-          content_settings::ResourceIdentifier(), NULL));
+          origin_url, origin_url, ContentSettingsType::SITE_ENGAGEMENT, NULL));
 
   if (value.get())
     return value;
@@ -275,7 +274,7 @@ void SiteEngagementScore::Commit() {
 
   settings_map_->SetWebsiteSettingDefaultScope(
       origin_, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
-      content_settings::ResourceIdentifier(), std::move(score_dict_));
+      std::move(score_dict_));
 }
 
 blink::mojom::EngagementLevel SiteEngagementScore::GetEngagementLevel() const {

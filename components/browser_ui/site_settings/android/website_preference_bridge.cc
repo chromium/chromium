@@ -143,11 +143,9 @@ void GetOrigins(JNIEnv* env,
   ContentSettingsForOneType all_settings;
   ContentSettingsForOneType embargo_settings;
 
-  content_settings_map->GetSettingsForOneType(content_type, std::string(),
-                                              &all_settings);
+  content_settings_map->GetSettingsForOneType(content_type, &all_settings);
   content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA, std::string(),
-      &embargo_settings);
+      ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA, &embargo_settings);
   ContentSetting default_content_setting =
       content_settings_map->GetDefaultContentSetting(content_type, nullptr);
 
@@ -253,7 +251,7 @@ void SetSettingForOrigin(JNIEnv* env,
           permissions::PermissionSourceUI::SITE_SETTINGS);
   GetHostContentSettingsMap(browser_context)
       ->SetContentSettingDefaultScope(origin_url, embedder_url, content_type,
-                                      std::string(), setting);
+                                      setting);
   content_settings::LogWebSiteSettingsPermissionChange(content_type, setting);
 }
 
@@ -375,8 +373,7 @@ static void SetNotificationSettingForOrigin(
 
   GetHostContentSettingsMap(browser_context)
       ->SetContentSettingDefaultScope(
-          url, GURL(), ContentSettingsType::NOTIFICATIONS,
-          content_settings::ResourceIdentifier(), setting);
+          url, GURL(), ContentSettingsType::NOTIFICATIONS, setting);
   content_settings::LogWebSiteSettingsPermissionChange(
       ContentSettingsType::NOTIFICATIONS, setting);
 }
@@ -706,7 +703,7 @@ static void JNI_WebsitePreferenceBridge_ClearBannerData(
   GetHostContentSettingsMap(jbrowser_context_handle)
       ->SetWebsiteSettingDefaultScope(
           GURL(ConvertJavaStringToUTF8(env, jorigin)), GURL(),
-          ContentSettingsType::APP_BANNER, std::string(), nullptr);
+          ContentSettingsType::APP_BANNER, nullptr);
 }
 
 static void JNI_WebsitePreferenceBridge_ClearMediaLicenses(
@@ -851,7 +848,7 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingForPattern(
               ? ContentSettingsPattern::Wildcard()
               : ContentSettingsPattern::FromString(secondary_pattern_string),
           static_cast<ContentSettingsType>(content_settings_type),
-          std::string(), static_cast<ContentSetting>(setting));
+          static_cast<ContentSetting>(setting));
 }
 
 static void JNI_WebsitePreferenceBridge_GetContentSettingsExceptions(
@@ -862,8 +859,7 @@ static void JNI_WebsitePreferenceBridge_GetContentSettingsExceptions(
   ContentSettingsForOneType entries;
   GetHostContentSettingsMap(jbrowser_context_handle)
       ->GetSettingsForOneType(
-          static_cast<ContentSettingsType>(content_settings_type), "",
-          &entries);
+          static_cast<ContentSettingsType>(content_settings_type), &entries);
   for (size_t i = 0; i < entries.size(); ++i) {
     Java_WebsitePreferenceBridge_addContentSettingExceptionToList(
         env, list, content_settings_type,

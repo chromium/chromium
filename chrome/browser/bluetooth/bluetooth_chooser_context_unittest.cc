@@ -494,9 +494,9 @@ TEST_F(BluetoothChooserContextTest, BluetoothGuardPermission) {
       CreateOptionsForServices(services2);
 
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
-  map->SetContentSettingDefaultScope(
-      foo_url_, foo_url_, ContentSettingsType::BLUETOOTH_GUARD,
-      /*resource_identifier=*/std::string(), CONTENT_SETTING_BLOCK);
+  map->SetContentSettingDefaultScope(foo_url_, foo_url_,
+                                     ContentSettingsType::BLUETOOTH_GUARD,
+                                     CONTENT_SETTING_BLOCK);
 
   BluetoothChooserContext* context = GetChooserContext(profile());
   EXPECT_CALL(mock_permission_observer_,

@@ -126,8 +126,7 @@ class ChromeNativeFileSystemPermissionContextTest : public testing::Test {
     HostContentSettingsMap* content_settings =
         HostContentSettingsMapFactory::GetForProfile(&profile_);
     content_settings->SetContentSettingDefaultScope(
-        origin.GetURL(), origin.GetURL(), type,
-        /*resource_identifier=*/std::string(), value);
+        origin.GetURL(), origin.GetURL(), type, value);
   }
 
   ChromeNativeFileSystemPermissionContext* permission_context() {

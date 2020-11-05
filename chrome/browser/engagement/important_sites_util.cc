@@ -215,7 +215,7 @@ std::unordered_set<std::string> GetBlacklistedImportantDomains(
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile);
   map->GetSettingsForOneType(ContentSettingsType::IMPORTANT_SITE_INFO,
-                             content_settings::ResourceIdentifier(),
+
                              &content_settings_list);
   std::unordered_set<std::string> ignoring_domains;
   for (ContentSettingPatternSource& site : content_settings_list) {
@@ -279,8 +279,7 @@ void PopulateInfoMapWithContentTypeAllowed(
   // Grab our content settings list.
   ContentSettingsForOneType content_settings_list;
   HostContentSettingsMapFactory::GetForProfile(profile)->GetSettingsForOneType(
-      content_type, content_settings::ResourceIdentifier(),
-      &content_settings_list);
+      content_type, &content_settings_list);
 
   // Extract a set of urls, using the primary pattern. We don't handle
   // wildcard patterns.
@@ -548,7 +547,7 @@ void ImportantSitesUtil::RecordBlacklistedAndIgnoredImportantSites(
       GURL origin("http://" + ignored_site);
       std::unique_ptr<base::DictionaryValue> dict =
           base::DictionaryValue::From(map->GetWebsiteSetting(
-              origin, origin, ContentSettingsType::IMPORTANT_SITE_INFO, "",
+              origin, origin, ContentSettingsType::IMPORTANT_SITE_INFO,
               nullptr));
 
       if (!dict)
@@ -557,7 +556,7 @@ void ImportantSitesUtil::RecordBlacklistedAndIgnoredImportantSites(
       RecordIgnore(dict.get());
 
       map->SetWebsiteSettingDefaultScope(
-          origin, origin, ContentSettingsType::IMPORTANT_SITE_INFO, "",
+          origin, origin, ContentSettingsType::IMPORTANT_SITE_INFO,
           std::move(dict));
     }
   } else {
@@ -575,7 +574,7 @@ void ImportantSitesUtil::RecordBlacklistedAndIgnoredImportantSites(
     dict->Remove(kTimeLastIgnored, nullptr);
     map->SetWebsiteSettingDefaultScope(origin, origin,
                                        ContentSettingsType::IMPORTANT_SITE_INFO,
-                                       "", std::move(dict));
+                                       std::move(dict));
   }
 
   // Finally, record our old crossed-stats.

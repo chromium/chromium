@@ -336,7 +336,7 @@ bool IsDownloadPermittedByContentSettings(
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
   host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::MIXEDSCRIPT, std::string(), &settings);
+      ContentSettingsType::MIXEDSCRIPT, &settings);
 
   // When there's only one rule, it's the default wildcard rule.
   if (settings.size() == 1) {

@@ -459,7 +459,7 @@ ContentSetting SearchPermissionsService::GetContentSetting(
     const GURL& origin,
     ContentSettingsType type) {
   return host_content_settings_map_->GetUserModifiableContentSetting(
-      origin, origin, type, std::string());
+      origin, origin, type);
 }
 
 void SearchPermissionsService::SetContentSetting(const GURL& origin,
@@ -474,15 +474,15 @@ void SearchPermissionsService::SetContentSetting(const GURL& origin,
   // never be changed between ALLOW<->BLOCK on Android. Do not copy this code.
   // Check with the notifications team if you need to do something like this.
   host_content_settings_map_->SetContentSettingDefaultScope(
-      origin, origin, type, std::string(), CONTENT_SETTING_DEFAULT);
+      origin, origin, type, CONTENT_SETTING_DEFAULT);
 
   // If we're restoring an ASK setting, it really implies that we should delete
   // the user-defined setting to fall back to the default.
   if (setting == CONTENT_SETTING_ASK)
     return;  // We deleted the setting above already.
 
-  host_content_settings_map_->SetContentSettingDefaultScope(
-      origin, origin, type, std::string(), setting);
+  host_content_settings_map_->SetContentSettingDefaultScope(origin, origin,
+                                                            type, setting);
 }
 
 void SearchPermissionsService::SetSearchEngineDelegateForTest(

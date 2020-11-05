@@ -44,19 +44,18 @@ void GetPluginContentSettingInternal(
   bool uses_plugin_specific_setting = false;
   if (use_javascript_setting) {
     value = host_content_settings_map->GetWebsiteSetting(
-        main_frame_url, main_frame_url, ContentSettingsType::JAVASCRIPT,
-        std::string(), &info);
+        main_frame_url, main_frame_url, ContentSettingsType::JAVASCRIPT, &info);
   } else {
     content_settings::SettingInfo specific_info;
     std::unique_ptr<base::Value> specific_setting =
         host_content_settings_map->GetWebsiteSetting(
-            main_frame_url, plugin_url, ContentSettingsType::PLUGINS, resource,
+            main_frame_url, plugin_url, ContentSettingsType::PLUGINS,
             &specific_info);
     content_settings::SettingInfo general_info;
     std::unique_ptr<base::Value> general_setting =
         host_content_settings_map->GetWebsiteSetting(
             main_frame_url, plugin_url, ContentSettingsType::PLUGINS,
-            std::string(), &general_info);
+            &general_info);
     // If there is a plugin-specific setting, we use it, unless the general
     // setting was set by policy, in which case it takes precedence.
     uses_plugin_specific_setting =
@@ -164,7 +163,7 @@ void PluginUtils::RememberFlashChangedForSite(
   dict->SetKey(kFlagKey, base::Value(true));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       top_level_url, top_level_url, ContentSettingsType::PLUGINS_DATA,
-      std::string(), std::move(dict));
+      std::move(dict));
 }
 
 // static

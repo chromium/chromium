@@ -38,15 +38,15 @@ TEST_F(PageSpecificContentSettingsTest, HistogramTest) {
   NavigateAndCommit(test_url);
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  map->SetContentSettingDefaultScope(
-      test_url, test_url, ContentSettingsType::GEOLOCATION, std::string(),
-      ContentSetting::CONTENT_SETTING_ALLOW);
-  map->SetContentSettingDefaultScope(
-      test_url, test_url, ContentSettingsType::MEDIASTREAM_MIC, std::string(),
-      ContentSetting::CONTENT_SETTING_ALLOW);
-  map->SetContentSettingDefaultScope(
-      test_url, test_url, ContentSettingsType::MEDIASTREAM_CAMERA,
-      std::string(), ContentSetting::CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(test_url, test_url,
+                                     ContentSettingsType::GEOLOCATION,
+                                     ContentSetting::CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(test_url, test_url,
+                                     ContentSettingsType::MEDIASTREAM_MIC,
+                                     ContentSetting::CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(test_url, test_url,
+                                     ContentSettingsType::MEDIASTREAM_CAMERA,
+                                     ContentSetting::CONTENT_SETTING_ALLOW);
 
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
   PageSpecificContentSettings* content_settings =

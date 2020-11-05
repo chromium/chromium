@@ -399,7 +399,7 @@ TEST_F(CookieSettingsTest, CookiesThirdPartyBlockedAllSitesAllowed) {
   // match all HTTPS sites.
   settings_map_->SetContentSettingCustomScope(
       kAllHttpsSitesPattern, ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES, std::string(), CONTENT_SETTING_ALLOW);
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
   cookie_settings_->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
 
   // |kAllowedSite| should be allowed.
@@ -480,8 +480,7 @@ TEST_F(CookieSettingsTest, GetCookieSettingDisabledSAA) {
   settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(url),
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
-      ContentSettingsType::STORAGE_ACCESS, std::string(),
-      CONTENT_SETTING_ALLOW);
+      ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
 
   ContentSetting setting;
   cookie_settings_->GetCookieSetting(url, top_level_url, nullptr, &setting);
@@ -503,8 +502,7 @@ TEST_F(CookieSettingsTest, GetCookieSettingDefaultSAA) {
   settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(url),
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
-      ContentSettingsType::STORAGE_ACCESS, std::string(),
-      CONTENT_SETTING_ALLOW);
+      ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
 
   ContentSetting setting;
   cookie_settings_->GetCookieSetting(url, top_level_url, nullptr, &setting);
@@ -535,8 +533,7 @@ TEST_F(CookieSettingsTest, GetCookieSettingEnabledSAA) {
   settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(url),
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
-      ContentSettingsType::STORAGE_ACCESS, std::string(),
-      CONTENT_SETTING_ALLOW);
+      ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
 
   // When requesting our setting for the url/top-level combination our
   // grant is for access should be allowed. For any other domain pairs access
@@ -579,8 +576,7 @@ TEST_F(CookieSettingsTest, GetCookieSettingSAAResourceWildcards) {
   settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(url),
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
-      ContentSettingsType::STORAGE_ACCESS, std::string(),
-      CONTENT_SETTING_ALLOW);
+      ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
 
   ContentSetting setting;
   cookie_settings_->GetCookieSetting(url, top_level_url, nullptr, &setting);
@@ -606,8 +602,7 @@ TEST_F(CookieSettingsTest, GetCookieSettingSAATopLevelWildcards) {
   settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(url),
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
-      ContentSettingsType::STORAGE_ACCESS, std::string(),
-      CONTENT_SETTING_ALLOW);
+      ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
 
   ContentSetting setting;
   cookie_settings_->GetCookieSetting(url, top_level_url, nullptr, &setting);
@@ -632,8 +627,7 @@ TEST_F(CookieSettingsTest, GetCookieSettingSAARespectsSettings) {
   settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(url),
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
-      ContentSettingsType::STORAGE_ACCESS, std::string(),
-      CONTENT_SETTING_ALLOW);
+      ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
 
   ContentSetting setting;
   cookie_settings_->GetCookieSetting(url, top_level_url, nullptr, &setting);
@@ -654,7 +648,7 @@ TEST_F(CookieSettingsTest, GetCookieSettingSAAExpiredGrant) {
   settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(url),
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
-      ContentSettingsType::STORAGE_ACCESS, std::string(), CONTENT_SETTING_ALLOW,
+      ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW,
       {content_settings::GetConstraintExpiration(
            base::TimeDelta::FromSeconds(100)),
        SessionModel::UserSession});
@@ -795,8 +789,7 @@ TEST_F(CookieSettingsTest,
   settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::FromString(kDomain),
       ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::LEGACY_COOKIE_ACCESS, std::string(),
-      CONTENT_SETTING_BLOCK);
+      ContentSettingsType::LEGACY_COOKIE_ACCESS, CONTENT_SETTING_BLOCK);
   const struct {
     net::CookieAccessSemantics status;
     std::string cookie_domain;
@@ -826,8 +819,7 @@ TEST_F(CookieSettingsTest,
   settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::FromString(kDomainWildcardPattern),
       ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::LEGACY_COOKIE_ACCESS, std::string(),
-      CONTENT_SETTING_BLOCK);
+      ContentSettingsType::LEGACY_COOKIE_ACCESS, CONTENT_SETTING_BLOCK);
   const struct {
     net::CookieAccessSemantics status;
     std::string cookie_domain;
@@ -868,8 +860,7 @@ TEST_F(SameSiteByDefaultCookieSettingsTest,
   settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::FromString(kDomain),
       ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::LEGACY_COOKIE_ACCESS, std::string(),
-      CONTENT_SETTING_ALLOW);
+      ContentSettingsType::LEGACY_COOKIE_ACCESS, CONTENT_SETTING_ALLOW);
   const struct {
     net::CookieAccessSemantics status;
     std::string cookie_domain;
@@ -898,8 +889,7 @@ TEST_F(SameSiteByDefaultCookieSettingsTest,
   settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::FromString(kDomainWildcardPattern),
       ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::LEGACY_COOKIE_ACCESS, std::string(),
-      CONTENT_SETTING_ALLOW);
+      ContentSettingsType::LEGACY_COOKIE_ACCESS, CONTENT_SETTING_ALLOW);
   const struct {
     net::CookieAccessSemantics status;
     std::string cookie_domain;

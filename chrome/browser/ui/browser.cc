@@ -1446,8 +1446,7 @@ bool Browser::ShouldAllowRunningInsecureContent(
       HostContentSettingsMapFactory::GetForProfile(profile);
   return content_settings->GetContentSetting(
              web_contents->GetLastCommittedURL(), GURL(),
-             ContentSettingsType::MIXEDSCRIPT,
-             std::string()) == CONTENT_SETTING_ALLOW;
+             ContentSettingsType::MIXEDSCRIPT) == CONTENT_SETTING_ALLOW;
 }
 
 void Browser::OnDidBlockNavigation(
@@ -2180,7 +2179,7 @@ void Browser::RequestPpapiBrokerPermission(
   HostContentSettingsMap* content_settings =
       HostContentSettingsMapFactory::GetForProfile(profile);
   ContentSetting setting = content_settings->GetContentSetting(
-      url, url, ContentSettingsType::PPAPI_BROKER, std::string());
+      url, url, ContentSettingsType::PPAPI_BROKER);
 
   if (setting == CONTENT_SETTING_ASK) {
     base::RecordAction(base::UserMetricsAction("PPAPI.BrokerInfobarDisplayed"));

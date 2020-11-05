@@ -55,14 +55,13 @@ SubresourceFilterContentSettingsManager::
 
 ContentSetting SubresourceFilterContentSettingsManager::GetSitePermission(
     const GURL& url) const {
-  return settings_map_->GetContentSetting(url, GURL(), ContentSettingsType::ADS,
-                                          std::string());
+  return settings_map_->GetContentSetting(url, GURL(),
+                                          ContentSettingsType::ADS);
 }
 
 void SubresourceFilterContentSettingsManager::AllowlistSite(const GURL& url) {
   settings_map_->SetContentSettingDefaultScope(
-      url, GURL(), ContentSettingsType::ADS, std::string(),
-      CONTENT_SETTING_ALLOW);
+      url, GURL(), ContentSettingsType::ADS, CONTENT_SETTING_ALLOW);
 }
 
 void SubresourceFilterContentSettingsManager::OnDidShowUI(const GURL& url) {
@@ -141,7 +140,7 @@ std::unique_ptr<base::DictionaryValue>
 SubresourceFilterContentSettingsManager::GetSiteMetadata(
     const GURL& url) const {
   return base::DictionaryValue::From(settings_map_->GetWebsiteSetting(
-      url, GURL(), ContentSettingsType::ADS_DATA, std::string(), nullptr));
+      url, GURL(), ContentSettingsType::ADS_DATA, nullptr));
 }
 
 void SubresourceFilterContentSettingsManager::SetSiteMetadataForTesting(
@@ -170,8 +169,7 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadata(
 
   content_settings::ContentSettingConstraints constraints = {expiry_time};
   settings_map_->SetWebsiteSettingDefaultScope(
-      url, GURL(), ContentSettingsType::ADS_DATA, std::string(),
-      std::move(dict), constraints);
+      url, GURL(), ContentSettingsType::ADS_DATA, std::move(dict), constraints);
 }
 
 std::unique_ptr<base::DictionaryValue>

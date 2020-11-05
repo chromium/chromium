@@ -235,9 +235,8 @@ TEST_F(ChooserContextBaseTest, GetAllGrantedObjects) {
 
 TEST_F(ChooserContextBaseTest, GetGrantedObjectsWithGuardBlocked) {
   auto* map = PermissionsClient::Get()->GetSettingsMap(browser_context());
-  map->SetContentSettingDefaultScope(url1_, url1_,
-                                     ContentSettingsType::USB_GUARD,
-                                     std::string(), CONTENT_SETTING_BLOCK);
+  map->SetContentSettingDefaultScope(
+      url1_, url1_, ContentSettingsType::USB_GUARD, CONTENT_SETTING_BLOCK);
 
   TestChooserContext context(browser_context());
   MockPermissionObserver mock_observer;
@@ -259,9 +258,8 @@ TEST_F(ChooserContextBaseTest, GetGrantedObjectsWithGuardBlocked) {
 
 TEST_F(ChooserContextBaseTest, GetAllGrantedObjectsWithGuardBlocked) {
   auto* map = PermissionsClient::Get()->GetSettingsMap(browser_context());
-  map->SetContentSettingDefaultScope(url1_, url1_,
-                                     ContentSettingsType::USB_GUARD,
-                                     std::string(), CONTENT_SETTING_BLOCK);
+  map->SetContentSettingDefaultScope(
+      url1_, url1_, ContentSettingsType::USB_GUARD, CONTENT_SETTING_BLOCK);
 
   TestChooserContext context(browser_context());
   MockPermissionObserver mock_observer;

@@ -145,17 +145,15 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ClearSiteSettings) {
           ->web_contents()
           ->GetBrowserContext());
   EXPECT_EQ(settings_map->GetContentSetting(dse_origin, dse_origin,
-                                            ContentSettingsType::GEOLOCATION,
-                                            std::string()),
+                                            ContentSettingsType::GEOLOCATION),
             CONTENT_SETTING_ALLOW);
   EXPECT_EQ(settings_map->GetContentSetting(foo_origin, foo_origin,
-                                            ContentSettingsType::GEOLOCATION,
-                                            std::string()),
+                                            ContentSettingsType::GEOLOCATION),
             CONTENT_SETTING_ASK);
 
-  settings_map->SetContentSettingDefaultScope(
-      foo_origin, foo_origin, ContentSettingsType::GEOLOCATION, std::string(),
-      CONTENT_SETTING_ALLOW);
+  settings_map->SetContentSettingDefaultScope(foo_origin, foo_origin,
+                                              ContentSettingsType::GEOLOCATION,
+                                              CONTENT_SETTING_ALLOW);
 
   // Ensure clearing things other than site data doesn't change it
   base::RunLoop run_loop;
@@ -167,13 +165,11 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ClearSiteSettings) {
   run_loop.Run();
 
   EXPECT_EQ(settings_map->GetContentSetting(dse_origin, dse_origin,
-                                            ContentSettingsType::GEOLOCATION,
-                                            std::string()),
+                                            ContentSettingsType::GEOLOCATION),
             CONTENT_SETTING_ALLOW);
 
   EXPECT_EQ(settings_map->GetContentSetting(foo_origin, foo_origin,
-                                            ContentSettingsType::GEOLOCATION,
-                                            std::string()),
+                                            ContentSettingsType::GEOLOCATION),
             CONTENT_SETTING_ALLOW);
 
   // Now clear site data.
@@ -183,12 +179,10 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ClearSiteSettings) {
   run_loop2.Run();
 
   EXPECT_EQ(settings_map->GetContentSetting(dse_origin, dse_origin,
-                                            ContentSettingsType::GEOLOCATION,
-                                            std::string()),
+                                            ContentSettingsType::GEOLOCATION),
             CONTENT_SETTING_ALLOW);
   EXPECT_EQ(settings_map->GetContentSetting(foo_origin, foo_origin,
-                                            ContentSettingsType::GEOLOCATION,
-                                            std::string()),
+                                            ContentSettingsType::GEOLOCATION),
             CONTENT_SETTING_ASK);
 }
 

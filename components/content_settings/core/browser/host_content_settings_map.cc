@@ -380,20 +380,18 @@ ContentSetting HostContentSettingsMap::GetDefaultContentSetting(
 ContentSetting HostContentSettingsMap::GetContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
-    ContentSettingsType content_type,
-    const std::string& resource_identifier) const {
+    ContentSettingsType content_type) const {
   DCHECK(content_settings::ContentSettingsRegistry::GetInstance()->Get(
       content_type));
-  std::unique_ptr<base::Value> value = GetWebsiteSetting(
-      primary_url, secondary_url, content_type, std::string(), nullptr);
+  std::unique_ptr<base::Value> value =
+      GetWebsiteSetting(primary_url, secondary_url, content_type, nullptr);
   return content_settings::ValueToContentSetting(value.get());
 }
 
 ContentSetting HostContentSettingsMap::GetUserModifiableContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
-    ContentSettingsType content_type,
-    const std::string& resource_identifier) const {
+    ContentSettingsType content_type) const {
   DCHECK(content_settings::ContentSettingsRegistry::GetInstance()->Get(
       content_type));
   std::unique_ptr<base::Value> value =
@@ -404,7 +402,6 @@ ContentSetting HostContentSettingsMap::GetUserModifiableContentSetting(
 
 void HostContentSettingsMap::GetSettingsForOneType(
     ContentSettingsType content_type,
-    const std::string& resource_identifier,
     ContentSettingsForOneType* settings,
     base::Optional<content_settings::SessionModel> session_model) const {
   DCHECK(settings);
@@ -425,7 +422,6 @@ void HostContentSettingsMap::GetSettingsForOneType(
 
 void HostContentSettingsMap::GetDiscardedSettingsForOneType(
     ContentSettingsType content_type,
-    const std::string& resource_identifier,
     ContentSettingsForOneType* settings) const {
   DCHECK(settings);
   UsedContentSettingsProviders();
@@ -458,14 +454,13 @@ void HostContentSettingsMap::SetDefaultContentSetting(
   }
   SetWebsiteSettingCustomScope(ContentSettingsPattern::Wildcard(),
                                ContentSettingsPattern::Wildcard(), content_type,
-                               std::string(), std::move(value));
+                               std::move(value));
 }
 
 void HostContentSettingsMap::SetWebsiteSettingDefaultScope(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
-    const std::string& resource_identifier,
     std::unique_ptr<base::Value> value,
     const content_settings::ContentSettingConstraints& constraints) {
   content_settings::PatternPair patterns = GetPatternsForContentSettingsType(
@@ -476,14 +471,13 @@ void HostContentSettingsMap::SetWebsiteSettingDefaultScope(
     return;
 
   SetWebsiteSettingCustomScope(primary_pattern, secondary_pattern, content_type,
-                               std::string(), std::move(value), constraints);
+                               std::move(value), constraints);
 }
 
 void HostContentSettingsMap::SetWebsiteSettingCustomScope(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    const std::string& resource_identifier,
     std::unique_ptr<base::Value> value,
     const content_settings::ContentSettingConstraints& constraints) {
   DCHECK(IsSecondaryPatternAllowed(primary_pattern, secondary_pattern,
@@ -533,8 +527,7 @@ void HostContentSettingsMap::SetNarrowestContentSetting(
   if (!patterns.first.IsValid() || !patterns.second.IsValid())
     return;
 
-  SetContentSettingCustomScope(patterns.first, patterns.second, type,
-                               std::string(), setting);
+  SetContentSettingCustomScope(patterns.first, patterns.second, type, setting);
 }
 
 content_settings::PatternPair HostContentSettingsMap::GetNarrowestPatterns (
@@ -579,7 +572,6 @@ void HostContentSettingsMap::SetContentSettingCustomScope(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    const std::string& resource_identifier,
     ContentSetting setting,
     const content_settings::ContentSettingConstraints& constraints) {
   DCHECK(content_settings::ContentSettingsRegistry::GetInstance()->Get(
@@ -609,14 +601,13 @@ void HostContentSettingsMap::SetContentSettingCustomScope(
     value.reset(new base::Value(setting));
   }
   SetWebsiteSettingCustomScope(primary_pattern, secondary_pattern, content_type,
-                               std::string(), std::move(value), constraints);
+                               std::move(value), constraints);
 }
 
 void HostContentSettingsMap::SetContentSettingDefaultScope(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
-    const std::string& resource_identifier,
     ContentSetting setting,
     const content_settings::ContentSettingConstraints& constraints) {
   content_settings::PatternPair patterns = GetPatternsForContentSettingsType(
@@ -628,7 +619,7 @@ void HostContentSettingsMap::SetContentSettingDefaultScope(
     return;
 
   SetContentSettingCustomScope(primary_pattern, secondary_pattern, content_type,
-                               std::string(), setting, constraints);
+                               setting, constraints);
 }
 
 base::WeakPtr<HostContentSettingsMap> HostContentSettingsMap::GetWeakPtr() {
@@ -649,7 +640,7 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
     const std::string type_name = info->name();
 
     ContentSettingsForOneType settings;
-    GetSettingsForOneType(content_type, std::string(), &settings);
+    GetSettingsForOneType(content_type, &settings);
     size_t num_exceptions = 0;
     size_t num_third_party_cookie_allow_exceptions = 0;
     base::flat_map<ContentSetting, size_t> num_exceptions_with_setting;
@@ -773,7 +764,7 @@ void HostContentSettingsMap::ClearSettingsForOneTypeWithPredicate(
   }
   UsedContentSettingsProviders();
   ContentSettingsForOneType settings;
-  GetSettingsForOneType(content_type, std::string(), &settings);
+  GetSettingsForOneType(content_type, &settings);
   for (const ContentSettingPatternSource& setting : settings) {
     if (pattern_predicate.is_null() ||
         pattern_predicate.Run(setting.primary_pattern,
@@ -873,7 +864,6 @@ std::unique_ptr<base::Value> HostContentSettingsMap::GetWebsiteSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
-    const std::string& resource_identifier,
     content_settings::SettingInfo* info) const {
 
   // Check if the requested setting is allowlisted.
@@ -1030,11 +1020,9 @@ void HostContentSettingsMap::InitializePluginsDataSettings() {
     return;
   }
   ContentSettingsForOneType host_settings;
-  GetSettingsForOneType(ContentSettingsType::PLUGINS_DATA, std::string(),
-                        &host_settings);
+  GetSettingsForOneType(ContentSettingsType::PLUGINS_DATA, &host_settings);
   if (host_settings.empty()) {
-    GetSettingsForOneType(ContentSettingsType::PLUGINS, std::string(),
-                          &host_settings);
+    GetSettingsForOneType(ContentSettingsType::PLUGINS, &host_settings);
     for (ContentSettingPatternSource pattern : host_settings) {
       if (pattern.source != "preference")
         continue;
@@ -1047,9 +1035,8 @@ void HostContentSettingsMap::InitializePluginsDataSettings() {
       auto dict = std::make_unique<base::DictionaryValue>();
       constexpr char kFlagKey[] = "flashPreviouslyChanged";
       dict->SetKey(kFlagKey, base::Value(true));
-      SetWebsiteSettingDefaultScope(primary, primary,
-                                    ContentSettingsType::PLUGINS_DATA,
-                                    std::string(), std::move(dict));
+      SetWebsiteSettingDefaultScope(
+          primary, primary, ContentSettingsType::PLUGINS_DATA, std::move(dict));
     }
   }
 }
@@ -1066,7 +1053,7 @@ void HostContentSettingsMap::
     ContentSettingsType type = info->website_settings_info()->type();
 
     ContentSettingsForOneType host_settings;
-    GetSettingsForOneType(type, std::string(), &host_settings);
+    GetSettingsForOneType(type, &host_settings);
     for (ContentSettingPatternSource pattern : host_settings) {
       if (pattern.source != "preference" ||
           pattern.secondary_pattern == ContentSettingsPattern::Wildcard()) {
@@ -1082,7 +1069,7 @@ void HostContentSettingsMap::
           pattern.secondary_pattern != pattern.primary_pattern) {
         SetContentSettingCustomScope(pattern.primary_pattern,
                                      pattern.secondary_pattern, type,
-                                     std::string(), CONTENT_SETTING_DEFAULT);
+                                     CONTENT_SETTING_DEFAULT);
         // Also clear the setting for the top level origin so that the user
         // receives another prompt. This is necessary in case they have allowed
         // the top level origin but blocked an embedded origin in which case
@@ -1090,19 +1077,19 @@ void HostContentSettingsMap::
         // embedded origin.
         SetContentSettingCustomScope(pattern.secondary_pattern,
                                      pattern.secondary_pattern, type,
-                                     std::string(), CONTENT_SETTING_DEFAULT);
+                                     CONTENT_SETTING_DEFAULT);
         SetContentSettingCustomScope(pattern.secondary_pattern,
                                      ContentSettingsPattern::Wildcard(), type,
-                                     std::string(), CONTENT_SETTING_DEFAULT);
+                                     CONTENT_SETTING_DEFAULT);
       } else if (pattern.primary_pattern.IsValid() &&
                  pattern.primary_pattern == pattern.secondary_pattern) {
         // Migrate settings from (x,x) -> (x,*).
         SetContentSettingCustomScope(pattern.primary_pattern,
                                      pattern.secondary_pattern, type,
-                                     std::string(), CONTENT_SETTING_DEFAULT);
-        SetContentSettingCustomScope(
-            pattern.primary_pattern, ContentSettingsPattern::Wildcard(), type,
-            std::string(), pattern.GetContentSetting());
+                                     CONTENT_SETTING_DEFAULT);
+        SetContentSettingCustomScope(pattern.primary_pattern,
+                                     ContentSettingsPattern::Wildcard(), type,
+                                     pattern.GetContentSetting());
       }
     }
   }

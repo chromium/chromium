@@ -351,7 +351,7 @@ class PasswordProtectionServiceTest : public ::testing::TestWithParam<bool> {
     std::unique_ptr<base::DictionaryValue> verdict_dictionary =
         base::DictionaryValue::From(content_setting_map_->GetWebsiteSetting(
             invalid_hostname, GURL(), ContentSettingsType::PASSWORD_PROTECTION,
-            std::string(), nullptr));
+            nullptr));
 
     if (!verdict_dictionary)
       verdict_dictionary = std::make_unique<base::DictionaryValue>();
@@ -372,7 +372,7 @@ class PasswordProtectionServiceTest : public ::testing::TestWithParam<bool> {
         std::move(invalid_cache_expression_entry));
     content_setting_map_->SetWebsiteSettingDefaultScope(
         invalid_hostname, GURL(), ContentSettingsType::PASSWORD_PROTECTION,
-        std::string(), std::move(verdict_dictionary));
+        std::move(verdict_dictionary));
   }
 
   size_t GetStoredVerdictCount(LoginReputationClientRequest::TriggerType type) {

@@ -236,8 +236,7 @@ void StatefulSSLHostStateDelegate::AllowCert(
   GURL url = GetSecureGURLForHost(host);
   std::unique_ptr<base::Value> value(
       host_content_settings_map_->GetWebsiteSetting(
-          url, url, ContentSettingsType::SSL_CERT_DECISIONS, std::string(),
-          nullptr));
+          url, url, ContentSettingsType::SSL_CERT_DECISIONS, nullptr));
 
   if (!value.get() || !value->is_dict())
     value.reset(new base::DictionaryValue());
@@ -261,8 +260,7 @@ void StatefulSSLHostStateDelegate::AllowCert(
   // The map takes ownership of the value, so it is released in the call to
   // SetWebsiteSettingDefaultScope.
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
-      url, GURL(), ContentSettingsType::SSL_CERT_DECISIONS, std::string(),
-      std::move(value));
+      url, GURL(), ContentSettingsType::SSL_CERT_DECISIONS, std::move(value));
 }
 
 void StatefulSSLHostStateDelegate::Clear(
@@ -319,8 +317,7 @@ StatefulSSLHostStateDelegate::QueryPolicy(const std::string& host,
 
   std::unique_ptr<base::Value> value(
       host_content_settings_map_->GetWebsiteSetting(
-          url, url, ContentSettingsType::SSL_CERT_DECISIONS, std::string(),
-          nullptr));
+          url, url, ContentSettingsType::SSL_CERT_DECISIONS, nullptr));
 
   if (!value.get() || !value->is_dict())
     return DENIED;
@@ -386,8 +383,7 @@ void StatefulSSLHostStateDelegate::RevokeUserAllowExceptions(
   GURL url = GetSecureGURLForHost(host);
 
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
-      url, GURL(), ContentSettingsType::SSL_CERT_DECISIONS, std::string(),
-      nullptr);
+      url, GURL(), ContentSettingsType::SSL_CERT_DECISIONS, nullptr);
 
   // Decisions for non-default storage partitions are stored separately in
   // memory; delete those as well.
@@ -416,8 +412,7 @@ bool StatefulSSLHostStateDelegate::HasAllowException(
 
   std::unique_ptr<base::Value> value(
       host_content_settings_map_->GetWebsiteSetting(
-          url, url, ContentSettingsType::SSL_CERT_DECISIONS, std::string(),
-          nullptr));
+          url, url, ContentSettingsType::SSL_CERT_DECISIONS, nullptr));
 
   if (!value.get() || !value->is_dict())
     return false;

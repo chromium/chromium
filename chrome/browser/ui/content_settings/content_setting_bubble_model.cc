@@ -128,7 +128,7 @@ bool GetSettingManagedByUser(const GURL& url,
   } else {
     SettingInfo info;
     std::unique_ptr<base::Value> value =
-        map->GetWebsiteSetting(url, url, type, std::string(), &info);
+        map->GetWebsiteSetting(url, url, type, &info);
     setting = content_settings::ValueToContentSetting(value.get());
     source = info.source;
   }
@@ -1123,7 +1123,7 @@ void ContentSettingMediaStreamBubbleModel::UpdateSettings(
             permissions::PermissionSourceUI::PAGE_ACTION);
     map->SetContentSettingDefaultScope(
         page_content_settings->media_stream_access_origin(), GURL(),
-        ContentSettingsType::MEDIASTREAM_MIC, std::string(), setting);
+        ContentSettingsType::MEDIASTREAM_MIC, setting);
   }
   if (CameraAccessed()) {
     permissions::PermissionUmaUtil::ScopedRevocationReporter
@@ -1133,7 +1133,7 @@ void ContentSettingMediaStreamBubbleModel::UpdateSettings(
             permissions::PermissionSourceUI::PAGE_ACTION);
     map->SetContentSettingDefaultScope(
         page_content_settings->media_stream_access_origin(), GURL(),
-        ContentSettingsType::MEDIASTREAM_CAMERA, std::string(), setting);
+        ContentSettingsType::MEDIASTREAM_CAMERA, setting);
   }
 }
 

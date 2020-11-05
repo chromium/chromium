@@ -47,7 +47,7 @@ class ImportantSitesUtilBrowserTest : public AndroidBrowserTest {
     ASSERT_TRUE(host_content_settings_map);
     host_content_settings_map->SetContentSettingDefaultScope(
         origin.GetURL(), GURL(), ContentSettingsType::NOTIFICATIONS,
-        std::string() /* resource_identifier */, CONTENT_SETTING_ALLOW);
+        CONTENT_SETTING_ALLOW);
   }
 
   std::vector<std::string> GetImportantDomains(Profile* profile) {

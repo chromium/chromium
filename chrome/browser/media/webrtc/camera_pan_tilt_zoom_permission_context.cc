@@ -103,8 +103,8 @@ void CameraPanTiltZoomPermissionContext::OnContentSettingChanged(
     return;
 
   ContentSetting camera_ptz_setting =
-      host_content_settings_map_->GetContentSetting(
-          url, url, content_settings_type(), resource_identifier);
+      host_content_settings_map_->GetContentSetting(url, url,
+                                                    content_settings_type());
 
   if (content_type == ContentSettingsType::CAMERA_PAN_TILT_ZOOM) {
     // Automatically update camera permission to camera PTZ permission as any
@@ -112,8 +112,7 @@ void CameraPanTiltZoomPermissionContext::OnContentSettingChanged(
     updating_mediastream_camera_permission_ = true;
     host_content_settings_map_->SetContentSettingCustomScope(
         primary_pattern, secondary_pattern,
-        ContentSettingsType::MEDIASTREAM_CAMERA, resource_identifier,
-        camera_ptz_setting);
+        ContentSettingsType::MEDIASTREAM_CAMERA, camera_ptz_setting);
     return;
   }
 
@@ -125,8 +124,7 @@ void CameraPanTiltZoomPermissionContext::OnContentSettingChanged(
   }
 
   ContentSetting mediastream_camera_setting =
-      host_content_settings_map_->GetContentSetting(url, url, content_type,
-                                                    resource_identifier);
+      host_content_settings_map_->GetContentSetting(url, url, content_type);
   if (mediastream_camera_setting == CONTENT_SETTING_BLOCK ||
       mediastream_camera_setting == CONTENT_SETTING_ASK) {
     // Automatically reset camera PTZ permission if camera permission
@@ -134,8 +132,7 @@ void CameraPanTiltZoomPermissionContext::OnContentSettingChanged(
     updating_camera_ptz_permission_ = true;
     host_content_settings_map_->SetContentSettingCustomScope(
         primary_pattern, secondary_pattern,
-        ContentSettingsType::CAMERA_PAN_TILT_ZOOM, resource_identifier,
-        CONTENT_SETTING_DEFAULT);
+        ContentSettingsType::CAMERA_PAN_TILT_ZOOM, CONTENT_SETTING_DEFAULT);
   }
 }
 

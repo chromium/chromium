@@ -2221,7 +2221,7 @@ void TabStripModel::SetSitesMuted(const std::vector<int>& indices,
         setting = CONTENT_SETTING_DEFAULT;
       }
       settings->SetContentSettingDefaultScope(
-          url, url, ContentSettingsType::SOUND, std::string(), setting);
+          url, url, ContentSettingsType::SOUND, setting);
     }
   }
 }

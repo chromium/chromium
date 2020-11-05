@@ -540,12 +540,12 @@ void GetExceptionsForContentType(
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile);
 
-  map->GetSettingsForOneType(type, std::string(), &all_settings);
+  map->GetSettingsForOneType(type, &all_settings);
 
   // Will return only regular settings for a regular profile and only incognito
   // settings for an incognito Profile.
   ContentSettingsForOneType discarded_settings;
-  map->GetDiscardedSettingsForOneType(type, std::string(), &discarded_settings);
+  map->GetDiscardedSettingsForOneType(type, &discarded_settings);
 
   // Group settings by primary_pattern.
   AllPatternsSettings all_patterns_settings;
@@ -576,7 +576,7 @@ void GetExceptionsForContentType(
 
   ContentSettingsForOneType embargo_settings;
   map->GetSettingsForOneType(ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
-                             std::string(), &embargo_settings);
+                             &embargo_settings);
 
   permissions::PermissionDecisionAutoBlocker* auto_blocker =
       permissions::PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
@@ -706,8 +706,8 @@ ContentSetting GetContentSettingForOrigin(
   // content settings, not just the permissions, plus all the possible sources,
   // and the calls to HostContentSettingsMap should be removed.
   content_settings::SettingInfo info;
-  std::unique_ptr<base::Value> value = map->GetWebsiteSetting(
-      origin, origin, content_type, std::string(), &info);
+  std::unique_ptr<base::Value> value =
+      map->GetWebsiteSetting(origin, origin, content_type, &info);
 
   // Retrieve the content setting.
   permissions::PermissionResult result(
@@ -736,7 +736,7 @@ std::vector<ContentSettingPatternSource> GetSiteExceptionsForContentType(
     HostContentSettingsMap* map,
     ContentSettingsType content_type) {
   ContentSettingsForOneType entries;
-  map->GetSettingsForOneType(content_type, std::string(), &entries);
+  map->GetSettingsForOneType(content_type, &entries);
   entries.erase(std::remove_if(entries.begin(), entries.end(),
                                [](const ContentSettingPatternSource& e) {
                                  return !PatternAppliesToSingleOrigin(e) ||

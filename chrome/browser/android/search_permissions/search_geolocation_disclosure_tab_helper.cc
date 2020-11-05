@@ -219,8 +219,7 @@ void SearchGeolocationDisclosureTabHelper::RecordPreDisclosureMetrics(
           prefs::kSearchGeolocationPreDisclosureMetricsRecorded)) {
     ContentSetting status =
         HostContentSettingsMapFactory::GetForProfile(GetProfile())
-            ->GetContentSetting(gurl, gurl, ContentSettingsType::GEOLOCATION,
-                                std::string());
+            ->GetContentSetting(gurl, gurl, ContentSettingsType::GEOLOCATION);
 
     UMA_HISTOGRAM_BOOLEAN("GeolocationDisclosure.PreDisclosureDSESetting",
                           status == CONTENT_SETTING_ALLOW);
@@ -237,8 +236,7 @@ void SearchGeolocationDisclosureTabHelper::RecordPostDisclosureMetrics(
           prefs::kSearchGeolocationPostDisclosureMetricsRecorded)) {
     ContentSetting status =
         HostContentSettingsMapFactory::GetForProfile(GetProfile())
-            ->GetContentSetting(gurl, gurl, ContentSettingsType::GEOLOCATION,
-                                std::string());
+            ->GetContentSetting(gurl, gurl, ContentSettingsType::GEOLOCATION);
 
     UMA_HISTOGRAM_BOOLEAN("GeolocationDisclosure.PostDisclosureDSESetting",
                           status == CONTENT_SETTING_ALLOW);

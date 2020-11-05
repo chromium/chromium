@@ -133,8 +133,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundSyncBrowserTest, ContentSettings) {
   host_content_settings_map->SetContentSettingDefaultScope(
       /* primary_url= */ GURL(kExampleUrl),
       /* secondary_url= */ GURL(kExampleUrl),
-      ContentSettingsType::BACKGROUND_SYNC,
-      /* resource_identifier= */ std::string(), CONTENT_SETTING_BLOCK);
+      ContentSettingsType::BACKGROUND_SYNC, CONTENT_SETTING_BLOCK);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(controller->IsOriginTracked(origin));
 }

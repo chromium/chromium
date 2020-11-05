@@ -44,8 +44,7 @@ void NotificationPermissionContext::UpdatePermission(
     case CONTENT_SETTING_DEFAULT:
       HostContentSettingsMapFactory::GetForProfile(browser_context)
           ->SetContentSettingDefaultScope(
-              origin, GURL(), ContentSettingsType::NOTIFICATIONS,
-              content_settings::ResourceIdentifier(), setting);
+              origin, GURL(), ContentSettingsType::NOTIFICATIONS, setting);
       break;
 
     default:

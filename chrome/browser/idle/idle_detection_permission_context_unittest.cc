@@ -35,7 +35,7 @@ class TestIdleDetectionPermissionContext
                                           const GURL& url_b) {
     return HostContentSettingsMapFactory::GetForProfile(browser_context())
         ->GetContentSetting(url_a.GetOrigin(), url_b.GetOrigin(),
-                            content_settings_type(), std::string());
+                            content_settings_type());
   }
 
  private:

@@ -341,7 +341,7 @@ TEST_F(SerialChooserContextTest, GuardPermission) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetContentSettingDefaultScope(origin.GetURL(), origin.GetURL(),
                                      ContentSettingsType::SERIAL_GUARD,
-                                     std::string(), CONTENT_SETTING_BLOCK);
+                                     CONTENT_SETTING_BLOCK);
   EXPECT_FALSE(context()->HasPortPermission(origin, origin, *port));
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>

@@ -69,7 +69,7 @@ TEST_F(BlockedPopupTabHelperTest, ShouldBlockPopup) {
   settings_map->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURL(source_url1),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS,
-      std::string(), CONTENT_SETTING_ALLOW);
+      CONTENT_SETTING_ALLOW);
 
   EXPECT_FALSE(GetBlockedPopupTabHelper()->ShouldBlockPopup(source_url1));
   const GURL source_url2("https://source-url2");

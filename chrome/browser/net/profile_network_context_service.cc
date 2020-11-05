@@ -172,7 +172,7 @@ bool IsAmbientAuthAllowedForProfile(Profile* profile) {
 void UpdateCookieSettings(Profile* profile) {
   ContentSettingsForOneType settings;
   HostContentSettingsMapFactory::GetForProfile(profile)->GetSettingsForOneType(
-      ContentSettingsType::COOKIES, std::string(), &settings);
+      ContentSettingsType::COOKIES, &settings);
   content::BrowserContext::ForEachStoragePartition(
       profile, base::BindRepeating(
                    [](ContentSettingsForOneType settings,
@@ -186,7 +186,7 @@ void UpdateCookieSettings(Profile* profile) {
 void UpdateLegacyCookieSettings(Profile* profile) {
   ContentSettingsForOneType settings;
   HostContentSettingsMapFactory::GetForProfile(profile)->GetSettingsForOneType(
-      ContentSettingsType::LEGACY_COOKIE_ACCESS, std::string(), &settings);
+      ContentSettingsType::LEGACY_COOKIE_ACCESS, &settings);
   content::BrowserContext::ForEachStoragePartition(
       profile, base::BindRepeating(
                    [](ContentSettingsForOneType settings,
@@ -201,8 +201,7 @@ void UpdateStorageAccessSettings(Profile* profile) {
   if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
     ContentSettingsForOneType settings;
     HostContentSettingsMapFactory::GetForProfile(profile)
-        ->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS,
-                                std::string(), &settings);
+        ->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS, &settings);
 
     content::BrowserContext::ForEachStoragePartition(
         profile, base::BindRepeating(
@@ -496,12 +495,12 @@ ProfileNetworkContextService::CreateCookieManagerParams(
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
   host_content_settings_map->GetSettingsForOneType(ContentSettingsType::COOKIES,
-                                                   std::string(), &settings);
+                                                   &settings);
   out->settings = std::move(settings);
 
   ContentSettingsForOneType settings_for_legacy_cookie_access;
   host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::LEGACY_COOKIE_ACCESS, std::string(),
+      ContentSettingsType::LEGACY_COOKIE_ACCESS,
       &settings_for_legacy_cookie_access);
   out->settings_for_legacy_cookie_access =
       std::move(settings_for_legacy_cookie_access);
@@ -509,8 +508,7 @@ ProfileNetworkContextService::CreateCookieManagerParams(
   ContentSettingsForOneType settings_for_storage_access;
   if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
     host_content_settings_map->GetSettingsForOneType(
-        ContentSettingsType::STORAGE_ACCESS, std::string(),
-        &settings_for_storage_access);
+        ContentSettingsType::STORAGE_ACCESS, &settings_for_storage_access);
   }
   out->settings_for_storage_access = std::move(settings_for_storage_access);
 

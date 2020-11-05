@@ -436,7 +436,7 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
 
     settings_map->SetContentSettingCustomScope(
         host_pattern, ContentSettingsPattern::Wildcard(), content_type,
-        std::string() /* resource_identifier */, setting);
+        setting);
   }
 
   void DidUpdateItem(base::OnceClosure quit_closure,

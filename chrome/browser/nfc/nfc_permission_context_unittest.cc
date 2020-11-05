@@ -167,8 +167,7 @@ void NfcPermissionContextTests::RequestManagerDocumentLoadCompleted(
 ContentSetting NfcPermissionContextTests::GetNfcContentSetting(GURL frame_0,
                                                                GURL frame_1) {
   return HostContentSettingsMapFactory::GetForProfile(profile())
-      ->GetContentSetting(frame_0, frame_1, ContentSettingsType::NFC,
-                          std::string());
+      ->GetContentSetting(frame_0, frame_1, ContentSettingsType::NFC);
 }
 
 void NfcPermissionContextTests::SetNfcContentSetting(
@@ -176,9 +175,8 @@ void NfcPermissionContextTests::SetNfcContentSetting(
     GURL frame_1,
     ContentSetting content_setting) {
   return HostContentSettingsMapFactory::GetForProfile(profile())
-      ->SetContentSettingDefaultScope(frame_0, frame_1,
-                                      ContentSettingsType::NFC, std::string(),
-                                      content_setting);
+      ->SetContentSettingDefaultScope(
+          frame_0, frame_1, ContentSettingsType::NFC, content_setting);
 }
 
 bool NfcPermissionContextTests::HasActivePrompt() {

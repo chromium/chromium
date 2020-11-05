@@ -181,7 +181,7 @@ void PageSpecificContentSettingsDelegate::OnContentAllowed(
   content_settings::SettingInfo setting_info;
   GetSettingsMap()->GetWebsiteSetting(web_contents()->GetLastCommittedURL(),
                                       web_contents()->GetLastCommittedURL(),
-                                      type, std::string(), &setting_info);
+                                      type, &setting_info);
   const base::Time grant_time = GetSettingsMap()->GetSettingLastModifiedDate(
       setting_info.primary_pattern, setting_info.secondary_pattern, type);
   if (grant_time.is_null())

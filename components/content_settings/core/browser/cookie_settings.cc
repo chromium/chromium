@@ -55,7 +55,7 @@ ContentSetting CookieSettings::GetDefaultCookieSetting(
 void CookieSettings::GetCookieSettings(
     ContentSettingsForOneType* settings) const {
   host_content_settings_map_->GetSettingsForOneType(
-      ContentSettingsType::COOKIES, std::string(), settings);
+      ContentSettingsType::COOKIES, settings);
 }
 
 void CookieSettings::RegisterProfilePrefs(
@@ -76,8 +76,7 @@ void CookieSettings::SetCookieSetting(const GURL& primary_url,
                                       ContentSetting setting) {
   DCHECK(IsValidSetting(setting));
   host_content_settings_map_->SetContentSettingDefaultScope(
-      primary_url, GURL(), ContentSettingsType::COOKIES, std::string(),
-      setting);
+      primary_url, GURL(), ContentSettingsType::COOKIES, setting);
 }
 
 void CookieSettings::ResetCookieSetting(const GURL& primary_url) {
@@ -102,14 +101,14 @@ void CookieSettings::SetThirdPartyCookieSetting(const GURL& first_party_url,
   host_content_settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromURLNoWildcard(first_party_url),
-      ContentSettingsType::COOKIES, std::string(), setting);
+      ContentSettingsType::COOKIES, setting);
 }
 
 void CookieSettings::ResetThirdPartyCookieSetting(const GURL& first_party_url) {
   host_content_settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromURLNoWildcard(first_party_url),
-      ContentSettingsType::COOKIES, std::string(), CONTENT_SETTING_DEFAULT);
+      ContentSettingsType::COOKIES, CONTENT_SETTING_DEFAULT);
 }
 
 bool CookieSettings::IsStorageDurable(const GURL& origin) const {
@@ -117,8 +116,7 @@ bool CookieSettings::IsStorageDurable(const GURL& origin) const {
   // https://crbug.com/539538
   ContentSetting setting = host_content_settings_map_->GetContentSetting(
       origin /*primary*/, origin /*secondary*/,
-      ContentSettingsType::DURABLE_STORAGE,
-      std::string() /*resource_identifier*/);
+      ContentSettingsType::DURABLE_STORAGE);
   return setting == CONTENT_SETTING_ALLOW;
 }
 
@@ -133,8 +131,7 @@ void CookieSettings::GetSettingForLegacyCookieAccess(
       cookie_domain, false /* secure scheme */);
 
   *setting = host_content_settings_map_->GetContentSetting(
-      cookie_domain_url, GURL(), ContentSettingsType::LEGACY_COOKIE_ACCESS,
-      std::string() /* resource_identifier */);
+      cookie_domain_url, GURL(), ContentSettingsType::LEGACY_COOKIE_ACCESS);
 }
 
 bool CookieSettings::ShouldIgnoreSameSiteRestrictions(
@@ -184,8 +181,7 @@ void CookieSettings::GetCookieSettingInternal(
   SettingInfo info;
   std::unique_ptr<base::Value> value =
       host_content_settings_map_->GetWebsiteSetting(
-          url, first_party_url, ContentSettingsType::COOKIES, std::string(),
-          &info);
+          url, first_party_url, ContentSettingsType::COOKIES, &info);
   if (source)
     *source = info.source;
 
@@ -216,8 +212,7 @@ void CookieSettings::GetCookieSettingInternal(
   if (block &&
       base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
     ContentSetting setting = host_content_settings_map_->GetContentSetting(
-        url, first_party_url, ContentSettingsType::STORAGE_ACCESS,
-        std::string());
+        url, first_party_url, ContentSettingsType::STORAGE_ACCESS);
 
     if (setting == CONTENT_SETTING_ALLOW) {
       block = false;

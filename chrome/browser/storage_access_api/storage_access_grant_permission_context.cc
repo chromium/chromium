@@ -83,7 +83,7 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   // |requesting_origin|.
   ContentSettingsForOneType implicit_grants;
   settings_map->GetSettingsForOneType(
-      ContentSettingsType::STORAGE_ACCESS, std::string(), &implicit_grants,
+      ContentSettingsType::STORAGE_ACCESS, &implicit_grants,
       content_settings::SessionModel::UserSession);
 
   const int existing_implicit_grants =
@@ -181,12 +181,11 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   // grant.
   settings_map->SetContentSettingDefaultScope(
       requesting_origin, embedding_origin, ContentSettingsType::STORAGE_ACCESS,
-      std::string(), content_setting,
-      implicit_result ? implicit_grant : explicit_grant);
+      content_setting, implicit_result ? implicit_grant : explicit_grant);
 
   ContentSettingsForOneType grants;
   settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS,
-                                      std::string(), &grants);
+                                      &grants);
 
   // TODO(https://crbug.com/989663): Ensure that this update of settings doesn't
   // cause a double update with

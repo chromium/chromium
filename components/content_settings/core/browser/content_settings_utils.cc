@@ -120,10 +120,10 @@ PatternPair ParsePatternString(const std::string& pattern_str) {
 void GetRendererContentSettingRules(const HostContentSettingsMap* map,
                                     RendererContentSettingRules* rules) {
 #if !defined(OS_ANDROID)
-  map->GetSettingsForOneType(ContentSettingsType::IMAGES, ResourceIdentifier(),
+  map->GetSettingsForOneType(ContentSettingsType::IMAGES,
                              &(rules->image_rules));
   map->GetSettingsForOneType(ContentSettingsType::MIXEDSCRIPT,
-                             ResourceIdentifier(),
+
                              &(rules->mixed_content_rules));
 #else
   // Android doesn't use image content settings, so ALLOW rule is added for
@@ -142,8 +142,8 @@ void GetRendererContentSettingRules(const HostContentSettingsMap* map,
       std::string(), map->IsOffTheRecord()));
 #endif
   map->GetSettingsForOneType(ContentSettingsType::JAVASCRIPT,
-                             ResourceIdentifier(), &(rules->script_rules));
-  map->GetSettingsForOneType(ContentSettingsType::POPUPS, ResourceIdentifier(),
+                             &(rules->script_rules));
+  map->GetSettingsForOneType(ContentSettingsType::POPUPS,
                              &(rules->popup_redirect_rules));
 }
 

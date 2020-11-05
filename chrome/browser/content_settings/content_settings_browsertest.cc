@@ -1090,7 +1090,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesBrowserTest,
   content_settings_map->SetWebsiteSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(http_url),
       ContentSettingsPattern::FromURLNoWildcard(module_url),
-      ContentSettingsType::JAVASCRIPT, std::string(),
+      ContentSettingsType::JAVASCRIPT,
       std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
 
   content::WebContents* web_contents =
@@ -1321,7 +1321,7 @@ class PepperContentSettingsSpecialCasesJavaScriptBlockedTest
     HostContentSettingsMap* content_settings_map =
         HostContentSettingsMapFactory::GetForProfile(browser()->profile());
     content_settings_map->SetContentSettingDefaultScope(
-        server_root, server_root, ContentSettingsType::PLUGINS, std::string(),
+        server_root, server_root, ContentSettingsType::PLUGINS,
         CONTENT_SETTING_ALLOW);
     content_settings_map->SetDefaultContentSetting(
         ContentSettingsType::JAVASCRIPT, CONTENT_SETTING_BLOCK);

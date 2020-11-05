@@ -194,11 +194,11 @@ IN_PROC_BROWSER_TEST_F(HatsWebDialogBrowserTest, Cookies) {
   GURL url1("https://survey.google.com/");
   GURL url2("https://survey.g.doubleclick.net/");
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            settings_map->GetContentSetting(
-                url1, url1, ContentSettingsType::COOKIES, std::string()));
+            settings_map->GetContentSetting(url1, url1,
+                                            ContentSettingsType::COOKIES));
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            settings_map->GetContentSetting(
-                url2, url2, ContentSettingsType::COOKIES, std::string()));
+            settings_map->GetContentSetting(url2, url2,
+                                            ContentSettingsType::COOKIES));
 }
 
 class MockHatsNextWebDialog : public HatsNextWebDialog {

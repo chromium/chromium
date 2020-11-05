@@ -319,8 +319,7 @@ bool BackgroundSyncControllerImpl::IsContentSettingBlocked(
   return CONTENT_SETTING_ALLOW != host_content_settings_map->GetContentSetting(
                                       /* primary_url= */ url,
                                       /* secondary_url= */ url,
-                                      ContentSettingsType::BACKGROUND_SYNC,
-                                      /* resource_identifier= */ std::string());
+                                      ContentSettingsType::BACKGROUND_SYNC);
 }
 
 void BackgroundSyncControllerImpl::Shutdown() {

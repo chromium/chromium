@@ -620,8 +620,7 @@ void ExtensionAppsBase::SetPermission(const std::string& app_id,
   }
 
   host_content_settings_map->SetContentSettingDefaultScope(
-      url, url, permission_type, std::string() /* resource identifier */,
-      permission_value);
+      url, url, permission_type, permission_value);
 }
 void ExtensionAppsBase::Uninstall(const std::string& app_id,
                                   apps::mojom::UninstallSource uninstall_source,
@@ -937,8 +936,8 @@ void ExtensionAppsBase::PopulatePermissions(
   DCHECK(host_content_settings_map);
 
   for (ContentSettingsType type : kSupportedPermissionTypes) {
-    ContentSetting setting = host_content_settings_map->GetContentSetting(
-        url, url, type, std::string() /* resource_identifier */);
+    ContentSetting setting =
+        host_content_settings_map->GetContentSetting(url, url, type);
 
     // Map ContentSettingsType to an apps::mojom::TriState value
     apps::mojom::TriState setting_val;
@@ -957,8 +956,7 @@ void ExtensionAppsBase::PopulatePermissions(
     }
 
     content_settings::SettingInfo setting_info;
-    host_content_settings_map->GetWebsiteSetting(url, url, type, std::string(),
-                                                 &setting_info);
+    host_content_settings_map->GetWebsiteSetting(url, url, type, &setting_info);
 
     auto permission = apps::mojom::Permission::New();
     permission->permission_id = static_cast<uint32_t>(type);

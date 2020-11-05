@@ -1182,7 +1182,7 @@ TEST_F(ChromeDownloadManagerDelegateTest,
   HostContentSettingsMapFactory::GetForProfile(profile())
       ->SetContentSettingDefaultScope(kSecureOrigin.GetURL(), GURL(),
                                       ContentSettingsType::MIXEDSCRIPT,
-                                      std::string(), CONTENT_SETTING_ALLOW);
+                                      CONTENT_SETTING_ALLOW);
 
   VerifyMixedContentExtensionOverride(
       warned_download_item.get(), {{}}, InsecureDownloadExtensions::kTest,

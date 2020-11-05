@@ -218,11 +218,9 @@ TEST_F(ContentSettingBubbleModelTest, BlockedMediastreamMicAndCamera) {
       HostContentSettingsMapFactory::GetForProfile(profile());
   ContentSetting setting = CONTENT_SETTING_BLOCK;
   host_content_settings_map->SetContentSettingDefaultScope(
-      url, GURL(), ContentSettingsType::MEDIASTREAM_MIC, std::string(),
-      setting);
+      url, GURL(), ContentSettingsType::MEDIASTREAM_MIC, setting);
   host_content_settings_map->SetContentSettingDefaultScope(
-      url, GURL(), ContentSettingsType::MEDIASTREAM_CAMERA, std::string(),
-      setting);
+      url, GURL(), ContentSettingsType::MEDIASTREAM_CAMERA, setting);
 
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
@@ -253,22 +251,20 @@ TEST_F(ContentSettingBubbleModelTest, BlockedMediastreamMicAndCamera) {
   // Test that the media settings where not changed.
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             host_content_settings_map->GetContentSetting(
-                url, url, ContentSettingsType::MEDIASTREAM_MIC, std::string()));
-  EXPECT_EQ(
-      CONTENT_SETTING_BLOCK,
-      host_content_settings_map->GetContentSetting(
-          url, url, ContentSettingsType::MEDIASTREAM_CAMERA, std::string()));
+                url, url, ContentSettingsType::MEDIASTREAM_MIC));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            host_content_settings_map->GetContentSetting(
+                url, url, ContentSettingsType::MEDIASTREAM_CAMERA));
 
   owner->SetSelectedRadioOptionAndCommit(0);
 
   // Test that the media setting were change correctly.
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetContentSetting(
-                url, url, ContentSettingsType::MEDIASTREAM_MIC, std::string()));
-  EXPECT_EQ(
-      CONTENT_SETTING_ALLOW,
-      host_content_settings_map->GetContentSetting(
-          url, url, ContentSettingsType::MEDIASTREAM_CAMERA, std::string()));
+                url, url, ContentSettingsType::MEDIASTREAM_MIC));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            host_content_settings_map->GetContentSetting(
+                url, url, ContentSettingsType::MEDIASTREAM_CAMERA));
 }
 
 // Tests whether a changed setting in the setting bubble is displayed again when
@@ -288,8 +284,7 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubble) {
       HostContentSettingsMapFactory::GetForProfile(profile());
   ContentSetting setting = CONTENT_SETTING_BLOCK;
   host_content_settings_map->SetContentSettingDefaultScope(
-      url, GURL(), ContentSettingsType::MEDIASTREAM_MIC, std::string(),
-      setting);
+      url, GURL(), ContentSettingsType::MEDIASTREAM_MIC, setting);
 
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
@@ -319,7 +314,7 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubble) {
   // Test that the setting was changed.
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetContentSetting(
-                url, url, ContentSettingsType::MEDIASTREAM_MIC, std::string()));
+                url, url, ContentSettingsType::MEDIASTREAM_MIC));
 
   {
     std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
@@ -342,7 +337,7 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubble) {
   // Test that the media settings were changed again.
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             host_content_settings_map->GetContentSetting(
-                url, url, ContentSettingsType::MEDIASTREAM_MIC, std::string()));
+                url, url, ContentSettingsType::MEDIASTREAM_MIC));
 
   {
     std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
@@ -1032,7 +1027,7 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
                                            CONTENT_SETTING_ALLOW);
     settings_map->SetContentSettingDefaultScope(
         web_contents()->GetURL(), web_contents()->GetURL(),
-        ContentSettingsType::GEOLOCATION, std::string(), CONTENT_SETTING_BLOCK);
+        ContentSettingsType::GEOLOCATION, CONTENT_SETTING_BLOCK);
     content_settings->OnContentBlocked(ContentSettingsType::GEOLOCATION);
     std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
         std::make_unique<ContentSettingGeolocationBubbleModel>(nullptr,
@@ -1416,7 +1411,7 @@ TEST_F(ContentSettingBubbleModelTest, SensorAccessPermissionsChanged) {
                                            CONTENT_SETTING_BLOCK);
     settings_map->SetContentSettingDefaultScope(
         web_contents()->GetURL(), web_contents()->GetURL(),
-        ContentSettingsType::SENSORS, std::string(), CONTENT_SETTING_ALLOW);
+        ContentSettingsType::SENSORS, CONTENT_SETTING_ALLOW);
     content_settings->OnContentAllowed(ContentSettingsType::SENSORS);
     std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
         ContentSettingBubbleModel::CreateContentSettingBubbleModel(
@@ -1451,7 +1446,7 @@ TEST_F(ContentSettingBubbleModelTest, SensorAccessPermissionsChanged) {
                                            CONTENT_SETTING_ALLOW);
     settings_map->SetContentSettingDefaultScope(
         web_contents()->GetURL(), web_contents()->GetURL(),
-        ContentSettingsType::SENSORS, std::string(), CONTENT_SETTING_BLOCK);
+        ContentSettingsType::SENSORS, CONTENT_SETTING_BLOCK);
     content_settings->OnContentBlocked(ContentSettingsType::SENSORS);
     std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
         ContentSettingBubbleModel::CreateContentSettingBubbleModel(

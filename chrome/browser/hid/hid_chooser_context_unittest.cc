@@ -318,7 +318,7 @@ TEST_F(HidChooserContextTest, GuardPermission) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetContentSettingDefaultScope(origin().GetURL(), origin().GetURL(),
                                      ContentSettingsType::HID_GUARD,
-                                     std::string(), CONTENT_SETTING_BLOCK);
+                                     CONTENT_SETTING_BLOCK);
 
   // 4. Check that the device permission is no longer granted.
   EXPECT_FALSE(context->HasDevicePermission(origin(), origin(), *device));

@@ -60,9 +60,8 @@ IN_PROC_BROWSER_TEST_F(IdleBrowserTest, Start) {
   GURL url = embedded_test_server()->GetURL("localhost", "/simple_page.html");
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-  map->SetContentSettingDefaultScope(url, url,
-                                     ContentSettingsType::IDLE_DETECTION,
-                                     std::string(), CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::IDLE_DETECTION, CONTENT_SETTING_ALLOW);
   ui_test_utils::NavigateToURL(browser(), url);
 
   // Test that statuses are updated after idleDetector.start().

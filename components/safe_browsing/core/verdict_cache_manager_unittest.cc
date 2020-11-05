@@ -201,8 +201,7 @@ TEST_F(VerdictCacheManagerTest, TestParseInvalidVerdictEntry) {
 
   content_setting_map_->SetWebsiteSettingDefaultScope(
       GURL("http://www.google.com/"), GURL(),
-      ContentSettingsType::PASSWORD_PROTECTION, std::string(),
-      std::move(cache_dictionary));
+      ContentSettingsType::PASSWORD_PROTECTION, std::move(cache_dictionary));
 
   ReusedPasswordAccountType password_type;
   password_type.set_account_type(ReusedPasswordAccountType::GSUITE);
@@ -428,8 +427,7 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdictWithInvalidEntry) {
 
   content_setting_map_->SetWebsiteSettingDefaultScope(
       GURL("http://www.google.com/"), GURL(),
-      ContentSettingsType::PASSWORD_PROTECTION, std::string(),
-      std::move(cache_dictionary));
+      ContentSettingsType::PASSWORD_PROTECTION, std::move(cache_dictionary));
 
   ReusedPasswordAccountType password_type;
   password_type.set_account_type(ReusedPasswordAccountType::GSUITE);
@@ -439,24 +437,22 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdictWithInvalidEntry) {
                          "www.google.com/", base::Time::Now());
 
   // Verify we saved two entries under PasswordType PRIMARY_ACCOUNT_PASSWORD
-  EXPECT_EQ(2U,
-            content_setting_map_
-                ->GetWebsiteSetting(GURL("http://www.google.com/"), GURL(),
-                                    ContentSettingsType::PASSWORD_PROTECTION,
-                                    std::string(), nullptr)
-                ->FindDictKey("1")
-                ->DictSize());
+  EXPECT_EQ(2U, content_setting_map_
+                    ->GetWebsiteSetting(
+                        GURL("http://www.google.com/"), GURL(),
+                        ContentSettingsType::PASSWORD_PROTECTION, nullptr)
+                    ->FindDictKey("1")
+                    ->DictSize());
 
   cache_manager_->CleanUpExpiredVerdicts();
 
   // One should have been cleaned up
-  EXPECT_EQ(1U,
-            content_setting_map_
-                ->GetWebsiteSetting(GURL("http://www.google.com/"), GURL(),
-                                    ContentSettingsType::PASSWORD_PROTECTION,
-                                    std::string(), nullptr)
-                ->FindDictKey("1")
-                ->DictSize());
+  EXPECT_EQ(1U, content_setting_map_
+                    ->GetWebsiteSetting(
+                        GURL("http://www.google.com/"), GURL(),
+                        ContentSettingsType::PASSWORD_PROTECTION, nullptr)
+                    ->FindDictKey("1")
+                    ->DictSize());
 }
 
 TEST_F(VerdictCacheManagerTest, TestCanRetrieveCachedRealTimeUrlCheckVerdict) {

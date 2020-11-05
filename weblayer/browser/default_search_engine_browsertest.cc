@@ -22,14 +22,12 @@ IN_PROC_BROWSER_TEST_F(DefaultSearchEngineBrowserTest,
           ->web_contents()
           ->GetBrowserContext());
   auto origin = GetDseOrigin().GetURL();
-  EXPECT_EQ(
-      settings_map->GetContentSetting(
-          origin, origin, ContentSettingsType::GEOLOCATION, std::string()),
-      CONTENT_SETTING_ALLOW);
-  EXPECT_EQ(
-      settings_map->GetContentSetting(
-          origin, origin, ContentSettingsType::NOTIFICATIONS, std::string()),
-      CONTENT_SETTING_ASK);
+  EXPECT_EQ(settings_map->GetContentSetting(origin, origin,
+                                            ContentSettingsType::GEOLOCATION),
+            CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(settings_map->GetContentSetting(origin, origin,
+                                            ContentSettingsType::NOTIFICATIONS),
+            CONTENT_SETTING_ASK);
 }
 
 class IncognitoDefaultSearchEngineBrowserTest
@@ -45,14 +43,12 @@ IN_PROC_BROWSER_TEST_F(IncognitoDefaultSearchEngineBrowserTest,
           ->web_contents()
           ->GetBrowserContext());
   auto origin = GetDseOrigin().GetURL();
-  EXPECT_EQ(
-      settings_map->GetContentSetting(
-          origin, origin, ContentSettingsType::GEOLOCATION, std::string()),
-      CONTENT_SETTING_ASK);
-  EXPECT_EQ(
-      settings_map->GetContentSetting(
-          origin, origin, ContentSettingsType::NOTIFICATIONS, std::string()),
-      CONTENT_SETTING_ASK);
+  EXPECT_EQ(settings_map->GetContentSetting(origin, origin,
+                                            ContentSettingsType::GEOLOCATION),
+            CONTENT_SETTING_ASK);
+  EXPECT_EQ(settings_map->GetContentSetting(origin, origin,
+                                            ContentSettingsType::NOTIFICATIONS),
+            CONTENT_SETTING_ASK);
 }
 
 }  // namespace weblayer

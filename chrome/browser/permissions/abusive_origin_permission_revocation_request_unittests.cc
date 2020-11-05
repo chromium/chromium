@@ -90,8 +90,7 @@ class AbusiveOriginPermissionRevocationRequestTestBase : public testing::Test {
     HostContentSettingsMap* host_content_settings_map =
         HostContentSettingsMapFactory::GetForProfile(testing_profile_.get());
     host_content_settings_map->SetContentSettingDefaultScope(
-        origin, GURL(), ContentSettingsType::NOTIFICATIONS, std::string(),
-        value);
+        origin, GURL(), ContentSettingsType::NOTIFICATIONS, value);
   }
 
   void VerifyNotificationsPermission(const GURL& origin,
@@ -100,7 +99,7 @@ class AbusiveOriginPermissionRevocationRequestTestBase : public testing::Test {
         HostContentSettingsMapFactory::GetForProfile(testing_profile_.get());
 
     ContentSetting result = host_content_settings_map->GetContentSetting(
-        origin, GURL(), ContentSettingsType::NOTIFICATIONS, std::string());
+        origin, GURL(), ContentSettingsType::NOTIFICATIONS);
 
     EXPECT_EQ(value, result);
   }

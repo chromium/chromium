@@ -121,7 +121,7 @@ void DurableStoragePermissionContext::UpdateContentSetting(
   HostContentSettingsMapFactory::GetForProfile(browser_context())
       ->SetContentSettingDefaultScope(requesting_origin, GURL(),
                                       ContentSettingsType::DURABLE_STORAGE,
-                                      std::string(), content_setting);
+                                      content_setting);
 }
 
 bool DurableStoragePermissionContext::IsRestrictedToSecureOrigins() const {

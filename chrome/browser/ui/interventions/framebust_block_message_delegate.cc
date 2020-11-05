@@ -58,6 +58,6 @@ void FramebustBlockMessageDelegate::DeclineInterventionSticky() {
   DCHECK(settings_map);
   settings_map->SetContentSettingDefaultScope(
       web_contents_->GetLastCommittedURL(), GURL(), ContentSettingsType::POPUPS,
-      std::string(), CONTENT_SETTING_ALLOW);
+      CONTENT_SETTING_ALLOW);
   DeclineIntervention();
 }

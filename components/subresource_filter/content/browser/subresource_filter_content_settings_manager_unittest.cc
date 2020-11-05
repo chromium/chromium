@@ -58,7 +58,7 @@ class SubresourceFilterContentSettingsManagerTest : public testing::Test {
   ContentSetting GetContentSettingMatchingUrlWithEmptyPath(const GURL& url) {
     ContentSettingsForOneType host_settings;
     GetSettingsMap()->GetSettingsForOneType(ContentSettingsType::ADS,
-                                            std::string(), &host_settings);
+                                            &host_settings);
     GURL url_with_empty_path = url.GetWithEmptyPath();
     for (const auto& it : host_settings) {
       // Need GURL conversion to get rid of unnecessary default ports.
@@ -293,8 +293,7 @@ TEST_F(SubresourceFilterContentSettingsManagerTest,
 
   // Set the setting to the default, should not populate the metadata.
   GetSettingsMap()->SetContentSettingDefaultScope(
-      url, GURL(), ContentSettingsType::ADS, std::string(),
-      CONTENT_SETTING_DEFAULT);
+      url, GURL(), ContentSettingsType::ADS, CONTENT_SETTING_DEFAULT);
 
   EXPECT_FALSE(settings_manager()->GetSiteMetadata(url));
 }

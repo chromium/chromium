@@ -88,90 +88,72 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     EXPECT_TRUE(
         cookie_settings->IsCookieAccessAllowed(example_url, example_url));
     EXPECT_TRUE(cookie_settings->IsCookieSessionOnly(example_url));
-    EXPECT_EQ(
-        CONTENT_SETTING_ALLOW,
-        map->GetContentSetting(example_url, example_url,
-                               ContentSettingsType::IMAGES, std::string()));
-    EXPECT_EQ(
-        CONTENT_SETTING_BLOCK,
-        map->GetContentSetting(example_url, example_url,
-                               ContentSettingsType::JAVASCRIPT, std::string()));
-    EXPECT_EQ(
-        CONTENT_SETTING_ALLOW,
-        map->GetContentSetting(example_url, example_url,
-                               ContentSettingsType::PLUGINS, std::string()));
-    EXPECT_EQ(
-        CONTENT_SETTING_BLOCK,
-        map->GetContentSetting(example_url, example_url,
-                               ContentSettingsType::POPUPS, std::string()));
+    EXPECT_EQ(CONTENT_SETTING_ALLOW,
+              map->GetContentSetting(example_url, example_url,
+                                     ContentSettingsType::IMAGES));
+    EXPECT_EQ(CONTENT_SETTING_BLOCK,
+              map->GetContentSetting(example_url, example_url,
+                                     ContentSettingsType::JAVASCRIPT));
+    EXPECT_EQ(CONTENT_SETTING_ALLOW,
+              map->GetContentSetting(example_url, example_url,
+                                     ContentSettingsType::PLUGINS));
+    EXPECT_EQ(CONTENT_SETTING_BLOCK,
+              map->GetContentSetting(example_url, example_url,
+                                     ContentSettingsType::POPUPS));
     EXPECT_EQ(CONTENT_SETTING_ASK,
               map->GetContentSetting(example_url, example_url,
-                                     ContentSettingsType::GEOLOCATION,
-                                     std::string()));
+                                     ContentSettingsType::GEOLOCATION));
     EXPECT_EQ(CONTENT_SETTING_ASK,
               map->GetContentSetting(example_url, example_url,
-                                     ContentSettingsType::NOTIFICATIONS,
-                                     std::string()));
+                                     ContentSettingsType::NOTIFICATIONS));
     EXPECT_EQ(CONTENT_SETTING_ASK,
               map->GetContentSetting(example_url, example_url,
-                                     ContentSettingsType::MEDIASTREAM_MIC,
-                                     std::string()));
+                                     ContentSettingsType::MEDIASTREAM_MIC));
     EXPECT_EQ(CONTENT_SETTING_ASK,
               map->GetContentSetting(example_url, example_url,
-                                     ContentSettingsType::MEDIASTREAM_CAMERA,
-                                     std::string()));
+                                     ContentSettingsType::MEDIASTREAM_CAMERA));
     EXPECT_EQ(CONTENT_SETTING_ASK,
               map->GetContentSetting(example_url, example_url,
-                                     ContentSettingsType::PPAPI_BROKER,
-                                     std::string()));
+                                     ContentSettingsType::PPAPI_BROKER));
     EXPECT_EQ(CONTENT_SETTING_ASK,
               map->GetContentSetting(example_url, example_url,
-                                     ContentSettingsType::AUTOMATIC_DOWNLOADS,
-                                     std::string()));
-    EXPECT_EQ(
-        CONTENT_SETTING_ALLOW,
-        map->GetContentSetting(example_url, example_url,
-                               ContentSettingsType::AUTOPLAY, std::string()));
+                                     ContentSettingsType::AUTOMATIC_DOWNLOADS));
+    EXPECT_EQ(CONTENT_SETTING_ALLOW,
+              map->GetContentSetting(example_url, example_url,
+                                     ContentSettingsType::AUTOPLAY));
 
     // Check content settings for www.google.com
     GURL url("http://www.google.com");
     EXPECT_FALSE(cookie_settings->IsCookieAccessAllowed(url, url));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
-              map->GetContentSetting(url, url, ContentSettingsType::IMAGES,
-                                     std::string()));
-    EXPECT_EQ(CONTENT_SETTING_BLOCK,
-              map->GetContentSetting(url, url, ContentSettingsType::JAVASCRIPT,
-                                     std::string()));
+              map->GetContentSetting(url, url, ContentSettingsType::IMAGES));
+    EXPECT_EQ(
+        CONTENT_SETTING_BLOCK,
+        map->GetContentSetting(url, url, ContentSettingsType::JAVASCRIPT));
     EXPECT_EQ(CONTENT_SETTING_DETECT_IMPORTANT_CONTENT,
-              map->GetContentSetting(url, url, ContentSettingsType::PLUGINS,
-                                     std::string()));
+              map->GetContentSetting(url, url, ContentSettingsType::PLUGINS));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
-              map->GetContentSetting(url, url, ContentSettingsType::POPUPS,
-                                     std::string()));
-    EXPECT_EQ(CONTENT_SETTING_BLOCK,
-              map->GetContentSetting(url, url, ContentSettingsType::GEOLOCATION,
-                                     std::string()));
-    EXPECT_EQ(CONTENT_SETTING_BLOCK,
-              map->GetContentSetting(
-                  url, url, ContentSettingsType::NOTIFICATIONS, std::string()));
+              map->GetContentSetting(url, url, ContentSettingsType::POPUPS));
     EXPECT_EQ(
         CONTENT_SETTING_BLOCK,
-        map->GetContentSetting(url, url, ContentSettingsType::MEDIASTREAM_MIC,
-                               std::string()));
+        map->GetContentSetting(url, url, ContentSettingsType::GEOLOCATION));
     EXPECT_EQ(
         CONTENT_SETTING_BLOCK,
-        map->GetContentSetting(
-            url, url, ContentSettingsType::MEDIASTREAM_CAMERA, std::string()));
+        map->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
+    EXPECT_EQ(
+        CONTENT_SETTING_BLOCK,
+        map->GetContentSetting(url, url, ContentSettingsType::MEDIASTREAM_MIC));
     EXPECT_EQ(CONTENT_SETTING_BLOCK,
-              map->GetContentSetting(
-                  url, url, ContentSettingsType::PPAPI_BROKER, std::string()));
+              map->GetContentSetting(url, url,
+                                     ContentSettingsType::MEDIASTREAM_CAMERA));
     EXPECT_EQ(
         CONTENT_SETTING_BLOCK,
-        map->GetContentSetting(
-            url, url, ContentSettingsType::AUTOMATIC_DOWNLOADS, std::string()));
+        map->GetContentSetting(url, url, ContentSettingsType::PPAPI_BROKER));
+    EXPECT_EQ(CONTENT_SETTING_BLOCK,
+              map->GetContentSetting(url, url,
+                                     ContentSettingsType::AUTOMATIC_DOWNLOADS));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
-              map->GetContentSetting(url, url, ContentSettingsType::AUTOPLAY,
-                                     std::string()));
+              map->GetContentSetting(url, url, ContentSettingsType::AUTOPLAY));
   }
 
   void CheckContentSettingsDefault() {
@@ -185,41 +167,34 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     EXPECT_TRUE(cookie_settings->IsCookieAccessAllowed(url, url));
     EXPECT_FALSE(cookie_settings->IsCookieSessionOnly(url));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
-              map->GetContentSetting(url, url, ContentSettingsType::IMAGES,
-                                     std::string()));
-    EXPECT_EQ(CONTENT_SETTING_ALLOW,
-              map->GetContentSetting(url, url, ContentSettingsType::JAVASCRIPT,
-                                     std::string()));
+              map->GetContentSetting(url, url, ContentSettingsType::IMAGES));
+    EXPECT_EQ(
+        CONTENT_SETTING_ALLOW,
+        map->GetContentSetting(url, url, ContentSettingsType::JAVASCRIPT));
     EXPECT_EQ(CONTENT_SETTING_BLOCK,
-              map->GetContentSetting(url, url, ContentSettingsType::PLUGINS,
-                                     std::string()));
+              map->GetContentSetting(url, url, ContentSettingsType::PLUGINS));
     EXPECT_EQ(CONTENT_SETTING_BLOCK,
-              map->GetContentSetting(url, url, ContentSettingsType::POPUPS,
-                                     std::string()));
-    EXPECT_EQ(CONTENT_SETTING_ASK,
-              map->GetContentSetting(url, url, ContentSettingsType::GEOLOCATION,
-                                     std::string()));
-    EXPECT_EQ(CONTENT_SETTING_ASK,
-              map->GetContentSetting(
-                  url, url, ContentSettingsType::NOTIFICATIONS, std::string()));
+              map->GetContentSetting(url, url, ContentSettingsType::POPUPS));
     EXPECT_EQ(
         CONTENT_SETTING_ASK,
-        map->GetContentSetting(url, url, ContentSettingsType::MEDIASTREAM_MIC,
-                               std::string()));
+        map->GetContentSetting(url, url, ContentSettingsType::GEOLOCATION));
     EXPECT_EQ(
         CONTENT_SETTING_ASK,
-        map->GetContentSetting(
-            url, url, ContentSettingsType::MEDIASTREAM_CAMERA, std::string()));
+        map->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
+    EXPECT_EQ(
+        CONTENT_SETTING_ASK,
+        map->GetContentSetting(url, url, ContentSettingsType::MEDIASTREAM_MIC));
     EXPECT_EQ(CONTENT_SETTING_ASK,
-              map->GetContentSetting(
-                  url, url, ContentSettingsType::PPAPI_BROKER, std::string()));
+              map->GetContentSetting(url, url,
+                                     ContentSettingsType::MEDIASTREAM_CAMERA));
     EXPECT_EQ(
         CONTENT_SETTING_ASK,
-        map->GetContentSetting(
-            url, url, ContentSettingsType::AUTOMATIC_DOWNLOADS, std::string()));
+        map->GetContentSetting(url, url, ContentSettingsType::PPAPI_BROKER));
+    EXPECT_EQ(CONTENT_SETTING_ASK,
+              map->GetContentSetting(url, url,
+                                     ContentSettingsType::AUTOMATIC_DOWNLOADS));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
-              map->GetContentSetting(url, url, ContentSettingsType::AUTOPLAY,
-                                     std::string()));
+              map->GetContentSetting(url, url, ContentSettingsType::AUTOPLAY));
   }
 
   // Returns a snapshot of content settings for a given URL.
@@ -234,28 +209,28 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     content_settings.push_back(
         cookie_settings->IsCookieAccessAllowed(url, url));
     content_settings.push_back(cookie_settings->IsCookieSessionOnly(url));
+    content_settings.push_back(
+        map->GetContentSetting(url, url, ContentSettingsType::IMAGES));
+    content_settings.push_back(
+        map->GetContentSetting(url, url, ContentSettingsType::JAVASCRIPT));
+    content_settings.push_back(
+        map->GetContentSetting(url, url, ContentSettingsType::PLUGINS));
+    content_settings.push_back(
+        map->GetContentSetting(url, url, ContentSettingsType::POPUPS));
+    content_settings.push_back(
+        map->GetContentSetting(url, url, ContentSettingsType::GEOLOCATION));
+    content_settings.push_back(
+        map->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
+    content_settings.push_back(
+        map->GetContentSetting(url, url, ContentSettingsType::MEDIASTREAM_MIC));
     content_settings.push_back(map->GetContentSetting(
-        url, url, ContentSettingsType::IMAGES, std::string()));
+        url, url, ContentSettingsType::MEDIASTREAM_CAMERA));
+    content_settings.push_back(
+        map->GetContentSetting(url, url, ContentSettingsType::PPAPI_BROKER));
     content_settings.push_back(map->GetContentSetting(
-        url, url, ContentSettingsType::JAVASCRIPT, std::string()));
-    content_settings.push_back(map->GetContentSetting(
-        url, url, ContentSettingsType::PLUGINS, std::string()));
-    content_settings.push_back(map->GetContentSetting(
-        url, url, ContentSettingsType::POPUPS, std::string()));
-    content_settings.push_back(map->GetContentSetting(
-        url, url, ContentSettingsType::GEOLOCATION, std::string()));
-    content_settings.push_back(map->GetContentSetting(
-        url, url, ContentSettingsType::NOTIFICATIONS, std::string()));
-    content_settings.push_back(map->GetContentSetting(
-        url, url, ContentSettingsType::MEDIASTREAM_MIC, std::string()));
-    content_settings.push_back(map->GetContentSetting(
-        url, url, ContentSettingsType::MEDIASTREAM_CAMERA, std::string()));
-    content_settings.push_back(map->GetContentSetting(
-        url, url, ContentSettingsType::PPAPI_BROKER, std::string()));
-    content_settings.push_back(map->GetContentSetting(
-        url, url, ContentSettingsType::AUTOMATIC_DOWNLOADS, std::string()));
-    content_settings.push_back(map->GetContentSetting(
-        url, url, ContentSettingsType::AUTOPLAY, std::string()));
+        url, url, ContentSettingsType::AUTOMATIC_DOWNLOADS));
+    content_settings.push_back(
+        map->GetContentSetting(url, url, ContentSettingsType::AUTOPLAY));
     return content_settings;
   }
 

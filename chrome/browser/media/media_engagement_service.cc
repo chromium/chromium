@@ -307,7 +307,6 @@ std::vector<MediaEngagementScore> MediaEngagementService::GetAllStoredScores()
   HostContentSettingsMap* settings =
       HostContentSettingsMapFactory::GetForProfile(profile_);
   settings->GetSettingsForOneType(ContentSettingsType::MEDIA_ENGAGEMENT,
-                                  content_settings::ResourceIdentifier(),
                                   &content_settings);
 
   // `GetSettingsForOneType` mixes incognito and non-incognito results in

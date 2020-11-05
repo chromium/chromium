@@ -829,8 +829,8 @@ void PageSpecificContentSettings::OnContentSettingChanged(
     case ContentSettingsType::MEDIASTREAM_MIC:
     case ContentSettingsType::MEDIASTREAM_CAMERA: {
       const GURL media_origin = media_stream_access_origin();
-      ContentSetting setting = map_->GetContentSetting(
-          media_origin, media_origin, content_type, std::string());
+      ContentSetting setting =
+          map_->GetContentSetting(media_origin, media_origin, content_type);
 
       if (content_type == ContentSettingsType::MEDIASTREAM_MIC &&
           setting == CONTENT_SETTING_ALLOW) {
@@ -847,8 +847,8 @@ void PageSpecificContentSettings::OnContentSettingChanged(
       break;
     }
     case ContentSettingsType::GEOLOCATION: {
-      ContentSetting geolocation_setting = map_->GetContentSetting(
-          visible_url_, visible_url_, content_type, std::string());
+      ContentSetting geolocation_setting =
+          map_->GetContentSetting(visible_url_, visible_url_, content_type);
       if (geolocation_setting == CONTENT_SETTING_ALLOW)
         geolocation_was_just_granted_on_site_level_ = true;
       FALLTHROUGH;
@@ -865,8 +865,8 @@ void PageSpecificContentSettings::OnContentSettingChanged(
     case ContentSettingsType::SOUND:
     case ContentSettingsType::CLIPBOARD_READ_WRITE:
     case ContentSettingsType::SENSORS: {
-      ContentSetting setting = map_->GetContentSetting(
-          visible_url_, visible_url_, content_type, std::string());
+      ContentSetting setting =
+          map_->GetContentSetting(visible_url_, visible_url_, content_type);
       // If an indicator is shown and the content settings has changed, swap the
       // indicator for the one with the opposite meaning (allowed <=> blocked).
       if (setting == CONTENT_SETTING_BLOCK && status.allowed) {

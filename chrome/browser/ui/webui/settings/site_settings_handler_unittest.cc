@@ -550,12 +550,10 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
       HostContentSettingsMapFactory::GetForProfile(profile());
   const GURL url1("http://example.com");
   const GURL url2("https://other.example.com");
-  map->SetContentSettingDefaultScope(url1, url1,
-                                     ContentSettingsType::NOTIFICATIONS,
-                                     std::string(), CONTENT_SETTING_BLOCK);
-  map->SetContentSettingDefaultScope(url2, url2,
-                                     ContentSettingsType::NOTIFICATIONS,
-                                     std::string(), CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(
+      url1, url1, ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_BLOCK);
+  map->SetContentSettingDefaultScope(
+      url2, url2, ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW);
   handler()->HandleGetAllSites(&get_all_sites_args);
 
   {
@@ -582,9 +580,8 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
 
   // Add an additional exception belonging to a different eTLD+1.
   const GURL url3("https://example2.net");
-  map->SetContentSettingDefaultScope(url3, url3,
-                                     ContentSettingsType::NOTIFICATIONS,
-                                     std::string(), CONTENT_SETTING_BLOCK);
+  map->SetContentSettingDefaultScope(
+      url3, url3, ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_BLOCK);
   handler()->HandleGetAllSites(&get_all_sites_args);
 
   {
@@ -771,15 +768,14 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
 
   clock.Advance(base::TimeDelta::FromHours(2));
   map->SetContentSettingDefaultScope(url2, url2, ContentSettingsType::PLUGINS,
-                                     std::string(), CONTENT_SETTING_ALLOW);
+                                     CONTENT_SETTING_ALLOW);
   clock.Advance(base::TimeDelta::FromHours(1));
   CreateIncognitoProfile();
   HostContentSettingsMap* incognito_map =
       HostContentSettingsMapFactory::GetForProfile(incognito_profile());
   incognito_map->SetClockForTesting(&clock);
   incognito_map->SetContentSettingDefaultScope(
-      url1, url1, ContentSettingsType::PLUGINS, std::string(),
-      CONTENT_SETTING_ALLOW);
+      url1, url1, ContentSettingsType::PLUGINS, CONTENT_SETTING_ALLOW);
 
   clock.Advance(base::TimeDelta::FromHours(1));
   permissions::PermissionDecisionAutoBlocker* incognito_auto_blocker =
@@ -1804,17 +1800,16 @@ TEST_F(SiteSettingsHandlerTest, ExcludeWebUISchemesInLists) {
   content_settings::SettingInfo info;
   std::unique_ptr<base::Value> value = map->GetWebsiteSetting(
       kWebUIOrigins[0].GetURL(), kWebUIOrigins[0].GetURL(),
-      content_settings_type, std::string(), &info);
+      content_settings_type, &info);
   EXPECT_EQ(CONTENT_SETTING_ALLOW, value->GetInt());
   EXPECT_EQ(content_settings::SETTING_SOURCE_ALLOWLIST, info.source);
 
   // Register an ordinary website permission.
   const GURL kWebUrl = GURL("https://example.com");
   map->SetContentSettingDefaultScope(kWebUrl, kWebUrl, content_settings_type,
-                                     std::string(), CONTENT_SETTING_ALLOW);
+                                     CONTENT_SETTING_ALLOW);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            map->GetContentSetting(kWebUrl, kWebUrl, content_settings_type,
-                                   std::string()));
+            map->GetContentSetting(kWebUrl, kWebUrl, content_settings_type));
 
   // GetAllSites() only returns website exceptions.
   {
@@ -2453,19 +2448,19 @@ TEST_F(SiteSettingsHandlerTest, CookieSettingDescription) {
   GURL url2("http://example.com");
   GURL url3("http://another.example.com");
   content_settings->SetContentSettingDefaultScope(
-      url1, url1, ContentSettingsType::COOKIES, std::string(),
+      url1, url1, ContentSettingsType::COOKIES,
       ContentSetting::CONTENT_SETTING_BLOCK);
   expected_call_index += kContentSettingListenerIndex;
   ValidateCookieSettingUpdate(kAllowed(1), expected_call_index);
 
   content_settings->SetContentSettingDefaultScope(
-      url2, url2, ContentSettingsType::COOKIES, std::string(),
+      url2, url2, ContentSettingsType::COOKIES,
       ContentSetting::CONTENT_SETTING_ALLOW);
   expected_call_index += kContentSettingListenerIndex;
   ValidateCookieSettingUpdate(kAllowed(1), expected_call_index);
 
   content_settings->SetContentSettingDefaultScope(
-      url3, url3, ContentSettingsType::COOKIES, std::string(),
+      url3, url3, ContentSettingsType::COOKIES,
       ContentSetting::CONTENT_SETTING_SESSION_ONLY);
   expected_call_index += kContentSettingListenerIndex;
   ValidateCookieSettingUpdate(kAllowed(1), expected_call_index);

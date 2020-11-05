@@ -28,8 +28,7 @@ std::unique_ptr<base::DictionaryValue> GetAutoDisplayDictForSettings(
 
   std::unique_ptr<base::DictionaryValue> value =
       base::DictionaryValue::From(settings->GetWebsiteSetting(
-          origin, origin, ContentSettingsType::INTENT_PICKER_DISPLAY,
-          content_settings::ResourceIdentifier(), nullptr));
+          origin, origin, ContentSettingsType::INTENT_PICKER_DISPLAY, nullptr));
 
   if (value.get())
     return value;
@@ -123,5 +122,5 @@ IntentPickerAutoDisplayPref::QueryPlatform() {
 void IntentPickerAutoDisplayPref::Commit() {
   settings_map_->SetWebsiteSettingDefaultScope(
       origin_, origin_, ContentSettingsType::INTENT_PICKER_DISPLAY,
-      content_settings::ResourceIdentifier(), std::move(pref_dict_));
+      std::move(pref_dict_));
 }

@@ -199,13 +199,12 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerTest,
       HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile());
   map->SetContentSettingDefaultScope(GURL("http://host1.com:1"), GURL(),
                                      ContentSettingsType::COOKIES,
-                                     std::string(), CONTENT_SETTING_BLOCK);
+                                     CONTENT_SETTING_BLOCK);
 
   ApplyBrowsingDataLifetimeDeletion(kPref);
 
   ContentSettingsForOneType host_settings;
-  map->GetSettingsForOneType(ContentSettingsType::COOKIES, std::string(),
-                             &host_settings);
+  map->GetSettingsForOneType(ContentSettingsType::COOKIES, &host_settings);
   for (const auto& host_setting : host_settings) {
     if (host_setting.source == "webui_allowlist")
       continue;

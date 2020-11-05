@@ -423,7 +423,7 @@ TEST_F(PageSpecificContentSettingsTest,
 
   map->SetWebsiteSettingCustomScope(
       pattern, ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::CLIPBOARD_READ_WRITE, std::string(),
+      ContentSettingsType::CLIPBOARD_READ_WRITE,
       std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
 
   // Now the indicator is set to allowed.
@@ -435,7 +435,7 @@ TEST_F(PageSpecificContentSettingsTest,
   // Simulate the user modifying the setting back to blocked.
   map->SetWebsiteSettingCustomScope(
       pattern, ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::CLIPBOARD_READ_WRITE, std::string(),
+      ContentSettingsType::CLIPBOARD_READ_WRITE,
       std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
 
   // Now the indicator is set to allowed.

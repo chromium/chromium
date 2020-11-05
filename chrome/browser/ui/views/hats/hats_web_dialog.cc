@@ -92,11 +92,11 @@ HatsWebDialog::HatsWebDialog(Browser* browser, const std::string& site_id)
   settings_map->SetContentSettingCustomScope(
       ContentSettingsPattern::FromString("[*.]google.com"),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
-      /* resource_identifier= */ std::string(), CONTENT_SETTING_ALLOW);
+      CONTENT_SETTING_ALLOW);
   settings_map->SetContentSettingCustomScope(
       ContentSettingsPattern::FromString("[*.]doubleclick.net"),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
-      /* resource_identifier= */ std::string(), CONTENT_SETTING_ALLOW);
+      CONTENT_SETTING_ALLOW);
 }
 
 HatsWebDialog::~HatsWebDialog() {

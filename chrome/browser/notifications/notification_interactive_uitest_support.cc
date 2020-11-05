@@ -232,8 +232,7 @@ bool NotificationsTest::CancelNotification(const char* notification_id,
 void NotificationsTest::GetDisabledContentSettings(
     ContentSettingsForOneType* settings) {
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS,
-                              content_settings::ResourceIdentifier(), settings);
+      ->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS, settings);
 
   for (auto it = settings->begin(); it != settings->end();) {
     if (it->GetContentSetting() != CONTENT_SETTING_BLOCK ||

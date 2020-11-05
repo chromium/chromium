@@ -321,7 +321,7 @@ void PermissionContextBase::ResetPermission(const GURL& requesting_origin,
   PermissionsClient::Get()
       ->GetSettingsMap(browser_context_)
       ->SetContentSettingDefaultScope(requesting_origin, embedding_origin,
-                                      content_settings_type_, std::string(),
+                                      content_settings_type_,
                                       CONTENT_SETTING_DEFAULT);
 }
 
@@ -340,7 +340,7 @@ ContentSetting PermissionContextBase::GetPermissionStatusInternal(
   return PermissionsClient::Get()
       ->GetSettingsMap(browser_context_)
       ->GetContentSetting(requesting_origin, embedding_origin,
-                          content_settings_type_, std::string());
+                          content_settings_type_);
 }
 
 void PermissionContextBase::DecidePermission(
@@ -457,8 +457,7 @@ void PermissionContextBase::UpdateContentSetting(
   PermissionsClient::Get()
       ->GetSettingsMap(browser_context_)
       ->SetContentSettingDefaultScope(requesting_origin, embedding_origin,
-                                      content_settings_type_, std::string(),
-                                      content_setting);
+                                      content_settings_type_, content_setting);
 }
 
 bool PermissionContextBase::PermissionAllowedByFeaturePolicy(

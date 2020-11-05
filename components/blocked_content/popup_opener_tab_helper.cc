@@ -114,9 +114,9 @@ void PopupOpenerTabHelper::MaybeLogPagePopupContentSettings() {
   // Do not record duplicate Popup.Page events for popups opened in succession
   // from the same opener.
   if (source_id != last_opener_source_id_) {
-    bool user_allows_popups = settings_map_->GetContentSetting(
-                                  url, url, ContentSettingsType::POPUPS,
-                                  std::string()) == CONTENT_SETTING_ALLOW;
+    bool user_allows_popups =
+        settings_map_->GetContentSetting(
+            url, url, ContentSettingsType::POPUPS) == CONTENT_SETTING_ALLOW;
     ukm::builders::Popup_Page(source_id)
         .SetAllowed(user_allows_popups)
         .Record(ukm::UkmRecorder::Get());

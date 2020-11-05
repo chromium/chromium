@@ -219,8 +219,7 @@ bool TabUnderNavigationThrottle::TabUndersAllowedBySettings() const {
           Profile::FromBrowserContext(contents->GetBrowserContext()));
   DCHECK(settings_map);
   return settings_map->GetContentSetting(contents->GetLastCommittedURL(),
-                                         GURL(), ContentSettingsType::POPUPS,
-                                         std::string()) ==
+                                         GURL(), ContentSettingsType::POPUPS) ==
          CONTENT_SETTING_ALLOW;
 }
 

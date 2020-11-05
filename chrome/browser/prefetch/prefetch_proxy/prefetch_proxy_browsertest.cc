@@ -1825,8 +1825,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
       ->SetWebsiteSettingDefaultScope(
           client_cert_needed_page, GURL(),
-          ContentSettingsType::AUTO_SELECT_CERTIFICATE, std::string(),
-          std::move(setting));
+          ContentSettingsType::AUTO_SELECT_CERTIFICATE, std::move(setting));
 
   // Navigating to the page should work just fine in the normal profile.
   ui_test_utils::NavigateToURL(browser(), client_cert_needed_page);

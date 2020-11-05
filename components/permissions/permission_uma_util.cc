@@ -499,11 +499,11 @@ PermissionUmaUtil::ScopedRevocationReporter::ScopedRevocationReporter(
   HostContentSettingsMap* settings_map =
       PermissionsClient::Get()->GetSettingsMap(browser_context_);
   ContentSetting initial_content_setting = settings_map->GetContentSetting(
-      primary_url_, secondary_url_, content_type_, std::string());
+      primary_url_, secondary_url_, content_type_);
   is_initially_allowed_ = initial_content_setting == CONTENT_SETTING_ALLOW;
   content_settings::SettingInfo setting_info;
   settings_map->GetWebsiteSetting(primary_url, secondary_url, content_type_,
-                                  std::string(), &setting_info);
+                                  &setting_info);
   last_modified_date_ = settings_map->GetSettingLastModifiedDate(
       setting_info.primary_pattern, setting_info.secondary_pattern,
       content_type);
@@ -530,7 +530,7 @@ PermissionUmaUtil::ScopedRevocationReporter::~ScopedRevocationReporter() {
   HostContentSettingsMap* settings_map =
       PermissionsClient::Get()->GetSettingsMap(browser_context_);
   ContentSetting final_content_setting = settings_map->GetContentSetting(
-      primary_url_, secondary_url_, content_type_, std::string());
+      primary_url_, secondary_url_, content_type_);
   if (final_content_setting != CONTENT_SETTING_ALLOW) {
     // PermissionUmaUtil takes origins, even though they're typed as GURL.
     GURL requesting_origin = primary_url_.GetOrigin();

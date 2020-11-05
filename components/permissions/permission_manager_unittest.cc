@@ -161,8 +161,8 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
   }
 
   void SetPermission(ContentSettingsType type, ContentSetting value) {
-    GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-        url_, url_, type, std::string(), value);
+    GetHostContentSettingsMap()->SetContentSettingDefaultScope(url_, url_, type,
+                                                               value);
   }
 
   int RequestPermission(PermissionType type,
@@ -372,8 +372,7 @@ TEST_F(PermissionManagerTest, SameTypeChangeNotifies) {
                      base::Unretained(this)));
 
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      url(), url(), ContentSettingsType::GEOLOCATION, std::string(),
-      CONTENT_SETTING_ALLOW);
+      url(), url(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
 
   EXPECT_TRUE(callback_called());
   EXPECT_EQ(PermissionStatus::GRANTED, callback_result());
@@ -390,8 +389,7 @@ TEST_F(PermissionManagerTest, DifferentTypeChangeDoesNotNotify) {
                      base::Unretained(this)));
 
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      url(), GURL(), ContentSettingsType::NOTIFICATIONS, std::string(),
-      CONTENT_SETTING_ALLOW);
+      url(), GURL(), ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW);
 
   EXPECT_FALSE(callback_called());
 
@@ -410,8 +408,7 @@ TEST_F(PermissionManagerTest, ChangeAfterUnsubscribeDoesNotNotify) {
       subscription_id);
 
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      url(), url(), ContentSettingsType::GEOLOCATION, std::string(),
-      CONTENT_SETTING_ALLOW);
+      url(), url(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
 
   EXPECT_FALSE(callback_called());
 }
@@ -424,7 +421,7 @@ TEST_F(PermissionManagerTest, DifferentPrimaryUrlDoesNotNotify) {
                      base::Unretained(this)));
 
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      other_url(), url(), ContentSettingsType::GEOLOCATION, std::string(),
+      other_url(), url(), ContentSettingsType::GEOLOCATION,
       CONTENT_SETTING_ALLOW);
 
   EXPECT_FALSE(callback_called());
@@ -441,7 +438,7 @@ TEST_F(PermissionManagerTest, DifferentSecondaryUrlDoesNotNotify) {
                      base::Unretained(this)));
 
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      url(), other_url(), ContentSettingsType::STORAGE_ACCESS, std::string(),
+      url(), other_url(), ContentSettingsType::STORAGE_ACCESS,
       CONTENT_SETTING_ALLOW);
 
   EXPECT_FALSE(callback_called());
@@ -469,8 +466,7 @@ TEST_F(PermissionManagerTest, WildCardPatternNotifies) {
 
 TEST_F(PermissionManagerTest, ClearSettingsNotifies) {
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      url(), url(), ContentSettingsType::GEOLOCATION, std::string(),
-      CONTENT_SETTING_ALLOW);
+      url(), url(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
 
   int subscription_id =
       GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
@@ -496,8 +492,7 @@ TEST_F(PermissionManagerTest, NewValueCorrectlyPassed) {
                      base::Unretained(this)));
 
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      url(), url(), ContentSettingsType::GEOLOCATION, std::string(),
-      CONTENT_SETTING_BLOCK);
+      url(), url(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_BLOCK);
 
   EXPECT_TRUE(callback_called());
   EXPECT_EQ(PermissionStatus::DENIED, callback_result());
@@ -508,8 +503,7 @@ TEST_F(PermissionManagerTest, NewValueCorrectlyPassed) {
 
 TEST_F(PermissionManagerTest, ChangeWithoutPermissionChangeDoesNotNotify) {
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      url(), url(), ContentSettingsType::GEOLOCATION, std::string(),
-      CONTENT_SETTING_ALLOW);
+      url(), url(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
 
   int subscription_id =
       GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
@@ -518,8 +512,7 @@ TEST_F(PermissionManagerTest, ChangeWithoutPermissionChangeDoesNotNotify) {
                      base::Unretained(this)));
 
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      url(), url(), ContentSettingsType::GEOLOCATION, std::string(),
-      CONTENT_SETTING_ALLOW);
+      url(), url(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
 
   EXPECT_FALSE(callback_called());
 
@@ -529,8 +522,7 @@ TEST_F(PermissionManagerTest, ChangeWithoutPermissionChangeDoesNotNotify) {
 
 TEST_F(PermissionManagerTest, ChangesBackAndForth) {
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      url(), url(), ContentSettingsType::GEOLOCATION, std::string(),
-      CONTENT_SETTING_ASK);
+      url(), url(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ASK);
 
   int subscription_id =
       GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
@@ -539,8 +531,7 @@ TEST_F(PermissionManagerTest, ChangesBackAndForth) {
                      base::Unretained(this)));
 
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      url(), url(), ContentSettingsType::GEOLOCATION, std::string(),
-      CONTENT_SETTING_ALLOW);
+      url(), url(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
 
   EXPECT_TRUE(callback_called());
   EXPECT_EQ(PermissionStatus::GRANTED, callback_result());
@@ -548,8 +539,7 @@ TEST_F(PermissionManagerTest, ChangesBackAndForth) {
   Reset();
 
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      url(), url(), ContentSettingsType::GEOLOCATION, std::string(),
-      CONTENT_SETTING_ASK);
+      url(), url(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ASK);
 
   EXPECT_TRUE(callback_called());
   EXPECT_EQ(PermissionStatus::ASK, callback_result());
@@ -560,8 +550,7 @@ TEST_F(PermissionManagerTest, ChangesBackAndForth) {
 
 TEST_F(PermissionManagerTest, ChangesBackAndForthWorker) {
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      url(), url(), ContentSettingsType::GEOLOCATION, std::string(),
-      CONTENT_SETTING_ASK);
+      url(), url(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ASK);
 
   int subscription_id =
       GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
@@ -570,8 +559,7 @@ TEST_F(PermissionManagerTest, ChangesBackAndForthWorker) {
                      base::Unretained(this)));
 
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      url(), url(), ContentSettingsType::GEOLOCATION, std::string(),
-      CONTENT_SETTING_ALLOW);
+      url(), url(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
 
   EXPECT_TRUE(callback_called());
   EXPECT_EQ(PermissionStatus::GRANTED, callback_result());
@@ -579,8 +567,7 @@ TEST_F(PermissionManagerTest, ChangesBackAndForthWorker) {
   Reset();
 
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      url(), url(), ContentSettingsType::GEOLOCATION, std::string(),
-      CONTENT_SETTING_ASK);
+      url(), url(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ASK);
 
   EXPECT_TRUE(callback_called());
   EXPECT_EQ(PermissionStatus::ASK, callback_result());
@@ -598,8 +585,7 @@ TEST_F(PermissionManagerTest, SubscribeMIDIPermission) {
 
   CheckPermissionStatus(PermissionType::GEOLOCATION, PermissionStatus::ASK);
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      url(), url(), ContentSettingsType::GEOLOCATION, std::string(),
-      CONTENT_SETTING_ALLOW);
+      url(), url(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
   CheckPermissionStatus(PermissionType::GEOLOCATION, PermissionStatus::GRANTED);
 
   EXPECT_FALSE(callback_called());
@@ -818,8 +804,7 @@ TEST_F(PermissionManagerTest, SubscribeWithPermissionDelegation) {
 
   // Allow access for the top level origin.
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      url(), url(), ContentSettingsType::GEOLOCATION, std::string(),
-      CONTENT_SETTING_ALLOW);
+      url(), url(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
 
   // The child's permission should still be block and no callback should be run.
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
@@ -850,8 +835,7 @@ TEST_F(PermissionManagerTest, SubscribeWithPermissionDelegation) {
   // Blocking access to the parent should trigger the callback to be run for the
   // child also.
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      url(), url(), ContentSettingsType::GEOLOCATION, std::string(),
-      CONTENT_SETTING_BLOCK);
+      url(), url(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_BLOCK);
 
   EXPECT_TRUE(callback_called());
   EXPECT_EQ(PermissionStatus::DENIED, callback_result());

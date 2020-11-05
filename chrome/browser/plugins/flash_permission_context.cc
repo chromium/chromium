@@ -99,7 +99,7 @@ void FlashPermissionContext::UpdateContentSetting(
     pattern = ContentSettingsPattern::FromURLNoWildcard(embedding_origin);
   host_content_settings_map->SetContentSettingCustomScope(
       pattern, ContentSettingsPattern::Wildcard(), content_settings_type(),
-      std::string(), content_setting);
+      content_setting);
 }
 
 bool FlashPermissionContext::IsRestrictedToSecureOrigins() const {

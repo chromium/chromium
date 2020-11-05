@@ -1771,7 +1771,7 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, TestLoginMediaPermission) {
   HostContentSettingsMapFactory::GetForProfile(profile)
       ->SetContentSettingDefaultScope(url3, url3,
                                       ContentSettingsType::MEDIASTREAM_CAMERA,
-                                      std::string(), CONTENT_SETTING_ALLOW);
+                                      CONTENT_SETTING_ALLOW);
 
   EXPECT_FALSE(web_contents_delegate->CheckMediaAccessPermission(
       web_contents->GetMainFrame(), url3,

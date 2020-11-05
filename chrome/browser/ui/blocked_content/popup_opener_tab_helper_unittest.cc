@@ -384,8 +384,7 @@ TEST_F(PopupOpenerTabHelperTest,
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(test_profile);
   host_content_settings_map->SetContentSettingDefaultScope(
-      url, url, ContentSettingsType::POPUPS, std::string(),
-      CONTENT_SETTING_ALLOW);
+      url, url, ContentSettingsType::POPUPS, CONTENT_SETTING_ALLOW);
 
   NavigateAndCommitWithoutGesture(url);
   SimulatePopup();

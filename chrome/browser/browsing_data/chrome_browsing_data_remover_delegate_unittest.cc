@@ -2117,16 +2117,16 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(GetProfile());
   host_content_settings_map->SetWebsiteSettingDefaultScope(
-      Origin1(), GURL(), ContentSettingsType::SITE_ENGAGEMENT, std::string(),
+      Origin1(), GURL(), ContentSettingsType::SITE_ENGAGEMENT,
       std::make_unique<base::DictionaryValue>());
   host_content_settings_map->SetWebsiteSettingDefaultScope(
-      Origin2(), GURL(), ContentSettingsType::SITE_ENGAGEMENT, std::string(),
+      Origin2(), GURL(), ContentSettingsType::SITE_ENGAGEMENT,
       std::make_unique<base::DictionaryValue>());
   host_content_settings_map->SetWebsiteSettingDefaultScope(
-      Origin3(), GURL(), ContentSettingsType::SITE_ENGAGEMENT, std::string(),
+      Origin3(), GURL(), ContentSettingsType::SITE_ENGAGEMENT,
       std::make_unique<base::DictionaryValue>());
   host_content_settings_map->SetWebsiteSettingDefaultScope(
-      Origin4(), GURL(), ContentSettingsType::SITE_ENGAGEMENT, std::string(),
+      Origin4(), GURL(), ContentSettingsType::SITE_ENGAGEMENT,
       std::make_unique<base::DictionaryValue>());
 
   // Clear all except for origin1 and origin3.
@@ -2148,7 +2148,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   // Verify we only have true, and they're origin1, origin3, and origin4.
   ContentSettingsForOneType host_settings;
   host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::SITE_ENGAGEMENT, std::string(), &host_settings);
+      ContentSettingsType::SITE_ENGAGEMENT, &host_settings);
   EXPECT_EQ(3u, host_settings.size());
   EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(Origin1()),
             host_settings[0].primary_pattern)
@@ -2165,20 +2165,19 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveContentSettings) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(GetProfile());
   map->SetContentSettingDefaultScope(Origin1(), Origin1(),
                                      ContentSettingsType::GEOLOCATION,
-                                     std::string(), CONTENT_SETTING_ALLOW);
+                                     CONTENT_SETTING_ALLOW);
   map->SetContentSettingDefaultScope(DSEOrigin(), DSEOrigin(),
                                      ContentSettingsType::GEOLOCATION,
-                                     std::string(), CONTENT_SETTING_BLOCK);
+                                     CONTENT_SETTING_BLOCK);
   map->SetContentSettingDefaultScope(Origin2(), Origin2(),
                                      ContentSettingsType::NOTIFICATIONS,
-                                     std::string(), CONTENT_SETTING_ALLOW);
-  map->SetContentSettingDefaultScope(Origin3(), GURL(),
-                                     ContentSettingsType::COOKIES,
-                                     std::string(), CONTENT_SETTING_BLOCK);
+                                     CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(
+      Origin3(), GURL(), ContentSettingsType::COOKIES, CONTENT_SETTING_BLOCK);
   ContentSettingsPattern pattern =
       ContentSettingsPattern::FromString("[*.]example.com");
   map->SetContentSettingCustomScope(pattern, ContentSettingsPattern::Wildcard(),
-                                    ContentSettingsType::COOKIES, std::string(),
+                                    ContentSettingsType::COOKIES,
                                     CONTENT_SETTING_BLOCK);
   BlockUntilBrowsingDataRemoved(
       base::Time(), base::Time::Max(),
@@ -2195,8 +2194,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveContentSettings) {
 #endif
 
   ContentSettingsForOneType host_settings;
-  map->GetSettingsForOneType(ContentSettingsType::GEOLOCATION, std::string(),
-                             &host_settings);
+  map->GetSettingsForOneType(ContentSettingsType::GEOLOCATION, &host_settings);
 
   if (expect_geolocation_dse_origin) {
     ASSERT_EQ(2u, host_settings.size());
@@ -2220,7 +2218,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveContentSettings) {
     EXPECT_EQ(CONTENT_SETTING_ASK, host_settings[0].GetContentSetting());
   }
 
-  map->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS, std::string(),
+  map->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS,
                              &host_settings);
 
   if (expect_notifications_dse_origin) {
@@ -2242,8 +2240,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveContentSettings) {
     EXPECT_EQ(CONTENT_SETTING_ASK, host_settings[0].GetContentSetting());
   }
 
-  map->GetSettingsForOneType(ContentSettingsType::COOKIES, std::string(),
-                             &host_settings);
+  map->GetSettingsForOneType(ContentSettingsType::COOKIES, &host_settings);
   ASSERT_EQ(1u, host_settings.size());
   EXPECT_EQ(ContentSettingsPattern::Wildcard(),
             host_settings[0].primary_pattern)
@@ -2304,14 +2301,14 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveSelectedClientHints) {
   expiration_times_dictionary->SetDouble("expiration_time", expiration_time);
 
   host_content_settings_map->SetWebsiteSettingDefaultScope(
-      Origin1(), GURL(), ContentSettingsType::CLIENT_HINTS, std::string(),
+      Origin1(), GURL(), ContentSettingsType::CLIENT_HINTS,
       expiration_times_dictionary->CreateDeepCopy());
   host_content_settings_map->SetWebsiteSettingDefaultScope(
-      Origin2(), GURL(), ContentSettingsType::CLIENT_HINTS, std::string(),
+      Origin2(), GURL(), ContentSettingsType::CLIENT_HINTS,
       expiration_times_dictionary->CreateDeepCopy());
 
   host_content_settings_map->SetWebsiteSettingDefaultScope(
-      Origin3(), GURL(), ContentSettingsType::CLIENT_HINTS, std::string(),
+      Origin3(), GURL(), ContentSettingsType::CLIENT_HINTS,
       expiration_times_dictionary->CreateDeepCopy());
 
   // Clear all except for origin1 and origin3.
@@ -2326,7 +2323,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveSelectedClientHints) {
 
   ContentSettingsForOneType host_settings;
   host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::CLIENT_HINTS, std::string(), &host_settings);
+      ContentSettingsType::CLIENT_HINTS, &host_settings);
 
   ASSERT_EQ(2u, host_settings.size());
 
@@ -2364,14 +2361,14 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveAllClientHints) {
   expiration_times_dictionary->SetDouble("expiration_time", expiration_time);
 
   host_content_settings_map->SetWebsiteSettingDefaultScope(
-      Origin1(), GURL(), ContentSettingsType::CLIENT_HINTS, std::string(),
+      Origin1(), GURL(), ContentSettingsType::CLIENT_HINTS,
       expiration_times_dictionary->CreateDeepCopy());
   host_content_settings_map->SetWebsiteSettingDefaultScope(
-      Origin2(), GURL(), ContentSettingsType::CLIENT_HINTS, std::string(),
+      Origin2(), GURL(), ContentSettingsType::CLIENT_HINTS,
       expiration_times_dictionary->CreateDeepCopy());
 
   host_content_settings_map->SetWebsiteSettingDefaultScope(
-      Origin3(), GURL(), ContentSettingsType::CLIENT_HINTS, std::string(),
+      Origin3(), GURL(), ContentSettingsType::CLIENT_HINTS,
       expiration_times_dictionary->CreateDeepCopy());
 
   // Clear all.
@@ -2381,7 +2378,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveAllClientHints) {
 
   ContentSettingsForOneType host_settings;
   host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::CLIENT_HINTS, std::string(), &host_settings);
+      ContentSettingsType::CLIENT_HINTS, &host_settings);
 
   ASSERT_EQ(0u, host_settings.size());
 }
@@ -2491,7 +2488,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDurablePermission) {
   // Verify we only have allow for the first origin.
   ContentSettingsForOneType host_settings;
   host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::DURABLE_STORAGE, std::string(), &host_settings);
+      ContentSettingsType::DURABLE_STORAGE, &host_settings);
 
   ASSERT_EQ(2u, host_settings.size());
   // Only the first should should have a setting.
@@ -2516,7 +2513,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
                                           CONTENT_SETTING_ALLOW);
   ContentSettingsForOneType host_settings;
   host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::DURABLE_STORAGE, std::string(), &host_settings);
+      ContentSettingsType::DURABLE_STORAGE, &host_settings);
   EXPECT_EQ(2u, host_settings.size());
 
   BlockUntilBrowsingDataRemoved(
@@ -2525,7 +2522,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 
   // After the deletion, only the wildcard should remain.
   host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::DURABLE_STORAGE, std::string(), &host_settings);
+      ContentSettingsType::DURABLE_STORAGE, &host_settings);
   EXPECT_EQ(1u, host_settings.size());
   EXPECT_EQ(ContentSettingsPattern::Wildcard(),
             host_settings[0].primary_pattern)
@@ -2940,12 +2937,12 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AllTypesAreGettingDeleted) {
     }
     // Create an exception.
     map->SetWebsiteSettingDefaultScope(
-        url, url, info->type(), std::string(),
+        url, url, info->type(),
         std::make_unique<base::Value>(some_value.Clone()));
 
     // Check that the exception was created.
     std::unique_ptr<base::Value> value =
-        map->GetWebsiteSetting(url, url, info->type(), std::string(), nullptr);
+        map->GetWebsiteSetting(url, url, info->type(), nullptr);
     EXPECT_TRUE(value) << "Not created: " << info->name();
     if (value)
       EXPECT_EQ(some_value, *value) << "Not created: " << info->name();
@@ -2963,7 +2960,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AllTypesAreGettingDeleted) {
     if (base::Contains(non_deletable_types, info->type()))
       continue;
     std::unique_ptr<base::Value> value =
-        map->GetWebsiteSetting(url, url, info->type(), std::string(), nullptr);
+        map->GetWebsiteSetting(url, url, info->type(), nullptr);
 
     if (value && value->is_int()) {
       EXPECT_EQ(CONTENT_SETTING_BLOCK, value->GetInt())

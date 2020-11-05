@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
       ->SetContentSettingDefaultScope(url, GURL(),
                                       ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
-                                      std::string(), CONTENT_SETTING_ASK);
+                                      CONTENT_SETTING_ASK);
 
   // The mic & camera bubble content does not include camera PTZ.
   std::unique_ptr<ContentSettingBubbleModel> mic_and_camera_bubble =
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
       ->SetContentSettingDefaultScope(url, GURL(),
                                       ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
-                                      std::string(), CONTENT_SETTING_ALLOW);
+                                      CONTENT_SETTING_ALLOW);
 
   // The mic & camera bubble content includes camera PTZ.
   std::unique_ptr<ContentSettingBubbleModel> mic_and_camera_ptz_bubble =

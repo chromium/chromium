@@ -23,10 +23,8 @@ namespace content_settings {
 bool ShouldAllowInsecurePrivateNetworkRequests(
     const HostContentSettingsMap* map,
     const GURL& url) {
-  const std::string unused_resource_identifier;
   const ContentSetting setting = map->GetContentSetting(
-      url, url, ContentSettingsType::INSECURE_PRIVATE_NETWORK,
-      unused_resource_identifier);
+      url, url, ContentSettingsType::INSECURE_PRIVATE_NETWORK);
 
   switch (setting) {
     case CONTENT_SETTING_ALLOW:

@@ -435,24 +435,24 @@ TEST_F(PageInfoTest, OnPermissionsChanged) {
   HostContentSettingsMap* content_settings =
       HostContentSettingsMapFactory::GetForProfile(profile());
   ContentSetting setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::POPUPS, std::string());
+      url(), url(), ContentSettingsType::POPUPS);
   EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
 #if BUILDFLAG(ENABLE_PLUGINS)
-  setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::PLUGINS, std::string());
+  setting = content_settings->GetContentSetting(url(), url(),
+                                                ContentSettingsType::PLUGINS);
   EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
 #endif
   setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::GEOLOCATION, std::string());
+      url(), url(), ContentSettingsType::GEOLOCATION);
   EXPECT_EQ(setting, CONTENT_SETTING_ASK);
   setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::NOTIFICATIONS, std::string());
+      url(), url(), ContentSettingsType::NOTIFICATIONS);
   EXPECT_EQ(setting, CONTENT_SETTING_ASK);
   setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::MEDIASTREAM_MIC, std::string());
+      url(), url(), ContentSettingsType::MEDIASTREAM_MIC);
   EXPECT_EQ(setting, CONTENT_SETTING_ASK);
   setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::MEDIASTREAM_CAMERA, std::string());
+      url(), url(), ContentSettingsType::MEDIASTREAM_CAMERA);
   EXPECT_EQ(setting, CONTENT_SETTING_ASK);
 
   EXPECT_CALL(*mock_ui(), SetIdentityInfo(_));
@@ -484,25 +484,25 @@ TEST_F(PageInfoTest, OnPermissionsChanged) {
                                        CONTENT_SETTING_ALLOW);
 
   // Verify that the site permissions were changed correctly.
-  setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::POPUPS, std::string());
+  setting = content_settings->GetContentSetting(url(), url(),
+                                                ContentSettingsType::POPUPS);
   EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
 #if BUILDFLAG(ENABLE_PLUGINS)
-  setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::PLUGINS, std::string());
+  setting = content_settings->GetContentSetting(url(), url(),
+                                                ContentSettingsType::PLUGINS);
   EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
 #endif
   setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::GEOLOCATION, std::string());
+      url(), url(), ContentSettingsType::GEOLOCATION);
   EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
   setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::NOTIFICATIONS, std::string());
+      url(), url(), ContentSettingsType::NOTIFICATIONS);
   EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
   setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::MEDIASTREAM_MIC, std::string());
+      url(), url(), ContentSettingsType::MEDIASTREAM_MIC);
   EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
   setting = content_settings->GetContentSetting(
-      url(), url(), ContentSettingsType::MEDIASTREAM_CAMERA, std::string());
+      url(), url(), ContentSettingsType::MEDIASTREAM_CAMERA);
   EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
 }
 

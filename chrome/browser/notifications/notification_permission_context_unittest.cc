@@ -74,7 +74,7 @@ class TestNotificationPermissionContext : public NotificationPermissionContext {
                                           const GURL& url_b) {
     return HostContentSettingsMapFactory::GetForProfile(browser_context())
         ->GetContentSetting(url_a.GetOrigin(), url_b.GetOrigin(),
-                            content_settings_type(), std::string());
+                            content_settings_type());
   }
 
  private:
@@ -463,9 +463,7 @@ TEST_F(NotificationPermissionContextTest, GetNotificationsSettings) {
 
   ContentSettingsForOneType settings;
   HostContentSettingsMapFactory::GetForProfile(profile())
-      ->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS,
-                              content_settings::ResourceIdentifier(),
-                              &settings);
+      ->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS, &settings);
 
   // |settings| contains the default setting and 4 exceptions.
   ASSERT_EQ(5u, settings.size());

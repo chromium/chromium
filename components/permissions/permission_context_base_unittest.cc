@@ -80,7 +80,7 @@ class TestPermissionContext : public PermissionContextBase {
                                           const GURL& url_b) {
     auto* map = PermissionsClient::Get()->GetSettingsMap(browser_context());
     return map->GetContentSetting(url_a.GetOrigin(), url_b.GetOrigin(),
-                                  content_settings_type(), std::string());
+                                  content_settings_type());
   }
 
   void RequestPermission(content::WebContents* web_contents,

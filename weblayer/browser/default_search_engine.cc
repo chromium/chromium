@@ -30,9 +30,8 @@ void ResetDsePermissions(content::BrowserContext* browser_context) {
     return;
   GURL url = GetDseOrigin().GetURL();
   HostContentSettingsMapFactory::GetForBrowserContext(browser_context)
-      ->SetContentSettingDefaultScope(url, url,
-                                      ContentSettingsType::GEOLOCATION,
-                                      std::string(), CONTENT_SETTING_ALLOW);
+      ->SetContentSettingDefaultScope(
+          url, url, ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
 }
 
 }  // namespace weblayer

@@ -361,9 +361,8 @@ TEST_F(UsbChooserContextTest, UsbGuardPermission) {
       device_manager_.CreateAndAddDevice(0, 0, "Google", "Gizmo", "");
 
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
-  map->SetContentSettingDefaultScope(kFooUrl, kFooUrl,
-                                     ContentSettingsType::USB_GUARD,
-                                     std::string(), CONTENT_SETTING_BLOCK);
+  map->SetContentSettingDefaultScope(
+      kFooUrl, kFooUrl, ContentSettingsType::USB_GUARD, CONTENT_SETTING_BLOCK);
 
   auto* store = GetChooserContext(profile());
   EXPECT_CALL(
@@ -680,10 +679,10 @@ TEST_F(UsbChooserContextTest,
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetContentSettingDefaultScope(ProductVendorUrl(), ProductVendorUrl(),
                                      ContentSettingsType::USB_GUARD,
-                                     std::string(), CONTENT_SETTING_BLOCK);
+                                     CONTENT_SETTING_BLOCK);
   map->SetContentSettingDefaultScope(GadgetUrl(), CoolUrl(),
                                      ContentSettingsType::USB_GUARD,
-                                     std::string(), CONTENT_SETTING_BLOCK);
+                                     CONTENT_SETTING_BLOCK);
   EXPECT_FALSE(store->HasDevicePermission(
       kProductVendorOrigin, kProductVendorOrigin, *specific_device_info));
   EXPECT_FALSE(store->HasDevicePermission(

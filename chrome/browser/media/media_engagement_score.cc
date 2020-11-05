@@ -40,8 +40,7 @@ std::unique_ptr<base::DictionaryValue> GetMediaEngagementScoreDictForSettings(
   std::unique_ptr<base::DictionaryValue> value =
       base::DictionaryValue::From(settings->GetWebsiteSetting(
           origin.GetURL(), origin.GetURL(),
-          ContentSettingsType::MEDIA_ENGAGEMENT,
-          content_settings::ResourceIdentifier(), nullptr));
+          ContentSettingsType::MEDIA_ENGAGEMENT, nullptr));
 
   if (value.get())
     return value;
@@ -158,7 +157,7 @@ void MediaEngagementScore::Commit() {
 
   settings_map_->SetWebsiteSettingDefaultScope(
       origin_.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
-      content_settings::ResourceIdentifier(), std::move(score_dict_));
+      std::move(score_dict_));
 }
 
 void MediaEngagementScore::IncrementMediaPlaybacks() {

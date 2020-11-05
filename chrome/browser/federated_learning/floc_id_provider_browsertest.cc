@@ -402,7 +402,7 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
 
     settings_map->SetContentSettingCustomScope(
         primary_pattern, ContentSettingsPattern::Wildcard(), content_type,
-        std::string() /* resource_identifier */, setting);
+        setting);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

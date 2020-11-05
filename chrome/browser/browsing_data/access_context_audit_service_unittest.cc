@@ -562,7 +562,7 @@ TEST_F(AccessContextAuditServiceTest, SessionOnlyRecords) {
   HostContentSettingsMapFactory::GetForProfile(profile())
       ->SetContentSettingDefaultScope(
           kTestSessionOnlyContentSettingURL, GURL(),
-          ContentSettingsType::COOKIES, std::string(),
+          ContentSettingsType::COOKIES,
           ContentSetting::CONTENT_SETTING_SESSION_ONLY);
 
   // Instruct service to clear session only records and check that they are

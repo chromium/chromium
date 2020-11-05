@@ -116,7 +116,7 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
     HostContentSettingsMapFactory::GetForProfile(browser()->profile())
         ->SetContentSettingDefaultScope(origin, origin,
                                         ContentSettingsType::PAYMENT_HANDLER,
-                                        std::string(), CONTENT_SETTING_BLOCK);
+                                        CONTENT_SETTING_BLOCK);
   }
 
   // Sets a TestDownloader for ServiceWorkerPaymentAppFinder and ignores port in

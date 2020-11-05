@@ -301,7 +301,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         ->SetContentSettingCustomScope(
             ContentSettingsPattern::FromString(urlToRemove),
             ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS,
-            std::string(), CONTENT_SETTING_DEFAULT);
+            CONTENT_SETTING_DEFAULT);
 
     // Remove the site from |_exceptions|.
     _exceptions.Remove(urlIndex, NULL);
@@ -340,8 +340,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // to only deal with urls/patterns that allow popups.
   ContentSettingsForOneType entries;
   ios::HostContentSettingsMapFactory::GetForBrowserState(_browserState)
-      ->GetSettingsForOneType(ContentSettingsType::POPUPS, std::string(),
-                              &entries);
+      ->GetSettingsForOneType(ContentSettingsType::POPUPS, &entries);
   for (size_t i = 0; i < entries.size(); ++i) {
     // Skip default settings from extensions and policy, and the default content
     // settings; all of them will affect the default setting UI.

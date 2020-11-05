@@ -63,7 +63,7 @@ void SetMultipleContentSetting(
     host_content_settings_map->SetContentSettingDefaultScope(
         t->GetCurrentWebContents()->GetLastCommittedURL(),
         t->GetCurrentWebContents()->GetLastCommittedURL(),
-        s.content_setting_type, std::string(), s.content_setting);
+        s.content_setting_type, s.content_setting);
 }
 
 void LoadGenericPageChangeDefaultPermissionAndEnterVr(

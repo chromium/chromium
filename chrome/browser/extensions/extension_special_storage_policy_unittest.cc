@@ -339,7 +339,7 @@ TEST_F(ExtensionSpecialStoragePolicyTest, IsStorageDurableTest) {
   HostContentSettingsMap* content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
   content_settings_map->SetContentSettingDefaultScope(
-      kHttpUrl, GURL(), ContentSettingsType::DURABLE_STORAGE, std::string(),
+      kHttpUrl, GURL(), ContentSettingsType::DURABLE_STORAGE,
       CONTENT_SETTING_ALLOW);
 
   EXPECT_TRUE(policy_->IsStorageDurable(kHttpUrl));

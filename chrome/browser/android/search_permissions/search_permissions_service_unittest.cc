@@ -129,16 +129,16 @@ class SearchPermissionsServiceTest : public testing::Test {
     // should never be changed between ALLOW<->BLOCK on Android. Do not copy
     // this code. Check with the notifications team if you need to do something
     // like this.
-    hcsm->SetContentSettingDefaultScope(url, url, type, std::string(),
+    hcsm->SetContentSettingDefaultScope(url, url, type,
                                         CONTENT_SETTING_DEFAULT);
-    hcsm->SetContentSettingDefaultScope(url, url, type, std::string(), setting);
+    hcsm->SetContentSettingDefaultScope(url, url, type, setting);
   }
 
   ContentSetting GetContentSetting(const std::string& origin_string,
                                    ContentSettingsType type) {
     GURL url(origin_string);
     return HostContentSettingsMapFactory::GetForProfile(profile())
-        ->GetContentSetting(url, url, type, std::string());
+        ->GetContentSetting(url, url, type);
   }
 
   // Simulates the initialization that happens when recreating the service. If

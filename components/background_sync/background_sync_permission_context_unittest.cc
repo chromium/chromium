@@ -95,7 +95,7 @@ TEST_F(BackgroundSyncPermissionContextTest, TestBlockOrigin) {
       ->GetSettingsMap(browser_context())
       ->SetContentSettingDefaultScope(url1, GURL(),
                                       ContentSettingsType::BACKGROUND_SYNC,
-                                      std::string(), CONTENT_SETTING_BLOCK);
+                                      CONTENT_SETTING_BLOCK);
 
   NavigateAndRequestPermission(url1, &permission_context);
 

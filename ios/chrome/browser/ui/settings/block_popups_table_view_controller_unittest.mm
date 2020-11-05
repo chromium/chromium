@@ -67,12 +67,11 @@ class BlockPopupsTableViewControllerTest
         chrome_browser_state_.get())
         ->SetContentSettingCustomScope(
             allowed_pattern, ContentSettingsPattern::Wildcard(),
-            ContentSettingsType::POPUPS, std::string(), CONTENT_SETTING_ALLOW);
+            ContentSettingsType::POPUPS, CONTENT_SETTING_ALLOW);
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               ios::HostContentSettingsMapFactory::GetForBrowserState(
                   chrome_browser_state_.get())
-                  ->GetContentSetting(url, url, ContentSettingsType::POPUPS,
-                                      std::string()));
+                  ->GetContentSetting(url, url, ContentSettingsType::POPUPS));
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -126,8 +125,7 @@ TEST_F(BlockPopupsTableViewControllerTest, TestOneAllowedItemDeleted) {
   ContentSettingsForOneType initial_entries;
   ios::HostContentSettingsMapFactory::GetForBrowserState(
       chrome_browser_state_.get())
-      ->GetSettingsForOneType(ContentSettingsType::POPUPS, std::string(),
-                              &initial_entries);
+      ->GetSettingsForOneType(ContentSettingsType::POPUPS, &initial_entries);
 
   // Add the pattern to be deleted.
   AddAllowedPattern(kAllowedPattern, GURL(kAllowedURL));
@@ -136,8 +134,7 @@ TEST_F(BlockPopupsTableViewControllerTest, TestOneAllowedItemDeleted) {
   ContentSettingsForOneType added_entries;
   ios::HostContentSettingsMapFactory::GetForBrowserState(
       chrome_browser_state_.get())
-      ->GetSettingsForOneType(ContentSettingsType::POPUPS, std::string(),
-                              &added_entries);
+      ->GetSettingsForOneType(ContentSettingsType::POPUPS, &added_entries);
   EXPECT_NE(initial_entries.size(), added_entries.size());
 
   CreateController();
@@ -159,8 +156,7 @@ TEST_F(BlockPopupsTableViewControllerTest, TestOneAllowedItemDeleted) {
   ContentSettingsForOneType final_entries;
   ios::HostContentSettingsMapFactory::GetForBrowserState(
       chrome_browser_state_.get())
-      ->GetSettingsForOneType(ContentSettingsType::POPUPS, std::string(),
-                              &final_entries);
+      ->GetSettingsForOneType(ContentSettingsType::POPUPS, &final_entries);
   EXPECT_EQ(initial_entries.size(), final_entries.size());
 }
 

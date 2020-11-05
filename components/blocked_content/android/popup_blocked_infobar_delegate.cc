@@ -78,7 +78,7 @@ PopupBlockedInfoBarDelegate::PopupBlockedInfoBarDelegate(
       on_accept_callback_(std::move(on_accept_callback)) {
   content_settings::SettingInfo setting_info;
   std::unique_ptr<base::Value> setting = map->GetWebsiteSetting(
-      url, url, ContentSettingsType::POPUPS, std::string(), &setting_info);
+      url, url, ContentSettingsType::POPUPS, &setting_info);
   can_show_popups_ =
       setting_info.source != content_settings::SETTING_SOURCE_POLICY;
 }

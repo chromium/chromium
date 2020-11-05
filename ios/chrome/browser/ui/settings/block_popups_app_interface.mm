@@ -23,9 +23,9 @@
   ContentSettingsPattern exceptionPattern =
       ContentSettingsPattern::FromString(base::SysNSStringToUTF8(pattern));
   ios::HostContentSettingsMapFactory::GetForBrowserState(browserState)
-      ->SetContentSettingCustomScope(
-          exceptionPattern, ContentSettingsPattern::Wildcard(),
-          ContentSettingsType::POPUPS, std::string(), policy);
+      ->SetContentSettingCustomScope(exceptionPattern,
+                                     ContentSettingsPattern::Wildcard(),
+                                     ContentSettingsType::POPUPS, policy);
 }
 
 @end

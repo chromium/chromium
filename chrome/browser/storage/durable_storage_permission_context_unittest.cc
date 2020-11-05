@@ -50,8 +50,7 @@ class TestDurablePermissionContext : public DurableStoragePermissionContext {
                                           const GURL& url_b) {
     return HostContentSettingsMapFactory::GetForProfile(browser_context())
         ->GetContentSetting(url_a.GetOrigin(), url_b.GetOrigin(),
-                            ContentSettingsType::DURABLE_STORAGE,
-                            std::string());
+                            ContentSettingsType::DURABLE_STORAGE);
   }
 
  private:

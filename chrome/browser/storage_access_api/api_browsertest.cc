@@ -498,11 +498,11 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   settings_map->SetContentSettingDefaultScope(
       GetURL("b.com"), GetURL("a.com"), ContentSettingsType::STORAGE_ACCESS,
-      std::string(), CONTENT_SETTING_ALLOW,
+      CONTENT_SETTING_ALLOW,
       {expiration_time, content_settings::SessionModel::UserSession});
   settings_map->SetContentSettingDefaultScope(
       GetURL("c.com"), GetURL("a.com"), ContentSettingsType::STORAGE_ACCESS,
-      std::string(), CONTENT_SETTING_ALLOW,
+      CONTENT_SETTING_ALLOW,
       {expiration_time, content_settings::SessionModel::UserSession});
 
   // Manually send our expired setting. This needs to be done manually because

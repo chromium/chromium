@@ -82,19 +82,19 @@ TEST_F(ChromePluginServiceFilterTest, PreferHtmlOverPluginsDefault) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetContentSettingDefaultScope(url, url, ContentSettingsType::PLUGINS,
-                                     std::string(), CONTENT_SETTING_BLOCK);
+                                     CONTENT_SETTING_BLOCK);
 
   EXPECT_FALSE(IsPluginAvailable(url, main_frame_origin, flash_plugin));
 
   // Allow plugins.
   map->SetContentSettingDefaultScope(url, url, ContentSettingsType::PLUGINS,
-                                     std::string(), CONTENT_SETTING_ALLOW);
+                                     CONTENT_SETTING_ALLOW);
 
   EXPECT_TRUE(IsPluginAvailable(url, main_frame_origin, flash_plugin));
 
   // Detect important content should block plugins without user gesture.
   map->SetContentSettingDefaultScope(url, url, ContentSettingsType::PLUGINS,
-                                     std::string(),
+
                                      CONTENT_SETTING_DETECT_IMPORTANT_CONTENT);
 
   EXPECT_FALSE(IsPluginAvailable(url, main_frame_origin, flash_plugin));
@@ -113,18 +113,18 @@ TEST_F(ChromePluginServiceFilterTest,
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetContentSettingDefaultScope(url, url, ContentSettingsType::PLUGINS,
-                                     std::string(), CONTENT_SETTING_ALLOW);
+                                     CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(IsPluginAvailable(url, main_frame_origin, flash_plugin));
 
   // Plugins should be hidden on ASK mode.
   map->SetContentSettingDefaultScope(url, url, ContentSettingsType::PLUGINS,
-                                     std::string(),
+
                                      CONTENT_SETTING_DETECT_IMPORTANT_CONTENT);
   EXPECT_FALSE(IsPluginAvailable(url, main_frame_origin, flash_plugin));
 
   // Block plugins.
   map->SetContentSettingDefaultScope(url, url, ContentSettingsType::PLUGINS,
-                                     std::string(), CONTENT_SETTING_BLOCK);
+                                     CONTENT_SETTING_BLOCK);
   EXPECT_FALSE(IsPluginAvailable(url, main_frame_origin, flash_plugin));
 }
 
@@ -143,8 +143,7 @@ TEST_F(ChromePluginServiceFilterTest,
   HostContentSettingsMap* incognito_map =
       HostContentSettingsMapFactory::GetForProfile(incognito);
   incognito_map->SetContentSettingDefaultScope(
-      url, url, ContentSettingsType::PLUGINS, std::string(),
-      CONTENT_SETTING_ALLOW);
+      url, url, ContentSettingsType::PLUGINS, CONTENT_SETTING_ALLOW);
 
   // We pass the availablity check in incognito.
   url::Origin main_frame_origin = url::Origin::Create(url);

@@ -339,8 +339,7 @@ void LogAllSitesAction(AllSitesAction2 action) {
 int GetNumCookieExceptionsOfTypes(HostContentSettingsMap* map,
                                   const std::set<ContentSetting> types) {
   ContentSettingsForOneType output;
-  map->GetSettingsForOneType(ContentSettingsType::COOKIES, std::string(),
-                             &output);
+  map->GetSettingsForOneType(ContentSettingsType::COOKIES, &output);
   return std::count_if(
       output.begin(), output.end(),
       [types](const ContentSettingPatternSource setting) {
@@ -1057,8 +1056,7 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
       PermissionDecisionAutoBlockerFactory::GetForProfile(profile_)
           ->RemoveEmbargoAndResetCounts(origin, content_type);
     }
-    map->SetContentSettingDefaultScope(origin, origin, content_type,
-                                       std::string(), setting);
+    map->SetContentSettingDefaultScope(origin, origin, content_type, setting);
     if (content_type == ContentSettingsType::SOUND) {
       ContentSetting default_setting =
           map->GetDefaultContentSetting(ContentSettingsType::SOUND, nullptr);
@@ -1100,9 +1098,8 @@ void SiteSettingsHandler::HandleClearFlashPref(const base::ListValue* args) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile_);
   const GURL origin(origin_string);
-  map->SetWebsiteSettingDefaultScope(origin, origin,
-                                     ContentSettingsType::PLUGINS_DATA,
-                                     std::string(), nullptr);
+  map->SetWebsiteSettingDefaultScope(
+      origin, origin, ContentSettingsType::PLUGINS_DATA, nullptr);
 }
 
 void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
@@ -1144,7 +1141,7 @@ void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
           permissions::PermissionSourceUI::SITE_SETTINGS);
 
   map->SetContentSettingCustomScope(primary_pattern, secondary_pattern,
-                                    content_type, "", CONTENT_SETTING_DEFAULT);
+                                    content_type, CONTENT_SETTING_DEFAULT);
 
   if (content_type == ContentSettingsType::SOUND) {
     ContentSetting default_setting =
@@ -1210,7 +1207,7 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
           permissions::PermissionSourceUI::SITE_SETTINGS);
 
   map->SetContentSettingCustomScope(primary_pattern, secondary_pattern,
-                                    content_type, "", setting);
+                                    content_type, setting);
 
   if (content_type == ContentSettingsType::SOUND) {
     ContentSetting default_setting =

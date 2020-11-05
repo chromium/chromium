@@ -51,8 +51,7 @@ class BackgroundFetchPermissionContextTest
         HostContentSettingsMapFactory::GetForProfile(profile());
     ASSERT_TRUE(host_content_settings_map);
     host_content_settings_map->SetContentSettingDefaultScope(
-        url /* primary_url*/, url /* secondary_url*/, content_type,
-        std::string() /* resource_identifier */, setting);
+        url /* primary_url*/, url /* secondary_url*/, content_type, setting);
   }
 
  private:

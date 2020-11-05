@@ -365,8 +365,7 @@ ContentSetting GeolocationPermissionContextTests::GetGeolocationContentSetting(
     GURL frame_1) {
   return PermissionsClient::Get()
       ->GetSettingsMap(browser_context())
-      ->GetContentSetting(frame_0, frame_1, ContentSettingsType::GEOLOCATION,
-                          std::string());
+      ->GetContentSetting(frame_0, frame_1, ContentSettingsType::GEOLOCATION);
 }
 
 void GeolocationPermissionContextTests::SetGeolocationContentSetting(
@@ -375,9 +374,8 @@ void GeolocationPermissionContextTests::SetGeolocationContentSetting(
     ContentSetting content_setting) {
   return PermissionsClient::Get()
       ->GetSettingsMap(browser_context())
-      ->SetContentSettingDefaultScope(frame_0, frame_1,
-                                      ContentSettingsType::GEOLOCATION,
-                                      std::string(), content_setting);
+      ->SetContentSettingDefaultScope(
+          frame_0, frame_1, ContentSettingsType::GEOLOCATION, content_setting);
 }
 
 bool GeolocationPermissionContextTests::HasActivePrompt() {

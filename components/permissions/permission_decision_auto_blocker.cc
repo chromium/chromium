@@ -59,7 +59,7 @@ std::unique_ptr<base::DictionaryValue> GetOriginAutoBlockerData(
   std::unique_ptr<base::DictionaryValue> dict =
       base::DictionaryValue::From(settings->GetWebsiteSetting(
           origin_url, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
-          std::string(), nullptr));
+          nullptr));
   if (!dict)
     return std::make_unique<base::DictionaryValue>();
 
@@ -93,7 +93,7 @@ int RecordActionInWebsiteSettings(const GURL& url,
 
   settings_map->SetWebsiteSettingDefaultScope(
       url, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
-      std::string(), std::move(dict));
+      std::move(dict));
 
   return current_count;
 }
@@ -290,8 +290,7 @@ std::set<GURL> PermissionDecisionAutoBlocker::GetEmbargoedOrigins(
   DCHECK(settings_map_);
   ContentSettingsForOneType embargo_settings;
   settings_map_->GetSettingsForOneType(
-      ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA, std::string(),
-      &embargo_settings);
+      ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA, &embargo_settings);
   std::set<GURL> origins;
   for (const auto& e : embargo_settings) {
     for (auto content_type : content_types) {
@@ -407,7 +406,7 @@ void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
 
   settings_map_->SetWebsiteSettingDefaultScope(
       url, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
-      std::string(), std::move(dict));
+      std::move(dict));
 }
 
 void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
@@ -415,8 +414,7 @@ void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
   std::unique_ptr<ContentSettingsForOneType> settings(
       new ContentSettingsForOneType);
   settings_map_->GetSettingsForOneType(
-      ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA, std::string(),
-      settings.get());
+      ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA, settings.get());
 
   for (const auto& site : *settings) {
     GURL origin(site.primary_pattern.ToString());
@@ -424,7 +422,7 @@ void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
     if (origin.is_valid() && filter.Run(origin)) {
       settings_map_->SetWebsiteSettingDefaultScope(
           origin, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
-          std::string(), nullptr);
+          nullptr);
     }
   }
 }
@@ -453,7 +451,7 @@ void PermissionDecisionAutoBlocker::PlaceUnderEmbargo(
       key, base::Value(static_cast<double>(clock_->Now().ToInternalValue())));
   settings_map_->SetWebsiteSettingDefaultScope(
       request_origin, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
-      std::string(), std::move(dict));
+      std::move(dict));
 }
 
 void PermissionDecisionAutoBlocker::SetClockForTesting(base::Clock* clock) {

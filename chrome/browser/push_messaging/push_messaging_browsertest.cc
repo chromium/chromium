@@ -2037,7 +2037,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, CrossOriginFrame) {
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->SetContentSettingDefaultScope(kRequesterURL, kRequesterURL,
                                       ContentSettingsType::NOTIFICATIONS,
-                                      std::string(), CONTENT_SETTING_ALLOW);
+                                      CONTENT_SETTING_ALLOW);
 
   GetPermissionRequestManager()->set_auto_response_for_test(
       permissions::PermissionRequestManager::DENY_ALL);
@@ -2449,7 +2449,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->SetContentSettingDefaultScope(origin, origin,
                                       ContentSettingsType::NOTIFICATIONS,
-                                      std::string(), CONTENT_SETTING_DEFAULT);
+                                      CONTENT_SETTING_DEFAULT);
 
   message_loop_runner->Run();
 
@@ -2487,7 +2487,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->SetContentSettingDefaultScope(origin, origin,
                                       ContentSettingsType::NOTIFICATIONS,
-                                      std::string(), CONTENT_SETTING_BLOCK);
+                                      CONTENT_SETTING_BLOCK);
 
   message_loop_runner->Run();
 
@@ -2560,7 +2560,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->SetContentSettingDefaultScope(origin, GURL(),
                                       ContentSettingsType::NOTIFICATIONS,
-                                      std::string(), CONTENT_SETTING_DEFAULT);
+                                      CONTENT_SETTING_DEFAULT);
 
   message_loop_runner->Run();
 
@@ -2598,7 +2598,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->SetContentSettingDefaultScope(origin, GURL(),
                                       ContentSettingsType::NOTIFICATIONS,
-                                      std::string(), CONTENT_SETTING_BLOCK);
+                                      CONTENT_SETTING_BLOCK);
 
   message_loop_runner->Run();
 
@@ -2636,7 +2636,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->SetContentSettingDefaultScope(origin, GURL(),
                                       ContentSettingsType::NOTIFICATIONS,
-                                      std::string(), CONTENT_SETTING_ALLOW);
+                                      CONTENT_SETTING_ALLOW);
 
   message_loop_runner->Run();
 
@@ -2677,7 +2677,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->SetContentSettingDefaultScope(origin, GURL(),
                                       ContentSettingsType::NOTIFICATIONS,
-                                      std::string(), CONTENT_SETTING_DEFAULT);
+                                      CONTENT_SETTING_DEFAULT);
 
   message_loop_runner->Run();
 
@@ -3042,7 +3042,7 @@ IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventTest,
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->SetContentSettingDefaultScope(app_identifier.origin(), GURL(),
                                       ContentSettingsType::NOTIFICATIONS,
-                                      std::string(), CONTENT_SETTING_BLOCK);
+                                      CONTENT_SETTING_BLOCK);
   run_loop.Run();
 
   ASSERT_TRUE(RunScript("pushManagerPermissionState()", &script_result));

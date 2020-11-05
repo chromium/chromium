@@ -65,8 +65,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBrowserTest, PermissionStatus) {
   auto* content_settings_map = page_info_delegate->GetContentSettings();
   ASSERT_TRUE(content_settings_map);
   content_settings_map->SetContentSettingDefaultScope(
-      url, url, ContentSettingsType::BACKGROUND_SYNC, std::string(),
-      CONTENT_SETTING_BLOCK);
+      url, url, ContentSettingsType::BACKGROUND_SYNC, CONTENT_SETTING_BLOCK);
 
   // Check that |page_info_delegate| returns expected ContentSettingsType.
   EXPECT_EQ(page_info_delegate

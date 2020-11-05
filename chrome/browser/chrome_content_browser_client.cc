@@ -2537,7 +2537,7 @@ ChromeContentBrowserClient::AllowServiceWorker(
   std::unique_ptr<base::Value> value =
       HostContentSettingsMapFactory::GetForProfile(profile)->GetWebsiteSetting(
           first_party_url, first_party_url, ContentSettingsType::JAVASCRIPT,
-          std::string(), &info);
+          &info);
   ContentSetting setting = content_settings::ValueToContentSetting(value.get());
   bool allow_javascript = (setting == CONTENT_SETTING_ALLOW);
 
@@ -2723,8 +2723,7 @@ ChromeContentBrowserClient::AllowWebBluetooth(
 
   if (content_settings->GetContentSetting(
           requesting_origin.GetURL(), embedding_origin.GetURL(),
-          ContentSettingsType::BLUETOOTH_GUARD,
-          std::string()) == CONTENT_SETTING_BLOCK) {
+          ContentSettingsType::BLUETOOTH_GUARD) == CONTENT_SETTING_BLOCK) {
     return AllowWebBluetoothResult::BLOCK_POLICY;
   }
   return AllowWebBluetoothResult::ALLOW;
@@ -2884,7 +2883,7 @@ std::unique_ptr<net::ClientCertIdentity> AutoSelectCertificate(
   std::unique_ptr<base::Value> setting =
       host_content_settings_map->GetWebsiteSetting(
           requesting_url, requesting_url,
-          ContentSettingsType::AUTO_SELECT_CERTIFICATE, std::string(), nullptr);
+          ContentSettingsType::AUTO_SELECT_CERTIFICATE, nullptr);
 
   if (!setting || !setting->is_dict())
     return nullptr;
@@ -2898,7 +2897,7 @@ std::unique_ptr<net::ClientCertIdentity> AutoSelectCertificate(
     // Therefore, delete the invalid value.
     host_content_settings_map->SetWebsiteSettingDefaultScope(
         requesting_url, requesting_url,
-        ContentSettingsType::AUTO_SELECT_CERTIFICATE, std::string(), nullptr);
+        ContentSettingsType::AUTO_SELECT_CERTIFICATE, nullptr);
     return nullptr;
   }
 
@@ -5657,8 +5656,7 @@ bool ChromeContentBrowserClient::IsBluetoothScanningBlocked(
 
   if (content_settings->GetContentSetting(
           requesting_origin.GetURL(), embedding_origin.GetURL(),
-          ContentSettingsType::BLUETOOTH_SCANNING,
-          std::string()) == CONTENT_SETTING_BLOCK) {
+          ContentSettingsType::BLUETOOTH_SCANNING) == CONTENT_SETTING_BLOCK) {
     return true;
   }
 
@@ -5675,8 +5673,7 @@ void ChromeContentBrowserClient::BlockBluetoothScanning(
 
   content_settings->SetContentSettingDefaultScope(
       requesting_origin.GetURL(), embedding_origin.GetURL(),
-      ContentSettingsType::BLUETOOTH_SCANNING, std::string(),
-      CONTENT_SETTING_BLOCK);
+      ContentSettingsType::BLUETOOTH_SCANNING, CONTENT_SETTING_BLOCK);
 }
 
 bool ChromeContentBrowserClient::ShouldLoadExtraIcuDataFile() {

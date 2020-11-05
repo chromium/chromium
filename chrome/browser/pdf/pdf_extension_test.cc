@@ -1084,7 +1084,7 @@ class PDFExtensionContentSettingJSTest
         ContentSettingsPattern::Wildcard(),
         ContentSettingsPattern::FromString(
             "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai"),
-        ContentSettingsType::JAVASCRIPT, std::string(),
+        ContentSettingsType::JAVASCRIPT,
         enabled ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
   }
 

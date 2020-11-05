@@ -395,7 +395,7 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
     std::unique_ptr<base::Value> notification_settings_value =
         host_content_settings_map_->GetWebsiteSetting(
             url, GURL() /* top_level_url */, ContentSettingsType::NOTIFICATIONS,
-            content_settings::ResourceIdentifier(), nullptr);
+            nullptr);
     return static_cast<ContentSetting>(notification_settings_value->GetInt());
   }
 

@@ -640,20 +640,18 @@ TEST_F(PageInfoBubbleViewTest, ChangingFlashSettingForSiteIsRemembered) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile);
   // Make sure the site being tested doesn't already have this marker set.
-  EXPECT_EQ(nullptr,
-            map->GetWebsiteSetting(url, url, ContentSettingsType::PLUGINS_DATA,
-                                   std::string(), nullptr));
+  EXPECT_EQ(nullptr, map->GetWebsiteSetting(
+                         url, url, ContentSettingsType::PLUGINS_DATA, nullptr));
   EXPECT_EQ(0u, api_->permissions_view()->children().size());
 
   // Change the Flash setting.
   map->SetContentSettingDefaultScope(url, url, ContentSettingsType::PLUGINS,
-                                     std::string(), CONTENT_SETTING_ALLOW);
+                                     CONTENT_SETTING_ALLOW);
   waiter.Wait();
 
   // Check that this site has now been marked for displaying Flash always.
-  EXPECT_NE(nullptr,
-            map->GetWebsiteSetting(url, url, ContentSettingsType::PLUGINS_DATA,
-                                   std::string(), nullptr));
+  EXPECT_NE(nullptr, map->GetWebsiteSetting(
+                         url, url, ContentSettingsType::PLUGINS_DATA, nullptr));
 
   // Check the Flash permission is now showing since it's non-default.
   api_->CreateView();
@@ -663,7 +661,7 @@ TEST_F(PageInfoBubbleViewTest, ChangingFlashSettingForSiteIsRemembered) {
 
   // Change the Flash setting back to the default.
   map->SetContentSettingDefaultScope(url, url, ContentSettingsType::PLUGINS,
-                                     std::string(), CONTENT_SETTING_DEFAULT);
+                                     CONTENT_SETTING_DEFAULT);
   EXPECT_EQ(kViewsPerPermissionRow, children.size());
 
   // Check the Flash permission is still showing since the user changed it

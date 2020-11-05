@@ -78,12 +78,9 @@ class ImportantSitesUtilTest : public ChromeRenderViewHostTestHarness {
     HostContentSettingsMapFactory::GetForProfile(profile())
         ->SetContentSettingCustomScope(
             ContentSettingsPattern::FromURLNoWildcard(origin),
-            ContentSettingsPattern::Wildcard(), type,
-            content_settings::ResourceIdentifier(), setting);
-    EXPECT_EQ(setting,
-              HostContentSettingsMapFactory::GetForProfile(profile())
-                  ->GetContentSetting(origin, GURL(), type,
-                                      content_settings::ResourceIdentifier()));
+            ContentSettingsPattern::Wildcard(), type, setting);
+    EXPECT_EQ(setting, HostContentSettingsMapFactory::GetForProfile(profile())
+                           ->GetContentSetting(origin, GURL(), type));
   }
 
   void AddBookmark(const GURL& origin) {

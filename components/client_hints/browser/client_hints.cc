@@ -49,14 +49,14 @@ void ClientHints::GetAllowedClientHintsFromSource(
     blink::WebEnabledClientHints* client_hints) {
   ContentSettingsForOneType client_hints_rules;
   settings_map_->GetSettingsForOneType(ContentSettingsType::CLIENT_HINTS,
-                                       std::string(), &client_hints_rules);
+                                       &client_hints_rules);
   client_hints::GetAllowedClientHintsFromSource(url, client_hints_rules,
                                                 client_hints);
 }
 
 bool ClientHints::IsJavaScriptAllowed(const GURL& url) {
-  return settings_map_->GetContentSetting(
-             url, url, ContentSettingsType::JAVASCRIPT, std::string()) !=
+  return settings_map_->GetContentSetting(url, url,
+                                          ContentSettingsType::JAVASCRIPT) !=
          CONTENT_SETTING_BLOCK;
 }
 
@@ -129,7 +129,7 @@ void ClientHints::PersistClientHints(
   // TODO(tbansal): crbug.com/735518. Disable updates to client hints settings
   // when cookies are disabled for |primary_origin|.
   settings_map_->SetWebsiteSettingDefaultScope(
-      primary_url, GURL(), ContentSettingsType::CLIENT_HINTS, std::string(),
+      primary_url, GURL(), ContentSettingsType::CLIENT_HINTS,
       std::move(expiration_times_dictionary),
       {base::Time(), content_settings::SessionModel::UserSession});
 

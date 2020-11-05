@@ -320,7 +320,7 @@ void AccessContextAuditService::SetTaskRunnerForTesting(
 void AccessContextAuditService::ClearSessionOnlyRecords() {
   ContentSettingsForOneType settings;
   HostContentSettingsMapFactory::GetForProfile(profile_)->GetSettingsForOneType(
-      ContentSettingsType::COOKIES, std::string(), &settings);
+      ContentSettingsType::COOKIES, &settings);
 
   database_task_runner_->PostTask(
       FROM_HERE,

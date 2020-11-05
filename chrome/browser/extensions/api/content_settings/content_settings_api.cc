@@ -133,10 +133,6 @@ ContentSettingsContentSettingGetFunction::Run() {
     }
   }
 
-  std::string resource_identifier;
-  if (params->details.resource_identifier.get())
-    resource_identifier = params->details.resource_identifier->id;
-
   bool incognito = false;
   if (params->details.incognito.get())
     incognito = *params->details.incognito;
@@ -168,8 +164,7 @@ ContentSettingsContentSettingGetFunction::Run() {
     cookie_settings->GetCookieSetting(primary_url, secondary_url, nullptr,
                                       &setting);
   } else {
-    setting = map->GetContentSetting(primary_url, secondary_url, content_type,
-                                     resource_identifier);
+    setting = map->GetContentSetting(primary_url, secondary_url, content_type);
   }
 
   std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());

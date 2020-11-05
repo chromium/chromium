@@ -34,8 +34,7 @@ OriginStatus GetOriginStatus(Profile* profile, const GURL& origin) {
           ->GetSettingsMap(profile)
           ->GetWebsiteSetting(
               origin, GURL(),
-              ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA,
-              std::string(), nullptr);
+              ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA, nullptr);
 
   OriginStatus status;
 
@@ -73,15 +72,15 @@ void SetOriginStatus(Profile* profile,
       ->GetSettingsMap(profile)
       ->SetWebsiteSettingDefaultScope(
           origin, GURL(), ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA,
-          std::string(), base::WrapUnique(dict.DeepCopy()));
+          base::WrapUnique(dict.DeepCopy()));
 }
 
 void RevokePermission(const GURL& origin, Profile* profile) {
   permissions::PermissionsClient::Get()
       ->GetSettingsMap(profile)
-      ->SetContentSettingDefaultScope(
-          origin, GURL(), ContentSettingsType::NOTIFICATIONS, std::string(),
-          ContentSetting::CONTENT_SETTING_DEFAULT);
+      ->SetContentSettingDefaultScope(origin, GURL(),
+                                      ContentSettingsType::NOTIFICATIONS,
+                                      ContentSetting::CONTENT_SETTING_DEFAULT);
 
   OriginStatus status = GetOriginStatus(profile, origin);
   status.has_been_previously_revoked = true;

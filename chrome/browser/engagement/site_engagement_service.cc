@@ -72,8 +72,7 @@ class StoppedClock : public base::Clock {
 ContentSettingsForOneType GetContentSettingsFromMap(HostContentSettingsMap* map,
                                                     ContentSettingsType type) {
   ContentSettingsForOneType content_settings;
-  map->GetSettingsForOneType(type, content_settings::ResourceIdentifier(),
-                             &content_settings);
+  map->GetSettingsForOneType(type, &content_settings);
   return content_settings;
 }
 
@@ -471,8 +470,7 @@ void SiteEngagementService::CleanupEngagementScores(
 
     // This origin has a score of 0. Wipe it from content settings.
     settings_map->SetWebsiteSettingDefaultScope(
-        origin, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
-        content_settings::ResourceIdentifier(), nullptr);
+        origin, GURL(), ContentSettingsType::SITE_ENGAGEMENT, nullptr);
   }
 
   // Set the last engagement time to be consistent with the scores. This will
@@ -734,8 +732,7 @@ void SiteEngagementService::UpdateEngagementScores(
     // Remove origins that have no urls left.
     if (remaining == 0) {
       settings_map->SetWebsiteSettingDefaultScope(
-          origin, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
-          content_settings::ResourceIdentifier(), nullptr);
+          origin, GURL(), ContentSettingsType::SITE_ENGAGEMENT, nullptr);
       continue;
     }
 

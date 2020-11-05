@@ -66,8 +66,7 @@ class SiteSettingsHelperTest : public testing::Test {
                   ContentSetting setting) {
     map->SetContentSettingCustomScope(
         ContentSettingsPattern::FromString(pattern),
-        ContentSettingsPattern::Wildcard(), kContentType, std::string(),
-        setting);
+        ContentSettingsPattern::Wildcard(), kContentType, setting);
   }
 
  private:
@@ -88,7 +87,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListWithEmbargoedAndBlockedOrigins) {
   constexpr char kOriginToBlock[] = "https://www.blocked.com:443";
   auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
   map->SetContentSettingDefaultScope(GURL(kOriginToBlock), GURL(kOriginToBlock),
-                                     kContentTypeNotifications, std::string(),
+                                     kContentTypeNotifications,
                                      CONTENT_SETTING_BLOCK);
 
   base::ListValue exceptions;
@@ -168,7 +167,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsIncognitoEmbargoed) {
         HostContentSettingsMapFactory::GetForProfile(incognito_profile);
     incognito_map->SetContentSettingDefaultScope(
         GURL(kOriginToBlock), GURL(kOriginToBlock), kContentTypeNotifications,
-        std::string(), CONTENT_SETTING_BLOCK);
+        CONTENT_SETTING_BLOCK);
   }
 
   // Check there is only 1 blocked origin for an incognito profile.
@@ -228,7 +227,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
 
   auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
   map->SetContentSettingDefaultScope(GURL(kOriginToBlock), GURL(kOriginToBlock),
-                                     kContentTypeNotifications, std::string(),
+                                     kContentTypeNotifications,
                                      CONTENT_SETTING_BLOCK);
   {
     // Check there is 1 blocked origin.
@@ -409,7 +408,7 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
 
   // User-set origin setting.
   map->SetContentSettingDefaultScope(origin, origin, kContentType,
-                                     std::string(), CONTENT_SETTING_ALLOW);
+                                     CONTENT_SETTING_ALLOW);
   content_setting =
       GetContentSettingForOrigin(&profile, map, origin, kContentType, &source,
                                  extension_registry, &display_name);

@@ -126,8 +126,7 @@ TEST_F(PopupBlockedInfoBarDelegateTest, ShowsBlockedPopups) {
   EXPECT_TRUE(result.did_navigate);
   EXPECT_TRUE(on_accept_called);
   EXPECT_EQ(settings_map()->GetContentSetting(GURL(kPageUrl), GURL(kPageUrl),
-                                              ContentSettingsType::POPUPS,
-                                              std::string()),
+                                              ContentSettingsType::POPUPS),
             CONTENT_SETTING_ALLOW);
 }
 

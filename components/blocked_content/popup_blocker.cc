@@ -44,8 +44,7 @@ PopupBlockType ShouldBlockPopup(content::WebContents* web_contents,
       opener_url ? *opener_url : web_contents->GetLastCommittedURL();
   ContentSetting cs;
   if (url.is_valid()) {
-    cs = settings_map->GetContentSetting(url, url, ContentSettingsType::POPUPS,
-                                         std::string());
+    cs = settings_map->GetContentSetting(url, url, ContentSettingsType::POPUPS);
   } else {
     cs = settings_map->GetDefaultContentSetting(ContentSettingsType::POPUPS,
                                                 nullptr);
