@@ -24,6 +24,8 @@ base/android/linker/
 chrome/chrome_cleaner/
 tools/
 net/tools/
+chrome/chrome_elf/
+chrome/installer/mini_installer/
 
 # The folder holds headers that are duplicated in the Android source and need to
 # provide a stable C ABI. Can't depend on //base.
