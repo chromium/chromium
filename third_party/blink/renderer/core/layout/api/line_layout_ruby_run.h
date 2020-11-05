@@ -49,10 +49,10 @@ class LineLayoutRubyRun : public LineLayoutBlockFlow {
   }
 
  private:
-  LayoutRubyRun* ToRubyRun() { return ToLayoutRubyRun(GetLayoutObject()); }
+  LayoutRubyRun* ToRubyRun() { return To<LayoutRubyRun>(GetLayoutObject()); }
 
   const LayoutRubyRun* ToRubyRun() const {
-    return ToLayoutRubyRun(GetLayoutObject());
+    return To<LayoutRubyRun>(GetLayoutObject());
   }
 };
 

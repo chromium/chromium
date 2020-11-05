@@ -470,7 +470,7 @@ bool ShouldPaintEmphasisMark(const ComputedStyle& style,
   const LayoutObject* parent = containing_block->Parent();
   if (!parent || !parent->IsRubyRun())
     return true;
-  const LayoutRubyText* ruby_text = ToLayoutRubyRun(parent)->RubyText();
+  const LayoutRubyText* ruby_text = To<LayoutRubyRun>(parent)->RubyText();
   if (!ruby_text)
     return true;
   if (!NGInlineCursor(*ruby_text))

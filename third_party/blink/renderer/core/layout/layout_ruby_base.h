@@ -80,7 +80,12 @@ class LayoutRubyBase : public LayoutBlockFlow {
   friend class LayoutRubyRun;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutRubyBase, IsRubyBase());
+template <>
+struct DowncastTraits<LayoutRubyBase> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsRubyBase();
+  }
+};
 
 }  // namespace blink
 

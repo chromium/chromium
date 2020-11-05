@@ -158,7 +158,7 @@ void LayoutRubyRun::RemoveChild(LayoutObject* child) {
     LayoutObject* right_neighbour = NextSibling();
     if (base && right_neighbour && right_neighbour->IsRubyRun()) {
       // Ruby run without a base can happen only at the first run.
-      LayoutRubyRun* right_run = ToLayoutRubyRun(right_neighbour);
+      auto* right_run = To<LayoutRubyRun>(right_neighbour);
       if (right_run->HasRubyBase()) {
         LayoutRubyBase* right_base = right_run->RubyBaseSafe();
         // Collect all children in a single base, then swap the bases.

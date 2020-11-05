@@ -440,7 +440,7 @@ float TextAutosizer::Inflate(LayoutObject* parent,
     // Inflate rubyRun's inner blocks.
     LayoutObject* run = parent->SlowFirstChild();
     if (run && run->IsRubyRun()) {
-      child = ToLayoutRubyRun(run)->FirstChild();
+      child = To<LayoutRubyRun>(run)->FirstChild();
       behavior = kDescendToInnerBlocks;
     }
   } else if (parent->IsListMarker()) {

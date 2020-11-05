@@ -855,9 +855,10 @@ BidiRun* LayoutBlockFlow::ComputeInlineDirectionPositionsForSegment(
       if (!r->line_layout_item_.IsLayoutInline()) {
         LayoutBox* layout_box =
             ToLayoutBox(r->line_layout_item_.GetLayoutObject());
-        if (layout_box->IsRubyRun())
-          SetMarginsForRubyRun(r, ToLayoutRubyRun(layout_box), previous_object,
-                               line_info);
+        if (layout_box->IsRubyRun()) {
+          SetMarginsForRubyRun(r, To<LayoutRubyRun>(layout_box),
+                               previous_object, line_info);
+        }
         r->box_->SetLogicalWidth(LogicalWidthForChild(*layout_box));
         total_logical_width +=
             MarginStartForChild(*layout_box) + MarginEndForChild(*layout_box);

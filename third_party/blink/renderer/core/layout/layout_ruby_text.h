@@ -71,7 +71,12 @@ class LayoutRubyText : public LayoutBlockFlow {
       LayoutUnit& logical_width) const override;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutRubyText, IsRubyText());
+template <>
+struct DowncastTraits<LayoutRubyText> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsRubyText();
+  }
+};
 
 }  // namespace blink
 

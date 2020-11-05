@@ -39,15 +39,13 @@ namespace blink {
 // === generic helper functions to avoid excessive code duplication ===
 
 static LayoutRubyRun* LastRubyRun(const LayoutObject* ruby) {
-  LayoutObject* child = ruby->SlowLastChild();
-  DCHECK(!child || child->IsRubyRun());
-  return ToLayoutRubyRun(child);
+  return To<LayoutRubyRun>(ruby->SlowLastChild());
 }
 
 static inline LayoutRubyRun* FindRubyRunParent(LayoutObject* child) {
   while (child && !child->IsRubyRun())
     child = child->Parent();
-  return ToLayoutRubyRun(child);
+  return To<LayoutRubyRun>(child);
 }
 
 // === ruby as inline object ===
@@ -82,7 +80,7 @@ void LayoutRubyAsInline::AddChild(LayoutObject* child,
       run = run->Parent();
     if (run) {
       if (before_child == run)
-        before_child = ToLayoutRubyRun(before_child)->FirstChild();
+        before_child = To<LayoutRubyRun>(before_child)->FirstChild();
       DCHECK(!before_child || before_child->IsDescendantOf(run));
       run->AddChild(child, before_child);
       return;
@@ -150,7 +148,7 @@ void LayoutRubyAsBlock::AddChild(LayoutObject* child,
       run = run->Parent();
     if (run) {
       if (before_child == run)
-        before_child = ToLayoutRubyRun(before_child)->FirstChild();
+        before_child = To<LayoutRubyRun>(before_child)->FirstChild();
       DCHECK(!before_child || before_child->IsDescendantOf(run));
       run->AddChild(child, before_child);
       return;

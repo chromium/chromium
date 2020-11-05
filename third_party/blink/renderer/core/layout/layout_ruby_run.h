@@ -102,7 +102,12 @@ class LayoutRubyRun : public LayoutBlockFlow {
   friend class LayoutNGMixin<LayoutRubyRun>;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutRubyRun, IsRubyRun());
+template <>
+struct DowncastTraits<LayoutRubyRun> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsRubyRun();
+  }
+};
 
 }  // namespace blink
 
