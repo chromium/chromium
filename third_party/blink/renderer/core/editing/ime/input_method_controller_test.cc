@@ -417,6 +417,15 @@ TEST_F(InputMethodControllerTest, FinishComposingTextKeepingStyle) {
   EXPECT_EQ("abc1<b>2</b>3hello7<b>8</b>9", div->innerHTML());
 }
 
+TEST_F(InputMethodControllerTest, FinishComposingTextKeepingBackwardSelection) {
+  GetFrame().Selection().SetSelectionAndEndTyping(
+      SetSelectionTextToBody("<div contenteditable>|abc^</div>"));
+
+  Controller().FinishComposingText(InputMethodController::kKeepSelection);
+
+  EXPECT_EQ("<div contenteditable>|abc^</div>", GetSelectionTextFromBody());
+}
+
 TEST_F(InputMethodControllerTest, CommitTextKeepingStyle) {
   Element* div = InsertHTMLElement(
       "<div id='sample' "

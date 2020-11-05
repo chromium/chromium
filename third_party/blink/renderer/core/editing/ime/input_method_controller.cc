@@ -580,7 +580,14 @@ bool InputMethodController::FinishComposingText(
     // eventually move back to the old selection offsets.
     const bool is_handle_visible = GetFrame().Selection().IsHandleVisible();
 
+    // Maintain to direction of the original selection as it affects how the
+    // selection can be extended.
     const PlainTextRange& old_offsets = GetSelectionOffsets();
+    const bool is_forward_selection =
+        GetFrame()
+            .Selection()
+            .ComputeVisibleSelectionInDOMTreeDeprecated()
+            .IsBaseFirst();
     RevealSelectionScope reveal_selection_scope(GetFrame());
 
     if (is_too_long) {
@@ -599,9 +606,12 @@ bool InputMethodController::FinishComposingText(
     if (old_selection_range.IsNull())
       return false;
     const SelectionInDOMTree& selection =
-        SelectionInDOMTree::Builder()
-            .SetBaseAndExtent(old_selection_range)
-            .Build();
+        is_forward_selection ? SelectionInDOMTree::Builder()
+                                   .SetAsForwardSelection(old_selection_range)
+                                   .Build()
+                             : SelectionInDOMTree::Builder()
+                                   .SetAsBackwardSelection(old_selection_range)
+                                   .Build();
     GetFrame().Selection().SetSelection(
         selection, SetSelectionOptions::Builder()
                        .SetShouldCloseTyping(true)
