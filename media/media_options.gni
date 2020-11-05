@@ -80,8 +80,11 @@ declare_args() {
       proprietary_codecs && (is_chromecast || is_fuchsia || use_fuzzing_engine)
 
   # Enable HEVC/H265 demuxing. Actual decoding must be provided by the
-  # platform. Enabled by default for Chromecast.
-  enable_platform_hevc = proprietary_codecs && is_chromecast
+  # platform. Enabled by default for Chromecast, Chrome OS protected media and
+  # fuzzer builds.
+  enable_platform_hevc =
+      proprietary_codecs &&
+      (is_chromecast || use_chromeos_protected_media || use_fuzzing_engine)
 
   # Enable Dolby Vision demuxing. Enable by default for Chromecast. Actual
   # decoding must be provided by the platform. Note some Dolby Vision profiles
