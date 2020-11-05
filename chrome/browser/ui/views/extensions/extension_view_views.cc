@@ -30,16 +30,24 @@ ExtensionViewViews::ExtensionViewViews(extensions::ExtensionViewHost* host)
       host_(host) {
   host_->set_view(this);
   SetWebContents(host_->web_contents());
-  if (host->extension_host_type() == extensions::VIEW_TYPE_EXTENSION_POPUP) {
-    EnableSizingFromWebContents(
-        gfx::Size(ExtensionPopup::kMinWidth, ExtensionPopup::kMinHeight),
-        gfx::Size(ExtensionPopup::kMaxWidth, ExtensionPopup::kMaxHeight));
-  }
 }
 
 ExtensionViewViews::~ExtensionViewViews() {
   if (parent())
     parent()->RemoveChildView(this);
+}
+
+void ExtensionViewViews::Init() {
+  if (host_->extension_host_type() == extensions::VIEW_TYPE_EXTENSION_POPUP) {
+    DCHECK(container_);
+
+    // This will set the max popup bounds for the duration of the popup's
+    // lifetime; they won't be readjusted if the window moves. This is usually
+    // okay, since moving the window typically (but not always) results in
+    // the popup closing.
+    EnableSizingFromWebContents(container_->GetMinBounds(),
+                                container_->GetMaxBounds());
+  }
 }
 
 void ExtensionViewViews::VisibilityChanged(View* starting_from,

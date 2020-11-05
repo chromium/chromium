@@ -150,6 +150,12 @@ void ViewsTestBase::SimulateNativeDestroy(Widget* widget) {
   test_helper_->SimulateNativeDestroy(widget);
 }
 
+#if !defined(OS_APPLE)
+int ViewsTestBase::GetSystemReservedHeightAtTopOfScreen() {
+  return 0;
+}
+#endif
+
 gfx::NativeWindow ViewsTestBase::GetContext() {
   return test_helper_->GetContext();
 }

@@ -86,6 +86,9 @@ class ExtensionActionTestHelper {
   // Returns the associated ExtensionsContainer.
   virtual ExtensionsContainer* GetExtensionsContainer() = 0;
 
+  // Waits for the ExtensionContainer's layout to be done.
+  virtual void WaitForExtensionsContainerLayout() = 0;
+
   // Creates and returns a ExtensionActionTestHelper with an "overflow"
   // container, with this object's container as the main bar.
   virtual std::unique_ptr<ExtensionActionTestHelper> CreateOverflowBar(
@@ -103,6 +106,11 @@ class ExtensionActionTestHelper {
 
   // Returns the maximum allowed size of an extension popup.
   virtual gfx::Size GetMaxPopupSize() = 0;
+
+  // Returns the maximum available size to place a bubble anchored to
+  // the browser action at |action_index| on screen.
+  virtual gfx::Size GetMaxAvailableSizeToFitBubbleOnScreen(
+      int action_index) = 0;
 
  protected:
   ExtensionActionTestHelper() {}

@@ -4,6 +4,7 @@
 
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
@@ -15,6 +16,7 @@
 #include "ui/base/default_style.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer_animation_element.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -24,6 +26,7 @@
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -319,11 +322,8 @@ Widget* BubbleDialogDelegate::CreateBubble(
   bubble_delegate->SetAnchorView(bubble_delegate->GetAnchorView());
   Widget* bubble_widget = CreateBubbleWidget(bubble_delegate);
 
-#if (defined(OS_LINUX) && !defined(OS_CHROMEOS)) || defined(OS_APPLE)
-  // Linux clips bubble windows that extend outside their parent window bounds.
-  // Mac never adjusts.
-  bubble_delegate->set_adjust_if_offscreen(false);
-#endif
+  bubble_delegate->set_adjust_if_offscreen(
+      PlatformStyle::kAdjustBubbleIfOffscreen);
 
   bubble_delegate->SizeToContents();
   bubble_delegate->bubble_widget_observer_ =
@@ -584,6 +584,63 @@ void BubbleDialogDelegate::SetPaintClientToLayer(bool paint_client_to_layer) {
 
 void BubbleDialogDelegate::UseCompactMargins() {
   set_margins(gfx::Insets(6));
+}
+
+// static
+gfx::Size BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(
+    View* anchor_view,
+    BubbleBorder::Arrow arrow,
+    bool adjust_if_offscreen,
+    BubbleFrameView::PreferredArrowAdjustment arrow_adjustment) {
+  // TODO(sanchit.abrol@microsoft.com): Implement for other arrows.
+  DCHECK(arrow == BubbleBorder::TOP_LEFT || arrow == BubbleBorder::TOP_RIGHT ||
+         arrow == BubbleBorder::BOTTOM_RIGHT ||
+         arrow == BubbleBorder::BOTTOM_LEFT);
+  DCHECK_EQ(arrow_adjustment,
+            BubbleFrameView::PreferredArrowAdjustment::kMirror);
+
+  gfx::Rect anchor_rect = anchor_view->GetAnchorBoundsInScreen();
+  gfx::Rect screen_rect =
+      display::Screen::GetScreen()
+          ->GetDisplayNearestPoint(anchor_rect.CenterPoint())
+          .work_area();
+
+  gfx::Size max_available_space;
+
+  if (adjust_if_offscreen) {
+    max_available_space = GetAvailableSpaceToPlaceBubble(
+        BubbleBorder::TOP_LEFT, anchor_rect, screen_rect);
+    max_available_space.SetToMax(GetAvailableSpaceToPlaceBubble(
+        BubbleBorder::TOP_RIGHT, anchor_rect, screen_rect));
+    max_available_space.SetToMax(GetAvailableSpaceToPlaceBubble(
+        BubbleBorder::BOTTOM_RIGHT, anchor_rect, screen_rect));
+    max_available_space.SetToMax(GetAvailableSpaceToPlaceBubble(
+        BubbleBorder::BOTTOM_LEFT, anchor_rect, screen_rect));
+  } else {
+    max_available_space =
+        GetAvailableSpaceToPlaceBubble(arrow, anchor_rect, screen_rect);
+  }
+
+  return max_available_space;
+}
+
+// static
+gfx::Size BubbleDialogDelegate::GetAvailableSpaceToPlaceBubble(
+    BubbleBorder::Arrow arrow,
+    gfx::Rect anchor_rect,
+    gfx::Rect screen_rect) {
+  int available_height_below = screen_rect.bottom() - anchor_rect.bottom();
+
+  int available_height_above = anchor_rect.y() - screen_rect.y();
+
+  int available_width_on_left = anchor_rect.right() - screen_rect.x();
+
+  int available_width_on_right = screen_rect.right() - anchor_rect.x();
+
+  return {BubbleBorder::is_arrow_on_left(arrow) ? available_width_on_right
+                                                : available_width_on_left,
+          BubbleBorder::is_arrow_on_top(arrow) ? available_height_below
+                                               : available_height_above};
 }
 
 void BubbleDialogDelegate::OnAnchorBoundsChanged() {

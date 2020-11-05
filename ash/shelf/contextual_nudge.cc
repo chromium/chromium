@@ -50,7 +50,6 @@ ContextualNudge::ContextualNudge(views::View* anchor,
   set_margins(gfx::Insets());
   set_accept_events(!tap_callback.is_null());
   SetCanActivate(false);
-  set_adjust_if_offscreen(false);
   set_shadow(views::BubbleBorder::NO_ASSETS);
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
@@ -73,6 +72,12 @@ ContextualNudge::ContextualNudge(views::View* anchor,
   label_->SetBorder(views::CreateEmptyBorder(margins));
 
   views::BubbleDialogDelegateView::CreateBubble(this);
+
+  // TODO(sanchit.abrol@microsoft.com): Move back among the other setters after
+  // the platform default setting is moved from
+  // |BubbleDialogDelegateView::CreateBubble| to being the default value at
+  // bubble construction.
+  set_adjust_if_offscreen(false);
 
   // Text box for shelf nudge should be ignored for collision detection.
   CollisionDetectionUtils::IgnoreWindowForCollisionDetection(

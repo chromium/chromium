@@ -40,6 +40,7 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
   void SetWidth(int width) override;
   ToolbarActionsBar* GetToolbarActionsBar() override;
   ExtensionsContainer* GetExtensionsContainer() override;
+  void WaitForExtensionsContainerLayout() override;
   std::unique_ptr<ExtensionActionTestHelper> CreateOverflowBar(
       Browser* browser) override;
   void LayoutForOverflowBar() override;
@@ -50,6 +51,7 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
   gfx::Size GetMinPopupSize() override;
   gfx::Size GetMaxPopupSize() override;
   gfx::Size GetToolbarActionSize() override;
+  gfx::Size GetMaxAvailableSizeToFitBubbleOnScreen(int action_index) override;
 
  private:
   class Wrapper;

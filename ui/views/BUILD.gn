@@ -946,6 +946,7 @@ source_set("test_support") {
       "test/event_generator_delegate_mac.mm",
       "test/scoped_views_test_helper_cocoa.mm",
       "test/test_views_delegate_mac.mm",
+      "test/views_test_base_mac.mm",
       "test/views_test_helper_mac.h",
       "test/views_test_helper_mac.mm",
       "test/widget_test_mac.mm",

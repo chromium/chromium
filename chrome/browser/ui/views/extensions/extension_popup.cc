@@ -19,6 +19,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
@@ -27,6 +28,9 @@
 #include "ui/wm/core/window_animations.h"
 #include "ui/wm/public/activation_client.h"
 #endif
+
+constexpr gfx::Size ExtensionPopup::kMinSize;
+constexpr gfx::Size ExtensionPopup::kMaxSize;
 
 // static
 void ExtensionPopup::ShowPopup(
@@ -37,6 +41,11 @@ void ExtensionPopup::ShowPopup(
   auto* popup =
       new ExtensionPopup(std::move(host), anchor_view, arrow, show_action);
   views::BubbleDialogDelegateView::CreateBubble(popup);
+
+  // Check that the preferred adjustment is set to mirror to match
+  // the assumption in the logic to calculate max bounds.
+  DCHECK_EQ(popup->GetBubbleFrameView()->preferred_arrow_adjustment(),
+            views::BubbleFrameView::PreferredArrowAdjustment::kMirror);
 
 #if defined(USE_AURA)
   gfx::NativeView native_view = popup->GetWidget()->GetNativeView();
@@ -61,8 +70,8 @@ ExtensionPopup::~ExtensionPopup() {
 gfx::Size ExtensionPopup::CalculatePreferredSize() const {
   // Constrain the size to popup min/max.
   gfx::Size sz = views::View::CalculatePreferredSize();
-  sz.SetToMax(gfx::Size(kMinWidth, kMinHeight));
-  sz.SetToMin(gfx::Size(kMaxWidth, kMaxHeight));
+  sz.SetToMax(kMinSize);
+  sz.SetToMin(kMaxSize);
   return sz;
 }
 
@@ -123,6 +132,21 @@ void ExtensionPopup::OnWindowActivated(
 
 void ExtensionPopup::OnExtensionSizeChanged(ExtensionViewViews* view) {
   SizeToContents();
+}
+
+gfx::Size ExtensionPopup::GetMinBounds() {
+  return kMinSize;
+}
+
+gfx::Size ExtensionPopup::GetMaxBounds() {
+  gfx::Size max_size = kMaxSize;
+  max_size.SetToMin(
+      BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(
+          GetAnchorView(), arrow(), adjust_if_offscreen(),
+          views::BubbleFrameView::PreferredArrowAdjustment::kMirror));
+  max_size.SetToMax(kMinSize);
+
+  return max_size;
 }
 
 void ExtensionPopup::OnExtensionUnloaded(
@@ -204,9 +228,14 @@ ExtensionPopup::ExtensionPopup(
   set_margins(gfx::Insets());
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
+  // Set the default value before initializing |extension_view_| to use
+  // the correct value while calculating max bounds.
+  set_adjust_if_offscreen(views::PlatformStyle::kAdjustBubbleIfOffscreen);
+
   extension_view_ =
       AddChildView(std::make_unique<ExtensionViewViews>(host_.get()));
   extension_view_->set_container(this);
+  extension_view_->Init();
 
   // See comments in OnWidgetActivationChanged().
   set_close_on_deactivate(false);

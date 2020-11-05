@@ -16,6 +16,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/base/hit_test.h"
+#include "ui/display/test/scoped_screen_override.h"
+#include "ui/display/test/test_screen.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/animation/test/ink_drop_host_view_test_api.h"
 #include "ui/views/animation/test/test_ink_drop.h"
@@ -23,6 +25,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/test_views.h"
@@ -625,6 +628,138 @@ TEST_F(BubbleDialogDelegateViewTest, GetThemeProvider_FromAnchorWidget) {
   EXPECT_EQ(bubble_widget->GetThemeProvider(),
             anchor_widget->GetThemeProvider());
 }
+
+const int kScreenWidth = 1024;
+const int kScreenHeight = 768;
+
+struct ArrowTestParameters {
+  views::BubbleBorder::Arrow arrow;
+  bool adjust_if_offscreen;
+  gfx::Rect anchor_rect;
+  views::BubbleBorder::Arrow expected_arrow;
+
+  gfx::Size ExpectedSpace() const {
+    gfx::Rect adjusted_anchor_rect = anchor_rect;
+    adjusted_anchor_rect.Offset(
+        0, ViewsTestBase::GetSystemReservedHeightAtTopOfScreen());
+    gfx::Rect screen_rect = gfx::Rect(0, 0, kScreenWidth, kScreenHeight);
+
+    return BubbleDialogDelegate::GetAvailableSpaceToPlaceBubble(
+        expected_arrow, adjusted_anchor_rect, screen_rect);
+  }
+};
+
+class BubbleDialogDelegateViewArrowTest
+    : public BubbleDialogDelegateViewTest,
+      public testing::WithParamInterface<ArrowTestParameters> {
+ public:
+  BubbleDialogDelegateViewArrowTest() : screen_override_(SetUpTestScreen()) {}
+  ~BubbleDialogDelegateViewArrowTest() override = default;
+
+ private:
+  display::Screen* SetUpTestScreen() {
+    const display::Display test_display = test_screen_.GetPrimaryDisplay();
+    display::Display display(test_display);
+    display.set_id(0x2);
+    display.set_bounds(gfx::Rect(0, 0, kScreenWidth, kScreenHeight));
+    display.set_work_area(gfx::Rect(0, 0, kScreenWidth, kScreenHeight));
+    test_screen_.display_list().RemoveDisplay(test_display.id());
+    test_screen_.display_list().AddDisplay(display,
+                                           display::DisplayList::Type::PRIMARY);
+    return &test_screen_;
+  }
+
+  display::test::TestScreen test_screen_;
+  display::test::ScopedScreenOverride screen_override_;
+
+  DISALLOW_COPY_AND_ASSIGN(BubbleDialogDelegateViewArrowTest);
+};
+
+TEST_P(BubbleDialogDelegateViewArrowTest, AvailableScreenSpaceTest) {
+  std::unique_ptr<Widget> anchor_widget =
+      CreateTestWidget(Widget::InitParams::TYPE_WINDOW);
+  auto* bubble_delegate =
+      new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
+  BubbleDialogDelegateView::CreateBubble(bubble_delegate);
+  EXPECT_EQ(bubble_delegate->adjust_if_offscreen(),
+            PlatformStyle::kAdjustBubbleIfOffscreen);
+
+  const ArrowTestParameters kParam = GetParam();
+
+  bubble_delegate->SetArrow(kParam.arrow);
+  bubble_delegate->set_adjust_if_offscreen(kParam.adjust_if_offscreen);
+  anchor_widget->GetContentsView()->SetBounds(
+      kParam.anchor_rect.x(), kParam.anchor_rect.y(),
+      kParam.anchor_rect.width(), kParam.anchor_rect.height());
+  gfx::Size available_space =
+      BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(
+          bubble_delegate->GetAnchorView(), bubble_delegate->arrow(),
+          bubble_delegate->adjust_if_offscreen(),
+          BubbleFrameView::PreferredArrowAdjustment::kMirror);
+  EXPECT_EQ(available_space, kParam.ExpectedSpace());
+}
+
+const int kAnchorFarRightX = 840;
+const int kAnchorFarLeftX = 75;
+const int kAnchorFarTopY = 57;
+const int kAnchorFarBottomY = 730;
+const int kAnchorLength = 28;
+
+// When the anchor rect is positioned at different places Rect(x, y,
+// kAnchorLength, kAnchorLength) with (x,y) set to far corners of the screen,
+// available space to position the bubble should vary acc. to
+// |adjust_if_offscreen_|.
+const ArrowTestParameters kAnchorAtFarScreenCornersParams[] = {
+    // Arrow at Top Right, no arrow adjustment needed
+    {views::BubbleBorder::Arrow::TOP_RIGHT, true,
+     gfx::Rect(kAnchorFarRightX, kAnchorFarTopY, kAnchorLength, kAnchorLength),
+     views::BubbleBorder::Arrow::TOP_RIGHT},
+    // Max size available when arrow is changed to Bottom Right
+    {views::BubbleBorder::Arrow::TOP_RIGHT, true,
+     gfx::Rect(kAnchorFarRightX,
+               kAnchorFarBottomY,
+               kAnchorLength,
+               kAnchorLength),
+     views::BubbleBorder::Arrow::BOTTOM_RIGHT},
+    // Max size available when arrow is changed to Bottom Left
+    {views::BubbleBorder::Arrow::TOP_RIGHT, true,
+     gfx::Rect(kAnchorFarLeftX,
+               kAnchorFarBottomY,
+               kAnchorLength,
+               kAnchorLength),
+     views::BubbleBorder::Arrow::BOTTOM_LEFT},
+    // Max size available when arrow is changed to Top Left
+    {views::BubbleBorder::Arrow::TOP_RIGHT, true,
+     gfx::Rect(kAnchorFarLeftX, kAnchorFarTopY, kAnchorLength, kAnchorLength),
+     views::BubbleBorder::Arrow::TOP_LEFT},
+    // Offscreen adjustment is off, available size is per Bottom Left
+    // arrow
+    {views::BubbleBorder::Arrow::BOTTOM_LEFT, false,
+     gfx::Rect(kAnchorFarRightX, kAnchorFarTopY, kAnchorLength, kAnchorLength),
+     views::BubbleBorder::Arrow::BOTTOM_LEFT},
+    // Offscreen adjustment is off, available size is per Top Left arrow
+    {views::BubbleBorder::Arrow::TOP_LEFT, false,
+     gfx::Rect(kAnchorFarRightX,
+               kAnchorFarBottomY,
+               kAnchorLength,
+               kAnchorLength),
+     views::BubbleBorder::Arrow::TOP_LEFT},
+    // Offscreen adjustment is off, available size is per Top Right arrow
+    {views::BubbleBorder::Arrow::TOP_RIGHT, false,
+     gfx::Rect(kAnchorFarLeftX,
+               kAnchorFarBottomY,
+               kAnchorLength,
+               kAnchorLength),
+     views::BubbleBorder::Arrow::TOP_RIGHT},
+    // Offscreen adjustment is off, available size is per Bottom Right
+    // arrow
+    {views::BubbleBorder::Arrow::BOTTOM_RIGHT, false,
+     gfx::Rect(kAnchorFarLeftX, kAnchorFarTopY, kAnchorLength, kAnchorLength),
+     views::BubbleBorder::Arrow::BOTTOM_RIGHT}};
+
+INSTANTIATE_TEST_SUITE_P(AnchorAtFarScreenCorners,
+                         BubbleDialogDelegateViewArrowTest,
+                         testing::ValuesIn(kAnchorAtFarScreenCornersParams));
 
 // Tests whether the BubbleDialogDelegateView will create a layer backed
 // ClientView when SetPaintClientToLayer is set to true.

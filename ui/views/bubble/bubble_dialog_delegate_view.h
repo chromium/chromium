@@ -15,6 +15,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/class_property.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -234,6 +235,21 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
   // Override to provide custom parameters before widget initialization.
   virtual void OnBeforeBubbleWidgetInit(Widget::InitParams* params,
                                         Widget* widget) const {}
+
+  // Get the maximum available screen space to place a bubble anchored to
+  // |anchor_view| at |arrow|. If offscreen adjustment is on, this would return
+  // the max space corresponding to the possible arrow positions of the bubble.
+  static gfx::Size GetMaxAvailableScreenSpaceToPlaceBubble(
+      View* anchor_view,
+      BubbleBorder::Arrow arrow,
+      bool adjust_if_offscreen,
+      BubbleFrameView::PreferredArrowAdjustment arrow_adjustment);
+
+  // Get the available space to place a bubble anchored to |anchor_rect| at
+  // |arrow| inside |screen_rect|.
+  static gfx::Size GetAvailableSpaceToPlaceBubble(BubbleBorder::Arrow arrow,
+                                                  gfx::Rect anchor_rect,
+                                                  gfx::Rect screen_rect);
 
  protected:
   // Create and initialize the bubble Widget with proper bounds.

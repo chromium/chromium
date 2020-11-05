@@ -90,6 +90,10 @@ class ViewsTestBase : public PlatformTest {
   // Simulate an OS-level destruction of the native window held by |widget|.
   void SimulateNativeDestroy(Widget* widget);
 
+  // Get the system reserved height at the top of the screen. On Mac, this
+  // includes the menu bar and title bar.
+  static int GetSystemReservedHeightAtTopOfScreen();
+
  protected:
   base::test::TaskEnvironment* task_environment() {
     return task_environment_.get();

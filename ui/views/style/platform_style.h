@@ -81,6 +81,10 @@ class VIEWS_EXPORT PlatformStyle {
   // Whether controls in inactive widgets appear disabled.
   static const bool kInactiveWidgetControlsAppearDisabled;
 
+  // Default setting at bubble creation time for whether arrow will be adjusted
+  // for bubbles going off-screen to bring more bubble area into view.
+  static const bool kAdjustBubbleIfOffscreen;
+
   // Creates the default scrollbar for the given orientation.
   static std::unique_ptr<ScrollBar> CreateScrollBar(bool is_horizontal);
 

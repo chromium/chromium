@@ -44,6 +44,7 @@ const bool PlatformStyle::kTreeViewSelectionPaintsEntireRow = true;
 const bool PlatformStyle::kUseRipples = false;
 const bool PlatformStyle::kPreferFocusRings = true;
 const bool PlatformStyle::kInactiveWidgetControlsAppearDisabled = true;
+const bool PlatformStyle::kAdjustBubbleIfOffscreen = false;
 
 const Button::KeyClickAction PlatformStyle::kKeyClickActionOnSpace =
     Button::KeyClickAction::kOnKeyPress;

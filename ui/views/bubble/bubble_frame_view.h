@@ -117,6 +117,9 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
     footnote_margins_ = footnote_margins;
   }
 
+  PreferredArrowAdjustment preferred_arrow_adjustment() const {
+    return preferred_arrow_adjustment_;
+  }
   void set_preferred_arrow_adjustment(PreferredArrowAdjustment adjustment) {
     preferred_arrow_adjustment_ = adjustment;
   }

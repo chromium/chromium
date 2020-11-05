@@ -31,12 +31,16 @@ class ExtensionViewViews : public views::WebView,
     virtual ~Container() = default;
 
     virtual void OnExtensionSizeChanged(ExtensionViewViews* view) {}
+    virtual gfx::Size GetMinBounds() = 0;
+    virtual gfx::Size GetMaxBounds() = 0;
   };
 
   explicit ExtensionViewViews(extensions::ExtensionViewHost* host);
   ExtensionViewViews(const ExtensionViewViews&) = delete;
   ExtensionViewViews& operator=(const ExtensionViewViews&) = delete;
   ~ExtensionViewViews() override;
+
+  void Init();
 
   // views::WebView:
   void VisibilityChanged(View* starting_from, bool is_visible) override;

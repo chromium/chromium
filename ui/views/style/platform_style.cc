@@ -52,6 +52,15 @@ const bool PlatformStyle::kTextfieldUsesDragCursorWhenDraggable = true;
 const bool PlatformStyle::kPreferFocusRings = true;
 const bool PlatformStyle::kInactiveWidgetControlsAppearDisabled = false;
 
+// Linux clips bubble windows that extend outside their parent window
+// bounds.
+const bool PlatformStyle::kAdjustBubbleIfOffscreen =
+#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+    false;
+#else
+    true;
+#endif
+
 // static
 std::unique_ptr<ScrollBar> PlatformStyle::CreateScrollBar(bool is_horizontal) {
 #if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
