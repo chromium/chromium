@@ -946,6 +946,7 @@ kept as long as profile signout is possible -->
 
   <owner>jlebel@chromium.org</owner>
   <owner>fernandex@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Tracks the SSO identity cache state before calling -[GCRSSOService
     identitiesWithError:] or -[GCRSSOService identitiesForDisplay]. See:
@@ -959,9 +960,74 @@ kept as long as profile signout is possible -->
 
   <owner>jlebel@chromium.org</owner>
   <owner>fernandex@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Tracks the time it takes to call -[GCRSSOService identitiesWithError:] or
     -[GCRSSOService identitiesForDisplay]. See: https://crbug.com/897470.
+  </summary>
+</histogram>
+
+<histogram
+    name="Signin.SSOIdentityListRequest.FetchIdentitiesWithCallback.Duration"
+    units="ms" expires_after="2021-04-19">
+  <owner>jlebel@chromium.org</owner>
+  <owner>fernandex@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Tracks the time between -[GCRSSOService fetchIdentitiesWithCallback:] and
+    the callback is invoked. See: https://crbug.com/897470.
+  </summary>
+</histogram>
+
+<histogram
+    name="Signin.SSOIdentityListRequest.RunAfterCacheIsPopulated.CacheState"
+    enum="SigninSSOIdentityListRequestCacheState" expires_after="2021-04-19">
+  <owner>jlebel@chromium.org</owner>
+  <owner>fernandex@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Tracks the state of the SSO identity cache before
+    ChromeIdentityServiceImpl::RunAfterCacheIsPopulated() is called. See:
+    https://crbug.com/897470.
+  </summary>
+</histogram>
+
+<histogram
+    name="Signin.SSOIdentityListRequest.RunAfterCacheIsPopulated.Duration"
+    units="ms" expires_after="2021-04-19">
+  <owner>jlebel@chromium.org</owner>
+  <owner>fernandex@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Tracks the time between
+    ChromeIdentityServiceImpl::RunAfterCacheIsPopulated() and the callback is
+    invoked. See: https://crbug.com/897470.
+  </summary>
+</histogram>
+
+<histogram
+    name="Signin.SSOIdentityListRequest.WaitUntilCacheIsPopulated.CacheState"
+    enum="SigninSSOIdentityListRequestCacheState" expires_after="2021-04-19">
+  <owner>jlebel@chromium.org</owner>
+  <owner>fernandex@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Tracks the state of the SSO identity cache before
+    ChromeIdentityServiceImpl::WaitUntilCacheIsPopulated() is called. See:
+    https://crbug.com/897470.
+  </summary>
+</histogram>
+
+<histogram
+    name="Signin.SSOIdentityListRequest.WaitUntilCacheIsPopulated.Duration"
+    units="ms" expires_after="2021-04-19">
+  <owner>jlebel@chromium.org</owner>
+  <owner>fernandex@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Tracks the time between
+    ChromeIdentityServiceImpl::WaitUntilCacheIsPopulated() and the callback is
+    invoked. See: https://crbug.com/897470.
   </summary>
 </histogram>
 
