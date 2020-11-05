@@ -35,6 +35,10 @@ class MockKeyPermissionsManager : public KeyPermissionsManager {
                KeyUsage key_usage,
                const std::string& public_key_spki_der),
               (override));
+
+  MOCK_METHOD(bool, AreCorporateKeysAllowedForArcUsage, (), (const, override));
+
+  MOCK_METHOD(void, Shutdown, (), (override));
 };
 
 }  // namespace platform_keys

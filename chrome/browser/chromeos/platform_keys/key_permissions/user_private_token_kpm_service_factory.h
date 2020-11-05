@@ -32,6 +32,9 @@ class UserPrivateTokenKeyPermissionsManagerService : public KeyedService {
       const UserPrivateTokenKeyPermissionsManagerService&) = delete;
   ~UserPrivateTokenKeyPermissionsManagerService() override;
 
+  // KeyedService
+  void Shutdown() override;
+
   virtual KeyPermissionsManager* key_permissions_manager();
 
  protected:

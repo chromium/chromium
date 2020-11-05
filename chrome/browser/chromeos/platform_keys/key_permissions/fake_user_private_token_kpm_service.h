@@ -34,6 +34,7 @@ class FakeUserPrivateTokenKeyPermissionsManagerService
   ~FakeUserPrivateTokenKeyPermissionsManagerService() override;
 
   platform_keys::KeyPermissionsManager* key_permissions_manager() override;
+  void Shutdown() override;
 
  private:
   platform_keys::KeyPermissionsManager* key_permissions_manager_ = nullptr;

@@ -28,6 +28,8 @@ FakeUserPrivateTokenKeyPermissionsManagerService::key_permissions_manager() {
   return key_permissions_manager_;
 }
 
+void FakeUserPrivateTokenKeyPermissionsManagerService::Shutdown() {}
+
 std::unique_ptr<KeyedService>
 BuildFakeUserPrivateTokenKeyPermissionsManagerService(
     platform_keys::KeyPermissionsManager* key_permissions_manager,

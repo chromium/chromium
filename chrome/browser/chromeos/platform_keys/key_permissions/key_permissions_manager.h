@@ -79,6 +79,19 @@ class KeyPermissionsManager {
   virtual void IsKeyAllowedForUsage(IsKeyAllowedForUsageCallback callback,
                                     KeyUsage key_usage,
                                     const std::string& public_key_spki_der) = 0;
+
+  // Returns true if corporate keys are allowed for ARC usages. Currently,
+  // either all corporate keys on a token are allowed for ARC usage or none of
+  // them.
+  virtual bool AreCorporateKeysAllowedForArcUsage() const = 0;
+
+  // Key permissions managers allow two-phase shutdown. This function can be
+  // called as the first shutdown phase before the destructor. This is useful
+  // for key permissions managers wrapped by browser context keyed services, so
+  // that the keyed services can ask the underlying key permissions managers to
+  // drop references of services that depend on the context that will be
+  // destroyed.
+  virtual void Shutdown() = 0;
 };
 
 }  // namespace platform_keys

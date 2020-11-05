@@ -696,6 +696,11 @@ std::unique_ptr<ArcAppListPrefs::PackageInfo> ArcAppListPrefs::GetPackage(
       std::move(permissions));
 }
 
+bool ArcAppListPrefs::IsPackageInstalled(
+    const std::string& package_name) const {
+  return GetPackage(package_name) != nullptr;
+}
+
 std::vector<std::string> ArcAppListPrefs::GetAppIds() const {
   if (arc::ShouldArcAlwaysStart())
     return GetAppIdsNoArcEnabledCheck();
