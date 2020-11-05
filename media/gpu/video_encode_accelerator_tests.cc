@@ -316,7 +316,7 @@ TEST_F(VideoEncoderTest, BitrateCheck) {
               kBitrateTolerance * config.bitrate);
 }
 
-TEST_F(VideoEncoderTest, DynamicBitrateChange) {
+TEST_F(VideoEncoderTest, BitrateCheck_DynamicBitrate) {
   auto config = GetDefaultConfig();
   config.num_frames_to_encode = kNumFramesToEncodeForBitrateCheck * 2;
   auto encoder = CreateVideoEncoder(g_env->Video(), config);
@@ -347,7 +347,7 @@ TEST_F(VideoEncoderTest, DynamicBitrateChange) {
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 }
 
-TEST_F(VideoEncoderTest, DynamicFramerateChange) {
+TEST_F(VideoEncoderTest, BitrateCheck_DynamicFramerate) {
   auto config = GetDefaultConfig();
   config.num_frames_to_encode = kNumFramesToEncodeForBitrateCheck * 2;
   auto encoder = CreateVideoEncoder(g_env->Video(), config);
