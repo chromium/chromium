@@ -140,8 +140,6 @@ const CGFloat kAnimationDuration = 0.25f;
 // Called inside the completion block of the current animation. Takes as
 // argument the state to which the animatees did animate to.
 - (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
-  [self.delegate viewRevealingVerticalPanHandler:self
-                                didChangeToState:viewRevealState];
   for (id<ViewRevealingAnimatee> animatee in self.animatees) {
     [animatee didAnimateViewReveal:viewRevealState];
   }

@@ -20,8 +20,7 @@ class Browser;
     shouldFinishWithBrowser:(Browser*)browser
                focusOmnibox:(BOOL)focusOmnibox;
 
-// Informs the delegate that the tab switcher is done and should be
-// dismissed.
+// Informs the delegate that the tab switcher is done and should be dismissed.
 - (void)tabGridDismissTransitionDidEnd:(TabGridCoordinator*)tabGrid;
 
 @end

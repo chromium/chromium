@@ -108,8 +108,9 @@ enum class KeyRetrievalTriggerForUMA;
 // Prepare to show the TabSwitcher UI.
 - (void)prepareTabSwitcher;
 
-// Shows the TabSwitcher UI.
-- (void)displayTabSwitcher;
+// Shows the TabSwitcher UI. When the thumb strip is enabled, shows the
+// TabSwitcher UI, specifically in its grid layout.
+- (void)displayTabSwitcherInGridLayout;
 
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
 // Shows the Autofill Settings UI, presenting from |baseViewController|.

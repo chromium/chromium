@@ -104,6 +104,7 @@ source_set("scene") {
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/sync",
     "//ios/chrome/browser/ui/tab_grid",
+    "//ios/chrome/browser/ui/thumb_strip:feature_flags",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/util:multiwindow_util",

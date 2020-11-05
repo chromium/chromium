@@ -57,8 +57,7 @@
                                   RecentTabsContextMenuDelegate,
                                   RecentTabsPresentationDelegate,
                                   TabGridMediatorDelegate,
-                                  TabPresentationDelegate,
-                                  ThumbStripCoordinatorDelegate> {
+                                  TabPresentationDelegate> {
   // Use an explicit ivar instead of synthesizing as the setter isn't using the
   // ivar.
   Browser* _incognitoBrowser;
@@ -382,7 +381,6 @@
     self.thumbStripCoordinator = [[ThumbStripCoordinator alloc]
         initWithBaseViewController:baseViewController
                            browser:self.browser];
-    self.thumbStripCoordinator.delegate = self;
     [self.thumbStripCoordinator start];
     self.thumbStripCoordinator.panHandler.layoutSwitcherProvider =
         baseViewController;
@@ -590,13 +588,6 @@
     (NSInteger)sectionIdentifier {
   return [self.baseViewController.remoteTabsViewController
       sessionForSectionIdentifier:sectionIdentifier];
-}
-
-#pragma mark - ThumbStripCoordinatorDelegate
-
-- (void)thumbStripDismissedForThumbStripCoordinator:
-    (ThumbStripCoordinator*)thumbStripCoordinator {
-  [self.delegate tabGridDismissTransitionDidEnd:self];
 }
 
 #pragma mark - Private methods

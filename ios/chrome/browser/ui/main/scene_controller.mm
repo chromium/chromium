@@ -78,6 +78,7 @@
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #include "ios/chrome/browser/ui/tab_grid/tab_grid_coordinator.h"
 #include "ios/chrome/browser/ui/tab_grid/tab_grid_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/multi_window_support.h"
 #import "ios/chrome/browser/ui/util/top_view_controller.h"
@@ -1000,8 +1001,15 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   [self.mainCoordinator prepareToShowTabGrid];
 }
 
-- (void)displayTabSwitcher {
-  DCHECK(!self.tabSwitcherIsActive);
+- (void)displayTabSwitcherInGridLayout {
+  if (!IsThumbStripEnabled()) {
+    // When the thumb strip feature is enabled, |self.tabSwitcherIsActive| could
+    // be YES if the tab switcher button is tapped while the thumb strip is
+    // visible, or it could be NO if tapped while thumb strip is hidden.
+    // Otherwise, when the thumb strip feature is disabled,
+    // |self.tabSwitcherIsActive| should always be NO at this point in code.
+    DCHECK(!self.tabSwitcherIsActive);
+  }
   if (!self.isProcessingVoiceSearchCommand) {
     [self.currentInterface.bvc userEnteredTabSwitcher];
     [self showTabSwitcher];
@@ -2298,6 +2306,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   [self.currentInterface setPrimary:YES];
 }
 
+// Shows the tab switcher UI.
 - (void)showTabSwitcher {
   DCHECK(self.mainCoordinator);
   [self.mainCoordinator setActivePage:[self activePage]];

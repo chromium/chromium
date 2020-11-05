@@ -34,7 +34,7 @@
 }
 
 - (void)tabGridTouchUp {
-  [self.dispatcher displayTabSwitcher];
+  [self.dispatcher displayTabSwitcherInGridLayout];
 }
 
 - (void)toolsMenuAction {
