@@ -44,6 +44,15 @@ extern const char kNtpRepeatableQueriesRecencyHalfLifeSecondsParam[];
 // frecency score for local history repeatable queries is exponentiated.
 // The value of this parameter should be parsable as a double.
 extern const char kNtpRepeatableQueriesFrequencyExponentParam[];
+// Parameter name determining the position, with respect to the MV tiles, in
+// which the repeatable queries should be inserted.
+extern const char kNtpRepeatableQueriesInsertPositionParam[];
+// The available positions, with respect to the MV tiles, in which the
+// repeatable queries can be inserted.
+enum class RepeatableQueriesInsertPosition {
+  kStart = 0,  // At the start of MV tiles.
+  kEnd,        // At the end of MV tiles.
+};
 
 // Returns the age threshold for local history repeatable queries.
 base::Time GetLocalHistoryRepeatableQueriesAgeThreshold();
@@ -53,6 +62,9 @@ int GetLocalHistoryRepeatableQueriesRecencyHalfLifeSeconds();
 // Returns the factor by which the frequency component of the frecency score for
 // local history repeatable queries is exponentiated.
 double GetLocalHistoryRepeatableQueriesFrequencyExponent();
+// Returns the position, with respect to the MV tiles, in which the repeatable
+// queries should be inserted.
+RepeatableQueriesInsertPosition GetRepeatableQueriesInsertPosition();
 
 }  // namespace ntp_features
 

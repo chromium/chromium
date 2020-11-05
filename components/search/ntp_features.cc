@@ -80,6 +80,8 @@ const char kNtpRepeatableQueriesRecencyHalfLifeSecondsParam[] =
     "NtpRepeatableQueriesRecencyHalfLifeSeconds";
 const char kNtpRepeatableQueriesFrequencyExponentParam[] =
     "NtpRepeatableQueriesFrequencyExponent";
+const char kNtpRepeatableQueriesInsertPositionParam[] =
+    "NtpRepeatableQueriesInsertPosition";
 
 base::Time GetLocalHistoryRepeatableQueriesAgeThreshold() {
   const base::TimeDelta kLocalHistoryRepeatableQueriesAgeThreshold =
@@ -126,6 +128,13 @@ double GetLocalHistoryRepeatableQueriesFrequencyExponent() {
   }
 
   return param_value_as_double;
+}
+
+RepeatableQueriesInsertPosition GetRepeatableQueriesInsertPosition() {
+  std::string param_value = base::GetFieldTrialParamValueByFeature(
+      kNtpRepeatableQueries, kNtpRepeatableQueriesInsertPositionParam);
+  return param_value == "end" ? RepeatableQueriesInsertPosition::kEnd
+                              : RepeatableQueriesInsertPosition::kStart;
 }
 
 }  // namespace ntp_features
