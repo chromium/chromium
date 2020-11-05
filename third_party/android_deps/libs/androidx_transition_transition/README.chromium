@@ -1,7 +1,7 @@
 Name: Android Transition Support Library
 Short Name: transition
-URL: https://developer.android.com/jetpack/androidx
-Version: 1.2.0
+URL: https://developer.android.com/jetpack/androidx/releases/transition#1.4.0-SNAPSHOT
+Version: 1.4.0-SNAPSHOT
 License: Apache Version 2.0
 License File: LICENSE
 Security Critical: yes

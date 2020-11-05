@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:1.1.0-cr0
+# cipd create --pkg-def cipd.yaml -tag version:1.2.0-SNAPSHOT-cr0
 package: chromium/third_party/android_deps/libs/androidx_coordinatorlayout_coordinatorlayout
 description: "Android Support Library Coordinator Layout"
 data:
-- file: coordinatorlayout-1.1.0.aar
+- file: coordinatorlayout-1.2.0-SNAPSHOT.aar

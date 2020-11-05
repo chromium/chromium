@@ -1,7 +1,7 @@
 Name: Android Support TV Provider
 Short Name: tvprovider
-URL: http://developer.android.com/tools/extras/support-library.html
-Version: 1.0.0
+URL: https://developer.android.com/jetpack/androidx/releases/tvprovider#1.1.0-SNAPSHOT
+Version: 1.1.0-SNAPSHOT
 License: Apache Version 2.0
 License File: LICENSE
 Security Critical: yes

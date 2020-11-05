@@ -1,7 +1,7 @@
 Name: AndroidX Futures
 Short Name: concurrent-futures
-URL: https://developer.android.com/topic/libraries/architecture/index.html
-Version: 1.0.0
+URL: https://developer.android.com/jetpack/androidx/releases/concurrent#1.2.0-SNAPSHOT
+Version: 1.2.0-SNAPSHOT
 License: Apache Version 2.0
 License File: LICENSE
 Security Critical: yes

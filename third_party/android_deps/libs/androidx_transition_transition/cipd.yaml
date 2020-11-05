@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:1.2.0-cr0
+# cipd create --pkg-def cipd.yaml -tag version:1.4.0-SNAPSHOT-cr0
 package: chromium/third_party/android_deps/libs/androidx_transition_transition
 description: "Android Transition Support Library"
 data:
-- file: transition-1.2.0.aar
+- file: transition-1.4.0-SNAPSHOT.aar

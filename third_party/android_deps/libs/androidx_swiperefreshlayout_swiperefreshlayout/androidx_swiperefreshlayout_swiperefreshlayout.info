@@ -9,6 +9,8 @@ has_proguard_flags = false
 has_r_text_file = true
 is_manifest_empty = true
 manifest_package = "androidx.swiperefreshlayout"
-resources = []
+resources = [
+  "res/values/values.xml"
+]
 subjar_tuples = []
 subjars = []

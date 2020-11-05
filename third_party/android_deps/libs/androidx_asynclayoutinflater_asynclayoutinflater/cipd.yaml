@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:1.0.0-cr0
+# cipd create --pkg-def cipd.yaml -tag version:1.1.0-SNAPSHOT-cr0
 package: chromium/third_party/android_deps/libs/androidx_asynclayoutinflater_asynclayoutinflater
 description: "Android Support Library Async Layout Inflater"
 data:
-- file: asynclayoutinflater-1.0.0.aar
+- file: asynclayoutinflater-1.1.0-SNAPSHOT.aar

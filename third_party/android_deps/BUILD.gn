@@ -173,7 +173,7 @@ java_prebuilt("androidx_annotation_annotation_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_annotation_annotation_experimental_java") {
-  aar_path = "libs/androidx_annotation_annotation_experimental/annotation-experimental-1.0.0.aar"
+  aar_path = "libs/androidx_annotation_annotation_experimental/annotation-experimental-1.1.0-SNAPSHOT.aar"
   info_path = "libs/androidx_annotation_annotation_experimental/androidx_annotation_annotation_experimental.info"
   resource_overlay = true
 }
@@ -219,7 +219,7 @@ java_prebuilt("androidx_arch_core_core_common_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_asynclayoutinflater_asynclayoutinflater_java") {
-  aar_path = "libs/androidx_asynclayoutinflater_asynclayoutinflater/asynclayoutinflater-1.0.0.aar"
+  aar_path = "libs/androidx_asynclayoutinflater_asynclayoutinflater/asynclayoutinflater-1.1.0-SNAPSHOT.aar"
   info_path = "libs/androidx_asynclayoutinflater_asynclayoutinflater/androidx_asynclayoutinflater_asynclayoutinflater.info"
   deps = [
     ":androidx_annotation_annotation_java",
@@ -230,9 +230,12 @@ android_aar_prebuilt("androidx_asynclayoutinflater_asynclayoutinflater_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_cardview_cardview_java") {
-  aar_path = "libs/androidx_cardview_cardview/cardview-1.0.0.aar"
+  aar_path = "libs/androidx_cardview_cardview/cardview-1.1.0-SNAPSHOT.aar"
   info_path = "libs/androidx_cardview_cardview/androidx_cardview_cardview.info"
-  deps = [ ":androidx_annotation_annotation_java" ]
+  deps = [
+    ":androidx_annotation_annotation_java",
+    ":androidx_core_core_java",
+  ]
   resource_overlay = true
 }
 
@@ -246,8 +249,7 @@ java_prebuilt("androidx_collection_collection_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("androidx_concurrent_concurrent_futures_java") {
-  jar_path =
-      "libs/androidx_concurrent_concurrent_futures/concurrent-futures-1.0.0.jar"
+  jar_path = "libs/androidx_concurrent_concurrent_futures/concurrent-futures-1.2.0-SNAPSHOT.jar"
   output_name = "androidx_concurrent_concurrent_futures"
   supports_android = true
   deps = [
@@ -258,7 +260,7 @@ java_prebuilt("androidx_concurrent_concurrent_futures_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_coordinatorlayout_coordinatorlayout_java") {
-  aar_path = "libs/androidx_coordinatorlayout_coordinatorlayout/coordinatorlayout-1.1.0.aar"
+  aar_path = "libs/androidx_coordinatorlayout_coordinatorlayout/coordinatorlayout-1.2.0-SNAPSHOT.aar"
   info_path = "libs/androidx_coordinatorlayout_coordinatorlayout/androidx_coordinatorlayout_coordinatorlayout.info"
   deps = [
     ":androidx_annotation_annotation_java",
@@ -321,7 +323,7 @@ android_aar_prebuilt("androidx_drawerlayout_drawerlayout_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_exifinterface_exifinterface_java") {
-  aar_path = "libs/androidx_exifinterface_exifinterface/exifinterface-1.0.0.aar"
+  aar_path = "libs/androidx_exifinterface_exifinterface/exifinterface-1.4.0-SNAPSHOT.aar"
   info_path = "libs/androidx_exifinterface_exifinterface/androidx_exifinterface_exifinterface.info"
   deps = [ ":androidx_annotation_annotation_java" ]
   resource_overlay = true
@@ -497,7 +499,7 @@ android_aar_prebuilt("androidx_lifecycle_lifecycle_viewmodel_java") {
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt(
     "androidx_localbroadcastmanager_localbroadcastmanager_java") {
-  aar_path = "libs/androidx_localbroadcastmanager_localbroadcastmanager/localbroadcastmanager-1.0.0.aar"
+  aar_path = "libs/androidx_localbroadcastmanager_localbroadcastmanager/localbroadcastmanager-1.1.0-SNAPSHOT.aar"
   info_path = "libs/androidx_localbroadcastmanager_localbroadcastmanager/androidx_localbroadcastmanager_localbroadcastmanager.info"
   deps = [ ":androidx_annotation_annotation_java" ]
   resource_overlay = true
@@ -621,7 +623,7 @@ android_aar_prebuilt("androidx_slice_slice_core_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_swiperefreshlayout_swiperefreshlayout_java") {
-  aar_path = "libs/androidx_swiperefreshlayout_swiperefreshlayout/swiperefreshlayout-1.0.0.aar"
+  aar_path = "libs/androidx_swiperefreshlayout_swiperefreshlayout/swiperefreshlayout-1.2.0-SNAPSHOT.aar"
   info_path = "libs/androidx_swiperefreshlayout_swiperefreshlayout/androidx_swiperefreshlayout_swiperefreshlayout.info"
   deps = [
     ":androidx_annotation_annotation_java",
@@ -772,7 +774,7 @@ android_aar_prebuilt("androidx_test_uiautomator_uiautomator_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_transition_transition_java") {
-  aar_path = "libs/androidx_transition_transition/transition-1.2.0.aar"
+  aar_path = "libs/androidx_transition_transition/transition-1.4.0-SNAPSHOT.aar"
   info_path =
       "libs/androidx_transition_transition/androidx_transition_transition.info"
   deps = [
@@ -786,7 +788,7 @@ android_aar_prebuilt("androidx_transition_transition_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_tvprovider_tvprovider_java") {
-  aar_path = "libs/androidx_tvprovider_tvprovider/tvprovider-1.0.0.aar"
+  aar_path = "libs/androidx_tvprovider_tvprovider/tvprovider-1.1.0-SNAPSHOT.aar"
   info_path =
       "libs/androidx_tvprovider_tvprovider/androidx_tvprovider_tvprovider.info"
   deps = [
@@ -1195,6 +1197,9 @@ android_aar_prebuilt("google_play_services_basement_java") {
 
   # Removing drawables from GMS .aars as they are unused bloat.
   strip_drawables = true
+
+  # https://crbug.com/989505
+  jar_excluded_patterns = [ "META-INF/proguard/*" ]
   input_jars_paths = [ "$android_sdk/optional/org.apache.http.legacy.jar" ]
 }
 
