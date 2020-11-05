@@ -340,10 +340,6 @@ extern const char kEnableAutofillPasswordInfoBarAccountIndicationFooterName[];
 extern const char
     kEnableAutofillPasswordInfoBarAccountIndicationFooterDescription[];
 
-extern const char kEnableAutofillSaveCardInfoBarAccountIndicationFooterName[];
-extern const char
-    kEnableAutofillSaveCardInfoBarAccountIndicationFooterDescription[];
-
 extern const char kEnableExperimentalCookieFeaturesName[];
 extern const char kEnableExperimentalCookieFeaturesDescription[];
 

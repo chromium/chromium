@@ -43191,8 +43191,6 @@ from previous Chrome versions.
   <int value="-665514294" label="FontAccess:disabled"/>
   <int value="-663476391" label="enable-pixel-canvas-recording:enabled"/>
   <int value="-662720891" label="PreviewsCoinFlipHoldback_UKMOnly:enabled"/>
-  <int value="-662314979"
-      label="AutofillEnableSaveCardInfoBarAccountIndicationFooter:disabled"/>
   <int value="-662064703" label="MediaSessionService:enabled"/>
   <int value="-661978438" label="enable-data-reduction-proxy-lo-fi"/>
   <int value="-660160292" label="enable-apps-show-on-first-paint"/>
@@ -43461,8 +43459,6 @@ from previous Chrome versions.
   <int value="-385337473" label="enable-fast-unload"/>
   <int value="-384589459" label="disable-supervised-user-safesites"/>
   <int value="-381181808" label="DragAppsInTabletMode:enabled"/>
-  <int value="-380992110"
-      label="AutofillEnableSaveCardInfoBarAccountIndicationFooter:enabled"/>
   <int value="-379809954"
       label="AutofillDoNotMigrateUnsupportedLocalCards:disabled"/>
   <int value="-378218969" label="VaapiJpegImageDecodeAcceleration:disabled"/>
