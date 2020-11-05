@@ -296,6 +296,11 @@ void ProcessMirrorHeader(
   if (manage_accounts_params.show_consistency_promo &&
       base::FeatureList::IsEnabled(kMobileIdentityConsistency)) {
     auto* window = web_contents->GetNativeView()->GetWindowAndroid();
+    if (!window) {
+      // The page is prefetched in the background, ignore the header.
+      // See https://crbug.com/1145031#c5 for details.
+      return;
+    }
     SigninUtils::OpenAccountPickerBottomSheet(
         window, manage_accounts_params.continue_url.empty()
                     ? chrome::kChromeUINativeNewTabURL
