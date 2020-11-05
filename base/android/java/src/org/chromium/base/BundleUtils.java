@@ -100,22 +100,10 @@ public final class BundleUtils {
     @CalledByNative
     public static String getNativeLibraryPath(String libraryName) {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            ClassLoader classLoader = ContextUtils.getApplicationContext().getClassLoader();
-            String path = getNativeLibraryPathFromClassLoader(classLoader, libraryName);
-            // TODO(b/171269960): Isolated split class loaders have an empty library path, so check
-            // the parent class loader as well.
-            if (path == null) {
-                path = getNativeLibraryPathFromClassLoader(classLoader.getParent(), libraryName);
-            }
-            return path;
+            // Due to b/171269960 isolated split class loaders have an empty library path, so check
+            // the base module class loader which loaded BundleUtils.
+            return ((BaseDexClassLoader) BundleUtils.class.getClassLoader())
+                    .findLibrary(libraryName);
         }
-    }
-
-    private static String getNativeLibraryPathFromClassLoader(
-            ClassLoader classLoader, String libraryName) {
-        if (classLoader == null) {
-            return null;
-        }
-        return ((BaseDexClassLoader) classLoader).findLibrary(libraryName);
     }
 }
