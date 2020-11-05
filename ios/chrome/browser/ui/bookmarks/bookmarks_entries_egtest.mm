@@ -200,16 +200,9 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests display and selection of 'Open in New Window' in a context menu on a
 // bookmarks entry.
-- (void)testContextMenuOpenInNewWindow {
-  // TODO(crbug.com/1035764): EG1 Test fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-
-  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
-    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
-  }
-
+//
+// TODO(crbug.com/1035764)/TODO(https://crbug.com/1145948): Reenable flaky test.
+- (void)DISABLED_testContextMenuOpenInNewWindow {
   [BookmarkEarlGrey clearBookmarksPositionCache];
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
