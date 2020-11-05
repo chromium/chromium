@@ -3128,9 +3128,12 @@ void GLRenderer::AddCompositeTimeTraces(base::TimeTicks ready_timestamp) {
   // Delete all timer queries for which results have been retrieved.
   gl_->DeleteQueriesEXT(count, queries_to_delete.data());
 
+  base::TimeDelta unique_id_delta = ready_timestamp - start_time_ticks;
+  const int trace_unique_id = unique_id_delta.InMilliseconds() * count;
+
   TRACE_EVENT_ASYNC_BEGIN_WITH_TIMESTAMP0(
       TRACE_DISABLED_BY_DEFAULT("viz.gpu_composite_time"), "Composite Time",
-      this, start_time_ticks);
+      TRACE_ID_LOCAL(trace_unique_id), start_time_ticks);
 
   while (!durations.empty()) {
     duration = durations.front().first;
@@ -3143,14 +3146,15 @@ void GLRenderer::AddCompositeTimeTraces(base::TimeTicks ready_timestamp) {
     }
     TRACE_EVENT_ASYNC_STEP_INTO_WITH_TIMESTAMP0(
         TRACE_DISABLED_BY_DEFAULT("viz.gpu_composite_time"), "Composite Time",
-        this, durations.front().second.c_str(), start_time_ticks);
+        TRACE_ID_LOCAL(trace_unique_id), durations.front().second.c_str(),
+        start_time_ticks);
     start_time_ticks += base::TimeDelta::FromNanoseconds(duration);
     durations.pop();
   }
 
   TRACE_EVENT_ASYNC_END_WITH_TIMESTAMP0(
       TRACE_DISABLED_BY_DEFAULT("viz.gpu_composite_time"), "Composite Time",
-      this, ready_timestamp);
+      TRACE_ID_LOCAL(trace_unique_id), ready_timestamp);
 }
 
 void GLRenderer::FinishDrawingQuadList() {
