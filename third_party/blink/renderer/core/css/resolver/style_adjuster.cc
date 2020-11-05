@@ -494,6 +494,8 @@ static void AdjustStyleForDisplay(ComputedStyle& style,
 
   // writing-mode does not apply to table row groups, table column groups, table
   // rows, and table columns.
+  // TODO(crbug.com/736072): Borders specified with logical css properties will
+  // not change to reflect new writing mode. ex: border-block-start.
   if (style.Display() == EDisplay::kTableColumn ||
       style.Display() == EDisplay::kTableColumnGroup ||
       style.Display() == EDisplay::kTableFooterGroup ||

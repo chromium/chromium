@@ -109,7 +109,7 @@ void ColumnBalancer::TraverseChildren(const LayoutObject& object) {
     // Tables are wicked. Both table rows and table cells are relative to their
     // table section.
     LayoutUnit offset_for_this_child =
-        child_box.IsTableRow() ? LayoutUnit() : logical_top;
+        child_box.IsLegacyTableRow() ? LayoutUnit() : logical_top;
 
     // Include this child's offset in the flow thread offset. Note that rather
     // than subtracting the offset again when done, we set it back to the old

@@ -4270,7 +4270,7 @@ inline bool LayoutObject::CanTraversePhysicalFragments() const {
   if (PaintFragment())
     return false;
   // The NG paint system currently doesn't support table-cells.
-  if (IsTableCell())
+  if (IsTableCellLegacy())
     return false;
   return true;
 }

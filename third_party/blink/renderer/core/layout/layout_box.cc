@@ -3823,7 +3823,7 @@ bool LayoutBox::MapToVisualRectInAncestorSpaceInternal(
   LayoutBox* table_row_container = nullptr;
   // Skip table row because cells and rows are in the same coordinate space (see
   // below, however for more comments about when |ancestor| is the table row).
-  if (IsTableCell()) {
+  if ((IsTableCell() && !IsLayoutNGObject()) || IsTableCellLegacy()) {
     DCHECK(container->IsTableRow());
     DCHECK_EQ(ParentBox(), container);
     if (container != ancestor)
@@ -5537,7 +5537,7 @@ static LayoutUnit AccumulateStaticOffsetForFlowThread(
     LayoutBox& layout_box,
     LayoutUnit inline_position,
     LayoutUnit& block_position) {
-  if (layout_box.IsTableRow())
+  if (layout_box.IsLegacyTableRow())
     return LayoutUnit();
   block_position += layout_box.LogicalTop();
   if (!layout_box.IsLayoutFlowThread())
@@ -6567,7 +6567,7 @@ PositionWithAffinity LayoutBox::PositionForPoint(
   LayoutUnit min_dist = LayoutUnit::Max();
   LayoutBox* closest_layout_object = nullptr;
   PhysicalOffset adjusted_point = point;
-  if (IsTableRow())
+  if (IsLegacyTableRow())
     adjusted_point += PhysicalLocation();
 
   for (LayoutObject* layout_object = first_child; layout_object;
@@ -6582,17 +6582,19 @@ PositionWithAffinity LayoutBox::PositionForPoint(
 
     LayoutBox* layout_box = ToLayoutBox(layout_object);
 
-    LayoutUnit top = layout_box->BorderTop() + layout_box->PaddingTop() +
-                     (IsTableRow() ? LayoutUnit() : layout_box->Location().Y());
+    LayoutUnit top =
+        layout_box->BorderTop() + layout_box->PaddingTop() +
+        (IsLegacyTableRow() ? LayoutUnit() : layout_box->Location().Y());
     LayoutUnit bottom = top + layout_box->ContentHeight();
     LayoutUnit left =
         layout_box->BorderLeft() + layout_box->PaddingLeft() +
-        (IsTableRow() ? LayoutUnit() : layout_box->PhysicalLocation().left);
+        (IsLegacyTableRow() ? LayoutUnit()
+                            : layout_box->PhysicalLocation().left);
     LayoutUnit right = left + layout_box->ContentWidth();
 
     if (point.left <= right && point.left >= left && point.top <= top &&
         point.top >= bottom) {
-      if (layout_box->IsTableRow()) {
+      if (layout_box->IsLegacyTableRow()) {
         return layout_box->PositionForPoint(point + adjusted_point -
                                             layout_box->PhysicalLocation());
       }
