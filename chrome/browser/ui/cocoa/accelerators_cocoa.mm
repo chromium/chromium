@@ -13,6 +13,7 @@
 #include "base/memory/singleton.h"
 #include "base/stl_util.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/commander/commander.h"
 #include "printing/buildflags/buildflags.h"
 #import "ui/base/accelerators/platform_accelerator_cocoa.h"
 #import "ui/events/cocoa/cocoa_event_utils.h"
@@ -113,6 +114,11 @@ AcceleratorsCocoa::AcceleratorsCocoa() {
     ui::Accelerator accelerator(entry.key_code, entry.modifiers);
     accelerators_.insert(std::make_pair(entry.command_id, accelerator));
   }
+  if (commander::IsEnabled()) {
+    accelerators_.insert(
+        std::make_pair(IDC_TOGGLE_COMMANDER,
+                       ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN)));
+  }
 }
 
 AcceleratorsCocoa::~AcceleratorsCocoa() {}
@@ -129,4 +135,3 @@ const ui::Accelerator* AcceleratorsCocoa::GetAcceleratorForCommand(
     return NULL;
   return &it->second;
 }
-
