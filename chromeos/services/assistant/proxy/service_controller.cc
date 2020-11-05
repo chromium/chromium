@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/assistant_manager_controller.h"
+#include "chromeos/services/assistant/proxy/service_controller.h"
 
 #include "base/feature_list.h"
 #include "chromeos/assistant/internal/cros_display_connection.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/assistant/assistant_manager_service_delegate.h"
-#include "chromeos/services/assistant/assistant_manager_service_impl.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
+#include "libassistant/shared/internal_api/fuchsia_api_helper.h"
 
 namespace chromeos {
 namespace assistant {
@@ -62,7 +62,7 @@ void SetServerExperiments(
 }
 
 void SetAuthTokens(assistant_client::AssistantManager* assistant_manager,
-                   const AssistantManagerController::AuthTokens& tokens) {
+                   const ServiceController::AuthTokens& tokens) {
   assistant_manager->SetAuthTokens(tokens);
 }
 
@@ -95,14 +95,17 @@ void CreateAssistantOnCurrentThread(
     assistant_client::PlatformApi* platform_api,
     assistant_client::ActionModule* action_module,
     assistant_client::FuchsiaApiDelegate* fuchsia_api_delegate,
-    AssistantManagerServiceImpl* service,
+    assistant_client::AssistantManagerDelegate* assistant_manager_delegate,
+    assistant_client::ConversationStateListener* conversation_state_listener,
+    assistant_client::DeviceStateListener* device_state_listener,
+    AssistantEventObserver* event_observer,
     const std::string& libassistant_config,
     const std::string& locale,
     const std::string& locale_override,
     bool spoken_feedback_enabled,
-    const AssistantManagerController::AuthTokens& auth_tokens) {
+    const ServiceController::AuthTokens& auth_tokens) {
   result->display_connection = std::make_unique<CrosDisplayConnection>(
-      service, /*feedback_ui_enabled=*/true,
+      event_observer, /*feedback_ui_enabled=*/true,
       assistant::features::IsMediaSessionIntegrationEnabled());
 
   result->assistant_manager =
@@ -118,12 +121,14 @@ void CreateAssistantOnCurrentThread(
       result->display_connection.get());
   result->assistant_manager_internal->SetLocaleOverride(locale_override);
   result->assistant_manager_internal->RegisterActionModule(action_module);
-  result->assistant_manager_internal->SetAssistantManagerDelegate(service);
+  result->assistant_manager_internal->SetAssistantManagerDelegate(
+      assistant_manager_delegate);
   result->assistant_manager_internal->GetFuchsiaApiHelperOrDie()
       ->SetFuchsiaApiDelegate(fuchsia_api_delegate);
 
-  result->assistant_manager->AddConversationStateListener(service);
-  result->assistant_manager->AddDeviceStateListener(service);
+  result->assistant_manager->AddConversationStateListener(
+      conversation_state_listener);
+  result->assistant_manager->AddDeviceStateListener(device_state_listener);
 
   SetServerExperiments(result->assistant_manager_internal);
   SetAuthTokens(result->assistant_manager.get(), auth_tokens);
@@ -139,22 +144,27 @@ void CreateAssistantOnBackgroundThread(
     assistant_client::PlatformApi* platform_api,
     assistant_client::ActionModule* action_module,
     assistant_client::FuchsiaApiDelegate* fuchsia_api_delegate,
-    AssistantManagerServiceImpl* service,
+    assistant_client::AssistantManagerDelegate* assistant_manager_delegate,
+    assistant_client::ConversationStateListener* conversation_state_listener,
+    assistant_client::DeviceStateListener* device_state_listener,
+    AssistantEventObserver* event_observer,
     const std::string& libassistant_config,
     const std::string& locale,
     const std::string& locale_override,
     bool spoken_feedback_enabled,
-    const AssistantManagerController::AuthTokens& auth_tokens,
+    const ServiceController::AuthTokens& auth_tokens,
     DoneCallback done_callback) {
   auto result = std::make_unique<AssistantObjects>();
   auto* result_pointer = result.get();
   task_runner->PostTaskAndReply(
       FROM_HERE,
-      BindOnce(CreateAssistantOnCurrentThread, result_pointer, delegate,
-               platform_api, action_module, fuchsia_api_delegate, service,
-               libassistant_config, locale, locale_override,
-               spoken_feedback_enabled, auth_tokens),
-      BindOnce(
+      base::BindOnce(CreateAssistantOnCurrentThread, result_pointer, delegate,
+                     platform_api, action_module, fuchsia_api_delegate,
+                     assistant_manager_delegate, conversation_state_listener,
+                     device_state_listener, event_observer, libassistant_config,
+                     locale, locale_override, spoken_feedback_enabled,
+                     auth_tokens),
+      base::BindOnce(
           [](std::unique_ptr<AssistantObjects> result, DoneCallback callback) {
             std::move(callback).Run(std::move(result->display_connection),
                                     std::move(result->assistant_manager),
@@ -165,49 +175,65 @@ void CreateAssistantOnBackgroundThread(
 
 }  // namespace
 
-AssistantManagerController::AssistantManagerController()
-    : weak_factory_(this) {}
+ServiceController::ServiceController() : weak_factory_(this) {}
 
-AssistantManagerController::~AssistantManagerController() = default;
+ServiceController::~ServiceController() = default;
 
-void AssistantManagerController::Initialize(
-    AssistantManagerServiceImpl* service,
+void ServiceController::Start(
     scoped_refptr<base::SingleThreadTaskRunner> background_task_runner,
     AssistantManagerServiceDelegate* delegate,
     assistant_client::PlatformApi* platform_api,
     assistant_client::ActionModule* action_module,
     assistant_client::FuchsiaApiDelegate* fuchsia_api_delegate,
+    assistant_client::AssistantManagerDelegate* assistant_manager_delegate,
+    assistant_client::ConversationStateListener* conversation_state_listener,
+    assistant_client::DeviceStateListener* device_state_listener,
+    AssistantEventObserver* event_observer,
     const std::string& libassistant_config,
     const std::string& locale,
     const std::string& locale_override,
     bool spoken_feedback_enabled,
     const AuthTokens& auth_tokens,
     base::OnceClosure done_callback) {
+  // Start can only be called once (unless Stop() was called).
+  DCHECK_EQ(state_, State::kStopped);
+  state_ = State::kStarting;
+
   CreateAssistantOnBackgroundThread(
       background_task_runner, delegate, platform_api, action_module,
-      fuchsia_api_delegate, service, libassistant_config, locale,
-      locale_override, spoken_feedback_enabled, auth_tokens,
-      base::BindOnce(&AssistantManagerController::OnAssistantCreated,
+      fuchsia_api_delegate, assistant_manager_delegate,
+      conversation_state_listener, device_state_listener, event_observer,
+      libassistant_config, locale, locale_override, spoken_feedback_enabled,
+      auth_tokens,
+      base::BindOnce(&ServiceController::OnAssistantCreated,
                      weak_factory_.GetWeakPtr(), std::move(done_callback)));
 }
 
-void AssistantManagerController::UpdateInternalOptions(
-    const std::string& locale,
-    bool spoken_feedback_enabled) {
+void ServiceController::Stop() {
+  // We can not cleanly stop if we're still starting.
+  DCHECK_NE(state_, State::kStarting);
+  state_ = State::kStopped;
+
+  display_connection_ = nullptr;
+  assistant_manager_ = nullptr;
+  assistant_manager_internal_ = nullptr;
+}
+
+void ServiceController::UpdateInternalOptions(const std::string& locale,
+                                              bool spoken_feedback_enabled) {
   chromeos::assistant::UpdateInternalOptions(assistant_manager_internal(),
                                              locale, spoken_feedback_enabled);
 }
 
-void AssistantManagerController::SetAuthTokens(const AuthTokens& tokens) {
+void ServiceController::SetAuthTokens(const AuthTokens& tokens) {
   chromeos::assistant::SetAuthTokens(assistant_manager(), tokens);
 }
 
-bool AssistantManagerController::IsInitialized() const {
-  return (display_connection_ != nullptr) && (assistant_manager_ != nullptr) &&
-         (assistant_manager_internal_ != nullptr);
+bool ServiceController::IsStarted() const {
+  return state_ == State::kStarted;
 }
 
-void AssistantManagerController::OnAssistantCreated(
+void ServiceController::OnAssistantCreated(
     base::OnceClosure done_callback,
     std::unique_ptr<CrosDisplayConnection> display_connection,
     std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
@@ -215,6 +241,9 @@ void AssistantManagerController::OnAssistantCreated(
   DCHECK(display_connection);
   DCHECK(assistant_manager);
   DCHECK(assistant_manager_internal);
+
+  DCHECK_EQ(state_, State::kStarting);
+  state_ = State::kStarted;
 
   display_connection_ = std::move(display_connection);
   assistant_manager_ = std::move(assistant_manager);

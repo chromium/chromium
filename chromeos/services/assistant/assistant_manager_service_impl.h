@@ -23,6 +23,7 @@
 #include "chromeos/services/assistant/assistant_manager_service.h"
 #include "chromeos/services/assistant/assistant_settings_impl.h"
 #include "chromeos/services/assistant/chromium_api_delegate.h"
+#include "chromeos/services/assistant/proxy/assistant_proxy.h"
 #include "chromeos/services/assistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
@@ -59,10 +60,11 @@ namespace assistant {
 
 class AssistantMediaSession;
 class AssistantDeviceSettingsDelegate;
-class AssistantManagerController;
 class AssistantManagerServiceDelegate;
+class AssistantProxy;
 class CrosPlatformApi;
 class ServiceContext;
+class ServiceController;
 
 // Enumeration of Assistant query response type, also recorded in histograms.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -246,7 +248,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void InitAssistant(const base::Optional<UserInfo>& user,
                      const std::string& locale);
   void PostInitAssistant();
-  bool IsInitialized() const;
+  bool IsServiceStarted() const;
 
   // Update device id, type and locale
   void UpdateDeviceSettings();
@@ -303,7 +305,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   scoped_refptr<base::SequencedTaskRunner> main_task_runner();
 
   CrosDisplayConnection* display_connection();
-  AssistantManagerController* assistant_manager_controller();
+  ServiceController& service_controller();
+  const ServiceController& service_controller() const;
 
   void SetStateAndInformObservers(State new_state);
 
@@ -314,7 +317,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   ChromiumApiDelegate chromium_api_delegate_;
   std::unique_ptr<AssistantSettingsImpl> assistant_settings_;
 
-  std::unique_ptr<AssistantManagerController> assistant_manager_controller_;
+  std::unique_ptr<AssistantProxy> assistant_proxy_;
 
   base::ObserverList<AssistantInteractionSubscriber> interaction_subscribers_;
   mojo::Remote<media_session::mojom::MediaController> media_controller_;
