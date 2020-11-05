@@ -5807,6 +5807,55 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="LoadCountsPerTopLevelDocument">
+  <owner>fdoray@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Counts loads of each type that occured on a top-level document. Recorded
+    when a top-level document is unloaded. This can be used to diagnose changes
+    to the &quot;Total pageloads&quot; shown on stability dashboard.
+
+    Exponential bucketing is applied to all counts. The bucketing function
+    preserves exact count up until 20.
+  </summary>
+  <metric name="NumMainFrameSameDocumentLoads_Hidden">
+    <summary>
+      Number of main frame same-document loads that occurred while the page was
+      hidden.
+    </summary>
+  </metric>
+  <metric name="NumMainFrameSameDocumentLoads_Visible">
+    <summary>
+      Number of main frame same-document loads that occurred while the page was
+      visible.
+    </summary>
+  </metric>
+  <metric name="NumSubFrameDifferentDocumentLoads_Hidden">
+    <summary>
+      Number of sub frame different-document loads that occurred while the page
+      was hidden.
+    </summary>
+  </metric>
+  <metric name="NumSubFrameDifferentDocumentLoads_Visible">
+    <summary>
+      Number of sub frame different-document loads that occurred while the page
+      was visible.
+    </summary>
+  </metric>
+  <metric name="NumSubFrameSameDocumentLoads_Hidden">
+    <summary>
+      Number of sub frame same-document loads that occurred while the page was
+      hidden.
+    </summary>
+  </metric>
+  <metric name="NumSubFrameSameDocumentLoads_Visible">
+    <summary>
+      Number of sub frame same-document loads that occurred while the page was
+      visible.
+    </summary>
+  </metric>
+</event>
+
 <event name="LoadingPredictor" singular="true">
   <owner>sophiechang@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>

@@ -14,6 +14,10 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/buildflags/buildflags.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/process_manager.h"
@@ -50,6 +54,7 @@ enum class NavigationType {
   kMainFrameSameDocument = 2,
   kSubFrameSameDocument = 3,
   kNoCommit = 4,
+  kCount,
 };
 
 // This enum matches "StabilityPageLoadType" in enums.xml. The ordering
@@ -84,6 +89,14 @@ enum class LoadType {
   kMaxValue = kUnknown,
 };
 
+// Bucketize |load_count| using an exponential function to minimize bits of data
+// sent through UKM. The bucket spacing is chosen to have exact counts until 20.
+// go/exponential-bucketing-for-ukm-discussion
+int64_t BucketizeLoadCount(int load_count) {
+  constexpr double kBucketSpacing = 1.1;
+  return ukm::GetExponentialBucketMin(load_count, kBucketSpacing);
+}
+
 // Listens to content::WebContentsObserver notifications and records metrics
 // for a given WebContents.
 class PageLoadMetricsWebContentsObserver
@@ -91,15 +104,14 @@ class PageLoadMetricsWebContentsObserver
       public content::WebContentsUserData<PageLoadMetricsWebContentsObserver> {
  public:
   explicit PageLoadMetricsWebContentsObserver(
-      content::WebContents* web_contents)
-      : content::WebContentsObserver(web_contents) {}
+      content::WebContents* web_contents);
 
   PageLoadMetricsWebContentsObserver(
       const PageLoadMetricsWebContentsObserver&) = delete;
   PageLoadMetricsWebContentsObserver& operator=(
       const PageLoadMetricsWebContentsObserver&) = delete;
 
-  ~PageLoadMetricsWebContentsObserver() override = default;
+  ~PageLoadMetricsWebContentsObserver() override;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
@@ -111,6 +123,8 @@ class PageLoadMetricsWebContentsObserver
   bool IsDevTools() const;
   bool IsPrerender() const;
 
+  void RecordUKM();
+
   // content::WebContentsObserver:
   void DidStartLoading() override;
   void DidStopLoading() override;
@@ -118,10 +132,27 @@ class PageLoadMetricsWebContentsObserver
       content::NavigationHandle* navigation_handle) override;
 
   WebContentsType cached_web_contents_type_ = WebContentsType::kUnknown;
+  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 
+  // Describes the current load.
   bool is_loading_ = false;
   NavigationType navigation_type_ = NavigationType::kNoCommit;
+
+  // Counts loads since the last top-level navigation.
+  std::array<int, static_cast<size_t>(NavigationType::kCount)> visible_loads_;
+  std::array<int, static_cast<size_t>(NavigationType::kCount)> hidden_loads_;
 };
+
+PageLoadMetricsWebContentsObserver::PageLoadMetricsWebContentsObserver(
+    content::WebContents* web_contents)
+    : content::WebContentsObserver(web_contents) {
+  visible_loads_.fill(0);
+  hidden_loads_.fill(0);
+}
+
+PageLoadMetricsWebContentsObserver::~PageLoadMetricsWebContentsObserver() {
+  RecordUKM();
+}
 
 WebContentsType PageLoadMetricsWebContentsObserver::GetWebContentsType() {
   // The WebContents type cannot change from kTab, kExtension or kDevTools.
@@ -178,6 +209,35 @@ bool PageLoadMetricsWebContentsObserver::IsDevTools() const {
 #endif
 }
 
+void PageLoadMetricsWebContentsObserver::RecordUKM() {
+  if (ukm_source_id_ != ukm::kInvalidSourceId) {
+    ukm::builders::LoadCountsPerTopLevelDocument(ukm_source_id_)
+        .SetNumMainFrameSameDocumentLoads_Visible(
+            BucketizeLoadCount(visible_loads_[static_cast<size_t>(
+                NavigationType::kMainFrameSameDocument)]))
+        .SetNumMainFrameSameDocumentLoads_Hidden(
+            BucketizeLoadCount(hidden_loads_[static_cast<size_t>(
+                NavigationType::kMainFrameSameDocument)]))
+        .SetNumSubFrameDifferentDocumentLoads_Visible(
+            BucketizeLoadCount(visible_loads_[static_cast<size_t>(
+                NavigationType::kSubFrameDifferentDocument)]))
+        .SetNumSubFrameDifferentDocumentLoads_Hidden(
+            BucketizeLoadCount(hidden_loads_[static_cast<size_t>(
+                NavigationType::kSubFrameDifferentDocument)]))
+        .SetNumSubFrameSameDocumentLoads_Visible(
+            BucketizeLoadCount(visible_loads_[static_cast<size_t>(
+                NavigationType::kSubFrameSameDocument)]))
+        .SetNumSubFrameSameDocumentLoads_Hidden(
+            BucketizeLoadCount(hidden_loads_[static_cast<size_t>(
+                NavigationType::kSubFrameSameDocument)]))
+        .Record(ukm::UkmRecorder::Get());
+  }
+
+  ukm_source_id_ = ukm::kInvalidSourceId;
+  visible_loads_.fill(0);
+  hidden_loads_.fill(0);
+}
+
 void PageLoadMetricsWebContentsObserver::DidStartLoading() {
   DCHECK(web_contents()->IsLoading());
 
@@ -228,6 +288,11 @@ void PageLoadMetricsWebContentsObserver::DidStopLoading() {
     }
   }
 
+  if (web_contents()->GetVisibility() == content::Visibility::VISIBLE)
+    ++visible_loads_[static_cast<int>(navigation_type_)];
+  else
+    ++hidden_loads_[static_cast<int>(navigation_type_)];
+
   is_loading_ = false;
   navigation_type_ = NavigationType::kNoCommit;
 
@@ -240,6 +305,13 @@ void PageLoadMetricsWebContentsObserver::DidFinishNavigation(
     return;
 
   DCHECK(is_loading_);
+
+  if (navigation_handle->IsInMainFrame() &&
+      !navigation_handle->IsSameDocument()) {
+    RecordUKM();
+    ukm_source_id_ = ukm::ConvertToSourceId(
+        navigation_handle->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
+  }
 
   NavigationType navigation_type;
   if (navigation_handle->IsSameDocument()) {
