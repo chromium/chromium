@@ -41,12 +41,13 @@ inline float FlipRtl(float value, TextDirection direction) {
 }
 
 inline bool IsBreakableSpace(UChar ch) {
-  return LazyLineBreakIterator::IsBreakableSpace(ch);
+  return LazyLineBreakIterator::IsBreakableSpace(ch) ||
+         Character::IsOtherSpaceSeparator(ch);
 }
 
 bool IsAllSpaces(const String& text, unsigned start, unsigned end) {
   return StringView(text, start, end - start)
-      .IsAllSpecialCharacters<LazyLineBreakIterator::IsBreakableSpace>();
+      .IsAllSpecialCharacters<IsBreakableSpace>();
 }
 
 bool ShouldHyphenate(const String& text, unsigned start, unsigned end) {

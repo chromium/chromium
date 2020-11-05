@@ -100,9 +100,7 @@ const UChar kHyphenCharacter = 0x2010;
 const UChar kHyphenMinusCharacter = 0x002D;
 const UChar kIdeographicCommaCharacter = 0x3001;
 const UChar kIdeographicFullStopCharacter = 0x3002;
-#if defined(USING_SYSTEM_ICU)
-const UChar ideographicSpaceCharacter = 0x3000;
-#endif
+const UChar kIdeographicSpaceCharacter = 0x3000;
 const UChar kInhibitArabicFormShapingCharacter = 0x206C;
 const UChar kInhibitSymmetricSwappingCharacter = 0x206A;
 const UChar kLatinCapitalLetterIWithDotAbove = 0x0130;
@@ -252,9 +250,7 @@ using WTF::unicode::kHyphenCharacter;
 using WTF::unicode::kHyphenMinusCharacter;
 using WTF::unicode::kIdeographicCommaCharacter;
 using WTF::unicode::kIdeographicFullStopCharacter;
-#if defined(USING_SYSTEM_ICU)
-using WTF::unicode::ideographicSpaceCharacter;
-#endif
+using WTF::unicode::kIdeographicSpaceCharacter;
 using WTF::unicode::kInhibitArabicFormShapingCharacter;
 using WTF::unicode::kInhibitSymmetricSwappingCharacter;
 using WTF::unicode::kLatinCapitalLetterIWithDotAbove;

@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shaping_line_breaker.h"
+#include "third_party/blink/renderer/platform/text/character.h"
 
 namespace blink {
 
@@ -32,6 +33,10 @@ namespace {
 // characters, but breaking before newline characters is not desired.
 inline bool IsBreakableSpace(UChar c) {
   return c == kSpaceCharacter || c == kTabulationCharacter;
+}
+
+inline bool IsBreakableSpaceOrOtherSeparator(UChar c) {
+  return IsBreakableSpace(c) || Character::IsOtherSpaceSeparator(c);
 }
 
 inline bool IsAllBreakableSpaces(const String& string,
@@ -1183,7 +1188,8 @@ void NGLineBreaker::HandleTrailingSpaces(const NGInlineItem& item,
     return;
   }
 
-  if (style.CollapseWhiteSpace()) {
+  if (style.CollapseWhiteSpace() &&
+      !Character::IsOtherSpaceSeparator(text[offset_])) {
     if (text[offset_] != kSpaceCharacter) {
       if (offset_ > 0 && IsBreakableSpace(text[offset_ - 1]))
         trailing_whitespace_ = WhitespaceState::kCollapsible;
@@ -1203,12 +1209,14 @@ void NGLineBreaker::HandleTrailingSpaces(const NGInlineItem& item,
   } else if (style.WhiteSpace() != EWhiteSpace::kBreakSpaces) {
     // Find the end of the run of space characters in this item.
     // Other white space characters (e.g., tab) are not included in this item.
-    DCHECK(style.BreakOnlyAfterWhiteSpace());
+    DCHECK(style.BreakOnlyAfterWhiteSpace() ||
+           Character::IsOtherSpaceSeparator(text[offset_]));
     unsigned end = offset_;
-    while (end < item.EndOffset() && IsBreakableSpace(text[end]))
+    while (end < item.EndOffset() &&
+           IsBreakableSpaceOrOtherSeparator(text[end]))
       end++;
     if (end == offset_) {
-      if (IsBreakableSpace(text[end - 1]))
+      if (IsBreakableSpaceOrOtherSeparator(text[end - 1]))
         trailing_whitespace_ = WhitespaceState::kPreserved;
       state_ = LineBreakState::kDone;
       return;
@@ -1235,7 +1243,7 @@ void NGLineBreaker::HandleTrailingSpaces(const NGInlineItem& item,
     }
     position_ += item_result->inline_size;
     item_result->can_break_after =
-        end < text.length() && !IsBreakableSpace(text[end]);
+        end < text.length() && !IsBreakableSpaceOrOtherSeparator(text[end]);
     offset_ = end;
     trailing_whitespace_ = WhitespaceState::kPreserved;
   }

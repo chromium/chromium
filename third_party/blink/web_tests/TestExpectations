@@ -1645,24 +1645,14 @@ crbug.com/1008029 external/wpt/css/css-text/white-space/textarea-pre-wrap-013.ht
 crbug.com/1071928 external/wpt/css/css-text/white-space/white-space-intrinsic-size-013.html [ Failure ]
 crbug.com/1071928 external/wpt/css/css-text/white-space/white-space-intrinsic-size-014.html [ Failure ]
 
-# Handling of trailing other spaces is not implemented yet.
-crbug.com/991413 external/wpt/css/css-text/white-space/trailing-other-space-separators-001.html [ Skip ]
-crbug.com/991413 external/wpt/css/css-text/white-space/trailing-other-space-separators-002.html [ Skip ]
-crbug.com/991413 external/wpt/css/css-text/white-space/trailing-other-space-separators-003.html [ Skip ]
-crbug.com/991413 external/wpt/css/css-text/white-space/trailing-other-space-separators-004.html [ Skip ]
-crbug.com/991413 external/wpt/css/css-text/white-space/trailing-other-space-separators-break-spaces-001.html [ Skip ]
-crbug.com/991413 external/wpt/css/css-text/white-space/trailing-other-space-separators-break-spaces-002.html [ Skip ]
-crbug.com/991413 external/wpt/css/css-text/white-space/trailing-other-space-separators-break-spaces-003.html [ Skip ]
-crbug.com/991413 external/wpt/css/css-text/white-space/trailing-other-space-separators-break-spaces-004.html [ Skip ]
-crbug.com/991413 external/wpt/css/css-text/white-space/trailing-other-space-separators-break-spaces-005.html [ Skip ]
-crbug.com/991413 external/wpt/css/css-text/white-space/trailing-other-space-separators-break-spaces-006.html [ Skip ]
-crbug.com/991413 external/wpt/css/css-text/white-space/trailing-other-space-separators-break-spaces-007.html [ Skip ]
-crbug.com/991413 external/wpt/css/css-text/white-space/trailing-other-space-separators-break-spaces-008.html [ Skip ]
-crbug.com/991413 external/wpt/css/css-text/white-space/trailing-other-space-separators-break-spaces-010.html [ Skip ]
-crbug.com/991413 external/wpt/css/css-text/white-space/trailing-other-space-separators-break-spaces-011.html [ Skip ]
-crbug.com/991413 external/wpt/css/css-text/white-space/trailing-other-space-separators-break-spaces-012.html [ Skip ]
-crbug.com/991413 external/wpt/css/css-text/white-space/trailing-other-space-separators-break-spaces-014.html [ Skip ]
-crbug.com/991413 external/wpt/css/css-text/white-space/trailing-other-space-separators-break-spaces-015.html [ Skip ]
+# Handling of trailing other space separator
+crbug.com/1129834 external/wpt/css/css-text/white-space/trailing-other-space-separators-001.html [ Failure ]
+crbug.com/1129834 external/wpt/css/css-text/white-space/trailing-other-space-separators-002.html [ Failure ]
+crbug.com/1129834 external/wpt/css/css-text/white-space/trailing-other-space-separators-003.html [ Failure ]
+crbug.com/1129834 external/wpt/css/css-text/white-space/trailing-other-space-separators-004.html [ Failure ]
+crbug.com/972992 external/wpt/css/css-text/white-space/trailing-ideographic-space-001.html [ Failure ]
+crbug.com/972992 external/wpt/css/css-text/white-space/trailing-ideographic-space-002.html [ Failure ]
+
 
 # Follow up the spec change for U+2010, U+2013
 crbug.com/1052717 external/wpt/css/css-text/line-break/line-break-loose-hyphens-001.html [ Failure ]
@@ -2895,15 +2885,11 @@ crbug.com/626703 external/wpt/html/browsers/the-window-object/apis-for-creating-
 crbug.com/626703 external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-negative-innerwidth-innerheight.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-bidi-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-nesting-002.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-text/white-space/trailing-ideographic-space-001.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-text/white-space/trailing-ideographic-space-003.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-nesting-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-bidi-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-end-of-line-001.html [ Failure ]
 crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-destroy-script-execution.html [ Timeout ]
 crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-no-sink.https.html [ Timeout ]
-crbug.com/626703 external/wpt/css/css-text/white-space/trailing-ideographic-space-002.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-text/white-space/trailing-ideographic-space-004.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-will-change/will-change-abspos-cb-dynamic-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-will-change/will-change-abspos-cb-001.html [ Failure ]
 ### See crbug.com/891427 comment near the top of this file:
