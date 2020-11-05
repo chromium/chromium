@@ -351,7 +351,7 @@ class QueueTouchEventDelegate : public GestureEventConsumeDelegate {
           synchronous_ack_for_next_event_ == AckState::CONSUMED
               ? ui::ER_CONSUMED
               : ui::ER_UNHANDLED,
-          false /* is_source_touch_event_set_non_blocking */, window_);
+          false /* is_source_touch_event_set_blocking */, window_);
       synchronous_ack_for_next_event_ = AckState::PENDING;
     } else {
       sent_events_ids_.push_back(event->unique_event_id());
@@ -389,7 +389,7 @@ class QueueTouchEventDelegate : public GestureEventConsumeDelegate {
     dispatcher_->ProcessedTouchEvent(
         sent_event_id, window_,
         prevent_defaulted ? ui::ER_HANDLED : ui::ER_UNHANDLED,
-        false /* is_source_touch_event_set_non_blocking */);
+        false /* is_source_touch_event_set_blocking */);
   }
 
   Window* window_;

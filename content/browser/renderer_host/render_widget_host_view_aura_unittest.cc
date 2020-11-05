@@ -209,14 +209,12 @@ class FakeWindowEventDispatcher : public aura::WindowEventDispatcher {
   FakeWindowEventDispatcher(aura::WindowTreeHost* host)
       : WindowEventDispatcher(host), processed_touch_event_count_(0) {}
 
-  void ProcessedTouchEvent(
-      uint32_t unique_event_id,
-      aura::Window* window,
-      ui::EventResult result,
-      bool is_source_touch_event_set_non_blocking) override {
+  void ProcessedTouchEvent(uint32_t unique_event_id,
+                           aura::Window* window,
+                           ui::EventResult result,
+                           bool is_source_touch_event_set_blocking) override {
     WindowEventDispatcher::ProcessedTouchEvent(
-        unique_event_id, window, result,
-        is_source_touch_event_set_non_blocking);
+        unique_event_id, window, result, is_source_touch_event_set_blocking);
     processed_touch_event_count_++;
   }
 
@@ -2344,7 +2342,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
       blink::mojom::InputEventResultState::kConsumed);
 
   ui::GestureEventDetails gesture_tap_down_details(ui::ET_GESTURE_TAP_DOWN);
-  gesture_tap_down_details.set_is_source_touch_event_set_non_blocking(true);
+  gesture_tap_down_details.set_is_source_touch_event_set_blocking(true);
   gesture_tap_down_details.set_device_type(
       ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
   ui::GestureEvent gesture_tap_down(2, 2, 0, ui::EventTimeForNow(),

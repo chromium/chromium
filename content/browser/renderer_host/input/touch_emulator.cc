@@ -288,12 +288,12 @@ bool TouchEmulator::HandleEmulatedTouchEvent(
     return true;
 
   const bool event_consumed = true;
-  const bool is_source_touch_event_set_non_blocking = false;
+  const bool is_source_touch_event_set_blocking = false;
   // Block emulated event when emulated native stream is active.
   if (native_stream_active_sequence_count_) {
     gesture_provider_->OnTouchEventAck(event.unique_touch_event_id,
                                        event_consumed,
-                                       is_source_touch_event_set_non_blocking);
+                                       is_source_touch_event_set_blocking);
     return true;
   }
 
@@ -302,7 +302,7 @@ bool TouchEmulator::HandleEmulatedTouchEvent(
   if (!emulated_stream_active_sequence_count_ && !is_sequence_start) {
     gesture_provider_->OnTouchEventAck(event.unique_touch_event_id,
                                        event_consumed,
-                                       is_source_touch_event_set_non_blocking);
+                                       is_source_touch_event_set_blocking);
     return true;
   }
 

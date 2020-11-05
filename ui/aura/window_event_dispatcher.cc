@@ -184,11 +184,10 @@ void WindowEventDispatcher::ProcessedTouchEvent(
     uint32_t unique_event_id,
     Window* window,
     ui::EventResult result,
-    bool is_source_touch_event_set_non_blocking) {
+    bool is_source_touch_event_set_blocking) {
   ui::GestureRecognizer::Gestures gestures =
       Env::GetInstance()->gesture_recognizer()->AckTouchEvent(
-          unique_event_id, result, is_source_touch_event_set_non_blocking,
-          window);
+          unique_event_id, result, is_source_touch_event_set_blocking, window);
   DispatchDetails details = ProcessGestures(window, std::move(gestures));
   if (details.dispatcher_destroyed)
     return;
@@ -575,7 +574,7 @@ ui::EventDispatchDetails WindowEventDispatcher::PostDispatchEvent(
         ui::GestureRecognizer::Gestures gestures =
             Env::GetInstance()->gesture_recognizer()->AckTouchEvent(
                 touchevent.unique_event_id(), event.result(),
-                false /* is_source_touch_event_set_non_blocking */, window);
+                false /* is_source_touch_event_set_blocking */, window);
 
         return ProcessGestures(window, std::move(gestures));
       }

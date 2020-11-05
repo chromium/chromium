@@ -27,7 +27,7 @@ class EVENTS_EXPORT GestureRecognizerImplMac : public GestureRecognizer {
                                     GestureConsumer* consumer) override;
   Gestures AckTouchEvent(uint32_t unique_event_id,
                          ui::EventResult result,
-                         bool is_source_touch_event_set_non_blocking,
+                         bool is_source_touch_event_set_blocking,
                          GestureConsumer* consumer) override;
   bool CleanupStateForConsumer(GestureConsumer* consumer) override;
   GestureConsumer* GetTouchLockedTarget(const TouchEvent& event) override;

@@ -227,7 +227,7 @@ ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
     if (gesture_provider_->OnTouchEvent(&touch_event_dip)) {
       gesture_provider_->OnTouchEventAck(
           touch_event_dip.unique_event_id(), false /* event_consumed */,
-          false /* is_source_touch_event_set_non_blocking */);
+          false /* is_source_touch_event_set_blocking */);
     }
     ProcessGestureEvents();
   }

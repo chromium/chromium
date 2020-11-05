@@ -47,7 +47,7 @@ class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilter {
   // OnTouchEventAck must be called upon receipt of every touch event ack.
   void OnTouchEventAck(uint32_t unique_touch_event_id,
                        bool event_consumed,
-                       bool is_source_touch_event_set_non_blocking);
+                       bool is_source_touch_event_set_blocking);
 
   // Whether there are any active gesture sequences still queued in the filter.
   bool IsEmpty() const;

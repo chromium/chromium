@@ -1009,7 +1009,7 @@ TEST_F(WindowEventDispatcherTest, CallToProcessedTouchEvent) {
 
   host()->dispatcher()->ProcessedTouchEvent(
       0, window.get(), ui::ER_UNHANDLED,
-      false /* is_source_touch_event_set_non_blocking */);
+      false /* is_source_touch_event_set_blocking */);
 }
 
 // This event handler requests the dispatcher to start holding pointer-move
@@ -2873,7 +2873,7 @@ class AsyncWindowDelegate : public test::TestWindowDelegate {
     event->DisableSynchronousHandling();
     dispatcher_->ProcessedTouchEvent(
         event->unique_event_id(), window_, ui::ER_UNHANDLED,
-        false /* is_source_touch_event_set_non_blocking */);
+        false /* is_source_touch_event_set_blocking */);
     event->StopPropagation();
   }
 

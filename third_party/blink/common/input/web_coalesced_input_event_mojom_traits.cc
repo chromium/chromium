@@ -125,8 +125,8 @@ bool StructTraits<blink::mojom::EventDataView,
         static_cast<blink::WebGestureEvent*>(input_event.get());
     gesture_event->SetPositionInWidget(gesture_data->widget_position);
     gesture_event->SetPositionInScreen(gesture_data->screen_position);
-    gesture_event->is_source_touch_event_set_non_blocking =
-        gesture_data->is_source_touch_event_set_non_blocking;
+    gesture_event->is_source_touch_event_set_blocking =
+        gesture_data->is_source_touch_event_set_blocking;
     gesture_event->primary_pointer_type = gesture_data->primary_pointer_type;
     gesture_event->SetSourceDevice(gesture_data->source_device);
     gesture_event->unique_touch_event_id = gesture_data->unique_touch_event_id;
@@ -422,8 +422,8 @@ StructTraits<blink::mojom::EventDataView,
   gesture_data->screen_position = gesture_event->PositionInScreen();
   gesture_data->widget_position = gesture_event->PositionInWidget();
   gesture_data->source_device = gesture_event->SourceDevice();
-  gesture_data->is_source_touch_event_set_non_blocking =
-      gesture_event->is_source_touch_event_set_non_blocking;
+  gesture_data->is_source_touch_event_set_blocking =
+      gesture_event->is_source_touch_event_set_blocking;
   gesture_data->primary_pointer_type = gesture_event->primary_pointer_type;
   gesture_data->unique_touch_event_id = gesture_event->unique_touch_event_id;
   switch (gesture_event->GetType()) {

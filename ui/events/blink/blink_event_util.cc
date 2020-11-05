@@ -322,8 +322,8 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
   gesture.SetPositionInWidget(location);
   gesture.SetPositionInScreen(raw_location);
 
-  gesture.is_source_touch_event_set_non_blocking =
-      details.is_source_touch_event_set_non_blocking();
+  gesture.is_source_touch_event_set_blocking =
+      details.is_source_touch_event_set_blocking();
   gesture.primary_pointer_type =
       ToWebPointerType(details.primary_pointer_type());
   gesture.unique_touch_event_id = unique_touch_event_id;

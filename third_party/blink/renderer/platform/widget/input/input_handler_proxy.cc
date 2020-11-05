@@ -325,7 +325,7 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
     // latency to so we flush the queue immediately. This happens only for the
     // first scroll update because once a scroll starts touch events are
     // dispatched non-blocking so scroll updates don't wait for a touch ACK.
-    // The |is_source_touch_event_set_non_blocking| bit is set based on the
+    // The |is_source_touch_event_set_blocking| bit is set based on the
     // renderer's reply that a blocking touch stream should be made
     // non-blocking. Note: unlike wheel events below, the first GSU in a touch
     // may have come from a non-blocking touch sequence, e.g. if the earlier
@@ -333,7 +333,7 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
     // of this, we can't simply look at the first GSU like wheels do.
     bool is_from_blocking_touch =
         gesture_event.SourceDevice() == WebGestureDevice::kTouchscreen &&
-        gesture_event.is_source_touch_event_set_non_blocking;
+        gesture_event.is_source_touch_event_set_blocking;
 
     // TODO(bokan): This was added in https://crrev.com/c/557463 before async
     // wheel events. It's not clear to me why flushing on a scroll end would

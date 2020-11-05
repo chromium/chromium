@@ -128,7 +128,7 @@ struct GestureData {
   gfx.mojom.PointF screen_position;
   gfx.mojom.PointF widget_position;
   blink.mojom.GestureDevice source_device;
-  bool is_source_touch_event_set_non_blocking;
+  bool is_source_touch_event_set_blocking;
   ui.mojom.EventPointerType primary_pointer_type;
   int32 unique_touch_event_id;
   gfx.mojom.Size? contact_size;

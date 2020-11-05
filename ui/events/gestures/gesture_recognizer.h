@@ -36,7 +36,7 @@ class EVENTS_EXPORT GestureRecognizer {
   // the queue which matches with unique_event_id.
   virtual Gestures AckTouchEvent(uint32_t unique_event_id,
                                  ui::EventResult result,
-                                 bool is_source_touch_event_set_non_blocking,
+                                 bool is_source_touch_event_set_blocking,
                                  GestureConsumer* consumer) = 0;
 
   // This is called when the consumer is destroyed. So this should cleanup any

@@ -542,7 +542,7 @@ ui::EventDispatchDetails MagnificationController::RewriteEvent(
   if (gesture_provider_->OnTouchEvent(&touch_event_copy)) {
     gesture_provider_->OnTouchEventAck(
         touch_event_copy.unique_event_id(), false /* event_consumed */,
-        false /* is_source_touch_event_set_non_blocking */);
+        false /* is_source_touch_event_set_blocking */);
   } else {
     return DiscardEvent(continuation);
   }

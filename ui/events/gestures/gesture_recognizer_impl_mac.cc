@@ -18,7 +18,7 @@ bool GestureRecognizerImplMac::ProcessTouchEventPreDispatch(
 GestureRecognizer::Gestures GestureRecognizerImplMac::AckTouchEvent(
     uint32_t unique_event_id,
     ui::EventResult result,
-    bool is_source_touch_event_set_non_blocking,
+    bool is_source_touch_event_set_blocking,
     GestureConsumer* consumer) {
   return {};
 }

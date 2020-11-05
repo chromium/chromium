@@ -194,7 +194,7 @@ TouchDispositionGestureFilter::OnGesturePacket(
 void TouchDispositionGestureFilter::OnTouchEventAck(
     uint32_t unique_touch_event_id,
     bool event_consumed,
-    bool is_source_touch_event_set_non_blocking) {
+    bool is_source_touch_event_set_blocking) {
   // Spurious asynchronous acks should not trigger a crash.
   if (IsEmpty() || (Head().empty() && sequences_.size() == 1))
     return;
@@ -207,13 +207,13 @@ void TouchDispositionGestureFilter::OnTouchEventAck(
   if (!Tail().empty() &&
       Tail().back().unique_touch_event_id() == unique_touch_event_id &&
       Tail().back().gesture_source() != GestureEventDataPacket::TOUCH_TIMEOUT) {
-    Tail().back().Ack(event_consumed, is_source_touch_event_set_non_blocking);
+    Tail().back().Ack(event_consumed, is_source_touch_event_set_blocking);
     if (sequences_.size() == 1 && Tail().size() == 1)
       SendAckedEvents();
   } else {
     DCHECK(!Head().empty());
     DCHECK_EQ(Head().front().unique_touch_event_id(), unique_touch_event_id);
-    Head().front().Ack(event_consumed, is_source_touch_event_set_non_blocking);
+    Head().front().Ack(event_consumed, is_source_touch_event_set_blocking);
     SendAckedEvents();
   }
 }

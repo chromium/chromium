@@ -26,7 +26,7 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
  public:
   using InertialPhaseState = mojom::InertialPhaseState;
 
-  bool is_source_touch_event_set_non_blocking = false;
+  bool is_source_touch_event_set_blocking = false;
 
   // The pointer type for the first touch point in the gesture.
   WebPointerProperties::PointerType primary_pointer_type =

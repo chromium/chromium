@@ -113,12 +113,12 @@ GestureEventDataPacket GestureEventDataPacket::FromTouchTimeout(
 }
 
 void GestureEventDataPacket::Ack(bool event_consumed,
-                                 bool is_source_touch_event_set_non_blocking) {
+                                 bool is_source_touch_event_set_blocking) {
   DCHECK_EQ(static_cast<int>(ack_state_), static_cast<int>(AckState::PENDING));
   ack_state_ = event_consumed ? AckState::CONSUMED : AckState::UNCONSUMED;
   for (auto& gesture : gestures_.container()) {
-    gesture.details.set_is_source_touch_event_set_non_blocking(
-        is_source_touch_event_set_non_blocking);
+    gesture.details.set_is_source_touch_event_set_blocking(
+        is_source_touch_event_set_blocking);
   }
 }
 

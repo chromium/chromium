@@ -285,7 +285,7 @@ void BackGestureEventHandler::OnTouchEvent(ui::TouchEvent* event) {
 
     gesture_provider_.OnTouchEventAck(
         touch_event_copy.unique_event_id(), /*event_consumed=*/false,
-        /*is_source_touch_event_set_non_blocking=*/false);
+        /*is_source_touch_event_set_blocking=*/false);
 
     std::vector<std::unique_ptr<ui::GestureEvent>> gestures =
         gesture_provider_.GetAndResetPendingGestures();
