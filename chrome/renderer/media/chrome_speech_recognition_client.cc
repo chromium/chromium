@@ -177,10 +177,14 @@ void ChromeSpeechRecognitionClient::Initialize() {
   render_frame_->GetBrowserInterfaceBroker()->GetInterface(
       caption_host_.BindNewPipeAndPassReceiver());
 
-  is_website_blocked_ = IsUrlBlocked(
-      render_frame_->GetWebFrame()->GetSecurityOrigin().ToString().Utf8());
-  base::UmaHistogramBoolean("Accessibility.LiveCaption.WebsiteBlocked",
-                            is_website_blocked_);
+  if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
+    is_website_blocked_ = false;
+  } else {
+    is_website_blocked_ = IsUrlBlocked(
+        render_frame_->GetWebFrame()->GetSecurityOrigin().ToString().Utf8());
+    base::UmaHistogramBoolean("Accessibility.LiveCaption.WebsiteBlocked",
+                              is_website_blocked_);
+  }
 
   speech_recognition_context_.set_disconnect_handler(media::BindToCurrentLoop(
       base::BindOnce(&ChromeSpeechRecognitionClient::OnRecognizerDisconnected,
