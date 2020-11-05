@@ -26,6 +26,7 @@ class WebUIBubbleView : public views::WebView,
   class Host {
    public:
     virtual void ShowUI() = 0;
+    virtual void CloseUI() = 0;
     virtual void OnWebViewSizeChanged() = 0;
   };
 
@@ -63,6 +64,7 @@ class WebUIBubbleView : public views::WebView,
 
   // MojoBubbleWebUIController::Embedder:
   void ShowUI() override;
+  void CloseUI() override;
 
  private:
   // |host_| does not always have to be set. The WebUIBubbleView can be cached

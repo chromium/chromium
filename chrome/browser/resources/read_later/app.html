@@ -1,11 +1,29 @@
 <style include="mwb-shared-style">
+  #top-container {
+    display: flex;
+  }
+
   #header {
     align-items: center;
     display: flex;
+    flex-grow: 1;
     font-size: 15px;
     height: var(--mwb-item-height);
     margin: 0;
     padding-inline-start: var(--mwb-list-item-horizontal-margin);
+  }
+
+  cr-icon-button {
+    border-radius: 50%;
+    margin-inline-end: 4px;
+    margin-top: 4px;
+    --cr-icon-button-fill-color: var(--google-grey-refresh-700);
+    --cr-icon-button-icon-size: var(--mwb-icon-size);
+    --cr-icon-button-size: 24px;
+  }
+
+  cr-icon-button:hover {
+    background-color: rgba(var(--google-grey-900-rgb), .1);
   }
 
   #read-later-list {
@@ -26,7 +44,13 @@
   }
 </style>
 
-<div id="header">$i18n{title}</div>
+<div id="top-container">
+  <div id="header">$i18n{title}</div>
+  <cr-icon-button id="closeButton" aria-label="$i18n{tooltipClose}"
+      disable-ripple iron-icon="cr:close" on-click="onCloseClick_"
+      title="$i18n{tooltipClose}">
+  </cr-icon-button>
+</div>
 <div id="read-later-list">
   <div class="sub-heading">$i18n{unreadHeader}</div>
   <template id="ureadItemsList" is="dom-repeat" items="[[unreadItems_]]">

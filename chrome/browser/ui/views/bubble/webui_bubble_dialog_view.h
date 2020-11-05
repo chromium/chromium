@@ -31,6 +31,7 @@ class WebUIBubbleDialogView : public views::BubbleDialogDelegateView,
 
   // WebUIBubbleView::Host:
   void ShowUI() override;
+  void CloseUI() override;
   void OnWebViewSizeChanged() override;
 
  private:

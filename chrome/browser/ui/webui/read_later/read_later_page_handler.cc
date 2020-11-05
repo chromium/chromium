@@ -102,6 +102,12 @@ void ReadLaterPageHandler::ShowUI() {
     embedder->ShowUI();
 }
 
+void ReadLaterPageHandler::CloseUI() {
+  auto embedder = read_later_ui_->embedder();
+  if (embedder)
+    embedder->CloseUI();
+}
+
 read_later::mojom::ReadLaterEntryPtr ReadLaterPageHandler::GetEntryData(
     const ReadingListEntry* entry) {
   auto entry_data = read_later::mojom::ReadLaterEntry::New();

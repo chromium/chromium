@@ -73,3 +73,8 @@ void WebUIBubbleView::ShowUI() {
   if (host_)
     host_->ShowUI();
 }
+
+void WebUIBubbleView::CloseUI() {
+  if (host_)
+    host_->CloseUI();
+}

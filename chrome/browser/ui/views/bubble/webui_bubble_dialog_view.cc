@@ -70,6 +70,12 @@ void WebUIBubbleDialogView::ShowUI() {
   web_view_->GetWebContents()->Focus();
 }
 
+void WebUIBubbleDialogView::CloseUI() {
+  DCHECK(GetWidget());
+  GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+}
+
 void WebUIBubbleDialogView::OnWebViewSizeChanged() {
   SizeToContents();
 }

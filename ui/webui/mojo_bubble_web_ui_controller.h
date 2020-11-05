@@ -20,6 +20,7 @@ class MojoBubbleWebUIController : public MojoWebUIController {
   class Embedder {
    public:
     virtual void ShowUI() = 0;
+    virtual void CloseUI() = 0;
   };
 
   // By default MojoBubbleWebUIController do not have normal WebUI bindings.

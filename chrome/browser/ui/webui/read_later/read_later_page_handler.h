@@ -39,6 +39,7 @@ class ReadLaterPageHandler : public read_later::mojom::PageHandler {
   void UpdateReadStatus(const GURL& url, bool read) override;
   void RemoveEntry(const GURL& url) override;
   void ShowUI() override;
+  void CloseUI() override;
 
  private:
   // Gets the reading list entry data used for displaying to the user and

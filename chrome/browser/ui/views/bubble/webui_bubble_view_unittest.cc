@@ -27,13 +27,16 @@ namespace {
 class MockHost : public WebUIBubbleView::Host {
  public:
   void ShowUI() override { ++show_ui_called_; }
+  void CloseUI() override { ++close_ui_called_; }
   void OnWebViewSizeChanged() override { ++size_changed_called_; }
 
   int show_ui_called() const { return show_ui_called_; }
+  int close_ui_called() const { return close_ui_called_; }
   int size_changed_called() const { return size_changed_called_; }
 
  private:
   int show_ui_called_ = 0;
+  int close_ui_called_ = 0;
   int size_changed_called_ = 0;
 };
 
@@ -116,6 +119,12 @@ TEST_F(WebUIBubbleViewTest, ShowUINotifiesHost) {
   EXPECT_EQ(0, host().show_ui_called());
   web_view()->ShowUI();
   EXPECT_EQ(1, host().show_ui_called());
+}
+
+TEST_F(WebUIBubbleViewTest, CloseUINotifiesHost) {
+  EXPECT_EQ(0, host().close_ui_called());
+  web_view()->CloseUI();
+  EXPECT_EQ(1, host().close_ui_called());
 }
 
 }  // namespace test

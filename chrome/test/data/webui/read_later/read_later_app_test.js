@@ -145,4 +145,11 @@ suite('ReadLaterAppTest', () => {
     const url = await testProxy.whenCalled('removeEntry');
     assertEquals(expectedUrl, url);
   });
+
+  test('Click on menu button triggers actions', async () => {
+    const readLaterCloseButton =
+        readLaterApp.shadowRoot.querySelector('#closeButton');
+    readLaterCloseButton.click();
+    await testProxy.whenCalled('closeUI');
+  });
 });

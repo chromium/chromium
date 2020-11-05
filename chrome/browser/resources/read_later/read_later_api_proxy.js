@@ -30,6 +30,8 @@ export class ReadLaterApiProxy {
 
   showUI() {}
 
+  closeUI() {}
+
   /** @return {!readLater.mojom.PageCallbackRouter} */
   getCallbackRouter() {}
 }
@@ -72,6 +74,11 @@ export class ReadLaterApiProxyImpl {
   /** @override */
   showUI() {
     this.handler.showUI();
+  }
+
+  /** @override */
+  closeUI() {
+    this.handler.closeUI();
   }
 
   /** @override */
