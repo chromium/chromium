@@ -10,17 +10,10 @@
 namespace ash {
 namespace hud_display {
 
-CompositorStats::CompositorStats(Observer* observer, ui::Compositor* compositor)
-    : observer_(observer), compositor_(compositor) {
-  compositor_->AddObserver(this);
-}
-
-CompositorStats::~CompositorStats() {
-  compositor_->RemoveObserver(this);
-}
+CompositorStats::CompositorStats() = default;
+CompositorStats::~CompositorStats() = default;
 
 void CompositorStats::OnDidPresentCompositorFrame(
-    uint32_t frame_token,
     const gfx::PresentationFeedback& feedback) {
   constexpr base::TimeDelta kOneSec = base::TimeDelta::FromSeconds(1);
   constexpr base::TimeDelta k500ms = base::TimeDelta::FromMilliseconds(500);
@@ -31,18 +24,13 @@ void CompositorStats::OnDidPresentCompositorFrame(
   while (!presented_times_.empty() && presented_times_.front() <= deadline_1s)
     presented_times_.pop_front();
 
-  const float frame_rate_1s = presented_times_.size();
-
   const base::TimeTicks deadline_500ms = feedback.timestamp - k500ms;
-  float frame_rate_500ms = 0;
+  frame_rate_for_last_half_second_ = 0;
   for (auto i = presented_times_.crbegin();
        (i != presented_times_.crend()) && (*i > deadline_500ms); ++i) {
-    ++frame_rate_500ms;
+    ++frame_rate_for_last_half_second_;
   }
-
-  frame_rate_500ms *= 2;  // per second
-  observer_->OnFramePresented(frame_rate_1s, frame_rate_500ms,
-                              compositor_->refresh_rate());
+  frame_rate_for_last_half_second_ *= 2;
 }
 
 }  // namespace hud_display

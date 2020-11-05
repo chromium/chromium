@@ -16,6 +16,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace hud_display {
@@ -46,10 +47,7 @@ FPSGraphPageView::FPSGraphPageView(const base::TimeDelta refresh_interval)
                     Graph::Baseline::BASELINE_BOTTOM,
                     Graph::Fill::NONE,
                     Graph::Style::SKYLINE,
-                    kHUDBackground /*not drawn*/),
-      compositor_stats_(
-          this,
-          Shell::Get()->GetAllRootWindows().front()->GetHost()->compositor()) {
+                    kHUDBackground /*not drawn*/) {
   const int data_width = frame_rate_1s_.max_data_points();
   // Verical ticks are drawn every 5 frames (5/60 interval).
   constexpr float vertical_ticks_interval = kVerticalTicFrames / 60.0;
@@ -84,9 +82,12 @@ FPSGraphPageView::FPSGraphPageView(const base::TimeDelta refresh_interval)
                            "second scaled to a second."),
         formatter_float}});
   CreateLegend(legend);
+  AddObserver(this);
 }
 
-FPSGraphPageView::~FPSGraphPageView() = default;
+FPSGraphPageView::~FPSGraphPageView() {
+  RemoveObserver(this);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -107,11 +108,18 @@ void FPSGraphPageView::OnPaint(gfx::Canvas* canvas) {
   // grid calculations.
 }
 
-void FPSGraphPageView::OnFramePresented(float frame_rate_1s,
-                                        float frame_rate_500ms,
-                                        float refresh_rate) {
+void FPSGraphPageView::OnDidPresentCompositorFrame(
+    uint32_t frame_token,
+    const gfx::PresentationFeedback& feedback) {
+  compositor_stats_.OnDidPresentCompositorFrame(feedback);
+  float frame_rate_1s = compositor_stats_.frame_rate_for_last_second();
+  float frame_rate_500ms = compositor_stats_.frame_rate_for_last_half_second();
+
+  float refresh_rate = GetWidget()->GetCompositor()->refresh_rate();
+
   UpdateTopLabel(refresh_rate);
   frame_rate_1s_.AddValue(frame_rate_1s / grid_->top_label(), frame_rate_1s);
+
   frame_rate_500ms_.AddValue(frame_rate_500ms / grid_->top_label(),
                              frame_rate_500ms);
 
@@ -120,19 +128,44 @@ void FPSGraphPageView::OnFramePresented(float frame_rate_1s,
   refresh_rate_.AddValue(max_refresh_rate / grid_->top_label(),
                          max_refresh_rate);
   // Legend update is expensive. Do it synchronously on regular intervals only.
-  SchedulePaint();
+  if (GetVisible())
+    SchedulePaint();
 }
 
 void FPSGraphPageView::UpdateData(const DataSource::Snapshot& snapshot) {
+  if (!GetWidget()->GetNativeWindow()->HasObserver(this)) {
+    GetWidget()->GetNativeWindow()->AddObserver(this);
+    GetWidget()->GetCompositor()->AddObserver(this);
+  }
   // Graph moves only on FramePresented.
   // Update legend only.
   RefreshLegendValues();
 }
 
+void FPSGraphPageView::OnViewRemovedFromWidget(View* observed_view) {
+  // Remove observe for destruction.
+  GetWidget()->GetNativeWindow()->RemoveObserver(this);
+  GetWidget()->GetCompositor()->RemoveObserver(this);
+}
+
+void FPSGraphPageView::OnWindowAddedToRootWindow(aura::Window* window) {
+  GetWidget()->GetCompositor()->AddObserver(this);
+}
+
+void FPSGraphPageView::OnWindowRemovingFromRootWindow(aura::Window* window,
+                                                      aura::Window* new_root) {
+  if (GetWidget() && GetWidget()->GetCompositor() &&
+      GetWidget()->GetCompositor()->HasObserver(this)) {
+    GetWidget()->GetCompositor()->RemoveObserver(this);
+  }
+}
+
 void FPSGraphPageView::UpdateTopLabel(float refresh_rate) {
-  if (grid_->top_label() < unsigned(refresh_rate)) {
-    const unsigned refresh_rate_rounded_10 =
-        ceilf(unsigned(refresh_rate) / 10.0F) * 10;
+  const float refresh_rate_rounded_10 =
+      ceilf(unsigned(refresh_rate) / 10.0F) * 10;
+  if (grid_->top_label() != refresh_rate_rounded_10) {
+    frame_rate_1s_.Reset();
+    frame_rate_500ms_.Reset();
     grid_->SetTopLabel(refresh_rate_rounded_10);
     grid_->SetVerticalTicsInterval(kVerticalTicFrames /
                                    refresh_rate_rounded_10);

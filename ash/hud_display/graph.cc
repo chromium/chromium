@@ -209,6 +209,11 @@ bool Graph::IsFilledIndex(size_t index) const {
   return data_.IsFilledIndex(raw_index);
 }
 
+void Graph::Reset() {
+  data_.Clear();
+  unscaled_data_.Clear();
+}
+
 #if !defined(NDEBUG)
 std::string Graph::DebugDump(const std::string& name) const {
   std::ostringstream os;

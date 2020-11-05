@@ -82,6 +82,9 @@ class Graph {
   // points from the right graph edge.
   bool IsFilledIndex(size_t index) const;
 
+  // Reset the data.
+  void Reset();
+
 #if !defined(NDEBUG)
   // Returns string representation os this object for debug.
   std::string DebugDump(const std::string& name) const;

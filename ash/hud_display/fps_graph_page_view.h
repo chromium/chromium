@@ -10,6 +10,9 @@
 #include "ash/hud_display/compositor_stats.h"
 #include "ash/hud_display/graph.h"
 #include "ash/hud_display/graph_page_view_base.h"
+#include "ui/aura/window_observer.h"
+#include "ui/compositor/compositor_observer.h"
+#include "ui/views/view_observer.h"
 
 namespace ash {
 namespace hud_display {
@@ -21,7 +24,9 @@ class Grid;
 // 1. Regular update with UpdateData() sifts graph and adds new point.
 // 2. Every time OnFramePresented() is called, the last graph value is updated.
 class FPSGraphPageView : public GraphPageViewBase,
-                         public CompositorStats::Observer {
+                         public ui::CompositorObserver,
+                         public views::ViewObserver,
+                         public aura::WindowObserver {
  public:
   METADATA_HEADER(FPSGraphPageView);
 
@@ -30,16 +35,22 @@ class FPSGraphPageView : public GraphPageViewBase,
   FPSGraphPageView& operator=(const FPSGraphPageView&) = delete;
   ~FPSGraphPageView() override;
 
-  // views::View
+  // GraphPageViewBase:
   void OnPaint(gfx::Canvas* canvas) override;
-
-  // CompositorStats::Observer
-  void OnFramePresented(float frame_rate_1s,
-                        float frame_rate_500ms,
-                        float refresh_rate) override;
-
-  // Update page data from the new snapshot.
   void UpdateData(const DataSource::Snapshot& snapshot) override;
+
+  // ui::CompositorObserver:
+  void OnDidPresentCompositorFrame(
+      uint32_t frame_token,
+      const gfx::PresentationFeedback& feedback) override;
+
+  // views::ViewObserver:
+  void OnViewRemovedFromWidget(views::View* observed_view) override;
+
+  // aura::WindowObserver:
+  void OnWindowAddedToRootWindow(aura::Window* window) override;
+  void OnWindowRemovingFromRootWindow(aura::Window* window,
+                                      aura::Window* new_root) override;
 
  private:
   // Sets grid top label to the maximum of the observed refresh rate.

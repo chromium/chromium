@@ -7,11 +7,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/time/time.h"
-#include "ui/compositor/compositor_observer.h"
 
-namespace ui {
-class Compositor;
-}
 namespace gfx {
 struct PresentationFeedback;
 }
@@ -19,29 +15,24 @@ struct PresentationFeedback;
 namespace ash {
 namespace hud_display {
 
-class CompositorStats : public ui::CompositorObserver {
+class CompositorStats {
  public:
-  class Observer {
-   public:
-    Observer() = default;
-    virtual ~Observer() = default;
+  CompositorStats();
+  CompositorStats(const CompositorStats&) = delete;
+  CompositorStats& operator=(const CompositorStats&) = delete;
+  ~CompositorStats();
 
-    virtual void OnFramePresented(float frame_rate_1s,
-                                  float frame_rate_500ms,
-                                  float refresh_rate) = 0;
-  };
+  float frame_rate_for_last_second() const { return presented_times_.size(); }
 
-  CompositorStats(Observer* observer, ui::Compositor* compositor);
-  ~CompositorStats() override;
+  float frame_rate_for_last_half_second() const {
+    return frame_rate_for_last_half_second_;
+  }
 
-  // ui::CompositorObserver:
-  void OnDidPresentCompositorFrame(
-      uint32_t frame_token,
-      const gfx::PresentationFeedback& feedback) override;
+  // Updates the stats with |feedback|.
+  void OnDidPresentCompositorFrame(const gfx::PresentationFeedback& feedback);
 
  private:
-  Observer* const observer_;
-  ui::Compositor* const compositor_;
+  float frame_rate_for_last_half_second_;
 
   // |timestamp| from PresentationFeedback for one second.
   base::circular_deque<base::TimeTicks> presented_times_;
