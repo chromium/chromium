@@ -11,12 +11,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.util.HashUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 /** Unit tests for {@link SettingsSecureBasedIdentificationGenerator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(UniqueIdentificationGeneratorFactoryTest.IDENTITY_GENERATOR_BATCH_NAME)
 public class SettingsSecureBasedIdentificationGeneratorTest {
     private static final String FLAG_ANDROID_ID = "android_id";
 

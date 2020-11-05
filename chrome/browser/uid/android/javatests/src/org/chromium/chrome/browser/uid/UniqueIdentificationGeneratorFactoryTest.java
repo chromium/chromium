@@ -11,12 +11,16 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 /** Unit tests for {@link UniqueIdentificationGeneratorFactory}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(UniqueIdentificationGeneratorFactoryTest.IDENTITY_GENERATOR_BATCH_NAME)
 public class UniqueIdentificationGeneratorFactoryTest {
+    public static final String IDENTITY_GENERATOR_BATCH_NAME = "identity_generator";
+
     @Test
     @SmallTest
     @Feature({"ChromeToMobile", "Omaha", "Sync"})

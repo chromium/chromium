@@ -14,12 +14,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 /** Unit tests for {@link UuidBasedUniqueIdentificationGenerator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(UniqueIdentificationGeneratorFactoryTest.IDENTITY_GENERATOR_BATCH_NAME)
 public class UuidBasedUniqueIdentificationGeneratorTest {
     private static final String FLAG_UUID = "uuid";
 
