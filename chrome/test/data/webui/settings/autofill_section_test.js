@@ -532,8 +532,15 @@ suite('AutofillSectionAddressLocaleTests', function() {
       assertEquals(company_enabled ? 6 : 5, rows.length);
 
       let index = 0;
-      // Name
+      // Country
       let row = rows[index];
+      const countrySelect = row.querySelector('select');
+      assertTrue(!!countrySelect);
+      assertEquals(
+          'United States', countrySelect.selectedOptions[0].textContent.trim());
+      index++;
+      // Name
+      row = rows[index];
       let cols = row.querySelectorAll('.address-column');
       assertEquals(1, cols.length);
       assertEquals(address.fullNames[0], cols[0].value);
@@ -559,13 +566,6 @@ suite('AutofillSectionAddressLocaleTests', function() {
       assertEquals(address.addressLevel2, cols[0].value);
       assertEquals(address.addressLevel1, cols[1].value);
       assertEquals(address.postalCode, cols[2].value);
-      index++;
-      // Country
-      row = rows[index];
-      const countrySelect = row.querySelector('select');
-      assertTrue(!!countrySelect);
-      assertEquals(
-          'United States', countrySelect.selectedOptions[0].textContent.trim());
       index++;
       // Phone, Email
       row = rows[index];
@@ -595,8 +595,16 @@ suite('AutofillSectionAddressLocaleTests', function() {
       assertEquals(company_enabled ? 7 : 6, rows.length);
 
       let index = 0;
-      // Name
+      // Country
       let row = rows[index];
+      const countrySelect = row.querySelector('select');
+      assertTrue(!!countrySelect);
+      assertEquals(
+          'United Kingdom',
+          countrySelect.selectedOptions[0].textContent.trim());
+      index++;
+      // Name
+      row = rows[index];
       let cols = row.querySelectorAll('.address-column');
       assertEquals(1, cols.length);
       assertEquals(address.fullNames[0], cols[0].value);
@@ -627,14 +635,6 @@ suite('AutofillSectionAddressLocaleTests', function() {
       assertEquals(1, cols.length);
       assertEquals(address.postalCode, cols[0].value);
       index++;
-      // Country
-      row = rows[index];
-      const countrySelect = row.querySelector('select');
-      assertTrue(!!countrySelect);
-      assertEquals(
-          'United Kingdom',
-          countrySelect.selectedOptions[0].textContent.trim());
-      index++;
       // Phone, Email
       row = rows[index];
       cols = row.querySelectorAll('.address-column');
@@ -664,14 +664,20 @@ suite('AutofillSectionAddressLocaleTests', function() {
       assertEquals(company_enabled ? 6 : 5, rows.length);
 
       let index = 0;
-      // Name
+      // Country
       let row = rows[index];
+      const countrySelect = row.querySelector('select');
+      assertTrue(!!countrySelect);
+      assertEquals(
+          'Israel', countrySelect.selectedOptions[0].textContent.trim());
+      index++;
+      // Name
+      row = rows[index];
       let cols = row.querySelectorAll('.address-column');
       assertEquals(1, cols.length);
       assertEquals(address.fullNames[0], cols[0].value);
       index++;
       // Organization
-
       if (company_enabled) {
         row = rows[index];
         cols = row.querySelectorAll('.address-column');
@@ -691,13 +697,6 @@ suite('AutofillSectionAddressLocaleTests', function() {
       assertEquals(2, cols.length);
       assertEquals(address.addressLevel2, cols[0].value);
       assertEquals(address.postalCode, cols[1].value);
-      index++;
-      // Country
-      row = rows[index];
-      const countrySelect = row.querySelector('select');
-      assertTrue(!!countrySelect);
-      assertEquals(
-          'Israel', countrySelect.selectedOptions[0].textContent.trim());
       index++;
       // Phone, Email
       row = rows[index];
@@ -730,7 +729,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
                    assertEquals(company_enabled ? 6 : 5, rows.length);
 
                    // City, State, ZIP code
-                   const row = rows[company_enabled ? 3 : 2];
+                   const row = rows[company_enabled ? 4 : 3];
                    const cols = row.querySelectorAll('.address-column');
                    assertEquals(3, cols.length);
                    cols[0].value = city;
@@ -747,7 +746,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
               assertEquals(company_enabled ? 6 : 5, rows.length);
 
               // City, Postal code
-              const row = rows[company_enabled ? 3 : 2];
+              const row = rows[company_enabled ? 4 : 3];
               const cols = row.querySelectorAll('.address-column');
               assertEquals(2, cols.length);
               assertEquals(city, cols[0].value);
@@ -763,7 +762,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
             assertEquals(company_enabled ? 6 : 5, rows.length);
 
             // City, State, ZIP code
-            const row = rows[company_enabled ? 3 : 2];
+            const row = rows[company_enabled ? 4 : 3];
             const cols = row.querySelectorAll('.address-column');
             assertEquals(3, cols.length);
             assertEquals(city, cols[0].value);
