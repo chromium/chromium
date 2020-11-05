@@ -1,26 +1,13 @@
-#!/usr/bin/env python2.7
-#
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import re
+import contextlib
+import io
 import os
 import posixpath
-import StringIO
-import sys
+import re
 import subprocess
-
-from contextlib import closing
-
-CUR_DIR = os.path.dirname(os.path.realpath(__file__))
-SRC_DIR = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.dirname(CUR_DIR))))
-TYP_DIR = os.path.join(
-    SRC_DIR, 'third_party', 'catapult', 'third_party', 'typ')
-
-if TYP_DIR not in sys.path:
-  sys.path.insert(0, TYP_DIR)
 
 import typ
 
@@ -142,7 +129,7 @@ def DumpAPK(apk):
   args.append(apk)
   content = subprocess.check_output(args)
   apk_entries = []
-  with closing(StringIO.StringIO(content)) as f:
+  with contextlib.closing(io.BytesIO(content)) as f:
     for line in f:
       match = ZIP_ENTRY.match(line)
       if match:
@@ -252,8 +239,8 @@ However these files were present in {0} but not in Monochrome:
         DeobfuscateFilename(f.filename, monochrome_pathmap)
           for f in monochrome
     ]
-    monochrome_dict = dict([(DeobfuscateFilename(i.filename, monochrome_pathmap),
-                             i) for i in monochrome])
+    monochrome_dict = dict((DeobfuscateFilename(i.filename, monochrome_pathmap),
+                            i) for i in monochrome)
 
     chrome = self.RemoveSpecific(DumpAPK(options.chrome_apk),
                                  CHROME_SPECIFIC)

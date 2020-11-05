@@ -7,16 +7,22 @@
 import os
 import sys
 
-CUR_DIR = os.path.dirname(os.path.realpath(__file__))
-SRC_DIR = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.dirname(CUR_DIR))))
-TYP_DIR = os.path.join(
-    SRC_DIR, 'third_party', 'catapult', 'third_party', 'typ')
+_SRC_DIR = os.path.normpath(os.path.join(
+    os.path.dirname(__file__), '..', '..', '..', '..'))
+_TYP_DIR = os.path.join(
+    _SRC_DIR, 'third_party', 'catapult', 'third_party', 'typ')
+_DEVIL_CHROMIUM_DIR = os.path.join(_SRC_DIR, 'build', 'android')
 
-if TYP_DIR not in sys.path:
-  sys.path.insert(0, TYP_DIR)
+sys.path[1:1] = [_TYP_DIR, _DEVIL_CHROMIUM_DIR]
 
+import devil_chromium
 import typ
+
+# Import test files so they they are included in .pydeps.
+import monochrome_dexdump_test
+import monochrome_apk_checker_test
+import monochrome_android_manifest_test
+
 
 def create_argument_parser():
   """ Creates command line parser. """
@@ -48,10 +54,13 @@ def create_argument_parser():
 
 
 def main(argv):
+  devil_chromium.Initialize()
   argument_parser = create_argument_parser()
 
   runner = typ.Runner()
   runner.parse_args(argument_parser, argv[1:])
+  if argument_parser.exit_status is not None:
+    return argument_parser.exit_status
   runner.args.top_level_dirs = [ os.path.dirname(__file__) ]
   runner.context = runner.args
 
