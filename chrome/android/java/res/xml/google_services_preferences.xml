@@ -10,8 +10,8 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="allow_signin"
-        android:title="@string/offer_chrome_signin_title"
-        android:summary="@string/offer_chrome_signin_summary"
+        android:title="@string/allow_chrome_signin_title"
+        android:summary="@string/allow_chrome_signin_summary"
         android:persistent="false"/>
     <!-- Only shown when metrics-settings-android flag is on. -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference

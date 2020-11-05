@@ -88,7 +88,7 @@ public class GoogleServicesSettingsTest {
                         GoogleServicesSettings.PREF_ALLOW_SIGNIN);
         Assert.assertTrue("Chrome Signin should be allowed", allowChromeSignin.isChecked());
 
-        onView(withText(R.string.offer_chrome_signin_title)).perform(click());
+        onView(withText(R.string.allow_chrome_signin_title)).perform(click());
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> Assert.assertNull("Account should be signed out!",
@@ -115,7 +115,7 @@ public class GoogleServicesSettingsTest {
                         GoogleServicesSettings.PREF_ALLOW_SIGNIN);
         Assert.assertTrue("Chrome Signin should be allowed", allowChromeSignin.isChecked());
 
-        onView(withText(R.string.offer_chrome_signin_title)).perform(click());
+        onView(withText(R.string.allow_chrome_signin_title)).perform(click());
         // Accept the sign out Dialog
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
         TestThreadUtils.runOnUiThreadBlocking(
