@@ -3044,17 +3044,7 @@
     "expiry_milestone": -1
   },
   {
-    "name": "location-change-string",
-    "owners": [ "thegreenfrog", "bling-team" ],
-    "expiry_milestone": 91
-  },
-  {
-    "name": "location-first-run-modal",
-    "owners": [ "thegreenfrog", "bling-team" ],
-    "expiry_milestone": 91
-  },
-  {
-    "name": "location-remove-first-run",
+    "name": "location-permissions-prompt",
     "owners": [ "thegreenfrog", "bling-team" ],
     "expiry_milestone": 91
   },

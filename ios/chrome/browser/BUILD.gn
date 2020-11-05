@@ -52,8 +52,6 @@ source_set("browser") {
     "ios_chrome_field_trials.h",
     "ios_chrome_io_thread.h",
     "ios_chrome_io_thread.mm",
-    "ios_first_run_field_trials.cc",
-    "ios_first_run_field_trials.h",
     "notification_promo.cc",
     "notification_promo.h",
   ]
@@ -104,6 +102,7 @@ source_set("browser") {
     "//ios/chrome/browser/sync/glue",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/fullscreen:feature_flags",
     "//ios/chrome/browser/ui/omnibox",
     "//ios/chrome/browser/ui/toolbar_container:feature_flags",

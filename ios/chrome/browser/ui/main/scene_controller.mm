@@ -69,6 +69,7 @@
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/location_permissions_commands.h"
 #import "ios/chrome/browser/ui/first_run/location_permissions_coordinator.h"
+#import "ios/chrome/browser/ui/first_run/location_permissions_field_trial.h"
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
 #include "ios/chrome/browser/ui/history/history_coordinator.h"
@@ -1130,7 +1131,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       advancedSettingsSigninCoordinatorWithBaseViewController:baseViewController
                                                       browser:mainBrowser];
   [self startSigninCoordinatorWithCompletion:^(BOOL success) {
-    if (base::FeatureList::IsEnabled(kLocationFirstRunModal)) {
+    if (location_permissions_field_trial::IsInFirstRunModalGroup()) {
       [self showLocationPermissionsFromViewController:baseViewController];
     }
   }];
