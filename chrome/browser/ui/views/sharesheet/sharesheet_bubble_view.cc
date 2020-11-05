@@ -264,7 +264,8 @@ void SharesheetBubbleView::PopulateLayoutsWithTargets(
         base::BindRepeating(&SharesheetBubbleView::TargetButtonPressed,
                             base::Unretained(this),
                             base::Passed(std::move(target))),
-        display_name, secondary_display_name, &target.icon);
+        display_name, secondary_display_name, target.icon,
+        delegate_->GetVectorIcon(display_name));
 
     layout_for_target->AddView(std::move(target_view));
   }

@@ -196,7 +196,7 @@ void SharesheetService::ShowBubbleWithDelegate(
   auto iter = actions.begin();
   while (iter != actions.end()) {
     if ((*iter)->ShouldShowAction(intent, contains_hosted_document)) {
-      targets.emplace_back(TargetType::kAction, (*iter)->GetActionIcon(),
+      targets.emplace_back(TargetType::kAction, base::nullopt,
                            (*iter)->GetActionName(), (*iter)->GetActionName(),
                            base::nullopt, base::nullopt);
     }
@@ -212,6 +212,11 @@ void SharesheetService::ShowBubbleWithDelegate(
                base::BindOnce(&SharesheetService::OnAppIconsLoaded,
                               weak_factory_.GetWeakPtr(), std::move(delegate),
                               std::move(intent), std::move(close_callback)));
+}
+
+const gfx::VectorIcon* SharesheetService::GetVectorIcon(
+    const base::string16& display_name) {
+  return sharesheet_action_cache_->GetVectorIconFromName(display_name);
 }
 
 }  // namespace sharesheet

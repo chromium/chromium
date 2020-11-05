@@ -6,6 +6,7 @@
 
 #include "chrome/browser/sharesheet/share_action.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
+#include "ui/gfx/vector_icon_types.h"
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
@@ -45,6 +46,15 @@ ShareAction* SharesheetActionCache::GetActionFromName(
   return nullptr;
 }
 
+const gfx::VectorIcon* SharesheetActionCache::GetVectorIconFromName(
+    const base::string16& display_name) {
+  ShareAction* share_action = GetActionFromName(display_name);
+  if (share_action == nullptr) {
+    return nullptr;
+  }
+  return &share_action->GetActionIcon();
+}
+
 bool SharesheetActionCache::HasVisibleActions(
     const apps::mojom::IntentPtr& intent,
     bool contains_google_document) {
@@ -58,7 +68,6 @@ bool SharesheetActionCache::HasVisibleActions(
 
 void SharesheetActionCache::AddShareAction(
     std::unique_ptr<ShareAction> action) {
-  DCHECK_EQ(action->GetActionIcon().size(), gfx::Size(kIconSize, kIconSize));
   share_actions_.push_back(std::move(action));
 }
 

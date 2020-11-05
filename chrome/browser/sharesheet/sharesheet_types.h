@@ -29,7 +29,7 @@ enum class TargetType {
 
 struct TargetInfo {
   TargetInfo(TargetType type,
-             const gfx::ImageSkia& icon,
+             const base::Optional<gfx::ImageSkia> icon,
              const base::string16& launch_name,
              const base::string16& display_name,
              const base::Optional<base::string16>& secondary_display_name,
@@ -48,8 +48,9 @@ struct TargetInfo {
   TargetType type;
 
   // The icon to be displayed for this target in the sharesheet bubble.
-  // DIP size must be kIconSize
-  gfx::ImageSkia icon;
+  // DIP size must be kIconSize. Only apps will have icons as share actions will
+  // have vector_icons that get generated when the view is displayed.
+  base::Optional<gfx::ImageSkia> icon;
 
   // The string used to launch this target. Represents an Android package name
   // when the app type is kArc.

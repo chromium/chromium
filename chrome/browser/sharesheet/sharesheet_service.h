@@ -31,6 +31,10 @@ namespace content {
 class WebContents;
 }
 
+namespace gfx {
+struct VectorIcon;
+}
+
 namespace sharesheet {
 
 class SharesheetServiceDelegate;
@@ -69,6 +73,7 @@ class SharesheetService : public KeyedService {
   bool HasShareTargets(const apps::mojom::IntentPtr& intent,
                        bool contains_hosted_document);
   Profile* GetProfile();
+  const gfx::VectorIcon* GetVectorIcon(const base::string16& display_name);
 
  private:
   using SharesheetServiceIconLoaderCallback =

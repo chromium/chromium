@@ -16,7 +16,7 @@ class DriveShareAction : public sharesheet::ShareAction {
 
   // sharesheet::ShareAction:
   const base::string16 GetActionName() override;
-  const gfx::ImageSkia GetActionIcon() override;
+  const gfx::VectorIcon& GetActionIcon() override;
   void LaunchAction(sharesheet::SharesheetController* controller,
                     views::View* root_view,
                     apps::mojom::IntentPtr intent) override;

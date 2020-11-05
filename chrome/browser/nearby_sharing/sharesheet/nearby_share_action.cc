@@ -24,8 +24,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/webview/webview.h"
 #include "url/gurl.h"
 
@@ -80,9 +78,8 @@ const base::string16 NearbyShareAction::GetActionName() {
   return l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME);
 }
 
-const gfx::ImageSkia NearbyShareAction::GetActionIcon() {
-  return gfx::CreateVectorIcon(kNearbyShareIcon, sharesheet::kIconSize,
-                               gfx::kPlaceholderColor);
+const gfx::VectorIcon& NearbyShareAction::GetActionIcon() {
+  return kNearbyShareIcon;
 }
 
 void NearbyShareAction::LaunchAction(

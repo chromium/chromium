@@ -24,6 +24,10 @@ namespace content {
 class WebContents;
 }
 
+namespace gfx {
+struct VectorIcon;
+}
+
 namespace sharesheet {
 
 class SharesheetService;
@@ -49,6 +53,7 @@ class SharesheetServiceDelegate : public SharesheetController {
                         apps::mojom::IntentPtr intent,
                         views::View* share_action_view);
   void OnActionLaunched();
+  const gfx::VectorIcon* GetVectorIcon(const base::string16& display_name);
 
   // SharesheetController overrides
   uint32_t GetId() override;

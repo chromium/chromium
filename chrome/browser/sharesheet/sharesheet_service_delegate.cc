@@ -73,4 +73,9 @@ void SharesheetServiceDelegate::CloseSharesheet() {
   sharesheet_bubble_view_->CloseBubble();
 }
 
+const gfx::VectorIcon* SharesheetServiceDelegate::GetVectorIcon(
+    const base::string16& display_name) {
+  return sharesheet_service_->GetVectorIcon(display_name);
+}
+
 }  // namespace sharesheet

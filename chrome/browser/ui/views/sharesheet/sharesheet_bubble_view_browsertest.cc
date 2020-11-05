@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
@@ -19,8 +21,18 @@
 #include "content/public/test/browser_test.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
-class SharesheetBubbleViewBrowserTest : public DialogBrowserTest {
+class SharesheetBubbleViewBrowserTest
+    : public ::testing::WithParamInterface<bool>,
+      public DialogBrowserTest {
  public:
+  SharesheetBubbleViewBrowserTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(features::kNearbySharing);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(features::kNearbySharing);
+    }
+  }
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     sharesheet::SharesheetService* const sharesheet_service =
@@ -33,8 +45,15 @@ class SharesheetBubbleViewBrowserTest : public DialogBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents(), std::move(intent),
         base::DoNothing());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SharesheetBubbleViewBrowserTest, InvokeUi_default) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         SharesheetBubbleViewBrowserTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SharesheetBubbleViewBrowserTest, InvokeUi_Default) {
   ShowAndVerifyUi();
 }

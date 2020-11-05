@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ui/views/sharesheet/sharesheet_target_button.h"
 
+#include <memory>
+
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/font_list.h"
+#include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -31,14 +34,37 @@ constexpr char kButtonSecondaryLabelFont[] = "Roboto, Regular, 13px";
 constexpr SkColor kShareTargetTitleColor = gfx::kGoogleGrey700;
 constexpr SkColor kShareTargetSecondaryTitleColor = gfx::kGoogleGrey600;
 
+std::unique_ptr<views::ImageView> CreateImageView(
+    const base::Optional<gfx::ImageSkia> icon,
+    const gfx::VectorIcon* vector_icon) {
+  if (icon.has_value()) {
+    auto image = std::make_unique<views::ImageView>();
+    image->SetImage(icon.value());
+    return image;
+  } else if (vector_icon != nullptr) {
+    return std::make_unique<views::ColorTrackingIconView>(
+        *vector_icon, sharesheet::kIconSize);
+  }
+  NOTREACHED();
+  return nullptr;
+}
+
 }  // namespace
 
 // A button that represents a candidate share target.
+// Only apps will have |icon| values, while share_actions will have a
+// |vector_icon| which is used to generate a |ColorTrackingIconView|. If
+// |icon| has a value |vector_icon| should be nullptr and vice versa. There
+// should never be a case where both don't have values or both have values.
+// It is safe to use |vector_icon| as a raw pointer because it has the same
+// lifetime as the |SharesheetService|, which outlives|SharesheetTargetButton|
+// as it is a transient UI invoked from the |SharesheetService|.
 SharesheetTargetButton::SharesheetTargetButton(
     PressedCallback callback,
     const base::string16& display_name,
     const base::string16& secondary_display_name,
-    const gfx::ImageSkia* icon)
+    const base::Optional<gfx::ImageSkia> icon,
+    const gfx::VectorIcon* vector_icon)
     : Button(std::move(callback)) {
   // TODO(crbug.com/1097623) Margins shouldn't be within
   // SharesheetTargetButton as the margins are different in |expanded_view_|.
@@ -49,12 +75,8 @@ SharesheetTargetButton::SharesheetTargetButton(
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  auto* image = AddChildView(std::make_unique<views::ImageView>());
+  auto* image = AddChildView(CreateImageView(icon, vector_icon));
   image->SetCanProcessEventsWithinSubtree(false);
-
-  if (!icon->isNull()) {
-    image->SetImage(icon);
-  }
 
   auto label_view = std::make_unique<views::View>();
   label_view->SetLayoutManager(std::make_unique<views::BoxLayout>(

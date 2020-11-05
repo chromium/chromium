@@ -11,6 +11,10 @@
 #include "base/strings/string16.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
+namespace gfx {
+struct VectorIcon;
+}
+
 namespace sharesheet {
 
 class ShareAction;
@@ -31,6 +35,10 @@ class SharesheetActionCache {
 
   bool HasVisibleActions(const apps::mojom::IntentPtr& intent,
                          bool contains_google_document);
+
+  // Returns null if |display_name| is not a valid ShareAction.
+  const gfx::VectorIcon* GetVectorIconFromName(
+      const base::string16& display_name);
 
  private:
   void AddShareAction(std::unique_ptr<ShareAction> action);
