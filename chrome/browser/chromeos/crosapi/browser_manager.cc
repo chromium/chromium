@@ -310,6 +310,9 @@ void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
   std::string crash_dir =
       browser_util::GetUserDataDir().Append("crash_dumps").AsUTF8Unsafe();
 
+  // Static configuration should be enabled from Lacros rather than Ash. This
+  // vector should only be used for dynamic configuration.
+  // TODO(https://crbug.com/1145713): Remove existing static configuration.
   std::vector<std::string> argv = {chrome_path,
                                    "--ozone-platform=wayland",
                                    "--user-data-dir=" + user_data_dir,
