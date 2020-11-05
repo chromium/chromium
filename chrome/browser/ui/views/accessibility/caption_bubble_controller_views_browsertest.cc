@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -159,6 +159,15 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
 
   std::vector<std::string> GetVirtualChildrenText() {
     return GetBubble()->GetVirtualChildrenTextForTesting();
+  }
+
+  void SetTickClockForTesting(const base::TickClock* tick_clock) {
+    GetController()->caption_bubble_->set_tick_clock_for_testing(tick_clock);
+  }
+
+  void UnfocusCaptionWidget() {
+    GetController()->caption_bubble_->AcceleratorPressed(
+        ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   }
 
  private:
@@ -1033,5 +1042,48 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_FALSE(IsWidgetActive());
 }
 #endif
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HidesAfterInactivity) {
+  // Use a ScopedMockTimeMessageLoopTaskRunner to test the inactivity timer with
+  // a mock tick clock that replaces the default tick clock with mock time.
+  base::ScopedMockTimeMessageLoopTaskRunner test_task_runner;
+  SetTickClockForTesting(test_task_runner->GetMockTickClock());
+
+  // Caption bubble hides after 5 seconds without receiving a transcription.
+  OnPartialTranscription("Bowhead whales can live for over 200 years.");
+  EXPECT_TRUE(IsWidgetVisible());
+  ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
+  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  EXPECT_FALSE(IsWidgetVisible());
+
+  // Caption bubble becomes visible when transcription is received, and stays
+  // visible if transcriptions are received before 5 seconds have passed.
+  OnPartialTranscription("Killer whales");
+  EXPECT_TRUE(IsWidgetVisible());
+  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(4));
+  EXPECT_TRUE(IsWidgetVisible());
+  OnPartialTranscription("Killer whales travel in matrifocal groups");
+  EXPECT_TRUE(IsWidgetVisible());
+  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(4));
+  EXPECT_TRUE(IsWidgetVisible());
+  OnFinalTranscription(
+      "Killer whales travel in matrifocal groups--a family unit centered on "
+      "the mother.");
+  EXPECT_TRUE(IsWidgetVisible());
+  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(4));
+  EXPECT_TRUE(IsWidgetVisible());
+
+  // Caption bubble stays visible while it has focus.
+  GetBubble()->RequestFocus();
+  EXPECT_TRUE(IsWidgetVisible());
+  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(10));
+  EXPECT_TRUE(IsWidgetVisible());
+
+  UnfocusCaptionWidget();
+  EXPECT_FALSE(GetBubble()->HasFocus());
+  EXPECT_TRUE(IsWidgetVisible());
+  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  EXPECT_FALSE(IsWidgetVisible());
+}
 
 }  // namespace captions

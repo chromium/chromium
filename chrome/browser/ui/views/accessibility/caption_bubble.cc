@@ -12,6 +12,8 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string16.h"
+#include "base/time/default_tick_clock.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/accessibility/caption_controller.h"
@@ -71,6 +73,7 @@ static constexpr int kErrorImageSizeDip = 20;
 static constexpr int kErrorMessageBetweenChildSpacingDip = 16;
 static constexpr int kFocusRingInnerInsetDip = 3;
 static constexpr int kWidgetDisplacementWithArrowKeyDip = 16;
+static constexpr int kNoActivityIntervalSeconds = 5;
 
 }  // namespace
 
@@ -179,7 +182,8 @@ CaptionBubble::CaptionBubble(views::View* anchor,
       destroyed_callback_(std::move(destroyed_callback)),
       ratio_in_parent_x_(kDefaultRatioInParentX),
       ratio_in_parent_y_(kDefaultRatioInParentY),
-      browser_view_(browser_view) {
+      browser_view_(browser_view),
+      tick_clock_(base::DefaultTickClock::GetInstance()) {
   // Bubbles that use transparent colors should not paint their ClientViews to a
   // layer as doing so could result in visual artifacts.
   SetPaintClientToLayer(false);
@@ -194,6 +198,12 @@ CaptionBubble::CaptionBubble(views::View* anchor,
   // View::FocusBehavior::ACCESSIBLE_ONLY. However, that does not seem to get
   // OnFocus() and OnBlur() called so we never draw the custom focus ring.
   SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  inactivity_timer_ = std::make_unique<base::RetainingOneShotTimer>(
+      FROM_HERE, base::TimeDelta::FromSeconds(kNoActivityIntervalSeconds),
+      base::BindRepeating(&CaptionBubble::OnInactivityTimeout,
+                          base::Unretained(this)),
+      tick_clock_);
+  inactivity_timer_->Stop();
 }
 
 CaptionBubble::~CaptionBubble() {
@@ -281,6 +291,11 @@ void CaptionBubble::OnWidgetBoundsChanged(views::Widget* widget,
 
   if (out_of_bounds)
     SizeToContents();
+
+  // If the widget is visible and unfocused, probably due to a mouse drag, reset
+  // the inactivity timer.
+  if (GetWidget()->IsVisible() && !HasFocus())
+    inactivity_timer_->Reset();
 }
 
 void CaptionBubble::Init() {
@@ -464,10 +479,12 @@ bool CaptionBubble::AcceleratorPressed(const ui::Accelerator& accelerator) {
 
 void CaptionBubble::OnFocus() {
   frame_->UpdateFocusRing(true);
+  inactivity_timer_->Stop();
 }
 
 void CaptionBubble::OnBlur() {
   frame_->UpdateFocusRing(false);
+  inactivity_timer_->Reset();
 }
 
 void CaptionBubble::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -510,6 +527,7 @@ void CaptionBubble::ExpandOrCollapseButtonPressed() {
   // TODO(crbug.com/1055150): Ensure that the button keeps focus on mac.
   if (button_had_focus)
     new_button->RequestFocus();
+  inactivity_timer_->Reset();
 }
 
 void CaptionBubble::SetModel(CaptionBubbleModel* model) {
@@ -525,6 +543,8 @@ void CaptionBubble::OnTextChanged() {
   std::string text = model_->GetFullText();
   label_->SetText(base::UTF8ToUTF16(text));
   UpdateBubbleAndTitleVisibility();
+  if (GetWidget()->IsVisible())
+    inactivity_timer_->Reset();
 
   // Only update ViewAccessibility if accessibility is enabled.
   if (content::BrowserAccessibilityState::GetInstance()
@@ -735,6 +755,11 @@ void CaptionBubble::Redraw() {
   SizeToContents();
 }
 
+void CaptionBubble::OnInactivityTimeout() {
+  if (GetWidget()->IsVisible())
+    GetWidget()->Hide();
+}
+
 const char* CaptionBubble::GetClassName() const {
   return "CaptionBubble";
 }
@@ -751,6 +776,10 @@ std::vector<std::string> CaptionBubble::GetVirtualChildrenTextForTesting() {
         ax::mojom::StringAttribute::kName));
   }
   return texts;
+}
+
+base::RetainingOneShotTimer* CaptionBubble::GetInactivityTimerForTesting() {
+  return inactivity_timer_.get();
 }
 
 }  // namespace captions

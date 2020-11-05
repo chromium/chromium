@@ -14,6 +14,10 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 
+namespace base {
+class RetainingOneShotTimer;
+}
+
 namespace gfx {
 struct VectorIcon;
 }
@@ -72,6 +76,10 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   const char* GetClassName() const override;
 
   std::string GetLabelTextForTesting();
+  base::RetainingOneShotTimer* GetInactivityTimerForTesting();
+  void set_tick_clock_for_testing(const base::TickClock* tick_clock) {
+    tick_clock_ = tick_clock;
+  }
 
  protected:
   // views::BubbleDialogDelegateView:
@@ -129,6 +137,11 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
                            const gfx::Range& range);
   std::vector<std::string> GetVirtualChildrenTextForTesting();
 
+  // After 5 seconds of inactivity, hide the caption bubble. Activity is defined
+  // as transcription received from the speech service or user interacting with
+  // the bubble through focus, pressing buttons, or dragging.
+  void OnInactivityTimeout();
+
   // Unowned. Owned by views hierarchy.
   views::Label* label_;
   views::Label* title_;
@@ -162,6 +175,11 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
 
   // Whether the caption bubble is expanded to show more lines of text.
   bool is_expanded_ = false;
+
+  // A timer which causes the bubble to hide if there is no activity after a
+  // specified interval.
+  std::unique_ptr<base::RetainingOneShotTimer> inactivity_timer_;
+  const base::TickClock* tick_clock_;
 };
 
 }  // namespace captions
