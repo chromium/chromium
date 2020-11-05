@@ -126,6 +126,7 @@
 #include "content/browser/webauth/authenticator_environment_impl.h"
 #include "content/browser/webauth/authenticator_impl.h"
 #include "content/browser/webauth/webauth_request_security_checker.h"
+#include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/websockets/websocket_connector_impl.h"
 #include "content/browser/webtransport/quic_transport_connector_impl.h"
 #include "content/browser/webui/url_data_manager_backend.h"
@@ -7974,6 +7975,12 @@ void RenderFrameHostImpl::BindWebOTPServiceReceiver(
   auto* fetcher = SmsFetcher::Get(GetProcess()->GetBrowserContext());
   if (WebOTPService::Create(fetcher, this, std::move(receiver)))
     document_used_web_otp_ = true;
+}
+
+void RenderFrameHostImpl::BindFederatedAuthRequestReceiver(
+    mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver) {
+  DCHECK(base::FeatureList::IsEnabled(features::kWebID));
+  FederatedAuthRequestImpl::Create(this, std::move(receiver));
 }
 
 void RenderFrameHostImpl::BindRestrictedCookieManager(

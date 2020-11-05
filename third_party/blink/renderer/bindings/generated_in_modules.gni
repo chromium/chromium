@@ -2123,6 +2123,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_vertex_array_object_oes.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_video_texture.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_video_texture.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_id.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_id.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_websocket.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_websocket.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_websocket_stream.cc",

@@ -175,6 +175,7 @@ mojom("mojom_platform") {
     "web_launch/web_launch.mojom",
     "webaudio/audio_context_manager.mojom",
     "webdatabase/web_database.mojom",
+    "webid/federated_auth_request.mojom",
     "webpreferences/web_preferences.mojom",
     "websockets/websocket_connector.mojom",
     "webtransport/quic_transport_connector.mojom",

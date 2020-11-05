@@ -315,6 +315,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      features::kConversionMeasurement},
     {wf::EnableParseUrlProtocolHandler,
      blink::features::kWebAppEnableProtocolHandlers},
+    {wf::EnableWebID, features::kWebID},
   };
   for (const auto& mapping : blinkFeatureToBaseFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(

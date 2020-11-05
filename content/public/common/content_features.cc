@@ -825,6 +825,9 @@ const base::Feature kWebBundlesFromNetwork{"WebBundlesFromNetwork",
 const base::Feature kWebGLImageChromium{"WebGLImageChromium",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable browser mediation API for federated identity interactions.
+const base::Feature kWebID{"kWebID", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable experimental policy-controlled features and LAPIs
 const base::Feature kExperimentalProductivityFeatures{
     "ExperimentalProductivityFeatures", base::FEATURE_DISABLED_BY_DEFAULT};

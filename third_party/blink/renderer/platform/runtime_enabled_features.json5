@@ -2124,6 +2124,9 @@
       status: {"Android": "", "default": "experimental"},
     },
     {
+      name: "WebID",
+    },
+    {
       name: "WebNFC",
       origin_trial_feature_name: "WebNFC",
       origin_trial_os: ["android"],

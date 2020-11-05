@@ -1,0 +1,6 @@
+file://content/browser/webid/OWNERS
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS
+
+# COMPONENT: Blink>Identity>WebID

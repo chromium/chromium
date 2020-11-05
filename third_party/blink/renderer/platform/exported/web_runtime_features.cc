@@ -739,4 +739,8 @@ void WebRuntimeFeatures::EnableParseUrlProtocolHandler(bool enable) {
   RuntimeEnabledFeatures::SetParseUrlProtocolHandlerEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableWebID(bool enable) {
+  RuntimeEnabledFeatures::SetWebIDEnabled(enable);
+}
+
 }  // namespace blink

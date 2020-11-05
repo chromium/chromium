@@ -128,6 +128,7 @@ _idl_imports = [
   "//third_party/blink/renderer/modules/webdatabase/idls.gni",
   "//third_party/blink/renderer/modules/webgl/idls.gni",
   "//third_party/blink/renderer/modules/webgpu/idls.gni",
+  "//third_party/blink/renderer/modules/webid/idls.gni",
   "//third_party/blink/renderer/modules/webmidi/idls.gni",
   "//third_party/blink/renderer/modules/webshare/idls.gni",
   "//third_party/blink/renderer/modules/websockets/idls.gni",

@@ -156,6 +156,7 @@ component("modules") {
     "//third_party/blink/renderer/modules/webdatabase",
     "//third_party/blink/renderer/modules/webgl",
     "//third_party/blink/renderer/modules/webgpu",
+    "//third_party/blink/renderer/modules/webid",
     "//third_party/blink/renderer/modules/webmidi",
     "//third_party/blink/renderer/modules/webshare",
     "//third_party/blink/renderer/modules/websockets",
