@@ -1039,13 +1039,6 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
                 mNativeWebContentsAndroid, WebContentsImpl.this);
     }
 
-    @Override
-    public boolean shouldVirtualKeyboardOverlayContent() {
-        checkNotDestroyed();
-        return WebContentsImplJni.get().shouldVirtualKeyboardOverlayContent(
-                mNativeWebContentsAndroid, WebContentsImpl.this);
-    }
-
     private void checkNotDestroyed() {
         if (mNativeWebContentsAndroid != 0) return;
         throw new IllegalStateException(
@@ -1151,7 +1144,5 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         void notifyBrowserControlsHeightChanged(
                 long nativeWebContentsAndroid, WebContentsImpl caller);
         boolean isBeingDestroyed(long nativeWebContentsAndroid, WebContentsImpl caller);
-        boolean shouldVirtualKeyboardOverlayContent(
-                long nativeWebContentsAndroid, WebContentsImpl caller);
     }
 }

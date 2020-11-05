@@ -71,6 +71,7 @@ import org.chromium.components.content_capture.ContentCaptureConsumer;
 import org.chromium.components.content_capture.ContentCaptureConsumerImpl;
 import org.chromium.components.content_capture.ExperimentContentCaptureConsumer;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.UiUtils;
@@ -810,8 +811,7 @@ public class CompositorViewHolder extends FrameLayout
             // isn't a change in size after the keyboard is raised or hidden.
             // Also the geometrychange event should only fire to the foreground tab.
             int keyboardHeight = 0;
-            boolean overlayContentForegroundTab = webContents.shouldVirtualKeyboardOverlayContent()
-                    && mTabVisible.getWebContents() == webContents;
+            boolean overlayContentForegroundTab = shouldVirtualKeyboardOverlayContent(webContents);
             if (overlayContentForegroundTab) {
                 // During orientation changes, width of the |WebContents| changes to match the width
                 // of the screen and so does the keyboard. We fire geometrychange with the updated
@@ -836,6 +836,21 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     /**
+     * Returns true if the overlaycontent flag is set in the JS, else false.
+     * This determines whether to fire geometrychange event to JS for the current visible tab
+     * and also not resize the visual/layout viewports in response to keyboard visibility changes.
+     *
+     * @return Whether overlaycontent flag is set or not.
+     */
+    @VisibleForTesting
+    boolean shouldVirtualKeyboardOverlayContent(WebContents webContents) {
+        return webContents != null && mTabVisible != null
+                && mTabVisible.getWebContents() == webContents
+                && ImeAdapter.fromWebContents(webContents) != null
+                && ImeAdapter.fromWebContents(webContents).shouldVirtualKeyboardOverlayContent();
+    }
+
+    /**
      * Notifies geometrychange event to JS.
      * @param w  Width of the view.
      * @param keyboardHeight Height of the keyboard.
@@ -843,7 +858,7 @@ public class CompositorViewHolder extends FrameLayout
      */
     private void notifyVirtualKeyboardOverlayGeometryChangeEvent(
             int w, int keyboardHeight, WebContents webContents) {
-        assert webContents.shouldVirtualKeyboardOverlayContent();
+        assert shouldVirtualKeyboardOverlayContent(webContents);
 
         boolean keyboardVisible = keyboardHeight > 0;
         if (!keyboardVisible && !mHasKeyboardGeometryChangeFired) {

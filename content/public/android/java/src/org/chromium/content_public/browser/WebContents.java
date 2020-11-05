@@ -532,14 +532,4 @@ public interface WebContents extends Parcelable {
      * this. Min-height is the minimum visible height the controls can have.
      */
     void notifyBrowserControlsHeightChanged();
-
-    /**
-     * Returns true if the overlaycontent flag is set in the JS, else false.
-     * This determines whether to fire geometrychange event to JS and also not
-     * resize the visual/layout viewports in response to keyboard visibility
-     * changes.
-     *
-     * @return Whether overlaycontent flag is set or not.
-     */
-    boolean shouldVirtualKeyboardOverlayContent();
 }

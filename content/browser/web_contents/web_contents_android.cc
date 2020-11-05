@@ -485,13 +485,6 @@ void WebContentsAndroid::ScrollFocusedEditableNodeIntoView(
     input_handler->ScrollFocusedEditableNodeIntoRect(gfx::Rect());
 }
 
-bool WebContentsAndroid::ShouldVirtualKeyboardOverlayContent(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
-  RenderFrameHostImpl* rfh = web_contents_->GetMainFrame();
-  return rfh && rfh->ShouldVirtualKeyboardOverlayContent();
-}
-
 void WebContentsAndroid::SelectWordAroundCaretAck(bool did_select,
                                                   int start_adjust,
                                                   int end_adjust) {

@@ -305,9 +305,4 @@ public class MockWebContents implements WebContents {
 
     @Override
     public void notifyBrowserControlsHeightChanged() {}
-
-    @Override
-    public boolean shouldVirtualKeyboardOverlayContent() {
-        return false;
-    }
 }

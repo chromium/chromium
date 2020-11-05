@@ -339,6 +339,12 @@ void RenderWidgetHostViewAndroid::NotifyVirtualKeyboardOverlayRect(
   }
 }
 
+bool RenderWidgetHostViewAndroid::ShouldVirtualKeyboardOverlayContent() {
+  RenderFrameHostImpl* frame_host = static_cast<RenderFrameHostImpl*>(
+      RenderViewHost::From(host())->GetMainFrame());
+  return frame_host && frame_host->ShouldVirtualKeyboardOverlayContent();
+}
+
 bool RenderWidgetHostViewAndroid::SynchronizeVisualProperties(
     const cc::DeadlinePolicy& deadline_policy,
     const base::Optional<viz::LocalSurfaceId>& child_local_surface_id) {

@@ -145,6 +145,9 @@ public class ImeAdapterImpl
     // True if ImeAdapter is connected to render process.
     private boolean mIsConnected;
 
+    // Returns true if the overlaycontent flag is set in the JS, else false.
+    private boolean mKeyboardOverlayContent;
+
     /**
      * {@ResultReceiver} passed in InputMethodManager#showSoftInput}. We need this to scroll to the
      * editable node at the right timing, which is after input method window shows up.
@@ -260,6 +263,19 @@ public class ImeAdapterImpl
     @Override
     public void addEventObserver(ImeEventObserver eventObserver) {
         mEventObservers.add(eventObserver);
+    }
+
+    /**
+     * Returns true if the overlaycontent flag is set in the JS, else false.
+     * This determines whether to fire geometrychange event to JS and also not
+     * resize the visual/layout viewports in response to keyboard visibility
+     * changes.
+     *
+     * @return Whether overlaycontent flag is set or not.
+     */
+    @Override
+    public boolean shouldVirtualKeyboardOverlayContent() {
+        return mKeyboardOverlayContent;
     }
 
     private void createInputConnectionFactory() {
@@ -433,7 +449,8 @@ public class ImeAdapterImpl
     private void updateState(int textInputType, int textInputFlags, int textInputMode,
             int textInputAction, boolean showIfNeeded, boolean alwaysHide, String text,
             int selectionStart, int selectionEnd, int compositionStart, int compositionEnd,
-            boolean replyToRequest, int lastVkVisibilityRequest, int vkPolicy) {
+            boolean replyToRequest, int lastVkVisibilityRequest, int vkPolicy,
+            boolean keyboardOverlayContent) {
         TraceEvent.begin("ImeAdapter.updateState");
         try {
             if (DEBUG_LOGS) {
@@ -449,6 +466,7 @@ public class ImeAdapterImpl
                 mRestartInputOnNextStateUpdate = false;
             }
 
+            mKeyboardOverlayContent = keyboardOverlayContent;
             mTextInputFlags = textInputFlags;
             if (mTextInputMode != textInputMode) {
                 mTextInputMode = textInputMode;

@@ -229,6 +229,11 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   // Non-virtual methods
   void UpdateNativeViewTree(gfx::NativeView parent_native_view);
+  // Returns true if the overlaycontent flag is set in the JS, else false.
+  // This determines whether to fire geometrychange event to JS and also not
+  // resize the visual/layout viewports in response to keyboard visibility
+  // changes.
+  bool ShouldVirtualKeyboardOverlayContent();
 
   // Returns the temporary background color of the underlaying document, for
   // example, returns black during screen rotation.
