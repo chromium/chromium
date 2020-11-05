@@ -48,9 +48,7 @@ void RunDeleteOnIO(const base::Location& from_here,
 
 AppCacheQuotaClient::AppCacheQuotaClient(
     base::WeakPtr<AppCacheServiceImpl> service)
-    : service_(std::move(service)) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
+    : service_(std::move(service)) {}
 
 AppCacheQuotaClient::~AppCacheQuotaClient() {
   DCHECK(pending_batch_requests_.empty());

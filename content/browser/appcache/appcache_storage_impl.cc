@@ -307,12 +307,7 @@ void AppCacheStorageImpl::InitTask::RunCompleted() {
         kDelay);
   }
 
-  if (storage_->service()->quota_client()) {
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AppCacheQuotaClient::NotifyStorageReady,
-                       base::RetainedRef(storage_->service()->quota_client())));
-  }
+  storage_->service()->NotifyStorageReady();
 }
 
 // DisableDatabaseTask -------

@@ -13,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -110,6 +111,9 @@ class CONTENT_EXPORT AppCacheServiceImpl : public AppCacheService {
   // without relaunching the browser.
   void ScheduleReinitialize();
 
+  // Called by AppCacheStorageImpl when it is fully initialized.
+  void NotifyStorageReady();
+
   // AppCacheService
   void GetAllAppCacheInfo(AppCacheInfoCollection* collection,
                           net::CompletionOnceCallback callback) override;
@@ -146,9 +150,6 @@ class CONTENT_EXPORT AppCacheServiceImpl : public AppCacheService {
   storage::QuotaManagerProxy* quota_manager_proxy() const {
     return quota_manager_proxy_.get();
   }
-
-  // This QuotaClient should only be used on the IO thread.
-  AppCacheQuotaClient* quota_client() const { return quota_client_.get(); }
 
   AppCacheStorage* storage() const { return storage_.get(); }
 
@@ -191,7 +192,6 @@ class CONTENT_EXPORT AppCacheServiceImpl : public AppCacheService {
   base::FilePath cache_directory_;
   scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
   AppCachePolicy* appcache_policy_;
-  scoped_refptr<AppCacheQuotaClient> quota_client_;
   std::unique_ptr<AppCacheStorage> storage_;
   scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
@@ -206,10 +206,16 @@ class CONTENT_EXPORT AppCacheServiceImpl : public AppCacheService {
   base::WeakPtr<StoragePartitionImpl> partition_;
 
  private:
+  class QuotaClientHolder;
+
   // The (process id, host id) pair that identifies one AppCacheHost.
   using AppCacheHostProcessMap =
       std::map<base::UnguessableToken, std::unique_ptr<AppCacheHost>>;
   AppCacheHostProcessMap hosts_;
+
+  // The QuotaClientHolder is constructed and accessed on the UI thread, and
+  // destroyed on the IO thread.
+  const scoped_refptr<QuotaClientHolder> quota_client_holder_;
 
   base::WeakPtrFactory<AppCacheServiceImpl> weak_factory_{this};
 
