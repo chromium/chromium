@@ -56,6 +56,7 @@ struct PaintPropertyTreeBuilderFragmentContext {
     //   * A scroll translation
     //   * A replaced contents transform
     //   * A transform isolation node
+    //   * A sticky translation
     // The offset plus paint_offset is the offset for layout shift tracking.
     // It doesn't include transforms because we need to ignore transform changes
     // for layout shift tracking, see

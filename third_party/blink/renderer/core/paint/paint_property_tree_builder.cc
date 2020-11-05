@@ -278,7 +278,8 @@ class FragmentPaintPropertyTreeBuilder {
             !properties_->Transform()->IsIdentityOr2DTranslation()) ||
            properties_->ScrollTranslation() ||
            properties_->ReplacedContentTransform() ||
-           properties_->TransformIsolationNode();
+           properties_->TransformIsolationNode() ||
+           object_.IsStickyPositioned();
   }
 
   const LayoutObject& object_;
