@@ -536,8 +536,8 @@ void TabWebContentsDelegateAndroid::CapturePaintPreviewOfSubframe(
     content::RenderFrameHost* render_frame_host) {
   auto* client =
       paint_preview::PaintPreviewClient::FromWebContents(web_contents);
-  DCHECK(client);
-  client->CaptureSubframePaintPreview(guid, rect, render_frame_host);
+  if (client)
+    client->CaptureSubframePaintPreview(guid, rect, render_frame_host);
 }
 #endif
 

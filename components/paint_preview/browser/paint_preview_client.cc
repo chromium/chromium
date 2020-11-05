@@ -281,7 +281,7 @@ void PaintPreviewClient::CapturePaintPreview(
                             mojom::PaintPreviewStatus::kGuidCollision, {});
     return;
   }
-  if (!render_frame_host) {
+  if (!render_frame_host || params.inner.document_guid.is_empty()) {
     std::move(callback).Run(params.inner.document_guid,
                             mojom::PaintPreviewStatus::kFailed, {});
     return;
@@ -318,6 +318,9 @@ void PaintPreviewClient::CaptureSubframePaintPreview(
     const base::UnguessableToken& guid,
     const gfx::Rect& rect,
     content::RenderFrameHost* render_subframe_host) {
+  if (guid.is_empty())
+    return;
+
   auto it = all_document_data_.find(guid);
   if (it == all_document_data_.end())
     return;
