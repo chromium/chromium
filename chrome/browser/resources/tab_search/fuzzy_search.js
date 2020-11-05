@@ -26,10 +26,12 @@ export function fuzzySearch(input, records, options) {
   // present in the input string.
   // To address these shortcomings we use the exactSearch implementation below
   // if the options indicate an exact matching algorithm should be used.
+  performance.mark('search_algorithm:benchmark_begin');
+  let result;
   if (options.threshold === 0.0) {
-    return exactSearch(input, records, options);
+    result = exactSearch(input, records, options);
   } else {
-    return new Fuse(records, options).search(input).map(result => {
+    result = new Fuse(records, options).search(input).map(result => {
       const titleMatch = result.matches.find(e => e.key === 'tab.title');
       const hostnameMatch = result.matches.find(e => e.key === 'hostname');
       const item = Object.assign({}, result.item);
@@ -42,6 +44,8 @@ export function fuzzySearch(input, records, options) {
       return item;
     });
   }
+  performance.mark('search_algorithm:benchmark_end');
+  return result;
 }
 
 /**
