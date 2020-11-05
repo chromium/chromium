@@ -42,6 +42,14 @@ const char kEnableVizDevTools[] = "enable-viz-devtools";
 // Enables hit-test debug logging.
 const char kEnableVizHitTestDebug[] = "enable-viz-hit-test-debug";
 
+#if BUILDFLAG(IS_ASH)
+// ChromeOS uses one of two VideoDecoder implementations based on SoC/board
+// specific configurations that are signalled via this command line flag.
+// TODO(b/159825227): remove when the "old" video decoder is fully launched.
+const char kPlatformDisallowsChromeOSDirectVideoDecoder[] =
+    "platform-disallows-chromeos-direct-video-decoder";
+#endif
+
 // Effectively disables pipelining of compositor frame production stages by
 // waiting for each stage to finish before completing a frame.
 const char kRunAllCompositorStagesBeforeDraw[] =

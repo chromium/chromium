@@ -294,6 +294,9 @@ static const char* const kSwitchNames[] = {
     switches::kEnableReachedCodeProfiler,
     switches::kReachedCodeSamplingIntervalUs,
 #endif
+#if BUILDFLAG(IS_ASH)
+    switches::kPlatformDisallowsChromeOSDirectVideoDecoder,
+#endif
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

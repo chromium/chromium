@@ -56,10 +56,6 @@ MEDIA_EXPORT extern const char kDisableAudioInput[];
 MEDIA_EXPORT extern const char kUseOverlaysForVideo[];
 #endif
 
-#if BUILDFLAG(IS_ASH)
-MEDIA_EXPORT extern const char kPlatformDisallowsChromeOSDirectVideoDecoder[];
-#endif
-
 #if defined(USE_CRAS)
 MEDIA_EXPORT extern const char kUseCras[];
 #endif

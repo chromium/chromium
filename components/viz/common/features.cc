@@ -113,6 +113,15 @@ bool IsUsingSkiaRenderer() {
   if (IsUsingVizForWebView())
     return true;
 
+#if BUILDFLAG(IS_ASH)
+  // TODO(https://crbug.com/1145180): SkiaRenderer isn't supported on Chrome
+  // OS boards that still use the legacy video decoder.
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(
+          switches::kPlatformDisallowsChromeOSDirectVideoDecoder))
+    return false;
+#endif
+
   return base::FeatureList::IsEnabled(kUseSkiaRenderer) ||
          base::FeatureList::IsEnabled(kVulkan);
 }

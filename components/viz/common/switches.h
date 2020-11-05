@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/optional.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/viz_common_export.h"
 
 namespace switches {
@@ -22,6 +23,12 @@ VIZ_COMMON_EXPORT extern const char kEnableDeJelly[];
 VIZ_COMMON_EXPORT extern const char kEnableHardwareOverlays[];
 VIZ_COMMON_EXPORT extern const char kEnableVizDevTools[];
 VIZ_COMMON_EXPORT extern const char kEnableVizHitTestDebug[];
+
+#if BUILDFLAG(IS_ASH)
+VIZ_COMMON_EXPORT extern const char
+    kPlatformDisallowsChromeOSDirectVideoDecoder[];
+#endif
+
 VIZ_COMMON_EXPORT extern const char kRunAllCompositorStagesBeforeDraw[];
 VIZ_COMMON_EXPORT extern const char kShowAggregatedDamage[];
 VIZ_COMMON_EXPORT extern const char kShowDCLayerDebugBorders[];
