@@ -12281,7 +12281,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, FrameDepthTest) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, VisibilityFrameDepthTest) {
+// Disabled due to flakiness. crbug.com/1146083
+#if defined(OS_WIN) || defined(OS_MAC)
+#define MAYBE_VisibilityFrameDepthTest DISABLED_VisibilityFrameDepthTest
+#else
+#define MAYBE_VisibilityFrameDepthTest VisibilityFrameDepthTest
+#endif
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       MAYBE_VisibilityFrameDepthTest) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   GURL popup_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
