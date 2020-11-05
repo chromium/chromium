@@ -1,0 +1,12 @@
+{
+  "name": "test",
+  "version": "0.1",
+  "manifest_version": 3,
+  "web_accessible_resources": [
+    {
+      "resources": ["test"],
+      "matches": ["https://chromium.org/*"],
+      "extension_ids": ["abcdefghijlkmnopabcdefghijklmnopabcdefghijlkmnop"]
+    }
+  ]
+}
