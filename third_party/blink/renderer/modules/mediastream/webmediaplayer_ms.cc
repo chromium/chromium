@@ -475,28 +475,50 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
     audio_renderer_->SetVolume(volume_);
     audio_renderer_->Start();
 
-    // Store the ID of audio track being played in |current_audio_track_id_|.
     if (!web_stream_.IsNull()) {
       MediaStreamDescriptor& descriptor = *web_stream_;
       auto audio_components = descriptor.AudioComponents();
+      // Store the ID of audio track being played in |current_audio_track_id_|.
       DCHECK_GT(audio_components.size(), 0U);
       current_audio_track_id_ = WebString(audio_components[0]->Id());
       SendLogMessage(String::Format("%s => (audio_track_id=%s)", __func__,
                                     current_audio_track_id_.Utf8().c_str()));
+      // Report the media track information to blink. Only the first audio track
+      // is enabled by default to match blink logic.
+      bool is_first_audio_track = true;
+      for (auto component : audio_components) {
+        client_->AddAudioTrack(
+            blink::WebString::FromUTF8(component->Id().Utf8()),
+            blink::WebMediaPlayerClient::kAudioTrackKindMain,
+            blink::WebString::FromUTF8(component->Source()->GetName().Utf8()),
+            /*language=*/"", is_first_audio_track);
+        is_first_audio_track = false;
+      }
     }
   }
 
   if (video_frame_provider_) {
     video_frame_provider_->Start();
 
-    // Store the ID of video track being played in |current_video_track_id_|.
     if (!web_stream_.IsNull()) {
       MediaStreamDescriptor& descriptor = *web_stream_;
       auto video_components = descriptor.VideoComponents();
+      // Store the ID of video track being played in |current_video_track_id_|.
       DCHECK_GT(video_components.size(), 0U);
       current_video_track_id_ = WebString(video_components[0]->Id());
       SendLogMessage(String::Format("%s => (video_track_id=%s)", __func__,
                                     current_video_track_id_.Utf8().c_str()));
+      // Report the media track information to blink. Only the first video track
+      // is enabled by default to match blink logic.
+      bool is_first_video_track = true;
+      for (auto component : video_components) {
+        client_->AddVideoTrack(
+            blink::WebString::FromUTF8(component->Id().Utf8()),
+            blink::WebMediaPlayerClient::kVideoTrackKindMain,
+            blink::WebString::FromUTF8(component->Source()->GetName().Utf8()),
+            /*language=*/"", is_first_video_track);
+        is_first_video_track = false;
+      }
     }
   }
   // When associated with an <audio> element, we don't want to wait for the
