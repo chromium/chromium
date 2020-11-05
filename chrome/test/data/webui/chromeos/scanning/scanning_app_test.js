@@ -335,8 +335,8 @@ export function scanningAppTest() {
       const panelContainer = scanningApp.$$('.panel-container');
       assertTrue(!!panelContainer);
 
-      const leftPanel = scanningApp.$$('.panel-container > #leftPanel');
-      const rightPanel = scanningApp.$$('.panel-container > #rightPanel');
+      const leftPanel = scanningApp.$$('.panel-container > .left-panel');
+      const rightPanel = scanningApp.$$('.panel-container > .right-panel');
 
       assertTrue(!!leftPanel);
       assertTrue(!!rightPanel);

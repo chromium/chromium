@@ -52,15 +52,22 @@
     width: var(--container-width);
   }
 
-  .panel {
-    padding-inline: var(--panel-padding);
-    width: var(--panel-width);
+  .left-panel {
+    padding-inline-end: var(--left-panel-padding-end);
+    padding-inline-start: var(--left-panel-padding-start);
+    width: var(--left-panel-width);
   }
 
   .panel-container {
     display: flex;
     margin-bottom: var(--panel-container-margin-bottom);
     margin-top: var(--panel-container-margin-top);
+  }
+
+  .right-panel {
+    padding-inline-end: var(--right-panel-padding-end);
+    padding-inline-start: var(--right-panel-padding-start);
+    width: var(--right-panel-width);
   }
 
   .scan-button-container {
@@ -71,10 +78,10 @@
 </style>
 <div id="scanningContainer">
   <div class="panel-container">
-    <div id="leftPanel" class="panel">
+    <div class="left-panel">
       <scan-preview></scan-preview>
     </div>
-    <div id="rightPanel" class="panel">
+    <div class="right-panel">
       <h1 id="appTitle">[[i18n('appTitle')]]</h1>
       <scanner-select id="scannerSelect" scanners="[[scanners_]]" loaded="[[loaded_]]"
           settings-disabled="[[settingsDisabled_]]"
