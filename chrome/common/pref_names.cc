@@ -1544,12 +1544,6 @@ const char kToolbarIconSurfacingBubbleLastShowTime[] =
     "toolbar_icon_surfacing_bubble_show_time";
 #endif
 
-// Whether WebRTC should use non-proxied UDP. If false, WebRTC will not send UDP
-// unless it goes through a proxy (i.e RETURN when it's available).  If no UDP
-// proxy is configured, it will not send UDP.  If true, WebRTC will send UDP
-// regardless of whether or not a proxy is configured. TODO(guoweis): Remove
-// this at M50.
-const char kWebRTCNonProxiedUdpEnabled[] = "webrtc.nonproxied_udp_enabled";
 // Define the IP handling policy override that WebRTC should follow. When not
 // set, it defaults to "default".
 const char kWebRTCIPHandlingPolicy[] = "webrtc.ip_handling_policy";

@@ -118,13 +118,6 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
       prefs->caret_browsing_enabled);
 #endif
 
-  // Handling the backward compatibility of previous boolean versions of policy
-  // controls.
-  if (!pref_service->HasPrefPath(prefs::kWebRTCIPHandlingPolicy) &&
-      !pref_service->GetBoolean(prefs::kWebRTCNonProxiedUdpEnabled)) {
-    prefs->webrtc_ip_handling_policy =
-        blink::kWebRTCIPHandlingDisableNonProxiedUdp;
-  }
   if (prefs->webrtc_ip_handling_policy.empty()) {
     prefs->webrtc_ip_handling_policy =
         pref_service->GetString(prefs::kWebRTCIPHandlingPolicy);

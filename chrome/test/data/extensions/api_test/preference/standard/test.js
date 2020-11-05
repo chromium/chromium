@@ -15,7 +15,6 @@ var preferences_to_test = [
     root: chrome.privacy.network,
     preferences: {
       networkPredictionEnabled: false,
-      webRTCNonProxiedUdpEnabled: false,
     }
   },
   {
@@ -47,9 +46,7 @@ var preferences_to_test = [
 
 // Some preferences are only present on certain platforms or are hidden
 // behind flags and might not be present when this test runs.
-var possibly_missing_preferences = new Set([
-  'webRTCNonProxiedUdpEnabled',          // requires ENABLE_WEBRTC=1
-]);
+var possibly_missing_preferences = new Set();
 
 if (!navigator.userAgent.includes('Windows') &&
     !navigator.userAgent.includes('CrOS')) {
