@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PageCallbackRouter, PageRemote, ProfileTabs} from 'chrome://tab-search/tab_search.mojom-webui.js';
 import {TabSearchApiProxy} from 'chrome://tab-search/tab_search_api_proxy.js';
 import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 
@@ -17,14 +18,14 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
       'closeUI',
     ]);
 
-    /** @type {!tabSearch.mojom.PageCallbackRouter} */
-    this.callbackRouter = new tabSearch.mojom.PageCallbackRouter();
+    /** @type {!PageCallbackRouter} */
+    this.callbackRouter = new PageCallbackRouter();
 
-    /** @type {!tabSearch.mojom.PageRemote} */
+    /** @type {!PageRemote} */
     this.callbackRouterRemote =
         this.callbackRouter.$.bindNewPipeAndPassRemote();
 
-    /** @private {tabSearch.mojom.ProfileTabs} */
+    /** @private {ProfileTabs} */
     this.profileTabs_;
   }
 
@@ -64,12 +65,12 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
     return this.callbackRouter;
   }
 
-  /** return {!tabSearch.mojom.PageRemote} */
+  /** return {!PageRemote} */
   getCallbackRouterRemote() {
     return this.callbackRouterRemote;
   }
 
-  /** @param {tabSearch.mojom.ProfileTabs} profileTabs */
+  /** @param {ProfileTabs} profileTabs */
   setProfileTabs(profileTabs) {
     this.profileTabs_ = profileTabs;
   }

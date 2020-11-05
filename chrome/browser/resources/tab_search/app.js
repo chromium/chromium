@@ -22,6 +22,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {fuzzySearch} from './fuzzy_search.js';
 import {TabData} from './tab_data.js';
+import {Tab, WindowTabs} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
 const selectorNavigationKeys = ['ArrowUp', 'ArrowDown', 'Home', 'End'];
@@ -43,7 +44,7 @@ export class TabSearchAppElement extends PolymerElement {
         value: '',
       },
 
-      /** @private {?Array<!tabSearch.mojom.WindowTabs>} */
+      /** @private {?Array<!WindowTabs>} */
       openTabs_: {
         type: Array,
         observer: 'openTabsChanged_',
@@ -185,7 +186,7 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /**
-   * @param {!tabSearch.mojom.Tab} updatedTab
+   * @param {!Tab} updatedTab
    * @private
    */
   onTabUpdated_(updatedTab) {
@@ -277,7 +278,7 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /**
-   * @param {!Array<!tabSearch.mojom.WindowTabs>} newOpenTabs
+   * @param {!Array<!WindowTabs>} newOpenTabs
    * @private
    */
   openTabsChanged_(newOpenTabs) {
@@ -431,7 +432,7 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /**
-   * @param {!Array<!tabSearch.mojom.WindowTabs>} windowTabs
+   * @param {!Array<!WindowTabs>} windowTabs
    * @private
    */
   updateFilteredTabs_(windowTabs) {
@@ -488,7 +489,7 @@ export class TabSearchAppElement extends PolymerElement {
     }
   }
 
-  /** return {!tabSearch.mojom.Tab} */
+  /** return {!Tab} */
   getSelectedTab_() {
     return this.filteredOpenTabs_[this.getSelectedIndex()].tab;
   }

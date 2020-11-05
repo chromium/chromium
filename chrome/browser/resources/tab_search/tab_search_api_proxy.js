@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
-import './tab_search.mojom-lite.js';
-
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, ProfileTabs, SwitchToTabInfo} from './tab_search.mojom-webui.js';
 
 /**
  * These values are persisted to logs and should not be renumbered or re-used.
@@ -23,18 +21,18 @@ export class TabSearchApiProxy {
   /** @param {number} tabId */
   closeTab(tabId) {}
 
-  /** @return {Promise<{profileTabs: tabSearch.mojom.ProfileTabs}>} */
+  /** @return {Promise<{profileTabs: ProfileTabs}>} */
   getProfileTabs() {}
 
   showFeedbackPage() {}
 
   /**
-   * @param {!tabSearch.mojom.SwitchToTabInfo} info
+   * @param {!SwitchToTabInfo} info
    * @param {boolean} withSearch
    */
   switchToTab(info, withSearch) {}
 
-  /** @return {!tabSearch.mojom.PageCallbackRouter} */
+  /** @return {!PageCallbackRouter} */
   getCallbackRouter() {}
 
   showUI() {}
@@ -45,13 +43,13 @@ export class TabSearchApiProxy {
 /** @implements {TabSearchApiProxy} */
 export class TabSearchApiProxyImpl {
   constructor() {
-    /** @type {!tabSearch.mojom.PageCallbackRouter} */
-    this.callbackRouter = new tabSearch.mojom.PageCallbackRouter();
+    /** @type {!PageCallbackRouter} */
+    this.callbackRouter = new PageCallbackRouter();
 
-    /** @type {!tabSearch.mojom.PageHandlerRemote} */
-    this.handler = new tabSearch.mojom.PageHandlerRemote();
+    /** @type {!PageHandlerRemote} */
+    this.handler = new PageHandlerRemote();
 
-    const factory = tabSearch.mojom.PageHandlerFactory.getRemote();
+    const factory = PageHandlerFactory.getRemote();
     factory.createPageHandler(
         this.callbackRouter.$.bindNewPipeAndPassRemote(),
         this.handler.$.bindNewPipeAndPassReceiver());

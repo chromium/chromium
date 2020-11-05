@@ -14,6 +14,7 @@ import {highlight} from 'chrome://resources/js/search_highlight_utils.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TabData} from './tab_data.js';
+import {Tab} from './tab_search.mojom-webui.js';
 import './strings.js';
 
 export class TabSearchItem extends PolymerElement {
@@ -51,7 +52,7 @@ export class TabSearchItem extends PolymerElement {
   }
 
   /**
-   * @param {!tabSearch.mojom.Tab} tab
+   * @param {!Tab} tab
    * @return {string}
    * @private
    */

@@ -5,6 +5,7 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {TabSearchAppElement} from 'chrome://tab-search/app.js';
+import {ProfileTabs, Tab} from 'chrome://tab-search/tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from 'chrome://tab-search/tab_search_api_proxy.js';
 import {TabSearchItem} from 'chrome://tab-search/tab_search_item.js';
 import {TabSearchSearchField} from 'chrome://tab-search/tab_search_search_field.js';
@@ -43,7 +44,7 @@ suite('TabSearchAppTest', () => {
   }
 
   /**
-   * @param {tabSearch.mojom.ProfileTabs} sampleData
+   * @param {ProfileTabs} sampleData
    * @param {Object=} loadTimeOverridenData
    */
   async function setupTest(sampleData, loadTimeOverridenData) {
@@ -213,7 +214,7 @@ suite('TabSearchAppTest', () => {
         (tabSearchApp.shadowRoot.querySelector('tab-search-item[id="1"]'));
     assertEquals('Google', tabSearchItem.data.tab.title);
     assertEquals('https://www.google.com', tabSearchItem.data.tab.url);
-    const updatedTab = /** @type {!tabSearch.mojom.Tab} */ ({
+    const updatedTab = /** @type {!Tab} */ ({
       index: 0,
       tabId: 1,
       title: 'Example',

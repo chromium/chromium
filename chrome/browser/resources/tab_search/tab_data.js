@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Tab} from './tab_search.mojom-webui.js';
+
 /**
  * TabData contains tabSearch.mojom.Tab and data derived from it.
  * It makes tabSearch.mojom.Tab immutable and works well for closure compiler
@@ -9,7 +11,7 @@
  */
 export class TabData {
   constructor() {
-    /** @type {!tabSearch.mojom.Tab} */
+    /** @type {!Tab} */
     this.tab;
 
     /** @type {string} */

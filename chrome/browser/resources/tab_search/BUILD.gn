@@ -67,11 +67,11 @@ preprocess_grit("preprocess_fuse") {
 }
 
 preprocess_grit("preprocess_mojo") {
-  deps = [ "//chrome/browser/ui/webui/tab_search:mojo_bindings_js" ]
-  in_folder = "$root_gen_dir/chrome/browser/ui/webui/tab_search/"
+  deps = [ "//chrome/browser/ui/webui/tab_search:mojo_bindings_webui_js" ]
+  in_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_search/"
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_mojo_manifest"
-  in_files = [ "tab_search.mojom-lite.js" ]
+  in_files = [ "tab_search.mojom-webui.js" ]
 }
 
 grit("tab_search_resources") {
@@ -101,6 +101,13 @@ grit("tab_search_resources") {
 
 js_type_check("closure_compile") {
   is_polymer3 = true
+  closure_flags =
+      default_closure_args + mojom_js_args + [
+        "js_module_root=" + rebase_path(".", root_build_dir),
+        "js_module_root=" + rebase_path(
+                "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_search",
+                root_build_dir),
+      ]
   deps = [
     ":app",
     ":fuzzy_search",
@@ -141,7 +148,7 @@ js_library("tab_data") {
 
 js_library("tab_search_api_proxy") {
   deps = [
-    "//chrome/browser/ui/webui/tab_search:mojo_bindings_js_library_for_compile",
+    "//chrome/browser/ui/webui/tab_search:mojo_bindings_webui_js",
     "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [ "$externs_path/metrics_private.js" ]
