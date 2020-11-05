@@ -153,7 +153,7 @@ declare_args() {
 
   # Turn off the --call-graph-profile-sort flag for lld by default. Enable
   # selectively for targets where it's beneficial.
-  enable_call_graph_profile_sort = false
+  enable_call_graph_profile_sort = chrome_pgo_phase == 2
 }
 
 declare_args() {
@@ -2503,7 +2503,7 @@ if (is_win || is_android || (is_chromeos && is_chromeos_device)) {
   # Use orderfile for linking Chrome on win, android, and Chrome OS.
   # This config enables using an orderfile for linking in LLD.
   config("chrome_orderfile_config") {
-    if (chrome_orderfile_path != "") {
+    if (chrome_orderfile_path != "" && !enable_call_graph_profile_sort) {
       assert(use_lld)
       _rebased_orderfile = rebase_path(chrome_orderfile_path, root_build_dir)
       if (is_android || (is_chromeos && is_chromeos_device)) {
