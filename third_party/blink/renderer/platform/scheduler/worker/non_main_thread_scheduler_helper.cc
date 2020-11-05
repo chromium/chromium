@@ -36,8 +36,9 @@ NonMainThreadSchedulerHelper::DefaultNonMainThreadTaskQueue() {
   return default_task_queue_;
 }
 
-scoped_refptr<TaskQueue> NonMainThreadSchedulerHelper::DefaultTaskQueue() {
-  return default_task_queue_;
+const scoped_refptr<base::SingleThreadTaskRunner>&
+NonMainThreadSchedulerHelper::DefaultTaskRunner() {
+  return default_task_queue_->GetTaskRunnerWithDefaultTaskType();
 }
 
 scoped_refptr<NonMainThreadTaskQueue>
@@ -45,8 +46,9 @@ NonMainThreadSchedulerHelper::ControlNonMainThreadTaskQueue() {
   return control_task_queue_;
 }
 
-scoped_refptr<TaskQueue> NonMainThreadSchedulerHelper::ControlTaskQueue() {
-  return control_task_queue_;
+const scoped_refptr<base::SingleThreadTaskRunner>&
+NonMainThreadSchedulerHelper::ControlTaskRunner() {
+  return control_task_queue_->GetTaskRunnerWithDefaultTaskType();
 }
 
 scoped_refptr<NonMainThreadTaskQueue>

@@ -57,11 +57,6 @@ void SchedulerHelper::Shutdown() {
   sequence_manager_ = nullptr;
 }
 
-scoped_refptr<base::SingleThreadTaskRunner>
-SchedulerHelper::DefaultTaskRunner() {
-  return default_task_runner_;
-}
-
 void SchedulerHelper::SetWorkBatchSizeForTesting(int work_batch_size) {
   CheckOnValidThread();
   DCHECK(sequence_manager_);

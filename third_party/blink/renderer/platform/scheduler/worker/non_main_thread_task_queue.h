@@ -34,6 +34,15 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
     return TaskQueue::CreateTaskRunner(static_cast<int>(task_type));
   }
 
+  // This method returns the default task runner with task type kTaskTypeNone
+  // and is mostly used for tests. For most use cases, you'll want a more
+  // specific task runner and should use the 'CreateTaskRunner' method and pass
+  // the desired task type.
+  const scoped_refptr<base::SingleThreadTaskRunner>&
+  GetTaskRunnerWithDefaultTaskType() const {
+    return task_runner();
+  }
+
  private:
   // Not owned.
   NonMainThreadSchedulerImpl* non_main_thread_scheduler_;

@@ -338,7 +338,7 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   scoped_refptr<SingleThreadTaskRunner> CreateTaskRunner(TaskType task_type);
 
   // Default task runner which doesn't annotate tasks with a task type.
-  scoped_refptr<SingleThreadTaskRunner> task_runner() const {
+  const scoped_refptr<SingleThreadTaskRunner>& task_runner() const {
     return default_task_runner_;
   }
 

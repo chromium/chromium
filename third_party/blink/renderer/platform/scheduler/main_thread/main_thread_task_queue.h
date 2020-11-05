@@ -437,7 +437,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   // the desired task type.
   const scoped_refptr<base::SingleThreadTaskRunner>&
   GetTaskRunnerWithDefaultTaskType() {
-    return task_runner_;
+    return task_queue_->task_runner();
   }
 
   base::WeakPtr<MainThreadTaskQueue> AsWeakPtr() {
@@ -470,7 +470,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   void ClearReferencesToSchedulers();
 
   scoped_refptr<TaskQueue> task_queue_;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   const QueueType queue_type_;
   const QueueTraits queue_traits_;

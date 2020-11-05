@@ -42,18 +42,15 @@ class PLATFORM_EXPORT SchedulerHelper
   base::TimeTicks NowTicks() const;
   void SetTimerSlack(base::TimerSlack timer_slack);
 
-  // Returns the default task queue.
-  virtual scoped_refptr<base::sequence_manager::TaskQueue>
-  DefaultTaskQueue() = 0;
+  // Returns the task runner for the default task queue.
+  virtual const scoped_refptr<base::SingleThreadTaskRunner>&
+  DefaultTaskRunner() = 0;
 
-  // Returns the control task queue.  Tasks posted to this queue are executed
-  // with the highest priority. Care must be taken to avoid starvation of other
-  // task queues.
-  virtual scoped_refptr<base::sequence_manager::TaskQueue>
-  ControlTaskQueue() = 0;
-
-  // Returns task runner for the default queue.
-  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner();
+  // Returns the task runner for the control task queue.  Tasks posted to this
+  // queue are executed with the highest priority. Care must be taken to avoid
+  // starvation of other task queues.
+  virtual const scoped_refptr<base::SingleThreadTaskRunner>&
+  ControlTaskRunner() = 0;
 
   // Adds or removes a task observer from the scheduler. The observer will be
   // notified before and after every executed task. These functions can only be

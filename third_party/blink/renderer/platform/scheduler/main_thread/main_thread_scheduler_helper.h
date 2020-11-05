@@ -32,9 +32,12 @@ class PLATFORM_EXPORT MainThreadSchedulerHelper : public SchedulerHelper {
   scoped_refptr<MainThreadTaskQueue> ControlMainThreadTaskQueue();
   scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner();
 
+  const scoped_refptr<base::SingleThreadTaskRunner>& DefaultTaskRunner()
+      override;
+  const scoped_refptr<base::SingleThreadTaskRunner>& ControlTaskRunner()
+      override;
+
  protected:
-  scoped_refptr<base::sequence_manager::TaskQueue> DefaultTaskQueue() override;
-  scoped_refptr<base::sequence_manager::TaskQueue> ControlTaskQueue() override;
   void ShutdownAllQueues() override;
 
  private:
