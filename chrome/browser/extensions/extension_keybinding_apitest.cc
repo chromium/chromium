@@ -1063,8 +1063,6 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const ActionInfo::Type action_type = GetParam();
-  std::unique_ptr<ScopedCurrentChannel> override_channel =
-      GetOverrideChannelForActionType(GetParam());
 
   // Load a test extension that has a command that invokes the action, and sends
   // a message when the action is invoked.
@@ -1124,8 +1122,6 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest, TriggeringCommandTriggersPopup) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const ActionInfo::Type action_type = GetParam();
-  std::unique_ptr<ScopedCurrentChannel> override_channel =
-      GetOverrideChannelForActionType(GetParam());
 
   // Load an extension that specifies a command to invoke the action, and has
   // a default popup.

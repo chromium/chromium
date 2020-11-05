@@ -5,13 +5,10 @@
 #ifndef EXTENSIONS_COMMON_API_EXTENSION_ACTION_ACTION_INFO_TEST_UTIL_H_
 #define EXTENSIONS_COMMON_API_EXTENSION_ACTION_ACTION_INFO_TEST_UTIL_H_
 
-#include <memory>
-
 #include "extensions/common/api/extension_action/action_info.h"
 
 namespace extensions {
 class Extension;
-class ScopedCurrentChannel;
 
 // Retrieves the manifest key for the given action |type|.
 const char* GetManifestKeyForActionType(ActionInfo::Type type);
@@ -26,14 +23,6 @@ const char* GetAPINameForActionType(ActionInfo::Type action_type);
 // agnostic.
 const ActionInfo* GetActionInfoOfType(const Extension& extension,
                                       ActionInfo::Type type);
-
-// Returns a ScopedCurrentChannel object to use in tests if one is necessary for
-// the given |action_type| specified in the manifest. This will only return
-// non-null if the "action" manifest key is used.
-// TODO(https://crbug.com/893373): Remove this once the "action" key is launched
-// to stable.
-std::unique_ptr<ScopedCurrentChannel> GetOverrideChannelForActionType(
-    ActionInfo::Type action_type);
 
 }  // namespace extensions
 

@@ -35,7 +35,6 @@
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/extension_action/action_info.h"
-#include "extensions/common/api/extension_action/action_info_test_util.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -809,8 +808,6 @@ TEST_F(ExtensionInfoGeneratorUnitTest, Blocklisted) {
 
 // Test generating extension action commands properly.
 TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionActionCommands) {
-  auto channel_override =
-      GetOverrideChannelForActionType(ActionInfo::TYPE_ACTION);
   struct {
     const char* name;
     const char* command_key;

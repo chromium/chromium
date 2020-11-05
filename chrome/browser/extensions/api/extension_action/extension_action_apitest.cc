@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
-#include "components/version_info/channel.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -34,7 +33,6 @@
 #include "extensions/browser/state_store.h"
 #include "extensions/common/api/extension_action/action_info_test_util.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -205,8 +203,7 @@ class MultiActionAPITest
     : public ExtensionActionAPITest,
       public testing::WithParamInterface<ActionInfo::Type> {
  public:
-  MultiActionAPITest()
-      : current_channel_(GetOverrideChannelForActionType(GetParam())) {}
+  MultiActionAPITest() = default;
 
   // Returns true if the |action| has whatever state its default is on the
   // tab with the given |tab_id|.
@@ -249,11 +246,6 @@ class MultiActionAPITest
     auto* action_manager = ExtensionActionManager::Get(profile());
     return action_manager->GetExtensionAction(extension);
   }
-
- private:
-  std::unique_ptr<ScopedCurrentChannel> current_channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiActionAPITest);
 };
 
 // Canvas tests rely on the harness producing pixel output in order to read back

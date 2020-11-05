@@ -13,7 +13,6 @@
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/api/extension_action/action_info_test_util.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/test/test_extension_dir.h"
 
 namespace extensions {
@@ -21,17 +20,7 @@ namespace {
 
 class ExtensionActionAPIUnitTest
     : public ExtensionServiceTestWithInstall,
-      public ::testing::WithParamInterface<ActionInfo::Type> {
- public:
-  ExtensionActionAPIUnitTest()
-      : current_channel_(GetOverrideChannelForActionType(GetParam())) {}
-  ~ExtensionActionAPIUnitTest() override {}
-
- private:
-  std::unique_ptr<ScopedCurrentChannel> current_channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActionAPIUnitTest);
-};
+      public ::testing::WithParamInterface<ActionInfo::Type> {};
 
 // Test that extensions can provide icons of arbitrary sizes in the manifest.
 TEST_P(ExtensionActionAPIUnitTest, MultiIcons) {

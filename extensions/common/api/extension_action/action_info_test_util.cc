@@ -4,8 +4,6 @@
 
 #include "extensions/common/api/extension_action/action_info_test_util.h"
 
-#include "components/version_info/channel.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_constants.h"
 
 namespace extensions {
@@ -49,30 +47,6 @@ const ActionInfo* GetActionInfoOfType(const Extension& extension,
   const ActionInfo* action_info =
       ActionInfo::GetExtensionActionInfo(&extension);
   return (action_info && action_info->type == type) ? action_info : nullptr;
-}
-
-std::unique_ptr<ScopedCurrentChannel> GetOverrideChannelForActionType(
-    ActionInfo::Type action_type) {
-  std::unique_ptr<ScopedCurrentChannel> channel;
-  // The "action" key is currently restricted to canary. Use a fake channel iff
-  // it would be restricted otherwise. This way, we still get all-channel
-  // coverage for browser and page actions, and cover all channels that "action"
-  // is supported in.
-  constexpr version_info::Channel kMaxChannelForActionKey =
-      version_info::Channel::CANARY;
-
-  switch (action_type) {
-    case ActionInfo::TYPE_ACTION:
-      if (GetCurrentChannel() > kMaxChannelForActionKey) {
-        channel =
-            std::make_unique<ScopedCurrentChannel>(kMaxChannelForActionKey);
-      }
-      break;
-    case ActionInfo::TYPE_PAGE:
-    case ActionInfo::TYPE_BROWSER:
-      break;
-  }
-  return channel;
 }
 
 }  // namespace extensions

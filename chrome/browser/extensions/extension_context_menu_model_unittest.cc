@@ -48,7 +48,6 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extensions_client.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
@@ -1625,8 +1624,6 @@ class ExtensionActionContextMenuModelTest
 TEST_P(ExtensionActionContextMenuModelTest,
        MenuItemShowsOnlyForAppropriateActionType) {
   const ActionInfo::Type action_type = GetParam();
-  std::unique_ptr<ScopedCurrentChannel> override_channel =
-      GetOverrideChannelForActionType(action_type);
 
   InitializeEmptyExtensionService();
 
@@ -1657,9 +1654,6 @@ TEST_P(ExtensionActionContextMenuModelTest,
 
 TEST_P(ExtensionActionContextMenuModelTest, ActionMenuItemsAreLimited) {
   const ActionInfo::Type action_type = GetParam();
-  std::unique_ptr<ScopedCurrentChannel> override_channel =
-      GetOverrideChannelForActionType(action_type);
-
   InitializeEmptyExtensionService();
 
   scoped_refptr<const Extension> extension =
@@ -1691,9 +1685,6 @@ TEST_P(ExtensionActionContextMenuModelTest,
   // different object file.
   ASSERT_EQ(6, api::context_menus::ACTION_MENU_TOP_LEVEL_LIMIT);
   const ActionInfo::Type action_type = GetParam();
-  std::unique_ptr<ScopedCurrentChannel> override_channel =
-      GetOverrideChannelForActionType(action_type);
-
   InitializeEmptyExtensionService();
 
   scoped_refptr<const Extension> extension =
