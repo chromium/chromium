@@ -130,6 +130,11 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         for (BookmarkId bId : bookmarks) {
             BookmarkItem item = mDelegate.getModel().getBookmarkById(bId);
             mElements.add(BookmarkListEntry.createBookmarkEntry(item));
+            // Add a divider below the reading list folder.
+            if (item.getId().getType() == BookmarkType.READING_LIST && item.isFolder()) {
+                mElements.add(BookmarkListEntry.createDivider());
+                assert topLevelFoldersShowing();
+            }
         }
         notifyDataSetChanged();
     }
@@ -172,6 +177,10 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
                 return createViewHolderHelper(parent, R.layout.bookmark_folder_row);
             case ViewType.BOOKMARK:
                 return createViewHolderHelper(parent, R.layout.bookmark_item_row);
+            case ViewType.DIVIDER:
+                return new ViewHolder(
+                        LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.horizontal_divider, parent, false)) {};
             default:
                 assert false;
                 return null;
@@ -186,7 +195,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         } else if (holder.getItemViewType() == ViewType.PERSONALIZED_SYNC_PROMO) {
             PersonalizedSigninPromoView view = (PersonalizedSigninPromoView) holder.itemView;
             mPromoHeaderManager.setupPersonalizedSyncPromo(view);
-        } else if (!(holder.getItemViewType() == ViewType.SYNC_PROMO)) {
+        } else if (BookmarkListEntry.isBookmarkEntry(holder.getItemViewType())) {
             BookmarkRow row = ((BookmarkRow) holder.itemView);
             BookmarkId id = getIdByPosition(position);
             row.setBookmarkId(id, getLocationFromPosition(position));
@@ -319,6 +328,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
      */
     void moveUpOne(BookmarkId bookmarkId) {
         int pos = getPositionForBookmark(bookmarkId);
+        assert isOrderable(getItemByPosition(pos));
         mElements.remove(pos);
         mElements.add(pos - 1,
                 BookmarkListEntry.createBookmarkEntry(
@@ -331,6 +341,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
      */
     void moveDownOne(BookmarkId bookmarkId) {
         int pos = getPositionForBookmark(bookmarkId);
+        assert isOrderable(getItemByPosition(pos));
         mElements.remove(pos);
         mElements.add(pos + 1,
                 BookmarkListEntry.createBookmarkEntry(

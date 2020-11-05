@@ -23,7 +23,7 @@ final class BookmarkListEntry {
      */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ViewType.INVALID, ViewType.PERSONALIZED_SIGNIN_PROMO, ViewType.PERSONALIZED_SYNC_PROMO,
-            ViewType.SYNC_PROMO, ViewType.FOLDER, ViewType.BOOKMARK})
+            ViewType.SYNC_PROMO, ViewType.FOLDER, ViewType.BOOKMARK, ViewType.DIVIDER})
     @interface ViewType {
         int INVALID = -1;
         int PERSONALIZED_SIGNIN_PROMO = 0;
@@ -31,6 +31,7 @@ final class BookmarkListEntry {
         int SYNC_PROMO = 2;
         int FOLDER = 3;
         int BOOKMARK = 4;
+        int DIVIDER = 5;
     }
 
     private final @ViewType int mViewType;
@@ -59,6 +60,22 @@ final class BookmarkListEntry {
         assert viewType == ViewType.PERSONALIZED_SIGNIN_PROMO
                 || viewType == ViewType.PERSONALIZED_SYNC_PROMO || viewType == ViewType.SYNC_PROMO;
         return new BookmarkListEntry(viewType, /*bookmarkItem=*/null);
+    }
+
+    /**
+     * Creates a divider to separate sections in the bookmark list.
+     */
+    static BookmarkListEntry createDivider() {
+        return new BookmarkListEntry(ViewType.DIVIDER, /*bookmarkItem=*/null);
+    }
+
+    /**
+     * Helper function that returns whether the view type represents a bookmark or bookmark folder.
+     * Returns false for other view holder types like divider, promo headers, etc.
+     * @param viewType The type of the view in the bookmark list UI.
+     */
+    static boolean isBookmarkEntry(@ViewType int viewType) {
+        return viewType == ViewType.BOOKMARK || viewType == ViewType.FOLDER;
     }
 
     /**

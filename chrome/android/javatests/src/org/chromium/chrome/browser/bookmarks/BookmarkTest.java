@@ -1471,6 +1471,13 @@ public class BookmarkTest {
         });
     }
 
+    /**
+     * Verifies the top level elements with the reading list folder.
+     * Layout:
+     *  - Reading list folder.
+     *  - Divider
+     *  - Mobile bookmark folder.
+     */
     @Test
     @SmallTest
     @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
@@ -1480,18 +1487,20 @@ public class BookmarkTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mManager.openFolder(mBookmarkModel.getRootFolderId()));
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
-        Assert.assertEquals("Wrong number of top level folders.", 2, getAdapter().getItemCount());
+        Assert.assertEquals("Wrong number of top level elements.", 3, getAdapter().getItemCount());
 
         // Reading list should show in the root folder.
         View readingListRow = mItemsContainer.findViewHolderForAdapterPosition(0).itemView;
         Assert.assertEquals("No overflow menu for reading list folder.", View.GONE,
                 readingListRow.findViewById(R.id.more).getVisibility());
-        Assert.assertEquals("The first view should be reading list.", BookmarkType.READING_LIST,
+        Assert.assertEquals("The 1st view should be reading list.", BookmarkType.READING_LIST,
                 getIdByPosition(0).getType());
         onView(withText("Reading list")).check(matches(isDisplayed()));
 
-        Assert.assertEquals("The second view should be a normal folder.", BookmarkType.NORMAL,
-                getIdByPosition(1).getType());
+        Assert.assertEquals("The 2nd view should be a divider.", BookmarkListEntry.ViewType.DIVIDER,
+                getAdapter().getItemViewType(1));
+        Assert.assertEquals("The 3rd view should be a normal folder.",
+                BookmarkListEntry.ViewType.FOLDER, getAdapter().getItemViewType(2));
     }
 
     /**
