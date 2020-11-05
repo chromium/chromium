@@ -243,6 +243,7 @@ aes_hw_set_decrypt_key:
 .type	aes_hw_encrypt,%function
 .align	5
 aes_hw_encrypt:
+	AARCH64_VALID_CALL_TARGET
 	ldr	r3,[r2,#240]
 	vld1.32	{q0},[r2]!
 	vld1.8	{q2},[r0]
@@ -273,6 +274,7 @@ aes_hw_encrypt:
 .type	aes_hw_decrypt,%function
 .align	5
 aes_hw_decrypt:
+	AARCH64_VALID_CALL_TARGET
 	ldr	r3,[r2,#240]
 	vld1.32	{q0},[r2]!
 	vld1.8	{q2},[r0]
