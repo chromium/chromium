@@ -35,6 +35,7 @@
 #include "url/gurl.h"
 
 namespace blink {
+class ChildURLLoaderFactoryBundle;
 class WebSharedWorker;
 }  // namespace blink
 
@@ -44,8 +45,6 @@ class PendingURLLoaderFactoryBundle;
 }  // namespace blink
 
 namespace content {
-
-class ChildURLLoaderFactoryBundle;
 
 // A stub class to receive IPC from browser process and talk to
 // blink::WebSharedWorker. Implements blink::WebSharedWorkerClient.
@@ -107,7 +106,8 @@ class EmbeddedSharedWorkerStub : public blink::WebSharedWorkerClient,
   scoped_refptr<ServiceWorkerProviderContext> service_worker_provider_context_;
 
   // The factory bundle used for loading subresources for this shared worker.
-  scoped_refptr<ChildURLLoaderFactoryBundle> subresource_loader_factory_bundle_;
+  scoped_refptr<blink::ChildURLLoaderFactoryBundle>
+      subresource_loader_factory_bundle_;
 
   // Out-of-process NetworkService:
   // Detects disconnection from the default factory of the loader factory bundle

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_LOADER_CHILD_URL_LOADER_FACTORY_BUNDLE_H_
-#define CONTENT_RENDERER_LOADER_CHILD_URL_LOADER_FACTORY_BUNDLE_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_CHILD_URL_LOADER_FACTORY_BUNDLE_H_
+#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_CHILD_URL_LOADER_FACTORY_BUNDLE_H_
 
 #include <map>
 #include <memory>
@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/optional.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -19,8 +18,9 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
+#include "third_party/blink/public/platform/web_common.h"
 
-namespace content {
+namespace blink {
 
 // Holds the internal state of a ChildURLLoaderFactoryBundle in a form that is
 // safe to pass across sequences.
@@ -30,7 +30,7 @@ namespace content {
 // pressure), and also adds special handling for Signed Exchanges (SXG) when the
 // flag is enabled. TODO(crbug/803776): deprecate this once SXG specific code is
 // moved into Network Service unless we see huge memory benefit for doing this.
-class CONTENT_EXPORT ChildPendingURLLoaderFactoryBundle
+class BLINK_PLATFORM_EXPORT ChildPendingURLLoaderFactoryBundle
     : public blink::PendingURLLoaderFactoryBundle {
  public:
   ChildPendingURLLoaderFactoryBundle();
@@ -104,7 +104,7 @@ class CONTENT_EXPORT ChildPendingURLLoaderFactoryBundle
 // factory, which bypasses custom overrides such as appcache or service worker.
 // Besides, it also supports using callbacks to lazily initialize the direct
 // network loader factory.
-class CONTENT_EXPORT ChildURLLoaderFactoryBundle
+class BLINK_PLATFORM_EXPORT ChildURLLoaderFactoryBundle
     : public blink::URLLoaderFactoryBundle {
  public:
   using FactoryGetterCallback = base::OnceCallback<
@@ -172,10 +172,9 @@ class CONTENT_EXPORT ChildURLLoaderFactoryBundle
 
   bool is_deprecated_process_wide_factory_ = false;
 
-  std::map<GURL, blink::mojom::TransferrableURLLoaderPtr>
-      subresource_overrides_;
+  std::map<GURL, mojom::TransferrableURLLoaderPtr> subresource_overrides_;
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_RENDERER_LOADER_CHILD_URL_LOADER_FACTORY_BUNDLE_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_CHILD_URL_LOADER_FACTORY_BUNDLE_H_

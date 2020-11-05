@@ -11,8 +11,8 @@
 
 #include "base/sequenced_task_runner.h"
 #include "content/common/content_export.h"
-#include "content/renderer/loader/child_url_loader_factory_bundle.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
 
 namespace content {
 
@@ -21,7 +21,7 @@ class HostChildURLLoaderFactoryBundle;
 // Holds the internal state of a |TrackedChildURLLoaderFactoryBundle| in a form
 // that is safe to pass across sequences.
 class CONTENT_EXPORT TrackedChildPendingURLLoaderFactoryBundle
-    : public ChildPendingURLLoaderFactoryBundle {
+    : public blink::ChildPendingURLLoaderFactoryBundle {
  public:
   using HostPtrAndTaskRunner =
       std::pair<base::WeakPtr<HostChildURLLoaderFactoryBundle>,
@@ -48,7 +48,7 @@ class CONTENT_EXPORT TrackedChildPendingURLLoaderFactoryBundle
   }
 
  protected:
-  // ChildPendingURLLoaderFactoryBundle overrides.
+  // blink::ChildPendingURLLoaderFactoryBundle overrides.
   scoped_refptr<network::SharedURLLoaderFactory> CreateFactory() override;
 
   std::unique_ptr<HostPtrAndTaskRunner> main_thread_host_bundle_;
@@ -56,17 +56,17 @@ class CONTENT_EXPORT TrackedChildPendingURLLoaderFactoryBundle
   DISALLOW_COPY_AND_ASSIGN(TrackedChildPendingURLLoaderFactoryBundle);
 };
 
-// This class extends |ChildURLLoaderFactoryBundle| to support a host/observer
-// tracking logic. There will be a single |HostChildURLLoaderFactoryBundle|
-// owned by |RenderFrameImpl| which lives on the main thread, and multiple
-// |TrackedChildURLLoaderFactoryBundle| on the worker thread (for Workers) or
-// the main thread (for frames from 'window.open()').
-// Both |Host/TrackedChildURLLoaderFactoryBundle::Clone()| can be used to create
-// a tracked bundle to the original host bundle.
-// These two classes are required to bring bundles back online in the event of
-// Network Service crash.
+// This class extends |blink::ChildURLLoaderFactoryBundle| to support a
+// host/observer tracking logic. There will be a single
+// |HostChildURLLoaderFactoryBundle| owned by |RenderFrameImpl| which lives on
+// the main thread, and multiple |TrackedChildURLLoaderFactoryBundle| on the
+// worker thread (for Workers) or the main thread (for frames from
+// 'window.open()'). Both |Host/TrackedChildURLLoaderFactoryBundle::Clone()| can
+// be used to create a tracked bundle to the original host bundle. These two
+// classes are required to bring bundles back online in the event of Network
+// Service crash.
 class CONTENT_EXPORT TrackedChildURLLoaderFactoryBundle
-    : public ChildURLLoaderFactoryBundle,
+    : public blink::ChildURLLoaderFactoryBundle,
       public base::SupportsWeakPtr<TrackedChildURLLoaderFactoryBundle> {
  public:
   using HostPtrAndTaskRunner =
@@ -78,7 +78,7 @@ class CONTENT_EXPORT TrackedChildURLLoaderFactoryBundle
       std::unique_ptr<TrackedChildPendingURLLoaderFactoryBundle>
           pending_factories);
 
-  // ChildURLLoaderFactoryBundle overrides.
+  // blink::ChildURLLoaderFactoryBundle overrides.
   // Returns |std::unique_ptr<TrackedChildPendingURLLoaderFactoryBundle>|.
   std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override;
 
@@ -111,7 +111,7 @@ class CONTENT_EXPORT TrackedChildURLLoaderFactoryBundle
 // comments in |TrackedChildURLLoaderFactoryBundle| for details about the
 // tracking logic.
 class CONTENT_EXPORT HostChildURLLoaderFactoryBundle
-    : public ChildURLLoaderFactoryBundle,
+    : public blink::ChildURLLoaderFactoryBundle,
       public base::SupportsWeakPtr<HostChildURLLoaderFactoryBundle> {
  public:
   using ObserverPtrAndTaskRunner =
@@ -124,7 +124,7 @@ class CONTENT_EXPORT HostChildURLLoaderFactoryBundle
   explicit HostChildURLLoaderFactoryBundle(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
-  // ChildURLLoaderFactoryBundle overrides.
+  // blink::ChildURLLoaderFactoryBundle overrides.
   // Returns |std::unique_ptr<TrackedChildPendingURLLoaderFactoryBundle>|.
   std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override;
   std::unique_ptr<network::PendingSharedURLLoaderFactory>

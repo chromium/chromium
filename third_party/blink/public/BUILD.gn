@@ -113,6 +113,7 @@ source_set("blink_headers") {
   sources = [
     "platform/audio/web_audio_device_source_type.h",
     "platform/blame_context.h",
+    "platform/child_url_loader_factory_bundle.h",
     "platform/cross_variant_mojo_util.h",
     "platform/file_path_conversion.h",
     "platform/input/input_handler_proxy.h",

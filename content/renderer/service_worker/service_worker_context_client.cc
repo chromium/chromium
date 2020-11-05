@@ -29,7 +29,6 @@
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/document_state.h"
 #include "content/public/renderer/worker_thread.h"
-#include "content/renderer/loader/child_url_loader_factory_bundle.h"
 #include "content/renderer/loader/web_url_loader_impl.h"
 #include "content/renderer/renderer_blink_platform_impl.h"
 #include "content/renderer/service_worker/embedded_worker_instance_client_impl.h"
@@ -50,6 +49,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
+#include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/url_conversion.h"
@@ -152,8 +152,8 @@ ServiceWorkerContextClient::ServiceWorkerContextClient(
                        base::Unretained(this)));
   }
 
-  loader_factories_ = base::MakeRefCounted<ChildURLLoaderFactoryBundle>(
-      std::make_unique<ChildPendingURLLoaderFactoryBundle>(
+  loader_factories_ = base::MakeRefCounted<blink::ChildURLLoaderFactoryBundle>(
+      std::make_unique<blink::ChildPendingURLLoaderFactoryBundle>(
           std::move(subresource_loaders)));
 
   service_worker_provider_info_ = std::move(provider_info);

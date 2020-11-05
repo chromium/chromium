@@ -49,7 +49,6 @@
 #include "content/public/renderer/websocket_handshake_throttle_provider.h"
 #include "content/renderer/content_security_policy_util.h"
 #include "content/renderer/frame_blame_context.h"
-#include "content/renderer/loader/child_url_loader_factory_bundle.h"
 #include "content/renderer/media/media_factory.h"
 #include "content/renderer/render_widget.h"
 #include "ipc/ipc_message.h"
@@ -95,6 +94,7 @@
 #include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/css_property_id.mojom.h"
+#include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document_loader.h"
@@ -951,17 +951,17 @@ class CONTENT_EXPORT RenderFrameImpl
   // Requests that the browser process navigates to |url|.
   void OpenURL(std::unique_ptr<blink::WebNavigationInfo> info);
 
-  // Returns a ChildURLLoaderFactoryBundle which can be used to request
+  // Returns a blink::ChildURLLoaderFactoryBundle which can be used to request
   // subresources for this frame.
   // For frames with committed navigations, this bundle is created with the
   // factories provided by the browser at navigation time. For any other frames
   // (i.e. frames on the initial about:blank Document), the bundle returned here
   // is lazily cloned from the parent or opener's own bundle.
-  ChildURLLoaderFactoryBundle* GetLoaderFactoryBundle();
+  blink::ChildURLLoaderFactoryBundle* GetLoaderFactoryBundle();
 
   // Clones and returns the creator's (parent's or opener's)
-  // ChildURLLoaderFactoryBundle.
-  scoped_refptr<ChildURLLoaderFactoryBundle>
+  // blink::ChildURLLoaderFactoryBundle.
+  scoped_refptr<blink::ChildURLLoaderFactoryBundle>
   GetLoaderFactoryBundleFromCreator();
 
   // Returns a mostly empty bundle, with a fallback that uses a process-wide,
@@ -969,9 +969,10 @@ class CONTENT_EXPORT RenderFrameImpl
   //
   // TODO(lukasza): https://crbug.com/1114822: Remove once the fallback is no
   // longer needed.
-  scoped_refptr<ChildURLLoaderFactoryBundle> GetLoaderFactoryBundleFallback();
+  scoped_refptr<blink::ChildURLLoaderFactoryBundle>
+  GetLoaderFactoryBundleFallback();
 
-  scoped_refptr<ChildURLLoaderFactoryBundle> CreateLoaderFactoryBundle(
+  scoped_refptr<blink::ChildURLLoaderFactoryBundle> CreateLoaderFactoryBundle(
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> info,
       base::Optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
           subresource_overrides,
@@ -1376,12 +1377,12 @@ class CONTENT_EXPORT RenderFrameImpl
   // This must be updated only via SetLoaderFactoryBundle, which is called at a
   // certain timing - right before the new document is committed during
   // FrameLoader::CommitNavigation.
-  scoped_refptr<ChildURLLoaderFactoryBundle> loader_factories_;
+  scoped_refptr<blink::ChildURLLoaderFactoryBundle> loader_factories_;
 
   // Loader factory bundle is stored here temporary between CommitNavigation
   // and DidCommitNavigation calls. These happen synchronously one after
   // another.
-  scoped_refptr<ChildURLLoaderFactoryBundle> pending_loader_factories_;
+  scoped_refptr<blink::ChildURLLoaderFactoryBundle> pending_loader_factories_;
 
   scoped_refptr<blink::WebFrameRequestBlocker> frame_request_blocker_;
 

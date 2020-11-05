@@ -5,7 +5,6 @@
 #include "content/renderer/worker/dedicated_worker_host_factory_client.h"
 
 #include <utility>
-#include "content/renderer/loader/child_url_loader_factory_bundle.h"
 #include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/loader/web_worker_fetch_context_impl.h"
 #include "content/renderer/render_thread_impl.h"
@@ -22,6 +21,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 #include "third_party/blink/public/mojom/tokens/tokens.mojom.h"
 #include "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom.h"
+#include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
 #include "third_party/blink/public/platform/web_dedicated_worker.h"
 #include "third_party/blink/public/platform/web_url.h"
 
@@ -132,8 +132,8 @@ void DedicatedWorkerHostFactoryClient::OnScriptLoadStarted(
   // Initialize the loader factory bundle passed by the browser process.
   DCHECK(!subresource_loader_factory_bundle_);
   subresource_loader_factory_bundle_ =
-      base::MakeRefCounted<ChildURLLoaderFactoryBundle>(
-          std::make_unique<ChildPendingURLLoaderFactoryBundle>(
+      base::MakeRefCounted<blink::ChildURLLoaderFactoryBundle>(
+          std::make_unique<blink::ChildPendingURLLoaderFactoryBundle>(
               std::move(pending_subresource_loader_factory_bundle)));
 
   DCHECK(!pending_subresource_loader_updater_);

@@ -262,7 +262,7 @@ void TestRenderFrame::Navigate(network::mojom::URLResponseHeadPtr head,
   BindNavigationClient(
       mock_navigation_client_.BindNewEndpointAndPassDedicatedReceiver());
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle> pending_factory_bundle =
-      ChildPendingURLLoaderFactoryBundle::CreateFromDefaultFactoryImpl(
+      blink::ChildPendingURLLoaderFactoryBundle::CreateFromDefaultFactoryImpl(
           std::make_unique<network::NotImplementedURLLoaderFactory>());
 
   CommitNavigation(std::move(common_params), std::move(commit_params),
@@ -294,7 +294,7 @@ void TestRenderFrame::NavigateWithError(
   BindNavigationClient(
       mock_navigation_client_.BindNewEndpointAndPassDedicatedReceiver());
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle> pending_factory_bundle =
-      ChildPendingURLLoaderFactoryBundle::CreateFromDefaultFactoryImpl(
+      blink::ChildPendingURLLoaderFactoryBundle::CreateFromDefaultFactoryImpl(
           std::make_unique<network::NotImplementedURLLoaderFactory>());
   mock_navigation_client_->CommitFailedNavigation(
       std::move(common_params), std::move(commit_params),

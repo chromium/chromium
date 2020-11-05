@@ -17,6 +17,7 @@ blink_platform_sources("loader") {
   sources = [
     "allowed_by_nosniff.cc",
     "allowed_by_nosniff.h",
+    "child_url_loader_factory_bundle.cc",
     "code_cache_loader.cc",
     "code_cache_loader.h",
     "cors/cors.cc",

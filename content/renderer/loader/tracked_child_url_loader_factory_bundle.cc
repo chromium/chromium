@@ -81,7 +81,7 @@ TrackedChildURLLoaderFactoryBundle::~TrackedChildURLLoaderFactoryBundle() {
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
 TrackedChildURLLoaderFactoryBundle::Clone() {
   auto pending_factories =
-      base::WrapUnique(static_cast<ChildPendingURLLoaderFactoryBundle*>(
+      base::WrapUnique(static_cast<blink::ChildPendingURLLoaderFactoryBundle*>(
           ChildURLLoaderFactoryBundle::Clone().release()));
 
   DCHECK(main_thread_host_bundle_);
@@ -129,7 +129,7 @@ void TrackedChildURLLoaderFactoryBundle::RemoveObserverOnMainThread() {
 void TrackedChildURLLoaderFactoryBundle::OnUpdate(
     std::unique_ptr<network::PendingSharedURLLoaderFactory> info) {
   Update(base::WrapUnique(
-      static_cast<ChildPendingURLLoaderFactoryBundle*>(info.release())));
+      static_cast<blink::ChildPendingURLLoaderFactoryBundle*>(info.release())));
 }
 
 // -----------------------------------------------------------------------------
@@ -147,7 +147,7 @@ HostChildURLLoaderFactoryBundle::~HostChildURLLoaderFactoryBundle() = default;
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
 HostChildURLLoaderFactoryBundle::Clone() {
   auto pending_factories =
-      base::WrapUnique(static_cast<ChildPendingURLLoaderFactoryBundle*>(
+      base::WrapUnique(static_cast<blink::ChildPendingURLLoaderFactoryBundle*>(
           ChildURLLoaderFactoryBundle::Clone().release()));
 
   DCHECK(base::SequencedTaskRunnerHandle::IsSet());
@@ -169,7 +169,7 @@ HostChildURLLoaderFactoryBundle::Clone() {
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
 HostChildURLLoaderFactoryBundle::CloneWithoutAppCacheFactory() {
   auto pending_factories =
-      base::WrapUnique(static_cast<ChildPendingURLLoaderFactoryBundle*>(
+      base::WrapUnique(static_cast<blink::ChildPendingURLLoaderFactoryBundle*>(
           ChildURLLoaderFactoryBundle::CloneWithoutAppCacheFactory()
               .release()));
 

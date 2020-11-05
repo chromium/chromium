@@ -79,8 +79,6 @@ target(link_target_type, "renderer") {
     "in_process_renderer_thread.h",
     "internal_document_state_data.cc",
     "internal_document_state_data.h",
-    "loader/child_url_loader_factory_bundle.cc",
-    "loader/child_url_loader_factory_bundle.h",
     "loader/navigation_body_loader.cc",
     "loader/navigation_body_loader.h",
     "loader/resource_dispatcher.cc",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/loader/child_url_loader_factory_bundle.h"
+#include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
 
 #include <memory>
 #include <string>
@@ -12,9 +12,7 @@
 #include "base/check.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/feature_list.h"
 #include "base/optional.h"
-#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/load_flags.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
@@ -22,7 +20,7 @@
 #include "url/origin.h"
 #include "url/url_constants.h"
 
-namespace content {
+namespace blink {
 
 namespace {
 
@@ -455,4 +453,4 @@ ChildURLLoaderFactoryBundle::PassInterface() {
   return result;
 }
 
-}  // namespace content
+}  // namespace blink

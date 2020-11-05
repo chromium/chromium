@@ -49,6 +49,7 @@ class SingleThreadTaskRunner;
 }
 
 namespace blink {
+class ChildURLLoaderFactoryBundle;
 class WebServiceWorkerContextProxy;
 class WebURLResponse;
 struct WebServiceWorkerInstalledScriptsManagerParams;
@@ -56,7 +57,6 @@ struct WebServiceWorkerInstalledScriptsManagerParams;
 
 namespace content {
 
-class ChildURLLoaderFactoryBundle;
 class EmbeddedWorkerInstanceClientImpl;
 class WebServiceWorkerFetchContext;
 
@@ -273,7 +273,7 @@ class CONTENT_EXPORT ServiceWorkerContextClient
   blink::mojom::EmbeddedWorkerStartTimingPtr start_timing_;
 
   // A URLLoaderFactory instance used for subresource loading.
-  scoped_refptr<ChildURLLoaderFactoryBundle> loader_factories_;
+  scoped_refptr<blink::ChildURLLoaderFactoryBundle> loader_factories_;
 
   // Out-of-process NetworkService:
   // Detects disconnection from the network service.
