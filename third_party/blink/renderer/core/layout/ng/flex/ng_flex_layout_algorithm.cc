@@ -872,10 +872,12 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
       LayoutUnit transferred_size_suggestion = LayoutUnit::Max();
       if (specified_size_suggestion == LayoutUnit::Max() &&
           child.HasAspectRatio()) {
+        LayoutUnit cross_axis_size(kIndefiniteSize);
         const Length& cross_axis_length =
             is_horizontal_flow_ ? child_style.Height() : child_style.Width();
         if (IsItemCrossAxisLengthDefinite(child, cross_axis_length)) {
-          LayoutUnit cross_axis_size;
+          // This entire IsItemCrossAxisLengthDefinite block may be unnecessary
+          // after enabling RuntimeEnabledFeatures::FlexAspectRatioEnabled().
           if (MainAxisIsInlineAxis(child)) {
             cross_axis_size = ResolveMainBlockLength(
                 flex_basis_space, child_style,
@@ -888,6 +890,14 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
                                         border_padding_in_child_writing_mode,
                                         MinMaxSizesFunc, cross_axis_length);
           }
+        } else if (WillChildCrossSizeBeContainerCrossSize(child) &&
+                   RuntimeEnabledFeatures::FlexAspectRatioEnabled()) {
+          NGBoxStrut margins = physical_child_margins.ConvertToLogical(
+              ConstraintSpace().GetWritingDirection());
+          cross_axis_size = CalculateFixedCrossSize(
+              min_max_sizes_in_cross_axis_direction, margins);
+        }
+        if (cross_axis_size != kIndefiniteSize) {
           double ratio = GetMainOverCrossAspectRatio(child);
           transferred_size_suggestion = LayoutUnit(
               main_axis_border_padding +

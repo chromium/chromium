@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+FAIL img 1 assert_equals: 
+<img src="support/200x200-green.png" data-expected-height="100" data-expected-width="100">
+width expected 100 but got 200
+FAIL img 2 assert_equals: 
+<img src="support/200x200-green.png" style="margin-bottom: 20px" data-expected-height="100" data-expected-width="100">
+width expected 100 but got 200
+FAIL img 3 assert_equals: 
+<img src="support/200x200-green.png" style="min-height: 100px;" data-expected-height="100" data-expected-width="100">
+width expected 100 but got 200
+Harness: the test ran to completion.
+
