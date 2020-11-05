@@ -919,7 +919,7 @@ class DomTreeExtractionBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
 
       // Merge LayoutTreeNode data into the dictionary.
       if (base::Value* layout_node_index_value =
-          node_dict->FindKey("layoutNodeIndex")) {
+              node_dict->FindKey("layoutNodeIndex")) {
         int layout_node_index = layout_node_index_value->GetInt();
         ASSERT_LE(0, layout_node_index);
         ASSERT_GT(result->GetLayoutTreeNodes()->size(),
@@ -966,7 +966,7 @@ class DomTreeExtractionBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
     base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
     base::FilePath expected_dom_nodes_path =
         source_root_dir.Append(FILE_PATH_LITERAL(
-            "headless/lib/dom_tree_extraction_expected_nodes.txt"));
+            "headless/test/dom_tree_extraction_expected_nodes.txt"));
     std::string expected_dom_nodes;
     ASSERT_TRUE(
         base::ReadFileToString(expected_dom_nodes_path, &expected_dom_nodes));
@@ -988,7 +988,7 @@ class DomTreeExtractionBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
 
     base::FilePath expected_styles_path =
         source_root_dir.Append(FILE_PATH_LITERAL(
-            "headless/lib/dom_tree_extraction_expected_styles.txt"));
+            "headless/test/dom_tree_extraction_expected_styles.txt"));
     std::string expected_computed_styles;
     ASSERT_TRUE(base::ReadFileToString(expected_styles_path,
                                        &expected_computed_styles));

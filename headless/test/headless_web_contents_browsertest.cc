@@ -991,9 +991,7 @@ class HeadlessWebContentsBeginFrameControlBasicTest
     return "/blue_page.html";
   }
 
-  void OnNeedsBeginFrame() override {
-    BeginFrame(true);
-  }
+  void OnNeedsBeginFrame() override { BeginFrame(true); }
 
   void OnFrameFinished(std::unique_ptr<headless_experimental::BeginFrameResult>
                            result) override {

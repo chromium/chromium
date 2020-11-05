@@ -625,15 +625,15 @@ if (is_mac) {
 test("headless_browsertests") {
   configs += [ "//net:net_test_config" ]
   sources = [
-    "lib/headless_browser_browsertest.cc",
-    "lib/headless_browser_context_browsertest.cc",
-    "lib/headless_devtools_client_browsertest.cc",
-    "lib/headless_origin_trials_browsertest.cc",
-    "lib/headless_web_contents_browsertest.cc",
+    "test/headless_browser_browsertest.cc",
+    "test/headless_browser_context_browsertest.cc",
     "test/headless_browser_test.cc",
     "test/headless_browser_test.h",
     "test/headless_client_browsertest.cc",
+    "test/headless_devtools_client_browsertest.cc",
+    "test/headless_origin_trials_browsertest.cc",
     "test/headless_test_launcher.cc",
+    "test/headless_web_contents_browsertest.cc",
     "test/test_network_interceptor.cc",
     "test/test_network_interceptor.h",
   ]
@@ -648,14 +648,14 @@ test("headless_browsertests") {
   }
 
   data = [
-    "lib/dom_tree_extraction_expected_nodes.txt",
-    "lib/dom_tree_extraction_expected_styles.txt",
+    "test/data/",
+    "test/dom_tree_extraction_expected_nodes.txt",
+    "test/dom_tree_extraction_expected_styles.txt",
     "$root_out_dir/headless_lib.pak",
     "//net/tools/testserver/",
     "//third_party/blink/web_tests/http/tests/inspector-protocol/",
     "//third_party/pywebsocket3/",
     "//third_party/tlslite/",
-    "test/data/",
   ]
 
   if (is_mac) {

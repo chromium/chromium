@@ -1,7 +1,10 @@
-specific_include_rules = {
-  "headless_compositor_browsertest.cc": [
-    "+cc/base/switches.h",
-    "+components/viz/common/switches.h",
-    "+third_party/blink/public/common/switches.h",
-  ]
-}
+include_rules = [
+  "+cc/base/switches.h",
+  "+cc/test",
+  "+components/viz/common",
+  "+pdf",
+  "+printing",
+  "+third_party/blink/public",
+  "+third_party/crashpad/crashpad/client",
+  "+third_party/skia/include",
+]
