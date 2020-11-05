@@ -1008,7 +1008,8 @@ DisplayResourceProvider::LockSetForExternalUse::~LockSetForExternalUse() {
 ExternalUseClient::ImageContext*
 DisplayResourceProvider::LockSetForExternalUse::LockResource(
     ResourceId id,
-    bool use_skia_color_conversion) {
+    bool is_video_plane,
+    const gfx::ColorSpace& color_space) {
   auto it = resource_provider_->resources_.find(id);
   DCHECK(it != resource_provider_->resources_.end());
 
@@ -1021,11 +1022,15 @@ DisplayResourceProvider::LockSetForExternalUse::LockResource(
 
     if (!resource.image_context) {
       sk_sp<SkColorSpace> image_color_space;
-      // Video (YUV with PQ or half float RGBA with linear HDR) color conversion
-      // is handled externally in SkiaRenderer using a special color filter, and
-      // |use_skia_color_conversion| is false in that case.
-      if (use_skia_color_conversion)
-        image_color_space = resource.transferable.color_space.ToSkColorSpace();
+      if (!is_video_plane) {
+        // HDR video color conversion is handled externally in SkiaRenderer
+        // using a special color filter and |color_space| is set to destination
+        // color space so that Skia doesn't perform implicit color conversion.
+        image_color_space =
+            color_space.IsValid()
+                ? color_space.ToSkColorSpace()
+                : resource.transferable.color_space.ToSkColorSpace();
+      }
       resource.image_context =
           resource_provider_->external_use_client_->CreateImageContext(
               resource.transferable.mailbox_holder, resource.transferable.size,

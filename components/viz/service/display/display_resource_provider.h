@@ -259,11 +259,14 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
         delete;
 
     // Lock a resource for external use. The return value was created by
-    // |client| at some point in the past. The resource color space will be set
-    // on the SkImage if |use_skia_color_conversion| is true.
+    // |client| at some point in the past. The SkImage color space will be set
+    // to |color_space| if valid, otherwise it will be set to the resource's
+    // color space. If |is_video_plane| is true, the image color space will be
+    // set to nullptr (to avoid LOG spam).
     ExternalUseClient::ImageContext* LockResource(
         ResourceId resource_id,
-        bool use_skia_color_conversion);
+        bool is_video_plane = false,
+        const gfx::ColorSpace& color_space = gfx::ColorSpace());
 
     // Unlock all locked resources with a |sync_token|.  The |sync_token| should
     // be waited on before reusing the resource's backing to ensure that any

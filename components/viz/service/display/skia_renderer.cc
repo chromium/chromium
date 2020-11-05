@@ -550,7 +550,7 @@ class SkiaRenderer::ScopedSkImageBuilder {
                        ResourceId resource_id,
                        SkAlphaType alpha_type = kPremul_SkAlphaType,
                        GrSurfaceOrigin origin = kTopLeft_GrSurfaceOrigin,
-                       bool use_skia_color_conversion = true);
+                       bool use_target_color_space = false);
   ~ScopedSkImageBuilder() = default;
 
   const SkImage* sk_image() const { return sk_image_; }
@@ -566,14 +566,18 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
     ResourceId resource_id,
     SkAlphaType alpha_type,
     GrSurfaceOrigin origin,
-    bool use_skia_color_conversion) {
+    bool use_target_color_space) {
   if (!resource_id)
     return;
   auto* resource_provider = skia_renderer->resource_provider_;
   DCHECK(IsTextureResource(resource_provider, resource_id));
 
+  gfx::ColorSpace color_space;
+  if (use_target_color_space)
+    color_space = skia_renderer->CurrentRenderPassColorSpace();
+
   auto* image_context = skia_renderer->lock_set_for_external_use_->LockResource(
-      resource_id, use_skia_color_conversion);
+      resource_id, /*is_video_plane=*/false, color_space);
   // |ImageContext::image| provides thread safety: (a) this ImageContext is
   // only accessed by GPU thread after |image| is set and (b) the fields of
   // ImageContext that are accessed by both compositor and GPU thread are no
@@ -612,20 +616,20 @@ class SkiaRenderer::ScopedYUVSkImageBuilder {
     // Skia API ignores the color space information on the individual planes.
     // Dropping them here avoids some LOG spam.
     auto* y_context = skia_renderer->lock_set_for_external_use_->LockResource(
-        quad->y_plane_resource_id(), /*use_skia_color_conversion=*/false);
+        quad->y_plane_resource_id(), /*is_video_plane=*/true);
     contexts.push_back(std::move(y_context));
     auto* u_context = skia_renderer->lock_set_for_external_use_->LockResource(
-        quad->u_plane_resource_id(), /*use_skia_color_conversion=*/false);
+        quad->u_plane_resource_id(), /*is_video_plane=*/true);
     contexts.push_back(std::move(u_context));
     if (is_i420) {
       auto* v_context = skia_renderer->lock_set_for_external_use_->LockResource(
-          quad->v_plane_resource_id(), /*use_skia_color_conversion=*/false);
+          quad->v_plane_resource_id(), /*is_video_plane=*/true);
       contexts.push_back(std::move(v_context));
     }
 
     if (has_alpha) {
       auto* a_context = skia_renderer->lock_set_for_external_use_->LockResource(
-          quad->a_plane_resource_id(), /*use_skia_color_conversion=*/false);
+          quad->a_plane_resource_id(), /*is_video_plane=*/true);
       contexts.push_back(std::move(a_context));
     }
 
@@ -1811,7 +1815,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
       this, quad->resource_id(),
       quad->premultiplied_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
       quad->y_flipped ? kBottomLeft_GrSurfaceOrigin : kTopLeft_GrSurfaceOrigin,
-      /*use_skia_color_conversion=*/!needs_color_conversion_filter);
+      /*use_target_color_space=*/needs_color_conversion_filter);
   const SkImage* image = builder.sk_image();
   if (!image)
     return;
