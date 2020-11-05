@@ -53,6 +53,7 @@
 namespace ui {
 
 namespace {
+constexpr uint32_t kMaxAuraShellVersion = 11;
 constexpr uint32_t kMaxCompositorVersion = 4;
 constexpr uint32_t kMaxCursorShapesVersion = 1;
 constexpr uint32_t kMaxGtkPrimarySelectionDeviceManagerVersion = 1;
@@ -66,7 +67,6 @@ constexpr uint32_t kMaxWpPresentationVersion = 1;
 constexpr uint32_t kMaxWpViewporterVersion = 1;
 constexpr uint32_t kMaxTextInputManagerVersion = 1;
 constexpr uint32_t kMaxExplicitSyncVersion = 2;
-constexpr uint32_t kMinAuraShellVersion = 11;
 constexpr uint32_t kMinWlDrmVersion = 2;
 constexpr uint32_t kMinWlOutputVersion = 2;
 constexpr uint32_t kMaxXdgDecorationVersion = 1;
@@ -435,9 +435,9 @@ void WaylandConnection::Global(void* data,
     connection->drm_ =
         std::make_unique<WaylandDrm>(wayland_drm.release(), connection);
   } else if (!connection->zaura_shell_ &&
-             (strcmp(interface, "zaura_shell") == 0) &&
-             version >= kMinAuraShellVersion) {
-    auto zaura_shell = wl::Bind<struct zaura_shell>(registry, name, version);
+             (strcmp(interface, "zaura_shell") == 0)) {
+    auto zaura_shell = wl::Bind<struct zaura_shell>(
+        registry, name, std::min(version, kMaxAuraShellVersion));
     if (!zaura_shell) {
       LOG(ERROR) << "Failed to bind zaura_shell";
       return;
