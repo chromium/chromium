@@ -691,6 +691,10 @@ class FakeOSServiceManager : public extension::OSServiceManager {
 
   DWORD DeleteService() override;
 
+  DWORD ChangeServiceConfig(DWORD dwServiceType,
+                            DWORD dwStartType,
+                            DWORD dwErrorControl) override;
+
  private:
   DWORD GetControlRequestForTesting() {
     std::unique_lock<std::mutex> lock(m);

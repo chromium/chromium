@@ -1376,6 +1376,12 @@ DWORD FakeOSServiceManager::DeleteService() {
   return ERROR_SUCCESS;
 }
 
+DWORD FakeOSServiceManager::ChangeServiceConfig(DWORD dwServiceType,
+                                                DWORD dwStartType,
+                                                DWORD dwErrorControl) {
+  return ERROR_SUCCESS;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 FakeTaskManager::FakeTaskManager()

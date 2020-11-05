@@ -41,12 +41,22 @@ class OSServiceManager {
   // Starts the GCPW extension using StartService Windows API.
   virtual DWORD StartGCPWService();
 
+  // Waits until service transitions to SERVICE_STOPPED state or the wait times
+  // out. Returns ERROR_SUCCESS if service is stopped successfully. Returns an
+  // error code in any other case.
+  virtual DWORD WaitForServiceStopped();
+
   // Calls the ControlService API to change the state of the service. |control|
   // needs to be one of the service controls as specified in documentation [1].
   // As a result |service_status| is returned that has the latest state of the
   // service. [1]
   // https://docs.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-controlservice
-  virtual DWORD ControlService(DWORD control, SERVICE_STATUS* service_status);
+  virtual DWORD ControlService(DWORD control);
+
+  // Updates the configuration of the service.
+  virtual DWORD ChangeServiceConfig(DWORD dwServiceType,
+                                    DWORD dwStartType,
+                                    DWORD dwErrorControl);
 
   // When the service control manager starts a service process, it waits for the
   // process to call the StartServiceCtrlDispatcher function. The main thread of

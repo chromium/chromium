@@ -235,14 +235,14 @@ HRESULT DoUninstall(const base::FilePath& installer_path,
   has_failures |= FAILED(UnregisterDlls(dest_path, register_dlls.data(),
                                         register_dlls.size(), fakes));
 
-  has_failures |=
-      FAILED(HRESULT_FROM_WIN32(extension::UninstallGCPWExtension()));
-
   // If the DLLs are unregistered, Credential Provider will not be loaded by
   // Winlogon. Therefore, it is safe to delete the startup sentinel file at this
   // time.
   if (!has_failures)
     DeleteStartupSentinel();
+
+  has_failures |=
+      FAILED(HRESULT_FROM_WIN32(extension::UninstallGCPWExtension()));
 
   // Delete all files in the destination directory.  This directory does not
   // contain any configuration files or anything else user generated.
