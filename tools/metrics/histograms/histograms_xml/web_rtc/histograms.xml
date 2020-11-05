@@ -216,6 +216,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Audio.ApmRuntimeSettingCannotEnqueue" units="counts"
+    expires_after="2021-12-31">
+  <owner>alessiob@chromium.org</owner>
+  <owner>peah@chromium.org</owner>
+  <summary>
+    Counts occurrences of if WebRTC's Audio Processing Module cannot enqueue a
+    runtime setting.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Audio.AudioInterruptionMs" units="ms"
     expires_after="2021-01-03">
   <owner>hlundin@chromium.org</owner>
