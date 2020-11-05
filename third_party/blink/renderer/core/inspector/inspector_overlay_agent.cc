@@ -1480,6 +1480,34 @@ InspectorOverlayAgent::ToGridHighlightConfig(
 }
 
 // static
+std::unique_ptr<InspectorFlexContainerHighlightConfig>
+InspectorOverlayAgent::ToFlexContainerHighlightConfig(
+    protocol::Overlay::FlexContainerHighlightConfig* config) {
+  if (!config) {
+    return nullptr;
+  }
+  std::unique_ptr<InspectorFlexContainerHighlightConfig> highlight_config =
+      std::make_unique<InspectorFlexContainerHighlightConfig>();
+  highlight_config->container_border =
+      InspectorOverlayAgent::ToLineStyle(config->getContainerBorder(nullptr));
+
+  return highlight_config;
+}
+
+// static
+std::unique_ptr<LineStyle> InspectorOverlayAgent::ToLineStyle(
+    protocol::Overlay::LineStyle* config) {
+  if (!config) {
+    return nullptr;
+  }
+  std::unique_ptr<LineStyle> line_style = std::make_unique<LineStyle>();
+  line_style->color = InspectorDOMAgent::ParseColor(config->getColor(nullptr));
+  line_style->pattern = config->getPattern("solid");
+
+  return line_style;
+}
+
+// static
 std::unique_ptr<InspectorHighlightConfig>
 InspectorOverlayAgent::ToHighlightConfig(
     protocol::Overlay::HighlightConfig* config) {
@@ -1523,6 +1551,10 @@ InspectorOverlayAgent::ToHighlightConfig(
   highlight_config->grid_highlight_config =
       InspectorOverlayAgent::ToGridHighlightConfig(
           config->getGridHighlightConfig(nullptr));
+
+  highlight_config->flex_container_highlight_config =
+      InspectorOverlayAgent::ToFlexContainerHighlightConfig(
+          config->getFlexContainerHighlightConfig(nullptr));
   return highlight_config;
 }
 

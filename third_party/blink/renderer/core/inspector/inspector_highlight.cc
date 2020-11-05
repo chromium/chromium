@@ -365,6 +365,27 @@ std::unique_ptr<protocol::DictionaryValue> BuildTextNodeInfo(Text* text_node) {
   return text_info;
 }
 
+std::unique_ptr<protocol::DictionaryValue>
+BuildFlexContainerHighlightConfigInfo(
+    const InspectorFlexContainerHighlightConfig& flex_config) {
+  std::unique_ptr<protocol::DictionaryValue> flex_config_info =
+      protocol::DictionaryValue::create();
+
+  // Container border style
+  if (flex_config.container_border &&
+      flex_config.container_border->color != Color::kTransparent) {
+    std::unique_ptr<protocol::DictionaryValue> border_config =
+        protocol::DictionaryValue::create();
+    border_config->setString("color",
+                             flex_config.container_border->color.Serialized());
+    border_config->setString("pattern", flex_config.container_border->pattern);
+
+    flex_config_info->setValue("containerBorder", std::move(border_config));
+  }
+
+  return flex_config_info;
+}
+
 std::unique_ptr<protocol::DictionaryValue> BuildGridHighlightConfigInfo(
     const InspectorGridHighlightConfig& grid_config) {
   std::unique_ptr<protocol::DictionaryValue> grid_config_info =
@@ -807,6 +828,34 @@ Vector<String> GetAuthoredGridTrackSizes(const CSSValue* value,
   return result;
 }
 
+std::unique_ptr<protocol::DictionaryValue> BuildFlexInfo(
+    Node* node,
+    const InspectorFlexContainerHighlightConfig&
+        flex_container_highlight_config,
+    float scale) {
+  LocalFrameView* containing_view = node->GetDocument().View();
+  LayoutObject* layout_object = node->GetLayoutObject();
+  DCHECK(layout_object);
+
+  std::unique_ptr<protocol::DictionaryValue> flex_info =
+      protocol::DictionaryValue::create();
+
+  // For now, we're only drawing a path around the container's content area.
+  PathBuilder container_border_builder;
+  LayoutBox* layout_box = ToLayoutBox(layout_object);
+  PhysicalRect content_box = layout_box->PhysicalContentBoxRect();
+  FloatQuad content_quad = layout_object->LocalRectToAbsoluteQuad(content_box);
+  FrameQuadToViewport(containing_view, content_quad);
+  container_border_builder.AppendPath(QuadToPath(content_quad), scale);
+  flex_info->setValue("containerBorder", container_border_builder.Release());
+
+  flex_info->setValue(
+      "flexContainerHighlightConfig",
+      BuildFlexContainerHighlightConfigInfo(flex_container_highlight_config));
+
+  return flex_info;
+}
+
 std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
     Node* node,
     const InspectorGridHighlightConfig& grid_highlight_config,
@@ -1071,6 +1120,8 @@ InspectorHighlight::InspectorHighlight(float scale)
 
 InspectorSourceOrderConfig::InspectorSourceOrderConfig() = default;
 
+LineStyle::LineStyle() = default;
+
 InspectorGridHighlightConfig::InspectorGridHighlightConfig()
     : show_grid_extension_lines(false),
       grid_border_dash(false),
@@ -1081,6 +1132,9 @@ InspectorGridHighlightConfig::InspectorGridHighlightConfig()
       show_area_names(false),
       show_line_names(false),
       show_track_sizes(false) {}
+
+InspectorFlexContainerHighlightConfig::InspectorFlexContainerHighlightConfig() =
+    default;
 
 InspectorHighlightBase::InspectorHighlightBase(float scale)
     : highlight_paths_(protocol::ListValue::create()), scale_(scale) {}
@@ -1423,13 +1477,24 @@ void InspectorHighlight::AppendNodeHighlight(
   AppendQuad(border, highlight_config.border, Color::kTransparent, "border");
   AppendQuad(margin, highlight_config.margin, Color::kTransparent, "margin");
 
-  if (highlight_config.css_grid == Color::kTransparent &&
-      !highlight_config.grid_highlight_config) {
-    return;
+  if (highlight_config.css_grid != Color::kTransparent ||
+      highlight_config.grid_highlight_config) {
+    grid_info_ = protocol::ListValue::create();
+    if (layout_object->IsLayoutGrid()) {
+      grid_info_->pushValue(
+          BuildGridInfo(node, highlight_config, scale_, true));
+    }
   }
-  grid_info_ = protocol::ListValue::create();
-  if (layout_object->IsLayoutGrid()) {
-    grid_info_->pushValue(BuildGridInfo(node, highlight_config, scale_, true));
+
+  if (highlight_config.flex_container_highlight_config) {
+    flex_info_ = protocol::ListValue::create();
+    // Some objects are flexible boxes even though display:flex is not set, we
+    // need to avoid those.
+    if (layout_object->StyleRef().IsDisplayFlexibleBox() &&
+        layout_object->IsFlexibleBoxIncludingNG()) {
+      flex_info_->pushValue(BuildFlexInfo(
+          node, *(highlight_config.flex_container_highlight_config), scale_));
+    }
   }
 }
 
@@ -1476,6 +1541,8 @@ std::unique_ptr<protocol::DictionaryValue> InspectorHighlight::AsProtocolValue()
     object->setValue("elementInfo", element_info_->clone());
   if (grid_info_ && grid_info_->size() > 0)
     object->setValue("gridInfo", grid_info_->clone());
+  if (flex_info_ && flex_info_->size() > 0)
+    object->setValue("flexInfo", flex_info_->clone());
   return object;
 }
 
@@ -1641,6 +1708,9 @@ InspectorHighlightConfig InspectorHighlight::DefaultConfig() {
   config.color_format = ColorFormat::HEX;
   config.grid_highlight_config = std::make_unique<InspectorGridHighlightConfig>(
       InspectorHighlight::DefaultGridConfig());
+  config.flex_container_highlight_config =
+      std::make_unique<InspectorFlexContainerHighlightConfig>(
+          InspectorHighlight::DefaultFlexContainerConfig());
   return config;
 }
 
@@ -1666,6 +1736,23 @@ InspectorGridHighlightConfig InspectorHighlight::DefaultGridConfig() {
   config.column_line_dash = true;
   config.show_track_sizes = true;
   return config;
+}
+
+// static
+InspectorFlexContainerHighlightConfig
+InspectorHighlight::DefaultFlexContainerConfig() {
+  InspectorFlexContainerHighlightConfig config;
+  config.container_border =
+      std::make_unique<LineStyle>(InspectorHighlight::DefaultLineStyle());
+  return config;
+}
+
+// static
+LineStyle InspectorHighlight::DefaultLineStyle() {
+  LineStyle style;
+  style.color = Color(255, 0, 0, 0);
+  style.pattern = "solid";
+  return style;
 }
 
 }  // namespace blink

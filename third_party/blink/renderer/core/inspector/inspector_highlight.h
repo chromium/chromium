@@ -18,6 +18,17 @@ namespace blink {
 class Color;
 
 enum class ColorFormat { RGB, HEX, HSL };
+
+struct CORE_EXPORT LineStyle {
+  USING_FAST_MALLOC(LineStyle);
+
+ public:
+  LineStyle();
+
+  Color color;
+  String pattern;
+};
+
 struct CORE_EXPORT InspectorSourceOrderConfig {
   USING_FAST_MALLOC(InspectorSourceOrderConfig);
 
@@ -55,6 +66,15 @@ struct CORE_EXPORT InspectorGridHighlightConfig {
   bool show_track_sizes;
 };
 
+struct CORE_EXPORT InspectorFlexContainerHighlightConfig {
+  USING_FAST_MALLOC(InspectorFlexContainerHighlightConfig);
+
+ public:
+  InspectorFlexContainerHighlightConfig();
+
+  std::unique_ptr<LineStyle> container_border;
+};
+
 struct CORE_EXPORT InspectorHighlightConfig {
   USING_FAST_MALLOC(InspectorHighlightConfig);
 
@@ -81,6 +101,8 @@ struct CORE_EXPORT InspectorHighlightConfig {
   ColorFormat color_format;
 
   std::unique_ptr<InspectorGridHighlightConfig> grid_highlight_config;
+  std::unique_ptr<InspectorFlexContainerHighlightConfig>
+      flex_container_highlight_config;
 };
 
 struct InspectorHighlightContrastInfo {
@@ -148,6 +170,7 @@ class CORE_EXPORT InspectorHighlight : public InspectorHighlightBase {
       std::unique_ptr<protocol::Array<protocol::Array<double>>>*);
   static InspectorHighlightConfig DefaultConfig();
   static InspectorGridHighlightConfig DefaultGridConfig();
+  static InspectorFlexContainerHighlightConfig DefaultFlexContainerConfig();
   void AppendEventTargetQuads(Node* event_target_node,
                               const InspectorHighlightConfig&);
   std::unique_ptr<protocol::DictionaryValue> AsProtocolValue() const override;
@@ -163,12 +186,15 @@ class CORE_EXPORT InspectorHighlight : public InspectorHighlightBase {
                                    LayoutObject* layout_object);
   void AddLayoutBoxToDistanceInfo(LayoutObject* layout_object);
 
+  static LineStyle DefaultLineStyle();
+
   std::unique_ptr<protocol::Array<protocol::Array<double>>> boxes_;
   std::unique_ptr<protocol::DictionaryValue> computed_style_;
   std::unique_ptr<protocol::DOM::BoxModel> model_;
   std::unique_ptr<protocol::DictionaryValue> distance_info_;
   std::unique_ptr<protocol::DictionaryValue> element_info_;
   std::unique_ptr<protocol::ListValue> grid_info_;
+  std::unique_ptr<protocol::ListValue> flex_info_;
   bool show_rulers_;
   bool show_extension_lines_;
   bool show_accessibility_info_;

@@ -1,0 +1,220 @@
+This test verifies the position and size of the highlight rectangles overlayed on an inspected CSS flex div.
+
+flex-container{
+  "paths": [
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        508,
+        8,
+        "L",
+        508,
+        108,
+        "L",
+        8,
+        108,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        508,
+        8,
+        "L",
+        508,
+        108,
+        "L",
+        8,
+        108,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        508,
+        8,
+        "L",
+        508,
+        108,
+        "L",
+        8,
+        108,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        792,
+        8,
+        "L",
+        792,
+        108,
+        "L",
+        8,
+        108,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "flex-container",
+    "nodeWidth": "500",
+    "nodeHeight": "100",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGFlexibleBox",
+    "showAccessibilityInfo": true
+  },
+  "flexInfo": [
+    {
+      "containerBorder": [
+        "M",
+        8,
+        8,
+        "L",
+        508,
+        8,
+        "L",
+        508,
+        108,
+        "L",
+        8,
+        108,
+        "Z"
+      ],
+      "flexContainerHighlightConfig": {
+        "containerBorder": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        }
+      }
+    }
+  ]
+}
+should-not-be-flexbox{
+  "paths": [
+    {
+      "path": [
+        "M",
+        8,
+        108,
+        "L",
+        58,
+        108,
+        "L",
+        58,
+        158,
+        "L",
+        8,
+        158,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        108,
+        "L",
+        58,
+        108,
+        "L",
+        58,
+        158,
+        "L",
+        8,
+        158,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        108,
+        "L",
+        58,
+        108,
+        "L",
+        58,
+        158,
+        "L",
+        8,
+        158,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        108,
+        "L",
+        58,
+        108,
+        "L",
+        58,
+        158,
+        "L",
+        8,
+        158,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "button",
+    "idValue": "should-not-be-flexbox",
+    "nodeWidth": "50",
+    "nodeHeight": "50",
+    "isKeyboardFocusable": true,
+    "accessibleName": "click",
+    "accessibleRole": "button",
+    "layoutObjectName": "LayoutNGButton",
+    "showAccessibilityInfo": true
+  }
+}
+

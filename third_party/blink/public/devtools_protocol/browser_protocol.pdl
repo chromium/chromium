@@ -5629,6 +5629,22 @@ experimental domain Overlay
       # The grid container background color (Default: transparent).
       optional DOM.RGBA gridBackgroundColor
 
+  # Configuration data for the highlighting of Flex container elements.
+  type FlexContainerHighlightConfig extends object
+    properties
+      # The style of the container border
+      optional LineStyle containerBorder
+
+  # Style information for drawing a line.
+  type LineStyle extends object
+    properties
+      # The color of the line (default: transparent)
+      optional DOM.RGBA color
+      # The line pattern (default: solid)
+      optional enum pattern
+        dashed
+        dotted
+
   # Configuration data for the highlighting of page elements.
   type HighlightConfig extends object
     properties
@@ -5662,6 +5678,8 @@ experimental domain Overlay
       optional ColorFormat colorFormat
       # The grid layout highlight configuration (default: all transparent).
       optional GridHighlightConfig gridHighlightConfig
+      # The flex container highlight configuration (default: all transparent).
+      optional FlexContainerHighlightConfig flexContainerHighlightConfig
 
   type ColorFormat extends string
     enum

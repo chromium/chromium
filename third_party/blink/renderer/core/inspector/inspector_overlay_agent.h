@@ -145,6 +145,10 @@ class CORE_EXPORT InspectorOverlayAgent final
  public:
   static std::unique_ptr<InspectorGridHighlightConfig> ToGridHighlightConfig(
       protocol::Overlay::GridHighlightConfig*);
+  static std::unique_ptr<InspectorFlexContainerHighlightConfig>
+  ToFlexContainerHighlightConfig(
+      protocol::Overlay::FlexContainerHighlightConfig*);
+  static std::unique_ptr<LineStyle> ToLineStyle(protocol::Overlay::LineStyle*);
   static std::unique_ptr<InspectorHighlightConfig> ToHighlightConfig(
       protocol::Overlay::HighlightConfig*);
   InspectorOverlayAgent(WebLocalFrameImpl*,
