@@ -272,7 +272,13 @@ void UnifiedMediaControlsView::SetArtwork(
 }
 
 void UnifiedMediaControlsView::SetTitle(const base::string16& title) {
+  if (title_label_->GetText() == title)
+    return;
+
   title_label_->SetText(title);
+  SetAccessibleName(l10n_util::GetStringFUTF16(
+      IDS_ASH_QUICK_SETTINGS_BUBBLE_MEDIA_CONTROLS_ACCESSIBLE_DESCRIPTION,
+      title));
 }
 
 void UnifiedMediaControlsView::SetArtist(const base::string16& artist) {

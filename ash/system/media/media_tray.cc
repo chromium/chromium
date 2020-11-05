@@ -355,6 +355,10 @@ void MediaTray::UpdateDisplayState() {
   SetVisiblePreferred(should_show);
 }
 
+base::string16 MediaTray::GetAccessibleNameForBubble() {
+  return l10n_util::GetStringUTF16(IDS_ASH_GLOBAL_MEDIA_CONTROLS_TITLE);
+}
+
 void MediaTray::SetNotificationColorTheme() {
   if (!MediaNotificationProvider::Get())
     return;

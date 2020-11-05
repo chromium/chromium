@@ -224,6 +224,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_LOCALE_SETTINGS_ACCESSIBLE_DESCRIPTION" desc="The accessible description for locale settings accessed through the locale feature pod.">
         Locale Settings
       </message>
+      <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_MEDIA_CONTROLS_ACCESSIBLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="The accessible description for media controls pod in quick settings.">
+        Media controls, now playing <ph name="MEDIA_TITLE">$1<ex>(Song name)</ex></ph>
+      </message>
+      <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_MEDIA_CONTROLS_SUB_MENU_ACCESSIBLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="The accessible description for global media controls accessed through the media controls pod.">
+        Media Controls
+      </message>
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_NETWORK_SETTINGS_ACCESSIBLE_DESCRIPTION" desc="The accessible description for network settings accessed through the network feature pod.">
         Network Settings
       </message>
@@ -235,9 +241,6 @@ This file contains the strings for ash.
       </message>
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_VPN_SETTINGS_ACCESSIBLE_DESCRIPTION" desc="The accessible description for VPN settings accessed through the VPN feature pod.">
         VPN Settings
-      </message>
-      <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_MEDIA_CONTROLS_ACCESSIBLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="The accessible description for global media controls accessed through the media controls pod.">
-        Media Controls
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BRAILLE_DISPLAY_CONNECTED" desc="The message shown on a notification when a braille display is connected">
         Braille display connected.

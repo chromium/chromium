@@ -80,6 +80,9 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
  private:
   friend class MediaTrayTest;
 
+  // TrayBubbleView::Delegate implementation.
+  base::string16 GetAccessibleNameForBubble() override;
+
   // Called when theme change, set colors for media notification view.
   void SetNotificationColorTheme();
 

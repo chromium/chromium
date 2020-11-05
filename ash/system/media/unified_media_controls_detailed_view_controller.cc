@@ -49,7 +49,7 @@ views::View* UnifiedMediaControlsDetailedViewController::CreateView() {
 base::string16 UnifiedMediaControlsDetailedViewController::GetAccessibleName()
     const {
   return l10n_util::GetStringUTF16(
-      IDS_ASH_QUICK_SETTINGS_BUBBLE_MEDIA_CONTROLS_ACCESSIBLE_DESCRIPTION);
+      IDS_ASH_QUICK_SETTINGS_BUBBLE_MEDIA_CONTROLS_SUB_MENU_ACCESSIBLE_DESCRIPTION);
 }
 
 }  // namespace ash
