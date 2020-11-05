@@ -42,16 +42,26 @@ void AddStatsForBookmarksWithSameUrl(
               });
   }
 
+  size_t duplicate_title_count = 0;
+  size_t duplicate_title_and_parent_count = 0;
+
   auto prev_i = bookmarks_with_same_url->begin();
   for (auto i = std::next(prev_i); i != bookmarks_with_same_url->end();
        ++i, ++prev_i) {
     DCHECK_EQ((*prev_i)->url(), (*i)->url());
     if ((*prev_i)->GetTitle() == (*i)->GetTitle()) {
-      ++stats->duplicate_url_and_title_bookmark_count;
+      ++duplicate_title_count;
       if ((*prev_i)->parent() == (*i)->parent())
-        ++stats->duplicate_url_and_title_and_parent_bookmark_count;
+        ++duplicate_title_and_parent_count;
     }
   }
+
+  DCHECK_LT(duplicate_title_count, bookmarks_with_same_url->size());
+  DCHECK_LE(duplicate_title_and_parent_count, duplicate_title_count);
+
+  stats->duplicate_url_and_title_bookmark_count += duplicate_title_count;
+  stats->duplicate_url_and_title_and_parent_bookmark_count +=
+      duplicate_title_and_parent_count;
 }
 
 }  // namespace

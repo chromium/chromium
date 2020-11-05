@@ -347,9 +347,12 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, PRE_EmitUmaForDuplicates) {
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, EmitUmaForDuplicates) {
   WaitForBookmarkModel(browser()->profile());
 
+  // The total number of bookmarks is 7, but it gets rounded down due to
+  // bucketing.
   ASSERT_THAT(
       histogram_tester()->GetAllSamples("Bookmarks.Count.OnProfileLoad"),
       testing::ElementsAre(base::Bucket(/*min=*/6, /*count=*/1)));
+
   // 2 bookmarks have URL http://b.com and 4 have http://c.com. This counts as 4
   // duplicates.
   EXPECT_THAT(histogram_tester()->GetAllSamples(
@@ -366,6 +369,19 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, EmitUmaForDuplicates) {
       histogram_tester()->GetAllSamples(
           "Bookmarks.Count.OnProfileLoad.DuplicateUrlAndTitleAndParent"),
       testing::ElementsAre(base::Bucket(/*min=*/1, /*count=*/1)));
+
+  // The remaining histograms are the result of substracting the number of
+  // duplicates from the total, which is 7 despite the bucket for the first
+  // histogram above suggesting 6.
+  EXPECT_THAT(histogram_tester()->GetAllSamples(
+                  "Bookmarks.Count.OnProfileLoad.UniqueUrl"),
+              testing::ElementsAre(base::Bucket(/*min=*/3, /*count=*/1)));
+  EXPECT_THAT(histogram_tester()->GetAllSamples(
+                  "Bookmarks.Count.OnProfileLoad.UniqueUrlAndTitle"),
+              testing::ElementsAre(base::Bucket(/*min=*/5, /*count=*/1)));
+  EXPECT_THAT(histogram_tester()->GetAllSamples(
+                  "Bookmarks.Count.OnProfileLoad.UniqueUrlAndTitleAndParent"),
+              testing::ElementsAre(base::Bucket(/*min=*/6, /*count=*/1)));
 }
 
 #endif  // !defined(OS_CHROMEOS)
