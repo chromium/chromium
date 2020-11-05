@@ -1070,7 +1070,6 @@ crbug.com/1066616 virtual/layout_ng_block_frag/fast/multicol/border-radius-clipp
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/caret-range-outside-columns.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/caret-range-outside-columns-rtl.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/client-rect-nested.html [ Failure ]
-crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/client-rects-rtl.html [ Crash Failure ]
 crbug.com/1058792 virtual/layout_ng_block_frag/fast/multicol/composited-layer-multiple-fragments-translated.html [ Failure Crash ]
 crbug.com/1058792 virtual/layout_ng_block_frag/fast/multicol/composited-layer-multiple-fragments.html [ Failure Crash ]
 crbug.com/1058792 virtual/layout_ng_block_frag/fast/multicol/composited-layer-nested.html [ Failure Crash ]
