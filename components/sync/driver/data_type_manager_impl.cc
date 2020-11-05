@@ -257,11 +257,6 @@ DataTypeManagerImpl::BuildDataTypeConfigStateMap(
   ModelTypeSet crypto_types = data_type_status_table_.GetCryptoErrorTypes();
   ModelTypeSet unready_types = data_type_status_table_.GetUnreadyErrorTypes();
 
-  // Types with persistence errors are only purged/resynced when they're
-  // actively being configured.
-  ModelTypeSet clean_types = data_type_status_table_.GetPersistenceErrorTypes();
-  clean_types.RetainAll(types_being_configured);
-
   // Types with unready errors do not count as unready if they've been disabled.
   unready_types.RetainAll(last_requested_types_);
 
@@ -278,7 +273,6 @@ DataTypeManagerImpl::BuildDataTypeConfigStateMap(
   DataTypeConfigStateMap config_state_map;
   SetDataTypesState(CONFIGURE_INACTIVE, enabled_types, &config_state_map);
   SetDataTypesState(CONFIGURE_ACTIVE, to_configure, &config_state_map);
-  SetDataTypesState(CONFIGURE_CLEAN, clean_types, &config_state_map);
   SetDataTypesState(DISABLED, disabled_types, &config_state_map);
   SetDataTypesState(FATAL, fatal_types, &config_state_map);
   SetDataTypesState(CRYPTO, crypto_types, &config_state_map);
@@ -471,10 +465,6 @@ void DataTypeManagerImpl::DownloadCompleted(
     ModelTypeSet failed_configuration_types) {
   DCHECK_EQ(CONFIGURING, state_);
 
-  // Persistence errors are reset after each backend configuration attempt
-  // during which they would have been purged.
-  data_type_status_table_.ResetPersistenceErrorsFrom(downloaded_types);
-
   if (!failed_configuration_types.Empty()) {
     DataTypeStatusTable::TypeErrorMap errors;
     for (ModelType type : failed_configuration_types) {
@@ -566,12 +556,10 @@ ModelTypeSet DataTypeManagerImpl::PrepareConfigureParams(
       GetDataTypesInState(UNREADY, config_state_map);
   const ModelTypeSet active_types =
       GetDataTypesInState(CONFIGURE_ACTIVE, config_state_map);
-  const ModelTypeSet clean_types =
-      GetDataTypesInState(CONFIGURE_CLEAN, config_state_map);
   const ModelTypeSet inactive_types =
       GetDataTypesInState(CONFIGURE_INACTIVE, config_state_map);
 
-  ModelTypeSet enabled_types = Union(active_types, clean_types);
+  ModelTypeSet enabled_types = active_types;
   ModelTypeSet disabled_types = GetDataTypesInState(DISABLED, config_state_map);
   disabled_types.PutAll(fatal_types);
   disabled_types.PutAll(crypto_types);
@@ -589,7 +577,6 @@ ModelTypeSet DataTypeManagerImpl::PrepareConfigureParams(
   downloaded_types_.PutAll(enabled_types);
   downloaded_types_.RemoveAll(disabled_types);
 
-  types_to_download.PutAll(clean_types);
   types_to_download.RemoveAll(ProxyTypes());
   types_to_download.RemoveAll(CommitOnlyTypes());
   if (!types_to_download.Empty())
@@ -626,10 +613,6 @@ ModelTypeSet DataTypeManagerImpl::PrepareConfigureParams(
   // mode.
   if (last_requested_context_.sync_mode == SyncMode::kFull) {
     types_to_purge = Difference(ModelTypeSet::All(), downloaded_types_);
-    // Include clean_types in types_to_purge, they are part of
-    // |downloaded_types_|, but still need to be cleared.
-    DCHECK(downloaded_types_.HasAll(clean_types));
-    types_to_purge.PutAll(clean_types);
     types_to_purge.RemoveAll(inactive_types);
     types_to_purge.RemoveAll(unready_types);
   }
@@ -722,20 +705,15 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
 
   if (error.IsSet()) {
     data_type_status_table_.UpdateFailedDataType(type, error);
-
-    // Unrecoverable errors will shut down the entire backend, so no need to
-    // reconfigure.
-    if (error.error_type() != SyncError::UNRECOVERABLE_ERROR) {
-      needs_reconfigure_ = true;
-      last_requested_context_.reason =
-          GetReasonForProgrammaticReconfigure(last_requested_context_.reason);
-      // Do this asynchronously so the ModelLoadManager has a chance to
-      // finish stopping this type, otherwise DeactivateDataType() and Stop()
-      // end up getting called twice on the controller.
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(&DataTypeManagerImpl::ProcessReconfigure,
-                                    weak_ptr_factory_.GetWeakPtr()));
-    }
+    needs_reconfigure_ = true;
+    last_requested_context_.reason =
+        GetReasonForProgrammaticReconfigure(last_requested_context_.reason);
+    // Do this asynchronously so the ModelLoadManager has a chance to
+    // finish stopping this type, otherwise DeactivateDataType() and Stop()
+    // end up getting called twice on the controller.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&DataTypeManagerImpl::ProcessReconfigure,
+                                  weak_ptr_factory_.GetWeakPtr()));
   }
 }
 

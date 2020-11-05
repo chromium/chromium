@@ -75,8 +75,6 @@ class DataTypeManagerImpl : public DataTypeManager,
     CONFIGURE_INACTIVE,  // Already configured or to be configured in future.
                          // Data of such types is left as it is, no
                          // downloading or purging.
-    CONFIGURE_CLEAN,     // Actively being configured but requiring unapply
-                         // and GetUpdates first (e.g. for persistence errors).
     DISABLED,            // Not syncing. Disabled by user.
     FATAL,               // Not syncing due to unrecoverable error.
     CRYPTO,              // Not syncing due to a cryptographer error.

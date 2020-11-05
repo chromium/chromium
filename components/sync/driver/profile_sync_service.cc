@@ -1044,32 +1044,12 @@ void ProfileSyncService::OnConfigureDone(
   //    ABORT - Configuration was aborted. This is not an error, if
   //            initiated by user.
   //    OK - Some or all types succeeded.
-  //    Everything else is an UnrecoverableError. So treat it as such.
 
   // First handle the abort case.
-  if (result.status == DataTypeManager::ABORTED &&
-      expect_sync_configuration_aborted_) {
+  if (result.status == DataTypeManager::ABORTED) {
+    DCHECK(expect_sync_configuration_aborted_);
     DVLOG(0) << "ProfileSyncService::Observe Sync Configure aborted";
     expect_sync_configuration_aborted_ = false;
-    return;
-  }
-
-  // Handle unrecoverable error.
-  if (result.status != DataTypeManager::OK) {
-    // Something catastrophic had happened. We should only have one
-    // error representing it.
-    SyncError error = result.data_type_status_table.GetUnrecoverableError();
-    DCHECK(error.IsSet());
-    std::string message =
-        "Sync configuration failed with status " +
-        DataTypeManager::ConfigureStatusToString(result.status) +
-        " caused by " +
-        ModelTypeSetToString(
-            result.data_type_status_table.GetUnrecoverableErrorTypes()) +
-        ": " + error.message();
-    LOG(ERROR) << "ProfileSyncService error: " << message;
-    OnUnrecoverableErrorImpl(error.location(), message,
-                             ERROR_REASON_CONFIGURATION_FAILURE);
     return;
   }
 

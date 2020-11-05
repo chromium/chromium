@@ -39,9 +39,6 @@ class DataTypeStatusTable {
   // Resets the set of types with cryptographer errors.
   void ResetCryptoErrors();
 
-  // Resets those persistence errors that intersect with |purged_types|.
-  void ResetPersistenceErrorsFrom(ModelTypeSet purged_types);
-
   // Removes |type| from the data_type_errors_ set. Returns true if the type
   // was removed from the error set, false if the type did not have a data type
   // error to begin with.
@@ -56,44 +53,26 @@ class DataTypeStatusTable {
   TypeErrorMap GetAllErrors() const;
 
   // Returns all types with failure errors. This includes, fatal, crypto, and
-  // unready types.`
+  // unready types.
   ModelTypeSet GetFailedTypes() const;
 
-  // Returns the types that are failing due to unrecoverable or datatype errors.
+  // Returns the types that are failing due to datatype errors.
   ModelTypeSet GetFatalErrorTypes() const;
 
   // Returns the types that are failing due to cryptographer errors.
   ModelTypeSet GetCryptoErrorTypes() const;
 
-  // Returns the types that are failing due to persistence errors.
-  ModelTypeSet GetPersistenceErrorTypes() const;
-
   // Returns the types that cannot be configured due to not being ready.
   ModelTypeSet GetUnreadyErrorTypes() const;
 
-  // Returns the types that triggered the unrecoverable error.
-  ModelTypeSet GetUnrecoverableErrorTypes() const;
-
-  // Returns the current unrecoverable error, if there is one.
-  SyncError GetUnrecoverableError() const;
-
  private:
-  // The current unrecoverable errors. Only one unrecoverable error can be
-  // active at a time, but it may apply to more than one type.
-  TypeErrorMap unrecoverable_errors_;
-
   // List of data types that failed due to runtime errors and should be
-  // disabled. These are different from unrecoverable_errors_ in that
-  // ResetDataTypeError can remove them from this list.
+  // disabled. ResetDataTypeError can remove them from this list.
   TypeErrorMap data_type_errors_;
   TypeErrorMap data_type_policy_errors_;
 
   // List of data types that failed due to the cryptographer not being ready.
   TypeErrorMap crypto_errors_;
-
-  // List of data types that failed because sync did not persist the newest
-  // version of their data.
-  TypeErrorMap persistence_errors_;
 
   // List of data types that could not start due to not being ready. These can
   // be marked as ready by calling ResetUnreadyErrorFor(..).

@@ -34,13 +34,6 @@ namespace {
 
 const char kEmail[] = "test_user@gmail.com";
 
-void SetError(DataTypeManager::ConfigureResult* result) {
-  DataTypeStatusTable::TypeErrorMap errors;
-  errors[BOOKMARKS] =
-      SyncError(FROM_HERE, SyncError::UNRECOVERABLE_ERROR, "Error", BOOKMARKS);
-  result->data_type_status_table.UpdateFailedDataTypes(errors);
-}
-
 }  // namespace
 
 ACTION_P(InvokeOnConfigureStart, sync_service) {
@@ -543,29 +536,6 @@ TEST_F(ProfileSyncServiceStartupTest, SwitchManaged) {
   EXPECT_FALSE(sync_service()->GetUserSettings()->IsFirstSetupComplete());
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(sync_service()->IsSyncFeatureActive());
-}
-
-TEST_F(ProfileSyncServiceStartupTest, StartFailure) {
-  sync_prefs()->SetSyncRequested(true);
-  sync_prefs()->SetFirstSetupComplete();
-  CreateSyncService(ProfileSyncService::MANUAL_START);
-  SimulateTestUserSignin();
-  SetUpFakeSyncEngine();
-  DataTypeManagerMock* data_type_manager = SetUpDataTypeManagerMock();
-  DataTypeManager::ConfigureStatus status = DataTypeManager::ABORTED;
-  DataTypeManager::ConfigureResult result(status, ModelTypeSet());
-  EXPECT_CALL(*data_type_manager, Configure(_, _))
-      .WillRepeatedly(
-          DoAll(InvokeOnConfigureStart(sync_service()),
-                InvokeOnConfigureDone(sync_service(),
-                                      base::BindRepeating(&SetError), result)));
-  EXPECT_CALL(*data_type_manager, state())
-      .WillOnce(Return(DataTypeManager::STOPPED));
-  sync_service()->Initialize();
-  EXPECT_TRUE(sync_service()->HasUnrecoverableError());
-  EXPECT_EQ(SyncService::DisableReasonSet(
-                SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR),
-            sync_service()->GetDisableReasons());
 }
 
 TEST_F(ProfileSyncServiceStartupTest, StartDownloadFailed) {

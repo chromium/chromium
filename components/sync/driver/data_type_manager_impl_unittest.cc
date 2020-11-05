@@ -40,25 +40,20 @@ ConfigureContext BuildConfigureContext(ConfigureReason reason,
 }
 
 DataTypeStatusTable BuildStatusTable(ModelTypeSet crypto_errors,
-                                     ModelTypeSet association_errors,
-                                     ModelTypeSet unready_errors,
-                                     ModelTypeSet unrecoverable_errors) {
+                                     ModelTypeSet datatype_errors,
+                                     ModelTypeSet unready_errors) {
   DataTypeStatusTable::TypeErrorMap error_map;
   for (ModelType type : crypto_errors) {
     error_map[type] = SyncError(FROM_HERE, SyncError::CRYPTO_ERROR,
                                 "crypto error expected", type);
   }
-  for (ModelType type : association_errors) {
+  for (ModelType type : datatype_errors) {
     error_map[type] = SyncError(FROM_HERE, SyncError::DATATYPE_ERROR,
                                 "association error expected", type);
   }
   for (ModelType type : unready_errors) {
     error_map[type] = SyncError(FROM_HERE, SyncError::UNREADY_ERROR,
                                 "unready error expected", type);
-  }
-  for (ModelType type : unrecoverable_errors) {
-    error_map[type] = SyncError(FROM_HERE, SyncError::UNRECOVERABLE_ERROR,
-                                "unrecoverable error expected", type);
   }
   DataTypeStatusTable status_table;
   status_table.UpdateFailedDataTypes(error_map);
@@ -423,7 +418,7 @@ TEST_F(SyncDataTypeManagerImplTest, OneWaitingForCrypto) {
   SetConfigureDoneExpectation(
       DataTypeManager::OK,
       BuildStatusTable(/*crypto_errors=*/ModelTypeSet(PASSWORDS),
-                       ModelTypeSet(), ModelTypeSet(), ModelTypeSet()));
+                       ModelTypeSet(), ModelTypeSet()));
   Configure(ModelTypeSet(PASSWORDS));
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // priority types
@@ -588,8 +583,9 @@ TEST_F(SyncDataTypeManagerImplTest, OneFailingController) {
   SetConfigureStartExpectation();
   SetConfigureDoneExpectation(
       DataTypeManager::UNKNOWN,
-      BuildStatusTable(ModelTypeSet(), ModelTypeSet(), ModelTypeSet(),
-                       /*unrecoverable_errors=*/ModelTypeSet(BOOKMARKS)));
+      BuildStatusTable(ModelTypeSet(),
+                       /*datatype_errors=*/ModelTypeSet(BOOKMARKS),
+                       ModelTypeSet()));
 
   Configure(ModelTypeSet(BOOKMARKS));
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
@@ -896,8 +892,8 @@ TEST_F(SyncDataTypeManagerImplTest, PrioritizedConfigurationDownloadError) {
   SetConfigureDoneExpectation(
       DataTypeManager::OK,
       BuildStatusTable(ModelTypeSet(),
-                       /*association_errors=*/ModelTypeSet(BOOKMARKS),
-                       ModelTypeSet(), ModelTypeSet()));
+                       /*datatype_errors=*/ModelTypeSet(BOOKMARKS),
+                       ModelTypeSet()));
 
   // Initially only PREFERENCES is configured.
   Configure(ModelTypeSet(BOOKMARKS, PREFERENCES));
@@ -958,8 +954,7 @@ TEST_F(SyncDataTypeManagerImplTest, FailingPreconditionKeepData) {
   SetConfigureDoneExpectation(
       DataTypeManager::OK,
       BuildStatusTable(ModelTypeSet(), ModelTypeSet(),
-                       /*unready_errors=*/ModelTypeSet(BOOKMARKS),
-                       ModelTypeSet()));
+                       /*unready_errors=*/ModelTypeSet(BOOKMARKS)));
   Configure(ModelTypeSet(BOOKMARKS));
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
   EXPECT_EQ(DataTypeController::NOT_RUNNING, GetController(BOOKMARKS)->state());
@@ -1000,8 +995,7 @@ TEST_F(SyncDataTypeManagerImplTest, UnreadyTypeResetReconfigure) {
   SetConfigureDoneExpectation(
       DataTypeManager::OK,
       BuildStatusTable(ModelTypeSet(), ModelTypeSet(),
-                       /*unready_errors=*/ModelTypeSet(BOOKMARKS),
-                       ModelTypeSet()));
+                       /*unready_errors=*/ModelTypeSet(BOOKMARKS)));
   Configure(ModelTypeSet(BOOKMARKS));
   // Second Configure sets a flag to perform reconfiguration after the first one
   // is done.
@@ -1028,8 +1022,7 @@ TEST_F(SyncDataTypeManagerImplTest, UnreadyTypeLaterReady) {
   SetConfigureDoneExpectation(
       DataTypeManager::OK,
       BuildStatusTable(ModelTypeSet(), ModelTypeSet(),
-                       /*unready_errors=*/ModelTypeSet(BOOKMARKS),
-                       ModelTypeSet()));
+                       /*unready_errors=*/ModelTypeSet(BOOKMARKS)));
   Configure(ModelTypeSet(BOOKMARKS));
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
   ASSERT_EQ(DataTypeController::NOT_RUNNING, GetController(BOOKMARKS)->state());
@@ -1067,9 +1060,9 @@ TEST_F(SyncDataTypeManagerImplTest,
   SetConfigureStartExpectation();
   SetConfigureDoneExpectation(
       DataTypeManager::OK,
-      BuildStatusTable(ModelTypeSet(), ModelTypeSet(),
-                       /*unready_errors=*/ModelTypeSet(BOOKMARKS, PREFERENCES),
-                       ModelTypeSet()));
+      BuildStatusTable(
+          ModelTypeSet(), ModelTypeSet(),
+          /*unready_errors=*/ModelTypeSet(BOOKMARKS, PREFERENCES)));
   Configure(ModelTypeSet(BOOKMARKS, PREFERENCES));
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
   ASSERT_EQ(DataTypeController::NOT_RUNNING, GetController(BOOKMARKS)->state());
@@ -1116,9 +1109,9 @@ TEST_F(SyncDataTypeManagerImplTest, MultipleUnreadyTypesLaterOneOfThemReady) {
   SetConfigureStartExpectation();
   SetConfigureDoneExpectation(
       DataTypeManager::OK,
-      BuildStatusTable(ModelTypeSet(), ModelTypeSet(),
-                       /*unready_errors=*/ModelTypeSet(BOOKMARKS, PREFERENCES),
-                       ModelTypeSet()));
+      BuildStatusTable(
+          ModelTypeSet(), ModelTypeSet(),
+          /*unready_errors=*/ModelTypeSet(BOOKMARKS, PREFERENCES)));
   Configure(ModelTypeSet(BOOKMARKS, PREFERENCES));
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
   ASSERT_EQ(DataTypeController::NOT_RUNNING, GetController(BOOKMARKS)->state());
@@ -1140,8 +1133,7 @@ TEST_F(SyncDataTypeManagerImplTest, MultipleUnreadyTypesLaterOneOfThemReady) {
   SetConfigureDoneExpectation(
       DataTypeManager::OK,
       BuildStatusTable(ModelTypeSet(), ModelTypeSet(),
-                       /*unready_errors=*/ModelTypeSet(PREFERENCES),
-                       ModelTypeSet()));
+                       /*unready_errors=*/ModelTypeSet(PREFERENCES)));
 
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
   FinishDownload(ModelTypeSet(BOOKMARKS), ModelTypeSet());
@@ -1161,8 +1153,7 @@ TEST_F(SyncDataTypeManagerImplTest,
   SetConfigureDoneExpectation(
       DataTypeManager::OK,
       BuildStatusTable(ModelTypeSet(), ModelTypeSet(),
-                       /*unready_errors=*/ModelTypeSet(BOOKMARKS),
-                       ModelTypeSet()));
+                       /*unready_errors=*/ModelTypeSet(BOOKMARKS)));
   Configure(ModelTypeSet(BOOKMARKS));
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
   ASSERT_EQ(DataTypeController::NOT_RUNNING, GetController(BOOKMARKS)->state());
@@ -1206,8 +1197,8 @@ TEST_F(SyncDataTypeManagerImplTest, ModelLoadError) {
   SetConfigureDoneExpectation(
       DataTypeManager::OK,
       BuildStatusTable(ModelTypeSet(),
-                       /*association_errors=*/ModelTypeSet(BOOKMARKS),
-                       ModelTypeSet(), ModelTypeSet()));
+                       /*datatype_errors=*/ModelTypeSet(BOOKMARKS),
+                       ModelTypeSet()));
   Configure(ModelTypeSet(BOOKMARKS));
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
   FinishDownload(ModelTypeSet(BOOKMARKS), ModelTypeSet());
@@ -1240,11 +1231,10 @@ TEST_F(SyncDataTypeManagerImplTest, ErrorBeforeStartup) {
   SetConfigureStartExpectation();
   Configure({BOOKMARKS, PREFERENCES});
 
-  SetConfigureDoneExpectation(
-      DataTypeManager::OK, BuildStatusTable(/*crypto_errors=*/{},
-                                            /*association_errors=*/{BOOKMARKS},
-                                            /*unready_errore=*/{},
-                                            /*unrecoverable_errors=*/{}));
+  SetConfigureDoneExpectation(DataTypeManager::OK,
+                              BuildStatusTable(/*crypto_errors=*/{},
+                                               /*datatype_errors=*/{BOOKMARKS},
+                                               /*unready_errore=*/{}));
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
   FinishDownload(ModelTypeSet(PREFERENCES), ModelTypeSet());
 
