@@ -210,7 +210,6 @@
 #define IDC_CLOSE_SIGN_IN_PROMO        40258
 #define IDC_SHOW_FULL_URLS             40259
 #define IDC_CARET_BROWSING_TOGGLE      40260
-#define IDC_TOGGLE_COMMANDER     40261
 
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.

@@ -47,7 +47,6 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/commander/commander.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
@@ -1583,10 +1582,6 @@ void ToggleCaretBrowsing(Browser* browser) {
 
 void PromptToNameWindow(Browser* browser) {
   chrome::ShowWindowNamePrompt(browser);
-}
-
-void ToggleCommander(Browser* browser) {
-  commander::Commander::Get()->ToggleForBrowser(browser);
 }
 
 #if !defined(TOOLKIT_VIEWS)

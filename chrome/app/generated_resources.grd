@@ -1065,9 +1065,6 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_MOVE_TAB_TO_NEW_WINDOW" desc="The text label of the Move Tab to Window menu item.">
             Move tab to new window
           </message>
-          <message name="IDS_TOGGLE_COMMANDER" desc="The text label of the Toggle Commander menu item">
-          Toggle Commander
-          </message>
         </if>
         <if expr="use_titlecase">
           <message name="IDS_NEW_TAB" desc="In Title Case: The text label of a menu item for opening a new tab">
@@ -1144,9 +1141,6 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_MOVE_TAB_TO_NEW_WINDOW" desc="In Title Case: The text label of the Move Tab to New Window menu item.">
             Move Tab to New Window
-          </message>
-          <message name="IDS_TOGGLE_COMMANDER" desc="In Title Case:The text label of the Toggle Commander menu item">
-          Toggle Commander
           </message>
         </if>
       </if>
