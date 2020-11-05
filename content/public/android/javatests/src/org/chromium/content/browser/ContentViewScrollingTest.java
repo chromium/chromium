@@ -224,6 +224,7 @@ public class ContentViewScrollingTest {
     @Test
     @SmallTest
     @Feature({"Main"})
+    @DisabledTest(message = "Test is flaky. crbug.com/1132544")
     public void testFlingDistance() {
         // Scaling the initial velocity by the device scale factor ensures that
         // it's of sufficient magnitude for all displays densities.
