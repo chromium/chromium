@@ -55,9 +55,9 @@ base::Optional<int> GetListItemNumber(const Node* node) {
   if (!layout_object)
     return base::nullopt;
   if (layout_object->IsLayoutNGListItem())
-    return ToLayoutNGListItem(layout_object)->Value();
+    return To<LayoutNGListItem>(layout_object)->Value();
   if (layout_object->IsListItem())
-    return ToLayoutListItem(layout_object)->Value();
+    return To<LayoutListItem>(layout_object)->Value();
   return base::nullopt;
 }
 

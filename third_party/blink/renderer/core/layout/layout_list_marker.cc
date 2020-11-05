@@ -54,8 +54,7 @@ const LayoutListItem* LayoutListMarker::ListItem() const {
   NOT_DESTROYED();
   LayoutObject* list_item = GetNode()->parentNode()->GetLayoutObject();
   DCHECK(list_item);
-  DCHECK(list_item->IsListItem());
-  return ToLayoutListItem(list_item);
+  return To<LayoutListItem>(list_item);
 }
 
 LayoutSize LayoutListMarker::ImageBulletSize() const {

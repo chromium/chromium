@@ -62,8 +62,12 @@ class CORE_EXPORT LayoutOutsideListMarker final : public LayoutBlockFlow {
   ListMarker list_marker_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutOutsideListMarker,
-                                IsOutsideListMarkerForCustomContent());
+template <>
+struct DowncastTraits<LayoutOutsideListMarker> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsOutsideListMarkerForCustomContent();
+  }
+};
 
 }  // namespace blink
 

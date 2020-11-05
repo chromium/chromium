@@ -36,8 +36,7 @@ TEST_F(LayoutNGListItemTest, InsideWithFirstLine) {
   GetDocument().UpdateStyleAndLayoutTree();
 
   // The list-item should have a marker.
-  LayoutNGListItem* list_item =
-      ToLayoutNGListItem(GetLayoutObjectByElementId("item"));
+  auto* list_item = To<LayoutNGListItem>(GetLayoutObjectByElementId("item"));
   LayoutObject* marker = list_item->Marker();
   EXPECT_TRUE(marker);
   // The marker should have only 1 child.

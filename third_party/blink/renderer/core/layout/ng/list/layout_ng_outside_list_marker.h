@@ -34,8 +34,12 @@ class CORE_EXPORT LayoutNGOutsideListMarker final
   ListMarker list_marker_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutNGOutsideListMarker,
-                                IsLayoutNGOutsideListMarker());
+template <>
+struct DowncastTraits<LayoutNGOutsideListMarker> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsLayoutNGOutsideListMarker();
+  }
+};
 
 }  // namespace blink
 

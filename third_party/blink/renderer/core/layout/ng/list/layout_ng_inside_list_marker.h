@@ -46,8 +46,12 @@ class CORE_EXPORT LayoutNGInsideListMarker final : public LayoutInline {
   ListMarker list_marker_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutNGInsideListMarker,
-                                IsLayoutNGInsideListMarker());
+template <>
+struct DowncastTraits<LayoutNGInsideListMarker> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsLayoutNGInsideListMarker();
+  }
+};
 
 }  // namespace blink
 

@@ -60,7 +60,7 @@ void LayoutListItem::StyleDidChange(StyleDifference diff,
   if (!marker)
     return;
 
-  LayoutListMarker* legacy_marker = ToLayoutListMarkerOrNull(marker);
+  auto* legacy_marker = DynamicTo<LayoutListMarker>(marker);
   ListMarker* list_marker = legacy_marker ? nullptr : ListMarker::Get(marker);
   DCHECK(legacy_marker || list_marker);
 
@@ -100,7 +100,7 @@ void LayoutListItem::SubtreeDidChange() {
   if (!marker)
     return;
 
-  if (LayoutListMarker* legacy_marker = ToLayoutListMarkerOrNull(marker))
+  if (auto* legacy_marker = DynamicTo<LayoutListMarker>(marker))
     legacy_marker->UpdateMarkerImageIfNeeded(StyleRef().ListStyleImage());
   else if (ListMarker* list_marker = ListMarker::Get(marker))
     list_marker->UpdateMarkerContentIfNeeded(*marker);
@@ -252,9 +252,9 @@ bool LayoutListItem::PrepareForBlockDirectionAlign(
     }
 
     if (marker->IsListMarkerForNormalContent())
-      ToLayoutListMarker(marker)->UpdateMargins();
+      To<LayoutListMarker>(marker)->UpdateMargins();
     else if (marker->IsOutsideListMarkerForCustomContent())
-      ToLayoutOutsideListMarker(marker)->UpdateMargins();
+      To<LayoutOutsideListMarker>(marker)->UpdateMargins();
     return true;
   }
   return false;
@@ -326,9 +326,9 @@ bool LayoutListItem::UpdateMarkerLocation() {
     // of referencing them delete marker_parent if it is an empty anonymous
     // block.
     if (marker->IsListMarkerForNormalContent())
-      ToLayoutListMarker(marker)->UpdateMargins();
+      To<LayoutListMarker>(marker)->UpdateMargins();
     else if (marker->IsOutsideListMarkerForCustomContent())
-      ToLayoutOutsideListMarker(marker)->UpdateMargins();
+      To<LayoutOutsideListMarker>(marker)->UpdateMargins();
     return true;
   }
 
@@ -421,8 +421,8 @@ void LayoutListItem::AlignMarkerInBlockDirection() {
     // However, when marker is text, BaselinePosition contains lineheight
     // information. So use marker_font_metrics.Ascent when marker is text.
     bool is_image = marker->IsListMarkerForNormalContent()
-                        ? ToLayoutListMarker(marker)->IsImage()
-                        : ToLayoutOutsideListMarker(marker)->IsMarkerImage();
+                        ? To<LayoutListMarker>(marker)->IsImage()
+                        : To<LayoutOutsideListMarker>(marker)->IsMarkerImage();
     if (is_image) {
       offset -= marker_inline_box->BaselinePosition(marker_root.BaselineType());
     } else {
@@ -489,8 +489,8 @@ void LayoutListItem::UpdateOverflow() {
   // FIXME: Need to account for relative positioning in the layout overflow.
   LayoutUnit marker_line_offset =
       marker->IsListMarkerForNormalContent()
-          ? ToLayoutListMarker(marker)->ListItemInlineStartOffset()
-          : ToLayoutOutsideListMarker(marker)->ListItemInlineStartOffset();
+          ? To<LayoutListMarker>(marker)->ListItemInlineStartOffset()
+          : To<LayoutOutsideListMarker>(marker)->ListItemInlineStartOffset();
   if (StyleRef().IsLeftToRightDirection()) {
     marker_line_offset =
         std::min(marker_line_offset,

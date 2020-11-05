@@ -1001,7 +1001,7 @@ static bool IsEmptyListItem(const LayoutBlockFlow& block_flow) {
   if (block_flow.IsLayoutNGListItem())
     return !block_flow.FirstChild();
   if (block_flow.IsListItem())
-    return ToLayoutListItem(block_flow).IsEmpty();
+    return To<LayoutListItem>(block_flow).IsEmpty();
   return false;
 }
 

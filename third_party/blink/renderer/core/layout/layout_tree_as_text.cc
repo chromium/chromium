@@ -251,7 +251,7 @@ void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
   }
 
   if (o.IsListMarkerForNormalContent()) {
-    String text = ToLayoutListMarker(o).GetText();
+    String text = To<LayoutListMarker>(o).GetText();
     if (!text.IsEmpty()) {
       if (text.length() != 1) {
         text = QuoteAndEscapeNonPrintables(text);
@@ -961,7 +961,7 @@ String MarkerTextForListItem(Element* element) {
   if (ListMarker* list_marker = ListMarker::Get(marker))
     return list_marker->MarkerTextWithoutSuffix(*marker);
   if (marker && marker->IsListMarkerForNormalContent())
-    return ToLayoutListMarker(marker)->GetText();
+    return To<LayoutListMarker>(marker)->GetText();
   return String();
 }
 

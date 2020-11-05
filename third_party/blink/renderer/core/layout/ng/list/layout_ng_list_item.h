@@ -45,7 +45,12 @@ class CORE_EXPORT LayoutNGListItem final : public LayoutNGBlockFlow {
   ListItemOrdinal ordinal_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutNGListItem, IsLayoutNGListItem());
+template <>
+struct DowncastTraits<LayoutNGListItem> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsLayoutNGListItem();
+  }
+};
 
 }  // namespace blink
 

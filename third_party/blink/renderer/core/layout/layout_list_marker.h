@@ -122,8 +122,12 @@ class CORE_EXPORT LayoutListMarker final : public LayoutBox {
   LayoutUnit list_item_inline_start_offset_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutListMarker,
-                                IsListMarkerForNormalContent());
+template <>
+struct DowncastTraits<LayoutListMarker> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsListMarkerForNormalContent();
+  }
+};
 
 }  // namespace blink
 

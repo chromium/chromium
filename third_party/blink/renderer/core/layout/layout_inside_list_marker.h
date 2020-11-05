@@ -42,8 +42,12 @@ class CORE_EXPORT LayoutInsideListMarker final : public LayoutInline {
   ListMarker list_marker_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutInsideListMarker,
-                                IsInsideListMarkerForCustomContent());
+template <>
+struct DowncastTraits<LayoutInsideListMarker> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsInsideListMarkerForCustomContent();
+  }
+};
 
 }  // namespace blink
 

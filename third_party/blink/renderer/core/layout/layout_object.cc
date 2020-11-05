@@ -4015,14 +4015,14 @@ bool LayoutObject::GetImageAnimationPolicy(
 bool LayoutObject::IsInsideListMarker() const {
   NOT_DESTROYED();
   return (IsListMarkerForNormalContent() &&
-          ToLayoutListMarker(this)->IsInside()) ||
+          To<LayoutListMarker>(this)->IsInside()) ||
          IsInsideListMarkerForCustomContent();
 }
 
 bool LayoutObject::IsOutsideListMarker() const {
   NOT_DESTROYED();
   return (IsListMarkerForNormalContent() &&
-          !ToLayoutListMarker(this)->IsInside()) ||
+          !To<LayoutListMarker>(this)->IsInside()) ||
          IsOutsideListMarkerForCustomContent();
 }
 

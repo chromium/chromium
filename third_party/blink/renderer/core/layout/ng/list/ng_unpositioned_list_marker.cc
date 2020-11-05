@@ -20,7 +20,7 @@ NGUnpositionedListMarker::NGUnpositionedListMarker(
 
 NGUnpositionedListMarker::NGUnpositionedListMarker(const NGBlockNode& node)
     : NGUnpositionedListMarker(
-          ToLayoutNGOutsideListMarker(node.GetLayoutBox())) {}
+          To<LayoutNGOutsideListMarker>(node.GetLayoutBox())) {}
 
 // Compute the inline offset of the marker, relative to the list item.
 // The marker is relative to the border box of the list item and has nothing

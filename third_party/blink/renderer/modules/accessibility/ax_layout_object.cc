@@ -1416,7 +1416,8 @@ String AXLayoutObject::TextAlternative(bool recursive,
       }
       found_text_alternative = true;
     } else if (layout_object_->IsListMarkerForNormalContent() && !recursive) {
-      text_alternative = ToLayoutListMarker(layout_object_)->TextAlternative();
+      text_alternative =
+          To<LayoutListMarker>(layout_object_)->TextAlternative();
       found_text_alternative = true;
     } else if (!recursive) {
       if (ListMarker* marker = ListMarker::Get(layout_object_)) {

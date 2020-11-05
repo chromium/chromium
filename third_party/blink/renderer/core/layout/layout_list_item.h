@@ -92,7 +92,12 @@ class LayoutListItem final : public LayoutBlockFlow {
   bool need_block_direction_align_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutListItem, IsListItem());
+template <>
+struct DowncastTraits<LayoutListItem> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsListItem();
+  }
+};
 
 }  // namespace blink
 

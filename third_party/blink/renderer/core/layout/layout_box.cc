@@ -3982,7 +3982,8 @@ static float GetMaxWidthListMarker(const LayoutBox* layout_object) {
       if (item_marker->NeedsLayout())
         item_marker->UpdateLayout();
       max_width = std::max<float>(
-          max_width, ToLayoutListMarker(item_marker)->LogicalWidth().ToFloat());
+          max_width,
+          To<LayoutListMarker>(item_marker)->LogicalWidth().ToFloat());
       break;
     }
   }

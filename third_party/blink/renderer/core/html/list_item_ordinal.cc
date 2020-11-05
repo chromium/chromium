@@ -37,9 +37,9 @@ ListItemOrdinal* ListItemOrdinal::Get(const Node& item_node) {
   LayoutObject* layout_object = item_node.GetLayoutObject();
   if (layout_object) {
     if (layout_object->IsListItem())
-      return &ToLayoutListItem(layout_object)->Ordinal();
+      return &To<LayoutListItem>(layout_object)->Ordinal();
     if (layout_object->IsLayoutNGListItem())
-      return &ToLayoutNGListItem(layout_object)->Ordinal();
+      return &To<LayoutNGListItem>(layout_object)->Ordinal();
   }
   return nullptr;
 }
@@ -175,9 +175,9 @@ void ListItemOrdinal::InvalidateSelf(const Node& item_node, ValueType type) {
 
   LayoutObject* layout_object = item_node.GetLayoutObject();
   if (layout_object->IsListItem())
-    ToLayoutListItem(layout_object)->OrdinalValueChanged();
+    To<LayoutListItem>(layout_object)->OrdinalValueChanged();
   else if (layout_object->IsLayoutNGListItem())
-    ToLayoutNGListItem(layout_object)->OrdinalValueChanged();
+    To<LayoutNGListItem>(layout_object)->OrdinalValueChanged();
 }
 
 // Invalidate items after |item_node| in the DOM order.

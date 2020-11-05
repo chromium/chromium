@@ -30,7 +30,12 @@ class CORE_EXPORT LayoutListMarkerImage final : public LayoutImage {
   void ComputeIntrinsicSizingInfo(IntrinsicSizingInfo&) const final;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutListMarkerImage, IsListMarkerImage());
+template <>
+struct DowncastTraits<LayoutListMarkerImage> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsListMarkerImage();
+  }
+};
 
 }  // namespace blink
 

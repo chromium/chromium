@@ -14,9 +14,9 @@ class AXLayoutObjectTest : public AccessibilityTest {
  protected:
   static LayoutObject* GetListMarker(const LayoutObject& list_item) {
     if (list_item.IsListItem())
-      return ToLayoutListItem(list_item).Marker();
+      return To<LayoutListItem>(list_item).Marker();
     if (list_item.IsLayoutNGListItem())
-      return ToLayoutNGListItem(list_item).Marker();
+      return To<LayoutNGListItem>(list_item).Marker();
     NOTREACHED();
     return nullptr;
   }

@@ -652,7 +652,7 @@ void NGBlockNode::PrepareForLayout() const {
   // TODO(layoutng) Can UpdateMarkerTextIfNeeded call be moved
   // somewhere else? List items need up-to-date markers before layout.
   if (IsListItem())
-    ToLayoutNGListItem(box_)->UpdateMarkerTextIfNeeded();
+    To<LayoutNGListItem>(box_)->UpdateMarkerTextIfNeeded();
 }
 
 void NGBlockNode::FinishLayout(
@@ -733,7 +733,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   // TODO(layoutng) Can UpdateMarkerTextIfNeeded call be moved
   // somewhere else? List items need up-to-date markers before layout.
   if (IsListItem())
-    ToLayoutNGListItem(box_)->UpdateMarkerTextIfNeeded();
+    To<LayoutNGListItem>(box_)->UpdateMarkerTextIfNeeded();
 
   bool is_orthogonal_flow_root =
       !IsParallelWritingMode(container_writing_mode, Style().GetWritingMode());

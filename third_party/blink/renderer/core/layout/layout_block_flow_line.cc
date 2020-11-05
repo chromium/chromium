@@ -1637,7 +1637,7 @@ void LayoutBlockFlow::ComputeInlinePreferredLogicalWidths(
   LayoutUnit inline_min;
 
   if (IsListItem())
-    ToLayoutListItem(this)->UpdateMarkerTextIfNeeded();
+    To<LayoutListItem>(this)->UpdateMarkerTextIfNeeded();
 
   const ComputedStyle& style_to_use = StyleRef();
 

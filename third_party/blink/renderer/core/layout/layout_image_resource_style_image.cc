@@ -73,7 +73,7 @@ FloatSize LayoutImageResourceStyleImage::ImageSize(float multiplier) const {
   // TODO(davve): Find out the correct default object size in this context.
   FloatSize default_size =
       layout_object_->IsListMarkerImage()
-          ? FloatSize(ToLayoutListMarkerImage(layout_object_)->DefaultSize())
+          ? FloatSize(To<LayoutListMarkerImage>(layout_object_)->DefaultSize())
           : FloatSize(LayoutReplaced::kDefaultWidth,
                       LayoutReplaced::kDefaultHeight);
   return ImageSizeWithDefaultSize(multiplier, default_size);

@@ -98,7 +98,7 @@ const LayoutObject* LayoutNGListItem::FindSymbolMarkerLayoutText(
     return list_marker->SymbolMarkerLayoutText(*object);
 
   if (object->IsLayoutNGListItem())
-    return FindSymbolMarkerLayoutText(ToLayoutNGListItem(object)->Marker());
+    return FindSymbolMarkerLayoutText(To<LayoutNGListItem>(object)->Marker());
 
   if (object->IsAnonymousBlock())
     return FindSymbolMarkerLayoutText(object->Parent());
