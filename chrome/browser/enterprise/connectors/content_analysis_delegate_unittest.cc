@@ -47,13 +47,43 @@ namespace {
 constexpr char kDmToken[] = "dm_token";
 constexpr char kTestUrl[] = "http://example.com/";
 
-constexpr char kTestHttpsSchemePatternUrl[] = "https://*";
-constexpr char kTestChromeSchemePatternUrl[] = "chrome://*";
-constexpr char kTestDevtoolsSchemePatternUrl[] = "devtools://*";
+constexpr char kBlockingScansForDlpAndMalware[] = R"(
+{
+  "service_provider": "google",
+  "enable": [
+    {
+      "url_list": ["*"],
+      "tags": ["dlp", "malware"]
+    }
+  ],
+  "block_until_verdict": 1
+})";
 
-constexpr char kTestPathPatternUrl[] = "*/a/specific/path/";
-constexpr char kTestPortPatternUrl[] = "*:1234";
-constexpr char kTestQueryPatternUrl[] = "*?q=5678";
+constexpr char kBlockingScansForDlp[] = R"(
+{
+  "service_provider": "google",
+  "enable": [
+    {
+      "url_list": ["*"],
+      "tags": ["dlp"]
+    }
+  ],
+  "block_until_verdict": 1
+})";
+
+constexpr char kBlockingScansForMalware[] = R"(
+{
+  "service_provider": "google",
+  "enable": [
+    {
+      "url_list": ["*"],
+      "tags": ["dlp"]
+    }
+  ],
+  "block_until_verdict": 1
+})";
+
+constexpr char kNothingEnabled[] = R"({ "service_provider": "google" })";
 
 // Helpers to get text with sizes relative to the minimum required size of 100
 // bytes for scans to trigger.
@@ -85,14 +115,12 @@ class BaseTest : public testing::Test {
 
   void EnableFeatures() {
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        {enterprise_connectors::kEnterpriseConnectorsEnabled}, {});
+    scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabled}, {});
   }
 
   void DisableFeatures() {
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        {}, {enterprise_connectors::kEnterpriseConnectorsEnabled});
+    scoped_feature_list_.InitWithFeatures({}, {kEnterpriseConnectorsEnabled});
   }
 
   void AddUrlToList(const char* pref_name, const std::string& url) {
@@ -126,18 +154,10 @@ class BaseTest : public testing::Test {
     }
   }
 
-  void SetUp() override {
-    enterprise_connectors::ConnectorsManager::GetInstance()->SetUpForTesting();
-
-    // Always set this so ContentAnalysisDelegate::ShowForWebContents waits
-    // for the verdict before running its callback.
-    safe_browsing::SetDelayDeliveryUntilVerdictPolicyForConnectors(
-        safe_browsing::DELAY_UPLOADS);
-  }
+  void SetUp() override { ConnectorsManager::GetInstance()->SetUpForTesting(); }
 
   void TearDown() override {
-    enterprise_connectors::ConnectorsManager::GetInstance()
-        ->TearDownForTesting();
+    ConnectorsManager::GetInstance()->TearDownForTesting();
   }
 
   Profile* profile() { return profile_; }
@@ -157,9 +177,8 @@ class BaseTest : public testing::Test {
                          bool expect_malware) {
     ContentAnalysisDelegate::Data data;
     EXPECT_EQ(expect_dlp || expect_malware,
-              ContentAnalysisDelegate::IsEnabled(
-                  profile(), GURL(url), &data,
-                  enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+              ContentAnalysisDelegate::IsEnabled(profile(), GURL(url), &data,
+                                                 FILE_ATTACHED));
     const auto& tags = data.settings.tags;
     EXPECT_EQ(expect_dlp, tags.find("dlp") != tags.end());
     EXPECT_EQ(expect_malware, tags.find("malware") != tags.end());
@@ -186,9 +205,8 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, NoFeatureNoDMTokenNoPref) {
       policy::DMToken::CreateInvalidTokenForTesting());
 
   ContentAnalysisDelegate::Data data;
-  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(
-      profile(), GURL(), &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
+                                                  FILE_ATTACHED));
   EXPECT_FALSE(data.settings.tags.count("dlp"));
   EXPECT_FALSE(data.settings.tags.count("malware"));
 }
@@ -199,24 +217,22 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, NoDMTokenNoPref) {
       policy::DMToken::CreateInvalidTokenForTesting());
 
   ContentAnalysisDelegate::Data data;
-  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(
-      profile(), GURL(), &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
+                                                  FILE_ATTACHED));
   EXPECT_FALSE(data.settings.tags.count("dlp"));
   EXPECT_FALSE(data.settings.tags.count("malware"));
 }
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, NoDMToken) {
   EnableFeatures();
-  SetDlpPolicyForConnectors(safe_browsing::CHECK_UPLOADS_AND_DOWNLOADS);
-  SetMalwarePolicyForConnectors(safe_browsing::SEND_UPLOADS_AND_DOWNLOADS);
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+                                      kBlockingScansForDlpAndMalware);
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateInvalidTokenForTesting());
 
   ContentAnalysisDelegate::Data data;
-  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(
-      profile(), GURL(), &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
+                                                  FILE_ATTACHED));
   EXPECT_FALSE(data.settings.tags.count("dlp"));
   EXPECT_FALSE(data.settings.tags.count("malware"));
 }
@@ -227,24 +243,22 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, NoFeatureNoPref) {
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
 
   ContentAnalysisDelegate::Data data;
-  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(
-      profile(), GURL(), &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
+                                                  FILE_ATTACHED));
   EXPECT_FALSE(data.settings.tags.count("dlp"));
   EXPECT_FALSE(data.settings.tags.count("malware"));
 }
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, NoFeatureNoDMToken) {
   DisableFeatures();
-  SetDlpPolicyForConnectors(safe_browsing::CHECK_UPLOADS_AND_DOWNLOADS);
-  SetMalwarePolicyForConnectors(safe_browsing::SEND_UPLOADS_AND_DOWNLOADS);
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+                                      kBlockingScansForDlpAndMalware);
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateInvalidTokenForTesting());
 
   ContentAnalysisDelegate::Data data;
-  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(
-      profile(), GURL(), &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
+                                                  FILE_ATTACHED));
   EXPECT_FALSE(data.settings.tags.count("dlp"));
   EXPECT_FALSE(data.settings.tags.count("malware"));
 }
@@ -253,13 +267,12 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, NoFeature) {
   DisableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  SetDlpPolicyForConnectors(safe_browsing::CHECK_UPLOADS_AND_DOWNLOADS);
-  SetMalwarePolicyForConnectors(safe_browsing::SEND_UPLOADS_AND_DOWNLOADS);
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+                                      kBlockingScansForDlpAndMalware);
 
   ContentAnalysisDelegate::Data data;
-  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(
-      profile(), GURL(), &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
+                                                  FILE_ATTACHED));
   EXPECT_FALSE(data.settings.tags.count("dlp"));
   EXPECT_FALSE(data.settings.tags.count("malware"));
 }
@@ -270,9 +283,8 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpNoPref) {
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
 
   ContentAnalysisDelegate::Data data;
-  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(
-      profile(), GURL(), &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
+                                                  FILE_ATTACHED));
   EXPECT_FALSE(data.settings.tags.count("dlp"));
   EXPECT_FALSE(data.settings.tags.count("malware"));
 }
@@ -281,12 +293,11 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpNoPref2) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  SetDlpPolicyForConnectors(safe_browsing::CHECK_NONE);
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, kNothingEnabled);
 
   ContentAnalysisDelegate::Data data;
-  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(
-      profile(), GURL(), &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
+                                                  FILE_ATTACHED));
   EXPECT_FALSE(data.settings.tags.count("dlp"));
   EXPECT_FALSE(data.settings.tags.count("malware"));
 }
@@ -295,12 +306,12 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpNoPref3) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  SetDlpPolicyForConnectors(safe_browsing::CHECK_DOWNLOADS);
+  safe_browsing::SetAnalysisConnector(FILE_DOWNLOADED,
+                                      kBlockingScansForDlpAndMalware);
 
   ContentAnalysisDelegate::Data data;
-  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(
-      profile(), GURL(), &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
+                                                  FILE_ATTACHED));
   EXPECT_FALSE(data.settings.tags.count("dlp"));
   EXPECT_FALSE(data.settings.tags.count("malware"));
 }
@@ -309,12 +320,11 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpEnabled) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  SetDlpPolicyForConnectors(safe_browsing::CHECK_UPLOADS);
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, kBlockingScansForDlp);
 
   ContentAnalysisDelegate::Data data;
-  EXPECT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), GURL(), &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  EXPECT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
+                                                 FILE_ATTACHED));
   EXPECT_TRUE(data.settings.tags.count("dlp"));
   EXPECT_FALSE(data.settings.tags.count("malware"));
 }
@@ -323,12 +333,12 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpEnabled2) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  SetDlpPolicyForConnectors(safe_browsing::CHECK_UPLOADS_AND_DOWNLOADS);
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, kBlockingScansForDlp);
+  safe_browsing::SetAnalysisConnector(FILE_DOWNLOADED, kBlockingScansForDlp);
 
   ContentAnalysisDelegate::Data data;
-  EXPECT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), GURL(), &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  EXPECT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
+                                                 FILE_ATTACHED));
   EXPECT_TRUE(data.settings.tags.count("dlp"));
   EXPECT_FALSE(data.settings.tags.count("malware"));
 }
@@ -337,30 +347,44 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpEnabledWithUrl) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  SetDlpPolicyForConnectors(safe_browsing::CHECK_UPLOADS_AND_DOWNLOADS);
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, kBlockingScansForDlp);
+  safe_browsing::SetAnalysisConnector(FILE_DOWNLOADED, kBlockingScansForDlp);
   GURL url(kTestUrl);
 
   ContentAnalysisDelegate::Data data;
-  EXPECT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  EXPECT_TRUE(
+      ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
   EXPECT_TRUE(data.settings.tags.count("dlp"));
   EXPECT_FALSE(data.settings.tags.count("malware"));
   EXPECT_EQ(kTestUrl, data.url);
 }
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpDisabledByList) {
-  GURL url(kTestUrl);
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  SetDlpPolicyForConnectors(safe_browsing::CHECK_UPLOADS);
-  AddUrlToList(prefs::kURLsToNotCheckComplianceOfUploadedContent, url);
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+                                      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "disable": [
+            {
+              "url_list": ["http://example.com/"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1
+        })");
 
   ContentAnalysisDelegate::Data data;
-  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(kTestUrl),
+                                                  &data, FILE_ATTACHED));
   EXPECT_FALSE(data.settings.tags.count("dlp"));
   EXPECT_FALSE(data.settings.tags.count("malware"));
 }
@@ -369,22 +393,32 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpDisabledByListWithPatterns) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  SetDlpPolicyForConnectors(safe_browsing::CHECK_UPLOADS);
-  AddUrlToList(prefs::kURLsToNotCheckComplianceOfUploadedContent, kTestUrl);
-  AddUrlToList(prefs::kURLsToNotCheckComplianceOfUploadedContent,
-               kTestHttpsSchemePatternUrl);
-  AddUrlToList(prefs::kURLsToNotCheckComplianceOfUploadedContent,
-               kTestChromeSchemePatternUrl);
-  AddUrlToList(prefs::kURLsToNotCheckComplianceOfUploadedContent,
-               kTestDevtoolsSchemePatternUrl);
-  AddUrlToList(prefs::kURLsToNotCheckComplianceOfUploadedContent,
-               kTestHttpsSchemePatternUrl);
-  AddUrlToList(prefs::kURLsToNotCheckComplianceOfUploadedContent,
-               kTestPathPatternUrl);
-  AddUrlToList(prefs::kURLsToNotCheckComplianceOfUploadedContent,
-               kTestPortPatternUrl);
-  AddUrlToList(prefs::kURLsToNotCheckComplianceOfUploadedContent,
-               kTestQueryPatternUrl);
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+                                      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "disable": [
+            {
+              "url_list": [
+                "http://example.com/",
+                "https://*",
+                "chrome://*",
+                "devtools://*",
+                "*/a/specific/path/",
+                "*:1234",
+                "*?q=5678"
+              ],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1
+        })");
 
   ValidateIsEnabled("http://example.com", /*dlp*/ false, /*malware*/ false);
   ValidateIsEnabled("http://google.com", /*dlp*/ true, /*malware*/ false);
@@ -414,9 +448,8 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareNoPref) {
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
 
   ContentAnalysisDelegate::Data data;
-  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(
-      profile(), GURL(), &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
+                                                  FILE_ATTACHED));
   EXPECT_FALSE(data.settings.tags.count("dlp"));
   EXPECT_FALSE(data.settings.tags.count("malware"));
 }
@@ -425,70 +458,49 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareNoPref2) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  SetMalwarePolicyForConnectors(safe_browsing::DO_NOT_SCAN);
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, kNothingEnabled);
 
   ContentAnalysisDelegate::Data data;
-  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(
-      profile(), GURL(), &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
+                                                  FILE_ATTACHED));
   EXPECT_FALSE(data.settings.tags.count("dlp"));
   EXPECT_FALSE(data.settings.tags.count("malware"));
 }
 
-TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareNoPref4) {
+TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareNoPref3) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  SetMalwarePolicyForConnectors(safe_browsing::SEND_DOWNLOADS);
+  safe_browsing::SetAnalysisConnector(FILE_DOWNLOADED,
+                                      kBlockingScansForDlpAndMalware);
 
   ContentAnalysisDelegate::Data data;
-  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(
-      profile(), GURL(), &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
-  EXPECT_FALSE(data.settings.tags.count("dlp"));
-  EXPECT_FALSE(data.settings.tags.count("malware"));
-}
-
-TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareNoList) {
-  EnableFeatures();
-  ScopedSetDMToken scoped_dm_token(
-      policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  SetMalwarePolicyForConnectors(safe_browsing::SEND_UPLOADS);
-
-  ContentAnalysisDelegate::Data data;
-  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(
-      profile(), GURL(), &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
-  EXPECT_FALSE(data.settings.tags.count("dlp"));
-  EXPECT_FALSE(data.settings.tags.count("malware"));
-}
-
-TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareNoList2) {
-  EnableFeatures();
-  ScopedSetDMToken scoped_dm_token(
-      policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  SetMalwarePolicyForConnectors(safe_browsing::SEND_UPLOADS_AND_DOWNLOADS);
-
-  ContentAnalysisDelegate::Data data;
-  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(
-      profile(), GURL(), &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
+                                                  FILE_ATTACHED));
   EXPECT_FALSE(data.settings.tags.count("dlp"));
   EXPECT_FALSE(data.settings.tags.count("malware"));
 }
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareEnabled) {
-  GURL url(kTestUrl);
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  SetMalwarePolicyForConnectors(safe_browsing::SEND_UPLOADS_AND_DOWNLOADS);
-  AddUrlToList(prefs::kURLsToCheckForMalwareOfUploadedContent, url);
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+                                      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["http://example.com/"],
+              "tags": ["malware"]
+            }
+          ],
+          "block_until_verdict": 1
+        })");
 
   ContentAnalysisDelegate::Data data;
-  EXPECT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  EXPECT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(kTestUrl),
+                                                 &data, FILE_ATTACHED));
   EXPECT_FALSE(data.settings.tags.count("dlp"));
   EXPECT_TRUE(data.settings.tags.count("malware"));
 }
@@ -498,45 +510,48 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, NoScanInIncognito) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  SetDlpPolicyForConnectors(safe_browsing::CHECK_UPLOADS_AND_DOWNLOADS);
-  SetMalwarePolicyForConnectors(safe_browsing::SEND_UPLOADS_AND_DOWNLOADS);
-  AddUrlToList(prefs::kURLsToCheckForMalwareOfUploadedContent, url);
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+                                      kBlockingScansForDlpAndMalware);
 
   ContentAnalysisDelegate::Data data;
-  EXPECT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  EXPECT_TRUE(
+      ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
   // The same URL should not trigger a scan in incognito.
   EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(
-      profile()->GetPrimaryOTRProfile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+      profile()->GetPrimaryOTRProfile(), url, &data, FILE_ATTACHED));
 
   // The same URL should not trigger a scan in non-primary OTR profiles
   EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(
       profile()->GetOffTheRecordProfile(
           Profile::OTRProfileID("Test::DeepScanning")),
-      url, &data, enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+      url, &data, FILE_ATTACHED));
 }
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareEnabledWithPatterns) {
   EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  SetMalwarePolicyForConnectors(safe_browsing::SEND_UPLOADS_AND_DOWNLOADS);
-  AddUrlToList(prefs::kURLsToCheckForMalwareOfUploadedContent, kTestUrl);
-  AddUrlToList(prefs::kURLsToCheckForMalwareOfUploadedContent,
-               kTestHttpsSchemePatternUrl);
-  AddUrlToList(prefs::kURLsToCheckForMalwareOfUploadedContent,
-               kTestChromeSchemePatternUrl);
-  AddUrlToList(prefs::kURLsToCheckForMalwareOfUploadedContent,
-               kTestDevtoolsSchemePatternUrl);
-  AddUrlToList(prefs::kURLsToCheckForMalwareOfUploadedContent,
-               kTestPathPatternUrl);
-  AddUrlToList(prefs::kURLsToCheckForMalwareOfUploadedContent,
-               kTestPortPatternUrl);
-  AddUrlToList(prefs::kURLsToCheckForMalwareOfUploadedContent,
-               kTestQueryPatternUrl);
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+                                      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": [
+                "http://example.com/",
+                "https://*",
+                "chrome://*",
+                "devtools://*",
+                "*/a/specific/path/",
+                "*:1234",
+                "*?q=5678"
+              ],
+              "tags": ["malware"]
+            }
+          ],
+          "block_until_verdict": 1
+        })");
 
   ContentAnalysisDelegate::Data data;
 
@@ -567,13 +582,12 @@ class ContentAnalysisDelegateAuditOnlyTest : public BaseTest {
   ContentAnalysisDelegateAuditOnlyTest() = default;
 
  protected:
-  void SetDLPResponse(enterprise_connectors::ContentAnalysisResponse response) {
+  void SetDLPResponse(ContentAnalysisResponse response) {
     dlp_response_ = std::move(response);
   }
 
-  void PathFailsDeepScan(
-      base::FilePath path,
-      enterprise_connectors::ContentAnalysisResponse response) {
+  void PathFailsDeepScan(base::FilePath path,
+                         ContentAnalysisResponse response) {
     failures_.insert({std::move(path), std::move(response)});
   }
 
@@ -585,23 +599,29 @@ class ContentAnalysisDelegateAuditOnlyTest : public BaseTest {
     include_dlp_ = dlp;
     include_malware_ = malware;
 
-    if (include_dlp_)
-      SetDlpPolicyForConnectors(safe_browsing::CHECK_UPLOADS);
-    else
-      SetDlpPolicyForConnectors(safe_browsing::CHECK_NONE);
-
-    if (include_malware_)
-      SetMalwarePolicyForConnectors(safe_browsing::SEND_UPLOADS);
-    else
-      SetMalwarePolicyForConnectors(safe_browsing::DO_NOT_SCAN);
+    for (auto connector : {FILE_ATTACHED, BULK_DATA_ENTRY}) {
+      if (include_dlp_ && include_malware_) {
+        safe_browsing::SetAnalysisConnector(connector,
+                                            kBlockingScansForDlpAndMalware);
+      } else if (include_dlp_) {
+        safe_browsing::SetAnalysisConnector(connector, kBlockingScansForDlp);
+      } else if (include_malware_) {
+        safe_browsing::SetAnalysisConnector(connector,
+                                            kBlockingScansForMalware);
+      } else {
+        safe_browsing::SetAnalysisConnector(connector, kNothingEnabled);
+      }
+    }
   }
 
   void SetUp() override {
     BaseTest::SetUp();
 
     EnableFeatures();
-    SetDlpPolicyForConnectors(safe_browsing::CHECK_UPLOADS);
-    SetMalwarePolicyForConnectors(safe_browsing::SEND_UPLOADS);
+    safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+                                        kBlockingScansForDlpAndMalware);
+    safe_browsing::SetAnalysisConnector(BULK_DATA_ENTRY,
+                                        kBlockingScansForDlpAndMalware);
 
     ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
         &FakeContentAnalysisDelegate::Create, run_loop_.QuitClosure(),
@@ -614,11 +634,10 @@ class ContentAnalysisDelegateAuditOnlyTest : public BaseTest {
         kDmToken));
   }
 
-  enterprise_connectors::ContentAnalysisResponse ConnectorStatusCallback(
-      const base::FilePath& path) {
+  ContentAnalysisResponse ConnectorStatusCallback(const base::FilePath& path) {
     // The path succeeds if it is not in the |failures_| maps.
     auto it = failures_.find(path);
-    enterprise_connectors::ContentAnalysisResponse response =
+    ContentAnalysisResponse response =
         it != failures_.end()
             ? it->second
             : FakeContentAnalysisDelegate::SuccessfulResponse([this]() {
@@ -649,24 +668,21 @@ class ContentAnalysisDelegateAuditOnlyTest : public BaseTest {
 
   // Paths in this map will be consider to have failed deep scan checks.
   // The actual failure response is given for each path.
-  std::map<base::FilePath, enterprise_connectors::ContentAnalysisResponse>
-      failures_;
+  std::map<base::FilePath, ContentAnalysisResponse> failures_;
 
   // Paths in this set will be considered to contain encryption and will
   // not be uploaded.
   std::set<base::FilePath> encrypted_;
 
   // DLP response to ovewrite in the callback if present.
-  base::Optional<enterprise_connectors::ContentAnalysisResponse> dlp_response_ =
-      base::nullopt;
+  base::Optional<ContentAnalysisResponse> dlp_response_ = base::nullopt;
 };
 
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, Empty) {
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  ASSERT_TRUE(
+      ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
   // Keep |data| empty by not setting any text or paths.
 
@@ -689,9 +705,8 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, Empty) {
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringData) {
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY));
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
+                                                 BULK_DATA_ENTRY));
 
   data.text.emplace_back(base::UTF8ToUTF16(large_text()));
 
@@ -715,9 +730,8 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringData) {
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringData2) {
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY));
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
+                                                 BULK_DATA_ENTRY));
 
   data.text.emplace_back(base::UTF8ToUTF16(large_text()));
   data.text.emplace_back(base::UTF8ToUTF16(large_text()));
@@ -743,9 +757,8 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringData2) {
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringData3) {
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY));
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
+                                                 BULK_DATA_ENTRY));
 
   // Because the strings are small, they are exempt from scanning and will be
   // allowed even when a negative verdict is mocked.
@@ -753,8 +766,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringData3) {
   data.text.emplace_back(base::UTF8ToUTF16(small_text()));
 
   SetDLPResponse(FakeContentAnalysisDelegate::DlpResponse(
-      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS, "rule",
-      enterprise_connectors::TriggeredRule::BLOCK));
+      ContentAnalysisResponse::Result::SUCCESS, "rule", TriggeredRule::BLOCK));
 
   bool called = false;
   ScanUpload(contents(), std::move(data),
@@ -777,9 +789,8 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest,
        FileDataPositiveMalwareAndDlpVerdicts) {
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  ASSERT_TRUE(
+      ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
   CreateFilesForTest({FILE_PATH_LITERAL("foo.doc")}, &data);
 
@@ -804,9 +815,8 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest,
        FileDataPositiveMalwareAndDlpVerdicts2) {
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  ASSERT_TRUE(
+      ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
   CreateFilesForTest(
       {FILE_PATH_LITERAL("foo.doc"), FILE_PATH_LITERAL("bar.doc")}, &data);
@@ -831,12 +841,10 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest,
 
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileDataPositiveMalwareVerdict) {
   SetScanPolicies(/*dlp=*/false, /*malware=*/true);
-  AddUrlToList(prefs::kURLsToCheckForMalwareOfUploadedContent, "*");
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  ASSERT_TRUE(
+      ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
   CreateFilesForTest(
       {FILE_PATH_LITERAL("good.doc"), FILE_PATH_LITERAL("good2.doc")}, &data);
@@ -862,15 +870,22 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileDataPositiveMalwareVerdict) {
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileIsEncrypted) {
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
 
-  SetScanPolicies(/*dlp=*/true, /*malware=*/true);
-  safe_browsing::SetAllowPasswordProtectedFilesPolicyForConnectors(
-      safe_browsing::ALLOW_NONE);
-  AddUrlToList(prefs::kURLsToCheckForMalwareOfUploadedContent, "*");
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, R"(
+    {
+      "service_provider": "google",
+      "enable": [
+        {
+          "url_list": ["*"],
+          "tags": ["dlp", "malware"]
+        }
+      ],
+      "block_until_verdict": 1,
+      "block_password_protected": true
+    })");
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  ASSERT_TRUE(
+      ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
   base::FilePath test_zip;
   EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_zip));
@@ -902,18 +917,26 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileIsEncrypted) {
 #else
 #define MAYBE_FileIsEncrypted_PolicyAllows FileIsEncrypted_PolicyAllows
 #endif
-TEST_F(ContentAnalysisDelegateAuditOnlyTest, MAYBE_FileIsEncrypted_PolicyAllows) {
+TEST_F(ContentAnalysisDelegateAuditOnlyTest,
+       MAYBE_FileIsEncrypted_PolicyAllows) {
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
 
-  SetScanPolicies(/*dlp=*/true, /*malware=*/true);
-  safe_browsing::SetAllowPasswordProtectedFilesPolicyForConnectors(
-      safe_browsing::ALLOW_UPLOADS);
-  AddUrlToList(prefs::kURLsToCheckForMalwareOfUploadedContent, "*");
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, R"(
+    {
+      "service_provider": "google",
+      "enable": [
+        {
+          "url_list": ["*"],
+          "tags": ["dlp", "malware"]
+        }
+      ],
+      "block_until_verdict": 1,
+      "block_password_protected": false
+    })");
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  ASSERT_TRUE(
+      ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
   base::FilePath test_zip;
   EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_zip));
@@ -941,18 +964,15 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, MAYBE_FileIsEncrypted_PolicyAllows)
 
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileDataNegativeMalwareVerdict) {
   SetScanPolicies(/*dlp=*/false, /*malware=*/true);
-  AddUrlToList(prefs::kURLsToCheckForMalwareOfUploadedContent, "*");
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  ASSERT_TRUE(
+      ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
   CreateFilesForTest(
       {FILE_PATH_LITERAL("good.doc"), FILE_PATH_LITERAL("bad.doc")}, &data);
-  PathFailsDeepScan(data.paths[1],
-                    FakeContentAnalysisDelegate::MalwareResponse(
-                        enterprise_connectors::TriggeredRule::BLOCK));
+  PathFailsDeepScan(data.paths[1], FakeContentAnalysisDelegate::MalwareResponse(
+                                       TriggeredRule::BLOCK));
 
   bool called = false;
   ScanUpload(contents(), std::move(data),
@@ -976,9 +996,8 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileDataPositiveDlpVerdict) {
   SetScanPolicies(/*dlp=*/true, /*malware=*/false);
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  ASSERT_TRUE(
+      ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
   CreateFilesForTest(
       {FILE_PATH_LITERAL("good.doc"), FILE_PATH_LITERAL("good2.doc")}, &data);
@@ -1003,21 +1022,17 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileDataPositiveDlpVerdict) {
 
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileDataNegativeDlpVerdict) {
   SetScanPolicies(/*dlp=*/true, /*malware=*/false);
-  AddUrlToList(prefs::kURLsToCheckForMalwareOfUploadedContent, "*");
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  ASSERT_TRUE(
+      ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
   CreateFilesForTest(
       {FILE_PATH_LITERAL("good.doc"), FILE_PATH_LITERAL("bad.doc")}, &data);
 
-  PathFailsDeepScan(
-      data.paths[1],
-      FakeContentAnalysisDelegate::DlpResponse(
-          enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS,
-          "rule", enterprise_connectors::TriggeredRule::BLOCK));
+  PathFailsDeepScan(data.paths[1], FakeContentAnalysisDelegate::DlpResponse(
+                                       ContentAnalysisResponse::Result::SUCCESS,
+                                       "rule", TriggeredRule::BLOCK));
 
   bool called = false;
   ScanUpload(contents(), std::move(data),
@@ -1040,12 +1055,10 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileDataNegativeDlpVerdict) {
 TEST_F(ContentAnalysisDelegateAuditOnlyTest,
        FileDataNegativeMalwareAndDlpVerdicts) {
   SetScanPolicies(/*dlp=*/true, /*malware=*/true);
-  AddUrlToList(prefs::kURLsToCheckForMalwareOfUploadedContent, "*");
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  ASSERT_TRUE(
+      ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
   CreateFilesForTest(
       {FILE_PATH_LITERAL("good.doc"), FILE_PATH_LITERAL("bad.doc")}, &data);
@@ -1053,9 +1066,8 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest,
   PathFailsDeepScan(
       data.paths[1],
       FakeContentAnalysisDelegate::MalwareAndDlpResponse(
-          enterprise_connectors::TriggeredRule::BLOCK,
-          enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS,
-          "rule", enterprise_connectors::TriggeredRule::BLOCK));
+          TriggeredRule::BLOCK, ContentAnalysisResponse::Result::SUCCESS,
+          "rule", TriggeredRule::BLOCK));
 
   bool called = false;
   ScanUpload(contents(), std::move(data),
@@ -1078,9 +1090,8 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest,
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringFileData) {
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY));
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
+                                                 BULK_DATA_ENTRY));
 
   data.text.emplace_back(base::UTF8ToUTF16(large_text()));
   CreateFilesForTest(
@@ -1108,12 +1119,10 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringFileData) {
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringFileDataNoDLP) {
   // Enable malware scan so deep scanning still occurs.
   SetScanPolicies(/*dlp=*/false, /*malware=*/true);
-  AddUrlToList(prefs::kURLsToCheckForMalwareOfUploadedContent, "*");
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY));
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
+                                                 BULK_DATA_ENTRY));
 
   data.text.emplace_back(base::UTF8ToUTF16(large_text()));
   data.text.emplace_back(base::UTF8ToUTF16(large_text()));
@@ -1144,16 +1153,14 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringFileDataFailedDLP) {
   SetScanPolicies(/*dlp=*/true, /*malware=*/false);
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY));
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
+                                                 BULK_DATA_ENTRY));
 
   data.text.emplace_back(base::UTF8ToUTF16(large_text()));
   data.text.emplace_back(base::UTF8ToUTF16(large_text()));
 
   SetDLPResponse(FakeContentAnalysisDelegate::DlpResponse(
-      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS, "rule",
-      enterprise_connectors::TriggeredRule::BLOCK));
+      ContentAnalysisResponse::Result::SUCCESS, "rule", TriggeredRule::BLOCK));
 
   bool called = false;
   ScanUpload(contents(), std::move(data),
@@ -1176,9 +1183,8 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringFileDataFailedDLP) {
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringFileDataPartialSuccess) {
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY));
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
+                                                 BULK_DATA_ENTRY));
 
   data.text.emplace_back(base::UTF8ToUTF16(large_text()));
   CreateFilesForTest({FILE_PATH_LITERAL("foo.doc"),
@@ -1189,22 +1195,16 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringFileDataPartialSuccess) {
                      &data);
 
   // Mark some files with failed scans.
-  PathFailsDeepScan(data.paths[1],
-                    FakeContentAnalysisDelegate::MalwareResponse(
-                        enterprise_connectors::TriggeredRule::WARN));
-  PathFailsDeepScan(data.paths[2],
-                    FakeContentAnalysisDelegate::MalwareResponse(
-                        enterprise_connectors::TriggeredRule::BLOCK));
-  PathFailsDeepScan(
-      data.paths[3],
-      FakeContentAnalysisDelegate::DlpResponse(
-          enterprise_connectors::ContentAnalysisResponse::Result::FAILURE, "",
-          enterprise_connectors::TriggeredRule::REPORT_ONLY));
-  PathFailsDeepScan(
-      data.paths[4],
-      FakeContentAnalysisDelegate::DlpResponse(
-          enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS,
-          "rule", enterprise_connectors::TriggeredRule::BLOCK));
+  PathFailsDeepScan(data.paths[1], FakeContentAnalysisDelegate::MalwareResponse(
+                                       TriggeredRule::WARN));
+  PathFailsDeepScan(data.paths[2], FakeContentAnalysisDelegate::MalwareResponse(
+                                       TriggeredRule::BLOCK));
+  PathFailsDeepScan(data.paths[3], FakeContentAnalysisDelegate::DlpResponse(
+                                       ContentAnalysisResponse::Result::FAILURE,
+                                       "", TriggeredRule::REPORT_ONLY));
+  PathFailsDeepScan(data.paths[4], FakeContentAnalysisDelegate::DlpResponse(
+                                       ContentAnalysisResponse::Result::SUCCESS,
+                                       "rule", TriggeredRule::BLOCK));
 
   bool called = false;
   ScanUpload(contents(), std::move(data),
@@ -1229,14 +1229,21 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringFileDataPartialSuccess) {
 }
 
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, NoDelay) {
-  safe_browsing::SetDelayDeliveryUntilVerdictPolicyForConnectors(
-      safe_browsing::DELAY_NONE);
-  AddUrlToList(prefs::kURLsToCheckForMalwareOfUploadedContent, "*");
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, R"(
+    {
+      "service_provider": "google",
+      "enable": [
+        {
+          "url_list": ["*"],
+          "tags": ["dlp", "malware"]
+        }
+      ],
+      "block_until_verdict": 0
+    })");
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  ASSERT_TRUE(
+      ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
   data.text.emplace_back(base::UTF8ToUTF16("dlp_text"));
   CreateFilesForTest({FILE_PATH_LITERAL("foo_fail_malware_0.doc"),
@@ -1248,27 +1255,19 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, NoDelay) {
 
   // Mark all files and text with failed scans.
   SetDLPResponse(FakeContentAnalysisDelegate::DlpResponse(
-      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS, "rule",
-      enterprise_connectors::TriggeredRule::BLOCK));
-  PathFailsDeepScan(data.paths[0],
-                    FakeContentAnalysisDelegate::MalwareResponse(
-                        enterprise_connectors::TriggeredRule::BLOCK));
-  PathFailsDeepScan(data.paths[1],
-                    FakeContentAnalysisDelegate::MalwareResponse(
-                        enterprise_connectors::TriggeredRule::WARN));
-  PathFailsDeepScan(data.paths[2],
-                    FakeContentAnalysisDelegate::MalwareResponse(
-                        enterprise_connectors::TriggeredRule::BLOCK));
-  PathFailsDeepScan(
-      data.paths[3],
-      FakeContentAnalysisDelegate::DlpResponse(
-          enterprise_connectors::ContentAnalysisResponse::Result::FAILURE, "",
-          enterprise_connectors::TriggeredRule::REPORT_ONLY));
-  PathFailsDeepScan(
-      data.paths[4],
-      FakeContentAnalysisDelegate::DlpResponse(
-          enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS,
-          "rule", enterprise_connectors::TriggeredRule::BLOCK));
+      ContentAnalysisResponse::Result::SUCCESS, "rule", TriggeredRule::BLOCK));
+  PathFailsDeepScan(data.paths[0], FakeContentAnalysisDelegate::MalwareResponse(
+                                       TriggeredRule::BLOCK));
+  PathFailsDeepScan(data.paths[1], FakeContentAnalysisDelegate::MalwareResponse(
+                                       TriggeredRule::WARN));
+  PathFailsDeepScan(data.paths[2], FakeContentAnalysisDelegate::MalwareResponse(
+                                       TriggeredRule::BLOCK));
+  PathFailsDeepScan(data.paths[3], FakeContentAnalysisDelegate::DlpResponse(
+                                       ContentAnalysisResponse::Result::FAILURE,
+                                       "", TriggeredRule::REPORT_ONLY));
+  PathFailsDeepScan(data.paths[4], FakeContentAnalysisDelegate::DlpResponse(
+                                       ContentAnalysisResponse::Result::SUCCESS,
+                                       "rule", TriggeredRule::BLOCK));
 
   bool called = false;
   ScanUpload(contents(), std::move(data),
@@ -1298,9 +1297,8 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, NoDelay) {
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, EmptyWait) {
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  ASSERT_TRUE(
+      ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
   bool called = false;
   ScanUpload(contents(), std::move(data),
@@ -1323,9 +1321,8 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, SupportedTypes) {
 
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  ASSERT_TRUE(
+      ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
   std::vector<base::FilePath::StringType> file_names;
   for (const base::FilePath::StringType& supported_type :
@@ -1338,7 +1335,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, SupportedTypes) {
   // Mark all files with failed scans.
   for (const auto& path : data.paths) {
     PathFailsDeepScan(path, FakeContentAnalysisDelegate::MalwareResponse(
-                                enterprise_connectors::TriggeredRule::BLOCK));
+                                TriggeredRule::BLOCK));
   }
 
   bool called = false;
@@ -1360,11 +1357,11 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, SupportedTypes) {
 }
 
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, UnsupportedTypesDefaultPolicy) {
+  SetScanPolicies(/*dlp=*/true, /*malware=*/false);
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  ASSERT_TRUE(
+      ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
   CreateFilesForTest(
       {FILE_PATH_LITERAL("foo.these"), FILE_PATH_LITERAL("foo.file"),
@@ -1374,8 +1371,9 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, UnsupportedTypesDefaultPolicy) {
 
   // Mark all files with failed scans.
   for (const auto& path : data.paths) {
-    PathFailsDeepScan(path, FakeContentAnalysisDelegate::MalwareResponse(
-                                enterprise_connectors::TriggeredRule::WARN));
+    PathFailsDeepScan(path, FakeContentAnalysisDelegate::DlpResponse(
+                                ContentAnalysisResponse::Result::SUCCESS,
+                                "rule", TriggeredRule::WARN));
   }
 
   bool called = false;
@@ -1398,13 +1396,22 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, UnsupportedTypesDefaultPolicy) {
 }
 
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, UnsupportedTypesBlockPolicy) {
-  safe_browsing::SetBlockUnsupportedFileTypesPolicyForConnectors(
-      safe_browsing::BLOCK_UNSUPPORTED_FILETYPES_UPLOADS_AND_DOWNLOADS);
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, R"(
+    {
+      "service_provider": "google",
+      "enable": [
+        {
+          "url_list": ["*"],
+          "tags": ["dlp", "malware"]
+        }
+      ],
+      "block_until_verdict": 1,
+      "block_unsupported_file_types": true
+    })");
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  EXPECT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  EXPECT_TRUE(
+      ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
   CreateFilesForTest(
       {FILE_PATH_LITERAL("foo.these"), FILE_PATH_LITERAL("foo.file"),
@@ -1414,8 +1421,9 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, UnsupportedTypesBlockPolicy) {
 
   // Mark all files with failed scans.
   for (const auto& path : data.paths) {
-    PathFailsDeepScan(path, FakeContentAnalysisDelegate::MalwareResponse(
-                                enterprise_connectors::TriggeredRule::WARN));
+    PathFailsDeepScan(path, FakeContentAnalysisDelegate::DlpResponse(
+                                ContentAnalysisResponse::Result::SUCCESS,
+                                "rule", TriggeredRule::WARN));
   }
 
   bool called = false;
@@ -1438,11 +1446,11 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, UnsupportedTypesBlockPolicy) {
 }
 
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, SupportedAndUnsupportedTypes) {
+  SetScanPolicies(/*dlp=*/true, /*malware=*/false);
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  ASSERT_TRUE(
+      ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
   // Only 3 of these file types are supported (bzip, cab and doc). They are
   // mixed in the list so as to show that insertion order does not matter.
@@ -1456,8 +1464,9 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, SupportedAndUnsupportedTypes) {
 
   // Mark all files with failed scans.
   for (const auto& path : data.paths) {
-    PathFailsDeepScan(path, FakeContentAnalysisDelegate::MalwareResponse(
-                                enterprise_connectors::TriggeredRule::BLOCK));
+    PathFailsDeepScan(path, FakeContentAnalysisDelegate::DlpResponse(
+                                ContentAnalysisResponse::Result::SUCCESS,
+                                "rule", TriggeredRule::BLOCK));
   }
 
   bool called = false;
@@ -1485,11 +1494,11 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, SupportedAndUnsupportedTypes) {
 }
 
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, UnsupportedTypeAndDLPFailure) {
+  SetScanPolicies(/*dlp=*/true, /*malware=*/false);
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  ASSERT_TRUE(
+      ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
   CreateFilesForTest({FILE_PATH_LITERAL("foo.unsupported_extension"),
                       FILE_PATH_LITERAL("dlp_fail.doc")},
@@ -1497,8 +1506,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, UnsupportedTypeAndDLPFailure) {
 
   // Mark DLP as failure.
   SetDLPResponse(FakeContentAnalysisDelegate::DlpResponse(
-      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS, "rule",
-      enterprise_connectors::TriggeredRule::BLOCK));
+      ContentAnalysisResponse::Result::SUCCESS, "rule", TriggeredRule::BLOCK));
 
   bool called = false;
   ScanUpload(contents(), std::move(data),
@@ -1531,8 +1539,8 @@ class ContentAnalysisDelegateResultHandlingTest
   void SetUp() override {
     BaseTest::SetUp();
     EnableFeatures();
-    SetDlpPolicyForConnectors(safe_browsing::CHECK_UPLOADS);
-    SetMalwarePolicyForConnectors(safe_browsing::SEND_UPLOADS);
+    safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+                                        kBlockingScansForDlpAndMalware);
 
     ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
         &FakeContentAnalysisDelegate::Create, run_loop_.QuitClosure(),
@@ -1548,8 +1556,7 @@ class ContentAnalysisDelegateResultHandlingTest
     return std::get<0>(GetParam());
   }
 
-  enterprise_connectors::ContentAnalysisResponse ConnectorStatusCallback(
-      const base::FilePath& path) {
+  ContentAnalysisResponse ConnectorStatusCallback(const base::FilePath& path) {
     return FakeContentAnalysisDelegate::SuccessfulResponse({"dlp", "malware"});
   }
 
@@ -1562,9 +1569,8 @@ TEST_P(ContentAnalysisDelegateResultHandlingTest, Test) {
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
   FakeContentAnalysisDelegate::SetResponseResult(result());
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      profile(), url, &data,
-      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+  ASSERT_TRUE(
+      ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
   CreateFilesForTest({FILE_PATH_LITERAL("foo.txt")}, &data);
 
@@ -1603,83 +1609,80 @@ INSTANTIATE_TEST_SUITE_P(
             safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED),
         testing::Bool()));
 
-class ContentAnalysisDelegatePolicyResultsTest
+class ContentAnalysisDelegateSettingsTest
     : public BaseTest,
       public testing::WithParamInterface<bool> {
  public:
-  ContentAnalysisDelegatePolicyResultsTest() = default;
+  ContentAnalysisDelegateSettingsTest() = default;
 
   void SetUp() override {
     BaseTest::SetUp();
     EnableFeatures();
-    // This is required since Connector policies can't return settings if
-    // there are no URL patterns. Legacy policies don't need to account for
-    // this since DLP is implicitly "*" on uploads.
-    safe_browsing::AddUrlsToCheckForMalwareOfUploadsForConnectors({"*"});
   }
 
-  enterprise_connectors::AnalysisSettings settings() {
+  bool allowed() const { return !GetParam(); }
+  const char* bool_setting() const { return GetParam() ? "true" : "false"; }
+
+  AnalysisSettings settings() {
     // Clear the cache before getting settings so there's no race with the pref
     // change and the cached values being updated.
-    enterprise_connectors::ConnectorsManager::GetInstance()
-        ->ClearCacheForTesting();
+    ConnectorsManager::GetInstance()->ClearCacheForTesting();
 
-    base::Optional<enterprise_connectors::AnalysisSettings> settings =
-        enterprise_connectors::ConnectorsManager::GetInstance()
-            ->GetAnalysisSettings(
-                GURL(kTestUrl),
-                enterprise_connectors::AnalysisConnector::FILE_ATTACHED);
+    base::Optional<AnalysisSettings> settings =
+        ConnectorsManager::GetInstance()->GetAnalysisSettings(GURL(kTestUrl),
+                                                              FILE_ATTACHED);
     EXPECT_TRUE(settings.has_value());
     return std::move(settings.value());
   }
 };
 
-TEST_F(ContentAnalysisDelegatePolicyResultsTest, BlockLargeFile) {
-  // The value returned by ResultShouldAllowDataUse for FILE_TOO_LARGE should
-  // match the BlockLargeFilePolicy.
-  safe_browsing::SetBlockLargeFileTransferPolicyForConnectors(
-      safe_browsing::BLOCK_LARGE_UPLOADS_AND_DOWNLOADS);
-  EXPECT_FALSE(ContentAnalysisDelegate::ResultShouldAllowDataUse(
-      safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE, settings()));
+INSTANTIATE_TEST_SUITE_P(,
+                         ContentAnalysisDelegateSettingsTest,
+                         testing::Bool());
 
-  safe_browsing::SetBlockLargeFileTransferPolicyForConnectors(
-      safe_browsing::BLOCK_LARGE_DOWNLOADS);
-  EXPECT_TRUE(ContentAnalysisDelegate::ResultShouldAllowDataUse(
-      safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE, settings()));
-
-  safe_browsing::SetBlockLargeFileTransferPolicyForConnectors(
-      safe_browsing::BLOCK_LARGE_UPLOADS);
-  EXPECT_FALSE(ContentAnalysisDelegate::ResultShouldAllowDataUse(
-      safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE, settings()));
-
-  safe_browsing::SetBlockLargeFileTransferPolicyForConnectors(
-      safe_browsing::BLOCK_NONE);
-  EXPECT_TRUE(ContentAnalysisDelegate::ResultShouldAllowDataUse(
-      safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE, settings()));
+TEST_P(ContentAnalysisDelegateSettingsTest, BlockLargeFile) {
+  auto pref = base::StringPrintf(R"(
+    {
+      "service_provider": "google",
+      "enable": [{"url_list": ["*"], "tags": ["dlp"]}],
+      "block_large_files": %s
+    })",
+                                 bool_setting());
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, pref);
+  EXPECT_EQ(allowed(),
+            ContentAnalysisDelegate::ResultShouldAllowDataUse(
+                safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE,
+                settings()));
 }
 
-TEST_F(ContentAnalysisDelegatePolicyResultsTest, AllowPasswordProtectedFiles) {
-  // The value returned by ResultShouldAllowDataUse for FILE_ENCRYPTED should
-  // match the AllowPasswordProtectedFiles policy.
-  safe_browsing::SetAllowPasswordProtectedFilesPolicyForConnectors(
-      safe_browsing::ALLOW_UPLOADS_AND_DOWNLOADS);
-  EXPECT_TRUE(ContentAnalysisDelegate::ResultShouldAllowDataUse(
-      safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED, settings()));
+TEST_P(ContentAnalysisDelegateSettingsTest, BlockPasswordProtected) {
+  auto pref = base::StringPrintf(R"(
+    {
+      "service_provider": "google",
+      "enable": [{"url_list": ["*"], "tags": ["dlp"]}],
+      "block_password_protected": %s
+    })",
+                                 bool_setting());
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, pref);
+  EXPECT_EQ(allowed(),
+            ContentAnalysisDelegate::ResultShouldAllowDataUse(
+                safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED,
+                settings()));
+}
 
-  safe_browsing::SetAllowPasswordProtectedFilesPolicyForConnectors(
-      safe_browsing::ALLOW_DOWNLOADS);
-  EXPECT_FALSE(ContentAnalysisDelegate::ResultShouldAllowDataUse(
-      safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED, settings()));
-
-  safe_browsing::SetAllowPasswordProtectedFilesPolicyForConnectors(
-      safe_browsing::ALLOW_UPLOADS);
-  EXPECT_TRUE(ContentAnalysisDelegate::ResultShouldAllowDataUse(
-      safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED, settings()));
-
-  safe_browsing::SetAllowPasswordProtectedFilesPolicyForConnectors(
-      safe_browsing::ALLOW_NONE);
-  EXPECT_FALSE(ContentAnalysisDelegate::ResultShouldAllowDataUse(
-      safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED, settings()));
+TEST_P(ContentAnalysisDelegateSettingsTest, BlockUnsupportedFileTypes) {
+  auto pref = base::StringPrintf(R"(
+    {
+      "service_provider": "google",
+      "enable": [{"url_list": ["*"], "tags": ["dlp"]}],
+      "block_unsupported_file_types": %s
+    })",
+                                 bool_setting());
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, pref);
+  EXPECT_EQ(allowed(), ContentAnalysisDelegate::ResultShouldAllowDataUse(
+                           safe_browsing::BinaryUploadService::Result::
+                               DLP_SCAN_UNSUPPORTED_FILE_TYPE,
+                           settings()));
 }
 
 }  // namespace enterprise_connectors
