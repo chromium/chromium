@@ -2571,6 +2571,9 @@ void TestRunner::OnFrameDeactivated(WebFrameTestProxy* frame) {
   DCHECK(frame->IsMainFrame());
   RemoveMainFrame(frame);
   RemoveRenderView(frame->GetWebViewTestProxy());
+
+  if (frame->GetWebFrame()->IsLoading())
+    RemoveLoadingFrame(frame->GetWebFrame());
 }
 
 void TestRunner::OnFrameReactivated(WebFrameTestProxy* frame) {
@@ -2578,6 +2581,10 @@ void TestRunner::OnFrameReactivated(WebFrameTestProxy* frame) {
     return;
 
   DCHECK(frame->IsMainFrame());
+
+  if (frame->GetWebFrame()->IsLoading()) {
+    AddLoadingFrame(frame->GetWebFrame());
+  }
 
   // A WorkQueueItem that navigates reports that it will start a load, but when
   // a frame comes from the back/forward cache, it is already loaded so
