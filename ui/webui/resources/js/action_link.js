@@ -13,9 +13,9 @@
 // underlined). This gives the user an idea that clicking this link will do
 // something similar to navigation but in the same page.
 //
-// They can be created in JavaScript like this:
+// They can be created in JavaScript like this (note second arg):
 //
-//   var link = document.createElement('a', 'action-link');  // Note second arg.
+//   var link = document.createElement('a', {is: 'action-link'});
 //
 // or with a constructor like this:
 //

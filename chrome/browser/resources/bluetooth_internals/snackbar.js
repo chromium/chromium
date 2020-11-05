@@ -52,7 +52,8 @@ cr.define('snackbar', function() {
       this.classList.add('snackbar');
       this.messageDiv_ = document.createElement('div');
       this.appendChild(this.messageDiv_);
-      this.actionLink_ = document.createElement('a', 'action-link');
+      this.actionLink_ = document.createElement('a', {is: 'action-link'});
+      this.actionLink_.setAttribute('is', 'action-link');
       this.appendChild(this.actionLink_);
 
       this.boundStartTimeout_ = this.startTimeout_.bind(this);

@@ -149,14 +149,16 @@ cr.define('device_table', function() {
       // Make two extra cells for the inspect link and connect errors.
       const inspectCell = row.insertCell();
 
-      const inspectLink = document.createElement('a', 'action-link');
+      const inspectLink = document.createElement('a', {is: 'action-link'});
+      inspectLink.setAttribute('is', 'action-link');
       inspectLink.textContent = 'Inspect';
       inspectCell.appendChild(inspectLink);
       inspectLink.addEventListener('click', function() {
         this.handleInspectClick_(row.sectionRowIndex);
       }.bind(this));
 
-      const forgetLink = document.createElement('a', 'action-link');
+      const forgetLink = document.createElement('a', {is: 'action-link'});
+      forgetLink.setAttribute('is', 'action-link');
       forgetLink.textContent = 'Forget';
       inspectCell.appendChild(forgetLink);
       forgetLink.addEventListener('click', function() {
