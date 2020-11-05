@@ -85,10 +85,17 @@ void VideoCaptureDeviceFactoryAndroid::GetDevicesInfo(
     const int capture_api_type =
         Java_VideoCaptureFactory_getCaptureApiType(env, camera_index);
     VideoCaptureControlSupport control_support;
-    control_support.zoom =
-        Java_VideoCaptureFactory_isZoomSupported(env, camera_index);
     const int facing_mode =
         Java_VideoCaptureFactory_getFacingMode(env, camera_index);
+
+    auto zoom_it = zooms_cache_.find(device_id);
+    if (zoom_it != zooms_cache_.end()) {
+      control_support.zoom = zoom_it->second;
+    } else {
+      control_support.zoom =
+          Java_VideoCaptureFactory_isZoomSupported(env, camera_index);
+      zooms_cache_.emplace(device_id, control_support.zoom);
+    }
 
     // Android cameras are not typically USB devices, and the model_id is
     // currently only used for USB model identifiers, so this implementation
@@ -125,6 +132,16 @@ void VideoCaptureDeviceFactoryAndroid::GetDevicesInfo(
   // Remove old entries from |supported_formats_cache_| if necessary.
   if (supported_formats_cache_.size() > devices_info.size()) {
     base::EraseIf(supported_formats_cache_, [&devices_info](const auto& entry) {
+      return base::ranges::none_of(
+          devices_info, [&entry](const VideoCaptureDeviceInfo& info) {
+            return entry.first == info.descriptor.device_id;
+          });
+    });
+  }
+
+  // Remove old entries from |zooms_cache_| if necessary.
+  if (zooms_cache_.size() > devices_info.size()) {
+    base::EraseIf(zooms_cache_, [&devices_info](const auto& entry) {
       return base::ranges::none_of(
           devices_info, [&entry](const VideoCaptureDeviceInfo& info) {
             return entry.first == info.descriptor.device_id;
