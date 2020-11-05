@@ -1227,7 +1227,9 @@ class RenderFrameImpl::MHTMLBodyLoaderClient
   // Marks |this|'s pending load as abandoned. There are a number of reasons
   // this can happen; see the destructor for more information.
   void Detach() {
-    CHECK(frame_->in_frame_tree_);
+    // Note that the MHTMLBodyLoaderClient might be associated with a
+    // provisional frame, so this does not assert that `frame_->in_frame_tree_`
+    // is true.
     frame_ = nullptr;
   }
 
