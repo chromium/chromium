@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This file is versioned solely for the convenience of sharing struct and enum
+// definitions with with an external repository. Do not add any
+// browser <-> renderer specific definitions or any browser <-> external
+// repository specific definitions in this file.
+// Specifically interfaces defined here must not be versioned.
+
+// Next MinVersion: 1
+
 module payments.mojom;
 
 import "components/payments/mojom/payment_request_data.mojom";
@@ -41,6 +49,7 @@ interface DigitalGoodsFactory {
         pending_remote<DigitalGoods>? digital_goods);
 };
 
+[Extensible]
 enum BillingResponseCode {
   kOk,
   kError,
@@ -64,6 +73,7 @@ struct ItemDetails {
   string? introductory_price_period;
 };
 
+[Extensible]
 enum CreateDigitalGoodsResponseCode {
   kOk,
   kError,
@@ -81,6 +91,7 @@ struct PurchaseDetails {
   bool will_auto_renew;
 };
 
+[Extensible]
 enum PurchaseState {
   kUnknown,
   kPurchased,
