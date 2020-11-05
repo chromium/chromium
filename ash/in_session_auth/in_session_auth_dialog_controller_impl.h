@@ -74,6 +74,9 @@ class InSessionAuthDialogControllerImpl
       bool success,
       FingerprintState fingerprint_state);
 
+  // Called when auth succeeds to close the dialog and report success.
+  void OnAuthSuccess();
+
   InSessionAuthDialogClient* client_ = nullptr;
 
   // Callback to provide result of the entire authentication flow to

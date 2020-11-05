@@ -166,10 +166,8 @@ void InSessionAuthDialogControllerImpl::OnAuthenticateComplete(
     OnAuthenticateCallback callback,
     bool success) {
   std::move(callback).Run(success);
-  // TODO(b/156258540): Manage retry instead of closing directly.
-  DestroyAuthenticationDialog();
-  if (finish_callback_)
-    std::move(finish_callback_).Run(success);
+  if (success)
+    OnAuthSuccess();
 }
 
 void InSessionAuthDialogControllerImpl::OnFingerprintAuthComplete(
@@ -180,12 +178,14 @@ void InSessionAuthDialogControllerImpl::OnFingerprintAuthComplete(
   // fingerprint check.
   std::move(views_callback).Run(success, fingerprint_state);
 
-  if (success) {
-    DestroyAuthenticationDialog();
-    if (finish_callback_)
-      std::move(finish_callback_).Run(success);
-    return;
-  }
+  if (success)
+    OnAuthSuccess();
+}
+
+void InSessionAuthDialogControllerImpl::OnAuthSuccess() {
+  DestroyAuthenticationDialog();
+  if (finish_callback_)
+    std::move(finish_callback_).Run(true);
 }
 
 void InSessionAuthDialogControllerImpl::Cancel() {

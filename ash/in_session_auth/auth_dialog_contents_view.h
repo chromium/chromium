@@ -55,6 +55,7 @@ class AuthDialogContentsView : public views::View {
   uint32_t auth_methods() const { return auth_methods_; }
 
  private:
+  class TitleLabel;
   class FingerprintView;
 
   // views::View:
@@ -87,6 +88,20 @@ class AuthDialogContentsView : public views::View {
   // Add a view for action buttons.
   void AddActionButtonsView();
 
+  // Called when the user taps a digit on the PIN pad.
+  void OnInsertDigitFromPinPad(int digit);
+
+  // Called when the user taps backspace on the PIN pad.
+  void OnBackspaceFromPinPad();
+
+  // Called when either:
+  // 1. the user inserts or deletes a character in
+  // |pin_text_input_view_| or |pin_digit_input_view_| without using the PIN
+  // pad, or
+  // 2. contents of |pin_text_input_view_| or |pin_digit_input_view_| are
+  // cleared by a Reset() call.
+  void OnPinTextChanged(bool is_empty);
+
   // Called when the user submits password or PIN.
   void OnAuthSubmit(const base::string16& password);
 
@@ -106,14 +121,17 @@ class AuthDialogContentsView : public views::View {
   // User avatar to indicate this is an OS dialog.
   AnimatedRoundedImageView* avatar_view_ = nullptr;
 
-  // Title of the auth dialog.
-  views::Label* title_ = nullptr;
+  // Title of the auth dialog, also used to show PIN auth error message..
+  TitleLabel* title_ = nullptr;
 
   // Prompt message to the user.
   views::Label* origin_name_view_ = nullptr;
 
   // Whether PIN can be auto submitted.
   bool pin_autosubmit_on_ = false;
+
+  // Number of PIN attempts so far.
+  int pin_attempts_ = 0;
 
   // Text input field for PIN if PIN cannot be auto submitted.
   LoginPasswordView* pin_text_input_view_ = nullptr;
