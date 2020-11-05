@@ -4629,17 +4629,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // checking whether the grandchild frame added in step 3 sees proper sandbox
 // flags and origin for its (remote) parent.  This wasn't addressed when
 // https://crbug.com/423587 was fixed.
-// TODO(alexmos): Re-enable when https://crbug.com/610893 is fixed.
-IN_PROC_BROWSER_TEST_P(
-    SitePerProcessBrowserTest,
-    DISABLED_ProxiesForNewChildFramesHaveCorrectReplicationState) {
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       ProxiesForNewChildFramesHaveCorrectReplicationState) {
   GURL main_url(
       embedded_test_server()->GetURL("/frame_tree/page_with_one_frame.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
-  TestNavigationObserver observer(shell()->web_contents());
 
   EXPECT_EQ(
       " Site A ------------ proxies for B\n"
@@ -4651,17 +4648,18 @@ IN_PROC_BROWSER_TEST_P(
   // In the root frame, add a new sandboxed local frame, which itself has a
   // child frame on baz.com.  Wait for three RenderFrameHosts to be created:
   // the new sandboxed local frame, its child (while it's still local), and a
-  // pending RFH when starting the cross-site navigation to baz.com.
+  // speculative RFH when starting the cross-site navigation to baz.com.
   RenderFrameHostCreatedObserver frame_observer(shell()->web_contents(), 3);
   EXPECT_TRUE(ExecuteScript(root,
                             "addFrame('/frame_tree/page_with_one_frame.html',"
-                            "         'allow-scripts allow-same-origin'))"));
+                            "         'allow-scripts allow-same-origin')"));
   frame_observer.Wait();
 
   // Wait for the cross-site navigation to baz.com in the grandchild to finish.
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   FrameTreeNode* bottom_child = root->child_at(1)->child_at(0);
-  TestFrameNavigationObserver navigation_observer(bottom_child);
-  navigation_observer.Wait();
+  EXPECT_EQ(embedded_test_server()->GetURL("baz.com", "/title1.html"),
+            bottom_child->current_url());
 
   EXPECT_EQ(
       " Site A ------------ proxies for B\n"
@@ -4673,9 +4671,12 @@ IN_PROC_BROWSER_TEST_P(
       DepictFrameTree(root));
 
   // Use location.ancestorOrigins to check that the grandchild on baz.com sees
-  // correct origin for its parent.
-  EXPECT_EQ(ListValueOf(url::Origin::Create(main_url)),
-            EvalJs(bottom_child, "Array.from(location.ancestorOrigins);"));
+  // correct origin for its parent and grandparent, which are at the same URL
+  // and origin (namely, page_with_one_frame.html on the server's default
+  // origin).
+  EXPECT_EQ(
+      ListValueOf(url::Origin::Create(main_url), url::Origin::Create(main_url)),
+      EvalJs(bottom_child, "Array.from(location.ancestorOrigins);"));
 
   // Check that the sandbox flags in the browser process are correct.
   // "allow-scripts" resets both network::mojom::WebSandboxFlags::Scripts and
