@@ -32,9 +32,10 @@ void ParseAndExercise(base::StringPiece data) {
 
   CHECK_EQ(parsed->Type(), dns_protocol::kTypeHttps);
   if (parsed->IsAlias()) {
+    CHECK(!parsed->IsMalformed());
     AliasFormHttpsRecordRdata* alias = parsed->AsAliasForm();
     alias->alias_name();
-  } else {
+  } else if (!parsed->IsMalformed()) {
     ServiceFormHttpsRecordRdata* service = parsed->AsServiceForm();
     CHECK_GT(service->priority(), 0);
     service->service_name();
