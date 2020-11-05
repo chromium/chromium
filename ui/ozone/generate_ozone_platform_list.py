@@ -49,12 +49,15 @@ Example Output: ./generate_ozone_platform_list.py --default wayland dri wayland
 
 """
 
+try:
+    from StringIO import StringIO  # for Python 2
+except ImportError:
+    from io import StringIO  # for Python 3
 import optparse
 import os
 import collections
 import re
 import sys
-import string
 
 
 def GetConstantName(name):
@@ -63,7 +66,7 @@ def GetConstantName(name):
   We just capitalize the platform name and prepend "CreateOzonePlatform".
   """
 
-  return 'kPlatform' + string.capitalize(name)
+  return 'kPlatform' + name.capitalize()
 
 
 def GeneratePlatformListText(out, platforms):
@@ -149,9 +152,9 @@ def main(argv):
     platforms.insert(0, options.default)
 
   # Write to standard output or file specified by --output_{cc,h}.
-  out_cc = sys.stdout
-  out_h = sys.stdout
-  out_txt = sys.stdout
+  out_cc = getattr(sys.stdout, 'buffer', sys.stdout)
+  out_h = getattr(sys.stdout, 'buffer', sys.stdout)
+  out_txt = getattr(sys.stdout, 'buffer', sys.stdout)
   if options.output_cc:
     out_cc = open(options.output_cc, 'wb')
   if options.output_h:
@@ -159,9 +162,16 @@ def main(argv):
   if options.output_txt:
     out_txt = open(options.output_txt, 'wb')
 
-  GeneratePlatformListText(out_txt, platforms)
-  GeneratePlatformListHeader(out_h, platforms)
-  GeneratePlatformListSource(out_cc, platforms)
+  out_txt_str = StringIO()
+  out_h_str = StringIO()
+  out_cc_str = StringIO()
+
+  GeneratePlatformListText(out_txt_str, platforms)
+  out_txt.write(out_txt_str.getvalue().encode('utf-8'))
+  GeneratePlatformListHeader(out_h_str, platforms)
+  out_h.write(out_h_str.getvalue().encode('utf-8'))
+  GeneratePlatformListSource(out_cc_str, platforms)
+  out_cc.write(out_cc_str.getvalue().encode('utf-8'))
 
   if options.output_cc:
     out_cc.close()

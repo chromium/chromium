@@ -283,8 +283,7 @@ static_library("test_support") {
   public_deps = [ ":test_support_internal" ]
 }
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("generate_ozone_platform_list") {
+action("generate_ozone_platform_list") {
   script = "generate_ozone_platform_list.py"
   outputs = [
     platform_list_cc_file,
@@ -303,8 +302,7 @@ python2_action("generate_ozone_platform_list") {
   visibility += [ "//media:*" ]
 }
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("generate_constructor_list") {
+action("generate_constructor_list") {
   script = "generate_constructor_list.py"
 
   inputs = [ platform_list_txt_file ]
@@ -324,8 +322,7 @@ python2_action("generate_constructor_list") {
   deps = [ ":generate_ozone_platform_list" ]
 }
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("generate_test_support_constructor_list") {
+action("generate_test_support_constructor_list") {
   script = "generate_constructor_list.py"
 
   inputs = [ platform_list_txt_file ]
