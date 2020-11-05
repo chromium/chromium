@@ -38,6 +38,9 @@ public class BaseCarouselSuggestionView extends LinearLayout {
         setClickable(false);
         setFocusable(false);
         setOrientation(VERTICAL);
+        final int verticalPad = getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_semicompact_padding);
+        setPaddingRelative(0, 0, 0, verticalPad);
 
         mHeader = new HeaderView(context);
         mHeader.setLayoutParams(
