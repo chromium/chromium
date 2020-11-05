@@ -5,6 +5,7 @@
 import("//build/config/android/config.gni")
 import("//build/config/arm.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/ios/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//third_party/libvpx/libvpx_srcs.gni")
 import("//third_party/nasm/nasm_assemble.gni")
@@ -310,8 +311,16 @@ static_library("libvpx") {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
   }
+  
+  # As "nasm" does not embed the required LC_BUILD_VERSION section in object
+  # files, it is not possible to build optimised version of the code if the
+  # target is iOS under "catalyst" environment. This version is not shipped,
+  # so there is no concern about performance.
+  # TODO(crbug.com/1145197): Remove this exception once "nasm" has support
+  # for embedding the correct LD_BUILD_VERSION section.
+  _force_generic_srcs = is_ios && target_environment == "catalyst"
 
-  if (is_nacl) {
+  if (is_nacl || _force_generic_srcs) {
     sources = libvpx_srcs_generic
   } else if (current_cpu == "x86") {
     sources = libvpx_srcs_x86
@@ -345,17 +354,19 @@ static_library("libvpx") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
   configs += [ ":libvpx_config" ]
   deps = []
-  if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
-    deps += [
-      ":libvpx_asm",
-      ":libvpx_intrinsics_avx",
-      ":libvpx_intrinsics_avx2",
-      ":libvpx_intrinsics_avx512",
-      ":libvpx_intrinsics_mmx",
-      ":libvpx_intrinsics_sse2",
-      ":libvpx_intrinsics_sse4_1",
-      ":libvpx_intrinsics_ssse3",
-    ]
+  if (!_force_generic_srcs) {
+    if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
+      deps += [
+        ":libvpx_asm",
+        ":libvpx_intrinsics_avx",
+        ":libvpx_intrinsics_avx2",
+        ":libvpx_intrinsics_avx512",
+        ":libvpx_intrinsics_mmx",
+        ":libvpx_intrinsics_sse2",
+        ":libvpx_intrinsics_sse4_1",
+        ":libvpx_intrinsics_ssse3",
+      ]
+    }
   }
   if (cpu_arch_full == "arm-neon-cpu-detect") {
     deps += [ ":libvpx_intrinsics_neon" ]

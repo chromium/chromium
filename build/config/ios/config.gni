@@ -1,0 +1,23 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # Configure the environment for which to build. Could be either "device",
+  # "simulator" or "catalyst". If unspecified, then it will be assumed to be
+  # "simulator" if the target_cpu is "x68" or "x64", "device" otherwise. The
+  # default is only there for compatibility reasons and will be removed (see
+  # crbug.com/1138425 for more details).
+  target_environment = ""
+}
+
+if (target_environment == "") {
+  if (current_cpu == "x86" || current_cpu == "x64") {
+    target_environment = "simulator"
+  } else {
+    target_environment = "device"
+  }
+}
+
+assert(target_environment == "simulator" || target_environment == "device" ||
+       target_environment == "catalyst")

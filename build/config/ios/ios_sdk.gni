@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ios/config.gni")
 import("//build/config/ios/ios_sdk_overrides.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/toolchain.gni")
@@ -60,13 +61,6 @@ declare_args() {
 
   # TODO(crbug.com/1015730): remove this flag because ios_use_goma_rbe covers.
   ios_enable_relative_sdk_path = ios_use_goma_rbe
-
-  # Configure the environment for which to build. Could be either "device",
-  # "simulator" or "catalyst". If unspecified, then it will be assumed to be
-  # "simulator" if the target_cpu if "x68" or "x64", "device" otherwise. The
-  # default is only there for compatibility reason and will be removed (see
-  # crbug.com/1138425 for more details).
-  target_environment = ""
 }
 
 declare_args() {
@@ -78,17 +72,6 @@ declare_args() {
   # toolchain for the fat build (could be current_toolchain).
   primary_fat_toolchain_name = ""
 }
-
-if (target_environment == "") {
-  if (current_cpu == "x86" || current_cpu == "x64") {
-    target_environment = "simulator"
-  } else {
-    target_environment = "device"
-  }
-}
-
-assert(target_environment == "simulator" || target_environment == "device" ||
-       target_environment == "catalyst")
 
 # Official builds may not use goma.
 assert(!(use_goma && is_chrome_branded && is_official_build &&
