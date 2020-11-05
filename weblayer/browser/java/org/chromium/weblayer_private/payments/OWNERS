@@ -1,0 +1,5 @@
+# TEAM: payments-dev@chromium.org
+# COMPONENT: Blink>Payments
+# OS: Android
+
+file://components/payments/OWNERS
