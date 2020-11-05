@@ -32,6 +32,30 @@ constexpr base::TimeDelta kNoDelay = base::TimeDelta::FromSeconds(0);
 constexpr base::TimeDelta kSmallDelay = base::TimeDelta::FromMilliseconds(300);
 constexpr base::TimeDelta kNormalDelay = base::TimeDelta::FromMilliseconds(500);
 
+constexpr char kBlockingScansForDlpAndMalware[] = R"(
+{
+  "service_provider": "google",
+  "enable": [
+    {
+      "url_list": ["*"],
+      "tags": ["dlp", "malware"]
+    }
+  ],
+  "block_until_verdict": 1
+})";
+
+constexpr char kBlockingScansForDlp[] = R"(
+{
+  "service_provider": "google",
+  "enable": [
+    {
+      "url_list": ["*"],
+      "tags": ["dlp"]
+    }
+  ],
+  "block_until_verdict": 1
+})";
+
 base::string16 text() {
   return base::UTF8ToUTF16(std::string(100, 'a'));
 }
@@ -403,17 +427,11 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogBehaviorBrowserTest, Test) {
 
   // Setup policies to enable deep scanning, its UI and the responses to be
   // simulated.
-  safe_browsing::SetDlpPolicyForConnectors(
-      safe_browsing::CHECK_UPLOADS_AND_DOWNLOADS);
-  safe_browsing::SetMalwarePolicyForConnectors(
-      safe_browsing::SEND_UPLOADS_AND_DOWNLOADS);
-  safe_browsing::AddUrlsToCheckForMalwareOfUploadsForConnectors({"*"});
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+                                      kBlockingScansForDlpAndMalware);
   SetStatusCallbackResponse(
       safe_browsing::SimpleContentAnalysisResponseForTesting(
           dlp_success(), malware_success()));
-
-  // Always set this policy so the UI is shown.
-  SetDelayDeliveryUntilVerdictPolicyForConnectors(safe_browsing::DELAY_UPLOADS);
 
   // Set up delegate test values.
   FakeContentAnalysisDelegate::SetResponseDelay(response_delay());
@@ -471,13 +489,10 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogCancelPendingScanBrowserTest,
 
   // Setup policies to enable deep scanning, its UI and the responses to be
   // simulated.
-  SetDlpPolicyForConnectors(safe_browsing::CHECK_UPLOADS);
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, kBlockingScansForDlp);
   SetStatusCallbackResponse(
       safe_browsing::SimpleContentAnalysisResponseForTesting(
           /*dlp=*/true, /*malware=*/base::nullopt));
-
-  // Always set this policy so the UI is shown.
-  SetDelayDeliveryUntilVerdictPolicyForConnectors(safe_browsing::DELAY_UPLOADS);
 
   // Set up delegate test values. An unresponsive delegate is set up to avoid
   // a race between the file responses and the "Cancel" button being clicked.
@@ -516,8 +531,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogWarningBrowserTest, Test) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Setup policies.
-  SetDlpPolicyForConnectors(safe_browsing::CHECK_UPLOADS);
-  SetDelayDeliveryUntilVerdictPolicyForConnectors(safe_browsing::DELAY_UPLOADS);
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED, kBlockingScansForDlp);
 
   // Setup the DLP warning response.
   enterprise_connectors::ContentAnalysisResponse response;
@@ -574,15 +588,12 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogAppearanceBrowserTest, Test) {
 
   // Setup policies to enable deep scanning, its UI and the responses to be
   // simulated.
-  SetDlpPolicyForConnectors(safe_browsing::CHECK_UPLOADS);
-  SetMalwarePolicyForConnectors(safe_browsing::SEND_UPLOADS);
+  safe_browsing::SetAnalysisConnector(FILE_ATTACHED,
+                                      kBlockingScansForDlpAndMalware);
 
   SetStatusCallbackResponse(
       safe_browsing::SimpleContentAnalysisResponseForTesting(success(),
                                                              success()));
-
-  // Always set this policy so the UI is shown.
-  SetDelayDeliveryUntilVerdictPolicyForConnectors(safe_browsing::DELAY_UPLOADS);
 
   // Set up delegate test values.
   FakeContentAnalysisDelegate::SetResponseDelay(kSmallDelay);
