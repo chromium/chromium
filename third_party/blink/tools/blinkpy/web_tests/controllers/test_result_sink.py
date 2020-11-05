@@ -15,7 +15,7 @@ section.
 
 import json
 import logging
-import urllib2
+import requests
 
 from blinkpy.web_tests.models.typ_types import ResultType
 
@@ -44,6 +44,10 @@ _result_type_to_sink_status = {
 }
 
 
+class TestResultSinkClosed(Exception):
+    """Raises if sink() is called over a closed TestResultSink instance."""
+
+
 def CreateTestResultSink(port):
     """Creates TestResultSink, if result_sink is present in LUCI_CONTEXT.
 
@@ -70,23 +74,21 @@ class TestResultSink(object):
 
     def __init__(self, port, sink_ctx):
         self._port = port
+        self.is_closed = False
         self._sink_ctx = sink_ctx
-        self._sink_url = (
+        self._url = (
             'http://%s/prpc/luci.resultsink.v1.Sink/ReportTestResults' %
             self._sink_ctx['address'])
+        self._session = requests.Session()
+        sink_headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'ResultSink %s' % self._sink_ctx['auth_token'],
+        }
+        self._session.headers.update(sink_headers)
 
     def _send(self, data):
-        req = urllib2.Request(
-            url=self._sink_url,
-            data=json.dumps(data),
-            headers={
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'Authorization':
-                'ResultSink %s' % self._sink_ctx['auth_token'],
-            },
-        )
-        return urllib2.urlopen(req)
+        self._session.post(self._url, data=json.dumps(data)).raise_for_status()
 
     def _status(self, result):
         """Returns the TestStatus enum value corresponding to the result type.
@@ -152,9 +154,15 @@ class TestResultSink(object):
                 False, otherwise.
             result: The TestResult object to report.
         Exceptions:
-            urllib2.URLError, if there was a network connection error.
-            urllib2.HTTPError, if ResultSink responded an error for the request.
+            requests.exceptions.ConnectionError, if there was a network
+              connection error.
+            requests.exceptions.HTTPError, if ResultSink responded an error
+              for the request.
+            ResultSinkClosed, if sink.close() was called prior to sink().
         """
+        if self.is_closed:
+            raise TestResultSinkClosed('sink() cannot be called after close()')
+
         # The structure and member definitions of this dict can be found at
         # https://chromium.googlesource.com/infra/luci/luci-go/+/refs/heads/master/resultdb/proto/sink/v1/test_result.proto
         r = {
@@ -178,3 +186,12 @@ class TestResultSink(object):
             },
         }
         self._send({'testResults': [r]})
+
+    def close(self):
+        """Close closes all the active connections to SinkServer.
+
+        The sink object is no longer usable after being closed.
+        """
+        if not self.is_closed:
+            self.is_closed = True
+            self._session.close()

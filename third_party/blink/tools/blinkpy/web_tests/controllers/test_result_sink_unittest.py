@@ -5,6 +5,7 @@
 import contextlib
 import json
 import mock
+import requests
 import sys
 import unittest
 from urlparse import urlparse
@@ -40,19 +41,28 @@ class TestCreateTestResultSink(TestResultSinkTestBase):
         self.luci_context(app={'foo': 'bar'})
         self.assertIsNone(CreateTestResultSink(self.port))
 
-    @mock.patch('urllib2.urlopen')
-    def test_with_result_sink_section(self, urlopen):
+    def test_auth_token(self):
         ctx = {'address': 'localhost:123', 'auth_token': 'secret'}
         self.luci_context(result_sink=ctx)
-        r = CreateTestResultSink(self.port)
-        self.assertIsNotNone(r)
-        r.sink(True, test_results.TestResult('test'))
-
-        urlopen.assert_called_once()
-        req = urlopen.call_args[0][0]
-        self.assertEqual(urlparse(req.get_full_url()).netloc, ctx['address'])
-        self.assertEqual(req.get_header('Authorization'),
+        rs = CreateTestResultSink(self.port)
+        self.assertIsNotNone(rs)
+        self.assertEqual(rs._session.headers['Authorization'],
                          'ResultSink ' + ctx['auth_token'])
+
+    def test_with_result_sink_section(self):
+        ctx = {'address': 'localhost:123', 'auth_token': 'secret'}
+        self.luci_context(result_sink=ctx)
+        rs = CreateTestResultSink(self.port)
+        self.assertIsNotNone(rs)
+
+        response = requests.Response()
+        response.status_code = 200
+        with mock.patch.object(rs._session, 'post',
+                               return_value=response) as m:
+            rs.sink(True, test_results.TestResult('test'))
+            self.assertTrue(m.called)
+            self.assertEqual(
+                urlparse(m.call_args[0][0]).netloc, ctx['address'])
 
 
 class TestResultSinkMessage(TestResultSinkTestBase):
@@ -66,11 +76,11 @@ class TestResultSinkMessage(TestResultSinkTestBase):
 
         ctx = {'address': 'localhost:123', 'auth_token': 'super-secret'}
         self.luci_context(result_sink=ctx)
-        self.r = CreateTestResultSink(self.port)
+        self.rs = CreateTestResultSink(self.port)
 
     def sink(self, expected, test_result):
-        self.r.sink(expected, test_result)
-        self.mock_send.called_once()
+        self.rs.sink(expected, test_result)
+        self.assertTrue(self.mock_send.called)
         return self.mock_send.call_args[0][0]['testResults'][0]
 
     def test_sink(self):

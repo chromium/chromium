@@ -94,10 +94,10 @@ class Manager(object):
         self._finder = WebTestFinder(self._port, self._options)
         self._path_finder = PathFinder(port.host.filesystem)
 
-        sink = CreateTestResultSink(self._port)
+        self._sink = CreateTestResultSink(self._port)
         self._runner = WebTestRunner(self._options, self._port, self._printer,
                                      self._results_directory,
-                                     self._test_is_slow, sink)
+                                     self._test_is_slow, self._sink)
 
     def run(self, args):
         """Runs the tests and return a RunDetails object with the results."""
@@ -499,6 +499,9 @@ class Manager(object):
         sys.stderr.flush()
         _log.debug('Cleaning up port')
         self._port.clean_up_test_run()
+        if self._sink:
+            _log.debug('Closing sink')
+            self._sink.close()
 
     def _look_for_new_crash_logs(self, run_results, start_time):
         """Looks for and writes new crash logs, at the end of the test run.
