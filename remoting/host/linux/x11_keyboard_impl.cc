@@ -45,6 +45,16 @@ bool FindKeycodeForKeySym(x11::Connection* connection,
   return false;
 }
 
+// This is ported from XStringToKeysym
+// https://gitlab.freedesktop.org/xorg/lib/libx11/-/blob/2b7598221d87049d03e9a95fcb541c37c8728184/src/StrKeysym.c#L147-154
+uint32_t UnicodeToKeysym(uint32_t u) {
+  if (u > 0x10ffff || u < 0x20 || (u > 0x7e && u < 0xa0))
+    return 0;
+  if (u < 0x100)
+    return u;
+  return u | 0x01000000;
+}
+
 }  // namespace
 
 namespace remoting {
@@ -106,22 +116,19 @@ bool X11KeyboardImpl::FindKeycode(uint32_t code_point,
 }
 
 bool X11KeyboardImpl::ChangeKeyMapping(uint32_t keycode, uint32_t code_point) {
-  bool res = false;
-  if (code_point > 0) {
-    for (auto keysym : GetKeySymsForUnicode(code_point)) {
-      if (keysym > 0xffff)
-        continue;
-      connection_->ChangeKeyboardMapping({
-          .keycode_count = 1,
-          .first_keycode = static_cast<x11::KeyCode>(keycode),
-          .keysyms_per_keycode = 2,
-          .keysyms = {static_cast<x11::KeySym>(keysym) /* lower-case */,
-                      static_cast<x11::KeySym>(keysym) /* upper-case */},
-      });
-      res = true;
-    }
-  }
-  return res;
+  if (!code_point)
+    return false;
+  auto keysym = UnicodeToKeysym(code_point);
+  if (!keysym)
+    return false;
+  connection_->ChangeKeyboardMapping({
+      .keycode_count = 1,
+      .first_keycode = static_cast<x11::KeyCode>(keycode),
+      .keysyms_per_keycode = 2,
+      .keysyms = {static_cast<x11::KeySym>(keysym) /* lower-case */,
+                  static_cast<x11::KeySym>(keysym) /* upper-case */},
+  });
+  return true;
 }
 
 void X11KeyboardImpl::Flush() {
