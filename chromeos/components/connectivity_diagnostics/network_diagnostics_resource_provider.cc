@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/connectivity_diagnostics/network_diagnostics_localized_strings.h"
+#include "chromeos/components/connectivity_diagnostics/network_diagnostics_resource_provider.h"
 
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/resources/grit/webui_resources.h"
 
 namespace chromeos {
 namespace network_diagnostics {
@@ -30,6 +31,9 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"NetworkDiagnosticsPassed", IDS_NETWORK_DIAGNOSTICS_PASSED},
     {"NetworkDiagnosticsFailed", IDS_NETWORK_DIAGNOSTICS_FAILED},
     {"NetworkDiagnosticsNotRun", IDS_NETWORK_DIAGNOSTICS_NOT_RUN},
+    {"NetworkDiagnosticsRunning", IDS_NETWORK_DIAGNOSTICS_RUNNING},
+    {"NetworkDiagnosticsResultPlaceholder",
+     IDS_NETWORK_DIAGNOSTICS_RESULT_PLACEHOLDER},
     {"NetworkDiagnosticsRun", IDS_NETWORK_DIAGNOSTICS_RUN},
     {"SignalStrengthProblem_NotFound",
      IDS_NETWORK_DIAGNOSTICS_SIGNAL_STRENGTH_PROBLEM_NOT_FOUND},
@@ -69,11 +73,32 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
      IDS_NETWORK_DIAGNOSTICS_DNS_RESOLUTION_PROBLEM_FAILED_TO_RESOLVE_HOST},
 };
 
+struct WebUiResource {
+  const char* name;
+  int id;
+};
+
+constexpr WebUiResource kResources[] = {
+    {"test_canceled.png",
+     IDR_CR_COMPONENTS_CHROMEOS_NETWORK_DIAGNOSTICS_CANCELED_ICON},
+    {"test_failed.png",
+     IDR_CR_COMPONENTS_CHROMEOS_NETWORK_DIAGNOSTICS_FAILED_ICON},
+    {"test_not_run.png",
+     IDR_CR_COMPONENTS_CHROMEOS_NETWORK_DIAGNOSTICS_NOT_RUN_ICON},
+    {"test_passed.png",
+     IDR_CR_COMPONENTS_CHROMEOS_NETWORK_DIAGNOSTICS_PASSED_ICON},
+    {"test_warning.png",
+     IDR_CR_COMPONENTS_CHROMEOS_NETWORK_DIAGNOSTICS_WARNING_ICON},
+};
+
 }  // namespace
 
-void AddLocalizedStrings(content::WebUIDataSource* html_source) {
+void AddResources(content::WebUIDataSource* html_source) {
   for (const auto& str : kLocalizedStrings)
     html_source->AddLocalizedString(str.name, str.id);
+
+  for (const auto& resource : kResources)
+    html_source->AddResourcePath(resource.name, resource.id);
 }
 
 }  // namespace network_diagnostics

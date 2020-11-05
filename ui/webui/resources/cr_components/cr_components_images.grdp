@@ -109,5 +109,22 @@
              file="cr_components/chromeos/network/wifi_4.svg" type="BINDATA" />
     <include name="IDR_CR_ELEMENTS_WIFI_OFF_SVG"
              file="cr_components/chromeos/network/wifi_off.svg" type="BINDATA" />
+
+    <!-- NetworkDiagnostics Images -->
+    <include name="IDR_CR_COMPONENTS_CHROMEOS_NETWORK_DIAGNOSTICS_CANCELED_ICON"
+              file="cr_components/chromeos/network_health/test_canceled.png"
+              type="BINDATA" />
+    <include name="IDR_CR_COMPONENTS_CHROMEOS_NETWORK_DIAGNOSTICS_FAILED_ICON"
+              file="cr_components/chromeos/network_health/test_failed.png"
+              type="BINDATA" />
+    <include name="IDR_CR_COMPONENTS_CHROMEOS_NETWORK_DIAGNOSTICS_NOT_RUN_ICON"
+              file="cr_components/chromeos/network_health/test_not_run.png"
+              type="BINDATA" />
+    <include name="IDR_CR_COMPONENTS_CHROMEOS_NETWORK_DIAGNOSTICS_PASSED_ICON"
+              file="cr_components/chromeos/network_health/test_passed.png"
+              type="BINDATA" />
+    <include name="IDR_CR_COMPONENTS_CHROMEOS_NETWORK_DIAGNOSTICS_WARNING_ICON"
+              file="cr_components/chromeos/network_health/test_warning.png"
+              type="BINDATA" />
   </if>
 </grit-part>

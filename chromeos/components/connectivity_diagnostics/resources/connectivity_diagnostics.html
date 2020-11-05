@@ -4,6 +4,25 @@
    font-size: 75%;
    font-weight: 500;
   }
+
+  .button-group {
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    padding: 10px;
+    display: flex;
+  }
+
+  .button-group > cr-button {
+    margin-inline-start: 10px;
+  }
 </style>
+
 <h1 id="appTitle">[[i18n('appTitle')]]</h1>
 <network-diagnostics id="network-diagnostics"></network-diagnostics>
+<div class="button-group">
+  <cr-button on-click="onCloseClick_">[[i18n('closeBtn')]]</cr-button>
+  <cr-button on-click="onRunAllRoutinesClick_">
+    [[i18n('rerunRoutinesBtn')]]
+  </cr-button>
+</div>

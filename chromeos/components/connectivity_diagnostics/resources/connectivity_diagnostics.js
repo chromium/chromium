@@ -20,4 +20,34 @@ Polymer({
   _template: html`{__html_template__}`,
 
   behaviors: [I18nBehavior],
+
+  /** @override */
+  attached() {
+    this.runAllRoutines_();
+  },
+
+  /**
+   * Returns and typecasts the network diagnostics element
+   * @returns {!NetworkDiagnosticsElement}
+   * @private
+   */
+  getNetworkDiagnosticsElement_() {
+    return /** @type {!NetworkDiagnosticsElement} */ (
+        this.$$('#network-diagnostics'));
+  },
+
+  /** @private */
+  runAllRoutines_() {
+    this.getNetworkDiagnosticsElement_().runAllRoutines();
+  },
+
+  /** @private */
+  onCloseClick_() {
+    self.close();
+  },
+
+  /** @private */
+  onRunAllRoutinesClick_() {
+    this.runAllRoutines_();
+  },
 });

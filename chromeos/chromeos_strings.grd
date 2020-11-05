@@ -601,6 +601,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_CONNECTIVITY_DIAGNOSTICS_TITLE" desc="The label for connectivity diagnostics application that shows potential issues with the network connections">
         Connectivity Diagnostics
       </message>
+      <message name="IDS_CONNECTIVITY_DIAGNOSTICS_RERUN_ROUTINES" desc="Label for connectivity diagnostics application rerun routines button">
+        Rerun Routines
+      </message>
+      <message name="IDS_CONNECTIVITY_DIAGNOSTICS_CLOSE" desc="Label for connectivity diagnostics application close button">
+        Close
+      </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_LAN_CONNECTIVITY" desc="Label for Network diagnostics `LAN connectivity` test. This test determines if the device is connected to a Local Area Network (LAN)">
         Lan Connectivity
       </message>
@@ -630,6 +636,12 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_NOT_RUN" desc="Label shown when a Network diagnostics routine did not run">
         Not Run
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_RUNNING" desc="Label shown when a network diagnostics routine is currently running">
+        Running
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_RESULT_PLACEHOLDER" desc="Symbol shown for a network diagnostics routine result that seperates the verdict and problem strings">
+        <ph name="VERDICT">$1<ex>Failed</ex></ph>: <ph name="PROBLEMS">$2<ex>Weak signal</ex></ph>
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_RUN" desc="Label for Network diagnostics run routine button">
         Run

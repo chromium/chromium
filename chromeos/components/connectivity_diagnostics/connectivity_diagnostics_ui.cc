@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "chromeos/components/connectivity_diagnostics/network_diagnostics_localized_strings.h"
+#include "chromeos/components/connectivity_diagnostics/network_diagnostics_resource_provider.h"
 #include "chromeos/components/connectivity_diagnostics/url_constants.h"
 #include "chromeos/grit/connectivity_diagnostics_resources.h"
 #include "chromeos/grit/connectivity_diagnostics_resources_map.h"
@@ -62,7 +62,10 @@ ConnectivityDiagnosticsUI::ConnectivityDiagnosticsUI(
   SetUpWebUIDataSource(source, resources, kGeneratedPath,
                        IDR_CONNECTIVITY_DIAGNOSTICS_INDEX_HTML);
   source->AddLocalizedString("appTitle", IDS_CONNECTIVITY_DIAGNOSTICS_TITLE);
-  network_diagnostics::AddLocalizedStrings(source);
+  source->AddLocalizedString("rerunRoutinesBtn",
+                             IDS_CONNECTIVITY_DIAGNOSTICS_RERUN_ROUTINES);
+  source->AddLocalizedString("closeBtn", IDS_CONNECTIVITY_DIAGNOSTICS_CLOSE);
+  network_diagnostics::AddResources(source);
 
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
