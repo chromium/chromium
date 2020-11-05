@@ -3176,6 +3176,22 @@
         {
             "platforms": [
                 "android",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "sampling-rate": "1000000"
+                    },
+                    "enable_features": [
+                        "HeapProfilerReporting"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
                 "chromeos",
                 "linux",
                 "mac",
@@ -3185,7 +3201,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "sampling-rate": "1000000"
+                        "sampling-rate": "10000000"
                     },
                     "enable_features": [
                         "HeapProfilerReporting"
