@@ -103,10 +103,6 @@ QUIC_FLAG(FLAGS_quic_restart_flag_quic_enable_zero_rtt_for_tls_v2, true)
 // If true, default on PTO which unifies TLP + RTO loss recovery.
 QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_default_on_pto, false)
 
-// If true, the B2HI connection option limits reduction of inflight_hi to
-// (1-Beta)*CWND.
-QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_bbr2_limit_inflight_hi, false)
-
 // If true, disable QUIC version h3-T050.
 QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_disable_version_t050, true)
 
@@ -120,7 +116,7 @@ QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_disable_version_draft_29, false)
 
 // If true, record the received min_ack_delay in transport parameters to QUIC
 // config.
-QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_record_received_min_ack_delay, false)
+QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_record_received_min_ack_delay, true)
 
 // If true, disable blackhole detection on server side.
 QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_disable_server_blackhole_detection,
@@ -264,7 +260,7 @@ QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_send_goaway_with_connection_close,
           false)
 
 // If true, ack frequency frame can be sent from server to client.
-QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_can_send_ack_frequency, false)
+QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_can_send_ack_frequency, true)
 
 // If true, QUIC BBRv2 will support NetworkParams.max_initial_congestion_window
 // when bootstrapping cwnd.
