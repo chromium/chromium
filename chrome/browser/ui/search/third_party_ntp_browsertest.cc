@@ -130,3 +130,25 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, ProcessPerSite) {
   EXPECT_EQ(tab1->GetMainFrame()->GetProcess(),
             tab2->GetMainFrame()->GetProcess());
 }
+
+// Verify that a third-party NTP commits in a remote NTP SiteInstance.
+IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, VerifySiteInstance) {
+  // Setup and navigate to third-party NTP.
+  GURL base_url =
+      https_test_server().GetURL("ntp.com", "/instant_extended.html");
+  GURL ntp_url =
+      https_test_server().GetURL("ntp.com", "/instant_extended_ntp.html");
+  SetupInstant(browser()->profile(), base_url, ntp_url);
+  ui_test_utils::NavigateToURL(browser(), ntp_url);
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Sanity check: the NTP should be provided by |ntp_url| (and not by
+  // chrome-search://local-ntp [deprecated], chrome://new-tab-page [1st-party
+  // NTP] or chrome://ntp [incognito]).
+  EXPECT_EQ(ntp_url, content::EvalJs(web_contents, "window.location.href"));
+
+  // Verify that NTP committed in remote NTP SiteInstance.
+  EXPECT_EQ(GURL("chrome-search://remote-ntp/"),
+            web_contents->GetMainFrame()->GetSiteInstance()->GetSiteURL());
+}
