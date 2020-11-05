@@ -398,9 +398,9 @@ bool RenderViewHostImpl::CreateRenderView(
 
   // The process may (if we're sharing a process with another host that already
   // initialized it) or may not (we have our own process or the old process
-  // crashed) have been initialized. Calling Init multiple times will be
+  // crashed) have been initialized. Calling Init() multiple times will be
   // ignored, so this is safe.
-  if (!GetAgentSchedulingGroup().InitProcessAndMojos())
+  if (!GetAgentSchedulingGroup().Init())
     return false;
   DCHECK(GetProcess()->IsInitializedAndNotDead());
   DCHECK(GetProcess()->GetBrowserContext());

@@ -63,11 +63,9 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
   RenderProcessHost* GetProcess();
-  // Ensure that the process this AgentSchedulingGroupHost belongs to is alive,
-  // that the renderer-side AgentSchedulingGroup exists, and that the
-  // mojom::AgentSchedulingGroup/Host interfaces are bound and connected.
+  // Ensure that the process this AgentSchedulingGroupHost belongs to is alive.
   // Returns |false| if any part of the initialization failed.
-  bool InitProcessAndMojos();
+  bool Init();
 
   // IPC and mojo messages to be forwarded to the RenderProcessHost, for now. In
   // the future they will be handled directly by the AgentSchedulingGroupHost.

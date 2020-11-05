@@ -2345,7 +2345,7 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
   // The process for the new SiteInstance may (if we're sharing a process with
   // another host that already initialized it) or may not (we have our own
   // process or the existing process crashed) have been initialized. Calling
-  // Init multiple times will be ignored, so this is safe.
+  // Init() multiple times will be ignored, so this is safe.
   if (!new_instance->GetProcess()->Init())
     return false;
 
@@ -2564,7 +2564,7 @@ bool RenderFrameHostManager::InitRenderView(
     RenderFrameProxyHost* proxy) {
   // Ensure the renderer process is initialized before creating the
   // RenderView.
-  if (!render_view_host->GetAgentSchedulingGroup().InitProcessAndMojos())
+  if (!render_view_host->GetAgentSchedulingGroup().Init())
     return false;
 
   // We may have initialized this RenderViewHost for another RenderFrameHost.
