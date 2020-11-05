@@ -107,7 +107,7 @@ class CORE_EXPORT InspectorEmulationAgent final
 
   void Trace(Visitor*) const override;
 
-  static AtomicString OverrideAcceptImageHeader(const HashSet<String>&);
+  static AtomicString OverrideAcceptImageHeader(const HashSet<String>*);
 
  private:
   WebViewImpl* GetWebViewImpl();

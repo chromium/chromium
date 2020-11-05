@@ -114,7 +114,8 @@ struct PLATFORM_EXPORT ResourceLoaderOptions {
       url_loader_factory;
 
   // Used by DevTools to emulate unsupported image types. See crbug.com/1130556.
-  HashSet<String> unsupported_image_mime_types;
+  scoped_refptr<base::RefCountedData<HashSet<String>>>
+      unsupported_image_mime_types;
 };
 
 }  // namespace blink

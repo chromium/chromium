@@ -447,9 +447,9 @@ void InspectorEmulationAgent::FrameStartedLoading(LocalFrame*) {
 }
 
 AtomicString InspectorEmulationAgent::OverrideAcceptImageHeader(
-    const HashSet<String>& disabled_image_types) {
+    const HashSet<String>* disabled_image_types) {
   String header(ImageAcceptHeader());
-  for (String type : disabled_image_types) {
+  for (String type : *disabled_image_types) {
     // The header string is expected to be like
     // `image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8` and is
     // expected to be always ending with `image/*,*/*;q=xxx`, therefore, to
@@ -475,12 +475,17 @@ void InspectorEmulationAgent::PrepareRequest(DocumentLoader* loader,
   if (resource_type != ResourceType::kImage || disabled_image_types_.IsEmpty())
     return;
 
+  if (!options.unsupported_image_mime_types) {
+    options.unsupported_image_mime_types =
+        base::MakeRefCounted<base::RefCountedData<HashSet<String>>>();
+  }
+
   for (String type : disabled_image_types_.Keys()) {
-    options.unsupported_image_mime_types.insert(type);
+    options.unsupported_image_mime_types->data.insert(type);
   }
 
   request.SetHTTPAccept(
-      OverrideAcceptImageHeader(options.unsupported_image_mime_types));
+      OverrideAcceptImageHeader(&options.unsupported_image_mime_types->data));
   // Bypassing caching to prevent the use of the previously loaded and cached
   // images.
   request.SetCacheMode(mojom::blink::FetchCacheMode::kBypassCache);

@@ -66,13 +66,12 @@ class NullImageResourceInfo final
 
   bool IsAdResource() const override { return false; }
 
-  const HashSet<String>& GetUnsupportedImageMimeTypes() const override {
-    return unsupported_image_mime_types_;
+  const HashSet<String>* GetUnsupportedImageMimeTypes() const override {
+    return nullptr;
   }
 
   const KURL url_;
   const ResourceResponse response_;
-  const HashSet<String> unsupported_image_mime_types_;
 };
 
 }  // namespace
@@ -423,12 +422,12 @@ ImageResourceContent::UpdateImageResult ImageResourceContent::UpdateImage(
       if (size_available_ == Image::kSizeUnavailable && !all_data_received)
         return UpdateImageResult::kNoDecodeError;
 
-      if (image_) {
+      if (image_ && info_->GetUnsupportedImageMimeTypes()) {
         // Filename extension is set by the image decoder based on the actual
         // image content.
         String file_extension = image_->FilenameExtension();
-        if (info_->GetUnsupportedImageMimeTypes().Contains("image/" +
-                                                           file_extension)) {
+        if (info_->GetUnsupportedImageMimeTypes()->Contains(
+                String("image/" + file_extension))) {
           return UpdateImageResult::kShouldDecodeError;
         }
       }

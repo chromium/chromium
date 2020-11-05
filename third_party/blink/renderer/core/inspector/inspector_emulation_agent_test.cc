@@ -33,16 +33,16 @@ TEST_F(InspectorEmulationAgentTest, ModifiesAcceptHeader) {
 #endif
 
   HashSet<String> disabled_types;
-  EXPECT_EQ(InspectorEmulationAgent::OverrideAcceptImageHeader(disabled_types),
+  EXPECT_EQ(InspectorEmulationAgent::OverrideAcceptImageHeader(&disabled_types),
             expected_default);
   disabled_types.insert("image/webp");
-  EXPECT_EQ(InspectorEmulationAgent::OverrideAcceptImageHeader(disabled_types),
+  EXPECT_EQ(InspectorEmulationAgent::OverrideAcceptImageHeader(&disabled_types),
             expected_no_webp);
   disabled_types.insert("image/avif");
-  EXPECT_EQ(InspectorEmulationAgent::OverrideAcceptImageHeader(disabled_types),
+  EXPECT_EQ(InspectorEmulationAgent::OverrideAcceptImageHeader(&disabled_types),
             expected_no_webp_and_avif);
   disabled_types.erase("image/webp");
-  EXPECT_EQ(InspectorEmulationAgent::OverrideAcceptImageHeader(disabled_types),
+  EXPECT_EQ(InspectorEmulationAgent::OverrideAcceptImageHeader(&disabled_types),
             expected_no_avif);
 }
 
