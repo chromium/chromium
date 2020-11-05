@@ -405,9 +405,7 @@ void TpmChallengeKeySubtleImpl::GetEnrollmentPreparationsCallback(
   }
 
   ::attestation::GetKeyInfoRequest request;
-  request.set_username(
-      cryptohome::CreateAccountIdentifierFromAccountId(GetAccountId())
-          .account_id());
+  request.set_username(cryptohome::Identification(GetAccountId()).id());
   request.set_key_label(key_name_);
   AttestationClient::Get()->GetKeyInfo(
       request, base::BindOnce(&TpmChallengeKeySubtleImpl::DoesKeyExistCallback,
@@ -509,9 +507,7 @@ void TpmChallengeKeySubtleImpl::GetPublicKey() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ::attestation::GetKeyInfoRequest request;
-  request.set_username(
-      cryptohome::CreateAccountIdentifierFromAccountId(GetAccountId())
-          .account_id());
+  request.set_username(cryptohome::Identification(GetAccountId()).id());
   request.set_key_label(key_name_);
   AttestationClient::Get()->GetKeyInfo(
       request, base::BindOnce(&TpmChallengeKeySubtleImpl::PrepareKeyFinished,

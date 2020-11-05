@@ -37,7 +37,7 @@ void DBusPrivacyCACallback(
     on_success.Run(data);
     return;
   }
-  LOG(ERROR) << "Cryptohome DBus method or server called failed with status: "
+  LOG(ERROR) << "Attestation DBus method or server called failed with status: "
              << status << ": " << from_here.ToString();
   if (!on_failure.is_null())
     on_failure.Run(status);
