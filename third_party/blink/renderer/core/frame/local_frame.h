@@ -203,7 +203,7 @@ class CORE_EXPORT LocalFrame final
   void DidFocus() override;
 
   void DidChangeThemeColor();
-  void DidChangeBackgroundColor(SkColor background_color);
+  void DidChangeBackgroundColor(SkColor background_color, bool color_adjust);
 
   void DetachChildren();
   // After Document is attached, resets state related to document, and sets

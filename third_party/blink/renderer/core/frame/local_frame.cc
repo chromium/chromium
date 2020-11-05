@@ -963,9 +963,11 @@ void LocalFrame::DidChangeThemeColor() {
   GetLocalFrameHostRemote().DidChangeThemeColor(sk_color);
 }
 
-void LocalFrame::DidChangeBackgroundColor(SkColor background_color) {
+void LocalFrame::DidChangeBackgroundColor(SkColor background_color,
+                                          bool color_adjust) {
   DCHECK(!Tree().Parent());
-  GetLocalFrameHostRemote().DidChangeBackgroundColor(background_color);
+  GetLocalFrameHostRemote().DidChangeBackgroundColor(background_color,
+                                                     color_adjust);
 }
 
 LocalFrame& LocalFrame::LocalFrameRoot() const {

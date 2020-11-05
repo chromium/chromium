@@ -5397,28 +5397,12 @@ void WebContentsImpl::OnThemeColorChanged(RenderViewHostImpl* source) {
 }
 
 void WebContentsImpl::OnBackgroundColorChanged(RenderViewHostImpl* source) {
-  if (source->did_first_visually_non_empty_paint()) {
-    if (last_sent_background_color_ != source->background_color()) {
-      observers_.ForEachObserver([&](WebContentsObserver* observer) {
-        observer->OnBackgroundColorChanged();
-      });
-      last_sent_background_color_ = source->background_color();
-    }
-    return;
-  }
-
-  if (source->background_color().has_value()) {
-    // <meta name="color-scheme" content="dark"> may pass the dark canvas
-    // background before the first paint in order to avoid flashing the white
-    // background in between loading documents. If we perform a navigation
-    // within the same renderer process, we keep the content background from the
-    // previous page while rendering is blocked in the new page, but for cross
-    // process navigations we would paint the default background (typically
-    // white) while the rendering is blocked.
-    if (auto* view = GetRenderWidgetHostView()) {
-      static_cast<RenderWidgetHostViewBase*>(view)->SetContentBackgroundColor(
-          source->background_color().value());
-    }
+  if (source->did_first_visually_non_empty_paint() &&
+      last_sent_background_color_ != source->background_color()) {
+    observers_.ForEachObserver([&](WebContentsObserver* observer) {
+      observer->OnBackgroundColorChanged();
+    });
+    last_sent_background_color_ = source->background_color();
   }
 }
 

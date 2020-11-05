@@ -208,7 +208,8 @@ interface LocalFrameHost {
 
   // Notifies the browser that the associated frame has changed its computed CSS
   // background color. This will be called on main-frames only.
-  DidChangeBackgroundColor(skia.mojom.SkColor background_color);
+  // |color_adjust| is true if the background is forced by color adjustments.
+  DidChangeBackgroundColor(skia.mojom.SkColor background_color, bool color_adjust);
 
   // Sent when the renderer fails to load with |error_code| which means a net
   // error code.

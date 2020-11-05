@@ -922,12 +922,23 @@ void RenderViewHostImpl::OnThemeColorChanged(
 
 void RenderViewHostImpl::DidChangeBackgroundColor(
     RenderFrameHostImpl* rfh,
-    const SkColor& background_color) {
+    const SkColor& background_color,
+    bool color_adjust) {
   if (GetMainFrame() != rfh)
     return;
 
   main_frame_background_color_ = background_color;
   delegate_->OnBackgroundColorChanged(this);
+  if (color_adjust) {
+    // <meta name="color-scheme" content="dark"> may pass the dark canvas
+    // background before the first paint in order to avoid flashing the white
+    // background in between loading documents. If we perform a navigation
+    // within the same renderer process, we keep the content background from the
+    // previous page while rendering is blocked in the new page, but for cross
+    // process navigations we would paint the default background (typically
+    // white) while the rendering is blocked.
+    GetWidget()->GetView()->SetContentBackgroundColor(background_color);
+  }
 }
 
 void RenderViewHostImpl::SetContentsMimeType(const std::string mime_type) {

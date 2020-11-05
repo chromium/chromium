@@ -1882,7 +1882,8 @@ void LocalFrameView::SetUseColorAdjustBackground(UseColorAdjustBackground use,
     // content background from the previous page while rendering is blocked in
     // the new page, but for cross process navigations we would paint the
     // default background (typically white) while the rendering is blocked.
-    GetFrame().DidChangeBackgroundColor(SkColor(BaseBackgroundColor()));
+    GetFrame().DidChangeBackgroundColor(SkColor(BaseBackgroundColor()),
+                                        true /* color_adjust */);
   }
 
   if (auto* layout_view = GetLayoutView())

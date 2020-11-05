@@ -4243,8 +4243,10 @@ void RenderFrameHostImpl::DidChangeThemeColor(
 }
 
 void RenderFrameHostImpl::DidChangeBackgroundColor(
-    const SkColor& background_color) {
-  render_view_host_->DidChangeBackgroundColor(this, background_color);
+    const SkColor& background_color,
+    bool color_adjust) {
+  render_view_host_->DidChangeBackgroundColor(this, background_color,
+                                              color_adjust);
 }
 
 void RenderFrameHostImpl::SetCommitCallbackInterceptorForTesting(

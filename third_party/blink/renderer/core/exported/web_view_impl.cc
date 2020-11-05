@@ -1389,8 +1389,10 @@ void WebViewImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,
     if (background_color != last_background_color_) {
       last_background_color_ = background_color;
       if (Page* page = page_.Get()) {
-        if (auto* main_local_frame = DynamicTo<LocalFrame>(page->MainFrame()))
-          main_local_frame->DidChangeBackgroundColor(background_color);
+        if (auto* main_local_frame = DynamicTo<LocalFrame>(page->MainFrame())) {
+          main_local_frame->DidChangeBackgroundColor(background_color,
+                                                     false /* color_adjust */);
+        }
       }
     }
   }

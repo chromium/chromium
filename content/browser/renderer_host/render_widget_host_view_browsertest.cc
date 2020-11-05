@@ -344,6 +344,19 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   EXPECT_EQ(SkColorSetRGB(18, 18, 18), bg_color.value());
 }
 
+IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
+                       NoColorSchemeMetaBackground) {
+  embedded_test_server()->RegisterRequestHandler(
+      base::BindRepeating(&HandleSlowStyleSheet));
+  ASSERT_TRUE(embedded_test_server()->Start());
+  DOMContentLoadedObserver observer(shell()->web_contents());
+  shell()->LoadURL(
+      embedded_test_server()->GetURL("/no_color_scheme_meta_slow.html"));
+  EXPECT_TRUE(observer.Wait());
+  auto bg_color = GetRenderWidgetHostView()->content_background_color();
+  ASSERT_FALSE(bg_color.has_value());
+}
+
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewBrowserTestBase,
                        CompositorWorksWhenReusingRenderer) {
   ASSERT_TRUE(embedded_test_server()->Start());

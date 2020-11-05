@@ -270,7 +270,8 @@ class CONTENT_EXPORT RenderViewHostImpl
                            const base::Optional<SkColor>& theme_color);
 
   void DidChangeBackgroundColor(RenderFrameHostImpl* rfh,
-                                const SkColor& background_color);
+                                const SkColor& background_color,
+                                bool color_adjust);
 
   base::Optional<SkColor> theme_color() const {
     return main_frame_theme_color_;
