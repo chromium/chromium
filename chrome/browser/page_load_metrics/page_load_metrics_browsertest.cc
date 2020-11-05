@@ -92,6 +92,7 @@
 using page_load_metrics::PageLoadMetricsTestWaiter;
 using TimingField = page_load_metrics::PageLoadMetricsTestWaiter::TimingField;
 using WebFeature = blink::mojom::WebFeature;
+using testing::SizeIs;
 using testing::UnorderedElementsAre;
 using NoStatePrefetch = ukm::builders::NoStatePrefetch;
 
@@ -1642,7 +1643,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 
   const auto& entries = test_ukm_recorder_->GetEntriesByName(
       ukm::builders::Blink_UseCounter::kEntryName);
-  EXPECT_EQ(5u, entries.size());
+  EXPECT_THAT(entries, SizeIs(4));
   std::vector<int64_t> ukm_features;
   for (const auto* entry : entries) {
     test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, url);
@@ -1660,10 +1661,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
           static_cast<int64_t>(WebFeature::kFullscreenSecureOrigin),
           static_cast<int64_t>(WebFeature::kNavigatorVibrate),
           static_cast<int64_t>(
-              WebFeature::kApplicationCacheManifestSelectSecureOrigin),
-          static_cast<int64_t>(
-              WebFeature::
-                  kAddressSpaceLocalEmbeddedInUnknownNonSecureContext)));
+              WebFeature::kApplicationCacheManifestSelectSecureOrigin)));
 }
 
 // Test UseCounter UKM mixed content features observed.
@@ -1686,7 +1684,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAutoupgradesDisabled,
 
   const auto& entries = test_ukm_recorder_->GetEntriesByName(
       ukm::builders::Blink_UseCounter::kEntryName);
-  EXPECT_EQ(8u, entries.size());
+  EXPECT_THAT(entries, SizeIs(7));
   std::vector<int64_t> ukm_features;
   for (const auto* entry : entries) {
     test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, url);
@@ -1697,20 +1695,16 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAutoupgradesDisabled,
     DCHECK(metric);
     ukm_features.push_back(*metric);
   }
-  EXPECT_THAT(
-      ukm_features,
-      UnorderedElementsAre(
-          static_cast<int64_t>(WebFeature::kPageVisits),
-          static_cast<int64_t>(WebFeature::kFullscreenSecureOrigin),
-          static_cast<int64_t>(WebFeature::kNavigatorVibrate),
-          static_cast<int64_t>(
-              WebFeature::kApplicationCacheManifestSelectSecureOrigin),
-          static_cast<int64_t>(WebFeature::kMixedContentImage),
-          static_cast<int64_t>(WebFeature::kMixedContentAudio),
-          static_cast<int64_t>(WebFeature::kMixedContentVideo),
-          static_cast<int64_t>(
-              WebFeature::
-                  kAddressSpaceLocalEmbeddedInUnknownNonSecureContext)));
+  EXPECT_THAT(ukm_features,
+              UnorderedElementsAre(
+                  static_cast<int64_t>(WebFeature::kPageVisits),
+                  static_cast<int64_t>(WebFeature::kFullscreenSecureOrigin),
+                  static_cast<int64_t>(WebFeature::kNavigatorVibrate),
+                  static_cast<int64_t>(
+                      WebFeature::kApplicationCacheManifestSelectSecureOrigin),
+                  static_cast<int64_t>(WebFeature::kMixedContentImage),
+                  static_cast<int64_t>(WebFeature::kMixedContentAudio),
+                  static_cast<int64_t>(WebFeature::kMixedContentVideo)));
 }
 
 // Test UseCounter Features observed in a child frame are recorded, exactly
