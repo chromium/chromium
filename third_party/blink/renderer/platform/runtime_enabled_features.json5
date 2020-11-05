@@ -1078,7 +1078,7 @@
     {
       name: "LayoutNGTextField",
       depends_on: ["EditingNG"],
-      status: "test",
+      status: "experimental",
     },
     {
       name: "LayoutNGWebkitBox",
