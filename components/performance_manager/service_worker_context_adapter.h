@@ -12,7 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
 
@@ -132,9 +132,9 @@ class ServiceWorkerContextAdapter
   // returns true if a registration existed, false otherwise.
   bool MaybeRemoveRunningServiceWorker(int64_t version_id);
 
-  ScopedObserver<content::ServiceWorkerContext,
-                 content::ServiceWorkerContextObserver>
-      scoped_underlying_context_observer_{this};
+  base::ScopedObservation<content::ServiceWorkerContext,
+                          content::ServiceWorkerContextObserver>
+      scoped_underlying_context_observation_{this};
 
   base::ObserverList<content::ServiceWorkerContextObserver, true, false>::
       Unchecked observer_list_;

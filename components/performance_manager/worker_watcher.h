@@ -12,7 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/service_worker_client.h"
 #include "content/public/browser/dedicated_worker_service.h"
@@ -177,18 +177,18 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
   const std::string browser_context_id_;
 
   // Observes the DedicatedWorkerService for this browser context.
-  ScopedObserver<content::DedicatedWorkerService,
-                 content::DedicatedWorkerService::Observer>
-      dedicated_worker_service_observer_{this};
+  base::ScopedObservation<content::DedicatedWorkerService,
+                          content::DedicatedWorkerService::Observer>
+      dedicated_worker_service_observation_{this};
 
   // Observes the SharedWorkerService for this browser context.
-  ScopedObserver<content::SharedWorkerService,
-                 content::SharedWorkerService::Observer>
-      shared_worker_service_observer_{this};
+  base::ScopedObservation<content::SharedWorkerService,
+                          content::SharedWorkerService::Observer>
+      shared_worker_service_observation_{this};
 
-  ScopedObserver<content::ServiceWorkerContext,
-                 content::ServiceWorkerContextObserver>
-      service_worker_context_observer_{this};
+  base::ScopedObservation<content::ServiceWorkerContext,
+                          content::ServiceWorkerContextObserver>
+      service_worker_context_observation_{this};
 
   // Used to retrieve an existing process node from its render process ID.
   ProcessNodeSource* const process_node_source_;

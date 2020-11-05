@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
 
 namespace performance_manager {
@@ -63,9 +63,9 @@ class TabHelperFrameNodeSource : public FrameNodeSource,
       observed_frame_nodes_;
 
   // Observes frame node deletions.
-  ScopedObserver<PerformanceManagerTabHelper,
-                 PerformanceManagerTabHelper::Observer>
-      performance_manager_tab_helper_observers_;
+  base::ScopedMultiSourceObservation<PerformanceManagerTabHelper,
+                                     PerformanceManagerTabHelper::Observer>
+      performance_manager_tab_helper_observations_;
 
   DISALLOW_COPY_AND_ASSIGN(TabHelperFrameNodeSource);
 };

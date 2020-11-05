@@ -10,7 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
@@ -76,7 +76,8 @@ class ChromeBrowserMainExtraPartsPerformanceManager
   std::unique_ptr<performance_manager::BrowserChildProcessWatcher>
       browser_child_process_watcher_;
 
-  ScopedObserver<Profile, ProfileObserver> observed_profiles_{this};
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      profile_observations_{this};
 
   // Needed to record "Pageloads" metrics.
   std::unique_ptr<performance_manager::PageLoadMetricsObserver>

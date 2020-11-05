@@ -195,7 +195,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostMainMessageLoopRun() {
   browser_child_process_watcher_.reset();
 
   g_browser_process->profile_manager()->RemoveObserver(this);
-  observed_profiles_.RemoveAll();
+  profile_observations_.RemoveAllObservations();
 
   page_load_tracker_decorator_helper_.reset();
   page_live_state_data_helper_.reset();
@@ -214,7 +214,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostMainMessageLoopRun() {
 
 void ChromeBrowserMainExtraPartsPerformanceManager::OnProfileAdded(
     Profile* profile) {
-  observed_profiles_.Add(profile);
+  profile_observations_.AddObservation(profile);
   registry_->NotifyBrowserContextAdded(profile);
 }
 
@@ -225,6 +225,6 @@ void ChromeBrowserMainExtraPartsPerformanceManager::
 
 void ChromeBrowserMainExtraPartsPerformanceManager::OnProfileWillBeDestroyed(
     Profile* profile) {
-  observed_profiles_.Remove(profile);
+  profile_observations_.RemoveObservation(profile);
   registry_->NotifyBrowserContextRemoved(profile);
 }

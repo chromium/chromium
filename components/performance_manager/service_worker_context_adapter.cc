@@ -6,7 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/scoped_observation.h"
+#include "base/scoped_observer.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 
@@ -82,7 +82,7 @@ void ServiceWorkerContextAdapter::RunningServiceWorker::
 
 ServiceWorkerContextAdapter::ServiceWorkerContextAdapter(
     content::ServiceWorkerContext* underlying_context) {
-  scoped_underlying_context_observer_.Add(underlying_context);
+  scoped_underlying_context_observation_.Observe(underlying_context);
 }
 
 ServiceWorkerContextAdapter::~ServiceWorkerContextAdapter() {

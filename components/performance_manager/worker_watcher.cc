@@ -121,20 +121,20 @@ WorkerWatcher::WorkerWatcher(
   DCHECK(process_node_source_);
   DCHECK(frame_node_source_);
 
-  dedicated_worker_service_observer_.Add(dedicated_worker_service);
-  shared_worker_service_observer_.Add(shared_worker_service);
-  service_worker_context_observer_.Add(service_worker_context);
+  dedicated_worker_service_observation_.Observe(dedicated_worker_service);
+  shared_worker_service_observation_.Observe(shared_worker_service);
+  service_worker_context_observation_.Observe(service_worker_context);
 }
 
 WorkerWatcher::~WorkerWatcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(frame_node_child_workers_.empty());
   DCHECK(dedicated_worker_nodes_.empty());
-  DCHECK(!dedicated_worker_service_observer_.IsObservingSources());
+  DCHECK(!dedicated_worker_service_observation_.IsObserving());
   DCHECK(shared_worker_nodes_.empty());
-  DCHECK(!shared_worker_service_observer_.IsObservingSources());
+  DCHECK(!shared_worker_service_observation_.IsObserving());
   DCHECK(service_worker_nodes_.empty());
-  DCHECK(!service_worker_context_observer_.IsObservingSources());
+  DCHECK(!service_worker_context_observation_.IsObserving());
 }
 
 void WorkerWatcher::TearDown() {
@@ -201,9 +201,9 @@ void WorkerWatcher::TearDown() {
 
   PerformanceManagerImpl::BatchDeleteNodes(std::move(nodes));
 
-  dedicated_worker_service_observer_.RemoveAll();
-  shared_worker_service_observer_.RemoveAll();
-  service_worker_context_observer_.RemoveAll();
+  dedicated_worker_service_observation_.RemoveObservation();
+  shared_worker_service_observation_.RemoveObservation();
+  service_worker_context_observation_.RemoveObservation();
 }
 
 void WorkerWatcher::OnWorkerCreated(

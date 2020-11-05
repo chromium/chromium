@@ -50,7 +50,7 @@ SiteDataCacheFacade::SiteDataCacheFacade(
       HistoryServiceFactory::GetForProfileWithoutCreating(
           Profile::FromBrowserContext(browser_context_));
   if (history)
-    history_observer_.Add(history);
+    history_observation_.Observe(history);
 }
 
 SiteDataCacheFacade::~SiteDataCacheFacade() {
@@ -154,7 +154,8 @@ void SiteDataCacheFacade::OnURLsDeleted(
 
 void SiteDataCacheFacade::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
-  history_observer_.Remove(history_service);
+  DCHECK(history_observation_.IsObservingSource(history_service));
+  history_observation_.RemoveObservation();
 }
 
 }  // namespace performance_manager
