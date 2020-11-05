@@ -18,8 +18,8 @@
 #include "base/check_op.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/chromeos/colors/cros_colors.h"
 #include "ui/gfx/color_analysis.h"
@@ -143,12 +143,10 @@ SkColor AshColorProvider::GetSecondToneColor(SkColor color_of_first_tone) {
 
 // static
 void AshColorProvider::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(
-      prefs::kDarkModeEnabled, kDefaultDarkModeEnabled,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(
-      prefs::kColorModeThemed, kDefaultColorModeThemed,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(prefs::kDarkModeEnabled,
+                                kDefaultDarkModeEnabled);
+  registry->RegisterBooleanPref(prefs::kColorModeThemed,
+                                kDefaultColorModeThemed);
 }
 
 void AshColorProvider::OnActiveUserPrefServiceChanged(PrefService* prefs) {
