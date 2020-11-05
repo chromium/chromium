@@ -62,7 +62,6 @@ import org.chromium.payments.mojom.PaymentResponse;
 import org.chromium.payments.mojom.PaymentShippingOption;
 import org.chromium.payments.mojom.PaymentValidationErrors;
 import org.chromium.url.GURL;
-import org.chromium.url.Origin;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -97,13 +96,7 @@ public class ChromePaymentRequestService
     private final RenderFrameHost mRenderFrameHost;
     private final Delegate mDelegate;
     private final WebContents mWebContents;
-    private final String mTopLevelOrigin;
-    private final String mPaymentRequestOrigin;
-    private final Origin mPaymentRequestSecurityOrigin;
-    @Nullable
-    private final byte[][] mCertificateChain;
     private final JourneyLogger mJourneyLogger;
-    private final boolean mIsOffTheRecord;
 
     private final PaymentUiService mPaymentUiService;
     private final PaymentOptions mPaymentOptions;
@@ -162,14 +155,8 @@ public class ChromePaymentRequestService
         mPaymentRequestService = paymentRequestService;
         mRenderFrameHost = paymentRequestService.getRenderFrameHost();
         assert mRenderFrameHost != null;
-        mPaymentRequestOrigin = paymentRequestService.getPaymentRequestOrigin();
-        assert mPaymentRequestOrigin != null;
-        mPaymentRequestSecurityOrigin = paymentRequestService.getPaymentRequestSecurityOrigin();
-        assert mPaymentRequestSecurityOrigin != null;
-        mTopLevelOrigin = paymentRequestService.getTopLevelOrigin();
-        assert mTopLevelOrigin != null;
-        mCertificateChain = paymentRequestService.getCertificateChain();
-        mIsOffTheRecord = paymentRequestService.isOffTheRecord();
+        String topLevelOrigin = paymentRequestService.getTopLevelOrigin();
+        assert topLevelOrigin != null;
         mDelegate = delegate;
         mWebContents = paymentRequestService.getWebContents();
         mJourneyLogger = paymentRequestService.getJourneyLogger();
@@ -180,8 +167,8 @@ public class ChromePaymentRequestService
 
         mPaymentRequestService = paymentRequestService;
         mPaymentUiService = new PaymentUiService(/*delegate=*/this,
-                /*params=*/mPaymentRequestService, mWebContents, mIsOffTheRecord, mJourneyLogger,
-                mTopLevelOrigin,
+                /*params=*/mPaymentRequestService, mWebContents,
+                paymentRequestService.isOffTheRecord(), mJourneyLogger, topLevelOrigin,
                 /*observer=*/this);
     }
 
@@ -219,7 +206,7 @@ public class ChromePaymentRequestService
                     // mPaymentUiService.merchantSupportsAutofillCards() is used instead.
                     break;
                 default:
-                    // "Other" includes https url, http url(when certifate check is bypassed) and
+                    // "Other" includes https url, http url(when certificate check is bypassed) and
                     // the unlisted methods defined in {@link MethodStrings}.
                     requestedMethodOther = true;
                     if (methodName.startsWith(UrlConstants.HTTPS_URL_PREFIX)
@@ -810,7 +797,7 @@ public class ChromePaymentRequestService
         }
 
         mWaitForUpdatedDetails = false;
-        // Triggered tansaction amount gets recorded when both of the following conditions are met:
+        // Triggered transaction amount gets recorded when both of the following conditions are met:
         // 1- Either Event.Shown or Event.SKIPPED_SHOW bits are set showing that transaction is
         // triggered (mDidRecordShowEvent == true). 2- The total amount in details won't change
         // (mWaitForUpdatedDetails == false). Record the transaction amount only when the triggered

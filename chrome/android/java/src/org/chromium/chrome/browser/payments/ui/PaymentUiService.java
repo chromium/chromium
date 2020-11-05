@@ -310,24 +310,6 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     }
 
     /**
-     * Set the PaymentRequestUI.
-     * @param paymentRequestUI The PaymentRequestUI.
-     */
-    public void setPaymentRequestUI(PaymentRequestUI paymentRequestUI) {
-        mPaymentRequestUI = paymentRequestUI;
-    }
-
-    /** @return The PaymentUisShowStateReconciler. */
-    public PaymentUisShowStateReconciler getPaymentUisShowStateReconciler() {
-        return mPaymentUisShowStateReconciler;
-    }
-
-    /** @return Get the CardEditor of the PaymentRequest UI. */
-    public CardEditor getCardEditor() {
-        return mCardEditor;
-    }
-
-    /**
      * @return Whether the merchant supports autofill cards. It can be used only after
      *         initialize() is invoked.
      */
@@ -356,11 +338,6 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         return mContactSection;
     }
 
-    /** Set the ContactSection of the PaymentRequest UI. */
-    public void setContactSection(ContactDetailsSection contactSection) {
-        mContactSection = contactSection;
-    }
-
     /** Set the AutofillPaymentAppCreator. */
     public void setAutofillPaymentAppCreator(AutofillPaymentAppCreator autofillPaymentAppCreator) {
         mAutofillPaymentAppCreator = autofillPaymentAppCreator;
@@ -385,26 +362,12 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         mHandler.post(callback.bind(mUiShoppingCart));
     }
 
-    /** @return Get a map of currency code to CurrencyFormatter. */
-    public Map<String, CurrencyFormatter> getCurrencyFormatterMap() {
-        return mCurrencyFormatterMap;
-    }
-
     /**
      * The UI model for the shipping options. Includes the label and sublabel for each shipping
      * option. Also keeps track of the selected shipping option. This data is passed to the UI.
      */
     public SectionInformation getUiShippingOptions() {
         return mUiShippingOptions;
-    }
-
-    /**
-     * Set the call back of PaymentInformation. This callback would be invoked when the payment
-     * information is retrieved.
-     */
-    public void setPaymentInformationCallback(
-            Callback<PaymentInformation> paymentInformationCallback) {
-        mPaymentInformationCallback = paymentInformationCallback;
     }
 
     /** Get the contact editor on PaymentRequest UI. */
@@ -456,14 +419,6 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         return true;
     }
 
-    /** Hides the minimal UI for when objects are closed and destroyed. */
-    public void hideMinimalUI() {
-        if (mMinimalUi != null) {
-            mMinimalUi.hide();
-            mMinimalUi = null;
-        }
-    }
-
     /**
      * Triggers the minimal UI.
      * @param chromeActivity The Android activity for the Chrome UI that will host the minimal UI.
@@ -479,14 +434,11 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         // Do not show the Payment Request UI dialog even if the minimal UI is suppressed.
         mPaymentUisShowStateReconciler.onBottomSheetShown();
         mMinimalUi = new MinimalUICoordinator();
-        if (mMinimalUi.show(chromeActivity,
-                    BottomSheetControllerProvider.from(chromeActivity.getWindowAndroid()),
-                    (PaymentApp) mPaymentMethodsSection.getSelectedItem(),
-                    mCurrencyFormatterMap.get(mRawTotal.amount.currency),
-                    mUiShoppingCart.getTotal(), readyObserver, confirmObserver, dismissObserver)) {
-            return true;
-        }
-        return false;
+        return mMinimalUi.show(chromeActivity,
+                BottomSheetControllerProvider.from(chromeActivity.getWindowAndroid()),
+                (PaymentApp) mPaymentMethodsSection.getSelectedItem(),
+                mCurrencyFormatterMap.get(mRawTotal.amount.currency), mUiShoppingCart.getTotal(),
+                readyObserver, confirmObserver, dismissObserver);
     }
 
     /**
@@ -972,13 +924,6 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     public void onPaymentHandlerUiShown() {
         assert mPaymentHandlerUi != null;
         mPaymentUisShowStateReconciler.onBottomSheetShown();
-    }
-
-    /** Close the PaymentHandler UI if not already. */
-    public void ensureHideAndResetPaymentHandlerUi() {
-        if (mPaymentHandlerUi == null) return;
-        mPaymentHandlerUi.hide();
-        mPaymentHandlerUi = null;
     }
 
     /**
