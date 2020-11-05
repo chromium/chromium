@@ -193,6 +193,38 @@ TEST(CSSParserImplTest, AtScrollTimelineOffsets) {
   EXPECT_EQ(test_css_parser_observer.rule_body_end_, 24u);
 }
 
+TEST(CSSParserImplTest, AtCounterStyleOffsets) {
+  ScopedCSSAtRuleCounterStyleForTest scoped_feature(true);
+
+  String sheet_text = "@counter-style test { }";
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  TestCSSParserObserver test_css_parser_observer;
+  CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, style_sheet,
+                                             test_css_parser_observer);
+  EXPECT_EQ(style_sheet->ChildRules().size(), 1u);
+  EXPECT_EQ(test_css_parser_observer.rule_type_,
+            StyleRule::RuleType::kCounterStyle);
+  EXPECT_EQ(test_css_parser_observer.rule_header_start_, 15u);
+  EXPECT_EQ(test_css_parser_observer.rule_header_end_, 20u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_start_, 21u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_end_, 22u);
+}
+
+TEST(CSSParserImplTest, AtCounterStyleDisabled) {
+  ScopedCSSAtRuleCounterStyleForTest scoped_feature(false);
+
+  String sheet_text = "@counter-style test { }";
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  TestCSSParserObserver test_css_parser_observer;
+  CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, style_sheet,
+                                             test_css_parser_observer);
+  EXPECT_EQ(style_sheet->ChildRules().size(), 0u);
+}
+
 TEST(CSSParserImplTest, RemoveImportantAnnotationIfPresent) {
   struct TestCase {
     String input;

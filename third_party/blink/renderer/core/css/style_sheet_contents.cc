@@ -508,6 +508,10 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(
       case StyleRuleBase::kSupports:
       case StyleRuleBase::kViewport:
         break;
+      case StyleRuleBase::kCounterStyle:
+        if (To<StyleRuleCounterStyle>(rule)->HasFailedOrCanceledSubresources())
+          return true;
+        break;
     }
   }
   return false;

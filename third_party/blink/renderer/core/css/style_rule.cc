@@ -96,6 +96,9 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
     case kViewport:
       To<StyleRuleViewport>(this)->TraceAfterDispatch(visitor);
       return;
+    case kCounterStyle:
+      To<StyleRuleCounterStyle>(this)->TraceAfterDispatch(visitor);
+      return;
   }
   NOTREACHED();
 }
@@ -141,6 +144,9 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
     case kViewport:
       To<StyleRuleViewport>(this)->~StyleRuleViewport();
       return;
+    case kCounterStyle:
+      To<StyleRuleCounterStyle>(this)->~StyleRuleCounterStyle();
+      return;
   }
   NOTREACHED();
 }
@@ -175,6 +181,8 @@ StyleRuleBase* StyleRuleBase::Copy() const {
     case kKeyframe:
       NOTREACHED();
       return nullptr;
+    case kCounterStyle:
+      return To<StyleRuleCounterStyle>(this)->Copy();
   }
   NOTREACHED();
   return nullptr;
@@ -225,6 +233,9 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(CSSStyleSheet* parent_sheet,
       rule = MakeGarbageCollected<CSSNamespaceRule>(
           To<StyleRuleNamespace>(self), parent_sheet);
       break;
+    case kCounterStyle:
+      // TODO(crbug.com/687225): Implement CSSOM wrapper
+      return nullptr;
     case kKeyframe:
     case kCharset:
     case kViewport:
@@ -482,6 +493,21 @@ MutableCSSPropertyValueSet& StyleRuleViewport::MutableProperties() {
 
 void StyleRuleViewport::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(properties_);
+  StyleRuleBase::TraceAfterDispatch(visitor);
+}
+
+StyleRuleCounterStyle::StyleRuleCounterStyle(const AtomicString& name,
+                                             CSSPropertyValueSet* properties)
+    : StyleRuleBase(kCounterStyle), name_(name) {
+  DCHECK(properties);
+}
+
+StyleRuleCounterStyle::StyleRuleCounterStyle(const StyleRuleCounterStyle&) =
+    default;
+
+StyleRuleCounterStyle::~StyleRuleCounterStyle() = default;
+
+void StyleRuleCounterStyle::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
 

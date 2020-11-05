@@ -174,6 +174,8 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
       return Parser::ParseFontFaceDescriptor(id, range, context);
     case StyleRule::kProperty:
       return Parser::ParseAtPropertyDescriptor(id, tokenized_value, context);
+    case StyleRule::kCounterStyle:
+      return Parser::ParseAtCounterStyleDescriptor(id, range, context);
     case StyleRule::kScrollTimeline:
       return Parser::ParseAtScrollTimelineDescriptor(id, range, context);
     case StyleRule::kCharset:
@@ -333,6 +335,23 @@ CSSValue* AtRuleDescriptorParser::ParseAtPropertyDescriptor(
       parsed_value = css_parsing_utils::ConsumeIdent<CSSValueID::kTrue,
                                                      CSSValueID::kFalse>(range);
       break;
+    default:
+      break;
+  }
+
+  if (!parsed_value || !range.AtEnd())
+    return nullptr;
+
+  return parsed_value;
+}
+
+CSSValue* AtRuleDescriptorParser::ParseAtCounterStyleDescriptor(
+    AtRuleDescriptorID id,
+    CSSParserTokenRange& range,
+    const CSSParserContext& context) {
+  CSSValue* parsed_value = nullptr;
+  switch (id) {
+    // TODO(crbug.com/687225): Parse the descriptors
     default:
       break;
   }

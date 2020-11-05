@@ -563,6 +563,8 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRule(CSSParserTokenStream& stream,
         return ConsumePropertyRule(stream);
       case kCSSAtRuleScrollTimeline:
         return ConsumeScrollTimelineRule(stream);
+      case kCSSAtRuleCounterStyle:
+        return ConsumeCounterStyleRule(stream);
       default:
         ConsumeErroneousAtRule(stream);
         return nullptr;  // Parse error, unrecognised or not-allowed at-rule
@@ -928,6 +930,34 @@ StyleRuleProperty* CSSParserImpl::ConsumePropertyRule(
       name, CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
 }
 
+StyleRuleCounterStyle* CSSParserImpl::ConsumeCounterStyleRule(
+    CSSParserTokenStream& stream) {
+  wtf_size_t prelude_offset_start = stream.LookAheadOffset();
+  CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
+  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
+  if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream))
+    return nullptr;
+  CSSParserTokenStream::BlockGuard guard(stream);
+
+  const CSSParserToken& name_token = prelude.ConsumeIncludingWhitespace();
+  if (!prelude.AtEnd())
+    return nullptr;
+
+  // TODO(crbug.com/687225): If the name is invalid (none, decimal, disc and
+  // CSS-wide keywords), should the entire rule be invalid, or does it simply
+  // not define a counter style?
+  AtomicString name(name_token.Value().ToString());
+
+  if (observer_) {
+    observer_->StartRuleHeader(StyleRule::kCounterStyle, prelude_offset_start);
+    observer_->EndRuleHeader(prelude_offset_end);
+  }
+
+  ConsumeDeclarationList(stream, StyleRule::kCounterStyle);
+  return MakeGarbageCollected<StyleRuleCounterStyle>(
+      name, CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
+}
+
 StyleRuleScrollTimeline* CSSParserImpl::ConsumeScrollTimelineRule(
     CSSParserTokenStream& stream) {
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
@@ -1027,6 +1057,7 @@ void CSSParserImpl::ConsumeDeclarationList(CSSParserTokenStream& stream,
 
   bool use_observer = observer_ && (rule_type == StyleRule::kStyle ||
                                     rule_type == StyleRule::kProperty ||
+                                    rule_type == StyleRule::kCounterStyle ||
                                     rule_type == StyleRule::kScrollTimeline ||
                                     rule_type == StyleRule::kKeyframe);
   if (use_observer) {
@@ -1104,6 +1135,7 @@ void CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
   CSSPropertyID unresolved_property = CSSPropertyID::kInvalid;
   AtRuleDescriptorID atrule_id = AtRuleDescriptorID::Invalid;
   if (rule_type == StyleRule::kFontFace || rule_type == StyleRule::kProperty ||
+      rule_type == StyleRule::kCounterStyle ||
       rule_type == StyleRule::kScrollTimeline) {
     if (important)  // Invalid
       return;

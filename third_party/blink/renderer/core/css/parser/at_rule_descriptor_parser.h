@@ -37,6 +37,9 @@ class AtRuleDescriptorParser {
   static CSSValue* ParseAtPropertyDescriptor(AtRuleDescriptorID,
                                              const CSSTokenizedValue&,
                                              const CSSParserContext&);
+  static CSSValue* ParseAtCounterStyleDescriptor(AtRuleDescriptorID,
+                                                 CSSParserTokenRange&,
+                                                 const CSSParserContext&);
   static CSSValue* ParseAtScrollTimelineDescriptor(AtRuleDescriptorID,
                                                    CSSParserTokenRange&,
                                                    const CSSParserContext&);

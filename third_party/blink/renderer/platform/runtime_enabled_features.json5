@@ -432,6 +432,10 @@
       status: "stable",
     },
     {
+      // https://drafts.csswg.org/css-counter-styles-3
+      name: "CSSAtRuleCounterStyle",
+    },
+    {
       name: "CSSCalcAsInt",
       status: "test",
     },

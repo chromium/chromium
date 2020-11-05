@@ -48,6 +48,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kKeyframes,
     kKeyframe,
     kNamespace,
+    kCounterStyle,
     kScrollTimeline,
     kSupports,
     kViewport,
@@ -56,6 +57,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   RuleType GetType() const { return static_cast<RuleType>(type_); }
 
   bool IsCharsetRule() const { return GetType() == kCharset; }
+  bool IsCounterStyleRule() const { return GetType() == kCounterStyle; }
   bool IsFontFaceRule() const { return GetType() == kFontFace; }
   bool IsKeyframesRule() const { return GetType() == kKeyframes; }
   bool IsKeyframeRule() const { return GetType() == kKeyframe; }
@@ -344,6 +346,31 @@ class StyleRuleCharset : public StyleRuleBase {
  private:
 };
 
+class CORE_EXPORT StyleRuleCounterStyle : public StyleRuleBase {
+ public:
+  StyleRuleCounterStyle(const AtomicString&, CSSPropertyValueSet*);
+  StyleRuleCounterStyle(const StyleRuleCounterStyle&);
+  ~StyleRuleCounterStyle();
+
+  AtomicString GetName() { return name_; }
+
+  // TODO(crbug.com/687225): Add descriptor getters and setters.
+
+  bool HasFailedOrCanceledSubresources() const {
+    // TODO(crbug.com/687225): Implement.
+    return false;
+  }
+
+  StyleRuleCounterStyle* Copy() const {
+    return MakeGarbageCollected<StyleRuleCounterStyle>(*this);
+  }
+
+  void TraceAfterDispatch(blink::Visitor*) const;
+
+ private:
+  AtomicString name_;
+};
+
 template <>
 struct DowncastTraits<StyleRule> {
   static bool AllowFrom(const StyleRuleBase& rule) {
@@ -402,6 +429,13 @@ template <>
 struct DowncastTraits<StyleRuleCharset> {
   static bool AllowFrom(const StyleRuleBase& rule) {
     return rule.IsCharsetRule();
+  }
+};
+
+template <>
+struct DowncastTraits<StyleRuleCounterStyle> {
+  static bool AllowFrom(const StyleRuleBase& rule) {
+    return rule.IsCounterStyleRule();
   }
 };
 
