@@ -38,6 +38,8 @@ const char* const kCaptionStylePrefsToObserve[] = {
     prefs::kAccessibilityCaptionsTextShadow,
     prefs::kAccessibilityCaptionsBackgroundOpacity};
 
+constexpr int kSodaCleanUpDelayInDays = 30;
+
 }  // namespace
 
 namespace captions {
@@ -113,14 +115,20 @@ bool CaptionController::IsLiveCaptionEnabled() {
 
 void CaptionController::UpdateSpeechRecognitionServiceEnabled() {
   if (enabled_) {
+    g_browser_process->local_state()->SetTime(prefs::kSodaScheduledDeletionTime,
+                                              base::Time());
     // Register SODA component and download speech model.
-    component_updater::RegisterSODAComponent(
+    component_updater::RegisterSodaComponent(
         g_browser_process->component_updater(), profile_->GetPrefs(),
+        g_browser_process->local_state(),
         base::BindOnce(&component_updater::SODAComponentInstallerPolicy::
                            UpdateSODAComponentOnDemand));
   } else {
-    // Do nothing. The SODA component will be uninstalled and removed from the
-    // device on the next start up.
+    // Schedule SODA to be deleted in 30 days if the feature is not enabled
+    // before then.
+    g_browser_process->local_state()->SetTime(
+        prefs::kSodaScheduledDeletionTime,
+        base::Time::Now() + base::TimeDelta::FromDays(kSodaCleanUpDelayInDays));
   }
 }
 

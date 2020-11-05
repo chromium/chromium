@@ -1228,6 +1228,11 @@ const char kSodaEnUsConfigPath[] =
 // The file path of the ja-JP Speech On-Device API (SODA) configuration file.
 const char kSodaJaJpConfigPath[] =
     "accessibility.captions.soda_ja_jp_config_path";
+
+// The scheduled time to clean up the Speech On-Device API (SODA) files from the
+// device.
+const char kSodaScheduledDeletionTime[] =
+    "accessibility.captions.soda_scheduled_deletion_time";
 #endif
 
 #if defined(OS_MAC)
