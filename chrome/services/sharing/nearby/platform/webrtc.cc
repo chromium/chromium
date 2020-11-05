@@ -4,6 +4,7 @@
 
 #include "chrome/services/sharing/nearby/platform/webrtc.h"
 
+#include "base/i18n/timezone.h"
 #include "chrome/services/sharing/webrtc/ipc_network_manager.h"
 #include "chrome/services/sharing/webrtc/ipc_packet_socket_factory.h"
 #include "chrome/services/sharing/webrtc/mdns_responder_adapter.h"
@@ -211,6 +212,10 @@ WebRtcMedium::WebRtcMedium(
 }
 
 WebRtcMedium::~WebRtcMedium() = default;
+
+const std::string WebRtcMedium::GetDefaultCountryCode() {
+  return base::CountryCodeForCurrentTimezone();
+}
 
 void WebRtcMedium::CreatePeerConnection(
     webrtc::PeerConnectionObserver* observer,

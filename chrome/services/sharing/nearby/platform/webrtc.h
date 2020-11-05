@@ -42,6 +42,7 @@ class WebRtcMedium : public api::WebRtcMedium {
   ~WebRtcMedium() override;
 
   // api::WebRtcMedium:
+  const std::string GetDefaultCountryCode() override;
   void CreatePeerConnection(webrtc::PeerConnectionObserver* observer,
                             PeerConnectionCallback callback) override;
   std::unique_ptr<api::WebRtcSignalingMessenger> GetSignalingMessenger(
