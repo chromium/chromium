@@ -10,6 +10,15 @@
 #include "base/component_export.h"
 #include "base/optional.h"
 
+enum class WindowType {
+  // No browser found, thus no window exists.
+  kNoBrowser,
+  // Valid window types.
+  kRegularTabbed,
+  kWebApp,
+  kSystemWebApp,
+};
+
 // A report about a JavaScript error that we might want to send back to Google
 // so it can be fixed. Fill in the fields and then call
 // SendJavaScriptErrorReport.
@@ -54,6 +63,9 @@ struct COMPONENT_EXPORT(JS_ERROR_REPORTING) JavaScriptErrorReport {
   // context) or the renderer process doesn't exist (possible due to termination
   // / failure to start).
   int renderer_process_uptime_ms = 0;
+
+  // The window type of the JS context that reported this error.
+  base::Optional<WindowType> window_type;
 };
 
 #endif  // COMPONENTS_CRASH_CONTENT_BROWSER_ERROR_REPORTING_JAVASCRIPT_ERROR_REPORT_H_

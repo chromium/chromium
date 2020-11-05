@@ -32,6 +32,10 @@
 namespace {
 
 constexpr char kCrashEndpointUrl[] = "https://clients2.google.com/cr/report";
+constexpr char kNoBrowserNoWindow[] = "NO_BROWSER";
+constexpr char kRegularTabbedWindow[] = "REGULAR_TABBED";
+constexpr char kWebAppWindow[] = "WEB_APP";
+constexpr char kSystemWebAppWindow[] = "SYSTEM_WEB_APP";
 
 // Sometimes, the stack trace will contain an error message as the first line,
 // which confuses the Crash server. This function deletes it if it is present.
@@ -69,6 +73,19 @@ std::string BuildPostRequestQueryString(const ParameterMap& params) {
          net::EscapeQueryParamValue(kv.second, /*use_plus=*/false)}));
   }
   return base::JoinString(query_parts, "&");
+}
+
+std::string MapWindowTypeToString(WindowType window_type) {
+  switch (window_type) {
+    case WindowType::kRegularTabbed:
+      return kRegularTabbedWindow;
+    case WindowType::kWebApp:
+      return kWebAppWindow;
+    case WindowType::kSystemWebApp:
+      return kSystemWebAppWindow;
+    default:
+      return kNoBrowserNoWindow;
+  }
 }
 
 }  // namespace
@@ -249,6 +266,12 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
       base::NumberToString(browser_process_uptime.InMilliseconds());
   params["renderer_process_uptime_ms"] =
       base::NumberToString(error_report->renderer_process_uptime_ms);
+  if (error_report->window_type.has_value()) {
+    std::string window_type =
+        MapWindowTypeToString(error_report->window_type.value());
+    if (window_type != kNoBrowserNoWindow)
+      params["window_type"] = window_type;
+  }
   if (error_report->app_locale)
     params["app_locale"] = std::move(*error_report->app_locale);
   const GURL url(base::StrCat(

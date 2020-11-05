@@ -7,6 +7,7 @@
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/renderer_uptime_tracker.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -25,6 +26,17 @@ base::Time g_last_called_time;
 base::Clock*& GetClock() {
   static base::Clock* clock = base::DefaultClock::GetInstance();
   return clock;
+}
+
+WindowType GetWindowType(content::WebContents* web_contents) {
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  if (!browser)
+    return WindowType::kNoBrowser;
+  if (!browser->app_controller())
+    return WindowType::kRegularTabbed;
+  if (browser->app_controller()->is_for_system_web_app())
+    return WindowType::kSystemWebApp;
+  return WindowType::kWebApp;
 }
 
 }  // namespace
@@ -83,16 +95,20 @@ ExtensionFunction::ResponseAction CrashReportPrivateReportErrorFunction::Run() {
     error_report.stack_trace = std::move(*params->info.stack_trace);
   }
 
-  if (web_contents && web_contents->GetMainFrame() &&
-      web_contents->GetMainFrame()->GetProcess()) {
-    int pid = web_contents->GetMainFrame()->GetProcess()->GetID();
-    base::TimeDelta render_process_uptime =
-        metrics::RendererUptimeTracker::Get()->GetProcessUptime(pid);
-    // Note: This can be 0 in tests or if the process can't be found (implying
-    // process fails to start up or terminated). Report this anyways as it can
-    // hint at race conditions.
-    error_report.renderer_process_uptime_ms =
-        render_process_uptime.InMilliseconds();
+  if (web_contents) {
+    error_report.window_type = GetWindowType(web_contents);
+
+    if (web_contents->GetMainFrame() &&
+        web_contents->GetMainFrame()->GetProcess()) {
+      int pid = web_contents->GetMainFrame()->GetProcess()->GetID();
+      base::TimeDelta render_process_uptime =
+          metrics::RendererUptimeTracker::Get()->GetProcessUptime(pid);
+      // Note: This can be 0 in tests or if the process can't be found (implying
+      // process fails to start up or terminated). Report this anyways as it can
+      // hint at race conditions.
+      error_report.renderer_process_uptime_ms =
+          render_process_uptime.InMilliseconds();
+    }
   }
 
   error_report.app_locale = g_browser_process->GetApplicationLocale();

@@ -3,11 +3,15 @@
 // found in the LICENSE file.
 
 #include "base/system/sys_info.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "chrome/browser/chromeos/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
 #include "chrome/browser/extensions/api/crash_report_private/crash_report_private_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
@@ -22,6 +26,7 @@ namespace extensions {
 
 namespace {
 
+using ::testing::HasSubstr;
 using ::testing::MatchesRegex;
 
 constexpr const char* kTestExtensionId = "jjeoclcdfjddkdjokiejckgcildcflpp";
@@ -82,6 +87,18 @@ class CrashReportPrivateApiTest : public ExtensionApiTest {
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CrashReportPrivateApiTest);
+};
+
+class CrashReportPrivateCalledFromSwaTest : public SystemWebAppIntegrationTest {
+ public:
+  CrashReportPrivateCalledFromSwaTest() {
+    // Enable this for tests so they still pass if "--disable-features=MediaApp"
+    // is present.
+    scoped_feature_list_.InitWithFeatures({chromeos::features::kMediaApp}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, Basic) {
@@ -288,5 +305,130 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, NoConsent) {
   const base::Optional<MockCrashEndpoint::Report>& report = last_report();
   EXPECT_FALSE(report);
 }
+
+// Test REGULAR_TABBED is detected when |CrashReportPrivate| is called from a
+// tab's |web_contents|.
+IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, CalledFromWebContentsInTab) {
+  // Navigate to the text |extension_| that has access to |CrashReportPrivate|.
+  const GURL extension_context_url(
+      "chrome-extension://jjeoclcdfjddkdjokiejckgcildcflpp/"
+      "_generated_background_page.html");
+  content::WebContents* web_content =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(NavigateToURL(web_content, extension_context_url));
+
+  constexpr char kTestScript[] = R"(
+    chrome.crashReportPrivate.reportError({
+        message: "hi",
+        url: "http://www.test.com",
+      },
+      () => window.domAutomationController.send(""));
+  )";
+  // Run the script in the |web_content| that has loaded |extension_| instead of
+  // |ExecuteScriptInBackgroundPage| so
+  // |chrome::FindBrowserWithWebContents(web_contents)| is not |nullptr|.
+  EXPECT_EQ(true, ExecuteScript(web_content, kTestScript));
+
+  auto report = crash_endpoint_->WaitForReport();
+  EXPECT_THAT(
+      report.query,
+      MatchesRegex("app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
+                   "\\d+&browser_"
+                   "version=1.2.3.4&channel=Stable&"
+                   "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
+                   "os=ChromeOS&os_version=7.20.1"
+                   "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&src="
+                   "http%3A%2F%2Fwww.test."
+                   "com%2F&type=JavascriptError&url=%2F&ver=1.2.3.4&window_"
+                   "type=REGULAR_TABBED"));
+  EXPECT_EQ(report.content, "");
+}
+
+// Test WEB_APP is detected when |CrashReportPrivate| is called from an app
+// window.
+IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
+                       CalledFromWebContentsInWebAppWindow) {
+  WaitForTestSystemAppInstall();
+  // Set up test server to listen to handle crash reports & serve fake web app
+  // content. Note: Creating a |MockCrashEndpoint| starts the server.
+  MockCrashEndpoint endpoint(embedded_test_server());
+  ScopedMockChromeJsErrorReportProcessor processor(endpoint);
+  ASSERT_TRUE(embedded_test_server()->Started());
+  // Create and launch a test web app, opens in an app window.
+  GURL start_url = embedded_test_server()->GetURL("/test_app.html");
+  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  web_app_info->start_url = start_url;
+  web_app::AppId app_id =
+      web_app::InstallWebApp(profile(), std::move(web_app_info));
+  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
+
+  content::WebContents* web_content =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  // Navigate to chrome://media-app which was access to |CrashReportPrivate|
+  // from the |WebContents| in the web app window.
+  const GURL extension_context_url("chrome://media-app");
+  EXPECT_TRUE(NavigateToURL(web_content, extension_context_url));
+
+  constexpr char kTestScript[] = R"(
+    chrome.crashReportPrivate.reportError({
+        message: "hi",
+        url: "http://www.test.com",
+      },
+      () => window.domAutomationController.send(""));
+  )";
+  EXPECT_EQ(true, ExecuteScript(web_content, kTestScript));
+
+  auto report = endpoint.WaitForReport();
+
+  EXPECT_THAT(
+      report.query,
+      MatchesRegex("app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
+                   "\\d+&browser_"
+                   "version=1.2.3.4&channel=Stable&"
+                   "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
+                   "os=ChromeOS&os_version=7.20.1"
+                   "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&src="
+                   "http%3A%2F%2Fwww.test."
+                   "com%2F&type=JavascriptError&url=%2F&ver=1.2.3.4&window_"
+                   "type=WEB_APP"));
+  EXPECT_EQ(report.content, "");
+}
+
+// Test SWA_WINDOW is detected when |CrashReportPrivate| is called from a
+// System Web App window |web_contents|.
+IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
+                       CalledFromWebContentsInSwaWindow) {
+  WaitForTestSystemAppInstall();
+  content::WebContents* web_content = LaunchApp(web_app::SystemAppType::MEDIA);
+  MockCrashEndpoint endpoint(embedded_test_server());
+  ScopedMockChromeJsErrorReportProcessor processor(endpoint);
+
+  constexpr char kTestScript[] = R"(
+    chrome.crashReportPrivate.reportError({
+        message: "hi",
+        url: "http://www.test.com",
+      },
+      () => window.domAutomationController.send(""));
+  )";
+  EXPECT_EQ(true, ExecuteScript(web_content, kTestScript));
+
+  auto report = endpoint.WaitForReport();
+
+  EXPECT_THAT(
+      report.query,
+      MatchesRegex("app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
+                   "\\d+&browser_"
+                   "version=1.2.3.4&channel=Stable&"
+                   "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
+                   "os=ChromeOS&os_version=7.20.1"
+                   "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&src="
+                   "http%3A%2F%2Fwww.test."
+                   "com%2F&type=JavascriptError&url=%2F&ver=1.2.3.4&window_"
+                   "type=SYSTEM_WEB_APP"));
+  EXPECT_EQ(report.content, "");
+}
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_WEB_APP_INFO_INSTALL_P(
+    CrashReportPrivateCalledFromSwaTest);
 
 }  // namespace extensions

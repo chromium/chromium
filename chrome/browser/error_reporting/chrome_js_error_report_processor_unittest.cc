@@ -102,6 +102,7 @@ TEST_F(ChromeJsErrorReportProcessorTest, AllFields) {
   report.column_number = 14;
   report.stack_trace = "bad_func(1, 2)\nonclick()\n";
   report.renderer_process_uptime_ms = 1234;
+  report.window_type = WindowType::kSystemWebApp;
 
   processor_->SendErrorReport(
       std::move(report),
@@ -119,6 +120,7 @@ TEST_F(ChromeJsErrorReportProcessorTest, AllFields) {
   EXPECT_THAT(actual_report->query, HasSubstr("browser_process_uptime_ms="));
   EXPECT_THAT(actual_report->query,
               HasSubstr("renderer_process_uptime_ms=1234"));
+  EXPECT_THAT(actual_report->query, HasSubstr("window_type=SYSTEM_WEB_APP"));
   // TODO(iby) research why URL is repeated...
   EXPECT_THAT(actual_report->query,
               HasSubstr("src=https%3A%2F%2Fwww.chromium.org%2FHome"));
