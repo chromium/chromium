@@ -9,6 +9,7 @@ import org.chromium.weblayer_private.interfaces.IDownloadCallbackClient;
 import org.chromium.weblayer_private.interfaces.IUserIdentityCallbackClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IPrerenderController;
+import org.chromium.weblayer_private.interfaces.IProfileClient;
 
 interface IProfile {
   void destroy() = 0;
@@ -49,4 +50,6 @@ interface IProfile {
 
   // Added in Version 88.
   boolean isIncognito() = 16;
+  void setClient(in IProfileClient client) = 17;
+  void destroyAndDeleteDataFromDiskSoon(in IObjectWrapper completeCallback) = 18;
 }

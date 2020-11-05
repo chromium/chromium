@@ -7,6 +7,7 @@ package org.chromium.weblayer.test;
 import android.net.Uri;
 import android.webkit.ValueCallback;
 
+import androidx.fragment.app.FragmentManager;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -86,6 +87,28 @@ public class ProfileTest {
         } catch (ExecutionException e) {
             // Expected.
         }
+    }
+
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(88)
+    public void testDestroyAndDeleteDataFromDiskSoonWhenInUse() throws Exception {
+        WebLayer weblayer = mActivityTestRule.getWebLayer();
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
+        final CallbackHelper callbackHelper = new CallbackHelper();
+        Profile profile =
+                TestThreadUtils.runOnUiThreadBlocking(() -> activity.getBrowser().getProfile());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            profile.destroyAndDeleteDataFromDiskSoon(callbackHelper::notifyCalled);
+            FragmentManager fm = activity.getSupportFragmentManager();
+            fm.beginTransaction()
+                    .remove(fm.getFragments().get(0))
+                    .runOnCommit(callbackHelper::notifyCalled)
+                    .commit();
+        });
+        callbackHelper.waitForCallback(0, 2);
+        Collection<Profile> profiles = getAllProfiles();
+        Assert.assertFalse(profiles.contains(profile));
     }
 
     @Test

@@ -18,6 +18,7 @@ import org.chromium.weblayer_private.interfaces.IDownload;
 import org.chromium.weblayer_private.interfaces.IDownloadCallbackClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IProfile;
+import org.chromium.weblayer_private.interfaces.IProfileClient;
 import org.chromium.weblayer_private.interfaces.IUserIdentityCallbackClient;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
@@ -112,6 +113,14 @@ public class Profile {
         } else {
             sProfiles.put(name, this);
         }
+
+        if (WebLayer.getSupportedMajorVersionInternal() >= 88) {
+            try {
+                mImpl.setClient(new ProfileClientImpl());
+            } catch (RemoteException e) {
+                throw new APICallException(e);
+            }
+        }
     }
 
     /**
@@ -187,8 +196,42 @@ public class Profile {
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
-        removeFromProfiles();
-        mImpl = null;
+        onDestroyed();
+    }
+
+    /**
+     * This method provides the same functionality as {@link destroyAndDeleteDataFromDisk}, but
+     * delays until there is no usage of the Profile. If there is no usage of the profile
+     * destruction is immediate. If there is usage, then destruction happens as soon as possible.
+     * It's possible cleanup may not happen until WebLayer is restarted. If cleanup does not happen
+     * until WebLayer is restarted, {@link completionCallback} is not run (because the process was
+     * restarted).
+     *
+     * While destruction may be delayed, once this function is called, the profile name will not be
+     * returned from {@link WebLayer#enumerateAllProfileNames}.
+     *
+     * @param completionCallback Callback this is notified when destruction is complete. This may
+     *         never be called.
+     *
+     * @since 88
+     */
+    public void destroyAndDeleteDataFromDiskSoon(@Nullable Runnable completionCallback) {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
+            throw new UnsupportedOperationException();
+        }
+        throwIfDestroyed();
+        try {
+            mImpl.destroyAndDeleteDataFromDiskSoon(ObjectWrapper.wrap(completionCallback));
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    private void throwIfDestroyed() {
+        if (mImpl == null) {
+            throw new IllegalStateException("Profile can not be used once destroyed");
+        }
     }
 
     @Deprecated
@@ -199,16 +242,16 @@ public class Profile {
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
-        removeFromProfiles();
-        mImpl = null;
+        onDestroyed();
     }
 
-    private void removeFromProfiles() {
+    private void onDestroyed() {
         if (mIsIncognito) {
             sIncognitoProfiles.remove(mName);
         } else {
             sProfiles.remove(mName);
         }
+        mImpl = null;
     }
 
     /**
@@ -524,6 +567,13 @@ public class Profile {
                     (ValueCallback<Bitmap>) ObjectWrapper.unwrap(
                             avatarLoadedWrapper, ValueCallback.class);
             mCallback.getAvatar(desiredSize, avatarLoadedCallback);
+        }
+    }
+
+    private final class ProfileClientImpl extends IProfileClient.Stub {
+        @Override
+        public void onProfileDestroyed() {
+            onDestroyed();
         }
     }
 }

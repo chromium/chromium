@@ -520,6 +520,8 @@ source_set("weblayer_lib_base") {
       "browser/browser_controls_navigation_state_handler.cc",
       "browser/browser_controls_navigation_state_handler.h",
       "browser/browser_controls_navigation_state_handler_delegate.h",
+      "browser/browser_list_proxy.cc",
+      "browser/browser_list_proxy.h",
       "browser/content_view_render_view.cc",
       "browser/content_view_render_view.h",
       "browser/devtools_manager_delegate_android.cc",

@@ -15,6 +15,10 @@ namespace weblayer {
 class BrowserImpl;
 class BrowserListObserver;
 
+#if defined(OS_ANDROID)
+class BrowserListProxy;
+#endif
+
 // Tracks the set of browsers.
 class BrowserList {
  public:
@@ -49,6 +53,9 @@ class BrowserList {
 
   base::flat_set<BrowserImpl*> browsers_;
   base::ObserverList<BrowserListObserver> observers_;
+#if defined(OS_ANDROID)
+  std::unique_ptr<BrowserListProxy> browser_list_proxy_;
+#endif
 };
 
 }  // namespace weblayer

@@ -263,6 +263,11 @@ void ProfileImpl::DownloadsInitialized() {
 #endif
 }
 
+void ProfileImpl::MarkAsDeleted() {
+  GetBackgroundDiskOperationTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&MarkProfileAsDeleted, info_));
+}
+
 void ProfileImpl::ClearBrowsingData(
     const std::vector<BrowsingDataType>& data_types,
     base::Time from_time,
