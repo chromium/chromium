@@ -66,11 +66,6 @@ public interface BrowserPaymentRequest {
      */
     void retry(PaymentValidationErrors errors);
 
-    /** @return Whether CanMakePayment query quota should be enfored. */
-    default boolean shouldEnforceCanMakePaymentQueryQuota() {
-        return false;
-    }
-
     /**
      * Delegate to the same method of ChromePaymentRequestService.
      * @param debugMessage The debug message shown for web developers.

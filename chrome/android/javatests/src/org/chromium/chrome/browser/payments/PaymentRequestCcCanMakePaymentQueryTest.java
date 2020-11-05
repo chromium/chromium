@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityS
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -40,7 +41,7 @@ public class PaymentRequestCcCanMakePaymentQueryTest implements MainActivityStar
 
     @Before
     public void setUp() {
-        ChromePaymentRequestService.setIsLocalCanMakePaymentQueryQuotaEnforcedForTest();
+        PaymentRequestService.setIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest();
     }
 
     @Override

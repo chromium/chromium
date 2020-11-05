@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
@@ -46,7 +47,7 @@ public class PaymentRequestPaymentMethodIdentifierTest implements MainActivitySt
 
     @Before
     public void setUp() {
-        ChromePaymentRequestService.setIsLocalCanMakePaymentQueryQuotaEnforcedForTest();
+        PaymentRequestService.setIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest();
     }
 
     @Override

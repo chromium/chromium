@@ -51,7 +51,6 @@ import org.chromium.components.payments.PaymentUIsObserver;
 import org.chromium.components.payments.PaymentValidator;
 import org.chromium.components.payments.Section;
 import org.chromium.components.payments.SkipToGPayHelper;
-import org.chromium.components.payments.UrlUtil;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PayerDetail;
@@ -89,7 +88,6 @@ public class ChromePaymentRequestService
                    PaymentDetailsConverter.MethodChecker, PaymentUiService.Delegate,
                    PaymentUIsObserver {
     private static final String TAG = "PaymentRequest";
-    private static boolean sIsLocalCanMakePaymentQueryQuotaEnforcedForTest;
 
     /**
      * Hold the currently showing PaymentRequest. Used to prevent showing more than one
@@ -1072,20 +1070,6 @@ public class ChromePaymentRequestService
         mPaymentUiService.onRetry(errors);
     }
 
-    /**
-     * @return Whether canMakePayment() query quota should be enforced. By default, the quota is
-     * enforced only on https:// scheme origins. However, the tests also enable the quota on
-     * localhost and file:// scheme origins to verify its behavior.
-     */
-    @Override
-    public boolean shouldEnforceCanMakePaymentQueryQuota() {
-        // If |mWebContents| is destroyed, don't bother checking the localhost or file:// scheme
-        // exemption. It doesn't really matter anyways.
-        return mWebContents.isDestroyed()
-                || !UrlUtil.isLocalDevelopmentUrl(mWebContents.getLastCommittedUrl())
-                || sIsLocalCanMakePaymentQueryQuotaEnforcedForTest;
-    }
-
     // Implement BrowserPaymentRequest:
     @Override
     public void close() {
@@ -1456,11 +1440,6 @@ public class ChromePaymentRequestService
     private static void setShowingPaymentRequest(ChromePaymentRequestService paymentRequest) {
         assert sShowingPaymentRequest == null || paymentRequest == null;
         sShowingPaymentRequest = paymentRequest;
-    }
-
-    @VisibleForTesting
-    public static void setIsLocalCanMakePaymentQueryQuotaEnforcedForTest() {
-        sIsLocalCanMakePaymentQueryQuotaEnforcedForTest = true;
     }
 
     // Implement PaymentUIsObserver:

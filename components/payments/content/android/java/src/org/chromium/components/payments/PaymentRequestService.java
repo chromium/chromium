@@ -61,6 +61,7 @@ public class PaymentRequestService {
     private static final String TAG = "PaymentRequestServ";
     private static PaymentRequestServiceObserverForTest sObserverForTest;
     private static NativeObserverForTest sNativeObserverForTest;
+    private static boolean sIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest;
     private final Runnable mOnClosedListener;
     private final WebContents mWebContents;
     private final JourneyLogger mJourneyLogger;
@@ -639,6 +640,11 @@ public class PaymentRequestService {
         return mIsFinishedQueryingPaymentApps;
     }
 
+    @VisibleForTesting
+    public static void setIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest() {
+        sIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest = true;
+    }
+
     /**
      * Called when a payment app is created.
      * @param paymentApp The created payment app.
@@ -690,7 +696,7 @@ public class PaymentRequestService {
                     mWebContents, mTopLevelOrigin, mPaymentRequestOrigin, mQueryForQuota)) {
             result = response ? HasEnrolledInstrumentQueryResult.HAS_ENROLLED_INSTRUMENT
                               : HasEnrolledInstrumentQueryResult.HAS_NO_ENROLLED_INSTRUMENT;
-        } else if (mBrowserPaymentRequest.shouldEnforceCanMakePaymentQueryQuota()) {
+        } else if (shouldEnforceHasEnrolledInstrumentQueryQuota()) {
             result = HasEnrolledInstrumentQueryResult.QUERY_QUOTA_EXCEEDED;
         } else {
             result = response ? HasEnrolledInstrumentQueryResult.WARNING_HAS_ENROLLED_INSTRUMENT
@@ -706,6 +712,19 @@ public class PaymentRequestService {
         if (sNativeObserverForTest != null) {
             sNativeObserverForTest.onHasEnrolledInstrumentReturned();
         }
+    }
+
+    /**
+     * @return Whether hasEnrolledInstrument() query quota should be enforced. By default, the quota
+     *         is enforced only on https:// scheme origins. However, the tests also enable the quota
+     *         on localhost and file:// scheme origins to verify its behavior.
+     */
+    private boolean shouldEnforceHasEnrolledInstrumentQueryQuota() {
+        // If |mWebContents| is destroyed, don't bother checking the localhost or file:// scheme
+        // exemption. It doesn't really matter anyways.
+        return mWebContents.isDestroyed()
+                || !UrlUtil.isLocalDevelopmentUrl(mWebContents.getLastCommittedUrl())
+                || sIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest;
     }
 
     /** @return Whether the instrument has been enrolled. */
