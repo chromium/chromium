@@ -26,6 +26,7 @@ class CustomShapeButton : public views::ImageButton {
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
  protected:
   void PaintCustomShapePath(gfx::Canvas* canvas);

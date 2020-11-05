@@ -47,8 +47,6 @@ UnifiedManagedDeviceView::UnifiedManagedDeviceView(
 
   label_->SetAutoColorReadabilityEnabled(false);
   label_->SetSubpixelRenderingEnabled(false);
-  label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary));
   label_->SetID(VIEW_ID_TRAY_ENTERPRISE_LABEL);
   AddChildView(label_);
 
@@ -74,6 +72,13 @@ void UnifiedManagedDeviceView::OnEnterpriseDomainChanged() {
 
 const char* UnifiedManagedDeviceView::GetClassName() const {
   return "UnifiedManagedDeviceView";
+}
+
+void UnifiedManagedDeviceView::OnThemeChanged() {
+  views::Button::OnThemeChanged();
+  label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary));
+  Update();
 }
 
 void UnifiedManagedDeviceView::Update() {

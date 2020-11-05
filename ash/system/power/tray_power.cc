@@ -82,6 +82,11 @@ const char* PowerTrayView::GetClassName() const {
   return "PowerTrayView";
 }
 
+void PowerTrayView::OnThemeChanged() {
+  TrayItemView::OnThemeChanged();
+  UpdateImage();
+}
+
 void PowerTrayView::HandleLocaleChange() {
   UpdateStatus();
 }

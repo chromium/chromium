@@ -11,8 +11,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/default_color_constants.h"
-#include "ash/style/default_colors.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -40,9 +38,8 @@ OverviewButtonTray::OverviewButtonTray(Shelf* shelf)
       scoped_session_observer_(this) {
   gfx::ImageSkia image = gfx::CreateVectorIcon(
       kShelfOverviewIcon,
-      DeprecatedGetContentLayerColor(
-          AshColorProvider::ContentLayerType::kButtonIconColor,
-          kShelfButtonColor));
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kButtonIconColor));
   icon_->SetImage(image);
   const int vertical_padding = (kTrayItemSize - image.height()) / 2;
   const int horizontal_padding = (kTrayItemSize - image.width()) / 2;

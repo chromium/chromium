@@ -18,8 +18,6 @@
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
-#include "ash/style/default_color_constants.h"
-#include "ash/style/default_colors.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_delegate.h"
@@ -161,9 +159,9 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
   DCHECK(shelf_);
   SetNotifyEnterExitOnChild(true);
 
-  SetInkDropBaseColor(DeprecatedGetInkDropBaseColor(kDefaultShelfInkDropColor));
-  SetInkDropVisibleOpacity(
-      DeprecatedGetInkDropOpacity(kDefaultShelfInkDropOpacity));
+  auto ripple_attributes = AshColorProvider::Get()->GetRippleAttributes();
+  SetInkDropBaseColor(ripple_attributes.base_color);
+  SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
 
   SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
   SetLayoutManager(std::make_unique<views::FillLayout>());

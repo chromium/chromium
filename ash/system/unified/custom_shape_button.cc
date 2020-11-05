@@ -39,8 +39,6 @@ CustomShapeButton::CustomShapeButton(PressedCallback callback)
   TrayPopupUtils::ConfigureTrayPopupButton(this);
   views::HighlightPathGenerator::Install(
       this, std::make_unique<CustomShapeButtonHighlightPathGenerator>());
-  focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 CustomShapeButton::~CustomShapeButton() = default;
@@ -68,6 +66,13 @@ CustomShapeButton::CreateInkDropHighlight() const {
 
 const char* CustomShapeButton::GetClassName() const {
   return "CustomShapeButton";
+}
+
+void CustomShapeButton::OnThemeChanged() {
+  ImageButton::OnThemeChanged();
+  focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
+  SchedulePaint();
 }
 
 void CustomShapeButton::PaintCustomShapePath(gfx::Canvas* canvas) {

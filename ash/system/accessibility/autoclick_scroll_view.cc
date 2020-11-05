@@ -115,7 +115,9 @@ class AutoclickScrollButton : public CustomShapeButton,
                         const gfx::VectorIcon& icon,
                         int accessible_name_id,
                         AutoclickScrollView::ButtonId id)
-      : CustomShapeButton(PressedCallback(this, this)), action_(action) {
+      : CustomShapeButton(PressedCallback(this, this)),
+        action_(action),
+        icon_(icon) {
     views::View::SetID(static_cast<int>(id));
     SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
     // Disable canvas flipping, as scroll left should always be left no matter
@@ -127,10 +129,6 @@ class AutoclickScrollButton : public CustomShapeButton,
             int64_t{AutoclickScrollView::kAutoclickScrollDelayMs}),
         base::BindRepeating(&AutoclickScrollButton::DoScrollAction,
                             base::Unretained(this)));
-    SetImage(views::Button::STATE_NORMAL,
-             gfx::CreateVectorIcon(
-                 icon, AshColorProvider::Get()->GetContentLayerColor(
-                           ContentLayerType::kIconColorPrimary)));
     if (action_ == AutoclickController::ScrollPadAction::kScrollLeft ||
         action_ == AutoclickController::ScrollPadAction::kScrollRight) {
       size_ = gfx::Size(kScrollPadButtonHypotenuseDips / 2,
@@ -190,6 +188,15 @@ class AutoclickScrollButton : public CustomShapeButton,
   // CustomShapeButton:
   SkPath CreateCustomShapePath(const gfx::Rect& bounds) const override {
     return ComputePath(true /* all_edges */);
+  }
+
+  void OnThemeChanged() override {
+    CustomShapeButton::OnThemeChanged();
+    SetImage(views::Button::STATE_NORMAL,
+             gfx::CreateVectorIcon(
+                 icon_, AshColorProvider::Get()->GetContentLayerColor(
+                            ContentLayerType::kIconColorPrimary)));
+    SchedulePaint();
   }
 
   // Computes the path which is the outline of this button. If |all_edges|,
@@ -315,6 +322,7 @@ class AutoclickScrollButton : public CustomShapeButton,
   gfx::Size size_;
   std::unique_ptr<base::RetainingOneShotTimer> scroll_hover_timer_;
   bool active_ = false;
+  const gfx::VectorIcon& icon_;
 
   DISALLOW_COPY_AND_ASSIGN(AutoclickScrollButton);
 };

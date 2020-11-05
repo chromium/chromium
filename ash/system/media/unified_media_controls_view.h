@@ -39,6 +39,9 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button {
       const base::flat_set<media_session::mojom::MediaSessionAction>&
           enabled_actions);
 
+  // views::Button:
+  void OnThemeChanged() override;
+
   // Show an empty state representing no media is playing.
   void ShowEmptyState();
 
@@ -66,6 +69,14 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button {
     std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
         const override;
     std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
+    void OnThemeChanged() override;
+
+   private:
+    void UpdateVectorIcon();
+
+    // Action that can be taken on the media through the button, it can be paly,
+    // pause or stop the media etc. See MediaSessionAction for all the actions.
+    media_session::mojom::MediaSessionAction action_;
   };
 
   SkPath GetArtworkClipPath(

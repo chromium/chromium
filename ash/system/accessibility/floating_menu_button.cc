@@ -21,10 +21,6 @@
 
 namespace ash {
 
-namespace {
-const SkColor kFloatingMenuButtonIconColorActive = SkColorSetRGB(32, 33, 36);
-}
-
 FloatingMenuButton::FloatingMenuButton(views::ButtonListener* listener,
                                        const gfx::VectorIcon& icon,
                                        int accessible_name_id,
@@ -55,10 +51,7 @@ FloatingMenuButton::FloatingMenuButton(views::ButtonListener* listener,
   SetPreferredSize(gfx::Size(size_, size_));
   TrayPopupUtils::ConfigureTrayPopupButton(this);
   views::InstallCircleHighlightPathGenerator(this);
-  focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
   SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
-  UpdateImage();
 }
 
 FloatingMenuButton::~FloatingMenuButton() = default;
@@ -126,21 +119,22 @@ FloatingMenuButton::CreateInkDropHighlight() const {
   return TrayPopupUtils::CreateInkDropHighlight(this);
 }
 
+void FloatingMenuButton::OnThemeChanged() {
+  ImageButton::OnThemeChanged();
+  focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
+  UpdateImage();
+  SchedulePaint();
+}
+
 void FloatingMenuButton::SetId(int id) {
   views::View::SetID(id);
 }
 
 void FloatingMenuButton::UpdateImage() {
-  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
-  SetImage(
-      views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(
-          *icon_, toggled_ ? kFloatingMenuButtonIconColorActive : icon_color));
-  SetImage(
-      views::Button::STATE_DISABLED,
-      gfx::CreateVectorIcon(
-          *icon_, toggled_ ? kFloatingMenuButtonIconColorActive : icon_color));
+  DCHECK(icon_);
+  AshColorProvider::Get()->DecorateIconButton(
+      this, *icon_, toggled_, GetDefaultSizeOfVectorIcon(*icon_));
 }
 
 }  // namespace ash

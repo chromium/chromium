@@ -91,6 +91,11 @@ const gfx::VectorIcon& GetVectorIconForMediaAction(MediaSessionAction action) {
   return gfx::kNoneIcon;
 }
 
+SkColor GetBackgroundColor() {
+  return AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+}
+
 }  // namespace
 
 UnifiedMediaControlsView::MediaActionButton::MediaActionButton(
@@ -105,7 +110,8 @@ UnifiedMediaControlsView::MediaActionButton::MediaActionButton(
                 media_message_center::GetActionFromButtonTag(*button));
           },
           controller,
-          this)) {
+          this)),
+      action_(action) {
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   SetPreferredSize(kMediaButtonSize);
@@ -113,27 +119,15 @@ UnifiedMediaControlsView::MediaActionButton::MediaActionButton(
 
   TrayPopupUtils::ConfigureTrayPopupButton(this);
   views::InstallCircleHighlightPathGenerator(this);
-
-  focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 void UnifiedMediaControlsView::MediaActionButton::SetAction(
     MediaSessionAction action,
     const base::string16& accessible_name) {
+  action_ = action;
   set_tag(static_cast<int>(action));
   SetTooltipText(accessible_name);
-  SetImage(views::Button::STATE_NORMAL,
-           CreateVectorIcon(
-               GetVectorIconForMediaAction(action), kMediaButtonIconSize,
-               AshColorProvider::Get()->GetContentLayerColor(
-                   AshColorProvider::ContentLayerType::kIconColorPrimary)));
-
-  SetImage(views::Button::STATE_DISABLED,
-           CreateVectorIcon(
-               GetVectorIconForMediaAction(action), kMediaButtonIconSize,
-               AshColorProvider::Get()->GetContentLayerColor(
-                   AshColorProvider::ContentLayerType::kIconColorSecondary)));
+  UpdateVectorIcon();
 }
 
 std::unique_ptr<views::InkDrop>
@@ -155,6 +149,19 @@ UnifiedMediaControlsView::MediaActionButton::CreateInkDropRipple() const {
       GetInkDropCenterBasedOnLastEvent());
 }
 
+void UnifiedMediaControlsView::MediaActionButton::OnThemeChanged() {
+  views::ImageButton::OnThemeChanged();
+  UpdateVectorIcon();
+  focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
+}
+
+void UnifiedMediaControlsView::MediaActionButton::UpdateVectorIcon() {
+  AshColorProvider::Get()->DecorateIconButton(
+      this, GetVectorIconForMediaAction(action_), /*toggled=*/false,
+      kMediaButtonIconSize);
+}
+
 UnifiedMediaControlsView::UnifiedMediaControlsView(
     UnifiedMediaControlsController* controller)
     : views::Button(base::BindRepeating(
@@ -165,13 +172,8 @@ UnifiedMediaControlsView::UnifiedMediaControlsView(
           this)),
       controller_(controller) {
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
-
-  SetBackground(views::CreateRoundedRectBackground(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive),
-      kMediaControlsCornerRadius));
+  SetBackground(views::CreateRoundedRectBackground(GetBackgroundColor(),
+                                                   kMediaControlsCornerRadius));
   auto* box_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kMediaControlsViewInsets,
       kMediaControlsViewPadding));
@@ -199,30 +201,21 @@ UnifiedMediaControlsView::UnifiedMediaControlsView(
     label->SetSubpixelRenderingEnabled(false);
   };
 
-  auto title_label = std::make_unique<views::Label>();
-  config_label(title_label.get());
-  title_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
-  title_label->SetFontList(
+  title_label_ = title_row->AddChildView(std::make_unique<views::Label>());
+  config_label(title_label_);
+  title_label_->SetFontList(
       views::Label::GetDefaultFontList().DeriveWithSizeDelta(
           kTrackTitleFontSizeIncrease));
-  title_label_ = title_row->AddChildView(std::move(title_label));
 
-  auto drop_down_icon = std::make_unique<views::ImageView>();
-  drop_down_icon->SetPreferredSize(gfx::Size(kTitleRowHeight, kTitleRowHeight));
-  drop_down_icon->SetImage(CreateVectorIcon(
-      kUnifiedMenuMoreIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
-  drop_down_icon_ = title_row->AddChildView(std::move(drop_down_icon));
+  drop_down_icon_ =
+      title_row->AddChildView(std::make_unique<views::ImageView>());
+  drop_down_icon_->SetPreferredSize(
+      gfx::Size(kTitleRowHeight, kTitleRowHeight));
 
   track_column->AddChildView(std::move(title_row));
 
-  auto artist_label = std::make_unique<views::Label>();
-  config_label(artist_label.get());
-  artist_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary));
-  artist_label_ = track_column->AddChildView(std::move(artist_label));
+  artist_label_ = track_column->AddChildView(std::make_unique<views::Label>());
+  config_label(artist_label_);
 
   box_layout->SetFlexForView(AddChildView(std::move(track_column)), 1);
 
@@ -300,6 +293,22 @@ void UnifiedMediaControlsView::UpdateActionButtonAvailability(
 
   if (should_invalidate)
     button_row_->InvalidateLayout();
+}
+
+void UnifiedMediaControlsView::OnThemeChanged() {
+  views::Button::OnThemeChanged();
+  auto* color_provider = AshColorProvider::Get();
+  focus_ring()->SetColor(color_provider->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
+  background()->SetNativeControlColor(GetBackgroundColor());
+  title_label_->SetEnabledColor(color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  drop_down_icon_->SetImage(CreateVectorIcon(
+      kUnifiedMenuMoreIcon,
+      color_provider->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  artist_label_->SetEnabledColor(color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary));
 }
 
 void UnifiedMediaControlsView::ShowEmptyState() {
