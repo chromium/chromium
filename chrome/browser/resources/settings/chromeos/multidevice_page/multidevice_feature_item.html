@@ -17,6 +17,14 @@
 <dom-module id="settings-multidevice-feature-item">
   <template>
     <style include="settings-shared">
+      :host([is-sub-feature]) iron-icon {
+        display: none;
+      }
+
+      :host([is-sub-feature]) .settings-box .middle {
+        padding-inline-start: 64px;
+      }
+
       #card {
         border-top: var(--cr-separator-line);
         border-top-style: var(--feature-item-border-top-style, solid);
@@ -33,7 +41,7 @@
     </style>
     <div id="card" class="settings-box two-line no-padding">
       <div class="link-wrapper" actionable
-           actionable$="[[hasSubpageClickHandler_(
+           actionable$="[[isRowClickable_(
                feature, pageContentData, subpageRoute)]]"
            on-click="handleItemClick_">
         <slot name="icon">

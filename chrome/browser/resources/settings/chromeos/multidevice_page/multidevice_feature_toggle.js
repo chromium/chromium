@@ -40,6 +40,21 @@ Polymer({
   },
 
   /**
+   * Callback for clicking on the toggle itself, or a row containing a toggle
+   * without other links. It attempts to toggle the feature's status if the user
+   * is allowed.
+   */
+  toggleFeature() {
+    this.resetChecked_();
+
+    // Pass the negation of |this.checked_|: this indicates that if the toggle
+    // is checked, the intent is for it to be unchecked, and vice versa.
+    this.fire(
+        'feature-toggle-clicked',
+        {feature: this.feature, enabled: !this.checked_});
+  },
+
+  /**
    * Because MultiDevice prefs are only meant to be controlled via the
    * MultiDevice mojo service, we need the cr-toggle to appear not to change
    * when pressed. This method resets it before a change is visible to the
@@ -64,21 +79,6 @@ Polymer({
    */
   onDisabledInnerToggleClick_(event) {
     event.stopPropagation();
-  },
-
-  /**
-   * Callback for clicking on the toggle. It attempts to toggle the feature's
-   * status if the user is allowed.
-   * @private
-   */
-  onChange_() {
-    this.resetChecked_();
-
-    // Pass the negation of |this.checked_|: this indicates that if the toggle
-    // is checked, the intent is for it to be unchecked, and vice versa.
-    this.fire(
-        'feature-toggle-clicked',
-        {feature: this.feature, enabled: !this.checked_});
   },
 
   /**

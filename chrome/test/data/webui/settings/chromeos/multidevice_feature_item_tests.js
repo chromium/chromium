@@ -7,6 +7,7 @@
 
 // #import {MultiDeviceFeature, MultiDeviceFeatureState, routes, Router} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // clang-format on
 
@@ -68,6 +69,18 @@ suite('Multidevice', function() {
     assertEquals(initialRoute, settings.Router.getInstance().getCurrentRoute());
   }
 
+  /**
+   * Clicks an element, asserts whether the click fires a
+   * 'feature-toggle-clicked' event.
+   * @param {HTMLElement} element. Target of click.
+   */
+  async function checkWhetherFeatureToggleClickedFired(element) {
+    const showCellularSetupPromise =
+        test_util.eventToPromise('feature-toggle-clicked', featureToggle);
+    element.click();
+    await Promise.all([showCellularSetupPromise, test_util.flushTasks()]);
+  }
+
   setup(function() {
     PolymerTest.clearBody();
 
@@ -110,23 +123,35 @@ suite('Multidevice', function() {
     checkWhetherClickRoutesAway(link, false);
   });
 
+  test('row is clickable', async () => {
+    featureItem.feature = settings.MultiDeviceFeature.BETTER_TOGETHER_SUITE;
+    featureState = settings.MultiDeviceFeatureState.ENABLED_BY_USER;
+    featureItem.subpageRoute = null;
+
+    await checkWhetherFeatureToggleClickedFired(
+        featureItem.$$('#item-text-container'));
+    await checkWhetherFeatureToggleClickedFired(featureItem.$$('iron-icon'));
+    await checkWhetherFeatureToggleClickedFired(
+        featureItem.$$('#featureSecondary'));
+  });
+
   test('toggle click does not navigate to subpage in any state', function() {
     checkWhetherClickRoutesAway(featureToggle, false);
 
     // Checked and enabled
-    setCrToggle(true, true);
-    checkWhetherClickRoutesAway(crToggle, false);
-
-    // Checked and disabled
     setCrToggle(true, false);
     checkWhetherClickRoutesAway(crToggle, false);
 
+    // Checked and disabled
+    setCrToggle(true, true);
+    checkWhetherClickRoutesAway(crToggle, false);
+
     // Unchecked and enabled
-    setCrToggle(false, true);
+    setCrToggle(false, false);
     checkWhetherClickRoutesAway(crToggle, false);
 
     // Unchecked and disabled
-    setCrToggle(false, false);
+    setCrToggle(false, true);
     checkWhetherClickRoutesAway(crToggle, false);
   });
 });

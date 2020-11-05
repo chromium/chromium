@@ -11,7 +11,7 @@
         aria-label$="[[getToggleA11yLabel_(feature)]]"
         checked="{{checked_}}"
         disabled="[[!isFeatureStateEditable(feature, pageContentData)]]"
-        on-change="onChange_">
+        on-change="toggleFeature">
     </cr-toggle>
   </template>
   <script src="multidevice_feature_toggle.js"></script>
