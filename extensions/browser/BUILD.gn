@@ -280,6 +280,8 @@ source_set("browser_sources") {
     "lazy_context_id.h",
     "lazy_context_task_queue.cc",
     "lazy_context_task_queue.h",
+    "load_and_localize_file.cc",
+    "load_and_localize_file.h",
     "management_policy.cc",
     "management_policy.h",
     "media_capture_util.cc",

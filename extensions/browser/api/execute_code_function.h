@@ -10,7 +10,6 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/common/api/extension_types.h"
-#include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/host_id.h"
 
 namespace extensions {
@@ -83,28 +82,6 @@ class ExecuteCodeFunction : public ExtensionFunction {
   void OnExecuteCodeFinished(const std::string& error,
                              const GURL& on_url,
                              const base::ListValue& result);
-
-  // Optionally localizes |data|.
-  // Localization depends on whether |might_require_localization| was specified.
-  // Only CSS file content needs to be localized.
-  void MaybeLocalizeInBackground(
-      const std::string& extension_id,
-      const base::FilePath& extension_path,
-      const std::string& extension_default_locale,
-      extension_l10n_util::GzippedMessagesPermission gzip_permission,
-      bool might_require_localization,
-      std::string* data);
-
-  // Optionally localizes |data|.
-  // Similar to MaybeLocalizeInBackground, but only applies to component
-  // extension resources.
-  std::unique_ptr<std::string> LocalizeComponentResourceInBackground(
-      std::unique_ptr<std::string> data,
-      const std::string& extension_id,
-      const base::FilePath& extension_path,
-      const std::string& extension_default_locale,
-      extension_l10n_util::GzippedMessagesPermission gzip_permission,
-      bool might_require_localization);
 
   // Run in UI thread.  Code string contains the code to be executed. Returns
   // true on success. If true is returned, this does an AddRef. Returns false on
