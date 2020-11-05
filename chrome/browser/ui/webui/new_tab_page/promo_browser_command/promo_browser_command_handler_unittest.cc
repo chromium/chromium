@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/webui/new_tab_page/promo_browser_command/promo_browser_command_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -72,6 +74,15 @@ class MockCommandUpdater : public CommandUpdaterImpl {
   MOCK_CONST_METHOD1(SupportsCommand, bool(int id));
 };
 
+// Callback used for testing
+// PromoBrowserCommandHandler::CanShowPromoWithCommand().
+void CanShowPromoWithCommandCallback(base::OnceClosure quit_closure,
+                                     bool* expected_can_show,
+                                     bool can_show) {
+  *expected_can_show = can_show;
+  std::move(quit_closure).Run();
+}
+
 // Callback used for testing PromoBrowserCommandHandler::ExecuteCommand().
 void ExecuteCommandCallback(base::OnceClosure quit_closure,
                             bool* expected_command_executed,
@@ -102,6 +113,16 @@ class PromoBrowserCommandHandlerTest : public testing::Test {
   MockCommandUpdater* mock_command_updater() {
     return static_cast<MockCommandUpdater*>(
         command_handler_->GetCommandUpdater());
+  }
+
+  bool CanShowPromoWithCommand(Command command_id) {
+    base::RunLoop run_loop;
+    bool can_show = false;
+    command_handler_->CanShowPromoWithCommand(
+        command_id, base::BindOnce(&CanShowPromoWithCommandCallback,
+                                   run_loop.QuitClosure(), &can_show));
+    run_loop.Run();
+    return can_show;
   }
 
   bool ExecuteCommand(Command command_id, ClickInfoPtr click_info) {
@@ -180,6 +201,10 @@ TEST_F(PromoBrowserCommandHandlerTest, DisableHandlingCommands) {
       PromoBrowserCommandHandler::kPromoBrowserCommandHistogramName, 0);
 }
 
+TEST_F(PromoBrowserCommandHandlerTest, CanShowOpenSafetyCheckCommandPromo) {
+  EXPECT_TRUE(CanShowPromoWithCommand(Command::kOpenSafetyCheck));
+}
+
 TEST_F(PromoBrowserCommandHandlerTest, OpenSafetyCheckCommand) {
   // The OpenSafetyCheck command opens a new settings window with the Safety
   // Check, and the correct disposition.
@@ -191,6 +216,70 @@ TEST_F(PromoBrowserCommandHandlerTest, OpenSafetyCheckCommand) {
       NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kSafetyCheckSubPage)),
                     DispositionFromClick(*info)));
   EXPECT_TRUE(ExecuteCommand(Command::kOpenSafetyCheck, std::move(info)));
+}
+
+TEST_F(PromoBrowserCommandHandlerTest,
+       CanShowSafeBrowsingEnhancedProtectionCommandPromo_NoPolicies) {
+  EXPECT_TRUE(CanShowPromoWithCommand(
+      Command::kOpenSafeBrowsingEnhancedProtectionSettings));
+}
+
+TEST_F(
+    PromoBrowserCommandHandlerTest,
+    CanShowSafeBrowsingEnhancedProtectionCommandPromo_EnhancedProtectionEnabled) {
+  TestingProfile::Builder builder;
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+  profile->GetTestingPrefService()->SetUserPref(
+      prefs::kSafeBrowsingEnhanced, std::make_unique<base::Value>(true));
+  command_handler_ = std::make_unique<MockCommandHandler>(profile.get());
+
+  EXPECT_FALSE(CanShowPromoWithCommand(
+      Command::kOpenSafeBrowsingEnhancedProtectionSettings));
+}
+
+TEST_F(
+    PromoBrowserCommandHandlerTest,
+    CanShowSafeBrowsingEnhancedProtectionCommandPromo_HasSafeBrowsingManaged_NoProtection) {
+  TestingProfile::Builder builder;
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+  profile->GetTestingPrefService()->SetManagedPref(
+      prefs::kSafeBrowsingEnabled, std::make_unique<base::Value>(false));
+  profile->GetTestingPrefService()->SetManagedPref(
+      prefs::kSafeBrowsingEnhanced, std::make_unique<base::Value>(false));
+  command_handler_ = std::make_unique<MockCommandHandler>(profile.get());
+
+  EXPECT_FALSE(CanShowPromoWithCommand(
+      Command::kOpenSafeBrowsingEnhancedProtectionSettings));
+}
+
+TEST_F(
+    PromoBrowserCommandHandlerTest,
+    CanShowSafeBrowsingEnhancedProtectionCommandPromo_HasSafeBrowsingManaged_StandardProtection) {
+  TestingProfile::Builder builder;
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+  profile->GetTestingPrefService()->SetManagedPref(
+      prefs::kSafeBrowsingEnabled, std::make_unique<base::Value>(true));
+  profile->GetTestingPrefService()->SetManagedPref(
+      prefs::kSafeBrowsingEnhanced, std::make_unique<base::Value>(false));
+  command_handler_ = std::make_unique<MockCommandHandler>(profile.get());
+
+  EXPECT_FALSE(CanShowPromoWithCommand(
+      Command::kOpenSafeBrowsingEnhancedProtectionSettings));
+}
+
+TEST_F(
+    PromoBrowserCommandHandlerTest,
+    CanShowSafeBrowsingEnhancedProtectionCommandPromo_HasSafeBrowsingManaged_EnhancedProtection) {
+  TestingProfile::Builder builder;
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+  profile->GetTestingPrefService()->SetManagedPref(
+      prefs::kSafeBrowsingEnabled, std::make_unique<base::Value>(true));
+  profile->GetTestingPrefService()->SetManagedPref(
+      prefs::kSafeBrowsingEnhanced, std::make_unique<base::Value>(true));
+  command_handler_ = std::make_unique<MockCommandHandler>(profile.get());
+
+  EXPECT_FALSE(CanShowPromoWithCommand(
+      Command::kOpenSafeBrowsingEnhancedProtectionSettings));
 }
 
 TEST_F(PromoBrowserCommandHandlerTest,
