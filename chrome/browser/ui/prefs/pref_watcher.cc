@@ -82,8 +82,6 @@ PrefWatcher::PrefWatcher(Profile* profile) : profile_(profile) {
                                      renderer_callback);
   profile_pref_change_registrar_.Add(prefs::kEnableEncryptedMedia,
                                      renderer_callback);
-  profile_pref_change_registrar_.Add(prefs::kWebRTCMultipleRoutesEnabled,
-                                     renderer_callback);
   profile_pref_change_registrar_.Add(prefs::kWebRTCNonProxiedUdpEnabled,
                                      renderer_callback);
   profile_pref_change_registrar_.Add(prefs::kWebRTCIPHandlingPolicy,

@@ -129,11 +129,6 @@ const PrefMappingEntry kPrefMapping[] = {
      APIPermission::kPrivacy, APIPermission::kPrivacy},
     {"translationServiceEnabled", prefs::kOfferTranslateEnabled,
      APIPermission::kPrivacy, APIPermission::kPrivacy},
-    // webRTCMultipleRoutesEnabled and webRTCNonProxiedUdpEnabled have been
-    // replaced by webRTCIPHandlingPolicy. Leaving it for backward
-    // compatibility. TODO(guoweis): Remove this in M50.
-    {"webRTCMultipleRoutesEnabled", prefs::kWebRTCMultipleRoutesEnabled,
-     APIPermission::kPrivacy, APIPermission::kPrivacy},
     {"webRTCNonProxiedUdpEnabled", prefs::kWebRTCNonProxiedUdpEnabled,
      APIPermission::kPrivacy, APIPermission::kPrivacy},
     {"webRTCIPHandlingPolicy", prefs::kWebRTCIPHandlingPolicy,

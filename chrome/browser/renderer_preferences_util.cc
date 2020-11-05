@@ -120,14 +120,10 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
 
   // Handling the backward compatibility of previous boolean versions of policy
   // controls.
-  if (!pref_service->HasPrefPath(prefs::kWebRTCIPHandlingPolicy)) {
-    if (!pref_service->GetBoolean(prefs::kWebRTCNonProxiedUdpEnabled)) {
-      prefs->webrtc_ip_handling_policy =
-          blink::kWebRTCIPHandlingDisableNonProxiedUdp;
-    } else if (!pref_service->GetBoolean(prefs::kWebRTCMultipleRoutesEnabled)) {
-      prefs->webrtc_ip_handling_policy =
-          blink::kWebRTCIPHandlingDefaultPublicInterfaceOnly;
-    }
+  if (!pref_service->HasPrefPath(prefs::kWebRTCIPHandlingPolicy) &&
+      !pref_service->GetBoolean(prefs::kWebRTCNonProxiedUdpEnabled)) {
+    prefs->webrtc_ip_handling_policy =
+        blink::kWebRTCIPHandlingDisableNonProxiedUdp;
   }
   if (prefs->webrtc_ip_handling_policy.empty()) {
     prefs->webrtc_ip_handling_policy =

@@ -25,12 +25,6 @@
             "value": ["networkPredictionEnabled", {"type":"boolean"}],
             "description": "If enabled, Chrome attempts to speed up your web browsing experience by pre-resolving DNS entries and preemptively opening TCP and SSL connections to servers. This preference only affects actions taken by Chrome's internal prediction service. It does not affect webpage-initiated prefectches or preconnects. This preference's value is a boolean, defaulting to <code>true</code>."
           },
-          "webRTCMultipleRoutesEnabled": {
-            "$ref": "types.ChromeSetting",
-            "value": ["webRTCMultipleRoutesEnabled", {"type":"boolean"}],
-            "deprecated": "Please use privacy.network.webRTCIPHandlingPolicy. This remains for backward compatibility in this release and will be removed in the future.",
-            "description": "If enabled, Chrome will explore all possible routing options when using WebRTC to find the most performant path, possibly exposing user's private IP address. Otherwise, WebRTC traffic will be routed the same way as regular HTTP. This preference's value is a boolean, defaulting to <code>true</code>."
-          },
           "webRTCNonProxiedUdpEnabled": {
             "$ref": "types.ChromeSetting",
             "value": ["webRTCNonProxiedUdpEnabled", {"type":"boolean"}],
