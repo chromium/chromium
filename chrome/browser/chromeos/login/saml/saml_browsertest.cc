@@ -1884,16 +1884,6 @@ void FakeGetCertificateCallbackTrue(
   std::move(callback).Run(attestation::ATTESTATION_SUCCESS, "certificate");
 }
 
-void FakeEnterpriseChallenge(
-    const std::string& challenge,
-    cryptohome::AsyncMethodCaller::DataCallback callback) {
-  if (challenge == GetTpmChallenge()) {
-    std::move(callback).Run(/*success=*/true, GetTpmResponse());
-  } else {
-    NOTREACHED();
-  }
-}
-
 constexpr base::TimeDelta kTimeoutTaskDelay =
     base::TimeDelta::FromMilliseconds(500);
 constexpr base::TimeDelta kBuildResponseTaskDelay =
@@ -1902,15 +1892,6 @@ static_assert(
     kTimeoutTaskDelay < kBuildResponseTaskDelay,
     "kTimeoutTaskDelay should be less than kBuildResponseTaskDelay to trigger "
     "timeout error in SAMLDeviceAttestationTest.TimeoutError test.");
-
-void FakeEnterpriseChallengeWithDelay(
-    const std::string& challenge,
-    cryptohome::AsyncMethodCaller::DataCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(FakeEnterpriseChallenge, challenge, std::move(callback)),
-      kBuildResponseTaskDelay);
-}
 
 class SAMLDeviceAttestationTest : public SamlTest {
  public:
