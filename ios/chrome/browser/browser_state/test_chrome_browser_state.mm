@@ -255,9 +255,9 @@ ChromeBrowserStateIOData* TestChromeBrowserState::GetIOData() {
 
 void TestChromeBrowserState::ClearNetworkingHistorySince(
     base::Time time,
-    const base::Closure& completion) {
+    base::OnceClosure completion) {
   if (!completion.is_null())
-    completion.Run();
+    std::move(completion).Run();
 }
 
 net::URLRequestContextGetter* TestChromeBrowserState::CreateRequestContext(

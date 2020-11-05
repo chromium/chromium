@@ -74,7 +74,7 @@ IOSChromePasswordManagerClient::IOSChromePasswordManagerClient(
   log_manager_ = autofill::LogManager::Create(
       ios::PasswordManagerLogRouterFactory::GetForBrowserState(
           bridge_.browserState),
-      base::Closure());
+      base::RepeatingClosure());
 }
 
 IOSChromePasswordManagerClient::~IOSChromePasswordManagerClient() = default;

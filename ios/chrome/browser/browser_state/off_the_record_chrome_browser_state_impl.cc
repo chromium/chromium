@@ -116,12 +116,12 @@ OffTheRecordChromeBrowserStateImpl::CreateRequestContext(
 
 void OffTheRecordChromeBrowserStateImpl::ClearNetworkingHistorySince(
     base::Time time,
-    const base::Closure& completion) {
+    base::OnceClosure completion) {
   // Nothing to do here, our transport security state is read-only.
   // Still, fire the callback to indicate we have finished, otherwise the
   // BrowsingDataRemover will never be destroyed and the dialog will never be
   // closed. We must do this asynchronously in order to avoid reentrancy issues.
   if (!completion.is_null()) {
-    base::PostTask(FROM_HERE, {web::WebThread::UI}, completion);
+    base::PostTask(FROM_HERE, {web::WebThread::UI}, std::move(completion));
   }
 }

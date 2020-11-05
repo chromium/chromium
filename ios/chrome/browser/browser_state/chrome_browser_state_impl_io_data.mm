@@ -104,7 +104,7 @@ ChromeBrowserStateIOData* ChromeBrowserStateImplIOData::Handle::io_data()
 
 void ChromeBrowserStateImplIOData::Handle::ClearNetworkingHistorySince(
     base::Time time,
-    const base::Closure& completion) {
+    base::OnceClosure completion) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   LazyInitialize();
 
@@ -112,7 +112,7 @@ void ChromeBrowserStateImplIOData::Handle::ClearNetworkingHistorySince(
       FROM_HERE, {web::WebThread::IO},
       base::BindOnce(
           &ChromeBrowserStateImplIOData::ClearNetworkingHistorySinceOnIOThread,
-          base::Unretained(io_data_), time, completion));
+          base::Unretained(io_data_), time, std::move(completion)));
 }
 
 void ChromeBrowserStateImplIOData::Handle::LazyInitialize() const {
@@ -234,15 +234,15 @@ void ChromeBrowserStateImplIOData::InitializeInternal(
 
 void ChromeBrowserStateImplIOData::ClearNetworkingHistorySinceOnIOThread(
     base::Time time,
-    const base::Closure& completion) {
+    base::OnceClosure completion) {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
   DCHECK(initialized());
   DCHECK(transport_security_state());
   auto barrier = base::BarrierClosure(
       2, base::BindOnce(
-             [](base::Closure completion) {
+             [](base::OnceClosure callback) {
                base::PostTask(FROM_HERE, base::TaskTraits(web::WebThread::UI),
-                              std::move(completion));
+                              std::move(callback));
              },
              std::move(completion)));
 

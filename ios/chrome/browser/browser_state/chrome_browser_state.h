@@ -103,7 +103,7 @@ class ChromeBrowserState : public web::BrowserState {
   // Be aware that theoretically it is possible that |completion| will be
   // invoked after the Profile instance has been destroyed.
   virtual void ClearNetworkingHistorySince(base::Time time,
-                                           const base::Closure& completion) = 0;
+                                           base::OnceClosure completion) = 0;
 
   // Returns an identifier of the browser state for debugging.
   std::string GetDebugName();

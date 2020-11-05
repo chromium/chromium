@@ -20,7 +20,7 @@ class WebState;
 // the TAB_PARENTED notification from all sources.
 class TabParentingGlobalObserver {
  public:
-  typedef base::Callback<void(web::WebState*)> OnTabParentedCallback;
+  using OnTabParentedCallback = base::RepeatingCallback<void(web::WebState*)>;
 
   // Returns the instance of TabParentingGlobalObserver.
   static TabParentingGlobalObserver* GetInstance();

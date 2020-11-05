@@ -133,8 +133,7 @@ void ChromeOmniboxClientIOS::OnFocusChanged(OmniboxFocusState state,
 void ChromeOmniboxClientIOS::OnResultChanged(
     const AutocompleteResult& result,
     bool default_match_changed,
-    const base::Callback<void(int result_index, const SkBitmap& bitmap)>&
-        on_bitmap_fetched) {
+    const BitmapFetchedCallback& on_bitmap_fetched) {
   if (result.empty()) {
     return;
   }

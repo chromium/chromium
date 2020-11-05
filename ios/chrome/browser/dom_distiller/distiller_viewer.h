@@ -30,11 +30,11 @@ class DistillerViewerInterface : public DomDistillerRequestViewBase {
     // The image data as a string.
     std::string data;
   };
-  typedef base::Callback<void(const GURL& url,
+  using DistillationFinishedCallback =
+      base::OnceCallback<void(const GURL& url,
                               const std::string& html,
                               const std::vector<ImageInfo>& images,
-                              const std::string& title)>
-      DistillationFinishedCallback;
+                              const std::string& title)>;
 
   DistillerViewerInterface(PrefService* prefs)
       : DomDistillerRequestViewBase(new DistilledPagePrefs(prefs)) {}
@@ -57,7 +57,7 @@ class DistillerViewer : public DistillerViewerInterface {
   DistillerViewer(dom_distiller::DomDistillerService* distillerService,
                   PrefService* prefs,
                   const GURL& url,
-                  const DistillationFinishedCallback& callback);
+                  DistillationFinishedCallback callback);
 
   // Creates a |DistillerView| without depending on the DomDistillerService.
   // Caller must provide |distiller_factory| and |page| which cannot be null.
@@ -67,7 +67,7 @@ class DistillerViewer : public DistillerViewerInterface {
                   std::unique_ptr<dom_distiller::DistillerPage> page,
                   PrefService* prefs,
                   const GURL& url,
-                  const DistillationFinishedCallback& callback);
+                  DistillationFinishedCallback callback);
   ~DistillerViewer() override;
 
   // DistillerViewerInterface implementation
@@ -91,7 +91,7 @@ class DistillerViewer : public DistillerViewerInterface {
   // JavaScript buffer.
   std::string js_buffer_;
   // Callback to run once distillation is complete.
-  const DistillationFinishedCallback callback_;
+  DistillationFinishedCallback callback_;
   // Keep reference of the distiller_ during distillation.
   std::unique_ptr<Distiller> distiller_;
 

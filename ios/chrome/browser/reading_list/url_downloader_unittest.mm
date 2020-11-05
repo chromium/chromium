@@ -32,7 +32,7 @@ namespace {
 class DistillerViewerTest : public dom_distiller::DistillerViewerInterface {
  public:
   DistillerViewerTest(const GURL& url,
-                      const DistillationFinishedCallback& callback,
+                      DistillationFinishedCallback callback,
                       reading_list::ReadingListDistillerPageDelegate* delegate,
                       const std::string& html,
                       const GURL& redirect_url,
@@ -50,7 +50,7 @@ class DistillerViewerTest : public dom_distiller::DistillerViewerInterface {
     if (!mime_type.empty()) {
       delegate->DistilledPageHasMimeType(url, mime_type);
     }
-    callback.Run(url, html, images, "title");
+    std::move(callback).Run(url, html, images, "title");
   }
 
   void OnArticleReady(

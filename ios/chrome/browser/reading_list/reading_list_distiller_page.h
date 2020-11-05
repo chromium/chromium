@@ -43,8 +43,6 @@ class ReadingListDistillerPageDelegate {
 // and add a 2 seconds delay between loading and distillation.
 class ReadingListDistillerPage : public dom_distiller::DistillerPageIOS {
  public:
-  typedef base::Callback<void(const GURL&, const GURL&)> RedirectionCallback;
-
   // Creates a ReadingListDistillerPage to distill |url|. WebStates to download
   // the pages will be provided by web_state_dispatcher.
   // |browser_state|, |web_state_dispatcher| and |delegate| must not be null.

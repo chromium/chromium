@@ -154,9 +154,6 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
   // Saved callback received from CollectFinalMetricsForLog().
   base::OnceClosure collect_final_metrics_done_callback_;
 
-  // Callback that is called when initial metrics gathering is complete.
-  base::Closure finished_init_task_callback_;
-
   // Subscription for receiving callbacks that a tab was parented.
   std::unique_ptr<base::CallbackList<void(web::WebState*)>::Subscription>
       tab_parented_subscription_;

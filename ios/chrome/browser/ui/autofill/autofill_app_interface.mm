@@ -139,7 +139,7 @@ void SaveLocalPasswordForm(const GURL& url) {
 // Removes all credentials stored.
 void ClearPasswordStore() {
   GetPasswordStore()->RemoveLoginsCreatedBetween(base::Time(), base::Time(),
-                                                 base::Closure());
+                                                 base::OnceClosure());
   TestStoreConsumer consumer;
 }
 

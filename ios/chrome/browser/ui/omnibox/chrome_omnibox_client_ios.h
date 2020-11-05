@@ -45,11 +45,9 @@ class ChromeOmniboxClientIOS : public OmniboxClient {
                                OmniboxNavigationObserver* observer) override;
   void OnFocusChanged(OmniboxFocusState state,
                       OmniboxFocusChangeReason reason) override;
-  void OnResultChanged(
-      const AutocompleteResult& result,
-      bool default_match_changed,
-      const base::Callback<void(int result_index, const SkBitmap& bitmap)>&
-          on_bitmap_fetched) override;
+  void OnResultChanged(const AutocompleteResult& result,
+                       bool default_match_changed,
+                       const BitmapFetchedCallback& on_bitmap_fetched) override;
   void DiscardNonCommittedNavigations() override;
   const base::string16& GetTitle() const override;
   gfx::Image GetFavicon() const override;

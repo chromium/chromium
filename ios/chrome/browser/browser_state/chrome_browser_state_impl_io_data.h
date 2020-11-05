@@ -53,7 +53,7 @@ class ChromeBrowserStateImplIOData : public ChromeBrowserStateIOData {
     // Works asynchronously, however if the |completion| callback is non-null,
     // it will be posted on the UI thread once the removal process completes.
     void ClearNetworkingHistorySince(base::Time time,
-                                     const base::Closure& completion);
+                                     base::OnceClosure completion);
 
    private:
     typedef std::map<base::FilePath,
@@ -113,7 +113,7 @@ class ChromeBrowserStateImplIOData : public ChromeBrowserStateIOData {
   // Works asynchronously, however if the |completion| callback is non-null,
   // it will be posted on the UI thread once the removal process completes.
   void ClearNetworkingHistorySinceOnIOThread(base::Time time,
-                                             const base::Closure& completion);
+                                             base::OnceClosure completion);
 
   mutable std::unique_ptr<IOSChromeNetworkDelegate> network_delegate_;
 

@@ -122,7 +122,7 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
       // renderer.
       log_manager_(LogManager::Create(
           AutofillLogRouterFactory::GetForBrowserState(browser_state),
-          base::Closure())) {}
+          base::RepeatingClosure())) {}
 
 ChromeAutofillClientIOS::~ChromeAutofillClientIOS() {
   HideAutofillPopup(PopupHidingReason::kTabGone);

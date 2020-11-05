@@ -219,8 +219,8 @@ net::URLRequestContextGetter* ChromeBrowserStateImpl::CreateRequestContext(
 
 void ChromeBrowserStateImpl::ClearNetworkingHistorySince(
     base::Time time,
-    const base::Closure& completion) {
-  io_data_->ClearNetworkingHistorySince(time, completion);
+    base::OnceClosure completion) {
+  io_data_->ClearNetworkingHistorySince(time, std::move(completion));
 }
 
 PrefProxyConfigTracker* ChromeBrowserStateImpl::GetProxyConfigTracker() {

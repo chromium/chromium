@@ -55,7 +55,7 @@
           .get();
   // Remove credentials stored during executing the test.
   passwordStore->RemoveLoginsCreatedBetween(base::Time(), base::Time::Now(),
-                                            base::Closure());
+                                            base::OnceClosure());
 }
 
 + (void)getCredentialsInTabAtIndex:(int)index {

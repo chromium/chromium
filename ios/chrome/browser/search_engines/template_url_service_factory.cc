@@ -33,7 +33,7 @@ base::RepeatingClosure GetDefaultSearchProviderChangedCallback() {
       base::IgnoreResult(&rlz::RLZTracker::RecordProductEvent), rlz_lib::CHROME,
       rlz::RLZTracker::ChromeOmnibox(), rlz_lib::SET_TO_GOOGLE);
 #else
-  return base::Closure();
+  return base::RepeatingClosure();
 #endif
 }
 

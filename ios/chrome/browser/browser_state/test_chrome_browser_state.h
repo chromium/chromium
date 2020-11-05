@@ -53,7 +53,7 @@ class TestChromeBrowserState : public ChromeBrowserState {
   PrefService* GetOffTheRecordPrefs() override;
   ChromeBrowserStateIOData* GetIOData() override;
   void ClearNetworkingHistorySince(base::Time time,
-                                   const base::Closure& completion) override;
+                                   base::OnceClosure completion) override;
   net::URLRequestContextGetter* CreateRequestContext(
       ProtocolHandlerMap* protocol_handlers) override;
 
