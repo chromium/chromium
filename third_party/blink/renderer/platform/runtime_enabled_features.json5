@@ -2217,11 +2217,6 @@
       status: "experimental",
     },
     {
-      name: "WebXRReflectionEstimation",
-      depends_on: ["WebXRARModule", "WebXRLightEstimation"],
-      status: "experimental",
-    },
-    {
       name: "WebXRViewportScale",
       depends_on: ["WebXRARModule"],
       status: "experimental",

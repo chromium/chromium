@@ -193,7 +193,6 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableWebXRImageTracking(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebXRLightEstimation(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebXRPlaneDetection(bool);
-  BLINK_PLATFORM_EXPORT static void EnableWebXRReflectionEstimation(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebXRViewportScale(bool);
   BLINK_PLATFORM_EXPORT static void EnableXSLT(bool);
   BLINK_PLATFORM_EXPORT static void ForceOverlayFullscreenVideo(bool);

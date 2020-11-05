@@ -6,12 +6,12 @@
 [
     SecureContext,
     Exposed=Window,
-    RuntimeEnabled=WebXRReflectionEstimation
+    RuntimeEnabled=WebXRLightEstimation
 ] interface XRWebGLBinding {
   [RaisesException] constructor(XRSession session, XRWebGLRenderingContext context);
 
   // Lighting Estimation API
-  [RuntimeEnabled=WebXRReflectionEstimation, RaisesException]
+  [RuntimeEnabled=WebXRLightEstimation, RaisesException]
   WebGLTexture? getReflectionCubeMap(XRLightProbe lightProbe);
 
   [RuntimeEnabled=WebXRCameraAccess] WebGLTexture? getCameraImage(XRFrame frame, XRView view);
