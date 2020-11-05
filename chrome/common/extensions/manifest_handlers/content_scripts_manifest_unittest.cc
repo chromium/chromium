@@ -40,9 +40,8 @@ TEST_F(ContentScriptsManifestTest, MatchPattern) {
 
       // Match paterns must be strings.
       Testcase("content_script_match_pattern_not_string.json",
-               ErrorUtils::FormatErrorMessage(
-                   errors::kInvalidMatch, base::NumberToString(0),
-                   base::NumberToString(0), errors::kExpectString))};
+               "Error at key 'content_scripts'. Parsing array failed: expected "
+               "string, got integer; unable to populate array 'matches'.")};
   RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
 
   LoadAndExpectSuccess("ports_in_content_scripts.json");

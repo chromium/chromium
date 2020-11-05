@@ -997,7 +997,7 @@ class _Generator(object):
             self._util_cc_helper.PopulateArrayFromListFunction(is_ptr),
             self._GenerateArgs(('*list', '&%(dst_var)s'))))
         c.Concat(self._GenerateError(
-            '"unable to populate array \'%%(parent_key)s\'"'))
+            '"unable to populate array \'%%(key)s\'"'))
         c.Append('return %(failure_value)s;')
         c.Eblock('}')
       c.Eblock('}')

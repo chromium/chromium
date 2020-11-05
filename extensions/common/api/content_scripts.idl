@@ -1,0 +1,31 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Stub namespace for the "content_scripts" manifest key.
+[generate_error_messages]
+namespace contentScripts {
+  // TODO(karandeepb): Add documentation.
+  enum RunAt {
+    document_idle,
+    document_start,
+    document_end
+  };
+
+  dictionary ContentScript {
+    DOMString[] matches;
+    DOMString[]? exclude_matches;
+    DOMString[]? css;
+    DOMString[]? js;
+    boolean? all_frames;
+    boolean? match_origin_as_fallback;
+    boolean? match_about_blank;
+    DOMString[]? include_globs;
+    DOMString[]? exclude_globs;
+    RunAt? run_at;
+  };
+
+  dictionary ManifestKeys {
+    ContentScript[] content_scripts;
+  };
+};

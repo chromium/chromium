@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/common/api/content_scripts.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -33,170 +34,84 @@
 
 namespace extensions {
 
-namespace keys = extensions::manifest_keys;
-namespace values = manifest_values;
 namespace errors = manifest_errors;
+namespace content_scripts_api = api::content_scripts;
+using ContentScriptsKeys = content_scripts_api::ManifestKeys;
 
 namespace {
 
-// Helper method that loads either the include_globs or exclude_globs list
-// from an entry in the content_script lists of the manifest.
-bool LoadGlobsHelper(const base::Value& content_script,
-                     int content_script_index,
-                     const char* globs_property_name,
-                     base::string16* error,
-                     void (UserScript::*add_method)(const std::string& glob),
-                     UserScript* instance) {
-  const base::Value* list = content_script.FindKey(globs_property_name);
-  if (!list)
-    return true;  // they are optional
-
-  if (!list->is_list()) {
-    *error = ErrorUtils::FormatErrorMessageUTF16(
-        errors::kInvalidGlobList, base::NumberToString(content_script_index),
-        globs_property_name);
-    return false;
+UserScript::RunLocation ConvertRunLocation(content_scripts_api::RunAt run_at) {
+  switch (run_at) {
+    case content_scripts_api::RUN_AT_DOCUMENT_END:
+      return UserScript::DOCUMENT_END;
+    case content_scripts_api::RUN_AT_DOCUMENT_IDLE:
+      return UserScript::DOCUMENT_IDLE;
+    case content_scripts_api::RUN_AT_DOCUMENT_START:
+      return UserScript::DOCUMENT_START;
+    case content_scripts_api::RUN_AT_NONE:
+      NOTREACHED();
+      return UserScript::DOCUMENT_IDLE;
   }
-
-  base::Value::ConstListView list_view = list->GetList();
-  for (size_t i = 0; i < list_view.size(); ++i) {
-    if (!list_view[i].is_string()) {
-      *error = ErrorUtils::FormatErrorMessageUTF16(
-          errors::kInvalidGlob, base::NumberToString(content_script_index),
-          globs_property_name, base::NumberToString(i));
-      return false;
-    }
-
-    (instance->*add_method)(list_view[i].GetString());
-  }
-
-  return true;
 }
 
-// Helper method that loads a UserScript object from a dictionary in the
-// content_script list of the manifest.
-std::unique_ptr<UserScript> LoadUserScriptFromDictionary(
-    const base::Value& content_script,
+// Helper method that converts a parsed ContentScript object into a UserScript
+// object.
+std::unique_ptr<UserScript> CreateUserScript(
+    const content_scripts_api::ContentScript& content_script,
     int definition_index,
+    bool can_execute_script_everywhere,
+    int valid_schemes,
+    bool all_urls_includes_chrome_urls,
     Extension* extension,
     base::string16* error) {
-  std::unique_ptr<UserScript> result(new UserScript());
+  auto result = std::make_unique<UserScript>();
+
   // run_at
-  const base::Value* run_at = content_script.FindKey(keys::kRunAt);
-  if (run_at != nullptr) {
-    if (!run_at->is_string()) {
-      *error = ErrorUtils::FormatErrorMessageUTF16(
-          errors::kInvalidRunAt, base::NumberToString(definition_index));
-      return nullptr;
-    }
+  if (content_script.run_at != content_scripts_api::RUN_AT_NONE)
+    result->set_run_location(ConvertRunLocation(content_script.run_at));
 
-    const std::string& run_location = run_at->GetString();
-    if (run_location == values::kRunAtDocumentStart) {
-      result->set_run_location(UserScript::DOCUMENT_START);
-    } else if (run_location == values::kRunAtDocumentEnd) {
-      result->set_run_location(UserScript::DOCUMENT_END);
-    } else if (run_location == values::kRunAtDocumentIdle) {
-      result->set_run_location(UserScript::DOCUMENT_IDLE);
-    } else {
-      *error = ErrorUtils::FormatErrorMessageUTF16(
-          errors::kInvalidRunAt, base::NumberToString(definition_index));
-      return nullptr;
-    }
-  }
+  // all_frames
+  if (content_script.all_frames)
+    result->set_match_all_frames(*content_script.all_frames);
 
-  // all frames
-  const base::Value* all_frames = content_script.FindKey(keys::kAllFrames);
-  if (all_frames != nullptr) {
-    if (!all_frames->is_bool()) {
-      *error = ErrorUtils::FormatErrorMessageUTF16(
-          errors::kInvalidAllFrames, base::NumberToString(definition_index));
-      return nullptr;
-    }
-    result->set_match_all_frames(all_frames->GetBool());
-  }
-
+  // match_origin_as_fallback
   bool has_match_origin_as_fallback = false;
-  // match origin as fallback
-  if (base::FeatureList::IsEnabled(
+  if (content_script.match_origin_as_fallback &&
+      base::FeatureList::IsEnabled(
           extensions_features::kContentScriptsMatchOriginAsFallback)) {
-    const base::Value* match_origin_as_fallback =
-        content_script.FindKey(keys::kMatchOriginAsFallback);
-    if (match_origin_as_fallback) {
-      if (!match_origin_as_fallback->is_bool()) {
-        *error = ErrorUtils::FormatErrorMessageUTF16(
-            errors::kInvalidMatchOriginAsFallback,
-            base::NumberToString(definition_index));
-        return nullptr;
-      }
-      has_match_origin_as_fallback = true;
-      result->set_match_origin_as_fallback(
-          match_origin_as_fallback->GetBool()
-              ? MatchOriginAsFallbackBehavior::kAlways
-              : MatchOriginAsFallbackBehavior::kNever);
-    }
+    has_match_origin_as_fallback = true;
+    result->set_match_origin_as_fallback(
+        *content_script.match_origin_as_fallback
+            ? MatchOriginAsFallbackBehavior::kAlways
+            : MatchOriginAsFallbackBehavior::kNever);
   }
 
-  // match about blank
+  // match_about_blank
   // Note: match_about_blank is ignored if |match_origin_as_fallback| was
   // specified.
-  if (!has_match_origin_as_fallback) {
-    const base::Value* match_about_blank =
-        content_script.FindKey(keys::kMatchAboutBlank);
-    if (match_about_blank) {
-      if (!match_about_blank->is_bool()) {
-        *error = ErrorUtils::FormatErrorMessageUTF16(
-            errors::kInvalidMatchAboutBlank,
-            base::NumberToString(definition_index));
-        return nullptr;
-      }
-      result->set_match_origin_as_fallback(
-          match_about_blank->GetBool()
-              ? MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree
-              : MatchOriginAsFallbackBehavior::kNever);
-    }
+  if (!has_match_origin_as_fallback && content_script.match_about_blank) {
+    result->set_match_origin_as_fallback(
+        *content_script.match_about_blank
+            ? MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree
+            : MatchOriginAsFallbackBehavior::kNever);
   }
 
-  // matches (required)
-  const base::Value* matches =
-      content_script.FindKeyOfType(keys::kMatches, base::Value::Type::LIST);
-  if (matches == nullptr) {
-    *error = ErrorUtils::FormatErrorMessageUTF16(
-        errors::kInvalidMatches, base::NumberToString(definition_index));
-    return nullptr;
-  }
-
-  base::Value::ConstListView list_view = matches->GetList();
-  if (list_view.empty()) {
+  // matches
+  if (content_script.matches.empty()) {
     *error = ErrorUtils::FormatErrorMessageUTF16(
         errors::kInvalidMatchCount, base::NumberToString(definition_index));
     return nullptr;
   }
 
-  const bool can_execute_script_everywhere =
-      PermissionsData::CanExecuteScriptEverywhere(extension->id(),
-                                                  extension->location());
-  const int valid_schemes =
-      UserScript::ValidUserScriptSchemes(can_execute_script_everywhere);
-
-  const bool all_urls_includes_chrome_urls =
-      PermissionsData::AllUrlsIncludesChromeUrls(extension->id());
-
-  for (size_t j = 0; j < list_view.size(); ++j) {
-    if (!list_view[j].is_string()) {
-      *error = ErrorUtils::FormatErrorMessageUTF16(
-          errors::kInvalidMatch, base::NumberToString(definition_index),
-          base::NumberToString(j), errors::kExpectString);
-      return nullptr;
-    }
-    const std::string& match_str = list_view[j].GetString();
-
+  for (size_t i = 0; i < content_script.matches.size(); ++i) {
     URLPattern pattern(valid_schemes);
 
+    const std::string& match_str = content_script.matches[i];
     URLPattern::ParseResult parse_result = pattern.Parse(match_str);
     if (parse_result != URLPattern::ParseResult::kSuccess) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidMatch, base::NumberToString(definition_index),
-          base::NumberToString(j),
+          base::NumberToString(i),
           URLPattern::GetParseResultString(parse_result));
       return nullptr;
     }
@@ -226,33 +141,16 @@ std::unique_ptr<UserScript> LoadUserScriptFromDictionary(
   }
 
   // exclude_matches
-  const base::Value* exclude_matches =
-      content_script.FindKey(keys::kExcludeMatches);
-  if (exclude_matches != nullptr) {  // optional
-    if (!exclude_matches->is_list()) {
-      *error = ErrorUtils::FormatErrorMessageUTF16(
-          errors::kInvalidExcludeMatches,
-          base::NumberToString(definition_index));
-      return nullptr;
-    }
-    base::Value::ConstListView list_view = exclude_matches->GetList();
-
-    for (size_t j = 0; j < list_view.size(); ++j) {
-      if (!list_view[j].is_string()) {
-        *error = ErrorUtils::FormatErrorMessageUTF16(
-            errors::kInvalidExcludeMatch,
-            base::NumberToString(definition_index), base::NumberToString(j),
-            errors::kExpectString);
-        return nullptr;
-      }
-      const std::string& match_str = list_view[j].GetString();
+  if (content_script.exclude_matches) {
+    for (size_t i = 0; i < content_script.exclude_matches->size(); ++i) {
+      const std::string& match_str = content_script.exclude_matches->at(i);
       URLPattern pattern(valid_schemes);
 
       URLPattern::ParseResult parse_result = pattern.Parse(match_str);
       if (parse_result != URLPattern::ParseResult::kSuccess) {
         *error = ErrorUtils::FormatErrorMessageUTF16(
             errors::kInvalidExcludeMatch,
-            base::NumberToString(definition_index), base::NumberToString(j),
+            base::NumberToString(definition_index), base::NumberToString(i),
             URLPattern::GetParseResultString(parse_result));
         return nullptr;
       }
@@ -261,52 +159,20 @@ std::unique_ptr<UserScript> LoadUserScriptFromDictionary(
     }
   }
 
-  // include/exclude globs (mostly for Greasemonkey compatibility)
-  if (!LoadGlobsHelper(content_script, definition_index, keys::kIncludeGlobs,
-                       error, &UserScript::add_glob, result.get())) {
-    return nullptr;
+  // include/exclude globs (mostly for Greasemonkey compatibility).
+  if (content_script.include_globs) {
+    for (const std::string& glob : *content_script.include_globs)
+      result->add_glob(glob);
+  }
+  if (content_script.exclude_globs) {
+    for (const std::string& glob : *content_script.exclude_globs)
+      result->add_exclude_glob(glob);
   }
 
-  if (!LoadGlobsHelper(content_script, definition_index, keys::kExcludeGlobs,
-                       error, &UserScript::add_exclude_glob, result.get())) {
-    return nullptr;
-  }
-
-  // js and css keys
-  const base::Value* js = content_script.FindKey(keys::kJs);
-  if (js != nullptr && !js->is_list()) {
-    *error = ErrorUtils::FormatErrorMessageUTF16(
-        errors::kInvalidJsList, base::NumberToString(definition_index));
-    return nullptr;
-  }
-
-  const base::Value* css = content_script.FindKey(keys::kCss);
-  if (css != nullptr && !css->is_list()) {
-    *error = ErrorUtils::FormatErrorMessageUTF16(
-        errors::kInvalidCssList, base::NumberToString(definition_index));
-    return nullptr;
-  }
-
-  // The manifest needs to have at least one js or css user script definition.
-  if (((js ? js->GetList().size() : 0) + (css ? css->GetList().size() : 0)) ==
-      0) {
-    *error = ErrorUtils::FormatErrorMessageUTF16(
-        errors::kMissingFile, base::NumberToString(definition_index));
-    return nullptr;
-  }
-
-  if (js) {
-    base::Value::ConstListView js_list = js->GetList();
-    result->js_scripts().reserve(js_list.size());
-    for (size_t script_index = 0; script_index < js_list.size();
-         ++script_index) {
-      if (!js_list[script_index].is_string()) {
-        *error = ErrorUtils::FormatErrorMessageUTF16(
-            errors::kInvalidJs, base::NumberToString(definition_index),
-            base::NumberToString(script_index));
-        return nullptr;
-      }
-      const std::string& relative = js_list[script_index].GetString();
+  // js
+  if (content_script.js) {
+    result->js_scripts().reserve(content_script.js->size());
+    for (const std::string& relative : *content_script.js) {
       GURL url = extension->GetResourceURL(relative);
       ExtensionResource resource = extension->GetResource(relative);
       result->js_scripts().push_back(std::make_unique<UserScript::File>(
@@ -314,24 +180,24 @@ std::unique_ptr<UserScript> LoadUserScriptFromDictionary(
     }
   }
 
-  if (css) {
-    base::Value::ConstListView css_list = css->GetList();
-    result->css_scripts().reserve(css_list.size());
-    for (size_t script_index = 0; script_index < css_list.size();
-         ++script_index) {
-      if (!css_list[script_index].is_string()) {
-        *error = ErrorUtils::FormatErrorMessageUTF16(
-            errors::kInvalidCss, base::NumberToString(definition_index),
-            base::NumberToString(script_index));
-        return nullptr;
-      }
-      const std::string& relative = css_list[script_index].GetString();
+  // css
+  if (content_script.css) {
+    result->css_scripts().reserve(content_script.css->size());
+    for (const std::string& relative : *content_script.css) {
       GURL url = extension->GetResourceURL(relative);
       ExtensionResource resource = extension->GetResource(relative);
       result->css_scripts().push_back(std::make_unique<UserScript::File>(
           resource.extension_root(), resource.relative_path(), url));
     }
   }
+
+  // The manifest needs to have at least one js or css user script definition.
+  if (result->js_scripts().empty() && result->css_scripts().empty()) {
+    *error = ErrorUtils::FormatErrorMessageUTF16(
+        errors::kMissingFile, base::NumberToString(definition_index));
+    return nullptr;
+  }
+
   return result;
 }
 
@@ -374,7 +240,7 @@ ContentScriptsInfo::~ContentScriptsInfo() {}
 const UserScriptList& ContentScriptsInfo::GetContentScripts(
     const Extension* extension) {
   ContentScriptsInfo* info = static_cast<ContentScriptsInfo*>(
-      extension->GetManifestData(keys::kContentScripts));
+      extension->GetManifestData(ContentScriptsKeys::kContentScripts));
   return info ? info->content_scripts
               : g_empty_script_list.Get().user_script_list;
 }
@@ -407,29 +273,30 @@ ContentScriptsHandler::ContentScriptsHandler() {}
 ContentScriptsHandler::~ContentScriptsHandler() {}
 
 base::span<const char* const> ContentScriptsHandler::Keys() const {
-  static constexpr const char* kKeys[] = {keys::kContentScripts};
+  static constexpr const char* kKeys[] = {ContentScriptsKeys::kContentScripts};
   return kKeys;
 }
 
 bool ContentScriptsHandler::Parse(Extension* extension, base::string16* error) {
-  std::unique_ptr<ContentScriptsInfo> content_scripts_info(
-      new ContentScriptsInfo);
-  const base::Value* scripts_list = nullptr;
-  if (!extension->manifest()->GetList(keys::kContentScripts, &scripts_list)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidContentScriptsList);
+  ContentScriptsKeys manifest_keys;
+  if (!ContentScriptsKeys::ParseFromDictionary(*extension->manifest()->value(),
+                                               &manifest_keys, error)) {
     return false;
   }
 
-  base::Value::ConstListView list_view = scripts_list->GetList();
-  for (size_t i = 0; i < list_view.size(); ++i) {
-    if (!list_view[i].is_dict()) {
-      *error = ErrorUtils::FormatErrorMessageUTF16(
-          errors::kInvalidContentScript, base::NumberToString(i));
-      return false;
-    }
+  auto content_scripts_info = std::make_unique<ContentScriptsInfo>();
 
-    std::unique_ptr<UserScript> user_script =
-        LoadUserScriptFromDictionary(list_view[i], i, extension, error);
+  const bool can_execute_script_everywhere =
+      PermissionsData::CanExecuteScriptEverywhere(extension->id(),
+                                                  extension->location());
+  const int valid_schemes =
+      UserScript::ValidUserScriptSchemes(can_execute_script_everywhere);
+  const bool all_urls_includes_chrome_urls =
+      PermissionsData::AllUrlsIncludesChromeUrls(extension->id());
+  for (size_t i = 0; i < manifest_keys.content_scripts.size(); ++i) {
+    std::unique_ptr<UserScript> user_script = CreateUserScript(
+        manifest_keys.content_scripts[i], i, can_execute_script_everywhere,
+        valid_schemes, all_urls_includes_chrome_urls, extension, error);
     if (!user_script)
       return false;  // Failed to parse script context definition.
 
@@ -442,7 +309,8 @@ bool ContentScriptsHandler::Parse(Extension* extension, base::string16* error) {
     user_script->set_id(UserScript::GenerateUserScriptID());
     content_scripts_info->content_scripts.push_back(std::move(user_script));
   }
-  extension->SetManifestData(keys::kContentScripts,
+
+  extension->SetManifestData(ContentScriptsKeys::kContentScripts,
                              std::move(content_scripts_info));
   PermissionsParser::SetScriptableHosts(
       extension, ContentScriptsInfo::GetScriptableHosts(extension));

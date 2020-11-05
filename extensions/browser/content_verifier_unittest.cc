@@ -14,6 +14,7 @@
 #include "extensions/browser/content_verifier/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
+#include "extensions/common/api/content_scripts.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_paths.h"
@@ -225,7 +226,8 @@ class ContentVerifierTest : public ExtensionsTest {
     matches->AppendString("http://*/*");
     content_script->Set("matches", std::move(matches));
     content_scripts->Append(std::move(content_script));
-    manifest.Set(manifest_keys::kContentScripts, std::move(content_scripts));
+    manifest.Set(api::content_scripts::ManifestKeys::kContentScripts,
+                 std::move(content_scripts));
 
     base::FilePath path;
     EXPECT_TRUE(base::PathService::Get(DIR_TEST_DATA, &path));
