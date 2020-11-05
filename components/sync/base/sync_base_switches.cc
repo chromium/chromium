@@ -9,6 +9,9 @@ namespace switches {
 // Overrides the default server used for profile sync.
 const char kSyncServiceURL[] = "sync-url";
 
+// Specifies the vault server used for trusted vault passphrase.
+const char kTrustedVaultServiceURL[] = "trusted-vault-service-url";
+
 const base::Feature kSyncNigoriRemoveMetadataOnCacheGuidMismatch{
     "SyncNigoriRemoveMetadataOnCacheGuidMismatch",
     base::FEATURE_ENABLED_BY_DEFAULT};

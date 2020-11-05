@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind_helpers.h"
+#include "base/command_line.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -14,6 +15,8 @@
 #include "base/task_runner_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/bind_to_task_runner.h"
+#include "components/sync/base/sync_base_switches.h"
+#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/trusted_vault/standalone_trusted_vault_backend.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher_impl.h"
@@ -27,6 +30,17 @@ namespace {
 constexpr base::TaskTraits kBackendTaskTraits = {
     base::MayBlock(), base::TaskPriority::USER_VISIBLE,
     base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
+
+GURL ExtractTrustedVaultServiceURLFromCommandLine() {
+  std::string string_url =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kTrustedVaultServiceURL);
+  if (string_url.empty()) {
+    // Command line switch is not specified or is not a valid ASCII string.
+    return GURL();
+  }
+  return GURL(string_url);
+}
 
 class PrimaryAccountObserver : public signin::IdentityManager::Observer {
  public:
@@ -143,16 +157,24 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
           switches::kSyncSupportTrustedVaultPassphrase)) {
     return;
   }
+
+  std::unique_ptr<TrustedVaultConnection> connection;
+  GURL trusted_vault_service_gurl =
+      ExtractTrustedVaultServiceURLFromCommandLine();
+  if (trusted_vault_service_gurl.is_valid()) {
+    connection = std::make_unique<TrustedVaultConnectionImpl>(
+        trusted_vault_service_gurl, url_loader_factory->Clone(),
+        std::make_unique<TrustedVaultAccessTokenFetcherImpl>(
+            access_token_fetcher_frontend_.GetWeakPtr()));
+  }
+
   backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
       file_path,
       std::make_unique<
           BackendDelegate>(BindToCurrentSequence(base::BindRepeating(
           &StandaloneTrustedVaultClient::NotifyRecoverabilityDegradedChanged,
           weak_ptr_factory_.GetWeakPtr()))),
-      std::make_unique<TrustedVaultConnectionImpl>(
-          url_loader_factory->Clone(),
-          std::make_unique<TrustedVaultAccessTokenFetcherImpl>(
-              access_token_fetcher_frontend_.GetWeakPtr())));
+      std::move(connection));
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&StandaloneTrustedVaultBackend::ReadDataFromDisk,

@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "components/sync/trusted_vault/trusted_vault_connection.h"
 #include "url/gurl.h"
 
 struct CoreAccountId;
@@ -29,7 +30,7 @@ namespace syncer {
 class TrustedVaultAccessTokenFetcher;
 
 // Allows calling VaultService API using proto-over-http.
-class TrustedVaultRequest {
+class TrustedVaultRequest : public TrustedVaultConnection::Request {
  public:
   using CompletionCallback =
       base::OnceCallback<void(bool success, const std::string& response_body)>;
@@ -45,7 +46,7 @@ class TrustedVaultRequest {
       const base::Optional<std::string>& serialized_request_proto);
   TrustedVaultRequest(const TrustedVaultRequest& other) = delete;
   TrustedVaultRequest& operator=(const TrustedVaultRequest& other) = delete;
-  ~TrustedVaultRequest();
+  ~TrustedVaultRequest() override;
 
   // Attempts to fetch access token and sends the request if fetch was
   // successful or populates error into ResultCallback otherwise. Should be

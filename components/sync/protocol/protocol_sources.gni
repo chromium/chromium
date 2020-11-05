@@ -62,6 +62,7 @@ sync_protocol_bases = [
   "user_consent_specifics",
   "user_consent_types",
   "user_event_specifics",
+  "vault",
   "web_app_specifics",
   "wifi_configuration_specifics",
 ]

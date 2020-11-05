@@ -56,21 +56,21 @@ class MockTrustedVaultConnection : public TrustedVaultConnection {
  public:
   MockTrustedVaultConnection() = default;
   ~MockTrustedVaultConnection() override = default;
-  MOCK_METHOD(void,
+  MOCK_METHOD(std::unique_ptr<Request>,
               RegisterAuthenticationFactor,
-              (const CoreAccountInfo&,
-               const std::vector<uint8_t>&,
-               int,
-               const SecureBoxPublicKey&,
-               RegisterAuthenticationFactorCallback),
+              (const CoreAccountInfo& account_info,
+               const std::vector<uint8_t>& last_trusted_vault_key,
+               int last_trusted_vault_key_version,
+               const SecureBoxPublicKey& authentication_factor_public_key,
+               RegisterAuthenticationFactorCallback callback),
               (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(std::unique_ptr<Request>,
               DownloadKeys,
-              (const CoreAccountInfo&,
-               const std::vector<uint8_t>&,
-               int,
-               std::unique_ptr<SecureBoxKeyPair>,
-               DownloadKeysCallback),
+              (const CoreAccountInfo& account_info,
+               const std::vector<uint8_t>& last_trusted_vault_key,
+               int last_trusted_vault_key_version,
+               std::unique_ptr<SecureBoxKeyPair> device_key_pair,
+               DownloadKeysCallback callback),
               (override));
 };
 
@@ -126,6 +126,11 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
                 TrustedVaultConnection::RegisterAuthenticationFactorCallback
                     callback) {
               device_registration_callback = std::move(callback);
+              // Note: TrustedVaultConnection::Request doesn't support
+              // cancellation, so these tests don't cover the contract that
+              // caller should store Request object until it's completed or need
+              // to be cancelled.
+              return std::make_unique<TrustedVaultConnection::Request>();
             });
     // Setting the primary account will trigger device registration.
     backend()->SetPrimaryAccount(account_info);
@@ -308,6 +313,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
                         callback) {
         serialized_public_device_key = device_public_key.ExportToBytes();
         device_registration_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
       });
 
   // Setting the primary account will trigger device registration.
@@ -382,6 +388,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadKeys) {
                     TrustedVaultConnection::DownloadKeysCallback callback) {
         device_key_pair = std::move(key_pair);
         download_keys_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
       });
 
   // FetchKeys() should trigger keys downloading.

@@ -42,6 +42,9 @@ class StandaloneTrustedVaultBackend
     virtual void NotifyRecoverabilityDegradedChanged() = 0;
   };
 
+  // |connection| can be null, in this case functionality that involves
+  // interaction with vault service (such as device registration, keys
+  // downloading, etc.) will be disabled.
   StandaloneTrustedVaultBackend(
       const base::FilePath& file_path,
       std::unique_ptr<Delegate> delegate,
@@ -128,7 +131,11 @@ class StandaloneTrustedVaultBackend
 
   const std::unique_ptr<Delegate> delegate_;
 
-  // Used for communication with trusted vault server.
+  // Used for communication with trusted vault server. Can be null, in this case
+  // functionality that involves interaction with vault service (such as device
+  // registration, keys downloading, etc.) will be disabled.
+  // TODO(crbug.com/1113598): clean up logic around nullable |connection_|, once
+  // kFollowTrustedVaultKeyRotation feature flag is removed.
   const std::unique_ptr<TrustedVaultConnection> connection_;
 
   sync_pb::LocalTrustedVault data_;
@@ -143,11 +150,10 @@ class StandaloneTrustedVaultBackend
   // Account used in last FetchKeys() call.
   base::Optional<std::string> ongoing_fetch_keys_gaia_id_;
 
-  bool is_recoverability_degraded_for_testing_ = false;
+  // Destroying this will cancel the ongoing request.
+  std::unique_ptr<TrustedVaultConnection::Request> ongoing_connection_request_;
 
-  // Used for cancellation of callbacks passed to |connection_|.
-  base::WeakPtrFactory<StandaloneTrustedVaultBackend>
-      weak_factory_for_connection_{this};
+  bool is_recoverability_degraded_for_testing_ = false;
 };
 
 }  // namespace syncer

@@ -1,0 +1,31 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+option java_package = "sync_pb";
+package sync_pb;
+
+message SharedKey {
+  optional int32 epoch = 1;
+  optional bytes wrapped_key = 2;
+  optional bytes member_proof = 3;
+}
+
+message SecurityDomain {
+  optional string name = 1;
+
+  message Member {
+    optional bytes public_key = 1;
+    repeated SharedKey keys = 2;
+  }
+
+  repeated Member members = 2;
+}
+
+message JoinSecurityDomainsRequest {
+  repeated SecurityDomain security_domains = 1;
+}

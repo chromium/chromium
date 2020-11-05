@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/sequence_checker.h"
 #include "components/os_crypt/os_crypt.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/trusted_vault/securebox.h"
 
 namespace syncer {
@@ -79,8 +78,7 @@ void StandaloneTrustedVaultBackend::FetchKeys(
   // |primary_account_| is set before FetchKeys() call and this may cause
   // redundant sync error in the UI (for key retrieval), especially during the
   // browser startup. Try to find a way to avoid this issue.
-  if (!base::FeatureList::IsEnabled(switches::kFollowTrustedVaultKeyRotation) ||
-      !primary_account_.has_value() ||
+  if (!connection_ || !primary_account_.has_value() ||
       primary_account_->gaia != account_info.gaia || !per_user_vault ||
       !per_user_vault->keys_are_stale() ||
       !per_user_vault->local_device_registration_info().device_registered()) {
@@ -96,7 +94,7 @@ void StandaloneTrustedVaultBackend::FetchKeys(
   // |account_info|.
   // 3. Concurrent FetchKeys() calls aren't supported, so there is no keys
   // download for |account_info|.
-  DCHECK(!weak_factory_for_connection_.HasWeakPtrs());
+  DCHECK(!ongoing_connection_request_);
 
   std::unique_ptr<SecureBoxKeyPair> key_pair =
       SecureBoxKeyPair::CreateByPrivateKeyImport(base::as_bytes(
@@ -122,12 +120,14 @@ void StandaloneTrustedVaultBackend::FetchKeys(
                              .at(per_user_vault->vault_key_size() - 1)
                              .key_material();
   std::vector<uint8_t> last_key_bytes(last_key.begin(), last_key.end());
-  connection_->DownloadKeys(
+  // |this| outlives |connection_| and |ongoing_connection_request_|, so it's
+  // safe to use base::Unretained() here.
+  ongoing_connection_request_ = connection_->DownloadKeys(
       *primary_account_, last_key_bytes,
       per_user_vault->last_vault_key_version(), std::move(key_pair),
       base::BindOnce(&StandaloneTrustedVaultBackend::OnKeysDownloaded,
-                     weak_factory_for_connection_.GetWeakPtr(),
-                     account_info.gaia));
+                     base::Unretained(this), account_info.gaia));
+  DCHECK(ongoing_connection_request_);
 }
 
 void StandaloneTrustedVaultBackend::StoreKeys(
@@ -229,7 +229,8 @@ void StandaloneTrustedVaultBackend::SetRecoverabilityDegradedForTesting() {
 
 void StandaloneTrustedVaultBackend::MaybeRegisterDevice(
     const std::string& gaia_id) {
-  if (!base::FeatureList::IsEnabled(switches::kFollowTrustedVaultKeyRotation)) {
+  if (!connection_) {
+    // Feature disabled.
     return;
   }
   if (!primary_account_.has_value() || primary_account_->gaia != gaia_id) {
@@ -281,11 +282,14 @@ void StandaloneTrustedVaultBackend::MaybeRegisterDevice(
   // Cancel existing callbacks passed to |connection_| to ensure there is only
   // one ongoing request.
   AbandonConnectionRequest();
-  connection_->RegisterAuthenticationFactor(
+  // |this| outlives |connection_| and |ongoing_connection_request_|, so it's
+  // safe to use base::Unretained() here.
+  ongoing_connection_request_ = connection_->RegisterAuthenticationFactor(
       *primary_account_, last_key_bytes,
       per_user_vault->last_vault_key_version(), key_pair->public_key(),
       base::BindOnce(&StandaloneTrustedVaultBackend::OnDeviceRegistered,
-                     weak_factory_for_connection_.GetWeakPtr(), gaia_id));
+                     base::Unretained(this), gaia_id));
+  DCHECK(ongoing_connection_request_);
 }
 
 void StandaloneTrustedVaultBackend::OnDeviceRegistered(
@@ -294,6 +298,12 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
   // If |primary_account_| was changed meanwhile, this callback must be
   // cancelled.
   DCHECK(primary_account_ && primary_account_->gaia == gaia_id);
+
+  // This method should be called only as a result of
+  // |ongoing_connection_request_| completion/failure, verify this condition
+  // and destroy |ongoing_connection_request_| as it's not needed anymore.
+  DCHECK(ongoing_connection_request_);
+  ongoing_connection_request_ = nullptr;
 
   sync_pb::LocalTrustedVaultPerUser* per_user_vault = FindUserVault(gaia_id);
   DCHECK(per_user_vault);
@@ -323,6 +333,12 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
   DCHECK(primary_account_ && primary_account_->gaia == gaia_id);
   DCHECK(!ongoing_fetch_keys_callback_.is_null());
   DCHECK(ongoing_fetch_keys_gaia_id_ == gaia_id);
+
+  // This method should be called only as a result of
+  // |ongoing_connection_request_| completion/failure, verify this condition
+  // and destroy |ongoing_connection_request_| as it's not needed anymore.
+  DCHECK(ongoing_connection_request_);
+  ongoing_connection_request_ = nullptr;
 
   sync_pb::LocalTrustedVaultPerUser* per_user_vault = FindUserVault(gaia_id);
   DCHECK(per_user_vault);
@@ -355,7 +371,7 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
 }
 
 void StandaloneTrustedVaultBackend::AbandonConnectionRequest() {
-  weak_factory_for_connection_.InvalidateWeakPtrs();
+  ongoing_connection_request_ = nullptr;
   FulfillOngoingFetchKeys();
 }
 

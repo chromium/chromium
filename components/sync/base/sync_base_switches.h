@@ -11,6 +11,7 @@
 namespace switches {
 
 extern const char kSyncServiceURL[];
+extern const char kTrustedVaultServiceURL[];
 
 extern const base::Feature kSyncNigoriRemoveMetadataOnCacheGuidMismatch;
 extern const base::Feature kSyncForceDisableScryptForCustomPassphrase;
