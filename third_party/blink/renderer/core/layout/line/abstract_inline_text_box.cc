@@ -353,9 +353,8 @@ scoped_refptr<AbstractInlineTextBox> LegacyAbstractInlineTextBox::NextOnLine()
     return nullptr;
 
   InlineBox* next = inline_text_box_->NextOnLine();
-  if (next && next->IsInlineTextBox())
-    return GetOrCreate(ToInlineTextBox(next)->GetLineLayoutItem(),
-                       ToInlineTextBox(next));
+  if (auto* text_box = DynamicTo<InlineTextBox>(next))
+    return GetOrCreate(text_box->GetLineLayoutItem(), text_box);
 
   return nullptr;
 }
@@ -368,9 +367,8 @@ LegacyAbstractInlineTextBox::PreviousOnLine() const {
     return nullptr;
 
   InlineBox* previous = inline_text_box_->PrevOnLine();
-  if (previous && previous->IsInlineTextBox())
-    return GetOrCreate(ToInlineTextBox(previous)->GetLineLayoutItem(),
-                       ToInlineTextBox(previous));
+  if (auto* text_box = DynamicTo<InlineTextBox>(previous))
+    return GetOrCreate(text_box->GetLineLayoutItem(), text_box);
 
   return nullptr;
 }

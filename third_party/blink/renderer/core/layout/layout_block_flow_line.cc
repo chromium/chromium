@@ -106,7 +106,7 @@ class ExpansionOpportunities {
 
         // Don't justify for white-space: pre.
         if (r->line_layout_item_.StyleRef().WhiteSpace() != EWhiteSpace::kPre) {
-          InlineTextBox* text_box = ToInlineTextBox(r->box_);
+          auto* text_box = To<InlineTextBox>(r->box_);
           CHECK(total_opportunities_);
           int expansion = ((available_logical_width - total_logical_width) *
                            opportunities_in_run / total_opportunities_)
@@ -228,7 +228,7 @@ InlineFlowBox* LayoutBlockFlow::CreateLineBoxes(LineLayoutItem line_layout_item,
       InlineBox* new_box = CreateInlineBoxForLayoutObject(
           LineLayoutItem(line_layout_item), line_layout_item.IsEqual(this));
       SECURITY_DCHECK(new_box->IsInlineFlowBox());
-      parent_box = ToInlineFlowBox(new_box);
+      parent_box = To<InlineFlowBox>(new_box);
       parent_box->SetFirstLineStyleBit(line_info.IsFirstLine());
       parent_box->SetIsHorizontal(IsHorizontalWritingMode());
       constructed_new_box = true;
@@ -549,7 +549,7 @@ static inline void SetLogicalWidthForTextRun(
   const Font& font = layout_text.Style(line_info.IsFirstLine())->GetFont();
 
   LayoutUnit hyphen_width;
-  if (ToInlineTextBox(run->box_)->HasHyphen())
+  if (To<InlineTextBox>(run->box_)->HasHyphen())
     hyphen_width = LayoutUnit(layout_text.HyphenWidth(font, run->Direction()));
 
   float measured_width = 0;
@@ -636,7 +636,7 @@ static inline void SetLogicalWidthForTextRun(
     DCHECK(run->box_->IsText());
     GlyphOverflowAndFallbackFontsMap::ValueType* it =
         text_box_data_map
-            .insert(ToInlineTextBox(run->box_),
+            .insert(To<InlineTextBox>(run->box_),
                     std::make_pair(Vector<const SimpleFontData*>(),
                                    GlyphOverflow()))
             .stored_value;
@@ -648,7 +648,7 @@ static inline void SetLogicalWidthForTextRun(
     DCHECK(run->box_->IsText());
     GlyphOverflowAndFallbackFontsMap::ValueType* it =
         text_box_data_map
-            .insert(ToInlineTextBox(run->box_),
+            .insert(To<InlineTextBox>(run->box_),
                     std::make_pair(Vector<const SimpleFontData*>(),
                                    GlyphOverflow()))
             .stored_value;
@@ -833,7 +833,7 @@ BidiRun* LayoutBlockFlow::ComputeInlineDirectionPositionsForSegment(
       if (text_align == ETextAlign::kJustify && r != trailing_space_run &&
           text_justify != TextJustify::kNone) {
         if (!is_after_expansion)
-          ToInlineTextBox(r->box_)->SetCanHaveLeadingExpansion(true);
+          To<InlineTextBox>(r->box_)->SetCanHaveLeadingExpansion(true);
         expansions.AddRunWithExpansions(*r, is_after_expansion, text_justify);
       }
 

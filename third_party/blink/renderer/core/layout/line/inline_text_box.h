@@ -240,7 +240,10 @@ class CORE_EXPORT InlineTextBox : public InlineBox {
   }
 };
 
-DEFINE_INLINE_BOX_TYPE_CASTS(InlineTextBox);
+template <>
+struct DowncastTraits<InlineTextBox> {
+  static bool AllowFrom(const InlineBox& box) { return box.IsInlineTextBox(); }
+};
 
 }  // namespace blink
 

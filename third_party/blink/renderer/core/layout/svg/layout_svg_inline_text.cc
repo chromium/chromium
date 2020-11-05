@@ -118,7 +118,7 @@ LayoutRect LayoutSVGInlineText::LocalCaretRect(const InlineBox* box,
   if (!box || !box->IsInlineTextBox())
     return LayoutRect();
 
-  const InlineTextBox* text_box = ToInlineTextBox(box);
+  const auto* text_box = To<InlineTextBox>(box);
   if (static_cast<unsigned>(caret_offset) < text_box->Start() ||
       static_cast<unsigned>(caret_offset) > text_box->Start() + text_box->Len())
     return LayoutRect();

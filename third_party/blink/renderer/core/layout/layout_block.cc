@@ -1320,7 +1320,7 @@ Position LayoutBlock::PositionForBox(InlineBox* box, bool start) const {
         start ? box->GetLineLayoutItem().CaretMinOffset()
               : box->GetLineLayoutItem().CaretMaxOffset());
 
-  InlineTextBox* text_box = ToInlineTextBox(box);
+  auto* text_box = To<InlineTextBox>(box);
   return Position::EditingPositionOf(
       box->GetLineLayoutItem().NonPseudoNode(),
       start ? text_box->Start() : text_box->Start() + text_box->Len());

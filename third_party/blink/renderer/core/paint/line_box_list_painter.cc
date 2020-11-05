@@ -45,8 +45,8 @@ void BuildBackplate(const InlineFlowBox* box,
     if (layout_item.IsText() || layout_item.IsListMarker()) {
       if (layout_item.IsText()) {
         String child_text =
-            ToInlineTextBox(child)->GetLineLayoutItem().GetText();
-        if (ToInlineTextBox(child)->IsLineBreak() ||
+            To<InlineTextBox>(child)->GetLineLayoutItem().GetText();
+        if (To<InlineTextBox>(child)->IsLineBreak() ||
             child_text.StartsWith('\n'))
           (*consecutive_line_breaks)++;
       }
@@ -69,7 +69,7 @@ void BuildBackplate(const InlineFlowBox* box,
     } else if (child->IsInlineFlowBox()) {
       // If an inline flow box was reached, continue to recursively build up the
       // backplate.
-      BuildBackplate(ToInlineFlowBox(child), paint_offset, current_backplate,
+      BuildBackplate(To<InlineFlowBox>(child), paint_offset, current_backplate,
                      consecutive_line_breaks, paragraph_backplates);
     }
   }

@@ -509,7 +509,10 @@ class InlineFlowBox : public InlineBox {
 #endif
 };
 
-DEFINE_INLINE_BOX_TYPE_CASTS(InlineFlowBox);
+template <>
+struct DowncastTraits<InlineFlowBox> {
+  static bool AllowFrom(const InlineBox& box) { return box.IsInlineFlowBox(); }
+};
 
 inline void InlineFlowBox::SetHasBadChildList() {
 #if DCHECK_IS_ON()

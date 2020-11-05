@@ -586,7 +586,7 @@ void RootInlineBox::AscentAndDescentForBox(
   Vector<const SimpleFontData*>* used_fonts = nullptr;
   if (box->IsText()) {
     GlyphOverflowAndFallbackFontsMap::iterator it =
-        text_box_data_map.find(ToInlineTextBox(box));
+        text_box_data_map.find(To<InlineTextBox>(box));
     used_fonts = it == text_box_data_map.end() ? nullptr : &it->value.first;
   }
 

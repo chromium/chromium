@@ -89,7 +89,7 @@ FloatRect SVGRootInlineBox::LayoutInlineBoxes(InlineBox& box) {
   if (auto* svg_inline_text_box = DynamicTo<SVGInlineTextBox>(box)) {
     rect = svg_inline_text_box->CalculateBoundaries();
   } else {
-    for (InlineBox* child = ToInlineFlowBox(box).FirstChild(); child;
+    for (InlineBox* child = To<InlineFlowBox>(box).FirstChild(); child;
          child = child->NextOnLine())
       rect.Unite(LayoutInlineBoxes(*child));
   }

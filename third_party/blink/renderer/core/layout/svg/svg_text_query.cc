@@ -89,7 +89,7 @@ static void CollectTextBoxesInFlowBox(InlineFlowBox* flow_box,
       if (!child->GetLineLayoutItem().GetNode())
         continue;
 
-      CollectTextBoxesInFlowBox(ToInlineFlowBox(child), text_boxes);
+      CollectTextBoxesInFlowBox(To<InlineFlowBox>(child), text_boxes);
       continue;
     }
 

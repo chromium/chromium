@@ -517,10 +517,6 @@ inline void InlineBox::SetHasBadParent() {
 }
 #endif
 
-#define DEFINE_INLINE_BOX_TYPE_CASTS(typeName)                     \
-  DEFINE_TYPE_CASTS(typeName, InlineBox, box, box->Is##typeName(), \
-                    box.Is##typeName())
-
 // Allow equality comparisons of InlineBox's by reference or pointer,
 // interchangeably.
 DEFINE_COMPARISON_OPERATORS_WITH_REFERENCES(InlineBox)

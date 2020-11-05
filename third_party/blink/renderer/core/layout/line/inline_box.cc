@@ -273,7 +273,7 @@ RootInlineBox& InlineBox::Root() {
 InlineBox* InlineBox::NextLeafChild() const {
   InlineBox* leaf = nullptr;
   for (InlineBox* box = NextOnLine(); box && !leaf; box = box->NextOnLine())
-    leaf = box->IsLeaf() ? box : ToInlineFlowBox(box)->FirstLeafChild();
+    leaf = box->IsLeaf() ? box : To<InlineFlowBox>(box)->FirstLeafChild();
   if (!leaf && Parent())
     leaf = Parent()->NextLeafChild();
   return leaf;
@@ -282,7 +282,7 @@ InlineBox* InlineBox::NextLeafChild() const {
 InlineBox* InlineBox::PrevLeafChild() const {
   InlineBox* leaf = nullptr;
   for (InlineBox* box = PrevOnLine(); box && !leaf; box = box->PrevOnLine())
-    leaf = box->IsLeaf() ? box : ToInlineFlowBox(box)->LastLeafChild();
+    leaf = box->IsLeaf() ? box : To<InlineFlowBox>(box)->LastLeafChild();
   if (!leaf && Parent())
     leaf = Parent()->PrevLeafChild();
   return leaf;
@@ -358,7 +358,7 @@ void InlineBox::SetShouldDoFullPaintInvalidationForFirstLine() {
   GetLineLayoutItem().SetShouldDoFullPaintInvalidation();
   if (!IsInlineFlowBox())
     return;
-  for (InlineBox* child = ToInlineFlowBox(this)->FirstChild(); child;
+  for (InlineBox* child = To<InlineFlowBox>(this)->FirstChild(); child;
        child = child->NextOnLine())
     child->SetShouldDoFullPaintInvalidationForFirstLine();
 }
