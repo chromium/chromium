@@ -43,8 +43,10 @@ class DiscoverFeedProvider {
   // Returns true if the Discover Feed is enabled.
   virtual bool IsDiscoverFeedEnabled();
   // Returns the Discover Feed ViewController.
-  virtual UIViewController* NewFeedViewController(Browser* browser)
-      NS_RETURNS_RETAINED;
+  virtual UIViewController* NewFeedViewController(Browser* browser);
+  // Removes the Discover |feedViewController|. It should be called whenever
+  // |feedViewController| will no longer be used.
+  virtual void RemoveFeedViewController(UIViewController* feedViewController);
   // Updates the feed's theme to match the user's theme (light/dark).
   virtual void UpdateTheme();
   // Refreshes the Discover Feed. Once the Feed model is refreshed it will

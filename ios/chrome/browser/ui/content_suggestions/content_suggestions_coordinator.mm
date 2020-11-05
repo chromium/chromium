@@ -332,6 +332,11 @@
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
   self.headerController = nil;
+  if (IsDiscoverFeedEnabled()) {
+    ios::GetChromeBrowserProvider()
+        ->GetDiscoverFeedProvider()
+        ->RemoveFeedViewController(self.discoverFeedViewController);
+  }
   _visible = NO;
 }
 

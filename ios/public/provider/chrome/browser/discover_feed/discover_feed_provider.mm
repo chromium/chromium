@@ -21,6 +21,9 @@ UIViewController* DiscoverFeedProvider::NewFeedViewController(
   return nil;
 }
 
+void DiscoverFeedProvider::RemoveFeedViewController(
+    UIViewController* feedViewController) {}
+
 void DiscoverFeedProvider::UpdateTheme() {}
 
 void DiscoverFeedProvider::RefreshFeed() {}
