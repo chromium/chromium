@@ -16,6 +16,7 @@
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/login/localized_values_builder.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace chromeos {
 
@@ -79,17 +80,16 @@ void ResetScreenHandler::DeclareLocalizedValues(
                IDS_RESET_SCREEN_TPM_FIRMWARE_UPDATE_OPTION);
 
   // Variants for screen title.
-  builder->AddF("resetWarningTitle",
-                IDS_RESET_SCREEN_WARNING_MSG,
-                IDS_SHORT_PRODUCT_NAME);
+  builder->AddF("resetWarningTitle", IDS_RESET_SCREEN_WARNING_MSG,
+                ui::GetChromeOSDeviceName());
 
   // Variants for screen message.
   builder->AddF("resetPowerwashWarningDetails",
                 IDS_RESET_SCREEN_WARNING_POWERWASH_MSG,
-                IDS_SHORT_PRODUCT_NAME);
+                ui::GetChromeOSDeviceName());
   builder->AddF("resetPowerwashRollbackWarningDetails",
                 IDS_RESET_SCREEN_WARNING_POWERWASH_AND_ROLLBACK_MSG,
-                IDS_SHORT_PRODUCT_NAME);
+                ui::GetChromeOSDeviceName());
 
   builder->Add("confirmPowerwashTitle", IDS_RESET_SCREEN_POPUP_POWERWASH_TITLE);
   builder->Add("confirmRollbackTitle", IDS_RESET_SCREEN_POPUP_ROLLBACK_TITLE);

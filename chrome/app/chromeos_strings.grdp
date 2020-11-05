@@ -2294,13 +2294,13 @@
     OK
   </message>
   <message name="IDS_RESET_SCREEN_WARNING_MSG" desc="Warning text shown on reset screen above the exclamation icon.">
-    Reset this <ph name="IDS_SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph> device
+    Reset this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
   <message name="IDS_RESET_SCREEN_WARNING_POWERWASH_MSG" desc="Warning text shown on reset screen below the exclamation icon.">
-    Powerwash to reset your <ph name="IDS_SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph> device to be just like new.
+    Powerwash to reset your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> to be just like new.
   </message>
   <message name="IDS_RESET_SCREEN_WARNING_POWERWASH_AND_ROLLBACK_MSG" desc="Warning text shown on reset screen below the exclamation icon.">
-    Powerwash your <ph name="IDS_SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph> device and return to the previous version.
+    Powerwash your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> and return to the previous version.
   </message>
   <message name="IDS_RESET_SCREEN_WARNING_DETAILS_DATA" desc="Additional warning text shown on reset screen below the main warning.">
     All user accounts and local data will be removed.
