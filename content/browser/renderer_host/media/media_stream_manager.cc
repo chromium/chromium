@@ -242,6 +242,8 @@ const char* StreamTypeToString(blink::mojom::MediaStreamType type) {
       return "DISPLAY_AUDIO_CAPTURE";
     case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE:
       return "DISPLAY_VIDEO_CAPTURE";
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
+      return "DISPLAY_VIDEO_CAPTURE_THIS_TAB";
     case blink::mojom::MediaStreamType::NO_SERVICE:
       return "NO_SERVICE";
     case blink::mojom::MediaStreamType::NUM_MEDIA_TYPES:
@@ -1465,7 +1467,8 @@ void MediaStreamManager::SetUpRequest(const std::string& label) {
   request->SetVideoType(request->controls.video.stream_type);
 
   const bool is_display_capture =
-      request->video_type() == MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+      request->video_type() == MediaStreamType::DISPLAY_VIDEO_CAPTURE ||
+      request->video_type() == MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB;
   if (is_display_capture && !SetUpDisplayCaptureRequest(request)) {
     FinalizeRequestFailed(label, request,
                           MediaStreamRequestResult::SCREEN_CAPTURE_FAILURE);
@@ -1510,7 +1513,9 @@ void MediaStreamManager::SetUpRequest(const std::string& label) {
 
 bool MediaStreamManager::SetUpDisplayCaptureRequest(DeviceRequest* request) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(request->video_type() == MediaStreamType::DISPLAY_VIDEO_CAPTURE);
+  DCHECK(request->video_type() == MediaStreamType::DISPLAY_VIDEO_CAPTURE ||
+         request->video_type() ==
+             MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB);
 
   // getDisplayMedia function does not permit the use of constraints for
   // selection of a source, see

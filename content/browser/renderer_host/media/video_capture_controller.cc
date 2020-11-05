@@ -69,6 +69,11 @@ void LogVideoFrameDrop(media::VideoCaptureFrameDropReason reason,
       UMA_HISTOGRAM_ENUMERATION("Media.VideoCapture.FrameDrop.DisplayCapture",
                                 reason, kEnumCount);
       break;
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
+      UMA_HISTOGRAM_ENUMERATION(
+          "Media.VideoCapture.FrameDrop.DisplayCaptureCurrentTab", reason,
+          kEnumCount);
+      break;
     default:
       // Do nothing
       return;
@@ -102,6 +107,11 @@ void LogMaxConsecutiveVideoFrameDropCountExceeded(
       UMA_HISTOGRAM_ENUMERATION(
           "Media.VideoCapture.MaxFrameDropExceeded.DisplayCapture", reason,
           kEnumCount);
+      break;
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
+      UMA_HISTOGRAM_ENUMERATION(
+          "Media.VideoCapture.MaxFrameDropExceeded.DisplayCaptureCurrentTab",
+          reason, kEnumCount);
       break;
     default:
       // Do nothing

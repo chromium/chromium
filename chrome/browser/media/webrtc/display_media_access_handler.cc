@@ -73,7 +73,9 @@ bool DisplayMediaAccessHandler::SupportsStreamType(
     content::WebContents* web_contents,
     const blink::mojom::MediaStreamType stream_type,
     const extensions::Extension* extension) {
-  return stream_type == blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+  return stream_type == blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE ||
+         stream_type ==
+             blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB;
   // This class handles MEDIA_DISPLAY_AUDIO_CAPTURE as well, but only if it is
   // accompanied by MEDIA_DISPLAY_VIDEO_CAPTURE request as per spec.
   // https://w3c.github.io/mediacapture-screen-share/#mediadevices-additions
@@ -134,6 +136,16 @@ void DisplayMediaAccessHandler::HandleRequest(
     return;
   }
 #endif  // defined(OS_MAC)
+
+  if (request.video_type ==
+      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
+    // TODO(crbug.com/1136942): Add support for capture-this-tab instead of
+    // returning an error
+    std::move(callback).Run(
+        blink::MediaStreamDevices(),
+        blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED, nullptr);
+    return;
+  }
 
   std::unique_ptr<DesktopMediaPicker> picker = picker_factory_->CreatePicker();
   if (!picker) {
@@ -267,8 +279,7 @@ void DisplayMediaAccessHandler::OnPickerDialogResults(
           web_contents->GetLastCommittedURL(),
           url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
       ui = GetDevicesForDesktopCapture(
-          web_contents, &devices, media_id,
-          blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+          web_contents, &devices, media_id, pending_request.request.video_type,
           blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE,
           media_id.audio_share, false /* disable_local_echo */,
           display_notification_, visible_url, visible_url);

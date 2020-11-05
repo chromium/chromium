@@ -19223,6 +19223,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="VideoCaptureFrameDrop" separator=".">
   <suffix name="DeviceCapture" label=""/>
   <suffix name="DisplayCapture" label=""/>
+  <suffix name="DisplayCaptureCurrentTab" label=""/>
   <suffix name="GumDesktopCapture" label=""/>
   <suffix name="GumTabCapture" label=""/>
   <affected-histogram name="Media.VideoCapture.FrameDrop"/>

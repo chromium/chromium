@@ -149,8 +149,8 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
 #endif  // !defined(OS_ANDROID)
 
     case blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE:
-      FALLTHROUGH;
-    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE: {
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE:
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB: {
       const DesktopMediaID desktop_id = DesktopMediaID::Parse(device_id);
       if (desktop_id.is_null()) {
         DLOG(ERROR) << "Desktop media ID is null";
