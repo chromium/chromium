@@ -1658,4 +1658,71 @@ TEST_F(TouchSelectionControllerTest, HideActiveSelectionHandle) {
   EXPECT_EQ(1.f, test_controller.GetEndAlpha());
 }
 
+TEST_F(TouchSelectionControllerTest, SwipeToMoveCursor_HideHandlesIfShown) {
+  // Step 1: Extra set-up.
+  // For Android P+, we need to hide handles while showing magnifier.
+  SetHideActiveHandle(true);
+  TouchSelectionControllerTestApi test_controller(&controller());
+
+  gfx::RectF insertion_rect(5, 5, 0, 10);
+  bool visible = true;
+
+  OnTapEvent();
+  ChangeInsertion(insertion_rect, visible);
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(INSERTION_HANDLE_SHOWN));
+  EXPECT_EQ(insertion_rect.bottom_left(), GetLastEventStart());
+
+  EXPECT_TRUE(test_controller.GetStartVisible());
+
+  // Step 2: Swipe-to-move-cursor begins: hide handles.
+  controller().OnSwipeToMoveCursorBegin();
+  EXPECT_FALSE(test_controller.GetStartVisible());
+
+  // Step 3: Move insertion: still hidden.
+  gfx::RectF new_insertion_rect(10, 5, 0, 10);
+  ChangeInsertion(new_insertion_rect, visible);
+  EXPECT_FALSE(test_controller.GetStartVisible());
+
+  // Step 4: Swipe-to-move-cursor ends: show handles.
+  controller().OnSwipeToMoveCursorEnd();
+  EXPECT_TRUE(test_controller.GetStartVisible());
+}
+
+TEST_F(TouchSelectionControllerTest, SwipeToMoveCursor_HandleWasNotShown) {
+  // Step 1: Extra set-up.
+  // For Android P+, we need to hide handles while showing magnifier.
+  SetHideActiveHandle(true);
+  TouchSelectionControllerTestApi test_controller(&controller());
+
+  gfx::RectF insertion_rect(5, 5, 0, 10);
+  bool visible = true;
+
+  OnTapEvent();
+  ChangeInsertion(insertion_rect, visible);
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(INSERTION_HANDLE_SHOWN));
+  EXPECT_EQ(insertion_rect.bottom_left(), GetLastEventStart());
+
+  EXPECT_TRUE(test_controller.GetStartVisible());
+
+  // Step 2: Handle is initially hidden, i.e., due to user typing.
+  controller().HideAndDisallowShowingAutomatically();
+  EXPECT_FALSE(test_controller.GetStartVisible());
+
+  // Step 3: Swipe-to-move-cursor begins: hide handles.
+  controller().OnSwipeToMoveCursorBegin();
+  EXPECT_FALSE(test_controller.GetStartVisible());
+
+  // Step 4: Move insertion.
+  // Note that this step is needed to show handle at the end since
+  // OnInsertionChanged() should activate start_ again, although it will stay
+  // temporarily hidden.
+  gfx::RectF new_insertion_rect(10, 5, 0, 10);
+  ChangeInsertion(new_insertion_rect, visible);
+  EXPECT_FALSE(test_controller.GetStartVisible());
+
+  // Step 5: Swipe-to-move-cursor ends: show handles.
+  controller().OnSwipeToMoveCursorEnd();
+  EXPECT_TRUE(test_controller.GetStartVisible());
+}
+
 }  // namespace ui

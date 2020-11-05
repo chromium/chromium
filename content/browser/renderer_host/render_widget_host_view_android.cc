@@ -99,6 +99,7 @@
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/touch_selection/selection_event_type.h"
 #include "ui/touch_selection/touch_selection_controller.h"
 
 namespace content {
@@ -1633,6 +1634,9 @@ void RenderWidgetHostViewAndroid::GestureEventAck(
 
   if (gesture_listener_manager_)
     gesture_listener_manager_->GestureEventAck(event, ack_result);
+
+  if (event.data.scroll_begin.cursor_control || swipe_to_move_cursor_activated_)
+    OnSwipeToMoveCursorGestureAck(event);
 }
 
 void RenderWidgetHostViewAndroid::ChildDidAckGestureEvent(
@@ -2438,6 +2442,37 @@ void RenderWidgetHostViewAndroid::SetDisplayFeatureForTesting(
   // RenderWidgetHostViewAndroid display feature mocking should be done via
   // TestViewAndroidDelegate instead - see MockDisplayFeature.
   NOTREACHED();
+}
+
+void RenderWidgetHostViewAndroid::OnSwipeToMoveCursorGestureAck(
+    const blink::WebGestureEvent& event) {
+  if (!touch_selection_controller_ || !selection_popup_controller_) {
+    swipe_to_move_cursor_activated_ = false;
+    return;
+  }
+
+  switch (event.GetType()) {
+    case blink::WebInputEvent::Type::kGestureScrollBegin: {
+      swipe_to_move_cursor_activated_ = true;
+      touch_selection_controller_->OnSwipeToMoveCursorBegin();
+      OnSelectionEvent(ui::INSERTION_HANDLE_DRAG_STARTED);
+      break;
+    }
+    case blink::WebInputEvent::Type::kGestureScrollUpdate: {
+      gfx::RectF rect = touch_selection_controller_->GetRectBetweenBounds();
+      selection_popup_controller_->OnDragUpdate(
+          gfx::PointF(event.PositionInWidget().x(), rect.right_center().y()));
+      break;
+    }
+    case blink::WebInputEvent::Type::kGestureScrollEnd: {
+      swipe_to_move_cursor_activated_ = false;
+      touch_selection_controller_->OnSwipeToMoveCursorEnd();
+      OnSelectionEvent(ui::INSERTION_HANDLE_DRAG_STOPPED);
+      break;
+    }
+    default:
+      break;
+  }
 }
 
 void RenderWidgetHostViewAndroid::WasEvicted() {

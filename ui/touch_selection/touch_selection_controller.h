@@ -139,6 +139,11 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
   const gfx::PointF& GetStartPosition() const;
   const gfx::PointF& GetEndPosition() const;
 
+  // To be called when swipe-to-move-cursor motion begins.
+  void OnSwipeToMoveCursorBegin();
+  // To be called when swipe-to-move-cursor motion ends.
+  void OnSwipeToMoveCursorEnd();
+
   const gfx::SelectionBound& start() const { return start_; }
   const gfx::SelectionBound& end() const { return end_; }
 

@@ -456,6 +456,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   void OnUpdateScopedSelectionHandles();
 
+  void OnSwipeToMoveCursorGestureAck(const blink::WebGestureEvent& event);
+
   bool is_showing_;
 
   // Window-specific bits that affect widget visibility.
@@ -557,6 +559,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   // into DevTools capture logic.
   // TODO(ericrk): Make this more robust.
   bool in_sync_copy_contents_ = false;
+
+  // Whether swipe-to-move-cursor gesture is activated.
+  bool swipe_to_move_cursor_activated_ = false;
 
   // A cached copy of the most up to date RenderFrameMetadata.
   base::Optional<cc::RenderFrameMetadata> last_render_frame_metadata_;
