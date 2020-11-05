@@ -284,14 +284,16 @@ bool WmGestureHandler::ProcessEventImpl(int finger_count,
 
   if (is_enhanced_desk_animations_ && finger_count == 4) {
     DCHECK(!moved);
+    // Horizon gesture may be flipped.
+    const float offset_x = GetOffset(-delta_x);
+    const float scroll_x = GetOffset(scroll_data_->scroll_x);
+    auto* desks_controller = DesksController::Get();
     // Update the continuous desk animation if it has already been started,
     // otherwise start it if it passes the threshold.
     if (scroll_data_->continuous_gesture_started) {
-      DesksController::Get()->UpdateSwipeAnimation(delta_x);
-    } else if (std::abs(scroll_data_->scroll_x) >
-               kContinuousGestureMoveThresholdDp) {
-      if (!DesksController::Get()->StartSwipeAnimation(
-              /*move_left=*/delta_x > 0)) {
+      desks_controller->UpdateSwipeAnimation(offset_x);
+    } else if (std::abs(scroll_x) > kContinuousGestureMoveThresholdDp) {
+      if (!desks_controller->StartSwipeAnimation(/*move_left=*/offset_x > 0)) {
         // Starting an animation failed. This can happen if we are on the
         // lockscreen or an ongoing animation from a different source is
         // happening. In this case reset |scroll_data_| and wait for the next 4
@@ -299,6 +301,9 @@ bool WmGestureHandler::ProcessEventImpl(int finger_count,
         scroll_data_.reset();
         return false;
       }
+      MaybeHandleWrongHorizontalGesture(/*move_left=*/scroll_x < 0,
+                                        desks_controller->GetPreviousDesk(),
+                                        desks_controller->GetNextDesk());
       scroll_data_->continuous_gesture_started = true;
     }
   }
