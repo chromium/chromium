@@ -642,6 +642,15 @@
     "expiry_milestone": 90
   },
   {
+    "name": "cookies-page-redesign",
+    "owners": [
+      "harrisonsean",
+      "sauski",
+      "msramek",
+      "chrome-friendly-settings@google.com"],
+    "expiry_milestone": 92
+  },
+  {
     "name": "cookies-without-same-site-must-be-secure",
     "owners": [ "chlily", "morlovich" ],
     "expiry_milestone": 90

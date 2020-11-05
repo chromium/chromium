@@ -5509,6 +5509,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kPrivacyReorderedAndroid)},
 #endif
 
+    {"cookies-page-redesign", flag_descriptions::kCookiesPageRedesignName,
+     flag_descriptions::kCookiesPageRedesignDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kCookiesPageRedesign)},
+
     {"privacy-settings-redesign",
      flag_descriptions::kPrivacySettingsRedesignName,
      flag_descriptions::kPrivacySettingsRedesignDescription, kOsDesktop,

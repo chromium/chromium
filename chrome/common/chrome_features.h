@@ -118,6 +118,9 @@ extern const base::Feature kClientStorageAccessContextAuditing;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kContentSettingsRedesign;
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kCookiesPageRedesign;
+
 #if defined(OS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kCpuAffinityRestrictToLittleCores;

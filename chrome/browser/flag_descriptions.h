@@ -282,6 +282,9 @@ extern const char kCompositedLayerBordersDescription[];
 extern const char kCookieDeprecationMessagesName[];
 extern const char kCookieDeprecationMessagesDescription[];
 
+extern const char kCookiesPageRedesignName[];
+extern const char kCookiesPageRedesignDescription[];
+
 extern const char kCookiesWithoutSameSiteMustBeSecureName[];
 extern const char kCookiesWithoutSameSiteMustBeSecureDescription[];
 

@@ -355,6 +355,9 @@ const char kContextMenuSearchAndShopWithGoogleLensDescription[] =
     "Display an additional menu item for a Shopping intent to Google Lens "
     "below Search with Google Lens when Lens shopping feature is enabled";
 
+const char kCookiesPageRedesignName[] = "Cookies Page Redesign";
+const char kCookiesPageRedesignDescription[] = "Enables cookies page redesign";
+
 const char kClickToOpenPDFName[] = "Click to open embedded PDFs";
 const char kClickToOpenPDFDescription[] =
     "When the PDF plugin is unavailable, show a click-to-open placeholder for "

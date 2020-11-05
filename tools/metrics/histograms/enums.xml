@@ -45746,6 +45746,7 @@ from previous Chrome versions.
   <int value="1896527497" label="ImmersiveUiMode:enabled"/>
   <int value="1898231011" label="enable-native-notifications"/>
   <int value="1899248188" label="MediaApp:disabled"/>
+  <int value="1900153036" label="CookiesPageRedesign:disabled"/>
   <int value="1900529524" label="disable-touch-drag-drop"/>
   <int value="1905465678" label="ContextualSearchSingleActions:enabled"/>
   <int value="1906942630" label="enable-easy-unlock"/>
@@ -45953,6 +45954,7 @@ from previous Chrome versions.
   <int value="2099945365" label="OmniboxAssistantVoiceSearch:enabled"/>
   <int value="2101151142" label="disable-direct-write"/>
   <int value="2104340988" label="CrostiniUsername:disabled"/>
+  <int value="2104718356" label="CookiesPageRedesign:enabled"/>
   <int value="2104788328" label="use-winrt-midi-api"/>
   <int value="2106798283" label="SafetyTip:disabled"/>
   <int value="2106855416" label="HostWindowsInAppShimProcess:enabled"/>
