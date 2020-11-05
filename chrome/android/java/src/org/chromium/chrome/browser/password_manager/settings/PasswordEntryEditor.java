@@ -141,7 +141,8 @@ public class PasswordEntryEditor extends Fragment {
         }
         mPendingAction = action;
         ReauthenticationManager.displayReauthenticationFragment(reasonString, View.NO_ID,
-                getParentFragmentManager(), ReauthenticationManager.ReauthScope.ONE_AT_A_TIME);
+                getActivity().getSupportFragmentManager(),
+                ReauthenticationManager.ReauthScope.ONE_AT_A_TIME);
     }
 
     @Override

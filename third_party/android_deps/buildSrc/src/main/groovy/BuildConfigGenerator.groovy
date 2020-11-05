@@ -354,8 +354,6 @@ class BuildConfigGenerator extends DefaultTask {
                 |  ]
                 |
                 |  ignore_proguard_configs = true
-                |
-                |  bytecode_rewriter_target = "//build/android/bytecode:fragment_activity_replacer"
                 |""".stripMargin())
                 break
             case 'androidx_media_media':
@@ -496,7 +494,6 @@ class BuildConfigGenerator extends DefaultTask {
                 |    "androidx/preference/PreferenceFragmentCompat*",
                 |  ]
                 |
-                |  bytecode_rewriter_target = "//build/android/bytecode:fragment_activity_replacer"
                 |""".stripMargin())
                 // Replace broad library -keep rules with a more limited set in
                 // chrome/android/java/proguard.flags instead.

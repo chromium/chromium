@@ -1297,7 +1297,6 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/gyp/apkbuilder.pydeps',
     'build/android/gyp/assert_static_initializers.pydeps',
     'build/android/gyp/bytecode_processor.pydeps',
-    'build/android/gyp/bytecode_rewriter.pydeps',
     'build/android/gyp/compile_java.pydeps',
     'build/android/gyp/compile_resources.pydeps',
     'build/android/gyp/copy_ex.pydeps',

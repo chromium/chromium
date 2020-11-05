@@ -352,9 +352,6 @@ android_aar_prebuilt("androidx_fragment_fragment_java") {
   jar_excluded_patterns = [ "androidx/fragment/app/DialogFragment*" ]
 
   ignore_proguard_configs = true
-
-  bytecode_rewriter_target =
-      "//build/android/bytecode:fragment_activity_replacer"
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -566,8 +563,6 @@ android_aar_prebuilt("androidx_preference_preference_java") {
     "androidx/preference/PreferenceFragmentCompat*",
   ]
 
-  bytecode_rewriter_target =
-      "//build/android/bytecode:fragment_activity_replacer"
   ignore_proguard_configs = true
 }
 

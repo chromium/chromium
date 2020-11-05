@@ -84,7 +84,8 @@ public class CableAuthenticatorModuleProvider extends Fragment {
     private void showModule() {
         mStatus.setText("Installed.");
 
-        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        FragmentTransaction transaction =
+                getActivity().getSupportFragmentManager().beginTransaction();
         Fragment fragment = Cablev2AuthenticatorModule.getImpl().getFragment();
         Bundle arguments = getArguments();
         if (arguments == null) {

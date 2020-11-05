@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.firstrun;
 
-import android.app.Activity;
+import androidx.fragment.app.FragmentActivity;
 
 /**
  * This interface is implemented by FRE fragments.
@@ -25,7 +25,7 @@ public interface FirstRunFragment {
     /**
      * @see Fragment#getActivity().
      */
-    Activity getActivity();
+    FragmentActivity getActivity();
 
     /**
      * Set the a11y focus when the fragment is shown on the screen.
