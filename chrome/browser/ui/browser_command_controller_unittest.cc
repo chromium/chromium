@@ -33,6 +33,24 @@
 
 typedef BrowserWithTestWindowTest BrowserCommandControllerTest;
 
+class GuestBrowserCommandControllerTest
+    : public BrowserWithTestWindowTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  GuestBrowserCommandControllerTest() : is_ephemeral_(GetParam()) {
+    // Change the value if Ephemeral is not supported.
+    is_ephemeral_ &=
+        TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+            scoped_feature_list_, is_ephemeral_);
+  }
+
+  bool is_ephemeral() const { return is_ephemeral_; }
+
+ private:
+  bool is_ephemeral_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKey) {
 #if defined(OS_CHROMEOS)
   // F1-3 keys are reserved Chrome accelerators on Chrome OS.
@@ -157,7 +175,7 @@ TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKeyIsApp) {
 #endif  // USE_AURA
 }
 
-TEST_F(BrowserCommandControllerTest, IncognitoCommands) {
+TEST_P(GuestBrowserCommandControllerTest, IncognitoCommands) {
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_OPTIONS));
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_IMPORT_SETTINGS));
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_SHOW_SIGNIN));
@@ -300,10 +318,14 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
 
 // Test that uses FullscreenTestBrowserWindow for its window.
 class BrowserCommandControllerFullscreenTest
-    : public BrowserWithTestWindowTest {
+    : public BrowserWithTestWindowTest,
+      public testing::WithParamInterface<bool> {
  public:
-  BrowserCommandControllerFullscreenTest() {}
-  ~BrowserCommandControllerFullscreenTest() override {}
+  BrowserCommandControllerFullscreenTest() {
+    TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+        scoped_feature_list_, GetParam());
+  }
+  ~BrowserCommandControllerFullscreenTest() override = default;
 
   Browser* GetBrowser() { return BrowserWithTestWindowTest::browser(); }
 
@@ -313,6 +335,7 @@ class BrowserCommandControllerFullscreenTest
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   DISALLOW_COPY_AND_ASSIGN(BrowserCommandControllerFullscreenTest);
 };
 
@@ -324,7 +347,7 @@ content::WebContents* FullscreenTestBrowserWindow::GetActiveWebContents() {
   return test_browser_->GetBrowser()->tab_strip_model()->GetActiveWebContents();
 }
 
-TEST_F(BrowserCommandControllerFullscreenTest,
+TEST_P(BrowserCommandControllerFullscreenTest,
        UpdateCommandsForFullscreenMode) {
   struct {
     int command_id;
@@ -453,10 +476,14 @@ TEST_F(BrowserCommandControllerFullscreenTest,
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_IMPORT_SETTINGS));
 }
 
+INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
+                         BrowserCommandControllerFullscreenTest,
+                         /*is_ephemeral=*/testing::Bool());
+
 // Ensure that the logic for enabling IDC_OPTIONS is consistent, regardless of
 // the order of entering fullscreen and forced incognito modes. See
 // http://crbug.com/694331.
-TEST_F(BrowserCommandControllerTest, OptionsConsistency) {
+TEST_P(GuestBrowserCommandControllerTest, OptionsConsistency) {
   TestingProfile* profile = browser()->profile()->AsTestingProfile();
   // Setup guest session.
   profile->SetGuestSession(true);
@@ -509,3 +536,7 @@ TEST_F(BrowserCommandControllerTest, OnSigninAllowedPrefChange) {
   profile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_SHOW_SIGNIN));
 }
+
+INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
+                         GuestBrowserCommandControllerTest,
+                         /*is_ephemeral=*/testing::Bool());

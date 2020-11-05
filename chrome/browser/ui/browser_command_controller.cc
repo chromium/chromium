@@ -1094,11 +1094,13 @@ void BrowserCommandController::UpdateSharedCommandsForIncognitoAvailability(
           !profile->IsGuestSession() && !profile->IsEphemeralGuestProfile());
 
   const bool forced_incognito =
-      incognito_availability == IncognitoModePrefs::FORCED ||
-      profile->IsGuestSession();  // Guest always runs in Incognito mode.
+      incognito_availability == IncognitoModePrefs::FORCED;
+  const bool is_guest =
+      profile->IsGuestSession() || profile->IsEphemeralGuestProfile();
+
   command_updater->UpdateCommandEnabled(
       IDC_SHOW_BOOKMARK_MANAGER,
-      browser_defaults::bookmarks_enabled && !forced_incognito);
+      browser_defaults::bookmarks_enabled && !forced_incognito && !is_guest);
   extensions::ExtensionService* extension_service =
       extensions::ExtensionSystem::Get(profile)->extension_service();
   const bool enable_extensions =
@@ -1108,13 +1110,16 @@ void BrowserCommandController::UpdateSharedCommandsForIncognitoAvailability(
 
   // Bookmark manager and settings page/subpages are forced to open in normal
   // mode. For this reason we disable these commands when incognito is forced.
-  command_updater->UpdateCommandEnabled(IDC_MANAGE_EXTENSIONS,
-                                        enable_extensions && !forced_incognito);
-
-  command_updater->UpdateCommandEnabled(IDC_IMPORT_SETTINGS, !forced_incognito);
   command_updater->UpdateCommandEnabled(
-      IDC_OPTIONS, !forced_incognito || profile->IsGuestSession());
-  command_updater->UpdateCommandEnabled(IDC_SHOW_SIGNIN, !forced_incognito);
+      IDC_MANAGE_EXTENSIONS,
+      enable_extensions && !forced_incognito && !is_guest);
+
+  command_updater->UpdateCommandEnabled(IDC_IMPORT_SETTINGS,
+                                        !forced_incognito && !is_guest);
+  command_updater->UpdateCommandEnabled(IDC_OPTIONS,
+                                        !forced_incognito || is_guest);
+  command_updater->UpdateCommandEnabled(IDC_SHOW_SIGNIN,
+                                        !forced_incognito && !is_guest);
 }
 
 void BrowserCommandController::UpdateCommandsForIncognitoAvailability() {
