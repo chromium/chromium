@@ -30,23 +30,30 @@
     margin-inline-start: 16px;
   }
 
-  .image {
+  .image-background {
     border-radius: 4px;
-    box-sizing: border-box;
     margin-bottom: 8px;
     width: 120px;
   }
 
-  :host([shopping]) .image {
-    background: var(--google-grey-50);
+  :host([shopping]) .image-background {
+    /* Mixes to Google Grey 50 underneath .image-container. */
+    background-color: rgb(22, 55, 88);
     height: 120px;
+  }
+
+  :host([shopping]) .image-container {
+    background-color: white;
+    box-sizing: border-box;
+    opacity: 97%;
     padding: 10px;
   }
 
-  :host([recipe]) .image {
+  :host([recipe]) .image-background {
     height: 100px;
   }
 
+  .image-container,
   img {
     height: 100%;
     width: 100%;
@@ -168,8 +175,10 @@
       on-dom-change="onDomChange_">
     <a class="task-item" href="[[item.targetUrl.url]]"
         on-click="onTaskItemClick_" on-auxclick="onTaskItemClick_">
-      <div class="image">
-        <img is="ntp-img" auto-src="[[item.imageUrl.url]]"></img>
+      <div class="image-background">
+        <div class="image-container">
+          <img is="ntp-img" auto-src="[[item.imageUrl.url]]"></img>
+        </div>
       </div>
       <div class="price" hidden$="[[!item.price]]">[[item.price]]</div>
       <div class="name" title="[[item.name]]">[[item.name]]</div>
