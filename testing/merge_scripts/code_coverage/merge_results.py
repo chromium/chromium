@@ -19,7 +19,7 @@ import subprocess
 import sys
 
 import merge_lib as profile_merger
-
+import merge_js_lib as javascript_merger
 
 def _MergeAPIArgumentParser(*args, **kwargs):
   """Parameters passed to this merge script, as per:
@@ -51,6 +51,12 @@ def _MergeAPIArgumentParser(*args, **kwargs):
   parser.add_argument(
       '--merged-jacoco-filename',
       help='filename used to uniquely name the merged exec file.')
+  parser.add_argument(
+      '--javascript-coverage-dir',
+      help='directory for JavaScript coverage data')
+  parser.add_argument(
+      '--merged-js-cov-filename', help='filename to uniquely identify merged '
+                                       'json coverage data')
   parser.add_argument(
       '--per-cl-coverage',
       action='store_true',
@@ -89,6 +95,16 @@ def main():
     logging.info('Merging JaCoCo .exec files to %s', output_path)
     profile_merger.merge_java_exec_files(
         params.task_output_dir, output_path, params.jacococli_path)
+
+  if params.javascript_coverage_dir:
+    if not params.merged_js_cov_filename:
+      parser.error('--merged-js-cov-filename required when merging '
+                   'JavaScript coverage')
+
+    output_path = os.path.join(params.javascript_coverage_dir,
+        '%s_javascript.json' % params.merged_js_cov_filename)
+    logging.info('Merging v8 coverage output to %s', output_path)
+    javascript_merger.merge_coverage_files(params.task_output_dir, output_path)
 
   # Name the output profdata file name as {test_target}.profdata or
   # default.profdata.
