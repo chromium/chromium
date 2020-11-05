@@ -80,6 +80,7 @@
       <structure name="IDR_CAMERA_UNTRUSTED_VIDEO_PROCESSOR_HELPER_JS" file="js/untrusted_video_processor_helper.js" type="chrome_html" />
       <structure name="IDR_CAMERA_UTIL_JS" file="js/util.js" type="chrome_html" />
       <structure name="IDR_CAMERA_VIDEO_SAVER_JS" file="js/models/video_saver.js" type="chrome_html" />
+      <structure name="IDR_CAMERA_VIDEO_PROCESSOR_INTERFACE_JS" file="js/models/video_processor_interface.js" type="chrome_html" />
       <structure name="IDR_CAMERA_VIEW_JS" file="js/views/view.js" type="chrome_html" />
       <structure name="IDR_CAMERA_WAITABLE_EVENT_JS" file="js/waitable_event.js" type="chrome_html" />
       <structure name="IDR_CAMERA_WARNING_JS" file="js/views/warning.js" type="chrome_html" />

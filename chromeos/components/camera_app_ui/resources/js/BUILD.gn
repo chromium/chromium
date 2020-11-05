@@ -52,6 +52,7 @@ js_library("compile_resources") {
     "models/mp4_video_processor.js",
     "models/native_file_system_entry.js",
     "models/result_saver.js",
+    "models/video_processor_interface.js",
     "models/video_saver.js",
     "mojo/chrome_helper.js",
     "mojo/device_operator.js",

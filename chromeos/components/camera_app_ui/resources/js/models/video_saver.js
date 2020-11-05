@@ -13,8 +13,10 @@ import {AsyncWriter} from './async_writer.js';
 import {createPrivateTempVideoFile} from './file_system.js';
 // eslint-disable-next-line no-unused-vars
 import {AbstractFileEntry} from './file_system_entry.js';
+// eslint-disable-next-line no-unused-vars
+import {VideoProcessor} from './video_processor_interface.js';
 
-const VideoProcessor = (async () => {
+const Mp4VideoProcessor = (async () => {
   const workerChannel = new MessageChannel();
   const videoProcessorHelper = /** @type {!VideoProcessorHelperInterface} */ (
       await util.createUntrustedJSModule(
@@ -27,11 +29,11 @@ const VideoProcessor = (async () => {
 
 /**
  * @param {!AsyncWriter} output
- * @return {!Promise<!AsyncWriter>}
+ * @return {!Promise<!VideoProcessor>}
  */
 async function createVideoProcessor(output) {
   // Comlink proxies all calls asynchronously, including constructors.
-  return new (await VideoProcessor)(
+  return new (await Mp4VideoProcessor)(
       Comlink.proxy(output), {seekable: output.seekable()});
 }
 
@@ -53,7 +55,7 @@ function createWriterForIntent(intent) {
 export class VideoSaver {
   /**
    * @param {!AbstractFileEntry} file
-   * @param {!AsyncWriter} processor
+   * @param {!VideoProcessor} processor
    */
   constructor(file, processor) {
     /**
@@ -62,7 +64,7 @@ export class VideoSaver {
     this.file_ = file;
 
     /**
-     * @const {!AsyncWriter}
+     * @const {!VideoProcessor}
      */
     this.processor_ = processor;
   }

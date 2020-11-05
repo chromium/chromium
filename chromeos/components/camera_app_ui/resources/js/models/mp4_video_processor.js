@@ -9,6 +9,8 @@ import runFFmpeg from '../lib/ffmpeg.js';
 import {WaitableEvent} from '../waitable_event.js';
 // eslint-disable-next-line no-unused-vars
 import {AsyncWriter} from './async_writer.js';
+// eslint-disable-next-line no-unused-vars
+import {VideoProcessor} from './video_processor_interface.js';
 
 /**
  * A file stream in Emscripten.
@@ -238,6 +240,7 @@ class OutputDevice {
 
 /**
  * A video processor that can remux mkv to mp4.
+ * @implements {VideoProcessor}
  */
 class Mp4VideoProcessor {
   /**
@@ -332,7 +335,7 @@ class Mp4VideoProcessor {
    * Writes a blob with mkv data into the processor.
    * @param {!Blob} blob
    */
-  write(blob) {
+  async write(blob) {
     this.jobQueue_.push(async () => {
       const buf = await blob.arrayBuffer();
       this.inputDevice_.push(new Int8Array(buf));
