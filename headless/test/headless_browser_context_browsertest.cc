@@ -180,13 +180,7 @@ class HeadlessBrowserUserDataDirTest : public HeadlessBrowserTest {
   base::ScopedTempDir user_data_dir_;
 };
 
-#if defined(NO_WIN_FLAKES)
-// TODO(crbug.com/1045971): Disabled due to flakiness.
-#define MAYBE_Do DISABLED_Do
-#else
-#define MAYBE_Do Do
-#endif
-IN_PROC_BROWSER_TEST_F(HeadlessBrowserUserDataDirTest, MAYBE_Do) {
+IN_PROC_BROWSER_TEST_F(HeadlessBrowserUserDataDirTest, Do) {
   // Allow IO from the main thread.
   base::ThreadRestrictions::SetIOAllowed(true);
 
@@ -211,13 +205,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserUserDataDirTest, MAYBE_Do) {
   EXPECT_FALSE(base::IsDirectoryEmpty(user_data_dir()));
 }
 
-#if defined(NO_WIN_FLAKES)
-// TODO(crbug.com/1045971): Disabled due to flakiness.
-#define MAYBE_IncognitoMode DISABLED_IncognitoMode
-#else
-#define MAYBE_IncognitoMode IncognitoMode
-#endif
-IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, MAYBE_IncognitoMode) {
+IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, IncognitoMode) {
   // We do not want to bother with posting tasks to create a temp dir.
   // Just allow IO from main thread for now.
   base::ThreadRestrictions::SetIOAllowed(true);

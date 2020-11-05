@@ -46,9 +46,8 @@ class HeadlessCompositorBrowserTest : public HeadlessProtocolBrowserTest {
 // BeginFrameControl is not supported on MacOS yet, see: https://cs.chromium.org
 // chromium/src/headless/lib/browser/protocol/target_handler.cc?
 // rcl=5811aa08e60ba5ac7622f029163213cfbdb682f7&l=32
-// TODO(crbug.com/954398): Suite is timeout-flaky on Windows.
 // TODO(crbug.com/1020046): Suite is flaky on TSan Linux.
-#if defined(OS_MAC) || defined(NO_WIN_FLAKES) || \
+#if defined(OS_MAC) || \
     ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(THREAD_SANITIZER))
 #define HEADLESS_COMPOSITOR_TEST(TEST_NAME, SCRIPT_NAME) \
   IN_PROC_BROWSER_TEST_F(HeadlessCompositorBrowserTest,  \

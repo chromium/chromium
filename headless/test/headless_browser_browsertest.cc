@@ -214,8 +214,7 @@ class HeadlessBrowserTestWithProxy : public HeadlessBrowserTest {
   net::EmbeddedTestServer proxy_server_;
 };
 
-#if defined(NO_WIN_FLAKES) || (defined(OS_MAC) && defined(ADDRESS_SANITIZER))
-// TODO(crbug.com/1045971): Disabled due to flakiness.
+#if defined(OS_MAC) && defined(ADDRESS_SANITIZER)
 // TODO(crbug.com/1086872): Disabled due to flakiness on Mac ASAN.
 #define MAYBE_SetProxyConfig DISABLED_SetProxyConfig
 #else
@@ -246,13 +245,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTestWithProxy, MAYBE_SetProxyConfig) {
   EXPECT_TRUE(browser_context->GetAllWebContents().empty());
 }
 
-// TODO(crbug.com/867447): Flaky on Windows 10 debug.
-#if defined(NO_WIN_FLAKES) && !defined(NDEBUG)
-#define MAYBE_WebGLSupported DISABLED_WebGLSupported
-#else
-#define MAYBE_WebGLSupported WebGLSupported
-#endif
-IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, MAYBE_WebGLSupported) {
+IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, WebGLSupported) {
   HeadlessBrowserContext* browser_context =
       browser()->CreateBrowserContextBuilder().Build();
 
@@ -288,13 +281,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, ClipboardCopyPasteText) {
   }
 }
 
-#if defined(NO_WIN_FLAKES)
-// TODO(crbug.com/1045971): Disabled due to flakiness.
-#define MAYBE_DefaultSizes DISABLED_DefaultSizes
-#else
-#define MAYBE_DefaultSizes DefaultSizes
-#endif
-IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, MAYBE_DefaultSizes) {
+IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, DefaultSizes) {
   HeadlessBrowserContext* browser_context =
       browser()->CreateBrowserContextBuilder().Build();
 
@@ -630,13 +617,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, TraceUsingBrowserDevToolsTarget) {
   EXPECT_LT(0u, tracing_data->GetSize());
 }
 
-#if defined(NO_WIN_FLAKES)
-// TODO(crbug.com/1045971): Disabled due to flakiness.
-#define MAYBE_WindowPrint DISABLED_WindowPrint
-#else
-#define MAYBE_WindowPrint WindowPrint
-#endif
-IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, MAYBE_WindowPrint) {
+IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, WindowPrint) {
   EXPECT_TRUE(embedded_test_server()->Start());
 
   HeadlessBrowserContext* browser_context =
@@ -658,14 +639,8 @@ class HeadlessBrowserAllowInsecureLocalhostTest : public HeadlessBrowserTest {
   }
 };
 
-#if defined(NO_WIN_FLAKES)
-// TODO(crbug.com/1045971): Disabled due to flakiness.
-#define MAYBE_AllowInsecureLocalhostFlag DISABLED_AllowInsecureLocalhostFlag
-#else
-#define MAYBE_AllowInsecureLocalhostFlag AllowInsecureLocalhostFlag
-#endif
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserAllowInsecureLocalhostTest,
-                       MAYBE_AllowInsecureLocalhostFlag) {
+                       AllowInsecureLocalhostFlag) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
   https_server.ServeFilesFromSourceDirectory("headless/test/data");
@@ -709,16 +684,8 @@ class HeadlessBrowserTestAppendCommandLineFlags : public HeadlessBrowserTest {
   bool callback_was_run_ = false;
 };
 
-#if defined(NO_WIN_FLAKES)
-// Flaky on Win ASAN. See https://crbug.com/884095.
-#define MAYBE_AppendChildProcessCommandLineFlags \
-  DISABLED_AppendChildProcessCommandLineFlags
-#else
-#define MAYBE_AppendChildProcessCommandLineFlags \
-  AppendChildProcessCommandLineFlags
-#endif
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserTestAppendCommandLineFlags,
-                       MAYBE_AppendChildProcessCommandLineFlags) {
+                       AppendChildProcessCommandLineFlags) {
   // Create a new renderer process, and verify that callback was executed.
   HeadlessBrowserContext* browser_context =
       browser()->CreateBrowserContextBuilder().Build();
@@ -733,14 +700,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTestAppendCommandLineFlags,
   (void)web_contents;
 }
 
-#if defined(NO_WIN_FLAKES)
-// TODO(crbug.com/1045971): Disabled due to flakiness.
-#define MAYBE_ServerWantsClientCertificate DISABLED_ServerWantsClientCertificate
-#else
-#define MAYBE_ServerWantsClientCertificate ServerWantsClientCertificate
-#endif
-IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest,
-                       MAYBE_ServerWantsClientCertificate) {
+IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, ServerWantsClientCertificate) {
   net::SpawnedTestServer::SSLOptions ssl_options;
   ssl_options.request_client_certificate = true;
 
@@ -759,13 +719,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest,
   EXPECT_TRUE(WaitForLoad(web_contents));
 }
 
-#if defined(NO_WIN_FLAKES)
-// TODO(crbug.com/1045971): Disabled due to flakiness.
-#define MAYBE_AIAFetching DISABLED_AIAFetching
-#else
-#define MAYBE_AIAFetching AIAFetching
-#endif
-IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, MAYBE_AIAFetching) {
+IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, AIAFetching) {
   net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
   net::EmbeddedTestServer::ServerCertificateConfig cert_config;
   cert_config.intermediate = net::EmbeddedTestServer::IntermediateType::kByAIA;

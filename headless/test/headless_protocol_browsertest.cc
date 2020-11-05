@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
+#include "build/build_config.h"
 #include "headless/app/headless_shell_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -175,10 +176,8 @@ void HeadlessProtocolBrowserTest::FinishTest() {
   FinishAsynchronousTest();
 }
 
-// TODO(crbug.com/867447): The whole test suite is extremely flaky on Win dbg.
 // TODO(crbug.com/1086872): The whole test suite is flaky on Mac ASAN.
-#if (defined(NO_WIN_FLAKES) && !defined(NDEBUG)) || \
-    (defined(OS_MAC) && defined(ADDRESS_SANITIZER))
+#if (defined(OS_MAC) && defined(ADDRESS_SANITIZER))
 #define HEADLESS_PROTOCOL_TEST(TEST_NAME, SCRIPT_NAME)                        \
   IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTest, DISABLED_##TEST_NAME) { \
     test_folder_ = "/protocol/";                                              \

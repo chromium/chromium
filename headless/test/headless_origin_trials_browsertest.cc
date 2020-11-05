@@ -54,21 +54,8 @@ class HeadlessOriginTrialsBrowserTest : public HeadlessBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(HeadlessOriginTrialsBrowserTest);
 };
 
-// Flaky on Windows Debug https://crbug.com/1090801
-#if defined(NO_WIN_FLAKES) && !defined(NDEBUG)
-#define MAYBE_TrialsCanBeEnabled DISABLED_TrialsCanBeEnabled
-#else
-#define MAYBE_TrialsCanBeEnabled TrialsCanBeEnabled
-#endif
-
-// Flaky on Windows Debug https://crbug.com/1090801
-#if defined(NO_WIN_FLAKES) && !defined(NDEBUG)
-#define MAYBE_TrialsDisabledByDefault DISABLED_TrialsDisabledByDefault
-#else
-#define MAYBE_TrialsDisabledByDefault TrialsDisabledByDefault
-#endif
 IN_PROC_BROWSER_TEST_F(HeadlessOriginTrialsBrowserTest,
-                       MAYBE_TrialsDisabledByDefault) {
+                       TrialsDisabledByDefault) {
   HeadlessBrowserContext* browser_context =
       browser()->CreateBrowserContextBuilder().Build();
 
@@ -89,13 +76,5 @@ IN_PROC_BROWSER_TEST_F(HeadlessOriginTrialsBrowserTest,
           ->GetValue()
           ->GetBool());
 }
-
-// Flaky on Windows Debug https://crbug.com/1090801
-#if defined(NO_WIN_FLAKES) && !defined(NDEBUG)
-#define MAYBE_WebComponentsV0CustomElements \
-  DISABLED_WebComponentsV0CustomElements
-#else
-#define MAYBE_WebComponentsV0CustomElements WebComponentsV0CustomElements
-#endif
 
 }  // namespace headless
