@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/service_manager/tests/sandbox_status_service.h"
+#include "content/test/sandbox_status_service.h"
 
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 
-namespace service_manager {
+namespace content {
 
 // static
 void SandboxStatusService::MakeSelfOwnedReceiver(
@@ -25,4 +25,4 @@ void SandboxStatusService::GetSandboxStatus(GetSandboxStatusCallback callback) {
       sandbox::policy::SandboxLinux::GetInstance()->GetStatus());
 }
 
-}  // namespace service_manager
+}  // namespace content

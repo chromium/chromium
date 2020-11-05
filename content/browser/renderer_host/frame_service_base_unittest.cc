@@ -11,7 +11,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
-#include "content/test/echo.mojom.h"
+#include "content/test/echo.test-mojom.h"
 #include "content/test/test_render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

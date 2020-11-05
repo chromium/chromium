@@ -374,6 +374,7 @@ static_library("test_support") {
   ]
 
   public_deps = [
+    ":test_interfaces",
     "//components/download/public/common:test_support",
     "//components/services/storage/public/mojom",
     "//content/public/app",
@@ -630,6 +631,13 @@ static_library("test_support") {
   if (chromeos_is_browser_only) {
     deps += [ "//chromeos/lacros" ]
   }
+
+  if (is_linux || is_chromeos) {
+    sources += [
+      "sandbox_status_service.cc",
+      "sandbox_status_service.h",
+    ]
+  }
 }
 
 # Fuchsia gpu integration tests use web_engine and a browser like shell
@@ -826,7 +834,10 @@ mojom("mojo_web_test_bindings") {
 
 mojom("test_interfaces") {
   testonly = true
-  sources = [ "echo.mojom" ]
+  sources = [ "echo.test-mojom" ]
+  if (is_linux || is_chromeos) {
+    sources += [ "sandbox_status.test-mojom" ]
+  }
 }
 
 mojom("mojo_bindings_web_test_mojom") {
@@ -1213,6 +1224,7 @@ test("content_browsertests") {
   ]
 
   public_deps = [
+    ":test_interfaces",
     ":web_ui_mojo_test_resources",
     "//content:content_resources",
     "//content:dev_ui_content_resources",
@@ -1221,7 +1233,6 @@ test("content_browsertests") {
   deps = [
     ":browsertest_support",
     ":content_test_mojo_bindings",
-    ":test_interfaces",
     ":test_support",
     ":web_ui_mojo_test_js_type_check",
     ":web_ui_test_mojo_bindings",
@@ -1433,10 +1444,7 @@ test("content_browsertests") {
       "../browser/utility_process_sandbox_browsertest.cc",
       "../browser/zygote_host/zygote_browsertest.cc",
     ]
-    deps += [
-      "//services/service_manager/tests:interfaces",
-      "//ui/gfx:test_support",
-    ]
+    deps += [ "//ui/gfx:test_support" ]
 
     if (use_atk) {
       sources += [

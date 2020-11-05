@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module service_manager.mojom;
+module content.mojom;
 
 // Interface used in testing the Linux sandbox status in
 // content/browser/utility_process_sandbox_browsertest.cc.

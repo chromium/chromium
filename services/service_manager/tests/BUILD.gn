@@ -51,28 +51,6 @@ mojom("interfaces") {
     "background.test-mojom",
     "test_support.test-mojom",
   ]
-
-  if (is_linux || is_chromeos) {
-    sources += [ "sandbox_status.test-mojom" ]
-  }
-}
-
-if (is_linux || is_chromeos) {
-  source_set("sandbox_status_service") {
-    testonly = true
-    sources = [
-      "sandbox_status_service.cc",
-      "sandbox_status_service.h",
-    ]
-
-    deps = [
-      ":interfaces",
-      "//base",
-      "//sandbox/policy",
-      "//services/service_manager/public/cpp",
-      "//services/service_manager/public/mojom",
-    ]
-  }
 }
 
 source_set("util") {

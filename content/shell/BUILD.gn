@@ -292,10 +292,6 @@ static_library("content_shell_lib") {
     deps += [ "//gin" ]
   }
 
-  if (is_linux || is_chromeos) {
-    deps += [ "//services/service_manager/tests:sandbox_status_service" ]
-  }
-
   if (use_gtk) {
     deps += [ "//ui/gtk" ]
     if (use_x11 || ozone_platform_x11) {

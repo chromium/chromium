@@ -35,7 +35,7 @@
 #include "services/test/echo/echo_service.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#include "services/service_manager/tests/sandbox_status_service.h"
+#include "content/test/sandbox_status_service.h"
 #endif
 
 namespace content {
@@ -145,9 +145,9 @@ void ShellContentUtilityClient::ExposeInterfacesToBrowser(
       base::ThreadTaskRunnerHandle::Get());
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   if (register_sandbox_status_helper_) {
-    binders->Add<service_manager::mojom::SandboxStatusService>(
+    binders->Add<content::mojom::SandboxStatusService>(
         base::BindRepeating(
-            &service_manager::SandboxStatusService::MakeSelfOwnedReceiver),
+            &content::SandboxStatusService::MakeSelfOwnedReceiver),
         base::ThreadTaskRunnerHandle::Get());
   }
 #endif

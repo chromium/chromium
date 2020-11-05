@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_SERVICE_MANAGER_TESTS_SANDBOX_STATUS_SERVICE_H_
-#define SERVICES_SERVICE_MANAGER_TESTS_SANDBOX_STATUS_SERVICE_H_
+#ifndef CONTENT_TEST_SANDBOX_STATUS_SERVICE_H_
+#define CONTENT_TEST_SANDBOX_STATUS_SERVICE_H_
 
-#include "base/macros.h"
+#include "content/test/sandbox_status.test-mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "services/service_manager/tests/sandbox_status.test-mojom.h"
 
-namespace service_manager {
+namespace content {
 
 class SandboxStatusService : public mojom::SandboxStatusService {
  public:
@@ -18,15 +17,15 @@ class SandboxStatusService : public mojom::SandboxStatusService {
       mojo::PendingReceiver<mojom::SandboxStatusService> receiver);
 
   SandboxStatusService();
+  SandboxStatusService(const SandboxStatusService&) = delete;
+  SandboxStatusService& operator=(const SandboxStatusService&) = delete;
   ~SandboxStatusService() override;
 
  private:
   // mojom::SandboxStatusService:
   void GetSandboxStatus(GetSandboxStatusCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxStatusService);
 };
 
-}  // namespace service_manager
+}  // namespace content
 
-#endif  // SERVICES_SERVICE_MANAGER_TESTS_SANDBOX_STATUS_SERVICE_H_
+#endif  // CONTENT_TEST_SANDBOX_STATUS_SERVICE_H_
