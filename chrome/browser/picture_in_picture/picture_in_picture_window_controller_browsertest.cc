@@ -330,7 +330,6 @@ class PictureInPicturePixelComparisonBrowserTest
   std::unique_ptr<SkBitmap> result_bitmap_;
 };
 
-// TODO(cliffordcheng): enable on Windows when compile errors are resolved.
 // Plays a video and then trigger Picture-in-Picture. Grabs a screenshot of
 // Picture-in-Picture window and verifies it's as expected.
 IN_PROC_BROWSER_TEST_F(PictureInPicturePixelComparisonBrowserTest, VideoPlay) {
@@ -1335,9 +1334,8 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Tests that when a new surface id is sent to the Picture-in-Picture window, it
 // doesn't move back to its default position.
-// crbug.com/1002489: disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
-                       DISABLED_SurfaceIdChangeDoesNotMoveWindow) {
+                       SurfaceIdChangeDoesNotMoveWindow) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
 
@@ -1621,9 +1619,8 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 // Tests that video in Picture-in-Picture is paused when user presses
 // VKEY_MEDIA_PLAY_PAUSE key even if there's another media playing in a
 // foreground tab.
-// TODO(https://crbug.com/1070810) flaky test
 IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
-                       DISABLED_HandleMediaKeyPlayPause) {
+                       HandleMediaKeyPlayPause) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kPictureInPictureWindowSizePage));
@@ -2650,11 +2647,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(in_picture_in_picture);
 }
 
-// TODO(http://crbug/1001249): flaky.
 // Check that Auto Picture-in-Picture applies only to the video element whose
 // autoPictureInPicture attribute was set most recently
 IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
-                       DISABLED_AutoPictureInPictureAttributeApplies) {
+                       AutoPictureInPictureAttributeApplies) {
   InstallAndLaunchPWA(main_url());
   bool result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(),
@@ -2896,14 +2892,8 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   ExpectLeavePictureInPicture(active_web_contents);
 }
 
-// TODO(crbug.com/1002489): Test is flaky on Linux.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_UpdateMaxSize DISABLED_UpdateMaxSize
-#else
-#define MAYBE_UpdateMaxSize UpdateMaxSize
-#endif
 IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
-                       MAYBE_UpdateMaxSize) {
+                       UpdateMaxSize) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
 
