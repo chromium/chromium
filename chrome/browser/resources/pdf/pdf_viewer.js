@@ -28,7 +28,7 @@ import {PluginController} from './controller.js';
 import {ViewerPdfSidenavElement} from './elements/viewer-pdf-sidenav.js';
 import {ViewerPdfToolbarNewElement} from './elements/viewer-pdf-toolbar-new.js';
 // <if expr="chromeos">
-import {InkController} from './ink_controller.js';
+import {InkController, InkControllerEventType} from './ink_controller.js';
 //</if>
 import {LocalStorageProxyImpl} from './local_storage_proxy.js';
 import {PDFMetrics, UserAction} from './metrics.js';
@@ -388,7 +388,8 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     this.inkController_ = new InkController(
         this.viewport, /** @type {!HTMLDivElement} */ (this.getContent()));
     this.tracker.add(
-        this.inkController_.getEventTarget(), 'has-unsaved-changes',
+        this.inkController_.getEventTarget(),
+        InkControllerEventType.HAS_UNSAVED_CHANGES,
         () => chrome.mimeHandlerPrivate.setShowBeforeUnloadDialog(true));
     // </if>
 

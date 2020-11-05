@@ -67,6 +67,9 @@ function createToken() {
 export class ContentController {
   constructor() {}
 
+  /** @return {!EventTarget} */
+  getEventTarget() {}
+
   /** @return {boolean} */
   get isActive() {}
 
@@ -128,10 +131,18 @@ export class ContentController {
 }
 
 /**
+ * Event types dispatched by the plugin controller.
+ * @enum {string}
+ */
+export const PluginControllerEventType = {
+  PLUGIN_MESSAGE: 'PluginControllerEventType.PLUGIN_MESSAGE',
+};
+
+/**
  * PDF plugin controller singleton, responsible for communicating with the
- * embedded plugin element. Dispatches a 'plugin-message' event containing the
- * message from the plugin, if a message type not handled by this controller is
- * received.
+ * embedded plugin element. Dispatches a
+ * `PluginControllerEventType.PLUGIN_MESSAGE` event containing the message from
+ * the plugin, if a message type not handled by this controller is received.
  * @implements {ContentController}
  */
 export class PluginController {
@@ -200,7 +211,10 @@ export class PluginController {
     return this.uidCounter_++;
   }
 
-  /** @return {!EventTarget} */
+  /**
+   * @return {!EventTarget}
+   * @override
+   */
   getEventTarget() {
     return this.eventTarget_;
   }
@@ -482,8 +496,8 @@ export class PluginController {
         resolver.resolve(null);
         break;
       default:
-        this.eventTarget_.dispatchEvent(
-            new CustomEvent('plugin-message', {detail: messageData}));
+        this.eventTarget_.dispatchEvent(new CustomEvent(
+            PluginControllerEventType.PLUGIN_MESSAGE, {detail: messageData}));
     }
   }
 

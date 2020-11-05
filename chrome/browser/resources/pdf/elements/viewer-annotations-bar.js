@@ -12,7 +12,7 @@ import './viewer-pen-options.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {InkController} from '../ink_controller.js';
+import {InkController, InkControllerEventType} from '../ink_controller.js';
 
 export class ViewerAnnotationsBarElement extends PolymerElement {
   static get is() {
@@ -67,13 +67,16 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
     }
 
     this.tracker_.add(
-        this.inkController.getEventTarget(), 'set-annotation-undo-state',
+        this.inkController.getEventTarget(),
+        InkControllerEventType.SET_ANNOTATION_UNDO_STATE,
         e => this.setAnnotationUndoState_(e));
-    this.tracker_.add(this.inkController.getEventTarget(), 'loaded', () => {
-      if (this.annotationTool_) {
-        this.inkController.setAnnotationTool(this.annotationTool_);
-      }
-    });
+    this.tracker_.add(
+        this.inkController.getEventTarget(), InkControllerEventType.LOADED,
+        () => {
+          if (this.annotationTool_) {
+            this.inkController.setAnnotationTool(this.annotationTool_);
+          }
+        });
   }
 
   /**

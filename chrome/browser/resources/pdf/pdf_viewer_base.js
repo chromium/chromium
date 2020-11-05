@@ -10,7 +10,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {BrowserApi, ZoomBehavior} from './browser_api.js';
 import {FittingType, Point} from './constants.js';
-import {ContentController, MessageData, PluginController} from './controller.js';
+import {ContentController, MessageData, PluginController, PluginControllerEventType} from './controller.js';
 import {PDFMetrics, UserAction} from './metrics.js';
 import {OpenPdfParamsParser} from './open_pdf_params_parser.js';
 import {LoadState} from './pdf_scripting_api.js';
@@ -280,7 +280,8 @@ export class PDFViewerBaseElement extends PolymerElement {
     this.currentController = pluginController;
 
     this.tracker.add(
-        pluginController.getEventTarget(), 'plugin-message',
+        pluginController.getEventTarget(),
+        PluginControllerEventType.PLUGIN_MESSAGE,
         e => this.handlePluginMessage(e));
 
     document.body.addEventListener('change-page-and-xy', e => {
