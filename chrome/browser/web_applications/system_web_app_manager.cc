@@ -111,10 +111,11 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps() {
   // If new names are added, update tool/metrics/histograms/histograms.xml:
   // "SystemWebAppName"
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::CAMERA)) {
-    infos.emplace(SystemAppType::CAMERA,
-                  SystemAppInfo("Camera", GURL("chrome://camera-app"),
-                                base::BindRepeating(
-                                    &CreateWebAppInfoForCameraSystemWebApp)));
+    infos.emplace(
+        SystemAppType::CAMERA,
+        SystemAppInfo(
+            "Camera", GURL("chrome://camera-app/views/main.html"),
+            base::BindRepeating(&CreateWebAppInfoForCameraSystemWebApp)));
     infos.at(SystemAppType::CAMERA).uninstall_and_replace = {
         extension_misc::kCameraAppId};
     // We need "FileHandling" to use File Handling API to set launch directory.

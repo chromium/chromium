@@ -12,8 +12,8 @@ namespace default_web_apps {
 // manifest served by the PWA.
 
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
-//     "chrome://camera-app/src/views/main.html"))
-constexpr char kCameraAppId[] = "lokiojgebppilomhkceogdnchlbpcoaj";
+//     "chrome://camera-app/views/main.html"))
+constexpr char kCameraAppId[] = "njfbnohfdkmbmnjapinfcopialeghnmh";
 
 // Generated as: // web_app::GenerateAppIdFromURL(GURL(
 //     "https://canvas.apps.chrome/"))
