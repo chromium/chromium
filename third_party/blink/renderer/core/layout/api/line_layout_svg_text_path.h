@@ -32,11 +32,11 @@ class LineLayoutSVGTextPath : public LineLayoutSVGInline {
 
  private:
   LayoutSVGTextPath* ToSVGTextPath() {
-    return ToLayoutSVGTextPath(GetLayoutObject());
+    return To<LayoutSVGTextPath>(GetLayoutObject());
   }
 
   const LayoutSVGTextPath* ToSVGTextPath() const {
-    return ToLayoutSVGTextPath(GetLayoutObject());
+    return To<LayoutSVGTextPath>(GetLayoutObject());
   }
 };
 

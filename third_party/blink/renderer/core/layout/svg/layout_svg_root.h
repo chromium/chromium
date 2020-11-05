@@ -223,7 +223,12 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   mutable bool has_descendant_with_compositing_reason_dirty_ : 1;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutSVGRoot, IsSVGRoot());
+template <>
+struct DowncastTraits<LayoutSVGRoot> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsSVGRoot();
+  }
+};
 
 }  // namespace blink
 

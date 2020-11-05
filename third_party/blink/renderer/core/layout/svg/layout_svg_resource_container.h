@@ -109,8 +109,12 @@ class LayoutSVGResourceContainer : public LayoutSVGHiddenContainer {
   // 23 padding bits available
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutSVGResourceContainer,
-                                IsSVGResourceContainer());
+template <>
+struct DowncastTraits<LayoutSVGResourceContainer> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsSVGResourceContainer();
+  }
+};
 
 #define DEFINE_LAYOUT_SVG_RESOURCE_TYPE_CASTS(thisType, typeName)   \
   DEFINE_TYPE_CASTS(thisType, LayoutSVGResourceContainer, resource, \

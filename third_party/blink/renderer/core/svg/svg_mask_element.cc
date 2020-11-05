@@ -130,8 +130,7 @@ void SVGMaskElement::SvgAttributeChanged(const QualifiedName& attr_name) {
       UpdateRelativeLengthsInformation();
     }
 
-    LayoutSVGResourceContainer* layout_object =
-        ToLayoutSVGResourceContainer(GetLayoutObject());
+    auto* layout_object = To<LayoutSVGResourceContainer>(GetLayoutObject());
     if (layout_object)
       layout_object->InvalidateCacheAndMarkForLayout();
 

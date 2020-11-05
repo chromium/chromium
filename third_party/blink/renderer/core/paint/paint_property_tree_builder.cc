@@ -1327,7 +1327,7 @@ static bool IsClipPathDescendant(const LayoutObject& object) {
   const LayoutObject* parent = object.Parent();
   while (parent) {
     if (parent->IsSVGResourceContainer()) {
-      auto* container = ToLayoutSVGResourceContainer(parent);
+      auto* container = To<LayoutSVGResourceContainer>(parent);
       return container->ResourceType() == kClipperResourceType;
     }
     parent = parent->Parent();
@@ -1562,7 +1562,7 @@ static bool NeedsOverflowClipForReplacedContents(
   // <svg> may optionally allow overflow. If an overflow clip is required,
   // always create it without checking whether the actual content overflows.
   if (replaced.IsSVGRoot())
-    return ToLayoutSVGRoot(replaced).ShouldApplyViewportClip();
+    return To<LayoutSVGRoot>(replaced).ShouldApplyViewportClip();
 
   // A replaced element with border-radius always clips the content.
   if (replaced.StyleRef().HasBorderRadius())
@@ -1812,7 +1812,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
                 kExcludeOverlayScrollbarSizeForHitTesting)));
       } else {
         DCHECK(object_.IsSVGViewportContainer());
-        const auto& viewport_container = ToLayoutSVGViewportContainer(object_);
+        const auto& viewport_container =
+            To<LayoutSVGViewportContainer>(object_);
         const auto clip_rect = FloatRoundedRect(
             viewport_container.LocalToSVGParentTransform().Inverse().MapRect(
                 viewport_container.Viewport()));
@@ -1889,7 +1890,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform() {
     AffineTransform content_to_parent_space;
     if (object_.IsSVGRoot()) {
       content_to_parent_space =
-          SVGRootPainter(ToLayoutSVGRoot(object_))
+          SVGRootPainter(To<LayoutSVGRoot>(object_))
               .TransformToPixelSnappedBorderBox(context_.current.paint_offset);
     } else if (object_.IsImage()) {
       const LayoutImage& layout_image = ToLayoutImage(object_);

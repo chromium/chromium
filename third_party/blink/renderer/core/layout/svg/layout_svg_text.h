@@ -116,7 +116,12 @@ class LayoutSVGText final : public LayoutSVGBlock {
   Vector<LayoutSVGInlineText*> descendant_text_nodes_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutSVGText, IsSVGText());
+template <>
+struct DowncastTraits<LayoutSVGText> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsSVGText();
+  }
+};
 
 }  // namespace blink
 

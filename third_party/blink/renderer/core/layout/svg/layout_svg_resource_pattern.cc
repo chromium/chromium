@@ -165,9 +165,8 @@ const LayoutSVGResourceContainer*
 LayoutSVGResourcePattern::ResolveContentElement() const {
   NOT_DESTROYED();
   DCHECK(Attributes().PatternContentElement());
-  LayoutSVGResourceContainer* expected_layout_object =
-      ToLayoutSVGResourceContainer(
-          Attributes().PatternContentElement()->GetLayoutObject());
+  auto* expected_layout_object = To<LayoutSVGResourceContainer>(
+      Attributes().PatternContentElement()->GetLayoutObject());
   // No content inheritance - avoid walking the inheritance chain.
   if (this == expected_layout_object)
     return this;

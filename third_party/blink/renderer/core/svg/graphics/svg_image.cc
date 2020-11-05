@@ -259,8 +259,7 @@ LayoutSize SVGImage::ContainerSize() const {
   if (!root_element)
     return LayoutSize();
 
-  LayoutSVGRoot* layout_object =
-      ToLayoutSVGRoot(root_element->GetLayoutObject());
+  auto* layout_object = To<LayoutSVGRoot>(root_element->GetLayoutObject());
   if (!layout_object)
     return LayoutSize();
 
@@ -305,7 +304,7 @@ bool SVGImage::GetIntrinsicSizingInfo(
   if (!svg)
     return false;
 
-  LayoutSVGRoot* layout_object = ToLayoutSVGRoot(svg->GetLayoutObject());
+  auto* layout_object = To<LayoutSVGRoot>(svg->GetLayoutObject());
   if (!layout_object)
     return false;
 
@@ -381,8 +380,8 @@ void SVGImage::ForContainer(const FloatSize& container_size, Func&& func) {
   LayoutSize rounded_container_size = RoundedLayoutSize(container_size);
 
   if (SVGSVGElement* root_element = SvgRootElement(page_.Get())) {
-    if (LayoutSVGRoot* layout_object =
-            ToLayoutSVGRoot(root_element->GetLayoutObject()))
+    if (auto* layout_object =
+            To<LayoutSVGRoot>(root_element->GetLayoutObject()))
       layout_object->SetContainerSize(rounded_container_size);
   }
 

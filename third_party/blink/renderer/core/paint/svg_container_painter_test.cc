@@ -65,7 +65,7 @@ TEST_P(SVGContainerPainterTest, FilterPaintProperties) {
                             IsPaintChunk(2, 3, rect_id, container_properties),
                             IsPaintChunk(3, 4, after_id, after_properties)));
   } else {
-    const auto* svg_paint_layer = ToLayoutSVGRoot(root)->Layer();
+    const auto* svg_paint_layer = To<LayoutSVGRoot>(root)->Layer();
     const auto* svg_graphics_layer =
         svg_paint_layer->GetCompositedLayerMapping()->MainGraphicsLayer();
 

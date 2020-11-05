@@ -106,7 +106,12 @@ class LayoutSVGInlineText final : public LayoutText {
   Vector<SVGTextMetrics> metrics_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutSVGInlineText, IsSVGInlineText());
+template <>
+struct DowncastTraits<LayoutSVGInlineText> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsSVGInlineText();
+  }
+};
 
 }  // namespace blink
 

@@ -231,7 +231,12 @@ class LayoutSVGShape : public LayoutSVGModelObject {
   bool transform_uses_reference_box_ : 1;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutSVGShape, IsSVGShape());
+template <>
+struct DowncastTraits<LayoutSVGShape> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsSVGShape();
+  }
+};
 
 }  // namespace blink
 

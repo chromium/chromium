@@ -228,7 +228,7 @@ std::unique_ptr<SVGResources> SVGResources::BuildResources(
         pattern->ReferencedElement();
     if (directly_referenced_pattern) {
       EnsureResources(resources).SetLinkedResource(
-          ToLayoutSVGResourceContainerOrNull(
+          DynamicTo<LayoutSVGResourceContainer>(
               directly_referenced_pattern->GetLayoutObject()));
     }
   }
@@ -660,7 +660,7 @@ void SVGElementResourceClient::ResourceContentChanged(
   if (!layout_object)
     return;
   if (layout_object->IsSVGResourceContainer()) {
-    ToLayoutSVGResourceContainer(layout_object)->RemoveAllClientsFromCache();
+    To<LayoutSVGResourceContainer>(layout_object)->RemoveAllClientsFromCache();
     return;
   }
 

@@ -223,7 +223,7 @@ void LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
 
     if (current->IsSVGResourceContainer()) {
       // This will process the rest of the ancestors.
-      ToLayoutSVGResourceContainer(current)->RemoveAllClientsFromCache();
+      To<LayoutSVGResourceContainer>(current)->RemoveAllClientsFromCache();
       break;
     }
 

@@ -257,7 +257,7 @@ void SVGSVGElement::SvgAttributeChanged(const QualifiedName& attr_name) {
                             StyleChangeReasonForTracing::Create(
                                 style_change_reason::kSVGContainerSizeChange));
         if (layout_object)
-          ToLayoutSVGRoot(layout_object)->IntrinsicSizingInfoChanged();
+          To<LayoutSVGRoot>(layout_object)->IntrinsicSizingInfoChanged();
       }
     } else {
       InvalidateSVGPresentationAttributeStyle();
@@ -273,7 +273,7 @@ void SVGSVGElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     if (LayoutObject* object = GetLayoutObject()) {
       object->SetNeedsTransformUpdate();
       if (attr_name == svg_names::kViewBoxAttr && object->IsSVGRoot())
-        ToLayoutSVGRoot(object)->IntrinsicSizingInfoChanged();
+        To<LayoutSVGRoot>(object)->IntrinsicSizingInfoChanged();
     }
   }
 
@@ -476,7 +476,7 @@ AffineTransform SVGSVGElement::LocalCoordinateSpaceTransform(
       // localToBorderBoxTransform to map an element from SVG viewport
       // coordinates to CSS box coordinates.
       matrix.Multiply(
-          ToLayoutSVGRoot(layout_object)->LocalToBorderBoxTransform());
+          To<LayoutSVGRoot>(layout_object)->LocalToBorderBoxTransform());
       // Drop any potential non-affine parts, because we're not able to convey
       // that information further anyway until getScreenCTM returns a DOMMatrix
       // (4x4 matrix.)
@@ -505,7 +505,7 @@ void SVGSVGElement::AttachLayoutTree(AttachContext& context) {
   SVGGraphicsElement::AttachLayoutTree(context);
 
   if (GetLayoutObject() && GetLayoutObject()->IsSVGRoot())
-    ToLayoutSVGRoot(GetLayoutObject())->IntrinsicSizingInfoChanged();
+    To<LayoutSVGRoot>(GetLayoutObject())->IntrinsicSizingInfoChanged();
 }
 
 LayoutObject* SVGSVGElement::CreateLayoutObject(const ComputedStyle&,
@@ -587,7 +587,7 @@ bool SVGSVGElement::HasEmptyViewBox() const {
 
 bool SVGSVGElement::ShouldSynthesizeViewBox() const {
   return GetLayoutObject() && GetLayoutObject()->IsSVGRoot() &&
-         ToLayoutSVGRoot(GetLayoutObject())->IsEmbeddedThroughSVGImage();
+         To<LayoutSVGRoot>(GetLayoutObject())->IsEmbeddedThroughSVGImage();
 }
 
 FloatRect SVGSVGElement::CurrentViewBoxRect() const {
@@ -631,13 +631,13 @@ FloatSize SVGSVGElement::CurrentViewportSize() const {
     return FloatSize();
 
   if (layout_object->IsSVGRoot()) {
-    LayoutSize content_size = ToLayoutSVGRoot(layout_object)->ContentSize();
+    LayoutSize content_size = To<LayoutSVGRoot>(layout_object)->ContentSize();
     float zoom = layout_object->StyleRef().EffectiveZoom();
     return FloatSize(content_size.Width() / zoom, content_size.Height() / zoom);
   }
 
   FloatRect viewport_rect =
-      ToLayoutSVGViewportContainer(GetLayoutObject())->Viewport();
+      To<LayoutSVGViewportContainer>(GetLayoutObject())->Viewport();
   return viewport_rect.Size();
 }
 

@@ -571,8 +571,8 @@ void WriteSVGResourceContainer(WTF::TextStream& ts,
   const AtomicString& id = element->GetIdAttribute();
   WriteNameAndQuotedValue(ts, "id", id);
 
-  LayoutSVGResourceContainer* resource =
-      ToLayoutSVGResourceContainer(const_cast<LayoutObject*>(&object));
+  auto* resource =
+      To<LayoutSVGResourceContainer>(const_cast<LayoutObject*>(&object));
   DCHECK(resource);
 
   if (resource->ResourceType() == kMaskerResourceType) {

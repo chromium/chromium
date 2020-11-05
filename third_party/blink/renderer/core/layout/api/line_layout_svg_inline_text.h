@@ -42,11 +42,11 @@ class LineLayoutSVGInlineText : public LineLayoutText {
 
  private:
   LayoutSVGInlineText* ToSVGInlineText() {
-    return ToLayoutSVGInlineText(GetLayoutObject());
+    return To<LayoutSVGInlineText>(GetLayoutObject());
   }
 
   const LayoutSVGInlineText* ToSVGInlineText() const {
-    return ToLayoutSVGInlineText(GetLayoutObject());
+    return To<LayoutSVGInlineText>(GetLayoutObject());
   }
 };
 

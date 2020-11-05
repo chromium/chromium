@@ -45,8 +45,7 @@ void SVGClipPathElement::SvgAttributeChanged(const QualifiedName& attr_name) {
   if (attr_name == svg_names::kClipPathUnitsAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
 
-    LayoutSVGResourceContainer* layout_object =
-        ToLayoutSVGResourceContainer(GetLayoutObject());
+    auto* layout_object = To<LayoutSVGResourceContainer>(GetLayoutObject());
     if (layout_object)
       layout_object->InvalidateCacheAndMarkForLayout();
     return;

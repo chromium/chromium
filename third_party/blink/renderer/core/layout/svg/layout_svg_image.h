@@ -112,7 +112,12 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
   Persistent<LayoutImageResource> image_resource_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutSVGImage, IsSVGImage());
+template <>
+struct DowncastTraits<LayoutSVGImage> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsSVGImage();
+  }
+};
 
 }  // namespace blink
 

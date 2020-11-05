@@ -500,7 +500,7 @@ void Write(WTF::TextStream& ts,
            int indent,
            LayoutAsTextBehavior behavior) {
   if (o.IsSVGShape()) {
-    Write(ts, ToLayoutSVGShape(o), indent);
+    Write(ts, To<LayoutSVGShape>(o), indent);
     return;
   }
   if (o.IsSVGResourceContainer()) {
@@ -512,23 +512,23 @@ void Write(WTF::TextStream& ts,
     return;
   }
   if (o.IsSVGRoot()) {
-    Write(ts, ToLayoutSVGRoot(o), indent);
+    Write(ts, To<LayoutSVGRoot>(o), indent);
     return;
   }
   if (o.IsSVGText()) {
-    WriteSVGText(ts, ToLayoutSVGText(o), indent);
+    WriteSVGText(ts, To<LayoutSVGText>(o), indent);
     return;
   }
   if (o.IsSVGInline()) {
-    WriteSVGInline(ts, ToLayoutSVGInline(o), indent);
+    WriteSVGInline(ts, To<LayoutSVGInline>(o), indent);
     return;
   }
   if (o.IsSVGInlineText()) {
-    WriteSVGInlineText(ts, ToLayoutSVGInlineText(o), indent);
+    WriteSVGInlineText(ts, To<LayoutSVGInlineText>(o), indent);
     return;
   }
   if (o.IsSVGImage()) {
-    WriteSVGImage(ts, ToLayoutSVGImage(o), indent);
+    WriteSVGImage(ts, To<LayoutSVGImage>(o), indent);
     return;
   }
 

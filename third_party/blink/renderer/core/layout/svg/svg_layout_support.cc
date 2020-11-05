@@ -92,8 +92,8 @@ static FloatRect MapToSVGRootIncludingFilter(
     visual_rect = parent->LocalToSVGParentTransform().MapRect(visual_rect);
   }
 
-  const LayoutSVGRoot& svg_root = ToLayoutSVGRoot(*parent);
-  return svg_root.LocalToBorderBoxTransform().MapRect(visual_rect);
+  return To<LayoutSVGRoot>(*parent).LocalToBorderBoxTransform().MapRect(
+      visual_rect);
 }
 
 static const LayoutSVGRoot& ComputeTransformToSVGRoot(
@@ -109,7 +109,7 @@ static const LayoutSVGRoot& ComputeTransformToSVGRoot(
     root_border_box_transform.PreMultiply(parent->LocalToSVGParentTransform());
   }
 
-  const LayoutSVGRoot& svg_root = ToLayoutSVGRoot(*parent);
+  const auto& svg_root = To<LayoutSVGRoot>(*parent);
   root_border_box_transform.PreMultiply(svg_root.LocalToBorderBoxTransform());
   return svg_root;
 }
@@ -166,9 +166,10 @@ void SVGLayoutSupport::MapLocalToAncestor(const LayoutObject* object,
   // localToBorderBoxTransform to map an element from SVG viewport coordinates
   // to CSS box coordinates.
   // LayoutSVGRoot's mapLocalToAncestor method expects CSS box coordinates.
-  if (parent->IsSVGRoot())
+  if (parent->IsSVGRoot()) {
     transform_state.ApplyTransform(
-        ToLayoutSVGRoot(parent)->LocalToBorderBoxTransform());
+        To<LayoutSVGRoot>(parent)->LocalToBorderBoxTransform());
+  }
 
   parent->MapLocalToAncestor(ancestor, transform_state, flags);
 }
@@ -208,7 +209,7 @@ const LayoutObject* SVGLayoutSupport::PushMappingToContainer(
   // LayoutSVGRoot's mapLocalToAncestor method expects CSS box coordinates.
   if (parent->IsSVGRoot()) {
     TransformationMatrix matrix(
-        ToLayoutSVGRoot(parent)->LocalToBorderBoxTransform());
+        To<LayoutSVGRoot>(parent)->LocalToBorderBoxTransform());
     matrix.Multiply(object->LocalToSVGParentTransform());
     geometry_map.Push(object, matrix);
   } else {
@@ -222,9 +223,9 @@ bool SVGLayoutSupport::LayoutSizeOfNearestViewportChanged(
     const LayoutObject* start) {
   for (; start; start = start->Parent()) {
     if (start->IsSVGRoot())
-      return ToLayoutSVGRoot(start)->IsLayoutSizeChanged();
+      return To<LayoutSVGRoot>(start)->IsLayoutSizeChanged();
     if (start->IsSVGViewportContainer())
-      return ToLayoutSVGViewportContainer(start)->IsLayoutSizeChanged();
+      return To<LayoutSVGViewportContainer>(start)->IsLayoutSizeChanged();
   }
   NOTREACHED();
   return false;
@@ -233,12 +234,12 @@ bool SVGLayoutSupport::LayoutSizeOfNearestViewportChanged(
 bool SVGLayoutSupport::ScreenScaleFactorChanged(const LayoutObject* ancestor) {
   for (; ancestor; ancestor = ancestor->Parent()) {
     if (ancestor->IsSVGRoot())
-      return ToLayoutSVGRoot(ancestor)->DidScreenScaleFactorChange();
+      return To<LayoutSVGRoot>(ancestor)->DidScreenScaleFactorChange();
     if (ancestor->IsSVGTransformableContainer())
-      return ToLayoutSVGTransformableContainer(ancestor)
+      return To<LayoutSVGTransformableContainer>(ancestor)
           ->DidScreenScaleFactorChange();
     if (ancestor->IsSVGViewportContainer())
-      return ToLayoutSVGViewportContainer(ancestor)
+      return To<LayoutSVGViewportContainer>(ancestor)
           ->DidScreenScaleFactorChange();
   }
   NOTREACHED();
@@ -361,7 +362,7 @@ bool SVGLayoutSupport::IsLayoutableTextNode(const LayoutObject* object) {
   DCHECK(object->IsText());
   // <br> is marked as text, but is not handled by the SVG layout code-path.
   return object->IsSVGInlineText() &&
-         !ToLayoutSVGInlineText(object)->HasEmptyText();
+         !To<LayoutSVGInlineText>(object)->HasEmptyText();
 }
 
 bool SVGLayoutSupport::WillIsolateBlendingDescendantsForStyle(
@@ -542,7 +543,7 @@ void SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(
   for (auto* ancestor = object->Parent(); ancestor;
        ancestor = ancestor->Parent()) {
     if (ancestor->IsSVGRoot()) {
-      ToLayoutSVGRoot(ancestor)->NotifyDescendantCompositingReasonsChanged();
+      To<LayoutSVGRoot>(ancestor)->NotifyDescendantCompositingReasonsChanged();
       break;
     }
   }

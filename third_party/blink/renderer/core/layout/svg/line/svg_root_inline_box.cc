@@ -48,8 +48,8 @@ void SVGRootInlineBox::MarkDirty() {
 }
 
 void SVGRootInlineBox::ComputePerCharacterLayoutInformation() {
-  LayoutSVGText& text_root =
-      ToLayoutSVGText(*LineLayoutAPIShim::LayoutObjectFrom(Block()));
+  auto& text_root =
+      To<LayoutSVGText>(*LineLayoutAPIShim::LayoutObjectFrom(Block()));
 
   const Vector<LayoutSVGInlineText*>& descendant_text_nodes =
       text_root.DescendantTextNodes();

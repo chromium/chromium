@@ -105,7 +105,7 @@ bool SVGGeometryElement::isPointInStroke(SVGPointTearOff* point) const {
   const LayoutObject* layout_object = GetLayoutObject();
   if (!layout_object)
     return false;
-  const LayoutSVGShape& layout_shape = ToLayoutSVGShape(*layout_object);
+  const auto& layout_shape = To<LayoutSVGShape>(*layout_object);
 
   StrokeData stroke_data;
   SVGLayoutSupport::ApplyStrokeStyleToStrokeData(
@@ -239,7 +239,7 @@ void SVGGeometryElement::GeometryPresentationAttributeChanged(
 
 void SVGGeometryElement::GeometryAttributeChanged() {
   SVGElement::InvalidationGuard invalidation_guard(this);
-  if (LayoutSVGShape* layout_object = ToLayoutSVGShape(GetLayoutObject())) {
+  if (auto* layout_object = To<LayoutSVGShape>(GetLayoutObject())) {
     layout_object->SetNeedsShapeUpdate();
     MarkForLayoutAndParentResourceInvalidation(*layout_object);
   }

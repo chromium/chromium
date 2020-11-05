@@ -1156,7 +1156,7 @@ LayoutSVGRoot* LocalFrameView::EmbeddedReplacedContent() const {
 
   // Currently only embedded SVG documents participate in the size-negotiation
   // logic.
-  return ToLayoutSVGRootOrNull(first_child);
+  return DynamicTo<LayoutSVGRoot>(first_child);
 }
 
 bool LocalFrameView::GetIntrinsicSizingInfo(

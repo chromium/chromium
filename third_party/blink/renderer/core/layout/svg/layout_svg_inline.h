@@ -74,7 +74,12 @@ class LayoutSVGInline : public LayoutInline {
   void WillBeRemovedFromTree() override;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutSVGInline, IsSVGInline());
+template <>
+struct DowncastTraits<LayoutSVGInline> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsSVGInline();
+  }
+};
 
 }  // namespace blink
 

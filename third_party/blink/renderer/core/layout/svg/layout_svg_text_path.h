@@ -73,7 +73,12 @@ class LayoutSVGTextPath final : public LayoutSVGInline {
   }
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutSVGTextPath, IsSVGTextPath());
+template <>
+struct DowncastTraits<LayoutSVGTextPath> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsSVGTextPath();
+  }
+};
 
 }  // namespace blink
 

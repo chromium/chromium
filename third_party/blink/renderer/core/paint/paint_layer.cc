@@ -1162,7 +1162,7 @@ bool PaintLayer::HasNonIsolatedDescendantWithBlendMode() const {
   if (has_non_isolated_descendant_with_blend_mode_)
     return true;
   if (GetLayoutObject().IsSVGRoot()) {
-    return ToLayoutSVGRoot(GetLayoutObject())
+    return To<LayoutSVGRoot>(GetLayoutObject())
         .HasNonIsolatedBlendingDescendants();
   }
   return false;
@@ -3044,7 +3044,8 @@ bool PaintLayer::ShouldBeSelfPaintingLayer() const {
          ScrollsOverflow() ||
          (RuntimeEnabledFeatures::CompositeSVGEnabled() &&
           GetLayoutObject().IsSVGRoot() &&
-          ToLayoutSVGRoot(GetLayoutObject()).HasDescendantCompositingReasons());
+          To<LayoutSVGRoot>(GetLayoutObject())
+              .HasDescendantCompositingReasons());
 }
 
 void PaintLayer::UpdateSelfPaintingLayer() {

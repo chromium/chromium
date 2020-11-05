@@ -59,8 +59,12 @@ class LayoutSVGTransformableContainer final : public LayoutSVGContainer {
   FloatSize additional_translation_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutSVGTransformableContainer,
-                                IsSVGTransformableContainer());
+template <>
+struct DowncastTraits<LayoutSVGTransformableContainer> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsSVGTransformableContainer();
+  }
+};
 
 }  // namespace blink
 

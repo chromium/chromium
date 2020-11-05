@@ -38,7 +38,7 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
       // If the screen scaling factor changed we need to update the text
       // metrics (note: this also happens for layoutSizeChanged=true).
       if (child->IsSVGText())
-        ToLayoutSVGText(child)->SetNeedsTextMetricsUpdate();
+        To<LayoutSVGText>(child)->SetNeedsTextMetricsUpdate();
       force_child_layout = true;
     }
 
@@ -51,10 +51,10 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
           // When the layout size changed and when using relative values tell
           // the LayoutSVGShape to update its shape object
           if (child->IsSVGShape()) {
-            ToLayoutSVGShape(child)->SetNeedsShapeUpdate();
+            To<LayoutSVGShape>(child)->SetNeedsShapeUpdate();
           } else if (child->IsSVGText()) {
-            ToLayoutSVGText(child)->SetNeedsTextMetricsUpdate();
-            ToLayoutSVGText(child)->SetNeedsPositioningValuesUpdate();
+            To<LayoutSVGText>(child)->SetNeedsTextMetricsUpdate();
+            To<LayoutSVGText>(child)->SetNeedsPositioningValuesUpdate();
           }
 
           force_child_layout = true;
@@ -122,10 +122,10 @@ static inline void UpdateObjectBoundingBox(FloatRect& object_bounding_box,
 
 static bool HasValidBoundingBoxForContainer(const LayoutObject& object) {
   if (object.IsSVGShape())
-    return !ToLayoutSVGShape(object).IsShapeEmpty();
+    return !To<LayoutSVGShape>(object).IsShapeEmpty();
 
   if (object.IsSVGText())
-    return ToLayoutSVGText(object).IsObjectBoundingBoxValid();
+    return To<LayoutSVGText>(object).IsObjectBoundingBoxValid();
 
   if (auto* svg_container = DynamicTo<LayoutSVGContainer>(object)) {
     return svg_container->IsObjectBoundingBoxValid() &&
@@ -136,7 +136,7 @@ static bool HasValidBoundingBoxForContainer(const LayoutObject& object) {
     return foreign_object->IsObjectBoundingBoxValid();
 
   if (object.IsSVGImage())
-    return ToLayoutSVGImage(object).IsObjectBoundingBoxValid();
+    return To<LayoutSVGImage>(object).IsObjectBoundingBoxValid();
 
   return false;
 }

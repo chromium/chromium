@@ -201,7 +201,7 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
   if (RuntimeEnabledFeatures::CompositeSVGEnabled()) {
     if (object.IsSVGRoot()) {
       main_graphics_layer->SetShouldCreateLayersAfterPaint(
-          ToLayoutSVGRoot(object).HasDescendantCompositingReasons() &&
+          To<LayoutSVGRoot>(object).HasDescendantCompositingReasons() &&
           main_graphics_layer->PaintsContentOrHitTest());
     }
   }

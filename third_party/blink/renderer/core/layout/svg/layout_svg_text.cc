@@ -55,7 +55,7 @@ const LayoutSVGText* FindTextRoot(const LayoutObject* start) {
   DCHECK(start);
   for (; start; start = start->Parent()) {
     if (start->IsSVGText())
-      return ToLayoutSVGText(start);
+      return To<LayoutSVGText>(start);
   }
   return nullptr;
 }
@@ -108,7 +108,7 @@ static inline void CollectDescendantTextNodes(
   for (LayoutObject* descendant = text_root.FirstChild(); descendant;
        descendant = descendant->NextInPreOrder(&text_root)) {
     if (descendant->IsSVGInlineText())
-      descendant_text_nodes.push_back(ToLayoutSVGInlineText(descendant));
+      descendant_text_nodes.push_back(To<LayoutSVGInlineText>(descendant));
   }
 }
 
@@ -145,7 +145,7 @@ static inline void UpdateFontAndMetrics(LayoutSVGText& text_root) {
        descendant = descendant->NextInPreOrder(&text_root)) {
     if (!descendant->IsSVGInlineText())
       continue;
-    LayoutSVGInlineText& text = ToLayoutSVGInlineText(*descendant);
+    auto& text = To<LayoutSVGInlineText>(*descendant);
     text.UpdateScaledFont();
     text.UpdateMetricsList(last_character_was_white_space);
   }

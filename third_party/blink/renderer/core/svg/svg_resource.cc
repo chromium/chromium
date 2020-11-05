@@ -53,7 +53,7 @@ LayoutSVGResourceContainer* SVGResource::ResourceContainer() const {
   LayoutObject* layout_object = target_->GetLayoutObject();
   if (!layout_object || !layout_object->IsSVGResourceContainer())
     return nullptr;
-  return ToLayoutSVGResourceContainer(layout_object);
+  return To<LayoutSVGResourceContainer>(layout_object);
 }
 
 LocalSVGResource::LocalSVGResource(TreeScope& tree_scope,

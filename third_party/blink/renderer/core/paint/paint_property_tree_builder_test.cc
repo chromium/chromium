@@ -5630,8 +5630,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGRootWithMask) {
     </svg>
   )HTML");
 
-  const LayoutSVGRoot& root =
-      *ToLayoutSVGRoot(GetLayoutObjectByElementId("svg"));
+  const auto& root = *To<LayoutSVGRoot>(GetLayoutObjectByElementId("svg"));
   EXPECT_TRUE(root.FirstFragment().PaintProperties()->Mask());
 }
 
@@ -5641,8 +5640,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGRootWithCSSMask) {
     </svg>
   )HTML");
 
-  const LayoutSVGRoot& root =
-      *ToLayoutSVGRoot(GetLayoutObjectByElementId("svg"));
+  const auto& root = *To<LayoutSVGRoot>(GetLayoutObjectByElementId("svg"));
   EXPECT_TRUE(root.FirstFragment().PaintProperties()->Mask());
 }
 

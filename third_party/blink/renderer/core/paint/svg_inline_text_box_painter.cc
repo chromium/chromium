@@ -69,7 +69,7 @@ LayoutObject& SVGInlineTextBoxPainter::ParentInlineLayoutObject() const {
 }
 
 LayoutSVGInlineText& SVGInlineTextBoxPainter::InlineText() const {
-  return ToLayoutSVGInlineText(InlineLayoutObject());
+  return To<LayoutSVGInlineText>(InlineLayoutObject());
 }
 
 void SVGInlineTextBoxPainter::Paint(const PaintInfo& paint_info,

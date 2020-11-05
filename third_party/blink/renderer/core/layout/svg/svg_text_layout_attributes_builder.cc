@@ -79,11 +79,12 @@ void SVGTextLayoutAttributesBuilder::BuildLayoutAttributes() {
   LayoutObject* child = text_root_.FirstChild();
   while (child) {
     if (child->IsSVGInlineText()) {
-      UpdateLayoutAttributes(ToLayoutSVGInlineText(*child), value_list_position,
-                             character_data_map_);
+      UpdateLayoutAttributes(To<LayoutSVGInlineText>(*child),
+                             value_list_position, character_data_map_);
     } else if (child->IsSVGInline()) {
       // Visit children of text content elements.
-      if (LayoutObject* inline_child = ToLayoutSVGInline(child)->FirstChild()) {
+      if (LayoutObject* inline_child =
+              To<LayoutSVGInline>(child)->FirstChild()) {
         child = inline_child;
         continue;
       }
@@ -127,12 +128,12 @@ void SVGTextLayoutAttributesBuilder::CollectTextPositioningElements(
        child = child->NextSibling()) {
     if (child->IsSVGInlineText()) {
       character_count_ +=
-          CountCharactersInTextNode(ToLayoutSVGInlineText(*child));
+          CountCharactersInTextNode(To<LayoutSVGInlineText>(*child));
       continue;
     }
 
     if (child->IsSVGInline()) {
-      CollectTextPositioningElements(ToLayoutSVGInline(*child));
+      CollectTextPositioningElements(To<LayoutSVGInline>(*child));
       continue;
     }
   }

@@ -154,7 +154,7 @@ void SVGGradientElement::ChildrenChanged(const ChildrenChange& change) {
 
 void SVGGradientElement::InvalidateGradient(
     LayoutInvalidationReasonForTracing reason) {
-  if (auto* layout_object = ToLayoutSVGResourceContainer(GetLayoutObject()))
+  if (auto* layout_object = To<LayoutSVGResourceContainer>(GetLayoutObject()))
     layout_object->InvalidateCacheAndMarkForLayout(reason);
 }
 

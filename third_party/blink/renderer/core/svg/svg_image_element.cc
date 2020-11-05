@@ -91,7 +91,7 @@ void SVGImageElement::Trace(Visitor* visitor) const {
 }
 
 bool SVGImageElement::CurrentFrameHasSingleSecurityOrigin() const {
-  if (LayoutSVGImage* layout_svg_image = ToLayoutSVGImage(GetLayoutObject())) {
+  if (auto* layout_svg_image = To<LayoutSVGImage>(GetLayoutObject())) {
     LayoutImageResource* layout_image_resource =
         layout_svg_image->ImageResource();
     ImageResourceContent* image_content = layout_image_resource->CachedImage();
@@ -196,7 +196,7 @@ bool SVGImageElement::HaveLoadedRequiredResources() {
 void SVGImageElement::AttachLayoutTree(AttachContext& context) {
   SVGGraphicsElement::AttachLayoutTree(context);
 
-  if (LayoutSVGImage* image_obj = ToLayoutSVGImage(GetLayoutObject())) {
+  if (auto* image_obj = To<LayoutSVGImage>(GetLayoutObject())) {
     LayoutImageResource* layout_image_resource = image_obj->ImageResource();
     if (layout_image_resource->HasImage())
       return;

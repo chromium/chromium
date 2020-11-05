@@ -128,7 +128,7 @@ bool LayoutSVGResourceGradient::IsChildAllowed(LayoutObject* child,
   if (!child->IsSVGResourceContainer())
     return false;
 
-  return ToLayoutSVGResourceContainer(child)->IsSVGPaintServer();
+  return To<LayoutSVGResourceContainer>(child)->IsSVGPaintServer();
 }
 
 GradientSpreadMethod LayoutSVGResourceGradient::PlatformSpreadMethodFromSVGType(

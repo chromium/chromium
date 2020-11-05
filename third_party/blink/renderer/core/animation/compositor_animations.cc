@@ -841,7 +841,7 @@ CompositorAnimations::CheckCanStartTransformAnimationOnCompositorForSVG(
       // by composited animation.
       reasons |= kTransformRelatedPropertyCannotBeAcceleratedOnTarget;
     } else if (layout_object->IsSVGTransformableContainer() &&
-               !ToLayoutSVGTransformableContainer(layout_object)
+               !To<LayoutSVGTransformableContainer>(layout_object)
                     ->AdditionalTranslation()
                     .IsZero()) {
       // TODO(crbug.com/1134775): Similarly, composited animation would also

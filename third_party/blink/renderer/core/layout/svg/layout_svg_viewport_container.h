@@ -80,8 +80,12 @@ class LayoutSVGViewportContainer final : public LayoutSVGContainer {
   bool needs_transform_update_ : 1;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutSVGViewportContainer,
-                                IsSVGViewportContainer());
+template <>
+struct DowncastTraits<LayoutSVGViewportContainer> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsSVGViewportContainer();
+  }
+};
 
 }  // namespace blink
 
