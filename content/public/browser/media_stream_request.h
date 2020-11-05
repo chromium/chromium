@@ -94,15 +94,26 @@ class MediaStreamUI {
  public:
   using SourceCallback =
       base::RepeatingCallback<void(const DesktopMediaID& media_id)>;
+  using StateChangeCallback = base::RepeatingCallback<void(
+      const DesktopMediaID& media_id,
+      blink::mojom::MediaStreamStateChange new_state)>;
 
   virtual ~MediaStreamUI() {}
 
   // Called when MediaStream capturing is started. Chrome layer can call |stop|
-  // to stop the stream, or |source| to change the source of the stream.
+  // to stop the stream, or |source| to change the source of the stream, or
+  // |state_change| to pause/unpause the stream.
   // Returns the platform-dependent window ID for the UI, or 0 if not
   // applicable.
-  virtual gfx::NativeViewId OnStarted(base::OnceClosure stop,
-                                      SourceCallback source) = 0;
+  virtual gfx::NativeViewId OnStarted(
+      base::OnceClosure stop,
+      SourceCallback source,
+      const std::string& label,
+      std::vector<DesktopMediaID> screen_capture_ids,
+      StateChangeCallback state_change) = 0;
+
+  virtual void OnDeviceStopped(const std::string& label,
+                               const DesktopMediaID& media_id) = 0;
 };
 
 // Callback used return results of media access requests.

@@ -229,7 +229,10 @@ class MockMediaStreamUIProxy : public FakeMediaStreamUIProxy {
   void OnStarted(
       base::OnceClosure stop,
       content::MediaStreamUI::SourceCallback source,
-      MediaStreamUIProxy::WindowIdCallback window_id_callback) override {
+      MediaStreamUIProxy::WindowIdCallback window_id_callback,
+      const std::string& label,
+      std::vector<DesktopMediaID> screen_share_ids,
+      MediaStreamUI::StateChangeCallback state_change_callback) override {
     // gmock cannot handle move-only types, so no std::move().
     MockOnStarted(stop);
   }

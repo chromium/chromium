@@ -1063,6 +1063,13 @@ void MediaStreamManager::StopDevice(MediaStreamType type,
 
       if (request->state(type) == MEDIA_REQUEST_STATE_DONE)
         CloseDevice(type, session_id);
+
+      if (request->ui_proxy) {
+        const DesktopMediaID media_id = DesktopMediaID::Parse(device_it->id);
+        if (!media_id.is_null())
+          request->ui_proxy->OnDeviceStopped(request_it->first, media_id);
+      }
+
       device_it = devices->erase(device_it);
     }
 
@@ -2353,6 +2360,28 @@ void MediaStreamManager::ChangeMediaStreamSourceFromBrowser(
   IncrementDesktopCaptureCounter(DESKTOP_CAPTURE_NOTIFICATION_CHANGE_SOURCE);
 }
 
+void MediaStreamManager::RequestStateChangeFromBrowser(
+    const std::string& label,
+    const DesktopMediaID& media_id,
+    blink::mojom::MediaStreamStateChange new_state) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  DeviceRequest* request = FindRequest(label);
+  if (!request)
+    return;
+
+  SendLogMessage(base::StringPrintf("RequestStateChangeFromBrowser({label=%s})",
+                                    label.c_str()));
+
+  if (request->device_request_state_change_cb) {
+    for (const MediaStreamDevice& device : request->devices) {
+      if (DesktopMediaID::Parse(device.id) == media_id) {
+        request->device_request_state_change_cb.Run(label, device, new_state);
+      }
+    }
+  }
+}
+
 void MediaStreamManager::WillDestroyCurrentMessageLoop() {
   DVLOG(3) << "MediaStreamManager::WillDestroyCurrentMessageLoop()";
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::IO) ||
@@ -2639,6 +2668,15 @@ void MediaStreamManager::OnStreamStarted(const std::string& label) {
         base::Unretained(this), label);
   }
 
+  std::vector<DesktopMediaID> screen_share_ids;
+  for (const MediaStreamDevice& device : request->devices) {
+    if (blink::IsVideoScreenCaptureMediaType(device.type)) {
+      screen_share_ids.push_back(DesktopMediaID::Parse(device.id));
+    }
+  }
+
+  // base::Unretained is safe here because MediaStreamManager is deleted on the
+  // UI thread, after the IO thread has been stopped.
   if (request->ui_proxy) {
     request->ui_proxy->OnStarted(
         base::BindOnce(&MediaStreamManager::StopMediaStreamFromBrowser,
@@ -2646,7 +2684,10 @@ void MediaStreamManager::OnStreamStarted(const std::string& label) {
         device_changed_cb,
         base::BindOnce(&MediaStreamManager::OnMediaStreamUIWindowId,
                        base::Unretained(this), request->video_type(),
-                       request->devices));
+                       request->devices),
+        label, screen_share_ids,
+        base::BindRepeating(&MediaStreamManager::RequestStateChangeFromBrowser,
+                            base::Unretained(this), label));
   }
 }
 

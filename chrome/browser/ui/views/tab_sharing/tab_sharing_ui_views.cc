@@ -305,5 +305,7 @@ void TabSharingUIViews::CreateTabCaptureIndicator() {
                                   ->GetMediaStreamCaptureIndicator()
                                   ->RegisterMediaStream(shared_tab_, {device});
   tab_capture_indicator_ui_->OnStarted(
-      base::OnceClosure(), content::MediaStreamUI::SourceCallback());
+      base::OnceClosure(), content::MediaStreamUI::SourceCallback(),
+      /*label=*/std::string(), /*screen_capture_ids=*/{},
+      content::MediaStreamUI::StateChangeCallback());
 }

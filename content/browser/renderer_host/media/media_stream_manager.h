@@ -398,6 +398,10 @@ class CONTENT_EXPORT MediaStreamManager
   void StopMediaStreamFromBrowser(const std::string& label);
   void ChangeMediaStreamSourceFromBrowser(const std::string& label,
                                           const DesktopMediaID& media_id);
+  void RequestStateChangeFromBrowser(
+      const std::string& label,
+      const DesktopMediaID& media_id,
+      blink::mojom::MediaStreamStateChange new_state);
 
   // Helpers.
   // Checks if all devices that was requested in the request identififed by

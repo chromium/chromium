@@ -18,6 +18,11 @@
 #include "base/mac/mac_util.h"
 #endif
 
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
+#endif
+
 namespace {
 
 static const char kMainHtmlPage[] = "/webrtc/webrtc_getdisplaymedia_test.html";
@@ -72,7 +77,7 @@ class WebRtcGetDisplayMediaBrowserTestWithPicker
 #else
     command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
                                     "Entire screen");
-#endif
+#endif  // defined(OS_CHROMEOS)
   }
 };
 
@@ -90,6 +95,41 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetDisplayMediaBrowserTestWithPicker,
   std::string constraints("{video:true}");
   RunGetDisplayMedia(tab, constraints);
 }
+
+#if defined(OS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(WebRtcGetDisplayMediaBrowserTestWithPicker,
+                       GetDisplayMediaVideoWithDlp) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
+  std::string constraints("{video:true}");
+  RunGetDisplayMedia(tab, constraints);
+
+  std::string result;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      tab->GetMainFrame(), "waitVideoUnmuted();", &result));
+  EXPECT_EQ(result, "unmuted");
+
+  const policy::DlpContentRestrictionSet kScreenShareRestricted(
+      policy::DlpContentRestriction::kScreenShare);
+  const policy::DlpContentRestrictionSet kEmptyRestrictionSet;
+
+  policy::DlpContentManager* dlp_content_manager =
+      policy::DlpContentManager::Get();
+  dlp_content_manager->OnConfidentialityChanged(tab, kScreenShareRestricted);
+  content::WaitForLoadStop(tab);
+
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      tab->GetMainFrame(), "waitVideoMuted();", &result));
+  EXPECT_EQ(result, "muted");
+
+  dlp_content_manager->OnConfidentialityChanged(tab, kEmptyRestrictionSet);
+
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      tab->GetMainFrame(), "waitVideoUnmuted();", &result));
+  EXPECT_EQ(result, "unmuted");
+}
+#endif  // defined(OS_CHROMEOS)
 
 // Real desktop capture is flaky on below platforms.
 #if defined(OS_WIN)

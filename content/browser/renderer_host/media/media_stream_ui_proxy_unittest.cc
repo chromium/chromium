@@ -64,11 +64,17 @@ class MockResponseCallback {
 class MockMediaStreamUI : public MediaStreamUI {
  public:
   gfx::NativeViewId OnStarted(base::OnceClosure stop,
-                              MediaStreamUI::SourceCallback source) override {
+                              MediaStreamUI::SourceCallback source,
+                              const std::string& label,
+                              std::vector<DesktopMediaID> screen_capture_ids,
+                              StateChangeCallback state_change) override {
     // gmock cannot handle move-only types:
     return MockOnStarted(base::AdaptCallbackForRepeating(std::move(stop)),
                          source);
   }
+
+  void OnDeviceStopped(const std::string& label,
+                       const DesktopMediaID& media_id) override {}
 
   MOCK_METHOD2(MockOnStarted,
                gfx::NativeViewId(base::RepeatingClosure stop,
@@ -189,7 +195,9 @@ TEST_F(MediaStreamUIProxyTest, AcceptAndStart) {
   EXPECT_FALSE(response.empty());
 
   proxy_->OnStarted(base::OnceClosure(), MediaStreamUI::SourceCallback(),
-                    MediaStreamUIProxy::WindowIdCallback());
+                    MediaStreamUIProxy::WindowIdCallback(),
+                    /*label=*/std::string(), /*screen_capture_ids=*/{},
+                    MediaStreamUI::StateChangeCallback());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -266,7 +274,9 @@ TEST_F(MediaStreamUIProxyTest, StopFromUI) {
   proxy_->OnStarted(base::BindOnce(&MockStopStreamHandler::OnStop,
                                    base::Unretained(&stop_handler)),
                     MediaStreamUI::SourceCallback(),
-                    MediaStreamUIProxy::WindowIdCallback());
+                    MediaStreamUIProxy::WindowIdCallback(),
+                    /*label=*/std::string(), /*screen_capture_ids=*/{},
+                    MediaStreamUI::StateChangeCallback());
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(stop_callback);
@@ -311,7 +321,9 @@ TEST_F(MediaStreamUIProxyTest, WindowIdCallbackCalled) {
                                    base::Unretained(&handler)),
                     MediaStreamUI::SourceCallback(),
                     base::BindOnce(&MockStopStreamHandler::OnWindowId,
-                                   base::Unretained(&handler)));
+                                   base::Unretained(&handler)),
+                    /*label=*/std::string(), /*screen_capture_ids=*/{},
+                    MediaStreamUI::StateChangeCallback());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -362,7 +374,8 @@ TEST_F(MediaStreamUIProxyTest, ChangeSourceFromUI) {
                      base::Unretained(&stop_handler)),
       base::BindRepeating(&MockChangeSourceStreamHandler::OnChangeSource,
                           base::Unretained(&source_handler)),
-      MediaStreamUIProxy::WindowIdCallback());
+      MediaStreamUIProxy::WindowIdCallback(), /*label=*/std::string(),
+      /*screen_capture_ids=*/{}, MediaStreamUI::StateChangeCallback());
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(source_callback.is_null());

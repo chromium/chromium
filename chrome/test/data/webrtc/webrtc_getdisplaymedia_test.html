@@ -8,6 +8,7 @@
   <script>
   'use strict';
   var settings;
+  var video_track;
   var has_audio_track = false;
 
   function handleSuccess(stream) {
@@ -15,6 +16,7 @@
     settings = stream.getVideoTracks()[0].getSettings();
     var video = document.querySelector('video');
     video.srcObject = stream;
+    video_track = stream.getVideoTracks()[0];
     video.play();
     returnToTest("getdisplaymedia-success");
   }
@@ -51,6 +53,24 @@
 
   function getFrameRateSetting() {
     returnToTest(settings.frameRate.toString());
+  }
+
+  function waitVideoMuted() {
+    if (video_track.muted) {
+      returnToTest("muted");
+    }
+    video_track.onmute = function(evt) {
+      returnToTest("muted");
+    }
+  }
+
+  function waitVideoUnmuted() {
+    if (!video_track.muted) {
+      returnToTest("unmuted");
+    }
+    video_track.onunmute = function(evt) {
+      returnToTest("unmuted");
+    }
   }
   </script>
 </head>

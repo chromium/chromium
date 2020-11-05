@@ -134,6 +134,27 @@ bool DlpContentManager::IsCaptureModeInitRestricted() const {
              DlpContentRestriction::kVideoCapture);
 }
 
+void DlpContentManager::OnScreenCaptureStarted(
+    const std::string& label,
+    std::vector<content::DesktopMediaID> screen_capture_ids,
+    content::MediaStreamUI::StateChangeCallback state_change_callback) {
+  for (const content::DesktopMediaID& id : screen_capture_ids) {
+    ScreenCaptureInfo capture_info(label, id, state_change_callback);
+    DCHECK(!base::Contains(running_screen_captures_, capture_info));
+    running_screen_captures_.push_back(capture_info);
+  }
+  CheckRunningScreenCaptures();
+}
+
+void DlpContentManager::OnScreenCaptureStopped(
+    const std::string& label,
+    const content::DesktopMediaID& media_id) {
+  base::EraseIf(running_screen_captures_,
+                [=](const ScreenCaptureInfo& capture) -> bool {
+                  return capture.label == label && capture.media_id == media_id;
+                });
+}
+
 /* static */
 void DlpContentManager::SetDlpContentManagerForTesting(
     DlpContentManager* dlp_content_manager) {
@@ -145,6 +166,31 @@ void DlpContentManager::SetDlpContentManagerForTesting(
 /* static */
 void DlpContentManager::ResetDlpContentManagerForTesting() {
   g_dlp_content_manager = nullptr;
+}
+
+DlpContentManager::ScreenCaptureInfo::ScreenCaptureInfo() = default;
+DlpContentManager::ScreenCaptureInfo::ScreenCaptureInfo(
+    const std::string& label,
+    const content::DesktopMediaID& media_id,
+    content::MediaStreamUI::StateChangeCallback state_change_callback)
+    : label(label),
+      media_id(media_id),
+      state_change_callback(state_change_callback) {}
+DlpContentManager::ScreenCaptureInfo::ScreenCaptureInfo(
+    const DlpContentManager::ScreenCaptureInfo& other) = default;
+DlpContentManager::ScreenCaptureInfo&
+DlpContentManager::ScreenCaptureInfo::operator=(
+    const DlpContentManager::ScreenCaptureInfo& other) = default;
+DlpContentManager::ScreenCaptureInfo::~ScreenCaptureInfo() = default;
+
+bool DlpContentManager::ScreenCaptureInfo::operator==(
+    const DlpContentManager::ScreenCaptureInfo& other) const {
+  return label == other.label && media_id == other.media_id;
+}
+
+bool DlpContentManager::ScreenCaptureInfo::operator!=(
+    const DlpContentManager::ScreenCaptureInfo& other) const {
+  return !(*this == other);
 }
 
 DlpContentManager::DlpContentManager() = default;
@@ -164,6 +210,7 @@ void DlpContentManager::OnConfidentialityChanged(
       MaybeChangeOnScreenRestrictions();
     }
   }
+  CheckRunningScreenCaptures();
 }
 
 void DlpContentManager::OnWebContentsDestroyed(
@@ -230,6 +277,7 @@ void DlpContentManager::MaybeChangeOnScreenRestrictions() {
     OnScreenRestrictionsChanged(added_restrictions, removed_restrictions);
   }
   CheckRunningVideoCapture();
+  CheckRunningScreenCaptures();
 }
 
 void DlpContentManager::OnScreenRestrictionsChanged(
@@ -324,6 +372,19 @@ void DlpContentManager::CheckRunningVideoCapture() {
   if (IsAreaRestricted(area, DlpContentRestriction::kVideoCapture)) {
     std::move(stop_callback).Run();
     running_video_capture_.reset();
+  }
+}
+
+void DlpContentManager::CheckRunningScreenCaptures() {
+  for (auto& capture : running_screen_captures_) {
+    bool is_allowed = !IsScreenCaptureRestricted(capture.media_id);
+    if (is_allowed != capture.is_running) {
+      capture.state_change_callback.Run(
+          capture.media_id, capture.is_running
+                                ? blink::mojom::MediaStreamStateChange::PAUSE
+                                : blink::mojom::MediaStreamStateChange::PLAY);
+      capture.is_running = is_allowed;
+    }
   }
 }
 

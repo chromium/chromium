@@ -177,7 +177,9 @@ TEST_P(MediaStreamCaptureIndicatorObserverMethodTest, AddAndRemoveDevice) {
   // Make sure that the observer gets called and that the corresponding accessor
   // gets called when |OnStarted| is called.
   (observer()->*(param.observer_method))(source, true);
-  ui->OnStarted(base::OnceClosure(), content::MediaStreamUI::SourceCallback());
+  ui->OnStarted(base::OnceClosure(), content::MediaStreamUI::SourceCallback(),
+                /*label=*/std::string(), /*screen_capture_ids=*/{},
+                content::MediaStreamUI::StateChangeCallback());
   EXPECT_TRUE((indicator()->*(param.accessor_method))(web_contents()));
   ::testing::Mock::VerifyAndClear(observer());
 
@@ -198,7 +200,9 @@ TEST_P(MediaStreamCaptureIndicatorObserverMethodTest, CloseActiveWebContents) {
   std::unique_ptr<content::MediaStreamUI> ui =
       indicator()->RegisterMediaStream(source, {CreateFakeDevice(param)});
   (observer()->*(param.observer_method))(source, true);
-  ui->OnStarted(base::OnceClosure(), content::MediaStreamUI::SourceCallback());
+  ui->OnStarted(base::OnceClosure(), content::MediaStreamUI::SourceCallback(),
+                /*label=*/std::string(), /*screen_capture_ids=*/{},
+                content::MediaStreamUI::StateChangeCallback());
   ::testing::Mock::VerifyAndClear(observer());
 
   // Deleting the WebContents should cause the observer to be notified that the

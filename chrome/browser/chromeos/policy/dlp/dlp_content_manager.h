@@ -17,9 +17,12 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_window_observer.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "content/public/browser/media_stream_request.h"
 
 class GURL;
 struct ScreenshotArea;
+FORWARD_DECLARE_TEST(WebRtcGetDisplayMediaBrowserTestWithPicker,
+                     GetDisplayMediaVideoWithDlp);
 
 namespace aura {
 class Window;
@@ -78,6 +81,18 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
   // any restricted content is currently visible.
   bool IsCaptureModeInitRestricted() const;
 
+  // Called when screen capture is started.
+  // |state_change_callback| will be called when restricted content will appear
+  // or disappear in the captured area.
+  void OnScreenCaptureStarted(
+      const std::string& label,
+      std::vector<content::DesktopMediaID> screen_capture_ids,
+      content::MediaStreamUI::StateChangeCallback state_change_callback);
+
+  // Called when screen capture is stopped.
+  void OnScreenCaptureStopped(const std::string& label,
+                              const content::DesktopMediaID& media_id);
+
   // The caller (test) should manage |dlp_content_manager| lifetime.
   // Reset doesn't delete the object.
   static void SetDlpContentManagerForTesting(
@@ -85,6 +100,7 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
   static void ResetDlpContentManagerForTesting();
 
  private:
+  // TODO(crbug.com/1145954): Refactor to avoid adding tests as friends.
   FRIEND_TEST_ALL_PREFIXES(DlpContentManagerBrowserTest, ScreenshotsRestricted);
   FRIEND_TEST_ALL_PREFIXES(DlpContentManagerBrowserTest,
                            VideoCaptureStoppedWhenConfidentialWindowResized);
@@ -94,9 +110,31 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
                            VideoCaptureNotStoppedWhenConfidentialWindowHidden);
   FRIEND_TEST_ALL_PREFIXES(DlpContentManagerPolicyBrowserTest,
                            GetRestrictionSetForURL);
+  FRIEND_TEST_ALL_PREFIXES(::WebRtcGetDisplayMediaBrowserTestWithPicker,
+                           GetDisplayMediaVideoWithDlp);
   friend class DlpContentManagerTest;
   friend class DlpContentTabHelper;
   friend class MockDlpContentManager;
+
+  // Structure to keep track of running screen captures.
+  struct ScreenCaptureInfo {
+    ScreenCaptureInfo();
+    ScreenCaptureInfo(
+        const std::string& label,
+        const content::DesktopMediaID& media_id,
+        content::MediaStreamUI::StateChangeCallback state_change_callback);
+    ScreenCaptureInfo(const ScreenCaptureInfo& other);
+    ScreenCaptureInfo& operator=(const ScreenCaptureInfo& other);
+    ~ScreenCaptureInfo();
+
+    bool operator==(const ScreenCaptureInfo& other) const;
+    bool operator!=(const ScreenCaptureInfo& other) const;
+
+    std::string label;
+    content::DesktopMediaID media_id;
+    content::MediaStreamUI::StateChangeCallback state_change_callback;
+    bool is_running = true;
+  };
 
   DlpContentManager();
   ~DlpContentManager() override;
@@ -141,6 +179,10 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
   // in the corresponding areas.
   void CheckRunningVideoCapture();
 
+  // Checks and stops the running screen captures if restricted content appeared
+  // in the corresponding areas.
+  void CheckRunningScreenCaptures();
+
   // Get the delay before switching privacy screen off.
   static base::TimeDelta GetPrivacyScreenOffDelayForTesting();
 
@@ -158,6 +200,9 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
   // The currently running video capture are and callback to stop, if any.
   base::Optional<std::pair<ScreenshotArea, base::OnceClosure>>
       running_video_capture_;
+
+  // List of the currently running screen captures.
+  std::vector<ScreenCaptureInfo> running_screen_captures_;
 };
 
 }  // namespace policy
