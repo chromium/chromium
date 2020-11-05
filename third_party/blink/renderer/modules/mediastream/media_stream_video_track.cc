@@ -611,6 +611,11 @@ void MediaStreamVideoTrack::SetEnabled(bool enabled) {
     encoded_sink->OnEnabledChanged(enabled);
 }
 
+size_t MediaStreamVideoTrack::CountSinks() const {
+  DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
+  return sinks_.size();
+}
+
 size_t MediaStreamVideoTrack::CountEncodedSinks() const {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   return encoded_sinks_.size();

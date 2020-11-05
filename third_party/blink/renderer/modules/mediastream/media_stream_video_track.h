@@ -91,6 +91,9 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
                bool is_sink_secure);
   void RemoveSink(WebMediaStreamSink* sink);
 
+  // Returns the number of currently connected sinks.
+  size_t CountSinks() const;
+
   // Adds |callback| for encoded frame output on the IO thread. The function
   // will cause generation of a keyframe from the source.
   // Encoded sinks are not secure.

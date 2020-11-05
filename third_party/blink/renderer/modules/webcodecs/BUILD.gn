@@ -59,6 +59,8 @@ blink_modules_sources("webcodecs") {
     "//third_party/blink/renderer/modules/mediastream:mediastream",
     "//third_party/blink/renderer/modules/webaudio:webaudio",
   ]
+  allow_circular_includes_from =
+      [ "//third_party/blink/renderer/modules/mediastream:mediastream" ]
 }
 
 source_set("unit_tests") {
