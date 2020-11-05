@@ -70,6 +70,7 @@
 #include "components/security_interstitials/content/ssl_cert_reporter.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/variations_params_manager.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -78,8 +79,10 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/common/page_type.h"
+#include "content/public/common/user_agent.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
@@ -681,6 +684,28 @@ class PrefetchProxyBrowserTest
                                      });
   }
 
+  // Uses the url's path to match requests since the host from
+  // EmbeddedTestServer is always 127.0.0.1.
+  void VerifyOriginRequestsAreIsolated(const std::set<std::string>& paths) {
+    size_t verified_url_count = 0;
+    for (const auto& request : origin_server_requests()) {
+      const GURL& url = request.GetURL();
+      if (paths.find(url.path()) == paths.end()) {
+        continue;
+      }
+
+      SCOPED_TRACE(request.GetURL().spec());
+      EXPECT_EQ(request.headers.find("user-agent")->second,
+                content::GetFrozenUserAgent(
+                    base::CommandLine::ForCurrentProcess()->HasSwitch(
+                        switches::kUseMobileUserAgent),
+                    version_info::GetMajorVersionNumber()));
+      EXPECT_EQ(request.headers.find("purpose")->second, "prefetch");
+      verified_url_count++;
+    }
+    EXPECT_EQ(paths.size(), verified_url_count);
+  }
+
   size_t OriginServerRequestCount() const {
     base::RunLoop().RunUntilIdle();
     return origin_server_request_count_;
@@ -714,6 +739,8 @@ class PrefetchProxyBrowserTest
       const net::test_server::HttpRequest& request) {
     if (request.GetURL().spec().find("favicon") != std::string::npos)
       return nullptr;
+
+    SCOPED_TRACE(request.GetURL().spec());
 
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -1169,6 +1196,8 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   EXPECT_EQ(base::UTF8ToUTF16("Title Of Awesomeness"),
             GetWebContents()->GetTitle());
 
+  VerifyOriginRequestsAreIsolated({prefetch_url.path()});
+
   // The origin server should not have served this request.
   EXPECT_EQ(starting_origin_request_count, OriginServerRequestCount());
 }
@@ -1228,6 +1257,12 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   // Navigate to a prefetched page to trigger UKM recording.
   ui_test_utils::NavigateToURL(browser(), eligible_link_2);
   base::RunLoop().RunUntilIdle();
+
+  VerifyOriginRequestsAreIsolated({
+      eligible_link_1.path(),
+      eligible_link_2.path(),
+      eligible_link_3.path(),
+  });
 
   using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
   auto expected_entries = std::vector<UkmEntry>{
@@ -2620,6 +2655,11 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
   EXPECT_TRUE(found_nsp_javascript);
   EXPECT_FALSE(found_nsp_mainframe);
   EXPECT_FALSE(found_image);
+
+  VerifyOriginRequestsAreIsolated({
+      "/prefetch/prefetch_proxy/prefetch.js",
+      eligible_link.path(),
+  });
 
   // Verify the resource load was reported to the subresource manager.
   PrefetchProxyService* service =

@@ -8,6 +8,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
@@ -35,6 +36,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prerender/browser/prerender_manager.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/network_service_instance.h"
@@ -44,6 +46,8 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
+#include "content/public/common/content_switches.h"
+#include "content/public/common/user_agent.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
@@ -700,6 +704,9 @@ void PrefetchProxyTabHelper::StartSinglePrefetch() {
   request->load_flags = net::LOAD_DISABLE_CACHE | net::LOAD_PREFETCH;
   request->credentials_mode = network::mojom::CredentialsMode::kInclude;
   request->headers.SetHeader(content::kCorsExemptPurposeHeaderName, "prefetch");
+  // Remove the user agent header if it was set so that the network context's
+  // default is used.
+  request->headers.RemoveHeader("User-Agent");
   request->trusted_params = trusted_params;
   request->site_for_cookies = trusted_params.isolation_info.site_for_cookies();
 
@@ -1373,7 +1380,10 @@ void PrefetchProxyTabHelper::CreateIsolatedURLLoaderFactory() {
 
   auto context_params = network::mojom::NetworkContextParams::New();
   context_params->context_name = "PrefetchProxy";
-  context_params->user_agent = ::GetUserAgent();
+  context_params->user_agent = content::GetFrozenUserAgent(
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseMobileUserAgent),
+      version_info::GetMajorVersionNumber());
   context_params->accept_language = net::HttpUtil::GenerateAcceptLanguageHeader(
       profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages));
   context_params->initial_custom_proxy_config =
