@@ -17,6 +17,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
@@ -47,7 +48,8 @@ CreateContentBrowserURLLoaderThrottles(
       browser_context->GetClientHintsControllerDelegate();
   if (base::FeatureList::IsEnabled(features::kFeaturePolicyForClientHints) &&
       base::FeatureList::IsEnabled(features::kCriticalClientHint) &&
-      request.is_main_frame && client_hint_delegate &&
+      request.is_main_frame && net::HttpUtil::IsMethodSafe(request.method) &&
+      client_hint_delegate &&
       ShouldAddClientHints(request.url,
                            FrameTreeNode::GloballyFindByID(frame_tree_node_id),
                            client_hint_delegate)) {
