@@ -62,7 +62,7 @@ void SavePasswordInfoBarDelegate::Create(
       base::WrapUnique(
           new SavePasswordInfoBarDelegate(web_contents, std::move(form_to_save),
                                           is_smartlock_branding_enabled)),
-      should_show_account_footer ? account_info.value() : AccountInfo()));
+      should_show_account_footer ? account_info : base::nullopt));
 }
 
 SavePasswordInfoBarDelegate::~SavePasswordInfoBarDelegate() {

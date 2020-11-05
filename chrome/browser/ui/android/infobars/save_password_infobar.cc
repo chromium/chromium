@@ -18,7 +18,7 @@ using base::android::JavaParamRef;
 
 SavePasswordInfoBar::SavePasswordInfoBar(
     std::unique_ptr<SavePasswordInfoBarDelegate> delegate,
-    AccountInfo account_info)
+    base::Optional<AccountInfo> account_info)
     : ChromeConfirmInfoBar(std::move(delegate)) {
   account_info_ = account_info;
 }
@@ -41,7 +41,9 @@ SavePasswordInfoBar::CreateRenderInfoBar(JNIEnv* env) {
   ScopedJavaLocalRef<jstring> details_message_text = ConvertUTF16ToJavaString(
       env, save_password_delegate->GetDetailsMessageText());
   ScopedJavaLocalRef<jobject> account_info =
-      ConvertToJavaAccountInfo(env, account_info_);
+      account_info_.has_value()
+          ? ConvertToJavaAccountInfo(env, account_info_.value())
+          : nullptr;
 
   base::android::ScopedJavaLocalRef<jobject> infobar;
   infobar.Reset(Java_SavePasswordInfoBar_show(
