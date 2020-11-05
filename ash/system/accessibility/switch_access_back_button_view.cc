@@ -8,15 +8,18 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/accessibility/floating_menu_button.h"
 #include "ash/system/tray/tray_constants.h"
+#include "base/bind.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/mojom/ax_node_data.mojom-shared.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -29,28 +32,29 @@ constexpr int kFocusRingBufferDp = 1;
 constexpr int kRadiusDp = 18;
 }  // namespace
 
-SwitchAccessBackButtonView::SwitchAccessBackButtonView(bool for_menu)
-    : back_button_(new FloatingMenuButton(
-          this,
-          for_menu ? kSwitchAccessCloseIcon : kSwitchAccessBackIcon,
-          IDS_ASH_SWITCH_ACCESS_BACK_BUTTON_DESCRIPTION,
-          /*flip_for_rtl=*/false,
-          2 * kRadiusDp,
-          /*draw_highlight=*/true,
-          /*is_a11y_togglable=*/false)) {
-  views::BoxLayout* layout =
-      SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, gfx::Insets()));
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
-  AddChildView(back_button_);
-
+SwitchAccessBackButtonView::SwitchAccessBackButtonView(bool for_menu) {
   // Calculate the side length of the bounding box, with room for the two-color
   // focus ring on either side.
   int focus_ring_width_per_side =
       2 * kFocusRingSingleColorWidthDp + kFocusRingBufferDp;
   int side_length = 2 * (kRadiusDp + focus_ring_width_per_side);
-  gfx::Size size(side_length, side_length);
-  SetSize(size);
+
+  views::Builder<SwitchAccessBackButtonView>(this)
+      .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
+      .AddChildren(
+          {views::Builder<FloatingMenuButton>()
+               .CopyAddressTo(&back_button_)
+               .SetVectorIcon(for_menu ? kSwitchAccessCloseIcon
+                                       : kSwitchAccessBackIcon)
+               .SetTooltipText(l10n_util::GetStringUTF16(
+                   IDS_ASH_SWITCH_ACCESS_BACK_BUTTON_DESCRIPTION))
+               .SetPreferredSize(gfx::Size(2 * kRadiusDp, 2 * kRadiusDp))
+               .SetDrawHighlight(true)
+               .SetCallback(base::BindRepeating(
+                   &SwitchAccessBackButtonView::OnButtonPressed,
+                   base::Unretained(this)))})
+      .SetSize(gfx::Size(side_length, side_length))
+      .BuildChildren();
 }
 
 void SwitchAccessBackButtonView::SetFocusRing(bool should_show) {
@@ -67,12 +71,6 @@ void SwitchAccessBackButtonView::SetForMenu(bool for_menu) {
     back_button_->SetVectorIcon(kSwitchAccessBackIcon);
 }
 
-void SwitchAccessBackButtonView::ButtonPressed(views::Button* sender,
-                                               const ui::Event& event) {
-  NotifyAccessibilityEvent(ax::mojom::Event::kClicked,
-                           /*send_native_event=*/false);
-}
-
 void SwitchAccessBackButtonView::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kButton;
@@ -80,10 +78,6 @@ void SwitchAccessBackButtonView::GetAccessibleNodeData(
 
 int SwitchAccessBackButtonView::GetHeightForWidth(int w) const {
   return w;
-}
-
-const char* SwitchAccessBackButtonView::GetClassName() const {
-  return "SwitchAccessBackButtonView";
 }
 
 void SwitchAccessBackButtonView::OnPaint(gfx::Canvas* canvas) {
@@ -107,5 +101,13 @@ void SwitchAccessBackButtonView::OnPaint(gfx::Canvas* canvas) {
   canvas->DrawCircle(gfx::PointF(rect.CenterPoint()),
                      kRadiusDp + (2 * kFocusRingSingleColorWidthDp), flags);
 }
+
+void SwitchAccessBackButtonView::OnButtonPressed() {
+  NotifyAccessibilityEvent(ax::mojom::Event::kClicked,
+                           /*send_native_event=*/false);
+}
+
+BEGIN_METADATA(SwitchAccessBackButtonView, views::BoxLayoutView)
+END_METADATA
 
 }  // namespace ash

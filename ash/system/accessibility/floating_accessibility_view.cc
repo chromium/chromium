@@ -18,9 +18,11 @@
 #include "ash/system/accessibility/select_to_speak_tray.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_tray.h"
+#include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -109,15 +111,11 @@ bool FloatingAccessibilityBubbleView::AcceleratorPressed(
   return true;
 }
 
-const char* FloatingAccessibilityBubbleView::GetClassName() const {
-  return "FloatingAccessibilityBubbleView";
-}
+BEGIN_METADATA(FloatingAccessibilityBubbleView, TrayBubbleView)
+END_METADATA
 
 FloatingAccessibilityView::FloatingAccessibilityView(Delegate* delegate)
     : delegate_(delegate) {
-  std::unique_ptr<views::BoxLayout> layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0);
-  SetLayoutManager(std::move(layout));
 
   Shelf* shelf = RootWindowController::ForTargetRootWindow()->shelf();
   std::unique_ptr<views::View> feature_buttons_container =
@@ -136,7 +134,10 @@ FloatingAccessibilityView::FloatingAccessibilityView(Delegate* delegate)
       CreateButtonRowContainer(kUnifiedTopShortcutSpacing);
   a11y_tray_button_ =
       tray_button_container->AddChildView(std::make_unique<FloatingMenuButton>(
-          this, kUnifiedMenuAccessibilityIcon,
+          base::BindRepeating(
+              &FloatingAccessibilityView::OnA11yTrayButtonPressed,
+              base::Unretained(this)),
+          kUnifiedMenuAccessibilityIcon,
           IDS_ASH_FLOATING_ACCESSIBILITY_DETAILED_MENU_OPEN,
           /*flip_for_rtl*/ true));
 
@@ -144,7 +145,10 @@ FloatingAccessibilityView::FloatingAccessibilityView(Delegate* delegate)
       CreateButtonRowContainer(kPanelPositionButtonPadding);
   position_button_ = position_button_container->AddChildView(
       std::make_unique<FloatingMenuButton>(
-          this, kAutoclickPositionBottomLeftIcon,
+          base::BindRepeating(
+              &FloatingAccessibilityView::OnPositionButtonPressed,
+              base::Unretained(this)),
+          kAutoclickPositionBottomLeftIcon,
           IDS_ASH_AUTOCLICK_OPTION_CHANGE_POSITION, /*flip_for_rtl*/ false,
           kPanelPositionButtonSize, false, /* is_a11y_togglable */ false));
 
@@ -154,8 +158,8 @@ FloatingAccessibilityView::FloatingAccessibilityView(Delegate* delegate)
   AddChildView(std::move(position_button_container));
 
   // Set view IDs for testing.
-  position_button_->SetId(static_cast<int>(ButtonId::kPosition));
-  a11y_tray_button_->SetId(static_cast<int>(ButtonId::kSettingsList));
+  position_button_->SetID(static_cast<int>(ButtonId::kPosition));
+  a11y_tray_button_->SetID(static_cast<int>(ButtonId::kSettingsList));
   dictation_button_->SetID(static_cast<int>(ButtonId::kDictation));
   select_to_speak_button_->SetID(static_cast<int>(ButtonId::kSelectToSpeak));
   virtual_keyboard_button_->SetID(static_cast<int>(ButtonId::kVirtualKeyboard));
@@ -203,47 +207,37 @@ void FloatingAccessibilityView::FocusOnDetailedViewButton() {
   a11y_tray_button_->RequestFocus();
 }
 
-void FloatingAccessibilityView::ButtonPressed(views::Button* sender,
-                                              const ui::Event& event) {
-  if (sender == a11y_tray_button_) {
-    delegate_->OnDetailedMenuEnabled(!a11y_tray_button_->IsToggled());
-    return;
-  }
-
-  if (sender == position_button_) {
-    FloatingMenuPosition new_position;
-    // Rotate clockwise throughout the screen positions.
-    switch (
-        Shell::Get()->accessibility_controller()->GetFloatingMenuPosition()) {
-      case FloatingMenuPosition::kBottomRight:
-        new_position = FloatingMenuPosition::kBottomLeft;
-        break;
-      case FloatingMenuPosition::kBottomLeft:
-        new_position = FloatingMenuPosition::kTopLeft;
-        break;
-      case FloatingMenuPosition::kTopLeft:
-        new_position = FloatingMenuPosition::kTopRight;
-        break;
-      case FloatingMenuPosition::kTopRight:
-        new_position = FloatingMenuPosition::kBottomRight;
-        break;
-      case FloatingMenuPosition::kSystemDefault:
-        new_position = base::i18n::IsRTL() ? FloatingMenuPosition::kTopLeft
-                                           : FloatingMenuPosition::kBottomLeft;
-        break;
-    }
-    Shell::Get()->accessibility_controller()->SetFloatingMenuPosition(
-        new_position);
-    Shell::Get()
-        ->accessibility_controller()
-        ->TriggerAccessibilityAlertWithMessage(
-            GetDescriptionForMovedToPosition(new_position));
-  }
-  return;
+void FloatingAccessibilityView::OnA11yTrayButtonPressed() {
+  delegate_->OnDetailedMenuEnabled(!a11y_tray_button_->GetToggled());
 }
 
-const char* FloatingAccessibilityView::GetClassName() const {
-  return "AccessiblityFloatingView";
+void FloatingAccessibilityView::OnPositionButtonPressed() {
+  FloatingMenuPosition new_position;
+  // Rotate clockwise throughout the screen positions.
+  switch (Shell::Get()->accessibility_controller()->GetFloatingMenuPosition()) {
+    case FloatingMenuPosition::kBottomRight:
+      new_position = FloatingMenuPosition::kBottomLeft;
+      break;
+    case FloatingMenuPosition::kBottomLeft:
+      new_position = FloatingMenuPosition::kTopLeft;
+      break;
+    case FloatingMenuPosition::kTopLeft:
+      new_position = FloatingMenuPosition::kTopRight;
+      break;
+    case FloatingMenuPosition::kTopRight:
+      new_position = FloatingMenuPosition::kBottomRight;
+      break;
+    case FloatingMenuPosition::kSystemDefault:
+      new_position = base::i18n::IsRTL() ? FloatingMenuPosition::kTopLeft
+                                         : FloatingMenuPosition::kBottomLeft;
+      break;
+  }
+  Shell::Get()->accessibility_controller()->SetFloatingMenuPosition(
+      new_position);
+  Shell::Get()
+      ->accessibility_controller()
+      ->TriggerAccessibilityAlertWithMessage(
+          GetDescriptionForMovedToPosition(new_position));
 }
 
 void FloatingAccessibilityView::OnViewVisibilityChanged(
@@ -253,5 +247,8 @@ void FloatingAccessibilityView::OnViewVisibilityChanged(
     return;
   delegate_->OnLayoutChanged();
 }
+
+BEGIN_METADATA(FloatingAccessibilityView, views::BoxLayoutView)
+END_METADATA
 
 }  // namespace ash
