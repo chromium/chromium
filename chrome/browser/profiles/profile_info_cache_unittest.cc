@@ -889,8 +889,10 @@ TEST_F(ProfileInfoCacheTest, GetGaiaImageForAvatarMenu) {
 
   // Try to get the GAIA image. For the first time, it triggers an async image
   // load from disk. The load status indicates the image is still being loaded.
+  constexpr int kArbitraryPreferredSize = 96;
   EXPECT_EQ(AvatarMenu::ImageLoadStatus::LOADING,
-            AvatarMenu::GetImageForMenuButton(profile_path, &image_loaded));
+            AvatarMenu::GetImageForMenuButton(profile_path, &image_loaded,
+                                              kArbitraryPreferredSize));
   EXPECT_FALSE(gfx::test::AreImagesEqual(gaia_image, image_loaded));
 
   // Wait until the async image load finishes.
@@ -898,7 +900,8 @@ TEST_F(ProfileInfoCacheTest, GetGaiaImageForAvatarMenu) {
 
   // Since the GAIA image is loaded now, we can get it this time.
   EXPECT_EQ(AvatarMenu::ImageLoadStatus::LOADED,
-            AvatarMenu::GetImageForMenuButton(profile_path, &image_loaded));
+            AvatarMenu::GetImageForMenuButton(profile_path, &image_loaded,
+                                              kArbitraryPreferredSize));
   EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_image, image_loaded));
 }
 #endif
