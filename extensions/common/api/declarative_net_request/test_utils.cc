@@ -7,7 +7,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "extensions/common/api/declarative_net_request.h"
-#include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/value_builder.h"
@@ -193,13 +192,13 @@ std::unique_ptr<base::DictionaryValue> TestRule::ToValue() const {
   return dict;
 }
 
-TestRule CreateGenericRule() {
+TestRule CreateGenericRule(int id) {
   TestRuleCondition condition;
   condition.url_filter = std::string("filter");
   TestRuleAction action;
   action.type = std::string("block");
   TestRule rule;
-  rule.id = kMinValidID;
+  rule.id = id;
   rule.priority = kMinValidPriority;
   rule.action = action;
   rule.condition = condition;

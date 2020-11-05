@@ -64,23 +64,6 @@ bool CanCallGetMatchedRules(content::BrowserContext* browser_context,
   return can_call;
 }
 
-size_t GetEnabledStaticRuleCount(
-    const declarative_net_request::CompositeMatcher* composite_matcher) {
-  size_t enabled_static_rule_count = 0;
-
-  if (composite_matcher) {
-    for (const std::unique_ptr<declarative_net_request::RulesetMatcher>&
-             matcher : composite_matcher->matchers()) {
-      if (matcher->id() == declarative_net_request::kDynamicRulesetID)
-        continue;
-
-      enabled_static_rule_count += matcher->GetRulesCount();
-    }
-  }
-
-  return enabled_static_rule_count;
-}
-
 }  // namespace
 
 DeclarativeNetRequestUpdateDynamicRulesFunction::
@@ -470,15 +453,23 @@ DeclarativeNetRequestGetAvailableStaticRuleCountFunction::Run() {
   const declarative_net_request::GlobalRulesTracker& global_rules_tracker =
       rules_monitor_service->global_rules_tracker();
 
-  available_static_rule_count = global_rules_tracker.GetUnallocatedRuleCount();
+  size_t available_allocation =
+      global_rules_tracker.GetAvailableAllocation(extension_id());
+  size_t guaranteed_static_minimum =
+      declarative_net_request::GetStaticGuaranteedMinimumRuleCount();
 
   // If an extension's rule count is below the guaranteed minimum, include the
   // difference.
-  size_t guaranteed_static_minimum =
-      declarative_net_request::GetStaticGuaranteedMinimumRuleCount();
   if (enabled_static_rule_count < guaranteed_static_minimum) {
-    available_static_rule_count +=
-        (guaranteed_static_minimum - enabled_static_rule_count);
+    available_static_rule_count =
+        (guaranteed_static_minimum - enabled_static_rule_count) +
+        available_allocation;
+  } else {
+    size_t used_global_allocation =
+        enabled_static_rule_count - guaranteed_static_minimum;
+    DCHECK_GE(available_allocation, used_global_allocation);
+
+    available_static_rule_count = available_allocation - used_global_allocation;
   }
 
   // Ensure conversion to int below doesn't underflow.

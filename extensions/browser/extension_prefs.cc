@@ -243,6 +243,11 @@ constexpr const char kDNRIgnoreRulesetKey[] = "ignore_ruleset";
 constexpr const char kDNRExtensionRulesAllocated[] =
     "dnr_extension_rules_allocated";
 
+// A boolean that indicates if an extension should have its unused rule
+// allocation kept during its next load.
+constexpr const char kPrefDNRKeepExcessAllocation[] =
+    "dnr_keep_excess_allocation";
+
 // The default value to use for permission withholding when setting the pref on
 // installation or for extensions where the pref has not been set.
 constexpr bool kDefaultWithholdingBehavior = false;
@@ -2201,6 +2206,22 @@ void ExtensionPrefs::SetDNRAllocatedGlobalRuleCount(
           ? std::make_unique<base::Value>(static_cast<int>(rule_count))
           : nullptr;
   UpdateExtensionPref(extension_id, kDNRExtensionRulesAllocated,
+                      std::move(pref_value));
+}
+
+bool ExtensionPrefs::GetDNRKeepExcessAllocation(
+    const ExtensionId& extension_id) const {
+  return ReadPrefAsBooleanAndReturn(extension_id, kPrefDNRKeepExcessAllocation);
+}
+
+void ExtensionPrefs::SetDNRKeepExcessAllocation(const ExtensionId& extension_id,
+                                                bool keep_excess_allocation) {
+  // Clear the pref entry if the extension will not keep its excess global rules
+  // allocation.
+  std::unique_ptr<base::Value> pref_value =
+      keep_excess_allocation ? std::make_unique<base::Value>(true) : nullptr;
+
+  UpdateExtensionPref(extension_id, kPrefDNRKeepExcessAllocation,
                       std::move(pref_value));
 }
 

@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/optional.h"
 #include "base/values.h"
+#include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/url_pattern.h"
 
 namespace base {
@@ -150,7 +151,7 @@ struct TestRule : public DictionarySource {
 };
 
 // Helper function to build a generic TestRule.
-TestRule CreateGenericRule();
+TestRule CreateGenericRule(int id = kMinValidID);
 
 // Bitmasks to configure the extension under test.
 enum ConfigFlag {

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
@@ -32,6 +33,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
+#include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/browser/warning_service.h"
 #include "extensions/browser/warning_service_factory.h"
 #include "extensions/browser/warning_set.h"
@@ -202,6 +204,26 @@ RulesMonitorService::~RulesMonitorService() = default;
       - UI -> File -> UI -> IPC to extension
 */
 
+void RulesMonitorService::OnExtensionWillBeInstalled(
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    bool is_update,
+    const std::string& old_name) {
+  if (!is_update || Manifest::IsUnpackedLocation(extension->location()))
+    return;
+
+  if (!base::FeatureList::IsEnabled(kDeclarativeNetRequestGlobalRules))
+    return;
+
+  // Allow the extension to retain its pre-update allocation during the next
+  // extension load. This can allow the extension to enable some
+  // non-manifest-enabled rulesets and to retain much of its pre-update
+  // behavior. The preference is set in OnExtensionWillBeInstalled instead of
+  // OnExtensionInstalled because OnExtensionInstalled is called after
+  // OnExtensionLoaded.
+  prefs_->SetDNRKeepExcessAllocation(extension->id(), true);
+}
+
 void RulesMonitorService::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
@@ -285,6 +307,15 @@ void RulesMonitorService::OnExtensionUnloaded(
     const Extension* extension,
     UnloadedExtensionReason reason) {
   DCHECK_EQ(context_, browser_context);
+
+  // If the extension is unloaded for any reason other than an update, the
+  // unused rule allocation should not be kept for this extension the next time
+  // its rulesets are loaded, as it is no longer "the first load after an
+  // update".
+  if (base::FeatureList::IsEnabled(kDeclarativeNetRequestGlobalRules) &&
+      reason != UnloadedExtensionReason::UPDATE) {
+    prefs_->SetDNRKeepExcessAllocation(extension->id(), false);
+  }
 
   // Return early if the extension does not have an active indexed ruleset.
   if (!ruleset_manager_.GetMatcherForExtension(extension->id()))

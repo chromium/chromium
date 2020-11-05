@@ -343,5 +343,21 @@ ScopedRuleLimitOverride CreateScopedRegexRuleLimitOverrideForTesting(
   return base::AutoReset<int>(&g_regex_rule_limit_for_testing, limit);
 }
 
+size_t GetEnabledStaticRuleCount(const CompositeMatcher* composite_matcher) {
+  if (!composite_matcher)
+    return 0;
+
+  size_t enabled_static_rule_count = 0;
+  for (const std::unique_ptr<RulesetMatcher>& matcher :
+       composite_matcher->matchers()) {
+    if (matcher->id() == kDynamicRulesetID)
+      continue;
+
+    enabled_static_rule_count += matcher->GetRulesCount();
+  }
+
+  return enabled_static_rule_count;
+}
+
 }  // namespace declarative_net_request
 }  // namespace extensions

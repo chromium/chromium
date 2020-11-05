@@ -93,22 +93,31 @@ bool GlobalRulesTracker::OnExtensionRuleCountUpdated(
   DCHECK_LE(new_rule_count, static_cast<size_t>(GetMaximumRulesPerRuleset()) *
                                 dnr_api::MAX_NUMBER_OF_STATIC_RULESETS);
 
+  bool keep_excess_allocation =
+      extension_prefs_->GetDNRKeepExcessAllocation(extension_id);
+
   if (new_rule_count <=
       static_cast<size_t>(GetStaticGuaranteedMinimumRuleCount())) {
-    ClearExtensionAllocation(extension_id);
+    if (!keep_excess_allocation)
+      ClearExtensionAllocation(extension_id);
+
     return true;
   }
 
-  size_t old_allocated_rule_count = 0;
-  extension_prefs_->GetDNRAllocatedGlobalRuleCount(extension_id,
-                                                   &old_allocated_rule_count);
-
+  size_t old_allocated_rule_count = GetAllocationInPrefs(extension_id);
   DCHECK_GE(allocated_global_rule_count_, old_allocated_rule_count);
+
   size_t new_allocated_rule_count =
       new_rule_count - GetStaticGuaranteedMinimumRuleCount();
 
   if (new_allocated_rule_count == old_allocated_rule_count)
     return true;
+
+  if (keep_excess_allocation &&
+      old_allocated_rule_count > new_allocated_rule_count) {
+    // Retain the extension's current excess allocation and allow the update.
+    return true;
+  }
 
   size_t new_global_rule_count =
       (allocated_global_rule_count_ - old_allocated_rule_count) +
@@ -118,6 +127,13 @@ bool GlobalRulesTracker::OnExtensionRuleCountUpdated(
   // to be exceeded, don't commit the update and return false.
   if (new_global_rule_count > static_cast<size_t>(GetGlobalStaticRuleLimit()))
     return false;
+
+  if (keep_excess_allocation) {
+    DCHECK_GT(new_allocated_rule_count, old_allocated_rule_count);
+    // The extension is now using more than it's pre-update rule allocation.
+    // Remove it's ability to keep the excess allocation.
+    extension_prefs_->SetDNRKeepExcessAllocation(extension_id, false);
+  }
 
   allocated_global_rule_count_ = new_global_rule_count;
   extension_prefs_->SetDNRAllocatedGlobalRuleCount(extension_id,
@@ -132,10 +148,7 @@ size_t GlobalRulesTracker::GetUnallocatedRuleCount() const {
 
 size_t GlobalRulesTracker::GetAvailableAllocation(
     const ExtensionId& extension_id) const {
-  size_t allocated_rule_count = 0;
-  extension_prefs_->GetDNRAllocatedGlobalRuleCount(extension_id,
-                                                   &allocated_rule_count);
-  return GetUnallocatedRuleCount() + allocated_rule_count;
+  return GetUnallocatedRuleCount() + GetAllocationInPrefs(extension_id);
 }
 
 void GlobalRulesTracker::ClearExtensionAllocation(
@@ -151,6 +164,14 @@ void GlobalRulesTracker::ClearExtensionAllocation(
   allocated_global_rule_count_ -= allocated_rule_count;
   extension_prefs_->SetDNRAllocatedGlobalRuleCount(extension_id,
                                                    0 /* rule_count */);
+}
+
+size_t GlobalRulesTracker::GetAllocationInPrefs(
+    const ExtensionId& extension_id) const {
+  size_t allocated_rule_count = 0;
+  extension_prefs_->GetDNRAllocatedGlobalRuleCount(extension_id,
+                                                   &allocated_rule_count);
+  return allocated_rule_count;
 }
 
 }  // namespace declarative_net_request

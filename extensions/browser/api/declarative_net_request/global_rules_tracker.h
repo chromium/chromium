@@ -44,6 +44,10 @@ class GlobalRulesTracker {
   size_t GetAllocatedGlobalRuleCountForTesting() const;
 
  private:
+  // Returns the number of rules in the global pool allocated for the extension.
+  // Note: Some of these allocated rules might not be enabled by the extension.
+  size_t GetAllocationInPrefs(const ExtensionId& extension_id) const;
+
   // The number of static rules from all extensions which contribute to the
   // global rule pool. Any enabled static rules for an extension past
   // |GUARANTEED_MINIMUM_STATIC_RULES| count towards this. This value must never

@@ -689,6 +689,12 @@ class ExtensionPrefs : public KeyedService {
   void SetDNRAllocatedGlobalRuleCount(const ExtensionId& extension_id,
                                       size_t rule_count);
 
+  // Whether the extension with the given |extension_id| should have its excess
+  // global rules allocation kept during its next load.
+  bool GetDNRKeepExcessAllocation(const ExtensionId& extension_id) const;
+  void SetDNRKeepExcessAllocation(const ExtensionId& extension_id,
+                                  bool keep_excess_allocation);
+
   // Migrates the disable reasons extension pref for extensions that were
   // disabled due to a deprecated reason.
   // TODO(archanasimha): Remove this around M89.
