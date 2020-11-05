@@ -61,6 +61,12 @@ public class WebLayerPaymentRequestFactory implements InterfaceFactory<PaymentRe
         }
 
         @Nullable
+        @Override
+        public String getTwaPackageName() {
+            return null;
+        }
+
+        @Nullable
         private ProfileImpl getProfile() {
             WebContents webContents =
                     PaymentRequestServiceUtil.getLiveWebContents(mRenderFrameHost);

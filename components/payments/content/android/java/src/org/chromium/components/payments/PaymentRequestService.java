@@ -80,8 +80,14 @@ public class PaymentRequestService {
     private final boolean mRequestPayerEmail;
     private final Delegate mDelegate;
     private final int mShippingType;
+    private final List<PaymentApp> mPendingApps = new ArrayList<>();
     private PaymentRequestSpec mSpec;
     private boolean mHasClosed;
+    private boolean mIsFinishedQueryingPaymentApps;
+    private boolean mIsCurrentPaymentRequestShowing;
+
+    /** Whether PaymentRequest.show() was invoked with a user gesture. */
+    private boolean mIsUserGestureShow;
 
     // mClient is null only when it has closed.
     private PaymentRequestClient mClient;
@@ -158,6 +164,14 @@ public class PaymentRequestService {
          * @return Whether the preferences allow CAN_MAKE_PAYMENT.
          */
         boolean prefsCanMakePayment();
+
+        /**
+         * @return If the merchant's WebContents is running inside of a Trusted Web Activity,
+         *         returns the package name for Trusted Web Activity. Otherwise returns an empty
+         *         string or null.
+         */
+        @Nullable
+        String getTwaPackageName();
     }
 
     /**
@@ -502,6 +516,7 @@ public class PaymentRequestService {
             if (paymentMethodName.equals(MethodStrings.ANDROID_PAY)
                     || paymentMethodName.equals(MethodStrings.GOOGLE_PAY)) {
                 isGooglePaymentApp = true;
+                break;
             }
         }
         if (isAutofillCard) {
@@ -513,12 +528,123 @@ public class PaymentRequestService {
         }
     }
 
+    /** Called when the payment app service has done creating all payment apps. */
+    public void onDoneCreatingPaymentApps() {
+        mIsFinishedQueryingPaymentApps = true;
+
+        if (disconnectIfNoPaymentMethodsSupported(mBrowserPaymentRequest.hasAvailableApps())) {
+            return;
+        }
+
+        // Always return false when can make payment is disabled.
+        mHasEnrolledInstrument &= mDelegate.prefsCanMakePayment();
+
+        if (mIsCanMakePaymentResponsePending) {
+            respondCanMakePaymentQuery();
+        }
+
+        if (mIsHasEnrolledInstrumentResponsePending) {
+            respondHasEnrolledInstrumentQuery();
+        }
+
+        mBrowserPaymentRequest.notifyPaymentUiOfPendingApps(mPendingApps);
+        mPendingApps.clear();
+        if (isCurrentPaymentRequestShowing() && !mBrowserPaymentRequest.showAppSelector()) return;
+
+        mBrowserPaymentRequest.triggerPaymentAppUiSkipIfApplicable();
+    }
+
+    /**
+     * If no payment methods are supported, disconnect from the client and return true.
+     * @param hasAvailableApps Whether any payment app is available.
+     * @return Whether client has been disconnected.
+     */
+    public boolean disconnectIfNoPaymentMethodsSupported(boolean hasAvailableApps) {
+        if (!mIsFinishedQueryingPaymentApps || !isCurrentPaymentRequestShowing()) return false;
+        if (!mCanMakePayment || (mPendingApps.isEmpty() && !hasAvailableApps)) {
+            // All factories have responded, but none of them have apps. It's possible to add credit
+            // cards, but the merchant does not support them either. The payment request must be
+            // rejected.
+            mJourneyLogger.setNotShown(mCanMakePayment
+                            ? NotShownReason.NO_MATCHING_PAYMENT_METHOD
+                            : NotShownReason.NO_SUPPORTED_PAYMENT_METHOD);
+            if (mDelegate.isOffTheRecord()) {
+                // If the user is in the OffTheRecord mode, hide the absence of their payment
+                // methods from the merchant site.
+                mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
+                        ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
+            } else {
+                if (sNativeObserverForTest != null) {
+                    sNativeObserverForTest.onNotSupportedError();
+                }
+
+                String rejectShowErrorMessage = mBrowserPaymentRequest.getRejectShowErrorMessage();
+                if (TextUtils.isEmpty(rejectShowErrorMessage) && !isInTwa()
+                        && mSpec.getMethodData().get(MethodStrings.GOOGLE_PLAY_BILLING) != null) {
+                    rejectShowErrorMessage = ErrorStrings.APP_STORE_METHOD_ONLY_SUPPORTED_IN_TWA;
+                }
+                mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
+                        ErrorMessageUtil.getNotSupportedErrorMessage(mSpec.getMethodData().keySet())
+                                + (TextUtils.isEmpty(rejectShowErrorMessage)
+                                                ? ""
+                                                : " " + rejectShowErrorMessage),
+                        PaymentErrorReason.NOT_SUPPORTED);
+            }
+            if (sObserverForTest != null) {
+                sObserverForTest.onPaymentRequestServiceShowFailed();
+            }
+            return true;
+        }
+        boolean isDisconnected = mBrowserPaymentRequest.disconnectForStrictShow(mIsUserGestureShow);
+        if (isDisconnected && sObserverForTest != null) {
+            sObserverForTest.onPaymentRequestServiceShowFailed();
+        }
+        return isDisconnected;
+    }
+
+    private boolean isInTwa() {
+        return !TextUtils.isEmpty(mDelegate.getTwaPackageName());
+    }
+
+    /** @return Whether PaymentRequest.show() was invoked with a user gesture. */
+    public boolean isUserGestureShow() {
+        return mIsUserGestureShow;
+    }
+
+    /**
+     * Records that PaymentRequest.show() was invoked with a user gesture.
+     * @param userGestureShow Whether it is invoked with a user gesture.
+     */
+    public void setUserGestureShow(boolean userGestureShow) {
+        mIsUserGestureShow = userGestureShow;
+    }
+
+    /** @return Whether the current payment request service has called show(). */
+    public boolean isCurrentPaymentRequestShowing() {
+        return mIsCurrentPaymentRequestShowing;
+    }
+
+    /**
+     * Records whether the current payment request service has called show().
+     * @param isShowing Whether show() has been called.
+     */
+    public void setCurrentPaymentRequestShowing(boolean isShowing) {
+        mIsCurrentPaymentRequestShowing = isShowing;
+    }
+
+    /**
+     * @return Whether all payment apps have been queried of canMakePayment() and
+     *         hasEnrolledInstrument().
+     */
+    public boolean isFinishedQueryingPaymentApps() {
+        return mIsFinishedQueryingPaymentApps;
+    }
+
     /**
      * Called when a payment app is created.
      * @param paymentApp The created payment app.
-     * @param pendingApps The list of created apps increasing until onDoneCreatingPaymentApp().
      */
-    public void onPaymentAppCreated(PaymentApp paymentApp, List<PaymentApp> pendingApps) {
+    public void onPaymentAppCreated(PaymentApp paymentApp) {
         mHasEnrolledInstrument |= paymentApp.canMakePayment();
         mHasNonAutofillApp |= !paymentApp.isAutofillInstrument();
 
@@ -531,7 +657,7 @@ public class PaymentRequestService {
             mJourneyLogger.setEventOccurred(Event.AVAILABLE_METHOD_OTHER);
         }
 
-        pendingApps.add(paymentApp);
+        mPendingApps.add(paymentApp);
     }
 
     /** @return Whether the response of CanMakePayment is pending. */
@@ -792,6 +918,8 @@ public class PaymentRequestService {
     public void close() {
         if (mHasClosed) return;
         mHasClosed = true;
+
+        mIsCurrentPaymentRequestShowing = false;
 
         if (mBrowserPaymentRequest == null) return;
         mBrowserPaymentRequest.close();

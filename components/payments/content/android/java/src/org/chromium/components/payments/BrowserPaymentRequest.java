@@ -14,6 +14,7 @@ import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequest;
 import org.chromium.payments.mojom.PaymentValidationErrors;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -135,4 +136,46 @@ public interface BrowserPaymentRequest {
 
     default void onWhetherGooglePayBridgeEligible(boolean googlePayBridgeEligible,
             WebContents webContents, PaymentMethodData[] rawMethodData) {}
+
+    /**
+     * @return Whether at least one payment app (including basic-card payment app) is available
+     *         (excluding the pending apps).
+     */
+    default boolean hasAvailableApps() {
+        return false;
+    }
+
+    /**
+     * If strict show() conditions are not satisfied, disconnect from client and return true.
+     * @param isUserGestureShow Whether the PaymentRequest.show() is triggered by user gesture.
+     * @return Whether client has been disconnected.
+     */
+    default boolean disconnectForStrictShow(boolean isUserGestureShow) {
+        return false;
+    }
+
+    /**
+     * Shows the payment apps selector.
+     * @return Whether the showing is successful.
+     */
+    default boolean showAppSelector() {
+        return false;
+    }
+
+    /**
+     * Notifies the payment UI service of the payment apps pending to be handled
+     * @param pendingApps The payment apps that are pending to be handled.
+     */
+    default void notifyPaymentUiOfPendingApps(List<PaymentApp> pendingApps) {}
+
+    /**
+     * Skips the app selector UI whether it is currently opened or not, and if applicable, invokes a
+     * payment app.
+     */
+    default void triggerPaymentAppUiSkipIfApplicable() {}
+
+    /** @return The error message of rejecting the show() request. */
+    default String getRejectShowErrorMessage() {
+        return "";
+    }
 }

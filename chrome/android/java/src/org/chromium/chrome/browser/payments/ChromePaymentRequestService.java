@@ -129,14 +129,11 @@ public class ChromePaymentRequestService
     private final int mShippingType;
 
     private boolean mIsHasEnrolledInstrumentResponsePending;
-    private boolean mIsCurrentPaymentRequestShowing;
     private boolean mWasRetryCalled;
 
     private boolean mHasClosed;
 
     private PaymentRequestSpec mSpec;
-    private boolean mIsFinishedQueryingPaymentApps;
-    private List<PaymentApp> mPendingApps = new ArrayList<>();
     private PaymentApp mInvokedPaymentApp;
     private boolean mHideServerAutofillCards;
     private boolean mWaitForUpdatedDetails;
@@ -164,9 +161,6 @@ public class ChromePaymentRequestService
      */
     private boolean mDidRecordShowEvent;
 
-    /** Whether PaymentRequest.show() was invoked with a user gesture. */
-    private boolean mIsUserGestureShow;
-
     /** The helper to create and fill the response to send to the merchant. */
     private PaymentResponseHelper mPaymentResponseHelper;
 
@@ -184,14 +178,6 @@ public class ChromePaymentRequestService
          *         true in tests.
          */
         boolean skipUiForBasicCard();
-
-        /**
-         * @return If the merchant's WebContents is running inside of a Trusted Web Activity,
-         *         returns the package name for Trusted Web Activity. Otherwise returns an empty
-         *         string or null.
-         */
-        @Nullable
-        String getTwaPackageName();
     }
 
     /**
@@ -396,13 +382,15 @@ public class ChromePaymentRequestService
 
         mJourneyLogger.recordCheckoutStep(CheckoutFunnelStep.SHOW_CALLED);
         setShowingPaymentRequest(this);
-        mIsCurrentPaymentRequestShowing = true;
-        mIsUserGestureShow = isUserGesture;
+        mPaymentRequestService.setCurrentPaymentRequestShowing(true);
+        mPaymentRequestService.setUserGestureShow(isUserGesture);
         mWaitForUpdatedDetails = waitForUpdatedDetails;
 
         mJourneyLogger.setTriggerTime();
-        if (disconnectIfNoPaymentMethodsSupported(hasAvailableApps())) return;
-        if (mIsFinishedQueryingPaymentApps && !showAppSelector()) return;
+        if (mPaymentRequestService.disconnectIfNoPaymentMethodsSupported(hasAvailableApps())) {
+            return;
+        }
+        if (mPaymentRequestService.isFinishedQueryingPaymentApps() && !showAppSelector()) return;
 
         triggerPaymentAppUiSkipIfApplicable();
     }
@@ -411,7 +399,9 @@ public class ChromePaymentRequestService
      * Shows the payment apps selector.
      * @return Whether the showing is successful.
      */
-    private boolean showAppSelector() {
+    // Implements BrowserPaymentRequest:
+    @Override
+    public boolean showAppSelector() {
         // Send AppListReady signal when all apps are created and request.show() is called.
         if (PaymentRequestService.getNativeObserverForTest() != null) {
             PaymentRequestService.getNativeObserverForTest().onAppListReady(
@@ -419,9 +409,9 @@ public class ChromePaymentRequestService
         }
         // Calculate skip ui and build ui only after all payment apps are ready and
         // request.show() is called.
-        mPaymentUiService.calculateWhetherShouldSkipShowingPaymentRequestUi(mIsUserGestureShow,
-                mURLPaymentMethodIdentifiersSupported, mDelegate.skipUiForBasicCard(),
-                mPaymentOptions);
+        mPaymentUiService.calculateWhetherShouldSkipShowingPaymentRequestUi(
+                mPaymentRequestService.isUserGestureShow(), mURLPaymentMethodIdentifiersSupported,
+                mDelegate.skipUiForBasicCard(), mPaymentOptions);
         ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
         if (quitShowIfActivityNotFound(chromeActivity) || !buildUI(chromeActivity)) return false;
         if (!mPaymentUiService.shouldSkipShowingPaymentRequestUi() && mSkipToGPayHelper == null) {
@@ -459,11 +449,14 @@ public class ChromePaymentRequestService
         return false;
     }
 
-    private void triggerPaymentAppUiSkipIfApplicable() {
+    // Implements BrowserPaymentRequest:
+    @Override
+    public void triggerPaymentAppUiSkipIfApplicable() {
         // If we are skipping showing the Payment Request UI, we should call into the payment app
         // immediately after we determine the apps are ready and UI is shown.
         if ((mPaymentUiService.shouldSkipShowingPaymentRequestUi() || mSkipToGPayHelper != null)
-                && mIsFinishedQueryingPaymentApps && mIsCurrentPaymentRequestShowing
+                && mPaymentRequestService.isFinishedQueryingPaymentApps()
+                && mPaymentRequestService.isCurrentPaymentRequestShowing()
                 && !mWaitForUpdatedDetails) {
             assert !mPaymentUiService.getPaymentMethodsSection().isEmpty();
             assert mPaymentUiService.getPaymentRequestUI() != null;
@@ -504,7 +497,8 @@ public class ChromePaymentRequestService
 
     /** @return Whether the minimal UI should be shown. */
     private boolean isMinimalUiApplicable() {
-        if (!mIsUserGestureShow || mPaymentUiService.getPaymentMethodsSection() == null
+        if (!mPaymentRequestService.isUserGestureShow()
+                || mPaymentUiService.getPaymentMethodsSection() == null
                 || mPaymentUiService.getPaymentMethodsSection().getSize() != 1) {
             return false;
         }
@@ -872,7 +866,7 @@ public class ChromePaymentRequestService
 
         triggerPaymentAppUiSkipIfApplicable();
 
-        if (mIsFinishedQueryingPaymentApps
+        if (mPaymentRequestService.isFinishedQueryingPaymentApps()
                 && !mPaymentUiService.shouldSkipShowingPaymentRequestUi()) {
             boolean providedInformationToPaymentRequestUI =
                     mPaymentUiService.enableAndUpdatePaymentRequestUIWithPaymentInfo();
@@ -1115,7 +1109,7 @@ public class ChromePaymentRequestService
             PaymentRequestService.getNativeObserverForTest().onCanMakePaymentCalled();
         }
 
-        if (mIsFinishedQueryingPaymentApps) {
+        if (mPaymentRequestService.isFinishedQueryingPaymentApps()) {
             mPaymentRequestService.respondCanMakePaymentQuery();
         } else {
             mPaymentRequestService.setCanMakePaymentResponsePending(true);
@@ -1132,7 +1126,7 @@ public class ChromePaymentRequestService
             PaymentRequestService.getNativeObserverForTest().onHasEnrolledInstrumentCalled();
         }
 
-        if (mIsFinishedQueryingPaymentApps) {
+        if (mPaymentRequestService.isFinishedQueryingPaymentApps()) {
             mPaymentRequestService.respondHasEnrolledInstrumentQuery();
         } else {
             mPaymentRequestService.setIsHasEnrolledInstrumentResponsePending(true);
@@ -1302,7 +1296,7 @@ public class ChromePaymentRequestService
 
         mHideServerAutofillCards |= paymentApp.isServerAutofillInstrumentReplacement();
         paymentApp.setHaveRequestedAutofillData(mPaymentUiService.haveRequestedAutofillData());
-        mPaymentRequestService.onPaymentAppCreated(paymentApp, mPendingApps);
+        mPaymentRequestService.onPaymentAppCreated(paymentApp);
     }
 
     // PaymentAppFactoryDelegate implementation.
@@ -1314,33 +1308,13 @@ public class ChromePaymentRequestService
     // PaymentAppFactoryDelegate implementation.
     @Override
     public void onDoneCreatingPaymentApps(PaymentAppFactoryInterface factory /* Unused */) {
-        mIsFinishedQueryingPaymentApps = true;
-
-        if (mPaymentRequestService == null
-                || disconnectIfNoPaymentMethodsSupported(hasAvailableApps())) {
-            return;
-        }
-
-        // Always return false when can make payment is disabled.
-        mPaymentRequestService.setHasEnrolledInstrument(
-                mPaymentRequestService.getHasEnrolledInstrument()
-                && mDelegate.prefsCanMakePayment());
-
-        if (mPaymentRequestService.isCanMakePaymentResponsePending()) {
-            mPaymentRequestService.respondCanMakePaymentQuery();
-        }
-
-        if (mPaymentRequestService.isHasEnrolledInstrumentResponsePending()) {
-            mPaymentRequestService.respondHasEnrolledInstrumentQuery();
-        }
-
-        notifyPaymentUiOfPendingApps(mPendingApps);
-        if (mIsCurrentPaymentRequestShowing && !showAppSelector()) return;
-
-        triggerPaymentAppUiSkipIfApplicable();
+        if (mPaymentRequestService == null) return;
+        mPaymentRequestService.onDoneCreatingPaymentApps();
     }
 
-    private void notifyPaymentUiOfPendingApps(List<PaymentApp> pendingApps) {
+    // Implements BrowserPaymentRequest:
+    @Override
+    public void notifyPaymentUiOfPendingApps(List<PaymentApp> pendingApps) {
         if (mHideServerAutofillCards) {
             List<PaymentApp> nonServerAutofillCards = new ArrayList<>();
             int numberOfPendingApps = pendingApps.size();
@@ -1398,76 +1372,26 @@ public class ChromePaymentRequestService
                     "PaymentRequest.MissingPaymentFields", missingFields);
         }
 
-        pendingApps.clear();
-
         mPaymentUiService.updateAppModifiedTotals();
 
         SettingsAutofillAndPaymentsObserver.getInstance().registerObserver(mPaymentUiService);
     }
 
-    /**
-     * If no payment methods are supported, disconnect from the client and return true.
-     * @param hasAvailableApps Whether any payment app is available.
-     * @return Whether client has been disconnected.
-     */
-    private boolean disconnectIfNoPaymentMethodsSupported(boolean hasAvailableApps) {
-        assert mPaymentRequestService != null;
-        if (!mIsFinishedQueryingPaymentApps || !mIsCurrentPaymentRequestShowing) return false;
-        if (!mPaymentRequestService.getCanMakePayment()
-                || (mPendingApps.isEmpty() && !hasAvailableApps)) {
-            // All factories have responded, but none of them have apps. It's possible to add credit
-            // cards, but the merchant does not support them either. The payment request must be
-            // rejected.
-            mJourneyLogger.setNotShown(mPaymentRequestService.getCanMakePayment()
-                            ? NotShownReason.NO_MATCHING_PAYMENT_METHOD
-                            : NotShownReason.NO_SUPPORTED_PAYMENT_METHOD);
-            if (mDelegate.isOffTheRecord()) {
-                // If the user is in the OffTheRecord mode, hide the absence of their payment
-                // methods from the merchant site.
-                disconnectFromClientWithDebugMessage(
-                        ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
-            } else {
-                if (PaymentRequestService.getNativeObserverForTest() != null) {
-                    PaymentRequestService.getNativeObserverForTest().onNotSupportedError();
-                }
-                if (TextUtils.isEmpty(mRejectShowErrorMessage) && !isInTwa()
-                        && mSpec.getMethodData().get(MethodStrings.GOOGLE_PLAY_BILLING) != null) {
-                    mRejectShowErrorMessage = ErrorStrings.APP_STORE_METHOD_ONLY_SUPPORTED_IN_TWA;
-                }
-                disconnectFromClientWithDebugMessage(
-                        ErrorMessageUtil.getNotSupportedErrorMessage(mSpec.getMethodData().keySet())
-                                + (TextUtils.isEmpty(mRejectShowErrorMessage)
-                                                ? ""
-                                                : " " + mRejectShowErrorMessage),
-                        PaymentErrorReason.NOT_SUPPORTED);
-            }
-            if (PaymentRequestService.getObserverForTest() != null) {
-                PaymentRequestService.getObserverForTest().onPaymentRequestServiceShowFailed();
-            }
-            return true;
-        }
-        boolean isDisconnected = disconnectForStrictShow(mIsUserGestureShow);
-        if (isDisconnected && PaymentRequestService.getObserverForTest() != null) {
-            PaymentRequestService.getObserverForTest().onPaymentRequestServiceShowFailed();
-        }
-        return isDisconnected;
-    }
-
-    /** @return Whether at least one payment app (including basic-card payment app) is available. */
-    private boolean hasAvailableApps() {
+    // Implements BrowserPaymentRequest:
+    @Override
+    public boolean hasAvailableApps() {
         return mPaymentUiService.hasAvailableApps();
     }
 
-    private boolean isInTwa() {
-        return !TextUtils.isEmpty(getTwaPackageName());
+    // Implements BrowserPaymentRequest:
+    @Override
+    public String getRejectShowErrorMessage() {
+        return mRejectShowErrorMessage;
     }
 
-    /**
-     * If strict show() conditions are not satisfied, disconnect from client and return true.
-     * @return Whether client has been disconnected.
-     * @param isUserGestureShow Whether the PaymentRequest.show() is triggered by user gesture.
-     */
-    private boolean disconnectForStrictShow(boolean isUserGestureShow) {
+    // Implements BrowserPaymentRequest:
+    @Override
+    public boolean disconnectForStrictShow(boolean isUserGestureShow) {
         if (!isUserGestureShow || !mSpec.getMethodData().containsKey(MethodStrings.BASIC_CARD)
                 || mPaymentRequestService.getHasEnrolledInstrument()
                 || mPaymentRequestService.getHasNonAutofillApp()
@@ -1476,9 +1400,6 @@ public class ChromePaymentRequestService
             return false;
         }
 
-        if (PaymentRequestService.getObserverForTest() != null) {
-            PaymentRequestService.getObserverForTest().onPaymentRequestServiceShowFailed();
-        }
         mRejectShowErrorMessage = ErrorStrings.STRICT_BASIC_CARD_SHOW_REJECT;
         disconnectFromClientWithDebugMessage(
                 ErrorMessageUtil.getNotSupportedErrorMessage(mSpec.getMethodData().keySet()) + " "
@@ -1569,7 +1490,6 @@ public class ChromePaymentRequestService
         SettingsAutofillAndPaymentsObserver.getInstance().unregisterObserver(mPaymentUiService);
 
         setShowingPaymentRequest(null);
-        mIsCurrentPaymentRequestShowing = false;
 
         // Destroy native objects.
         mJourneyLogger.destroy();

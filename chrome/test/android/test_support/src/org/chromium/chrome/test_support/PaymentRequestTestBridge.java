@@ -34,24 +34,16 @@ public class PaymentRequestTestBridge {
     private static class ChromePaymentRequestDelegateForTest
             extends PaymentRequestDelegateForTest implements ChromePaymentRequestService.Delegate {
         private final boolean mSkipUiForBasicCard;
-        private final String mTwaPackageName;
 
         ChromePaymentRequestDelegateForTest(boolean isOffTheRecord, boolean isValidSsl,
                 boolean prefsCanMakePayment, String twaPackageName, boolean skipUiForBasicCard) {
-            super(isOffTheRecord, isValidSsl, prefsCanMakePayment);
+            super(isOffTheRecord, isValidSsl, prefsCanMakePayment, twaPackageName);
             mSkipUiForBasicCard = skipUiForBasicCard;
-            mTwaPackageName = twaPackageName;
         }
 
         @Override
         public boolean skipUiForBasicCard() {
             return mSkipUiForBasicCard;
-        }
-
-        @Override
-        @Nullable
-        public String getTwaPackageName() {
-            return mTwaPackageName;
         }
     }
 
@@ -64,12 +56,14 @@ public class PaymentRequestTestBridge {
         private final boolean mIsOffTheRecord;
         private final boolean mIsValidSsl;
         private final boolean mPrefsCanMakePayment;
+        private final String mTwaPackageName;
 
-        PaymentRequestDelegateForTest(
-                boolean isOffTheRecord, boolean isValidSsl, boolean prefsCanMakePayment) {
+        PaymentRequestDelegateForTest(boolean isOffTheRecord, boolean isValidSsl,
+                boolean prefsCanMakePayment, String twaPackageName) {
             mIsOffTheRecord = isOffTheRecord;
             mIsValidSsl = isValidSsl;
             mPrefsCanMakePayment = prefsCanMakePayment;
+            mTwaPackageName = twaPackageName;
         }
 
         @Override
@@ -86,6 +80,12 @@ public class PaymentRequestTestBridge {
         @Override
         public boolean prefsCanMakePayment() {
             return mPrefsCanMakePayment;
+        }
+
+        @Nullable
+        @Override
+        public String getTwaPackageName() {
+            return mTwaPackageName;
         }
     }
 
