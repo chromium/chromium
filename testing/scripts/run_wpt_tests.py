@@ -129,7 +129,9 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
             "--additional-expectations",
             WPT_OVERRIDE_EXPECTATIONS_PATH,
             "--checked-in-metadata-dir",
-            WPT_CHECKED_IN_METADATA_DIR
+            WPT_CHECKED_IN_METADATA_DIR,
+            "--no-process-baselines",
+            "--no-handle-annotations"
         ])
 
 

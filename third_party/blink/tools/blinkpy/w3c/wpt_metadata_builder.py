@@ -56,6 +56,8 @@ class WPTMetadataBuilder(object):
         self.wpt_manifest = self.port.wpt_manifest("external/wpt")
         self.metadata_output_dir = ""
         self.checked_in_metadata_dir = ""
+        self.process_baselines = True
+        self.handle_annotations = True
 
     def run(self, args=None):
         """Main entry point to parse flags and execute the script."""
@@ -73,6 +75,28 @@ class WPTMetadataBuilder(object):
             '--verbose',
             action='store_true',
             help='More verbose logging.')
+        parser.add_argument(
+            "--process-baselines",
+            action="store_true",
+            default=True,
+            dest="process_baselines",
+            help="Whether to translate baseline (-expected.txt) files into WPT "
+            "metadata files. This translation is lossy and results in any "
+            "subtest being accepted by wptrunner.")
+        parser.add_argument("--no-process-baselines",
+                            action="store_false",
+                            dest="process_baselines")
+        parser.add_argument(
+            "--handle-annotations",
+            action="store_true",
+            default=True,
+            dest="handle_annotations",
+            help="Whether to handle annotations in expectations files. These "
+            "are trailing comments that give additional details for how "
+            "to translate an expectation into WPT metadata.")
+        parser.add_argument("--no-handle-annotations",
+                            action="store_false",
+                            dest="handle_annotations")
         args = parser.parse_args(args)
 
         log_level = logging.DEBUG if args.verbose else logging.INFO
@@ -80,6 +104,8 @@ class WPTMetadataBuilder(object):
 
         self.metadata_output_dir = args.metadata_output_dir
         self.checked_in_metadata_dir = args.checked_in_metadata_dir
+        self.process_baselines = args.process_baselines
+        self.handle_annotations = args.handle_annotations
         self._build_metadata_and_write()
 
         return 0
@@ -198,11 +224,12 @@ class WPTMetadataBuilder(object):
                 continue
 
             # Check if the test has a baseline
-            test_baseline = self.port.expected_text(test_name)
-            if not test_baseline:
-                continue
-            self._handle_test_with_baseline(test_name, test_baseline,
-                                            tests_needing_metadata)
+            if self.process_baselines:
+                test_baseline = self.port.expected_text(test_name)
+                if not test_baseline:
+                    continue
+                self._handle_test_with_baseline(test_name, test_baseline,
+                                                tests_needing_metadata)
         return tests_needing_metadata
 
     def _handle_test_with_expectation(self, test_name, expectation_line,
@@ -230,7 +257,7 @@ class WPTMetadataBuilder(object):
             status_bitmap |= TEST_TIMEOUT
         if ResultType.Crash in test_statuses:
             status_bitmap |= TEST_CRASH
-        if annotations:
+        if self.handle_annotations and annotations:
             if "wpt_subtest_failure" in annotations:
                 status_bitmap |= SUBTEST_FAIL
             if "wpt_precondition_failed" in annotations:
