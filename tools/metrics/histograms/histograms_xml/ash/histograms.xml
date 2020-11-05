@@ -198,6 +198,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Ash.CaptureModeController.ScreenRecordingLength"
+    units="seconds" expires_after="2021-11-04">
+  <owner>afakhry@chromium.org</owner>
+  <owner>chinsenj@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the time of a successful video recording in capture mode. This
+    metric will not be recorded if a file was not successfully saved. The upper
+    limit of this histogram is 3 hours.
+  </summary>
+</histogram>
+
 <histogram name="Ash.CaptureModeController.ScreenshotsPerDay" units="int"
     expires_after="2021-09-29">
   <owner>afakhry@chromium.org</owner>

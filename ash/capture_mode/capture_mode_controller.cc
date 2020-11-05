@@ -50,6 +50,9 @@ CaptureModeController* g_instance = nullptr;
 
 constexpr char kEntryHistogramName[] = "Ash.CaptureModeController.EntryPoint";
 
+constexpr char kRecordTimeHistogramName[] =
+    "Ash.CaptureModeController.ScreenRecordingLength";
+
 constexpr char kScreenCaptureNotificationId[] = "capture_mode_notification";
 constexpr char kScreenCaptureStoppedNotificationId[] =
     "capture_mode_stopped_notification";
@@ -494,12 +497,22 @@ void CaptureModeController::OnVideoFileSaved(bool success) {
 
   // TODO(afakhry): The file will be empty now until the recording service is
   // implemented.
-  if (!success)
+  if (!success) {
     ShowFailureNotification();
-  else
+  } else {
     ShowPreviewNotification(current_video_file_path_, gfx::Image(),
                             CaptureModeType::kVideo);
+    DCHECK(!recording_start_time_.is_null());
+    // Use custom counts macro instead of custom times so we can record in
+    // seconds instead of milliseconds. The max bucket is 3 hours.
+    base::UmaHistogramCustomCounts(
+        kRecordTimeHistogramName,
+        (base::TimeTicks::Now() - recording_start_time_).InSeconds(), /*min=*/1,
+        /*max=*/base::TimeDelta::FromHours(3).InSeconds(),
+        /*bucket_count=*/50);
+  }
 
+  recording_start_time_ = base::TimeTicks();
   current_video_file_path_.clear();
   video_file_handler_.Reset();
 }
@@ -629,6 +642,7 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
   // in.
   constexpr size_t kVideoBufferCapacityBytes = 20;
   DCHECK(current_video_file_path_.empty());
+  recording_start_time_ = base::TimeTicks::Now();
   current_video_file_path_ = BuildVideoPath(base::Time::Now());
   video_file_handler_ = VideoFileHandler::Create(
       task_runner_, current_video_file_path_, kVideoBufferCapacityBytes);

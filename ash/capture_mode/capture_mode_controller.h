@@ -204,6 +204,11 @@ class ASH_EXPORT CaptureModeController {
   int num_screenshots_taken_in_last_day_ = 0;
   int num_screenshots_taken_in_last_week_ = 0;
 
+  // The time when OnVideoRecordCountDownFinished is called and video has
+  // started recording. It is used when video has finished recording for metrics
+  // collection.
+  base::TimeTicks recording_start_time_;
+
   base::WeakPtrFactory<CaptureModeController> weak_ptr_factory_{this};
 };
 
