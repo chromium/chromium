@@ -107,6 +107,7 @@ class MemoryCacheTest : public testing::Test {
     fetcher_ = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
         properties->MakeDetachable(), MakeGarbageCollected<MockFetchContext>(),
         base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+        base::MakeRefCounted<scheduler::FakeTaskRunner>(),
         MakeGarbageCollected<TestLoaderFactory>(),
         MakeGarbageCollected<MockContextLifecycleNotifier>()));
   }

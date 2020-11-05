@@ -101,6 +101,7 @@ constexpr TaskType kAllFrameTaskTypes[] = {
     TaskType::kInternalLoading,
     TaskType::kNetworking,
     TaskType::kNetworkingWithURLLoaderAnnotation,
+    TaskType::kNetworkingUnfreezable,
     TaskType::kNetworkingControl,
     TaskType::kDOMManipulation,
     TaskType::kHistoryTraversal,
@@ -145,7 +146,7 @@ constexpr TaskType kAllFrameTaskTypes[] = {
     TaskType::kInternalHighPriorityLocalFrame};
 
 static_assert(
-    static_cast<int>(TaskType::kCount) == 75,
+    static_cast<int>(TaskType::kCount) == 76,
     "When adding a TaskType, make sure that kAllFrameTaskTypes is updated.");
 
 void AppendToVectorTestTask(Vector<String>* vector, String value) {
@@ -355,6 +356,11 @@ class FrameSchedulerImplTest : public testing::Test {
 
   scoped_refptr<MainThreadTaskQueue> LoadingControlTaskQueue() {
     return GetTaskQueue(FrameSchedulerImpl::LoadingControlTaskQueueTraits());
+  }
+
+  scoped_refptr<MainThreadTaskQueue> UnfreezableLoadingTaskQueue() {
+    return GetTaskQueue(
+        FrameSchedulerImpl::UnfreezableLoadingTaskQueueTraits());
   }
 
   scoped_refptr<MainThreadTaskQueue> DeferrableTaskQueue() {
@@ -1069,6 +1075,39 @@ TEST_F(FrameSchedulerImplStopNonTimersInBackgroundEnabledTest,
   EXPECT_EQ(1, counter);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(5, counter);
+}
+
+class FrameSchedulerImplTestWithUnfreezableLoading
+    : public FrameSchedulerImplTest {
+ public:
+  FrameSchedulerImplTestWithUnfreezableLoading()
+      : FrameSchedulerImplTest({blink::features::kLoadingTasksUnfreezable},
+                               {}) {}
+};
+
+TEST_F(FrameSchedulerImplTestWithUnfreezableLoading,
+       LoadingTasksKeepRunningWhenFrozen) {
+  int counter = 0;
+  UnfreezableLoadingTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
+  LoadingTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
+
+  page_scheduler_->SetPageVisible(false);
+  page_scheduler_->SetPageFrozen(true);
+
+  EXPECT_EQ(0, counter);
+  base::RunLoop().RunUntilIdle();
+  // Unfreezable tasks continue to run.
+  EXPECT_EQ(1, counter);
+
+  page_scheduler_->SetPageFrozen(false);
+
+  EXPECT_EQ(1, counter);
+  // Same as RunUntilIdle but also advances the clock if necessary.
+  task_environment_.FastForwardUntilNoTasksRemain();
+  // Freezable tasks resume.
+  EXPECT_EQ(2, counter);
 }
 
 // Tests if throttling observer interfaces work.

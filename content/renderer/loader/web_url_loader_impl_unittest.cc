@@ -168,6 +168,9 @@ class TestWebURLLoaderClient : public blink::WebURLLoaderClient {
             blink::scheduler::WebResourceLoadingTaskRunnerHandle::
                 CreateUnprioritized(
                     blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
+            blink::scheduler::WebResourceLoadingTaskRunnerHandle::
+                CreateUnprioritized(
+                    blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &fake_url_loader_factory_),
             /*keep_alive_handle=*/mojo::NullRemote())),

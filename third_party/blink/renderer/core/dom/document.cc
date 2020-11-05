@@ -840,8 +840,9 @@ Document::Document(const DocumentInit& initializer,
             *MakeGarbageCollected<NullResourceFetcherProperties>());
     fetcher_ = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
         properties, &FetchContext::NullInstance(),
-        GetTaskRunner(TaskType::kNetworking), nullptr /* loader_factory */,
-        GetExecutionContext()));
+        GetTaskRunner(TaskType::kNetworking),
+        GetTaskRunner(TaskType::kNetworkingUnfreezable),
+        nullptr /* loader_factory */, GetExecutionContext()));
 
     if (imports_controller_) {
       // We don't expect the fetcher to be used, so count such unexpected use.

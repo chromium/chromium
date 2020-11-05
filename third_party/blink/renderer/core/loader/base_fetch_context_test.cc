@@ -138,6 +138,7 @@ class BaseFetchContextTest : public testing::Test {
         MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
             properties, fetch_context_,
             base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+            base::MakeRefCounted<scheduler::FakeTaskRunner>(),
             MakeGarbageCollected<TestLoaderFactory>(), execution_context_));
   }
 

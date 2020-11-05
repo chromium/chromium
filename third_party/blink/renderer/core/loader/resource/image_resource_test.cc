@@ -222,6 +222,7 @@ ResourceFetcher* CreateFetcher() {
   return MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
       properties->MakeDetachable(), MakeGarbageCollected<MockFetchContext>(),
       base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+      base::MakeRefCounted<scheduler::FakeTaskRunner>(),
       MakeGarbageCollected<TestLoaderFactory>(),
       MakeGarbageCollected<MockContextLifecycleNotifier>()));
 }
@@ -928,13 +929,15 @@ TEST_F(ImageResourceTest, PeriodicFlushTest) {
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       page_holder->GetFrame().GetTaskRunner(TaskType::kInternalTest);
+  scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner =
+      page_holder->GetFrame().GetTaskRunner(TaskType::kInternalTest);
   auto* context = MakeGarbageCollected<MockFetchContext>();
   auto& properties =
       MakeGarbageCollected<TestResourceFetcherProperties>()->MakeDetachable();
-  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(
-      ResourceFetcherInit(properties, context, task_runner,
-                          MakeGarbageCollected<TestLoaderFactory>(),
-                          page_holder->GetFrame().DomWindow()));
+  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+      properties, context, task_runner, unfreezable_task_runner,
+      MakeGarbageCollected<TestLoaderFactory>(),
+      page_holder->GetFrame().DomWindow()));
   auto frame_scheduler = std::make_unique<scheduler::FakeFrameScheduler>();
   auto* scheduler = MakeGarbageCollected<ResourceLoadScheduler>(
       ResourceLoadScheduler::ThrottlingPolicy::kNormal,

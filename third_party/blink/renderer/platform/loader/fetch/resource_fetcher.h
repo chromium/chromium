@@ -91,11 +91,15 @@ class PLATFORM_EXPORT ResourceFetcher
 
     virtual void Trace(Visitor*) const {}
 
-    // Create a WebURLLoader for given the request information and task runner.
+    // Create a WebURLLoader for given the request information and task runners.
+    // TODO(yuzus): Take only unfreezable task runner once both
+    // URLLoaderClientImpl and ResponseBodyLoader use unfreezable task runner.
     virtual std::unique_ptr<WebURLLoader> CreateURLLoader(
         const ResourceRequest&,
         const ResourceLoaderOptions&,
-        scoped_refptr<base::SingleThreadTaskRunner>) = 0;
+        scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
+        scoped_refptr<base::SingleThreadTaskRunner>
+            unfreezable_task_runner) = 0;
 
     // Create a code cache loader to fetch data from code caches.
     virtual std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() = 0;
@@ -154,7 +158,7 @@ class PLATFORM_EXPORT ResourceFetcher
   // this fetcher initiates. The returned task runner will keep working even
   // after ClearContext is called.
   const scoped_refptr<base::SingleThreadTaskRunner>& GetTaskRunner() const {
-    return task_runner_;
+    return freezable_task_runner_;
   }
 
   // Create a loader. This cannot be called after ClearContext is called.
@@ -408,7 +412,8 @@ class PLATFORM_EXPORT ResourceFetcher
   Member<DetachableResourceFetcherProperties> properties_;
   Member<ResourceLoadObserver> resource_load_observer_;
   Member<FetchContext> context_;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner_;
   const Member<DetachableUseCounter> use_counter_;
   const Member<DetachableConsoleLogger> console_logger_;
   Member<LoaderFactory> loader_factory_;
@@ -506,15 +511,23 @@ struct PLATFORM_EXPORT ResourceFetcherInit final {
  public:
   // |context| and |task_runner| must not be null.
   // |loader_factory| can be null if |properties.IsDetached()| is true.
-  ResourceFetcherInit(DetachableResourceFetcherProperties& properties,
-                      FetchContext* context,
-                      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-                      ResourceFetcher::LoaderFactory* loader_factory,
-                      ContextLifecycleNotifier* context_lifecycle_notifier);
+  // This takes two types of task runners: freezable and unfreezable one.
+  // |unfreezable_task_runner| is used for handling incoming resource load from
+  // outside the renderer via Mojo (i.e. by URLLoaderClientImpl and
+  // ResponseBodyLoader) so that network loading can make progress even when a
+  // frame is frozen, while |freezable_task_runner| is used for everything else.
+  ResourceFetcherInit(
+      DetachableResourceFetcherProperties& properties,
+      FetchContext* context,
+      scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
+      ResourceFetcher::LoaderFactory* loader_factory,
+      ContextLifecycleNotifier* context_lifecycle_notifier);
 
   DetachableResourceFetcherProperties* const properties;
   FetchContext* const context;
-  const scoped_refptr<base::SingleThreadTaskRunner> task_runner;
+  const scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner;
+  const scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner;
   ResourceFetcher::LoaderFactory* const loader_factory;
   ContextLifecycleNotifier* const context_lifecycle_notifier;
   DetachableUseCounter* use_counter = nullptr;

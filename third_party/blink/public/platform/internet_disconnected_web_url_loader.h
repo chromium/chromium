@@ -24,7 +24,9 @@ class BLINK_PLATFORM_EXPORT InternetDisconnectedWebURLLoaderFactory final
   std::unique_ptr<WebURLLoader> CreateURLLoader(
       const WebURLRequest&,
       std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
-          task_runner_handle) override;
+          freezable_task_runner_handle,
+      std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
+          unfreezable_task_runner_handle) override;
 };
 
 // WebURLLoader which always returns an internet disconnected error. At present,
@@ -63,7 +65,8 @@ class InternetDisconnectedWebURLLoader final : public WebURLLoader {
       WebURLLoaderClient* client) override;
   void SetDefersLoading(bool defers) override;
   void DidChangePriority(WebURLRequest::Priority, int) override;
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() override;
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
+      override;
 
  private:
   void DidFail(WebURLLoaderClient* client, const WebURLError& error);

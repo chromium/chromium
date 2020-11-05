@@ -35,6 +35,7 @@ class WorkletModuleResponsesMapTest : public testing::Test {
     fetcher_ = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
         properties->MakeDetachable(), context,
         base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+        base::MakeRefCounted<scheduler::FakeTaskRunner>(),
         MakeGarbageCollected<TestLoaderFactory>(
             platform_->GetURLLoaderMockFactory()),
         MakeGarbageCollected<MockContextLifecycleNotifier>()));

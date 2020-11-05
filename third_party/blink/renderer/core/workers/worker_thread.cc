@@ -580,6 +580,7 @@ void WorkerThread::InitializeSchedulerOnWorkerThread(
       TaskType::kMicrotask,
       TaskType::kMiscPlatformAPI,
       TaskType::kNetworking,
+      TaskType::kNetworkingUnfreezable,
       TaskType::kPerformanceTimeline,
       TaskType::kPermission,
       TaskType::kPostedMessage,

@@ -71,7 +71,8 @@ class WebURLLoaderMock : public WebURLLoader {
   void SetDefersLoading(bool defer) override;
   void DidChangePriority(WebURLRequest::Priority new_priority,
                          int intra_priority_value) override;
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() override;
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
+      override;
 
   bool is_deferred() { return is_deferred_; }
   bool is_cancelled() { return !client_; }

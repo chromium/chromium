@@ -27,7 +27,8 @@ void LoaderFactoryForWorker::Trace(Visitor* visitor) const {
 std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
     const ResourceRequest& request,
     const ResourceLoaderOptions& options,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner) {
   WrappedResourceRequest wrapped(request);
 
   mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
@@ -51,7 +52,9 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
 
   if (url_loader_factory) {
     return web_context_->WrapURLLoaderFactory(std::move(url_loader_factory))
-        ->CreateURLLoader(wrapped, CreateTaskRunnerHandle(task_runner));
+        ->CreateURLLoader(wrapped,
+                          CreateTaskRunnerHandle(freezable_task_runner),
+                          CreateTaskRunnerHandle(unfreezable_task_runner));
   }
 
   // If |global_scope_| is a service worker, use |script_loader_factory_| for
@@ -71,7 +74,8 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
       // workers.
       if (web_context_->GetScriptLoaderFactory()) {
         return web_context_->GetScriptLoaderFactory()->CreateURLLoader(
-            wrapped, CreateTaskRunnerHandle(task_runner));
+            wrapped, CreateTaskRunnerHandle(freezable_task_runner),
+            CreateTaskRunnerHandle(unfreezable_task_runner));
       }
     }
   } else {
@@ -79,7 +83,8 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
   }
 
   return web_context_->GetURLLoaderFactory()->CreateURLLoader(
-      wrapped, CreateTaskRunnerHandle(task_runner));
+      wrapped, CreateTaskRunnerHandle(freezable_task_runner),
+      CreateTaskRunnerHandle(unfreezable_task_runner));
 }
 
 std::unique_ptr<WebCodeCacheLoader>

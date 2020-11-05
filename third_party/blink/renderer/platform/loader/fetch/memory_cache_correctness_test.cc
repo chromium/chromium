@@ -130,6 +130,7 @@ class MemoryCacheCorrectnessTest : public testing::Test {
     fetcher_ = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
         properties->MakeDetachable(), context,
         base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+        base::MakeRefCounted<scheduler::FakeTaskRunner>(),
         MakeGarbageCollected<TestLoaderFactory>(),
         MakeGarbageCollected<MockContextLifecycleNotifier>()));
     Resource::SetClockForTesting(platform_->test_task_runner()->GetMockClock());

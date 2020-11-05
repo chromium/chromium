@@ -31,12 +31,16 @@ class TestLoaderFactory : public ResourceFetcher::LoaderFactory {
   std::unique_ptr<WebURLLoader> CreateURLLoader(
       const ResourceRequest& request,
       const ResourceLoaderOptions& options,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
+      scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner)
+      override {
     WrappedResourceRequest wrapped(request);
     return url_loader_factory_->CreateURLLoader(
         wrapped,
         scheduler::WebResourceLoadingTaskRunnerHandle::CreateUnprioritized(
-            std::move(task_runner)));
+            std::move(freezable_task_runner)),
+        scheduler::WebResourceLoadingTaskRunnerHandle::CreateUnprioritized(
+            std::move(unfreezable_task_runner)));
   }
 
   std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override {

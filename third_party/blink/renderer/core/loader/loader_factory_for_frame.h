@@ -26,8 +26,13 @@ class LoaderFactoryForFrame final : public ResourceFetcher::LoaderFactory {
   std::unique_ptr<WebURLLoader> CreateURLLoader(
       const ResourceRequest&,
       const ResourceLoaderOptions&,
+      scoped_refptr<base::SingleThreadTaskRunner>,
       scoped_refptr<base::SingleThreadTaskRunner>) override;
   std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override;
+
+  std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
+  CreateTaskRunnerHandle(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
  private:
   const Member<DocumentLoader> document_loader_;

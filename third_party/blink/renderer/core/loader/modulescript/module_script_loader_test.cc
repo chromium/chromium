@@ -192,6 +192,7 @@ void ModuleScriptLoaderTest::InitializeForDocument() {
   fetcher_ = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
       properties->MakeDetachable(), fetch_context,
       base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+      base::MakeRefCounted<scheduler::FakeTaskRunner>(),
       MakeGarbageCollected<TestLoaderFactory>(
           platform_->GetURLLoaderMockFactory()),
       MakeGarbageCollected<MockContextLifecycleNotifier>()));
@@ -205,6 +206,7 @@ void ModuleScriptLoaderTest::InitializeForWorklet() {
       MakeGarbageCollected<TestResourceFetcherProperties>(security_origin_);
   fetcher_ = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
       properties->MakeDetachable(), fetch_context,
+      base::MakeRefCounted<scheduler::FakeTaskRunner>(),
       base::MakeRefCounted<scheduler::FakeTaskRunner>(),
       MakeGarbageCollected<TestLoaderFactory>(
           platform_->GetURLLoaderMockFactory()),

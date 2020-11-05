@@ -71,6 +71,7 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
   std::unique_ptr<WebURLLoader> CreateURLLoader(
       const ResourceRequest& request,
       const ResourceLoaderOptions& options,
+      scoped_refptr<base::SingleThreadTaskRunner>,
       scoped_refptr<base::SingleThreadTaskRunner>) override {
     return std::make_unique<NoopWebURLLoader>();
   }
@@ -111,7 +112,8 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
     void DidChangePriority(WebURLRequest::Priority, int) override {
       NOTREACHED();
     }
-    scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() override {
+    scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
+        override {
       return base::MakeRefCounted<scheduler::FakeTaskRunner>();
     }
   };
@@ -121,12 +123,13 @@ class ScriptStreamingTest : public testing::Test {
  public:
   ScriptStreamingTest()
       : url_("http://www.streaming-test.com/"),
-        loading_task_runner_(platform_->test_task_runner()) {
+        freezable_task_runner_(platform_->test_task_runner()),
+        unfreezable_task_runner_(platform_->test_task_runner()) {
     auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
     FetchContext* context = MakeGarbageCollected<MockFetchContext>();
     auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-        properties->MakeDetachable(), context, loading_task_runner_,
-        MakeGarbageCollected<NoopLoaderFactory>(),
+        properties->MakeDetachable(), context, freezable_task_runner_,
+        unfreezable_task_runner_, MakeGarbageCollected<NoopLoaderFactory>(),
         MakeGarbageCollected<MockContextLifecycleNotifier>()));
 
     ResourceRequest request(url_);
@@ -136,7 +139,7 @@ class ScriptStreamingTest : public testing::Test {
     FetchParameters params = FetchParameters::CreateForTest(std::move(request));
     resource_ = ScriptResource::Fetch(params, fetcher, resource_client_,
                                       ScriptResource::kAllowStreaming);
-    resource_->AddClient(resource_client_, loading_task_runner_.get());
+    resource_->AddClient(resource_client_, freezable_task_runner_.get());
 
     ScriptStreamer::SetSmallScriptThresholdForTesting(0);
 
@@ -202,7 +205,8 @@ class ScriptStreamingTest : public testing::Test {
       platform_;
 
   KURL url_;
-  scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner_;
 
   Persistent<TestResourceClient> resource_client_;
   Persistent<ScriptResource> resource_;

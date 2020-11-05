@@ -106,7 +106,9 @@ std::unique_ptr<blink::WebURLLoader>
 ServiceWorkerNetworkProviderForFrame::CreateURLLoader(
     const blink::WebURLRequest& request,
     std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
-        task_runner_handle) {
+        freezable_task_runner_handle,
+    std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
+        unfreezable_task_runner_handle) {
   // RenderThreadImpl is nullptr in some tests.
   if (!RenderThreadImpl::current())
     return nullptr;
@@ -152,8 +154,9 @@ ServiceWorkerNetworkProviderForFrame::CreateURLLoader(
   // ServiceWorker.
   return std::make_unique<WebURLLoaderImpl>(
       RenderThreadImpl::current()->resource_dispatcher(),
-      std::move(task_runner_handle), context()->GetSubresourceLoaderFactory(),
-      std::move(keep_alive_handle));
+      std::move(freezable_task_runner_handle),
+      std::move(unfreezable_task_runner_handle),
+      context()->GetSubresourceLoaderFactory(), std::move(keep_alive_handle));
 }
 
 blink::mojom::ControllerServiceWorkerMode

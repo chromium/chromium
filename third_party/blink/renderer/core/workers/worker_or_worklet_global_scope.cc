@@ -316,6 +316,7 @@ ResourceFetcher* WorkerOrWorkletGlobalScope::CreateFetcherInternal(
         content_security_policy, resource_timing_notifier);
     ResourceFetcherInit init(properties, worker_fetch_context,
                              GetTaskRunner(TaskType::kNetworking),
+                             GetTaskRunner(TaskType::kNetworkingUnfreezable),
                              MakeGarbageCollected<LoaderFactoryForWorker>(
                                  *this, web_worker_fetch_context_),
                              this);
@@ -349,6 +350,7 @@ ResourceFetcher* WorkerOrWorkletGlobalScope::CreateFetcherInternal(
     fetcher = MakeGarbageCollected<ResourceFetcher>(
         ResourceFetcherInit(properties, &FetchContext::NullInstance(),
                             GetTaskRunner(TaskType::kNetworking),
+                            GetTaskRunner(TaskType::kNetworkingUnfreezable),
                             nullptr /* loader_factory */, this));
   }
   if (IsContextPaused())

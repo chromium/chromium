@@ -127,7 +127,8 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
         WTF::Bind(&PrefetchedSignedExchangeLoader::DidChangePriority,
                   GetWeakPtr(), new_priority, intra_priority_value));
   }
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() override {
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
+      override {
     return task_runner_;
   }
 
@@ -232,7 +233,9 @@ PrefetchedSignedExchangeManager::CreateDefaultURLLoader(
     const WebURLRequest& request) {
   return frame_->GetURLLoaderFactory()->CreateURLLoader(
       request,
-      frame_->GetFrameScheduler()->CreateResourceLoadingTaskRunnerHandle());
+      frame_->GetFrameScheduler()->CreateResourceLoadingTaskRunnerHandle(),
+      frame_->GetFrameScheduler()
+          ->CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle());
 }
 
 std::unique_ptr<WebURLLoader>
@@ -244,7 +247,9 @@ PrefetchedSignedExchangeManager::CreatePrefetchedSignedExchangeURLLoader(
       ->WrapURLLoaderFactory(std::move(loader_factory))
       ->CreateURLLoader(
           request,
-          frame_->GetFrameScheduler()->CreateResourceLoadingTaskRunnerHandle());
+          frame_->GetFrameScheduler()->CreateResourceLoadingTaskRunnerHandle(),
+          frame_->GetFrameScheduler()
+              ->CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle());
 }
 
 void PrefetchedSignedExchangeManager::TriggerLoad() {

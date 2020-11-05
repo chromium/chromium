@@ -242,6 +242,7 @@ ResourceFetcher* FrameFetchContext::CreateFetcherForCommittedDocument(
   ResourceFetcherInit init(
       properties, frame_fetch_context,
       frame->GetTaskRunner(TaskType::kNetworking),
+      frame->GetTaskRunner(TaskType::kNetworkingUnfreezable),
       MakeGarbageCollected<LoaderFactoryForFrame>(loader, *frame->DomWindow()),
       frame->DomWindow());
   init.use_counter =

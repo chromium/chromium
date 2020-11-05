@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/scheduler/public/worker_scheduler.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/wake_up_budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_proxy.h"
@@ -190,6 +191,10 @@ scoped_refptr<base::SingleThreadTaskRunner> WorkerScheduler::GetTaskRunner(
       // move them into other task runners. See also comments in
       // Get(LocalFrame). (https://crbug.com/670534)
       return unpausable_task_queue_->CreateTaskRunner(type);
+    case TaskType::kNetworkingUnfreezable:
+      return base::FeatureList::IsEnabled(features::kLoadingTasksUnfreezable)
+                 ? unpausable_task_queue_->CreateTaskRunner(type)
+                 : pausable_task_queue_->CreateTaskRunner(type);
     case TaskType::kMainThreadTaskQueueV8:
     case TaskType::kMainThreadTaskQueueCompositor:
     case TaskType::kMainThreadTaskQueueDefault:

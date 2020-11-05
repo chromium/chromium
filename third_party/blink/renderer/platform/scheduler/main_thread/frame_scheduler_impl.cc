@@ -394,6 +394,10 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     case TaskType::kNetworking:
     case TaskType::kNetworkingWithURLLoaderAnnotation:
       return LoadingTaskQueueTraits();
+    case TaskType::kNetworkingUnfreezable:
+      return base::FeatureList::IsEnabled(features::kLoadingTasksUnfreezable)
+                 ? UnfreezableLoadingTaskQueueTraits()
+                 : LoadingTaskQueueTraits();
     case TaskType::kNetworkingControl:
       return LoadingControlTaskQueueTraits();
     // Throttling following tasks may break existing web pages, so tentatively
@@ -521,6 +525,12 @@ scoped_refptr<MainThreadTaskQueue> FrameSchedulerImpl::GetTaskQueue(
 std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
 FrameSchedulerImpl::CreateResourceLoadingTaskRunnerHandle() {
   return CreateResourceLoadingTaskRunnerHandleImpl();
+}
+
+std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
+FrameSchedulerImpl::CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle() {
+  return ResourceLoadingTaskRunnerHandleImpl::WrapTaskRunner(
+      GetTaskQueue(TaskType::kNetworkingUnfreezable));
 }
 
 std::unique_ptr<ResourceLoadingTaskRunnerHandleImpl>
@@ -1395,6 +1405,11 @@ MainThreadTaskQueue::QueueTraits FrameSchedulerImpl::LoadingTaskQueueTraits() {
       .SetCanBeFrozen(true)
       .SetCanBeDeferred(true)
       .SetPrioritisationType(QueueTraits::PrioritisationType::kLoading);
+}
+
+MainThreadTaskQueue::QueueTraits
+FrameSchedulerImpl::UnfreezableLoadingTaskQueueTraits() {
+  return LoadingTaskQueueTraits().SetCanBeFrozen(false);
 }
 
 MainThreadTaskQueue::QueueTraits

@@ -69,6 +69,7 @@ TEST_F(FontResourceTest,
   auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
       properties->MakeDetachable(), context,
       base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+      base::MakeRefCounted<scheduler::FakeTaskRunner>(),
       MakeGarbageCollected<TestLoaderFactory>(),
       MakeGarbageCollected<MockContextLifecycleNotifier>()));
 

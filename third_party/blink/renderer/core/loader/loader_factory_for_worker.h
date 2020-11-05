@@ -31,7 +31,9 @@ class LoaderFactoryForWorker : public ResourceFetcher::LoaderFactory {
   std::unique_ptr<WebURLLoader> CreateURLLoader(
       const ResourceRequest& request,
       const ResourceLoaderOptions& options,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
+      scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner)
+      override;
   std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override;
 
  private:

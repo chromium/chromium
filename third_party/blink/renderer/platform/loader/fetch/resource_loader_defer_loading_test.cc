@@ -91,7 +91,8 @@ class TestWebURLLoader final : public WebURLLoader {
   void DidChangePriority(WebURLRequest::Priority, int) override {
     NOTREACHED();
   }
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() override {
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
+      override {
     return base::MakeRefCounted<scheduler::FakeTaskRunner>();
   }
 
@@ -113,7 +114,9 @@ class DeferTestLoaderFactory final : public ResourceFetcher::LoaderFactory {
   std::unique_ptr<WebURLLoader> CreateURLLoader(
       const ResourceRequest& request,
       const ResourceLoaderOptions& options,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
+      scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner)
+      override {
     return std::make_unique<TestWebURLLoader>(defers_flag_);
   }
 
@@ -149,6 +152,7 @@ class ResourceLoaderDefersLoadingTest : public testing::Test {
     return MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
         MakeGarbageCollected<TestResourceFetcherProperties>()->MakeDetachable(),
         MakeGarbageCollected<MockFetchContext>(),
+        base::MakeRefCounted<scheduler::FakeTaskRunner>(),
         base::MakeRefCounted<scheduler::FakeTaskRunner>(),
         MakeGarbageCollected<DeferTestLoaderFactory>(
             &web_url_loader_defers_, process_code_cache_request_callback_),

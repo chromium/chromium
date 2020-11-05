@@ -110,6 +110,8 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
   CreateResourceLoadingTaskRunnerHandle() override;
 
+  std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
+  CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle() override;
   WebAgentGroupScheduler* GetAgentGroupScheduler() override;
   PageScheduler* GetPageScheduler() const override;
   void DidStartProvisionalLoad(bool is_main_frame) override;
@@ -304,6 +306,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   static MainThreadTaskQueue::QueueTraits
   DoesNotUseVirtualTimeTaskQueueTraits();
   static MainThreadTaskQueue::QueueTraits LoadingTaskQueueTraits();
+  static MainThreadTaskQueue::QueueTraits UnfreezableLoadingTaskQueueTraits();
   static MainThreadTaskQueue::QueueTraits LoadingControlTaskQueueTraits();
   static MainThreadTaskQueue::QueueTraits FindInPageTaskQueueTraits();
 

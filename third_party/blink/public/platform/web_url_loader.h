@@ -104,7 +104,8 @@ class WebURLLoader {
                                  int intra_priority_value) = 0;
 
   // Returns the task runner for this request.
-  virtual scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() = 0;
+  virtual scoped_refptr<base::SingleThreadTaskRunner>
+  GetTaskRunnerForBodyLoader() = 0;
 };
 
 }  // namespace blink

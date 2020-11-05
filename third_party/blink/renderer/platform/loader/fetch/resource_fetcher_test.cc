@@ -172,6 +172,7 @@ class ResourceFetcherTest : public testing::Test {
       FetchContext* context) {
     return MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
         properties.MakeDetachable(), context, CreateTaskRunner(),
+        CreateTaskRunner(),
         MakeGarbageCollected<TestLoaderFactory>(
             platform_->GetURLLoaderMockFactory()),
         MakeGarbageCollected<MockContextLifecycleNotifier>()));
@@ -410,6 +411,7 @@ class RequestSameResourceOnComplete
     auto* fetcher2 = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
         properties->MakeDetachable(), context,
         base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+        base::MakeRefCounted<scheduler::FakeTaskRunner>(),
         MakeGarbageCollected<TestLoaderFactory>(mock_factory_),
         MakeGarbageCollected<MockContextLifecycleNotifier>()));
     ResourceRequest resource_request2(GetResource()->Url());
@@ -577,6 +579,7 @@ class ScopedMockRedirectRequester {
     auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
     auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
         properties->MakeDetachable(), context_, task_runner_,
+        base::MakeRefCounted<scheduler::FakeTaskRunner>(),
         MakeGarbageCollected<TestLoaderFactory>(mock_factory_),
         MakeGarbageCollected<MockContextLifecycleNotifier>()));
     ResourceRequest resource_request(url);
@@ -1166,7 +1169,7 @@ TEST_F(ResourceFetcherTest, Detach) {
   auto* const fetcher =
       MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
           properties, MakeGarbageCollected<MockFetchContext>(),
-          CreateTaskRunner(),
+          CreateTaskRunner(), CreateTaskRunner(),
           MakeGarbageCollected<TestLoaderFactory>(
               platform_->GetURLLoaderMockFactory()),
           MakeGarbageCollected<MockContextLifecycleNotifier>()));

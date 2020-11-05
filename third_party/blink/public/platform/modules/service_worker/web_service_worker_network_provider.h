@@ -65,6 +65,7 @@ class WebServiceWorkerNetworkProvider {
   // to the default loading behavior.
   virtual std::unique_ptr<WebURLLoader> CreateURLLoader(
       const WebURLRequest& request,
+      std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>,
       std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>) = 0;
 
   // For service worker clients.

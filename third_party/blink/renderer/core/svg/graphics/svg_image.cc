@@ -81,8 +81,12 @@ using TaskRunnerHandle = scheduler::WebResourceLoadingTaskRunnerHandle;
 
 class FailingLoader final : public WebURLLoader {
  public:
-  explicit FailingLoader(std::unique_ptr<TaskRunnerHandle> task_runner_handle)
-      : task_runner_handle_(std::move(task_runner_handle)) {}
+  explicit FailingLoader(
+      std::unique_ptr<TaskRunnerHandle> freezable_task_runner_handle,
+      std::unique_ptr<TaskRunnerHandle> unfreezable_task_runner_handle)
+      : freezable_task_runner_handle_(std::move(freezable_task_runner_handle)),
+        unfreezable_task_runner_handle_(
+            std::move(unfreezable_task_runner_handle)) {}
   ~FailingLoader() override = default;
 
   // WebURLLoader implementation:
@@ -116,12 +120,14 @@ class FailingLoader final : public WebURLLoader {
   }
   void SetDefersLoading(bool) override {}
   void DidChangePriority(WebURLRequest::Priority, int) override {}
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() override {
-    return task_runner_handle_->GetTaskRunner();
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
+      override {
+    return freezable_task_runner_handle_->GetTaskRunner();
   }
 
  private:
-  const std::unique_ptr<TaskRunnerHandle> task_runner_handle_;
+  const std::unique_ptr<TaskRunnerHandle> freezable_task_runner_handle_;
+  const std::unique_ptr<TaskRunnerHandle> unfreezable_task_runner_handle_;
 };
 
 class FailingLoaderFactory final : public WebURLLoaderFactory {
@@ -129,8 +135,12 @@ class FailingLoaderFactory final : public WebURLLoaderFactory {
   // WebURLLoaderFactory implementation:
   std::unique_ptr<WebURLLoader> CreateURLLoader(
       const WebURLRequest&,
-      std::unique_ptr<TaskRunnerHandle> task_runner_handle) override {
-    return std::make_unique<FailingLoader>(std::move(task_runner_handle));
+      std::unique_ptr<TaskRunnerHandle> freezable_task_runner_handle,
+      std::unique_ptr<TaskRunnerHandle> unfreezable_task_runner_handle)
+      override {
+    return std::make_unique<FailingLoader>(
+        std::move(freezable_task_runner_handle),
+        std::move(unfreezable_task_runner_handle));
   }
 };
 

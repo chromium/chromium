@@ -793,5 +793,10 @@ const base::Feature kWebAppEnableProtocolHandlers{
 // without conversion to I420.
 const base::Feature kWebRtcLibvpxEncodeNV12{"WebRtcLibvpxEncodeNV12",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Makes network loading tasks unfreezable so that they can be processed while
+// the page is frozen.
+const base::Feature kLoadingTasksUnfreezable{"LoadingTasksUnfreezable",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace features
 }  // namespace blink

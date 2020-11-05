@@ -41,7 +41,9 @@ class CONTENT_EXPORT WebURLLoaderFactoryImpl
   std::unique_ptr<blink::WebURLLoader> CreateURLLoader(
       const blink::WebURLRequest& request,
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
-          task_runner_handle) override;
+          freezable_task_runner_handle,
+      std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
+          unfreezable_task_runner_handle) override;
 
  private:
   base::WeakPtr<ResourceDispatcher> resource_dispatcher_;
@@ -56,7 +58,9 @@ class CONTENT_EXPORT WebURLLoaderImpl : public blink::WebURLLoader {
   WebURLLoaderImpl(
       ResourceDispatcher* resource_dispatcher,
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
-          task_runner_handle,
+          freezable_task_runner_handle,
+      std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
+          unfreezable_task_runner_handle,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle);
   ~WebURLLoaderImpl() override;
@@ -98,7 +102,8 @@ class CONTENT_EXPORT WebURLLoaderImpl : public blink::WebURLLoader {
   void SetDefersLoading(bool value) override;
   void DidChangePriority(blink::WebURLRequest::Priority new_priority,
                          int intra_priority_value) override;
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() override;
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
+      override;
 
  private:
   class Context;

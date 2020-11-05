@@ -87,7 +87,8 @@ class FakeWebURLLoader final : public WebURLLoader {
 
   void SetDefersLoading(bool defers) override {}
   void DidChangePriority(WebURLRequest::Priority, int) override {}
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() override {
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
+      override {
     return base::MakeRefCounted<scheduler::FakeTaskRunner>();
   }
 };
@@ -98,6 +99,7 @@ class FakeWebURLLoaderFactory final : public WebURLLoaderFactory {
  public:
   std::unique_ptr<WebURLLoader> CreateURLLoader(
       const WebURLRequest&,
+      std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>,
       std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>) override {
     return std::make_unique<FakeWebURLLoader>();
   }

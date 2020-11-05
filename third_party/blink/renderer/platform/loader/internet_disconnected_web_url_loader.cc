@@ -19,16 +19,18 @@ std::unique_ptr<WebURLLoader>
 InternetDisconnectedWebURLLoaderFactory::CreateURLLoader(
     const WebURLRequest&,
     std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
-        task_runner_handle) {
-  DCHECK(task_runner_handle);
+        freezable_task_runner_handle,
+    std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
+        unfreezable_task_runner_handle) {
+  DCHECK(freezable_task_runner_handle);
   return std::make_unique<InternetDisconnectedWebURLLoader>(
-      std::move(task_runner_handle));
+      std::move(freezable_task_runner_handle));
 }
 
 InternetDisconnectedWebURLLoader::InternetDisconnectedWebURLLoader(
     std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
-        task_runner_handle)
-    : task_runner_handle_(std::move(task_runner_handle)) {}
+        freezable_task_runner_handle)
+    : task_runner_handle_(std::move(freezable_task_runner_handle)) {}
 
 InternetDisconnectedWebURLLoader::~InternetDisconnectedWebURLLoader() = default;
 
@@ -87,7 +89,7 @@ void InternetDisconnectedWebURLLoader::DidFail(WebURLLoaderClient* client,
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
-InternetDisconnectedWebURLLoader::GetTaskRunner() {
+InternetDisconnectedWebURLLoader::GetTaskRunnerForBodyLoader() {
   return task_runner_handle_->GetTaskRunner();
 }
 

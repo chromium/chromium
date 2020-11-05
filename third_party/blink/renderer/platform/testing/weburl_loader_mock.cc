@@ -148,7 +148,8 @@ void WebURLLoaderMock::SetDefersLoading(bool deferred) {
 void WebURLLoaderMock::DidChangePriority(WebURLRequest::Priority new_priority,
                                          int intra_priority_value) {}
 
-scoped_refptr<base::SingleThreadTaskRunner> WebURLLoaderMock::GetTaskRunner() {
+scoped_refptr<base::SingleThreadTaskRunner>
+WebURLLoaderMock::GetTaskRunnerForBodyLoader() {
   return base::MakeRefCounted<scheduler::FakeTaskRunner>();
 }
 

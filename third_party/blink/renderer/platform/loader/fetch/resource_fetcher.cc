@@ -367,16 +367,19 @@ void PopulateAndAddResourceTimingInfo(Resource* resource,
 ResourceFetcherInit::ResourceFetcherInit(
     DetachableResourceFetcherProperties& properties,
     FetchContext* context,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
     ResourceFetcher::LoaderFactory* loader_factory,
     ContextLifecycleNotifier* context_lifecycle_notifier)
     : properties(&properties),
       context(context),
-      task_runner(std::move(task_runner)),
+      freezable_task_runner(std::move(freezable_task_runner)),
+      unfreezable_task_runner(std::move(unfreezable_task_runner)),
       loader_factory(loader_factory),
       context_lifecycle_notifier(context_lifecycle_notifier) {
   DCHECK(context);
-  DCHECK(this->task_runner);
+  DCHECK(this->freezable_task_runner);
+  DCHECK(this->unfreezable_task_runner);
   DCHECK(loader_factory || properties.IsDetached());
   DCHECK(context_lifecycle_notifier || properties.IsDetached());
 }
@@ -581,7 +584,8 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
 ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
     : properties_(*init.properties),
       context_(init.context),
-      task_runner_(init.task_runner),
+      freezable_task_runner_(init.freezable_task_runner),
+      unfreezable_task_runner_(init.unfreezable_task_runner),
       use_counter_(init.use_counter
                        ? init.use_counter
                        : MakeGarbageCollected<DetachableUseCounter>(nullptr)),
@@ -598,7 +602,7 @@ ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
           init.loading_behavior_observer)),
       archive_(init.archive),
       resource_timing_report_timer_(
-          task_runner_,
+          freezable_task_runner_,
           this,
           &ResourceFetcher::ResourceTimingReportTimerFired),
       frame_or_worker_scheduler_(
@@ -761,7 +765,7 @@ Resource* ResourceFetcher::ResourceForStaticData(
   if (data->size())
     resource->SetResourceBuffer(data);
   resource->SetCacheIdentifier(cache_identifier);
-  resource->Finish(base::TimeTicks(), task_runner_.get());
+  resource->Finish(base::TimeTicks(), freezable_task_runner_.get());
 
   AddToMemoryCacheIfNeeded(params, resource);
   return resource;
@@ -775,10 +779,10 @@ Resource* ResourceFetcher::ResourceForBlockedRequest(
   Resource* resource = factory.Create(
       params.GetResourceRequest(), params.Options(), params.DecoderOptions());
   if (client)
-    client->SetResource(resource, task_runner_.get());
+    client->SetResource(resource, freezable_task_runner_.get());
   resource->FinishAsError(ResourceError::CancelledDueToAccessCheckError(
                               params.Url(), blocked_reason),
-                          task_runner_.get());
+                          freezable_task_runner_.get());
   return resource;
 }
 
@@ -1107,7 +1111,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     resource->VirtualTimePauser() = std::move(pauser);
 
   if (client)
-    client->SetResource(resource, task_runner_.get());
+    client->SetResource(resource, freezable_task_runner_.get());
 
   // TODO(yoav): It is not clear why preloads are exempt from this check. Can we
   // remove the exemption?
@@ -1168,7 +1172,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
                    std::move(params.MutableResourceRequest().MutableBody()),
                    load_blocking_policy)) {
       resource->FinishAsError(ResourceError::CancelledError(params.Url()),
-                              task_runner_.get());
+                              freezable_task_runner_.get());
     }
   }
 
@@ -1255,10 +1259,12 @@ std::unique_ptr<WebURLLoader> ResourceFetcher::CreateURLLoader(
     // TODO(yoichio): CreateURLLoader take a ResourceRequestHead instead of
     // ResourceRequest.
     return loader_factory_->CreateURLLoader(ResourceRequest(request),
-                                            new_options, task_runner_);
+                                            new_options, freezable_task_runner_,
+                                            unfreezable_task_runner_);
   }
   return loader_factory_->CreateURLLoader(ResourceRequest(request), options,
-                                          task_runner_);
+                                          freezable_task_runner_,
+                                          unfreezable_task_runner_);
 }
 
 std::unique_ptr<WebCodeCacheLoader> ResourceFetcher::CreateCodeCacheLoader() {
@@ -1768,7 +1774,7 @@ void ResourceFetcher::ClearContext() {
     // to keep the ResourceFetcher and ResourceLoaders alive until the requests
     // complete or the timer fires.
     keepalive_loaders_task_handle_ = PostDelayedCancellableTask(
-        *task_runner_, FROM_HERE,
+        *freezable_task_runner_, FROM_HERE,
         WTF::Bind(&ResourceFetcher::StopFetchingIncludingKeepaliveLoaders,
                   WrapPersistent(this)),
         kKeepaliveLoadersTimeout);
@@ -1824,7 +1830,7 @@ void ResourceFetcher::ScheduleWarnUnusedPreloads() {
   if (preloads_.IsEmpty())
     return;
   unused_preloads_timer_ = PostDelayedCancellableTask(
-      *task_runner_, FROM_HERE,
+      *freezable_task_runner_, FROM_HERE,
       WTF::Bind(&ResourceFetcher::WarnUnusedPreloads, WrapWeakPersistent(this)),
       kUnusedPreloadTimeout);
 }
@@ -1884,7 +1890,7 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
 
   resource->VirtualTimePauser().UnpauseVirtualTime();
   if (type == kDidFinishLoading) {
-    resource->Finish(response_end, task_runner_.get());
+    resource->Finish(response_end, freezable_task_runner_.get());
 
     // Since this resource came from the network stack we only schedule a stale
     // while revalidate request if the network asked us to. If we called
@@ -1934,7 +1940,7 @@ void ResourceFetcher::HandleLoaderError(Resource* resource,
     use_counter_->CountUse(
         mojom::WebFeature::kCertificateTransparencyRequiredErrorOnResourceLoad);
   }
-  resource->FinishAsError(error, task_runner_.get());
+  resource->FinishAsError(error, freezable_task_runner_.get());
   if (resource_load_observer_) {
     DCHECK(!IsDetached());
     resource_load_observer_->DidFailLoading(
@@ -2214,7 +2220,7 @@ void ResourceFetcher::ScheduleStaleRevalidate(Resource* stale_resource) {
   if (stale_resource->StaleRevalidationStarted())
     return;
   stale_resource->SetStaleRevalidationStarted();
-  task_runner_->PostTask(
+  freezable_task_runner_->PostTask(
       FROM_HERE,
       WTF::Bind(&ResourceFetcher::RevalidateStaleResource,
                 WrapWeakPersistent(this), WrapPersistent(stale_resource)));
@@ -2242,7 +2248,8 @@ void ResourceFetcher::RevalidateStaleResource(Resource* stale_resource) {
 mojom::blink::BlobRegistry* ResourceFetcher::GetBlobRegistry() {
   if (!blob_registry_remote_.is_bound()) {
     Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-        blob_registry_remote_.BindNewPipeAndPassReceiver(task_runner_));
+        blob_registry_remote_.BindNewPipeAndPassReceiver(
+            freezable_task_runner_));
   }
   return blob_registry_remote_.get();
 }

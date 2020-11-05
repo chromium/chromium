@@ -123,6 +123,13 @@ class FrameScheduler : public FrameOrWorkerScheduler {
   virtual std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
   CreateResourceLoadingTaskRunnerHandle() = 0;
 
+  // Returns a WebResourceLoadingTaskRunnerHandle which is intended to be used
+  // by the loading stack, same as CreateResourceLoadingTaskRunnerHandle(), but
+  // the task type of this runner is unfreezable if kLoadingTasksUnfreezable
+  // feature is on.
+  virtual std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
+  CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle() = 0;
+
   virtual std::unique_ptr<WebSchedulingTaskQueue> CreateWebSchedulingTaskQueue(
       WebSchedulingPriority) = 0;
 

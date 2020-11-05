@@ -1281,7 +1281,9 @@ class RenderFrameImpl::FrameURLLoaderFactory
   std::unique_ptr<blink::WebURLLoader> CreateURLLoader(
       const WebURLRequest& request,
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
-          task_runner_handle) override {
+          freezable_task_runner_handle,
+      std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
+          unfreezable_task_runner_handle) override {
     // This should not be called if the frame is detached.
     DCHECK(frame_);
 
@@ -1292,8 +1294,9 @@ class RenderFrameImpl::FrameURLLoaderFactory
     }
     return std::make_unique<WebURLLoaderImpl>(
         RenderThreadImpl::current()->resource_dispatcher(),
-        std::move(task_runner_handle), frame_->GetLoaderFactoryBundle(),
-        std::move(keep_alive_handle));
+        std::move(freezable_task_runner_handle),
+        std::move(unfreezable_task_runner_handle),
+        frame_->GetLoaderFactoryBundle(), std::move(keep_alive_handle));
   }
 
  private:

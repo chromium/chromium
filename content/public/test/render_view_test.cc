@@ -122,8 +122,12 @@ class FakeWebURLLoader : public blink::WebURLLoader {
  public:
   FakeWebURLLoader(
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
-          task_runner_handle)
-      : task_runner_handle_(std::move(task_runner_handle)) {}
+          freezable_task_runner_handle,
+      std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
+          unfreezable_task_runner_handle)
+      : freezable_task_runner_handle_(std::move(freezable_task_runner_handle)),
+        unfreezable_task_runner_handle_(
+            std::move(unfreezable_task_runner_handle)) {}
 
   void LoadSynchronously(
       std::unique_ptr<network::ResourceRequest> request,
@@ -150,9 +154,9 @@ class FakeWebURLLoader : public blink::WebURLLoader {
       bool no_mime_sniffing,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>,
       blink::WebURLLoaderClient* client) override {
-    DCHECK(task_runner_handle_);
+    DCHECK(freezable_task_runner_handle_);
     async_client_ = client;
-    task_runner_handle_->GetTaskRunner()->PostTask(
+    freezable_task_runner_handle_->GetTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(&FakeWebURLLoader::DidFail, weak_factory_.GetWeakPtr(),
                        blink::WebURLError(kFailureReason, request->url), 0, 0,
@@ -161,7 +165,8 @@ class FakeWebURLLoader : public blink::WebURLLoader {
 
   void SetDefersLoading(bool) override {}
   void DidChangePriority(WebURLRequest::Priority, int) override {}
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() override {
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
+      override {
     return nullptr;
   }
 
@@ -178,7 +183,9 @@ class FakeWebURLLoader : public blink::WebURLLoader {
  private:
   static const int kFailureReason = net::ERR_FAILED;
   std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
-      task_runner_handle_;
+      freezable_task_runner_handle_;
+  std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
+      unfreezable_task_runner_handle_;
   blink::WebURLLoaderClient* async_client_ = nullptr;
 
   base::WeakPtrFactory<FakeWebURLLoader> weak_factory_{this};
@@ -189,8 +196,12 @@ class FakeWebURLLoaderFactory : public blink::WebURLLoaderFactoryForTest {
   std::unique_ptr<blink::WebURLLoader> CreateURLLoader(
       const WebURLRequest&,
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
-          task_runner_handle) override {
-    return std::make_unique<FakeWebURLLoader>(std::move(task_runner_handle));
+          freezable_task_runner_handle,
+      std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
+          unfreezable_task_runner_handle) override {
+    return std::make_unique<FakeWebURLLoader>(
+        std::move(freezable_task_runner_handle),
+        std::move(unfreezable_task_runner_handle));
   }
 
   std::unique_ptr<WebURLLoaderFactoryForTest> Clone() override {
