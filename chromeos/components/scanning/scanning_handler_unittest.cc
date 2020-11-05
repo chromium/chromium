@@ -11,7 +11,9 @@
 #include "base/files/file_path.h"
 #include "base/strings/string16.h"
 #include "base/values.h"
+#include "chromeos/components/scanning/scanning_paths_provider.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,12 +21,6 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
-
-namespace {
-
-constexpr char kTestDirectory[] = "/this/is/a/test/directory/Base Name";
-
-}  // namespace
 
 namespace chromeos {
 
@@ -41,17 +37,17 @@ std::unique_ptr<ui::SelectFilePolicy> CreateTestSelectFilePolicy(
   return std::make_unique<TestSelectFilePolicy>();
 }
 
-// A fake ui::SelectFileDialog.
-class FakeSelectFileDialog : public ui::SelectFileDialog {
+// A test ui::SelectFileDialog.
+class TestSelectFileDialog : public ui::SelectFileDialog {
  public:
-  FakeSelectFileDialog(Listener* listener,
+  TestSelectFileDialog(Listener* listener,
                        std::unique_ptr<ui::SelectFilePolicy> policy,
-                       bool is_cancel)
+                       base::FilePath selected_path)
       : ui::SelectFileDialog(listener, std::move(policy)),
-        is_cancel_(is_cancel) {}
+        selected_path_(selected_path) {}
 
-  FakeSelectFileDialog(const FakeSelectFileDialog&) = delete;
-  FakeSelectFileDialog& operator=(const FakeSelectFileDialog&) = delete;
+  TestSelectFileDialog(const TestSelectFileDialog&) = delete;
+  TestSelectFileDialog& operator=(const TestSelectFileDialog&) = delete;
 
  protected:
   void SelectFileImpl(Type type,
@@ -62,13 +58,13 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
                       void* params) override {
-    if (is_cancel_) {
+    if (selected_path_.empty()) {
       listener_->FileSelectionCanceled(params);
       return;
     }
 
-    const base::FilePath file_path(FILE_PATH_LITERAL(kTestDirectory));
-    listener_->FileSelected(file_path, 0 /* index */, nullptr /* params */);
+    listener_->FileSelected(selected_path_, 0 /* index */,
+                            nullptr /* params */);
   }
 
   bool IsRunning(gfx::NativeWindow owning_window) const override {
@@ -78,22 +74,23 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
   bool HasMultipleFileTypeChoicesImpl() override { return false; }
 
  private:
-  ~FakeSelectFileDialog() override = default;
+  ~TestSelectFileDialog() override = default;
 
-  // Determines if directory is chosen or dialog is canceled.
-  bool is_cancel_;
+  // The simulatd file path selected by the user.
+  base::FilePath selected_path_;
 };
 
 // A factory associated with the artificial file picker.
 class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
  public:
-  explicit TestSelectFileDialogFactory(bool is_cancel)
-      : is_cancel_(is_cancel) {}
+  explicit TestSelectFileDialogFactory(base::FilePath selected_path)
+      : selected_path_(selected_path) {}
 
   ui::SelectFileDialog* Create(
       ui::SelectFileDialog::Listener* listener,
       std::unique_ptr<ui::SelectFilePolicy> policy) override {
-    return new FakeSelectFileDialog(listener, std::move(policy), is_cancel_);
+    return new TestSelectFileDialog(listener, std::move(policy),
+                                    selected_path_);
   }
 
   TestSelectFileDialogFactory(const TestSelectFileDialogFactory&) = delete;
@@ -101,8 +98,23 @@ class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
       delete;
 
  private:
-  // Determines if directory is chosen or dialog is canceled.
-  bool is_cancel_;
+  // The simulated file path selected by the user.
+  base::FilePath selected_path_;
+};
+
+// A test impl of ScanningPathsProvider.
+class TestScanningPathsProvider : public ScanningPathsProvider {
+ public:
+  TestScanningPathsProvider() = default;
+
+  TestScanningPathsProvider(const TestScanningPathsProvider&) = delete;
+  TestScanningPathsProvider& operator=(const TestScanningPathsProvider&) =
+      delete;
+
+  std::string GetBaseNameFromPath(content::WebUI* web_ui,
+                                  const base::FilePath& path) override {
+    return path.BaseName().value();
+  }
 };
 
 class ScanningHandlerTest : public testing::Test {
@@ -115,7 +127,8 @@ class ScanningHandlerTest : public testing::Test {
 
   void SetUp() override {
     scanning_handler_ = std::make_unique<ScanningHandler>(
-        base::BindRepeating(&CreateTestSelectFilePolicy));
+        base::BindRepeating(&CreateTestSelectFilePolicy),
+        std::make_unique<chromeos::TestScanningPathsProvider>());
     scanning_handler_->SetWebUIForTest(&web_ui_);
     scanning_handler_->RegisterMessages();
 
@@ -139,8 +152,9 @@ class ScanningHandlerTest : public testing::Test {
 // select dialog, and if a directory is chosen, returns the selected file path
 // and base name.
 TEST_F(ScanningHandlerTest, SelectDirectory) {
+  const base::FilePath base_file_path("/this/is/a/test/directory/Base Name");
   ui::SelectFileDialog::SetFactory(
-      new TestSelectFileDialogFactory(false /* is_cancel */));
+      new TestSelectFileDialogFactory(base_file_path));
 
   const size_t call_data_count_before_call = web_ui_.call_data().size();
   base::ListValue args;
@@ -156,7 +170,8 @@ TEST_F(ScanningHandlerTest, SelectDirectory) {
 
   const base::DictionaryValue* selected_path_dict;
   EXPECT_TRUE(call_data.arg3()->GetAsDictionary(&selected_path_dict));
-  EXPECT_EQ(kTestDirectory, *selected_path_dict->FindStringPath("filePath"));
+  EXPECT_EQ(base_file_path.value(),
+            *selected_path_dict->FindStringPath("filePath"));
   EXPECT_EQ("Base Name", *selected_path_dict->FindStringPath("baseName"));
 }
 
@@ -165,7 +180,7 @@ TEST_F(ScanningHandlerTest, SelectDirectory) {
 // base name.
 TEST_F(ScanningHandlerTest, CancelDialog) {
   ui::SelectFileDialog::SetFactory(
-      new TestSelectFileDialogFactory(true /* is_cancel */));
+      new TestSelectFileDialogFactory(base::FilePath()));
 
   const size_t call_data_count_before_call = web_ui_.call_data().size();
   base::ListValue args;

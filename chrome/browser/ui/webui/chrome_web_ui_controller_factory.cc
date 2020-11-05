@@ -164,6 +164,7 @@
 #include "chrome/browser/chromeos/printing/print_management/printing_manager_factory.h"
 #include "chrome/browser/chromeos/scanning/scan_service.h"
 #include "chrome/browser/chromeos/scanning/scan_service_factory.h"
+#include "chrome/browser/chromeos/scanning/scanning_paths_provider_impl.h"
 #include "chrome/browser/chromeos/secure_channel/secure_channel_client_provider.h"
 #include "chrome/browser/chromeos/web_applications/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/chromeos/web_applications/chrome_help_app_ui_delegate.h"
@@ -411,7 +412,8 @@ WebUIController* NewWebUI<chromeos::ScanningUI>(WebUI* web_ui,
                                                 const GURL& url) {
   return new chromeos::ScanningUI(
       web_ui, base::BindRepeating(&BindScanService, Profile::FromWebUI(web_ui)),
-      base::BindRepeating(&CreateChromeSelectFilePolicy));
+      base::BindRepeating(&CreateChromeSelectFilePolicy),
+      std::make_unique<chromeos::ScanningPathsProviderImpl>());
 }
 
 void BindMultiDeviceSetup(

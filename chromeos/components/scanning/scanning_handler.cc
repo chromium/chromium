@@ -4,7 +4,9 @@
 
 #include "chromeos/components/scanning/scanning_handler.h"
 
+#include "base/strings/string16.h"
 #include "base/values.h"
+#include "chromeos/components/scanning/scanning_paths_provider.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -16,23 +18,15 @@ namespace {
 constexpr char kBaseName[] = "baseName";
 constexpr char kFilePath[] = "filePath";
 
-// Uses the full filepath and the base directory (lowest level directory in the
-// filepath, used to display in the UI) to create a Value object to return to
-// the Scanning UI.
-base::Value CreateSelectedPathValue(const base::FilePath& path) {
-  base::Value selected_path(base::Value::Type::DICTIONARY);
-  selected_path.SetStringKey(kBaseName, path.BaseName().value());
-  selected_path.SetStringKey(kFilePath, path.value());
-  return selected_path;
-}
-
 }  // namespace
 
 namespace chromeos {
 
 ScanningHandler::ScanningHandler(
-    const SelectFilePolicyCreator& select_file_policy_creator)
-    : select_file_policy_creator_(select_file_policy_creator) {}
+    const SelectFilePolicyCreator& select_file_policy_creator,
+    std::unique_ptr<ScanningPathsProvider> scanning_paths_provider)
+    : select_file_policy_creator_(select_file_policy_creator),
+      scanning_paths_provider_(std::move(scanning_paths_provider)) {}
 
 ScanningHandler::~ScanningHandler() = default;
 
@@ -85,6 +79,18 @@ void ScanningHandler::FileSelectionCanceled(void* params) {
     ResolveJavascriptCallback(base::Value(scan_location_callback_id_),
                               CreateSelectedPathValue(base::FilePath()));
   }
+}
+
+// Uses the full filepath and the base directory (lowest level directory in the
+// filepath, used to display in the UI) to create a Value object to return to
+// the Scanning UI.
+base::Value ScanningHandler::CreateSelectedPathValue(
+    const base::FilePath& path) {
+  base::Value selected_path(base::Value::Type::DICTIONARY);
+  selected_path.SetStringKey(kFilePath, path.value());
+  selected_path.SetStringKey(
+      kBaseName, scanning_paths_provider_->GetBaseNameFromPath(web_ui(), path));
+  return selected_path;
 }
 
 void ScanningHandler::SetWebUIForTest(content::WebUI* web_ui) {

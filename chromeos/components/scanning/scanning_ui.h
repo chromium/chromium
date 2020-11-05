@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_COMPONENTS_SCANNING_SCANNING_UI_H_
 #define CHROMEOS_COMPONENTS_SCANNING_SCANNING_UI_H_
 
+#include <memory>
+
 #include "base/callback.h"
 #include "chromeos/components/scanning/mojom/scanning.mojom-forward.h"
 #include "chromeos/components/scanning/scanning_handler.h"
@@ -17,6 +19,8 @@ class WebUI;
 
 namespace chromeos {
 
+class ScanningPathsProvider;
+
 // The WebUI for chrome://scanning.
 class ScanningUI : public ui::MojoWebUIController {
  public:
@@ -28,7 +32,8 @@ class ScanningUI : public ui::MojoWebUIController {
   ScanningUI(content::WebUI* web_ui,
              BindScanServiceCallback callback,
              const ScanningHandler::SelectFilePolicyCreator&
-                 select_file_policy_creator);
+                 select_file_policy_creator,
+             std::unique_ptr<ScanningPathsProvider> scanning_paths_provider);
   ~ScanningUI() override;
 
   ScanningUI(const ScanningUI&) = delete;

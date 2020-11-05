@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -25,6 +26,8 @@ class WebContents;
 
 namespace chromeos {
 
+class ScanningPathsProvider;
+
 // ChromeOS Scanning app UI handler.
 class ScanningHandler : public content::WebUIMessageHandler,
                         public ui::SelectFileDialog::Listener {
@@ -33,8 +36,9 @@ class ScanningHandler : public content::WebUIMessageHandler,
       base::RepeatingCallback<std::unique_ptr<ui::SelectFilePolicy>(
           content::WebContents*)>;
 
-  explicit ScanningHandler(
-      const SelectFilePolicyCreator& select_file_policy_creator);
+  ScanningHandler(
+      const SelectFilePolicyCreator& select_file_policy_creator,
+      std::unique_ptr<ScanningPathsProvider> scanning_paths_provider);
   ~ScanningHandler() override;
 
   ScanningHandler(const ScanningHandler&) = delete;
@@ -48,6 +52,8 @@ class ScanningHandler : public content::WebUIMessageHandler,
                     int index,
                     void* params) override;
   void FileSelectionCanceled(void* params) override;
+
+  base::Value CreateSelectedPathValue(const base::FilePath& path);
 
   void SetWebUIForTest(content::WebUI* web_ui);
 
@@ -64,6 +70,9 @@ class ScanningHandler : public content::WebUIMessageHandler,
   std::string scan_location_callback_id_;
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
+
+  // Provides FilePath util for converting a FilePath base name.
+  std::unique_ptr<ScanningPathsProvider> scanning_paths_provider_;
 };
 
 }  // namespace chromeos
