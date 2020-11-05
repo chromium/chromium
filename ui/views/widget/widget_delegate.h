@@ -32,9 +32,15 @@ class VIEWS_EXPORT WidgetDelegate {
  public:
   using ClientViewFactory =
       base::OnceCallback<std::unique_ptr<ClientView>(Widget*)>;
-  using NonClientFrameViewFactory =
-      base::OnceCallback<std::unique_ptr<NonClientFrameView>(Widget*)>;
   using OverlayViewFactory = base::OnceCallback<std::unique_ptr<View>()>;
+
+  // NonClientFrameViewFactory is a RepeatingCallback because the
+  // NonClientFrameView is rebuilt on Aura platforms when WindowTreeHost
+  // properties that might affect its appearance change. Rebuilding the entire
+  // NonClientFrameView is a pretty big hammer for that but it's the one we
+  // have.
+  using NonClientFrameViewFactory =
+      base::RepeatingCallback<std::unique_ptr<NonClientFrameView>(Widget*)>;
 
   struct Params {
     Params();

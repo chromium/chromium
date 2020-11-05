@@ -53,7 +53,7 @@ WidgetDelegate::WidgetDelegate()
       client_view_factory_(
           base::BindOnce(&CreateDefaultClientView, base::Unretained(this))),
       non_client_frame_view_factory_(
-          base::BindOnce(&CreateDefaultNonClientFrameView)),
+          base::BindRepeating(&CreateDefaultNonClientFrameView)),
       overlay_view_factory_(base::BindOnce(&CreateDefaultOverlayView)) {}
 WidgetDelegate::~WidgetDelegate() {
   CHECK(can_delete_this_) << "A WidgetDelegate must outlive its Widget";
@@ -255,7 +255,7 @@ ClientView* WidgetDelegate::CreateClientView(Widget* widget) {
 std::unique_ptr<NonClientFrameView> WidgetDelegate::CreateNonClientFrameView(
     Widget* widget) {
   DCHECK(non_client_frame_view_factory_);
-  return std::move(non_client_frame_view_factory_).Run(widget);
+  return non_client_frame_view_factory_.Run(widget);
 }
 
 View* WidgetDelegate::CreateOverlayView() {
