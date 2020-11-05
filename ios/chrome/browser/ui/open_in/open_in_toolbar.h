@@ -9,10 +9,13 @@
 
 @interface OpenInToolbar : UIView
 
-- (instancetype)initWithTarget:(id)target action:(SEL)action;
+// Init with the given local target and action.
+- (instancetype)initWithTarget:(id)target
+                        action:(SEL)action NS_DESIGNATED_INITIALIZER;
 
-// Updates the constraint managing the bottom margin height using NamedGuides.
-- (void)updateBottomMarginHeight;
+- (instancetype)initWithFrame:(CGRect)aRect NS_UNAVAILABLE;
+
+- (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
 @end
 

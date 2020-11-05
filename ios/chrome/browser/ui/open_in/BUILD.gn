@@ -26,7 +26,6 @@ source_set("open_in") {
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
-    "//ios/third_party/material_components_ios",
     "//ios/web/public",
     "//net",
     "//services/network/public/cpp",
