@@ -95,8 +95,13 @@ void VulkanSwapChain::Destroy() {
       // other fences and semaphores safely.
       base::ScopedBlockingCall scoped_blocking_call(
           FROM_HERE, base::BlockingType::MAY_BLOCK);
-      vkWaitForFences(device, 1, &fence_and_semaphores_queue_.back().fence,
-                      VK_TRUE, UINT64_MAX);
+      // Use 1 second timeout for vkWaitForFences(), it should be long enough.
+      constexpr auto kTimeout = base::TimeTicks::kNanosecondsPerSecond;
+      auto result =
+          vkWaitForFences(device, 1, &fence_and_semaphores_queue_.back().fence,
+                          VK_TRUE, kTimeout);
+      if (result != VK_SUCCESS)
+        LOG(ERROR) << "vkWaitForFences() failed: " << result;
     }
     for (auto& fence_and_semaphores : fence_and_semaphores_queue_) {
       vkDestroyFence(device, fence_and_semaphores.fence,
