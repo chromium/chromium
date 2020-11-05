@@ -125,7 +125,6 @@
 <translation id="2127372758936585790">Зарядно устройство с малка мощност</translation>
 <translation id="2132302418721800944">Записване на целия екран</translation>
 <translation id="2135456203358955318">Лупа в прикрепен режим</translation>
-<translation id="2144487987174258011">Рестартирайте, за да актуализирате Adobe Flash Player</translation>
 <translation id="2208323208084708176">Режим на обединен работен плот</translation>
 <translation id="2220572644011485463">ПИН код или парола</translation>
 <translation id="2222338659135520253">Изисква се вход в профила</translation>
@@ -160,7 +159,6 @@
 <translation id="2435457462613246316">Показване на паролата</translation>
 <translation id="2473177541599297363">Потвърждаване на разделителната способност</translation>
 <translation id="2475982808118771221">Възникна грешка</translation>
-<translation id="2479579251444854687">Прекарайте три пръста нагоре или надолу, за да отворите или затворите общия преглед.</translation>
 <translation id="2482878487686419369">Известия</translation>
 <translation id="2484513351006226581">Натиснете <ph name="KEYBOARD_SHORTCUT" /> за превключване на клавиатурната подредба.</translation>
 <translation id="2501920221385095727">Оставащи клавиши</translation>
@@ -371,7 +369,6 @@
 <translation id="4481530544597605423">Несдвоени устройства</translation>
 <translation id="4485060137115666462">Когато кликнете с десния бутон на мишката или натиснете продължително, Асистент ви показва информация за избраното от вас, като например определение или преобразуване на мерни единици.</translation>
 <translation id="4505050298327493054">Активен работен кът.</translation>
-<translation id="4506458088675900627">Жестът за отваряне на общия преглед посредством сензорния панел е променен</translation>
 <translation id="4513946894732546136">Отзиви</translation>
 <translation id="4527045527269911712">Устройството с Bluetooth „<ph name="DEVICE_NAME" />“ иска разрешение за сдвояване.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> до пълно зареждане</translation>
@@ -434,6 +431,7 @@
 <translation id="5033299697334913360">Кликнете върху произволно място, за да се заснеме целият екран</translation>
 <translation id="5035236842988137213">Устройството <ph name="DEVICE_NAME" /> е свързано с нов телефон</translation>
 <translation id="5035389544768382859">Потвърждаване на конфигурацията на дисплея</translation>
+<translation id="5078796286268621944">Неправилен ПИН</translation>
 <translation id="5083553833479578423">Отключете още функции на Асистент.</translation>
 <translation id="5136175204352732067">Свързана е различна клавиатура</translation>
 <translation id="5168181903108465623">Налице са устройства Cast</translation>

@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">กำหนดความถี่ในการอัปเดตหน้าจอ</translation>
 <translation id="1061904396131502319">เกือบถึงเวลาพักแล้ว</translation>
 <translation id="1067048845568873861">สร้างแล้ว</translation>
+<translation id="1067291318998134776">Linux (เบต้า)</translation>
 <translation id="1067922213147265141">บริการอื่นๆ ของ Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">โปรแกรมอื่นบนคอมพิวเตอร์ได้เพิ่มส่วนขยายที่อาจเปลี่ยนลักษณะการทำงานของ Chrome
@@ -1377,7 +1378,6 @@
 <translation id="2562743677925229011">ไม่ได้ลงชื่อเข้าใช้ <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">การเรียกใช้ JavaScript ผ่าน AppleScript ปิดอยู่ หากต้องการเปิด จากแถบเมนู ให้ไปที่ มุมมอง &gt; นักพัฒนาซอฟต์แวร์ &gt; อนุญาตให้เรียกใช้ JavaScript จากกิจกรรมใน Apple ดูข้อมูลเพิ่มเติมที่ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">การตรวจตัวสะกดที่ได้รับการปรับปรุง</translation>
-<translation id="2566124945717127842">Powerwash เพื่อรีเซ็ตอุปกรณ์ <ph name="IDS_SHORT_PRODUCT_NAME" /> ให้เหมือนใหม่</translation>
 <translation id="2568774940984945469">ที่เก็บแถบข้อมูล</translation>
 <translation id="2571655996835834626">เปลี่ยนการตั้งค่าที่ควบคุมการเข้าถึงฟีเจอร์ของเว็บไซต์ เช่น คุกกี้, JavaScript, ปลั๊กอิน, ตำแหน่งทางภูมิศาสตร์, ไมโครโฟน, กล้องถ่ายรูป และอื่นๆ</translation>
 <translation id="2572032849266859634">ได้รับสิทธิ์ในการอ่าน <ph name="VOLUME_NAME" /> เท่านั้นแล้ว</translation>
@@ -1842,7 +1842,6 @@
 <translation id="3118319026408854581">ความช่วยเหลือของ <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">โปรดรอสักครู่แล้วลองเริ่มต้น Linux อีกครั้ง</translation>
 <translation id="3120430004221004537">การเข้ารหัสสำหรับการดำเนินการที่ระบุไม่เพียงพอใน "<ph name="DEVICE_NAME" />"</translation>
-<translation id="3121793941267913344">รีเซ็ตอุปกรณ์ <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">การสร้างไดเรกทอรีข้อมูลล้มเหลว</translation>
 <translation id="3124111068741548686">ผู้ใช้จัดการ</translation>
@@ -5493,7 +5492,6 @@
 <translation id="7475671414023905704">URL รหัสผ่านสูญหายของ Netscape</translation>
 <translation id="7476454130948140105">แบตเตอรี่เหลือน้อยเกินไปสำหรับอัปเดต (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">ควบคุมเพลง วิดีโอ และอื่นๆ</translation>
-<translation id="7478362879637727630">คุณต้องลงทะเบียนอุปกรณ์ Chrome Education เครื่องนี้ในบัญชีสถานศึกษา หากต้องการลงชื่อสมัครใช้บัญชีใหม่ โปรดไปที่ https://g.co/workspace/edusignup</translation>
 <translation id="7478485216301680444">แอปพลิเคชันคีออสก์ไม่สามารถติดตั้งได้</translation>
 <translation id="7479221278376295180">ภาพรวมการใช้งานพื้นที่เก็บข้อมูล</translation>
 <translation id="7481312909269577407">ส่งต่อ</translation>
@@ -6064,7 +6062,6 @@
 <translation id="8101987792947961127">ต้องใช้ Powerwash ในการรีบูตครั้งถัดไป</translation>
 <translation id="8102139037507939978">นำข้อมูลส่วนบุคคลที่ระบุตัวบุคคลนั้นได้ออกจาก system_logs.txt</translation>
 <translation id="8102159139658438129">ไปที่<ph name="LINK_BEGIN" />การตั้งค่า<ph name="LINK_END" />เพื่อดูตัวเลือกสำหรับโทรศัพท์ที่เชื่อมต่อ</translation>
-<translation id="8104696615244072556">Powerwash อุปกรณ์ <ph name="IDS_SHORT_PRODUCT_NAME" /> ของคุณและเปลี่ยนกลับไปใช้เวอร์ชันก่อนหน้า</translation>
 <translation id="8107015733319732394">กำลังติดตั้ง Google Play Store ใน <ph name="DEVICE_TYPE" /> อาจใช้เวลาสักครู่</translation>
 <translation id="810728361871746125">ความละเอียดของจอแสดงผล</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{ไม่มีคุกกี้ของบุคคลที่สาม}=1{บล็อกคุกกี้ของบุคคลที่สามไว้ 1 รายการ}other{บล็อกคุกกี้ของบุคคลที่สามไว้ # รายการ}}</translation>

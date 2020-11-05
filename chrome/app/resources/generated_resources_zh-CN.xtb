@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">确定屏幕更新的频率</translation>
 <translation id="1061904396131502319">快到休息时间了</translation>
 <translation id="1067048845568873861">创建时间</translation>
+<translation id="1067291318998134776">Linux（测试版）</translation>
 <translation id="1067922213147265141">其他 Google 服务</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">您计算机上的其他程序擅自安装了一个可能会更改 Chrome 工作方式的扩展程序。
@@ -1373,7 +1374,6 @@
 <translation id="2562743677925229011">尚未登录 <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">通过 AppleScript 执行 JavaScript 的功能已关闭。要开启此功能，请在菜单栏中依次转到“查看”&gt;“开发者”&gt;“允许 Apple 事件中的 JavaScript”。如需更多信息，请访问 https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">增强的“拼写检查”功能</translation>
-<translation id="2566124945717127842">Powerwash会将您的<ph name="IDS_SHORT_PRODUCT_NAME" />设备重置为初始状态。</translation>
 <translation id="2568774940984945469">信息栏容器</translation>
 <translation id="2571655996835834626">更改您用于控制以下权限的设置：网站对 Cookie、JavaScript、插件、地理位置信息、麦克风、摄像头等功能的使用权限。</translation>
 <translation id="2572032849266859634">已授予对 <ph name="VOLUME_NAME" />的只读权限。</translation>
@@ -1838,7 +1838,6 @@
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" />帮助</translation>
 <translation id="3118654181216384296">请稍等片刻，然后再次尝试启动 Linux。</translation>
 <translation id="3120430004221004537">“<ph name="DEVICE_NAME" />”上某项指定操作的加密强度不足。</translation>
-<translation id="3121793941267913344">重置这台<ph name="IDS_SHORT_PRODUCT_NAME" />设备</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">无法创建数据目录</translation>
 <translation id="3124111068741548686">USER处理函数</translation>
@@ -5488,7 +5487,6 @@
 <translation id="7475671414023905704">Netscape 忘了密码网址</translation>
 <translation id="7476454130948140105">电量太低 (<ph name="BATTERY_PERCENT" />%)，无法更新</translation>
 <translation id="7477793887173910789">控制您的音乐、视频等媒体内容</translation>
-<translation id="7478362879637727630">您必须将这部 Chrome 教育版设备注册到一个教育版帐号。若要注册新帐号，请访问 https://g.co/workspace/edusignup。</translation>
 <translation id="7478485216301680444">无法安装自助服务终端应用。</translation>
 <translation id="7479221278376295180">存储空间使用情况概览</translation>
 <translation id="7481312909269577407">前进</translation>
@@ -6059,7 +6057,6 @@
 <translation id="8101987792947961127">必须在下次重启时执行 Powerwash</translation>
 <translation id="8102139037507939978">从 system_logs.txt 中删除个人身份信息。</translation>
 <translation id="8102159139658438129">转到<ph name="LINK_BEGIN" />设置<ph name="LINK_END" />即可查看与所连手机相关的选项</translation>
-<translation id="8104696615244072556">对您的 <ph name="IDS_SHORT_PRODUCT_NAME" /> 设备执行 Powerwash 操作，使其还原到之前的版本。</translation>
 <translation id="8107015733319732394">正在在您的 <ph name="DEVICE_TYPE" /> 上安装 Google Play 商店。这可能需要几分钟的时间。</translation>
 <translation id="810728361871746125">显示屏分辨率</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{无第三方 Cookie}=1{已屏蔽 1 个第三方 Cookie}other{已屏蔽 # 个第三方 Cookie}}</translation>

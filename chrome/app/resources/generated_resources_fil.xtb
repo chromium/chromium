@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Tinutukoy ang frequency na ina-update ng screen</translation>
 <translation id="1061904396131502319">Halos oras na para magpahinga</translation>
 <translation id="1067048845568873861">Ginawa</translation>
+<translation id="1067291318998134776">Linux (Beta)</translation>
 <translation id="1067922213147265141">Iba pang serbisyo ng Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Isa pang program sa iyong computer ang nagdagdag extension na maaaring magpabago sa paraan ng paggana ng Chrome.
@@ -1377,7 +1378,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2562743677925229011">Hindi naka-sign in sa <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Na-off ang pagpapatupad ng JavaScript sa pamamagitan ng AppleScript. Para i-on ito, mula sa menu bar, pumunta sa Tingnan &gt; Developer &gt; Payagan ang JavaScript mula sa Mga Event ng Apple. Para sa higit pang impormasyon: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Pinahusay na pang-check ng pagbabaybay</translation>
-<translation id="2566124945717127842">Mag-powerwash upang i-reset ang iyong <ph name="IDS_SHORT_PRODUCT_NAME" /> device upang maging parang bago.</translation>
 <translation id="2568774940984945469">Infobar Container</translation>
 <translation id="2571655996835834626">Palitan ang iyong mga setting na kumokontrol sa access ng mga website sa mga feature gaya ng mga cookie, JavaScript, plugin, geolocation, mikropono, camera, atbp.</translation>
 <translation id="2572032849266859634">Ipinagkaloob na sa <ph name="VOLUME_NAME" /> ang read-only na access.</translation>
@@ -1842,7 +1842,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Help</translation>
 <translation id="3118654181216384296">Pakisubukan ulit na simulan ang Linux pagkalipas ng ilang sandali.</translation>
 <translation id="3120430004221004537">Hindi sapat ang pag-encrypt para sa isang partikular na operation sa: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344">I-reset ang <ph name="IDS_SHORT_PRODUCT_NAME" /> device na ito</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Nabigo Sa Paglikha ng Direktoryo sa Data</translation>
 <translation id="3124111068741548686">Mga USER handle</translation>
@@ -5493,7 +5492,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="7475671414023905704">URL ng Nawalang Password ng Netscape</translation>
 <translation id="7476454130948140105">Masyadong kaunti ang baterya (<ph name="BATTERY_PERCENT" />%) para sa pag-update</translation>
 <translation id="7477793887173910789">Kontrolin ang iyong musika, mga video, at higit pa</translation>
-<translation id="7478362879637727630">Dapat mong i-enroll ang Chrome Education device na ito sa isang education account. Para mag-sign up para sa isang bagong account, pakibisita ang https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">Hindi ma-install ang kiosk application.</translation>
 <translation id="7479221278376295180">Overview ng Paggamit ng Storage</translation>
 <translation id="7481312909269577407">Sumulong</translation>
@@ -6064,7 +6062,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8101987792947961127">Kinakailangan ng Powerwash sa susunod na reboot</translation>
 <translation id="8102139037507939978">Alisin ang Impormasyong Nagbibigay ng Personal na Pagkakakilanlan sa system_logs.txt.</translation>
 <translation id="8102159139658438129">Pumunta sa <ph name="LINK_BEGIN" />Mga Setting<ph name="LINK_END" /> para makakita ng mga opsyon para sa iyong nakakonektang telepono</translation>
-<translation id="8104696615244072556">I-powerwash ang iyong <ph name="IDS_SHORT_PRODUCT_NAME" /> device at ibalik sa dating bersyon.</translation>
 <translation id="8107015733319732394">Ini-install ang Google Play Store sa iyong <ph name="DEVICE_TYPE" />. Maaaring abutin ito nang ilang minuto.</translation>
 <translation id="810728361871746125">Resolution ng display</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Walang third-party na cookies}=1{1 third-party na cookie ang na-block}one{# third-party na cookies ang na-block}other{# na third-party na cookies ang na-block}}</translation>

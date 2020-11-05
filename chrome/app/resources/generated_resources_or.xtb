@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">ସ୍କ୍ରିନ୍ ଅପଡେଟ୍ କରୁଥିବା ଫ୍ରିକ୍ୟୁଏନ୍ସି ନିର୍ଦ୍ଧାରଣ କରେ</translation>
 <translation id="1061904396131502319">ବିରତି ପାଇଁ ପ୍ରାୟ ସମୟ ହୋଇଗଲାଣି</translation>
 <translation id="1067048845568873861">ସୃଷ୍ଟିହେଲା:</translation>
+<translation id="1067291318998134776">Linux (ବେଟା)</translation>
 <translation id="1067922213147265141">ଅନ୍ୟାନ୍ୟ Google ସେବା</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍‌ରେ ଥିବା ପ୍ରୋଗ୍ରାମ୍ ଅନ୍ୟ ଏକ ଏକ୍ସଟେନ୍‌ସନ୍‌ ଯୋଗ କରିଥାଏ, ଯାହା Chromeର କାର୍ଯ୍ୟ କରିବା ମାର୍ଗକୁ ପରିବର୍ତ୍ତନ କରିପାରେ।
@@ -1370,7 +1371,6 @@
 <translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" />ରେ ସାଇନ୍ଇ-ଇନ୍ କରିନାହାନ୍ତି</translation>
 <translation id="2564520396658920462">AppleScript ମାଧ୍ୟମରେ JavaScript କାର୍ଯ୍ୟକାରୀ କରିବା ସୁବିଧା ବନ୍ଦ ଅଛି। ଏହାକୁ ଚାଲୁ କରିବା ପାଇଁ, ମେନୁ ବାର୍‌ରୁ, ଭ୍ୟୁ &gt; ଡେଭଲପର୍ &gt; ଆପଲ୍ ଇଭେଣ୍ଟସ୍‌ରୁ JavaScriptକୁ ଅନୁମତି ଦିଅନ୍ତୁ ଅଧିକ ସୂଚନା ପାଇଁ: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">ବର୍ଦ୍ଧିତ ବନାନ ଯାଞ୍ଚ</translation>
-<translation id="2566124945717127842">ଅପଣଙ୍କର <ph name="IDS_SHORT_PRODUCT_NAME" /> ଡିଭାଇସ୍‍କୁ ନୂଆ ପରି ରିସେଟ୍ କରିବା ପାଇଁ ପାୱାର୍‍ୱାସ୍ କରନ୍ତୁ।</translation>
 <translation id="2568774940984945469">ସୂଚନା ବାର୍ କଣ୍ଟେନର୍‌</translation>
 <translation id="2571655996835834626">ଆପଣ ସେହି ସେଟିଂସ୍‌ରେ ପରିବର୍ତ୍ତନ କରନ୍ତୁ, ଯାହା ୱେବସାଇଟ୍‍ର ଫିଚର୍‌ଗୁଡ଼ିକ ଯେପରି କୁକୀ, JavaScript, ପ୍ଲଗ୍‌ଇନ୍, ଜିଓଲୋକେସନ୍, ମାଇକ୍ରୋଫୋନ୍, କ୍ୟାମେରା ଇତ୍ୟାଦିକୁ ନିୟନ୍ତ୍ରଣ କରେ।</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" />କେବଳ ପଢ଼ିବା ଆକ୍ସେସ୍ ମଞ୍ଜୁର କରାଯାଇଛି।</translation>
@@ -1835,7 +1835,6 @@
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> ସାହାଯ୍ୟ</translation>
 <translation id="3118654181216384296">ଦୟାକରି କିଛି ସମୟ ମଧ୍ୟରେ Linux ପୁଣି ଆରମ୍ଭ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3120430004221004537">ଦିଆଯାଇଥିବା କାର୍ଯ୍ୟ ପାଇଁ ଯଥେଷ୍ଟ ନଥିବା ଏନକ୍ରିପ୍ସନ୍: "<ph name="DEVICE_NAME" />"</translation>
-<translation id="3121793941267913344">ଏହି <ph name="IDS_SHORT_PRODUCT_NAME" /> ଡିଭାଇସ୍‌ ରିସେଟ୍‍ କରନ୍ତୁ</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">ଡାଟା ଡିରେକ୍ଟୋରୀ ସୃଷ୍ଟି କରିବା ଲାଗି ବିଫଳହେଲା</translation>
 <translation id="3124111068741548686">ଉପଯୋଗକର୍ତ୍ତା ପରିଚାଳନା କରେ</translation>
@@ -5486,7 +5485,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7475671414023905704">Netscape ପାସ୍‍ୱର୍ଡର URL ହଜାଇଦେ‍ଇଛି</translation>
 <translation id="7476454130948140105">ଅପ୍‌ଡ଼େଟ୍ ପାଇଁ ବ୍ୟାଟେରୀ ବହୁତ କମ୍ ଅଛି (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">ଆପଣଙ୍କର ସଙ୍ଗୀତ, ଭିଡିଓଗୁଡ଼ିକ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
-<translation id="7478362879637727630">ଆପଣ ଏହି Chrome Education ଡିଭାଇସକୁ ଏକ ଶିକ୍ଷା ସମ୍ବନ୍ଧିତ ଆକାଉଣ୍ଟରେ ପଞ୍ଜିକରଣ କରିବା ଆବଶ୍ୟକ। ଏକ ନୂଆ ଆକାଉଣ୍ଟ ପାଇଁ ସାଇନ୍ ଅପ୍ କରିବାକୁ, ଦୟାକରି https://g.co/workspace/edusignupକୁ ଭିଜିଟ୍ କରନ୍ତୁ।</translation>
 <translation id="7478485216301680444">କିଓସ୍କ ଆପ୍ଲିକେସନ୍‍କୁ ଇନ୍‍ଷ୍ଟଲ୍ କରିହେଲା ନାହିଁ।</translation>
 <translation id="7479221278376295180">ଷ୍ଟୋରେଜ୍ ବ୍ୟବହାରର ସାରାଂଶ</translation>
 <translation id="7481312909269577407">ଅଗ୍ରଗତି</translation>
@@ -6055,7 +6053,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8101987792947961127">ପରବର୍ତ୍ତୀ ରିବୁଟ୍‌ରେ ପାୱାର୍‍ୱାସ୍ ଆବଶ୍ୟକ</translation>
 <translation id="8102139037507939978">System_logs.txtରୁ ବ୍ୟକ୍ତିଗତ ରୂପେ ଚିହ୍ନଟ କରାଯାଇପାରୁଥିବା ସୂଚନାକୁ କାଢ଼ି ଦିଅନ୍ତୁ।</translation>
 <translation id="8102159139658438129">ସଂଯୁକ୍ତ ଥିବା ଆପଣଙ୍କ ଫୋନ୍ ପାଇଁ ବିକଳ୍ପ ଦେଖିବାକୁ <ph name="LINK_BEGIN" />ସେଟିଂସ୍<ph name="LINK_END" />କୁ ଯାଆନ୍ତୁ</translation>
-<translation id="8104696615244072556">ଆପଣଙ୍କର <ph name="IDS_SHORT_PRODUCT_NAME" /> ଡିଭାଇସ୍‌କୁ ପାୱାର୍‍ୱାସ୍ କରନ୍ତୁ ଏବଂ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ଫେରନ୍ତୁ।</translation>
 <translation id="8107015733319732394">ଆପଣଙ୍କର <ph name="DEVICE_TYPE" />ରେ Google Play Store ଇନ୍‌ଷ୍ଟଲ୍‌ ହେଉଛି। ଏଥିରେ କିଛି ସମୟ ଲାଗିପାରେ।</translation>
 <translation id="810728361871746125">ଡିସପ୍ଲେ ରିଜୋଲ୍ୟୁସନ୍</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{କୌଣସି ତୃତୀୟ-ପକ୍ଷ କୁକୀ ନାହିଁ}=1{1ଟି ତୃତୀୟ-ପକ୍ଷ କୁକୀ ବ୍ଲକ୍ କରାଯାଇଛି}other{#ଟି ତୃତୀୟ-ପକ୍ଷ କୁକୀ ବ୍ଲକ୍ କରାଯାଇଛି}}</translation>

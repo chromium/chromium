@@ -314,6 +314,7 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="3285080554353377245">Videozapisi o načinu korištenja Chromea</translation>
 <translation id="3288003805934695103">Ponovno učitavanje stranice</translation>
 <translation id="32895400574683172">Obavještenja su omogućena</translation>
+<translation id="3290991969712132877">Da biste brže otvorili ovu stranicu, dodajte je na početni zaslon pomoću gumba Više opcija</translation>
 <translation id="3295530008794733555">Pretražujte brže. Koristite manje podataka.</translation>
 <translation id="3298243779924642547">Jednostav.</translation>
 <translation id="3303414029551471755">Nastaviti s preuzimanjem sadržaja?</translation>
@@ -470,6 +471,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4532845899244822526">Izaberite folder</translation>
 <translation id="4538018662093857852">Uključi jednostavni način rada</translation>
 <translation id="4550003330909367850">Da prikažete ili kopirate lozinku ovdje, postavite zaključavanje ekrana na ovom uređaju.</translation>
+<translation id="4557685098773234337">Da biste brže otvorili ovu stranicu, dodajte je na početni zaslon</translation>
 <translation id="4558311620361989323">Prečice web stranice</translation>
 <translation id="4561979708150884304">Niste povezani na mrežu</translation>
 <translation id="4565377596337484307">Sakrij lozinku</translation>
@@ -499,6 +501,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4720982865791209136">Pomozite nam da poboljšamo Chrome. <ph name="BEGIN_LINK" />Učestvujte u anketi<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">Pogledajte najpopularnije web lokacije</translation>
 <translation id="4732120983431207637">Rastvarač grupe</translation>
+<translation id="4732693703583195378">Dodajte ovu web-lokaciju na početni zaslon tableta da biste je lakše mogli otvoriti</translation>
 <translation id="4738836084190194332">Posljednji put sinhronizirano: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Otvori novu karticu</translation>
 <translation id="4759238208242260848">Preuzimanja</translation>
@@ -536,6 +539,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="4925120120285606924">Snimak ekrana <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Vaše lozinke će se izvesti i preuzeti kao tekstualni fajl. Bit će vidljive svima i svakoj aplikaciji s pristupom odredišnom folderu.</translation>
 <translation id="4932247056774066048">S obzirom na to da se odjavljujete s računa kojim upravlja domena <ph name="DOMAIN_NAME" />, vaši podaci iz Chromea će se izbrisati s ovog uređaja. Ostat će na vašem Google računu.</translation>
+<translation id="4936039914467572121">Brže otvorite ovu stranicu</translation>
 <translation id="4943703118917034429">Virtuelna realnost</translation>
 <translation id="4943872375798546930">Nema rezultata</translation>
 <translation id="4961107849584082341">Prevedite ovu stranicu na bilo koji jezik</translation>
@@ -647,6 +651,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5763382633136178763">Anonimne kartice</translation>
 <translation id="5763514718066511291">Dodirnite da kopirate URL za ovu aplikaciju</translation>
 <translation id="5765780083710877561">Opis:</translation>
+<translation id="5767013862801005129">Vraćena je kartica <ph name="TAB_TITLE" /></translation>
 <translation id="5776970333778123608">Nevažni podaci</translation>
 <translation id="5793665092639000975">Koristi se <ph name="SPACE_USED" /> od <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Pretraživanje i pregledanje</translation>
@@ -952,6 +957,7 @@ Podaci iz vaših anonimnih sesija će se obrisati iz Chromea kada <ph name="BEGI
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Provjerite nove priče kasnije</translation>
 <translation id="7791543448312431591">Dodaj</translation>
+<translation id="7798392620021911922">Kartice su vraćene (njih <ph name="TAB_COUNT" />)</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7810647596859435254">Otvori koristeći…</translation>
 <translation id="7821588508402923572">Vaši sačuvani podaci će se prikazati ovdje</translation>
@@ -1137,6 +1143,7 @@ Podaci iz vaših anonimnih sesija će se obrisati iz Chromea kada <ph name="BEGI
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Prikaži original</translation>
 <translation id="9148126808321036104">Prijavi se ponovo</translation>
+<translation id="9149286894143103695">Dodajte ovu web-lokaciju na početni zaslon telefona da biste je lakše mogli otvoriti</translation>
 <translation id="9155898266292537608">Također možete pretraživati brzim dodirom riječi</translation>
 <translation id="9169507124922466868">Historija navigacije je napola otvorena</translation>
 <translation id="9191031968346938109">Dodaj u…</translation>

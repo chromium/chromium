@@ -125,7 +125,6 @@
 <translation id="2127372758936585790">Кубаты төмөн кубаттагыч</translation>
 <translation id="2132302418721800944">Толук экран режиминде жаздыруу</translation>
 <translation id="2135456203358955318">Жалгаштырылган лупа</translation>
-<translation id="2144487987174258011">Adobe Flash Player'ди жаңыртуу үчүн түзмөктү өчүрүп күйгүзүңүз</translation>
 <translation id="2208323208084708176">Биргелешкен иш тактасы режими</translation>
 <translation id="2220572644011485463">PIN же сырсөз</translation>
 <translation id="2222338659135520253">Аккаунтка кирүү талап кылынат</translation>
@@ -160,7 +159,6 @@
 <translation id="2435457462613246316">Сырсөздү көрсөтүү</translation>
 <translation id="2473177541599297363">Дааналыкты ырастоо</translation>
 <translation id="2475982808118771221">Ката кетти</translation>
-<translation id="2479579251444854687">Назарды ачуу үчүн экранды үч манжаңыз менен өйдө, ал эми жабуу үчүн ылдый серпип коюуңуз.</translation>
 <translation id="2482878487686419369">Билдирмелер</translation>
 <translation id="2484513351006226581">Баскычтоптун калыбын которуу үчүн <ph name="KEYBOARD_SHORTCUT" /> басып коюңуз.</translation>
 <translation id="2501920221385095727">Жабышчаак баскычтар функциясы</translation>
@@ -371,7 +369,6 @@
 <translation id="4481530544597605423">Ажыратылган түзмөктөр</translation>
 <translation id="4485060137115666462">Чычкандын оң баскычын чыкылдатып же коё бербей басып турсаңыз, Жардамчы тандаган нерсенин аныктамасы, котормосу же бирдикти которуу сыяктуу маалыматты көрсөтөт.</translation>
 <translation id="4505050298327493054">Жигердүү иш такта.</translation>
-<translation id="4506458088675900627">Назар сенсордук такта жаңсоосу өзгөрдү</translation>
 <translation id="4513946894732546136">Пикир билдирүү</translation>
 <translation id="4527045527269911712">Bluetooth түзмөгү "<ph name="DEVICE_NAME" />" жупташууга уруксат сурайт.</translation>
 <translation id="453661520163887813">Толгончо <ph name="TIME" /> бар</translation>
@@ -434,6 +431,7 @@
 <translation id="5033299697334913360">Толук экранды сүрөткө тартуу үчүн каалаган жерин басыңыз</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> жаңы телефонго туташты</translation>
 <translation id="5035389544768382859">Дисплейдин конфигурациясын ырастоо</translation>
+<translation id="5078796286268621944">Туура эмес PIN</translation>
 <translation id="5083553833479578423">Жардамчынын башка функцияларын иштетиңиз.</translation>
 <translation id="5136175204352732067">Башка баскычтоп туташтырылды</translation>
 <translation id="5168181903108465623">Тышкы экранга чыгаруу түзмөктөрү жеткиликтүү</translation>

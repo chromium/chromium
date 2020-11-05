@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">መተግበሪያዎች</translation>
 <translation id="2872961005593481000">ዝጋ</translation>
 <translation id="3008341117444806826">አድስ</translation>
+<translation id="3009958530611748826">የሚያስቀምጡበትን አቃፊ ይምረጡ</translation>
 <translation id="3083667275341675831">የግንኙነት ምርመራዎች</translation>
 <translation id="3091839911843451378">አልተሳካም - ተቋርጧል</translation>
 <translation id="3188257591659621405">የእኔ ፋይሎች</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">የህትመት ስራዎች</translation>
 <translation id="3527036260304016759">አልተሳካም - ያልታወቀ ስህተት</translation>
 <translation id="360565022852130722">የWiFi አውታረ መረብ ደህንነት በደካማ ፕሮቶኮል WEP 802.1x የተጠበቀ ነው</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ግምገማዎች)</translation>
 <translation id="3749289110408117711">የፋይል ስም</translation>
 <translation id="38114475217616659">ሁሉንም የዕይታ ታሪክ አፅዳ</translation>
 <translation id="3820172043799983114">ልክ ያልኾነ ፒን።</translation>
@@ -79,10 +81,12 @@
 <translation id="4731797938093519117">የወላጅ መዳረሻ</translation>
 <translation id="4773299976671772492">ቆሟል</translation>
 <translation id="4808449224298348341">የተሰረዘ የሕትመት ሥራ <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4832079907277790330">በፋይሎች መተግበሪያ ውስጥ አቃፊን ይምረጡ...</translation>
 <translation id="4890353053343094602">ወዲያውኑ አዲስ ይምረጡ</translation>
 <translation id="4917889632206600977">ቆሟል - ወረቀት አልቋል</translation>
 <translation id="4932733599132424254">ቀን</translation>
 <translation id="4985509611418653372">አሂድ</translation>
+<translation id="4991056862642197104">ሰነድዎን ያስቀምጡ እና ለመጀመር ቃኝን ጠቅ ያድርጉ</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> እኚህን ተጠቃሚ ያስተዳድራል ኣና በርቀት ቅንብሮችን ሊያቀናብር እና የተጠቃሚ እንቅስቃሴን ሊቆጣጠር ይችላል።</translation>
 <translation id="520299634122159966">ምንም ቃኚዎች አይገኙም</translation>
 <translation id="5212543919916444558">እኔ ላግዝ የምችልበት ምንም ነገር በእርስዎ ማያ ገጽ ላይ አላገኘሁም።
@@ -120,6 +124,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">የፋይል አይነት</translation>
 <translation id="7561454561030345039">ይህ ቅንብር በአስተዳዳሪዎ የሚቀናበር ነው።</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">ይቅር</translation>
 <translation id="7690294790491645610">አዲስ የይለፍ ቃል ያረጋግጡ</translation>
 <translation id="7805768142964895445">ሁኔታ</translation>

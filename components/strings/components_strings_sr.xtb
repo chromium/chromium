@@ -316,6 +316,7 @@
 <translation id="214556005048008348">Откажи плаћање</translation>
 <translation id="2147827593068025794">Синхронизација у позадини</translation>
 <translation id="2148613324460538318">Додај картицу</translation>
+<translation id="2149968176347646218">Веза није безбедна</translation>
 <translation id="2154054054215849342">Синхронизација није доступна за домен</translation>
 <translation id="2154484045852737596">Измените картицу</translation>
 <translation id="2161656808144014275">Текст</translation>
@@ -1169,6 +1170,7 @@
 <translation id="5571083550517324815">Преузимање са ове адресе није могуће. Изаберите другу адресу.</translation>
 <translation id="5580958916614886209">Проверите месец истека и пробајте поново</translation>
 <translation id="5586446728396275693">Нема сачуваних адреса</translation>
+<translation id="5593349413089863479">Веза није потпуно безбедна</translation>
 <translation id="5595485650161345191">Измена адресе</translation>
 <translation id="5598944008576757369">Одаберите начин плаћања</translation>
 <translation id="560412284261940334">Управљање није подржано</translation>
@@ -1886,6 +1888,7 @@
 <translation id="8507227106804027148">Командна линија</translation>
 <translation id="8508648098325802031">Икона Претрага</translation>
 <translation id="8522552481199248698">Chrome може да вам помогне да заштитите Google налог и промените лозинку.</translation>
+<translation id="8525306231823319788">Цео екран</translation>
 <translation id="8530813470445476232">Обришите историју прегледања, колачиће, кеш и друго у подешавањима Chrome-а</translation>
 <translation id="8533619373899488139">Посетите &lt;strong&gt;chrome://policy&lt;/strong&gt; да бисте видели листу блокираних URL-ова и друге смернице које је одредио администратор система.</translation>
 <translation id="8541158209346794904">Bluetooth уређај</translation>

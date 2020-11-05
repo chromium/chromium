@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">決定螢幕更新的頻率</translation>
 <translation id="1061904396131502319">快到休息時間了</translation>
 <translation id="1067048845568873861">已建立</translation>
+<translation id="1067291318998134776">Linux (Beta 版本)</translation>
 <translation id="1067922213147265141">其他 Google 服務</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">電腦中其他程式所新增的擴充功能可能會變更 Chrome 的運作方式。
@@ -1376,7 +1377,6 @@
 <translation id="2562743677925229011">未登入「<ph name="SHORT_PRODUCT_NAME" />」</translation>
 <translation id="2564520396658920462">透過 AppleScript 執行 JavaScript 的功能已關閉。如要開啟此功能，請從選單列前往「檢視模式」&gt;「開發人員」&gt;「允許透過 Apple 活動執行 JavaScript」。如需瞭解詳情，請瀏覽：https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">強化的拼字檢查</translation>
-<translation id="2566124945717127842">執行「清空」(恢復原廠設定) 會將您的 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置重設並恢復為原廠設定。</translation>
 <translation id="2568774940984945469">資料列容器</translation>
 <translation id="2571655996835834626">變更設定來控制網站對 Cookie、JavaScript、外掛程式、地理位置、麥克風、相機等功能的存取權。</translation>
 <translation id="2572032849266859634">已授與「<ph name="VOLUME_NAME" />」的唯讀權限。</translation>
@@ -1841,7 +1841,6 @@
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> 說明</translation>
 <translation id="3118654181216384296">請稍後再嘗試重新啟動 Linux。</translation>
 <translation id="3120430004221004537">「<ph name="DEVICE_NAME" />」的指定操作加密不足。</translation>
-<translation id="3121793941267913344">重設這個 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">無法建立數據目錄</translation>
 <translation id="3124111068741548686">USER 控制代碼</translation>
@@ -5492,7 +5491,6 @@
 <translation id="7475671414023905704">Netscape 遺失密碼網址</translation>
 <translation id="7476454130948140105">電量過低，無法更新 (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">控制音樂、影片及其他內容</translation>
-<translation id="7478362879637727630">您必須將此 Chrome Education 裝置註冊至教育版帳戶。如要註冊新帳戶，請前往 https://g.co/workspace/edusignup。</translation>
 <translation id="7478485216301680444">Kiosk 應用程式無法安裝。</translation>
 <translation id="7479221278376295180">儲存空間用量概覽</translation>
 <translation id="7481312909269577407">向前</translation>
@@ -6063,7 +6061,6 @@
 <translation id="8101987792947961127">必須在下次重新啟動時執行 Powerwash</translation>
 <translation id="8102139037507939978">移除 system_logs.txt 中的個人識別資料。</translation>
 <translation id="8102159139658438129">前往「<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />」查看已連接手機的選項</translation>
-<translation id="8104696615244072556">為您的 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置執行 Powerwash 並重設為上個版本。</translation>
 <translation id="8107015733319732394">正在為 <ph name="DEVICE_TYPE" /> 安裝「Google Play 商店」。這可能需時幾分鐘。</translation>
 <translation id="810728361871746125">螢幕解像度</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{沒有第三方 Cookie}=1{已封鎖 1 個第三方 Cookie}other{已封鎖 # 個第三方 Cookie}}</translation>

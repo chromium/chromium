@@ -10,7 +10,6 @@
 <translation id="1049926623896334335">Rašyklės dokumentas</translation>
 <translation id="1060368002126861100">Jei norite atidaryti failus naudodami programą „<ph name="APP_NAME" />“, pirmiausia perkelkite juos į „Windows“ failų aplanką.</translation>
 <translation id="1062407476771304334">Pakeisti</translation>
-<translation id="1065449928621190041">Kanados prancūziška klaviatūra</translation>
 <translation id="1119069657431255176">„Bzip2“ suglaudintas TAR archyvas</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="1148097584170732637">Rasta: <ph name="FILE_COUNT" />.
@@ -36,7 +35,6 @@
 <translation id="1297922636971898492">„Google“ diskas dabar nepasiekiamas. Įkėlimas bus iš naujo pradėtas automatiškai, kai „Google“ diskas bus vėl pasiekiamas.</translation>
 <translation id="1307931752636661898">Nepavyko peržiūrėti „Linux“ failų</translation>
 <translation id="1310751437842832374">Transliteracija (mausam → ନମସ୍ତେ)</translation>
-<translation id="1337036551624197047">Čekiška klaviatūra</translation>
 <translation id="1338950911836659113">Ištrinama...</translation>
 <translation id="1346748346194534595">Dešinė</translation>
 <translation id="1351692861129622852">Importuojami failai (<ph name="FILE_COUNT" />)...</translation>
@@ -62,7 +60,6 @@
 <translation id="1556189134700913550">Taikyti visiems</translation>
 <translation id="1561842594491319104">„Chrome“ įrenginiai</translation>
 <translation id="1572585716423026576">Nustatyti kaip foną</translation>
-<translation id="158809615184981282">Farerų klaviatūra</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1646019627374511909">Nustatoma, kad failai (<ph name="NUMBER_OF_ITEMS" />) būtų pasiekiami neprisijungus</translation>
@@ -139,9 +136,9 @@
 <translation id="2453576648990281505">Failas jau yra</translation>
 <translation id="2464079411014186876">Ledai</translation>
 <translation id="2468402215065996499">Tamagočis</translation>
-<translation id="247772113373397749">Kanadai skirta kelių kalbų klaviatūra</translation>
 <translation id="2494837236724268445">Gudžarati klaviatūra (fonetinė)</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2529133382850673012">JAV klaviatūra</translation>
 <translation id="2534155362429831547">Ištrinta elementų: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2541377937973966830">Šio aplanko turinys skirtas tik skaityti. Tam tikra veikla nepalaikoma.</translation>
 <translation id="2542049655219295786">„Google“ lentelė</translation>
@@ -195,9 +192,10 @@
 <translation id="3067790092342515856">„Windows“ failai</translation>
 <translation id="3078461028045006476">Bendrinti su „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="3083975830683400843">Chromebit</translation>
+<translation id="3116361045094675131">JK klaviatūra</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ATLIKTA</translation>
-<translation id="3182237543071236785">Anglų k. (JK)</translation>
+<translation id="3157729859914172001">JAV tarptautinė (AK) klaviatūra</translation>
 <translation id="3187212781151025377">Hebrajiška klaviatūra</translation>
 <translation id="3188257591659621405">Mano failai</translation>
 <translation id="3197563288998582412">JK Dvorako</translation>
@@ -296,7 +294,6 @@
 <translation id="426015154560005552">Arabiška klaviatūra</translation>
 <translation id="4261901459838235729">„Google“ pristatymas</translation>
 <translation id="4290535918735525311">1 aplankas bendrinamas su „Linux“</translation>
-<translation id="4298972503445160211">Daniška klaviatūra</translation>
 <translation id="4299729908419173967">Brazilų k.</translation>
 <translation id="4309915981827077375">Bendroji informacija</translation>
 <translation id="4315949787858895817">Olandų k. (Belgija)</translation>
@@ -309,6 +306,7 @@
 <translation id="4465830120256509958">Braziliška klaviatūra</translation>
 <translation id="4470564870223067757">Hangul 2 rinkinys</translation>
 <translation id="4477219268485577442">Fonetinė bulgarų</translation>
+<translation id="4479812471636796472">JAV Dvorako klaviatūra</translation>
 <translation id="4522570452068850558">Išsami informacija</translation>
 <translation id="4527800702232535228">Šis aplankas bendrinamas su „Parallels Desktop“</translation>
 <translation id="4552678318981539154">Įsigyti daugiau atminties</translation>
@@ -338,7 +336,6 @@
 <translation id="4737050008115666127">Nusileidimas</translation>
 <translation id="4747271164117300400">Makedoniečių</translation>
 <translation id="4749157430980974800">Gruziniška klaviatūra</translation>
-<translation id="4755240240651974342">Suomiška klaviatūra</translation>
 <translation id="4759238208242260848">Atsisiuntimai</translation>
 <translation id="4779136857077979611">Onigiris</translation>
 <translation id="4784330909746505604">„PowerPoint“ pristatymas</translation>
@@ -396,7 +393,6 @@
    Pašalinę dar naudojamą įrenginį galite prarasti duomenų. Palaukite, kol pasibaigs operacija, ir pašalinkite įrenginį naudodami programą „Failai“.</translation>
 <translation id="5163869187418756376">Nepavyko bendrinti. Patikrinkite ryšį ir vėliau bandykite dar kartą.</translation>
 <translation id="516592729076796170">Programuotojų JAV Dvorako</translation>
-<translation id="5167131699331641907">Olandiška klaviatūra</translation>
 <translation id="5170477580121653719">Liko vietos „Google“ diske: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">Miniatiūros rodinys</translation>
 <translation id="5194713942430106590">Spustelėkite, kad galėtumėte rūšiuoti stulpelį didėjimo tvarka.</translation>
@@ -469,7 +465,6 @@
 <translation id="5850516540536751549">Šio tipo failas nepalaikomas. Apsilankykite <ph name="BEGIN_LINK" />„Chrome“ internetinėje parduotuvėje<ph name="END_LINK" /> ir raskite programą, kuria galima atidaryti šio tipo failą.
     <ph name="BEGIN_LINK_HELP" />Sužinokite daugiau<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Čia nieko nėra...</translation>
-<translation id="5892290200158927959">Prancūziška BÉPO klaviatūra</translation>
 <translation id="5911887972742538906">Diegiant „Linux“ programą įvyko klaida.</translation>
 <translation id="5912396950572065471">Formatas</translation>
 <translation id="5913638992615760742">Nepavyko įvykdyti kopijavimo operacijos; nenumatyta klaida: <ph name="ERROR_MESSAGE" /></translation>
@@ -485,7 +480,6 @@
 <translation id="60357267506638014">Čekiška QWERTY</translation>
 <translation id="604001903249547235">Atsarginis kopijavimas debesyje</translation>
 <translation id="6040143037577758943">Uždaryti</translation>
-<translation id="6054173164583630569">Prancūziška klaviatūra</translation>
 <translation id="6074825444536523002">„Google“ forma</translation>
 <translation id="6096979789310008754">Paieškos tekstas išvalytas, rodomi visi failai ir aplankai.</translation>
 <translation id="610101264611565198">Failas „<ph name="FILE_NAME" />“ perkeliamas į aplanką „<ph name="FOLDER_NAME" />“</translation>
@@ -508,7 +502,6 @@
 <translation id="6339034549827494595">Rusiška fonetinė (AATSEEL) klaviatūra</translation>
 <translation id="6339145975392024142">JAV tarptautinė (AK) klaviatūra</translation>
 <translation id="6346310558342052870">Prieiga apribota</translation>
-<translation id="6353618411602605519">Kroatiška klaviatūra</translation>
 <translation id="6356685157277930264">Failų atsiliepimų langas</translation>
 <translation id="6358884629796491903">Drakonas</translation>
 <translation id="637062427944097960">Šis failas atidarytas kitame darbalaukyje. Perkelkite failus <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), kad peržiūrėtumėte juos.</translation>
@@ -519,7 +512,6 @@
 <translation id="6462109140674788769">Graikiška klaviatūra</translation>
 <translation id="6466492211071551451">Airiška klaviatūra</translation>
 <translation id="6485131920355264772">Nepavyko nuskaityti vietos informacijos</translation>
-<translation id="6503256918647795660">Šveicarijos prancūziška klaviatūra</translation>
 <translation id="6505918941256367791">Tamiliška klaviatūra („InScript“)</translation>
 <translation id="6509122719576673235">Norvegų</translation>
 <translation id="6527303717912515753">Bendrinti</translation>
@@ -564,6 +556,7 @@
     <ph name="LINE_BREAK1" />
     Rasta: <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Aukštyn kojomis</translation>
+<translation id="6939777852457331078">JAV „Workman“ klaviatūra</translation>
 <translation id="696203921837389374">Įgalinti mobiliųjų duomenų sinchronizavimą</translation>
 <translation id="6965382102122355670">Gerai</translation>
 <translation id="6970230597523682626">Bulgarų</translation>
@@ -580,9 +573,9 @@
 <translation id="7126604456862387217">&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; – &lt;em&gt;ieškoti Diske&lt;/em&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7170467426996704624">Transliteracija (salam → ሰላም)</translation>
-<translation id="7172053773111046550">Estiška klaviatūra</translation>
 <translation id="7180611975245234373">Atnaujinti</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
+<translation id="719009910964971313">Programuotojų JAV Dvorako klaviatūra</translation>
 <translation id="7191454237977785534">Išsaugoti failą kaip</translation>
 <translation id="7222624196722476520">Bulgarų fonetinė klaviatūra</translation>
 <translation id="7238097264433196391">Atmintuko pavadinimas</translation>
@@ -591,6 +584,7 @@
 <translation id="7283041136720745563">„Google“ disko kvota nepakankamai didelė.</translation>
 <translation id="7295662345261934369">Bendrinti su kitais žmonėmis</translation>
 <translation id="7339898014177206373">Naujas langas</translation>
+<translation id="7348749398828259943">JAV „Workman“ tarptautinė klaviatūra</translation>
 <translation id="7359359531237882347">Kopijuojama elementų: <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="7375951387215729722">Failų sąrašas surūšiuotas pagal stulpelį „<ph name="COLUMN_NAME" />“ mažėjimo tvarka.</translation>
 <translation id="7389722738210761877">Tailandietiška klaviatūra (TIS 820-2531)</translation>
@@ -598,7 +592,9 @@
 <translation id="7417453074306512035">Etiopiška klaviatūra</translation>
 <translation id="7417705661718309329">„Google“ žemėlapis</translation>
 <translation id="7419631653042041064">Kataloniška klaviatūra</translation>
+<translation id="7434823369735508263">JK Dvorako klaviatūra</translation>
 <translation id="7460898608667578234">Ukrainiečių</translation>
+<translation id="7474889694310679759">Kanados angliška klaviatūra</translation>
 <translation id="7489215562877293245">Rasta: <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Paruošta kurti atsarginę kopiją <ph name="BEGIN_LINK" />„Google“ diske<ph name="END_LINK" /></translation>
@@ -651,6 +647,7 @@
 <translation id="7873831373602885875">Nepavyko išsaugoti aplanke „<ph name="FOLDER_NAME" />“. Visi pakeitimai bus išsaugoti „Atsisiuntimų“ aplanko aplanke „<ph name="DOWNLOADS_FOLDER" />“.</translation>
 <translation id="7881969471599061635">Išjungti subtitrus</translation>
 <translation id="78946041517601018">Bendri diskai</translation>
+<translation id="7896906914454843592">JAV išplėstinė klaviatūra</translation>
 <translation id="7898607018410277265">Gudžarati klaviatūra (nauja fonetinė)</translation>
 <translation id="7908793776359722643">Formatuojant skaidinį bus ištrinti visi jame saugomi duomenys. Šio veiksmo anuliuoti negalima.</translation>
 <translation id="7917972308273378936">Lietuviška klaviatūra</translation>
@@ -707,6 +704,7 @@
 <translation id="8395901698320285466">Aspektai</translation>
 <translation id="8412586565681117057">Greitasis įvesties metodas</translation>
 <translation id="8418113698656761985">Rumuniška klaviatūra</translation>
+<translation id="8432745813735585631">JAV „Colemak“ klaviatūra</translation>
 <translation id="8437209419043462667">JAV</translation>
 <translation id="8456681095658380701">Netinkamas pavadinimas</translation>
 <translation id="8466234950814670489">TAR archyvas</translation>
@@ -727,6 +725,7 @@
 <translation id="8698464937041809063">„Google“ piešinys</translation>
 <translation id="8714406895390098252">Dviratis</translation>
 <translation id="8719721339511222681">Pasirinktas įrašas „<ph name="ENTRY_NAME" />“.</translation>
+<translation id="8722421161699219904">JAV tarptautinė klaviatūra</translation>
 <translation id="872537912056138402">Kroatų</translation>
 <translation id="874420130893181774">Tradicinis „Pinyin“ įvesties metodas</translation>
 <translation id="8770002329960263418">Olandų k. (Nyderlandai) su JAV tarptautine (AK) klaviatūra</translation>
@@ -738,7 +737,6 @@
 <translation id="885381502874625531">Baltarusiška klaviatūra</translation>
 <translation id="8860454412039442620">„Excel“ skaičiuoklė</translation>
 <translation id="8900820606136623064">Vengrų</translation>
-<translation id="8901822611024316615">Čekiška QWERTY klaviatūra</translation>
 <translation id="8919081441417203123">Danų</translation>
 <translation id="8941776146379310519">Malajų</translation>
 <translation id="8960999352790021682">Bengališka klaviatūra (fonetinė)</translation>

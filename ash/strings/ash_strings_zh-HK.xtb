@@ -125,7 +125,6 @@
 <translation id="2127372758936585790">低功率充電器</translation>
 <translation id="2132302418721800944">錄影全螢幕</translation>
 <translation id="2135456203358955318">固定的放大鏡</translation>
-<translation id="2144487987174258011">請重新啟動以更新 Adobe Flash Player</translation>
 <translation id="2208323208084708176">統一桌面模式</translation>
 <translation id="2220572644011485463">PIN 或密碼</translation>
 <translation id="2222338659135520253">必須登入</translation>
@@ -160,7 +159,6 @@
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="2473177541599297363">確認解像度</translation>
 <translation id="2475982808118771221">發生錯誤</translation>
-<translation id="2479579251444854687">用三隻手指向上滑動可開啟「概覽」，向下滑動可關閉「概覽」。</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484513351006226581">按下 <ph name="KEYBOARD_SHORTCUT" /> 鍵可切換鍵盤配置。</translation>
 <translation id="2501920221385095727">相黏鍵</translation>
@@ -371,7 +369,6 @@
 <translation id="4481530544597605423">未配對的裝置</translation>
 <translation id="4485060137115666462">按一下或長按右鍵，「Google 助理」即可顯示選取項目的定義、翻譯或單位轉換等相關資料。</translation>
 <translation id="4505050298327493054">用緊嘅桌面。</translation>
-<translation id="4506458088675900627">「概覽」觸控板手勢已變更</translation>
 <translation id="4513946894732546136">意見反映</translation>
 <translation id="4527045527269911712">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限。</translation>
 <translation id="453661520163887813">還有 <ph name="TIME" />便完成充電</translation>
@@ -434,6 +431,7 @@
 <translation id="5033299697334913360">點擊任何一處即可擷取全螢幕畫面</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> 已連接至新手機</translation>
 <translation id="5035389544768382859">確認螢幕設定</translation>
+<translation id="5078796286268621944">PIN 不正確</translation>
 <translation id="5083553833479578423">啟用更多「Google 助理」功能。</translation>
 <translation id="5136175204352732067">已連接不同的鍵盤</translation>
 <translation id="5168181903108465623">有可用投放裝置</translation>

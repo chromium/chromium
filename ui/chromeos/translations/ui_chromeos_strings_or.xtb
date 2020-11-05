@@ -10,7 +10,6 @@
 <translation id="1049926623896334335">Word ଡକ୍ୟୁମେଣ୍ଟ</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> ମାଧ୍ୟମରେ ଫାଇଲଗୁଡ଼ିକ ଖୋଲିବାକୁ, ପ୍ରଥମେ ସେଗୁଡ଼ିକୁ Windows ଫାଇଲ୍ ଫୋଲ୍ଡରକୁ ମୁଭ୍ କରନ୍ତୁ।</translation>
 <translation id="1062407476771304334">ପ୍ରତିସ୍ଥାପନ କରନ୍ତୁ</translation>
-<translation id="1065449928621190041">କାନାଡିଆନ୍ ଫ୍ରେଞ୍ଚ କୀ'ବୋର୍ଡ</translation>
 <translation id="1119069657431255176">Bzip2 ସଙ୍କୁଚିତ ଟାର୍ ଆରକାଇଭ୍</translation>
 <translation id="1120073797882051782">ହଂଗୁଲ୍ ରୋମାଜା</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" />ଟି ମିଳିଛି।
@@ -36,7 +35,6 @@
 <translation id="1297922636971898492">ଏହି କ୍ଷଣି Google ଡ୍ରାଇଭ୍ ଉପଲବ୍ଧ ନାହିଁ। ଥରେ Google ଡ୍ରାଇଭ୍ କାର୍ଯ୍ୟକ୍ଷମ ହୋଇଗଲେ, ଅପ୍‍‍ଲୋଡ୍ ସ୍ଵଚାଳିତ ଭାବେ ରିଷ୍ଟାର୍ଟ ହେବ।</translation>
 <translation id="1307931752636661898">Linux ଫାଇଲ୍‌ଗୁଡ଼ିକ ଦେଖିପାରୁନାହିଁ</translation>
 <translation id="1310751437842832374">ଆକ୍ଷରିକ ଅନୁବାଦକରଣ (mausam → ନମସ୍ତେ)</translation>
-<translation id="1337036551624197047">Czech କୀ'ବୋର୍ଡ</translation>
 <translation id="1338950911836659113">ଡିଲିଟ୍ କରାଯାଉଛି…</translation>
 <translation id="1346748346194534595">ଡାହାଣ</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> ଟି ଫାଇଲ୍ ଇମ୍ପୋର୍ଟ କରାଯାଉଛି...</translation>
@@ -62,7 +60,6 @@
 <translation id="1556189134700913550">ସମସ୍ତ ପାଇଁ ଲାଗୁ ହେବ</translation>
 <translation id="1561842594491319104">Chrome ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="1572585716423026576">ୱାଲ୍‌‌ପେପର୍‌ ଭାବରେ ସେଟ୍‍ କରନ୍ତୁ</translation>
-<translation id="158809615184981282">ଫାରୋଇଜ୍‍ କୀବୋର୍ଡ</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">କ୍ୟାମେରା</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" />ଟି ଫାଇଲକୁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରାଯାଉଛି</translation>
@@ -139,9 +136,9 @@
 <translation id="2453576648990281505">ପୂର୍ବରୁ ଏହି ଫାଇଲ୍‌ଟି ଅଛି</translation>
 <translation id="2464079411014186876">ଆଇସ୍‍କ୍ରିମ୍</translation>
 <translation id="2468402215065996499">ଟାମାଗୋଚୀ</translation>
-<translation id="247772113373397749">କାନାଡିଆନ୍ ବହୁଭାଷୀ କୀବୋର୍ଡ</translation>
 <translation id="2494837236724268445">ଗୁଜରାତି କୀ'ବୋର୍ଡ (ଫୋନେଟିକ୍)</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2529133382850673012">US କୀବୋର୍ଡ</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍‌ ଡିଲିଟ୍‍ ହୋ‍ଇଛି</translation>
 <translation id="2541377937973966830">ଏହି ଫୋଲ୍ଡରରେ ଥିବା ବିଷୟବସ୍ତୁଗୁଡ଼ିକ କେବଳ-ପଢ଼ିବା ପାଇଁ ଅଟେ। କିଛି କାର୍ଯ୍ୟକଳାପ ସମର୍ଥିତ ନୁହେଁ।</translation>
 <translation id="2542049655219295786">Google ଟେବଲ୍</translation>
@@ -195,8 +192,10 @@
 <translation id="3067790092342515856">Windows ଫାଇଲଗୁଡ଼ିକ</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> ସହ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="3083975830683400843">Chromebits</translation>
+<translation id="3116361045094675131">UK କୀବୋର୍ଡ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ହୋଇଗଲା</translation>
+<translation id="3157729859914172001">US ଆନ୍ତର୍ଜାତୀୟ (PC) କୀବୋର୍ଡ</translation>
 <translation id="3187212781151025377">ହିବ୍ର୍ୟୁ କୀବୋର୍ଡ</translation>
 <translation id="3188257591659621405">ମୋ ଫାଇଲ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="3197563288998582412">US ଡିଭୋରାକ୍</translation>
@@ -295,7 +294,6 @@
 <translation id="426015154560005552">ଆରବିକ୍ କୀବୋର୍ଡ</translation>
 <translation id="4261901459838235729">Google ଉପସ୍ଥାପନା</translation>
 <translation id="4290535918735525311">Linux ସହ 1ଟି ଫୋଲ୍ଡର୍ ସେୟାର୍ କରାଯାଇଛି</translation>
-<translation id="4298972503445160211">ଡେନିଶ୍ କୀବୋର୍ଡ</translation>
 <translation id="4299729908419173967">ବ୍ରାଜିଲିଆନ୍</translation>
 <translation id="4309915981827077375">ସାଧାରଣ ସୂଚନା</translation>
 <translation id="4315949787858895817">ଡଚ୍ (ବେଲଜିୟମ୍)</translation>
@@ -308,6 +306,7 @@
 <translation id="4465830120256509958">ବ୍ରାଜିଲୀୟ କୀବୋର୍ଡ୍</translation>
 <translation id="4470564870223067757">ହଂଗୁଲ୍ 2 ସେଟ୍</translation>
 <translation id="4477219268485577442">ବୁଲ୍‍‍ଗେରିଆନ୍ ଫୋନେଟିକ୍</translation>
+<translation id="4479812471636796472">US ଡଭୋର୍କ୍ କୀବୋର୍ଡ୍</translation>
 <translation id="4522570452068850558">ବିବରଣୀ</translation>
 <translation id="4527800702232535228">Parallels Desktop ସହିତ ଏହି ଫୋଲ୍ଡରକୁ ସେୟାର୍ କରାଯାଇଛି</translation>
 <translation id="4552678318981539154">ଅଧିକ ଷ୍ଟୋରେଜ୍ କିଣନ୍ତୁ</translation>
@@ -337,7 +336,6 @@
 <translation id="4737050008115666127">ଲ୍ୟାଣ୍ଡିଙ୍ଗ୍‌</translation>
 <translation id="4747271164117300400">ମାସିଡୋନିୟ</translation>
 <translation id="4749157430980974800">ଜର୍ଜିଆନ୍ କୀ'ବୋର୍ଡ</translation>
-<translation id="4755240240651974342">ଫୀନୀଶ୍ କୀବୋର୍ଡ</translation>
 <translation id="4759238208242260848">ଡାଉନଲୋଡସମୂହ</translation>
 <translation id="4779136857077979611">ଓନିଗିରି</translation>
 <translation id="4784330909746505604">PowerPoint ଉପସ୍ଥାପନା</translation>
@@ -395,7 +393,6 @@
    ବ୍ୟବହାର କରିବା ସମୟରେ ଆପଣଙ୍କର ଡିଭାଇସ୍‍କୁ କାଢ଼ିଦେବା ଦ୍ୱାରା ଡାଟା କ୍ଷତି ହୋଇପାରେ।  ଦୟାକରି ଅପରେସନ୍ ସମ୍ପୂର୍ଣ୍ଣ ହେବା ପର୍ଯ୍ୟନ୍ତ ଅପେକ୍ଷା କରନ୍ତୁ, ତା'ପରେ Files ଆପ୍ ବ୍ୟବହାର କରି ଡିଭାଇସ୍‍କୁ ବାହାର କରିଦିଅନ୍ତୁ।</translation>
 <translation id="5163869187418756376">ସେୟାର୍ ହେଇପାରିଲା ନାହିଁ ନିଜ ସଂଯୋଗ ଯାଞ୍ଚ କରି ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="516592729076796170">US ପ୍ରୋଗ୍ରାମର୍ ଡିଭୋରାକ୍</translation>
-<translation id="5167131699331641907">ନେଦର୍‍ଲ୍ୟାଣ୍ଡ କୀବୋର୍ଡ</translation>
 <translation id="5170477580121653719">Google ଡ୍ରାଇଭ୍ ଅବଶିଷ୍ଟ ସ୍ଥାନ: <ph name="SPACE_AVAILABLE" />।</translation>
 <translation id="5177526793333269655">ଥମ୍ଵନେଲ୍ ଦର୍ଶନ</translation>
 <translation id="5194713942430106590">କଲମ୍‍କୁ ସାନରୁ ବଡ଼ କ୍ରମରେ ସଜାଇବା ପାଇଁ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
@@ -462,7 +459,6 @@
 <translation id="5850516540536751549">ଏହି ଫାଇଲ୍ ପ୍ରକାର ସମର୍ଥିତ ନୁହେଁ। ଏହି ପ୍ରକାରର ଫାଇଲ୍ ଖୋଜିପାରୁଥିବା ଗୋଟିଏ ଆପ୍ ଖୋଜିବାକୁ ଦୟାକରି <ph name="BEGIN_LINK" />Chrome ୱେବ୍ ଷ୍ଟୋର୍‌<ph name="END_LINK" />କୁ ଯାଆନ୍ତୁ।
     <ph name="BEGIN_LINK_HELP" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">ଏଠାରେ ଦେଖିବା ପାଇଁ କିଛି ନାହିଁ...</translation>
-<translation id="5892290200158927959">ଫ୍ରେଞ୍ଚ BÉPO କୀବୋର୍ଡ</translation>
 <translation id="5911887972742538906">ଆପଣଙ୍କର Linux ଆପ୍ଲିକେସନ୍ ଇନ୍‌ଷ୍ଟଲେସନ୍‌ ସମୟରେ ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା।</translation>
 <translation id="5912396950572065471">ଫର୍ମାଟ୍</translation>
 <translation id="5913638992615760742">କପି କାର୍ଯ୍ୟ ବିଫଳ ହେଲା, ଅପ୍ରତ୍ୟାଶିତ ତ୍ରୁଟି: <ph name="ERROR_MESSAGE" /></translation>
@@ -478,7 +474,6 @@
 <translation id="60357267506638014">ଚେକ୍ QWERTY</translation>
 <translation id="604001903249547235">କ୍ଲାଉଡ୍ ବ୍ୟାକ୍‌ଅପ୍‌</translation>
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
-<translation id="6054173164583630569">ଫ୍ରେଞ୍ଚ କୀବୋର୍ଡ୍</translation>
 <translation id="6074825444536523002">Google ଫର୍ମ</translation>
 <translation id="6096979789310008754">ସନ୍ଧାନ ଟେକ୍ସଟ୍ ଖାଲି ହୋଇଛି, ସମସ୍ତ ଫାଇଲ୍ ଏବଂ ଫୋଲ୍ଡର୍ ଦେଖାଉଛି।</translation>
 <translation id="610101264611565198"><ph name="FOLDER_NAME" />କୁ <ph name="FILE_NAME" /> ମୁଭ୍ କରାଯାଉଛି</translation>
@@ -501,7 +496,6 @@
 <translation id="6339034549827494595">ଋଷିୟାନ୍ ଫୋନେଟିକ୍ (AATSEEL) କୀବୋର୍ଡ</translation>
 <translation id="6339145975392024142">US ଆନ୍ତର୍ଜାତିକ (PC)</translation>
 <translation id="6346310558342052870">ଆକ୍ସେସ୍‍କୁ ପ୍ରତିବନ୍ଧିତ କରାଯାଇଛି</translation>
-<translation id="6353618411602605519">କ୍ରୋସିଆନ୍ କୀ'ବୋର୍ଡ</translation>
 <translation id="6356685157277930264">ଫାଇଲ୍ସ ଫିଡ୍‍ବ୍ୟାକ୍ ୱିଣ୍ଡୋ</translation>
 <translation id="6358884629796491903">ଡ୍ରାଗନ୍</translation>
 <translation id="637062427944097960">ଏହି ଫାଇଲ୍‌ଟି ଏକ ଭିନ୍ନ ଡେସ୍କଟପ୍‌ରେ ଖୋଲିଲା। (<ph name="MAIL_ADDRESS" />)କୁ ଦେଖିବା ପାଇଁ <ph name="USER_NAME" />କୁ ଘୁଞ୍ଚାନ୍ତୁ</translation>
@@ -512,7 +506,6 @@
 <translation id="6462109140674788769">ଗ୍ରୀକ୍ କୀବୋର୍ଡ</translation>
 <translation id="6466492211071551451">ଇରିସ୍‍ କୀବୋର୍ଡ</translation>
 <translation id="6485131920355264772">ଯାଗା ସମ୍ବନ୍ଧିତ ତଥ୍ୟ ପୁନରୁଦ୍ଧାର କରିବାରେ ବିଫଳ ହେଲା</translation>
-<translation id="6503256918647795660">ସୁଇସ୍ ଫ୍ରେଞ୍ଚ କୀ'ବୋର୍ଡ</translation>
 <translation id="6505918941256367791">ତାମିଲ୍ କୀ'ବୋର୍ଡ (InScript)</translation>
 <translation id="6509122719576673235">ନରୱେଜିଆନ୍</translation>
 <translation id="6527303717912515753">ସେୟାର୍ କରନ୍ତୁ</translation>
@@ -557,6 +550,7 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" />ଟି ମିଳିଲା</translation>
 <translation id="6935521024859866267">ଓଲଟା</translation>
+<translation id="6939777852457331078">US ୱର୍କମେନ୍ କୀବୋର୍ଡ</translation>
 <translation id="696203921837389374">ମୋବାଇଲ୍ ଡାଟା ଜରିଆରେ ସିଙ୍କ୍ ପ୍ରକ୍ରିୟା ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="6965382102122355670">ଓକେ ବଟନ୍</translation>
 <translation id="6970230597523682626">ବୁଲଗେରୀୟ</translation>
@@ -573,9 +567,9 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ଡ୍ରାଇଭ୍‍‍ରେ ଖୋଜନ୍ତୁ&lt;/em&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7170467426996704624">ଆକ୍ଷରିକ ଅନୁବାଦକରଣ (salam → ሰላም)</translation>
-<translation id="7172053773111046550">ଏଷ୍ଟୋନିଆନ୍ କୀବୋର୍ଡ୍</translation>
 <translation id="7180611975245234373">ରିଫ୍ରେଶ୍</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
+<translation id="719009910964971313">US ପ୍ରୋଗ୍ରାମର୍ Dvorak କୀ'ବୋର୍ଡ</translation>
 <translation id="7191454237977785534">ଏପରି ଭାବରେ ଫାଇଲ୍‌ ସେଭ୍‌ କରନ୍ତୁ</translation>
 <translation id="7222624196722476520">ବୁଲ୍‌ଗାରିଆନ୍ ଫୋନେଟିକ୍ କୀବୋର୍ଡ</translation>
 <translation id="7238097264433196391">ଡ୍ରାଇଭ୍ ନାମ</translation>
@@ -584,6 +578,7 @@
 <translation id="7283041136720745563">Google ଡ୍ରାଇଭ୍‌ରେ ଆପଣଙ୍କ ପାଇଁ ସଂରକ୍ଷିତ ଥିବା ସ୍ଥିରୀକୃତ ଅଂଶ ପର୍ଯ୍ୟାପ୍ତ ନୁହେଁ।</translation>
 <translation id="7295662345261934369">ଅନ୍ୟମାନଙ୍କ ସହ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="7339898014177206373">ନୂଆ ୱିଣ୍ଡୋ</translation>
+<translation id="7348749398828259943">US ୱାର୍କମେନ୍ ଆନ୍ତର୍ଜାତିକ କୀ'ବୋର୍ଡ</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍‌ କପି ହେଉଛି...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> ଦ୍ୱାରା ଫାଇଲ୍‌ର ତାଲିକା ବଡ଼ରୁ ସାନ କ୍ରମରେ ସଜାଯାଇଛି।</translation>
 <translation id="7389722738210761877">ଥାଇ କୀବୋର୍ଡ (TIS 820-2531)</translation>
@@ -591,7 +586,9 @@
 <translation id="7417453074306512035">ଇଥିଓପିକ୍ କୀବୋର୍ଡ</translation>
 <translation id="7417705661718309329">Google ମ୍ୟାପ୍‌</translation>
 <translation id="7419631653042041064">କାଟାଲାନ୍ କୀବୋର୍ଡ</translation>
+<translation id="7434823369735508263">UK ଡିଭୋରାକ୍ କୀବୋର୍ଡ</translation>
 <translation id="7460898608667578234">ୟୁକ୍ରାନିଆନ୍</translation>
+<translation id="7474889694310679759">କାନାଡିଆନ୍ ଇଂରାଜୀ କୀବୋର୍ଡ୍</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" />ଟି ମିଳିଛି
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google ଡ୍ରାଇଭ୍‍<ph name="END_LINK" />ରେ ବ୍ୟାକ୍‌ଅପ୍‌ ପାଇଁ ପ୍ରସ୍ତୁତ</translation>
@@ -644,6 +641,7 @@
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" />ରେ ସେଭ୍ କରିପାରିବ ନାହିଁ। ସମସ୍ତ ଏଡ଼ିଟ୍‌ ଡାଉନ୍‌ଲୋଡ୍‌ ଫୋଲ୍ଡର୍‌ର <ph name="DOWNLOADS_FOLDER" />ରେ ସେଭ୍‌ କରାଯିବ।</translation>
 <translation id="7881969471599061635">ଉପଶୀର୍ଷକ ଅକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="78946041517601018">ସେୟାର୍ ହୋଇଥିବା ଡ୍ରାଇଭ୍‌ଗୁଡ଼ିକ</translation>
+<translation id="7896906914454843592">US ସମ୍ପ୍ରସାରିତ କୀବୋର୍ଡ</translation>
 <translation id="7898607018410277265">ଗୁଜରାଟୀ କୀବୋର୍ଡ (ନୂଆ ଫୋନେଟିକ୍)</translation>
 <translation id="7908793776359722643">ଏକ ପାର୍ଟିସନକୁ ଫର୍ମାଟ୍ କରିବା ଦ୍ୱାରା ଏଥିରେ ଷ୍ଟୋର୍ କରାଯାଇଥିବା ସମସ୍ତ ଡାଟା ଲିଭିଯିବ। ଏହି କାର୍ଯ୍ୟକୁ ପୂର୍ବବତ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="7917972308273378936">ଲିଥୁଆନିଆନ୍ କୀ'ବୋର୍ଡ</translation>
@@ -700,6 +698,7 @@
 <translation id="8395901698320285466">ପରିମେୟ ପରିସର</translation>
 <translation id="8412586565681117057">ତ୍ୱରିତ ଇନପୁଟ୍ ପଦ୍ଧତି</translation>
 <translation id="8418113698656761985">ରୋମାନିୟାନ୍‌ କୀବୋର୍ଡ</translation>
+<translation id="8432745813735585631">US କୋଲ୍‌ମାକ୍ କୀବୋର୍ଡ</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">ଅବୈଧ ନାମ</translation>
 <translation id="8466234950814670489">ଟାର୍ ଆରକାଇଭ୍</translation>
@@ -720,6 +719,7 @@
 <translation id="8698464937041809063">Google ଡ୍ରଇଂ</translation>
 <translation id="8714406895390098252">ସାଇକେଲ୍</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ବଛାଯାଇଛି।</translation>
+<translation id="8722421161699219904">US ଆନ୍ତର୍ଜାତିକ କୀ'ବୋର୍ଡ</translation>
 <translation id="872537912056138402">କ୍ରୋଏସିଆନ୍</translation>
 <translation id="874420130893181774">ପାରମ୍ପାରିକ ପିନ୍‌ୟିନ୍ ଇନ୍‍ପୁଟ୍ ପଦ୍ଧତି</translation>
 <translation id="8770002329960263418">US ଆନ୍ତର୍ଜାତୀୟ PC କୀବୋର୍ଡ ସହିତ ଡଚ୍ (ନେଦରଲ୍ୟାଣ୍ଡ) ଭାଷା</translation>
@@ -731,7 +731,6 @@
 <translation id="885381502874625531">ବେଲାରଷିଆନ୍‌ କୀବୋର୍ଡ</translation>
 <translation id="8860454412039442620">Excel ସ୍ପ୍ରେଡ୍‍ସିଟ୍</translation>
 <translation id="8900820606136623064">ହଙ୍ଗେରୀଆନ୍</translation>
-<translation id="8901822611024316615">ଚେକ୍ QWERTY କୀବୋର୍ଡ</translation>
 <translation id="8919081441417203123">ଡାନିଶ୍</translation>
 <translation id="8941776146379310519">ମଲୟ</translation>
 <translation id="8960999352790021682">ବେଙ୍ଗଲୀ କୀବୋର୍ଡ (ଫୋନେଟିକ୍)</translation>

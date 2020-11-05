@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Determina a frequência com que a tela é atualizada</translation>
 <translation id="1061904396131502319">Está quase na hora de fazer uma pausa</translation>
 <translation id="1067048845568873861">Criado em</translation>
+<translation id="1067291318998134776">Linux (Beta)</translation>
 <translation id="1067922213147265141">Outros serviços do Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Outro programa no seu computador adicionou uma extensão que pode mudar a forma como o Google Chrome funciona.
@@ -1377,7 +1378,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2562743677925229011">Não conectado a <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">A execução do JavaScript por AppleScript está desativada. Para ativá-la, na barra de menu, acesse Ver &gt; Desenvolvedor &gt; Permitir o JavaScript do Eventos da Apple. Para ver mais informações: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Verificação ortográfica aprimorada</translation>
-<translation id="2566124945717127842">Use a função "Powerwash" para redefinir seu dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /> para as condições de fábrica.</translation>
 <translation id="2568774940984945469">Recipiente da barra de informações</translation>
 <translation id="2571655996835834626">Alterar configurações que controlam o acesso de sites a recursos como cookies, JavaScript, plug-ins, geolocalização, microfone, câmera etc.</translation>
 <translation id="2572032849266859634">Foi concedido acesso apenas de leitura a <ph name="VOLUME_NAME" />.</translation>
@@ -1842,7 +1842,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3118319026408854581">Ajuda do <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">Tente iniciar o Linux novamente em alguns instantes.</translation>
 <translation id="3120430004221004537">Criptografia insuficiente para uma determinada operação em "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344">Restaurar este dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Falha ao criar o diretório de dados</translation>
 <translation id="3124111068741548686">Processamentos do USUÁRIO</translation>
@@ -5496,7 +5495,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7475671414023905704">URL da senha perdida do Netscape</translation>
 <translation id="7476454130948140105">Bateria muito fraca para atualizar (<ph name="BATTERY_PERCENT" />%</translation>
 <translation id="7477793887173910789">Controle suas músicas, seus vídeos e muito mais</translation>
-<translation id="7478362879637727630">Inscreva este dispositivo Chrome Education em uma conta de ensino. Para criar uma nova conta, acesse https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">Não foi possível instalar o aplicativo de quiosque.</translation>
 <translation id="7479221278376295180">Visão geral do uso do armazenamento</translation>
 <translation id="7481312909269577407">Avançar</translation>
@@ -6067,7 +6065,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8101987792947961127">Powerwash obrigatório na próxima reinicialização</translation>
 <translation id="8102139037507939978">Remover informações de identificação pessoal de system_logs.txt.</translation>
 <translation id="8102159139658438129">Acesse <ph name="LINK_BEGIN" />Configurações<ph name="LINK_END" /> para ver as opções do smartphone conectado</translation>
-<translation id="8104696615244072556">Execute um powerwash no seu dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /> e volte para a versão anterior.</translation>
 <translation id="8107015733319732394">Instalando a Google Play Store no seu <ph name="DEVICE_TYPE" />. Isso pode demorar alguns minutos.</translation>
 <translation id="810728361871746125">Resolução da tela</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Sem cookies de terceiros}=1{1 cookie de terceiros foi bloqueado}one{# cookie de terceiros foi bloqueado}other{# cookies de terceiros foram bloqueados}}</translation>

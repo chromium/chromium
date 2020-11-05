@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">ਸਕ੍ਰੀਨ ਅੱਪਡੇਟ ਹੋਣ ਦੀ ਵਾਰਵਾਰਤਾ ਨੂੰ ਨਿਰਧਾਰਿਤ ਕਰਦੀ ਹੈ</translation>
 <translation id="1061904396131502319">ਥੋੜ੍ਹੀ ਦੇਰ ਆਰਾਮ ਕਰਨ ਦਾ ਸਮਾਂ ਹੋਣ ਵਾਲਾ ਹੈ</translation>
 <translation id="1067048845568873861">ਬਣਾਇਆ</translation>
+<translation id="1067291318998134776">Linux (ਬੀਟਾ)</translation>
 <translation id="1067922213147265141">ਹੋਰ Google ਸੇਵਾਵਾਂ</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਦੇ ਕਿਸੇ ਹੋਰ ਪ੍ਰੋਗਰਾਮ ਨੇ ਇੱਕ ਐਕਸਟੈਂਸ਼ਨ ਜੋੜ ਦਿੱਤੀ ਜੋ Chrome ਦੇ ਕੰਮ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਦਲ ਸਕਦੀ ਹੈ।
@@ -1376,7 +1377,6 @@
 <translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" /> ਤੇ ਸਾਈਨ ਇਨ ਨਹੀਂ ਕੀਤਾ</translation>
 <translation id="2564520396658920462">AppleScript ਦੇ ਰਾਹੀਂ JavaScript ਨੂੰ ਚਲਾਉਣਾ ਬੰਦ ਹੈ। ਇਸਨੂੰ ਮੀਨੂ ਬਾਰ ਤੋਂ ਚਲਾਉਣ ਲਈ, ਦ੍ਰਿਸ਼ &gt; ਵਿਕਾਸਕਾਰ &gt; Apple ਇਵੈਂਟਾਂ ਤੋਂ JavaScript ਚੱਲਣ ਦਿਓ 'ਤੇ ਜਾਓ। ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">ਬਿਹਤਰ ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ</translation>
-<translation id="2566124945717127842">ਤੁਹਾਡੀ <ph name="IDS_SHORT_PRODUCT_NAME" /> ਡੀਵਾਈਸ ਨੂੰ ਬਿਲਕੁਲ ਨਵੇਂ ਵਾਂਗ ਰੀਸੈੱਟ ਕਰਨ ਲਈ ਪਾਵਰਵਾਸ਼।</translation>
 <translation id="2568774940984945469">ਇੰਫੋਬਾਰ ਕੰਟੇਨਰ</translation>
 <translation id="2571655996835834626">ਆਪਣੀਆਂ ਉਹ ਸੈਟਿੰਗਾਂ ਬਦਲੋ ਜੋ ਕੁਕੀਜ਼, JavaScript, ਪਲੱਗਇਨਾਂ, ਭੂਗੋਲਿਕ-ਟਿਕਾਣਾ, ਮਾਈਕ੍ਰੋਫ਼ੋਨ, ਕੈਮਰਾ ਆਦਿ ਵਰਗੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਵਾਲੀਆਂ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੰਟਰੋਲ ਕਰਦੀਆਂ ਹਨ।</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> ਤੱਕ ਰੀਡ-ਓਨਲੀ ਪਹੁੰਚ ਦੀ ਅਨੁਮਤੀ ਦਿੱਤੀ ਗਈ ਹੈ।</translation>
@@ -1840,7 +1840,6 @@
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> ਸਹਾਇਤਾ</translation>
 <translation id="3118654181216384296">ਕਿਰਪਾ ਕਰਕੇ ਕੁਝ ਪਲਾਂ ਵਿੱਚ Linux ਨੂੰ ਦੁਬਾਰਾ ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="3120430004221004537">ਇਸ 'ਤੇ ਦਿੱਤੀ ਗਈ ਕਿਰਿਆ ਲਈ ਨਾਕਾਫ਼ੀ ਇਨਕ੍ਰਿਪਸ਼ਨ: "<ph name="DEVICE_NAME" />"।</translation>
-<translation id="3121793941267913344">ਇਸ <ph name="IDS_SHORT_PRODUCT_NAME" /> ਡੀਵਾਈਸ ਨੂੰ ਰੀਸੈਟ ਕਰੋ</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">ਡਾਟਾ ਡਾਇਰੈਕਟਰੀ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ</translation>
 <translation id="3124111068741548686">ਵਰਤੋਂਕਾਰ ਹੈਂਡਲ</translation>
@@ -5491,7 +5490,6 @@
 <translation id="7475671414023905704">Netscape ਨਸ਼ਟ ਹੋਇਆ ਪਾਸਵਰਡ URL</translation>
 <translation id="7476454130948140105">ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਬੈਟਰੀ ਬਹੁਤ ਘੱਟ ਹੈ (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">ਆਪਣਾ ਸੰਗੀਤ, ਵੀਡੀਓ ਕੰਟਰੋਲ ਕਰੋ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ</translation>
-<translation id="7478362879637727630">ਤੁਹਾਨੂੰ ਇਸ Chrome Education ਡੀਵਾਈਸ ਨੂੰ 'ਸਿੱਖਿਆ ਲਈ ਖਾਤੇ' ਵਿੱਚ ਦਰਜ ਕਰਨਾ ਚਾਹੀਦਾ ਹੈ। ਨਵੇਂ ਖਾਤੇ ਲਈ ਸਾਈਨ-ਅੱਪ ਕਰਨ ਵਾਸਤੇ, ਕਿਰਪਾ ਕਰਕੇ https://g.co/workspace/edusignup 'ਤੇ ਜਾਓ।</translation>
 <translation id="7478485216301680444">ਕਿਓਸਕ ਐਪਲੀਕੇਸ਼ਨ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।</translation>
 <translation id="7479221278376295180">ਸਟੋਰੇਜ ਵਰਤੋਂ ਦੀ ਰੂਪ-ਰੇਖਾ</translation>
 <translation id="7481312909269577407">ਅੱਗੇ ਭੇਜੋ</translation>
@@ -6060,7 +6058,6 @@
 <translation id="8101987792947961127">ਅਗਲੇ ਰੀਬੂਟ 'ਤੇ ਪਾਵਰਵਾਸ਼ ਲੁੜੀਂਦਾ</translation>
 <translation id="8102139037507939978">system_logs.txt ਤੋਂ ਨਿੱਜੀ ਪਛਾਣ ਕਰਨ ਵਾਲੀ ਜਾਣਕਾਰੀ ਨੂੰ ਹਟਾਓ।</translation>
 <translation id="8102159139658438129">ਤੁਹਾਡੇ ਕਨੈਕਟ ਕੀਤੇ ਫ਼ੋਨ ਲਈ ਵਿਕਲਪਾਂ ਨੂੰ ਦੇਖਣ ਵਾਸਤੇ <ph name="LINK_BEGIN" />ਸੈਟਿੰਗਾਂ<ph name="LINK_END" /> 'ਤੇ ਜਾਓ</translation>
-<translation id="8104696615244072556">ਆਪਣੇ <ph name="IDS_SHORT_PRODUCT_NAME" /> ਡੀਵਾਈਸ ਨੂੰ ਪਾਵਰਵਾਸ਼ ਕਰੋ ਅਤੇ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਵਾਪਸ ਜਾਓ।</translation>
 <translation id="8107015733319732394">ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> 'ਤੇ Google Play ਸਟੋਰ ਸਥਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਥੋੜ੍ਹੀ ਦੇਰ ਲੱਗ ਸਕਦੀ ਹੈ।</translation>
 <translation id="810728361871746125">ਡਿਸਪਲੇ ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{ਕੋਈ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀ ਨਹੀਂ}=1{1 ਤੀਜੀ-ਧਿਰ ਦੀ ਕੁਕੀ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ}other{# ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ}}</translation>

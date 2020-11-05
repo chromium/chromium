@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Экрандын жаңыртуу жыштыгын аныктайт</translation>
 <translation id="1061904396131502319">Тыныгууга убакыт келип калды</translation>
 <translation id="1067048845568873861">Түзүлгөн</translation>
+<translation id="1067291318998134776">Linux (Бета)</translation>
 <translation id="1067922213147265141">Башка Google кызматтары</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Компьютериңиздеги программалардын бири Chrome'дун ишин өзгөртө турган кеңейтүүнү кошуп койду.
@@ -1377,7 +1378,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" /> ичине кирген жок</translation>
 <translation id="2564520396658920462">AppleScript аркылуу JavaScript файлдарын иштетүү өчүрүлгөн. Аны күйгүзүү үчүн меню тилкесинен Көрүнүш &gt; Иштеп чыгуучу &gt; Apple Events'теги JavaScript'ке уруксат берүү дегенди тандаңыз. Кеңири маалымат: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Жакшыртылган орфографиялык текшерүү</translation>
-<translation id="2566124945717127842"><ph name="IDS_SHORT_PRODUCT_NAME" /> түзмөгүңүз жапжаңыдай болуп калышы үчүн, аны баштапкы абалга кайтарып "жууп салыңыз".</translation>
 <translation id="2568774940984945469">Маалымат тилкесинин контейнери</translation>
 <translation id="2571655996835834626">Вебсайттардын cookie файлдарын, JavaScript'терди, плагиндерди, жайгашкан жерди аныктоо кызматтарын, микрофон жана камера сыяктуу нерселерди колдонуу мүмкүнчүлүгүн көзөмөлдөгөн жөндөөлөрүңүздү өзгөртүңүз.</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> томуна уруксат берилди (окуу үчүн гана).</translation>
@@ -1842,7 +1842,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Жардам</translation>
 <translation id="3118654181216384296">Linux'ту бир нече мүнөттөн кийин иштетип көрүңүз.</translation>
 <translation id="3120430004221004537">Төмөнкү түзмөктө ушул иш-аракет толук шифрленбей калды: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344">Бул <ph name="IDS_SHORT_PRODUCT_NAME" /> түзмөгүн баштапкы абалга келтириңиз</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Дайындар каталогу түзүлбөй калды</translation>
 <translation id="3124111068741548686">КОЛДОНУУЧУ маркерлери</translation>
@@ -5493,7 +5492,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7475671414023905704">Netscape жоголгон сырсөз URL дареги</translation>
 <translation id="7476454130948140105">Жаңыртуу үчүн батареянын кубаты жетишсиз (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">Музыканы, видеолорду жана башкаларды көзөмөлдөңүз</translation>
-<translation id="7478362879637727630">Бул Chrome Education түзмөгүн окуу аккаунтуна каттаңыз. Жаңы аккаунтту каттоо үчүн https://g.co/workspace/edusignup бөлүмүнө өтүңүз.</translation>
 <translation id="7478485216301680444">Киоск колдонмосу орнотулган жок.</translation>
 <translation id="7479221278376295180">Сактагычтын колдонулушу жөнүндө жалпы маалымат</translation>
 <translation id="7481312909269577407">Багыттоо</translation>
@@ -6063,7 +6061,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8101987792947961127">Жууп салуу аракети кийинки жолу кайра жүктөөдө т</translation>
 <translation id="8102139037507939978">Адамдын инсандыгын аныктоочу маалыматты system_logs.txt таржымалынан өчүрүү.</translation>
 <translation id="8102159139658438129">Байланышкан телефондун параметрлерин көрүү үчүн <ph name="LINK_BEGIN" />Жөндөөлөргө<ph name="LINK_END" /> өтүңүз</translation>
-<translation id="8104696615244072556"><ph name="IDS_SHORT_PRODUCT_NAME" /> түзмөгүңүздү "жууп салып", аны мурунку версиясына кайтарыңыз.</translation>
 <translation id="8107015733319732394"><ph name="DEVICE_TYPE" /> түзмөгүңүзгө Google Play Store орнотулууда. Бир нече мүнөт кетиши мүмкүн.</translation>
 <translation id="810728361871746125">Дисплейдин дааналыгы</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Үчүнчү тараптын cookie файлдары жок}=1{Үчүнчү тараптын 1 cookie файлы бөгөттөлдү}other{Үчүнчү тараптын # cookie файлы бөгөттөлдү}}</translation>

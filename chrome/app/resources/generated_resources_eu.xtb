@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Pantaila eguneratzeko maiztasuna zehazten du</translation>
 <translation id="1061904396131502319">Atseden hartzeko garaia izango da laster</translation>
 <translation id="1067048845568873861">Sortze-data</translation>
+<translation id="1067291318998134776">Linux (beta)</translation>
 <translation id="1067922213147265141">Beste Google-ren zerbitzu batzuk</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Ordenagailuko beste programa batek Chrome-ren funtzionamenduari eragin diezaiokeen luzapen bat gehitu du.
@@ -1377,7 +1378,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2562743677925229011">Ez duzu saioa hasi <ph name="SHORT_PRODUCT_NAME" />-n</translation>
 <translation id="2564520396658920462">Desaktibatuta dago AppleScript bitartez JavaScript exekutatzeko aukera. Aktibatzeko, joan menu-barrara eta sakatu Ikusi &gt; Garatzailea &gt; Baimendu JavaScript Apple gertaeretan. Informazio gehiago lortzeko, joan https://support.google.com/chrome/?p=applescript helbidera.</translation>
 <translation id="2564653188463346023">Ortografia-zuzentzaile hobetua</translation>
-<translation id="2566124945717127842">Berrezarri fabrikako ezarpenak eta <ph name="IDS_SHORT_PRODUCT_NAME" /> gailua berria izango balitz bezala geratuko da.</translation>
 <translation id="2568774940984945469">Informazio-barraren edukiontzia</translation>
 <translation id="2571655996835834626">Aldatu webguneek darabiltzaten eginbideen baimenak kontrolatzen dituzten ezarpenak; besteak beste, cookieak, JavaScript, pluginak, geokokapena, mikrofonoa eta kamera.</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> bolumenean irakurtzeko sarbidea bakarrik eman da.</translation>
@@ -1842,7 +1842,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> laguntza</translation>
 <translation id="3118654181216384296">Saiatu berriro Linux abiarazten minutu gutxi batzuk barru.</translation>
 <translation id="3120430004221004537">"<ph name="DEVICE_NAME" />" gailuko eragiketa jakin bat ez da behar adina enkriptatu.</translation>
-<translation id="3121793941267913344">Berrezarri <ph name="IDS_SHORT_PRODUCT_NAME" /> gailua</translation>
 <translation id="3122464029669770682">PUZ</translation>
 <translation id="3122496702278727796">Ezin izan da sortu datuen direktorioa</translation>
 <translation id="3124111068741548686">Erabiltzailearen heldulekuak</translation>
@@ -5493,7 +5492,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="7475671414023905704">Netscape galdutako pasahitzaren URLa</translation>
 <translation id="7476454130948140105">Ez daukazu eguneratzeko behar adina bateria (% <ph name="BATTERY_PERCENT" />)</translation>
 <translation id="7477793887173910789">Kontrolatu musika, bideoak eta beste</translation>
-<translation id="7478362879637727630">Chrome Education-eko gailu hau G Suite for Education-eko kontu batekin erregistratu behar duzu. Beste kontu bat erregistratzeko, joan https://g.co/workspace/edusignup helbidera.</translation>
 <translation id="7478485216301680444">Ezin izan da instalatu aplikazio espezializatua.</translation>
 <translation id="7479221278376295180">Memoriaren erabilerari buruzko informazio orokorra</translation>
 <translation id="7481312909269577407">Aurrera</translation>
@@ -6063,7 +6061,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8101987792947961127">Fabrikako ezarpenak berrezarri behar dira Powerwash bidez hurrengo aldiz berrabiaraztean</translation>
 <translation id="8102139037507939978">Kendu jendea pertsonalki identifikatzeko balio duen informazioa system_logs.txt dokumentutik.</translation>
 <translation id="8102159139658438129">Joan <ph name="LINK_BEGIN" />Ezarpenak<ph name="LINK_END" /> atalera eta ikusi konektatutako telefonoarekin egin dezakezuna</translation>
-<translation id="8104696615244072556">Berrezarri <ph name="IDS_SHORT_PRODUCT_NAME" /> gailuaren fabrikako ezarpenak eta itzuli aurreko bertsiora.</translation>
 <translation id="8107015733319732394">Google Play Store <ph name="DEVICE_TYPE" /> gailuan instalatzen ari gara. Minutu batzuk beharko ditugu.</translation>
 <translation id="810728361871746125">Pantailaren bereizmena</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Ez dago hirugarrenen cookierik}=1{Hirugarrenen 1 cookie blokeatu da}other{Hirugarrenen # cookie blokeatu dira}}</translation>

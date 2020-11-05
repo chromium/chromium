@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Визначає частоту оновлення екрана</translation>
 <translation id="1061904396131502319">Невдовзі час зробити перерву</translation>
 <translation id="1067048845568873861">Створено</translation>
+<translation id="1067291318998134776">Linux (бета-версія)</translation>
 <translation id="1067922213147265141">Інші сервіси Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Інша програма на вашому комп’ютері додала розширення, яке може впливати на роботу Chrome.
@@ -1377,7 +1378,6 @@
 <translation id="2562743677925229011">Ви не ввійшли в <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Виконання JavaScript через AppleScript вимкнено. Щоб увімкнути його, на панелі меню виберіть "Перегляд" &gt; "Для розробників" &gt; "Дозволити JavaScript від подій Apple". Щоб дізнатися більше, відвідайте сторінку https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Покращена перевірка орфографії</translation>
-<translation id="2566124945717127842">Виконайте Powerwash, щоб відновити заводські налаштування пристрою <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2568774940984945469">Контейнер інформаційної панелі</translation>
 <translation id="2571655996835834626">Змінювати налаштування, які контролюють доступ веб-сайтів до файлів cookie, файлів JavaScript, плагінів, даних геолокації, мікрофона, камери тощо.</translation>
 <translation id="2572032849266859634">Надано доступ лише для перегляду (<ph name="VOLUME_NAME" />).</translation>
@@ -1842,7 +1842,6 @@
 <translation id="3118319026408854581">Довідка <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">Спробуйте запустити Linux ще раз через кілька хвилин.</translation>
 <translation id="3120430004221004537">Недостатнє шифрування для цієї операції на пристрої <ph name="DEVICE_NAME" />.</translation>
-<translation id="3121793941267913344">Скинути налаштування цього пристрою <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="3122464029669770682">ЦП</translation>
 <translation id="3122496702278727796">Не вдалося створити каталог даних</translation>
 <translation id="3124111068741548686">Обробка КОРИСТУВАЧА</translation>
@@ -5493,7 +5492,6 @@
 <translation id="7475671414023905704">URL-адреса втраченого пароля Netscape</translation>
 <translation id="7476454130948140105">Акумулятор недостатньо заряджений, щоб оновити дані (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">Керуйте музикою, відео й іншим контентом</translation>
-<translation id="7478362879637727630">Зареєструйте цей пристрій із ліцензією Chrome Education в обліковому записі закладу освіти. Щоб зареєструвати новий обліковий запис, перейдіть на сторінку https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">Не вдалося встановити програму для терміналів.</translation>
 <translation id="7479221278376295180">Огляд використання пам'яті</translation>
 <translation id="7481312909269577407">Переслати</translation>
@@ -6064,7 +6062,6 @@
 <translation id="8101987792947961127">Під час наступного перезавантаження потрібно виконати Powerwash</translation>
 <translation id="8102139037507939978">Вилучити ідентифікаційну інформацію з файлу system_logs.txt.</translation>
 <translation id="8102159139658438129">Перейдіть у <ph name="LINK_BEGIN" />Налаштування<ph name="LINK_END" />, щоб переглянути параметри для підключеного телефона</translation>
-<translation id="8104696615244072556">Виконати Powerwash на вашому пристрої <ph name="IDS_SHORT_PRODUCT_NAME" /> і повернутися до попередньої версії.</translation>
 <translation id="8107015733319732394">Встановлення додатка Google Play Store на ваш <ph name="DEVICE_TYPE" />. Це може зайняти кілька хвилин.</translation>
 <translation id="810728361871746125">Роздільна здатність дисплея</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Немає файлів cookie третіх сторін}=1{Заблоковано 1 файл cookie третіх сторін}one{Заблоковано # файл cookie третіх сторін}few{Заблоковано # файли cookie третіх сторін}many{Заблоковано # файлів cookie третіх сторін}other{Заблоковано # файлу cookie третіх сторін}}</translation>

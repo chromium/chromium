@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">ဖန်သားပြင်အပ်ဒိတ်လုပ်သည့် ကြိမ်နှုန်းကို သတ်မှတ်ပေးသည်</translation>
 <translation id="1061904396131502319">ခေတ္တနားချိန် ရောက်တော့မည်</translation>
 <translation id="1067048845568873861">ပြုလုပ်ပြီးပါပြီ</translation>
+<translation id="1067291318998134776">Linux (စမ်းသပ်ဆော့ဖ်ဝဲ)</translation>
 <translation id="1067922213147265141">အခြား Google ဝန်ဆောင်မှုများ</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">သင့်ကွန်ပျူတာသို့ Chrome အလုပ်လုပ်ပုံပြောင်းလဲစေမည့် ပရိုဂရမ်အဆက်တစ်ခုကို အခြားပရိုဂရမ်တစ်ခုမှ ပေါင်းတည့်ခဲ့ပါသည်။
@@ -1378,7 +1379,6 @@
 <translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" />သို့ လက်မှတ်ထိုး မဝင်ထား</translation>
 <translation id="2564520396658920462">JavaScript ကို AppleScript မှတစ်ဆင့် ဖွင့်ခြင်းကို ပိတ်ထားသည်။ ၎င်းကို ဖွင့်ရန် မီနူးဘားမှနေ၍ မြင်ကွင်း &gt; ဆော့ဖ်ဝဲအင်ဂျင်နီယာ &gt; 'Apple ပွဲများ မှ JavaScript ကို ခွင့်ပြုပါ' သို့သွားပါ။ နောက်ထပ် အချက်အလက်များအတွက်− https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">ပိုမိုကောင်းမွန်အောင် ပြုလုပ်ထားသည့် စာလုံးပေါင်းစစ်ဆေးမှု</translation>
-<translation id="2566124945717127842">သင့် <ph name="IDS_SHORT_PRODUCT_NAME" /> စက်ပစ္စည်းကို အသစ်အတိုင်းပြန်ဖြစ်စေရန် ပါဝါဆေးကြောပါ။</translation>
 <translation id="2568774940984945469">အချက်လက်ဘား ကွန်တိန်နာ</translation>
 <translation id="2571655996835834626">ကွတ်ကီးများ၊ JavaScript၊ ပလတ်အင်များ၊ ပထဝီတည်နေရာ၊ မိုက်ကရိုဖုန်း၊ ကင်မရာ စသည့် ဝန်ဆောင်မှုများသို့ ဝဘ်ဆိုက်များ၏ ဝင်ကြည့်ခွင့်အား ထိန်းချုပ်သည့် ဆက်တင်များကို ပြောင်းပါ။</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> သို့ ဖတ်ရန်သာလျှင် ဝင်ခွင့်ပြု၏။</translation>
@@ -1843,7 +1843,6 @@
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" />အကူအညီ</translation>
 <translation id="3118654181216384296">ခဏအကြာတွင် Linux ကို ထပ်မံစတင်ကြည့်ပါ။</translation>
 <translation id="3120430004221004537">"<ph name="DEVICE_NAME" />" ရှိလုပ်ဆောင်မှုအတွက် လုံခြုံအောင်ပြုလုပ်ခြင်း လုံလောက်မှုမရှိပါ။</translation>
-<translation id="3121793941267913344">ဒီကိရိယာ<ph name="IDS_SHORT_PRODUCT_NAME" />ကို ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">ဒေတာ ဒါရိုက်ထရီ ဖန်တီးခြင်း မအောင်မြင်</translation>
 <translation id="3124111068741548686">USER လက်ကိုင်များ</translation>
@@ -5491,7 +5490,6 @@
 <translation id="7475671414023905704">Netscape ပျောက်ဆုံး စကားဝှက် URL</translation>
 <translation id="7476454130948140105">အပ်ဒိတ်လုပ်ရန် ဓာတ်ခဲအား အလွန်နည်းနေပါသည် (<ph name="BATTERY_PERCENT" />)</translation>
 <translation id="7477793887173910789">သင့်သီချင်း၊ ဗီဒီယိုနှင့် အခြားအရာများ ထိန်းချုပ်ရန်</translation>
-<translation id="7478362879637727630">ဤ 'Chrome ပညာရေး' စက်ပစ္စည်းကို ပညာရေးဆိုင်ရာအကောင့်တွင် စာရင်းသွင်းရပါမည်။ အကောင့်သစ်အတွက် စာရင်းသွင်းရန် https://g.co/workspace/edusignup တွင် ဝင်ကြည့်ပါ။</translation>
 <translation id="7478485216301680444">Kiosk အပလီကေးရှင်းကို မတပ်ဆင်နိုင်ခဲ့ပါ။</translation>
 <translation id="7479221278376295180">သိုလှောင်ခန်း အသုံးပြုမှု အနှစ်ချုပ်</translation>
 <translation id="7481312909269577407">ရှေ့သို့</translation>
@@ -6061,7 +6059,6 @@
 <translation id="8101987792947961127">နောက်တစ်ကြိမ် reboot လုပ်လျှင် Powerwash လိုအပ်သည်။</translation>
 <translation id="8102139037507939978">system_logs.txt မှ 'ပုဂ္ဂိုလ်ရေးအရ ခွဲခြားသတ်မှတ်သော အချက်အလက်' ကို ဖယ်ရှားနိုင်သည်။</translation>
 <translation id="8102159139658438129">သင်ချိတ်ထားသောဖုန်းအတွက် ရွေးစရာများ ကြည့်ရန် <ph name="LINK_BEGIN" />ဆက်တင်များ<ph name="LINK_END" /> သို့ သွားပါ</translation>
-<translation id="8104696615244072556">သင့် <ph name="IDS_SHORT_PRODUCT_NAME" /> စက်ပစ္စည်းအား powerwash လုပ်ပြီးနောက် ယခင်ဗားရှင်းသို့ ပြန်သွားရန်</translation>
 <translation id="8107015733319732394">သင့် <ph name="DEVICE_TYPE" /> တွင် Google Play စတိုးကို ထည့်သွင်းနေပါသည်။ မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။</translation>
 <translation id="810728361871746125">မျက်နှာပြင်ပြသမှုပုံရိပ် ပြတ်သားကိန်း</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{ပြင်ပအဖွဲ့အစည်း၏ ကွတ်ကီးများ မရှိပါ}=1{ပြင်ပအဖွဲ့အစည်း၏ ကွတ်ကီး ၁ ခုကို ပိတ်ထားသည်}other{ပြင်ပအဖွဲ့အစည်း၏ ကွတ်ကီး # ခုကို ပိတ်ထားသည်}}</translation>

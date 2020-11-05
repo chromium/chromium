@@ -125,7 +125,6 @@
 <translation id="2127372758936585790">ที่ชาร์จพลังงานต่ำ</translation>
 <translation id="2132302418721800944">บันทึกแบบเต็มหน้าจอ</translation>
 <translation id="2135456203358955318">แว่นขยายหน้าจอบางส่วน</translation>
-<translation id="2144487987174258011">รีสตาร์ทเพื่ออัปเดต Adobe Flash Player</translation>
 <translation id="2208323208084708176">โหมดเดสก์ท็อปแบบรวม</translation>
 <translation id="2220572644011485463">PIN หรือรหัสผ่าน</translation>
 <translation id="2222338659135520253">ต้องลงชื่อเข้าใช้</translation>
@@ -160,7 +159,6 @@
 <translation id="2435457462613246316">แสดงรหัสผ่าน</translation>
 <translation id="2473177541599297363">ยืนยันความละเอียด</translation>
 <translation id="2475982808118771221">มีข้อผิดพลาดเกิดขึ้น</translation>
-<translation id="2479579251444854687">ใช้ 3 นิ้วเลื่อนขึ้นเพื่อเปิด "ภาพรวม" และใช้ 3 นิ้วเลื่อนลงเพื่อปิด</translation>
 <translation id="2482878487686419369">การแจ้งเตือน</translation>
 <translation id="2484513351006226581">กด <ph name="KEYBOARD_SHORTCUT" /> เพื่อสลับรูปแบบแป้นพิมพ์</translation>
 <translation id="2501920221385095727">คีย์ติดหนึบ</translation>
@@ -371,7 +369,6 @@
 <translation id="4481530544597605423">อุปกรณ์ที่ไม่ได้จับคู่</translation>
 <translation id="4485060137115666462">เมื่อคลิกขวาหรือกดค้าง Assistant จะแสดงข้อมูล เช่น คำจำกัดความ คำแปล หรือการแปลงหน่วยของรายการที่คุณเลือก</translation>
 <translation id="4505050298327493054">โต๊ะทำงานที่ใช้งานอยู่</translation>
-<translation id="4506458088675900627">มีการเปลี่ยนแปลงท่าทางสัมผัส "ภาพรวม" ของทัชแพด</translation>
 <translation id="4513946894732546136">ข้อเสนอแนะ</translation>
 <translation id="4527045527269911712">อุปกรณ์บลูทูธ "<ph name="DEVICE_NAME" />" ต้องการสิทธิ์ในการจับคู่</translation>
 <translation id="453661520163887813">อีก <ph name="TIME" /> จะเต็ม</translation>
@@ -434,6 +431,7 @@
 <translation id="5033299697334913360">คลิกที่ใดก็ได้เพื่อจับภาพแบบเต็มหน้าจอ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> เชื่อมต่อโทรศัพท์เครื่องใหม่แล้ว</translation>
 <translation id="5035389544768382859">ยืนยันการกำหนดค่าจอแสดงผล</translation>
+<translation id="5078796286268621944">PIN ไม่ถูกต้อง</translation>
 <translation id="5083553833479578423">ใช้ฟีเจอร์จาก Assistant ได้มากขึ้น</translation>
 <translation id="5136175204352732067">เชื่อมต่อกับแป้นพิมพ์อื่นแล้ว</translation>
 <translation id="5168181903108465623">เครื่องส่งพร้อมใช้งาน</translation>

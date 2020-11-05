@@ -125,7 +125,6 @@
 <translation id="2127372758936585790">ပါဝါနိမ့် အားသွင်းစက်</translation>
 <translation id="2132302418721800944">ဖန်သားပြင်အပြည့် ရိုက်ကူးရန်</translation>
 <translation id="2135456203358955318">နေရာချထားသည့် မှန်ဘီလူး</translation>
-<translation id="2144487987174258011">Adobe Flash Player ကို အပ်ဒိတ်လုပ်ရန် ပြန်စပါ</translation>
 <translation id="2208323208084708176">တစ်စုတစ်စည်းတည်းပြ ဒက်စတော့ မုဒ်</translation>
 <translation id="2220572644011485463">ပင်နံပါတ် သို့မဟုတ် စကားဝှက်</translation>
 <translation id="2222338659135520253">လက်မှတ်ထိုးဝင်ရန် လိုအပ်သည်</translation>
@@ -160,7 +159,6 @@
 <translation id="2435457462613246316">စကားဝှက်ကို ပြပါ</translation>
 <translation id="2473177541599297363">ပုံရိပ်ပြတ်သားကိန်း အတည်ပြုခြင်း</translation>
 <translation id="2475982808118771221">အမှားတစ်ခု ဖြစ်ခဲ့သည်။</translation>
-<translation id="2479579251444854687">'အနှစ်ချုပ်' ဖွင့်ရန် လက်သုံးချောင်းဖြင့် အပေါ်သို့ပွတ်ဆွဲပြီး ပိတ်ရန် အောက်သို့ပွတ်ဆွဲပါ။</translation>
 <translation id="2482878487686419369">အကြောင်းကြားစာ</translation>
 <translation id="2484513351006226581">ကီးဘုတ်လက်ကွက် ပြောင်းရန် <ph name="KEYBOARD_SHORTCUT" /> ကို နှိပ်ပါ။</translation>
 <translation id="2501920221385095727">Sticky keys</translation>
@@ -371,7 +369,6 @@
 <translation id="4481530544597605423">ချိတ်ဆက်မှု ဖြုတ်ထားသည့် စက်ပစ္စည်းများ</translation>
 <translation id="4485060137115666462">ညာဘက်ခလုတ်ကိုနှိပ်လျှင် (သို့) ကြာရှည်စွာဖိထားလျှင် သင်ရွေးထားသည့်အရာအတွက် အဓိပ္ပာယ်ဖွင့်ဆိုချက်၊ ဘာသာပြန်ဆိုချက် (သို့) ယူနစ်ပြောင်းလဲခြင်းကဲ့သို့ အချက်အလက်များကို Assistant က ပြသည်။</translation>
 <translation id="4505050298327493054">အသုံးပြုနေသော နေရာ။</translation>
-<translation id="4506458088675900627">'အနှစ်ချုပ်' တာ့ချ်ပက် လက်ဟန်ကို ပြောင်းလိုက်သည်</translation>
 <translation id="4513946894732546136">အကြံပြုချက်</translation>
 <translation id="4527045527269911712">ဘလူးတုသ် ကိရိယာ "<ph name="DEVICE_NAME" />" က ချိတ်တွဲရန် ခွင့်ပြုချက် ရယူလိုသည်။</translation>
 <translation id="453661520163887813">ပြည့်သည်အထိ <ph name="TIME" /></translation>
@@ -434,6 +431,7 @@
 <translation id="5033299697334913360">ဖန်သားပြင်အပြည့် ရိုက်ယူရန် မည်သည့်နေရာကိုမဆို နှိပ်ပါ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> က ဖုန်းအသစ်သို့ ချိတ်ဆက်ထားသည်</translation>
 <translation id="5035389544768382859">ဖန်သားပြင် စီစဉ်သတ်မှတ်မှု အတည်ပြုခြင်း</translation>
+<translation id="5078796286268621944">မမှန်ကန်သည့် ပင်ကုဒ်</translation>
 <translation id="5083553833479578423">နောက်ထပ် Assistant ဝန်ဆောင်မှုများကို ဖွင့်ပါ</translation>
 <translation id="5136175204352732067">မတူညီသည့် ကီးဘုတ်ကို ချိတ်ဆက်ထားသည်</translation>
 <translation id="5168181903108465623">Cast စက်ကိရိယာများ ရနိုင်၏</translation>

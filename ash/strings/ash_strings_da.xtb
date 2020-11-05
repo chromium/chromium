@@ -125,7 +125,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2127372758936585790">Oplader ved lav kraft</translation>
 <translation id="2132302418721800944">Optag hele skærmen</translation>
 <translation id="2135456203358955318">Fastgjort lupvindue</translation>
-<translation id="2144487987174258011">Genstart for at opdatere Adobe Flash Player</translation>
 <translation id="2208323208084708176">Samlet skrivebordstilstand</translation>
 <translation id="2220572644011485463">Pin- eller adgangskode</translation>
 <translation id="2222338659135520253">Login er påkrævet</translation>
@@ -160,7 +159,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2435457462613246316">Vis adgangskode</translation>
 <translation id="2473177541599297363">Bekræft opløsningen</translation>
 <translation id="2475982808118771221">Der opstod en fejl</translation>
-<translation id="2479579251444854687">Stryg opad med tre fingre for at åbne oversigten, og stryg nedad for at lukke den.</translation>
 <translation id="2482878487686419369">Notifikationer</translation>
 <translation id="2484513351006226581">Tryk på <ph name="KEYBOARD_SHORTCUT" /> for at skifte tastaturlayout.</translation>
 <translation id="2501920221385095727">Træge taster</translation>
@@ -371,7 +369,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4481530544597605423">Ikke-parrede enheder</translation>
 <translation id="4485060137115666462">Når du højreklikker eller bruger langt tryk, viser Google Assistent oplysninger som f.eks. definition, oversættelse eller enhedsomregning for den tekst, du har markeret.</translation>
 <translation id="4505050298327493054">Aktivt skrivebord.</translation>
-<translation id="4506458088675900627">Touchpadbevægelsen for Oversigt har ændret sig</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4527045527269911712">Bluetooth-enheden "<ph name="DEVICE_NAME" />" vil gerne have parringstilladelse.</translation>
 <translation id="453661520163887813">Fuldt opladet om <ph name="TIME" /></translation>
@@ -434,6 +431,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="5033299697334913360">Klik et vilkårligt sted for at tage et billede af hele skærmen</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> har oprettet forbindelse til en ny telefon</translation>
 <translation id="5035389544768382859">Bekræft skærmkonfiguration</translation>
+<translation id="5078796286268621944">Forkert pinkode</translation>
 <translation id="5083553833479578423">Få adgang til endnu flere Assistent-funktioner.</translation>
 <translation id="5136175204352732067">Du har tilsluttet et andet tastatur</translation>
 <translation id="5168181903108465623">Tilgængelige Cast-enheder</translation>

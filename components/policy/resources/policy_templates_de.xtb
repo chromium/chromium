@@ -833,31 +833,6 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       Wenn Sie "<ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" />" festlegen (Wert: 1), werden nur Variationen für <ph name="PRODUCT_NAME" /> angewendet, die als wichtige Sicherheits- oder Stabilitätskorrekturen gewertet werden.
 
       Wenn Sie "<ph name="VARIATIONS_DISABLED_OPTION_NAME" />" festlegen (Wert: 2), werden keine Variationen auf den Browser angewendet. Dieser Modus kann die <ph name="PRODUCT_NAME" />-Entwickler möglicherweise daran hindern, wichtige Sicherheitskorrekturen zeitnah durchzuführen. Er wird daher nicht empfohlen.</translation>
-<translation id="2402140031630105556">Konfiguriert eine Liste mit Regeln zur Vermeidung von Datenlecks in <ph name="PRODUCT_OS_NAME" />.
-      Datenlecks können unter anderem beim Kopieren und Einfügen von Daten, beim Übertragen von Dateien, beim Drucken, bei der Bildschirmfreigabe oder beim Aufnehmen von Screenshots auftreten.
-
-Jede Regel hat folgende Bestandteile:
-- Eine Liste von Quellen, die als URLs definiert sind. Alle Daten in den Quellen werden als vertrauliche Daten behandelt, auf die Einschränkungen angewendet werden.
-      - Eine Liste von Zielen, die als URLs oder Komponenten definiert sind, für die vertrauliche Daten entweder freigegeben oder nicht freigegeben werden dürfen.
-      - Eine Liste von Einschränkungen, die auf die Daten der Quellen angewendet werden.
-
-      Regeln können hinzugefügt werden, um Einschränkungen für Folgendes zu steuern:
-- Daten in der Zwischenablage, die zwischen Quellen und Zielen geteilt werden
-      - Die Aufnahme von Screenshots der Quellen
-      - Das Drucken von Quellen
-      - Die Privatsphärefunktion, wenn eine der Quellen sichtbar ist
-
-      Die Einschränkungsebene kann mit BLOCK oder ALLOW festgelegt werden.
-      - Wenn die Einschränkung auf BLOCK gesetzt ist, wird die Aktion nicht zugelassen.
-      - Wenn die Einschränkung auf ALLOW gesetzt ist, wird die Aktion zugelassen.
-
-      Hinweise:
-- Die Einschränkung PRIVACY_SCREEN blockiert nicht das Aktivieren der Privatsphärefunktion, sondern erzwingt diese, wenn die Einschränkungsklasse auf BLOCK gesetzt ist.
-      - Ziele dürfen nicht leer sein, für den Fall, dass eine der Einschränkungen CLIPBOARD lautet. Sie wirken sich nicht auf andere Einschränkungen aus.
-      - Bei der Einschränkung CLIPBOARD kann nicht zwischen CROSTINI und PLUGIN_VM unterschieden werden. Wenn eines davon ausgewählt wird, um die Datenfreigabe zu blockieren oder zuzulassen, wird die Regel auf beide angewendet.
-      - Formatieren Sie die URL-Muster entsprechend diesem Format (https://www.chromium.org/administrators/url-blacklist-filter-format).
-
-Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewendet.</translation>
 <translation id="2411629345938804022">Wenn die Richtlinie auf "3" gesetzt ist, können Websites den Zugriff auf Bluetooth-Geräte in der Nähe anfragen. Wenn die Richtlinie auf "2" gesetzt ist, wird der Zugriff auf Bluetooth-Geräte in der Nähe verweigert.
 
       Wird sie nicht konfiguriert, können Websites den Zugriff anfragen, Nutzer können diese Einstellung jedoch ändern.</translation>

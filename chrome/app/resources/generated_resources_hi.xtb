@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">स्क्रीन अपडेट होने की दर तय की जाती है</translation>
 <translation id="1061904396131502319">ब्रेक लेने का समय होने वाला है</translation>
 <translation id="1067048845568873861">निर्मित</translation>
+<translation id="1067291318998134776">Linux (बीटा)</translation>
 <translation id="1067922213147265141">Google की दूसरी सेवाएंं</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">आपके कंप्‍यूटर पर किसी अन्‍य प्रोग्राम ने ऐसा एक्‍सटेंशन जोड़ा है जो Chrome के काम करने के तरीके को बदल सकता है.
@@ -1377,7 +1378,6 @@
 <translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" /> में प्रवेश नहीं है</translation>
 <translation id="2564520396658920462">AppleScript के ज़रिए JavaScript काम में लेने की सुविधा बंद है. उसे चालू करने के लिए, मेन्यू बार से, View &gt; Developer &gt; Allow JavaScript from Apple Events पर जाएं. ज़्यादा जानकारी के लिए: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">वर्तनी की बेहतर जांच</translation>
-<translation id="2566124945717127842">अपने <ph name="IDS_SHORT_PRODUCT_NAME" /> डिवाइस को बिल्कुल नए जैसा रीसेट करने के लिए पावरवॉश करें.</translation>
 <translation id="2568774940984945469">जानकारी बार कंटेनर</translation>
 <translation id="2571655996835834626">कुकी, JavaScript, प्लग इन, भौगोलिक स्थान, माइक्रोफ़ोन, कैमरा वगैरह जैसी सुविधाओं तक वेबसाइट का ऐक्सेस नियंत्रित करने वाली सेटिंग में बदलाव करें.</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> को सिर्फ़ पढ़ने के लिए एक्सेस दी गई है.</translation>
@@ -1842,7 +1842,6 @@
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" />सहायता</translation>
 <translation id="3118654181216384296">कृपया Linux को कुछ देर बाद शुरू करें.</translation>
 <translation id="3120430004221004537">दी गई कार्रवाई के लिए इस पर सुरक्षित करने का तरीका काफी नहीं है: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344">इस <ph name="IDS_SHORT_PRODUCT_NAME" /> डिवाइस को रीसेट करें</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">डेटा निर्देशिका बनाने में विफल</translation>
 <translation id="3124111068741548686">उपयोगकर्ता हैंडल</translation>
@@ -5492,7 +5491,6 @@
 <translation id="7475671414023905704">Netscape खोए पासवर्ड का URL</translation>
 <translation id="7476454130948140105">अपडेट करने के लिए बैटरी बहुत कम है (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">अपने संगीत और वीडियो के साथ दूसरी चीज़ें नियंत्रित करें</translation>
-<translation id="7478362879637727630">किसी 'शिक्षा के लिए G Suite' खाते में इस Chrome Education डिवाइस का नाम दर्ज करना ज़रूरी है. नए खाते के लिए, कृपया https://g.co/workspace/edusignup पर जाकर, साइन अप करें.</translation>
 <translation id="7478485216301680444">कियोस्क ऐप्स  इंस्टॉल नहीं किया जा सका.</translation>
 <translation id="7479221278376295180">मेमोरी के इस्तेमाल की खास जानकारी</translation>
 <translation id="7481312909269577407">आगे जाएं</translation>
@@ -6062,7 +6060,6 @@
 <translation id="8101987792947961127">अगली बार रीबूट करने पर पावरवॉश ज़रूरी है</translation>
 <translation id="8102139037507939978">system_logs.txt से, व्यक्तिगत पहचान ज़ाहिर करने वाली जानकारी को हटाएं.</translation>
 <translation id="8102159139658438129">अपने जुड़े हुए फ़ोन के विकल्प देखने के लिए <ph name="LINK_BEGIN" />सेटिंग<ph name="LINK_END" /> पर जाएं</translation>
-<translation id="8104696615244072556">अपने <ph name="IDS_SHORT_PRODUCT_NAME" /> डिवाइस को पावरवॉश करें और पिछले वर्ज़न पर वापस लौटें.</translation>
 <translation id="8107015733319732394">आपके <ph name="DEVICE_TYPE" /> पर Google Play स्टोर इंस्टॉल हो रहा है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="810728361871746125">डिसप्ले का रिज़ॉल्यूशन</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{तीसरे पक्ष की कोई कुकी नहीं है}=1{तीसरे पक्ष की 1 कुकी ब्लॉक की गई है}one{तीसरे पक्ष की # कुकी ब्लॉक की गई हैं}other{तीसरे पक्ष की # कुकी ब्लॉक की गई हैं}}</translation>

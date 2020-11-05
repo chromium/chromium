@@ -125,7 +125,6 @@
 <translation id="2127372758936585790">নিম্ন শক্তির চার্জার</translation>
 <translation id="2132302418721800944">ফুল স্ক্রিন রেকর্ড করুন</translation>
 <translation id="2135456203358955318">ডক করা ম্যাগনিফায়ার</translation>
-<translation id="2144487987174258011">Adobe ফ্ল্যাশ প্লেয়ার আপডেট করার জন্য বন্ধ করে আবার চালু করুন</translation>
 <translation id="2208323208084708176">একীভূত ডেস্কটপ মোড</translation>
 <translation id="2220572644011485463">PIN বা পাসওয়ার্ড</translation>
 <translation id="2222338659135520253">সাইন-ইন করা প্রয়োজন</translation>
@@ -160,7 +159,6 @@
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
 <translation id="2473177541599297363">রেজোলিউশন কনফার্ম করুন</translation>
 <translation id="2475982808118771221">একটি ত্রুটি ঘটেছে</translation>
-<translation id="2479579251444854687">ওভারভিউ দেখতে তিন আঙুল ব্যবহার করে উপরের দিকে বা বন্ধ করতে নিচের দিকে সোয়াইপ করুন।</translation>
 <translation id="2482878487686419369">বিজ্ঞপ্তিগুলি</translation>
 <translation id="2484513351006226581">কীবোর্ড লে-আউট পরিবর্তন করতে <ph name="KEYBOARD_SHORTCUT" /> টিপুন।</translation>
 <translation id="2501920221385095727">স্টিকি কীজ</translation>
@@ -371,7 +369,6 @@
 <translation id="4481530544597605423">বিযুক্ত করা ডিভাইসগুলি</translation>
 <translation id="4485060137115666462">রাইট-ক্লিক করলে বা বেশিক্ষণ টিপে ধরে রাখলে, Assistant আপনার বেছে নেওয়া আইটেমের সংজ্ঞা, অনুবাদ বা ইউনিট রূপান্তরের মতো বিভিন্ন তথ্য দেখায়।</translation>
 <translation id="4505050298327493054">অ্যাক্টিভ ডেস্কটপ।</translation>
-<translation id="4506458088675900627">ওভারভিউ টাচপ্যাড জেসচার পরিবর্তন করা হয়েছে</translation>
 <translation id="4513946894732546136">প্রতিক্রিয়া</translation>
 <translation id="4527045527269911712">ব্লুটুথ ডিভাইস "<ph name="DEVICE_NAME" />" যুক্ত করার অনুমতি চাইছে।</translation>
 <translation id="453661520163887813">সম্পূর্ণ হতে <ph name="TIME" /> বাকি</translation>
@@ -434,6 +431,7 @@
 <translation id="5033299697334913360">সম্পূর্ণ স্ক্রিন ক্যাপচার করতে যেকোনও জায়গায় ক্লিক করুন</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />টি নতুন ফোনে কানেক্ট করা হয়েছে</translation>
 <translation id="5035389544768382859">ডিসপ্লে কনফিগারেশন কনফার্ম করুন</translation>
+<translation id="5078796286268621944">ভুল পিন</translation>
 <translation id="5083553833479578423">অ্যাসিস্ট্যান্ট-এর আরও বৈশিষ্ট্য আনলক করুন।</translation>
 <translation id="5136175204352732067">বিভিন্ন কীবোর্ড কানেক্ট করা হয়েছে</translation>
 <translation id="5168181903108465623">কাস্ট ডিভাইসগুলি উপলব্ধ</translation>

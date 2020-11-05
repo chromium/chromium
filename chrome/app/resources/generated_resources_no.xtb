@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Bestemmer frekvensen for skjermoppdateringer</translation>
 <translation id="1061904396131502319">Snart tid for en pause</translation>
 <translation id="1067048845568873861">Opprettet</translation>
+<translation id="1067291318998134776">Linux (beta)</translation>
 <translation id="1067922213147265141">Andre Google-tjenester</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Et annet program på datamaskinen la til en utvidelse som kan endre måten Chrome fungerer på.
@@ -1374,7 +1375,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2562743677925229011">Ikke logget på <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Kjøring av JavaScript gjennom AppleScript er slått av. For å slå det på, gå til menylinjen og velg Vis &gt; Utvikler &gt; Tillat JavaScript fra Apple Events. For mer informasjon, se: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Bedre stavekontroll</translation>
-<translation id="2566124945717127842">Kjør Powerwash for å tilbakestille <ph name="IDS_SHORT_PRODUCT_NAME" />-enheten så den blir som ny.</translation>
 <translation id="2568774940984945469">Beholder for inforad</translation>
 <translation id="2571655996835834626">Endre innstillingene som styrer nettsteders tilgang til elementer som informasjonskapsler, JavaScript, programtillegg, geolokalisering, mikrofon, kamera osv.</translation>
 <translation id="2572032849266859634">Skrivebeskyttet tilgang til <ph name="VOLUME_NAME" /> er innvilget.</translation>
@@ -1839,7 +1839,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3118319026408854581">Hjelp for <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">Prøv å starte Linux igjen om en liten stund.</translation>
 <translation id="3120430004221004537">Utilstrekkelig kryptering for en angitt operasjon på: «<ph name="DEVICE_NAME" />».</translation>
-<translation id="3121793941267913344">Tilbakestill denne <ph name="IDS_SHORT_PRODUCT_NAME" />-enheten</translation>
 <translation id="3122464029669770682">Prosessor</translation>
 <translation id="3122496702278727796">Kan ikke opprette datakatalog</translation>
 <translation id="3124111068741548686">BRUKEREN håndterer</translation>
@@ -5488,7 +5487,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7475671414023905704">Nettadresse for mistet passord – Netscape</translation>
 <translation id="7476454130948140105">Det er for lite batteri igjen til å starte oppdateringen (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7477793887173910789">Styr musikk, video og mer</translation>
-<translation id="7478362879637727630">Du må registrere denne Chrome Education-enheten på en utdanningskonto. For å registrere en ny konto, gå til https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">Kiosk-appen kunne ikke installeres.</translation>
 <translation id="7479221278376295180">Oversikt over bruk av lagring</translation>
 <translation id="7481312909269577407">Frem</translation>
@@ -6059,7 +6057,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8101987792947961127">Powerwash kreves ved neste omstart</translation>
 <translation id="8102139037507939978">Fjern personlig identifiserende informasjon fra system_logs.txt.</translation>
 <translation id="8102159139658438129">Gå til <ph name="LINK_BEGIN" />Innstillinger<ph name="LINK_END" /> for å se alternativer for den tilkoblede telefonen</translation>
-<translation id="8104696615244072556">Kjør Powerwash på <ph name="IDS_SHORT_PRODUCT_NAME" />-enheten din og gå tilbake til forrige versjon.</translation>
 <translation id="8107015733319732394">Installerer Google Play-butikken på <ph name="DEVICE_TYPE" />-enheten din. Dette kan ta noen minutter.</translation>
 <translation id="810728361871746125">Skjermoppløsning</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Ingen informasjonskapsler fra tredjeparter}=1{1 informasjonskapsel fra en tredjepart er blokkert}other{# informasjonskapsler fra tredjeparter er blokkert}}</translation>

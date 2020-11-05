@@ -835,31 +835,6 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
       Als je <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (waarde 1) instelt, mogen alleen varianten die worden beschouwd als essentiële beveiligings- of stabiliteitsoplossingen, worden toegepast op <ph name="PRODUCT_NAME" />.
 
       Als je <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (waarde 2) instelt, mag geen van de varianten worden toegepast op de browser. Deze modus kan er potentieel voor zorgen dat <ph name="PRODUCT_NAME" />-ontwikkelaars essentiële beveiligingsoplossingen niet tijdig kunnen leveren en wordt dus niet aanbevolen.</translation>
-<translation id="2402140031630105556">Hiermee stel je een lijst op met regels ter voorkoming van datalekken op <ph name="PRODUCT_OS_NAME" />.
-      Een datalek kan optreden als je gegevens kopieert en plakt, gegevens overdraagt, afdrukt, je scherm deelt of screenshots maakt, enzovoort.
-
-      Elke regel bevat het volgende:
-      - Een lijst met bronnen die zijn gedefinieerd als URL's. Alle gegevens in de bronnen worden beschouwd als vertrouwelijk en hierop worden de beperkingen toegepast.
-      - Een lijst met bestemmingen die zijn gedefinieerd als URL's of componenten, waarmee de vertrouwelijke gegevens wel of niet mogen worden gedeeld.
-      - Een lijst met beperkingen die op de gegevens van de bronnen moeten worden toegepast.
-
-      Regels kunnen om deze redenen worden toegevoegd:
-      - Bepalen welke klembordgegevens mogen worden gedeeld tussen de bronnen en de bestemmingen.
-      - Bepalen of er screenshots van de bronnen mogen worden gemaakt.
-      - Bepalen of er bronnen mogen worden afgedrukt.
-      - Bepalen of het privacyscherm moet worden gebruikt als er bronnen zichtbaar zijn.
-
-      Het beperkingsniveau kan worden ingesteld op BLOCK of ALLOW.
-      - Als de beperking is ingesteld op BLOCK, is de actie niet toegestaan.
-      - Als de beperking is ingesteld op ALLOW, is de actie toegestaan.
-
-      Opmerkingen:
-      - Met de beperking PRIVACY_SCREEN blokkeer je niet de mogelijkheid om het privacyscherm in te schakelen maar dwing je dit af als de beperkingsklasse is ingesteld op BLOCK.
-      - Bestemmingen mogen niet leeg zijn als een van de beperkingen CLIPBOARD is, maar ze maken geen verschil voor de overige beperkingen.
-      - De beperking CLIPBOARD maakt geen onderscheid tussen CROSTINI en PLUGIN_VM. Als een van de twee is geselecteerd om het delen van gegevens te blokkeren of toe te staan, wordt de regel op beide toegepast.
-      - Gebruik een notatie voor de URL-patronen volgens deze indeling (https://www.chromium.org/administrators/url-blacklist-filter-format).
-
-      Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</translation>
 <translation id="2411629345938804022">Als je het beleid instelt op 3, kunnen websites vragen om toegang tot bluetooth-apparaten in de buurt. Als je het beleid instelt op 2, wordt de toegang tot bluetooth-apparaten in de buurt geblokkeerd.
 
       Als je het beleid niet instelt, kunnen sites om toegang vragen maar kunnen gebruikers deze instelling wijzigen.</translation>

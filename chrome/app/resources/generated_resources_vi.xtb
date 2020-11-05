@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Xác định tần suất cập nhật màn hình</translation>
 <translation id="1061904396131502319">Sắp đến giờ nghỉ giải lao</translation>
 <translation id="1067048845568873861">Đã tạo</translation>
+<translation id="1067291318998134776">Linux (Beta)</translation>
 <translation id="1067922213147265141">Các dịch vụ khác của Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Một chương trình khác trên máy tính của bạn đã thêm một tiện ích có thể thay đổi cách Chrome hoạt động.
@@ -1377,7 +1378,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2562743677925229011">Chưa được đăng nhập vào <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Tùy chọn thực thi JavaScript qua AppleScript đã bị tắt. Để bật tùy chọn này, từ thanh menu, hãy chuyển đến Xem&gt; Nhà phát triển &gt; Cho phép JavaScript từ Apple Events. Để biết thêm thông tin, hãy truy cập vào https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Cải thiện khả năng kiểm tra chính trả</translation>
-<translation id="2566124945717127842">Powerwash để đặt lại thiết bị <ph name="IDS_SHORT_PRODUCT_NAME" /> của bạn giống như mới.</translation>
 <translation id="2568774940984945469">Bộ chứa Thanh thông tin</translation>
 <translation id="2571655996835834626">Thay đổi các tùy chọn cài đặt kiểm soát quyền truy cập vào các tính năng của trang web, chẳng hạn như cookie, JavaScript, plugin, vị trí địa lý, micrô, máy ảnh, v.v.</translation>
 <translation id="2572032849266859634">Quyền truy cập chỉ đọc vào <ph name="VOLUME_NAME" /> đã được cấp.</translation>
@@ -1842,7 +1842,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3118319026408854581">Trợ giúp <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">Vui lòng thử khởi động lại Linux sau giây lát.</translation>
 <translation id="3120430004221004537">Mã hóa không đầy đủ đối với một tác vụ cụ thể trên: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344">Đặt lại thiết bị <ph name="IDS_SHORT_PRODUCT_NAME" /> này</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Lỗi tạo Thư mục Dữ liệu</translation>
 <translation id="3124111068741548686">Quản lý NGƯỜI DÙNG</translation>
@@ -5493,7 +5492,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7475671414023905704">URL Mật khẩu đã Mất của Netscape</translation>
 <translation id="7476454130948140105">Pin quá yếu để cập nhật (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">Điều khiển nhạc, video và nhiều nội dung khác</translation>
-<translation id="7478362879637727630">Bạn phải đăng ký thiết bị này (thiết bị sử dụng giấy phép Chrome Education) bằng một tài khoản thuộc tổ chức giáo dục. Để thiết lập tài khoản mới, vui lòng truy cập vào https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">Không thể cài đặt ứng dụng kiosk.</translation>
 <translation id="7479221278376295180">Phần tổng quan về mức sử dụng bộ nhớ</translation>
 <translation id="7481312909269577407">Chuyển tiếp</translation>
@@ -6064,7 +6062,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8101987792947961127">Yêu cầu Powerwash trong lần khởi động lại tiếp theo</translation>
 <translation id="8102139037507939978">Xóa thông tin nhận dạng cá nhân khỏi tệp system_logs.txt.</translation>
 <translation id="8102159139658438129">Chuyển tới mục <ph name="LINK_BEGIN" />Cài đặt<ph name="LINK_END" /> để xem các tùy chọn cho điện thoại đã kết nối</translation>
-<translation id="8104696615244072556">Powerwash thiết bị <ph name="IDS_SHORT_PRODUCT_NAME" /> của bạn và quay lại phiên bản trước.</translation>
 <translation id="8107015733319732394">Đang cài đặt Cửa hàng Google Play trên <ph name="DEVICE_TYPE" /> của bạn. Quá trình này có thể mất vài phút.</translation>
 <translation id="810728361871746125">Độ phân giải màn hình</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Không có cookie bên thứ ba}=1{Đã chặn 1 cookie bên thứ ba}other{Đã chặn # cookie bên thứ ba}}</translation>

@@ -312,6 +312,7 @@
 <translation id="214556005048008348">ክፍያን ሰርዝ</translation>
 <translation id="2147827593068025794">የጀርባ ስምረት</translation>
 <translation id="2148613324460538318">ካርድ አክል</translation>
+<translation id="2149968176347646218">ግንኙነትዎ ደህንነቱ የተጠበቀ አይደለም</translation>
 <translation id="2154054054215849342">ስምረት ለእርስዎ ጎራ አይገኝም</translation>
 <translation id="2154484045852737596">ካርትን ያርትዑ</translation>
 <translation id="2161656808144014275">ጽሑፍ</translation>
@@ -1159,6 +1160,7 @@
 <translation id="5571083550517324815">ከዚህ አድራሻ ላይ መውሰድ አይቻልም። የተለየ አድራሻ ይምረጡ።</translation>
 <translation id="5580958916614886209">የእርስዎን የአገልግሎት ማብቂያ ወር ይመልከቱ እና እንደገና ይሞክሩ</translation>
 <translation id="5586446728396275693">ምንም የተቀመጡ አድራሻዎች የሉም</translation>
+<translation id="5593349413089863479">ግንኙነት ሙሉ በሙሉ ደህንነቱ የተጠበቀ አይደለም</translation>
 <translation id="5595485650161345191">አድራሻ አርትዕ</translation>
 <translation id="5598944008576757369">የመክፈያ ዘዴ ይምረጡ</translation>
 <translation id="560412284261940334">አስተዳደር አይደገፍም</translation>
@@ -1877,6 +1879,7 @@
 <translation id="8507227106804027148">የትዕዛዝ መስመር</translation>
 <translation id="8508648098325802031">የፍለጋ አዶ</translation>
 <translation id="8522552481199248698">Chrome የGoogle መለያዎን እንዲጠብቁ እና የይለፍ ቃልዎን እንዲቀይሩት ያግዘዎታል።</translation>
+<translation id="8525306231823319788">ሙሉ ማያ ገጽ</translation>
 <translation id="8530813470445476232">የእርስዎን የአሰሳ ታሪክ፣ ኩኪዎች፣ መሸጎጫዎች እና ተጨማሪ በChrome ቅንብሮች ውስጥ ያጽዱ</translation>
 <translation id="8533619373899488139">የታገዱ የዩአርኤሎች ዝርዝር እና ሌሎች በሥርዓት አስተዳዳሪዎ አስገዳጅነት የተሰጣቸው መመሪያዎችን ለማየት &lt;strong&gt;chrome://policy&lt;/strong&gt;ን ይጎብኙ።</translation>
 <translation id="8541158209346794904">የብሉቱዝ መሣሪያ</translation>

@@ -314,6 +314,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="3285080554353377245">Video's oor hoe om Chrome te gebruik</translation>
 <translation id="3288003805934695103">Die bladsy herlaai</translation>
 <translation id="32895400574683172">Kennisgewings word toegelaat</translation>
+<translation id="3290991969712132877">Voeg hierdie bladsy by jou tuisskerm deur die Meer Opsies-knoppie om vinniger hierheen te kom</translation>
 <translation id="3295530008794733555">Blaai vinniger. Gebruik minder data.</translation>
 <translation id="3298243779924642547">Lig</translation>
 <translation id="3303414029551471755">Gaan voort om die inhoud af te laai?</translation>
@@ -470,6 +471,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4532845899244822526">Kies vouer</translation>
 <translation id="4538018662093857852">Skakel Ligte Modus aan</translation>
 <translation id="4550003330909367850">Stel skermslot op hierdie toestel op om jou wagwoord hier te bekyk of te kopieer.</translation>
+<translation id="4557685098773234337">Voeg hierdie bladsy by jou tuisskerm om vinniger hierheen te kom</translation>
 <translation id="4558311620361989323">Webbladkortpaaie</translation>
 <translation id="4561979708150884304">Geen verbinding nie</translation>
 <translation id="4565377596337484307">Versteek wagwoord</translation>
@@ -499,6 +501,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4720982865791209136">Help om Chrome te verbeter. <ph name="BEGIN_LINK" />Neem aan die opname deel<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">Sien jou topwerwe</translation>
 <translation id="4732120983431207637">Stapellosdraaier</translation>
+<translation id="4732693703583195378">Voeg hierdie werf by jou tablet se tuisskerm sodat jy makliker hierheen kan kom</translation>
 <translation id="4738836084190194332">Laas gesinkroniseer: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Maak 'n nuwe oortjie oop</translation>
 <translation id="4759238208242260848">Aflaaie</translation>
@@ -536,6 +539,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4925120120285606924">Skermkiekie <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Jou wagwoorde sal as 'n tekslêer uitgevoer en afgelaai word. Hulle sal sigbaar wees vir almal en enige program met toegang tot die bestemminglêer.</translation>
 <translation id="4932247056774066048">Jou Chrome-data sal van hierdie toestel af uitgevee word omdat jy uitteken by 'n rekening wat deur <ph name="DOMAIN_NAME" /> bestuur word. Dit sal in jou Google-rekening bly.</translation>
+<translation id="4936039914467572121">Gaan vinniger na hierdie werf toe</translation>
 <translation id="4943703118917034429">Virtuele realiteit</translation>
 <translation id="4943872375798546930">Geen resultate nie</translation>
 <translation id="4961107849584082341">Vertaal hierdie bladsy in enige taal</translation>
@@ -647,6 +651,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5763382633136178763">Incognito-oortjies</translation>
 <translation id="5763514718066511291">Tik om hierdie program se URL te kopieer</translation>
 <translation id="5765780083710877561">Beskrywing:</translation>
+<translation id="5767013862801005129">Het <ph name="TAB_TITLE" />, oortjie, teruggestel</translation>
 <translation id="5776970333778123608">Onbelangrike data</translation>
 <translation id="5793665092639000975">Gebruik tans <ph name="SPACE_USED" /> van <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Soek en blaai</translation>
@@ -952,6 +957,7 @@ Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <p
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Loer later weer in vir nuwe stories</translation>
 <translation id="7791543448312431591">Voeg by</translation>
+<translation id="7798392620021911922">Het <ph name="TAB_COUNT" /> oortjies teruggestel</translation>
 <translation id="780301667611848630">Nee, dankie</translation>
 <translation id="7810647596859435254">Maak oop met …</translation>
 <translation id="7821588508402923572">Jou databesparing sal hier verskyn</translation>
@@ -1137,6 +1143,7 @@ Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <p
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Wys oorspronklike</translation>
 <translation id="9148126808321036104">Meld weer aan …</translation>
+<translation id="9149286894143103695">Voeg hierdie werf by jou foon se tuisskerm sodat jy makliker hierheen kan kom</translation>
 <translation id="9155898266292537608">Jy kan ook soek met 'n vinnige tik op 'n woord</translation>
 <translation id="9169507124922466868">Navigasiegeskiedenis is half oopgemaak</translation>
 <translation id="9191031968346938109">Voeg by …</translation>

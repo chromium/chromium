@@ -316,6 +316,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="214556005048008348">Otkaži plaćanje</translation>
 <translation id="2147827593068025794">Sinkronizacija u pozadini</translation>
 <translation id="2148613324460538318">Dodaj karticu</translation>
+<translation id="2149968176347646218">Veza nije sigurna</translation>
 <translation id="2154054054215849342">Sinkronizacija nije dostupna za vašu domenu</translation>
 <translation id="2154484045852737596">Uredite karticu</translation>
 <translation id="2161656808144014275">Tekst</translation>
@@ -1169,6 +1170,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5571083550517324815">Preuzimanje na toj adresi nije moguće. Odaberite drugu adresu.</translation>
 <translation id="5580958916614886209">Provjerite mjesec isteka, pa pokušajte ponovo</translation>
 <translation id="5586446728396275693">Nema nijedne spremljene adrese</translation>
+<translation id="5593349413089863479">Veza nije potpuno sigurna</translation>
 <translation id="5595485650161345191">Uređivanje adrese</translation>
 <translation id="5598944008576757369">Odaberite način plaćanja</translation>
 <translation id="560412284261940334">Upravljanje nije podržano</translation>
@@ -1887,6 +1889,7 @@ Dodatne pojedinosti:
 <translation id="8507227106804027148">Naredbeni redak</translation>
 <translation id="8508648098325802031">Ikona pretraživanja</translation>
 <translation id="8522552481199248698">Chrome vam može pomoći da zaštitite svoj Google račun i promijenite zaporku.</translation>
+<translation id="8525306231823319788">Cijeli zaslon</translation>
 <translation id="8530813470445476232">Izbrišite povijest pregledavanja, kolačiće, predmemoriju i još mnogo toga u postavkama Chromea</translation>
 <translation id="8533619373899488139">Posjetite &lt;strong&gt;chrome://policy&lt;/strong&gt; da biste vidjeli popis blokiranih URL-ova i druga pravila koja je postavio vaš administrator sustava.</translation>
 <translation id="8541158209346794904">Bluetooth uređaj</translation>

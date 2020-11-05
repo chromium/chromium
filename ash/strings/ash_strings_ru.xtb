@@ -125,7 +125,6 @@
 <translation id="2127372758936585790">Маломощное зарядное устройство</translation>
 <translation id="2132302418721800944">Запись видео со всего экрана</translation>
 <translation id="2135456203358955318">Закрепленная лупа</translation>
-<translation id="2144487987174258011">Перезагрузите, чтобы обновить Adobe Flash Player</translation>
 <translation id="2208323208084708176">Единый рабочий стол</translation>
 <translation id="2220572644011485463">PIN-код или пароль</translation>
 <translation id="2222338659135520253">Требуется выполнить вход.</translation>
@@ -160,7 +159,6 @@
 <translation id="2435457462613246316">Показать пароль</translation>
 <translation id="2473177541599297363">Разрешение экрана было изменено</translation>
 <translation id="2475982808118771221">Произошел сбой.</translation>
-<translation id="2479579251444854687">Проведите тремя пальцами вверх, чтобы открыть панель обзора, или вниз – чтобы закрыть ее.</translation>
 <translation id="2482878487686419369">Уведомления</translation>
 <translation id="2484513351006226581">Чтобы переключить раскладку клавиатуры, нажмите клавиши <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2501920221385095727">Залипание клавиш</translation>
@@ -371,7 +369,6 @@
 <translation id="4481530544597605423">Отключенные устройства</translation>
 <translation id="4485060137115666462">Чтобы, например, посмотреть определение и перевод слова или конвертировать одни единицы измерения в другие, выберите нужный элемент с помощью правого клика или долгого нажатия.</translation>
 <translation id="4505050298327493054">Активный рабочий стол.</translation>
-<translation id="4506458088675900627">Жест для просмотра всех открытых окон изменился</translation>
 <translation id="4513946894732546136">Отзыв</translation>
 <translation id="4527045527269911712">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth.</translation>
 <translation id="453661520163887813">До полной зарядки <ph name="TIME" /></translation>
@@ -434,6 +431,7 @@
 <translation id="5033299697334913360">Чтобы снять экран полностью, нажмите в любом его месте</translation>
 <translation id="5035236842988137213">Устройство <ph name="DEVICE_NAME" /> подключено к новому телефону</translation>
 <translation id="5035389544768382859">Подтвердите конфигурацию экрана</translation>
+<translation id="5078796286268621944">Неверный PIN-код</translation>
 <translation id="5083553833479578423">Получите доступ к другим возможностям Ассистента.</translation>
 <translation id="5136175204352732067">Подключена другая клавиатура</translation>
 <translation id="5168181903108465623">Доступны устройства для трансляции</translation>

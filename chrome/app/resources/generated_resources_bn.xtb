@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">স্ক্রিন আপডেট হওয়ার ফ্রিকোয়েন্সি নির্ধারণ করে</translation>
 <translation id="1061904396131502319">বিরতির সময় হতে চলেছে</translation>
 <translation id="1067048845568873861">তৈরি হয়েছে</translation>
+<translation id="1067291318998134776">Linux (বিটা)</translation>
 <translation id="1067922213147265141">Google-এর অন্যান্য পরিষেবা</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">আপনার কম্পিউটারের অন্য একটি প্রোগ্রাম একটি এক্সটেনশন যোগ করেছে যা Chrome-এর কাজ করার ধরন পাল্টে দিতে পারে।
@@ -1376,7 +1377,6 @@
 <translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" />-এ প্রবেশ করেননি</translation>
 <translation id="2564520396658920462">AppleScript-এর মাধ্যমে জাভাস্ক্রিপ্ট চালানো বন্ধ করা আছে। এটি চালু করতে মেনু বার থেকে, ভিউ &gt; ডেভেলপার &gt; জাভাস্ক্রিপ্টের অনুমতি দিন-এ যান। আরও তথ্যের জন্য: https://support.google.com/chrome/?p=applescript-এ যান</translation>
 <translation id="2564653188463346023">আরও উন্নত বানান পরীক্ষা</translation>
-<translation id="2566124945717127842">আপনার <ph name="IDS_SHORT_PRODUCT_NAME" /> ডিভাইস আবার নতুনের মত সেট করতে পাওয়ারওয়াশ করুন।</translation>
 <translation id="2568774940984945469">তথ্যবার ধারক</translation>
 <translation id="2571655996835834626">কুকি, জাভাস্ক্রিপ্ট, প্লাগ-ইন, ভৌগোলিক লোকেশন, মাইক্রোফোন, ক্যামেরার মতো ফিচারগুলিতে ওয়েবসাইটের অ্যাক্সেস নিয়ন্ত্রণ করে যে সেটিংস সেটি পরিবর্তন করুন।</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" />-এ শুধুমাত্র পাঠযোগ্য অ্যাক্সেস মঞ্জুর করা হয়েছে৷</translation>
@@ -1841,7 +1841,6 @@
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> সহায়তা</translation>
 <translation id="3118654181216384296">কিছুক্ষণ পরে Linux আবার চালু করে দেখুন।</translation>
 <translation id="3120430004221004537">এখানে একটি নির্দিষ্ট অ্যাকশনকলাপের জন্য অপর্যাপ্ত এনক্রিপশান: "<ph name="DEVICE_NAME" />"।</translation>
-<translation id="3121793941267913344">এই <ph name="IDS_SHORT_PRODUCT_NAME" /> ডিভাইসটি রিসেট করুন</translation>
 <translation id="3122464029669770682">সিপিইউ</translation>
 <translation id="3122496702278727796">ডেটা ডিরেক্টরি তৈরি করা যায়নি</translation>
 <translation id="3124111068741548686">ব্যবহারকারীর হ্যান্ডলগুলি</translation>
@@ -5493,7 +5492,6 @@
 <translation id="7475671414023905704">Netscape পাসওয়ার্ড URL হারিয়েছে</translation>
 <translation id="7476454130948140105">চার্জ খুব কম (<ph name="BATTERY_PERCENT" />%), আপডেট করা যাবে না</translation>
 <translation id="7477793887173910789">আপনার মিউজিক, ভিডিও ও আরও অনেক কিছু নিয়ন্ত্রণ করুন</translation>
-<translation id="7478362879637727630">আপনাকে এই Chrome Education ডিভাইস একটি এডুকেশন অ্যাকাউন্টে এনরোল করতে হবে। নতুন অ্যাকাউন্টে সাইন-আপ করতে, https://g.co/workspace/edusignup লিঙ্কে যান।</translation>
 <translation id="7478485216301680444">Kiosk অ্যাপ্লিকেশান ইনস্টল করা যাবে না৷</translation>
 <translation id="7479221278376295180">এক নজরে স্টোরেজের ব্যবহার</translation>
 <translation id="7481312909269577407">ফরওয়ার্ড</translation>
@@ -6063,7 +6061,6 @@
 <translation id="8101987792947961127">পরবর্তী রিবুটে পাওয়ারওয়াশ প্রয়োজন</translation>
 <translation id="8102139037507939978">System_logs.txt থেকে ব্যক্তিগতভাবে শনাক্তকরণযোগ্য তথ্য সরিয়ে দিন</translation>
 <translation id="8102159139658438129">আপনার কানেক্ট করা ফোনের বিকল্পগুলি দেখতে <ph name="LINK_BEGIN" />সেটিংস<ph name="LINK_END" />-এ যান</translation>
-<translation id="8104696615244072556">আপনার <ph name="IDS_SHORT_PRODUCT_NAME" /> ডিভাইসটি পাওয়ারওয়াশ করুন এবং পূর্ববর্তী ভার্সনে ফিরে যান।</translation>
 <translation id="8107015733319732394">আপনার <ph name="DEVICE_TYPE" /> এ Google Play স্টোর ইনস্টল করা হচ্ছে। এতে কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="810728361871746125">ডিসপ্লের রেজোলিউশন</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{কোনও থার্ড-পার্টি কুকি নেই}=1{১টি থার্ড-পার্টি কুকি ব্লক করা হয়েছে}one{#টি থার্ড-পার্টি কুকি ব্লক করা হয়েছে}other{#টি থার্ড-পার্টি কুকি ব্লক করা হয়েছে}}</translation>

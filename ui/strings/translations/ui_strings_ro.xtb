@@ -152,6 +152,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{Activ astăzi}=1{Activ acum o zi}few{Activ acum # zile}other{Activ acum # de zile}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{O zi și  }few{# zile și  }other{# de zile și  }}</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5843690142429128814">Imagine.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{în 1 an}few{în # ani}other{în # ani}}</translation>
 <translation id="588258955323874662">Ecran complet</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{O secundă rămasă}few{# secunde rămase}other{# de secunde rămase}}</translation>
@@ -192,6 +193,7 @@
 <translation id="6845533974506654842">apasă</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{O oră rămasă}few{# ore rămase}other{# de ore rămase}}</translation>
 <translation id="688711909580084195">Pagină web fără titlu</translation>
+<translation id="6902419395050653510">Conținut HTML.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{1 an rămas}few{# ani rămași}other{# de ani rămași}}</translation>
 <translation id="6945221475159498467">Selectează</translation>

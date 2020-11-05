@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2872961005593481000">Isključi</translation>
 <translation id="3008341117444806826">OSVJEŽI</translation>
+<translation id="3009958530611748826">Odaberite mapu za spremanje</translation>
 <translation id="3083667275341675831">Dijagnostika povezivosti</translation>
 <translation id="3091839911843451378">Nije uspjelo – zaustavljeno</translation>
 <translation id="3188257591659621405">Moji fajlovi</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">Zadaci štampanja</translation>
 <translation id="3527036260304016759">Nije uspjelo – nepoznata greška</translation>
 <translation id="360565022852130722">WiFi mreža je zaštićena slabim protokolom WEP 802.1x</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (broj recenzija: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3749289110408117711">Naziv fajla</translation>
 <translation id="38114475217616659">Obriši svu historiju</translation>
 <translation id="3820172043799983114">Nevažeći PIN.</translation>
@@ -79,10 +81,12 @@
 <translation id="4731797938093519117">Pristup roditelja</translation>
 <translation id="4773299976671772492">Zaustavljeno</translation>
 <translation id="4808449224298348341">Zadatak za štampanje dokumenta <ph name="DOCUMENT_TITLE" /> je otkazan</translation>
+<translation id="4832079907277790330">Odaberi mapu u aplikaciji Datoteke...</translation>
 <translation id="4890353053343094602">Odmah odaberite novu lozinku</translation>
 <translation id="4917889632206600977">Zaustavljeno – nestalo je papira</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Pokreni</translation>
+<translation id="4991056862642197104">Namjestite dokument i kliknite Skeniraj</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> upravlja ovim korisnikom i može udaljeno upravljati postavkama i pratiti aktivnost korisnika.</translation>
 <translation id="520299634122159966">Nije dostupan nijedan skener</translation>
 <translation id="5212543919916444558">Ne mogu pronaći ništa na ekranu u vezi s čim mogu pomoći.
@@ -120,6 +124,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
 <translation id="7561454561030345039">Ovom radnjom upravlja vaš administrator</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7690294790491645610">Potvrdite novu lozinku</translation>
 <translation id="7805768142964895445">Status</translation>

@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">განსაზღვრავს ეკრანის განახლების სიხშირეს</translation>
 <translation id="1061904396131502319">შესვენების დრო ახლოვდება</translation>
 <translation id="1067048845568873861">შექმნის თარიღი</translation>
+<translation id="1067291318998134776">Linux (ბეტა)</translation>
 <translation id="1067922213147265141">Google-ის სხვა სერვისები</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">თქვენს კომპიუტერში არსებულმა სხვა პროგრამამ დაამატა გაფართოება, რომელსაც Chrome-ის მუშაობის შეცვლა შეუძლია.
@@ -1376,7 +1377,6 @@
 <translation id="2562743677925229011">არ არის შესული <ph name="SHORT_PRODUCT_NAME" />-ში</translation>
 <translation id="2564520396658920462">AppleScript-ის მეშვეობით JavaScript-ის შესრულების ფუნქცია გამორთულია. მის ჩასართავად მენიუს ზოლიან გადადით აქ: ხედი &gt; დეველოპერი &gt; Apple-ის მოვლენებიდან JavaScript-ის დაშვება. დამატებითი ინფორმაციისთვის იხილეთ: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">გაძლიერებული მართლწერის შემოწმება</translation>
-<translation id="2566124945717127842">განახორციელეთ გაწმენდა, რომ გადატვირთოთ თქვენი <ph name="IDS_SHORT_PRODUCT_NAME" /> მოწყობილობა, იმისთვის, რომ იყოს როგორც ახალი.</translation>
 <translation id="2568774940984945469">საინფორმაციო ზოლის კონტეინერი</translation>
 <translation id="2571655996835834626">თქვენი პარამეტრების შეცვლა, რომლებიც მართავს ვებსაიტების წვდომას ისეთ ფუნქციებზე, როგორიცაა ქუქი-ჩანაწერები, JavaScript, დანამატები, გეოლოკაცია, მიკროფონი, კამერა და სხვა.</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" />-ზე მხოლოდ წაკითხვადი წვდომის უფლება მინიჭებულია.</translation>
@@ -1841,7 +1841,6 @@
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> დახმარება</translation>
 <translation id="3118654181216384296">ცადეთ Linux-ის ხელახლა გაშვება რამდენიმე წუთში.</translation>
 <translation id="3120430004221004537">„<ph name="DEVICE_NAME" />“-ზე მოცემული ოპერაცია არასაკმარისად დაშიფრულია.</translation>
-<translation id="3121793941267913344">ამ <ph name="IDS_SHORT_PRODUCT_NAME" /> მოწყობილობის განულება</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">მონაცემების დირექტორია ვერ შეიქმნა</translation>
 <translation id="3124111068741548686">მომხმარებლის სახელურები</translation>
@@ -5492,7 +5491,6 @@
 <translation id="7475671414023905704">Netscape URL-ის დაკარგული პაროლი</translation>
 <translation id="7476454130948140105">ბატარეა არასაკმარისად დამუხტულია განახლებისთვის (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">მართეთ თქვენი მუსიკა, ვიდეოები და სხვა</translation>
-<translation id="7478362879637727630">ეს Chrome Education მოწყობილობა საგანმანათლებლო ანგარიშში უნდა დაარეგისტრიროთ. ახალი ანგარიშის შესაქმნელად გადადით აქ: https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">ვერ ხერხდება კიოსკის პროგრამის დაინსტალირება.</translation>
 <translation id="7479221278376295180">გამოყენებული მეხსიერების მიმოხილვა</translation>
 <translation id="7481312909269577407">გადამისამართება</translation>
@@ -6062,7 +6060,6 @@
 <translation id="8101987792947961127">შემდეგი ჩატვირთვის დროს საჭიროა შესრულდეს განახლება</translation>
 <translation id="8102139037507939978">system_logs.txt ფაილიდან პერსონალურად ამოცნობადი ინფორმაციის მოშორება.</translation>
 <translation id="8102159139658438129">დაკავშირებული ტელეფონის ვარიანტების სანახავად გადადით <ph name="LINK_BEGIN" />პარამეტრებზე<ph name="LINK_END" /></translation>
-<translation id="8104696615244072556">გაასუფთავეთ თქვენი <ph name="IDS_SHORT_PRODUCT_NAME" /> მოწყობილობა და დაბრუნდით წინა ვერსიაზე.</translation>
 <translation id="8107015733319732394">მიმდინარეობს Google Play Store-ის ინსტალაცია თქვენს <ph name="DEVICE_TYPE" />-ზე. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="810728361871746125">ეკრანის გარჩევადობა</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{მესამე მხარის ქუქი-ჩანაწერები არ არის}=1{მესამე მხარის 1 ქუქი-ჩანაწერი დაბლოკილია}other{მესამე მხარის # ქუქი-ჩანაწერი დაბლოკილია}}</translation>

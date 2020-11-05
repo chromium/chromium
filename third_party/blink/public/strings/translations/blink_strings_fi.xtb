@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Tässä kuussa</translation>
 <translation id="1637811476055996098">Valitse tiedostot</translation>
 <translation id="1650423536718072820">erotettu lainaus</translation>
+<translation id="1681022320378710418">nykyinen aika</translation>
 <translation id="1727886345390570319">sulje tekstitysvalikko</translation>
 <translation id="1729654308190250600">Kirjoita ei-tyhjä sähköpostiosoite.</translation>
 <translation id="1758486001363313524">Muu...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Lisää URL-osoite.</translation>
 <translation id="3175736971608411871">ajastin</translation>
 <translation id="3199563858620722075">yhdistelmäruutu</translation>
+<translation id="3220661731597678625">nykyinen vaihe</translation>
 <translation id="3329013043687509092">Värikylläisyys</translation>
 <translation id="3450233048674729344">Arvon tulee olla pienempi tai yhtä suuri kuin <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">määritelmä</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="479989351350248267">haku</translation>
 <translation id="4812940957355064477">Anna numero.</translation>
+<translation id="4912200001568447310">tämä kohta</translation>
 <translation id="4912536737030637138">lähdeluettelomerkintä</translation>
 <translation id="4915360478455618802">Näytä ajan valitsin</translation>
 <translation id="492244087561876220">kommentti</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Mediaa ei voi toistaa.</translation>
 <translation id="537648784377940524">Vähimmäispäivämäärän (<ph name="MIN_DATE_OR_TIME" />) on oltava ennen enimmäispäivämäärää (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">kuva</translation>
+<translation id="5425179576310518467">nykyinen päivämäärä</translation>
 <translation id="5453733299334684579">puukohde</translation>
 <translation id="5466621249238537318">Valitse vähintään yksi tiedosto.</translation>
 <translation id="5468998798572797635">poistu koko näytön tilasta</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">mittari</translation>
 <translation id="6166809985690652833">jälkipuhe</translation>
 <translation id="6209276755895393898">Näkyy olevan: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">nykyinen sivu</translation>
 <translation id="6213469881011901533">sanasto</translation>
 <translation id="6281588256137006900">Valoisuus</translation>
 <translation id="6281763101136022427">url-osoite</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Pidennä tämä teksti vähintään <ph name="MIN_CHARACTERS" /> merkkiin (tällä hetkellä käytössä 1 merkki).</translation>
 <translation id="7034405885550056553">ehdotus</translation>
 <translation id="709897737746224366">Käytä pyydettyä muotoilua.</translation>
+<translation id="7102274145889307184">nykyinen sijainti</translation>
 <translation id="7118469954320184356">Ei kuvausta saatavilla</translation>
 <translation id="7139483182332611405">johdanto</translation>
 <translation id="7214187073215825913">sisältötiedot</translation>

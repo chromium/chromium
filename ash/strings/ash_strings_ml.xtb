@@ -125,7 +125,6 @@
 <translation id="2127372758936585790">കുറഞ്ഞ തോതിൽ വൈദ്യുതി പ്രവഹിക്കുന്ന ചാർജർ</translation>
 <translation id="2132302418721800944">പൂർണ്ണ സ്ക്രീൻ റെക്കോർഡ് ചെയ്യുക</translation>
 <translation id="2135456203358955318">ഡോക്ക് ചെയ്‌ത മാഗ്‌നിഫയർ</translation>
-<translation id="2144487987174258011">Adobe Flash Player അപ്‌ഡേറ്റ് ചെയ്യാൻ റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="2208323208084708176">ഏകീകൃത ഡെസ്‌ക്‌ടോപ്പ് മോഡ്</translation>
 <translation id="2220572644011485463">പിൻ അല്ലെങ്കിൽ പാസ്‌വേഡ്</translation>
 <translation id="2222338659135520253">സൈൻ ഇൻ ചെയ്യേണ്ടത് ആവശ്യമാണ്</translation>
@@ -160,7 +159,6 @@
 <translation id="2435457462613246316">പാസ്‌വേഡ് കാണിക്കുക</translation>
 <translation id="2473177541599297363">റെസല്യൂഷൻ സ്ഥിരീകരിക്കുക</translation>
 <translation id="2475982808118771221">ഒരു പിശക് സംഭവിച്ചു</translation>
-<translation id="2479579251444854687">അവലോകനം തുറക്കാൻ മൂന്നുവിരലുകൾ ഉപയോഗിച്ച് മുകളിലേക്ക് സ്വൈപ്പ് ചെയ്യുക, അടയ്ക്കാൻ താഴേക്ക് സ്വൈപ്പ് ചെയ്യുക.</translation>
 <translation id="2482878487686419369">അറിയിപ്പുകൾ</translation>
 <translation id="2484513351006226581">കീബോര്‍‌ഡ് ലേഔട്ട് മാറാൻ <ph name="KEYBOARD_SHORTCUT" /> അമർത്തുക.</translation>
 <translation id="2501920221385095727">സ്‌റ്റിക്കി കീകൾ</translation>
@@ -371,7 +369,6 @@
 <translation id="4481530544597605423">ജോടി മാറ്റിയ ഉപകരണങ്ങൾ</translation>
 <translation id="4485060137115666462">വലത്-ക്ലിക്ക് ചെയ്യുകയോ ദീർഘനേരം അമർത്തുകയോ ചെയ്താൽ നിങ്ങൾ തിരഞ്ഞെടുത്തതിനുള്ള നിർവചനമോ വിവർത്തനമോ യൂണിറ്റ് പരിവർത്തനമോ പോലുള്ള വിവരങ്ങൾ Assistant കാണിക്കുന്നു.</translation>
 <translation id="4505050298327493054">സജീവ ഡെസ്‌ക്.</translation>
-<translation id="4506458088675900627">അവലോകനത്തിനായുള്ള ടച്ച്‌പാഡ് വിരൽചലനം മാറ്റി</translation>
 <translation id="4513946894732546136">ഫീഡ്ബാക്ക്</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" എന്ന Bluetooth ഉപകരണം ജോടിയാക്കുന്നതിനുള്ള അനുമതി ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="453661520163887813">പൂർത്തിയാകാൻ ശേഷിക്കുന്ന സമയം <ph name="TIME" /></translation>
@@ -434,6 +431,7 @@
 <translation id="5033299697334913360">പൂർണ്ണ സ്ക്രീൻ ക്യാപ്‌ചർ ചെയ്യാൻ എവിടെയെങ്കിലും ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> പുതിയ ഫോണിലേക്ക് കണക്‌റ്റ് ചെയ്‌തു</translation>
 <translation id="5035389544768382859">ഡിസ്പ്ലേ കോൺഫിഗറേഷൻ സ്ഥിരീകരിക്കുക</translation>
+<translation id="5078796286268621944">തെറ്റായ PIN</translation>
 <translation id="5083553833479578423">കൂടുതൽ അസിസ്റ്റന്റ് ഫീച്ചറുകൾ അൺലോക്ക് ചെയ്യുക.</translation>
 <translation id="5136175204352732067">വ്യത്യസ്ത കീബോർഡ് കണക്‌റ്റ് ചെയ്‌തു</translation>
 <translation id="5168181903108465623">Cast ഉപകരണങ്ങൾ ലഭ്യമാണ്.</translation>

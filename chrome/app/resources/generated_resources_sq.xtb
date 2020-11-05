@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Përcakton shpeshtësinë e përditësimit të ekranit</translation>
 <translation id="1061904396131502319">Pothuajse koha për një pushim</translation>
 <translation id="1067048845568873861">U krijua</translation>
+<translation id="1067291318998134776">Linux (Beta)</translation>
 <translation id="1067922213147265141">Shërbime e tjera të Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Një program tjetër në kompjuterin tënd shtoi një shtesë që mund të ndryshojë mënyrën e funksionimit të Chrome.
@@ -1374,7 +1375,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2562743677925229011">I paidentifikuar në <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Ekzekutimi i JavaScript nëpërmjet AppleScript është çaktivizuar. Për ta aktivizuar, nga shiriti i menysë, shko te Pamja &gt; Zhvilluesi &gt; Lejo JavaScript nga ngjarjet e Apple. Për më shumë informacione: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Kontroll i përmirësuar drejtshkrimor</translation>
-<translation id="2566124945717127842">Powerwash do ta rivendosë pajisjen tënde <ph name="IDS_SHORT_PRODUCT_NAME" /> për ta bërë si të re.</translation>
 <translation id="2568774940984945469">Mbajtësi i shiritit të informacionit</translation>
 <translation id="2571655996835834626">Ndrysho cilësimet që kontrollojnë qasjen e faqeve të uebit në funksione të tilla si kukit, JavaScript, përbërësit shtesë, vendndodhja gjeografike, mikrofoni, kamera, etj.</translation>
 <translation id="2572032849266859634">Është dhënë qasja "vetëm për lexim" për <ph name="VOLUME_NAME" />.</translation>
@@ -1839,7 +1839,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3118319026408854581">Ndihma e <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">Provo ta nisësh përsëri Linux pas disa minutash.</translation>
 <translation id="3120430004221004537">Shifrimi i pamjaftueshëm për një veprim të dhënë në: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344">Rivendos këtë pajisje <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Dështoi në krijimin e direktorisë së të dhënave</translation>
 <translation id="3124111068741548686">Profilet e PËRDORUESIT</translation>
@@ -5490,7 +5489,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7475671414023905704">URL-ja e Netscape për humbjen e fjalëkalimit</translation>
 <translation id="7476454130948140105">Niveli i baterisë është shumë i ulët për përditësimin (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">Kontrollo muzikën, videot e tua etj.</translation>
-<translation id="7478362879637727630">Duhet ta regjistrosh këtë pajisje të Chrome Education në një llogari arsimore. Për t'u regjistruar për një llogari të re, vizito https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">Aplikacioni kioskë nuk mund të instalohej.</translation>
 <translation id="7479221278376295180">Përmbledhja e përdorimit të hapësirës ruajtëse</translation>
 <translation id="7481312909269577407">Përpara</translation>
@@ -6059,7 +6057,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8101987792947961127">Kërkohet Powerwash me rindezjen e ardhshme</translation>
 <translation id="8102139037507939978">Hiq informacionin e idetifikueshëm personalisht nga system_logs.txt.</translation>
 <translation id="8102159139658438129">Shko te <ph name="LINK_BEGIN" />Cilësimet<ph name="LINK_END" /> për të parë opsione për telefonin e lidhur</translation>
-<translation id="8104696615244072556">Kryej Powerwash të pajisjes tënde <ph name="IDS_SHORT_PRODUCT_NAME" /> dhe kthehu te versioni i mëparshëm.</translation>
 <translation id="8107015733319732394">Po instalon Google Play Store në pajisjen tënde <ph name="DEVICE_TYPE" />. Kjo mund të kërkojë disa minuta kohë.</translation>
 <translation id="810728361871746125">Rezolucioni i ekranit</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Asnjë kuki e palëve të treta}=1{1 kuki e palëve të treta është bllokuar}other{# kuki të palëve të treta janë bllokuar}}</translation>

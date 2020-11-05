@@ -125,7 +125,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2127372758936585790">Ładowarka o małej mocy</translation>
 <translation id="2132302418721800944">Nagraj cały ekran</translation>
 <translation id="2135456203358955318">Lupa zadokowana</translation>
-<translation id="2144487987174258011">Uruchom ponownie, by zaktualizować Adobe Flash Playera</translation>
 <translation id="2208323208084708176">Tryb ujednoliconego pulpitu</translation>
 <translation id="2220572644011485463">Kod PIN lub hasło</translation>
 <translation id="2222338659135520253">Musisz się zalogować</translation>
@@ -160,7 +159,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2435457462613246316">Pokaż hasło</translation>
 <translation id="2473177541599297363">Potwierdź rozdzielczość</translation>
 <translation id="2475982808118771221">Wystąpił błąd</translation>
-<translation id="2479579251444854687">Przesuń 3 palcami do góry, by otworzyć Przegląd, lub w dół, by go zamknąć.</translation>
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="2484513351006226581">Naciśnij <ph name="KEYBOARD_SHORTCUT" />, by przełączyć układ klawiatury.</translation>
 <translation id="2501920221385095727">Klawisze trwałe</translation>
@@ -371,7 +369,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4481530544597605423">Niesparowane urządzenia</translation>
 <translation id="4485060137115666462">Gdy klikniesz prawym przyciskiem lub przytrzymasz zaznaczony na ekranie fragment, Asystent poda Ci związane z nim informacje, takie jak definicja, tłumaczenie czy przeliczenie jednostek.</translation>
 <translation id="4505050298327493054">Aktywne biurko.</translation>
-<translation id="4506458088675900627">Zmienił się gest na touchpadzie związany z trybem przeglądu</translation>
 <translation id="4513946894732546136">Twoja opinia</translation>
 <translation id="4527045527269911712">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> do pełnego naładowania</translation>
@@ -434,6 +431,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5033299697334913360">Aby zrobić zrzut całego ekranu, kliknij w dowolnym miejscu</translation>
 <translation id="5035236842988137213">Urządzenie <ph name="DEVICE_NAME" /> zostało połączone z nowym telefonem</translation>
 <translation id="5035389544768382859">Potwierdź konfigurację wyświetlacza</translation>
+<translation id="5078796286268621944">Błędny kod PIN</translation>
 <translation id="5083553833479578423">Poznaj więcej funkcji Asystenta.</translation>
 <translation id="5136175204352732067">Podłączono inną klawiaturę</translation>
 <translation id="5168181903108465623">Dostępne są urządzenia przesyłające</translation>

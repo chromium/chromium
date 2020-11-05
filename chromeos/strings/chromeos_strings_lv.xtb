@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">Lietotnes</translation>
 <translation id="2872961005593481000">Beidzēt</translation>
 <translation id="3008341117444806826">ATSVAIDZINĀT</translation>
+<translation id="3009958530611748826">Atlasiet mapi, kurā saglabāt failus</translation>
 <translation id="3083667275341675831">Savienojamības diagnostika</translation>
 <translation id="3091839911843451378">Neizdevās — darbība apturēta</translation>
 <translation id="3188257591659621405">Mani faili</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">Drukas uzdevumi</translation>
 <translation id="3527036260304016759">Neizdevās — nezināma kļūda</translation>
 <translation id="360565022852130722">Wi-Fi tīklu sargā nedrošs protokols WEP 802.1x</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (atsauksmju skaits: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3749289110408117711">Faila nosaukums</translation>
 <translation id="38114475217616659">Notīrīt visu vēsturi</translation>
 <translation id="3820172043799983114">PIN nav derīgs.</translation>
@@ -79,10 +81,12 @@
 <translation id="4731797938093519117">Vecāku piekļuve</translation>
 <translation id="4773299976671772492">Pārtraukts</translation>
 <translation id="4808449224298348341">Drukas uzdevums “<ph name="DOCUMENT_TITLE" />” tika atcelts</translation>
+<translation id="4832079907277790330">Atlasīt mapi lietotnē Faili…</translation>
 <translation id="4890353053343094602">Nekavējoties izvēlieties jaunu</translation>
 <translation id="4917889632206600977">Apturēts — beidzies papīrs</translation>
 <translation id="4932733599132424254">Datums</translation>
 <translation id="4985509611418653372">Izpildīt</translation>
+<translation id="4991056862642197104">Novietojiet dokumentu un pēc tam noklikšķiniet uz pogas Skenēt, lai sāktu</translation>
 <translation id="5094480857972195099">Šis lietotājs tiek pārvaldīts domēnā <ph name="ENROLLMENT_DOMAIN" />, un tajā var tikt attālināti pārvaldīti iestatījumi un uzraudzītas lietotāja darbības.</translation>
 <translation id="520299634122159966">Nav pieejamu skeneru</translation>
 <translation id="5212543919916444558">Ekrānā neredzu neko, ar ko varētu palīdzēt.
@@ -120,6 +124,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Faila tips</translation>
 <translation id="7561454561030345039">Šo darbību pārvalda administrators</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7690294790491645610">Apstipriniet jauno paroli</translation>
 <translation id="7805768142964895445">Statuss</translation>

@@ -152,6 +152,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{Последња активност: данас}=1{Последња активност: пре 1 дан}one{Последња активност: пре # дан}few{Последња активност: пре # дана}other{Последња активност: пре # дана}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 дан и }one{# дан и }few{# дана и }other{# дана и }}</translation>
 <translation id="5789643057113097023">,</translation>
+<translation id="5843690142429128814">Слика.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{за 1 г}one{за # г}few{за # г}other{за # г}}</translation>
 <translation id="588258955323874662">Цеo екран</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{Још 1 секунда}one{Још # секунда}few{Још # секунде}other{Још # секунди}}</translation>
@@ -192,6 +193,7 @@
 <translation id="6845533974506654842">притисни</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{Још 1 сат}one{Још # сат}few{Још # сата}other{Још # сати}}</translation>
 <translation id="688711909580084195">Веб-страница без наслова</translation>
+<translation id="6902419395050653510">HTML садржај.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{Још 1 година}one{Још # година}few{Још # године}other{Још # година}}</translation>
 <translation id="6945221475159498467">Изабери</translation>

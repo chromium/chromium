@@ -125,7 +125,6 @@
 <translation id="2127372758936585790">저출력 충전기</translation>
 <translation id="2132302418721800944">화면 전체 녹화</translation>
 <translation id="2135456203358955318">고정 돋보기</translation>
-<translation id="2144487987174258011">Adobe Flash Player를 업데이트하려면 다시 시작하세요.</translation>
 <translation id="2208323208084708176">통합 바탕화면 모드</translation>
 <translation id="2220572644011485463">PIN 또는 비밀번호</translation>
 <translation id="2222338659135520253">로그인 필요</translation>
@@ -160,7 +159,6 @@
 <translation id="2435457462613246316">비밀번호 표시</translation>
 <translation id="2473177541599297363">해상도 확인</translation>
 <translation id="2475982808118771221">오류가 발생했습니다.</translation>
-<translation id="2479579251444854687">세 손가락을 사용해 위로 스와이프하여 개요를 열고 아래로 스와이프하여 닫습니다.</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="2484513351006226581">키보드 레이아웃을 전환하려면 <ph name="KEYBOARD_SHORTCUT" />을(를) 누르세요.</translation>
 <translation id="2501920221385095727">고정키</translation>
@@ -371,7 +369,6 @@
 <translation id="4481530544597605423">페어링 해제된 기기</translation>
 <translation id="4485060137115666462">마우스 오른쪽 버튼으로 클릭하거나 길게 누르면 어시스턴트가 선택한 항목의 정의, 번역 또는 단위 변환과 같은 정보를 표시합니다.</translation>
 <translation id="4505050298327493054">활성 데스크입니다.</translation>
-<translation id="4506458088675900627">개요 모드의 터치패드 동작이 변경됨</translation>
 <translation id="4513946894732546136">문제 신고</translation>
 <translation id="4527045527269911712">블루투스 기기 '<ph name="DEVICE_NAME" />'에서 페어링 허가를 요청합니다.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> 후 충전 완료</translation>
@@ -434,6 +431,7 @@
 <translation id="5033299697334913360">전체 화면을 캡처하려면 아무 곳이나 클릭하세요</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />이(가) 새 휴대전화에 연결되었습니다.</translation>
 <translation id="5035389544768382859">화면 구성 확인</translation>
+<translation id="5078796286268621944">잘못된 PIN</translation>
 <translation id="5083553833479578423">더 많은 어시스턴트 기능을 사용해 보세요.</translation>
 <translation id="5136175204352732067">다른 키보드 연결됨</translation>
 <translation id="5168181903108465623">전송 기기를 사용할 수 있음</translation>

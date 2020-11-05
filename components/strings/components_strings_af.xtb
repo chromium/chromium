@@ -316,6 +316,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="214556005048008348">Kanselleer betaling</translation>
 <translation id="2147827593068025794">Agtergrondsinkronisering</translation>
 <translation id="2148613324460538318">Voeg kaart by</translation>
+<translation id="2149968176347646218">Verbinding is nie veilig nie</translation>
 <translation id="2154054054215849342">Sinkronisering is nie vir jou domein beskikbaar nie</translation>
 <translation id="2154484045852737596">Wysig kaart</translation>
 <translation id="2161656808144014275">Teks</translation>
@@ -1169,6 +1170,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5571083550517324815">Kan nie by hierdie adres oplaai nie. Kies 'n ander adres.</translation>
 <translation id="5580958916614886209">Gaan jou vervalmaand na en probeer weer</translation>
 <translation id="5586446728396275693">Geen gestoorde adresse nie</translation>
+<translation id="5593349413089863479">Verbinding is nie heeltemal veilig nie</translation>
 <translation id="5595485650161345191">Wysig adres</translation>
 <translation id="5598944008576757369">Kies betaalmetode</translation>
 <translation id="560412284261940334">Bestuur word nie gesteun nie</translation>
@@ -1887,6 +1889,7 @@ Bykomende besonderhede:
 <translation id="8507227106804027148">Bevellyn</translation>
 <translation id="8508648098325802031">Search-ikoon</translation>
 <translation id="8522552481199248698">Chrome kan jou help om jou Google-rekening te beskerm en jou wagwoord te verander.</translation>
+<translation id="8525306231823319788">Volskerm</translation>
 <translation id="8530813470445476232">Vee jou blaaigeskiedenis, webkoekies, kasgeheue en meer in Chrome-instellings uit</translation>
 <translation id="8533619373899488139">Besoek &lt;strong&gt;chrome://policy&lt;/strong&gt; om die lys geblokkeerde URL'e en ander beleide wat jou stelseladministrateur toepas te sien.</translation>
 <translation id="8541158209346794904">Bluetooth-toestel</translation>

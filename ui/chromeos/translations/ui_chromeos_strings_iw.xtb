@@ -10,7 +10,6 @@
 <translation id="1049926623896334335">‏מסמך Word</translation>
 <translation id="1060368002126861100">‏כדי שניתן יהיה לפתוח קבצים באמצעות <ph name="APP_NAME" />, צריך להעתיק אותם לתיקיית קובצי Windows.</translation>
 <translation id="1062407476771304334">החלפה</translation>
-<translation id="1065449928621190041">מקלדת צרפתית (קנדה)</translation>
 <translation id="1119069657431255176">‏ארכיון TAR מכווץ של Bzip2</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="1148097584170732637">נמצאו <ph name="FILE_COUNT" />.
@@ -36,7 +35,6 @@
 <translation id="1297922636971898492">‏Google Drive אינו זמין כעת. ההעלאה תופעל מחדש באופן אוטומטי לאחר ש-Google Drive יחזור לפעול.</translation>
 <translation id="1307931752636661898">‏לא ניתן להציג קובצי Linux</translation>
 <translation id="1310751437842832374">‏תעתוק (mausam → ନମସ୍ତେ)</translation>
-<translation id="1337036551624197047">מקלדת צ'כית</translation>
 <translation id="1338950911836659113">מוחק...</translation>
 <translation id="1346748346194534595">ימינה</translation>
 <translation id="1351692861129622852">מתבצע ייבוא של <ph name="FILE_COUNT" /> קבצים...</translation>
@@ -62,7 +60,6 @@
 <translation id="1556189134700913550">החלה על הכול</translation>
 <translation id="1561842594491319104">‏מכשירי Chrome</translation>
 <translation id="1572585716423026576">הגדרה כטפט</translation>
-<translation id="158809615184981282">מקלדת פארואזית</translation>
 <translation id="1589128298353575783">‎<ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1646019627374511909">המערכת מגדירה <ph name="NUMBER_OF_ITEMS" /> קבצים כזמינים אופליין</translation>
@@ -139,9 +136,9 @@
 <translation id="2453576648990281505">הקובץ כבר קיים</translation>
 <translation id="2464079411014186876">גלידה</translation>
 <translation id="2468402215065996499">טמגוצ'י</translation>
-<translation id="247772113373397749">מקלדת רב-לשונית קנדית</translation>
 <translation id="2494837236724268445">מקלדת גוג'אראטי (פונטית)</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2529133382850673012">מקלדת אנגלית (ארה"ב)</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> פריטים נמחקו</translation>
 <translation id="2541377937973966830">התכנים בתיקייה הזו הם לקריאה בלבד. לא ניתן לבצע פעולות מסוימות.</translation>
 <translation id="2542049655219295786">‏טבלה של Google</translation>
@@ -195,9 +192,10 @@
 <translation id="3067790092342515856">‏קובצי Windows</translation>
 <translation id="3078461028045006476">שיתוף באמצעות <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">‏מכשירי Chromebit</translation>
+<translation id="3116361045094675131">מקלדת אנגלית (בריטניה)</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">בוצע</translation>
-<translation id="3182237543071236785">אנגלית (בריטניה)</translation>
+<translation id="3157729859914172001">‏מקלדת בינלאומית (ארה"ב) ל-PC</translation>
 <translation id="3187212781151025377">מקלדת עברית</translation>
 <translation id="3188257591659621405">הקבצים שלי</translation>
 <translation id="3197563288998582412">‏בריטניה - Dvorak</translation>
@@ -296,7 +294,6 @@
 <translation id="426015154560005552">מקלדת ערבית</translation>
 <translation id="4261901459838235729">‏מצגת Google</translation>
 <translation id="4290535918735525311">‏תיקייה אחת שותפה עם Linux</translation>
-<translation id="4298972503445160211">מקלדת דנית</translation>
 <translation id="4299729908419173967">פורטוגזית (ברזיל)</translation>
 <translation id="4309915981827077375">מידע כללי</translation>
 <translation id="4315949787858895817">הולנדית (בלגיה)</translation>
@@ -309,6 +306,7 @@
 <translation id="4465830120256509958">מקלדת פורטוגזית (ברזיל) </translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
 <translation id="4477219268485577442">בולגרית פונטית</translation>
+<translation id="4479812471636796472">‏מקלדת Dvorak אנגלית (ארה"ב)</translation>
 <translation id="4522570452068850558">פרטים</translation>
 <translation id="4527800702232535228">‏התיקייה הזו משותפת עם Parallels Desktop</translation>
 <translation id="4552678318981539154">לרכישת עוד נפח אחסון</translation>
@@ -338,7 +336,6 @@
 <translation id="4737050008115666127">נחיתה</translation>
 <translation id="4747271164117300400">מקדונית</translation>
 <translation id="4749157430980974800">מקלדת גיאורגית</translation>
-<translation id="4755240240651974342">מקלדת פינית</translation>
 <translation id="4759238208242260848">הורדות</translation>
 <translation id="4779136857077979611">אוניגירי</translation>
 <translation id="4784330909746505604">‏מצגת PowerPoint</translation>
@@ -396,7 +393,6 @@
        הסרת המכשיר בעודו בשימוש תגרום לאובדן נתונים. המתן עד לסיום הפעולה, ולאחר מכן נתק את המכשיר דרך היישום 'קבצים'.</translation>
 <translation id="5163869187418756376">השיתוף נכשל. כדאי לבדוק את החיבור ולנסות שוב מאוחר יותר.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
-<translation id="5167131699331641907">מקלדת להולנד</translation>
 <translation id="5170477580121653719">‏שטח אחסון שנותר ב-Google Drive‏: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">תצוגת תמונה ממוזערת</translation>
 <translation id="5194713942430106590">יש ללחוץ כדי למיין את העמודה בסדר עולה.</translation>
@@ -470,7 +466,6 @@
 <translation id="5850516540536751549">‏סוג קובץ זה אינו נתמך. אפשר לבקר ב<ph name="BEGIN_LINK" />חנות האינטרנט של Chrome‏<ph name="END_LINK" /> כדי למצוא אפליקציה שבאמצעותה ניתן לפתוח קובץ מסוג זה.
 <ph name="BEGIN_LINK_HELP" />למידע נוסף<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">אין מה לראות כאן...</translation>
-<translation id="5892290200158927959">‏מקלדת צרפתית בפריסת BÉPO</translation>
 <translation id="5911887972742538906">‏קרתה שגיאה במהלך ההתקנה של אפליקציית Linux.</translation>
 <translation id="5912396950572065471">פורמט</translation>
 <translation id="5913638992615760742">פעולת ההעתקה נכשלה, שגיאה בלתי צפויה: <ph name="ERROR_MESSAGE" /></translation>
@@ -486,7 +481,6 @@
 <translation id="60357267506638014">‏צ'כית - QWERTY</translation>
 <translation id="604001903249547235">גיבוי בענן</translation>
 <translation id="6040143037577758943">סגור</translation>
-<translation id="6054173164583630569">מקלדת צרפתית</translation>
 <translation id="6074825444536523002">Google Forms</translation>
 <translation id="6096979789310008754">טקסט החיפוש נוקה, מוצגים עכשיו כל הקבצים והתיקיות.</translation>
 <translation id="610101264611565198">מתבצעת העברה של <ph name="FILE_NAME" /> אל <ph name="FOLDER_NAME" /></translation>
@@ -509,7 +503,6 @@
 <translation id="6339034549827494595">‏מקלדת רוסית פונטית (AATSEEL)</translation>
 <translation id="6339145975392024142">‏מקלדת ארה"ב בינלאומית (PC)</translation>
 <translation id="6346310558342052870">גישה מוגבלת</translation>
-<translation id="6353618411602605519">מקלדת קרואטית</translation>
 <translation id="6356685157277930264">חלון משוב לגבי קבצים</translation>
 <translation id="6358884629796491903">דרקון</translation>
 <translation id="637062427944097960">הקובץ הזה נפתח בשולחן עבודה שונה. עבור אל <ph name="USER_NAME" />‏ (<ph name="MAIL_ADDRESS" />) כדי לראות אותו.</translation>
@@ -520,7 +513,6 @@
 <translation id="6462109140674788769">מקלדת יוונית</translation>
 <translation id="6466492211071551451">מקלדת אירית</translation>
 <translation id="6485131920355264772">נכשל בקבלת מידע על שטח האחסון</translation>
-<translation id="6503256918647795660">מקלדת צרפתית (שוויץ)</translation>
 <translation id="6505918941256367791">‏מקלדת טמילית (InScript)</translation>
 <translation id="6509122719576673235">נורווגית</translation>
 <translation id="6527303717912515753">שיתוף</translation>
@@ -565,6 +557,7 @@
     <ph name="LINE_BREAK1" />
     נמצאו <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">פרפר הפוך</translation>
+<translation id="6939777852457331078">‏מקלדת US Workman</translation>
 <translation id="696203921837389374">הפעלת סנכרון של חבילת הגלישה</translation>
 <translation id="6965382102122355670">אישור</translation>
 <translation id="6970230597523682626">בולגרית</translation>
@@ -581,9 +574,9 @@
 <translation id="7126604456862387217">‏'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' – &lt;em&gt;חיפוש ב-‏Drive‏&lt;/em‏&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7170467426996704624">‏תעתוק (salam → ሰላም)</translation>
-<translation id="7172053773111046550">מקלדת אסטונית</translation>
 <translation id="7180611975245234373">רענון</translation>
 <translation id="7189874332498648577">‎<ph name="NUMBER_OF_GB" /> GB</translation>
+<translation id="719009910964971313">‏מקלדת US Programmer Dvorak</translation>
 <translation id="7191454237977785534">שמירה בשם</translation>
 <translation id="7222624196722476520">מקלדת בולגרית פונטית</translation>
 <translation id="7238097264433196391">שם התקן האחסון</translation>
@@ -592,6 +585,7 @@
 <translation id="7283041136720745563">‏המכסה שלך ב-Google Drive לא גדולה מספיק.</translation>
 <translation id="7295662345261934369">שיתוף עם אחרים</translation>
 <translation id="7339898014177206373">חלון חדש</translation>
+<translation id="7348749398828259943">‏מקלדת US Workman בינלאומית</translation>
 <translation id="7359359531237882347">המערכת מעתיקה <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
 <translation id="7375951387215729722">רשימת הקבצים ממוינת לפי <ph name="COLUMN_NAME" /> בסדר יורד.</translation>
 <translation id="7389722738210761877">‏מקלדת תאילנדית (TIS 820-2531)</translation>
@@ -599,7 +593,9 @@
 <translation id="7417453074306512035">מקלדת אתיופית</translation>
 <translation id="7417705661718309329">‏מפת Google</translation>
 <translation id="7419631653042041064">מקלדת קטלאנית</translation>
+<translation id="7434823369735508263">‏מקלדת Dvorak אנגלית (בריטניה)</translation>
 <translation id="7460898608667578234">אוקראינית</translation>
+<translation id="7474889694310679759">מקלדת אנגלית (קנדה)</translation>
 <translation id="7489215562877293245">‏נמצאו <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     הקבצים מוכנים לגיבוי ב-<ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
@@ -652,6 +648,7 @@
 <translation id="7873831373602885875">לא ניתן לשמור בתיקייה <ph name="FOLDER_NAME" />. כל העריכות יישמרו בתיקייה<ph name="DOWNLOADS_FOLDER" /> שנמצאת בתיקיית ההורדות.</translation>
 <translation id="7881969471599061635">השבתת כתוביות</translation>
 <translation id="78946041517601018">‏כונני Drive משותפים</translation>
+<translation id="7896906914454843592">מקלדת מורחבת של ארה"ב</translation>
 <translation id="7898607018410277265">מקלדת גוג'אראטי (פונטית חדשה)</translation>
 <translation id="7908793776359722643">פרמוט מחיצה ימחק את כל הנתונים המאוחסנים בה. לא ניתן לבטל פעולה זו.</translation>
 <translation id="7917972308273378936">מקלדת ליטאית </translation>
@@ -708,6 +705,7 @@
 <translation id="8395901698320285466">מידות</translation>
 <translation id="8412586565681117057">‏שיטת קלט Quick</translation>
 <translation id="8418113698656761985">מקלדת רומנית</translation>
+<translation id="8432745813735585631">‏מקלדת Colemak אנגלית (ארה"ב)</translation>
 <translation id="8437209419043462667">ארה"ב</translation>
 <translation id="8456681095658380701">שם לא חוקי</translation>
 <translation id="8466234950814670489">‏ארכיון TAR</translation>
@@ -728,6 +726,7 @@
 <translation id="8698464937041809063">‏איור של Google</translation>
 <translation id="8714406895390098252">אופניים</translation>
 <translation id="8719721339511222681">בחרת את <ph name="ENTRY_NAME" />.</translation>
+<translation id="8722421161699219904">מקלדת בינ"ל של ארה"ב</translation>
 <translation id="872537912056138402">קרואטית</translation>
 <translation id="874420130893181774">‏שיטת קלט Traditional Pinyin</translation>
 <translation id="8770002329960263418">‏הולנדית (הולנד) עם מקלדת בינלאומית של ארה"ב ל-PC</translation>
@@ -739,7 +738,6 @@
 <translation id="885381502874625531">מקלדת בלארוסית</translation>
 <translation id="8860454412039442620">‏גיליון אלקטרוני של Excel</translation>
 <translation id="8900820606136623064">הונגרית</translation>
-<translation id="8901822611024316615">‏מקלדת QWERTY צ'כית</translation>
 <translation id="8919081441417203123">דנית</translation>
 <translation id="8941776146379310519">מלאית</translation>
 <translation id="8960999352790021682">מקלדת בנגאלי (פונטית)</translation>

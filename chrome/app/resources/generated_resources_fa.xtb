@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">بسامد به‌روزرسانی‌های صفحه‌نمایش را مشخص می‌کند</translation>
 <translation id="1061904396131502319">تقریباً زمان استراحت است</translation>
 <translation id="1067048845568873861">ایجاد شد</translation>
+<translation id="1067291318998134776">‏Linux (بتا)</translation>
 <translation id="1067922213147265141">‏سایر سرویس‌های Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">‏برنامه دیگری در رایانه شما یک افزونه اضافه کرده است که ممکن است نحوه کارکرد Chrome را تغییر دهد.
@@ -1374,7 +1375,6 @@
 <translation id="2562743677925229011">به سیستم <ph name="SHORT_PRODUCT_NAME" /> وارد نشدید</translation>
 <translation id="2564520396658920462">‏اجرای جاوااسکریپت ازطریق AppleScript خاموش شده است. برای روشن کردن آن، از نوار منو به View (مشاهده) &gt; Developer (برنامه‌نویس) &gt; Allow JavaScript from Apple Events (مجاز کردن JavaScript از رویدادهای Apple) بروید. برای اطلاعات بیشتر به این نشانی بروید: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">غلط‌گیر املا بهبودیافته</translation>
-<translation id="2566124945717127842">‏Powerwash، دستگاه <ph name="IDS_SHORT_PRODUCT_NAME" /> شما را بازنشانی می‌کند، به نحوی که مانند یک دستگاه جدید به نظر می‌رسد.</translation>
 <translation id="2568774940984945469">قسمت نوار اطلاعات</translation>
 <translation id="2571655996835834626">تنظیماتی را تغییر دهید که دسترسی وب‌سایت‌ها را به ویژگی‌هایی مثل کوکی‌ها، جاوا اسکریپت، افزایه، موقعیت جغرافیایی، میکروفون، دوربین و غیره کنترل می‌کنند.</translation>
 <translation id="2572032849266859634">مجوز دسترسی فقط خواندنی به <ph name="VOLUME_NAME" /> صادر شد.</translation>
@@ -1839,7 +1839,6 @@
 <translation id="3118319026408854581">راهنمای <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">‏لطفاً چند لحظه دیگر Linux را مجدداً راه‌اندازی کنید.</translation>
 <translation id="3120430004221004537">رمزگذاری برای عملیات موردنظر در این دستگاه کافی نیست: «<ph name="DEVICE_NAME" />».</translation>
-<translation id="3121793941267913344">این دستگاه <ph name="IDS_SHORT_PRODUCT_NAME" /> بازنشانی شود</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">ایجاد دایرکتوری داده ناموفق بود</translation>
 <translation id="3124111068741548686">کنترل‌های کاربر</translation>
@@ -5490,7 +5489,6 @@
 <translation id="7475671414023905704">‏نشانی وب گذرواژه گم شده Netscape</translation>
 <translation id="7476454130948140105">شارژ باتری برای به‌روزرسانی خیلی کم است (<ph name="BATTERY_PERCENT" />٪)</translation>
 <translation id="7477793887173910789">کنترل موسیقی، ویدیو و سایر موارد</translation>
-<translation id="7478362879637727630">‏باید این دستگاه Chrome Education را در «حساب آموزشی» ثبت‌نام کنید. برای ثبت‌نام در حسابی جدید، لطفاً به https://g.co/workspace/edusignup بروید.</translation>
 <translation id="7478485216301680444">برنامه کاربردی کیوسک نصب نشد.</translation>
 <translation id="7479221278376295180">نمای کلی استفاده از حافظه</translation>
 <translation id="7481312909269577407">ارسال کردن</translation>
@@ -6061,7 +6059,6 @@
 <translation id="8101987792947961127">در راه‌اندازی مجدد بعدی پاکسازی لازم است</translation>
 <translation id="8102139037507939978">‏«اطلاعات قابل‌شناسایی شخصی» از system_logs.txt حذف شود.</translation>
 <translation id="8102159139658438129">برای دیدن گزینه‌های تلفن متصل، به <ph name="LINK_BEGIN" />تنظیمات<ph name="LINK_END" /> بروید</translation>
-<translation id="8104696615244072556">‏دستگاه <ph name="IDS_SHORT_PRODUCT_NAME" /> شما Powerwash می‌شود و به نسخه قبلی باز می‌گردد.</translation>
 <translation id="8107015733319732394">‏«فروشگاه Google Play» در <ph name="DEVICE_TYPE" /> شما درحال نصب شدن است. ممکن است این کار چند دقیقه طول بکشد.</translation>
 <translation id="810728361871746125">وضوح نمایشگر</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{فاقد کوکی شخص ثالث}=1{۱ کوکی شخص ثالث مسدود شده است}one{# کوکی شخص ثالث مسدود شده است}other{# کوکی شخص ثالث مسدود شده است}}</translation>

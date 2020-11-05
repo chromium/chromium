@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">تحدّد معدّل تحديثات الشاشة</translation>
 <translation id="1061904396131502319">سيتم قفل الجهاز بعد قليل</translation>
 <translation id="1067048845568873861">تم الإنشاء</translation>
+<translation id="1067291318998134776">‏نظام التشغيل Linux (نسخة تجريبية)</translation>
 <translation id="1067922213147265141">‏خدمات Google الأخرى</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">‏أضاف برنامج آخر بجهاز الكمبيوتر إضافة قد تؤدي إلى تغيير طريقة عمل Chrome.
@@ -1377,7 +1378,6 @@
 <translation id="2562743677925229011">لم يتم تسجيل الدخول إلى <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">‏تم إيقاف تنفيذ JavaScript عبر AppleScript. ولتفعيله، انتقل من شريط القائمة إلى عرض &gt; مطوّر البرامج &gt; السماح بJavaScript من أحداث Apple. لمزيد من المعلومات: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">تدقيق إملائي مُحسّن</translation>
-<translation id="2566124945717127842">‏يمكنك إجراء Powerwash لإعادة تعيين جهاز <ph name="IDS_SHORT_PRODUCT_NAME" /> ليصبح كما لو كان جديدًا.</translation>
 <translation id="2568774940984945469">حاوية شريط المعلومات</translation>
 <translation id="2571655996835834626">يمكنك تغيير الإعدادات التي تتحكَّم في وصول المواقع الإلكترونية إلى ميزات مثل ملفات تعريف الارتباط وجافا سكريبت والمكوّنات الإضافية والمواقع الجغرافية والميكروفون والكاميرا وغيرها.</translation>
 <translation id="2572032849266859634">تم منح إذن دخول للقراءة فقط إلى <ph name="VOLUME_NAME" />.</translation>
@@ -1843,7 +1843,6 @@
 <translation id="3118319026408854581">مساعدة <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">‏يُرجى إعادة محاولة تشغيل نظام التشغيل Linux بعد بضع لحظات.</translation>
 <translation id="3120430004221004537">ترميز غير كافٍ لعملية معينة على: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344">إعادة ضبط جهاز <ph name="IDS_SHORT_PRODUCT_NAME" /> هذا</translation>
 <translation id="3122464029669770682">وحدة المعالجة المركزية</translation>
 <translation id="3122496702278727796">إخفاق محاولة إنشاء دليل  البيانات</translation>
 <translation id="3124111068741548686">معالجات المستخدم</translation>
@@ -5493,7 +5492,6 @@
 <translation id="7475671414023905704">‏عنوان URL لكلمة المرور المفقودة في Netscape</translation>
 <translation id="7476454130948140105">مستوى البطارية ضعيف جدًا لإجراء التحديث (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">التحكم في الموسيقى والفيديوهات وغير ذلك</translation>
-<translation id="7478362879637727630">‏يجب تسجيل جهاز Chrome Education هذا باستخدام حساب تعليم. للاشتراك في حساب جديد، يُرجى زيارة https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">‏تعذر تثبيت تطبيق Kiosk.</translation>
 <translation id="7479221278376295180">نظرة عامة على استخدام مساحة التخزين</translation>
 <translation id="7481312909269577407">إلى الأمام</translation>
@@ -6064,7 +6062,6 @@
 <translation id="8101987792947961127">‏يتطلب إجراء Powerwash بعد عملية إعادة التشغيل التالية</translation>
 <translation id="8102139037507939978">‏إزالة معلومات تحديد الهوية الشخصية من system_logs.txt</translation>
 <translation id="8102159139658438129">يُرجى الانتقال إلى <ph name="LINK_BEGIN" />الإعدادات<ph name="LINK_END" /> للاطِّلاع على خيارات لهاتفك المتَّصل</translation>
-<translation id="8104696615244072556">‏استخدم وظيفة Powerwash <ph name="IDS_SHORT_PRODUCT_NAME" /> وارجع إلى الإصدار السابق.</translation>
 <translation id="8107015733319732394">‏تثبيت متجر Google Play على <ph name="DEVICE_TYPE" />. قد يستغرق ذلك بضع دقائق.</translation>
 <translation id="810728361871746125">درجة دقة شاشة العرض</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{ليس هناك ملفات تعريف ارتباط تابعة لجهات خارجية}=1{تم حظر ملف تعريف ارتباط واحد تابع لجهات خارجية}two{تم حظر ملفَي تعريف ارتباط تابعَين لجهات خارجية}few{تم حظر # ملفات تعريف ارتباط تابعة لجهات خارجية}many{تم حظر # ملف تعريف ارتباط تابع لجهات خارجية}other{تم حظر # ملف تعريف ارتباط تابع لجهات خارجية}}</translation>

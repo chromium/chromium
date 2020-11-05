@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Segir fyrir um hve hratt skjárinn uppfærist</translation>
 <translation id="1061904396131502319">Það fer að koma tími til að taka sér hlé</translation>
 <translation id="1067048845568873861">Búið til</translation>
+<translation id="1067291318998134776">Linux (tilraunaútgáfa)</translation>
 <translation id="1067922213147265141">Önnur Google þjónusta</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Annað forrit í tölvunni þinni bætti við viðbót sem gæti breytt því hvernig Chrome virkar.
@@ -1377,7 +1378,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2562743677925229011">Ekki skráð(ur) inn á <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Slökkt er á keyrslu JavaScript í gegnum AppleScript. Þú getur kveikt á henni með því að fara í valmyndarstikuna og velja Yfirlit &gt; Þróunaraðili &gt; Leyfa JavaScript úr Apple Events. Nánari upplýsingar eru á: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Endurbætt villuleit</translation>
-<translation id="2566124945717127842">Djúphreinsaðu til að endurstilla <ph name="IDS_SHORT_PRODUCT_NAME" /> tækið svo það verði eins og nýtt.</translation>
 <translation id="2568774940984945469">Rammi upplýsingastiku</translation>
 <translation id="2571655996835834626">Breyta stillingum sem stjórna aðgangi vefsvæða að eiginleikum eins og fótsporum, JavaScript, viðbótum, landfræðilegri staðsetningu, hljóðnema, myndavél o.s.frv.</translation>
 <translation id="2572032849266859634">Skrifvarinn aðgangur að <ph name="VOLUME_NAME" /> hefur verið veittur.</translation>
@@ -1842,7 +1842,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3118319026408854581">Hjálp fyrir <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">Reyndu aftur að ræsa Linux eftir smástund.</translation>
 <translation id="3120430004221004537">Ófullnægjandi dulkóðun fyrir tiltekna aðgerð í: „<ph name="DEVICE_NAME" />“.</translation>
-<translation id="3121793941267913344">Endurstilla þetta <ph name="IDS_SHORT_PRODUCT_NAME" /> tæki</translation>
 <translation id="3122464029669770682">Örgjörvi</translation>
 <translation id="3122496702278727796">Mistókst að búa til gagnamöppu</translation>
 <translation id="3124111068741548686">Notendanöfn</translation>
@@ -5493,7 +5492,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7475671414023905704">Slóð á týnt aðgangsorð Netscape</translation>
 <translation id="7476454130948140105">Of lítil hleðsla á rafhlöðu til að uppfæra (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">Stjórnaðu tónlistinni, myndskeiðunum og fleiru</translation>
-<translation id="7478362879637727630">Þú verður að skrá þetta Chrome Education tæki inn á skólareikning. Til að stofna nýjan reikning skaltu fara á https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">Ekki tókst að setja upp sjálfsalaforrit.</translation>
 <translation id="7479221278376295180">Yfirlit yfir notkun geymslurýmis</translation>
 <translation id="7481312909269577407">Áfram</translation>
@@ -6063,7 +6061,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8101987792947961127">Djúphreinsunar er krafist við næstu endurræsingu</translation>
 <translation id="8102139037507939978">Fjarlægja persónugreinanlegar upplýsingar úr system_logs.txt.</translation>
 <translation id="8102159139658438129">Farðu í <ph name="LINK_BEGIN" />Stillingar<ph name="LINK_END" /> til að sjá valkosti fyrir tengda símann þinn</translation>
-<translation id="8104696615244072556">Djúphreinsa <ph name="IDS_SHORT_PRODUCT_NAME" /> tækið þitt og setja fyrri útgáfu upp aftur.</translation>
 <translation id="8107015733319732394">Setur Google Play Store upp á <ph name="DEVICE_TYPE" />. Þetta gæti tekið nokkrar mínútur.</translation>
 <translation id="810728361871746125">Skjáupplausn</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Engin fótspor frá þriðju aðilum}=1{Lokað á eitt fótspor frá þriðja aðila}one{Lokað er á # fótspor frá þriðju aðilum}other{Lokað er á # fótspor frá þriðju aðilum}}</translation>

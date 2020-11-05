@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Den här månaden</translation>
 <translation id="1637811476055996098">Välj filer</translation>
 <translation id="1650423536718072820">utvalt citat</translation>
+<translation id="1681022320378710418">aktuell tid</translation>
 <translation id="1727886345390570319">dölj textningsmenyn</translation>
 <translation id="1729654308190250600">Ange en e-postadress som inte är tom.</translation>
 <translation id="1758486001363313524">Annat ...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Ange en webbadress.</translation>
 <translation id="3175736971608411871">timer</translation>
 <translation id="3199563858620722075">kombinationsruta</translation>
+<translation id="3220661731597678625">aktuellt steg</translation>
 <translation id="3329013043687509092">Mättnad</translation>
 <translation id="3450233048674729344">Värdet måste vara mindre än eller lika med <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">definition</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="479989351350248267">sök</translation>
 <translation id="4812940957355064477">Ange ett nummer.</translation>
+<translation id="4912200001568447310">aktuellt objekt</translation>
 <translation id="4912536737030637138">bibliografipost</translation>
 <translation id="4915360478455618802">Visa tidsväljare</translation>
 <translation id="492244087561876220">kommentar</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Det går inte att spela upp media.</translation>
 <translation id="537648784377940524">Tidigaste datum (<ph name="MIN_DATE_OR_TIME" />) måste vara före senaste datum (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">figur</translation>
+<translation id="5425179576310518467">aktuellt datum</translation>
 <translation id="5453733299334684579">trädobjekt</translation>
 <translation id="5466621249238537318">Välj en eller flera filer.</translation>
 <translation id="5468998798572797635">avsluta helskärmsläge</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">mätare</translation>
 <translation id="6166809985690652833">efterord</translation>
 <translation id="6209276755895393898">Det verkar vara: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">aktuell sida</translation>
 <translation id="6213469881011901533">ordlista</translation>
 <translation id="6281588256137006900">Ljushet</translation>
 <translation id="6281763101136022427">webbadress</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Lägg till minst <ph name="MIN_CHARACTERS" /> tecken (för närvarande har du angett 1 tecken).</translation>
 <translation id="7034405885550056553">förslag</translation>
 <translation id="709897737746224366">Matcha det format som anges.</translation>
+<translation id="7102274145889307184">aktuell plats</translation>
 <translation id="7118469954320184356">Det finns ingen tillgänglig beskrivning.</translation>
 <translation id="7139483182332611405">företal</translation>
 <translation id="7214187073215825913">innehållsinformation</translation>

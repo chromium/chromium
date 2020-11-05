@@ -125,7 +125,6 @@
 <translation id="2127372758936585790">کم پاور والا چارجر</translation>
 <translation id="2132302418721800944">فُل اسکرین ریکارڈ کریں</translation>
 <translation id="2135456203358955318">ڈاک کردہ مکبّر</translation>
-<translation id="2144487987174258011">‏Adobe Flash Player اپ ڈیٹ کرنے کیلئے ری اسٹارٹ کریں</translation>
 <translation id="2208323208084708176">متحد ڈیسک ٹاپ وضع</translation>
 <translation id="2220572644011485463">‏PIN یا پاس ورڈ</translation>
 <translation id="2222338659135520253">سائن ان درکار ہے</translation>
@@ -160,7 +159,6 @@
 <translation id="2435457462613246316">پاس ورڈ دکھائیں</translation>
 <translation id="2473177541599297363">ریزولیوشن کی تصدیق کریں</translation>
 <translation id="2475982808118771221">ایک خرابی پیش آگئی</translation>
-<translation id="2479579251444854687">مجموعی جائزے کو کھولنے کیلئے تین انگلیوں سے اوپر اور بند کرنے کیلئے نیچے سوائپ کریں۔</translation>
 <translation id="2482878487686419369">اطلاعات</translation>
 <translation id="2484513351006226581">کی بورڈ کا لے آؤٹ سوئچ کرنے کے لیے <ph name="KEYBOARD_SHORTCUT" /> دبائیں۔</translation>
 <translation id="2501920221385095727">اسٹکی کلیدیں</translation>
@@ -371,7 +369,6 @@
 <translation id="4481530544597605423">جوڑا ختم کیے ہوئے آلات</translation>
 <translation id="4485060137115666462">دائیں طرف کلک کرنے یا لانگ پریس سے، اسسٹنٹ آپ کے انتخاب کیلئے تعریف، ترجمہ یا یونٹ تبدیلی جیسی معلومات دکھاتی ہے۔</translation>
 <translation id="4505050298327493054">فعال ڈیسک۔</translation>
-<translation id="4506458088675900627">مجموعی جائزے کے ٹچ پیڈ کا اشارہ تبدیل ہو گیا ہے</translation>
 <translation id="4513946894732546136">تاثرات</translation>
 <translation id="4527045527269911712">بلوٹوتھ آلہ "<ph name="DEVICE_NAME" />" جوڑا بنانے کی اجازت چاہتا ہے۔</translation>
 <translation id="453661520163887813">مکمل ہونے میں <ph name="TIME" /> باقی</translation>
@@ -434,6 +431,7 @@
 <translation id="5033299697334913360">فُل اسکرین کیپچر کرنے کیلئے کہیں بھی کلک کریں</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> نئے فون سے منسلک ہو گیا</translation>
 <translation id="5035389544768382859">ڈسپلے کنفیگریشن کی تصدیق کریں</translation>
+<translation id="5078796286268621944">‏غلط PIN</translation>
 <translation id="5083553833479578423">اسسٹنٹ کی مزید خصوصیات کو غیر مقفل کریں۔</translation>
 <translation id="5136175204352732067">مختلف کی بورڈ منسلک کر دیا گیا</translation>
 <translation id="5168181903108465623">کاسٹ آلات دستیاب ہیں</translation>

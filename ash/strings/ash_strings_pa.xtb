@@ -125,7 +125,6 @@
 <translation id="2127372758936585790">ਘੱਟ-ਪਾਵਰ ਦਾ ਚਾਰਜਰ</translation>
 <translation id="2132302418721800944">ਪੂਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਰਿਕਾਰਡ ਕਰੋ</translation>
 <translation id="2135456203358955318">ਡੌਕ ਕੀਤਾ ਵਿਸਤਾਰਕ</translation>
-<translation id="2144487987174258011">Adobe ਫਲੈਸ਼ ਪਲੇਅਰ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2208323208084708176">ਯੂਨੀਫਾਈਡ ਡੈਸਕਟਾਪ ਮੋਡ</translation>
 <translation id="2220572644011485463">ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ</translation>
 <translation id="2222338659135520253">ਸਾਈਨ-ਇਨ ਲੋੜੀਂਦਾ ਹੈ</translation>
@@ -160,7 +159,6 @@
 <translation id="2435457462613246316">ਪਾਸਵਰਡ ਵੇਖੋ</translation>
 <translation id="2473177541599297363">ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਦੀ ਤਸਦੀਕੀ ਕਰੋ</translation>
 <translation id="2475982808118771221">ਇੱਕ ਗੜਬੜ ਹੋਈ</translation>
-<translation id="2479579251444854687">ਰੂਪ-ਰੇਖਾ ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ ਤਿੰਨ ਉਂਗਲਾਂ ਨਾਲ ਉੱਪਰ ਵੱਲ ਅਤੇ ਬੰਦ ਕਰਨ ਲਈ ਹੇਠਾਂ ਵੱਲ ਸਵਾਈਪ ਕਰੋ।</translation>
 <translation id="2482878487686419369">ਸੂਚਨਾਵਾਂ</translation>
 <translation id="2484513351006226581">ਕੀ-ਬੋਰਡ ਖਾਕਾ ਬਦਲਣ ਲਈ <ph name="KEYBOARD_SHORTCUT" /> ਦਬਾਓ।</translation>
 <translation id="2501920221385095727">ਸਟਿਕੀ ਕੁੰਜੀਆਂ</translation>
@@ -371,7 +369,6 @@
 <translation id="4481530544597605423">ਅਣ-ਜੋੜਾਬੱਧ ਕੀਤੀਆਂ ਡੀਵਾਈਸਾਂ</translation>
 <translation id="4485060137115666462">ਸੱਜੇ-ਕਲਿੱਕ ਜਾਂ ਦਬਾਈ ਰੱਖਣ ਨਾਲ, Assistant ਤੁਹਾਡੀ ਚੋਣ ਲਈ ਪਰਿਭਾਸ਼ਾ, ਅਨੁਵਾਦ ਜਾਂ ਇਕਾਈ ਰੂਪਾਂਤਰਨ ਵਰਗੀ ਜਾਣਕਾਰੀ ਦਿਖਾਉਂਦੀ ਹੈ।</translation>
 <translation id="4505050298327493054">ਕਿਰਿਆਸ਼ੀਲ ਡੈਸਕ।</translation>
-<translation id="4506458088675900627">ਰੂਪ-ਰੇਖਾ ਲਈ ਟੱਚਪੈਡ ਇਸ਼ਾਰੇ ਨੂੰ ਬਦਲ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="4513946894732546136">ਫ਼ੀਡਬੈਕ</translation>
 <translation id="4527045527269911712">ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ "<ph name="DEVICE_NAME" />" ਜੋੜਾਬੱਧ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੁੰਦੀ ਹੈ।</translation>
 <translation id="453661520163887813">ਪੂਰੀ ਤਰ੍ਹਾਂ ਚਾਰਜ ਹੋਣ ਵਿੱਚ <ph name="TIME" /> ਬਾਕੀ</translation>
@@ -434,6 +431,7 @@
 <translation id="5033299697334913360">ਪੂਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਕੈਪਚਰ ਕਰਨ ਲਈ ਕਿਤੇ ਵੀ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />ਨੂੰ ਨਵੇਂ ਫ਼ੋਨ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5035389544768382859">ਡਿਸਪਲੇ ਸੰਰੂਪਣ ਦੀ ਤਸਦੀਕ ਕਰੋ</translation>
+<translation id="5078796286268621944">ਗ਼ਲਤ PIN</translation>
 <translation id="5083553833479578423">'ਸਹਾਇਕ' ਦੀਆਂ ਹੋਰ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬਾਰੇ ਜਾਣੋ।</translation>
 <translation id="5136175204352732067">ਵੱਖਰਾ ਕੀ-ਬੋਰਡ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5168181903108465623">ਕਾਸਟ ਡਿਵਾਈਸਾਂ ਉਪਲਬਧ</translation>

@@ -17,6 +17,7 @@
 <translation id="1369915414381695676">Sivusto <ph name="SITE_NAME" /> lisättiin.</translation>
 <translation id="1383876407941801731">Haku</translation>
 <translation id="1384959399684842514">Lataus keskeytettiin.</translation>
+<translation id="1415402041810619267">URL näkyy lyhennettynä</translation>
 <translation id="1431402976894535801">Estä sivustoja tietämästä, kun olet paikalla</translation>
 <translation id="1446450296470737166">Salli MIDI-laitteiden täysi käyttöoik.</translation>
 <translation id="1509960214886564027">Useiden sivustojen ominaisuudet saattavat lakata toimimasta</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">Salli sivustojen toistaa suojattua sisältöä</translation>
 <translation id="4468959413250150279">Mykistä tietyn sivuston äänet.</translation>
 <translation id="4479647676395637221">Pyydä lupaa, kun sivustot yrittävät käyttää kameraasi (suositus).</translation>
+<translation id="4505788138578415521">URL näkyy laajennettuna</translation>
 <translation id="4534723447064627427">Laita mikrofoni päälle myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> saa pääsyn mikrofoniisi.</translation>
 <translation id="4570913071927164677">Tiedot</translation>
 <translation id="4645575059429386691">Vanhempasi hallinnoima</translation>

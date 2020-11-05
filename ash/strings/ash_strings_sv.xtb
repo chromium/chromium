@@ -8,6 +8,7 @@
 <translation id="1036672894875463507">Jag är Google-assistenten och jag kan hjälpa dig under hela dagen.
 Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> har lagts till</translation>
+<translation id="1047773237499189053">Det finns en ny funktion. Tryck på uppåtpilen om du vill läsa mer.</translation>
 <translation id="1056775291175587022">Inga nätverk</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mobil: <ph name="ADDRESS" /></translation>
@@ -20,6 +21,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1153356358378277386">Kopplade enheter</translation>
 <translation id="1175572348579024023">Rulla</translation>
 <translation id="1178581264944972037">Paus</translation>
+<translation id="118532027333893379">Tryck var som helst för att ta en bild av hela skärmen</translation>
 <translation id="1190609913194133056">Meddelandecenter</translation>
 <translation id="1195412055398077112">överskanning</translation>
 <translation id="119944043368869598">Ta bort alla</translation>
@@ -125,7 +127,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2127372758936585790">Laddning med låg effekt</translation>
 <translation id="2132302418721800944">Spela in hela skärmen</translation>
 <translation id="2135456203358955318">Dockad skärmförstoring</translation>
-<translation id="2144487987174258011">Starta om för att uppdatera Adobe Flash Player</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: Försök igen</translation>
 <translation id="2208323208084708176">Enhetligt skrivbordsläge</translation>
 <translation id="2220572644011485463">Pinkod eller lösenord</translation>
 <translation id="2222338659135520253">Inloggning krävs</translation>
@@ -137,6 +139,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="229397294990920565">Mobildata stängs av …</translation>
 <translation id="2295777434187870477">Mikrofonen är på. Om du ändrar läge stängs indata av.</translation>
 <translation id="2298170939937364391">Helskärmsförstoring har aktiverats. Tryck på Ctrl + Sök + M igen om du vill inaktivera funktionen.</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" />: Klicka på dialogrutan för att visa resultat i Google Assistent.</translation>
 <translation id="2302092602801625023">Det här kontot hanteras av Family Link</translation>
 <translation id="2303600792989757991">Växla fönsteröversikt</translation>
 <translation id="2322173485024759474">Bakåt tecken för tecken</translation>
@@ -160,11 +163,11 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
 <translation id="2473177541599297363">Bekräfta upplösningen</translation>
 <translation id="2475982808118771221">Det uppstod ett fel</translation>
-<translation id="2479579251444854687">Dra uppåt med tre fingrar för att öppna och stänga översikten.</translation>
 <translation id="2482878487686419369">Aviseringar</translation>
 <translation id="2484513351006226581">Tryck på <ph name="KEYBOARD_SHORTCUT" /> om du vill byta tangentbordslayout.</translation>
 <translation id="2501920221385095727">Tröga tangenter</translation>
 <translation id="2509468283778169019">CAPS LOCK är på</translation>
+<translation id="2536159006530886390">Det gick inte att ansluta till internet.</translation>
 <translation id="2542089167727451762">Tryck på profilbilden</translation>
 <translation id="255671100581129685">Google-assistenten är inte tillgänglig i en offentlig session.</translation>
 <translation id="256712445991462162">den dockade skärmförstoraren</translation>
@@ -186,6 +189,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2727977024730340865">Ansluten till en laddare med låg effekt. Batteriet kanske inte laddas ordentligt.</translation>
 <translation id="2792498699870441125">Alt + Sök</translation>
 <translation id="2819276065543622893">Du loggas nu ut.</translation>
+<translation id="28232023175184696">Det gick inte att ansluta till internet. Klicka om du vill försöka igen.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> har inte stöd för <ph name="SPECIFIED_RESOLUTION" />. Upplösningen ändrades till <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Hylla</translation>
 <translation id="2841907151129139818">Bytte till surfplatteläge</translation>
@@ -326,6 +330,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4129129681837227511">Lås upp enheten för att ändra inställningen för aviseringar på låsskärmen</translation>
 <translation id="4146833061457621061">Spela upp musik</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> hanteras av <ph name="DOMAIN" /></translation>
+<translation id="415719264485676252">Skärmbilder/skärminspelning blockeras</translation>
 <translation id="4157822100366708405">Inställningar för mörkt tema</translation>
 <translation id="4181841719683918333">Språk</translation>
 <translation id="4195877955194704651">Knapp för Automatiska klick</translation>
@@ -371,7 +376,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4481530544597605423">Frånkopplade enheter</translation>
 <translation id="4485060137115666462">Assistenten visar information om det som är markerat när du högerklickar eller trycker länge på det, t.ex. en definition, översättning eller en omräkning till en annan enhet.</translation>
 <translation id="4505050298327493054">Aktiv arbetsyta.</translation>
-<translation id="4506458088675900627">Styrplatterörelsen för översikten har ändrats</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4527045527269911712">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> tills batteriet är fullt</translation>
@@ -395,6 +399,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4710243778082831592">IME-inställningar</translation>
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
 <translation id="4734965478015604180">Horisontell</translation>
+<translation id="4744944742468440486">Information om det som är markerat</translation>
 <translation id="4759238208242260848">Nedladdningar</translation>
 <translation id="4774338217796918551">Prova igen i morgon klockan <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Lösenord för <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -434,6 +439,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5033299697334913360">Klicka var som helst för att ta en bild av hela skärmen</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> har anslutits till en ny mobil</translation>
 <translation id="5035389544768382859">Bekräfta skärminställningarna</translation>
+<translation id="5078796286268621944">Fel pinkod</translation>
 <translation id="5083553833479578423">Lås upp fler funktioner för Assistent</translation>
 <translation id="5136175204352732067">Ett annat tangentbord har anslutits</translation>
 <translation id="5168181903108465623">Överföringsenheter finns tillgängliga</translation>
@@ -513,6 +519,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="595202126637698455">Resultatspårning aktiverat</translation>
 <translation id="5957083217255311415">Mobildata har inaktiverats.</translation>
 <translation id="5958529069007801266">Kontrollerad användare</translation>
+<translation id="5960825221082587934">Låt assistenten visa information för det som är markerat, till exempel en definition, en översättning eller en omräkning till en annan enhet.</translation>
 <translation id="5977415296283489383">Hörlurar</translation>
 <translation id="5978382165065462689">Dela kontroll över skärmen via Fjärrhjälp.</translation>
 <translation id="5980301590375426705">Avsluta gästsession</translation>
@@ -596,6 +603,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6777216307882431711">Laddar anslutna USB-C-enheter</translation>
 <translation id="6790428901817661496">Spela</translation>
 <translation id="6803622936009808957">Det gick inte att spegla visningar eftersom inga upplösningar som stöds hittades. Utökat skrivbordsläge används i stället.</translation>
+<translation id="6816797338148849397">Det finns information om det som är markerat. Tryck på uppåtpilen för att komma åt den.</translation>
 <translation id="6818242057446442178">Bakåt ord för ord</translation>
 <translation id="6820676911989879663">Ta en paus!</translation>
 <translation id="6850010208275816200">Den aktuella appen visas i helskärmsläge. Om du blir ombedd att ange ditt lösenord måste du först stänga helskärmsläget.</translation>
@@ -659,6 +667,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7497767806359279797">Välj språk och tangentbord</translation>
 <translation id="7526573455193969409">Nätverket kan vara övervakat</translation>
 <translation id="7536035074519304529">IP-adress: <ph name="ADDRESS" /></translation>
+<translation id="7542906349682405018">Möjligheten att ta en skärmbild/göra en skärminspelning av innehållet på skärmen blockeras av administratören.</translation>
 <translation id="7548434653388805669">Läggdags</translation>
 <translation id="7551643184018910560">Fäst på hyllan</translation>
 <translation id="7561982940498449837">Stäng meny</translation>
@@ -786,6 +795,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Laddare med låg effekt ansluten</translation>
 <translation id="8683506306463609433">Prestandaspårning är aktiv</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Hantera den här funktionen med tangenterna vänster- och högerpil.</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8721053961083920564">Ljud på/av. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">Det kan försöka stjäla dina tangenttryckningar</translation>
@@ -806,6 +816,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8874184842967597500">Inte ansluten</translation>
 <translation id="8877788021141246043">Ställ in en påminnelse</translation>
 <translation id="8878886163241303700">Utökad skärm</translation>
+<translation id="8883473964424809116">Klicka här för att öppna inställningarna för Google Assistent.</translation>
 <translation id="890616557918890486">Ändra källa</translation>
 <translation id="8909138438987180327">Batterinivån är på <ph name="PERCENTAGE" /> procent.</translation>
 <translation id="8913384980486163186">Tema (standard)</translation>

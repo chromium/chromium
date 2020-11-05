@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">画面の更新頻度を指定します</translation>
 <translation id="1061904396131502319">もうすぐ休憩の時間です</translation>
 <translation id="1067048845568873861">作成日</translation>
+<translation id="1067291318998134776">Linux（ベータ版）</translation>
 <translation id="1067922213147265141">他の Google サービス</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">パソコン上の別のプログラムにより、Chrome の動作に影響を及ぼす可能性のある拡張機能が追加されました。
@@ -1377,7 +1378,6 @@
 <translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" /> にログインしていません</translation>
 <translation id="2564520396658920462">AppleScript からの JavaScript の実行がオフになっています。オンにするには、メニューバーから [表示] &gt; [デベロッパー] &gt; [Apple Events からの JavaScript を許可] を選択してください。詳しくは、https://support.google.com/chrome/?p=applescript をご覧ください。</translation>
 <translation id="2564653188463346023">拡張スペルチェック</translation>
-<translation id="2566124945717127842">お使いの <ph name="IDS_SHORT_PRODUCT_NAME" /> デバイスを出荷時の状態にリセットするために、Powerwash を実行します。</translation>
 <translation id="2568774940984945469">情報バー コンテナ</translation>
 <translation id="2571655996835834626">Cookie、JavaScript、プラグイン、位置情報、マイク、カメラといった機能へのウェブサイトからのアクセスを制御する設定を変更します。</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> への読み取り専用アクセスが許可されました。</translation>
@@ -1842,7 +1842,6 @@
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> ヘルプ</translation>
 <translation id="3118654181216384296">しばらくしてからもう一度 Linux の起動をお試しください。</translation>
 <translation id="3120430004221004537">「<ph name="DEVICE_NAME" />」で、指定された操作に必要な暗号化が行われていません。</translation>
-<translation id="3121793941267913344">この <ph name="IDS_SHORT_PRODUCT_NAME" /> デバイスをリセットします</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">データ ディレクトリの作成に失敗しました</translation>
 <translation id="3124111068741548686">USER ハンドル</translation>
@@ -5493,7 +5492,6 @@
 <translation id="7475671414023905704">Netscape パスワード紛失 URL</translation>
 <translation id="7476454130948140105">更新するには電池残量が少なすぎます（<ph name="BATTERY_PERCENT" />%）</translation>
 <translation id="7477793887173910789">音楽、動画、その他のメディアを操作します</translation>
-<translation id="7478362879637727630">この Chrome Education デバイスを教育機関向けアカウントに登録する必要があります。新しいアカウントに登録する場合は、https://g.co/workspace/edusignup にアクセスしてください。</translation>
 <translation id="7478485216301680444">キオスク アプリケーションをインストールできませんでした。</translation>
 <translation id="7479221278376295180">ストレージ使用状況</translation>
 <translation id="7481312909269577407">進む</translation>
@@ -6064,7 +6062,6 @@
 <translation id="8101987792947961127">次回の再起動時に Powerwash が必要</translation>
 <translation id="8102139037507939978">system_logs.txt から個人を特定できる情報を削除する。</translation>
 <translation id="8102159139658438129">接続しているスマートフォン用のオプションを表示するには [<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />] に移動してください</translation>
-<translation id="8104696615244072556"><ph name="IDS_SHORT_PRODUCT_NAME" /> デバイスで Powerwash を実行し、以前のバージョンに戻します。</translation>
 <translation id="8107015733319732394"><ph name="DEVICE_TYPE" /> に Google Play ストアをインストールしています。この処理には数分かかる可能性があります。</translation>
 <translation id="810728361871746125">ディスプレイの解像度</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{サードパーティの Cookie はありません}=1{1 個のサードパーティ Cookie がブロックされています}other{# 個のサードパーティ Cookie がブロックされています}}</translation>

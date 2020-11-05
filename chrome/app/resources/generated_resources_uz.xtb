@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Ekranlardagi yangilanish chastotasini aniqlaydi</translation>
 <translation id="1061904396131502319">Tanaffus qilish vaqti keldi</translation>
 <translation id="1067048845568873861">Yaratilgan sanasi</translation>
+<translation id="1067291318998134776">Linux (Beta)</translation>
 <translation id="1067922213147265141">Boshqa Google xizmatlari</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Kompyuteringizdagi boshqa dastur bitta kengaytma o‘rnatdi. U Chrome brauzerinig ishlash usulini o‘zgartirishi mumkin.
@@ -1375,7 +1376,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" /> hisobiga kirish bajarilmagan</translation>
 <translation id="2564520396658920462">JavaScriptni AppleScript orqali bajarish funksiyasi o‘chiq. Uni yoqish uchun menyudagi  “Ko‘rish &gt; Dasturchilar uchun” sahifasi orqali Apple Events uchun JavaScript ishlatishga ruxsat bering. Batafsil axborot: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Kengaytirilgan imlo tekshiruvi</translation>
-<translation id="2566124945717127842">Powerwash funksiyasi <ph name="IDS_SHORT_PRODUCT_NAME" /> qurilmasini zavod sozlamariga qaytaradi.</translation>
 <translation id="2568774940984945469">Ma’lumotlar paneli konteyneri</translation>
 <translation id="2571655996835834626">Saytlarning cookie fayllari, JavaScript, plaginlar, geo-maʼlumotlar, mikrofon, kamera va boshqa fuksiyalarga ruxsat sozlamalarini oʻzgartirish</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" />’ga faqat o‘qishga ruxsat berildi.</translation>
@@ -1840,7 +1840,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> yordam markazi</translation>
 <translation id="3118654181216384296">Bir necha daqiqadan keyin Linuxni qaytadan ishga tushiring.</translation>
 <translation id="3120430004221004537">“<ph name="DEVICE_NAME" />” qurilmasidagi shifrlash yetarli darajada emas.</translation>
-<translation id="3121793941267913344"><ph name="IDS_SHORT_PRODUCT_NAME" /> qurilmasi sozlamalarini dastlabki holatga qaytarish</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Ma’lumotlar katalogini yaratishda xatolik yuz berdi</translation>
 <translation id="3124111068741548686">USER-deskriptorlari</translation>
@@ -5491,7 +5490,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7475671414023905704">Netscape yo‘qotilgan parollar URL manzili</translation>
 <translation id="7476454130948140105">Batareya quvvati yetarli emas (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">Multimedia boshqaruvi</translation>
-<translation id="7478362879637727630">Bu qurilmani Chrome Education litsenziyasi bilan oʻquv hisobida roʻyxatdan oʻtkazing. Yangi hisob yaratish uchun https://g.co/workspace/edusignup sahifasini oching.</translation>
 <translation id="7478485216301680444">Kiosk-ilovani o‘rnatib bo‘lmadi.</translation>
 <translation id="7479221278376295180">Xotira sarfiga nazar solish</translation>
 <translation id="7481312909269577407">Oldinga</translation>
@@ -6060,7 +6058,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8101987792947961127">Qurilmani keyingi marta qayta ishga tushirishda Powerwash amali bajarilishi kerak</translation>
 <translation id="8102139037507939978">Shaxsni aniqlash maʼlumotlarini system_logs.txt faylidan chiqarib tashlash.</translation>
 <translation id="8102159139658438129">Ulangan telefon parametrlari bilan <ph name="LINK_BEGIN" />Sozlamalar<ph name="LINK_END" /> orqali tanishing</translation>
-<translation id="8104696615244072556"><ph name="IDS_SHORT_PRODUCT_NAME" /> qurilmasida “Powerwash” funksiyasidan foydalanish va avvalgi versiyasiga qaytish.</translation>
 <translation id="8107015733319732394">Google Market <ph name="DEVICE_TYPE" /> qurilmangizga o‘rnatilmoqda. Bu bir necha daqiqa oladi.</translation>
 <translation id="810728361871746125">Ekran oʻlchami:</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Tashqi cookie fayllar yoʻq}=1{1 ta tashqi cookie fayl bloklandi}other{# ta tashqi cookie fayl bloklandi}}</translation>

@@ -315,6 +315,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="214556005048008348">Cancel payment</translation>
 <translation id="2147827593068025794">Background Sync</translation>
 <translation id="2148613324460538318">Add Card</translation>
+<translation id="2149968176347646218">Connection is not secure</translation>
 <translation id="2154054054215849342">Sync is not available for your domain</translation>
 <translation id="2154484045852737596">Edit card</translation>
 <translation id="2161656808144014275">Text</translation>
@@ -1168,6 +1169,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5571083550517324815">Can’t pick up from this address. Select a different address.</translation>
 <translation id="5580958916614886209">Check your expiry month and try again</translation>
 <translation id="5586446728396275693">No saved addresses</translation>
+<translation id="5593349413089863479">Connection is not fully secure</translation>
 <translation id="5595485650161345191">Edit address</translation>
 <translation id="5598944008576757369">Choose payment method</translation>
 <translation id="560412284261940334">Management not supported</translation>
@@ -1886,6 +1888,7 @@ Additional details:
 <translation id="8507227106804027148">Command line</translation>
 <translation id="8508648098325802031">Search icon</translation>
 <translation id="8522552481199248698">Chrome can help you protect your Google account and change your password.</translation>
+<translation id="8525306231823319788">Full screen</translation>
 <translation id="8530813470445476232">Clear your browsing history, cookies, cache and more in Chrome settings</translation>
 <translation id="8533619373899488139">Visit &lt;strong&gt;chrome://policy&lt;/strong&gt; to see the list of blocked URLs and other policies enforced by your system administrator.</translation>
 <translation id="8541158209346794904">Bluetooth device</translation>

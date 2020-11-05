@@ -125,7 +125,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2127372758936585790">Gücü az şarjer</translation>
 <translation id="2132302418721800944">Tam ekranı çəkin</translation>
 <translation id="2135456203358955318">Daxili miqyas</translation>
-<translation id="2144487987174258011">Adobe Flash Player'i güncəlləmək üçün yenidən başladın</translation>
 <translation id="2208323208084708176">Vahid masa üstü rejimi</translation>
 <translation id="2220572644011485463">PIN və ya parol</translation>
 <translation id="2222338659135520253">Giriş tələb olunur</translation>
@@ -160,7 +159,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2435457462613246316">Parolu göstərin</translation>
 <translation id="2473177541599297363">Əksetmə qabiliyyətini təsdiq edin</translation>
 <translation id="2475982808118771221">Xəta baş verdi</translation>
-<translation id="2479579251444854687">İcmalı açmaq üçün üç barmaq ilə yuxarı, bağlamaq üçün aşağı çəkin.</translation>
 <translation id="2482878487686419369">Bildirişlər</translation>
 <translation id="2484513351006226581">Klaviatura düzülüşünü dəyişmək üçün <ph name="KEYBOARD_SHORTCUT" /> süyməsinə klikləyin.</translation>
 <translation id="2501920221385095727">Əvəzedici açarlar</translation>
@@ -371,7 +369,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4481530544597605423">Ayrılmış cihazlar</translation>
 <translation id="4485060137115666462">Sağ düymə ilə toxunduqda və ya basıb saxladıqda Assistent seçiminiz üçün izahat, tərcümə və ya vahidin çevrilməsi kimi məlumatı göstərir.</translation>
 <translation id="4505050298327493054">Aktiv masa.</translation>
-<translation id="4506458088675900627">İcmal taçped jesti dəyişib</translation>
 <translation id="4513946894732546136">Geri əlaqə</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" cihazı cütlənmək üçün icazə istəyir.</translation>
 <translation id="453661520163887813">dolana qədər <ph name="TIME" /></translation>
@@ -434,6 +431,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5033299697334913360">Tam ekranı çəkmək üçün istənilən yerə klikləyin</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> yeni telefona qoşuldu</translation>
 <translation id="5035389544768382859">Displey Konfiqurasiyasını təsdiq edin</translation>
+<translation id="5078796286268621944">Yanlış PIN</translation>
 <translation id="5083553833479578423">Daha çox Assistent funksiyalarını kiliddən çıxarın.</translation>
 <translation id="5136175204352732067">Fərqli klaviatura qoşuldu</translation>
 <translation id="5168181903108465623">Mövcud Cast cihazlar</translation>

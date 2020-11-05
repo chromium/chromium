@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Вызначае частату абнаўлення экрана</translation>
 <translation id="1061904396131502319">Набліжаецца час блакіроўкі</translation>
 <translation id="1067048845568873861">Створаны</translation>
+<translation id="1067291318998134776">Linux (бэта-версія)</translation>
 <translation id="1067922213147265141">Іншыя сэрвісы Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Іншая праграма на камп'ютары дадала пашырэнне, якое можа змяніць працу Chrome.
@@ -1377,7 +1378,6 @@
 <translation id="2562743677925229011">Не выкананы ўваход у <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Выкананне JavaScript праз AppleScript выключана. Каб уключыць яго, перайдзіце з панэлі меню ў "Прагляд &gt; Распрацоўшчык &gt; Дазволіць JavaScript з падзей Apple". Падрабязную інфармацыю глядзіце тут: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Палепшаная праверка правапісу</translation>
-<translation id="2566124945717127842">Powerwash скіне налады прылады <ph name="IDS_SHORT_PRODUCT_NAME" />, і яна будзе як новая.</translation>
 <translation id="2568774940984945469">Кантэйнер панэлі інфармацыі</translation>
 <translation id="2571655996835834626">Змена налад, якія кантралююць доступ вэб-сайтаў да такіх функцый, як файлы cookie, JavaScript, убудовы, вызначэнне геаграфічнага месцазнаходжання, доступ да мікрафона, камеры і г. д.</translation>
 <translation id="2572032849266859634">Доступ да <ph name="VOLUME_NAME" /> дадзены толькі для чытання.</translation>
@@ -1842,7 +1842,6 @@
 <translation id="3118319026408854581">Даведка <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">Перазапусціце Linux праз некалькі секунд.</translation>
 <translation id="3120430004221004537">Недастатковае шыфраванне аперацыі на прыладзе "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344">Скінуць прыладу <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="3122464029669770682">Працэсар</translation>
 <translation id="3122496702278727796">Не ўдалося стварыць каталог даных</translation>
 <translation id="3124111068741548686">Маркеры КАРЫСТАЛЬНІКА</translation>
@@ -5492,7 +5491,6 @@
 <translation id="7475671414023905704">URL-адрас для забытага пароля Netscape</translation>
 <translation id="7476454130948140105">Зарад акумулятара занадта нізкі для абнаўлення (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7477793887173910789">Кіруйце музыкай, відэа і шмат чым іншым</translation>
-<translation id="7478362879637727630">Вы павінны зарэгістраваць гэту прыладу Chrome Education у навучальным уліковым запісе. Каб стварыць новы ўліковы запіс, наведайце старонку https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">Не ўдалося ўсталяваць праграму-кіёск.</translation>
 <translation id="7479221278376295180">Агляд выкарыстання сховішча</translation>
 <translation id="7481312909269577407">Далей</translation>
@@ -6062,7 +6060,6 @@
 <translation id="8101987792947961127">Пры наступнай перазагрузцы патрабуецца Powerwash</translation>
 <translation id="8102139037507939978">Выдаліць інфармацыю, якая дазваляе ідэнтыфікаваць асобу, з файла system_logs.txt.</translation>
 <translation id="8102159139658438129">Перайдзіце ў <ph name="LINK_BEGIN" />Налады<ph name="LINK_END" />, каб паглядзець параметры падключанага тэлефона</translation>
-<translation id="8104696615244072556">Скінуць налады прылады <ph name="IDS_SHORT_PRODUCT_NAME" /> з дапамогай Powerwash і вярнуцца да папярэдняй версіі.</translation>
 <translation id="8107015733319732394">Ідзе ўсталяванне Крамы Google Play на <ph name="DEVICE_TYPE" />. Гэта можа заняць некалькі хвілін.</translation>
 <translation id="810728361871746125">Раздзяляльнасць дысплэя</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Няма старонніх файлаў cookie}=1{1 старонні файл cookie заблакіраваны}one{# старонні файл cookie заблакіраваны}few{# староннія файлы cookie заблакіраваны}many{# старонніх файлаў cookie заблакіраваны}other{# старонняга файла cookie заблакіраваны}}</translation>

@@ -314,6 +314,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3285080554353377245">Videor om hur du använder Chrome</translation>
 <translation id="3288003805934695103">läsa in sidan igen</translation>
 <translation id="32895400574683172">Aviseringar tillåts</translation>
+<translation id="3290991969712132877">Lägg till sidan på startskärmen med knappen Fler alternativ, så att du kommer åt den snabbare</translation>
 <translation id="3295530008794733555">Surfa snabbare. Förbruka mindre data.</translation>
 <translation id="3298243779924642547">Lite</translation>
 <translation id="3303414029551471755">Vill du ladda ned innehållet?</translation>
@@ -470,6 +471,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4532845899244822526">Välj mapp</translation>
 <translation id="4538018662093857852">Aktivera begränsat läge</translation>
 <translation id="4550003330909367850">Ange ett skärmlås på enheten om du vill visa eller kopiera lösenordet här.</translation>
+<translation id="4557685098773234337">Lägg till sidan på startskärmen så att du kommer åt den snabbare</translation>
 <translation id="4558311620361989323">Kortkommandon på webbsidor</translation>
 <translation id="4561979708150884304">Ingen anslutning</translation>
 <translation id="4565377596337484307">Dölj lösenord</translation>
@@ -499,6 +501,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4720982865791209136">Hjälp till att förbättra Chrome. <ph name="BEGIN_LINK" />Fyll i enkäten<ph name="END_LINK" />.</translation>
 <translation id="47217992755561375">Se dina mest besökta webbplatser</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
+<translation id="4732693703583195378">Lägg till webbplatsen på surfplattans startskärm så att du kommer åt den enkelt</translation>
 <translation id="4738836084190194332">Synkroniserades senast: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Öppna en ny flik</translation>
 <translation id="4759238208242260848">Nedladdningar</translation>
@@ -536,6 +539,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4925120120285606924">Skärmdump <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Dina lösenord exporteras och laddas ned som en textfil. De blir synliga för alla personer och appar som har åtkomst till målmappen.</translation>
 <translation id="4932247056774066048">Eftersom du loggar ut från ett konto som hanteras av <ph name="DOMAIN_NAME" /> raderas din Chrome-data från den här enheten. Den finns kvar på ditt Google-konto.</translation>
+<translation id="4936039914467572121">Kom åt webbplatsen snabbare</translation>
 <translation id="4943703118917034429">Virtuell verklighet</translation>
 <translation id="4943872375798546930">Inga resultat</translation>
 <translation id="4961107849584082341">Översätt den här sidan till vilket språk som helst</translation>
@@ -647,6 +651,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5763382633136178763">Inkognitoflikar</translation>
 <translation id="5763514718066511291">Tryck om du vill kopiera webbadressen till appen</translation>
 <translation id="5765780083710877561">Beskrivning:</translation>
+<translation id="5767013862801005129">Fliken <ph name="TAB_TITLE" /> har återställts</translation>
 <translation id="5776970333778123608">Oviktig data</translation>
 <translation id="5793665092639000975"><ph name="SPACE_USED" /> av <ph name="SPACE_AVAILABLE" /> används</translation>
 <translation id="5795872532621730126">Sök och utforska</translation>
@@ -952,6 +957,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> till}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> till}}</translation>
 <translation id="7778840695157240389">Återkom senare för nya berättelser</translation>
 <translation id="7791543448312431591">Lägg till</translation>
+<translation id="7798392620021911922"><ph name="TAB_COUNT" /> flikar har återställts</translation>
 <translation id="780301667611848630">Nej tack</translation>
 <translation id="7810647596859435254">Öppna med …</translation>
 <translation id="7821588508402923572">Här visas hur mycket data du har sparat</translation>
@@ -1137,6 +1143,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Visa original</translation>
 <translation id="9148126808321036104">Logga in igen</translation>
+<translation id="9149286894143103695">Lägg till webbplatsen på telefonens startskärm så att du kommer åt den enkelt</translation>
 <translation id="9155898266292537608">Du kan även söka med ett snabbt tryck eller ett ord</translation>
 <translation id="9169507124922466868">Navigeringshistoriken visas på halva skärmen</translation>
 <translation id="9191031968346938109">Lägg till i …</translation>

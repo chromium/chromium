@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Meghatározza a képernyő frissítési gyakoriságát</translation>
 <translation id="1061904396131502319">Lassan ideje szünetet tartani</translation>
 <translation id="1067048845568873861">Létrehozva</translation>
+<translation id="1067291318998134776">Linux (béta)</translation>
 <translation id="1067922213147265141">Egyéb Google-szolgáltatások</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">A számítógépén lévő egyik program olyan bővítményt adott hozzá, amely megváltoztathatja a Chrome működését.
@@ -1377,7 +1378,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2562743677925229011">Nem jelentkezett be ide: <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">A JavaScript AppleScripten keresztüli futtatásának lehetősége ki van kapcsolva. A bekapcsolásához kattintson a menüsávon lévő Nézet &gt; Fejlesztő &gt; A JavaScript engedélyezése Apple-eseményekből lehetőségre. További információ: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Továbbfejlesztett helyesírás-ellenőrzés</translation>
-<translation id="2566124945717127842">Végezze el a powerwash műveletet a(z) <ph name="IDS_SHORT_PRODUCT_NAME" /> eszköz visszaállításához, hogy az olyan legyen, mint új korában.</translation>
 <translation id="2568774940984945469">Infósáv tárolója</translation>
 <translation id="2571655996835834626">A weboldalak cookie-khoz, JavaScripthez, beépülő modulokhoz, tartózkodási helyhez, mikrofonhoz, kamerához és egyéb funkciókhoz való hozzáférését vezérlő beállítások módosítása.</translation>
 <translation id="2572032849266859634">Csak olvasási hozzáférést kapott a következőhöz: <ph name="VOLUME_NAME" />.</translation>
@@ -1842,7 +1842,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Súgó</translation>
 <translation id="3118654181216384296">Néhány pillanat múlva próbálkozzon újra a Linux elindításával.</translation>
 <translation id="3120430004221004537">Elégtelen titkosítás egy adott művelet esetében a következőn: „<ph name="DEVICE_NAME" />”.</translation>
-<translation id="3121793941267913344">A(z) <ph name="IDS_SHORT_PRODUCT_NAME" /> eszköz visszaállítása</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Nem sikerült létrehozni az adatkönyvtárat</translation>
 <translation id="3124111068741548686">FELHASZNÁLÓI azonosítók</translation>
@@ -5494,7 +5493,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7475671414023905704">Netscape - elveszett jelszó URL</translation>
 <translation id="7476454130948140105">Az akkumulátor töltöttségi szintje túl alacsony a frissítéshez (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">Zeneszámok, videók és további tartalmak vezérlése</translation>
-<translation id="7478362879637727630">Oktatási fiókot kell felvennie erre a Chrome Education-eszközre. Új fiók regisztrálásához nyissa meg a https://g.co/workspace/edusignup címet.</translation>
 <translation id="7478485216301680444">A kiosk-alkalmazást nem sikerült telepíteni.</translation>
 <translation id="7479221278376295180">Tárhelyhasználat áttekintése</translation>
 <translation id="7481312909269577407">Előre</translation>
@@ -6065,7 +6063,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8101987792947961127">Powerwash szükséges a következő újraindításkor</translation>
 <translation id="8102139037507939978">Személyazonosításra alkalmas adatok eltávolítása a system_logs.txt fájlból.</translation>
 <translation id="8102159139658438129">A <ph name="LINK_BEGIN" />Beállítások<ph name="LINK_END" /> között megtalálja a csatlakoztatott telefonra vonatkozó lehetőségeket.</translation>
-<translation id="8104696615244072556">Hajtson végre Powerwash műveletet <ph name="IDS_SHORT_PRODUCT_NAME" /> eszközén, és térjen vissza a korábbi verzióhoz.</translation>
 <translation id="8107015733319732394">Folyamatban van a Google Play Áruház telepítése a(z) <ph name="DEVICE_TYPE" /> eszközre. Ez eltarthat néhány percig.</translation>
 <translation id="810728361871746125">Képernyőfelbontás</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Nem találhatók harmadik féltől származó cookie-k}=1{1 harmadik féltől származó cookie letiltva}other{# harmadik féltől származó cookie letiltva}}</translation>

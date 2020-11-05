@@ -125,7 +125,6 @@
 <translation id="2127372758936585790">Зарядний пристрій низької потужності</translation>
 <translation id="2132302418721800944">Записувати весь екран</translation>
 <translation id="2135456203358955318">Закріплена лупа</translation>
-<translation id="2144487987174258011">Перезапустіть Chrome, щоб оновити Adobe Flash Player</translation>
 <translation id="2208323208084708176">Режим уніфікованого комп’ютера</translation>
 <translation id="2220572644011485463">PIN-код або пароль</translation>
 <translation id="2222338659135520253">Потрібно ввійти в обліковий запис</translation>
@@ -160,7 +159,6 @@
 <translation id="2435457462613246316">Показати пароль</translation>
 <translation id="2473177541599297363">Підтвердьте роздільну здатність</translation>
 <translation id="2475982808118771221">Сталася помилка</translation>
-<translation id="2479579251444854687">Проведіть трьома пальцями вгору, щоб відкрити режим огляду, або вниз, щоб закрити його.</translation>
 <translation id="2482878487686419369">Сповіщення</translation>
 <translation id="2484513351006226581">Натисніть комбінацію клавіш <ph name="KEYBOARD_SHORTCUT" />, щоб змінити розкладку клавіатури.</translation>
 <translation id="2501920221385095727">Залипання клавіш</translation>
@@ -371,7 +369,6 @@
 <translation id="4481530544597605423">Відключені пристрої</translation>
 <translation id="4485060137115666462">Натисніть вибраний контент правою кнопкою миші або втримуйте його, і Асистент покаже визначення чи переклад терміна, конвертує одиницю тощо.</translation>
 <translation id="4505050298327493054">Активний робочий стіл.</translation>
-<translation id="4506458088675900627">Змінився жест запуску режиму огляду й виходу з нього</translation>
 <translation id="4513946894732546136">Відгуки</translation>
 <translation id="4527045527269911712">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> до повного заряду</translation>
@@ -434,6 +431,7 @@
 <translation id="5033299697334913360">Натисніть будь-де, щоб зробити знімок усього екрана</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> під’єднано до нового телефона</translation>
 <translation id="5035389544768382859">Підтвердьте налаштування дисплея</translation>
+<translation id="5078796286268621944">Неправильний PIN-код</translation>
 <translation id="5083553833479578423">Розблокуйте інші функції Асистента.</translation>
 <translation id="5136175204352732067">Під’єднано іншу клавіатуру</translation>
 <translation id="5168181903108465623">Доступні пристрої для трансляції</translation>

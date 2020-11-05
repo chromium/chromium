@@ -152,6 +152,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktīva šodien}=1{Aktīva pirms 1 dienas}zero{Aktīva pirms # dienām}one{Aktīva pirms # dienas}other{Aktīva pirms # dienām}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 diena un }zero{# dienas un }one{# diena un }other{# dienas un }}</translation>
 <translation id="5789643057113097023">:</translation>
+<translation id="5843690142429128814">Attēls.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{pēc 1 g.}zero{pēc # g.}one{pēc # g.}other{pēc # g.}}</translation>
 <translation id="588258955323874662">Pilnekrāna</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{Atlikusi 1 sekunde}zero{Atlikušas # sekundes}one{Atlikusi # sekunde}other{Atlikušas # sekundes}}</translation>
@@ -192,6 +193,7 @@
 <translation id="6845533974506654842">nospiest</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{Atlikusi 1 stunda}zero{Atlikušas # stundas}one{Atlikusi # stunda}other{Atlikušas # stundas}}</translation>
 <translation id="688711909580084195">Tīmekļa lapa bez nosaukuma</translation>
+<translation id="6902419395050653510">HTML saturs.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{Atlicis 1 gads}zero{Atlikuši # gadi}one{Atlicis # gads}other{Atlikuši # gadi}}</translation>
 <translation id="6945221475159498467">Atlasīt</translation>

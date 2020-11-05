@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">திரை புதுப்பிக்கும் இடைவெளியைத் தீர்மானிக்கும்</translation>
 <translation id="1061904396131502319">சாதனம் பூட்டப்பட உள்ளது</translation>
 <translation id="1067048845568873861">உருவாக்கப்பட்டது</translation>
+<translation id="1067291318998134776">Linux (பீட்டா)</translation>
 <translation id="1067922213147265141">பிற Google சேவைகள்</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">உங்கள் கம்ப்யூட்டரில் உள்ள மற்றொரு நிரல் Chrome செயல்படும் முறையை மாற்றக்கூடிய ஒரு நீட்டிப்பைச் சேர்த்துள்ளது.
@@ -1377,7 +1378,6 @@
 <translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" /> இல் உள்நுழைந்திருக்கவில்லை</translation>
 <translation id="2564520396658920462">AppleScript மூலம் JavaScriptடை இயக்குவது முடக்கப்பட்டுள்ளது. அதை இயக்க, மெனுப் பட்டியிலிருந்து காட்டு &gt; டெவெலப்பர் &gt; Apple Events இலிருந்து JavaScriptடை அனுமதி என்பதைக் கிளிக் செய்யவும். கூடுதல் தகவலை இதில் அறியலாம்: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">மேம்படுத்தப்பட்ட எழுத்துப் பிழை சரிபார்ப்பான்</translation>
-<translation id="2566124945717127842">பவர்வாஷ், உங்கள் <ph name="IDS_SHORT_PRODUCT_NAME" /> சாதனத்தைப் புதியதைப் போன்று மீட்டமைக்கும்.</translation>
 <translation id="2568774940984945469">தகவல்பட்டி கொள்கலன்</translation>
 <translation id="2571655996835834626">குக்கீகள், JavaScript, செருகுநிரல்கள், புவிஇருப்பிடம், மைக்ரோஃபோன் கேமரா போன்ற இணையதளத்தின் அம்சங்களுக்கான அணுகலைக் கட்டுப்படுத்தும் அமைப்புகளை மாற்றலாம்</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> இல் படிப்பதற்கு மட்டுமான அணுகல் வழங்கப்பட்டது.</translation>
@@ -1842,7 +1842,6 @@
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> உதவி</translation>
 <translation id="3118654181216384296">சில வினாடிகளுக்குப் பிறகு மீண்டும் Linuxஸைத் தொடங்க முயலவும்.</translation>
 <translation id="3120430004221004537">குறிப்பிட்ட செயல்பாட்டுக்குப் போதுமான என்க்ரிப்ஷன் இல்லாத சாதனம்: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344">இந்த <ph name="IDS_SHORT_PRODUCT_NAME" /> சாதனத்தை மீட்டமைக்கவும்</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">ஒரு தரவு கோப்பகத்தை உருவாக்குவதில் தோல்வியடைந்தது</translation>
 <translation id="3124111068741548686">USER ஹேண்டில்ஸ்</translation>
@@ -5494,7 +5493,6 @@
 <translation id="7475671414023905704">Netscape தொலைந்த கடவுச்சொல் URL</translation>
 <translation id="7476454130948140105">பேட்டரி மிகவும் குறைவாக இருப்பதால், புதுப்பிக்க முடியவில்லை (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">உங்கள் இசை, வீடியோக்கள் மற்றும் பலவற்றைக் கட்டுப்படுத்தலாம்</translation>
-<translation id="7478362879637727630">இந்த Chrome Education சாதனத்தை நீங்கள் கல்விக் கணக்கில் பதிவுசெய்ய வேண்டும். புதிய கணக்கிற்குப் பதிசெய்ய, https://g.co/workspace/edusignup தளத்திற்குச் செல்லவும்.</translation>
 <translation id="7478485216301680444">Kiosk ஆப்ஸை நிறுவ முடியவில்லை.</translation>
 <translation id="7479221278376295180">சேமிப்பக உபயோகம் குறித்த கண்ணோட்டம்</translation>
 <translation id="7481312909269577407">அடுத்த பக்கம்</translation>
@@ -6065,7 +6063,6 @@
 <translation id="8101987792947961127">அடுத்த மறுதொடக்கத்திற்கு பவர்வாஷ் தேவைப்படுகிறது</translation>
 <translation id="8102139037507939978">system_logs.txt கோப்பில் இருக்கும், தனிப்பட்ட ஒருவரை அடையாளம் காணக்கூடியத் தகவலைக் கோடிட்டு மறைக்கும்.</translation>
 <translation id="8102159139658438129">இணைக்கப்பட்ட உங்கள் ஃபோனுக்கான விருப்பத்தேர்வுகளைப் பார்க்க, <ph name="LINK_BEGIN" />அமைப்புகளுக்குச்<ph name="LINK_END" /> செல்லவும்</translation>
-<translation id="8104696615244072556"><ph name="IDS_SHORT_PRODUCT_NAME" /> சாதனத்தை பவர்வாஷ் செய்து, முந்தைய பதிப்பிற்கு மாறவும்.</translation>
 <translation id="8107015733319732394">உங்கள் <ph name="DEVICE_TYPE" /> இல் Google Play ஸ்டோரை நிறுவுகிறது. இதற்குச் சில நிமிடங்கள் ஆகலாம்.</translation>
 <translation id="810728361871746125">திரையின் தெளிவுத்திறன்</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{மூன்றாம் தரப்பின் குக்கீகள் எதுவும் இல்லை}=1{1 மூன்றாம் தரப்பின் குக்கீ தடுக்கப்பட்டுள்ளது}other{# மூன்றாம் தரப்பின் குக்கீகள் தடுக்கப்பட்டுள்ளன}}</translation>

@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">यसले स्क्रिन अपडेट हुने फ्रिक्वेन्सी निर्धारण गर्छ</translation>
 <translation id="1061904396131502319">विश्राम लिने समय हुनै लाग्यो</translation>
 <translation id="1067048845568873861">सिर्जना गरियो</translation>
+<translation id="1067291318998134776">Linux (बिटा)</translation>
 <translation id="1067922213147265141">Google का अन्य सेवाहरू</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">तपाईँको कम्प्युटरमा अर्को प्रोग्रामले एउटा विस्तार थप्यो जसले Chrome को कार्य गर्ने तरिकालाई बदल्न सक्छ। <ph name="EXTENSION_NAME" /></translation>
@@ -1373,7 +1374,6 @@
 <translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" /> मा साइन इन भएको छैन</translation>
 <translation id="2564520396658920462">AppleScript मार्फत JavaScript कार्यान्वयन गर्ने सुविधा निष्क्रिय पारिएको छ। मेनु बारबाट यो सुविधा सक्रिय गर्न हेर्नुहोस्&gt; विकासकर्ता &gt; Apple Events बाट JavaScript लाई अनुमति दिनुहोस् नामक विकल्पमा जानुहोस् । थप जानकारीका लागि https://support.google.com/chrome/?p=applescript मा जानुहोस्</translation>
 <translation id="2564653188463346023">परिष्कृत हिज्जे जाँच</translation>
-<translation id="2566124945717127842">तपाईंको <ph name="IDS_SHORT_PRODUCT_NAME" /> लाई नयाँ जस्तै हुने गरि रिसेट गर्न पावरवाश गर्नुहोस्।</translation>
 <translation id="2568774940984945469">इनफोबर कन्टेनर</translation>
 <translation id="2571655996835834626">कुकी, JavaScript, प्लग-इन, भूस्थान, माइक्रोफोन र क्यामेरा जस्ता सुविधाहरूमाथि वेबसाइटको पहुँच नियन्त्रण गर्ने आफ्ना सेटिङहरू परिवर्तन गर्नुहोस्।</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> मा पढ्ने-मात्र अनुमति प्रदान गरिएको छ।</translation>
@@ -1839,7 +1839,6 @@
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> मद्दत</translation>
 <translation id="3118654181216384296">कृपया केही मिनेटपछि पुनः Linux सुरु गरी हेर्नुहोस्।</translation>
 <translation id="3120430004221004537">"<ph name="DEVICE_NAME" />" मा दिइएको कार्यको लागि अपर्याप्त इन्क्रिप्सन</translation>
-<translation id="3121793941267913344">यो <ph name="IDS_SHORT_PRODUCT_NAME" /> यन्त्रलाई रिसेट गर्नुहोस्</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">डाटा डाइरेक्टरी सिर्जना गर्न असफल भयो</translation>
 <translation id="3124111068741548686">प्रयोगकर्ता ह्यान्डलहरू</translation>
@@ -5488,7 +5487,6 @@
 <translation id="7475671414023905704">नेटस्केप हराएको पासवर्ड युआरएल</translation>
 <translation id="7476454130948140105">अद्यावधिक गर्न ब्याट्रीको स्तर अत्यन्तै कम छ (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">आफ्नो सङ्गीत, भिडियो र थप कुराहरू नियन्त्रण गर्नुहोस्</translation>
-<translation id="7478362879637727630">तपाईंले अनिवार्य रूपमा यो Chrome Education यन्त्र कुनै शैक्षिक खातामा दर्ता गर्नु पर्छ। कुनै नयाँ खाता बनाउन कृपया https://g.co/workspace/edusignup मा जानुहोस्।</translation>
 <translation id="7478485216301680444">Kiosk एप्लिकेसनलाई स्थापना गर्न सकिएन।</translation>
 <translation id="7479221278376295180">भण्डारणको प्रयोगसम्बन्धी संक्षिप्त विवरण</translation>
 <translation id="7481312909269577407">अगाडि</translation>
@@ -6058,7 +6056,6 @@
 <translation id="8101987792947961127">अर्को रिबुटमा पावरवास आवश्यक छ</translation>
 <translation id="8102139037507939978">system_logs.txt बाट व्यक्तिगत रूपमा पहिचान गर्न मिल्ने जानकारी हटाइयोस्।</translation>
 <translation id="8102159139658438129">आफ्नो जोडिएको फोनसम्बन्धी विकल्पहरू हेर्न <ph name="LINK_BEGIN" />सेटिङहरू<ph name="LINK_END" />मा जानुहोस्</translation>
-<translation id="8104696615244072556">Powerwash तपाईँको <ph name="IDS_SHORT_PRODUCT_NAME" /> उपकरणलाई powerwash गरी पहिलेको संस्करणमा फर्कन सक्नुहुन्छ।</translation>
 <translation id="8107015733319732394">तपाईंको <ph name="DEVICE_TYPE" /> मा उक्त Google Play स्टोर स्थापना गर्दै। यस कार्यमा केही समय लाग्नसक्छ।</translation>
 <translation id="810728361871746125">डिस्प्लेको रिजोल्युसन</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{कुनै पनि तेस्रो पक्षीय कुकी छैन}=1{१ तेस्रो पक्षीय कुकीलाई रोक लगाइयो}other{# वटा तेस्रो पक्षीय कुकीलाई रोक लगाइयो}}</translation>

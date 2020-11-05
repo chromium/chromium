@@ -125,7 +125,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2127372758936585790">Carregador de baixa potência</translation>
 <translation id="2132302418721800944">Gravar tela cheia</translation>
 <translation id="2135456203358955318">Lupa em área fixa</translation>
-<translation id="2144487987174258011">Reinicie para atualizar o Adobe Flash Player</translation>
 <translation id="2208323208084708176">Modo de área de trabalho unificada.</translation>
 <translation id="2220572644011485463">PIN ou senha</translation>
 <translation id="2222338659135520253">É necessário fazer login</translation>
@@ -160,7 +159,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2435457462613246316">Mostrar senha</translation>
 <translation id="2473177541599297363">Confirmar resolução</translation>
 <translation id="2475982808118771221">Ocorreu um erro</translation>
-<translation id="2479579251444854687">Deslize com três dedos para cima para abrir e para baixo para fechar a Visão geral.</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2484513351006226581">Pressione <ph name="KEYBOARD_SHORTCUT" /> para alterar o layout do teclado.</translation>
 <translation id="2501920221385095727">Teclas aderentes</translation>
@@ -371,7 +369,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4481530544597605423">Dispositvos não pareados</translation>
 <translation id="4485060137115666462">Quando você clica com o botão direito do mouse ou toca na tela e a mantém pressionada, o Assistente mostra informações como a definição, tradução ou conversão de unidades da sua seleção.</translation>
 <translation id="4505050298327493054">Espaço de trabalho ativo.</translation>
-<translation id="4506458088675900627">O gesto no touchpad para abrir a Visão geral mudou</translation>
 <translation id="4513946894732546136">Comentários</translation>
 <translation id="4527045527269911712">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" deseja permissão para realizar o pareamento.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> até completar</translation>
@@ -434,6 +431,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="5033299697334913360">Clique em qualquer lugar para capturar a tela cheia</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> conectado a um novo smartphone</translation>
 <translation id="5035389544768382859">Confirmar configuração da tela</translation>
+<translation id="5078796286268621944">PIN incorreto</translation>
 <translation id="5083553833479578423">Desbloqueie mais recursos do Assistente.</translation>
 <translation id="5136175204352732067">Teclado diferente conectado</translation>
 <translation id="5168181903108465623">Dispositivos de transmissão disponíveis</translation>

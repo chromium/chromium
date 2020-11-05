@@ -10,7 +10,6 @@
 <translation id="1049926623896334335">Word dokuments</translation>
 <translation id="1060368002126861100">Lai atvērtu failus, izmantojot lietotni <ph name="APP_NAME" />, vispirms pārvietojiet tos uz Windows failu mapi.</translation>
 <translation id="1062407476771304334">Aizstāt</translation>
-<translation id="1065449928621190041">Kanādas franču valodas tastatūra</translation>
 <translation id="1119069657431255176">Bzip2 saspiests Tar arhīvs</translation>
 <translation id="1120073797882051782">Hangils (Romaja)</translation>
 <translation id="1148097584170732637">Atrasts: <ph name="FILE_COUNT" />.
@@ -36,7 +35,6 @@
 <translation id="1297922636971898492">Google disks pašlaik nav pieejams. Augšupielāde tiks automātiski atsākta, tiklīdz Google disks atkal būs pieejams.</translation>
 <translation id="1307931752636661898">Nevar skatīt Linux failus</translation>
 <translation id="1310751437842832374">Transliterācija (mausam → ନମସ୍ତେ)</translation>
-<translation id="1337036551624197047">Čehu valodas tastatūra</translation>
 <translation id="1338950911836659113">Notiek dzēšana...</translation>
 <translation id="1346748346194534595">Pa labi</translation>
 <translation id="1351692861129622852">Notiek <ph name="FILE_COUNT" /> failu importēšana...</translation>
@@ -62,7 +60,6 @@
 <translation id="1556189134700913550">Lietot visiem</translation>
 <translation id="1561842594491319104">Chrome</translation>
 <translation id="1572585716423026576">Iestatīt kā fona tapeti</translation>
-<translation id="158809615184981282">Fēru valodas tastatūra</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1646019627374511909">Vairāki faili tiek padarīti pieejami bezsaistē (skaits: <ph name="NUMBER_OF_ITEMS" />)</translation>
@@ -139,9 +136,9 @@
 <translation id="2453576648990281505">Fails jau eksistē</translation>
 <translation id="2464079411014186876">Saldējums</translation>
 <translation id="2468402215065996499">Tamagoči</translation>
-<translation id="247772113373397749">Kanādas vairākvalodu tastatūra</translation>
 <translation id="2494837236724268445">Gudžaratu valodas tastatūra (fonētiskā)</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2529133382850673012">ASV tastatūra</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> vienumi tika izdzēsti</translation>
 <translation id="2541377937973966830">Šīs mapes saturs ir tikai lasāms. Noteiktas darbības netiek atbalstītas.</translation>
 <translation id="2542049655219295786">Google tabula</translation>
@@ -195,9 +192,10 @@
 <translation id="3067790092342515856">Windows faili</translation>
 <translation id="3078461028045006476">Kopīgot ar paplašinājumu <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit</translation>
+<translation id="3116361045094675131">AK tastatūra</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">GATAVS</translation>
-<translation id="3182237543071236785">Angļu (AK)</translation>
+<translation id="3157729859914172001">ASV starptautiskā (PC) tastatūra</translation>
 <translation id="3187212781151025377">Ebreju valodas tastatūra</translation>
 <translation id="3188257591659621405">Mani faili</translation>
 <translation id="3197563288998582412">Lielbritānijas Dvorak</translation>
@@ -296,7 +294,6 @@
 <translation id="426015154560005552">Arābu tastatūra</translation>
 <translation id="4261901459838235729">Google prezentācija</translation>
 <translation id="4290535918735525311">1 mape kopīgota ar Linux</translation>
-<translation id="4298972503445160211">Dāņu valodas tastatūra</translation>
 <translation id="4299729908419173967">Brazīliešu</translation>
 <translation id="4309915981827077375">Vispārīga informācija</translation>
 <translation id="4315949787858895817">Holandiešu (Beļģija)</translation>
@@ -309,6 +306,7 @@
 <translation id="4465830120256509958">Brazīļu valodas tastatūra</translation>
 <translation id="4470564870223067757">Hangils (2 Set)</translation>
 <translation id="4477219268485577442">Bulgāru fonētiskā</translation>
+<translation id="4479812471636796472">ASV Dvoraka tastatūra</translation>
 <translation id="4522570452068850558">Informācija</translation>
 <translation id="4527800702232535228">Šī mape ir kopīgota ar Parallels Desktop</translation>
 <translation id="4552678318981539154">Iegādāties papildu vietu krātuvē</translation>
@@ -338,7 +336,6 @@
 <translation id="4737050008115666127">Ielidošana</translation>
 <translation id="4747271164117300400">Maķedoniešu</translation>
 <translation id="4749157430980974800">Gruzīnu tastatūra</translation>
-<translation id="4755240240651974342">Somu valodas tastatūra</translation>
 <translation id="4759238208242260848">Lejupielādes</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint prezentācija</translation>
@@ -396,7 +393,6 @@
    Atvienojot ierīci lietošanas laikā, var tikt zaudēti dati. Lūdzu, uzgaidiet, līdz tiks pabeigta darbība, un pēc tam atvienojiet ierīci, izmantojot lietotni Faili.</translation>
 <translation id="5163869187418756376">Kopīgošana neizdevās. Pārbaudiet savienojumu un vēlāk mēģiniet vēlreiz.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
-<translation id="5167131699331641907">Holandiešu valodas tastatūra</translation>
 <translation id="5170477580121653719">Pakalpojumā Google disks atlikušās brīvās vietas apjoms: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">Sīktēlu skatījums</translation>
 <translation id="5194713942430106590">Noklikšķiniet, lai kārtotu kolonnas augošā secībā.</translation>
@@ -469,7 +465,6 @@
 <translation id="5850516540536751549">Šis faila tips netiek atbalstīts. Lūdzu, apmeklējiet <ph name="BEGIN_LINK" />Chrome interneta veikalu<ph name="END_LINK" />, lai atrastu lietotni, ar kuru var atvērt šo failu.
     <ph name="BEGIN_LINK_HELP" />Uzziniet vairāk<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Šeit nekā nav...</translation>
-<translation id="5892290200158927959">Franču valodas BÉPO tastatūra</translation>
 <translation id="5911887972742538906">Linux lietojumprogrammas instalēšanas laikā radās kļūda.</translation>
 <translation id="5912396950572065471">Formāts</translation>
 <translation id="5913638992615760742">Kopēšana neizdevās; radās neparedzēta kļūda: <ph name="ERROR_MESSAGE" /></translation>
@@ -485,7 +480,6 @@
 <translation id="60357267506638014">Čehu QWERTY</translation>
 <translation id="604001903249547235">Dublēšana mākonī</translation>
 <translation id="6040143037577758943">Aizvērt</translation>
-<translation id="6054173164583630569">Franču valodas tastatūra</translation>
 <translation id="6074825444536523002">Google veidlapa</translation>
 <translation id="6096979789310008754">Meklēšanas teksts ir notīrīts; tiek rādīti visi faili un mapes.</translation>
 <translation id="610101264611565198">Fails “<ph name="FILE_NAME" />” tiek pārvietots uz mapi “<ph name="FOLDER_NAME" />”</translation>
@@ -508,7 +502,6 @@
 <translation id="6339034549827494595">Krievu fonētiskā (AATSEEL) tastatūra</translation>
 <translation id="6339145975392024142">ASV starptautiskā (PC) tastatūra</translation>
 <translation id="6346310558342052870">Piekļuve ierobežota</translation>
-<translation id="6353618411602605519">Horvātu valodas tastatūra</translation>
 <translation id="6356685157277930264">Failu atsauksmju logs</translation>
 <translation id="6358884629796491903">Pūķis</translation>
 <translation id="637062427944097960">Šis fails tika atvērts citā darbvirsmā. Lai skatītu šo darbvirsmu, izmantojiet profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
@@ -519,7 +512,6 @@
 <translation id="6462109140674788769">Grieķu valodas tastatūra</translation>
 <translation id="6466492211071551451">Īru valodas tastatūra</translation>
 <translation id="6485131920355264772">Neizdevās izgūt informāciju par brīvo vietu</translation>
-<translation id="6503256918647795660">Šveices franču valodas tastatūra</translation>
 <translation id="6505918941256367791">Tamilu valodas tastatūra (InScript)</translation>
 <translation id="6509122719576673235">Norvēģu valoda</translation>
 <translation id="6527303717912515753">Kopīgot</translation>
@@ -564,6 +556,7 @@
     <ph name="LINE_BREAK1" />
     Atrasts: <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Otrādi</translation>
+<translation id="6939777852457331078">Workman (ASV) tastatūra</translation>
 <translation id="696203921837389374">Iespējot mobilo datu sinhronizāciju</translation>
 <translation id="6965382102122355670">Labi</translation>
 <translation id="6970230597523682626">Bulgāru valoda</translation>
@@ -580,9 +573,9 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' — &lt;em&gt;meklēt Diskā&lt;/em&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7170467426996704624">Transliterācija (salam → ሰላም)</translation>
-<translation id="7172053773111046550">Igauņu valodas tastatūra</translation>
 <translation id="7180611975245234373">Atsvaidzināt</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
+<translation id="719009910964971313">US Programmer Dvorak tastatūra</translation>
 <translation id="7191454237977785534">Saglabāt failu kā</translation>
 <translation id="7222624196722476520">Bulgāru fonētiskā tastatūra</translation>
 <translation id="7238097264433196391">Diska nosaukums</translation>
@@ -591,6 +584,7 @@
 <translation id="7283041136720745563">Jūsu Google diska kvota nav pietiekami liela.</translation>
 <translation id="7295662345261934369">Kopīgot ar citiem</translation>
 <translation id="7339898014177206373">Jauns logs</translation>
+<translation id="7348749398828259943">Workman (ASV) starptautiskā tastatūra</translation>
 <translation id="7359359531237882347">Notiek <ph name="NUMBER_OF_ITEMS" /> vienumu kopēšana...</translation>
 <translation id="7375951387215729722">Failu saraksts ir sakārtots pēc slejas “<ph name="COLUMN_NAME" />” dilstošā secībā.</translation>
 <translation id="7389722738210761877">Taju valodas tastatūra (TIS 820-2531)</translation>
@@ -598,7 +592,9 @@
 <translation id="7417453074306512035">Gēzu rakstības tastatūra</translation>
 <translation id="7417705661718309329">Google karte</translation>
 <translation id="7419631653042041064">Katalāņu valodas tastatūra</translation>
+<translation id="7434823369735508263">AK Dvoraka tastatūra</translation>
 <translation id="7460898608667578234">Ukraiņu valoda</translation>
+<translation id="7474889694310679759">Kanādas angļu valodas tastatūra</translation>
 <translation id="7489215562877293245">Atrasts: <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Gatavs dublēšanai <ph name="BEGIN_LINK" />Google diskā<ph name="END_LINK" /></translation>
@@ -651,6 +647,7 @@
 <translation id="7873831373602885875">Nevar veikt saglabāšanu mapē <ph name="FOLDER_NAME" />. Visi labojumi tiks saglabāti lejupielāžu mapē šeit: <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="7881969471599061635">Atspējot subtitrus</translation>
 <translation id="78946041517601018">Kopīgie diski</translation>
+<translation id="7896906914454843592">ASV paplašinātā tastatūra</translation>
 <translation id="7898607018410277265">Gudžaratu valodas tastatūra (jaunā fonētiskā)</translation>
 <translation id="7908793776359722643">Formatējot nodalījumu, tiks izdzēsti visi tajā glabātie dati. Šo darbību nevar atsaukt.</translation>
 <translation id="7917972308273378936">Lietuviešu valodas tastatūra</translation>
@@ -707,6 +704,7 @@
 <translation id="8395901698320285466">Izmēri</translation>
 <translation id="8412586565681117057">Ātrā ievades metode</translation>
 <translation id="8418113698656761985">Rumāņu valodas tastatūra</translation>
+<translation id="8432745813735585631">ASV Kolemaka tastatūra</translation>
 <translation id="8437209419043462667">ASV</translation>
 <translation id="8456681095658380701">Nederīgs nosaukums</translation>
 <translation id="8466234950814670489">Tar arhīvs</translation>
@@ -727,6 +725,7 @@
 <translation id="8698464937041809063">Google zīmējums</translation>
 <translation id="8714406895390098252">Velosipēds</translation>
 <translation id="8719721339511222681">Atlasīts vienums “<ph name="ENTRY_NAME" />”.</translation>
+<translation id="8722421161699219904">ASV starptautiskā tastatūra</translation>
 <translation id="872537912056138402">Horvātu valoda</translation>
 <translation id="874420130893181774">Tradicionālā piņjiņa ievades metode</translation>
 <translation id="8770002329960263418">Holandiešu (Nīderlande) valoda ar ASV starptautisko datora tastatūru</translation>
@@ -738,7 +737,6 @@
 <translation id="885381502874625531">Baltkrievu tastatūra</translation>
 <translation id="8860454412039442620">Excel izklājlapa</translation>
 <translation id="8900820606136623064">Ungāru</translation>
-<translation id="8901822611024316615">Čehu QWERTY tastatūra</translation>
 <translation id="8919081441417203123">Dāņu valoda</translation>
 <translation id="8941776146379310519">Malajiešu valoda</translation>
 <translation id="8960999352790021682">Bengāļu valodas tastatūra (fonētiskā)</translation>

@@ -152,6 +152,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{ዛሬ ንቁ}=1{ከ1 ቀን በፊት ንቁ ነበር}one{ከ# ቀኖች በፊት ንቁ ነበር}other{ከ# ቀኖች በፊት ንቁ ነበር}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 ቀን እና }one{# ቀኖች እና }other{# ቀኖች እና }}</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5843690142429128814">ምስል።</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{በ 1ዓ ውስጥ}one{በ #ዓ ውስጥ}other{በ #ዓ ውስጥ}}</translation>
 <translation id="588258955323874662">ሙሉ ገጽ ዕይታ</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 ሰከንድ ቀርቷል}one{# ሰከንዶች ቀርቷል}other{# ሰከንዶች ቀርቷል}}</translation>
@@ -192,6 +193,7 @@
 <translation id="6845533974506654842">ተጫን</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 ሰዓት ቀርቷል}one{# ሰዓቶች ቀርቷል}other{# ሰዓቶች ቀርተዋል}}</translation>
 <translation id="688711909580084195">ርዕስ-አልባ ድረ-ገጽ</translation>
+<translation id="6902419395050653510">የኤች ቲ ኤም ኤል ይዘት</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> ፔባ/ሰ</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{1 ዓመት ቀርቷል}one{# ዓመቶች ቀርተዋል}other{# ዓመቶች ቀርተዋል}}</translation>
 <translation id="6945221475159498467">ይምረጡ</translation>

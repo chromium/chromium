@@ -125,7 +125,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2127372758936585790">Nabíjačka s nízkym výkonom</translation>
 <translation id="2132302418721800944">Nahrať celú obrazovku</translation>
 <translation id="2135456203358955318">Ukotvená lupa</translation>
-<translation id="2144487987174258011">Reštartujte a aktualizujte tak Adobe Flash Player</translation>
 <translation id="2208323208084708176">Režim zjednotenej pracovnej plochy</translation>
 <translation id="2220572644011485463">PIN alebo heslo</translation>
 <translation id="2222338659135520253">Vyžaduje sa prihlásenie</translation>
@@ -160,7 +159,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2435457462613246316">Zobraziť heslo</translation>
 <translation id="2473177541599297363">Potvrďte rozlíšenie</translation>
 <translation id="2475982808118771221">Vyskytla sa chyba</translation>
-<translation id="2479579251444854687">Potiahnutím troma prstami nahor Prehľad otvoríte a rovnakým gestom nadol ho zatvoríte.</translation>
 <translation id="2482878487686419369">Upozornenia</translation>
 <translation id="2484513351006226581">Stlačením klávesov <ph name="KEYBOARD_SHORTCUT" /> zmeníte rozloženie klávesnice.</translation>
 <translation id="2501920221385095727">Funkcia sticky keys</translation>
@@ -371,7 +369,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4481530544597605423">Nespárované zariadenia</translation>
 <translation id="4485060137115666462">Po kliknutí pravým tlačidlom alebo dlhom stlačení zobrazí Asistent informácie pre váš výber, napríklad definíciu, preklad alebo prevod jednotiek.</translation>
 <translation id="4505050298327493054">Aktívna plocha.</translation>
-<translation id="4506458088675900627">Gesto touchpadu na zobrazenie Prehľadu bolo zmenené</translation>
 <translation id="4513946894732546136">Spätná väzba</translation>
 <translation id="4527045527269911712">Zariadenie Bluetooth s názvom <ph name="DEVICE_NAME" /> žiada o povolenie párovania.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> do úplného nabitia</translation>
@@ -434,6 +431,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5033299697334913360">Kliknutím na ľubovoľné miesto nahráte celú obrazovku</translation>
 <translation id="5035236842988137213">Zariadenie <ph name="DEVICE_NAME" /> bolo pripojené k novému telefónu</translation>
 <translation id="5035389544768382859">Potvrdenie konfigurácie zobrazenia</translation>
+<translation id="5078796286268621944">Nesprávny kód PIN</translation>
 <translation id="5083553833479578423">Odblokujte ďalšie funkcie Asistenta.</translation>
 <translation id="5136175204352732067">Bola pripojená iná klávesnica</translation>
 <translation id="5168181903108465623">Dostupné zariadenia na prenos</translation>

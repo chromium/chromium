@@ -17,6 +17,7 @@
 <translation id="1369915414381695676">Site-ul <ph name="SITE_NAME" /> a fost adăugat</translation>
 <translation id="1383876407941801731">Caută</translation>
 <translation id="1384959399684842514">Descărcare întreruptă</translation>
+<translation id="1415402041810619267">Adresă URL trunchiată</translation>
 <translation id="1431402976894535801">Împiedică site-urile să-ți detecteze prezența</translation>
 <translation id="1446450296470737166">Control complet dispozitive MIDI</translation>
 <translation id="1509960214886564027">Este posibil ca funcțiile de pe mai multe site-uri să fie întrerupte</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">Permite site-urilor să redea conținut protejat</translation>
 <translation id="4468959413250150279">Dezactivează sunetul pentru un anumit site.</translation>
 <translation id="4479647676395637221">Întreabă înainte de a permite site-urilor să folosească camera foto (recomandat)</translation>
+<translation id="4505788138578415521">Adresă URL extinsă</translation>
 <translation id="4534723447064627427">Pentru a permite aplicației <ph name="APP_NAME" /> să acceseze microfonul, activează microfonul și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
 <translation id="4570913071927164677">Detalii</translation>
 <translation id="4645575059429386691">Gestionat de părintele tău</translation>

@@ -125,7 +125,6 @@
 <translation id="2127372758936585790">ເຄື່ອງສາກໄຟຕໍ່າ</translation>
 <translation id="2132302418721800944">ບັນທຶກໜ້າຈໍເຕັມ</translation>
 <translation id="2135456203358955318">ແວ່ນຂະຫຍາຍທີ່ຕັ້ງໄວ້ແລ້ວ</translation>
-<translation id="2144487987174258011">ປິດເປີດຄືນໃໝ່ເພື່ອອັບເດດ Adobe Flash Player</translation>
 <translation id="2208323208084708176">​ໂໝດ​ໜ້າ​ຈໍ​ເຮັດ​ເຂົ້າ​ກັນ​ແລ້ວ</translation>
 <translation id="2220572644011485463">PIN ຫຼື ລະຫັດຜ່ານ</translation>
 <translation id="2222338659135520253">ຈຳເປັນຕ້ອງເຂົ້າສູ່ລະບົບ</translation>
@@ -160,7 +159,6 @@
 <translation id="2435457462613246316">ສະ​ແດງ​ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="2473177541599297363">ຢືນຢັນຄວາມລະອຽດ</translation>
 <translation id="2475982808118771221">ເກີດຄວາມຜິດພາດຂຶ້ນ.</translation>
-<translation id="2479579251444854687">ໃຊ້ສາມນິ້ວມືປັດຂຶ້ນເພື່ອເປີດ ແລະ ປັດລົງເພື່ອປິດພາບຮວມ.</translation>
 <translation id="2482878487686419369">ການແຈ້ງເຕືອນ</translation>
 <translation id="2484513351006226581">ແຕະ <ph name="KEYBOARD_SHORTCUT" /> ເພື່ອປ່ຽນໂຄງຮ່າງແປ້ນພິມ.</translation>
 <translation id="2501920221385095727">ປຸ່ມສະຕິກກີ້</translation>
@@ -371,7 +369,6 @@
 <translation id="4481530544597605423">ອຸປະກອນທີ່ບໍ່ໄດ້ຈັບຄູ່ກັນ</translation>
 <translation id="4485060137115666462">ໂດຍການຄລິກຂວາ ຫຼື ກົດຄ້າງໄວ້, ຜູ້ຊ່ວຍຈະສະແດງຂໍ້ມູນ ເຊັ່ນ: ຄຳນິຍາມ, ຄຳແປ ຫຼື ການປ່ຽນຫົວໜ່ວຍສຳລັບການເລືອກຂອງທ່ານ.</translation>
 <translation id="4505050298327493054">ໂຕະເຮັດວຽກທີ່ນຳໃຊ້ຢູ່.</translation>
-<translation id="4506458088675900627">ມີການປ່ຽນແປງທ່າທາງສຳຜັດພາບຮວມຂອງແຜ່ນສຳຜັດ</translation>
 <translation id="4513946894732546136">ຄໍາຄິດເຫັນ</translation>
 <translation id="4527045527269911712">ອຸປະກອນ Bluetooth "<ph name="DEVICE_NAME" />" ຢາກໄດ້ການອະນຸຍາດຈັບຄູ່.</translation>
 <translation id="453661520163887813">ອີກ <ph name="TIME" /> ຈຶ່ງຈະເຕັມ</translation>
@@ -434,6 +431,7 @@
 <translation id="5033299697334913360">ຄລິກບ່ອນໃດກໍໄດ້ເພື່ອຖ່າຍຮູບແບບເຕັມຈໍ</translation>
 <translation id="5035236842988137213">ເຊື່ອມຕໍ່ <ph name="DEVICE_NAME" />ກັບໂທລະສັບໃໝ່ແລ້ວ</translation>
 <translation id="5035389544768382859">ຢືນຢັນການຕັ້ງຄ່າຈໍສະແດງຜົນ</translation>
+<translation id="5078796286268621944">PIN ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="5083553833479578423">ປົດລັອກຄຸນສົມບັດເພີ່ມເຕີມຂອງຜູ້ຊ່ວຍ.</translation>
 <translation id="5136175204352732067">ເຊື່ອມຕໍ່ແປ້ນພິມອື່ນແລ້ວ</translation>
 <translation id="5168181903108465623">ອຸປະກອນຄາສທ໌ທີ່ມີໃຫ້</translation>

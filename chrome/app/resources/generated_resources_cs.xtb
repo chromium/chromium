@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Určuje frekvenci obnovování obrazovky</translation>
 <translation id="1061904396131502319">Brzy bude čas na přestávku</translation>
 <translation id="1067048845568873861">Vytvořeno</translation>
+<translation id="1067291318998134776">Linux (beta)</translation>
 <translation id="1067922213147265141">Další služby Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Jiný program ve vašem počítači nainstaloval rozšíření, které může měnit funkce Chromu.
@@ -1376,7 +1377,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2562743677925229011">Nejste v prohlížeči <ph name="SHORT_PRODUCT_NAME" /> přihlášeni</translation>
 <translation id="2564520396658920462">Spouštění JavaScriptu prostřednictvím AppleScriptu je vypnuto. Chcete-li jej zapnout, na liště s nabídkou přejděte na Zobrazení &gt; Vývojář &gt; Povolit JavaScript z událostí Apple. Další informace najdete na stránce https://support.google.com/chrome/?p=applescript.</translation>
 <translation id="2564653188463346023">Vylepšená kontrola pravopisu</translation>
-<translation id="2566124945717127842">Funkce Powerwash zařízení <ph name="IDS_SHORT_PRODUCT_NAME" /> resetuje na tovární nastavení.</translation>
 <translation id="2568774940984945469">Kontejner informačního panelu</translation>
 <translation id="2571655996835834626">Změnit vaše nastavení, která řídí přístup webů k funkcím, jako jsou soubory cookie, JavaScript, pluginy, určování geografické polohy, mikrofon, fotoaparát apod.</translation>
 <translation id="2572032849266859634">Byl udělen přístup pouze ke čtení ke svazku <ph name="VOLUME_NAME" />.</translation>
@@ -1841,7 +1841,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3118319026408854581">Nápověda aplikace <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">Zkuste Linux spustit znovu za chvíli.</translation>
 <translation id="3120430004221004537">Šifrování je pro danou operaci na zařízení <ph name="DEVICE_NAME" /> nedostatečné.</translation>
-<translation id="3121793941267913344">Resetování tohoto zařízení <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Nepodařilo se vytvořit datový adresář</translation>
 <translation id="3124111068741548686">Popisovače – UŽIVATEL</translation>
@@ -5491,7 +5490,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7475671414023905704">Adresa URL pro získání ztraceného hesla Netscape</translation>
 <translation id="7476454130948140105">Aktualizaci nelze zahájit z důvodu slabé baterie (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7477793887173910789">Ovládejte hudbu, videa a další obsah</translation>
-<translation id="7478362879637727630">Toto zařízení Chrome Education musíte zaregistrovat do školního účtu. Nový účet zaregistrujete na stránce https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">Aplikaci pro režim veřejného terminálu se nepodařilo nainstalovat.</translation>
 <translation id="7479221278376295180">Přehled využití úložiště</translation>
 <translation id="7481312909269577407">Vpřed</translation>
@@ -6062,7 +6060,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8101987792947961127">Je vyžadováno použití funkce Powerwash při dalším restartu</translation>
 <translation id="8102139037507939978">Odstranit ze souboru system_logs.txt informace umožňující zjištění totožnosti.</translation>
 <translation id="8102159139658438129">Možnosti připojeného telefonu najdete v sekci <ph name="LINK_BEGIN" />Nastavení<ph name="LINK_END" /></translation>
-<translation id="8104696615244072556">Tato akce resetuje zařízení <ph name="IDS_SHORT_PRODUCT_NAME" /> pomocí funkce Powerwash a obnoví předchozí verzi aplikace.</translation>
 <translation id="8107015733319732394">Instalace Obchodu Google Play do zařízení <ph name="DEVICE_TYPE" />. Tato operace může několik minut trvat.</translation>
 <translation id="810728361871746125">Rozlišení displeje</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Žádné soubory cookie třetích stran}=1{1 soubor cookie třetí strany je blokován}few{# soubory cookie třetích stran jsou blokovány}many{# souboru cookie třetích stran je blokováno}other{# souborů cookie třetích stran je blokováno}}</translation>

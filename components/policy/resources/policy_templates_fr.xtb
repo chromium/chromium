@@ -863,31 +863,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si vous définissez <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> sur "1", seules les variantes considérées comme des correctifs essentiels de sécurité ou de stabilité peuvent être appliquées à <ph name="PRODUCT_NAME" />.
 
       Si vous définissez <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> sur "2", aucune variante ne peut être appliquée au navigateur. Veuillez noter que ce mode n'est pas recommandé, car il est susceptible d'empêcher les développeurs <ph name="PRODUCT_NAME" /> de fournir des correctifs de sécurité critiques en temps voulu.</translation>
-<translation id="2402140031630105556">Configure une liste de règles pour empêcher les fuites de données sur <ph name="PRODUCT_OS_NAME" />.
-      Une fuite de données peut se produire lors d'un copier-coller de données, d'un transfert de fichiers, d'une impression, d'un partage ou d'une capture d'écran, etc.
-
-      Chaque règle se compose des éléments suivants :
-      - Une liste de sources définies comme URL. Les données des sources sont considérées comme confidentielles, et les restrictions leur sont appliquées.
-      - Une liste de destinations définies comme URL ou comme composants, et pour lesquelles le partage de données confidentielles est autorisé ou non.
-      - Une liste de restrictions à appliquer aux données des sources.
-
-      Les règles peuvent être ajoutées aux fins suivantes :
-      - Contrôle des données du presse-papiers partagées entre les sources et les destinations.
-      - Contrôle des captures d'écran de n'importe quelle source.
-      - Contrôle de l'impression de n'importe quelle source.
-      - Contrôle de l'écran de confidentialité lorsque l'une des sources est visible.
-
-      Le niveau de restriction peut être défini sur BLOCK ou ALLOW.
-      - Si la restriction est définie sur BLOCK, l'action correspondante n'est pas autorisée.
-      - Si elle est définie sur ALLOW, l'action est autorisée.
-
-      Remarques :
-      - La restriction PRIVACY_SCREEN n'empêche pas d'activer l'écran de confidentialité, mais elle force son affichage lorsque le niveau de restriction est défini sur BLOCK.
-      - Les destinations ne peuvent pas être vides si l'une des restrictions est la restriction CLIPBOARD. Toutefois, elles n'ont aucune incidence pour les autres restrictions.
-      - La restriction CLIPBOARD ne fait pas la différence entre CROSTINI et PLUGIN_VM. Si l'un de ces éléments est sélectionné pour bloquer ou autoriser le partage de données, la règle s'applique aux deux.
-      - Les formats d'URL doivent respecter les conditions énoncées sur la page https://www.chromium.org/administrators/url-blacklist-filter-format.
-
-      Si la règle n'est pas configurée, aucune restriction n'est appliquée.</translation>
 <translation id="2411629345938804022">Si cette règle est définie sur "3", les sites Web peuvent demander l'accès aux appareils Bluetooth à proximité. Si cette règle est définie sur "2", la demande d'accès à ces appareils est refusée.
 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>

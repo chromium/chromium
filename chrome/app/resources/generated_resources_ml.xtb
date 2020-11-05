@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">സ്‌ക്രീൻ അപ്‌ഡേറ്റ് ചെയ്യുന്ന ആവൃത്തി നിർണ്ണയിക്കുന്നു</translation>
 <translation id="1061904396131502319">ഇടവേളയ്ക്കുള്ള സമയം ആകാറായിരിക്കുന്നു</translation>
 <translation id="1067048845568873861">സൃഷ്‌ടിച്ചു</translation>
+<translation id="1067291318998134776">Linux (ബീറ്റ)</translation>
 <translation id="1067922213147265141">മറ്റ് Google സേവനങ്ങള്‍‌</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">നിങ്ങളുടെ കമ്പ്യൂട്ടറിലെ മറ്റൊരു പ്രോഗ്രാം, Chrome പ്രവർത്തിക്കുന്ന രീതിയെ മാറ്റിയേക്കാവുന്ന ഒരു വിപുലീകരണം ചേർത്തു.
@@ -1374,7 +1375,6 @@
 <translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" />-ലേക്ക് പ്രവേശിച്ചിട്ടില്ല</translation>
 <translation id="2564520396658920462">AppleScript-ലൂടെ JavaScript നടപ്പിലാക്കുന്നത് ഓഫാക്കിയിരിക്കുന്നു. അത് ഓണാക്കാൻ, മെനു ബാറിൽ നിന്നും കാഴ്‌ച &gt; ഡെവലപ്പർ &gt; Apple Events-ൽ നിന്ന് JavaScript അനുവദിക്കൽ, എന്നതിലേക്ക് പോവുക. കൂടുതൽ വിവരങ്ങൾക്ക്: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">മെച്ചപ്പെടുത്തിയ അക്ഷരത്തെറ്റ് പരിശോധന</translation>
-<translation id="2566124945717127842">നിങ്ങളുടെ <ph name="IDS_SHORT_PRODUCT_NAME" /> ഉപകരണം പുതിയതു പോലെയാക്കാൻ റീസെറ്റ് ചെയ്യുന്നതിന് പവർവാഷ് ചെയ്യുക.</translation>
 <translation id="2568774940984945469">വിവരബാര്‍ കണ്ടെയ്നര്‍</translation>
 <translation id="2571655996835834626">കുക്കികൾ, JavaScript, പ്ലഗിന്നുകൾ, ജിയോലൊക്കേഷൻ, മൈക്രോഫോൺ, ക്യാമറ മുതലായ ഫീച്ചറുകളിലേക്കുള്ള വെബ്‌സൈറ്റിൻ്റെ ആക്‌സസ് നിയന്ത്രിക്കുന്ന നിങ്ങളുടെ ക്രമീകരണം മാറ്റുക.</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> എന്നതിലേക്ക് റീഡ് ഒൺലി ആക്‌സസ്സ് അനുവദിച്ചു.</translation>
@@ -1839,7 +1839,6 @@
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> സഹായം</translation>
 <translation id="3118654181216384296">അൽപ്പസമയത്തിനുള്ളിൽ Linux വീണ്ടും ആരംഭിക്കാൻ ശ്രമിക്കുക.</translation>
 <translation id="3120430004221004537">ഇനി പറയുന്നതിൽ നൽകിയിരിക്കുന്ന പ്രവർത്തനത്തിന് എൻക്രിപ്‌ഷൻ അപര്യാപ്‌തമാണ്: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344">ഈ <ph name="IDS_SHORT_PRODUCT_NAME" /> ഉപകരണം റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">ഡാറ്റാ ഡയറക്റ്ററി സൃഷ്ടിക്കുന്നതില്‍ പരാജയപ്പെട്ടു</translation>
 <translation id="3124111068741548686">ഉപയോക്താവ് കൈകാര്യം ചെയ്യുന്നവ</translation>
@@ -5491,7 +5490,6 @@
 <translation id="7475671414023905704">നെറ്റ്‌സ്‌കേപ്പ് നഷ്‌ടമായ പാസ്‌വേഡ് URL</translation>
 <translation id="7476454130948140105">അപ്‌ഡേറ്റ് ചെയ്യാൻ ബാറ്ററി ചാർജ്ജ് വളരെ കുറവാണ്. (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">നിങ്ങളുടെ സംഗീതവും വീഡിയോകളും മറ്റും നിയന്ത്രിക്കുക</translation>
-<translation id="7478362879637727630">ഈ Chrome Education ഉപകരണം നിങ്ങൾ ഒരു വിദ്യാഭ്യാസ അക്കൗണ്ടിലേക്ക് എൻറോൾ ചെയ്തിരിക്കണം. പുതിയ അക്കൗണ്ടിനായി സൈൻ അപ്പ് ചെയ്യാൻ, https://g.co/workspace/edusignup സന്ദർശിക്കുക.</translation>
 <translation id="7478485216301680444">കിയോസ്‌ക് ആപ്പ് ഇൻസ്റ്റാൾ ചെയ്യാനായില്ല.</translation>
 <translation id="7479221278376295180">സ്‌റ്റോറേജ് ഉപയോഗ അവലോകനം</translation>
 <translation id="7481312909269577407">മുന്നോട്ട്</translation>
@@ -6062,7 +6060,6 @@
 <translation id="8101987792947961127">അടുത്ത റീബൂട്ടിൽ പവർവാഷ് ആവശ്യമാണ്</translation>
 <translation id="8102139037507939978">system_logs.txt-ൽ നിന്ന് വ്യക്തിപരമായി തിരിച്ചറിയാനുതകുന്ന വിവരങ്ങൾ ഇല്ലാതാക്കുക.</translation>
 <translation id="8102159139658438129">കണക്‌റ്റ് ചെയ്‌തിരിക്കുന്ന ഫോണിനായുള്ള ഓപ്ഷനുകൾ കാണാൻ <ph name="LINK_BEGIN" />ക്രമീകരണം<ph name="LINK_END" /> എന്നതിലേക്ക് പോവുക</translation>
-<translation id="8104696615244072556">നിങ്ങളുടെ <ph name="IDS_SHORT_PRODUCT_NAME" /> ഉപകരണം പവർവാഷ് ചെയ്‌തശേഷം മുൻ പതിപ്പിലേക്ക് മടങ്ങുക.</translation>
 <translation id="8107015733319732394">നിങ്ങളുടെ <ph name="DEVICE_TYPE" />-ൽ Google Play Store ഇൻസ്‌റ്റാൾ ചെയ്യുന്നു. ഇതിന് കുറച്ച് മിനിറ്റുകളെടുക്കാം.</translation>
 <translation id="810728361871746125">ഡിസ്പ്ലേ റെസല്യൂഷൻ</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{മൂന്നാം കക്ഷി കുക്കികൾ ഒന്നുമില്ല}=1{ഒരു മൂന്നാം കക്ഷി കുക്കി ബ്ലോക്ക് ചെയ്‍തു}other{# മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്‍തു}}</translation>

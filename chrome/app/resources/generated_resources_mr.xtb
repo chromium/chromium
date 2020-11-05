@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">स्क्रीन अपडेट करत असलेली वारंवारता निर्धारित करतो</translation>
 <translation id="1061904396131502319">विश्रांतीची वेळ झाली आहे</translation>
 <translation id="1067048845568873861">तयार केले</translation>
+<translation id="1067291318998134776">Linux (बीटा)</translation>
 <translation id="1067922213147265141">इतर Google सेवा</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">तुमच्या कॉंप्युटरवरील दुसर्‍या प्रोग्रामने एक एक्स्टेंशन जोडले जो Chrome ची काम करण्‍याची पद्धत कदाचित बदलू शकतो.
@@ -1376,7 +1377,6 @@
 <translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" /> मध्‍ये साइन इन नाही</translation>
 <translation id="2564520396658920462">AppleScript द्वारे JavaScript एक्झिक्युट करणे बंद केले आहे. ते सुरू करण्यासाठी, मेनू बारवरून, पहा &gt; डेव्हलपर &gt; Apple इव्‍हेंटवरून JavaScript चालवू द्या यावर जा. अधिक माहितीसाठी: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">वर्धित केलेले स्पेल चेक</translation>
-<translation id="2566124945717127842">तुमचा <ph name="IDS_SHORT_PRODUCT_NAME" /> डिव्हाइस अगदी नवीन सारखे रीसेट करण्यासाठी Powerwash करा.</translation>
 <translation id="2568774940984945469">इंफोबार कंटेनर</translation>
 <translation id="2571655996835834626">कुकी, JavaScript, प्लग-इन, भौगोलिक स्थान, मायक्रोफोन, कॅमेरा इ. सारख्या वैशिष्ट्यांवरील वेबसाइटचे अ‍ॅक्सेस नियंत्रित करणार्‍या तुमच्या सेटिंग्ज बदला.</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> साठी रीड-ओन्ली ॲक्सेस मंजूर केला गेला आहे.</translation>
@@ -1841,7 +1841,6 @@
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> मदत</translation>
 <translation id="3118654181216384296">कृपया काही क्षणांत Linux सुरू करण्याचा पुन्हा प्रयत्न करा.</translation>
 <translation id="3120430004221004537">दिलेल्या ऑपरेशनसाठी यावर अपुरे एंक्रिप्शन आहे: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344">हा <ph name="IDS_SHORT_PRODUCT_NAME" /> डिव्हाइस रीसेट करा</translation>
 <translation id="3122464029669770682">सीपीयू</translation>
 <translation id="3122496702278727796">डेटा डिरेक्टरी तयार करण्यात अयशस्वी</translation>
 <translation id="3124111068741548686">वापरकर्ता हँडल</translation>
@@ -5491,7 +5490,6 @@
 <translation id="7475671414023905704">Netscape पासवर्ड URL गमावली</translation>
 <translation id="7476454130948140105">अपडेटसाठी बॅटरी खूप कमी (<ph name="BATTERY_PERCENT" />%) आहे</translation>
 <translation id="7477793887173910789">व्हिडिओ पाहा आणि बरेच काही नियंत्रित करा</translation>
-<translation id="7478362879637727630">तुम्ही या Chrome Education डिव्हाइसची शिक्षण खात्यामध्ये नोंदणी करणे आवश्यक आहे. नवीन खात्यासाठी साइन अप करण्याकरिता, कृपया https://g.co/workspace/edusignup ला भेट द्या.</translation>
 <translation id="7478485216301680444">कियोस्क ॲप्लिकेशन इंस्टॉल केले जाऊ शकले नाही.</translation>
 <translation id="7479221278376295180">स्टोरेज वापराचे अवलोकन</translation>
 <translation id="7481312909269577407">पुढील</translation>
@@ -6060,7 +6058,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8101987792947961127">पुढील रीबूटवर Powerwash आवश्यक</translation>
 <translation id="8102139037507939978">system_logs.txt वरून वैयक्तिकरीत्या ओळखण्यायोग्य माहिती स्ट्रिप करा.</translation>
 <translation id="8102159139658438129">तुमच्या कनेक्ट केलेल्या फोनसाठी पर्याय पाहण्याकरिता <ph name="LINK_BEGIN" />सेटिंग्ज<ph name="LINK_END" /> वर जा</translation>
-<translation id="8104696615244072556">तुमचे <ph name="IDS_SHORT_PRODUCT_NAME" /> डिव्हाइस Powerwash करा आणि मागील आवृत्तीकडे परत या.</translation>
 <translation id="8107015733319732394">तुमच्या <ph name="DEVICE_TYPE" /> वर Google Play स्टोअर इंस्टॉल करत आहे. यासाठी काही मिनिटे लागतील.</translation>
 <translation id="810728361871746125">डिस्प्ले रिझोल्युशन</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{कोणत्याही तृतीय पक्ष कुकी नाहीत}=1{१ तृतीय पक्ष कुकी ब्लॉक केली आहे}other{# तृतीय पक्ष कुकी ब्लॉक केल्या आहेत}}</translation>

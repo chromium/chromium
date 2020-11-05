@@ -857,31 +857,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Jika <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (nilai 1) disetel, hanya variasi yang dianggap sebagai perbaikan keamanan atau stabilitas penting yang akan diterapkan ke <ph name="PRODUCT_NAME" />.
 
       Jika <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (nilai 2) disetel, semua variasi tidak akan dapat diterapkan ke browser. Perlu diketahui, mode ini tidak direkomendasikan karena berpotensi menyebabkan developer <ph name="PRODUCT_NAME" /> tidak dapat menyediakan perbaikan keamanan penting secara tepat waktu.</translation>
-<translation id="2402140031630105556">Mengonfigurasi daftar aturan untuk mencegah kebocoran data di <ph name="PRODUCT_OS_NAME" />.
-      Kebocoran data dapat terjadi dengan menyalin dan menempelkan data, mentransfer file, mencetak, berbagi layar, atau mengambil screenshot ...dll.
-
-      Setiap aturan terdiri dari hal-hal berikut:
-      - Daftar sumber yang ditentukan sebagai URL. Setiap data dalam sumber akan dianggap sebagai data rahasia. Pembatasan akan diterapkan terhadap data tersebut.
-      - Daftar tujuan yang ditentukan sebagai URL atau komponen. Data rahasia akan diizinkan atau tidak diizinkan untuk dibagikan ke daftar tujuan tersebut.
-      - Daftar batasan yang akan diterapkan pada data sumber.
-
-      Aturan dapat ditambahkan untuk:
-      - Mengontrol data papan klip yang dibagikan antara sumber dan tujuan.
-      - Mengontrol pengambilan screenshot dari sumber mana pun.
-      - Mengontrol pencetakan dari sumber mana pun.
-      - Mengontrol layar privasi saat sumber mana pun terlihat.
-
-      Level batasan dapat disetel ke BLOCK atau ALLOW.
-      - Jika batasan disetel ke BLOCK, tindakan tidak akan diizinkan.
-      - Jika batasan disetel ke ALLOW, tindakan akan diizinkan.
-
-      Catatan:
-      - Batasan PRIVACY_SCREEN tidak memblokir kemampuan untuk mengaktifkan layar privasi, tetapi menerapkannya saat class batasan disetel ke BLOCK.
-      - Tujuan tidak boleh kosong jika salah satu batasannya adalah CLIPBOARD, tetapi hal ini tidak membuat perbedaan apa pun untuk batasan lainnya.
-      - Batasan CLIPBOARD tidak dapat membedakan antara CROSTINI dan PLUGIN_VM. Jika salah satu dipilih untuk memblokir/mengizinkan berbagi data, aturan akan diterapkan untuk keduanya.
-      - Format pola URL sesuai dengan format ini (https://www.chromium.org/administrators/url-blacklist-filter-format).
-
-      Jika kebijakan tidak disetel, tidak akan ada batasan yang diterapkan.</translation>
 <translation id="2411629345938804022">Jika kebijakan disetel ke 3, situs akan meminta akses ke perangkat Bluetooth di sekitar. Jika kebijakan disetel ke 2, akses ke perangkat Bluetooth di sekitar akan ditolak.
 
       Jika kebijakan tidak disetel, situs akan meminta akses, tetapi pengguna dapat mengubah setelan ini.</translation>

@@ -17,6 +17,7 @@
 <translation id="1369915414381695676">Site <ph name="SITE_NAME" /> added</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384959399684842514">Download paused</translation>
+<translation id="1415402041810619267">URL truncated</translation>
 <translation id="1431402976894535801">Block sites from knowing when you're present</translation>
 <translation id="1446450296470737166">Allow full control of MIDI devices</translation>
 <translation id="1509960214886564027">Features on many sites may break</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">Allow sites to play protected content</translation>
 <translation id="4468959413250150279">Mute sound for a specific site.</translation>
 <translation id="4479647676395637221">Ask first before allowing sites to use your camera (recommended)</translation>
+<translation id="4505788138578415521">URL expanded</translation>
 <translation id="4534723447064627427">To let <ph name="APP_NAME" /> access your microphone, also turn on microphone in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="4570913071927164677">Details</translation>
 <translation id="4645575059429386691">Managed by your parent</translation>

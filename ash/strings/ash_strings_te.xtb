@@ -125,7 +125,6 @@
 <translation id="2127372758936585790">తక్కువ-పవర్ గల ఛార్జర్</translation>
 <translation id="2132302418721800944">ఫుల్ స్క్రీన్‌ను రికార్డ్ చేయండి</translation>
 <translation id="2135456203358955318">డాక్ చేయబడిన మాగ్నిఫైయర్</translation>
-<translation id="2144487987174258011">Adobe Flash Playerను అప్‌డేట్ చేయ‌డానికి పున:ప్రారంభించండి</translation>
 <translation id="2208323208084708176">ఏకీకృత డెస్క్‌టాప్ మోడ్</translation>
 <translation id="2220572644011485463">PIN లేదా పాస్‌వర్డ్</translation>
 <translation id="2222338659135520253">సైన్ ఇన్ చేయాలి</translation>
@@ -160,7 +159,6 @@
 <translation id="2435457462613246316">పాస్‌వర్డ్‌ను చూపించు</translation>
 <translation id="2473177541599297363">రిజల్యూషన్‌ను ధృవీకరించండి</translation>
 <translation id="2475982808118771221">ఒక ఎర్రర్ ఏర్పడింది</translation>
-<translation id="2479579251444854687">ఓవర్‌వ్యూను తెరవడానికి మూడు వేళ్లతో పైకి స్వైప్ చేయండి, మూసివేయడానికి కిందకు స్వైప్ చేయండి.</translation>
 <translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
 <translation id="2484513351006226581">కీబోర్డ్ లేఅవుట్‌ను మార్చడానికి <ph name="KEYBOARD_SHORTCUT" />ని నొక్కండి.</translation>
 <translation id="2501920221385095727">స్టిక్కీ కీలు</translation>
@@ -372,7 +370,6 @@
 <translation id="4481530544597605423">జతను తీసివేసిన పరికరాలు</translation>
 <translation id="4485060137115666462">కుడి క్లిక్ ద్వారా లేదా ఎక్కువసేపు నొక్కి, ఉంచడం ద్వారా, మీ ఎంపిక కోసం నిర్వచనం, అనువాదం లేదా యూనిట్ మార్పిడి లాంటి సమాచారాన్ని Assistant చూపుతుంది.</translation>
 <translation id="4505050298327493054">యాక్టివ్ డెస్క్.</translation>
-<translation id="4506458088675900627">ఓవర్‌వ్యూ టచ్‌ప్యాడ్ సంజ్ఞ మారింది</translation>
 <translation id="4513946894732546136">అభిప్రాయం</translation>
 <translation id="4527045527269911712">బ్లూటూత్ పరికరం "<ph name="DEVICE_NAME" />" జత కావడానికి అనుమతి కోరుతోంది.</translation>
 <translation id="453661520163887813">పూర్తి కావడానికి <ph name="TIME" /> పడుతుంది</translation>
@@ -435,6 +432,7 @@
 <translation id="5033299697334913360">ఫుల్ స్క్రీన్‌ను క్యాప్చర్ చేయడానికి ఎక్కడైనా క్లిక్ చేయండి</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ఒక కొత్త ఫోన్‌కి కనెక్ట్ చేయబడింది</translation>
 <translation id="5035389544768382859">డిస్‌ప్లే కాన్ఫిగరేషన్‌ను నిర్ధారించండి</translation>
+<translation id="5078796286268621944"> సరి కానటువంటి PIN</translation>
 <translation id="5083553833479578423">మరిన్ని Assistant ఫీచర్‌లను అన్‌లాక్ చేయండి.</translation>
 <translation id="5136175204352732067">వేరే కీబోర్డ్ కనెక్ట్ చేయబడింది</translation>
 <translation id="5168181903108465623">Cast పరికరాలు అందుబాటులో ఉన్నాయి</translation>

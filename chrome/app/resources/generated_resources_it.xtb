@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Consente di stabilire la frequenza di aggiornamento dello schermo</translation>
 <translation id="1061904396131502319">È quasi ora di fare una pausa</translation>
 <translation id="1067048845568873861">Data creazione</translation>
+<translation id="1067291318998134776">Linux (beta)</translation>
 <translation id="1067922213147265141">Altri servizi Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Un altro programma sul computer ha aggiunto un'estensione che potrebbe modificare il funzionamento di Chrome.
@@ -1376,7 +1377,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2562743677925229011">Non connesso a <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">L'esecuzione di JavaScript tramite AppleScript è disattivata. Per attivarla, vai alla barra dei menu, apri Visualizza &gt; Sviluppatore &gt; Consenti JavaScript da Apple Events. Per ulteriori informazioni, visita la pagina all'indirizzo https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Controllo ortografico avanzato</translation>
-<translation id="2566124945717127842">Esegui il powerwash per ripristinare il tuo dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /> e farlo tornare come nuovo.</translation>
 <translation id="2568774940984945469">Infobar Container</translation>
 <translation id="2571655996835834626">Modifica delle impostazioni che controllano l'accesso dei siti web a funzioni quali cookie, JavaScript, plug-in, geolocalizzazione, microfono, videocamera e così via.</translation>
 <translation id="2572032849266859634">È stato concesso l'accesso in sola lettura a <ph name="VOLUME_NAME" />.</translation>
@@ -1841,7 +1841,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3118319026408854581">Guida di <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">Riprova ad avviare Linux tra qualche istante.</translation>
 <translation id="3120430004221004537">Crittografia insufficiente per un'operazione specifica su: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344">Ripristina questo dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Creazione directory dati non riuscita</translation>
 <translation id="3124111068741548686">Handle UTENTE</translation>
@@ -5492,7 +5491,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7475671414023905704">URL password persa Netscape</translation>
 <translation id="7476454130948140105">Livello della batteria troppo basso per eseguire l'aggiornamento (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">Gestisci la tua musica, i tuoi video e altro ancora</translation>
-<translation id="7478362879637727630">Devi registrare questo dispositivo Chrome Education a un account Education. Per la registrazione a un nuovo account, visita l'indirizzo https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">Impossibile installare l'applicazione kiosk.</translation>
 <translation id="7479221278376295180">Panoramica dell'utilizzo dello spazio di archiviazione</translation>
 <translation id="7481312909269577407">Avanti</translation>
@@ -6063,7 +6061,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8101987792947961127">Powerwash necessario a prossimo riavvio</translation>
 <translation id="8102139037507939978">Rimuovi le informazioni che consentono l'identificazione personale dal file system_logs.txt.</translation>
 <translation id="8102159139658438129">Vai alle <ph name="LINK_BEGIN" />Impostazioni<ph name="LINK_END" /> per visualizzare le opzioni disponibili per il tuo telefono collegato</translation>
-<translation id="8104696615244072556">Esegui il Powerwash del tuo dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /> e torna alla versione precedente.</translation>
 <translation id="8107015733319732394">Installazione in corso del Google Play Store sul tuo dispositivo <ph name="DEVICE_TYPE" />. L'operazione potrebbe richiedere alcuni minuti.</translation>
 <translation id="810728361871746125">Risoluzione del display</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Nessun cookie di terze parti}=1{È stato bloccato 1 cookie di terze parti}other{Sono stati bloccati # cookie di terze parti}}</translation>

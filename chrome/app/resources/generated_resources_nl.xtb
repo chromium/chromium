@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Bepaalt de frequentie waarmee het scherm wordt geüpdatet</translation>
 <translation id="1061904396131502319">Bijna tijd voor pauze</translation>
 <translation id="1067048845568873861">Gemaakt</translation>
+<translation id="1067291318998134776">Linux (bèta)</translation>
 <translation id="1067922213147265141">Andere Google-services</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Een ander programma op je computer heeft een extensie toegevoegd die de manier kan wijzigen waarop Chrome werkt.
@@ -1377,7 +1378,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2562743677925229011">Niet ingelogd bij <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Het uitvoeren van JavaScript via AppleScript is uitgeschakeld. Als je dit wilt inschakelen, ga je vanaf de menubalk naar Weergave &gt; Ontwikkelaar &gt; JavaScript vanuit Apple Events toestaan. Meer informatie: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Uitgebreide spellingcontrole</translation>
-<translation id="2566124945717127842">Voer de Powerwash-functie uit om je <ph name="IDS_SHORT_PRODUCT_NAME" />-apparaat opnieuw in te stellen.</translation>
 <translation id="2568774940984945469">Container voor infobalk</translation>
 <translation id="2571655996835834626">Je instellingen wijzigen die de toegang van websites bepalen tot functies zoals cookies, JavaScript, plug-ins, geografische locatie, microfoon, camera, enzovoort.</translation>
 <translation id="2572032849266859634">Alleen-lezen-toegang tot <ph name="VOLUME_NAME" /> is toegekend.</translation>
@@ -1842,7 +1842,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Help</translation>
 <translation id="3118654181216384296">Probeer Linux zometeen opnieuw te starten.</translation>
 <translation id="3120430004221004537">Onvoldoende versleuteling voor een bepaalde bewerking op: <ph name="DEVICE_NAME" />.</translation>
-<translation id="3121793941267913344">Dit <ph name="IDS_SHORT_PRODUCT_NAME" />-apparaat herstellen</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Kan gegevensdirectory niet maken</translation>
 <translation id="3124111068741548686">USER-handles</translation>
@@ -5493,7 +5492,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7475671414023905704">URL van verloren Netscape-wachtwoord</translation>
 <translation id="7476454130948140105">Batterij niet voldoende opgeladen voor update (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">Je muziek, video's en meer bedienen</translation>
-<translation id="7478362879637727630">Je moet dit Chrome Education-apparaat aanmelden bij een onderwijsaccount. Ga naar https://g.co/workspace/edusignup om je aan te melden voor een nieuw account.</translation>
 <translation id="7478485216301680444">Kiosk-app kan niet worden geïnstalleerd.</translation>
 <translation id="7479221278376295180">Gebruikersoverzicht van opslagruimte</translation>
 <translation id="7481312909269577407">Vooruit</translation>
@@ -6063,7 +6061,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8101987792947961127">Powerwash vereist bij volgende keer opnieuw opstarten</translation>
 <translation id="8102139037507939978">Persoonlijk identificeerbare informatie verwijderen uit system_logs.txt.</translation>
 <translation id="8102159139658438129">Ga naar <ph name="LINK_BEGIN" />Instellingen <ph name="LINK_END" /> om opties voor je gekoppelde telefoon te bekijken</translation>
-<translation id="8104696615244072556">Powerwash je <ph name="IDS_SHORT_PRODUCT_NAME" />-apparaat en zet de vorige versie terug.</translation>
 <translation id="8107015733319732394">De Google Play Store wordt geïnstalleerd op je <ph name="DEVICE_TYPE" />. Dit kan enkele minuten duren.</translation>
 <translation id="810728361871746125">Schermresolutie</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Geen cookies van derden}=1{1 cookie van derden is geblokkeerd}other{# cookies van derden zijn geblokkeerd}}</translation>

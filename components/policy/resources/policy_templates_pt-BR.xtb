@@ -840,31 +840,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Definir <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (valor 1) permite que apenas as variações consideradas como correções críticas de segurança ou estabilidade sejam aplicadas ao <ph name="PRODUCT_NAME" />.
 
       Definir <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2) impede que qualquer variação seja aplicada ao navegador. Esse modo não é recomendado, porque pode impedir que os desenvolvedores do <ph name="PRODUCT_NAME" /> forneçam correções críticas de segurança de maneira rápida.</translation>
-<translation id="2402140031630105556">Configura uma lista de regras para prevenir vazamentos de dados no <ph name="PRODUCT_OS_NAME" />.
-      Vazamentos de dados podem acontecer ao copiar e colar dados, transferir arquivos, imprimir, compartilhar ou capturar a tela etc.
-
-      Cada regra consiste no seguinte:
-      - Uma lista de origens definidas como URLs. Qualquer dado nas origens será considerado confidencial, e as restrições serão aplicadas a eles.
-      - Uma lista de destinos definidos como URLs ou componentes, em que os dados confidenciais terão permissão ou não para serem compartilhados.
-      - Uma lista de restrições a serem aplicadas aos dados das origens.
-
-      As regras podem ser aplicadas para:
-      - controlar os dados na área de transferência compartilhados entre as origens e os destinos;
-      - controlar as capturas de telas de qualquer uma das origens;
-      - controlar a impressão de qualquer uma das origens;
-      - controlar a Tela de privacidade quando qualquer uma das origens estiver visível.
-
-      O nível de restrição pode ser definido como BLOCK ou ALLOW (bloquear ou permitir).
-      - Se a restrição for definida como BLOCK, a ação não será permitida.
-      - Se a restrição for definida como ALLOW, a ação será permitida.
-
-      Observações:
-      - Restrições PRIVACY_SCREEN não bloqueiam a capacidade de ativar a Tela de privacidade, mas forçam o uso dela quando a classe de restrição é definida como BLOCK.
-      - Os destinos não podem ficar vazios caso uma das restrições seja CLIPBOARD, mas eles não afetarão as outras restrições.
-      - A restrição CLIPBOARD não diferencia entre CROSTINI e PLUGIN_VM. Se qualquer um deles tiver sido definido como bloquear/permitir o compartilhamento de dados, a regra será aplicada a ambos.
-      - Formate os padrões do URL de acordo com este formato (https://www.chromium.org/administrators/url-blacklist-filter-format, link em inglês).
-
-      Se a política não for definida, nenhuma restrição será aplicada.</translation>
 <translation id="2411629345938804022">Se a política for definida como 3, os sites solicitarão acesso a dispositivos Bluetooth que estiverem por perto. Se a política for definida como 2, o acesso a dispositivos Bluetooth que estiverem por perto será negado.
 
       Se não for definida, os sites terão permissão para solicitar acesso, mas os usuários poderão mudar essa configuração.</translation>

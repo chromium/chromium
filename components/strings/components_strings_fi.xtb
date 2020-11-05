@@ -316,6 +316,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="214556005048008348">Peruuta maksu</translation>
 <translation id="2147827593068025794">Taustasynkronointi</translation>
 <translation id="2148613324460538318">Lisää kortti</translation>
+<translation id="2149968176347646218">Yhteys ei ole turvallinen</translation>
 <translation id="2154054054215849342">Synkronointi ei ole käytettävissä verkkotunnuksessasi.</translation>
 <translation id="2154484045852737596">Muokkaa korttia</translation>
 <translation id="2161656808144014275">Teksti</translation>
@@ -1170,6 +1171,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5571083550517324815">Nouto tästä osoitteesta ei onnistu. Valitse eri osoite.</translation>
 <translation id="5580958916614886209">Tarkista vanhentumiskuukausi ja yritä uudelleen.</translation>
 <translation id="5586446728396275693">Ei tallennettuja osoitteita</translation>
+<translation id="5593349413089863479">Yhteys ei ole täysin suojattu</translation>
 <translation id="5595485650161345191">Osoitteen muokkaus</translation>
 <translation id="5598944008576757369">Valitse maksutapa</translation>
 <translation id="560412284261940334">Hallintaa ei tueta</translation>
@@ -1888,6 +1890,7 @@ Lisätietoja:
 <translation id="8507227106804027148">Komentorivi</translation>
 <translation id="8508648098325802031">Hakukuvake</translation>
 <translation id="8522552481199248698">Chrome voi auttaa suojaamaan Google-tiliäsi ja vaihtamaan salasanasi.</translation>
+<translation id="8525306231823319788">Koko näyttö</translation>
 <translation id="8530813470445476232">Tyhjennä selaushistoria, evästeet, välimuisti ja muita tietoja Chromen asetuksista</translation>
 <translation id="8533619373899488139">Voit nähdä estetyt URL-osoitteet ja muut järjestelmänvalvojasi määräämät käytännöt osoitteessa &lt;strong&gt;chrome://policy&lt;/strong&gt;.</translation>
 <translation id="8541158209346794904">Bluetooth-laite</translation>

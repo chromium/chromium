@@ -314,6 +314,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3285080554353377245">Videos about how to use Chrome</translation>
 <translation id="3288003805934695103">Reloading the page</translation>
 <translation id="32895400574683172">Notifications are allowed</translation>
+<translation id="3290991969712132877">To get here quicker, add this page to your home screen from the 'More options' button</translation>
 <translation id="3295530008794733555">Browse faster. Use less data.</translation>
 <translation id="3298243779924642547">Lite</translation>
 <translation id="3303414029551471755">Proceed to download the content?</translation>
@@ -470,6 +471,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4532845899244822526">Choose folder</translation>
 <translation id="4538018662093857852">Turn on Lite mode</translation>
 <translation id="4550003330909367850">To view or copy your password here, set screen lock on this device.</translation>
+<translation id="4557685098773234337">To get here quicker, add this page to your home screen</translation>
 <translation id="4558311620361989323">Web page shortcuts</translation>
 <translation id="4561979708150884304">No connection</translation>
 <translation id="4565377596337484307">Hide password</translation>
@@ -499,6 +501,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4720982865791209136">Help improve Chrome. <ph name="BEGIN_LINK" />Take survey<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">See your top sites</translation>
 <translation id="4732120983431207637">Stack unwinder</translation>
+<translation id="4732693703583195378">Add this site to your tablet’s home screen so that you can get here more easily</translation>
 <translation id="4738836084190194332">Last synced: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Open a new tab</translation>
 <translation id="4759238208242260848">Downloads</translation>
@@ -536,6 +539,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Your passwords will be exported and downloaded as a text file. They will be visible to anyone and any app with access to the destination folder.</translation>
 <translation id="4932247056774066048">Because you're signing out of an account managed by <ph name="DOMAIN_NAME" />, your Chrome data will be deleted from this device. It will remain in your Google account.</translation>
+<translation id="4936039914467572121">Get to this site quicker</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
 <translation id="4943872375798546930">No results</translation>
 <translation id="4961107849584082341">Translate this page to any language</translation>
@@ -647,6 +651,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5763382633136178763">Incognito tabs</translation>
 <translation id="5763514718066511291">Tap to copy the URL for this app</translation>
 <translation id="5765780083710877561">Description:</translation>
+<translation id="5767013862801005129">Restored <ph name="TAB_TITLE" />, tab</translation>
 <translation id="5776970333778123608">Unimportant data</translation>
 <translation id="5793665092639000975">Using <ph name="SPACE_USED" /> of <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Search and browse</translation>
@@ -952,6 +957,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}}</translation>
 <translation id="7778840695157240389">Check back later for new stories</translation>
 <translation id="7791543448312431591">Add</translation>
+<translation id="7798392620021911922">Restored <ph name="TAB_COUNT" /> tabs</translation>
 <translation id="780301667611848630">No, thanks</translation>
 <translation id="7810647596859435254">Open with…</translation>
 <translation id="7821588508402923572">Your data savings will appear here</translation>
@@ -1137,6 +1143,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Show original</translation>
 <translation id="9148126808321036104">Sign in again</translation>
+<translation id="9149286894143103695">Add this site to your phone’s home screen so that you can get here more easily</translation>
 <translation id="9155898266292537608">You can also search with a quick tap on a word</translation>
 <translation id="9169507124922466868">Navigation history is half-opened</translation>
 <translation id="9191031968346938109">Add to…</translation>

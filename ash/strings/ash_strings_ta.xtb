@@ -125,7 +125,6 @@
 <translation id="2127372758936585790">குறைந்த சக்திகொண்ட சார்ஜர்</translation>
 <translation id="2132302418721800944">முழுத்திரையையும் ரெக்கார்டு செய்யும்</translation>
 <translation id="2135456203358955318">டாக் செய்யப்பட்ட பெரிதாக்கி</translation>
-<translation id="2144487987174258011">Adobe Flash Playerஐப் புதுப்பிக்க, மீண்டும் தொடங்கவும்</translation>
 <translation id="2208323208084708176">ஒன்றிணைந்த டெஸ்க்டாப் பயன்முறை</translation>
 <translation id="2220572644011485463">பின் அல்லது கடவுச்சொல்</translation>
 <translation id="2222338659135520253">உள்நுழைய வேண்டும்</translation>
@@ -160,7 +159,6 @@
 <translation id="2435457462613246316">கடவுச்சொல்லைக் காண்பி</translation>
 <translation id="2473177541599297363">தெளிவுத்திறனை உறுதிப்படுத்துங்கள்</translation>
 <translation id="2475982808118771221">ஒரு பிழை ஏற்பட்டது</translation>
-<translation id="2479579251444854687">மேலோட்டப் பயன்முறையைத் திறக்க மேல்நோக்கியும் அதை மூட கீழ்நோக்கியும் மூன்று விரல்களால் ஸ்வைப் செய்யவும்.</translation>
 <translation id="2482878487686419369">அறிவிப்புகள்</translation>
 <translation id="2484513351006226581">விசைப்பலகைத் தளவமைப்பை மாற்ற, <ph name="KEYBOARD_SHORTCUT" /> விசையை அழுத்தவும்.</translation>
 <translation id="2501920221385095727">ஸ்டிக்கி விசைகள்</translation>
@@ -371,7 +369,6 @@
 <translation id="4481530544597605423">இணைக்காத சாதனங்கள்</translation>
 <translation id="4485060137115666462">வலது கிளிக் செய்தாலோ நீண்ட நேரம் அழுத்தினாலோ நீங்கள் தேர்ந்தெடுத்ததற்கான விளக்கம், மொழிபெயர்ப்பு, அலகு மாற்றம் போன்ற தகவலை Assistant காட்டும்.</translation>
 <translation id="4505050298327493054">செயலிலுள்ள டெஸ்க்.</translation>
-<translation id="4506458088675900627">மேலோட்டப் பார்வைக்கான டச்பேட் சைகை மாறியுள்ளது</translation>
 <translation id="4513946894732546136">கருத்து</translation>
 <translation id="4527045527269911712">புளூடூத் சாதனம் "<ph name="DEVICE_NAME" />", இணைப்பதற்கான அனுமதியை விரும்புகிறது.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> ஆகும் 100% சார்ஜாக</translation>
@@ -434,6 +431,7 @@
 <translation id="5033299697334913360">முழுத்திரையைப் படமெடுக்க, எங்கு வேண்டுமானாலும் கிளிக் செய்யவும்</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ஒரு புதிய ஃபோனுடன் இணைக்கப்பட்டுள்ளது</translation>
 <translation id="5035389544768382859">திரை உள்ளமைவை உறுதிசெய்யுங்கள்</translation>
+<translation id="5078796286268621944">தவறான PIN</translation>
 <translation id="5083553833479578423">மேலும் பல அசிஸ்டண்ட் அம்சங்களைப் பெறுக.</translation>
 <translation id="5136175204352732067">வேறொரு விசைப்பலகை இணைக்கப்பட்டது</translation>
 <translation id="5168181903108465623">Cast சாதனங்கள் உள்ளன</translation>

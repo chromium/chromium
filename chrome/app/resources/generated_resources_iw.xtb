@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">קביעת התדירות של רענון המסך</translation>
 <translation id="1061904396131502319">עוד מעט זמן להפסקה</translation>
 <translation id="1067048845568873861">נוצר</translation>
+<translation id="1067291318998134776">‏Linux (בטא)</translation>
 <translation id="1067922213147265141">‏שירותי Google אחרים</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">‏תוכנה אחרת במחשב הוסיפה תוסף שעשוי לשנות את אופן הפעולה של Chrome.
@@ -1374,7 +1375,6 @@
 <translation id="2562743677925229011">לא נכנסת לחשבון <ph name="SHORT_PRODUCT_NAME" /> שלך</translation>
 <translation id="2564520396658920462">‏הפעלת JavaScript דרך AppleScript מושבתת. כדי להפעיל את האפשרות הזו, מסרגל התפריטים יש לעבור אל 'תצוגה' &gt; 'מפתח' &gt; 'התרת JavaScript מאירועי Apple'. מידע נוסף זמין בכתובת https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">בדיקת איות משופרת</translation>
-<translation id="2566124945717127842">‏בצע פעולת Powerwash כדי לאפס את מכשיר <ph name="IDS_SHORT_PRODUCT_NAME" /> שלך כך שיהיה כמו חדש.</translation>
 <translation id="2568774940984945469">גורם מכיל של סרגל המידע</translation>
 <translation id="2571655996835834626">‏שינוי ההגדרות ששולטות בגישה של אתרים לתכונות כמו קובצי cookie, ‏JavaScript, יישומי פלאגין, מיקום גיאוגרפי, מיקרופון, מצלמה וכו'.</translation>
 <translation id="2572032849266859634">ניתנה הרשאה לקריאה בלבד ב-<ph name="VOLUME_NAME" />.</translation>
@@ -1840,7 +1840,6 @@
 <translation id="3118319026408854581">עזרה של <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">‏אפשר לנסות שוב להפעיל את Linux בעוד כמה רגעים.</translation>
 <translation id="3120430004221004537">ההצפנה לא מספיקה לפעולה נתונה במכשיר: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344">איפוס מכשיר <ph name="IDS_SHORT_PRODUCT_NAME" /> זה</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">יצירת ספריית נתונים נכשלה</translation>
 <translation id="3124111068741548686">מזהים ייחודיים של משתמש</translation>
@@ -5491,7 +5490,6 @@
 <translation id="7475671414023905704">‏כתובת אתר לסיסמה שאבדה של Netscape</translation>
 <translation id="7476454130948140105">‏הסוללה חלשה מדי להתקנת העדכון (‎<ph name="BATTERY_PERCENT" />%‎)</translation>
 <translation id="7477793887173910789">שליטה במוזיקה, בסרטונים ועוד</translation>
-<translation id="7478362879637727630">‏עליך לרשום את המכשיר עם Chrome Education לחשבון ששייך למוסד לימודים. כדי להירשם לחשבון חדש, יש להיכנס לכתובת https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">לא ניתן היה להתקין אפליקציית "קיוסק".</translation>
 <translation id="7479221278376295180">סקירה כללית של השימוש בשטח אחסון</translation>
 <translation id="7481312909269577407">קדימה</translation>
@@ -6063,7 +6061,6 @@
 <translation id="8101987792947961127">‏יש לבצע Powerwash באתחול הבא</translation>
 <translation id="8102139037507939978">‏הסרה של פרטים אישיים מזהים מהקובץ system_logs.txt.</translation>
 <translation id="8102159139658438129">כדי לראות אפשרויות לגבי הטלפון המחובר, אפשר לעבור אל <ph name="LINK_BEGIN" />הגדרות<ph name="LINK_END" /></translation>
-<translation id="8104696615244072556">‏בצע פעולת Powerwash במכשיר <ph name="IDS_SHORT_PRODUCT_NAME" /> שלך וחזור לגרסה הקודמת.</translation>
 <translation id="8107015733319732394">‏ההתקנה של חנות Google Play במכשיר <ph name="DEVICE_TYPE" /> מתבצעת. ייתכן שההתקנה תימשך כמה דקות.</translation>
 <translation id="810728361871746125">רזולוציית מסך</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{‏אין קובצי cookie של צד שלישי}=1{‏קובץ cookie אחד של צד שלישי נחסם}two{‏# קובצי cookie של צד שלישי נחסמו}many{‏# קובצי cookie של צד שלישי נחסמו}other{‏# קובצי cookie של צד שלישי נחסמו}}</translation>

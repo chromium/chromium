@@ -858,31 +858,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
       Việc đặt <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (giá trị 1) sẽ chỉ cho phép áp dụng những biến thể được xem là bản sửa lỗi quan trọng về độ bảo mật hoặc độ ổn định cho <ph name="PRODUCT_NAME" />.
 
       Việc đặt <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (giá trị 2) sẽ không cho phép áp dụng tất cả biến thể cho trình duyệt. Xin lưu ý rằng chế độ này có thể khiến nhà phát triển <ph name="PRODUCT_NAME" /> không thể cung cấp kịp thời các bản sửa lỗi bảo mật quan trọng nên không được khuyên dùng.</translation>
-<translation id="2402140031630105556">Định cấu hình danh sách các quy tắc để ngăn rò rỉ dữ liệu trên <ph name="PRODUCT_OS_NAME" />.
-      Rò rỉ dữ liệu có thể xảy ra khi bạn sao chép và dán dữ liệu, chuyển tệp, in, chia sẻ màn hình hoặc chụp ảnh màn hình, v.v.
-
-      Mỗi quy tắc bao gồm những nội dung sau:
-      – Một danh sách các nguồn được xác định là URL. Mọi dữ liệu trong những nguồn đó đều được coi là dữ liệu mật. Sẽ có các mức hạn chế áp dụng cho những dữ liệu mật này.
-      – Một danh sách các đích đến được xác định là URL hoặc thành phần mà bạn được phép hoặc không được phép chia sẻ dữ liệu mật.
-      – Một danh sách các mức hạn chế được áp dụng cho dữ liệu của những nguồn đó.
-
-      Bạn có thể thêm các quy tắc để:
-      – Kiểm soát dữ liệu trong khay nhớ tạm được chia sẻ giữa các nguồn và đích đến.
-      – Kiểm soát việc chụp ảnh màn hình bất kỳ nguồn nào.
-      – Kiểm soát việc in bất kỳ nguồn nào.
-      – Kiểm soát màn hình bảo vệ quyền riêng tư khi bất kỳ nguồn nào hiển thị.
-
-      Bạn có thể đặt mức hạn chế thành BLOCK, ALLOW.
-      – Nếu bạn đặt thành BLOCK, mức hạn chế này sẽ không cho phép thực hiện thao tác.
-      – Nếu bạn đặt thành ALLOW, mức hạn chế này sẽ cho phép thực hiện thao tác.
-
-      Lưu ý:
-      – Mức hạn chế PRIVACY_SCREEN không chặn thao tác bật màn hình bảo vệ quyền riêng tư, mà sẽ thực thi điều này khi bạn đặt mức hạn chế thành BLOCK.
-      – Bạn không được để trống các đích đến trong trường hợp một trong những mức hạn chế là CLIPBOARD. Tuy nhiên, các đích đến này không tạo ra sự khác biệt nào đối với các mức hạn chế còn lại.
-      – Mức hạn chế CLIPBOARD không phân biệt giữa CROSTINI và PLUGIN_VM. Nếu bạn chọn bất kỳ mức hạn chế nào trong số đó để chặn/cho phép chia sẻ dữ liệu, thì quy tắc này sẽ áp dụng cho cả hai.
-      – Tạo mẫu URL theo định dạng này (https://www.chromium.org/administrators/url-blacklist-filter-format).
-
-      Nếu bạn không đặt chính sách này, sẽ không có mức hạn chế nào được áp dụng.</translation>
 <translation id="2411629345938804022">Nếu bạn đặt chính sách này thành 3, thì trang web sẽ yêu cầu quyền truy cập vào thiết bị Bluetooth ở gần. Nếu bạn đặt chính sách này thành 2, thì các trang web sẽ không được phép truy cập vào thiết bị Bluetooth ở gần.
 
       Nếu bạn không đặt chính sách này, thì các trang sẽ yêu cầu quyền truy cập nhưng người dùng có thể thay đổi tùy chọn cài đặt này.</translation>

@@ -125,7 +125,6 @@
 <translation id="2127372758936585790">低電力の充電器</translation>
 <translation id="2132302418721800944">全画面を録画</translation>
 <translation id="2135456203358955318">ドッキング拡大鏡</translation>
-<translation id="2144487987174258011">Adobe Flash Player を更新するには再起動してください</translation>
 <translation id="2208323208084708176">デスクトップ統合モード</translation>
 <translation id="2220572644011485463">PIN またはパスワード</translation>
 <translation id="2222338659135520253">ログインしてください</translation>
@@ -160,7 +159,6 @@
 <translation id="2435457462613246316">パスワードを表示</translation>
 <translation id="2473177541599297363">解像度の確定</translation>
 <translation id="2475982808118771221">エラーが発生しました</translation>
-<translation id="2479579251444854687">複数画面モードを開くには 3 本の指で上にスワイプ、閉じるには 3 本の指で下にスワイプします。</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484513351006226581">キーボード レイアウトを切り替えるには <ph name="KEYBOARD_SHORTCUT" /> キーを押します。</translation>
 <translation id="2501920221385095727">固定キー</translation>
@@ -371,7 +369,6 @@
 <translation id="4481530544597605423">ペア設定されていないデバイス</translation>
 <translation id="4485060137115666462">右クリックするか長押しすると、選択した項目の情報（定義、翻訳、単位変換など）が表示されます。</translation>
 <translation id="4505050298327493054">使用中のデスクです。</translation>
-<translation id="4506458088675900627">複数画面モードのタッチパッド操作が変わりました</translation>
 <translation id="4513946894732546136">フィードバック</translation>
 <translation id="4527045527269911712">Bluetooth デバイス「<ph name="DEVICE_NAME" />」がペア設定の権限をリクエストしています。</translation>
 <translation id="453661520163887813">あと <ph name="TIME" /> で充電完了</translation>
@@ -434,6 +431,7 @@
 <translation id="5033299697334913360">全画面をキャプチャするには任意の場所をクリックしてください</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> が新しいスマートフォンに接続されました</translation>
 <translation id="5035389544768382859">ディスプレイ設定の確定</translation>
+<translation id="5078796286268621944">PIN が正しくありません</translation>
 <translation id="5083553833479578423">さらに多くのアシスタント機能をぜひご活用ください。</translation>
 <translation id="5136175204352732067">別のキーボードが接続されています</translation>
 <translation id="5168181903108465623">キャスト デバイスを利用できます</translation>

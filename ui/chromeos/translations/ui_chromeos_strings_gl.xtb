@@ -10,7 +10,6 @@
 <translation id="1049926623896334335">Documento de Word</translation>
 <translation id="1060368002126861100">Para poder abrir ficheiros coa aplicación <ph name="APP_NAME" />, debes movelos ao cartafol de ficheiros de Windows.</translation>
 <translation id="1062407476771304334">Substituír</translation>
-<translation id="1065449928621190041">Teclado francés canadense</translation>
 <translation id="1119069657431255176">Arquivo tar comprimido mediante Bzip2</translation>
 <translation id="1120073797882051782">Romaja hangul</translation>
 <translation id="1148097584170732637">Atopáronse <ph name="FILE_COUNT" />.
@@ -36,7 +35,6 @@
 <translation id="1297922636971898492">Google Drive non está dispoñible nestes momentos. A carga reiniciarase automaticamente cando volva estar dispoñible.</translation>
 <translation id="1307931752636661898">Non se puideron ver ficheiros de Linux</translation>
 <translation id="1310751437842832374">Transliteración (mausam → ନମସ୍ତେ)</translation>
-<translation id="1337036551624197047">Teclado checo</translation>
 <translation id="1338950911836659113">Eliminando...</translation>
 <translation id="1346748346194534595">Dereita</translation>
 <translation id="1351692861129622852">Importando <ph name="FILE_COUNT" /> ficheiros...</translation>
@@ -62,7 +60,6 @@
 <translation id="1556189134700913550">Aplicar a todas</translation>
 <translation id="1561842594491319104">Dispositivos Chrome</translation>
 <translation id="1572585716423026576">Definir como fondo de pantalla</translation>
-<translation id="158809615184981282">Teclado feroés</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1646019627374511909">Activando acceso sen conexión a <ph name="NUMBER_OF_ITEMS" /> ficheiros</translation>
@@ -139,9 +136,9 @@
 <translation id="2453576648990281505">O ficheiro xa existe</translation>
 <translation id="2464079411014186876">Xeado</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
-<translation id="247772113373397749">Teclado multilingüe canadense</translation>
 <translation id="2494837236724268445">Teclado guxaratí (fonético)</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2529133382850673012">Teclado estadounidense</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> elementos eliminados</translation>
 <translation id="2541377937973966830">O contido deste cartafol é só de lectura. Non se admiten algunhas actividades.</translation>
 <translation id="2542049655219295786">Táboa de Google</translation>
@@ -195,8 +192,10 @@
 <translation id="3067790092342515856">Ficheiros de Windows</translation>
 <translation id="3078461028045006476">Compartir con <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebits</translation>
+<translation id="3116361045094675131">Teclado do Reino Unido</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">LISTO</translation>
+<translation id="3157729859914172001">Teclado internacional estadounidense (PC)</translation>
 <translation id="3187212781151025377">Teclado hebreo</translation>
 <translation id="3188257591659621405">Os meus ficheiros</translation>
 <translation id="3197563288998582412">Dvorak para o Reino Unido</translation>
@@ -295,7 +294,6 @@
 <translation id="426015154560005552">Teclado árabe</translation>
 <translation id="4261901459838235729">Presentación de Google</translation>
 <translation id="4290535918735525311">1 cartafol compartido con Linux</translation>
-<translation id="4298972503445160211">Teclado dinamarqués</translation>
 <translation id="4299729908419173967">Brasileiro</translation>
 <translation id="4309915981827077375">Información xeral</translation>
 <translation id="4315949787858895817">Neerlandés (Bélxica)</translation>
@@ -308,6 +306,7 @@
 <translation id="4465830120256509958">Teclado brasileiro</translation>
 <translation id="4470564870223067757">Dobre alternancia hangul</translation>
 <translation id="4477219268485577442">Búlgaro fonético</translation>
+<translation id="4479812471636796472">Teclado Dvorak estadounidense</translation>
 <translation id="4522570452068850558">Detalles</translation>
 <translation id="4527800702232535228">Este cartafol compártese con Parallels Desktop</translation>
 <translation id="4552678318981539154">Comprar máis almacenamento</translation>
@@ -337,7 +336,6 @@
 <translation id="4737050008115666127">Aterraxe</translation>
 <translation id="4747271164117300400">Macedonio</translation>
 <translation id="4749157430980974800">Teclado xeorxiano</translation>
-<translation id="4755240240651974342">Teclado finés</translation>
 <translation id="4759238208242260848">Descargas</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Presentación de PowerPoint</translation>
@@ -395,7 +393,6 @@
    Retirar o dispositivo mentres se está usando pode provocar a perda de datos. Agarda a que finalice a operación e, a continuación, expulsa o dispositivo mediante a aplicación Ficheiros.</translation>
 <translation id="5163869187418756376">Non se puido compartir. Comproba a túa conexión e téntao de novo máis tarde.</translation>
 <translation id="516592729076796170">Dvorak de programador para EUA</translation>
-<translation id="5167131699331641907">Teclado dos Países Baixos</translation>
 <translation id="5170477580121653719">Espazo restante en Google Drive: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">Vista de miniaturas</translation>
 <translation id="5194713942430106590">Fai clic para organizar a columna en orde ascendente.</translation>
@@ -467,7 +464,6 @@
 <translation id="5850516540536751549">Este tipo de ficheiro non é compatible. Visita a <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> para encontrar unha aplicación que poida abrir este tipo de ficheiro.
     <ph name="BEGIN_LINK_HELP" />Máis información<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Non hai contido para mostrar...</translation>
-<translation id="5892290200158927959">Teclado BÉPO francés</translation>
 <translation id="5911887972742538906">Produciuse un erro durante a instalación da aplicación Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>
 <translation id="5913638992615760742">Non se puido efectuar a copia porque se produciu un erro inesperado: <ph name="ERROR_MESSAGE" /></translation>
@@ -483,7 +479,6 @@
 <translation id="60357267506638014">QWERTY checo</translation>
 <translation id="604001903249547235">Copia de seguranza na nube</translation>
 <translation id="6040143037577758943">Pechar</translation>
-<translation id="6054173164583630569">Teclado francés</translation>
 <translation id="6074825444536523002">Formulario de Google</translation>
 <translation id="6096979789310008754">Texto de busca borrado, mostrando todos os ficheiros e cartafoles.</translation>
 <translation id="610101264611565198">Movendo <ph name="FILE_NAME" /> a <ph name="FOLDER_NAME" /></translation>
@@ -506,7 +501,6 @@
 <translation id="6339034549827494595">Teclado fonético ruso (AATSEEL)</translation>
 <translation id="6339145975392024142">Internacional dos EUA (PC)</translation>
 <translation id="6346310558342052870">Acceso restrinxido</translation>
-<translation id="6353618411602605519">Teclado croata</translation>
 <translation id="6356685157277930264">Ventá de información sobre a aplicación Ficheiros</translation>
 <translation id="6358884629796491903">Dragón</translation>
 <translation id="637062427944097960">Este ficheiro abriuse nun ordenador diferente. Diríxete a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) para velo.</translation>
@@ -517,7 +511,6 @@
 <translation id="6462109140674788769">Teclado grego</translation>
 <translation id="6466492211071551451">Teclado irlandés</translation>
 <translation id="6485131920355264772">Non se puido recuperar a información sobre o espazo</translation>
-<translation id="6503256918647795660">Teclado francés suízo</translation>
 <translation id="6505918941256367791">Teclado támil (InScript)</translation>
 <translation id="6509122719576673235">Noruegués</translation>
 <translation id="6527303717912515753">Compartir</translation>
@@ -562,6 +555,7 @@
     <ph name="LINE_BREAK1" />
     Atopáronse <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Do revés</translation>
+<translation id="6939777852457331078">Teclado Workman estadounidense</translation>
 <translation id="696203921837389374">Activar a sincronización a través de datos móbiles</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6970230597523682626">Búlgaro</translation>
@@ -578,9 +572,9 @@
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;": &lt;em&gt;buscar en Drive&lt;/em&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7170467426996704624">Transliteración (salam → ሰላም)</translation>
-<translation id="7172053773111046550">Teclado estoniano</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
+<translation id="719009910964971313">Teclado Dvorak de programador para EUA</translation>
 <translation id="7191454237977785534">Gardar ficheiro como</translation>
 <translation id="7222624196722476520">Teclado fonético búlgaro</translation>
 <translation id="7238097264433196391">Nome da unidade</translation>
@@ -589,6 +583,7 @@
 <translation id="7283041136720745563">Non hai espazo suficiente na túa cota de Google Drive.</translation>
 <translation id="7295662345261934369">Compartir con outros usuarios</translation>
 <translation id="7339898014177206373">Nova ventá</translation>
+<translation id="7348749398828259943">Teclado internacional Workman estadounidense</translation>
 <translation id="7359359531237882347">Copiando <ph name="NUMBER_OF_ITEMS" /> elementos…</translation>
 <translation id="7375951387215729722">A lista de ficheiros está en orde descendente segundo os datos da columna <ph name="COLUMN_NAME" />.</translation>
 <translation id="7389722738210761877">Teclado tailandés (TIS 820-2531)</translation>
@@ -596,7 +591,9 @@
 <translation id="7417453074306512035">Teclado etíope</translation>
 <translation id="7417705661718309329">Mapa de Google</translation>
 <translation id="7419631653042041064">Teclado catalán</translation>
+<translation id="7434823369735508263">Teclado Dvorak do Reino Unido</translation>
 <translation id="7460898608667578234">Ucraíno</translation>
+<translation id="7474889694310679759">Teclado inglés canadense</translation>
 <translation id="7489215562877293245">Atopáronse <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Listo para crear unha copia de seguranza en <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
@@ -649,6 +646,7 @@
 <translation id="7873831373602885875">Non se pode gardar en <ph name="FOLDER_NAME" />. Todas as edicións gardaranse en <ph name="DOWNLOADS_FOLDER" /> no cartafol Descargas.</translation>
 <translation id="7881969471599061635">Desactivar subtítulos</translation>
 <translation id="78946041517601018">Unidades compartidas</translation>
+<translation id="7896906914454843592">Teclado estadounidense ampliado</translation>
 <translation id="7898607018410277265">Teclado guxaratí (fonético novo)</translation>
 <translation id="7908793776359722643">Cando se formata unha partición, bórranse todos os datos que contén. Esta acción non se pode desfacer.</translation>
 <translation id="7917972308273378936">Teclado lituano</translation>
@@ -705,6 +703,7 @@
 <translation id="8395901698320285466">Dimensións</translation>
 <translation id="8412586565681117057">Método de introdución rápida de texto</translation>
 <translation id="8418113698656761985">Teclado romanés</translation>
+<translation id="8432745813735585631">Teclado Colemak estadounidense</translation>
 <translation id="8437209419043462667">EUA</translation>
 <translation id="8456681095658380701">Nome non válido</translation>
 <translation id="8466234950814670489">Arquivo Tar</translation>
@@ -725,6 +724,7 @@
 <translation id="8698464937041809063">Debuxo de Google</translation>
 <translation id="8714406895390098252">Bicicleta</translation>
 <translation id="8719721339511222681">Seleccionouse <ph name="ENTRY_NAME" />.</translation>
+<translation id="8722421161699219904">Teclado estadounidense internacional</translation>
 <translation id="872537912056138402">Croata</translation>
 <translation id="874420130893181774">Método de introdución de pinyin tradicional</translation>
 <translation id="8770002329960263418">Neerlandés (Países Baixos) con teclado internacional estadounidense (PC)</translation>
@@ -736,7 +736,6 @@
 <translation id="885381502874625531">Teclado bielorruso</translation>
 <translation id="8860454412039442620">Folla de cálculo de Excel</translation>
 <translation id="8900820606136623064">Húngaro</translation>
-<translation id="8901822611024316615">Teclado QWERTY checo</translation>
 <translation id="8919081441417203123">Danés</translation>
 <translation id="8941776146379310519">Malaio</translation>
 <translation id="8960999352790021682">Teclado bengalí (fonético)</translation>

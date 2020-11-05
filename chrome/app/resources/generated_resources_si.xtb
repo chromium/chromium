@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">තිරය යාවත්කාලීන වන සංඛ්‍යාතය තීරණ කරයි</translation>
 <translation id="1061904396131502319">විවේකයක් සඳහා වේලාවයි</translation>
 <translation id="1067048845568873861">සාදන ලදි</translation>
+<translation id="1067291318998134776">Linux (බීටා)</translation>
 <translation id="1067922213147265141">වෙනත් Google සේවාවන්</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">ඔබේ පරිගණකයේ ඇති වෙනත් ක්‍රමලේඛයක් දිගුවක් එක් කර ඇති අතර එයින් Chrome ක්‍රියා කරන ආකරය වෙනස් විය හැකිය.
@@ -1374,7 +1375,6 @@
 <translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" /> වෙත පිවිසී නොමැත</translation>
 <translation id="2564520396658920462">AppleScript හරහා ජාවාස්ක්‍රිප්ට ක්‍රියාත්මක කිරීම ක්‍රියාවිරහිතයි. එය ක්‍රියාත්මක කිරීමට, මෙනු තීරුවෙන්, දසුන &gt; සංවර්ධක &gt; Apple සිදුවීම්වලින් ජාවාස්ක්‍රිප්ටවලට ඉඩ දෙන්න වෙත යන්න. වැඩිදුර තොරතුරු සඳහා: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">වැඩි දියුණු කරන ලද අක්ෂර වින්‍යාස පරික්ෂාව</translation>
-<translation id="2566124945717127842">ඔබේ <ph name="IDS_SHORT_PRODUCT_NAME" /> අලුත් එකක් මෙන් දිස් වීමට පවර්වොෂ් කරන්න.</translation>
 <translation id="2568774940984945469">තොරතුරු තීරු බහාලුම</translation>
 <translation id="2571655996835834626">කුකී, ජාවාස්ක්‍රිප්ට්, පේනු මෘදුකාංග, භූ ස්ථානය, මයික්‍රොෆෝනය, කැමරා ආදි විශේෂාංග සඳහා වෙබ් අඩවිවල ප්‍රවේශය පාලන කරන ඔබගේ සැකසීම් වෙනස් කරන්න.</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> වෙත කියවීමට-පමණයි ප්‍රවේශය ලබා දී ඇත.</translation>
@@ -1839,7 +1839,6 @@
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> උදව්</translation>
 <translation id="3118654181216384296">ලිනක්ස් ආරම්භ කිරීමට සුළු මොහොතකින් නැවත උත්සාහ කරන්න.</translation>
 <translation id="3120430004221004537">මෙහි දෙන ලද මෙහෙයුමක් සඳහා ප්‍රමාණවත් නොවන සංකේතනය: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344">මෙම <ph name="IDS_SHORT_PRODUCT_NAME" /> උපාංගය නැවත සකසන්න</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">දත්ත නාමාවලියක් සෑදීම අසාර්ථක විය</translation>
 <translation id="3124111068741548686">USER අල්ලු</translation>
@@ -5490,7 +5489,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7475671414023905704">නෙට්ස්කේප් අහිමි වූ මුරපද URL</translation>
 <translation id="7476454130948140105">යාවත්කාලීනය සඳහා බැටරිය ඉතා අඩුයි (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">ඔබේ සංගීත, වීඩියෝ, සහ තවත් ඒවා පාලන කරන්න</translation>
-<translation id="7478362879637727630">ඔබ මෙම Chrome Education උපාංගය අධ්‍යාපන ගිණුමකට සම්බන්ධ කළ යුතුය. නව ගිණුමක් සඳහා ලියාපදිංචි වීමට, කරුණාකර https://g.co/workspace/edusignup වෙත පිවිසෙන්න.</translation>
 <translation id="7478485216301680444">කියෝස්ක් යෙදුම් ස්ථාපනය කළ නොහැක.</translation>
 <translation id="7479221278376295180">ආචයන භාවිත දළ විශ්ලේෂණය</translation>
 <translation id="7481312909269577407">ඉදිරියට යන්න</translation>
@@ -6059,7 +6057,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8101987792947961127">ඊළඟ පණගැන්වීමේදී Powerwash අවශ්‍යයි</translation>
 <translation id="8102139037507939978">system_logs.txt වෙතින් පුද්ගලිකව හඳුනා ගත හැකි තොරතුරු ඉවත් කරන්න.</translation>
 <translation id="8102159139658438129">ඔබේ සම්බන්ධිත දුරකථනය සඳහා විකල්ප බැලීමට <ph name="LINK_BEGIN" />සැකසීම්<ph name="LINK_END" /> වෙත යන්න</translation>
-<translation id="8104696615244072556">ඔබේ <ph name="IDS_SHORT_PRODUCT_NAME" /> උපාංගය Powerwash කර පෙර සංස්කරණයට නැවත යන්න.</translation>
 <translation id="8107015733319732394">ඔබේ <ph name="DEVICE_TYPE" /> මත Google Play Store ස්ථාපනය කරමින්. මේ සඳහා විනාඩි කිහිපයක් ගත විය හැකිය.</translation>
 <translation id="810728361871746125">සංදර්ශක විභේදනය</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{තෙවන පාර්ශ්ව කුකී නැත}=1{1 තෙවන පාර්ශ්ව කුකීයක් අවහිර කළා}one{තෙවන පාර්ශ්ව කුකී # ක් අවහිර කළා}other{තෙවන පාර්ශ්ව කුකී # ක් අවහිර කළා}}</translation>

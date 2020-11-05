@@ -316,6 +316,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="214556005048008348">Avbryt betalningen</translation>
 <translation id="2147827593068025794">Bakgrundssynkronisering</translation>
 <translation id="2148613324460538318">Lägg till kort</translation>
+<translation id="2149968176347646218">Anslutningen är inte säker</translation>
 <translation id="2154054054215849342">Synkronisering är inte tillgänglig för din domän</translation>
 <translation id="2154484045852737596">Redigera kortet</translation>
 <translation id="2161656808144014275">Text</translation>
@@ -1169,6 +1170,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="5571083550517324815">Utlämning erbjuds inte på den här adressen. Välj en annan adress.</translation>
 <translation id="5580958916614886209">Kontrollera utgångsmånad och försök igen</translation>
 <translation id="5586446728396275693">Inga sparade adresser</translation>
+<translation id="5593349413089863479">Anslutningen är inte helt säker</translation>
 <translation id="5595485650161345191">Redigera adress</translation>
 <translation id="5598944008576757369">Välj betalningsmetod</translation>
 <translation id="560412284261940334">Hantering stöds inte</translation>
@@ -1887,6 +1889,7 @@ Mer information:
 <translation id="8507227106804027148">Kommandorad</translation>
 <translation id="8508648098325802031">Sökikon</translation>
 <translation id="8522552481199248698">Du kan skydda Google-kontot genom att byta lösenord.</translation>
+<translation id="8525306231823319788">Helskärm</translation>
 <translation id="8530813470445476232">Rensa webbhistorik, cookies, cache med mera i inställningarna för Chrome</translation>
 <translation id="8533619373899488139">Besök &lt;strong&gt;chrome://policy&lt;/strong&gt; om du vill visa listan med blockerade webbadresser och andra policyer som angetts av systemadministratören.</translation>
 <translation id="8541158209346794904">Bluetooth-enhet</translation>

@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Détermine la fréquence à laquelle l'écran est actualisé</translation>
 <translation id="1061904396131502319">C'est bientôt le moment de prendre une pause</translation>
 <translation id="1067048845568873861">Créé</translation>
+<translation id="1067291318998134776">Linux (bêta)</translation>
 <translation id="1067922213147265141">Autres services Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Un autre programme sur votre ordinateur a ajouté une extension qui risque de modifier le fonctionnement de Chrome.
@@ -1378,7 +1379,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2564520396658920462">L'exécution de JavaScript par AppleScript est désactivée. Vous pouvez l'activer à partir de la barre de menu en accédant à Affichage &gt; Concepteur &gt; Autoriser JavaScript à partir des Événements Apple. Pour en savoir plus :
 https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Correcteur orthographique amélioré</translation>
-<translation id="2566124945717127842">La fonctionnalité « Powerwash » réinitialise votre appareil <ph name="IDS_SHORT_PRODUCT_NAME" />, qui redevient comme neuf.</translation>
 <translation id="2568774940984945469">Conteneur de barres d'information</translation>
 <translation id="2571655996835834626">Modifiez les paramètres qui contrôlent l'accès des sites Web aux éléments comme les témoins, le code JavaScript, les plugiciels, la géolocalisation, le microphone, l'appareil photo, etc.</translation>
 <translation id="2572032849266859634">L'accès en lecture seule à <ph name="VOLUME_NAME" /> a été accordé.</translation>
@@ -1843,7 +1843,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3118319026408854581">Aide de <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">Veuillez réessayer d'ouvrir Linux dans quelques instants.</translation>
 <translation id="3120430004221004537">Chiffrement insuffisant pour une opération donnée sur l'appareil « <ph name="DEVICE_NAME" /> ».</translation>
-<translation id="3121793941267913344">Réinitialiser cet appareil <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="3122464029669770682">Processeur</translation>
 <translation id="3122496702278727796">Échec de la création du répertoire des données</translation>
 <translation id="3124111068741548686">Descripteurs de l'UTILISATEUR</translation>
@@ -5494,7 +5493,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7475671414023905704">URL de mot de passe perdu Netscape</translation>
 <translation id="7476454130948140105">Pile trop faible pour la mise à jour (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7477793887173910789">Commandez votre musique, vos vidéos et plus encore</translation>
-<translation id="7478362879637727630">Vous devez inscrire cet appareil Chrome Education dans un compte pour le secteur de l'éducation. Pour créer un compte, veuillez visiter la page https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">L'application de kiosque n'a pas pu être installée.</translation>
 <translation id="7479221278376295180">Aperçu de l'utilisation de la mémoire</translation>
 <translation id="7481312909269577407">Suivant</translation>
@@ -6064,7 +6062,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8101987792947961127">Réinitialisation « Powerwash » nécessaire au prochain démarrage</translation>
 <translation id="8102139037507939978">Supprimer les renseignements personnels du fichier system_logs.txt.</translation>
 <translation id="8102159139658438129">Accédez à <ph name="LINK_BEGIN" />Paramètres<ph name="LINK_END" /> pour afficher les options de votre téléphone connecté</translation>
-<translation id="8104696615244072556">Utilisez la fonction Powerwash sur votre appareil <ph name="IDS_SHORT_PRODUCT_NAME" /> et revenez à la version précédente.</translation>
 <translation id="8107015733319732394">Installation du Google Play Store sur votre <ph name="DEVICE_TYPE" /> en cours… Cela peut prendre quelques minutes.</translation>
 <translation id="810728361871746125">Résolution de l'écran</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Aucun témoin tiers}=1{1 témoin tiers est bloqué}one{# témoin tiers est bloqué}other{# témoins tiers sont bloqués}}</translation>

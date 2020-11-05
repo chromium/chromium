@@ -125,7 +125,6 @@
 <translation id="2127372758936585790">Төмен қуатты зарядтағыш</translation>
 <translation id="2132302418721800944">Толық экранды жазу</translation>
 <translation id="2135456203358955318">Бекітілген ұлғайтқыш</translation>
-<translation id="2144487987174258011">Adobe Flash Player қолданбасын жаңарту үшін қайта іске қосыңыз</translation>
 <translation id="2208323208084708176">Бірыңғай жұмыс үстелі режимі</translation>
 <translation id="2220572644011485463">PIN коды немесе құпия сөз</translation>
 <translation id="2222338659135520253">Есептік жазбаға кіру керек</translation>
@@ -160,7 +159,6 @@
 <translation id="2435457462613246316">Құпия сөзді көрсету</translation>
 <translation id="2473177541599297363">Ажыратымдылықты растаңыз</translation>
 <translation id="2475982808118771221">Қате орын алды</translation>
-<translation id="2479579251444854687">Үш саусақпен жоғары сырғытсаңыз, "Жалпы ақпарат" бөлімі ашылады, ал төмен сырғытсаңыз, ол жабылады.</translation>
 <translation id="2482878487686419369">Хабарландырулар</translation>
 <translation id="2484513351006226581">Пернетақтаны ауыстыру үшін <ph name="KEYBOARD_SHORTCUT" /> пернелерін басыңыз.</translation>
 <translation id="2501920221385095727">Жабысқақ пернелер</translation>
@@ -371,7 +369,6 @@
 <translation id="4481530544597605423">Жұпталмаған құрылғылар</translation>
 <translation id="4485060137115666462">Тінтуірдің оң жақ түймесін бассаңыз немесе басып тұрсаңыз, Assistant таңдаған нәрсеңізге қатысты анықтама, аударма немесе бірлікті түрлендіру сияқты ақпаратты көрсетеді.</translation>
 <translation id="4505050298327493054">Белсенді жұмыс үстелі.</translation>
-<translation id="4506458088675900627">"Жалпы ақпарат" сенсорлық тақтасындағы қимыл өзгерді</translation>
 <translation id="4513946894732546136">Пікір жіберу</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" Bluetooth құрылғысы жұптасуға рұқсат сұрайды.</translation>
 <translation id="453661520163887813">Зарядтау аяқталғанға дейін <ph name="TIME" /> қалды</translation>
@@ -434,6 +431,7 @@
 <translation id="5033299697334913360">Толық экранды түсіру үшін кез келген жерді басыңыз.</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> жаңа телефонға жалғанды</translation>
 <translation id="5035389544768382859">Дисплей конфигурациясын растау</translation>
+<translation id="5078796286268621944">PIN коды дұрыс емес</translation>
 <translation id="5083553833479578423">Басқа да Assistant мүмкіндіктерін ашыңыз.</translation>
 <translation id="5136175204352732067">Басқа пернетақта жалғанды</translation>
 <translation id="5168181903108465623">Трансляциялау құрылғылары қолжетімді</translation>

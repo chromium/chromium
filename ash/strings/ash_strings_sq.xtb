@@ -125,7 +125,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2127372758936585790">Ngarkues me fuqi të ulët</translation>
 <translation id="2132302418721800944">Regjistro ekranin e plotë</translation>
 <translation id="2135456203358955318">Zmadhuesi i stacionuar</translation>
-<translation id="2144487987174258011">Rinise për të përditësuar Adobe Flash Player</translation>
 <translation id="2208323208084708176">Modaliteti i desktopit të unifikuar</translation>
 <translation id="2220572644011485463">Kodi PIN ose fjalëkalimi</translation>
 <translation id="2222338659135520253">Kërkohet identifikimi</translation>
@@ -160,7 +159,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2435457462613246316">Shfaq fjalëkalimin</translation>
 <translation id="2473177541599297363">Konfirmo rezolucionin</translation>
 <translation id="2475982808118771221">Ndodhi një gabim</translation>
-<translation id="2479579251444854687">Rrëshqit shpejt lart me tre gishta për ta hapur dhe poshtë për ta mbyllur "Përmbledhjen"</translation>
 <translation id="2482878487686419369">Njoftimet</translation>
 <translation id="2484513351006226581">Shtyp <ph name="KEYBOARD_SHORTCUT" /> për të ndryshuar planin e tastierës.</translation>
 <translation id="2501920221385095727">Tastet e përhershme</translation>
@@ -371,7 +369,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4481530544597605423">Pajisjet e paçiftuara</translation>
 <translation id="4485060137115666462">Me një klikim me butonin djathtas ose shtypje të gjatë, "Asistenti" shfaq informacione si p.sh. përkufizimi, përkthimi ose konvertimi i njësisë për zgjedhjen tënde.</translation>
 <translation id="4505050298327493054">Hapësira e punës aktive.</translation>
-<translation id="4506458088675900627">Gjesti i bllokut me prekje të "Përmbledhjes" ka ndryshuar</translation>
 <translation id="4513946894732546136">Komente</translation>
 <translation id="4527045527269911712">Pajisja me Bluetooth "<ph name="DEVICE_NAME" />" kërkon leje për çiftim.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> derisa të mbushet</translation>
@@ -434,6 +431,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5033299697334913360">Kliko diku për të regjistruar ekranin e plotë</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> u lidh me një telefon të ri</translation>
 <translation id="5035389544768382859">Konfirmo konfigurimin e ekranit</translation>
+<translation id="5078796286268621944">Kod i pasaktë PIN</translation>
 <translation id="5083553833479578423">Shkyç më shumë funksione të "Asistentit".</translation>
 <translation id="5136175204352732067">Është lidhur një tastierë tjetër</translation>
 <translation id="5168181903108465623">Pajisjet e transmetimit janë të disponueshme</translation>

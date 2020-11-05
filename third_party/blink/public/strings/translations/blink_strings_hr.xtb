@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Ovaj mjesec</translation>
 <translation id="1637811476055996098">Odabir datoteka</translation>
 <translation id="1650423536718072820">izdvojeno</translation>
+<translation id="1681022320378710418">trenutačno vrijeme</translation>
 <translation id="1727886345390570319">sakrij izbornik titlova</translation>
 <translation id="1729654308190250600">Unesite e-adresu koja nije prazna vrijednost.</translation>
 <translation id="1758486001363313524">Drugo...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Unesite URL.</translation>
 <translation id="3175736971608411871">odbrojavanje</translation>
 <translation id="3199563858620722075">kombinirani okvir</translation>
+<translation id="3220661731597678625">trenutačni korak</translation>
 <translation id="3329013043687509092">Zasićenje</translation>
 <translation id="3450233048674729344">Vrijednost mora biti <ph name="MAXIMUM" /> ili manja.</translation>
 <translation id="3486220673238053218">definicija</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">videozapis</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4812940957355064477">Unesite broj.</translation>
+<translation id="4912200001568447310">trenutačna stavka</translation>
 <translation id="4912536737030637138">bibliografski unos</translation>
 <translation id="4915360478455618802">Prikaži alat za odabir vremena</translation>
 <translation id="492244087561876220">komentar</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Reprodukcija medija nije uspjela.</translation>
 <translation id="537648784377940524">Minimalni datum (<ph name="MIN_DATE_OR_TIME" />) mora prethoditi Maksimalnom datumu (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">lik</translation>
+<translation id="5425179576310518467">trenutačni datum</translation>
 <translation id="5453733299334684579">stavka stabla</translation>
 <translation id="5466621249238537318">Izaberite jednu ili više datoteka.</translation>
 <translation id="5468998798572797635">izlazak iz cijelog zaslona</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">mjerač</translation>
 <translation id="6166809985690652833">pogovor</translation>
 <translation id="6209276755895393898">Čini se da je to: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">trenutačna stranica</translation>
 <translation id="6213469881011901533">pojmovnik</translation>
 <translation id="6281588256137006900">Svjetlina</translation>
 <translation id="6281763101136022427">url</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Produljite broj znakova u tekstu na minimalno <ph name="MIN_CHARACTERS" /> (trenutačno imate 1 znak).</translation>
 <translation id="7034405885550056553">prijedlog</translation>
 <translation id="709897737746224366">Udovoljite zadanom formatu.</translation>
+<translation id="7102274145889307184">trenutačna lokacija</translation>
 <translation id="7118469954320184356">Opis nije dostupan.</translation>
 <translation id="7139483182332611405">predgovor</translation>
 <translation id="7214187073215825913">informacije o sadržaju</translation>

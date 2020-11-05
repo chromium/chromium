@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Ја одредува фреквенцијата на освежување на екранот</translation>
 <translation id="1061904396131502319">Речиси е време за пауза</translation>
 <translation id="1067048845568873861">Создадено</translation>
+<translation id="1067291318998134776">Linux (бета)</translation>
 <translation id="1067922213147265141">Други услуги на Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Друга програма на компјутерот додаде екстензија што може да промени како работи Chrome.
@@ -1377,7 +1378,6 @@
 <translation id="2562743677925229011">Не е најавен на <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Извршувањето на JavaScript преку AppleScript е исклучено. За да го вклучите, од лентата со мени, одете на „Приказ &gt; Програмер &gt; Дозволи JavaScript“ од настаните на Apple. За повеќе информации: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Подобрена проверка на правописот</translation>
-<translation id="2566124945717127842">Вратете ги фабричките вредности да го ресетирате уредот <ph name="IDS_SHORT_PRODUCT_NAME" /> за да биде како нов.</translation>
 <translation id="2568774940984945469">Контејнер на лента со информации</translation>
 <translation id="2571655996835834626">Променете ги поставките што го контролираат пристапот на веб-сајтовите до функциите како што се колачиња, JavaScript, приклучоци, геолокација, микрофон, камера итн.</translation>
 <translation id="2572032849266859634">Доделен е пристап само за читање на <ph name="VOLUME_NAME" />.</translation>
@@ -1842,7 +1842,6 @@
 <translation id="3118319026408854581">Помош за <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">Обидете се да го стартувате Linux повторно по неколку секунди.</translation>
 <translation id="3120430004221004537">Недоволнo шифрирање за дадена операција на: „<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344">Ресетирај го уредот со <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="3122464029669770682">ЦПУ</translation>
 <translation id="3122496702278727796">Не успеа да се создаде Директориум со податоци</translation>
 <translation id="3124111068741548686">Рачки на КОРИСНИК</translation>
@@ -5493,7 +5492,6 @@
 <translation id="7475671414023905704">URL за изгубена лозинка на Netscape</translation>
 <translation id="7476454130948140105">Батеријата е речиси празна за да се ажурира (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">Контролирајте ја музиката, видеата и др.</translation>
-<translation id="7478362879637727630">Мора да го регистрирате уредов за Chrome Education во сметка на Education. За да се регистрирате за нова сметка, одете на https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">Киоск-апликацијата не можеше да се инсталира.</translation>
 <translation id="7479221278376295180">Преглед на користењето на меморијата</translation>
 <translation id="7481312909269577407">Напред</translation>
@@ -6063,7 +6061,6 @@
 <translation id="8101987792947961127">Потребно е фабричко ресетирање на следното рестартирање</translation>
 <translation id="8102139037507939978">Отстрани ги податоците што откриваат идентитет од датотеката system_logs.txt.</translation>
 <translation id="8102159139658438129">Одете во <ph name="LINK_BEGIN" />„Поставки“<ph name="LINK_END" /> за да видите опции за поврзаниот телефон</translation>
-<translation id="8104696615244072556">Фабрички ресетирајте го вашиот уред со <ph name="IDS_SHORT_PRODUCT_NAME" /> и вратете се на претходната верзија.</translation>
 <translation id="8107015733319732394">Google Play Store се инсталира на вашиот <ph name="DEVICE_TYPE" />. Ова може да потрае неколку минути.</translation>
 <translation id="810728361871746125">Резолуција на екранот</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Нема колачиња од трети страни}=1{Блокирано е 1 колаче од трета страна}one{Блокирано е # колаче од трети страни}other{Блокирани се # колачиња од трети страни}}</translation>

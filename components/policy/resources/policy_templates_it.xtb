@@ -838,31 +838,6 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
       Se viene impostato <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (valore 1), è possibile applicare a <ph name="PRODUCT_NAME" /> soltanto le varianti considerate correzioni fondamentali per la sicurezza o la stabilità.
 
       La configurazione di <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valore 2) impedisce di applicare al browser tutte le varianti. Questa modalità potrebbe impedire agli sviluppatori di <ph name="PRODUCT_NAME" /> di fornire tempestivamente correzioni fondamentali per la sicurezza ed è pertanto sconsigliata.</translation>
-<translation id="2402140031630105556">Consente di configurare un elenco di regole per prevenire la fuga di dati su <ph name="PRODUCT_OS_NAME" />.
-      La fuga di dati può verificarsi tramite le operazioni di copia e incolla dei dati, il trasferimento di file, la stampa, la condivisione schermo o l'acquisizione di screenshot.
-
-      Ciascuna regola prevede quanto segue:
-      - Un elenco di sorgenti definite come URL. Tutti i dati delle origini saranno considerati riservati e su di essi verranno applicate le limitazioni.
-      - Un elenco di destinazioni definite come URL o componenti, con i quali la condivisione dei dati riservati è consentita o non consentita.
-      - Un elenco di limitazioni da applicare ai dati delle origini.
-
-      È possibile aggiungere regole per:
-      - Controllare i dati degli appunti condivisi tra le origini e le destinazioni.
-      - Controllare l'acquisizione di screenshot di tutte le origini.
-      - Controllare la stampa di tutte le origini.
-      - Controllare la Schermata privata quando una delle origini è visibile.
-
-      Il livello di limitazione può essere impostato su BLOCK o su ALLOW.
-      - Se la limitazione è impostata su BLOCK, l'azione non sarà consentita.
-      - Se la limitazione è imposta su ALLOW, l'azione sarà consentita.
-
-      Note:
-      - La limitazione PRIVACY_SCREEN non blocca la capacità di attivare la schermata privata, ma la applica quando la classe della limitazione è impostata su BLOCK.
-      - Le destinazioni non possono essere vuote nel caso in cui una delle limitazioni sia CLIPBOARD, ma questo non fa alcuna differenza per le altre limitazioni.
-      - La limitazione CLIPBOARD non può distinguere tra CROSTINI e PLUGIN_VM. Se uno di questi criteri viene selezionato per bloccare/consentire la condivisione dei dati, la regola si applica a entrambi.
-      - I pattern URL devono avere il formato indicato all'indirizzo ( https://www.chromium.org/administrators/url-blacklist-filter-format ).
-
-      Se il criterio non viene configurato, non sarà applicata alcuna limitazione.</translation>
 <translation id="2411629345938804022">Se il criterio è impostato su 3, i siti web possono chiedere l'accesso ai dispositivi Bluetooth nelle vicinanze. Se il criterio è impostato su 2, l'accesso ai dispositivi Bluetooth nelle vicinanze viene negato.
 
       Se il criterio non viene configurato, i siti possono chiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>

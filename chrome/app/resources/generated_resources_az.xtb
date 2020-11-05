@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Ekranın güncəllənmə tezliyini təyin edir</translation>
 <translation id="1061904396131502319">Fasilə vaxtıdır</translation>
 <translation id="1067048845568873861">Yaradılıb</translation>
+<translation id="1067291318998134776">Linux (Beta)</translation>
 <translation id="1067922213147265141">Digər Google xidmətləri</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Kompüterinizdə başqa bir proqram Chrome'un necə işlədiyini dəyişdirən artırma əlavə etdi. <ph name="EXTENSION_NAME" /></translation>
@@ -1372,7 +1373,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" /> məhsuluna giriş edilməyib</translation>
 <translation id="2564520396658920462">AppleScript ilə JavaScript'in işə salınması deaktivdir. Onu aktiv etmək üçün menyuda Görünüş &gt; Developer &gt; Tətbiq Tədbirlərdində JavaScript' ə icazə verin seçimini edin. Ətraflı məlumat: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Təkmilləşdirilmiş yazı yoxlaması</translation>
-<translation id="2566124945717127842"><ph name="IDS_SHORT_PRODUCT_NAME" /> cihazınızı tam sıfırlamaq üçün fabrik sıfırlaması edin.</translation>
 <translation id="2568774940984945469">Məlumat paneli konteyneri</translation>
 <translation id="2571655996835834626">Veb səhifələrin kuki, JavaScript, plaqin, coğrafi məkan, mikrofon, kamera və s. kimi funksiyalara girişinə nəzarət edən ayarları dəyişin.</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> yalnız oxumaq hüququ verilmişdir.</translation>
@@ -1837,7 +1837,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Yardım</translation>
 <translation id="3118654181216384296">Bir qədər sonra Linux'u yenidən işə salmağa cəhd edin.</translation>
 <translation id="3120430004221004537">Verilmiş əməliyyat üçün qeyri-kafi kodlaşdırma: " <ph name="DEVICE_NAME" /> ".</translation>
-<translation id="3121793941267913344">Bu <ph name="IDS_SHORT_PRODUCT_NAME" /> cihazını sıfırlayın</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Data Lüğəti yaratmaq alınmadı</translation>
 <translation id="3124111068741548686">İSTİFADƏÇİ ləqəbləri</translation>
@@ -5485,7 +5484,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7475671414023905704">Netscape Parol Linkini itirdi</translation>
 <translation id="7476454130948140105">Güncəlləmə üçün batareya çox azdır (<ph name="BATTERY_PERCENT" />)</translation>
 <translation id="7477793887173910789">Musiqi, video və daha çoxuna nəzarət edin</translation>
-<translation id="7478362879637727630">Bu Chrome Təhsil cihazını təhsil hesabında qeydiyyata almalısınız. Yeni hesab üçün qeydiyyatdan keçmək üçün https://g.co/workspace/edusignup ünvanına daxil olun.</translation>
 <translation id="7478485216301680444">Kiosk tətbiqi quraşdırılmadı.</translation>
 <translation id="7479221278376295180">Yaddaş İstifadəsi İcmalı</translation>
 <translation id="7481312909269577407">İrəli</translation>
@@ -6055,7 +6053,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8101987792947961127">Növbəti yenidən yüklənmə zamanı zavod sıfırlaması tələb olunur</translation>
 <translation id="8102139037507939978">Şəxsi Eyniləşdirici Məlumatları system_logs.txt faylından çıxarın.</translation>
 <translation id="8102159139658438129">Qoşulmuş telefon haqqında seçimlərə baxmaq üçün <ph name="LINK_BEGIN" />Ayarlar<ph name="LINK_END" /> səhifəsinə keçin</translation>
-<translation id="8104696615244072556"><ph name="IDS_SHORT_PRODUCT_NAME" /> cihazını sıfırlayın və öncəki versiyaya qayıdın.</translation>
 <translation id="8107015733319732394"><ph name="DEVICE_TYPE" /> cihazında Google Play Mağazası quraşdırılır. Bu proses bir neçə dəqiqə vaxt ala bilər.</translation>
 <translation id="810728361871746125">Displeyin ayırdetmə dəqiqliyi</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Üçüncü tərəf kuki yoxdur}=1{1 üçüncü tərəf kuki bloklanıb}other{# üçüncü tərəf kuki bloklanıb}}</translation>

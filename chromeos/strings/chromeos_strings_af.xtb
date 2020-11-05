@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">Programme</translation>
 <translation id="2872961005593481000">Skakel af</translation>
 <translation id="3008341117444806826">HERLAAI</translation>
+<translation id="3009958530611748826">Kies 'n vouer om in te stoor</translation>
 <translation id="3083667275341675831">Konnektiwiteitdiagnostiek</translation>
 <translation id="3091839911843451378">Misluk – Gestop</translation>
 <translation id="3188257591659621405">My lêers</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">Druktake</translation>
 <translation id="3527036260304016759">Misluk – Onbekende fout</translation>
 <translation id="360565022852130722">Wi-Fi-netwerk is met swak protokol WEP 802.1x beveilig</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> resensies)</translation>
 <translation id="3749289110408117711">Lêernaam</translation>
 <translation id="38114475217616659">Vee alle geskiedenis uit</translation>
 <translation id="3820172043799983114">Ongeldige PIN.</translation>
@@ -79,10 +81,12 @@
 <translation id="4731797938093519117">Ouertoegang</translation>
 <translation id="4773299976671772492">Gestop</translation>
 <translation id="4808449224298348341">Gekanselleerde druktaak <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4832079907277790330">Kies vouer in Lêers-program …</translation>
 <translation id="4890353053343094602">Kies onmiddellik 'n nuwe een</translation>
 <translation id="4917889632206600977">Gestop – papier is op</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Laat loop</translation>
+<translation id="4991056862642197104">Plaas jou dokument, en klik Skandeer om te begin</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> bestuur hierdie gebruiker en kan oor 'n afstand instellings bestuur en gebruikeraktiwiteit monitor.</translation>
 <translation id="520299634122159966">Geen skandeerders is beskikbaar nie</translation>
 <translation id="5212543919916444558">Ek kry niks op jou skerm waarmee ek kan help nie.
@@ -120,6 +124,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Lêertipe</translation>
 <translation id="7561454561030345039">Jou administrateur bestuur hierdie handeling</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7690294790491645610">Bevestig nuwe wagwoord</translation>
 <translation id="7805768142964895445">Status</translation>

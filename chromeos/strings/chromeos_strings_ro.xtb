@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">Aplicații</translation>
 <translation id="2872961005593481000">Închide</translation>
 <translation id="3008341117444806826">ACTUALIZEAZĂ</translation>
+<translation id="3009958530611748826">Selectează un dosar în care să salvezi</translation>
 <translation id="3083667275341675831">Diagnosticare pentru conectivitate</translation>
 <translation id="3091839911843451378">Nereușită – Oprită</translation>
 <translation id="3188257591659621405">Fișierele mele</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">Sarcini de printare</translation>
 <translation id="3527036260304016759">Nereușită – Eroare necunoscută</translation>
 <translation id="360565022852130722">Rețeaua Wi-Fi este securizată cu protocolul slab WEP 802.1x</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recenzii)</translation>
 <translation id="3749289110408117711">Nume de fișier</translation>
 <translation id="38114475217616659">Șterge tot istoricul</translation>
 <translation id="3820172043799983114">PIN nevalid.</translation>
@@ -79,10 +81,12 @@
 <translation id="4731797938093519117">Acces pentru părinți</translation>
 <translation id="4773299976671772492">Oprit</translation>
 <translation id="4808449224298348341">S-a anulat sarcina de printare <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4832079907277790330">Selectează dosarul în aplicația Fișiere...</translation>
 <translation id="4890353053343094602">Alege imediat una nouă</translation>
 <translation id="4917889632206600977">Oprită – Hârtie epuizată</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Rulează</translation>
+<translation id="4991056862642197104">Plasează documentul și dă clic pe Scanează ca să începi</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> gestionează acest utilizator și poate să gestioneze de la distanță setările și să monitorizeze activitatea utilizatorului.</translation>
 <translation id="520299634122159966">Nu sunt disponibile scanere</translation>
 <translation id="5212543919916444558">Nu găsesc conținut pe ecran în privința căruia te-aș putea ajuta.
@@ -120,6 +124,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tip de fișier</translation>
 <translation id="7561454561030345039">Această setare este gestionată de administrator</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7690294790491645610">Confirmă noua parolă</translation>
 <translation id="7805768142964895445">Stare</translation>

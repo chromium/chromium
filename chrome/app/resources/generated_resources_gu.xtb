@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">જે આવર્તન પર સ્ક્રીન અપડેટ કરે છે તેનું નિર્ધારણ કરે છે</translation>
 <translation id="1061904396131502319">વિરામનો સમય થવા જ આવ્યો છે</translation>
 <translation id="1067048845568873861">બનાવ્યું</translation>
+<translation id="1067291318998134776">Linux (બીટા)</translation>
 <translation id="1067922213147265141">અન્ય Google સેવાઓ</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">તમારા કોમ્પ્યુટર પરના અન્ય પ્રોગ્રામે કોઇ એક્સ્ટેન્શન ઉમેર્યું છે જેનાથી Chromeની કાર્યપદ્ધતિમાં ફેરફાર થઇ શકે છે.
@@ -1373,7 +1374,6 @@
 <translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" /> પર સાઇન ઇન નથી</translation>
 <translation id="2564520396658920462">Executing JavaScript through AppleScript is turned off. To turn it on, from the menu bar, go to View &gt; Developer &gt; Allow JavaScript from Apple Events. For more information: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">વધારેલ જોડણીની તપાસ</translation>
-<translation id="2566124945717127842">તમારા <ph name="IDS_SHORT_PRODUCT_NAME" /> ડિવાઇસને નવાની જેમ રીસેટ કરવા માટે પાવરવૉશ કરો.</translation>
 <translation id="2568774940984945469">માહિતી બાર સંગ્રહક</translation>
 <translation id="2571655996835834626">તમારી તે સેટિંગને બદલો કે જે કૂકી, JavaScript, પ્લગ-ઇન, ભૌગોલિક સ્થાન, માઇક્રોફોન, કૅમેરા, વગેરે જેવી સુવિધાઓની વેબસાઇટના ઍક્સેસને નિયંત્રિત કરે છે</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> ને માત્ર વાંચવાની ઍક્સેસ મંજૂર કરવામાં આવી છે.</translation>
@@ -1838,7 +1838,6 @@
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> સહાય</translation>
 <translation id="3118654181216384296">કૃપા કરીને થોડીવારમાં ફરી Linux ચાલુ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="3120430004221004537">આના પર આપેલા ઑપરેશન માટે અપૂરતું એન્ક્રિપ્શન: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344">આ <ph name="IDS_SHORT_PRODUCT_NAME" /> ઉપકરણ ફરીથી સેટ કરો</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">ડેટા ડિરેક્ટરી બનાવવા માટે નિષ્ફળ</translation>
 <translation id="3124111068741548686">વપરાશકર્તા હેન્ડલ કરે છે</translation>
@@ -5491,7 +5490,6 @@ USB ડિવાઇસ</translation>
 <translation id="7475671414023905704">નેટસ્કેપ ખોવાયેલો પાસવર્ડ URL</translation>
 <translation id="7476454130948140105">અપડેટ માટે બૅટરી ખૂબ ઓછી છે (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">તમારું મ્યુઝિક, વીડિયો અને બીજું ઘણું નિયંત્રિત કરો</translation>
-<translation id="7478362879637727630">તમારા આ Chrome શૈક્ષણિક ડિવાઇસની નોંધણી શિક્ષણ સંબંધિત એકાઉન્ટમાં કરાવવી જરૂરી છે. નવા એકાઉન્ટ માટે સાઇન અપ કરવા, કૃપા કરીને https://g.co/workspace/edusignupની મુલાકાત લો.</translation>
 <translation id="7478485216301680444">કિઓસ્ક ઍપ્લિકેશન ઇન્સ્ટોલ કરી શકાઈ નથી.</translation>
 <translation id="7479221278376295180">સ્ટોરેજ વપરાશની ઝલક</translation>
 <translation id="7481312909269577407">ફોર્વર્ડ કરો</translation>
@@ -6056,7 +6054,6 @@ USB ડિવાઇસ</translation>
 <translation id="8101987792947961127">આગલા રીબૂટ પર Powerwash આવશ્યક છે</translation>
 <translation id="8102139037507939978">system_logs.txtમાંથી વ્યક્તિગત રૂપે ઓળખી શકાય તેવી માહિતી જુદી પાડો.</translation>
 <translation id="8102159139658438129">તમારા કનેક્ટ કરેલા ફોન માટેના વિકલ્પો જોવા માટે <ph name="LINK_BEGIN" />સેટિંગ<ph name="LINK_END" /> પર જાઓ</translation>
-<translation id="8104696615244072556">તમારા <ph name="IDS_SHORT_PRODUCT_NAME" /> ડિવાઇસને Powerwash કરો અને પાછલા વર્ઝન પર પાછા ફરો.</translation>
 <translation id="8107015733319732394">તમારા <ph name="DEVICE_TYPE" /> પર Google Play સ્ટોર ઇન્સ્ટૉલ કરી રહ્યાં છીએ. આમાં થોડી મિનિટ લાગી શકે છે.</translation>
 <translation id="810728361871746125">ડિસ્પ્લેનું રિઝોલ્યુશન</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{ત્રીજા પક્ષની કોઈ કુકી નથી}=1{ત્રીજા પક્ષની 1 કુકી બ્લૉક કરવામાં આવી છે}one{ત્રીજા પક્ષની # કુકી બ્લૉક કરવામાં આવી છે}other{ત્રીજા પક્ષની # કુકી બ્લૉક કરવામાં આવી છે}}</translation>

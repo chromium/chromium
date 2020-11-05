@@ -314,6 +314,7 @@
 <translation id="3285080554353377245">Chromeን እንዴት እንደሚጠቀሙ ቪዲዮዎች</translation>
 <translation id="3288003805934695103">ገጹን እንደገና መጫን</translation>
 <translation id="32895400574683172">ማሳወቂያዎች ይፈቀዳሉ</translation>
+<translation id="3290991969712132877">በፍጥነት እዚህ ለመድረስ ከብዙ አማራጮች አዝራር ላይ ይህንን ገጽ ወደ መነሻ ገጽዎ ያክሉ</translation>
 <translation id="3295530008794733555">በበለጠ ፍጥነት ያስሱ። ያነሰ ውሂብን ይጠቀሙ።</translation>
 <translation id="3298243779924642547">ቀላል</translation>
 <translation id="3303414029551471755">ይዘቱን ማውረድ ይቀጥል?</translation>
@@ -470,6 +471,7 @@
 <translation id="4532845899244822526">አቃፊ ይምረጡ</translation>
 <translation id="4538018662093857852">ቀላል ሁነታን አብራ</translation>
 <translation id="4550003330909367850">የይለፍ ቃልዎን ቅጂ እዚህ ለመመልከት በዚህ መሣሪያ ላይ የማያ ገጽ ቁልፍን ያቀናብሩ።</translation>
+<translation id="4557685098773234337">በፍጥነት እዚህ ለመድረስ ይህንን ገጽ ወደ መነሻ ገጽዎ ያክሉ</translation>
 <translation id="4558311620361989323">የድረ-ገጽ አቋራጮች</translation>
 <translation id="4561979708150884304">ግንኙነት የለም</translation>
 <translation id="4565377596337484307">የይለፍ ቃል ደብቅ</translation>
@@ -499,6 +501,7 @@
 <translation id="4720982865791209136">Chrome እንዲሻሻል ያግዙ። <ph name="BEGIN_LINK" />የዳሰሳ ጥናት ይወሰዱ<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">ከፍተኛዎቹ ጣቢያዎችዎን ይመልከቱ</translation>
 <translation id="4732120983431207637">ድርድር ወደ ኋላ ማጠንጠኛ</translation>
+<translation id="4732693703583195378">በበለጠ በቀላሉ ወደዚህ ለመድረስ ይህንን ጣቢያ በጡባዊዎ መነሻ ገጽ ላይ ያክሉ</translation>
 <translation id="4738836084190194332">የተመሳሰለበት የመጨረሻው ጊዜ፦ <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">አዲስ ትር ክፈት</translation>
 <translation id="4759238208242260848">የወረዱ</translation>
@@ -536,6 +539,7 @@
 <translation id="4925120120285606924">ቅጽበታዊ ገጽ እይታ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">የይለፍ ቃላትዎ ወደ ውጭ ይላካና እንደ የጽሑፍ ፋይል ይወርዳሉ። የመድረሻ አቃፊ መዳረሻ ላለው ማንኛውም ሰው እና ለማንኛውም መተግበሪያ ይታያሉ።</translation>
 <translation id="4932247056774066048">በ<ph name="DOMAIN_NAME" /> ከሚተዳደር መለያ ዘግተው እየወጡ ስለሆነ የChrome ውሂብዎ ከዚህ መሣሪያ ይሰረዛል። በGoogle መለያዎ ውስጥ እንዳለ ይቆያል።</translation>
+<translation id="4936039914467572121">በፍጥነት ወደዚህ ጣቢያ ይሂዱ</translation>
 <translation id="4943703118917034429">ምናባዊ እውነታ</translation>
 <translation id="4943872375798546930">ውጤቶች የሉም</translation>
 <translation id="4961107849584082341">ይህን ገጽ ወደ ማንኛውም ቋንቋ ያስተርጉሙ</translation>
@@ -647,6 +651,7 @@
 <translation id="5763382633136178763">ማንነት የማያሳውቁ ትሮች</translation>
 <translation id="5763514718066511291">የዚህ መተግበሪያ ዩአርኤል ለመቅዳት መታ ያድርጉ</translation>
 <translation id="5765780083710877561">መግለጫ</translation>
+<translation id="5767013862801005129">ወደነበሩበት የተመለሱ <ph name="TAB_TITLE" />፣ ትር</translation>
 <translation id="5776970333778123608">አስፈላጊ ያልሆነ ውሂብ</translation>
 <translation id="5793665092639000975"><ph name="SPACE_USED" /> ከ<ph name="SPACE_AVAILABLE" /> በመጠቀም ላይ</translation>
 <translation id="5795872532621730126">ይፈልጉ እና ያስሱ</translation>
@@ -952,6 +957,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ተጨማሪ}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ተጨማሪ}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ተጨማሪ}}</translation>
 <translation id="7778840695157240389">ለአዳዲስ ዘገባዎች በኋላ ላይ መልሰው ይፈትሹ</translation>
 <translation id="7791543448312431591">ያክሉ</translation>
+<translation id="7798392620021911922">ወደነበሩበት የተመለሱ <ph name="TAB_COUNT" /> ትሮች</translation>
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>
 <translation id="7810647596859435254">ክፈት በ…</translation>
 <translation id="7821588508402923572">የእርስዎ የውሂብ ቁጠባዎች እዚህ ይታያሉ</translation>
@@ -1137,6 +1143,7 @@
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">የመጀመሪያውን አሳይ</translation>
 <translation id="9148126808321036104">እንደገና ይግቡ</translation>
+<translation id="9149286894143103695">በበለጠ በቀላሉ ወደዚህ ለመድረስ ይህንን ጣቢያ በስልክዎ መነሻ ገጽ ላይ ያክሉ</translation>
 <translation id="9155898266292537608">እንዲሁም አንድ ቃል ላይ በፍጥነት መታ በማድረግ ፍለጋ ማድረግ ይችላሉ</translation>
 <translation id="9169507124922466868">የዳሰሳ ታሪክ በግማሽ ተከፍቷል</translation>
 <translation id="9191031968346938109">አክል ወደ…</translation>

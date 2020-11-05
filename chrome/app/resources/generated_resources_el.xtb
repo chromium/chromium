@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Καθορίζει τη συχνότητα ενημέρωσης της οθόνης</translation>
 <translation id="1061904396131502319">Πλησιάζει η ώρα για διάλειμμα</translation>
 <translation id="1067048845568873861">Δημιουργήθηκε</translation>
+<translation id="1067291318998134776">Linux (Beta)</translation>
 <translation id="1067922213147265141">Άλλες υπηρεσίες Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Κάποιο άλλο πρόγραμμα στον υπολογιστή σας πρόσθεσε μια επέκταση, η οποία ενδέχεται να αλλάξει τον τρόπο λειτουργίας του Chrome.
@@ -1377,7 +1378,6 @@
 <translation id="2562743677925229011">Δεν είστε συνδεδεμένος στο <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Η εκτέλεση JavaScript μέσω του AppleScript είναι απενεργοποιημένη. Για να την ενεργοποιήσετε, από τη γραμμή μενού, μεταβείτε στο μενού Προβολή &gt; Προγραμματιστής &gt; Να επιτρέπεται η JavaScript από τα Apple Events. Για περισσότερες πληροφορίες: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Ενισχυμένος ορθογραφικός έλεγχος</translation>
-<translation id="2566124945717127842">Το Powerwash θα επαναφέρει τη συσκευή σας <ph name="IDS_SHORT_PRODUCT_NAME" /> και θα την κάνει σαν καινούρια.</translation>
 <translation id="2568774940984945469">Υποδοχέας γραμμής πληροφοριών</translation>
 <translation id="2571655996835834626">Αλλάξτε τις ρυθμίσεις που ελέγχουν την πρόσβαση των ιστοτόπων σε λειτουργίες, όπως είναι τα cookie, η JavaScript, οι προσθήκες, η γεωγραφική τοποθεσία, το μικρόφωνο, η κάμερα κ.λπ.</translation>
 <translation id="2572032849266859634">Παραχωρήθηκε πρόσβαση ανάγνωσης σε <ph name="VOLUME_NAME" />.</translation>
@@ -1842,7 +1842,6 @@
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Βοήθεια</translation>
 <translation id="3118654181216384296">Δοκιμάστε ξανά να ξεκινήσετε το Linux σε λίγα λεπτά.</translation>
 <translation id="3120430004221004537">Ανεπαρκής κρυπτογράφηση για συγκεκριμένη λειτουργία στη συσκευή: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344">Επαναφορά αυτής της συσκευής <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="3122464029669770682">Κεντρική μονάδα επεξεργασίας</translation>
 <translation id="3122496702278727796">Η δημιουργία καταλόγου δεδομένων απέτυχε</translation>
 <translation id="3124111068741548686">Χειρισμοί ΧΡΗΣΤΗ</translation>
@@ -5494,7 +5493,6 @@
 <translation id="7475671414023905704">URL χαμένου κωδικού πρόσβασης Netscape</translation>
 <translation id="7476454130948140105">Η ισχύς της μπαταρίας είναι πολύ χαμηλή για ενημέρωση (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">Ελέγξτε τη μουσική σας, τα βίντεο και περισσότερα</translation>
-<translation id="7478362879637727630">Θα πρέπει να εγγραφείτε σε αυτήν τη συσκευή Chrome για εκπαιδευτικά ιδρύματα σε έναν λογαριασμό εκπαιδευτικού ιδρύματος. Για να εγγραφείτε για έναν νέο λογαριασμό, επισκεφτείτε τη διεύθυνση https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">Δεν ήταν δυνατή η εγκατάσταση της εφαρμογής Kiosk.</translation>
 <translation id="7479221278376295180">Επισκόπηση χρήσης αποθηκευτικού χώρου</translation>
 <translation id="7481312909269577407">Προώθηση</translation>
@@ -6065,7 +6063,6 @@
 <translation id="8101987792947961127">Απαιτείται Powerwash στην επόμενη επανεκκίνηση</translation>
 <translation id="8102139037507939978">Αφαίρεση στοιχείων προσωπικής ταυτοποίησης από το system_logs.txt.</translation>
 <translation id="8102159139658438129">Μεταβείτε στις <ph name="LINK_BEGIN" />Ρυθμίσεις<ph name="LINK_END" />, για να δείτε τις επιλογές που έχετε για το συνδεδεμένο τηλέφωνο</translation>
-<translation id="8104696615244072556">Επαναφέρετε (powerwash) τη συσκευή σας <ph name="IDS_SHORT_PRODUCT_NAME" /> και επιστρέψτε στην προηγούμενη έκδοση</translation>
 <translation id="8107015733319732394">Εγκατάσταση του Google Play Store στη συσκευή σας <ph name="DEVICE_TYPE" />. Αυτό μπορεί να διαρκέσει μερικά λεπτά.</translation>
 <translation id="810728361871746125">Ανάλυση οθόνης</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Δεν υπάρχουν cookie τρίτου μέρους}=1{Αποκλείστηκε 1 cookie τρίτου μέρους}other{Αποκλείστηκαν # cookie τρίτου μέρους}}</translation>

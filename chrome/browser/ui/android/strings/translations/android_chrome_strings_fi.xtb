@@ -314,6 +314,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="3285080554353377245">Video-ohjeita Chromen käyttöön</translation>
 <translation id="3288003805934695103">Lataa sivu uudelleen.</translation>
 <translation id="32895400574683172">Ilmoitukset sallitaan</translation>
+<translation id="3290991969712132877">Pääset tähän nopeammin, kun lisäät sivun aloitusnäytöllesi lisäasetuksista</translation>
 <translation id="3295530008794733555">Selaa nettiä nopeammin. Käytä vähemmän dataa.</translation>
 <translation id="3298243779924642547">Lite</translation>
 <translation id="3303414029551471755">Jatketaanko sisällön lataamiseen?</translation>
@@ -470,6 +471,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4532845899244822526">Valitse kansio</translation>
 <translation id="4538018662093857852">Ota yksinkertaistettu tila käyttöön</translation>
 <translation id="4550003330909367850">Aseta laitteelle näytön lukitus, niin voit nähdä ja kopioida salasanasi tässä.</translation>
+<translation id="4557685098773234337">Lisää tämä sivu aloitusnäytölle, niin pääset tähän nopeammin</translation>
 <translation id="4558311620361989323">Verkkosivun pikanäppäimet</translation>
 <translation id="4561979708150884304">Ei yhteyttä</translation>
 <translation id="4565377596337484307">Piilota salasana</translation>
@@ -499,6 +501,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4720982865791209136">Auta parantamaan Chromea. <ph name="BEGIN_LINK" />Vastaa kyselyyn.<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">Katso suositut sivustosi</translation>
 <translation id="4732120983431207637">Pinon tyhjentäjä</translation>
+<translation id="4732693703583195378">Lisää tämä sivusto tabletin aloitusnäytölle, niin pääset tähän helpommin</translation>
 <translation id="4738836084190194332">Viimeisin synkronointi: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Uuden välilehden avaaminen</translation>
 <translation id="4759238208242260848">Lataukset</translation>
@@ -536,6 +539,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="4925120120285606924">Kuvakaappaus <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Salasanasi viedään ja ladataan tekstitiedostona. Ne näkyvät kaikille käyttäjille ja sovelluksille, joilla on pääsy kohdekansioon.</translation>
 <translation id="4932247056774066048">Koska olet kirjautumassa ulos tililtä, jota <ph name="DOMAIN_NAME" /> ylläpitää, Chrome-datasi poistetaan tältä laitteelta. Se pysyy Google-tililläsi.</translation>
+<translation id="4936039914467572121">Avaa sivusto nopeammin</translation>
 <translation id="4943703118917034429">Virtuaalitodellisuus</translation>
 <translation id="4943872375798546930">Ei tuloksia</translation>
 <translation id="4961107849584082341">Käännä sivu mille tahansa kielelle</translation>
@@ -647,6 +651,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5763382633136178763">Incognito-välilehdet</translation>
 <translation id="5763514718066511291">Kosketa kopioidaksesi tämän sovelluksen URL-osoite</translation>
 <translation id="5765780083710877561">Kuvaus:</translation>
+<translation id="5767013862801005129">Välilehti <ph name="TAB_TITLE" /> palautettu</translation>
 <translation id="5776970333778123608">Vähemmän tärkeä data</translation>
 <translation id="5793665092639000975">Käytössä <ph name="SPACE_USED" /> / <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Hae ja selaa</translation>
@@ -952,6 +957,7 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> muu}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> muuta}}</translation>
 <translation id="7778840695157240389">Katso mahdolliset uudet tarinat myöhemmin</translation>
 <translation id="7791543448312431591">Lisää</translation>
+<translation id="7798392620021911922"><ph name="TAB_COUNT" /> välilehteä palautettu</translation>
 <translation id="780301667611848630">Ei kiitos</translation>
 <translation id="7810647596859435254">Avaa sovelluksessa…</translation>
 <translation id="7821588508402923572">Datasäästösi näkyvät täällä</translation>
@@ -1137,6 +1143,7 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Näytä alkuperäinen</translation>
 <translation id="9148126808321036104">Kirjaudu sisään uudelleen</translation>
+<translation id="9149286894143103695">Lisää tämä sivusto puhelimen aloitusnäytölle, niin pääset tähän helpommin</translation>
 <translation id="9155898266292537608">Voit hakea myös napauttamalla sanaa nopeasti.</translation>
 <translation id="9169507124922466868">Navigointihistoria on puoliksi auki</translation>
 <translation id="9191031968346938109">Lisää…</translation>

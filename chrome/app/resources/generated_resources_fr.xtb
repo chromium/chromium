@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Indique la fréquence à laquelle l'écran est actualisé</translation>
 <translation id="1061904396131502319">Il est presque temps de faire une pause</translation>
 <translation id="1067048845568873861">Date de création</translation>
+<translation id="1067291318998134776">Linux (version bêta)</translation>
 <translation id="1067922213147265141">Autres services Google</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Une extension qui risque de modifier le fonctionnement de Chrome a été ajoutée via un autre programme sur votre ordinateur.
@@ -1377,7 +1378,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2562743677925229011">Vous n'êtes pas connecté à <ph name="SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2564520396658920462">L'exécution de JavaScript via AppleScript est désactivée. Pour l'activer, dans la barre de menu, accédez à Affichage &gt; Développeur &gt; Autoriser JavaScript dans les événements AppleScript. Pour en savoir plus, consultez la page https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Correcteur orthographique amélioré</translation>
-<translation id="2566124945717127842">Effectuez un Powerwash pour rétablir la configuration d'usine de votre appareil <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2568774940984945469">Conteneur de barres d'infos</translation>
 <translation id="2571655996835834626">Modifier les paramètres qui contrôlent l'accès des sites Web à des fonctionnalités telles que les cookies, le code JavaScript, les plug-ins, la géolocalisation, le micro, la caméra, etc.</translation>
 <translation id="2572032849266859634">L'accès en lecture seule à "<ph name="VOLUME_NAME" />" a été accordé.</translation>
@@ -1842,7 +1842,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3118319026408854581">Aide <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">Veuillez réessayer de démarrer Linux dans quelques instants.</translation>
 <translation id="3120430004221004537">Chiffrement insuffisant pour une opération donnée sur l'appareil <ph name="DEVICE_NAME" />.</translation>
-<translation id="3121793941267913344">Réinitialiser cet appareil <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="3122464029669770682">UC</translation>
 <translation id="3122496702278727796">Échec de la création du répertoire des données</translation>
 <translation id="3124111068741548686">Handles UTILISATEUR</translation>
@@ -5494,7 +5493,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7475671414023905704">URL de mot de passe perdu Netscape</translation>
 <translation id="7476454130948140105">Batterie trop faible pour la mise à jour (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7477793887173910789">Contrôler votre musique, vos vidéos et d'autres contenus</translation>
-<translation id="7478362879637727630">Vous devez enregistrer cet appareil Chrome Education dans un compte G Suite for Education. Pour créer un compte, rendez-vous sur https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">Impossible d'installer l'application kiosque.</translation>
 <translation id="7479221278376295180">Aperçu de l'espace de stockage utilisé</translation>
 <translation id="7481312909269577407">Avancer</translation>
@@ -6065,7 +6063,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8101987792947961127">Powerwash requis au prochain redémarrage</translation>
 <translation id="8102139037507939978">Retirez les informations personnelles du fichier system_logs.txt.</translation>
 <translation id="8102159139658438129">Accédez à <ph name="LINK_BEGIN" />Paramètres<ph name="LINK_END" /> pour consulter les options de votre téléphone connecté</translation>
-<translation id="8104696615244072556">Réinitialiser l'appareil <ph name="IDS_SHORT_PRODUCT_NAME" /> avec la fonctionnalité Powerwash et rétablir la version précédente</translation>
 <translation id="8107015733319732394">Installation du Google Play Store sur votre <ph name="DEVICE_TYPE" />. Cette opération peut prendre quelques minutes.</translation>
 <translation id="810728361871746125">Résolution d'affichage</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Aucun cookie tiers}=1{1 cookie tiers bloqué}one{# cookie tiers bloqué}other{# cookies tiers bloqués}}</translation>

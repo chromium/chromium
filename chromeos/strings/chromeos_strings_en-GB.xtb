@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Shut down</translation>
 <translation id="3008341117444806826">REFRESH</translation>
+<translation id="3009958530611748826">Select a folder to save to</translation>
 <translation id="3083667275341675831">Connectivity diagnostics</translation>
 <translation id="3091839911843451378">Failed – Stopped</translation>
 <translation id="3188257591659621405">My files</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">Print jobs</translation>
 <translation id="3527036260304016759">Failed – Unknown error</translation>
 <translation id="360565022852130722">Wi-Fi network is secured with weak protocol WEP 802.1x</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> reviews)</translation>
 <translation id="3749289110408117711">File name</translation>
 <translation id="38114475217616659">Clear all history</translation>
 <translation id="3820172043799983114">Invalid PIN.</translation>
@@ -79,10 +81,12 @@
 <translation id="4731797938093519117">Parent access</translation>
 <translation id="4773299976671772492">Stopped</translation>
 <translation id="4808449224298348341">Cancelled print job <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4832079907277790330">Select folder in the Files app…</translation>
 <translation id="4890353053343094602">Choose a new one immediately</translation>
 <translation id="4917889632206600977">Stopped – out of paper</translation>
 <translation id="4932733599132424254">Date</translation>
 <translation id="4985509611418653372">Run</translation>
+<translation id="4991056862642197104">Place your document, and click Scan to get started</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> manages this user and may remotely manage settings and monitor user activity.</translation>
 <translation id="520299634122159966">No available scanners</translation>
 <translation id="5212543919916444558">I can't find anything on your screen that I can help with.
@@ -120,6 +124,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">File type</translation>
 <translation id="7561454561030345039">This action is managed by your administrator</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7690294790491645610">Confirm new password</translation>
 <translation id="7805768142964895445">Status</translation>

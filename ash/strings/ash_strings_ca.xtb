@@ -125,7 +125,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2127372758936585790">Carregador de baix consum</translation>
 <translation id="2132302418721800944">Grava la pantalla completa</translation>
 <translation id="2135456203358955318">Lupa acoblada</translation>
-<translation id="2144487987174258011">Reinicia per actualitzar Adobe Flash Player</translation>
 <translation id="2208323208084708176">Mode d'escriptori unificat</translation>
 <translation id="2220572644011485463">PIN o contrasenya</translation>
 <translation id="2222338659135520253">Cal iniciar la sessió</translation>
@@ -160,7 +159,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2435457462613246316">Mostra la contrasenya</translation>
 <translation id="2473177541599297363">Confirma la resolució</translation>
 <translation id="2475982808118771221">S'ha produït un error</translation>
-<translation id="2479579251444854687">Fes lliscar tres dits cap amunt per obrir la informació general i cap avall per tancar-la.</translation>
 <translation id="2482878487686419369">Notificacions</translation>
 <translation id="2484513351006226581">Prem <ph name="KEYBOARD_SHORTCUT" /> per canviar la disposició del teclat.</translation>
 <translation id="2501920221385095727">Tecles permanents</translation>
@@ -371,7 +369,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4481530544597605423">Dispositius desvinculats</translation>
 <translation id="4485060137115666462">Si mantens el text premut o hi fas clic amb el botó dret, l'Assistent et mostrarà informació com ara la definició, la traducció o la conversió d'unitats.</translation>
 <translation id="4505050298327493054">Escriptori actiu.</translation>
-<translation id="4506458088675900627">El el gest dratolí tàctil per a la informació general ha canviat</translation>
 <translation id="4513946894732546136">Comentaris</translation>
 <translation id="4527045527269911712">El dispositiu Bluetooth "<ph name="DEVICE_NAME" />" sol·licita permís per emparellar-se.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> per completar la càrrega</translation>
@@ -434,6 +431,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5033299697334913360">Fes clic en qualsevol lloc per capturar la pantalla completa</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> s'ha connectat a un altre telèfon</translation>
 <translation id="5035389544768382859">Confirma la configuració de la pantalla</translation>
+<translation id="5078796286268621944">PIN incorrecte</translation>
 <translation id="5083553833479578423">Desbloqueja més funcions de l'Assistent.</translation>
 <translation id="5136175204352732067">S'ha connectat un altre teclat</translation>
 <translation id="5168181903108465623">Dispositius d'emissió disponibles</translation>

@@ -125,7 +125,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2127372758936585790">Bộ sạc công suất thấp</translation>
 <translation id="2132302418721800944">Ghi toàn màn hình</translation>
 <translation id="2135456203358955318">Phóng to ở vị trí cố định</translation>
-<translation id="2144487987174258011">Khởi động lại để cập nhật Adobe Flash Player</translation>
 <translation id="2208323208084708176">Chế độ màn hình đồng nhất</translation>
 <translation id="2220572644011485463">Mã PIN hoặc mật khẩu</translation>
 <translation id="2222338659135520253">Cần đăng nhập</translation>
@@ -160,7 +159,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2435457462613246316">Hiển thị mật khẩu</translation>
 <translation id="2473177541599297363">Xác nhận độ phân giải</translation>
 <translation id="2475982808118771221">Đã xảy ra lôi</translation>
-<translation id="2479579251444854687">Hãy dùng 3 ngón tay vuốt lên/xuống để mở/đóng chế độ Tổng quan.</translation>
 <translation id="2482878487686419369">Thông báo</translation>
 <translation id="2484513351006226581">Hãy nhấn <ph name="KEYBOARD_SHORTCUT" /> để chuyển bố cục bàn phím.</translation>
 <translation id="2501920221385095727">Phím cố định</translation>
@@ -371,7 +369,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4481530544597605423">Thiết bị được hủy ghép nối</translation>
 <translation id="4485060137115666462">Khi bạn nhấp chuột phải hoặc nhấn và giữ, Trợ lý sẽ hiển thị các thông tin như định nghĩa, bản dịch hoặc kết quả chuyển đổi đơn vị cho nội dung bạn chọn.</translation>
 <translation id="4505050298327493054">Không gian làm việc đang hoạt động.</translation>
-<translation id="4506458088675900627">Cử chỉ mở/đóng chế độ Tổng quan bằng bàn di chuột đã thay đổi</translation>
 <translation id="4513946894732546136">Phản hồi</translation>
 <translation id="4527045527269911712">Thiết bị Bluetooth "<ph name="DEVICE_NAME" />"muốn được phép ghép nối.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> cho đến khi đầy</translation>
@@ -434,6 +431,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5033299697334913360">Nhấp vào bất cứ đâu để chụp toàn màn hình</translation>
 <translation id="5035236842988137213">Đã kết nối <ph name="DEVICE_NAME" /> với một điện thoại mới</translation>
 <translation id="5035389544768382859">Xác nhận cấu hình của màn hình</translation>
+<translation id="5078796286268621944">Mã PIN không chính xác</translation>
 <translation id="5083553833479578423">Mở khóa các tính năng khác của Trợ lý.</translation>
 <translation id="5136175204352732067">Đã kết nối bàn phím khác</translation>
 <translation id="5168181903108465623">Có thiết bị truyền</translation>

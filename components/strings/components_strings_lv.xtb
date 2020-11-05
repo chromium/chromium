@@ -316,6 +316,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="214556005048008348">Atcelt maksājumu</translation>
 <translation id="2147827593068025794">Sinhronizācija fonā</translation>
 <translation id="2148613324460538318">Pievienot karti</translation>
+<translation id="2149968176347646218">Savienojums nav drošs</translation>
 <translation id="2154054054215849342">Sinhronizācija jūsu domēnam nav pieejama.</translation>
 <translation id="2154484045852737596">Kartes informācijas rediģēšana</translation>
 <translation id="2161656808144014275">Teksts</translation>
@@ -1166,6 +1167,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5571083550517324815">Nevar saņemt sūtījumu šajā adresē. Atlasiet citu adresi.</translation>
 <translation id="5580958916614886209">Pārbaudiet derīguma termiņa mēnesi un mēģiniet vēlreiz.</translation>
 <translation id="5586446728396275693">Nav saglabātu adrešu.</translation>
+<translation id="5593349413089863479">Savienojums nav pilnīgi drošs</translation>
 <translation id="5595485650161345191">Rediģēt adresi</translation>
 <translation id="5598944008576757369">Izvēlēties maksājuma veidu</translation>
 <translation id="560412284261940334">Pārvaldīšana netiek atbalstīta.</translation>
@@ -1884,6 +1886,7 @@ Papildu informācija:
 <translation id="8507227106804027148">Komandrinda</translation>
 <translation id="8508648098325802031">Meklēšanas ikona</translation>
 <translation id="8522552481199248698">Chrome var palīdzēt jums aizsargāt jūsu Google kontu un nomainīt paroli.</translation>
+<translation id="8525306231823319788">Pilnekrāna režīms</translation>
 <translation id="8530813470445476232">Notīriet savu pārlūkošanas vēsturi, sīkfailus, kešatmiņu un citus datus Chrome iestatījumos.</translation>
 <translation id="8533619373899488139">Apmeklējiet vietni &lt;strong&gt;chrome://policy&lt;/strong&gt;, lai skatītu bloķēto URL sarakstu, kā arī citas politikas, ko noteicis sistēmas administrators.</translation>
 <translation id="8541158209346794904">Bluetooth ierīce</translation>

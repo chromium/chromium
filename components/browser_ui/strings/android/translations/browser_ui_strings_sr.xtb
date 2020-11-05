@@ -17,6 +17,7 @@
 <translation id="1369915414381695676">Сајт <ph name="SITE_NAME" /> је додат</translation>
 <translation id="1383876407941801731">Претражи</translation>
 <translation id="1384959399684842514">Преузимање је паузирано</translation>
+<translation id="1415402041810619267">URL је скраћен</translation>
 <translation id="1431402976894535801">Не дозволите сајтовима да знају када сте присутни</translation>
 <translation id="1446450296470737166">Пуна контрола над MIDI уређајима</translation>
 <translation id="1509960214886564027">Функције на многим сајтовима могу да престану са радом</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">Дозволите сајтовима да пуштају заштићени садржај</translation>
 <translation id="4468959413250150279">Искључи звук за одређени сајт</translation>
 <translation id="4479647676395637221">Питај пре него што дозволиш сајтовима да користе камеру (препоручено)</translation>
+<translation id="4505788138578415521">URL је проширен</translation>
 <translation id="4534723447064627427">Да бисте дозволили да <ph name="APP_NAME" /> приступа микрофону, укључите микрофон и у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
 <translation id="4570913071927164677">Детаљи</translation>
 <translation id="4645575059429386691">Овим управља твој родитељ</translation>

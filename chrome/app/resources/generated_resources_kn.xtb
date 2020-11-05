@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">ಸ್ಕ್ರೀನ್ ಅಪ್‌ಡೇಟ್‌ಗಳ ಫ್ರೀಕ್ವೆನ್ಸಿ ಅನ್ನು ನಿರ್ಧರಿಸುತ್ತದೆ</translation>
 <translation id="1061904396131502319">ಬಹುತೇಕ ವಿರಾಮದ ಸಮಯ</translation>
 <translation id="1067048845568873861">ರಚಿಸಲಾಗಿದೆ</translation>
+<translation id="1067291318998134776">Linux (ಬೀಟಾ)</translation>
 <translation id="1067922213147265141">ಇತರ Google ಸೇವೆಗಳು</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿನ ಮತ್ತೊಂದು ಪ್ರೋಗ್ರಾಂ, Chrome ಕಾರ್ಯನಿರ್ವಹಿಸುವ ವಿಧಾನವನ್ನು ಬದಲಿಸಬಹುದಾದಂತಹ ವಿಸ್ತರಣೆಯನ್ನು ಸೇರಿಸಿದೆ.
@@ -1377,7 +1378,6 @@
 <translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿಲ್ಲ</translation>
 <translation id="2564520396658920462">JavaScript ಅನ್ನು AppleScript ಮೂಲಕ ಎಕ್ಸಿಕ್ಯೂಟ್ ಮಾಡುವ ಸೌಲಭ್ಯವನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ. ಅದನ್ನು ಆನ್ ಮಾಡಲು, ಮೆನು ಬಾರ್‌ ಮೂಲಕ, ವೀಕ್ಷಣೆ &gt; ಡೆವಲಪರ್ &gt; Apple ಈವೆಂಟ್‌ಗಳಿಂದ JavaScript ಅನ್ನು ಅನುಮತಿಸಿಗೆ ಹೋಗಿ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಇಲ್ಲಿಗೆ ಭೇಟಿ ನೀಡಿ: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">ವರ್ಧಿತ ಕಾಗುಣಿತ ಪರೀಕ್ಷೆ</translation>
-<translation id="2566124945717127842">ಹೊಸದರಂತೆ ಮಾಡುವುದಕ್ಕಾಗಿ ನಿಮ್ಮ <ph name="IDS_SHORT_PRODUCT_NAME" /> ಸಾಧನವನ್ನು ಮರುಹೊಂದಿಸಲು ಪವರ್‌ವಾಶ್ ಮಾಡಿ.</translation>
 <translation id="2568774940984945469">ಮಾಹಿತಿಪಟ್ಟಿಯ ಕಂಟೇನರ್</translation>
 <translation id="2571655996835834626">ಕುಕೀಗಳು, JavaScript, ಪ್ಲಗ್ಇನ್‌ಗಳು, ಜಿಯೊಲೊಕೇಶನ್, ಮೈಕ್ರೊಫೋನ್, ಕ್ಯಾಮರಾ, ಮುಂತಾದ ವೈಶಿಷ್ಟ್ಯಗಳಿಗೆ ವೆಬ್‌‌ಸೈಟ್‌ಗಳ ಪ್ರವೇಶವನ್ನು ನಿಯಂತ್ರಿಸುವ ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಿ.</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> ಗೆ ಓದಲು-ಮಾತ್ರ ಪ್ರವೇಶವನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ.</translation>
@@ -1842,7 +1842,6 @@
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> ಸಹಾಯ</translation>
 <translation id="3118654181216384296">ಕೆಲವು ಕ್ಷಣಗಳ ಬಳಿಕ, Linux ಅನ್ನು ಪ್ರಾರಂಭಿಸಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3120430004221004537">ನೀಡಿರುವ ಕಾರ್ಯಾಚರಣೆಗೆ ಈ ಸಾಧನದಲ್ಲಿ ಎನ್‌ಕ್ರಿಪ್ಶನ್ ಸಾಕಷ್ಟಿಲ್ಲ: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344">ಈ <ph name="IDS_SHORT_PRODUCT_NAME" /> ಸಾಧನವನ್ನು ಮರುಹೊಂದಿಸಿ</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">ಡೇಟಾ ಡೈರೆಕ್ಟರಿ ರಚಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="3124111068741548686">ಬಳಕೆದಾರರ ನಿರ್ವಹಣೆಗಳು</translation>
@@ -5496,7 +5495,6 @@
 <translation id="7475671414023905704">Netscape ಕಳೆದು ಹೋದ ಪಾಸ್‌ವರ್ಡ್ URL</translation>
 <translation id="7476454130948140105">ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು ಬ್ಯಾಟರಿ <ph name="BATTERY_PERCENT" /> ತುಂಬಾ ಕಡಿಮೆ ಇದೆ</translation>
 <translation id="7477793887173910789">ನಿಮ್ಮ ಸಂಗೀತ, ವೀಡಿಯೊಗಳು ಹಾಗೂ ಇತ್ಯಾದಿಗಳನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
-<translation id="7478362879637727630">ನೀವು ಈ Chrome Education ಸಾಧನವನ್ನು ಶಿಕ್ಷಣ ಖಾತೆಯಲ್ಲಿ ನೋಂದಾಯಿಸಬೇಕು. ಹೊಸ ಖಾತೆಗಾಗಿ ಸೈನ್ ಅಪ್ ಮಾಡಲು, https://g.co/workspace/edusignup ಗೆ ಭೇಟಿ ನೀಡಿ.</translation>
 <translation id="7478485216301680444">ಕಿಯೋಸ್ಕ್ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಸ್ಥಾಪಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="7479221278376295180">ಸಂಗ್ರಹಣೆ ಬಳಕೆಯ ಅವಲೋಕನ</translation>
 <translation id="7481312909269577407">ಫಾರ್ವರ್ಡ್</translation>
@@ -6063,7 +6061,6 @@
 <translation id="8101987792947961127">ಮುಂದಿನ ರೀಬೂಟ್‌ನಲ್ಲಿ ಪವರ್‌ವಾಷ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="8102139037507939978">system_logs.txt ನಿಂದ ವೈಯಕ್ತಿಕವಾಗಿ ಗುರುತಿಸಬಲ್ಲ ಮಾಹಿತಿಯನ್ನು ತೆಗೆದುಹಾಕಿ.</translation>
 <translation id="8102159139658438129">ನಿಮ್ಮ ಸಂಪರ್ಕಿತ ಫೋನ್‌ಗಾಗಿ ಆಯ್ಕೆಗಳನ್ನು ನೋಡಲು, <ph name="LINK_BEGIN" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="LINK_END" /> ಹೋಗಿ</translation>
-<translation id="8104696615244072556">ನಿಮ್ಮ <ph name="IDS_SHORT_PRODUCT_NAME" /> ಸಾಧನವನ್ನು ಪವರ್‌ವಾಶ್ ಮಾಡಿ ಮತ್ತು ಹಿಂದಿನ ಆವೃತ್ತಿಗೆ ಹಿಂತಿರುಗಿ.</translation>
 <translation id="8107015733319732394">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ Google Play ಸ್ಟೋರ್ ಅನ್ನು ಸ್ಥಾಪಿಸಲಾಗುತ್ತಿದೆ. ಇದು ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="810728361871746125">ಡಿಸ್‌ಪ್ಲೇ ರೆಸಲ್ಯೂಷನ್</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{ಯಾವುದೇ ಥರ್ಡ್ ಪಾರ್ಟಿ ಕುಕೀಗಳಿಲ್ಲ}=1{1 ಥರ್ಡ್ ಪಾರ್ಟಿ ಕುಕೀಯನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}one{# ಥರ್ಡ್ ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}other{# ಥರ್ಡ್ ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}}</translation>

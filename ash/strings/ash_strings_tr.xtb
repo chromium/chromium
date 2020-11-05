@@ -125,7 +125,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2127372758936585790">Düşük güçlü şarj cihazı</translation>
 <translation id="2132302418721800944">Tam ekran kaydet</translation>
 <translation id="2135456203358955318">Yerleştirilmiş büyüteç</translation>
-<translation id="2144487987174258011">Adobe Flash Player'ı güncellemek için yeniden başlatın</translation>
 <translation id="2208323208084708176">Birleştirilmiş masaüstü modu</translation>
 <translation id="2220572644011485463">PIN veya şifre</translation>
 <translation id="2222338659135520253">Oturum açılması gerekiyor</translation>
@@ -160,7 +159,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2435457462613246316">Şifreyi göster</translation>
 <translation id="2473177541599297363">Çözünürlüğü Onayla</translation>
 <translation id="2475982808118771221">Bir hata oluştu</translation>
-<translation id="2479579251444854687">Genel Bakış'ı açmak için üç parmakla yukarı, kapatmak için aşağı kaydırın.</translation>
 <translation id="2482878487686419369">Bildirimler</translation>
 <translation id="2484513351006226581">Klavye düzenini değiştirmek için <ph name="KEYBOARD_SHORTCUT" /> tuşlarına basın.</translation>
 <translation id="2501920221385095727">Yapışkan tuşlar</translation>
@@ -371,7 +369,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4481530544597605423">Eşlemesi kaldırılmış cihazlar</translation>
 <translation id="4485060137115666462">Sağ tıkladığınızda veya uzun bastığınızda Asistan, yaptığınız seçimin tanımı, çevirisi veya birimin dönüştürülmesi gibi bilgiler gösterir.</translation>
 <translation id="4505050298327493054">Etkin masa.</translation>
-<translation id="4506458088675900627">Genel Bakış dokunmatik alan hareketi değişti</translation>
 <translation id="4513946894732546136">Geri Bildirim</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" adlı Bluetooth cihaz eşleme izni istiyor.</translation>
 <translation id="453661520163887813">Dolmasına <ph name="TIME" /> var</translation>
@@ -434,6 +431,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5033299697334913360">Tam ekran görüntüsünü yakalamak için herhangi bir yeri tıklayın</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />, yeni bir telefona bağlandı</translation>
 <translation id="5035389544768382859">Ekran Yapılandırmasını Onaylayın</translation>
+<translation id="5078796286268621944">Yanlış PIN</translation>
 <translation id="5083553833479578423">Diğer Asistan özelliklerinin kilidini açın.</translation>
 <translation id="5136175204352732067">Farklı klavye bağlandı</translation>
 <translation id="5168181903108465623">Yayın cihazları kullanılabilir</translation>

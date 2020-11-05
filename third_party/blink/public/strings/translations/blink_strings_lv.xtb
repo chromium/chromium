@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Šis mēnesis</translation>
 <translation id="1637811476055996098">Izvēlēties failus</translation>
 <translation id="1650423536718072820">izvilkuma citāts</translation>
+<translation id="1681022320378710418">pašreizējais laiks</translation>
 <translation id="1727886345390570319">paslēpt subtitru izvēlni</translation>
 <translation id="1729654308190250600">Lūdzu, ievadiet e-pasta adresi.</translation>
 <translation id="1758486001363313524">Cits...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Ievadiet URL.</translation>
 <translation id="3175736971608411871">taimeris</translation>
 <translation id="3199563858620722075">kombinētais lodziņš</translation>
+<translation id="3220661731597678625">pašreizējā darbība</translation>
 <translation id="3329013043687509092">Piesātinājums</translation>
 <translation id="3450233048674729344">Vērtībai ir jābūt mazākai vai vienādai ar <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">definīcija</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="479989351350248267">meklēt</translation>
 <translation id="4812940957355064477">Lūdzu, ievadiet skaitli.</translation>
+<translation id="4912200001568447310">pašreizējais vienums</translation>
 <translation id="4912536737030637138">bibliogrāfijas ieraksts</translation>
 <translation id="4915360478455618802">Rādīt laika atlasītāju</translation>
 <translation id="492244087561876220">komentārs</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Nevar atskaņot multividi.</translation>
 <translation id="537648784377940524">Minimālajai datuma vērtībai (<ph name="MIN_DATE_OR_TIME" />) ir jābūt pirms maksimālās datuma vērtības (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">cipars</translation>
+<translation id="5425179576310518467">pašreizējais datums</translation>
 <translation id="5453733299334684579">koka vienums</translation>
 <translation id="5466621249238537318">Lūdzu, atlasiet vienu vai vairākus failus.</translation>
 <translation id="5468998798572797635">iziet no pilnekrāna režīma</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">mērītājs</translation>
 <translation id="6166809985690652833">pēcvārds</translation>
 <translation id="6209276755895393898">Šķiet, ka tas ir: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">pašreizējā lapa</translation>
 <translation id="6213469881011901533">glosārijs</translation>
 <translation id="6281588256137006900">Gaišums</translation>
 <translation id="6281763101136022427">URL</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Lūdzu, papildiniet šo tekstu līdz vismaz <ph name="MIN_CHARACTERS" /> rakstzīmēm (pašlaik tas ietver 1 rakstzīmi).</translation>
 <translation id="7034405885550056553">ieteikums</translation>
 <translation id="709897737746224366">Pieskaņojiet vērtību prasītajam formātam.</translation>
+<translation id="7102274145889307184">pašreizējā atrašanās vieta</translation>
 <translation id="7118469954320184356">Nav apraksta.</translation>
 <translation id="7139483182332611405">ievadraksts</translation>
 <translation id="7214187073215825913">informācija par saturu</translation>

@@ -125,7 +125,6 @@
 <translation id="2127372758936585790">低功率充电器</translation>
 <translation id="2132302418721800944">录制整个屏幕</translation>
 <translation id="2135456203358955318">停靠的放大镜</translation>
-<translation id="2144487987174258011">请重新启动以更新 Adobe Flash Player</translation>
 <translation id="2208323208084708176">统一桌面模式</translation>
 <translation id="2220572644011485463">PIN 码或密码</translation>
 <translation id="2222338659135520253">必须登录</translation>
@@ -160,7 +159,6 @@
 <translation id="2435457462613246316">显示密码</translation>
 <translation id="2473177541599297363">确认分辨率</translation>
 <translation id="2475982808118771221">出现错误</translation>
-<translation id="2479579251444854687">若要开启“概览”模式，请用三根手指向上滑动；若要关闭该模式，请用三根手指向下滑动。</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484513351006226581">按 <ph name="KEYBOARD_SHORTCUT" />键可切换键盘布局。</translation>
 <translation id="2501920221385095727">粘滞键</translation>
@@ -371,7 +369,6 @@
 <translation id="4481530544597605423">未配对的设备</translation>
 <translation id="4485060137115666462">只要您右键点击或长按所选内容，Google 助理即会显示与其相关的信息（例如定义、翻译或单位换算）。</translation>
 <translation id="4505050298327493054">处于活动状态的桌面。</translation>
-<translation id="4506458088675900627">用于开启/关闭“概览”模式的触控板手势已更改</translation>
 <translation id="4513946894732546136">反馈</translation>
 <translation id="4527045527269911712">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。</translation>
 <translation id="453661520163887813"><ph name="TIME" /> 后充满</translation>
@@ -434,6 +431,7 @@
 <translation id="5033299697334913360">点击任意位置即可截取整个屏幕</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />已连接到新手机</translation>
 <translation id="5035389544768382859">确认显示屏配置</translation>
+<translation id="5078796286268621944">PIN 不正确</translation>
 <translation id="5083553833479578423">启用更多 Google 助理功能。</translation>
 <translation id="5136175204352732067">所连接的键盘已不是原来的那个</translation>
 <translation id="5168181903108465623">有可用的投射设备</translation>

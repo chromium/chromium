@@ -125,7 +125,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2127372758936585790">Low-power charger</translation>
 <translation id="2132302418721800944">I-record ang full screen</translation>
 <translation id="2135456203358955318">Naka-dock na magnifier</translation>
-<translation id="2144487987174258011">I-restart upang i-update ang Adobe Flash Player</translation>
 <translation id="2208323208084708176">Unified desktop mode</translation>
 <translation id="2220572644011485463">PIN o password</translation>
 <translation id="2222338659135520253">Kinakailangang mag-sign in</translation>
@@ -160,7 +159,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2435457462613246316">Ipakita ang password</translation>
 <translation id="2473177541599297363">Kumpirmahin ang Resolution</translation>
 <translation id="2475982808118771221">May isang naganap na error</translation>
-<translation id="2479579251444854687">Mag-swipe pataas gamit ang tatlong daliri para buksan at mag-swipe pababa para isara ang Overview.</translation>
 <translation id="2482878487686419369">Mga Abiso</translation>
 <translation id="2484513351006226581">Pindutin ang <ph name="KEYBOARD_SHORTCUT" /> upang palitan ang layout ng keyboard.</translation>
 <translation id="2501920221385095727">Mga sticky key</translation>
@@ -371,7 +369,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4481530544597605423">Mga hindi nakapares na device</translation>
 <translation id="4485060137115666462">Sa pamamagitan ng pag-right click o matagal na pagpindot, magpapakita ang Assistant ng impormasyon tulad ng kahulugan, pagsasalin, o conversion ng unit para sa iyong napili.</translation>
 <translation id="4505050298327493054">Aktibong desk.</translation>
-<translation id="4506458088675900627">Binago na ang galaw sa touchpad para sa Overview</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4527045527269911712">Gusto ng bluetooth device na "<ph name="DEVICE_NAME" />" na magpares.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> na lang bago mapuno</translation>
@@ -434,6 +431,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5033299697334913360">Mag-click kahit saan para i-capture ang full screen</translation>
 <translation id="5035236842988137213">Kumonekta ang <ph name="DEVICE_NAME" /> sa isang bagong telepono</translation>
 <translation id="5035389544768382859">Kumpirmahin ang Configuration ng Display</translation>
+<translation id="5078796286268621944">Maling PIN</translation>
 <translation id="5083553833479578423">Mag-unlock ng higit pang feature ng Assistant.</translation>
 <translation id="5136175204352732067">Ibang keyboard ang nakakonekta</translation>
 <translation id="5168181903108465623">I-cast ang mga available na device</translation>

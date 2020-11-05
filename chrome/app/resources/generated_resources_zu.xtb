@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Inquma imvamisa isikrini esibuyekezwa ngayo</translation>
 <translation id="1061904396131502319">Kucishe isikhathi sekhefu</translation>
 <translation id="1067048845568873861">Idaliwe</translation>
+<translation id="1067291318998134776">I-Linux (Beta)</translation>
 <translation id="1067922213147265141">Amanye amasevisi e-Google</translation>
 <translation id="1070066693520972135">I-WEP</translation>
 <translation id="1070377999570795893">Olunye uhlelo kukhompuyutha yakho lungeze isandiso esingaguqula indlela i-Chrome esebenza ngayo.
@@ -1375,7 +1376,6 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2562743677925229011">Ayingenile ngemvume ku-<ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Ukwenza kusebenze i-JavaScript nge-AppleScript kuvaliwe. Ukuze ukuvule, kusukela kubha yemenyu, hamba kokuthi Buka &gt; Unjiniyela &gt; Vumela i-JavaScript kusukela kumicimbi ye-Apple. Ukuze uthole olunye ulwazi: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Ukuhlola ukupela okuthuthukisiwe</translation>
-<translation id="2566124945717127842">Geza ngamandla ukuze usethe kabusha idivayisi yakho ye-<ph name="IDS_SHORT_PRODUCT_NAME" /> ukuthi ibe ngathi yintsha.</translation>
 <translation id="2568774940984945469">Isiqukathi sebha yolwazi</translation>
 <translation id="2571655996835834626">Guqula izilungiselelo zakho ezilawula ukufinyelela kwewebhusayithi yezici ezifana namakhukhi, i-JavaScript, ama-plug-in, i-geolocation, amamakrofoni, ikhamera njll.</translation>
 <translation id="2572032849266859634">Ukufinyelela kokufunda kuphela kwe-<ph name="VOLUME_NAME" /> kunikwe amandla.</translation>
@@ -1840,7 +1840,6 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Usizo</translation>
 <translation id="3118654181216384296">Sicela uzame ukuqalisa i-Linux futhi ezikhathini ezimbalwa.</translation>
 <translation id="3120430004221004537">Ukubethela okunganele ngomsebenzi onikeziwe ku-: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344">Setha kabusha le divayisi ye-<ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="3122464029669770682">I-CPU</translation>
 <translation id="3122496702278727796">Yehlulekile ukudala umkhombandlela wedatha</translation>
 <translation id="3124111068741548686">Izibambo ZOMSEBENZISI</translation>
@@ -5493,7 +5492,6 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="7475671414023905704">I-Netscape ilahlekelwe yi-URL yephasiwedi</translation>
 <translation id="7476454130948140105">Ibhethri liphansi kakhulu ukuthi lingabuyekezwa (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">Lawula umculo wakho, amavidiyo, nokuningi</translation>
-<translation id="7478362879637727630">Kufanele ubhalise le divayisi ye-Chrome Education kwi-akhawunti yemfundo Ukuze ubhalisele i-akhawunti entsha, sicela uvakashele ku-https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">Uhlelo lokusebenza lwekhiyoski alikwazanga ukufakwa.</translation>
 <translation id="7479221278376295180">Ukubuka konke kokusetshenziswa kwesitoreji</translation>
 <translation id="7481312909269577407">Dlulisela</translation>
@@ -6063,7 +6061,6 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8101987792947961127">Kudingeka i-Powerwash ekuqaliseni kabusha okulandelayo</translation>
 <translation id="8102139037507939978">Susa Ulwazi Lwenkomba Olungokomuntu Siqu ku-system_logs.txt.</translation>
 <translation id="8102159139658438129">Hamba <ph name="LINK_BEGIN" />kuzilungiselelo<ph name="LINK_END" /> ukuze ubone izinketho zefoni yakho exhunyiwe</translation>
-<translation id="8104696615244072556">Yenza i-Powerwash kudivayisi yakho ye-<ph name="IDS_SHORT_PRODUCT_NAME" /> futhi ubuyele kunguqulo yangaphambilini.</translation>
 <translation id="8107015733319732394">Ukufaka i-Google Play Isitolo ku-<ph name="DEVICE_TYPE" /> yakho. Lokhu kungathatha amaminithi ambalwa.</translation>
 <translation id="810728361871746125">Isiboniso sokulungiswa</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Awekho amakhukhi enkampani yangaphandle}=1{1 ikhukhi lenkampani yangaphandle livinjelwe}one{# amakhukhi enkampani yangaphandle avinjelwe}other{# amakhukhi enkampani yangaphandle avinjelwe}}</translation>

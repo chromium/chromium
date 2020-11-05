@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">Дэлгэцийг шинэчлэх давтамжийг тодорхойлно</translation>
 <translation id="1061904396131502319">Завсарлах цаг ойртож байна</translation>
 <translation id="1067048845568873861">Үүсгэсэн</translation>
+<translation id="1067291318998134776">Linux (Бэта)</translation>
 <translation id="1067922213147265141">Google-н бусад үйлчилгээ</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Taны компьютерын өөр нэг программ өргөтгөл нэмсэн бөгөөд энэ нь Chrome-н ажиллах зарчмыг өөрчилж магад.
@@ -1372,7 +1373,6 @@
 <translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" />-д нэвтэрээгүй байна.</translation>
 <translation id="2564520396658920462">AppleScript-р гүйцэтгэж байгаа JavaScript-г унтраалттай байна. Үүнийг асаахын тулд цэсийн талбарын Apple-н арга хэмжээнээс Харах &gt; Хөгжүүлэгч &gt; JavaScript-г зөвшөөрөх хэсэгт очно уу. Дэлгэрэнгүй мэдээллийг: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Зөв бичгийн алдаа шалгах сайжруулсан онцлог</translation>
-<translation id="2566124945717127842">Powerwash нь таны <ph name="IDS_SHORT_PRODUCT_NAME" /> төхөөрөмжийг шинэ мэт тохируулна.</translation>
 <translation id="2568774940984945469">Мэдээллийн цонх агуулагч</translation>
 <translation id="2571655996835834626">Таны веб сайтын күүки, JavaScript, залгаас, геолокаци, микрофон, камер зэрэг онцлогийн хандалтыг хянадаг тохиргоог өөрчилдөг.</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> руу зөвхөн унших горимоор нэвтрэх зөвшөөрлийг олгосон байна.</translation>
@@ -1837,7 +1837,6 @@
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Тусламж</translation>
 <translation id="3118654181216384296">Хэдэн хормын дараа Linux-г дахин эхлүүлэхийг оролдоно уу.</translation>
 <translation id="3120430004221004537">Операторт хангалтгүй шифр байна: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344"><ph name="IDS_SHORT_PRODUCT_NAME" /> төхөөрөмжийг дахин сэргээх</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Өгөгдлийн хадгалалтын санг үүсгэж чадсангүй</translation>
 <translation id="3124111068741548686">USER-ийн тохиргоо</translation>
@@ -5487,7 +5486,6 @@
 <translation id="7475671414023905704">Netscape Lost Password URL</translation>
 <translation id="7476454130948140105">Шинэчлэхэд батерейны түвшин хангалтгүй байна (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">Хөгжим, видео болон бусад зүйлээ хянах</translation>
-<translation id="7478362879637727630">Та энэ Chrome Education төхөөрөмжийг боловсролын бүртгэлд бүртгүүлэх ёстой. Шинэ бүртгэлд бүртгүүлэхийн тулд https://g.co/workspace/edusignup хаягт зочилно уу.</translation>
 <translation id="7478485216301680444">Kiosk программыг суулгах боломжгүй байна.</translation>
 <translation id="7479221278376295180">Хадгалах сан ашиглалтын тойм</translation>
 <translation id="7481312909269577407">Forward</translation>
@@ -6055,7 +6053,6 @@
 <translation id="8101987792947961127">Дараа дахин ачаалахад та өөрийн төхөөрөмжинд хадгалагдаж буй мэдээллийг бүрэн цэвэрлэсэн байх шаардлагатай (Powerwash хийсэн байх шаардлагатай).</translation>
 <translation id="8102139037507939978">Хувь хүнийг тодорхойлох мэдээллийг system_logs.txt-с арилгана.</translation>
 <translation id="8102159139658438129">Холбогдсон утасныхаа сонголтыг харахын тулд <ph name="LINK_BEGIN" />Тохиргоо<ph name="LINK_END" /> хэсэгт очно уу</translation>
-<translation id="8104696615244072556"><ph name="IDS_SHORT_PRODUCT_NAME" /> төхөөрөмжөө цэвэрлээд, өмнөх хувилбарт шилжих.</translation>
 <translation id="8107015733319732394">Google Play Дэлгүүрийг таны <ph name="DEVICE_TYPE" />-д суулгаж байна. Суулгахад хэдэн хором болно.</translation>
 <translation id="810728361871746125">Дэлгэцийн нягтрал</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Гуравдагч талын күүки байхгүй}=1{Гуравдагч талын 1 күүкиг блоклосон}other{Гуравдагч талын # күүкиг блоклосон}}</translation>

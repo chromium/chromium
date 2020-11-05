@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">స్క్రీన్ అప్‌డేట్‌ల ఫ్రీక్వెన్సీని నిర్ణయిస్తుంది</translation>
 <translation id="1061904396131502319">దాదాపు విరామ సమయం</translation>
 <translation id="1067048845568873861">సృష్టించబడింది</translation>
+<translation id="1067291318998134776">Linux (బీటా)</translation>
 <translation id="1067922213147265141">ఇతర Google సర్వీసులు</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">మీ కంప్యూటర్‌లోని మరొక ప్రోగ్రామ్ Chrome పని చేసే విధానాన్ని మార్చగలిగే ఒక ఎక్స్‌టెన్షన్‌ని జోడించింది.
@@ -254,7 +255,7 @@
 <translation id="1280965841156951489">ఎడిటింగ్‌ను అనుమతించు</translation>
 <translation id="1285320974508926690">ఈ సైట్‌ను ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="1285484354230578868">మీ Google డిస్క్ ఖాతాలో డేటాను నిల్వ చేయండి</translation>
-<translation id="1288037062697528143">సూర్యాస్తమయ సమయానికి రాత్రి కాంతి స్వయంచాలకంగా ఆన్ అవుతుంది</translation>
+<translation id="1288037062697528143">రాత్రి కాంతి, సూర్యాస్తమయ సమయానికి ఆటోమేటిక్‌గా ఆన్ అవుతుంది</translation>
 <translation id="1288300545283011870">ప్రసంగ లక్షణాలు</translation>
 <translation id="1293264513303784526">USB-C పరికరం (ఎడమ పోర్ట్)</translation>
 <translation id="1293556467332435079">Files</translation>
@@ -1377,7 +1378,6 @@
 <translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" />కు సైన్ ఇన్ చేయలేదు</translation>
 <translation id="2564520396658920462">AppleScript ద్వారా JavaScriptను అమలు చేయడం ఆఫ్ చేయబడింది. దీనిని ఆన్ చేయడం కోసం, మెనూ బార్‌లో, వీక్షించండి &gt; డెవలపర్ &gt; Apple ఈవెంట్‌ల నుండి JavaScriptను అనుమతించండి ఎంపికను ఎంచుకోండి. మరింత సమాచారం కోసం ఇక్కడ చూడండి: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">మెరుగుపరిచిన స్పెల్ చెక్</translation>
-<translation id="2566124945717127842">మీ <ph name="IDS_SHORT_PRODUCT_NAME" /> పరికరాన్ని కొత్త దాని లాగా రీసెట్ చేయడానికి పవర్‌వాష్ చేయండి.</translation>
 <translation id="2568774940984945469">సమాచారబార్ కంటైనర్</translation>
 <translation id="2571655996835834626">కుక్కీలు, JavaScript, ప్లగ్ఇన్‌లు, భౌగోళిక స్థానం, మైక్రోఫోన్, కెమెరా మొదలైన ఫీచ‌ర్‌లకు వెబ్‌సైట్‌ల యాక్సెస్‌ను నియంత్రించే మీ సెట్టింగ్‌లను మార్చండి.</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" />కి చదవడానికి మాత్రమే యాక్సెస్ మంజూరు చేయబడింది.</translation>
@@ -1842,7 +1842,6 @@
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> సహాయం</translation>
 <translation id="3118654181216384296">దయచేసి, కొన్ని క్షణాల్లో Linuxను మళ్లీ ప్రారంభించండానికి ట్రై చేయండి.</translation>
 <translation id="3120430004221004537">దీనిలో నిర్దిష్ట చర్య కోసం తగిన ఎన్‌క్రిప్షన్ లేదు: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344">ఈ <ph name="IDS_SHORT_PRODUCT_NAME" /> పరికరాన్ని రీసెట్ చేయండి</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">డేటా డైరెక్టరీని సృష్టించడంలో విఫలమైంది</translation>
 <translation id="3124111068741548686">వినియోగదారు నిర్వహించేవి</translation>
@@ -5493,7 +5492,6 @@
 <translation id="7475671414023905704">Netscape తప్పిపోయిన పాస్‌వర్డ్ URL</translation>
 <translation id="7476454130948140105">అప్‌డేట్ చేయడానికి తగినంత బ్యాటరీ ఛార్జింగ్ లేదు (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">మీ సంగీతం, వీడియోలు అలాగే ఇంకా మరిన్నింటిని నియంత్రించండి</translation>
-<translation id="7478362879637727630">మీరు ఈ Chrome Education పరికరాన్ని ఎడ్యుకేషన్ ఖాతాలో తప్పనిసరిగా ఎన్‌రోల్ చేయాలి. కొత్త ఖాతా కోసం సైన్ అప్ చేయడానికి, దయచేసి https://g.co/workspace/edusignupను సందర్శించండి.</translation>
 <translation id="7478485216301680444">కియోస్క్ అప్లికేషన్‌ను ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="7479221278376295180">నిల్వ వినియోగ అవలోకనం</translation>
 <translation id="7481312909269577407">ఫార్వర్డ్</translation>
@@ -6060,7 +6058,6 @@
 <translation id="8101987792947961127">తరువాత రీబూట్‌లో పవర్‌వాష్ అవసరం</translation>
 <translation id="8102139037507939978">system_logs.txt నుండి వ్యక్తిగతంగా గుర్తించగలిగే సమాచారాన్ని తొలగించండి.</translation>
 <translation id="8102159139658438129">మీ కనెక్ట్ చేయబడిన ఫోన్ యొక్క ఎంపికలను చూడటం కోసం <ph name="LINK_BEGIN" />సెట్టింగ్‌లు<ph name="LINK_END" />లోకి వెళ్లండి</translation>
-<translation id="8104696615244072556">మీ <ph name="IDS_SHORT_PRODUCT_NAME" /> పరికరాన్ని పవర్‌వాష్ చేసి, మునుపటి వెర్షన్‌కు తిరిగి మార్చండి.</translation>
 <translation id="8107015733319732394">మీ <ph name="DEVICE_TYPE" />లో Google Play స్టోర్‌ని ఇన్‌స్టాల్ చేస్తోంది. ఇందుకు కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
 <translation id="810728361871746125">డిస్‌ప్లే రిజల్యూషన్</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{మూడవ పక్షం కుక్కీలు లేవు}=1{మూడవ పక్షానికి సంబంధించిన 1 కుక్కీ బ్లాక్ చేయబడింది}other{మూడవ పక్షానికి సంబంధించిన # కుక్కీలు బ్లాక్ చేయబడ్డాయి}}</translation>

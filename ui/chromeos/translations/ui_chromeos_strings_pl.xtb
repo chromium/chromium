@@ -10,7 +10,6 @@
 <translation id="1049926623896334335">Dokument Worda</translation>
 <translation id="1060368002126861100">Aby otworzyć pliki w aplikacji <ph name="APP_NAME" />, najpierw przenieś je do folderu Pliki systemu Windows.</translation>
 <translation id="1062407476771304334">Zastąp</translation>
-<translation id="1065449928621190041">Klawiatura kanadyjska (francuski)</translation>
 <translation id="1119069657431255176">Archiwum Tar po kompresji Bzip2</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="1148097584170732637">Znaleziono <ph name="FILE_COUNT" />.
@@ -36,7 +35,6 @@
 <translation id="1297922636971898492">Dysk Google nie jest teraz dostępny. Gdy znów będzie można z niego korzystać, przesyłanie zostanie automatycznie wznowione.</translation>
 <translation id="1307931752636661898">Nie można wyświetlić plików Linuksa</translation>
 <translation id="1310751437842832374">Transliteracja (mausam → ନମସ୍ତେ)</translation>
-<translation id="1337036551624197047">Klawiatura czeska</translation>
 <translation id="1338950911836659113">Usuwam...</translation>
 <translation id="1346748346194534595">W prawo</translation>
 <translation id="1351692861129622852">Importuję <ph name="FILE_COUNT" /> pliki(ów)...</translation>
@@ -62,7 +60,6 @@
 <translation id="1556189134700913550">Zastosuj do wszystkich</translation>
 <translation id="1561842594491319104">Urządzenia z Chrome</translation>
 <translation id="1572585716423026576">Ustaw jako tapetę</translation>
-<translation id="158809615184981282">Klawiatura farerska</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1646019627374511909">Udostępniam pliki (<ph name="NUMBER_OF_ITEMS" />) offline</translation>
@@ -139,9 +136,9 @@
 <translation id="2453576648990281505">Plik już istnieje.</translation>
 <translation id="2464079411014186876">Lody</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
-<translation id="247772113373397749">Kanadyjska klawiatura wielojęzyczna</translation>
 <translation id="2494837236724268445">Klawiatura gudżarati (fonetyczna)</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2529133382850673012">Klawiatura amerykańska</translation>
 <translation id="2534155362429831547">Usunięte elementy: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2541377937973966830">Zawartość tego folderu jest tylko do odczytu. Niektóre działania nie są obsługiwane.</translation>
 <translation id="2542049655219295786">Tabela Google</translation>
@@ -195,9 +192,10 @@
 <translation id="3067790092342515856">Pliki systemu Windows</translation>
 <translation id="3078461028045006476">Udostępnij w rozszerzeniu <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebity</translation>
+<translation id="3116361045094675131">Klawiatura brytyjska</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">GOTOWE</translation>
-<translation id="3182237543071236785">angielski (Wielka Brytania)</translation>
+<translation id="3157729859914172001">Klawiatura amerykańska międzynarodowa (PC)</translation>
 <translation id="3187212781151025377">Klawiatura hebrajska</translation>
 <translation id="3188257591659621405">Moje pliki</translation>
 <translation id="3197563288998582412">brytyjska klawiatura Dvoraka</translation>
@@ -296,7 +294,6 @@
 <translation id="426015154560005552">Klawiatura arabska</translation>
 <translation id="4261901459838235729">Prezentacja Google</translation>
 <translation id="4290535918735525311">Folder udostępniono Linuksowi</translation>
-<translation id="4298972503445160211">Klawiatura duńska</translation>
 <translation id="4299729908419173967">brazylijski</translation>
 <translation id="4309915981827077375">Informacje ogólne</translation>
 <translation id="4315949787858895817">niderlandzki (Belgia)</translation>
@@ -309,6 +306,7 @@
 <translation id="4465830120256509958">Klawiatura brazylijska</translation>
 <translation id="4470564870223067757">Zestaw Hangul 2</translation>
 <translation id="4477219268485577442">bułgarska klawiatura fonetyczna</translation>
+<translation id="4479812471636796472">Klawiatura amerykańska (Dvorak)</translation>
 <translation id="4522570452068850558">Szczegóły</translation>
 <translation id="4527800702232535228">Ten folder jest udostępniany Parallels Desktop</translation>
 <translation id="4552678318981539154">Kup więcej miejsca</translation>
@@ -338,7 +336,6 @@
 <translation id="4737050008115666127">Lądowanie</translation>
 <translation id="4747271164117300400">Macedoński</translation>
 <translation id="4749157430980974800">Klawiatura gruzińska</translation>
-<translation id="4755240240651974342">Klawiatura fińska</translation>
 <translation id="4759238208242260848">Pobrane pliki</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Prezentacja PowerPoint</translation>
@@ -396,7 +393,6 @@
        Jeśli to zrobisz w trakcie pracy, możesz spowodować utratę danych. Poczekaj na zakończenie operacji, a następnie odłącz urządzenie, używając aplikacji Pliki.</translation>
 <translation id="5163869187418756376">Niepowodzenie udostępniania. Sprawdź połączenie i spróbuj ponownie później.</translation>
 <translation id="516592729076796170">Amerykańska dewelopera (Dvorak)</translation>
-<translation id="5167131699331641907">Klawiatura niderlandzka</translation>
 <translation id="5170477580121653719">Na Dysku Google pozostało <ph name="SPACE_AVAILABLE" /> wolnego miejsca.</translation>
 <translation id="5177526793333269655">Widok miniatur</translation>
 <translation id="5194713942430106590">Kliknij, by posortować kolumnę w kolejności rosnącej.</translation>
@@ -469,7 +465,6 @@
 <translation id="5850516540536751549">Ten typ plików nie jest obsługiwany. W <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> znajdziesz aplikację umożliwiającą otwieranie plików tego typu.
     <ph name="BEGIN_LINK_HELP" />Więcej informacji<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Niczego tu nie ma...</translation>
-<translation id="5892290200158927959">Klawiatura francuska BÉPO</translation>
 <translation id="5911887972742538906">Podczas instalowania aplikacji na Linuksa wystąpił błąd.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Kopiowanie nie powiodło się z powodu nieoczekiwanego błędu: <ph name="ERROR_MESSAGE" /></translation>
@@ -485,7 +480,6 @@
 <translation id="60357267506638014">czeski (QWERTY)</translation>
 <translation id="604001903249547235">Kopia zapasowa w chmurze</translation>
 <translation id="6040143037577758943">Zamknij</translation>
-<translation id="6054173164583630569">Klawiatura francuska</translation>
 <translation id="6074825444536523002">Formularz Google</translation>
 <translation id="6096979789310008754">Wyszukiwany tekst został wyczyszczony. Wyświetlam wszystkie pliki i foldery.</translation>
 <translation id="610101264611565198">Przenoszę plik <ph name="FILE_NAME" /> do folderu <ph name="FOLDER_NAME" /></translation>
@@ -508,7 +502,6 @@
 <translation id="6339034549827494595">Klawiatura rosyjska – fonetyczna (AATSEEL)</translation>
 <translation id="6339145975392024142">Amerykańska międzynarodowa (PC)</translation>
 <translation id="6346310558342052870">Ograniczony dostęp</translation>
-<translation id="6353618411602605519">Klawiatura chorwacka</translation>
 <translation id="6356685157277930264">Okno informacji zwrotnych o plikach</translation>
 <translation id="6358884629796491903">Smok</translation>
 <translation id="637062427944097960">Ten plik został otwarty na innym pulpicie. Przejdź do <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), aby go zobaczyć.</translation>
@@ -519,7 +512,6 @@
 <translation id="6462109140674788769">Klawiatura grecka</translation>
 <translation id="6466492211071551451">Klawiatura irlandzka</translation>
 <translation id="6485131920355264772">Pobieranie informacji o wolnym miejscu nie powiodło się</translation>
-<translation id="6503256918647795660">Klawiatura szwajcarska (francuski)</translation>
 <translation id="6505918941256367791">Klawiatura tamilska (j. indyjskie)</translation>
 <translation id="6509122719576673235">Norweski</translation>
 <translation id="6527303717912515753">Udostępnij</translation>
@@ -564,6 +556,7 @@
     <ph name="LINE_BREAK1" />
     Znaleziono <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Do góry nogami</translation>
+<translation id="6939777852457331078">Amerykańska klawiatura Workman</translation>
 <translation id="696203921837389374">Włącz synchronizację przy użyciu komórkowej transmisji danych.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Bułgarski</translation>
@@ -580,9 +573,9 @@
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;” – &lt;em&gt;wyszukaj na Dysku&lt;/em&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7170467426996704624">Transliteracja (salam → ሰላም)</translation>
-<translation id="7172053773111046550">Klawiatura estońska</translation>
 <translation id="7180611975245234373">Odśwież</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
+<translation id="719009910964971313">Klawiatura amerykańska dewelopera (Dvorak)</translation>
 <translation id="7191454237977785534">Zapisz plik jako</translation>
 <translation id="7222624196722476520">Klawiatura bułgarska fonetyczna</translation>
 <translation id="7238097264433196391">Nazwa dysku</translation>
@@ -591,6 +584,7 @@
 <translation id="7283041136720745563">Twój limit na Dysku Google nie jest wystarczająco duży.</translation>
 <translation id="7295662345261934369">Udostępnij innym</translation>
 <translation id="7339898014177206373">Nowe okno</translation>
+<translation id="7348749398828259943">Amerykańska klawiatura międzynarodowa Workman</translation>
 <translation id="7359359531237882347">Kopiuję elementy (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="7375951387215729722">Lista plików posortowana według kolumny <ph name="COLUMN_NAME" /> w kolejności malejącej.</translation>
 <translation id="7389722738210761877">Klawiatura tajska (TIS 820-2531)</translation>
@@ -598,7 +592,9 @@
 <translation id="7417453074306512035">Klawiatura etiopska</translation>
 <translation id="7417705661718309329">Mapa Google</translation>
 <translation id="7419631653042041064">Klawiatura katalońska</translation>
+<translation id="7434823369735508263">Klawiatura brytyjska (Dvorak)</translation>
 <translation id="7460898608667578234">Ukraiński</translation>
+<translation id="7474889694310679759">Klawiatura kanadyjska (angielski)</translation>
 <translation id="7489215562877293245">Znaleziono <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Wszystko gotowe do utworzenia kopii zapasowej na <ph name="BEGIN_LINK" />Dysku Google<ph name="END_LINK" /></translation>
@@ -651,6 +647,7 @@
 <translation id="7873831373602885875">Nie można zapisać w folderze <ph name="FOLDER_NAME" />. Wszystkie zmiany będą zapisywane w folderze <ph name="DOWNLOADS_FOLDER" /> znajdującym się w folderze Pobrane pliki.</translation>
 <translation id="7881969471599061635">Wyłącz napisy</translation>
 <translation id="78946041517601018">Dyski współdzielone</translation>
+<translation id="7896906914454843592">Klawiatura rozszerzona USA</translation>
 <translation id="7898607018410277265">Klawiatura gudżarati (nowa fonetyczna)</translation>
 <translation id="7908793776359722643">Sformatowanie partycji usunie wszystkie zapisane na niej dane. Tej czynności nie będzie można cofnąć.</translation>
 <translation id="7917972308273378936">Klawiatura litewska</translation>
@@ -707,6 +704,7 @@
 <translation id="8395901698320285466">Wymiary</translation>
 <translation id="8412586565681117057">Szybka metoda wprowadzania</translation>
 <translation id="8418113698656761985">Klawiatura rumuńska</translation>
+<translation id="8432745813735585631">Klawiatura amerykańska (Colemak)</translation>
 <translation id="8437209419043462667">amerykański</translation>
 <translation id="8456681095658380701">Nieprawidłowa nazwa</translation>
 <translation id="8466234950814670489">Archiwum Tar</translation>
@@ -727,6 +725,7 @@
 <translation id="8698464937041809063">Rysunek Google</translation>
 <translation id="8714406895390098252">Rower</translation>
 <translation id="8719721339511222681">Zaznaczono element <ph name="ENTRY_NAME" />.</translation>
+<translation id="8722421161699219904">Amerykańska klawiatura międzynarodowa</translation>
 <translation id="872537912056138402">Chorwacki</translation>
 <translation id="874420130893181774">Tradycyjna metoda wprowadzania Pinyin</translation>
 <translation id="8770002329960263418">niderlandzki (Holandia) z klawiaturą amerykańską międzynarodową (PC)</translation>
@@ -738,7 +737,6 @@
 <translation id="885381502874625531">Klawiatura białoruska</translation>
 <translation id="8860454412039442620">Arkusz kalkulacyjny Excela</translation>
 <translation id="8900820606136623064">Węgierski</translation>
-<translation id="8901822611024316615">Czeska klawiatura QWERTY</translation>
 <translation id="8919081441417203123">Duński</translation>
 <translation id="8941776146379310519">malajski</translation>
 <translation id="8960999352790021682">Klawiatura bengalska (fonetyczna)</translation>

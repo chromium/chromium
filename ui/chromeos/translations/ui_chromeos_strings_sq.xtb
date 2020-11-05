@@ -10,7 +10,6 @@
 <translation id="1049926623896334335">Dokument Word</translation>
 <translation id="1060368002126861100">Për të hapur skedarët me <ph name="APP_NAME" />, në fillim zhvendosi në dosjen e skedarëve të Windows.</translation>
 <translation id="1062407476771304334">Zëvendëso</translation>
-<translation id="1065449928621190041">Tastiera për frëngjishte kanadeze</translation>
 <translation id="1119069657431255176">Arkivi i ngjeshur i mbledhjes së Bzip2</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> të gjetura.
@@ -36,7 +35,6 @@
 <translation id="1297922636971898492">"Disku i Google" nuk ofrohet tani. Ngarkimi do të rifillojë automatikisht pasi të kthehet "Disku i Google".</translation>
 <translation id="1307931752636661898">Nuk mund të shihen skedarët e Linux</translation>
 <translation id="1310751437842832374">Transliterim (mausam → ନମସ୍ତେ)</translation>
-<translation id="1337036551624197047">Tastierë në çekisht</translation>
 <translation id="1338950911836659113">Po fshin...</translation>
 <translation id="1346748346194534595">Djathtas</translation>
 <translation id="1351692861129622852">Po importon <ph name="FILE_COUNT" /> skedarë...</translation>
@@ -62,7 +60,6 @@
 <translation id="1556189134700913550">Zbatoje për të gjitha</translation>
 <translation id="1561842594491319104">Pajisjet e Chrome</translation>
 <translation id="1572585716423026576">Vendose si imazh sfondi</translation>
-<translation id="158809615184981282">Tastiera në faroisht</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1646019627374511909">Po i bën të disponueshëm jashtë linje <ph name="NUMBER_OF_ITEMS" /> skedarë</translation>
@@ -139,9 +136,9 @@
 <translation id="2453576648990281505">Skedari ekziston tashmë.</translation>
 <translation id="2464079411014186876">Akullore</translation>
 <translation id="2468402215065996499">Tamagoçi</translation>
-<translation id="247772113373397749">Tastierë kanadeze me shumë gjuhë</translation>
 <translation id="2494837236724268445">Tastiera guxharati (fonetike)</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2529133382850673012">Tastiera amerikane</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> artikuj të fshirë</translation>
 <translation id="2541377937973966830">Përmbajtjet e kësaj dosjeje janë vetëm për lexim. Disa aktivitete nuk mbështeten.</translation>
 <translation id="2542049655219295786">Tabela e Google</translation>
@@ -195,8 +192,10 @@
 <translation id="3067790092342515856">Skedarët e Windows</translation>
 <translation id="3078461028045006476">Ndaje me <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Pajisjet Chromebit</translation>
+<translation id="3116361045094675131">Tastierë britanike</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">U KRYE</translation>
+<translation id="3157729859914172001">Tastierë amerikane ndërkombëtare (PC)</translation>
 <translation id="3187212781151025377">Tastiera në hebraisht</translation>
 <translation id="3188257591659621405">Skedarët e mi</translation>
 <translation id="3197563288998582412">dvorak britanik</translation>
@@ -295,7 +294,6 @@
 <translation id="426015154560005552">Tastierë në arabisht</translation>
 <translation id="4261901459838235729">Prezantim i Google</translation>
 <translation id="4290535918735525311">1 dosje e ndarë me Linux</translation>
-<translation id="4298972503445160211">Tastiera në danisht</translation>
 <translation id="4299729908419173967">Braziliane</translation>
 <translation id="4309915981827077375">Informacione të përgjithshme</translation>
 <translation id="4315949787858895817">holandisht (Belgjikë)</translation>
@@ -308,6 +306,7 @@
 <translation id="4465830120256509958">Tastiera në brazilisht</translation>
 <translation id="4470564870223067757">Paketa hangul 2</translation>
 <translation id="4477219268485577442">Tastierë fonetike bullgare</translation>
+<translation id="4479812471636796472">Tastierë amerikane dvorak</translation>
 <translation id="4522570452068850558">Detajet</translation>
 <translation id="4527800702232535228">Kjo dosje është ndarë me Parallels Desktop</translation>
 <translation id="4552678318981539154">Bli më shumë hapësirë ruajtëse</translation>
@@ -337,7 +336,6 @@
 <translation id="4737050008115666127">Zbritja</translation>
 <translation id="4747271164117300400">Maqedonisht</translation>
 <translation id="4749157430980974800">Tastierë në gjeorgjisht</translation>
-<translation id="4755240240651974342">Tastiera në finlandisht</translation>
 <translation id="4759238208242260848">Shkarkimet</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Prezantim në PowerPoint</translation>
@@ -395,7 +393,6 @@
    Heqja e pajisjes kur është në përdorim mund të shkaktojë humbje të të dhënave. Prit deri sa të përfundojë operacioni dhe më pas nxirre pajisjen duke përdorur aplikacionin "Skedarët".</translation>
 <translation id="5163869187418756376">Ndarja dështoi. Kontrollo lidhjen dhe provo përsëri më vonë.</translation>
 <translation id="516592729076796170">Amerikane Dvorak për programues</translation>
-<translation id="5167131699331641907">Tastierë në holandisht</translation>
 <translation id="5170477580121653719">Hapësira e mbetur në "Diskun e Google": <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">Pamje miniaturë</translation>
 <translation id="5194713942430106590">Kliko për të renditur kolonën në rend ngjitës.</translation>
@@ -467,7 +464,6 @@
 <translation id="5850516540536751549">Ky lloj skedari nuk mbështetet. Vizito <ph name="BEGIN_LINK" />Dyqanin e uebit të Chrome<ph name="END_LINK" /> për të gjetur një aplikacion që mund ta hapë këtë lloj skedari.
     <ph name="BEGIN_LINK_HELP" />Mëso më shumë<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Nuk ka asgjë për të parë këtu...</translation>
-<translation id="5892290200158927959">Tastiera franceze BÉPO</translation>
 <translation id="5911887972742538906">Ndodhi një gabim gjatë instalimit të aplikacionit tënd për Linux.</translation>
 <translation id="5912396950572065471">Formati</translation>
 <translation id="5913638992615760742">Operacioni i kopjimit dështoi, gabim i papritur: <ph name="ERROR_MESSAGE" /></translation>
@@ -483,7 +479,6 @@
 <translation id="60357267506638014">Tastierë çeke QWERTY</translation>
 <translation id="604001903249547235">Rezervimi në renë kompjuterike</translation>
 <translation id="6040143037577758943">Mbyll</translation>
-<translation id="6054173164583630569">Tastierë në frëngjisht</translation>
 <translation id="6074825444536523002">Formulari i Google</translation>
 <translation id="6096979789310008754">Teksti i kërkimit u fshi, duke treguar të gjithë skedarët dhe dosjet.</translation>
 <translation id="610101264611565198">Po zhvendos <ph name="FILE_NAME" /> në <ph name="FOLDER_NAME" /></translation>
@@ -506,7 +501,6 @@
 <translation id="6339034549827494595">Tastierë fonetike (AATSEEL) në rusisht</translation>
 <translation id="6339145975392024142">Amerikane ndërkombëtare (PC)</translation>
 <translation id="6346310558342052870">Qasja e kufizuar</translation>
-<translation id="6353618411602605519">Tastierë kroate</translation>
 <translation id="6356685157277930264">Dritarja e komenteve për skedarët</translation>
 <translation id="6358884629796491903">Dragua</translation>
 <translation id="637062427944097960">Ky skedar u hap në një desktop tjetër. Lëviz te <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) për ta parë.</translation>
@@ -517,7 +511,6 @@
 <translation id="6462109140674788769">Tastierë greqisht</translation>
 <translation id="6466492211071551451">Tastierë irlandeze</translation>
 <translation id="6485131920355264772">Dështoi në marrjen e informacionit të hapësirës</translation>
-<translation id="6503256918647795660">Tastierë në frëngjishte zvicerane</translation>
 <translation id="6505918941256367791">Tastierë në tamilisht (InScript)</translation>
 <translation id="6509122719576673235">Norvegjisht</translation>
 <translation id="6527303717912515753">Ndaj</translation>
@@ -562,6 +555,7 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> të gjetura</translation>
 <translation id="6935521024859866267">Përmbys</translation>
+<translation id="6939777852457331078">Tastiera amerikane Workman</translation>
 <translation id="696203921837389374">Aktivizo sinkronizimin nëpërmjet të dhënave celulare</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6970230597523682626">Bullgarisht</translation>
@@ -578,9 +572,9 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;kërko në "Disk"&lt;/em&gt;</translation>
 <translation id="714034171374937760">Baza e Chrome</translation>
 <translation id="7170467426996704624">Transliterim (salam → ሰላም)</translation>
-<translation id="7172053773111046550">Tastiera në estonisht</translation>
 <translation id="7180611975245234373">Rifresko</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
+<translation id="719009910964971313">Tastierë amerikane Dvorak për programues</translation>
 <translation id="7191454237977785534">Ruaje faqen si</translation>
 <translation id="7222624196722476520">Tastierë fonetike bullgare</translation>
 <translation id="7238097264433196391">Emri i diskut</translation>
@@ -589,6 +583,7 @@
 <translation id="7283041136720745563">Kuota e "Diskut të Google" nuk është e mjaftueshme.</translation>
 <translation id="7295662345261934369">Ndaj me të tjerët</translation>
 <translation id="7339898014177206373">Dritare e re</translation>
+<translation id="7348749398828259943">Tastiera ndërkombëtare amerikane  Workman</translation>
 <translation id="7359359531237882347">Po kopjon <ph name="NUMBER_OF_ITEMS" /> artikuj...</translation>
 <translation id="7375951387215729722">Lista e skedarëve është renditur sipas kolonës "<ph name="COLUMN_NAME" />" në rend zbritës.</translation>
 <translation id="7389722738210761877">Tastierë në tajlandisht (TIS 820-2531)</translation>
@@ -596,7 +591,9 @@
 <translation id="7417453074306512035">Tastiera në etiopisht</translation>
 <translation id="7417705661718309329">Hartë e Google</translation>
 <translation id="7419631653042041064">Tastierë në katalanisht</translation>
+<translation id="7434823369735508263">Tastierë britanike Dvorak</translation>
 <translation id="7460898608667578234">Ukrainisht</translation>
+<translation id="7474889694310679759">Tastierë në anglishte kanadeze</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> të gjetura
     <ph name="LINE_BREAK1" />
     Gati për të rezervuar te <ph name="BEGIN_LINK" />Disku i Google<ph name="END_LINK" /></translation>
@@ -649,6 +646,7 @@
 <translation id="7873831373602885875">Nuk mund të ruajë në <ph name="FOLDER_NAME" />. Të gjitha modifikimet do të ruhen në <ph name="DOWNLOADS_FOLDER" /> në dosjen e "Shkarkimeve".</translation>
 <translation id="7881969471599061635">Çaktivizo titrat</translation>
 <translation id="78946041517601018">Disqet e ndara</translation>
+<translation id="7896906914454843592">Tastiera e zgjeruar amerikane</translation>
 <translation id="7898607018410277265">Tastiera guxharati (fonetike e re)</translation>
 <translation id="7908793776359722643">Formatimi i një ndarjeje do të spastrojë të gjitha të dhënat e ruajtura në të. Ky veprim nuk mund të zhbëhet.</translation>
 <translation id="7917972308273378936">Tastierë lituaneze</translation>
@@ -705,6 +703,7 @@
 <translation id="8395901698320285466">Përmasat</translation>
 <translation id="8412586565681117057">Metoda e hyrjes së shpejtë</translation>
 <translation id="8418113698656761985">Tastierë në rumanisht</translation>
+<translation id="8432745813735585631">Tastierë amerikane Colemak</translation>
 <translation id="8437209419043462667">Amerikane</translation>
 <translation id="8456681095658380701">Emër i pavlefshëm</translation>
 <translation id="8466234950814670489">Arkivi i mbledhjes</translation>
@@ -725,6 +724,7 @@
 <translation id="8698464937041809063">Vizatimi Google</translation>
 <translation id="8714406895390098252">Biçikleta</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> u zgjodh.</translation>
+<translation id="8722421161699219904">Tastierë amerikane ndërkombëtare</translation>
 <translation id="872537912056138402">Kroatisht</translation>
 <translation id="874420130893181774">Metoda e hyrjes pinyin tradicionale</translation>
 <translation id="8770002329960263418">holandisht (Holandë) me tastierë amerikane ndërkombëtare për PC</translation>
@@ -736,7 +736,6 @@
 <translation id="885381502874625531">Tastierë bjelloruse</translation>
 <translation id="8860454412039442620">Fletëllogaritëse Excel-i</translation>
 <translation id="8900820606136623064">Hungarisht</translation>
-<translation id="8901822611024316615">Tastierë çekisht QWERTY</translation>
 <translation id="8919081441417203123">Danisht</translation>
 <translation id="8941776146379310519">Malajzisht</translation>
 <translation id="8960999352790021682">Tastierë në bengalisht (Fonetike)</translation>

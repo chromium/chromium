@@ -853,31 +853,6 @@ Esta política no se aplica a las aplicaciones de kiosko; estas se migran de for
       Si estableces <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (valor 1), solo se podrán aplicar las variaciones que se consideren correcciones de estabilidad o seguridad críticas en <ph name="PRODUCT_NAME" />.
 
       Si estableces <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2), no se podrá aplicar ninguna variación en el navegador. Ten en cuenta que no se recomienda este modo porque podría impedir que los desarrolladores de <ph name="PRODUCT_NAME" /> proporcionen correcciones de seguridad críticas de manera oportuna.</translation>
-<translation id="2402140031630105556">Configura una lista de reglas para prevenir la filtración de datos de <ph name="PRODUCT_OS_NAME" />.
-      Se pueden filtrar datos cuando se copia y pega información, se transfieren archivos, se imprime contenido, se comparten pantallas, se realizan capturas de pantalla, etc.
-
-      Cada regla consiste en lo siguiente:
-      - Una lista de orígenes definidos como URL (los datos de los orígenes se considerarán confidenciales y se les aplicarán restricciones conforme a esta condición)
-      - Una lista de destinos definidos como URL o componentes (se podrá determinar si se comparten o no los datos confidenciales con estos destinos)
-      - Una lista de restricciones que se aplicarán en los datos de los orígenes
-
-      Se pueden definir reglas para lo siguiente:
-      - Controlar los datos del portapapeles que se comparten entre los orígenes y los destinos
-      - Controlar si se realizan capturas de pantalla de los orígenes
-      - Controlar si se imprime contenido de los orígenes
-      - Controlar la pantalla de privacidad cuando alguno de los orígenes está visible
-
-      Puedes establecer BLOCK o ALLOW como nivel de restricción.
-      - Si estableces la restricción como BLOCK, no se permitirá la acción.
-      - Si estableces la restricción como ALLOW, se permitirá la acción.
-
-      Notas:
-      - La restricción de PRIVACY_SCREEN no impide que se active la pantalla de privacidad, pero sí lo hace cuando se establece la restricción como BLOCK.
-      - Los campos de destino no pueden estar vacíos cuando una de las restricciones es CLIPBOARD; sin embargo, sí pueden quedar vacíos con el resto de las restricciones.
-      - La restricción de CLIPBOARD no puede diferenciar entre CROSTINI y PLUGIN_VM. Si se selecciona cualquiera de los dos para bloquear o permitir el uso compartido de datos, la regla se aplicará para ambos.
-      - Los patrones de las URL deben presentar un formato conforme a lo especificado en https://www.chromium.org/administrators/url-blacklist-filter-format.
-
-      Si no estableces la política, no se aplicarán restricciones.</translation>
 <translation id="2411629345938804022">Si estableces la política en 3, los sitios web podrán solicitar acceso a dispositivos Bluetooth cercanos. Si la estableces en 2, se negará el acceso a dispositivos Bluetooth cercanos.
 
       Si no la estableces, los sitios podrán solicitar acceso, pero los usuarios podrán cambiar esta configuración.</translation>

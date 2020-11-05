@@ -17,6 +17,7 @@
 <translation id="1369915414381695676">Webbplatsen <ph name="SITE_NAME" /> har lagts till</translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="1384959399684842514">Nedladdningen har pausats</translation>
+<translation id="1415402041810619267">Webbadressen har trunkerats</translation>
 <translation id="1431402976894535801">Blockera webbplatser från att registrera om du är närvarande</translation>
 <translation id="1446450296470737166">Tillåt fullst. kontroll av MIDI</translation>
 <translation id="1509960214886564027">Funktioner kan sluta att fungera på många webbplatser</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">Tillåt att webbplatser spelar upp skyddat innehåll</translation>
 <translation id="4468959413250150279">Stäng av ljudet för en webbplats.</translation>
 <translation id="4479647676395637221">Fråga innan webbplatser tillåts att använda kameran (rekommenderas)</translation>
+<translation id="4505788138578415521">Webbadressen har utökats</translation>
 <translation id="4534723447064627427">Om du vill ge <ph name="APP_NAME" /> åtkomst till mikrofonen måste du även aktivera mikrofonen i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="4570913071927164677">Information</translation>
 <translation id="4645575059429386691">Hanteras av din förälder</translation>

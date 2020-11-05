@@ -125,7 +125,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2127372758936585790">Carregador de baixo consumo</translation>
 <translation id="2132302418721800944">Gravar ecrã inteiro</translation>
 <translation id="2135456203358955318">Lupa ancorada</translation>
-<translation id="2144487987174258011">Reinicie para atualizar o Adobe Flash Player</translation>
 <translation id="2208323208084708176">Modo de ambiente de trabalho unificado</translation>
 <translation id="2220572644011485463">PIN ou palavra-passe</translation>
 <translation id="2222338659135520253">É necessário iniciar sessão.</translation>
@@ -160,7 +159,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2435457462613246316">Mostrar palavra-passe</translation>
 <translation id="2473177541599297363">Confirme a resolução</translation>
 <translation id="2475982808118771221">Ocorreu um erro</translation>
-<translation id="2479579251444854687">Deslize rapidamente para cima com três dedos para abrir e para baixo para fechar a Vista geral.</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2484513351006226581">Prima <ph name="KEYBOARD_SHORTCUT" /> para mudar o esquema do teclado.</translation>
 <translation id="2501920221385095727">Teclas aderentes</translation>
@@ -371,7 +369,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4481530544597605423">Dispositivos dessincronizados</translation>
 <translation id="4485060137115666462">Ao clicar com o botão direito do rato ou ao manter o botão premido, o Assistente mostra-lhe informações como a definição, a tradução ou a conversão de unidades para a sua seleção.</translation>
 <translation id="4505050298327493054">Espaço de trabalho ativo.</translation>
-<translation id="4506458088675900627">O gesto do touchpad da Vista geral foi alterado</translation>
 <translation id="4513946894732546136">Comentários</translation>
 <translation id="4527045527269911712">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" necessita de autorização para sincronizar.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> até estar totalmente carregada</translation>
@@ -434,6 +431,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5033299697334913360">Clique em qualquer local para capturar o ecrã inteiro.</translation>
 <translation id="5035236842988137213">O dispositivo <ph name="DEVICE_NAME" /> estabeleceu ligação a um novo telemóvel.</translation>
 <translation id="5035389544768382859">Confirme a configuração do ecrã</translation>
+<translation id="5078796286268621944">PIN incorreto</translation>
 <translation id="5083553833479578423">Desbloqueie mais funcionalidades do Assistente.</translation>
 <translation id="5136175204352732067">Teclado diferente ligado</translation>
 <translation id="5168181903108465623">Dispositivos de transmissão disponíveis</translation>

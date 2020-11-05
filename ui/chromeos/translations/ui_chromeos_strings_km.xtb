@@ -10,7 +10,6 @@
 <translation id="1049926623896334335">ឯកសារ Word</translation>
 <translation id="1060368002126861100">ដើម្បីបើកឯកសារដោយប្រើ <ph name="APP_NAME" /> សូមផ្លាស់ទីឯកសារទាំងនោះទៅក្នុងថតឯកសារ Windows ជាមុនសិន។</translation>
 <translation id="1062407476771304334">ជំនួស</translation>
-<translation id="1065449928621190041">ក្តារចុចភាសាបារាំងកាណាដា</translation>
 <translation id="1119069657431255176">Bzip2 បានបង្រួមបណ្ណាសារ tar</translation>
 <translation id="1120073797882051782">រ៉ូម៉ាចាហានគុល</translation>
 <translation id="1148097584170732637">បានរកឃើញ <ph name="FILE_COUNT" /> ។
@@ -36,7 +35,6 @@
 <translation id="1297922636971898492">Google Drive មិនមានទេឥឡូវនេះ។ ការទាញឡើងនឹងចាប់ផ្តើមឡើងវិញដោយស្វ័យប្រវត្តិនៅពេល Google Drive ត្រលប់មកវិញ។</translation>
 <translation id="1307931752636661898">មិនអាច​មើល​ឯកសារ Linux បានទេ</translation>
 <translation id="1310751437842832374">ការសរសេរតាមសូរស័ព្ទ (mausam → ନମସ୍ତେ)</translation>
-<translation id="1337036551624197047">ក្តារចុចឆេក</translation>
 <translation id="1338950911836659113">កំពុងលុប...</translation>
 <translation id="1346748346194534595">ស្តាំ</translation>
 <translation id="1351692861129622852">កំពុងនាំចូលឯកសារ <ph name="FILE_COUNT" /> ...</translation>
@@ -62,7 +60,6 @@
 <translation id="1556189134700913550">អនុវត្តទៅទាំងអស់</translation>
 <translation id="1561842594491319104">ឧបករណ៍ Chrome</translation>
 <translation id="1572585716423026576">កំណត់​ជា​ផ្ទាំង​រូបភាព</translation>
-<translation id="158809615184981282">ក្តារចុចហ្វារូស</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">កាមេរ៉ា</translation>
 <translation id="1646019627374511909">កំពុង​កំណត់​ឱ្យ​ឯកសារ <ph name="NUMBER_OF_ITEMS" /> អាច​ប្រើ​បាន​ពេល​គ្មាន​អ៊ីនធឺណិត</translation>
@@ -139,9 +136,9 @@
 <translation id="2453576648990281505">ឯកសារមានរួចហើយ</translation>
 <translation id="2464079411014186876">ការ៉េម​</translation>
 <translation id="2468402215065996499">ថាម៉ាហ្គោឈី</translation>
-<translation id="247772113373397749">ក្តារចុចពហុភាសាកាណាដា</translation>
 <translation id="2494837236724268445">ក្តារចុចគូចារ៉ាទី (Phonetic)</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2529133382850673012">ក្តារចុចអាមេរិក</translation>
 <translation id="2534155362429831547">បានលុបធាតុ <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2541377937973966830">ខ្លឹមសារនៃថតនេះគឺសម្រាប់​តែអានប៉ុណ្ណោះ។ មិនអាច​ប្រើសកម្មភាព​មួយចំនួន​បានទេ។</translation>
 <translation id="2542049655219295786">តារាង Google</translation>
@@ -195,8 +192,10 @@
 <translation id="3067790092342515856">ឯកសារ Windows</translation>
 <translation id="3078461028045006476">ចែករំលែកជាមួយ <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit</translation>
+<translation id="3116361045094675131">ក្តារចុចចក្រភពអង់គ្លេស</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ធ្វើរួច</translation>
+<translation id="3157729859914172001">ក្តារចុចអាមេរិកអន្តរជាតិ (PC)</translation>
 <translation id="3187212781151025377">ក្តារចុចហេប្រឺ</translation>
 <translation id="3188257591659621405">ឯកសារ​របស់ខ្ញុំ​</translation>
 <translation id="3197563288998582412">UK Dvorak</translation>
@@ -295,7 +294,6 @@
 <translation id="426015154560005552">ក្តារចុចអារ៉ាប់</translation>
 <translation id="4261901459838235729">បទបង្ហាញ Google</translation>
 <translation id="4290535918735525311">ថត 1 ដែលបាន​ចែករំលែក​ជាមួយ Linux</translation>
-<translation id="4298972503445160211">ក្តារចុចដាណឺម៉ាក</translation>
 <translation id="4299729908419173967">ភាសាប្រេស៊ីល</translation>
 <translation id="4309915981827077375">ព័ត៌​មាន​ទូទៅ</translation>
 <translation id="4315949787858895817">ហូឡង់ (បែលហ្សិក​)</translation>
@@ -308,6 +306,7 @@
 <translation id="4465830120256509958">ក្តារចុចប្រេស៊ីល</translation>
 <translation id="4470564870223067757">ហានគុល 2 ឈុត</translation>
 <translation id="4477219268485577442">សូរសព្ទប៊ុលហ្គារី</translation>
+<translation id="4479812471636796472">ក្តារចុចអាមេរិក Dvorak</translation>
 <translation id="4522570452068850558">ព័ត៌មានលំអិត</translation>
 <translation id="4527800702232535228">ថតនេះត្រូវបាន​ចែករំលែកជាមួយ Parallels Desktop</translation>
 <translation id="4552678318981539154">ទិន្នន័យចន្លោះផ្ទុ</translation>
@@ -337,7 +336,6 @@
 <translation id="4737050008115666127">ផ្លូវចុះចត</translation>
 <translation id="4747271164117300400">ម៉ាសេដូនី</translation>
 <translation id="4749157430980974800">ក្តារចុចហ្សកហ្ស៊ី</translation>
-<translation id="4755240240651974342">ក្តារចុចហ្វាំងឡង់</translation>
 <translation id="4759238208242260848">ទាញយក</translation>
 <translation id="4779136857077979611">អូនីហ្គីរិ</translation>
 <translation id="4784330909746505604">បទបង្ហាញ PowerPoint</translation>
@@ -395,7 +393,6 @@
    ការដកឧបករណ៍របស់អ្នកចេញ ខណៈពេលកំពុងប្រើប្រាស់អាចបណ្តាលឲ្យបាត់បង់ទិន្នន័យ។ សូមរង់ចាំរហូតដល់ប្រតិបត្តិការត្រូវបានបញ្ចប់ បន្ទាប់មកបញ្ចេញឧបករណ៍ដោយប្រើកម្មវិធីឯកសារ។</translation>
 <translation id="5163869187418756376">ការចែករំលែកបានបរាជ័យ។ ពិនិត្យការភ្ជាប់របស់អ្នក ហើយព្យាយាមម្តងទៀត។</translation>
 <translation id="516592729076796170">អ្នកសរសេរកម្មវិធីអាមេរិក Dvorak</translation>
-<translation id="5167131699331641907">ក្តារចុចហូឡង់</translation>
 <translation id="5170477580121653719">ចន្លោះផ្ទុក Google Drive ដែលនៅសល់៖ <ph name="SPACE_AVAILABLE" />។</translation>
 <translation id="5177526793333269655">មើលរូបតំណាងតូច</translation>
 <translation id="5194713942430106590">ចុចដើម្បី​តម្រៀបជួរឈរ​តាមលំដាប់កើន។</translation>
@@ -467,7 +464,6 @@
 <translation id="5850516540536751549">ប្រភេទឯកសារនេះមិនត្រូវបានគាំទ្រទេ។ សូមទៅកាន់ <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> ដើម្បីស្វែងរកកម្មវិធីដែលអាចបើកប្រភេទឯកសារនេះ។
     <ph name="BEGIN_LINK_HELP" />ស្វែងយល់បន្ថែម<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">គ្មានអ្វីមើលទេនៅទីនេះ...</translation>
-<translation id="5892290200158927959">ក្តារចុច BÉPO បារាំង</translation>
 <translation id="5911887972742538906">មានបញ្ហា​កើតឡើង អំឡុង​ពេលដំឡើង​កម្មវិធី Linux របស់អ្នក។</translation>
 <translation id="5912396950572065471">ទម្រង់</translation>
 <translation id="5913638992615760742">មិនអាចចម្លង​ប្រតិបត្តិការ​បានទេ បញ្ហាមិនបានរំពឹងទុក៖ <ph name="ERROR_MESSAGE" /></translation>
@@ -483,7 +479,6 @@
 <translation id="60357267506638014">ក្តារចុចភាសាឆេក</translation>
 <translation id="604001903249547235">ការបម្រុងទុកក្លោដ</translation>
 <translation id="6040143037577758943">បិទ</translation>
-<translation id="6054173164583630569">ក្តារចុចបារាំង</translation>
 <translation id="6074825444536523002">បែបបទ Google</translation>
 <translation id="6096979789310008754">បានសម្អាតអត្ថបទស្វែងរក ដែលបង្ហាញឯកសារ និងថតទាំងអស់។</translation>
 <translation id="610101264611565198">កំពុងផ្លាស់ទី <ph name="FILE_NAME" /> ទៅ <ph name="FOLDER_NAME" /></translation>
@@ -506,7 +501,6 @@
 <translation id="6339034549827494595">ក្តារចុចសូរស័ព្ទភាសារុស្សី (AATSEEL)</translation>
 <translation id="6339145975392024142">អាមេរិក​អន្តរជាតិ (PC)</translation>
 <translation id="6346310558342052870">បាន​រឹតបន្តឹង​ការ​ចូលប្រើ​</translation>
-<translation id="6353618411602605519">ក្តារចុចក្រូអាត</translation>
 <translation id="6356685157277930264">វិនដូមតិកែលម្អ​របស់ឯកសារ</translation>
 <translation id="6358884629796491903">នាគ</translation>
 <translation id="637062427944097960">៝ឯកសារនេះបានបើកនៅលើដេស៍ថបផ្សេង។ ផ្លាស់ទីទៅ <ph name="USER_NAME" /> <ph name="MAIL_ADDRESS" /> ដើម្បីមើលវា។</translation>
@@ -517,7 +511,6 @@
 <translation id="6462109140674788769">ក្តារចុចក្រិច</translation>
 <translation id="6466492211071551451">ក្តារចុចអៀរឡង់</translation>
 <translation id="6485131920355264772">បានបរាជ័យក្នុងការទាញត្រលប់ព័ត៌មានចន្លោះផ្ទុក</translation>
-<translation id="6503256918647795660">ក្តារចុចបារាំងស្វីស</translation>
 <translation id="6505918941256367791">ក្តារចុចតាមិល (InScript)</translation>
 <translation id="6509122719576673235">ន័រវេស</translation>
 <translation id="6527303717912515753">ចែករំលែក</translation>
@@ -562,6 +555,7 @@
     <ph name="LINE_BREAK1" />
     បានរកឃើញ <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">ផ្កាប់ចុះក្រោម</translation>
+<translation id="6939777852457331078">ក្តារចុច US Workman</translation>
 <translation id="696203921837389374">បើកដំណើរការធ្វើសមកម្មនៅលើទិន្នន័យចល័ត</translation>
 <translation id="6965382102122355670">យល់ព្រម</translation>
 <translation id="6970230597523682626">ភាសាប៊ុលហ្គារី</translation>
@@ -578,9 +572,9 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ស្វែងរក Drive&lt;/em&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7170467426996704624">ការសរសេរតាមសូរស័ព្ទ (salam → ሰላም)</translation>
-<translation id="7172053773111046550">ក្តារចុចអេស្តូនី</translation>
 <translation id="7180611975245234373">ធ្វើឲ្យថ្មីឡើងវិញ…</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
+<translation id="719009910964971313">ក្តារចុចអ្នកសរសេរកម្មវិធីអាមេរិក Dvorak</translation>
 <translation id="7191454237977785534">រក្សាទុកឯកសារជា</translation>
 <translation id="7222624196722476520">ក្តារចុចតាមសូរសព្ទប៊ុលហ្គារី</translation>
 <translation id="7238097264433196391">ឈ្មោះ​ឧបករណ៍ USB</translation>
@@ -589,6 +583,7 @@
 <translation id="7283041136720745563">កម្រិត​កំណត់​នៃ Google ថាស​របស់អ្នក​មិនមាន​ទំហំធំ​គ្រប់គ្រាន់​ទេ។</translation>
 <translation id="7295662345261934369">ចែក​រំលែក​ជាមួយ​អ្នកដទៃ</translation>
 <translation id="7339898014177206373">ផ្ទាំងថ្មី</translation>
+<translation id="7348749398828259943">ក្តារចុច US Workman អន្តរជាតិ</translation>
 <translation id="7359359531237882347">កំពុង​ចម្លងធាតុ <ph name="NUMBER_OF_ITEMS" /> ...</translation>
 <translation id="7375951387215729722">បញ្ជី​ឯកសារ​ដែលតម្រៀប​តាមលំដាប់​ចុះនៃ <ph name="COLUMN_NAME" /> ។</translation>
 <translation id="7389722738210761877">ក្តារចុចថៃ (TIS 820-2531)</translation>
@@ -596,7 +591,9 @@
 <translation id="7417453074306512035">ក្តារចុចអេត្យូពី</translation>
 <translation id="7417705661718309329">Google ផែនទី</translation>
 <translation id="7419631653042041064">ក្តារចុចកាតាឡាន</translation>
+<translation id="7434823369735508263">ក្តារចុចចក្រភពអស់គ្លេស Dvorak</translation>
 <translation id="7460898608667578234">ភាសាអ៊ុយក្រែន</translation>
+<translation id="7474889694310679759">ក្តារចុចភាសាអស់គ្លេសកាណាដា</translation>
 <translation id="7489215562877293245">បានរកឃើញ <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     រួច​រាល់​ដើម្បី​បម្រុងទុក​ទៅកាន់ <ph name="BEGIN_LINK" />Google ថាស<ph name="END_LINK" /></translation>
@@ -649,6 +646,7 @@
 <translation id="7873831373602885875">មិនអាច​រក្សាទុកទៅ <ph name="FOLDER_NAME" /> បានទេ។ ការកែសម្រួល​ទាំងអស់​នឹងត្រូវរក្សាទុកទៅក្នុង <ph name="DOWNLOADS_FOLDER" /> នៅក្នុងថត​ទាញយក។</translation>
 <translation id="7881969471599061635">បិទដំណើរការចំណងជើងរង</translation>
 <translation id="78946041517601018">ថាស​ដែលបាន​ចែករំលែក</translation>
+<translation id="7896906914454843592">ក្តារចុច US Extended</translation>
 <translation id="7898607018410277265">ក្ដារចុចគូចារ៉ាទី (សូរសព្ទថ្មី)</translation>
 <translation id="7908793776359722643">ការសម្អាតផ្នែកណាមួយនឹងលុបទិន្នន័យទាំងអស់ ដែលបានរក្សាទុកនៅក្នុងនោះ។ សកម្មភាព​នេះ​មិន​អាច​​ត្រឡប់វិញ​បានទេ។</translation>
 <translation id="7917972308273378936">ក្តារចុចលីទុយអានី</translation>
@@ -705,6 +703,7 @@
 <translation id="8395901698320285466">ទំហំ</translation>
 <translation id="8412586565681117057">រិធីសាស្ត្របញ្ចូលរហ័ស</translation>
 <translation id="8418113698656761985">ក្តារចុចរ៉ូម៉ានី</translation>
+<translation id="8432745813735585631">ក្តារចុចអាមេរិក Colemak</translation>
 <translation id="8437209419043462667">អាមេរិក</translation>
 <translation id="8456681095658380701">ឈ្មោះគ្មានសុពលភាព</translation>
 <translation id="8466234950814670489">បណ្ណាសារ tar</translation>
@@ -725,6 +724,7 @@
 <translation id="8698464937041809063">គំនូរ Google</translation>
 <translation id="8714406895390098252">កង់</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ដែលបានជ្រើសរើស។</translation>
+<translation id="8722421161699219904">ក្តារចុចអាមេរិកអន្តរជាតិ</translation>
 <translation id="872537912056138402">ភាសាក្រូអាត</translation>
 <translation id="874420130893181774">វិធីសាស្ត្របញ្ចូលភីងអ៊ីញប្រពៃណី</translation>
 <translation id="8770002329960263418">ភាសាហូឡង់ (ហូឡង់) ជាមួយក្ដារចុចកុំព្យូទ័រអាមេរិកអន្តរជាតិ</translation>
@@ -736,7 +736,6 @@
 <translation id="885381502874625531">ក្តារចុចបេឡារុស</translation>
 <translation id="8860454412039442620">សៀវភៅបញ្ជី Excel</translation>
 <translation id="8900820606136623064">ភាសាហុងគ្រី</translation>
-<translation id="8901822611024316615">ក្តារចុចឆេក</translation>
 <translation id="8919081441417203123">ភាសាដាណឺម៉ាក</translation>
 <translation id="8941776146379310519">ម៉ាឡេស៊ី</translation>
 <translation id="8960999352790021682">ក្តារចុចប៉េងកាល់ (Phonetic)</translation>

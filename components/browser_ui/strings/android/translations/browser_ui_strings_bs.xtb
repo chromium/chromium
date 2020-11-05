@@ -17,6 +17,7 @@
 <translation id="1369915414381695676">Web lokacija <ph name="SITE_NAME" /> je dodana</translation>
 <translation id="1383876407941801731">Traži</translation>
 <translation id="1384959399684842514">Preuzimanje je pauzirano</translation>
+<translation id="1415402041810619267">URL je skraćen</translation>
 <translation id="1431402976894535801">Blokirajte web lokacijama informacije o prisutnosti</translation>
 <translation id="1446450296470737166">Puna kontrola MIDI uređaja</translation>
 <translation id="1509960214886564027">Moguće je da će funkcije na mnogim web lokacijama prestati s radom</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">Dozvoljava web lokacijama da reproduciraju zaštićen sadržaj</translation>
 <translation id="4468959413250150279">Isključen zvuk za određenu web lokaciju.</translation>
 <translation id="4479647676395637221">Web-lokacije moraju tražiti dopuštenje za pristup kameri (preporučeno)</translation>
+<translation id="4505788138578415521">URL je proširen</translation>
 <translation id="4534723447064627427">Da aplikaciji <ph name="APP_NAME" /> dozvolite pristup mikrofonu, također uključite mikrofon u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="4570913071927164677">Detalji</translation>
 <translation id="4645575059429386691">Upravlja roditelj</translation>

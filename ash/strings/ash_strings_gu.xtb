@@ -125,7 +125,6 @@
 <translation id="2127372758936585790">નિમ્ન-પાવર ચાર્જર</translation>
 <translation id="2132302418721800944">પૂર્ણ સ્ક્રીન રેકોર્ડ કરો</translation>
 <translation id="2135456203358955318">ડૉક કરેલ મૅગ્નિફાયર</translation>
-<translation id="2144487987174258011">Adobe Flash Player અપડેટ કરવા પુનઃપ્રારંભ કરો</translation>
 <translation id="2208323208084708176">એકીકૃત ડેસ્કટૉપ મોડ</translation>
 <translation id="2220572644011485463">PIN અથવા પાસવર્ડ</translation>
 <translation id="2222338659135520253">સાઇન ઇન આવશ્યક</translation>
@@ -160,7 +159,6 @@
 <translation id="2435457462613246316">પાસવર્ડ બતાવો</translation>
 <translation id="2473177541599297363">રિઝોલ્યુશન કન્ફર્મ કરો</translation>
 <translation id="2475982808118771221">કોઈ ભૂલ આવી છે</translation>
-<translation id="2479579251444854687">ઓવરવ્યૂ ખોલવા માટે ત્રણ આંગળી વડે ઉપરની તરફ અને તેને બંધ કરવા માટે નીચેની તરફ સ્વાઇપ કરો.</translation>
 <translation id="2482878487686419369">નોટિફિકેશનો</translation>
 <translation id="2484513351006226581">કીબોર્ડ લેઆઉટ સ્વિચ કરવા માટે <ph name="KEYBOARD_SHORTCUT" />ને દબાવો.</translation>
 <translation id="2501920221385095727">સ્ટિકી કી</translation>
@@ -371,7 +369,6 @@
 <translation id="4481530544597605423">જોડીથી અલગ કરેલા ઉપકરણો</translation>
 <translation id="4485060137115666462">બટનને રાઇટ ક્લિક કરવાથી અથવા થોડીવાર દબાવી રાખવાથી, Assistant તમારી પસંદગી માટે વ્યાખ્યા, અનુવાદ અથવા એકમના રૂપાંતરણ જેવી માહિતી બતાવે છે.</translation>
 <translation id="4505050298327493054">સક્રિય ડેસ્ક.</translation>
-<translation id="4506458088675900627">ઓવરવ્યૂ માટેનો ટચપૅડ સંકેત બદલાયો છે</translation>
 <translation id="4513946894732546136">પ્રતિસાદ</translation>
 <translation id="4527045527269911712">Bluetooth ડિવાઇસ "<ph name="DEVICE_NAME" />" ને જોડી બનાવવા માટે પરવાનગી જોઈએ છે.</translation>
 <translation id="453661520163887813">પૂર્ણપણે ચાર્જ થવામાં <ph name="TIME" /></translation>
@@ -434,6 +431,7 @@
 <translation id="5033299697334913360">પૂર્ણ સ્ક્રીન કૅપ્ચર કરવા માટે સ્ક્રીન પર ગમે ત્યાં ક્લિક કરો</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />, નવા ફોન સાથે કનેક્ટ થયું</translation>
 <translation id="5035389544768382859">ડિસ્પ્લેની ગોઠવણને કન્ફર્મ કરો</translation>
+<translation id="5078796286268621944">ખોટો PIN</translation>
 <translation id="5083553833479578423">આસિસ્ટંટની વધુ સુવિધાઓને અનલૉક કરો.</translation>
 <translation id="5136175204352732067">અલગ કીબોર્ડ કનેક્ટ કર્યું</translation>
 <translation id="5168181903108465623">Cast ઉપકરણો ઉપલબ્ધ</translation>

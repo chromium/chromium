@@ -125,7 +125,6 @@
 <translation id="2127372758936585790">Kis teljesítményű töltő</translation>
 <translation id="2132302418721800944">Teljes képernyő rögzítése</translation>
 <translation id="2135456203358955318">Dokkolt nagyító</translation>
-<translation id="2144487987174258011">Az Adobe Flash Player frissítéséhez újraindítás szükséges</translation>
 <translation id="2208323208084708176">Egységes asztali mód</translation>
 <translation id="2220572644011485463">PIN-kód vagy jelszó</translation>
 <translation id="2222338659135520253">Bejelentkezést igényel</translation>
@@ -160,7 +159,6 @@
 <translation id="2435457462613246316">Jelszó megjelenítése</translation>
 <translation id="2473177541599297363">Felbontás megerősítése</translation>
 <translation id="2475982808118771221">Hiba történt</translation>
-<translation id="2479579251444854687">Az Áttekintés megnyitásához csúsztasson felfelé, a bezárásához pedig csúsztasson lefelé három ujjával.</translation>
 <translation id="2482878487686419369">Értesítések</translation>
 <translation id="2484513351006226581">A billentyűzetkiosztás átváltásához nyomja meg a(z) <ph name="KEYBOARD_SHORTCUT" /> billentyűparancsot.</translation>
 <translation id="2501920221385095727">Beragadó billentyűk</translation>
@@ -372,7 +370,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4481530544597605423">Párosítatlan eszközök</translation>
 <translation id="4485060137115666462">Jobb kattintással vagy nyomva tartással információkat kérhet Segédjétől (például a kijelölt szöveg definícióját vagy fordítását, illetve a mértékegységek közötti átváltást).</translation>
 <translation id="4505050298327493054">Aktív asztal.</translation>
-<translation id="4506458088675900627">Megváltozott az Áttekintés előhívásához az érintőpadon használt kézmozdulat</translation>
 <translation id="4513946894732546136">Visszajelzés</translation>
 <translation id="4527045527269911712">A(z) „<ph name="DEVICE_NAME" />” Bluetooth-eszköz engedélyt kér a párosításra.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> a teljes feltöltésig</translation>
@@ -435,6 +432,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5033299697334913360">Kattintson bárhová a teljes képernyő rögzítéséhez</translation>
 <translation id="5035236842988137213">A(z) <ph name="DEVICE_NAME" /> új telefonhoz csatlakozott</translation>
 <translation id="5035389544768382859">Képernyő-beállítás megerősítése</translation>
+<translation id="5078796286268621944">Helytelen PIN-kód</translation>
 <translation id="5083553833479578423">Hozzáférés a Segéd további funkcióihoz</translation>
 <translation id="5136175204352732067">Új billentyűzet lett csatlakoztatva</translation>
 <translation id="5168181903108465623">Cast-eszközök állnak rendelkezésre</translation>

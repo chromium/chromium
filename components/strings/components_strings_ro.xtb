@@ -316,6 +316,7 @@
 <translation id="214556005048008348">Anulează plata</translation>
 <translation id="2147827593068025794">Sincronizare în fundal</translation>
 <translation id="2148613324460538318">Adaugă un card</translation>
+<translation id="2149968176347646218">Conexiunea nu este sigură</translation>
 <translation id="2154054054215849342">Sincronizarea nu este disponibilă pentru domeniul tău</translation>
 <translation id="2154484045852737596">Editează cardul</translation>
 <translation id="2161656808144014275">Text</translation>
@@ -1167,6 +1168,7 @@
 <translation id="5571083550517324815">Nu se poate prelua de la această adresă. Selectează altă adresă.</translation>
 <translation id="5580958916614886209">Verifică luna în care expiră și încearcă din nou</translation>
 <translation id="5586446728396275693">Nu există adrese salvate</translation>
+<translation id="5593349413089863479">Conexiunea nu este complet sigură</translation>
 <translation id="5595485650161345191">Editează adresa</translation>
 <translation id="5598944008576757369">Alege metoda de plată</translation>
 <translation id="560412284261940334">Gestionarea nu este acceptată</translation>
@@ -1885,6 +1887,7 @@ Detalii suplimentare:
 <translation id="8507227106804027148">Linie de comandă</translation>
 <translation id="8508648098325802031">Pictograma Căutare</translation>
 <translation id="8522552481199248698">Chrome te poate ajuta să îți protejezi Contul Google și să îți schimbi parola.</translation>
+<translation id="8525306231823319788">Ecran complet</translation>
 <translation id="8530813470445476232">Șterge istoricul de navigare, cookie-urile, memoria cache și altele din setările Chrome</translation>
 <translation id="8533619373899488139">Accesează &lt;strong&gt;chrome://policy&lt;/strong&gt; ca să vezi lista de adrese URL blocate și alte politici aplicate de administratorul de sistem.</translation>
 <translation id="8541158209346794904">Dispozitivul Bluetooth</translation>

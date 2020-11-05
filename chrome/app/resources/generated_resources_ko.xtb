@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">화면 업데이트 빈도 결정</translation>
 <translation id="1061904396131502319">곧 휴식 시간입니다</translation>
 <translation id="1067048845568873861">생성됨</translation>
+<translation id="1067291318998134776">Linux(베타)</translation>
 <translation id="1067922213147265141">다른 Google 서비스</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">컴퓨터의 다른 프로그램에서 Chrome 작동에 영향을 줄 수 있는 확장 프로그램을 추가했습니다. 
@@ -1377,7 +1378,6 @@
 <translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" />에 로그인되어 있지 않습니다.</translation>
 <translation id="2564520396658920462">AppleScript를 통한 자바스크립트 실행 기능이 꺼져 있습니다. 이 기능을 사용하도록 설정하려면 메뉴 바에서 보기 &gt; 개발자 &gt; Apple Events의 자바스크립트 허용으로 이동하세요. 자세한 내용은 다음 페이지에서 확인하세요. https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">향상된 맞춤법 검사</translation>
-<translation id="2566124945717127842">Powerwash는 <ph name="IDS_SHORT_PRODUCT_NAME" /> 기기를 재설정하여 새것처럼 만듭니다.</translation>
 <translation id="2568774940984945469">정보 표시줄 컨테이너</translation>
 <translation id="2571655996835834626">쿠키, 자바스크립트, 플러그인, 위치정보, 마이크, 카메라 등의 기능에 대한 웹사이트의 액세스 권한을 관리하는 설정을 변경합니다.</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" />에 대한 읽기 전용 액세스가 허용되었습니다.</translation>
@@ -1842,7 +1842,6 @@
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> 도움말</translation>
 <translation id="3118654181216384296">잠시 후 Linux를 다시 시작해 보세요.</translation>
 <translation id="3120430004221004537">기기(<ph name="DEVICE_NAME" />)에서 해당 작업에 필요한 암호화가 수행되지 않았습니다.</translation>
-<translation id="3121793941267913344"><ph name="IDS_SHORT_PRODUCT_NAME" /> 기기 재설정</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">데이터 디렉터리 만들기 실패</translation>
 <translation id="3124111068741548686">사용자 핸들</translation>
@@ -5491,7 +5490,6 @@
 <translation id="7475671414023905704">Netscape Lost Password URL</translation>
 <translation id="7476454130948140105">배터린 잔량이 부족하여(<ph name="BATTERY_PERCENT" />%) 업데이트할 수 없음</translation>
 <translation id="7477793887173910789">음악, 동영상 등의 항목 제어하기</translation>
-<translation id="7478362879637727630">이 Chrome Education 기기를 교육 계정에 등록해야 합니다. 새 계정으로 가입하려면 https://g.co/workspace/edusignup 페이지로 이동하세요.</translation>
 <translation id="7478485216301680444">키오스크 애플리케이션을 설치할 수 없습니다.</translation>
 <translation id="7479221278376295180">저장용량 사용량 개요</translation>
 <translation id="7481312909269577407">앞으로</translation>
@@ -6062,7 +6060,6 @@
 <translation id="8101987792947961127">다음에 재부팅할 때 Powerwash 필요</translation>
 <translation id="8102139037507939978">system_logs.txt에서 개인 식별 정보를 삭제합니다.</translation>
 <translation id="8102159139658438129"><ph name="LINK_BEGIN" />설정<ph name="LINK_END" />으로 이동해 연결된 휴대전화의 옵션을 확인하세요.</translation>
-<translation id="8104696615244072556"><ph name="IDS_SHORT_PRODUCT_NAME" /> 기기를 Powerwash한 다음 이전 버전으로 돌아가세요.</translation>
 <translation id="8107015733319732394"><ph name="DEVICE_TYPE" />에 Google Play 스토어를 설치합니다. 설치하는 데 몇 분 정도 걸릴 수 있습니다.</translation>
 <translation id="810728361871746125">화면 해상도</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{타사 쿠키 없음}=1{타사 쿠키 1개가 차단됨}other{타사 쿠키 #개가 차단됨}}</translation>

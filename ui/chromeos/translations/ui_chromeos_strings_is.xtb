@@ -10,7 +10,6 @@
 <translation id="1049926623896334335">Word-skjal</translation>
 <translation id="1060368002126861100">Til að opna skrár með <ph name="APP_NAME" /> skaltu fyrst afrita þær í skráamöppu Windows.</translation>
 <translation id="1062407476771304334">Skipta út</translation>
-<translation id="1065449928621190041">Kanadískt franskt lyklaborð</translation>
 <translation id="1119069657431255176">Bzip2-þjöppuð tar-safnskrá</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="1148097584170732637">Fann <ph name="FILE_COUNT" />.
@@ -36,7 +35,6 @@
 <translation id="1297922636971898492">Google Drive er ekki í boði núna. Flutningur verður sjálfkrafa hafinn að nýju þegar Google Drive verður aftur tiltækt.</translation>
 <translation id="1307931752636661898">Ekki er hægt að skoða Linux-skrár</translation>
 <translation id="1310751437842832374">Umritun (mausam → ନମସ୍ତେ)</translation>
-<translation id="1337036551624197047">Tékkneskt lyklaborð</translation>
 <translation id="1338950911836659113">Eyðir...</translation>
 <translation id="1346748346194534595">Réttsælis</translation>
 <translation id="1351692861129622852">Flytur inn <ph name="FILE_COUNT" /> skrár...</translation>
@@ -62,7 +60,6 @@
 <translation id="1556189134700913550">Nota á allt</translation>
 <translation id="1561842594491319104">Chrome tæki</translation>
 <translation id="1572585716423026576">Nota sem veggfóður</translation>
-<translation id="158809615184981282">Færeyskt lyklaborð</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Myndavél</translation>
 <translation id="1646019627374511909">Gerir <ph name="NUMBER_OF_ITEMS" /> skrár aðgengilegar án nettengingar</translation>
@@ -139,9 +136,9 @@
 <translation id="2453576648990281505">Skráin er þegar til</translation>
 <translation id="2464079411014186876">Ís</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
-<translation id="247772113373397749">Kanadískt fjöltyngt lyklaborð</translation>
 <translation id="2494837236724268445">Gujarati-lyklaborð (hljóðritun)</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2529133382850673012">Bandarískt lyklaborð</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> atriðum eytt</translation>
 <translation id="2541377937973966830">Innihald þessarar möppu er skrifvarið. Sumar aðgerðir eru ekki studdar.</translation>
 <translation id="2542049655219295786">Google tafla</translation>
@@ -195,8 +192,10 @@
 <translation id="3067790092342515856">Windows-skrár</translation>
 <translation id="3078461028045006476">Deila með <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit tæki</translation>
+<translation id="3116361045094675131">Breskt lyklaborð</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">LOKIÐ</translation>
+<translation id="3157729859914172001">Bandarískt alþjóðlegt tölvulyklaborð</translation>
 <translation id="3187212781151025377">Hebreskt lyklaborð</translation>
 <translation id="3188257591659621405">Skrárnar mínar</translation>
 <translation id="3197563288998582412">Breskt Dvorak</translation>
@@ -295,7 +294,6 @@
 <translation id="426015154560005552">Arabískt lyklaborð</translation>
 <translation id="4261901459838235729">Google kynning</translation>
 <translation id="4290535918735525311">Einni möppu deilt með Linux</translation>
-<translation id="4298972503445160211">Danskt lyklaborð</translation>
 <translation id="4299729908419173967">Brasilískt</translation>
 <translation id="4309915981827077375">Almennar upplýsingar</translation>
 <translation id="4315949787858895817">Hollenska (Belgía)</translation>
@@ -308,6 +306,7 @@
 <translation id="4465830120256509958">Barislískt lyklaborð</translation>
 <translation id="4470564870223067757">Hangul 2 sett</translation>
 <translation id="4477219268485577442">Búlgarskt hljóðritunarlyklaborð</translation>
+<translation id="4479812471636796472">Bandarískt Dvorak-lyklaborð</translation>
 <translation id="4522570452068850558">Upplýsingar</translation>
 <translation id="4527800702232535228">Þessari möppu er deilt með Parallels Desktop</translation>
 <translation id="4552678318981539154">Kaupa meira geymslurými</translation>
@@ -337,7 +336,6 @@
 <translation id="4737050008115666127">Lending</translation>
 <translation id="4747271164117300400">Makedónska</translation>
 <translation id="4749157430980974800">Georgískt lyklaborð</translation>
-<translation id="4755240240651974342">Finnskt lyklaborð</translation>
 <translation id="4759238208242260848">Niðurhal</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint-kynning</translation>
@@ -395,7 +393,6 @@
    Ef tækið er fjarlægt á meðan það er í notkun kunna gögn að tapast. Bíddu þangað til aðgerðinni er lokið og aftengdu síðan tækið úr skráaforritinu.</translation>
 <translation id="5163869187418756376">Mistókst að deila. Athugaðu nettenginguna og reyndu aftur síðar.</translation>
 <translation id="516592729076796170">Bandarískt Dvorak-lyklaborð fyrir forritara</translation>
-<translation id="5167131699331641907">Hollenskt lyklaborð</translation>
 <translation id="5170477580121653719">Geymslurými eftir á Google Drive: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">Smámyndayfirlit</translation>
 <translation id="5194713942430106590">Smelltu til að raða dálkinum í hækkandi röð.</translation>
@@ -467,7 +464,6 @@
 <translation id="5850516540536751549">Þessi skráargerð er ekki studd. Farðu í <ph name="BEGIN_LINK" />vefverslun Chrome<ph name="END_LINK" /> til að finna forrit sem getur opnað þessa skráargerð.
     <ph name="BEGIN_LINK_HELP" />Frekari upplýsingar<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Ekkert að sjá hér...</translation>
-<translation id="5892290200158927959">Franskt BÉPO-lyklaborð</translation>
 <translation id="5911887972742538906">Villa kom upp við uppsetningu Linux-forritsins.</translation>
 <translation id="5912396950572065471">Snið</translation>
 <translation id="5913638992615760742">Afritunaraðgerðin mistókst vegna óvæntrar villu: <ph name="ERROR_MESSAGE" /></translation>
@@ -483,7 +479,6 @@
 <translation id="60357267506638014">Tékkneskt QWERTY</translation>
 <translation id="604001903249547235">Afrit í skýi</translation>
 <translation id="6040143037577758943">Loka</translation>
-<translation id="6054173164583630569">Franskt lyklaborð</translation>
 <translation id="6074825444536523002">Google eyðublað</translation>
 <translation id="6096979789310008754">Leitartexti hreinsaður, sýnir allar skrár og möppur.</translation>
 <translation id="610101264611565198">Færir <ph name="FILE_NAME" /> í <ph name="FOLDER_NAME" /></translation>
@@ -506,7 +501,6 @@
 <translation id="6339034549827494595">Rússneskt hljóðritunarlyklaborð (AATSEEL)</translation>
 <translation id="6339145975392024142">Bandarískt alþjóðlegt tölvulyklaborð</translation>
 <translation id="6346310558342052870">Takmarkaður aðgangur</translation>
-<translation id="6353618411602605519">Króatískt lyklaborð</translation>
 <translation id="6356685157277930264">Gluggi með upplýsingum um skrár</translation>
 <translation id="6358884629796491903">Dreki</translation>
 <translation id="637062427944097960">Skráin var opnuð á öðru skjáborði. Skiptu yfir í <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) til að skoða hana.</translation>
@@ -517,7 +511,6 @@
 <translation id="6462109140674788769">Grískt lyklaborð</translation>
 <translation id="6466492211071551451">Írskt lyklaborð</translation>
 <translation id="6485131920355264772">Mistókst að sækja upplýsingar um pláss</translation>
-<translation id="6503256918647795660">Svissneskt franskt lyklaborð</translation>
 <translation id="6505918941256367791">Tamil-lyklaborð (InScript)</translation>
 <translation id="6509122719576673235">Norskt</translation>
 <translation id="6527303717912515753">Deila</translation>
@@ -562,6 +555,7 @@
     <ph name="LINE_BREAK1" />
     Fann <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Öfugur</translation>
+<translation id="6939777852457331078">Bandarískt Workman-lyklaborð</translation>
 <translation id="696203921837389374">Virkja samstillingu með farsímagögnum</translation>
 <translation id="6965382102122355670">Í lagi</translation>
 <translation id="6970230597523682626">Búlgarskt</translation>
@@ -578,9 +572,9 @@
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;“ – &lt;em&gt;leita í Drive&lt;/em&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7170467426996704624">Umritun (Salam → ሰላም)</translation>
-<translation id="7172053773111046550">Eistneskt lyklaborð</translation>
 <translation id="7180611975245234373">Endurnýja</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
+<translation id="719009910964971313">Bandarískt Dvorak-lyklaborð fyrir forritara</translation>
 <translation id="7191454237977785534">Vista skrá sem</translation>
 <translation id="7222624196722476520">Búlgarskt hljóðritunarlyklaborð</translation>
 <translation id="7238097264433196391">Heiti drifs</translation>
@@ -589,6 +583,7 @@
 <translation id="7283041136720745563">Þú hefur ekki nægan Google Drive kvóta.</translation>
 <translation id="7295662345261934369">Deila með öðrum</translation>
 <translation id="7339898014177206373">Nýr gluggi</translation>
+<translation id="7348749398828259943">Bandarískt alþjóðlegt Workman-lyklaborð</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> atriði afrituð...</translation>
 <translation id="7375951387215729722">Skráalista raðað eftir <ph name="COLUMN_NAME" /> í lækkandi röð.</translation>
 <translation id="7389722738210761877">Taílenskt lyklaborð (TIS 820-2531)</translation>
@@ -596,7 +591,9 @@
 <translation id="7417453074306512035">Eþíópískt lyklaborð</translation>
 <translation id="7417705661718309329">Google kort</translation>
 <translation id="7419631653042041064">Katalónskt lyklaborð</translation>
+<translation id="7434823369735508263">Breskt Dvorak-lyklaborð</translation>
 <translation id="7460898608667578234">Úkraínskt</translation>
+<translation id="7474889694310679759">Kanadískt enskt lyklaborð</translation>
 <translation id="7489215562877293245">Fann <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Afritun á <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> er tilbúin</translation>
@@ -649,6 +646,7 @@
 <translation id="7873831373602885875">Ekki tókst að vista í <ph name="FOLDER_NAME" />. Allar breytingar verða vistaðar í <ph name="DOWNLOADS_FOLDER" /> í möppunni Niðurhal.</translation>
 <translation id="7881969471599061635">Fela skjátexta</translation>
 <translation id="78946041517601018">Samnýtt drif</translation>
+<translation id="7896906914454843592">Bandarískt aukið lyklaborð</translation>
 <translation id="7898607018410277265">Gujarati-lyklaborð (ný hljóðritun)</translation>
 <translation id="7908793776359722643">Þegar sneið er forsniðin eyðast öll gögn af henni. Ekki er hægt að afturkalla þessa aðgerð.</translation>
 <translation id="7917972308273378936">Litháískt lyklaborð</translation>
@@ -705,6 +703,7 @@
 <translation id="8395901698320285466">Stærð</translation>
 <translation id="8412586565681117057">Flýtiinnsláttaraðferð</translation>
 <translation id="8418113698656761985">Rúmenskt lyklaborð</translation>
+<translation id="8432745813735585631">Bandarískt Colemak-lyklaborð</translation>
 <translation id="8437209419043462667">Bandarískt</translation>
 <translation id="8456681095658380701">Ógilt heiti</translation>
 <translation id="8466234950814670489">Tar-safnskrá</translation>
@@ -725,6 +724,7 @@
 <translation id="8698464937041809063">Google teikning</translation>
 <translation id="8714406895390098252">Bíllaus</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> valið.</translation>
+<translation id="8722421161699219904">Bandarískt alþjóðlegt lyklaborð</translation>
 <translation id="872537912056138402">Króatískt</translation>
 <translation id="874420130893181774">Hefðbundin pinyin-innsláttaraðferð</translation>
 <translation id="8770002329960263418">Hollenska (Holland) með bandarísku alþjóðlegu tölvulyklaborði</translation>
@@ -736,7 +736,6 @@
 <translation id="885381502874625531">Hvítrússneskt lyklaborð</translation>
 <translation id="8860454412039442620">Excel-töflureiknir</translation>
 <translation id="8900820606136623064">Ungverskt</translation>
-<translation id="8901822611024316615">Tékkneskt QWERTY-lyklaborð</translation>
 <translation id="8919081441417203123">Danskt</translation>
 <translation id="8941776146379310519">Malajíska</translation>
 <translation id="8960999352790021682">Bengalskt lyklaborð (hljóðritun)</translation>

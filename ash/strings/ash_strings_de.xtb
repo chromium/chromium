@@ -125,7 +125,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2127372758936585790">Schwaches Ladegerät</translation>
 <translation id="2132302418721800944">Ganzen Bildschirm aufzeichnen</translation>
 <translation id="2135456203358955318">Angedockte Lupe</translation>
-<translation id="2144487987174258011">Neu starten, um den Adobe Flash Player zu aktualisieren</translation>
 <translation id="2208323208084708176">Unified Desktop-Modus</translation>
 <translation id="2220572644011485463">PIN oder Passwort</translation>
 <translation id="2222338659135520253">Anmeldung erforderlich</translation>
@@ -160,7 +159,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
 <translation id="2473177541599297363">Auflösung bestätigen</translation>
 <translation id="2475982808118771221">Ein Fehler ist aufgetreten.</translation>
-<translation id="2479579251444854687">Sie können die Übersicht öffnen, indem Sie mit drei Fingern nach oben wischen. Zum Schließen der Übersicht wischen Sie mit drei Fingern nach unten.</translation>
 <translation id="2482878487686419369">Benachrichtigungen</translation>
 <translation id="2484513351006226581">Drücken Sie <ph name="KEYBOARD_SHORTCUT" />, um das Tastaturlayout zu ändern.</translation>
 <translation id="2501920221385095727">Sticky Keys</translation>
@@ -371,7 +369,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4481530544597605423">Entkoppelte Geräte</translation>
 <translation id="4485060137115666462">Wenn Sie mit der rechten Maustaste klicken oder lange drücken, zeigt Assistant Informationen wie die Definition, Übersetzung oder das Umrechnen von Einheiten für Ihre Auswahl.</translation>
 <translation id="4505050298327493054">Aktiver Desktop.</translation>
-<translation id="4506458088675900627">Die Touchpad-Geste für die Übersicht wurde geändert</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4527045527269911712">Das Bluetooth-Gerät "<ph name="DEVICE_NAME" />" bittet um Erlaubnis für Kopplung.</translation>
 <translation id="453661520163887813">Voll geladen in <ph name="TIME" /> h</translation>
@@ -434,6 +431,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5033299697334913360">Auf eine beliebige Stelle klicken, um den ganzen Bildschirm aufzuzeichnen</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ist mit einem neuen Smartphone verbunden</translation>
 <translation id="5035389544768382859">Displaykonfiguration bestätigen</translation>
+<translation id="5078796286268621944">Falsche PIN</translation>
 <translation id="5083553833479578423">Möchten Sie weitere Assistant-Funktionen freischalten?</translation>
 <translation id="5136175204352732067">Andere Tastatur angeschlossen</translation>
 <translation id="5168181903108465623">Übertragungsgeräte verfügbar</translation>

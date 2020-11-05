@@ -316,6 +316,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="214556005048008348">Otkaži plaćanje</translation>
 <translation id="2147827593068025794">Sinhronizacija u pozadini</translation>
 <translation id="2148613324460538318">Dodaj karticu</translation>
+<translation id="2149968176347646218">Veza nije bezbedna</translation>
 <translation id="2154054054215849342">Sinhronizacija nije dostupna za domen</translation>
 <translation id="2154484045852737596">Izmenite karticu</translation>
 <translation id="2161656808144014275">Tekst</translation>
@@ -1169,6 +1170,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5571083550517324815">Preuzimanje sa ove adrese nije moguće. Izaberite drugu adresu.</translation>
 <translation id="5580958916614886209">Proverite mesec isteka i probajte ponovo</translation>
 <translation id="5586446728396275693">Nema sačuvanih adresa</translation>
+<translation id="5593349413089863479">Veza nije potpuno bezbedna</translation>
 <translation id="5595485650161345191">Izmena adrese</translation>
 <translation id="5598944008576757369">Odaberite način plaćanja</translation>
 <translation id="560412284261940334">Upravljanje nije podržano</translation>
@@ -1886,6 +1888,7 @@ Dodatni detalji:
 <translation id="8507227106804027148">Komandna linija</translation>
 <translation id="8508648098325802031">Ikona Pretraga</translation>
 <translation id="8522552481199248698">Chrome može da vam pomogne da zaštitite Google nalog i promenite lozinku.</translation>
+<translation id="8525306231823319788">Ceo ekran</translation>
 <translation id="8530813470445476232">Obrišite istoriju pregledanja, kolačiće, keš i drugo u podešavanjima Chrome-a</translation>
 <translation id="8533619373899488139">Posetite &lt;strong&gt;chrome://policy&lt;/strong&gt; da biste videli listu blokiranih URL-ova i druge smernice koje je odredio administrator sistema.</translation>
 <translation id="8541158209346794904">Bluetooth uređaj</translation>

@@ -62,6 +62,7 @@
 <translation id="1060292118287751956">স্ক্ৰীনখন আপডে’ট হোৱা সঘনতা নিৰ্দিষ্ট কৰে</translation>
 <translation id="1061904396131502319">ডিভাইচ লক হওঁ হওঁ</translation>
 <translation id="1067048845568873861">সৃষ্টি কৰা হ’ল</translation>
+<translation id="1067291318998134776">Linux (বিটা)</translation>
 <translation id="1067922213147265141">অন্য Google সেৱা</translation>
 <translation id="1070066693520972135">ডব্লিউইপি</translation>
 <translation id="1070377999570795893">আপোনাৰ কম্পিউটাৰৰ অন্য প্ৰ’গামে যোগ কৰা এক্সটেনশ্বনে Chrome কার্যপ্ৰণালী সলনি কৰিব পাৰে।
@@ -1374,7 +1375,6 @@
 <translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" />ত ছাইন ইন কৰি থোৱা নাই</translation>
 <translation id="2564520396658920462">AppleScriptৰ জৰিয়তে JavaScript কার্যকৰী কৰা সুবিধাটো অফ কৰা হৈছে। এই সুবিধা অন কৰিবলৈ Apple Eventsৰ মেনু বাৰৰ পৰা চাওক &gt; বিকাশকর্তা &gt; JavaScriptৰ অনুমতি দিয়ক-লৈ যাওক। অধিক তথ্যৰ বাবে ইয়াত চাওক: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">বানান পৰীক্ষা কৰা সুবিধাটো উন্নত কৰা হৈছে</translation>
-<translation id="2566124945717127842">আপোনাৰ <ph name="IDS_SHORT_PRODUCT_NAME" /> ডিভাইচটো ৰিছেট কৰি নতুনৰ দৰে কৰিবলৈ পাৱাৰৱাশ্ব কৰক।</translation>
 <translation id="2568774940984945469">ইনফ’বাৰ কণ্টেইনাৰ</translation>
 <translation id="2571655996835834626">ৱেবছাইটসমূহে কুকি, JavaScript, প্লাগইন, ভৌগলিক অৱস্থান, মাইক্ৰফ’ন, কেমেৰা ইত্যাদিলৈ এক্সেছ কৰা সুবিধাটো নিয়ন্ত্ৰণ কৰা আপোনাৰ ছেটিংসমূহ সলনি কৰক।</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" />লৈ কেৱল পঢ়াৰ এক্সেছ দিয়া হৈছে।</translation>
@@ -1839,7 +1839,6 @@
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> সহায়</translation>
 <translation id="3118654181216384296">অনুগ্ৰহ কৰি কেইমুহূৰ্তমানৰ পাছত পুনৰ Linux ষ্টার্ট কৰি চাওক।</translation>
 <translation id="3120430004221004537">প্ৰদত্ত প্ৰক্ৰিয়াৰ বাবে এনক্ৰিপছন পৰ্যাপ্ত নহয়: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3121793941267913344">এই <ph name="IDS_SHORT_PRODUCT_NAME" /> ডিভাইচ ৰিছেট কৰক</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">ডেটা ডাইৰেক্ট'ৰী সৃষ্টি কৰিব পৰা নগ'ল</translation>
 <translation id="3124111068741548686">USER নিয়ন্ত্ৰণসমূহ</translation>
@@ -5479,7 +5478,6 @@
 <translation id="7475671414023905704">নেটস্কেপৰ হেৰুওৱা পাছৱর্ডৰ URL</translation>
 <translation id="7476454130948140105">আপডে’ট কৰিবলৈ বেটাৰীৰ চ্চার্জ অতি কম আছে (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">আপোনাৰ সংগীত, ভিডিঅ’সমূহ আৰু অধিক নিয়ন্ত্ৰণ কৰক</translation>
-<translation id="7478362879637727630">আপুনি এই Chrome Education ডিভাইচটো এটা শিক্ষা একাউণ্টত পঞ্জীয়ন কৰিবই লাগিব। এটা নতুন একাউণ্টৰ বাবে ছাইন আপ কৰিবলৈ অনুগ্ৰহ কৰি https://g.co/workspace/edusignupলৈ যাওক।</translation>
 <translation id="7478485216301680444">Kiosk এপ্‌টো ইনষ্টল কৰিব পৰা নগ’ল।</translation>
 <translation id="7479221278376295180">ষ্ট’ৰেজ ব্যৱহাৰৰ অৱলোকন</translation>
 <translation id="7481312909269577407">ফৰৱাৰ্ড কৰক</translation>
@@ -6047,7 +6045,6 @@
 <translation id="8101987792947961127">পৰৱর্তী ৰিবুটৰ বাবে পাৱাৰৱাশ্বৰ আৱশ্যক</translation>
 <translation id="8102139037507939978">system_logs.txtৰ পৰা ব্যক্তিগতভাৱে চিনাক্ত কৰিব পৰা তথ্য আঁতৰাওক।</translation>
 <translation id="8102159139658438129">আপুনি সংযোগ কৰি থোৱা ফ’নটোৰ বিকল্পসমূহ চাবলৈ <ph name="LINK_BEGIN" />ছেটিংসমূহ<ph name="LINK_END" />লৈ যাওক</translation>
-<translation id="8104696615244072556">আপোনাৰ <ph name="IDS_SHORT_PRODUCT_NAME" /> ডিভাইচ পাৱাৰৱাশ্ব কৰক আৰু পূৰ্বৰ সংস্কৰণলৈ উভটি যাওক</translation>
 <translation id="8107015733319732394">আপোনাৰ <ph name="DEVICE_TYPE" />ত Google Play Store ইনষ্টল কৰি থকা হৈছে। ইয়াৰ বাবে কিছু সময়ৰ প্ৰয়োজন হ'ব পাৰে।</translation>
 <translation id="810728361871746125">ডিছপ্লে’ৰ ৰিজ’লিউশ্বন</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{তৃতীয় পক্ষৰ কুকিসমূহ নাই}=1{১টা তৃতীয় পক্ষৰ কুকি অৱৰোধ কৰা হৈছে}one{#টা তৃতীয় পক্ষৰ কুকীসমূহ অৱৰোধ কৰা হৈছে}other{#টা তৃতীয় পক্ষৰ কুকীসমূহ অৱৰোধ কৰা হৈছে}}</translation>

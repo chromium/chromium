@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">በዚህ ወር</translation>
 <translation id="1637811476055996098">ፋይሎችን ይምረጡ</translation>
 <translation id="1650423536718072820">ጥቅስ</translation>
+<translation id="1681022320378710418">የአሁኑ ሰዓት</translation>
 <translation id="1727886345390570319">የተዘጉ የሥዕል መግለጫ ጽሑፎችን ምናሌ ደብቅ</translation>
 <translation id="1729654308190250600">እባክዎ ባዶ ያልሆነ የኢሜይል አድራሻ ያስገቡ።</translation>
 <translation id="1758486001363313524">ሌላ...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">እባክዎ አንድ ዩአርኤል ያስገቡ።</translation>
 <translation id="3175736971608411871">ሰዓት ቆጣሪ</translation>
 <translation id="3199563858620722075">ጥምድ ሳጥን</translation>
+<translation id="3220661731597678625">የአሁኑ ደረጃ</translation>
 <translation id="3329013043687509092">የቀለም ሙሌት</translation>
 <translation id="3450233048674729344">ዋጋ ከ<ph name="MAXIMUM" /> የሚያንስ ወይም ከእሱ እኩል መሆን አለበት።</translation>
 <translation id="3486220673238053218">ብየና</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">ቪዲዮ</translation>
 <translation id="479989351350248267">ፈልግ</translation>
 <translation id="4812940957355064477">እባክዎ ቁጥር ያስገቡ።</translation>
+<translation id="4912200001568447310">የአሁን ንጥል</translation>
 <translation id="4912536737030637138">የዋቢ መጽሐፍት ግቤት</translation>
 <translation id="4915360478455618802">ሰዓት መራጭን አሳይ</translation>
 <translation id="492244087561876220">አስተያየት</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">ሚዲያን ማጫወት አልተቻለም።</translation>
 <translation id="537648784377940524">አነስተኛው ቀን (<ph name="MIN_DATE_OR_TIME" />) ከከፍተኛው ቀን (<ph name="MAX_DATE_OR_TIME" />) በፊት መምጣት አለበት።</translation>
 <translation id="5406322316791861025">ምስል</translation>
+<translation id="5425179576310518467">የአሁኑ ቀን</translation>
 <translation id="5453733299334684579">የዛፍ ንጥል</translation>
 <translation id="5466621249238537318">እባክዎ አንድ ወይም ተጨማሪ ፋይሎችን ይምረጡ።</translation>
 <translation id="5468998798572797635">ከሙሉ ማያ ገጽ ውጣ</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">ሜትር</translation>
 <translation id="6166809985690652833">ድሕረ ቃል</translation>
 <translation id="6209276755895393898">ይህ ይመስላል፦ <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">የአሁኑ ገጽ</translation>
 <translation id="6213469881011901533">ሙዳየ ቃላት</translation>
 <translation id="6281588256137006900">ፍካት</translation>
 <translation id="6281763101136022427">ዩአርኤል</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">እባክዎ ይህን ጽሑፍ ወደ <ph name="MIN_CHARACTERS" /> ወይም ከዚያ በላይ ቁምፊዎች ያራዝሙት (አሁን እየተጠቀሙ ያሉት 1 ቁምፊ ነው)።</translation>
 <translation id="7034405885550056553">የአስተያየት ጥቆማ</translation>
 <translation id="709897737746224366">እባክዎ የተጠየቀውን ቅርጸት ያዛምዱ።</translation>
+<translation id="7102274145889307184">የአሁኑ አካባቢ</translation>
 <translation id="7118469954320184356">ምንም መግለጫ የለም።</translation>
 <translation id="7139483182332611405">መቅድም</translation>
 <translation id="7214187073215825913">የይዘት መረጃ</translation>
