@@ -8,13 +8,12 @@ import android.content.Context;
 import android.util.Pair;
 
 import org.chromium.base.StrictModeContext;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modelutil.MVCListAdapter;
 
 /**
  * Creates and helps set up instances of an appropriate implementation of
  * {@link OmniboxSuggestionsDropdown}.
+ * TODO(crbug.com/1075602): remove this class.
  */
 class OmniboxSuggestionsDropdownFactory {
     /**
@@ -25,10 +24,7 @@ class OmniboxSuggestionsDropdownFactory {
      */
     static Pair<OmniboxSuggestionsDropdown, MVCListAdapter> provideDropdownAndAdapter(
             Context context, MVCListAdapter.ModelList modelList) {
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.OMNIBOX_SUGGESTIONS_RECYCLER_VIEW)) {
-            return provideRecyclerView(context, modelList);
-        }
-        return provideListView(context, modelList);
+        return provideRecyclerView(context, modelList);
     }
 
     private static Pair<OmniboxSuggestionsDropdown, MVCListAdapter> provideRecyclerView(
@@ -39,18 +35,6 @@ class OmniboxSuggestionsDropdownFactory {
         }
         OmniboxSuggestionsRecyclerViewAdapter adapter =
                 new OmniboxSuggestionsRecyclerViewAdapter(modelList);
-        dropdown.setAdapter(adapter);
-        return Pair.create(dropdown, adapter);
-    }
-
-    private static Pair<OmniboxSuggestionsDropdown, MVCListAdapter> provideListView(
-            Context context, MVCListAdapter.ModelList modelList) {
-        OmniboxSuggestionsList dropdown;
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            dropdown = new OmniboxSuggestionsList(context);
-        }
-
-        OmniboxSuggestionsListAdapter adapter = new OmniboxSuggestionsListAdapter(modelList);
         dropdown.setAdapter(adapter);
         return Pair.create(dropdown, adapter);
     }

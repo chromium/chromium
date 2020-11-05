@@ -3565,11 +3565,6 @@
     "expiry_milestone": 89
   },
   {
-    "name": "omnibox-suggestions-recycler-view",
-    "owners": [ "fgorski", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 89
-  },
-  {
     "name": "omnibox-suggestions-wrap-around",
     "owners": [ "ender", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 90

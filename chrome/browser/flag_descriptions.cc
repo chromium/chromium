@@ -1581,11 +1581,6 @@ const char kOmniboxSpareRendererDescription[] =
     "When the omnibox is focused, start an empty spare renderer. This can "
     "speed up the load of the navigation from the omnibox.";
 
-const char kOmniboxSuggestionsRecyclerViewName[] =
-    "Omnibox Suggestions using a recycler view";
-const char kOmniboxSuggestionsRecyclerViewDescription[] =
-    "Use an Android RecyclerView to render the Omnibox Suggestions drop down.";
-
 const char kOmniboxSuggestionsWrapAroundName[] =
     "Omnibox Suggestions Wrap-Around";
 const char kOmniboxSuggestionsWrapAroundDescription[] =

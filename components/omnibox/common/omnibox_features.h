@@ -87,7 +87,6 @@ extern const base::Feature kOmniboxSuggestionButtonRow;
 extern const base::Feature kOmniboxPedalSuggestions;
 extern const base::Feature kOmniboxKeywordSearchButton;
 extern const base::Feature kOmniboxRefinedFocusState;
-extern const base::Feature kOmniboxSuggestionsRecyclerView;
 extern const base::Feature kOmniboxSuggestionsWrapAround;
 extern const base::Feature kWebUIOmniboxPopup;
 

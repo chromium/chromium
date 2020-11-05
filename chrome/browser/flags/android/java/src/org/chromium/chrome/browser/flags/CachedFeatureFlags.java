@@ -71,7 +71,6 @@ public class CachedFeatureFlags {
             put(ChromeFeatureList.INSTANT_START, false);
             put(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID, false);
             put(ChromeFeatureList.TAB_TO_GTS_ANIMATION, false);
-            put(ChromeFeatureList.OMNIBOX_SUGGESTIONS_RECYCLER_VIEW, false);
             put(ChromeFeatureList.TEST_DEFAULT_DISABLED, false);
             put(ChromeFeatureList.TEST_DEFAULT_ENABLED, true);
             put(ChromeFeatureList.REPORT_FEED_USER_ACTIONS, false);
