@@ -63,9 +63,6 @@ class ClipboardWriter : public GarbageCollected<ClipboardWriter>,
   virtual void StartWrite(
       DOMArrayBuffer* raw_data,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) = 0;
-  virtual void DecodeOnBackgroundThread(
-      DOMArrayBuffer* raw_data,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) = 0;
   // This ClipboardPromise owns this.
   Member<ClipboardPromise> promise_;
 
