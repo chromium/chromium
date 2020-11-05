@@ -22,10 +22,40 @@
           .catch(e => window.domAutomationController.send(false));
     }
 
+    function enterPictureInPicture() {
+      video.requestPictureInPicture()
+          .then(_ => window.domAutomationController.send(true))
+          .catch(e => window.domAutomationController.send(false));
+    }
+
     function enterFullscreen() {
       video.requestFullscreen()
           .then(_ => window.domAutomationController.send(true))
           .catch(e => window.domAutomationController.send(false));
+    }
+
+    function addPlayEventListener() {
+      video.addEventListener('play', () => {
+        document.title = 'play';
+      }, { once: true });
+    }
+
+    function addPauseEventListener() {
+      video.addEventListener('pause', () => {
+        document.title = 'pause';
+      }, { once: true });
+    }
+
+    function setMediaSessionPlayActionHandler() {
+      navigator.mediaSession.setActionHandler("play", _ => {
+        video.play();
+      });
+    }
+
+    function setMediaSessionPauseActionHandler() {
+      navigator.mediaSession.setActionHandler("pause", _ => {
+        video.pause();
+      });
     }
   </script>
 </html>

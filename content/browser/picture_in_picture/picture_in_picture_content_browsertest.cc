@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/browser/picture_in_picture/picture_in_picture_service_impl.h"
 #include "content/browser/picture_in_picture/picture_in_picture_window_controller_impl.h"
 #include "content/public/browser/content_browser_client.h"
@@ -14,6 +16,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/media_session/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom.h"
 
@@ -39,7 +42,9 @@ class TestOverlayWindow : public OverlayWindow {
   void UpdateVideoSize(const gfx::Size& natural_size) override {
     size_ = natural_size;
   }
-  void SetPlaybackState(PlaybackState playback_state) override {}
+  void SetPlaybackState(PlaybackState playback_state) override {
+    playback_state_ = playback_state;
+  }
   void SetPlayPauseButtonVisibility(bool is_visible) override {}
   void SetSkipAdButtonVisibility(bool is_visible) override {}
   void SetNextTrackButtonVisibility(bool is_visible) override {}
@@ -47,8 +52,13 @@ class TestOverlayWindow : public OverlayWindow {
   void SetSurfaceId(const viz::SurfaceId& surface_id) override {}
   cc::Layer* GetLayerForTesting() override { return nullptr; }
 
+  const base::Optional<PlaybackState>& playback_state() const {
+    return playback_state_;
+  }
+
  private:
   gfx::Size size_;
+  base::Optional<PlaybackState> playback_state_;
 
   DISALLOW_COPY_AND_ASSIGN(TestOverlayWindow);
 };
@@ -124,6 +134,11 @@ class PictureInPictureContentBrowserTest : public ContentBrowserTest {
   PictureInPictureWindowControllerImpl* window_controller() {
     return PictureInPictureWindowControllerImpl::FromWebContents(
         shell()->web_contents());
+  }
+
+  TestOverlayWindow* overlay_window() {
+    return static_cast<TestOverlayWindow*>(
+        window_controller()->GetWindowForTesting());
   }
 
  private:
@@ -239,6 +254,120 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
   Mock::VerifyAndClearExpectations(web_contents_delegate());
 }
 
+// Check that the playback state in the Picture-in-Picture window follows the
+// state of the media player.
+IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
+                       EnterPictureInPictureForPausedPlayer) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
+
+  // Play and pause the player from script.
+  bool result = false;
+  ASSERT_TRUE(
+      ExecuteScriptAndExtractBool(shell()->web_contents(), "play();", &result));
+  ASSERT_TRUE(result);
+
+  ASSERT_TRUE(ExecuteScript(shell()->web_contents(), "video.pause();"));
+
+  ASSERT_TRUE(ExecuteScriptAndExtractBool(shell()->web_contents(),
+                                          "enterPictureInPicture();", &result));
+  ASSERT_TRUE(result);
+  EXPECT_EQ(overlay_window()->playback_state(),
+            OverlayWindow::PlaybackState::kPaused);
+
+  // Simulate resuming playback by interacting with the PiP window.
+  ASSERT_TRUE(
+      ExecuteScript(shell()->web_contents(), "addPlayEventListener();"));
+  window_controller()->TogglePlayPause();
+
+  base::string16 expected_title = base::ASCIIToUTF16("play");
+  EXPECT_EQ(
+      expected_title,
+      TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());
+  EXPECT_EQ(overlay_window()->playback_state(),
+            OverlayWindow::PlaybackState::kPlaying);
+
+  // Simulate pausing playback by interacting with the PiP window.
+  ASSERT_TRUE(
+      ExecuteScript(shell()->web_contents(), "addPauseEventListener();"));
+  window_controller()->TogglePlayPause();
+
+  expected_title = base::ASCIIToUTF16("pause");
+  EXPECT_EQ(
+      expected_title,
+      TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());
+  EXPECT_EQ(overlay_window()->playback_state(),
+            OverlayWindow::PlaybackState::kPaused);
+}
+
+class MediaSessionPictureInPictureContentBrowserTest
+    : public PictureInPictureContentBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "PictureInPictureAPI,MediaSession");
+    scoped_feature_list_.InitWithFeatures(
+        {media_session::features::kMediaSessionService}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Check that the playback state in the Picture-in-Picture window follows the
+// state of the media player.
+IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
+                       EnterPictureInPictureForPausedPlayer) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
+
+  // Play and pause the player from script.
+  bool result = false;
+  ASSERT_TRUE(
+      ExecuteScriptAndExtractBool(shell()->web_contents(), "play();", &result));
+  ASSERT_TRUE(result);
+
+  ASSERT_TRUE(ExecuteScript(shell()->web_contents(), "video.pause();"));
+
+  ASSERT_TRUE(ExecuteScriptAndExtractBool(shell()->web_contents(),
+                                          "enterPictureInPicture();", &result));
+  ASSERT_TRUE(result);
+  EXPECT_EQ(overlay_window()->playback_state(),
+            OverlayWindow::PlaybackState::kPaused);
+
+  // Simulate resuming playback by invoking the Media Session "play" action
+  // through interaction with the PiP window.
+  ASSERT_TRUE(ExecuteScript(shell()->web_contents(),
+                            "setMediaSessionPlayActionHandler();"));
+  ASSERT_TRUE(
+      ExecuteScript(shell()->web_contents(), "addPlayEventListener();"));
+  window_controller()->TogglePlayPause();
+
+  base::string16 expected_title = base::ASCIIToUTF16("play");
+  EXPECT_EQ(
+      expected_title,
+      TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());
+  EXPECT_EQ(overlay_window()->playback_state(),
+            OverlayWindow::PlaybackState::kPlaying);
+
+  // Simulate pausing playback by invoking the Media Session "pause" action
+  // through interaction with the PiP window.
+  ASSERT_TRUE(ExecuteScript(shell()->web_contents(),
+                            "setMediaSessionPauseActionHandler();"));
+  ASSERT_TRUE(
+      ExecuteScript(shell()->web_contents(), "addPauseEventListener();"));
+  window_controller()->TogglePlayPause();
+
+  expected_title = base::ASCIIToUTF16("pause");
+  EXPECT_EQ(
+      expected_title,
+      TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());
+  EXPECT_EQ(overlay_window()->playback_state(),
+            OverlayWindow::PlaybackState::kPaused);
+}
+
 class AutoPictureInPictureContentBrowserTest
     : public PictureInPictureContentBrowserTest {
  public:
@@ -255,7 +384,7 @@ class AutoPictureInPictureContentBrowserTest
 // triggered.
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureContentBrowserTest,
                        AutoPictureInPictureTriggeredWhenFullscreen) {
-  EXPECT_TRUE(NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
 
   bool result = false;
