@@ -110,10 +110,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependency {
   virtual void DidLoseContext(gpu::error::ContextLostReason reason,
                               const GURL& active_url) = 0;
 
-  // Called on client thread.
-  virtual base::Optional<SkSurfaceCharacterization>
-  GetRootSurfaceCharacterization() = 0;
-
   virtual base::TimeDelta GetGpuBlockedTimeSinceLastSwap() = 0;
   virtual bool NeedsSupportForExternalStencil() = 0;
 

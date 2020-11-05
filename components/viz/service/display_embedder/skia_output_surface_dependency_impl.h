@@ -59,8 +59,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependencyImpl
   void DidLoseContext(gpu::error::ContextLostReason reason,
                       const GURL& active_url) override;
 
-  base::Optional<SkSurfaceCharacterization> GetRootSurfaceCharacterization()
-      override;
   base::TimeDelta GetGpuBlockedTimeSinceLastSwap() override;
   bool NeedsSupportForExternalStencil() override;
 

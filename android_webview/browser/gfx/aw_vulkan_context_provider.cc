@@ -221,9 +221,6 @@ void AwVulkanContextProvider::SecondaryCBDrawBegin(
   DCHECK(!draw_context_);
   DCHECK(post_submit_tasks_.empty());
   draw_context_ = draw_context;
-  characterization_.emplace();
-  bool result = draw_context_->characterize(&characterization_.value());
-  CHECK(result);
 }
 
 void AwVulkanContextProvider::SecondaryCMBDrawSubmitted() {
@@ -251,8 +248,6 @@ void AwVulkanContextProvider::SecondaryCMBDrawSubmitted() {
 
   fence_helper->EnqueueFence(vk_fence);
   fence_helper->ProcessCleanupTasks();
-
-  characterization_.reset();
 }
 
 }  // namespace android_webview

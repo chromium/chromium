@@ -13,6 +13,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "gpu/config/gpu_switches.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/src/gpu/vk/GrVkSecondaryCBDrawContext.h"
@@ -90,7 +91,7 @@ sk_sp<GrVkSecondaryCBDrawContext> CreateDrawContext(
       .fFormat = params->format,
       .fDrawBounds = &draw_bounds,
   };
-  SkSurfaceProps props(0, kUnknown_SkPixelGeometry);
+  SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
   return GrVkSecondaryCBDrawContext::Make(gr_context, info, drawable_info,
                                           &props);
 }

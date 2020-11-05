@@ -30,12 +30,22 @@ SkiaOutputDeviceVulkanSecondaryCB::SkiaOutputDeviceVulkanSecondaryCB(
   capabilities_.output_surface_origin = gfx::SurfaceOrigin::kTopLeft;
   capabilities_.supports_post_sub_buffer = false;
   capabilities_.orientation_mode = OutputSurface::OrientationMode::kLogic;
+  capabilities_.root_is_vulkan_secondary_command_buffer = true;
 
-  // Do not set any |capabilities_.sk_color_types|. This requires the
-  // SkSurfaceCharacterization to be overridden with the one obtained from
-  // GrVkSecondaryCBDrawContext instead of being created by SkiaRenderer
-  // from the passed in information. So |sk_color_types| should not be used.
-  // TODO(crbug.com/1144921): Remove this override.
+  GrVkSecondaryCBDrawContext* secondary_cb_draw_context =
+      context_provider_->GetGrSecondaryCBDrawContext();
+  SkSurfaceCharacterization characterization;
+  VkFormat vkFormat = VK_FORMAT_UNDEFINED;
+  bool result = secondary_cb_draw_context->characterize(&characterization);
+  CHECK(result);
+  characterization.backendFormat().asVkFormat(&vkFormat);
+  auto sk_color_type = vkFormat == VK_FORMAT_R8G8B8A8_UNORM
+                           ? kRGBA_8888_SkColorType
+                           : kBGRA_8888_SkColorType;
+  capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_8888)] =
+      sk_color_type;
+  capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::BGRA_8888)] =
+      sk_color_type;
 }
 
 void SkiaOutputDeviceVulkanSecondaryCB::Submit(base::OnceClosure callback) {

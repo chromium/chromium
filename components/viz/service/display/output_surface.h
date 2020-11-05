@@ -116,6 +116,8 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     // This is the maximum size for RenderPass textures. No maximum size is
     // enforced if zero.
     int max_render_target_size = 0;
+    // The root surface is rendered using vulkan secondary command buffer.
+    bool root_is_vulkan_secondary_command_buffer = false;
 
     // SkColorType for all supported buffer formats.
     SkColorType sk_color_types[static_cast<int>(gfx::BufferFormat::LAST) + 1] =

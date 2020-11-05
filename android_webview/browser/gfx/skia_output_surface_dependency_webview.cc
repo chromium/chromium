@@ -148,13 +148,6 @@ SkiaOutputSurfaceDependencyWebView::GetGpuBlockedTimeSinceLastSwap() {
   return base::TimeDelta();
 }
 
-base::Optional<SkSurfaceCharacterization>
-SkiaOutputSurfaceDependencyWebView::GetRootSurfaceCharacterization() {
-  if (!vulkan_context_provider_)
-    return base::nullopt;
-  return vulkan_context_provider_->characterization();
-}
-
 void SkiaOutputSurfaceDependencyWebView::ScheduleDelayedGPUTaskFromGPUThread(
     base::OnceClosure task) {
   task_queue_->ScheduleIdleTask(std::move(task));

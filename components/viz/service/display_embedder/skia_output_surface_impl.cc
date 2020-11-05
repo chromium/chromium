@@ -246,18 +246,9 @@ void SkiaOutputSurfaceImpl::Reshape(const gfx::Size& size,
   is_hdr_ = color_space_.IsHDR();
   size_ = size;
   format_ = format;
-  base::Optional<SkSurfaceCharacterization> characterization_opt =
-      dependency_->GetRootSurfaceCharacterization();
-  if (characterization_opt) {
-    characterization_ = characterization_opt.value();
-    DCHECK(characterization_.isValid());
-    DCHECK_EQ(size.width(), characterization_.width());
-    DCHECK_EQ(size.height(), characterization_.height());
-  } else {
-    characterization_ = CreateSkSurfaceCharacterization(
-        size, format, false /* mipmap */, color_space_.ToSkColorSpace(),
-        true /* is_root_render_pass */);
-  }
+  characterization_ = CreateSkSurfaceCharacterization(
+      size, format, false /* mipmap */, color_space_.ToSkColorSpace(),
+      true /* is_root_render_pass */);
   RecreateRootRecorder();
 }
 
@@ -851,7 +842,9 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
         capabilities_.uses_default_gl_framebuffer, false /* isTextureable */,
         impl_on_gpu_->GetGpuPreferences().enforce_vulkan_protected_memory
             ? GrProtected::kYes
-            : GrProtected::kNo);
+            : GrProtected::kNo,
+        false /* vkRTSupportsInputAttachment */,
+        capabilities_.root_is_vulkan_secondary_command_buffer);
     VkFormat vk_format = VK_FORMAT_UNDEFINED;
     LOG_IF(DFATAL, !characterization.isValid())
         << "\n  surface_size=" << surface_size.ToString()
