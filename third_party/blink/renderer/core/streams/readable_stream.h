@@ -21,6 +21,7 @@ class AbortSignal;
 class ExceptionState;
 class MessagePort;
 class ReadableStreamDefaultController;
+class ReadableStreamGetReaderOptions;
 class ReadableWritablePair;
 class ScriptPromise;
 class ScriptState;
@@ -112,9 +113,9 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   ReadableStreamDefaultReader* getReader(ScriptState*, ExceptionState&);
 
   // https://streams.spec.whatwg.org/#rs-get-reader
-  ReadableStreamDefaultReader* getReader(ScriptState*,
-                                         ScriptValue options,
-                                         ExceptionState&);
+  ReadableStreamReader* getReader(ScriptState*,
+                                  ReadableStreamGetReaderOptions* options,
+                                  ExceptionState&);
 
   ReadableStream* pipeThrough(ScriptState*,
                               ReadableWritablePair* transform,
@@ -268,12 +269,6 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   //
   // TODO(ricea): Functions for transferable streams.
   //
-
-  // Validates the "options" argument to ReadableStream::getReader().
-  // If an exception is thrown validation failed.
-  static void GetReaderValidateOptions(ScriptState*,
-                                       ScriptValue options,
-                                       ExceptionState&);
 
   // Calls Tee() on |readable|, converts the two branches to a JavaScript array
   // and returns them.

@@ -740,6 +740,7 @@ core_dictionary_idl_files =
                     "page/scrolling/scroll_state_init.idl",
                     "resize_observer/resize_observer_options.idl",
                     "streams/readable_stream_byob_read_result.idl",
+                    "streams/readable_stream_get_reader_options.idl",
                     "streams/readable_writable_pair.idl",
                     "streams/stream_pipe_options.idl",
                     "streams/queuing_strategy_init.idl",

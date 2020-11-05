@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
 #include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_get_reader_options.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_reader.h"
 #include "third_party/blink/renderer/core/streams/readable_writable_pair.h"
 #include "third_party/blink/renderer/core/streams/stream_algorithms.h"
@@ -1209,24 +1210,26 @@ ReadableStreamDefaultReader* ReadableStream::getReader(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#rs-get-reader
-  // 2. If mode is undefined, return ? AcquireReadableStreamDefaultReader(this,
-  //    true).
+  // 1. If options["mode"] does not exist, return ?
+  // AcquireReadableStreamDefaultReader(this).
   return AcquireDefaultReader(script_state, this, true, exception_state);
 }
 
-ReadableStreamDefaultReader* ReadableStream::getReader(
+ReadableStreamReader* ReadableStream::getReader(
     ScriptState* script_state,
-    ScriptValue options,
+    ReadableStreamGetReaderOptions* options,
     ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#rs-get-reader
-  // Since we don't support byob readers, the only thing
-  // GetReaderValidateOptions() needs to do is throw an exception if
-  // |options.mode| is invalid.
-  GetReaderValidateOptions(script_state, options, exception_state);
-  if (exception_state.HadException()) {
+  // Since byob readers are not completely implemented yet, this function should
+  // just call the default getReader().
+  // TODO(nidhijaju): Add assertion options["mode"] is "byob" and return
+  // ? AcquireReadableStreamBYOBReader(this) according to spec, once byob
+  // readers have been implemented.
+  if (options->hasMode()) {
+    DCHECK_EQ(options->mode(), "byob");
+    exception_state.ThrowTypeError("byob not implemented");
     return nullptr;
   }
-
   return getReader(script_state, exception_state);
 }
 
@@ -1804,51 +1807,6 @@ int ReadableStream::GetNumReadRequests(const ReadableStream* stream) {
 //
 // TODO(ricea): Functions for transferable streams.
 //
-
-void ReadableStream::GetReaderValidateOptions(ScriptState* script_state,
-                                              ScriptValue options,
-                                              ExceptionState& exception_state) {
-  // https://streams.spec.whatwg.org/#rs-get-reader
-  // The unpacking of |options| is indicated as part of the signature of the
-  // function in the standard.
-  v8::TryCatch block(script_state->GetIsolate());
-  v8::Local<v8::Value> mode;
-  v8::Local<v8::String> mode_string;
-  v8::Local<v8::Context> context = script_state->GetContext();
-  if (options.V8Value()->IsUndefined()) {
-    mode = v8::Undefined(script_state->GetIsolate());
-  } else {
-    v8::Local<v8::Object> v8_options;
-    if (!options.V8Value()->ToObject(context).ToLocal(&v8_options)) {
-      exception_state.RethrowV8Exception(block.Exception());
-      return;
-    }
-    if (!v8_options->Get(context, V8String(script_state->GetIsolate(), "mode"))
-             .ToLocal(&mode)) {
-      exception_state.RethrowV8Exception(block.Exception());
-      return;
-    }
-  }
-
-  // 3. Set mode to ? ToString(mode).
-  if (!mode->ToString(context).ToLocal(&mode_string)) {
-    exception_state.RethrowV8Exception(block.Exception());
-    return;
-  }
-
-  // 4. If mode is "byob", return ? AcquireReadableStreamBYOBReader(this, true).
-  if (ToCoreString(mode_string) == "byob") {
-    // TODO(ricea): Support BYOB readers.
-    exception_state.ThrowTypeError("invalid mode");
-    return;
-  }
-
-  if (!mode->IsUndefined()) {
-    // 5. Throw a RangeError exception.
-    exception_state.ThrowRangeError("invalid mode");
-    return;
-  }
-}
 
 ScriptValue ReadableStream::CallTeeAndReturnBranchArray(
     ScriptState* script_state,

@@ -7,7 +7,7 @@ PASS ReadableStream constructor will not tolerate initial garbage as cancel argu
 PASS ReadableStream constructor will not tolerate initial garbage as pull argument
 PASS ReadableStream start should be called with the proper thisArg
 PASS ReadableStream start controller parameter should be extensible
-FAIL default ReadableStream getReader() should only accept mode:undefined assert_throws_js: function "() => (new ReadableStream()).getReader({ mode: 'potato' })" threw object "RangeError: Failed to execute 'getReader' on 'ReadableStream': invalid mode" ("RangeError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS default ReadableStream getReader() should only accept mode:undefined
 PASS ReadableStream should be able to call start method within prototype chain of its source
 PASS ReadableStream start should be able to return a promise
 PASS ReadableStream start should be able to return a promise and reject it
