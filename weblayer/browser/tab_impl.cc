@@ -302,10 +302,6 @@ TabImpl::TabImpl(ProfileImpl* profile,
 
   navigation_controller_ = std::make_unique<NavigationControllerImpl>(this);
 
-#if defined(OS_ANDROID)
-  InfoBarService::CreateForWebContents(web_contents_.get());
-#endif
-
   find_in_page::FindTabHelper::CreateForWebContents(web_contents_.get());
   GetFindTabHelper()->AddObserver(this);
 
