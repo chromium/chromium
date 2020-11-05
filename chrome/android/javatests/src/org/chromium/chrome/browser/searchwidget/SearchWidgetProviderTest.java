@@ -35,7 +35,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.searchwidget.SearchActivity.SearchActivityDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.ApplicationTestUtils;
+import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -102,7 +102,7 @@ public class SearchWidgetProviderTest {
 
     @Before
     public void setUp() {
-        ApplicationTestUtils.setUp(InstrumentationRegistry.getTargetContext());
+        ChromeApplicationTestUtils.setUp(InstrumentationRegistry.getTargetContext());
         SearchActivity.setDelegateForTests(new TestSearchDelegate());
 
         mContext = new TestContext();
@@ -112,7 +112,7 @@ public class SearchWidgetProviderTest {
 
     @After
     public void tearDown() {
-        ApplicationTestUtils.tearDown(InstrumentationRegistry.getTargetContext());
+        ChromeApplicationTestUtils.tearDown(InstrumentationRegistry.getTargetContext());
     }
 
     @Test

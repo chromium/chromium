@@ -25,7 +25,7 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.ApplicationTestUtils;
+import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -54,7 +54,7 @@ public final class BackgroundMetricsTest {
     public void pressHome() {
         UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         device.pressHome();
-        ApplicationTestUtils.waitUntilChromeInBackground();
+        ChromeApplicationTestUtils.waitUntilChromeInBackground();
     }
 
     private void loadNative() {

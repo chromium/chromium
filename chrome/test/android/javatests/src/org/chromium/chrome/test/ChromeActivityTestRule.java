@@ -49,7 +49,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
-import org.chromium.chrome.test.util.ApplicationTestUtils;
+import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
@@ -113,7 +113,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends ActivityTe
             public void evaluate() throws Throwable {
                 mDefaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
                 Thread.setDefaultUncaughtExceptionHandler(new ChromeUncaughtExceptionHandler());
-                ApplicationTestUtils.setUp(InstrumentationRegistry.getTargetContext());
+                ChromeApplicationTestUtils.setUp(InstrumentationRegistry.getTargetContext());
 
                 // Preload Calendar so that it does not trigger ReadFromDisk Strict mode violations
                 // if called on the UI Thread. See https://crbug.com/705477 and
@@ -602,7 +602,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends ActivityTe
      * from the compositor and asserts that this happens.
      */
     public void assertWaitForPageScaleFactorMatch(float expectedScale) {
-        ApplicationTestUtils.assertWaitForPageScaleFactorMatch(getActivity(), expectedScale);
+        ChromeApplicationTestUtils.assertWaitForPageScaleFactorMatch(getActivity(), expectedScale);
     }
 
     public String getName() {

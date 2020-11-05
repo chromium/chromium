@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.MultiActivityTestRule;
-import org.chromium.chrome.test.util.ApplicationTestUtils;
+import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
@@ -94,7 +94,7 @@ public class WebappModeTest {
 
         InstrumentationRegistry.getTargetContext().startActivity(intent);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        ApplicationTestUtils.waitUntilChromeInForeground();
+        ChromeApplicationTestUtils.waitUntilChromeInForeground();
     }
 
     @Before
@@ -195,7 +195,7 @@ public class WebappModeTest {
 
         // Return home.
         final Context context = InstrumentationRegistry.getTargetContext();
-        ApplicationTestUtils.fireHomeScreenIntent(context);
+        ChromeApplicationTestUtils.fireHomeScreenIntent(context);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Bring the WebappActivity back via an Intent.
@@ -207,7 +207,7 @@ public class WebappModeTest {
         // Because of Android killing Activities willy-nilly, it may not be the same Activity, but
         // it should have the same Tab ID.
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        ApplicationTestUtils.waitUntilChromeInForeground();
+        ChromeApplicationTestUtils.waitUntilChromeInForeground();
         CriteriaHelper.pollInstrumentationThread(() -> {
             Activity lastActivity = ApplicationStatus.getLastTrackedFocusedActivity();
             Criteria.checkThat(isWebappActivityReady(lastActivity), Matchers.is(true));

@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.ApplicationTestUtils;
+import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.contextmenu.RevampedContextMenuUtils;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -710,7 +710,7 @@ public class TabsOpenedFromExternalAppTest {
                     mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount(),
                     Matchers.is(1));
         });
-        ApplicationTestUtils.assertWaitForPageScaleFactorMatch(
+        ChromeApplicationTestUtils.assertWaitForPageScaleFactorMatch(
                 mActivityTestRule.getActivity(), 0.5f);
 
         // Open context menu and select the "open in new tab" option.

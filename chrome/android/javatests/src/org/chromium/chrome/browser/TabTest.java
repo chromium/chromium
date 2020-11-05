@@ -28,7 +28,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.ApplicationTestUtils;
+import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -111,7 +111,7 @@ public class TabTest {
         Assert.assertFalse(isShowingSadTab());
 
         // Stop the activity and simulate a killed renderer.
-        ApplicationTestUtils.fireHomeScreenIntent(InstrumentationRegistry.getTargetContext());
+        ChromeApplicationTestUtils.fireHomeScreenIntent(InstrumentationRegistry.getTargetContext());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeTabUtils.simulateRendererKilledForTesting(mTab, false));
 
@@ -119,7 +119,7 @@ public class TabTest {
         Assert.assertTrue(mTab.needsReload());
         Assert.assertFalse(isShowingSadTab());
 
-        ApplicationTestUtils.launchChrome(InstrumentationRegistry.getTargetContext());
+        ChromeApplicationTestUtils.launchChrome(InstrumentationRegistry.getTargetContext());
 
         // The tab should be restored and visible.
         CriteriaHelper.pollUiThread(() -> !mTab.isHidden());

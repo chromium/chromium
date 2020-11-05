@@ -54,7 +54,7 @@ import org.chromium.chrome.features.start_surface.InstantStartTest;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.ApplicationTestUtils;
+import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -295,7 +295,7 @@ public class ReturnToChromeTest {
         assertEquals(3, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
 
         // Trigger hide and resume.
-        ApplicationTestUtils.fireHomeScreenIntent(InstrumentationRegistry.getTargetContext());
+        ChromeApplicationTestUtils.fireHomeScreenIntent(InstrumentationRegistry.getTargetContext());
         mActivityTestRule.resumeMainActivityFromLauncher();
 
         CriteriaHelper.pollUiThread(() -> {
@@ -332,7 +332,7 @@ public class ReturnToChromeTest {
         assertEquals(3, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
 
         // Trigger hide and resume.
-        ApplicationTestUtils.fireHomeScreenIntent(InstrumentationRegistry.getTargetContext());
+        ChromeApplicationTestUtils.fireHomeScreenIntent(InstrumentationRegistry.getTargetContext());
         mActivityTestRule.resumeMainActivityFromLauncher();
 
         Assert.assertTrue(

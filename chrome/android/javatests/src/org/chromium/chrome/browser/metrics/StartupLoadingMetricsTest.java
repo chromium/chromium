@@ -30,7 +30,7 @@ import org.chromium.chrome.browser.webapps.WebApkActivityTestRule;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.ApplicationTestUtils;
+import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -221,7 +221,8 @@ public class StartupLoadingMetricsTest {
             mTabbedActivityTestRule.startActivityCompletely(intent);
 
             // Put Chrome in background before the page is committed.
-            ApplicationTestUtils.fireHomeScreenIntent(InstrumentationRegistry.getTargetContext());
+            ChromeApplicationTestUtils.fireHomeScreenIntent(
+                    InstrumentationRegistry.getTargetContext());
 
             // Wait for a tab to be loaded.
             mTabbedActivityTestRule.waitForActivityNativeInitializationComplete();
@@ -235,7 +236,7 @@ public class StartupLoadingMetricsTest {
         assertHistogramsRecorded(0, TABBED_SUFFIX);
         runAndWaitForPageLoadMetricsRecorded(() -> {
             // Put Chrome in foreground before loading a new page.
-            ApplicationTestUtils.launchChrome(InstrumentationRegistry.getTargetContext());
+            ChromeApplicationTestUtils.launchChrome(InstrumentationRegistry.getTargetContext());
             mTabbedActivityTestRule.loadUrl(mTestPage);
         });
         assertHistogramsRecorded(0, TABBED_SUFFIX);

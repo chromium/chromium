@@ -7,13 +7,14 @@ package org.chromium.chrome.test;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.test.runner.lifecycle.Stage;
 
 import org.junit.Assert;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.test.util.ApplicationTestUtils;
 
 /**
  * Custom ActivityTestRule for tests using ChromeTabbedActivity
@@ -35,6 +36,6 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
         Intent launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(
                 getActivity().getPackageName());
         getActivity().startActivity(launchIntent, noAnimationLaunchOptions());
-        ApplicationTestUtils.waitForActivityState(getActivity(), ActivityState.RESUMED);
+        ApplicationTestUtils.waitForActivityState(getActivity(), Stage.RESUMED);
     }
 }

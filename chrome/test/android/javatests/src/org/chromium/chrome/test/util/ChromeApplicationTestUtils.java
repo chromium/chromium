@@ -8,7 +8,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
 import android.os.PowerManager;
 import android.util.Pair;
 
@@ -18,7 +17,6 @@ import org.junit.Assert;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -26,18 +24,15 @@ import org.chromium.chrome.browser.omaha.OmahaBase;
 import org.chromium.chrome.browser.omaha.VersionNumberGetter;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.test.util.Coordinates;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Methods used for testing Chrome at the Application-level.
  */
-public class ApplicationTestUtils {
+public class ChromeApplicationTestUtils {
     private static final String TAG = "ApplicationTestUtils";
     private static final float FLOAT_EPSILON = 0.001f;
 
@@ -130,42 +125,6 @@ public class ApplicationTestUtils {
         });
     }
 
-    /** Waits until the given activity transitions to the given state. */
-    public static void waitForActivityState(Activity activity, @ActivityState int state)
-            throws Exception {
-        final CallbackHelper callbackHelper = new CallbackHelper();
-        final ApplicationStatus.ActivityStateListener activityStateListener =
-                (activity1, newState) -> {
-            if (newState == state) {
-                callbackHelper.notifyCalled();
-            }
-        };
-        try {
-            boolean correctState = TestThreadUtils.runOnUiThreadBlocking(() -> {
-                if (ApplicationStatus.getStateForActivity(activity) == state) {
-                    return true;
-                }
-                ApplicationStatus.registerStateListenerForActivity(activityStateListener, activity);
-                return false;
-            });
-            if (!correctState) {
-                callbackHelper.waitForCallback(0);
-            }
-        } finally {
-            ApplicationStatus.unregisterActivityStateListener(activityStateListener);
-        }
-    }
-
-    /** Finishes the given activity and waits for its onDestroy() to be called. */
-    public static void finishActivity(final Activity activity) throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            if (ApplicationStatus.getStateForActivity(activity) != ActivityState.DESTROYED) {
-                activity.finish();
-            }
-        });
-        waitForActivityState(activity, ActivityState.DESTROYED);
-    }
-
     /**
      * Waits till the WebContents receives the expected page scale factor
      * from the compositor and asserts that this happens.
@@ -184,44 +143,5 @@ public class ApplicationTestUtils {
             Criteria.checkThat(
                     (double) expectedScale, Matchers.is(Matchers.closeTo(scale, FLOAT_EPSILON)));
         });
-    }
-
-    /**
-     * Recreates the provided Activity, returning the newly created Activity once it's finished
-     * starting up.
-     * @param activity The Activity to recreate.
-     * @return The newly created Activity.
-     */
-    public static <T extends Activity> T recreateActivity(T activity) {
-        final Class<?> activityClass = activity.getClass();
-        final CallbackHelper activityCallback = new CallbackHelper();
-        final AtomicReference<T> activityRef = new AtomicReference<>();
-        ApplicationStatus.ActivityStateListener stateListener =
-                new ApplicationStatus.ActivityStateListener() {
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public void onActivityStateChange(Activity activity, int newState) {
-                        if (newState == ActivityState.RESUMED) {
-                            if (!activityClass.isAssignableFrom(activity.getClass())) return;
-
-                            activityRef.set((T) activity);
-                            new Handler().post(() -> activityCallback.notifyCalled());
-                            ApplicationStatus.unregisterActivityStateListener(this);
-                        }
-                    }
-                };
-        ApplicationStatus.registerStateListenerForAllActivities(stateListener);
-
-        try {
-            TestThreadUtils.runOnUiThreadBlocking(() -> activity.recreate());
-            activityCallback.waitForCallback("Activity did not start as expected", 0);
-            T createdActivity = activityRef.get();
-            Assert.assertNotNull("Activity reference is null.", createdActivity);
-            return createdActivity;
-        } catch (TimeoutException e) {
-            throw new RuntimeException(e);
-        } finally {
-            ApplicationStatus.unregisterActivityStateListener(stateListener);
-        }
     }
 }

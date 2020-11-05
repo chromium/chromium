@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
-import org.chromium.chrome.test.util.ApplicationTestUtils;
+import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 
 import java.util.concurrent.TimeoutException;
@@ -38,7 +38,7 @@ public class MultiActivityTestRule implements TestRule {
             throws TimeoutException {
         waitForTabCreation(activity);
 
-        ApplicationTestUtils.assertWaitForPageScaleFactorMatch(activity, 0.5f);
+        ChromeApplicationTestUtils.assertWaitForPageScaleFactorMatch(activity, 0.5f);
         final Tab tab = activity.getActivityTab();
         assert tab != null;
 
@@ -61,11 +61,11 @@ public class MultiActivityTestRule implements TestRule {
 
     private void ruleSetUp() {
         mContext = InstrumentationRegistry.getTargetContext();
-        ApplicationTestUtils.setUp(mContext);
+        ChromeApplicationTestUtils.setUp(mContext);
     }
 
     private void ruleTearDown() {
-        ApplicationTestUtils.tearDown(mContext);
+        ChromeApplicationTestUtils.tearDown(mContext);
     }
 
     @Override
