@@ -24,8 +24,6 @@ blink_modules_sources("credentialmanager") {
     "credentials_container.h",
     "federated_credential.cc",
     "federated_credential.h",
-    "navigator_credentials.cc",
-    "navigator_credentials.h",
     "otp_credential.cc",
     "otp_credential.h",
     "password_credential.cc",

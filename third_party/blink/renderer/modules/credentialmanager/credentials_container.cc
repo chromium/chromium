@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/page/frame_tree.h"
@@ -806,7 +807,20 @@ void CreatePublicKeyCredentialForPaymentCredential(
 
 }  // namespace
 
-CredentialsContainer::CredentialsContainer() = default;
+const char CredentialsContainer::kSupplementName[] = "CredentialsContainer";
+
+CredentialsContainer* CredentialsContainer::credentials(Navigator& navigator) {
+  CredentialsContainer* credentials =
+      Supplement<Navigator>::From<CredentialsContainer>(navigator);
+  if (!credentials) {
+    credentials = MakeGarbageCollected<CredentialsContainer>(navigator);
+    ProvideTo(navigator, credentials);
+  }
+  return credentials;
+}
+
+CredentialsContainer::CredentialsContainer(Navigator& navigator)
+    : Supplement<Navigator>(navigator) {}
 
 ScriptPromise CredentialsContainer::get(
     ScriptState* script_state,
@@ -1245,6 +1259,11 @@ ScriptPromise CredentialsContainer::preventSilentAccess(
       WTF::Passed(std::make_unique<ScopedPromiseResolver>(resolver))));
 
   return promise;
+}
+
+void CredentialsContainer::Trace(Visitor* visitor) const {
+  ScriptWrappable::Trace(visitor);
+  Supplement<Navigator>::Trace(visitor);
 }
 
 }  // namespace blink
