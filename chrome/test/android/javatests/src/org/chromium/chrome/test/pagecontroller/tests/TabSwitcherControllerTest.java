@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.test.pagecontroller.tests;
 
+import android.os.Build.VERSION_CODES;
+
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -18,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.test.pagecontroller.controllers.ntp.NewTabPageController;
 import org.chromium.chrome.test.pagecontroller.controllers.tabswitcher.TabSwitcherController;
@@ -46,7 +49,10 @@ public class TabSwitcherControllerTest {
     }
 
     @Test
-    public void testOpenNewTab() {
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.O_MR1,
+            message = "https://crbug.com/1130617 https://crbug.com/1141179")
+    public void
+    testOpenNewTab() {
         mController.clickNewTab();
         Assert.assertTrue(NewTabPageController.getInstance().isCurrentPageThis());
     }
@@ -58,21 +64,30 @@ public class TabSwitcherControllerTest {
     }
 
     @Test
-    public void testCloseAllTabs() {
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.O_MR1,
+            message = "https://crbug.com/1130617 https://crbug.com/1141179")
+    public void
+    testCloseAllTabs() {
         mController.clickNewTab().openTabSwitcher().clickNewTab().openTabSwitcher();
         mController.clickCloseAllTabs();
         waitForTabCount(0);
     }
 
     @Test
-    public void testNumberOfOpenTabs() {
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.O_MR1,
+            message = "https://crbug.com/1130617 https://crbug.com/1141179")
+    public void
+    testNumberOfOpenTabs() {
         int startTabs = mController.getNumberOfOpenTabs();
         mController.clickNewTab().openTabSwitcher();
         waitForTabCount(startTabs + 1);
     }
 
     @Test
-    public void testClickTabSwitcher() {
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.O_MR1,
+            message = "https://crbug.com/1130617 https://crbug.com/1141179")
+    public void
+    testClickTabSwitcher() {
         mController.clickTabSwitcher();
         Assert.assertTrue(NewTabPageController.getInstance().isCurrentPageThis());
     }

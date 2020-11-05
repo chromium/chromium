@@ -50,7 +50,10 @@ public class NewTabPageControllerTest {
     }
 
     @Test
-    public void testIsCurrentPageThis() {
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.O_MR1,
+            message = "https://crbug.com/1130617 https://crbug.com/1141179")
+    public void
+    testIsCurrentPageThis() {
         Assert.assertTrue(mController.isCurrentPageThis());
     }
 
@@ -74,13 +77,19 @@ public class NewTabPageControllerTest {
     }
 
     @Test
-    public void testOpenChromeMenu() {
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.O_MR1,
+            message = "https://crbug.com/1130617 https://crbug.com/1141179")
+    public void
+    testOpenChromeMenu() {
         ChromeMenu menu = mController.openChromeMenu();
         Assert.assertTrue(menu.isCurrentPageThis());
     }
 
     @Test
-    public void testOmniboxSearch() {
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.O_MR1,
+            message = "https://crbug.com/1130617 https://crbug.com/1141179")
+    public void
+    testOmniboxSearch() {
         UrlPage urlPage = mController.omniboxSearch("www.google.com");
         Assert.assertTrue(urlPage.isCurrentPageThis());
     }
