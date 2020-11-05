@@ -11,6 +11,7 @@ import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.viz.common.VizFeatures;
 import org.chromium.gpu.config.GpuFeatures;
 import org.chromium.gpu.config.GpuSwitches;
+import org.chromium.ui.base.UiFeatures;
 
 /**
  * List of experimental features/flags supported for user devices. Add features/flags to this list
@@ -100,5 +101,7 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AwFeatures.WEBVIEW_MIXED_CONTENT_AUTOUPGRADES,
                     "Enables autoupgrades for audio/video/image mixed content when mixed content "
                             + "mode is set to MIXED_CONTENT_COMPATIBILITY_MODE"),
+            Flag.baseFeature(
+                    UiFeatures.SWIPE_TO_MOVE_CURSOR, "Enables swipe to move cursor feature."),
     };
 }

@@ -656,6 +656,7 @@ android_library("common_java") {
     "//gpu/config:config_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/blink/public/common:common_java",
+    "//ui/android:ui_features_java",
   ]
   srcjar_deps = [
     ":common_java_features_srcjar",
@@ -802,7 +803,8 @@ if (android_64bit_target_cpu) {
            "32-bit targets shouldn't have secondary abi")
     arch_suffix = "32"
     if (use_v8_context_snapshot) {
-      renaming_sources = [ "$_secondary_abi_out_dir/$v8_context_snapshot_filename" ]
+      renaming_sources =
+          [ "$_secondary_abi_out_dir/$v8_context_snapshot_filename" ]
       renaming_destinations = [ "v8_context_snapshot_$arch_suffix.bin" ]
     } else {
       renaming_sources = [ "$_secondary_abi_out_dir/snapshot_blob.bin" ]
