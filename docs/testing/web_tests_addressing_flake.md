@@ -1,5 +1,16 @@
 # Addressing Flaky Web Tests
 
+This document provides tips and tricks for reproducing and debugging flakes in
+[Web Tests](web_tests.md). If you are debugging a flaky Web Platform Test (WPT),
+you may wish to check the specific [Addressing Flaky
+WPTs](web_platform_tests_addressing_flake.md) documentation.
+
+This document assumes you are familiar with running Web Tests via
+`run_web_tests.py`; if you are not then [see
+here](web_tests.md#Running-Web-Tests).
+
+[TOC]
+
 ## Understanding builder results
 
 Often (e.g. by Flake Portal), you will be pointed to a particular build in which
@@ -56,11 +67,57 @@ highlighted.
 
 ## Reproducing Web Test flakes
 
->TODO: add documentation on reproducing Web Test flakes
+>TODO: document how to get the args.gn that the bot used
+
+>TODO: document how to get the flags that the bot passed to `run_web_tests.py`
+
+### Repeatedly running tests
+
+Flakes are by definition non-deterministic, so it may be necessary to run the
+test or set of tests repeatedly to reproduce the failure. Two flags to
+`run_web_tests.py` can help with this:
+
+* `--repeat-each=N` - repeats each test in the test set N times. Given a set of
+  tests A, B, and C, `--repeat-each=3` will run AAABBBCCC.
+* `--iterations=N` - repeats the entire test set N times. Given a set of tests
+  A, B, and C, `--iterations=3` will run ABCABCABC.
 
 ## Debugging flaky Web Tests
 
->TODO: add documentation on debugging flaky Web Tests
+>TODO: document how to attach gdb
+
+### Seeing logs from content\_shell
+
+When debugging flaky tests, it can be useful to add `LOG` statements to your
+code to quickly understand test state. In order to see these logs when using
+`run_web_tests.py`, pass the `--driver-logging` flag:
+
+```
+./third_party/blink/tools/run_web_tests.py --driver-logging path/to/test.html
+```
+
+### Loading the test directly in content\_shell
+
+When debugging a specific test, it can be useful to skip `run_web_tests.py` and
+directly run the test under `content_shell` in an interactive session. For many
+tests, one can just pass the test path to `content_shell`:
+
+```
+out/Default/content_shell third_party/blink/web_tests/path/to/test.html
+```
+
+**Caveat**: running tests like this is not equivalent to `run_web_tests.py`,
+which passes the `--run-web-tests` flag to `content_shell`. The
+`--run-web-tests` flag enables a lot of testing-only code in `content_shell`,
+but also runs in a non-interactive mode.
+
+Useful flags to pass to get `content_shell` closer to the `--run-web-tests` mode
+include:
+
+* `--enable-blink-test-features` - enables status=test and status=experimental
+  features from `runtime_enabled_features.json5`.
+
+>TODO: document how to deal with tests that require a server to be running
 
 [web_tests_blink_web_tests_step]: images/web_tests_blink_web_tests_step.png
 [web_tests_archive_blink_web_tests_step]: images/web_tests_archive_blink_web_tests_step.png
