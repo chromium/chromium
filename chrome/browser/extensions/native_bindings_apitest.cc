@@ -284,4 +284,148 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, APICreationFromNewContext) {
       << message_;
 }
 
+// End-to-end test for promise support on bindings for MV3 extensions, using a
+// few tabs APIs. Also ensures callbacks still work for the API as expected.
+IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, PromiseBasedAPI) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(
+      R"({
+           "name": "Promises",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {
+             "service_worker": "background.js"
+           },
+           "permissions": ["tabs"]
+         })");
+  constexpr char kBackgroundJs[] =
+      R"(let tabIdExample;
+         let tabIdGoogle;
+
+         chrome.test.getConfig((config) => {
+           let exampleUrl = `https://example.com:${config.testServer.port}/`;
+           let googleUrl = `https://google.com:${config.testServer.port}/`
+
+           chrome.test.runTests([
+             function createNewTabPromise() {
+               let promise = chrome.tabs.create({url: exampleUrl});
+               chrome.test.assertNoLastError();
+               chrome.test.assertTrue(promise instanceof Promise);
+               promise.then((tab) => {
+                 let url = tab.pendingUrl;
+                 chrome.test.assertEq(exampleUrl, url);
+                 tabIdExample = tab.id;
+                 chrome.test.assertNoLastError();
+                 chrome.test.succeed();
+               });
+             },
+             function queryTabPromise() {
+               let promise = chrome.tabs.query({url: exampleUrl});
+               chrome.test.assertNoLastError();
+               chrome.test.assertTrue(promise instanceof Promise);
+               promise.then((tabs) => {
+                 chrome.test.assertTrue(tabs instanceof Array);
+                 chrome.test.assertEq(1, tabs.length);
+                 chrome.test.assertEq(tabIdExample, tabs[0].id);
+                 chrome.test.assertNoLastError();
+                 chrome.test.succeed();
+               });
+             },
+
+             function createNewTabCallback() {
+               chrome.tabs.create({url: googleUrl}, (tab) => {
+                 let url = tab.pendingUrl;
+                 chrome.test.assertEq(googleUrl, url);
+                 tabIdGoogle = tab.id;
+                 chrome.test.assertNoLastError();
+                 chrome.test.succeed();
+               });
+             },
+             function queryTabCallback() {
+               chrome.tabs.query({url: googleUrl}, (tabs) => {
+                 chrome.test.assertTrue(tabs instanceof Array);
+                 chrome.test.assertEq(1, tabs.length);
+                 chrome.test.assertEq(tabIdGoogle, tabs[0].id);
+                 chrome.test.assertNoLastError();
+                 chrome.test.succeed();
+               });
+             }
+           ]);
+         });)";
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  ResultCatcher catcher;
+  ASSERT_TRUE(LoadExtensionWithFlags(test_dir.UnpackedPath(),
+                                     kFlagIgnoreManifestWarnings));
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
+// Tests that calling an API which supports promises using an MV2 extension does
+// not get a promise based return and still needs to use callbacks when
+// required.
+IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, MV2PromisesNotSupported) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(
+      R"({
+           "name": "Promises",
+           "manifest_version": 2,
+           "version": "0.1",
+           "background": {
+             "scripts": ["background.js"]
+           },
+           "permissions": ["tabs"]
+         })");
+  constexpr char kBackgroundJs[] =
+      R"(let tabIdGooge;
+
+         chrome.test.getConfig((config) => {
+           let exampleUrl = `https://example.com:${config.testServer.port}/`;
+           let googleUrl = `https://google.com:${config.testServer.port}/`
+
+           chrome.test.runTests([
+             function createNewTabPromise() {
+               let result = chrome.tabs.create({url: exampleUrl});
+               chrome.test.assertEq(undefined, result);
+               chrome.test.assertNoLastError();
+               chrome.test.succeed();
+             },
+             function queryTabPromise() {
+               let expectedError = 'Error in invocation of tabs.query(object ' +
+                   'queryInfo, function callback): No matching signature.';
+               chrome.test.assertThrows(chrome.tabs.query,
+                                        [{url: exampleUrl}],
+                                        expectedError);
+               chrome.test.succeed();
+             },
+
+             function createNewTabCallback() {
+               chrome.tabs.create({url: googleUrl}, (tab) => {
+                 let url = tab.pendingUrl;
+                 chrome.test.assertEq(googleUrl, url);
+                 tabIdGoogle = tab.id;
+                 chrome.test.assertNoLastError();
+                 chrome.test.succeed();
+               });
+             },
+             function queryTabCallback() {
+               chrome.tabs.query({url: googleUrl}, (tabs) => {
+                 chrome.test.assertTrue(tabs instanceof Array);
+                 chrome.test.assertEq(1, tabs.length);
+                 chrome.test.assertEq(tabIdGoogle, tabs[0].id);
+                 chrome.test.assertNoLastError();
+                 chrome.test.succeed();
+               });
+             }
+           ]);
+         });)";
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  ResultCatcher catcher;
+  ASSERT_TRUE(LoadExtensionWithFlags(test_dir.UnpackedPath(),
+                                     kFlagIgnoreManifestWarnings));
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
 }  // namespace extensions

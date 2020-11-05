@@ -308,7 +308,7 @@ class _Generator(object):
     (c.Append('namespace %s {' % event_namespace)
       .Append()
       .Concat(self._GenerateEventNameConstant(event))
-      .Concat(self._GenerateCreateCallbackArguments(event))
+      .Concat(self._GenerateAsyncResponseArguments(event.params))
       .Append('}  // namespace %s' % event_namespace)
     )
     return c
@@ -327,8 +327,8 @@ class _Generator(object):
       .Append()
       .Cblock(self._GenerateFunctionParams(function))
     )
-    if function.callback:
-      c.Cblock(self._GenerateFunctionResults(function.callback))
+    if function.returns_async:
+      c.Cblock(self._GenerateFunctionResults(function.returns_async))
     c.Append('}  // namespace %s' % function_namespace)
     return c
 
@@ -426,11 +426,11 @@ class _Generator(object):
 
     return c
 
-  def _GenerateCreateCallbackArguments(self, function):
-    """Generates functions for passing parameters to a callback.
+  def _GenerateAsyncResponseArguments(self, params):
+    """Generates a function to create the arguments to pass as results to a
+    function callback, promise or event details.
     """
     c = Code()
-    params = function.params
     c.Cblock(self._GenerateTypes((p.type_ for p in params), is_toplevel=True))
 
     declaration_list = []
@@ -452,13 +452,13 @@ class _Generator(object):
     c.Append()
     return c
 
-  def _GenerateFunctionResults(self, callback):
+  def _GenerateFunctionResults(self, returns_async):
     """Generates namespace for passing a function's result back.
     """
     c = Code()
     (c.Append('namespace Results {')
       .Append()
-      .Concat(self._GenerateCreateCallbackArguments(callback))
+      .Concat(self._GenerateAsyncResponseArguments(returns_async.params))
       .Append('}  // namespace Results')
     )
     return c

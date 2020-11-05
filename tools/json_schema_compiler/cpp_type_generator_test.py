@@ -171,7 +171,7 @@ class CppTypeGeneratorTest(unittest.TestCase):
     self.assertEquals(
         'std::vector<Window>',
         manager.GetCppType(
-            self.windows.functions['getAll'].callback.params[0].type_))
+            self.windows.functions['getAll'].returns_async.params[0].type_))
     manager = CppTypeGenerator(self.models.get('permissions'),
                                _FakeSchemaLoader(None))
     self.assertEquals(
@@ -191,7 +191,8 @@ class CppTypeGeneratorTest(unittest.TestCase):
     manager = CppTypeGenerator(self.models.get('tabs'), _FakeSchemaLoader(None))
     self.assertEquals(
         'Tab',
-        manager.GetCppType(self.tabs.functions['get'].callback.params[0].type_))
+        manager.GetCppType(
+            self.tabs.functions['get'].returns_async.params[0].type_))
 
   def testGetCppTypeIncludedRef(self):
     m = model.Model()
@@ -218,10 +219,10 @@ class CppTypeGeneratorTest(unittest.TestCase):
         manager.GetCppType(
             self.permissions.types['Permissions'].properties['origins'].type_,
             is_in_container=True))
-    self.assertEquals('bool',
-        manager.GetCppType(
-            self.permissions.functions['contains'].callback.params[0].type_,
-        is_in_container=True))
+    self.assertEquals(
+        'bool',
+        manager.GetCppType(self.permissions.functions['contains'].returns_async.
+                           params[0].type_, is_in_container=True))
 
   def testHardIncludesForEnums(self):
     """Tests that enums generate hard includes. Note that it's important to use

@@ -332,8 +332,9 @@ class Function(object):
              parameter is used for each choice of a 'choices' parameter
   - |deprecated| a reason and possible alternative for a deprecated function
   - |description| a description of the function (if provided)
-  - |callback| the callback parameter to the function. There should be exactly
-               one
+  - |returns_async| an asynchronous return for the function. This may be
+                    specified either though the returns_async field or a
+                    callback function at the end of the parameters, but not both
   - |optional| whether the Function is "optional"; this only makes sense to be
                present when the Function is representing a callback property
   - |simple_name| the name of this Function without a namespace
@@ -352,7 +353,7 @@ class Function(object):
     self.params = []
     self.description = json.get('description')
     self.deprecated = json.get('deprecated')
-    self.callback = None
+    self.returns_async = None
     self.optional = json.get('optional', False)
     self.parent = parent
     self.nocompile = json.get('nocompile')
@@ -368,10 +369,32 @@ class Function(object):
 
     self.filters = [GeneratePropertyFromParam(filter_instance)
                     for filter_instance in json.get('filters', [])]
-    callback_param = None
+
+    returns_async = json.get('returns_async', None)
+    if returns_async:
+      if len(returns_async.get('parameters')) > 1:
+        raise ValueError('Only a single parameter can be specific on '
+                         'returns_async: %s.%s' % (namespace.name, name))
+      self.returns_async = ReturnsAsync(self, returns_async, namespace,
+                                        Origin(from_client=True))
+      # TODO(https://crbug.com/1143032): Returning a synchronous value is
+      # incompatible with returning a promise. There are APIs that specify this,
+      # though. Some appear to be incorrectly specified (i.e., don't return a
+      # value, but claim to), but others actually do return something. We'll
+      # need to handle those when converting them to allow promises.
+      if json.get('returns') is not None:
+        raise ValueError(
+            'Cannot specify both returns and returns_async: %s.%s'
+            % (namespace.name, name))
+
     params = json.get('parameters', [])
+    callback_param = None
     for i, param in enumerate(params):
-      if i == len(params) - 1 and param.get('type') == 'function':
+      # We consider the final function argument to the API to be the callback
+      # parameter if returns_async wasn't specified. Otherwise, we consider all
+      # function arguments to just be properties.
+      if i == len(params) - 1 and param.get(
+          'type') == 'function' and not self.returns_async:
         callback_param = param
       else:
         # Treat all intermediate function arguments as properties. Certain APIs,
@@ -379,11 +402,8 @@ class Function(object):
         self.params.append(GeneratePropertyFromParam(param))
 
     if callback_param:
-      self.callback = Function(self,
-                               callback_param['name'],
-                               callback_param,
-                               namespace,
-                               Origin(from_client=True))
+      self.returns_async = ReturnsAsync(self, callback_param, namespace,
+                                        Origin(from_client=True))
 
     self.returns = None
     if 'returns' in json:
@@ -392,6 +412,45 @@ class Function(object):
                           json['returns'],
                           namespace,
                           origin)
+
+
+class ReturnsAsync(object):
+  """A structure documenting asynchronous return values (through a callback or
+  promise) for an API function.
+
+  Properties:
+  - |name| the name of the asynchronous return, generally 'callback'
+  - |simple_name| the name of this ReturnsAsync without a namespace
+  - |description| a description of the ReturnsAsync (if provided)
+  - |optional| whether specifying the ReturnsAsync is "optional" (in situations
+               where promises are supported, this will be ignored as promises
+               inheriently make a callback optional)
+  - |params| a list of parameters supplied to the function in the case of using
+             callbacks, or the list of properties on the returned object in the
+             case of using promises
+  """
+  def __init__(self, parent, json, namespace, origin):
+    self.name = json.get('name')
+    self.simple_name = _StripNamespace(self.name, namespace)
+    self.description = json.get('description')
+    self.optional = json.get('optional', False)
+    self.nocompile = json.get('nocompile')
+    self.parent = parent
+
+    if json.get('returns') is not None:
+      raise ValueError('Cannot return a value from an asynchronous return: '
+                       '%s.%s' % (namespace.name, self.name))
+    if json.get('deprecated') is not None:
+      raise ValueError('Cannot specify deprecated on an asynchronous return: '
+                       '%s.%s' % (namespace.name, self.name))
+
+    def GeneratePropertyFromParam(p):
+      return Property(self, p['name'], p, namespace, origin)
+
+    params = json.get('parameters', [])
+    self.params = []
+    for _, param in enumerate(params):
+      self.params.append(GeneratePropertyFromParam(param))
 
 
 class Property(object):

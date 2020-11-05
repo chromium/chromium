@@ -94,8 +94,9 @@ class ModelTest(unittest.TestCase):
   def testDescription(self):
     self.assertFalse(
         self.permissions.functions['contains'].params[0].description)
-    self.assertEquals('True if the extension has the specified permissions.',
-        self.permissions.functions['contains'].callback.params[0].description)
+    self.assertEquals(
+        'True if the extension has the specified permissions.', self.
+        permissions.functions['contains'].returns_async.params[0].description)
 
   def testPropertyUnixName(self):
     param = self.tabs.functions['move'].params[0]

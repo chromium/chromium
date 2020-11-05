@@ -96,6 +96,7 @@ namespace fakeApi {
         [instanceOf = SomeType] optional object optionalSomeType,
         optional boolean bool,
         optional Baz baz,
+        double num,
         VoidCallback callback);
 
     static void multipleOptionalParams(
@@ -263,10 +264,11 @@ chrome.fakeApi.optionalParam = function(callback) {};
  * @param {?SomeType|undefined} optionalSomeType
  * @param {?boolean|undefined} bool
  * @param {?chrome.fakeApi.Baz|undefined} baz
+ * @param {number} num
  * @param {function(): void} callback
  * @see https://developer.chrome.com/extensions/fakeApi#method-nonFinalOptionalParams
  */
-chrome.fakeApi.nonFinalOptionalParams = function(string, num, obj, someType, optionalSomeType, bool, baz, callback) {};
+chrome.fakeApi.nonFinalOptionalParams = function(string, num, obj, someType, optionalSomeType, bool, baz, num, callback) {};
 
 /**
  * @param {string=} param1
@@ -434,6 +436,28 @@ fake_json = """// Copyright 2014 The Chromium Authors. All rights reserved.
           "int": { "type": "number" }
         }
       }
+    },
+    {
+      "name": "funcWithReturnsAsync",
+      "type": "function",
+      "parameters": [
+        {
+          "type": "integer",
+          "name": "someNumber",
+          "description": "A number parameter"
+        }
+      ],
+      "returns_async": {
+        "name": "callback",
+        "optional": true,
+        "parameters": [
+          {
+            "name": "anotherNumber",
+            "type": "integer",
+            "description": "A number that comes back"
+          }
+        ]
+      }
     } ]
   }
 ]"""
@@ -497,7 +521,14 @@ chrome.fakeJson.lastError;
  * }}
  * @see https://developer.chrome.com/extensions/fakeJson#method-funcWithInlineObj
  */
-chrome.fakeJson.funcWithInlineObj = function(inlineObj, callback) {};""" % (
+chrome.fakeJson.funcWithInlineObj = function(inlineObj, callback) {};
+
+/**
+ * @param {number} someNumber A number parameter
+ * @param {function(number): void=} callback
+ * @see https://developer.chrome.com/extensions/fakeJson#method-funcWithReturnsAsync
+ */
+chrome.fakeJson.funcWithReturnsAsync = function(someNumber, callback) {};""" % (
     datetime.now().year)
 
 
@@ -523,7 +554,7 @@ class JsExternGeneratorTest(unittest.TestCase):
     self.assertMultiLineEqual(fake_private_idl_expected,
                               JsExternsGenerator().Generate(namespace).Render())
 
-  def testJsonWithInlineObjects(self):
+  def testJsonWithInlineObjectsAndAsyncReturn(self):
     namespace = self._GetNamespace(fake_json, 'fake_api.json', False)
     self.assertMultiLineEqual(fake_json_expected,
                               JsExternsGenerator().Generate(namespace).Render())

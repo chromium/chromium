@@ -28,6 +28,7 @@ sources_ = [
   "objects.json",
   "objects_movable.idl",
   "objects_movable_json.json",
+  "returns_async.json",
   "simple_api.json",
 ]
 
@@ -73,6 +74,7 @@ source_set("unit_tests") {
     "generated_schemas_unittest.cc",
     "idl_schemas_unittest.cc",
     "objects_unittest.cc",
+    "returns_async_unittest.cc",
     "simple_api_unittest.cc",
     "test_util.cc",
     "test_util.h",

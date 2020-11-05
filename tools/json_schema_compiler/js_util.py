@@ -82,8 +82,9 @@ class JsUtil(object):
       # Mark the parameter as optional, *only if* all following parameters are
       # also optional, to avoid JSC_OPTIONAL_ARG_AT_END errors thrown by Closure
       # Compiler.
-      optional = (all(p.optional for p in function.params[i:])
-                  and (function.callback is None or function.callback.optional))
+      optional = (
+          all(p.optional for p in function.params[i:]) and
+          (function.returns_async is None or function.returns_async.optional))
       js_type = self._TypeToJsType(namespace_name, param.type_)
 
       # If the parameter was originally optional, but was followed by
@@ -99,12 +100,13 @@ class JsUtil(object):
 
       append_field(c, 'param', js_type, param.name, optional, param.description)
 
-    if function.callback:
-      append_field(c, 'param',
-                   self._FunctionToJsFunction(namespace_name,
-                                              function.callback),
-                   function.callback.name, function.callback.optional,
-                   function.callback.description)
+    if function.returns_async:
+      append_field(
+          c, 'param',
+          self._ReturnsAsyncToJsFunction(namespace_name,
+                                         function.returns_async),
+          function.returns_async.name, function.returns_async.optional,
+          function.returns_async.description)
 
     if function.returns:
       append_field(c, 'return',
@@ -134,16 +136,9 @@ class JsUtil(object):
     """Converts a model.Function to a JS type (i.e., function([params])...)"""
     c = Code()
     c.Append('function(')
-    for i, param in enumerate(function.params):
-      t = self._TypeToJsType(namespace_name, param.type_)
-      if param.optional:
-        c.Append('(', new_line=False)
-        c.Concat(t, new_line=False)
-        c.Append('|undefined)', new_line=False)
-      else:
-        c.Concat(t, new_line = False)
-      if i is not len(function.params) - 1:
-        c.Append(', ', new_line=False, strip_right=False)
+    c.Concat(
+        self._FunctionParamsToJsParams(namespace_name, function.params),
+        new_line=False)
     c.Append('): ', new_line=False, strip_right=False)
 
     if function.returns:
@@ -152,6 +147,35 @@ class JsUtil(object):
     else:
       c.Append('void', new_line=False)
 
+    return c
+
+  def _ReturnsAsyncToJsFunction(self, namespace_name, returns_async):
+    """Converts a model.ReturnsAsync to a JS function equivalent"""
+    # TODO(https://crbug.com/1142991) update this to generate promise-based
+    # types and show that as a return from the API function itself, rather than
+    # appended to the params as a callback.
+    c = Code()
+    c.Append('function(')
+    c.Concat(
+        self._FunctionParamsToJsParams(namespace_name, returns_async.params),
+        new_line=False)
+    c.Append('): ', new_line=False, strip_right=False)
+
+    c.Append('void', new_line=False)
+    return c
+
+  def _FunctionParamsToJsParams(self, namespace_name, params):
+    c = Code()
+    for i, param in enumerate(params):
+      t = self._TypeToJsType(namespace_name, param.type_)
+      if param.optional:
+        c.Append('(', new_line=False)
+        c.Concat(t, new_line=False)
+        c.Append('|undefined)', new_line=False)
+      else:
+        c.Concat(t, new_line=False)
+      if i is not len(params) - 1:
+        c.Append(', ', new_line=False, strip_right=False)
     return c
 
   def _TypeToJsType(self, namespace_name, js_type):

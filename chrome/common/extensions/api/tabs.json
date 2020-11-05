@@ -381,20 +381,19 @@
                 "description": "The ID of the tab that opened this tab. If specified, the opener tab must be in the same window as the newly created tab."
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "tab",
-                "$ref": "Tab",
-                "description": "The created tab."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "tab",
+              "$ref": "Tab",
+              "description": "The created tab."
+            }
+          ]
+        }
       },
       {
         "name": "duplicate",
@@ -406,21 +405,20 @@
             "name": "tabId",
             "minimum": 0,
             "description": "The ID of the tab to duplicate."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "tab",
-                "optional": true,
-                "description": "Details about the duplicated tab. The $(ref:tabs.Tab) object does not contain <code>url</code>, <code>pendingUrl</code>, <code>title</code>, and <code>favIconUrl</code> if the <code>\"tabs\"</code> permission has not been requested.",
-                "$ref": "Tab"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "tab",
+              "optional": true,
+              "description": "Details about the duplicated tab. The $(ref:tabs.Tab) object does not contain <code>url</code>, <code>pendingUrl</code>, <code>title</code>, and <code>favIconUrl</code> if the <code>\"tabs\"</code> permission has not been requested.",
+              "$ref": "Tab"
+            }
+          ]
+        }
       },
       {
         "name": "query",
@@ -518,21 +516,20 @@
                 "description": "The position of the tabs within their windows."
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "result",
-                "type": "array",
-                "items": {
-                  "$ref": "Tab"
-                }
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "array",
+              "items": {
+                "$ref": "Tab"
+              }
+            }
+          ]
+        }
       },
       {
         "name": "highlight",

@@ -208,8 +208,8 @@ class CppTypeGenerator(object):
       for param in function.params:
         dependencies |= self._TypeDependencies(param.type_,
                                                hard=not param.optional)
-      if function.callback:
-        for param in function.callback.params:
+      if function.returns_async:
+        for param in function.returns_async.params:
           dependencies |= self._TypeDependencies(param.type_,
                                                  hard=not param.optional)
     for type_ in self._default_namespace.types.values():

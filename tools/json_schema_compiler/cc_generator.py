@@ -692,9 +692,10 @@ class _Generator(object):
       )
 
     # Results::Create function
-    if function.callback:
-      c.Concat(self._GenerateCreateCallbackArguments('Results',
-                                                     function.callback))
+    if function.returns_async:
+      c.Concat(
+          self._GenerateAsyncResponseArguments('Results',
+                                              function.returns_async.params))
 
     c.Append('}  // namespace %s' % function_namespace)
     return c
@@ -706,7 +707,7 @@ class _Generator(object):
     (c.Append('namespace %s {' % event_namespace)
       .Append()
       .Cblock(self._GenerateEventNameConstant(event))
-      .Cblock(self._GenerateCreateCallbackArguments(None, event))
+      .Cblock(self._GenerateAsyncResponseArguments(None, event.params))
       .Append('}  // namespace %s' % event_namespace)
     )
     return c
@@ -1188,20 +1189,18 @@ class _Generator(object):
     )
     return c
 
-  def _GenerateCreateCallbackArguments(self,
-                                       function_scope,
-                                       callback):
-    """Generate all functions to create Value parameters for a callback.
+  def _GenerateAsyncResponseArguments(self, function_scope, params):
+    """Generate the function that creates base::Value parameters to return to a
+    callback, promise or pass to an event listener.
 
     E.g for function "Bar", generate Bar::Results::Create
     E.g for event "Baz", generate Baz::Create
 
     function_scope: the function scope path, e.g. Foo::Bar for the function
                     Foo::Bar::Baz(). May be None if there is no function scope.
-    callback: the Function object we are creating callback arguments for.
+    params: the parameters passed as results or event details.
     """
     c = Code()
-    params = callback.params
     c.Concat(self._GeneratePropertyFunctions(function_scope, params))
 
     (c.Sblock('std::unique_ptr<base::ListValue> %(function_scope)s'

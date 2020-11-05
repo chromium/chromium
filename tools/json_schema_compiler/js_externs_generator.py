@@ -165,10 +165,8 @@ class _Generator(object):
 
     c.Append('@typedef {')
     if properties:
-      self._js_util.AppendObjectDefinition(c,
-                                           self._namespace.name,
-                                           properties,
-                                           new_line=False)
+      self._js_util.AppendObjectDefinition(
+              c, self._namespace.name, properties, new_line=False)
     else:
       c.Append('Object', new_line=False)
     c.Append('}', new_line=False)
@@ -229,9 +227,12 @@ class _Generator(object):
     """Returns the function params string for function.
     """
     params = function.params[:]
-    if function.callback:
-      params.append(function.callback)
-    return ', '.join(param.name for param in params)
+    param_names = [param.name for param in params]
+    # TODO(https://crbug.com/1142991): Update this to represent promises better,
+    # rather than just appended as a callback.
+    if function.returns_async:
+      param_names.append(function.returns_async.name)
+    return ', '.join(param_names)
 
   def _GetNamespace(self):
     """Returns the namespace to be prepended to a top-level typedef.

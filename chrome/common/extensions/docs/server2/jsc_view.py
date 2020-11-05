@@ -177,22 +177,33 @@ class _JSCViewBuilder(object):
       }
     return None
 
-  def _GenerateCallback(self, callback):
+  def _GenerateCallback(self, returns_async):
     '''Returns a dictionary representation of a callback suitable
     for consumption by templates.
     '''
-    if not callback:
+    if not returns_async:
       return None
     callback_dict = {
-      'name': callback.simple_name,
+      'name': returns_async.simple_name,
       'simple_type': {'simple_type': 'function'},
-      'optional': callback.optional,
+      'optional': returns_async.optional,
       'parameters': []
     }
-    with self._current_node.Descend('parameters',
-                                    callback.simple_name,
+    with self._current_node.Descend('parameters', returns_async.simple_name,
                                     'parameters'):
-      for param in callback.params:
+      for i, param in enumerate(returns_async.params):
+        # HACK(https://crbug.com/996488): Callbacks to callbacks of events
+        # break, and have historically just been omitted completely due to not
+        # checking the 'callback' property here. With the move to ReturnsAsync,
+        # the callbacks are now included in the parameters, but this breaks
+        # assumptions elsewhere (at the very least, in api_schema_graph.py,
+        # which assumes the path will not be this long when looking up the
+        # event). For now, hack in ignoring the callback, as we've always done.
+        is_callback_to_callback = (
+            i == len(returns_async.params) - 1 and
+            param.type_.property_type == model.PropertyType.FUNCTION)
+        if (is_callback_to_callback):
+          continue
         callback_dict['parameters'].append(self._GenerateProperty(param))
     if (len(callback_dict['parameters']) > 0):
       callback_dict['parameters'][-1]['last'] = True
@@ -255,7 +266,10 @@ class _JSCViewBuilder(object):
       function_dict = {
         'name': function.simple_name,
         'description': function.description,
-        'callback': self._GenerateCallback(function.callback),
+        # TODO(https://crbug.com/1143020): Rename this when we're ready to add
+        # promise support into the docs. For now, keep these as callbacks (which
+        # are also checked at other places in the docserver code).
+        'callback': self._GenerateCallback(function.returns_async),
         'parameters': [],
         'returns': None,
         'id': _CreateId(function, 'method'),
@@ -268,11 +282,12 @@ class _JSCViewBuilder(object):
     with self._current_node.Descend(function.simple_name, 'parameters'):
       for param in function.params:
         function_dict['parameters'].append(self._GenerateProperty(param))
-    if function.callback is not None:
+    if function.returns_async is not None:
       # Show the callback as an extra parameter.
       function_dict['parameters'].append(
-          self._GenerateCallbackProperty(function.callback,
+          self._GenerateCallbackProperty(function.returns_async,
                                          function_dict['callback']))
+
     if len(function_dict['parameters']) > 0:
       function_dict['parameters'][-1]['last'] = True
     return function_dict
@@ -324,8 +339,8 @@ class _JSCViewBuilder(object):
                                        namespace=event.parent,
                                        origin='')
       callback_object.params = event.params
-      if event.callback:
-        callback_object.callback = event.callback
+      if event.returns_async:
+        callback_object.returns_async = event.returns_async
 
       with self._current_node.Descend(event.simple_name):
         callback = self._GenerateFunction(callback_object)
