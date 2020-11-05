@@ -26,6 +26,9 @@ class RoutineUpdatePtr;
 namespace chromeos {
 namespace diagnostics {
 
+using RunRoutineCallback =
+    base::OnceCallback<void(cros_healthd::mojom::RunRoutineResponsePtr)>;
+
 class SystemRoutineController : public mojom::SystemRoutineController {
  public:
   SystemRoutineController();
@@ -39,11 +42,10 @@ class SystemRoutineController : public mojom::SystemRoutineController {
                   mojo::PendingRemote<mojom::RoutineRunner> runner) override;
 
  private:
-  void ExecuteRoutine(mojom::RoutineType type);
+  void ExecuteRoutine(mojom::RoutineType routine_type);
 
-  void RunCpuStressRoutine();
-
-  void OnCpuStressRoutineStarted(
+  void OnRoutineStarted(
+      mojom::RoutineType routine_type,
       cros_healthd::mojom::RunRoutineResponsePtr response_ptr);
 
   void CheckRoutineStatus(mojom::RoutineType routine_type, int32_t id);
