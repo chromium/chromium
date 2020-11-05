@@ -388,7 +388,7 @@ const base::Feature kImeMojoDecoder{"ImeMojoDecoder",
 
 // Enables view-based version of multiprofile login, as opposed to Web UI one.
 const base::Feature kViewBasedMultiprofileLogin{
-    "ViewBasedMultiprofileLogin", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ViewBasedMultiprofileLogin", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable or disable using the floating virtual keyboard as the default option
 // on Chrome OS.
