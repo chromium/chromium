@@ -104,8 +104,11 @@ class WebAppProvider : public WebAppProviderBase {
   void CreateCommonSubsystems(Profile* profile);
   // Create extension-independent subsystems.
   void CreateWebAppsSubsystems(Profile* profile);
-  // ... or create legacy extension-based subsystems.
+
+  // Create legacy extension-based subsystems.
   void CreateBookmarkAppsSubsystems(Profile* profile);
+  std::unique_ptr<InstallFinalizer> CreateBookmarkAppInstallFinalizer(
+      Profile* profile);
 
   // Wire together subsystems but do not start them (yet).
   void ConnectSubsystems();

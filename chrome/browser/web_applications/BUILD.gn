@@ -52,8 +52,14 @@ source_set("web_applications") {
     "web_app_install_task.h",
     "web_app_installation_utils.cc",
     "web_app_installation_utils.h",
+    "web_app_migration_manager.h",
+    "web_app_migration_user_display_mode_clean_up.h",
     "web_app_proto_utils.cc",
     "web_app_proto_utils.h",
+    "web_app_provider.cc",
+    "web_app_provider.h",
+    "web_app_provider_factory.cc",
+    "web_app_provider_factory.h",
     "web_app_registrar.cc",
     "web_app_registrar.h",
     "web_app_registry_update.cc",
@@ -72,12 +78,12 @@ source_set("web_applications") {
     "//chrome/browser/web_applications/components",
     "//chrome/common",
     "//components/content_settings/core/browser",
+    "//components/keyed_service/content",
     "//components/performance_manager",
     "//components/pref_registry",
     "//components/services/app_service/public/cpp:protocol_handling",
     "//components/sync",
     "//content/public/browser",
-    "//extensions/browser",
     "//services/metrics/public/cpp:ukm_builders",
     "//skia",
   ]
@@ -273,18 +279,12 @@ source_set("web_applications_browser_tests") {
   }
 }
 
-# TODO(crbug.com/877898): Erase this and move WebAppProvider into
-# web_applications set.
+# TODO(crbug.com/877898): Erase this and move all migration code to
+# //chrome/browser/web_applications/extensions:extensions GN source set.
 source_set("web_applications_on_extensions") {
   sources = [
     "web_app_migration_manager.cc",
-    "web_app_migration_manager.h",
     "web_app_migration_user_display_mode_clean_up.cc",
-    "web_app_migration_user_display_mode_clean_up.h",
-    "web_app_provider.cc",
-    "web_app_provider.h",
-    "web_app_provider_factory.cc",
-    "web_app_provider_factory.h",
   ]
 
   deps = [

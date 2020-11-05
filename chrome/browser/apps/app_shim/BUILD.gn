@@ -24,7 +24,7 @@ source_set("app_shim") {
 
   deps = [
     "//apps",
-    "//chrome/browser/web_applications:web_applications_on_extensions",
+    "//chrome/browser/web_applications:web_applications",
     "//chrome/browser/web_applications/components",
     "//chrome/common",
     "//chrome/common:app_mode_app_support",

@@ -16,6 +16,7 @@ source_set("extensions") {
     "bookmark_app_icon_manager.h",
     "bookmark_app_install_finalizer.cc",
     "bookmark_app_install_finalizer.h",
+    "bookmark_app_provider.cc",
     "bookmark_app_registrar.cc",
     "bookmark_app_registrar.h",
     "bookmark_app_registry_controller.cc",
