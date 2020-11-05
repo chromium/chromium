@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/phonehub/notification_access_manager.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -117,8 +118,9 @@ void NotificationOptInView::InitLayout() {
                                .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
   text_label_->SetLineHeight(kTextLabelLineHeightDip);
   text_label_->SetBorder(views::CreateEmptyBorder(kTextLabelBorderInsets));
-  text_label_->SetText(l10n_util::GetStringUTF16(
-      IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_DESCRIPTION));
+  text_label_->SetText(l10n_util::GetStringFUTF16(
+      IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_DESCRIPTION,
+      ui::GetChromeOSDeviceName()));
 
   // Set up layout row for the buttons.
   layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);

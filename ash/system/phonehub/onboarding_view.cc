@@ -29,6 +29,7 @@
 #include "chromeos/components/phonehub/onboarding_ui_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
@@ -74,8 +75,9 @@ class OnboardingMainView : public PhoneHubInterstitialView {
     SetImage(*image);
     SetTitle(
         l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_TITLE));
-    SetDescription(l10n_util::GetStringUTF16(
-        IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DESCRIPTION));
+    SetDescription(l10n_util::GetStringFUTF16(
+        IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DESCRIPTION,
+        ui::GetChromeOSDeviceName()));
 
     // Add "Dismiss" and "Get started" buttons.
     auto dismiss = std::make_unique<InterstitialViewButton>(
@@ -133,8 +135,9 @@ class OnboardingDismissPromptView : public PhoneHubInterstitialView {
     // Adds title and description.
     SetTitle(l10n_util::GetStringUTF16(
         IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_TITLE));
-    base::string16 part1 = l10n_util::GetStringUTF16(
-        IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_1);
+    base::string16 part1 = l10n_util::GetStringFUTF16(
+        IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_1,
+        ui::GetChromeOSDeviceName());
     base::string16 part2 = l10n_util::GetStringUTF16(
         IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_2);
     // Uses "\n" to create a newline separator between two text paragraphs.

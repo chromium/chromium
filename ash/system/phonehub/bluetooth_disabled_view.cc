@@ -19,6 +19,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
@@ -41,8 +42,9 @@ BluetoothDisabledView::BluetoothDisabledView() {
   content_view->SetImage(*image);
   content_view->SetTitle(l10n_util::GetStringUTF16(
       IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_TITLE));
-  content_view->SetDescription(l10n_util::GetStringUTF16(
-      IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_DESCRIPTION));
+  content_view->SetDescription(l10n_util::GetStringFUTF16(
+      IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_DESCRIPTION,
+      ui::GetChromeOSDeviceName()));
 
   // Add "Learn more" button.
   auto learn_more = std::make_unique<InterstitialViewButton>(

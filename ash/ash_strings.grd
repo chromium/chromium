@@ -1001,13 +1001,13 @@ This file contains the strings for ash.
         Phone Hub
       </message>
       <message name="IDS_ASH_PHONE_HUB_ENABLE_HOTSPOT_TITLE" desc="Title of the enable hotspot toggle in the phone hub bubble.">
-        Enable Hotspot
+        Enable hotspot
       </message>
       <message name="IDS_ASH_PHONE_HUB_SILENCE_PHONE_TITLE" desc="Title of the silence phone toggle in the phone hub bubble.">
-        Silence
+        Silence phone
       </message>
       <message name="IDS_ASH_PHONE_HUB_LOCATE_PHONE_TITLE" desc="Title of the locate phone toggle in the phone hub bubble.">
-        Locate Phone
+        Locate phone
       </message>
       <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_TOGGLE_TOOLTIP" desc="The tooltip text used for the button in phone hube bubble to toggle quick actions feature on or off.">
         Toggle <ph name="FEATURE_NAME">$1<ex>Silence</ex></ph>. <ph name="STATE_TEXT">$2<ex>Silence is on.</ex></ph>
@@ -1049,13 +1049,13 @@ This file contains the strings for ash.
         Not available
       </message>
       <message name="IDS_ASH_PHONE_HUB_TASK_CONTINUATION_TITLE" desc="Title of the task continuation section (where users pick up unfinished task left off from their phone, currently only support web browsing) in phone hub bubble.">
-        Continue browsing
+        Recent Chrome tabs
       </message>
       <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_TITLE" desc="The title of the onboarding dialog that pops up for existing multidevice users to ask for permission when the user enables this feature.">
         Turn on Phone Hub
       </message>
-      <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DESCRIPTION" desc="The description of the onboarding dialog that pops up for existing multidevice users to ask for permission when the user enables this feature." translateable="false">
-        View quick actions to extend the phone internet connection, control DND and locate your phone. Also view active Chrome tabs from your phone on your Chromebook.
+      <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DESCRIPTION" desc="The description of the onboarding dialog that pops up for existing multidevice users to ask for permission when the user enables this feature.">
+        Extend your phone’s internet connection, control Do Not Disturb and locate your device. View active Chrome tabs from your phone on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
       </message>
       <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DISMISS_BUTTON" desc="Dimiss button on the onboarding dialog for user to opt out this feature.">
         Dismiss
@@ -1066,26 +1066,26 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_TITLE" desc="The title of the dialog that pops up after user clicks the dismiss button on the onboarding dialog.">
         Set up Phone Hub later
       </message>
-      <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_1" desc="The description of the dialog that pops up after user clicks the dismiss button on the onboarding dialog. Also see IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_2." translateable="false">
-        View quick actions to extend the phone internet connection, control DND and locate your phone. Also view active Chrome tabs from your phone on your Chromebook.
+      <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_1" desc="The description of the dialog that pops up after user clicks the dismiss button on the onboarding dialog. Also see IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_2.">
+        Extend your phone’s internet connection, control Do Not Disturb and locate your phone. View active Chrome tabs from your phone on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
       </message>
-      <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_2" desc="The description of the dialog that pops up after user clicks the dismiss button on the onboarding dialog. Also see IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_1." translateable="false">
+      <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_2" desc="The description of the dialog that pops up after user clicks the dismiss button on the onboarding dialog. Also see IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_1.">
         You can always set up later from Settings.
       </message>
       <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_OK_BUTTON" desc="Confirm button on the onboarding dismiss dialog to acknowledge.">
-        Ok, got it
+        OK
       </message>
       <message name="IDS_ASH_PHONE_HUB_INITIAL_CONNECTING_DIALOG_TITLE" desc="The title of the initial connecting dialog that indicates the device is trying to connect to your phone after the user has opted in the Phone Hub feature.">
-        Connecting to your phone...
+        Connecting...
       </message>
-      <message name="IDS_ASH_PHONE_HUB_INITIAL_CONNECTING_DIALOG_DESCRIPTION" desc="The description of the onboarding dialog that indicates the device is trying to connect to your phone after the user has opted in the Phone Hub feature." translateable="false">
-        Make sure your phone is nearby with Bluetooth and Wi-Fi turned on.
+      <message name="IDS_ASH_PHONE_HUB_INITIAL_CONNECTING_DIALOG_DESCRIPTION" desc="The description of the onboarding dialog that indicates the device is trying to connect to your phone after the user has opted in the Phone Hub feature.">
+        Make sure your phone is nearby with Bluetooth and Wi-Fi is turned on.
       </message>
       <message name="IDS_ASH_PHONE_HUB_CONNECTION_ERROR_DIALOG_TITLE" desc="The title of the dialog that pops up when the Phone Hub feature is not available because there is currently no active connection to the phone.">
-        Uh Oh! Can’t find phone
+        Can’t find your phone
       </message>
       <message name="IDS_ASH_PHONE_HUB_CONNECTION_ERROR_DIALOG_DESCRIPTION" desc="The description of the dialog that pops up when the Phone Hub feature is not available because there is currently no active connection to the phone.">
-        Looks like your phone is not online and we are not able to get all the goodies from it for you now.
+        Looks like your phone is not online and we are not able to connect to it.
       </message>
       <message name="IDS_ASH_PHONE_HUB_CONNECTION_ERROR_DIALOG_REFRESH_BUTTON" desc="Refresh button on the connection error dialog to retry the connection attempt to the phone.">
         Refresh
@@ -1094,10 +1094,10 @@ This file contains the strings for ash.
         Learn more
       </message>
       <message name="IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_TITLE" desc="The title of the dialog that pops up when the phone hub feature is not available because Bluetooth is disabled on this device.">
-        Uh Oh! Check your connection
+        Check your connection
       </message>
       <message name="IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_DESCRIPTION" desc="The description of the dialog that pops up when the phone hub feature is not available because Bluetooth is disabled on this device.">
-        Looks like your Bluetooth or Wi-Fi is turned off on your Chromebook. Please check your connection to use Phone Hub.
+        Looks like your Bluetooth or Wi-Fi is turned off on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. Please check your connection to use Phone Hub.
       </message>
       <message name="IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_OK_BUTTON" desc="Confirm button on the bluetooth disabled dialog to acknowledge.">
         Ok, got it
@@ -1112,7 +1112,7 @@ This file contains the strings for ash.
         Reply
       </message>
       <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_DESCRIPTION" desc="Description for the notification opt in view.">
-        Turn on Notifications from your Android phone
+        Get notifications from your phone on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
       </message>
       <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_SET_UP_BUTTON" desc="Label for the set up button to start the opt in flow to show notifications from the phone.">
         Set up
