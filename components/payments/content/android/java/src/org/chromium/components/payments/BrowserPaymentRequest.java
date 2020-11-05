@@ -130,15 +130,6 @@ public interface BrowserPaymentRequest {
     }
 
     /**
-     * If strict show() conditions are not satisfied, disconnect from client and return true.
-     * @param isUserGestureShow Whether the PaymentRequest.show() is triggered by user gesture.
-     * @return Whether client has been disconnected.
-     */
-    default boolean disconnectForStrictShow(boolean isUserGestureShow) {
-        return false;
-    }
-
-    /**
      * Shows the payment apps selector.
      * @return Whether the showing is successful.
      */
@@ -157,11 +148,6 @@ public interface BrowserPaymentRequest {
      * payment app.
      */
     default void triggerPaymentAppUiSkipIfApplicable() {}
-
-    /** @return The error message of rejecting the show() request. */
-    default String getRejectShowErrorMessage() {
-        return "";
-    }
 
     /**
      * Called when a new payment app is created.
@@ -183,12 +169,4 @@ public interface BrowserPaymentRequest {
     default boolean isPaymentSheetBasedPaymentAppSupported() {
         return false;
     }
-
-    // TODO(crbug.com/1144527): this method will be removed once PaymentRequestService has taken
-    // over mRejectShowErrorMessage.
-    /**
-     * Set the error message for show rejection.
-     * @param errorMessage The error message for show rejection.
-     */
-    default void setRejectShowErrorMessage(String errorMessage) {}
 }

@@ -86,6 +86,9 @@ public class PaymentRequestService implements PaymentAppFactoryDelegate, Payment
     private boolean mIsFinishedQueryingPaymentApps;
     private boolean mIsCurrentPaymentRequestShowing;
 
+    /** If not empty, use this error message for rejecting PaymentRequest.show(). */
+    private String mRejectShowErrorMessage;
+
     /** Whether PaymentRequest.show() was invoked with a user gesture. */
     private boolean mIsUserGestureShow;
 
@@ -581,16 +584,15 @@ public class PaymentRequestService implements PaymentAppFactoryDelegate, Payment
                     sNativeObserverForTest.onNotSupportedError();
                 }
 
-                String rejectShowErrorMessage = mBrowserPaymentRequest.getRejectShowErrorMessage();
-                if (TextUtils.isEmpty(rejectShowErrorMessage) && !isInTwa()
+                if (TextUtils.isEmpty(mRejectShowErrorMessage) && !isInTwa()
                         && mSpec.getMethodData().get(MethodStrings.GOOGLE_PLAY_BILLING) != null) {
-                    rejectShowErrorMessage = ErrorStrings.APP_STORE_METHOD_ONLY_SUPPORTED_IN_TWA;
+                    mRejectShowErrorMessage = ErrorStrings.APP_STORE_METHOD_ONLY_SUPPORTED_IN_TWA;
                 }
                 mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
                         ErrorMessageUtil.getNotSupportedErrorMessage(mSpec.getMethodData().keySet())
-                                + (TextUtils.isEmpty(rejectShowErrorMessage)
+                                + (TextUtils.isEmpty(mRejectShowErrorMessage)
                                                 ? ""
-                                                : " " + rejectShowErrorMessage),
+                                                : " " + mRejectShowErrorMessage),
                         PaymentErrorReason.NOT_SUPPORTED);
             }
             if (sObserverForTest != null) {
@@ -598,11 +600,32 @@ public class PaymentRequestService implements PaymentAppFactoryDelegate, Payment
             }
             return true;
         }
-        boolean isDisconnected = mBrowserPaymentRequest.disconnectForStrictShow(mIsUserGestureShow);
-        if (isDisconnected && sObserverForTest != null) {
+        return disconnectForStrictShow(mIsUserGestureShow);
+    }
+
+    /**
+     * If strict show() conditions are not satisfied, disconnect from client and return true.
+     * @param isUserGestureShow Whether the PaymentRequest.show() is triggered by user gesture.
+     * @return Whether client has been disconnected.
+     */
+    private boolean disconnectForStrictShow(boolean isUserGestureShow) {
+        if (!isUserGestureShow || !mSpec.getMethodData().containsKey(MethodStrings.BASIC_CARD)
+                || mHasEnrolledInstrument || mHasNonAutofillApp
+                || !PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                        PaymentFeatureList.STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT)) {
+            return false;
+        }
+
+        if (sObserverForTest != null) {
             sObserverForTest.onPaymentRequestServiceShowFailed();
         }
-        return isDisconnected;
+        mRejectShowErrorMessage = ErrorStrings.STRICT_BASIC_CARD_SHOW_REJECT;
+        mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
+                ErrorMessageUtil.getNotSupportedErrorMessage(mSpec.getMethodData().keySet()) + " "
+                        + mRejectShowErrorMessage,
+                PaymentErrorReason.NOT_SUPPORTED);
+
+        return true;
     }
 
     private boolean isInTwa() {
@@ -755,9 +778,8 @@ public class PaymentRequestService implements PaymentAppFactoryDelegate, Payment
     // Implements PaymentAppFactoryDelegate:
     @Override
     public void onPaymentAppCreationError(String errorMessage) {
-        if (mBrowserPaymentRequest != null
-                && TextUtils.isEmpty(mBrowserPaymentRequest.getRejectShowErrorMessage())) {
-            mBrowserPaymentRequest.setRejectShowErrorMessage(errorMessage);
+        if (TextUtils.isEmpty(mRejectShowErrorMessage)) {
+            mRejectShowErrorMessage = errorMessage;
         }
     }
 

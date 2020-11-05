@@ -24,7 +24,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.CheckoutFunnelStep;
-import org.chromium.components.payments.ErrorMessageUtil;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.Event;
 import org.chromium.components.payments.JourneyLogger;
@@ -124,9 +123,6 @@ public class ChromePaymentRequestService
 
     /** The helper to create and fill the response to send to the merchant. */
     private PaymentResponseHelper mPaymentResponseHelper;
-
-    /** If not empty, use this error message for rejecting PaymentRequest.show(). */
-    private String mRejectShowErrorMessage;
 
     /** A helper to manage the Skip-to-GPay experimental flow. */
     private SkipToGPayHelper mSkipToGPayHelper;
@@ -1145,38 +1141,6 @@ public class ChromePaymentRequestService
     @Override
     public boolean isPaymentSheetBasedPaymentAppSupported() {
         return mPaymentUiService.canUserAddCreditCard();
-    }
-
-    // Implements BrowserPaymentRequest:
-    @Override
-    public String getRejectShowErrorMessage() {
-        return mRejectShowErrorMessage;
-    }
-
-    // Implements BrowserPaymentRequest:
-    @Override
-    public void setRejectShowErrorMessage(String errorMessage) {
-        mRejectShowErrorMessage = errorMessage;
-    }
-
-    // Implements BrowserPaymentRequest:
-    @Override
-    public boolean disconnectForStrictShow(boolean isUserGestureShow) {
-        if (!isUserGestureShow || !mSpec.getMethodData().containsKey(MethodStrings.BASIC_CARD)
-                || mPaymentRequestService.getHasEnrolledInstrument()
-                || mPaymentRequestService.getHasNonAutofillApp()
-                || !PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                        PaymentFeatureList.STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT)) {
-            return false;
-        }
-
-        mRejectShowErrorMessage = ErrorStrings.STRICT_BASIC_CARD_SHOW_REJECT;
-        disconnectFromClientWithDebugMessage(
-                ErrorMessageUtil.getNotSupportedErrorMessage(mSpec.getMethodData().keySet()) + " "
-                        + mRejectShowErrorMessage,
-                PaymentErrorReason.NOT_SUPPORTED);
-
-        return true;
     }
 
     // Implements PaymentApp.InstrumentDetailsCallback:
