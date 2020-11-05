@@ -358,8 +358,20 @@ void TouchEmulator::OnViewDestroyed(RenderWidgetHostViewBase* destroyed_view) {
   if (destroyed_view != last_emulated_start_target_)
     return;
 
-  last_emulated_start_target_ = nullptr;
   emulated_stream_active_sequence_count_ = 0;
+  // If we aren't enabled, just reset out target.
+  if (!gesture_provider_) {
+    last_emulated_start_target_ = nullptr;
+    return;
+  }
+
+  // TouchEmulator is still enabled. To reset the state go through a
+  // Disable/Enable sequence to destroy the GestureRecognizer otherwise it will
+  // be left in an unknown state because the associated view was destroyed.
+  ui::GestureProviderConfigType config_type = gesture_provider_config_type_;
+  Mode mode = mode_;
+  Disable();
+  Enable(mode, config_type);
 }
 
 void TouchEmulator::OnGestureEvent(const ui::GestureEventData& gesture) {
