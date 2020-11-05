@@ -17,14 +17,12 @@ class PhoneHubManager;
 
 namespace ash {
 
-class TrayBubbleView;
-
 // A view of the Phone Hub panel, displaying phone status and utility actions
 // such as phone status, task continuation, etc.
 class PhoneConnectedView : public PhoneHubContentView {
  public:
-  PhoneConnectedView(TrayBubbleView* bubble_view,
-                     chromeos::phonehub::PhoneHubManager* phone_hub_manager);
+  explicit PhoneConnectedView(
+      chromeos::phonehub::PhoneHubManager* phone_hub_manager);
   ~PhoneConnectedView() override;
 
   // views::View:

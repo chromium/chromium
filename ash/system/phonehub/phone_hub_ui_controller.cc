@@ -76,8 +76,7 @@ std::unique_ptr<PhoneHubContentView> PhoneHubUiController::CreateContentView(
           ConnectionErrorView::ErrorStatus::kDisconnected,
           phone_hub_manager_->GetConnectionScheduler());
     case UiState::kPhoneConnected:
-      return std::make_unique<PhoneConnectedView>(bubble_view,
-                                                  phone_hub_manager_);
+      return std::make_unique<PhoneConnectedView>(phone_hub_manager_);
   }
 }
 

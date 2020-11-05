@@ -27,7 +27,6 @@
 namespace ash {
 
 PhoneConnectedView::PhoneConnectedView(
-    TrayBubbleView* bubble_view,
     chromeos::phonehub::PhoneHubManager* phone_hub_manager) {
   SetID(PhoneHubViewID::kPhoneConnectedView);
 
@@ -42,7 +41,7 @@ PhoneConnectedView::PhoneConnectedView(
   layout->SetDefaultFlex(1);
 
   AddChildView(std::make_unique<NotificationOptInView>(
-      bubble_view, phone_hub_manager->GetNotificationAccessManager()));
+      phone_hub_manager->GetNotificationAccessManager()));
 
   setup_layered_view(
       AddChildView(std::make_unique<QuickActionsView>(phone_hub_manager)));

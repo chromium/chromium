@@ -25,8 +25,6 @@ class NotificationAccessManager;
 
 namespace ash {
 
-class TrayBubbleView;
-
 // An additional entry point shown on the Phone Hub bubble for the user to grant
 // access or opt out for notifications from the phone.
 class ASH_EXPORT NotificationOptInView
@@ -35,18 +33,14 @@ class ASH_EXPORT NotificationOptInView
  public:
   METADATA_HEADER(NotificationOptInView);
 
-  NotificationOptInView(TrayBubbleView* bubble_view,
-                        chromeos::phonehub::NotificationAccessManager*
-                            notification_access_manager);
+  explicit NotificationOptInView(chromeos::phonehub::NotificationAccessManager*
+                                     notification_access_manager);
   NotificationOptInView(const NotificationOptInView&) = delete;
   NotificationOptInView& operator=(const NotificationOptInView&) = delete;
   ~NotificationOptInView() override;
 
   // chromeos::phonehub::NotificationAccessManager::Observer:
   void OnNotificationAccessChanged() override;
-
-  views::View* set_up_button_for_testing() { return set_up_button_; }
-  views::View* dismiss_button_for_testing() { return dismiss_button_; }
  private:
   void InitLayout();
 
@@ -62,7 +56,6 @@ class ASH_EXPORT NotificationOptInView
   InterstitialViewButton* set_up_button_ = nullptr;
   InterstitialViewButton* dismiss_button_ = nullptr;
 
-  TrayBubbleView* bubble_view_ = nullptr;
   chromeos::phonehub::NotificationAccessManager* notification_access_manager_;
 
   ScopedObserver<chromeos::phonehub::NotificationAccessManager,

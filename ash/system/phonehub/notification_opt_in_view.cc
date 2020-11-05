@@ -12,7 +12,6 @@
 #include "ash/system/phonehub/interstitial_view_button.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
-#include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_popup_item_style.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
@@ -53,10 +52,8 @@ constexpr char kMultideviceSettingsUrl[] =
 }  // namespace
 
 NotificationOptInView::NotificationOptInView(
-    TrayBubbleView* bubble_view,
     chromeos::phonehub::NotificationAccessManager* notification_access_manager)
-    : bubble_view_(bubble_view),
-      notification_access_manager_(notification_access_manager) {
+    : notification_access_manager_(notification_access_manager) {
   SetID(PhoneHubViewID::kNotificationOptInView);
   InitLayout();
 
@@ -82,7 +79,6 @@ void NotificationOptInView::DismissButtonPressed() {
   // Dismiss this view if user chose to opt out and update the bubble size.
   LogNotificationOptInEvent(InterstitialScreenEvent::kDismiss);
   SetVisible(false);
-  bubble_view_->UpdateBubble();
   notification_access_manager_->DismissSetupRequiredUi();
 }
 
@@ -144,6 +140,7 @@ void NotificationOptInView::InitLayout() {
   dismiss_button_->SetEnabledTextColors(
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kTextColorPrimary));
+  dismiss_button_->SetID(kNotificationOptInDismissButton);
   set_up_button_ =
       button_container->AddChildView(std::make_unique<InterstitialViewButton>(
           base::BindRepeating(&NotificationOptInView::SetUpButtonPressed,
@@ -151,6 +148,7 @@ void NotificationOptInView::InitLayout() {
           l10n_util::GetStringUTF16(
               IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_SET_UP_BUTTON),
           /*paint_background=*/true));
+  set_up_button_->SetID(kNotificationOptInSetUpButton);
 }
 
 void NotificationOptInView::UpdateVisibility() {

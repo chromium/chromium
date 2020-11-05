@@ -18,6 +18,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/event.h"
+#include "ui/views/controls/button/button.h"
 
 namespace ash {
 
@@ -140,6 +141,16 @@ class PhoneHubTrayTest : public AshTestBase {
         PhoneHubViewID::kBluetoothDisabledLearnMoreButton));
   }
 
+  views::Button* notification_opt_in_set_up_button() {
+    return static_cast<views::Button*>(bubble_view()->GetViewByID(
+        PhoneHubViewID::kNotificationOptInSetUpButton));
+  }
+
+  views::Button* notification_opt_in_dismiss_button() {
+    return static_cast<views::Button*>(bubble_view()->GetViewByID(
+        PhoneHubViewID::kNotificationOptInDismissButton));
+  }
+
  protected:
   PhoneHubTray* phone_hub_tray_ = nullptr;
   chromeos::phonehub::FakePhoneHubManager phone_hub_manager_;
@@ -201,11 +212,14 @@ TEST_F(PhoneHubTrayTest, ShowNotificationOptInViewWhenAccessNotGranted) {
   EXPECT_TRUE(notification_opt_in_view());
   EXPECT_TRUE(notification_opt_in_view()->GetVisible());
 
-  // Simulate a click on the dimiss button.
-  ClickOnAndWait(notification_opt_in_view()->dismiss_button_for_testing());
+  // Simulate a click on "Dismiss" button.
+  ClickOnAndWait(notification_opt_in_dismiss_button());
 
-  // The view should be dismissed on button clicked.
+  // Clicking on "Dismiss" should hide the view and also disable the ability to
+  // show it again.
   EXPECT_FALSE(notification_opt_in_view()->GetVisible());
+  EXPECT_TRUE(
+      GetNotificationAccessManager()->HasNotificationSetupUiBeenDismissed());
 }
 
 TEST_F(PhoneHubTrayTest, HideNotificationOptInViewWhenAccessHasBeenGranted) {
@@ -234,7 +248,7 @@ TEST_F(PhoneHubTrayTest, StartNotificationSetUpFlow) {
         EXPECT_TRUE(from_user_interaction);
       });
 
-  ClickOnAndWait(notification_opt_in_view()->set_up_button_for_testing());
+  ClickOnAndWait(notification_opt_in_set_up_button());
 
   // Simulate that notification access has been granted.
   GetNotificationAccessManager()->SetHasAccessBeenGrantedInternal(true);
