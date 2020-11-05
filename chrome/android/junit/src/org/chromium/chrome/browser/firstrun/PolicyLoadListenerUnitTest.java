@@ -77,7 +77,7 @@ public class PolicyLoadListenerUnitTest {
 
     @Test
     public void testAppRestrictionNotFound() {
-        mPolicyLoadListener.onAvailable(mListener);
+        Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.onAvailable(mListener));
 
         mAppRestrictionsCallback.onResult(false);
         Assert.assertFalse(LOADED_NO_POLICY, mPolicyLoadListener.get());
@@ -86,7 +86,7 @@ public class PolicyLoadListenerUnitTest {
 
     @Test
     public void testAppRestrictionFoundAndPolicyLoaded() {
-        mPolicyLoadListener.onAvailable(mListener);
+        Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.onAvailable(mListener));
 
         mAppRestrictionsCallback.onResult(true);
         Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.get());
@@ -103,7 +103,7 @@ public class PolicyLoadListenerUnitTest {
 
     @Test
     public void testPolicyInitializedWithoutAppRestriction() {
-        mPolicyLoadListener.onAvailable(mListener);
+        Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.onAvailable(mListener));
 
         mTestPolicyServiceSupplier.set(mPolicyService);
         Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.get());
@@ -128,13 +128,13 @@ public class PolicyLoadListenerUnitTest {
         mAppRestrictionsCallback.onResult(false);
         Assert.assertFalse(LOADED_NO_POLICY, mPolicyLoadListener.get());
 
-        mPolicyLoadListener.onAvailable(mListener);
+        Assert.assertFalse(LOADED_NO_POLICY, mPolicyLoadListener.onAvailable(mListener));
         Mockito.verify(mListener).onResult(false);
     }
 
     @Test
     public void testDestroyAfterStart_AppRestrictions() {
-        mPolicyLoadListener.onAvailable(mListener);
+        Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.onAvailable(mListener));
 
         mPolicyLoadListener.destroy();
         Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.get());
@@ -149,7 +149,7 @@ public class PolicyLoadListenerUnitTest {
 
     @Test
     public void testDestroyAfterStart_PolicyInitialized() {
-        mPolicyLoadListener.onAvailable(mListener);
+        Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.onAvailable(mListener));
 
         mPolicyLoadListener.destroy();
         Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.get());

@@ -4,6 +4,8 @@
 
 package org.chromium.base.supplier;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 
 /**
@@ -29,8 +31,10 @@ import org.chromium.base.Callback;
  *    <li>To be notified when the object is available, call {@link #onAvailable(Callback)}.
  *    <li>If the object is already available, the Callback will be posted immediately on the handler
  *    for the thread the supplier was created on.
- *    <li>The Callback will be called at most
- *    once. It's still recommended to use {@link org.chromium.base.CallbackController} for safety.
+ *    <li>The object held by this supplier will also be returned at the end of {@link
+ *    #onAvailable(Callback)}.
+ *    <li>The Callback will be called at most once. It's still
+ * recommended to use {@link org.chromium.base.CallbackController} for safety.
  * </ul>
  *
  * @param <T> The type of the wrapped object.
@@ -42,6 +46,8 @@ public interface OneshotSupplier<T> extends Supplier<T> {
      * current message loop.
      *
      * @param callback The callback to be called.
+     * @return The value for this supplier if already available. Null otherwise.
      */
-    void onAvailable(Callback<T> callback);
+    @Nullable
+    T onAvailable(Callback<T> callback);
 }

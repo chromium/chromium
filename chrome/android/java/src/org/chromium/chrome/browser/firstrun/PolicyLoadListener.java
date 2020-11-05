@@ -70,8 +70,8 @@ public class PolicyLoadListener implements OneshotSupplier<Boolean> {
     }
 
     @Override
-    public void onAvailable(Callback<Boolean> callback) {
-        mMightHavePoliciesSupplier.onAvailable(callback);
+    public Boolean onAvailable(Callback<Boolean> callback) {
+        return mMightHavePoliciesSupplier.onAvailable(callback);
     }
 
     @Override

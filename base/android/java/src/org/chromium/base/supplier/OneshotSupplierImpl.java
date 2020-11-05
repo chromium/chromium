@@ -31,9 +31,10 @@ public class OneshotSupplierImpl<T> implements OneshotSupplier<T> {
     private final ThreadUtils.ThreadChecker mThreadChecker = new ThreadUtils.ThreadChecker();
 
     @Override
-    public void onAvailable(Callback<T> callback) {
+    public T onAvailable(Callback<T> callback) {
         mThreadChecker.assertOnValidThread();
         mPromise.then(callback);
+        return get();
     }
 
     @Override

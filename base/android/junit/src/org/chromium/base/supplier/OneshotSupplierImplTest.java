@@ -39,8 +39,8 @@ public class OneshotSupplierImplTest {
 
     @Test
     public void testSet() {
-        mSupplier.onAvailable(mCallback1);
-        mSupplier.onAvailable(mCallback2);
+        assertNull(mSupplier.onAvailable(mCallback1));
+        assertNull(mSupplier.onAvailable(mCallback2));
         mSupplier.set("answer");
 
         verify(mCallback1).onResult("answer");
@@ -51,8 +51,8 @@ public class OneshotSupplierImplTest {
     public void testSetBeforeAddObserver() {
         mSupplier.set("answer");
 
-        mSupplier.onAvailable(mCallback1);
-        mSupplier.onAvailable(mCallback2);
+        assertEquals("answer", mSupplier.onAvailable(mCallback1));
+        assertEquals("answer", mSupplier.onAvailable(mCallback2));
 
         verify(mCallback1).onResult("answer");
         verify(mCallback2).onResult("answer");
@@ -60,9 +60,9 @@ public class OneshotSupplierImplTest {
 
     @Test
     public void testInterleaved() {
-        mSupplier.onAvailable(mCallback1);
+        assertNull(mSupplier.onAvailable(mCallback1));
         mSupplier.set("answer");
-        mSupplier.onAvailable(mCallback2);
+        assertEquals("answer", mSupplier.onAvailable(mCallback2));
 
         verify(mCallback1).onResult("answer");
         verify(mCallback2).onResult("answer");
