@@ -5,7 +5,6 @@
 package org.chromium.weblayer_private.payments;
 
 import org.chromium.components.payments.BrowserPaymentRequest;
-import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppService;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestService.Delegate;
@@ -69,9 +68,4 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
         assert false : "Not implemented yet";
     }
 
-    @Override
-    public PaymentAppFactoryDelegate getPaymentAppFactoryDelegate() {
-        assert false : "Not implemented yet";
-        return null;
-    }
 }

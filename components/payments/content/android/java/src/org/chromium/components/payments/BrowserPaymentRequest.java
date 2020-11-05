@@ -118,9 +118,6 @@ public interface BrowserPaymentRequest {
      */
     void addPaymentAppFactories(PaymentAppService service);
 
-    /** @return A PaymentAppFactoryDelegate to be used with the PaymentAppService. */
-    PaymentAppFactoryDelegate getPaymentAppFactoryDelegate();
-
     default void onWhetherGooglePayBridgeEligible(boolean googlePayBridgeEligible,
             WebContents webContents, PaymentMethodData[] rawMethodData) {}
 
@@ -165,4 +162,33 @@ public interface BrowserPaymentRequest {
     default String getRejectShowErrorMessage() {
         return "";
     }
+
+    /**
+     * Called when a new payment app is created.
+     * @param paymentApp The new payment app.
+     */
+    default void onPaymentAppCreated(PaymentApp paymentApp) {}
+
+    // TODO(crbug.com/1144527): this method will be removed once PaymentRequestService has taken
+    // over PaymentRequestUpdateEventListener.
+    /** @return An instance of PaymentRequestUpdateEventListener. */
+    default PaymentRequestUpdateEventListener getPaymentRequestUpdateEventListener() {
+        return null;
+    }
+
+    /**
+     * @return Whether payment sheet based payment app is supported, e.g., user entering credit
+     *      cards on payment sheet.
+     */
+    default boolean isPaymentSheetBasedPaymentAppSupported() {
+        return false;
+    }
+
+    // TODO(crbug.com/1144527): this method will be removed once PaymentRequestService has taken
+    // over mRejectShowErrorMessage.
+    /**
+     * Set the error message for show rejection.
+     * @param errorMessage The error message for show rejection.
+     */
+    default void setRejectShowErrorMessage(String errorMessage) {}
 }

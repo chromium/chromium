@@ -33,9 +33,6 @@ import org.chromium.components.payments.NotShownReason;
 import org.chromium.components.payments.PackageManagerDelegate;
 import org.chromium.components.payments.PayerData;
 import org.chromium.components.payments.PaymentApp;
-import org.chromium.components.payments.PaymentAppFactoryDelegate;
-import org.chromium.components.payments.PaymentAppFactoryInterface;
-import org.chromium.components.payments.PaymentAppFactoryParams;
 import org.chromium.components.payments.PaymentAppService;
 import org.chromium.components.payments.PaymentAppType;
 import org.chromium.components.payments.PaymentDetailsConverter;
@@ -57,9 +54,7 @@ import org.chromium.payments.mojom.PayerDetail;
 import org.chromium.payments.mojom.PaymentAddress;
 import org.chromium.payments.mojom.PaymentComplete;
 import org.chromium.payments.mojom.PaymentDetails;
-import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentErrorReason;
-import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequest;
@@ -70,7 +65,6 @@ import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -81,9 +75,8 @@ import java.util.Set;
  * living in {@link PaymentRequestService}.
  */
 public class ChromePaymentRequestService
-        implements BrowserPaymentRequest, PaymentAppFactoryDelegate, PaymentAppFactoryParams,
-                   PaymentRequestUpdateEventListener, PaymentApp.AbortCallback,
-                   PaymentApp.InstrumentDetailsCallback,
+        implements BrowserPaymentRequest, PaymentRequestUpdateEventListener,
+                   PaymentApp.AbortCallback, PaymentApp.InstrumentDetailsCallback,
                    PaymentResponseHelper.PaymentResponseRequesterDelegate,
                    PaymentDetailsConverter.MethodChecker, PaymentUiService.Delegate,
                    PaymentUIsObserver {
@@ -113,8 +106,6 @@ public class ChromePaymentRequestService
     private final boolean mIsOffTheRecord;
 
     private final PaymentUiService mPaymentUiService;
-
-    @Nullable
     private final PaymentOptions mPaymentOptions;
     private final boolean mRequestShipping;
     private boolean mWasRetryCalled;
@@ -189,7 +180,8 @@ public class ChromePaymentRequestService
 
         mPaymentRequestService = paymentRequestService;
         mPaymentUiService = new PaymentUiService(/*delegate=*/this,
-                /*params=*/this, mWebContents, mIsOffTheRecord, mJourneyLogger, mTopLevelOrigin,
+                /*params=*/mPaymentRequestService, mWebContents, mIsOffTheRecord, mJourneyLogger,
+                mTopLevelOrigin,
                 /*observer=*/this);
     }
 
@@ -294,14 +286,9 @@ public class ChromePaymentRequestService
         }
         if (AutofillPaymentAppFactory.canMakePayments(mSpec.getMethodData())) {
             mPaymentUiService.setAutofillPaymentAppCreator(
-                    AutofillPaymentAppFactory.createAppCreator(/*delegate=*/this));
+                    AutofillPaymentAppFactory.createAppCreator(
+                            /*delegate=*/mPaymentRequestService));
         }
-    }
-
-    // Implements BrowserPaymentRequest:
-    @Override
-    public PaymentAppFactoryDelegate getPaymentAppFactoryDelegate() {
-        return this;
     }
 
     /** @return Whether the UI was built. */
@@ -1083,149 +1070,11 @@ public class ChromePaymentRequestService
         closeUIAndDestroyNativeObjects();
     }
 
-    // PaymentAppFactoryParams implementation.
-    @Override
-    public WebContents getWebContents() {
-        return mWebContents;
-    }
-
-    // PaymentAppFactoryParams implementation.
-    @Override
-    public RenderFrameHost getRenderFrameHost() {
-        return mRenderFrameHost;
-    }
-
-    // PaymentAppFactoryParams implementation.
-    @Override
-    public boolean hasClosed() {
-        return mHasClosed;
-    }
-
-    // PaymentAppFactoryParams implementation.
-    @Override
-    public Map<String, PaymentMethodData> getMethodData() {
-        // GetMethodData should not get called after PR is closed.
-        assert !mHasClosed;
-        assert !mSpec.isDestroyed();
-        return mSpec.getMethodData();
-    }
-
-    // PaymentAppFactoryParams implementation.
-    @Override
-    public String getId() {
-        assert !mHasClosed;
-        assert !mSpec.isDestroyed();
-        return mSpec.getId();
-    }
-
-    // PaymentAppFactoryParams implementation.
-    @Override
-    public String getTopLevelOrigin() {
-        return mTopLevelOrigin;
-    }
-
-    // PaymentAppFactoryParams implementation.
-    @Override
-    public String getPaymentRequestOrigin() {
-        return mPaymentRequestOrigin;
-    }
-
-    // PaymentAppFactoryParams implementation.
-    @Override
-    public Origin getPaymentRequestSecurityOrigin() {
-        return mPaymentRequestSecurityOrigin;
-    }
-
-    // PaymentAppFactoryParams implementation.
-    @Override
-    @Nullable
-    public byte[][] getCertificateChain() {
-        return mCertificateChain;
-    }
-
-    // PaymentAppFactoryParams implementation.
-    @Override
-    public Map<String, PaymentDetailsModifier> getUnmodifiableModifiers() {
-        assert !mHasClosed;
-        assert !mSpec.isDestroyed();
-        return Collections.unmodifiableMap(mSpec.getModifiers());
-    }
-
-    // PaymentAppFactoryParams implementation.
-    @Override
-    public PaymentItem getRawTotal() {
-        assert !mHasClosed;
-        assert !mSpec.isDestroyed();
-        return mSpec.getRawTotal();
-    }
-
-    // PaymentAppFactoryParams implementation.
-    @Override
-    public boolean getMayCrawl() {
-        return !mPaymentUiService.canUserAddCreditCard()
-                || PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                        PaymentFeatureList.WEB_PAYMENTS_ALWAYS_ALLOW_JUST_IN_TIME_PAYMENT_APP);
-    }
-
-    // PaymentAppFactoryParams implementation.
-    @Override
-    public PaymentRequestUpdateEventListener getPaymentRequestUpdateEventListener() {
-        return this;
-    }
-
-    // PaymentAppFactoryParams implementation.
-    @Override
-    public PaymentOptions getPaymentOptions() {
-        return mPaymentOptions;
-    }
-
-    // PaymentAppFactoryParams implementation.
-    @Override
-    public PaymentRequestSpec getSpec() {
-        return mSpec;
-    }
-
-    // PaymentAppFactoryParams implementation.
-    @Override
-    @Nullable
-    public String getTwaPackageName() {
-        return mDelegate.getTwaPackageName();
-    }
-
-    // PaymentAppFactoryDelegate implementation.
-    @Override
-    public PaymentAppFactoryParams getParams() {
-        return this;
-    }
-
-    // PaymentAppFactoryDelegate implementation.
-    @Override
-    public void onCanMakePaymentCalculated(boolean canMakePayment) {
-        if (mPaymentRequestService == null) return;
-        mPaymentRequestService.onCanMakePaymentCalculated(canMakePayment);
-    }
-
-    // PaymentAppFactoryDelegate implementation.
+    // Implements BrowserPaymentRequest:
     @Override
     public void onPaymentAppCreated(PaymentApp paymentApp) {
-        if (mPaymentRequestService == null) return;
-
         mHideServerAutofillCards |= paymentApp.isServerAutofillInstrumentReplacement();
         paymentApp.setHaveRequestedAutofillData(mPaymentUiService.haveRequestedAutofillData());
-        mPaymentRequestService.onPaymentAppCreated(paymentApp);
-    }
-
-    // PaymentAppFactoryDelegate implementation.
-    @Override
-    public void onPaymentAppCreationError(String errorMessage) {
-        if (TextUtils.isEmpty(mRejectShowErrorMessage)) mRejectShowErrorMessage = errorMessage;
-    }
-
-    // PaymentAppFactoryDelegate implementation.
-    @Override
-    public void onDoneCreatingPaymentApps(PaymentAppFactoryInterface factory /* Unused */) {
-        if (mPaymentRequestService == null) return;
-        mPaymentRequestService.onDoneCreatingPaymentApps();
     }
 
     // Implements BrowserPaymentRequest:
@@ -1301,8 +1150,26 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
+    public PaymentRequestUpdateEventListener getPaymentRequestUpdateEventListener() {
+        return this;
+    }
+
+    // Implements BrowserPaymentRequest:
+    @Override
+    public boolean isPaymentSheetBasedPaymentAppSupported() {
+        return mPaymentUiService.canUserAddCreditCard();
+    }
+
+    // Implements BrowserPaymentRequest:
+    @Override
     public String getRejectShowErrorMessage() {
         return mRejectShowErrorMessage;
+    }
+
+    // Implements BrowserPaymentRequest:
+    @Override
+    public void setRejectShowErrorMessage(String errorMessage) {
+        mRejectShowErrorMessage = errorMessage;
     }
 
     // Implements BrowserPaymentRequest:

@@ -57,7 +57,7 @@ import java.util.Map;
  * class need to close them with
  * {@link PaymentRequestService#close()}, after which no usage is allowed.
  */
-public class PaymentRequestService {
+public class PaymentRequestService implements PaymentAppFactoryDelegate, PaymentAppFactoryParams {
     private static final String TAG = "PaymentRequestServ";
     private static PaymentRequestServiceObserverForTest sObserverForTest;
     private static NativeObserverForTest sNativeObserverForTest;
@@ -73,7 +73,6 @@ public class PaymentRequestService {
     @Nullable
     private final byte[][] mCertificateChain;
     private final boolean mIsOffTheRecord;
-    @Nullable
     private final PaymentOptions mPaymentOptions;
     private final boolean mRequestShipping;
     private final boolean mRequestPayerName;
@@ -91,9 +90,11 @@ public class PaymentRequestService {
     private boolean mIsUserGestureShow;
 
     // mClient is null only when it has closed.
+    @Nullable
     private PaymentRequestClient mClient;
 
     // mBrowserPaymentRequest is null when it has closed or is uninitiated.
+    @Nullable
     private BrowserPaymentRequest mBrowserPaymentRequest;
     /**
      * A mapping of the payment method names to the corresponding payment method specific data. If
@@ -332,7 +333,7 @@ public class PaymentRequestService {
     private void startPaymentAppService() {
         PaymentAppService service = PaymentAppService.getInstance();
         mBrowserPaymentRequest.addPaymentAppFactories(service);
-        service.create(/*delegate=*/mBrowserPaymentRequest.getPaymentAppFactoryDelegate());
+        service.create(/*delegate=*/this);
     }
 
     /** Abort the request, used before this class's instantiation. */
@@ -528,8 +529,10 @@ public class PaymentRequestService {
         }
     }
 
-    /** Called when the payment app service has done creating all payment apps. */
-    public void onDoneCreatingPaymentApps() {
+    // Implements PaymentAppFactoryDelegate:
+    @Override
+    public void onDoneCreatingPaymentApps(PaymentAppFactoryInterface factory /* Unused */) {
+        if (mBrowserPaymentRequest == null) return;
         mIsFinishedQueryingPaymentApps = true;
 
         if (disconnectIfNoPaymentMethodsSupported(mBrowserPaymentRequest.hasAvailableApps())) {
@@ -645,11 +648,17 @@ public class PaymentRequestService {
         sIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest = true;
     }
 
-    /**
-     * Called when a payment app is created.
-     * @param paymentApp The created payment app.
-     */
+    // Implements PaymentAppFactoryDelegate:
+    @Override
+    public PaymentAppFactoryParams getParams() {
+        return this;
+    }
+
+    // Implements PaymentAppFactoryDelegate:
+    @Override
     public void onPaymentAppCreated(PaymentApp paymentApp) {
+        if (mBrowserPaymentRequest == null) return;
+        mBrowserPaymentRequest.onPaymentAppCreated(paymentApp);
         mHasEnrolledInstrument |= paymentApp.canMakePayment();
         mHasNonAutofillApp |= !paymentApp.isAutofillInstrument();
 
@@ -667,8 +676,7 @@ public class PaymentRequestService {
 
     /** Responds to the CanMakePayment query from the merchant page. */
     public void respondCanMakePaymentQuery() {
-        // Every caller should stop referencing this class once close() is called.
-        assert mClient != null;
+        if (mClient == null) return;
 
         mIsCanMakePaymentResponsePending = false;
 
@@ -688,6 +696,7 @@ public class PaymentRequestService {
 
     /** Responds to the HasEnrolledInstrument query from the merchant page. */
     public void respondHasEnrolledInstrumentQuery() {
+        if (mClient == null) return;
         boolean response = mHasEnrolledInstrument;
         mIsHasEnrolledInstrumentResponsePending = false;
 
@@ -732,16 +741,24 @@ public class PaymentRequestService {
         return mHasEnrolledInstrument;
     }
 
-    /**
-     * Called when the response of the CanMakePayment query is calculated.
-     * @param canMakePayment Whether any payment app support the requested payment.
-     */
+    // Implements PaymentAppFactoryDelegate:
+    @Override
     public void onCanMakePaymentCalculated(boolean canMakePayment) {
+        if (mBrowserPaymentRequest == null) return;
         mCanMakePayment = canMakePayment;
         if (!mIsCanMakePaymentResponsePending) return;
         // canMakePayment doesn't need to wait for all apps to be queried because it only needs to
         // test the existence of a payment handler.
         respondCanMakePaymentQuery();
+    }
+
+    // Implements PaymentAppFactoryDelegate:
+    @Override
+    public void onPaymentAppCreationError(String errorMessage) {
+        if (mBrowserPaymentRequest != null
+                && TextUtils.isEmpty(mBrowserPaymentRequest.getRejectShowErrorMessage())) {
+            mBrowserPaymentRequest.setRejectShowErrorMessage(errorMessage);
+        }
     }
 
     /** @return Whether the created payment apps includes any autofill payment app. */
@@ -1020,50 +1037,9 @@ public class PaymentRequestService {
         return mJourneyLogger;
     }
 
-    /** @return The WebContents of the merchant's page, cannot be null. */
-    public WebContents getWebContents() {
-        return mWebContents;
-    }
-
     /** @return Whether the WebContents is currently showing an off-the-record tab. */
     public boolean isOffTheRecord() {
         return mIsOffTheRecord;
-    }
-
-    /** @return The certificate chain from the merchant page's WebContents, can be null. */
-    @Nullable
-    public byte[][] getCertificateChain() {
-        return mCertificateChain;
-    }
-
-    /** @return The origin of the page at which the PaymentRequest is created. */
-    public String getPaymentRequestOrigin() {
-        return mPaymentRequestOrigin;
-    }
-
-    /** @return The origin of the top level frame of the merchant page. */
-    public String getTopLevelOrigin() {
-        return mTopLevelOrigin;
-    }
-
-    /** @return The payment options requested by the merchant, can be null. */
-    @Nullable
-    public PaymentOptions getPaymentOptions() {
-        return mPaymentOptions;
-    }
-
-    /** @return The RendererFrameHost of the merchant page. */
-    public RenderFrameHost getRenderFrameHost() {
-        return mRenderFrameHost;
-    }
-
-    /**
-     * @return The origin of the iframe that invoked the PaymentRequest API. Can be opaque. Used by
-     * security features like 'Sec-Fetch-Site' and 'Cross-Origin-Resource-Policy'. Should not be
-     * null.
-     */
-    public Origin getPaymentRequestSecurityOrigin() {
-        return mPaymentRequestSecurityOrigin;
     }
 
     /**
@@ -1079,5 +1055,114 @@ public class PaymentRequestService {
             shippingAddress.recipient = "";
             shippingAddress.addressLine = new String[0];
         }
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public WebContents getWebContents() {
+        return mWebContents;
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public RenderFrameHost getRenderFrameHost() {
+        return mRenderFrameHost;
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public boolean hasClosed() {
+        return mHasClosed;
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public Map<String, PaymentMethodData> getMethodData() {
+        // GetMethodData should not get called after PR is closed.
+        assert !mHasClosed;
+        assert !mSpec.isDestroyed();
+        return mSpec.getMethodData();
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public String getId() {
+        assert !mHasClosed;
+        assert !mSpec.isDestroyed();
+        return mSpec.getId();
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public String getTopLevelOrigin() {
+        return mTopLevelOrigin;
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public String getPaymentRequestOrigin() {
+        return mPaymentRequestOrigin;
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public Origin getPaymentRequestSecurityOrigin() {
+        return mPaymentRequestSecurityOrigin;
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    @Nullable
+    public byte[][] getCertificateChain() {
+        return mCertificateChain;
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public Map<String, PaymentDetailsModifier> getUnmodifiableModifiers() {
+        assert !mHasClosed;
+        assert !mSpec.isDestroyed();
+        return Collections.unmodifiableMap(mSpec.getModifiers());
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public PaymentItem getRawTotal() {
+        assert !mHasClosed;
+        assert !mSpec.isDestroyed();
+        return mSpec.getRawTotal();
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public boolean getMayCrawl() {
+        return !mBrowserPaymentRequest.isPaymentSheetBasedPaymentAppSupported()
+                || PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                        PaymentFeatureList.WEB_PAYMENTS_ALWAYS_ALLOW_JUST_IN_TIME_PAYMENT_APP);
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public PaymentRequestUpdateEventListener getPaymentRequestUpdateEventListener() {
+        return mBrowserPaymentRequest.getPaymentRequestUpdateEventListener();
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public PaymentOptions getPaymentOptions() {
+        return mPaymentOptions;
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public PaymentRequestSpec getSpec() {
+        return mSpec;
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    @Nullable
+    public String getTwaPackageName() {
+        return mDelegate.getTwaPackageName();
     }
 }
