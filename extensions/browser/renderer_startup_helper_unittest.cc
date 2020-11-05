@@ -15,8 +15,38 @@
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 
 namespace extensions {
+
+// Class that implements the binding of a new Renderer mojom interface and
+// can receive callbacks on it for testing validation.
+class InterceptingRendererStartupHelper : public RendererStartupHelper,
+                                          public mojom::Renderer {
+ public:
+  explicit InterceptingRendererStartupHelper(
+      content::BrowserContext* browser_context)
+      : RendererStartupHelper(browser_context) {}
+
+  size_t num_activated_extensions() { return activated_extensions_.size(); }
+
+ protected:
+  mojo::PendingAssociatedRemote<mojom::Renderer> BindNewRendererRemote(
+      content::RenderProcessHost* process) override {
+    mojo::AssociatedRemote<mojom::Renderer> remote;
+    receivers_.Add(this, remote.BindNewEndpointAndPassDedicatedReceiver());
+    return remote.Unbind();
+  }
+
+ private:
+  // mojom::Renderer implementation:
+  void ActivateExtension(const std::string& extension_id) override {
+    activated_extensions_.push_back(extension_id);
+  }
+
+  std::vector<std::string> activated_extensions_;
+  mojo::AssociatedReceiverSet<mojom::Renderer> receivers_;
+};
 
 class RendererStartupHelperTest : public ExtensionsTest {
  public:
@@ -25,7 +55,8 @@ class RendererStartupHelperTest : public ExtensionsTest {
 
   void SetUp() override {
     ExtensionsTest::SetUp();
-    helper_ = std::make_unique<RendererStartupHelper>(browser_context());
+    helper_ =
+        std::make_unique<InterceptingRendererStartupHelper>(browser_context());
     registry_ =
         ExtensionRegistryFactory::GetForBrowserContext(browser_context());
     render_process_host_ =
@@ -102,7 +133,7 @@ class RendererStartupHelperTest : public ExtensionsTest {
   }
 
   bool IsProcessInitialized(content::RenderProcessHost* rph) {
-    return base::Contains(helper_->initialized_processes_, rph);
+    return base::Contains(helper_->process_mojo_map_, rph);
   }
 
   bool IsExtensionLoaded(const Extension& extension) {
@@ -122,7 +153,7 @@ class RendererStartupHelperTest : public ExtensionsTest {
                           extension.id());
   }
 
-  std::unique_ptr<RendererStartupHelper> helper_;
+  std::unique_ptr<InterceptingRendererStartupHelper> helper_;
   ExtensionRegistry* registry_;  // Weak.
   std::unique_ptr<content::MockRenderProcessHost> render_process_host_;
   std::unique_ptr<content::MockRenderProcessHost>
@@ -170,9 +201,8 @@ TEST_F(RendererStartupHelperTest, NormalExtensionLifecycle) {
   helper_->ActivateExtensionInProcess(*extension_, render_process_host_.get());
   EXPECT_FALSE(IsExtensionPendingActivationInProcess(
       *extension_, render_process_host_.get()));
-  ASSERT_EQ(1u, sink.message_count());
-  EXPECT_EQ(static_cast<uint32_t>(ExtensionMsg_ActivateExtension::ID),
-            sink.GetMessageAt(0)->type());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1u, helper_->num_activated_extensions());
 
   // Disable extension.
   sink.ClearMessages();

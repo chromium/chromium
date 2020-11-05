@@ -79,8 +79,8 @@ RendererStartupHelper::RendererStartupHelper(BrowserContext* browser_context)
 }
 
 RendererStartupHelper::~RendererStartupHelper() {
-  for (auto* process : initialized_processes_)
-    process->RemoveObserver(this);
+  for (auto& process_entry : process_mojo_map_)
+    process_entry.first->RemoveObserver(this);
 }
 
 void RendererStartupHelper::OnRenderProcessHostCreated(
@@ -104,6 +104,11 @@ void RendererStartupHelper::InitializeProcess(
   ExtensionsBrowserClient* client = ExtensionsBrowserClient::Get();
   if (!client->IsSameContext(browser_context_, process->GetBrowserContext()))
     return;
+
+  mojom::Renderer* renderer =
+      process_mojo_map_.emplace(process, BindNewRendererRemote(process))
+          .first->second.get();
+  process->AddObserver(this);
 
   bool activity_logging_enabled =
       client->IsActivityLoggingEnabled(process->GetBrowserContext());
@@ -185,13 +190,11 @@ void RendererStartupHelper::InitializeProcess(
       DCHECK(extensions.Contains(id));
       DCHECK(base::Contains(extension_process_map_, id));
       DCHECK(base::Contains(extension_process_map_[id], process));
-      process->Send(new ExtensionMsg_ActivateExtension(id));
+      renderer->ActivateExtension(id);
     }
   }
 
-  initialized_processes_.insert(process);
   pending_active_extensions_.erase(process);
-  process->AddObserver(this);
 }
 
 void RendererStartupHelper::UntrackProcess(
@@ -202,7 +205,7 @@ void RendererStartupHelper::UntrackProcess(
   }
 
   process->RemoveObserver(this);
-  initialized_processes_.erase(process);
+  process_mojo_map_.erase(process);
   pending_active_extensions_.erase(process);
   for (auto& extension_process_pair : extension_process_map_)
     extension_process_pair.second.erase(process);
@@ -226,9 +229,10 @@ void RendererStartupHelper::ActivateExtensionInProcess(
   if (!IsExtensionVisibleToContext(extension, process->GetBrowserContext()))
     return;
 
-  if (base::Contains(initialized_processes_, process)) {
+  auto remote = process_mojo_map_.find(process);
+  if (remote != process_mojo_map_.end()) {
     DCHECK(base::Contains(extension_process_map_[extension.id()], process));
-    process->Send(new ExtensionMsg_ActivateExtension(extension.id()));
+    remote->second->ActivateExtension(extension.id());
   } else {
     pending_active_extensions_[process].insert(extension.id());
   }
@@ -269,7 +273,8 @@ void RendererStartupHelper::OnExtensionLoaded(const Extension& extension) {
   params.emplace_back(&extension, false /* no tab permissions */,
                       GetWorkerActivationSequence(browser_context_, extension));
 
-  for (content::RenderProcessHost* process : initialized_processes_) {
+  for (auto& process_entry : process_mojo_map_) {
+    content::RenderProcessHost* process = process_entry.first;
     if (!IsExtensionVisibleToContext(extension, process->GetBrowserContext()))
       continue;
     process->Send(new ExtensionMsg_Loaded(params));
@@ -287,7 +292,7 @@ void RendererStartupHelper::OnExtensionUnloaded(const Extension& extension) {
   const std::set<content::RenderProcessHost*>& loaded_process_set =
       extension_process_map_[extension.id()];
   for (content::RenderProcessHost* process : loaded_process_set) {
-    DCHECK(base::Contains(initialized_processes_, process));
+    DCHECK(base::Contains(process_mojo_map_, process));
     process->Send(new ExtensionMsg_Unloaded(extension.id()));
   }
 
@@ -303,6 +308,14 @@ void RendererStartupHelper::OnExtensionUnloaded(const Extension& extension) {
 
   // Mark the extension as unloaded.
   extension_process_map_.erase(extension.id());
+}
+
+mojo::PendingAssociatedRemote<mojom::Renderer>
+RendererStartupHelper::BindNewRendererRemote(
+    content::RenderProcessHost* process) {
+  mojo::AssociatedRemote<mojom::Renderer> renderer_interface;
+  process->GetChannel()->GetRemoteAssociatedInterface(&renderer_interface);
+  return renderer_interface.Unbind();
 }
 
 //////////////////////////////////////////////////////////////////////////////

@@ -16,6 +16,9 @@
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/mojom/renderer.mojom.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
 namespace content {
 class BrowserContext;
@@ -65,6 +68,11 @@ class RendererStartupHelper : public KeyedService,
   void OnExtensionUnloaded(const Extension& extension);
   void OnExtensionLoaded(const Extension& extension);
 
+ protected:
+  // Provide ability for tests to override.
+  virtual mojo::PendingAssociatedRemote<mojom::Renderer> BindNewRendererRemote(
+      content::RenderProcessHost* process);
+
  private:
   friend class RendererStartupHelperTest;
 
@@ -81,17 +89,19 @@ class RendererStartupHelper : public KeyedService,
   std::map<ExtensionId, std::set<content::RenderProcessHost*>>
       extension_process_map_;
 
-  // The set of render processes that have had the initial batch of IPC messages
-  // sent, including the set of loaded extensions. Further messages that
-  // activate, load, or unload extensions should not be sent until after this
-  // happens.
-  std::set<content::RenderProcessHost*> initialized_processes_;
-
   // The set of ids for extensions that are active in a process that has not
   // been initialized. The activation message will be sent the process is
   // initialized.
   std::map<content::RenderProcessHost*, std::set<ExtensionId>>
       pending_active_extensions_;
+
+  // A map of render processes to mojo remotes. Being in this
+  // map means that have had the initial batch of IPC messages
+  // sent, including the set of loaded extensions. Further messages that
+  // activate, load, or unload extensions should not be sent until after this
+  // happens.
+  std::map<content::RenderProcessHost*, mojo::AssociatedRemote<mojom::Renderer>>
+      process_mojo_map_;
 
   DISALLOW_COPY_AND_ASSIGN(RendererStartupHelper);
 };

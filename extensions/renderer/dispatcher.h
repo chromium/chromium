@@ -25,11 +25,13 @@
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_session_type.h"
+#include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/renderer/resource_bundle_source_map.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
 #include "extensions/renderer/user_script_set_manager.h"
 #include "extensions/renderer/v8_schema_registry.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "v8/include/v8.h"
 
@@ -74,7 +76,8 @@ struct PortId;
 // Dispatches extension control messages sent to the renderer and stores
 // renderer extension related state.
 class Dispatcher : public content::RenderThreadObserver,
-                   public UserScriptSetManager::Observer {
+                   public UserScriptSetManager::Observer,
+                   public mojom::Renderer {
  public:
   explicit Dispatcher(std::unique_ptr<DispatcherDelegate> delegate);
   ~Dispatcher() override;
@@ -198,15 +201,23 @@ class Dispatcher : public content::RenderThreadObserver,
 
  private:
   // The RendererPermissionsPolicyDelegateTest.CannotScriptWebstore test needs
-  // to call the OnActivateExtension IPCs.
+  // to call the ActivateExtension IPCs.
   friend class ::ChromeRenderViewTest;
   FRIEND_TEST_ALL_PREFIXES(RendererPermissionsPolicyDelegateTest,
                            CannotScriptWebstore);
 
   // RenderThreadObserver implementation:
   bool OnControlMessageReceived(const IPC::Message& message) override;
+  void RegisterMojoInterfaces(
+      blink::AssociatedInterfaceRegistry* associated_interfaces) override;
+  void UnregisterMojoInterfaces(
+      blink::AssociatedInterfaceRegistry* associated_interfaces) override;
 
-  void OnActivateExtension(const std::string& extension_id);
+  // mojom::Renderer implementation:
+  void ActivateExtension(const std::string& extension_id) override;
+
+  void OnRendererAssociatedRequest(
+      mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
   void OnCancelSuspend(const std::string& extension_id);
   void OnDeliverMessage(int worker_thread_id,
                         const PortId& target_port_id,
@@ -343,6 +354,10 @@ class Dispatcher : public content::RenderThreadObserver,
   // if this renderer is a WebView guest render process. Otherwise, this will be
   // empty.
   std::string webview_partition_id_;
+
+  // Extensions renderer receiver. This is an associated receiver because
+  // it is dependent on other messages sent on other associated channels.
+  mojo::AssociatedReceiver<mojom::Renderer> receiver_;
 
   // Used to hold a service worker information which is ready to execute but the
   // onloaded message haven't been received yet. We need to defer service worker

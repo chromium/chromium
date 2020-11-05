@@ -1,0 +1,15 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module extensions.mojom;
+
+// This should be used for implementing browser-to-renderer control messages
+// which need to retain FIFO with respect to other mojo interfaces like
+// content.mojom.Renderer.
+interface Renderer {
+  // Marks an extension as 'active' in an extension process. 'Active' extensions
+  // have more privileges than other extension content that might end up running
+  // in the process (e.g. because of iframes or content scripts).
+  ActivateExtension(string extension_id);
+};

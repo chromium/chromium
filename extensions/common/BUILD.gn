@@ -40,6 +40,7 @@ if (enable_extensions) {
       "mojom/app_window.mojom",
       "mojom/guest_view.mojom",
       "mojom/keep_alive.mojom",
+      "mojom/renderer.mojom",
     ]
 
     if (proprietary_codecs && enable_wifi_display) {
