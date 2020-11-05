@@ -7,8 +7,9 @@
 """Creates files required to feed into trybot_commit_size_checker"""
 
 import argparse
-import os
+import json
 import logging
+import os
 import shutil
 import subprocess
 
@@ -21,38 +22,41 @@ _CLANG_UPDATE_PATH = os.path.join(_SRC_ROOT, 'tools', 'clang', 'scripts',
                                   'update.py')
 
 
-def _extract_proguard_mapping(apk_name, mapping_name_list, staging_dir,
-                              chromium_output_directory):
-  """Copies proguard mapping files to staging_dir"""
-  for mapping_name in mapping_name_list:
-    mapping_path = os.path.join(chromium_output_directory, 'apks', mapping_name)
-    shutil.copy(mapping_path, os.path.join(staging_dir, apk_name + '.mapping'))
+def _copy_files_to_staging_dir(files_to_copy, make_staging_path):
+  """Copies files from output directory to staging_dir"""
+  for filename in files_to_copy:
+    shutil.copy(filename, make_staging_path(filename))
 
 
-def _generate_resource_sizes(apk_name, staging_dir, chromium_output_directory):
+def _generate_resource_sizes(to_resource_sizes_py, make_chromium_output_path,
+                             make_staging_path):
   """Creates results-chart.json file in staging_dir"""
-  apk_path = os.path.join(chromium_output_directory, 'apks', apk_name)
+  cmd = [
+      _RESOURCE_SIZES_PATH,
+      make_chromium_output_path(to_resource_sizes_py['apk_name']),
+      '--output-format=chartjson',
+      '--chromium-output-directory',
+      make_chromium_output_path(),
+      '--output-dir',
+      make_staging_path(),
+  ]
+  FORWARDED_PARAMS = [
+      ('--trichrome-library', make_chromium_output_path, 'trichrome_library'),
+      ('--trichrome-chrome', make_chromium_output_path, 'trichrome_chrome'),
+      ('--trichrome-webview', make_chromium_output_path, 'trichrome_webview'),
+  ]
+  for switch, fun, key in FORWARDED_PARAMS:
+    if key in to_resource_sizes_py:
+      cmd += [switch, fun(to_resource_sizes_py[key])]
+  subprocess.run(cmd, check=True)
 
-  subprocess.run(
-      [
-          _RESOURCE_SIZES_PATH,
-          apk_path,
-          '--output-format=chartjson',
-          '--output-dir',
-          staging_dir,
-          '--chromium-output-directory',
-          chromium_output_directory,
-      ],
-      check=True,
-  )
 
-
-def _generate_supersize_archive(apk_name, staging_dir,
-                                chromium_output_directory):
+def _generate_supersize_archive(supersize_input_file, make_chromium_output_path,
+                                make_staging_path):
   """Creates a .size file for the given .apk or .minimal.apks"""
   subprocess.run([_CLANG_UPDATE_PATH, '--package=objdump'], check=True)
-  apk_path = os.path.join(chromium_output_directory, 'apks', apk_name)
-  size_path = os.path.join(staging_dir, apk_name + '.size')
+  supersize_input_path = make_chromium_output_path(supersize_input_file)
+  size_path = make_staging_path(supersize_input_file) + '.size'
 
   supersize_script_path = os.path.join(_BINARY_SIZE_DIR, 'supersize')
 
@@ -62,7 +66,7 @@ def _generate_supersize_archive(apk_name, staging_dir,
           'archive',
           size_path,
           '-f',
-          apk_path,
+          supersize_input_path,
           '-v',
       ],
       check=True,
@@ -71,21 +75,46 @@ def _generate_supersize_archive(apk_name, staging_dir,
 
 def main():
   parser = argparse.ArgumentParser()
+
+  # A size config JSON specifies files relative to --chromium-output-directory.
+  # Its fields are:
+  # * mapping_files: A list of .mapping files, to be copied to --staging-dir for
+  #   SuperSize and trybot_commit_size_checker.py (indirectly). SuperSize
+  #   deduces mapping filenames; there's no need to pass these to it directly.
+  # * resource_size_args: A dict of arguments for resource_sizes.py. Its
+  #   sub-fields are:
+  #   * apk_name: Required main input, although for Trichrome this can be a
+  #     placeholder name.
+  #   * trichrome_library: --trichrome-library param (Trichrome only).
+  #   * trichrome_chrome: --trichrome-chrome param (Trichrome only).
+  #   * trichrome_webview: --trichrome-webview param (Trichrome only).
+  # * supersize_input_file: Main input for SuperSize, and can be {.apk,
+  #   .minimal.apks, .ssargs}. If .ssargs, then the file is copied to the
+  #   staging dir.
+  # * version: (Unused by this script) Used by build bots to determine whether
+  #   significant binary package restructure has occurred.
+
+  # --size-config-json will replace {--apk-name, --mapping-name}.
+  parser.add_argument('--size-config-json',
+                      help='Path to JSON file with configs for binary size '
+                      'measurement.')
+
+  # Deprecated.
   parser.add_argument(
       '--apk-name',
-      required=True,
       help='Name of the apk (ex. Name.apk)',
   )
+  # Deprecated.
+  parser.add_argument(
+      '--mapping-name',
+      action='append',
+      help='Filename of the proguard mapping file.',
+  )
+
   parser.add_argument(
       '--chromium-output-directory',
       required=True,
       help='Location of the build artifacts.',
-  )
-  parser.add_argument(
-      '--mapping-name',
-      required=True,
-      action='append',
-      help='Filename of the proguard mapping file.',
   )
   parser.add_argument(
       '--staging-dir',
@@ -95,21 +124,52 @@ def main():
 
   args = parser.parse_args()
 
-  _extract_proguard_mapping(
-      args.apk_name,
-      args.mapping_name,
-      args.staging_dir,
-      args.chromium_output_directory,
-  )
+  assert bool(args.size_config_json) != bool(
+      args.apk_name), ('Require exactly one of --size-config-json or the'
+                       ' {--apk-name, --mapping-name} group.')
+  assert bool(args.apk_name) == bool(args.mapping_name), (
+      'Require {--apk-name, --mapping-name} to be specified together.')
+
+  if args.size_config_json:
+    with open(args.size_config_json, 'rt') as fh:
+      config = json.load(fh)
+    to_resource_sizes_py = config['to_resource_sizes_py']
+    mapping_files = config['mapping_files']
+    supersize_input_file = config['supersize_input_file']
+  else:
+    # Deprecated flow. Add 'apks/' prefix for compatibility.
+    to_resource_sizes_py = {'apk_name': os.path.join('apks', args.apk_name)}
+    mapping_files = [os.path.join('apks', name) for name in args.mapping_name]
+    supersize_input_file = os.path.join('apks', args.apk_name)
+
+  def make_chromium_output_path(path_rel_to_output=None):
+    if path_rel_to_output is None:
+      return args.chromium_output_directory
+    return os.path.join(args.chromium_output_directory, path_rel_to_output)
+
+  # N.B. os.path.basename() usage.
+  def make_staging_path(path_rel_to_output=None):
+    if path_rel_to_output is None:
+      return args.staging_dir
+    return os.path.join(args.staging_dir, os.path.basename(path_rel_to_output))
+
+  files_to_copy = [make_chromium_output_path(f) for f in mapping_files]
+  # Copy size config JSON and .ssargs to staging dir to save settings used.
+  if args.size_config_json:
+    files_to_copy.append(args.size_config_json)
+  if supersize_input_file.endswith('.ssargs'):
+    files_to_copy.append(make_chromium_output_path(supersize_input_file))
+  _copy_files_to_staging_dir(files_to_copy, make_staging_path)
+
   _generate_resource_sizes(
-      args.apk_name,
-      args.staging_dir,
-      args.chromium_output_directory,
+      to_resource_sizes_py,
+      make_chromium_output_path,
+      make_staging_path,
   )
   _generate_supersize_archive(
-      args.apk_name,
-      args.staging_dir,
-      args.chromium_output_directory,
+      supersize_input_file,
+      make_chromium_output_path,
+      make_staging_path,
   )
 
 

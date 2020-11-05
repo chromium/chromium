@@ -3013,9 +3013,22 @@ if (is_official_build) {
     deps = [ ":monochrome_public_bundle" ]
     bundle_path = "$root_build_dir/apks/MonochromePublic.aab"
   }
+
+  _minimal_apks_filename = "MonochromePublic.minimal.apks"
   android_resource_sizes_test("resource_sizes_monochrome_public_minimal_apks") {
-    file_path = "$root_build_dir/apks/MonochromePublic.minimal.apks"
+    file_path = "$root_build_dir/apks/${_minimal_apks_filename}"
     data_deps = [ ":monochrome_public_minimal_apks" ]
+  }
+
+  android_resource_size_config(
+      "resource_size_config_monochrome_public_minimal_apks") {
+    name = "MonochromePublic"
+    mapping_files = [ "apks/MonochromePublic.aab.mapping" ]
+    to_resource_sizes_py = {
+      apk_name = "apks/$_minimal_apks_filename"
+    }
+    supersize_input_file = "apks/$_minimal_apks_filename"
+    version = "1"
   }
 }
 
@@ -3056,9 +3069,10 @@ if (is_official_build) {
   _trichrome_library_basename = "TrichromeLibrary.apk"
   _trichrome_chrome_basename = "TrichromeChrome.minimal.apks"
   _trichrome_webview_basename = "TrichromeWebView.minimal.apks"
+  _ssargs_filename = "Trichrome.ssargs"
 
   write_ssargs_trichrome("ssargs_trichrome") {
-    ssargs_path = "$root_build_dir/apks/Trichrome.ssargs"
+    ssargs_path = "$root_build_dir/apks/${_ssargs_filename}"
     trichrome_library_basename = _trichrome_library_basename
     trichrome_chrome_basename = _trichrome_chrome_basename
     trichrome_webview_basename = _trichrome_webview_basename
@@ -3084,6 +3098,23 @@ if (is_official_build) {
     trichrome_chrome_path = "$root_build_dir/apks/$_trichrome_chrome_basename"
     trichrome_webview_path = "$root_build_dir/apks/$_trichrome_webview_basename"
     data_deps = [ ":trichrome_minimal_apks" ]
+  }
+
+  android_resource_size_config("resource_size_config_trichrome") {
+    name = "Trichrome"
+    mapping_files = [
+      "apks/TrichromeLibrary.apk.mapping",
+      "apks/TrichromeChrome.aab.mapping",
+      "apks/TrichromeWebView.aab.mapping",
+    ]
+    to_resource_sizes_py = {
+      apk_name = "apks/resource_size_config_trichrome"
+      trichrome_library = "apks/$_trichrome_library_basename"
+      trichrome_chrome = "apks/$_trichrome_chrome_basename"
+      trichrome_webview = "apks/$_trichrome_webview_basename"
+    }
+    supersize_input_file = "apks/$_ssargs_filename"
+    version = "1"
   }
 }
 

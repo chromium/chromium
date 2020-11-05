@@ -123,9 +123,9 @@ def _CreateResourceSizesDelta(before_dir, after_dir):
       sizes_diff.summary_stat.value)
 
 
-def _CreateSupersizeDiff(apk_name, before_dir, after_dir):
-  before_size_path = os.path.join(before_dir, apk_name + '.size')
-  after_size_path = os.path.join(after_dir, apk_name + '.size')
+def _CreateSupersizeDiff(main_file_name, before_dir, after_dir):
+  before_size_path = os.path.join(before_dir, main_file_name + '.size')
+  after_size_path = os.path.join(after_dir, main_file_name + '.size')
   before = archive.LoadAndPostProcessSizeInfo(before_size_path)
   after = archive.LoadAndPostProcessSizeInfo(after_size_path)
   size_info_delta = diff.Diff(before, after, sort=True)
@@ -146,8 +146,7 @@ def _CreateUncompressedPakSizeDeltas(symbols):
   ]
 
 
-def _ExtractForTestingSymbolsFromMapping(mapping_path):
-  symbols = set()
+def _ExtractForTestingSymbolsFromSingleMapping(mapping_path):
   with open(mapping_path) as f:
     proguard_mapping_lines = f.readlines()
     current_class_orig = None
@@ -168,20 +167,26 @@ def _ExtractForTestingSymbolsFromMapping(mapping_path):
         method_symbol = '{}#{}'.format(
             match.group('original_method_class') or current_class_orig,
             match.group('original_method_name'))
-        symbols.add(method_symbol)
+        yield method_symbol
 
       match = _PROGUARD_FIELD_MAPPING_RE.search(line)
       if (match is not None
           and match.group('original_name').find('ForTest') > -1):
         field_symbol = '{}#{}'.format(current_class_orig,
                                       match.group('original_name'))
-        symbols.add(field_symbol)
+        yield field_symbol
+
+
+def _ExtractForTestingSymbolsFromMappings(mapping_paths):
+  symbols = set()
+  for mapping_path in mapping_paths:
+    symbols.update(_ExtractForTestingSymbolsFromSingleMapping(mapping_path))
   return symbols
 
 
-def _CreateTestingSymbolsDeltas(before_mapping_path, after_mapping_path):
-  before_symbols = _ExtractForTestingSymbolsFromMapping(before_mapping_path)
-  after_symbols = _ExtractForTestingSymbolsFromMapping(after_mapping_path)
+def _CreateTestingSymbolsDeltas(before_mapping_paths, after_mapping_paths):
+  before_symbols = _ExtractForTestingSymbolsFromMappings(before_mapping_paths)
+  after_symbols = _ExtractForTestingSymbolsFromMappings(after_mapping_paths)
   added_symbols = list(after_symbols.difference(before_symbols))
   removed_symbols = list(before_symbols.difference(after_symbols))
   lines = []
@@ -197,13 +202,14 @@ def _CreateTestingSymbolsDeltas(before_mapping_path, after_mapping_path):
                            len(added_symbols) - len(removed_symbols))
 
 
-def _GuessMappingFilename(results_dir, apk_name):
-  guess = apk_name + '.mapping'
-  if os.path.exists(os.path.join(results_dir, guess)):
+def _GuessMappingFilename(to_result_path, container_filename):
+  guess = to_result_path(container_filename + '.mapping')
+  if os.path.exists(guess):
     return guess
-  guess = (apk_name.replace('minimal.apks', '.aab').replace('.apks', '.aab') +
-           '.mapping')
-  if os.path.exists(os.path.join(results_dir, guess)):
+  guess = to_result_path(
+      container_filename.replace('.minimal.apks', '.aab').replace(
+          '.apks', '.aab') + '.mapping')
+  if os.path.exists(guess):
     return guess
   return None
 
@@ -249,8 +255,16 @@ def _FormatNumber(number):
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--author', required=True, help='CL author')
-  parser.add_argument(
-      '--apk-name', required=True, help='Name of the apk (ex. Name.apk)')
+
+  name_parser = parser.add_mutually_exclusive_group(required=True)
+
+  # --size-config-json-name will replace --apk-name.
+  name_parser.add_argument('--size-config-json-name',
+                           help='Filename of JSON with configs for '
+                           'binary size measurement.')
+  # Deprecated.
+  name_parser.add_argument('--apk-name', help='Name of the apk (ex. Name.apk).')
+
   parser.add_argument(
       '--before-dir',
       required=True,
@@ -273,9 +287,31 @@ def main():
   if args.verbose:
     logging.basicConfig(level=logging.INFO)
 
+  to_before_path = lambda p: os.path.join(args.before_dir, os.path.basename(p))
+  to_after_path = lambda p: os.path.join(args.after_dir, os.path.basename(p))
+  if args.size_config_json_name:
+    with open(to_after_path(args.size_config_json_name), 'rt') as fh:
+      config = json.load(fh)
+    supersize_input_name = os.path.basename(config['supersize_input_file'])
+    before_mapping_paths = [to_before_path(f) for f in config['mapping_files']]
+    after_mapping_paths = [to_after_path(f) for f in config['mapping_files']]
+  else:
+    supersize_input_name = args.apk_name
+    # Guess separately for "before" and "after" to be robust against naming
+    # glitches as generate_commit_size_analysis.py's renaming scheme change.
+    before_mapping_path = _GuessMappingFilename(to_before_path, args.apk_name)
+    if not before_mapping_path:
+      raise Exception('Cannot find "before" proguard mapping file.')
+    before_mapping_paths = [before_mapping_path]
+
+    after_mapping_path = _GuessMappingFilename(to_after_path, args.apk_name)
+    if not after_mapping_path:
+      raise Exception('Cannot find "after" proguard mapping file.')
+    after_mapping_paths = [after_mapping_path]
+
   logging.info('Creating Supersize diff')
   supersize_diff_lines, delta_size_info = _CreateSupersizeDiff(
-      args.apk_name, args.before_dir, args.after_dir)
+      supersize_input_name, args.before_dir, args.after_dir)
 
   changed_symbols = delta_size_info.raw_symbols.WhereDiffStatusIs(
       models.DIFF_STATUS_UNCHANGED).Inverted()
@@ -295,16 +331,10 @@ def main():
   size_deltas.add(mutable_constants_delta)
   metrics.add((mutable_constants_delta, _MUTABLE_CONSTANTS_LOG))
 
-  # Look for symbols with 'ForTesting' in their name.
+  # Look for symbols with 'ForTest' in their name.
   logging.info('Checking for DEX symbols named "ForTest"')
-  mapping_name = _GuessMappingFilename(args.before_dir, args.apk_name)
-  if not mapping_name:
-    raise Exception('Cannot find proguard mapping file.')
-
-  before_mapping = os.path.join(args.before_dir, mapping_name)
-  after_mapping = os.path.join(args.after_dir, mapping_name)
   testing_symbols_lines, test_symbols_delta = (_CreateTestingSymbolsDeltas(
-      before_mapping, after_mapping))
+      before_mapping_paths, after_mapping_paths))
   size_deltas.add(test_symbols_delta)
   metrics.add((test_symbols_delta, _FOR_TESTING_LOG))
 
