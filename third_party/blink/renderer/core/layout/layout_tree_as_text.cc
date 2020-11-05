@@ -572,7 +572,7 @@ void Write(WTF::TextStream& ts,
     }
 
     if (o.IsLayoutEmbeddedContent()) {
-      FrameView* frame_view = ToLayoutEmbeddedContent(o).ChildFrameView();
+      FrameView* frame_view = To<LayoutEmbeddedContent>(o).ChildFrameView();
       if (auto* local_frame_view = DynamicTo<LocalFrameView>(frame_view)) {
         if (auto* layout_view = local_frame_view->GetLayoutView()) {
           layout_view->GetDocument().UpdateStyleAndLayout(
@@ -728,8 +728,8 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
           : layer->IntersectsDamageRect(layer_bounds, damage_rect.Rect(),
                                         offset_from_root);
 
-  if (layer->GetLayoutObject().IsLayoutEmbeddedContent() &&
-      ToLayoutEmbeddedContent(layer->GetLayoutObject()).IsThrottledFrameView())
+  auto* embedded = DynamicTo<LayoutEmbeddedContent>(layer->GetLayoutObject());
+  if (embedded && embedded->IsThrottledFrameView())
     should_paint = false;
 
 #if DCHECK_IS_ON()

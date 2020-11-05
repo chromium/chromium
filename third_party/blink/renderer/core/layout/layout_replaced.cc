@@ -654,9 +654,8 @@ PhysicalRect LayoutReplaced::ComputeObjectFit(
       // Srcset images have an intrinsic size depending on their destination,
       // but with object-fit: scale-down they need to use the underlying image
       // src's size. So revert back to the original size in that case.
-      if (IsLayoutImage()) {
-        scaled_intrinsic_size.Scale(
-            1.0 / ToLayoutImage(this)->ImageDevicePixelRatio());
+      if (auto* image = DynamicTo<LayoutImage>(this)) {
+        scaled_intrinsic_size.Scale(1.0 / image->ImageDevicePixelRatio());
       }
       FALLTHROUGH;
     case EObjectFit::kContain:

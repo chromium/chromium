@@ -3352,11 +3352,8 @@ WebPluginContainerImpl* Node::GetWebPluginContainer() const {
     return nullptr;
   }
 
-  LayoutObject* object = GetLayoutObject();
-  if (object && object->IsLayoutEmbeddedContent()) {
-    return ToLayoutEmbeddedContent(object)->Plugin();
-  }
-
+  if (auto* embedded = DynamicTo<LayoutEmbeddedContent>(GetLayoutObject()))
+    return embedded->Plugin();
   return nullptr;
 }
 

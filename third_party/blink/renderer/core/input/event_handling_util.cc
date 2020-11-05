@@ -165,12 +165,11 @@ LocalFrame* SubframeForTargetNode(Node* node, bool* is_remote_frame) {
   if (!node)
     return nullptr;
 
-  LayoutObject* layout_object = node->GetLayoutObject();
-  if (!layout_object || !layout_object->IsLayoutEmbeddedContent())
+  auto* embedded = DynamicTo<LayoutEmbeddedContent>(node->GetLayoutObject());
+  if (!embedded)
     return nullptr;
 
-  FrameView* frame_view =
-      ToLayoutEmbeddedContent(layout_object)->ChildFrameView();
+  FrameView* frame_view = embedded->ChildFrameView();
   if (!frame_view)
     return nullptr;
   auto* local_frame_view = DynamicTo<LocalFrameView>(frame_view);

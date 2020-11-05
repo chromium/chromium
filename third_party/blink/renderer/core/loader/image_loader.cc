@@ -625,7 +625,7 @@ void ImageLoader::DoUpdateFromElement(
   if (update_behavior == kUpdateSizeChanged && element_->GetLayoutObject() &&
       element_->GetLayoutObject()->IsImage() &&
       new_image_content == old_image_content) {
-    ToLayoutImage(element_->GetLayoutObject())->IntrinsicSizeChanged();
+    To<LayoutImage>(element_->GetLayoutObject())->IntrinsicSizeChanged();
   } else {
     bool is_lazyload = lazy_image_load_state_ == LazyImageLoadState::kDeferred;
 
@@ -883,8 +883,8 @@ LayoutImageResource* ImageLoader::GetLayoutImageResource() {
   // We don't return style generated image because it doesn't belong to the
   // ImageLoader. See <https://bugs.webkit.org/show_bug.cgi?id=42840>
   if (layout_object->IsImage() &&
-      !ToLayoutImage(layout_object)->IsGeneratedContent())
-    return ToLayoutImage(layout_object)->ImageResource();
+      !To<LayoutImage>(layout_object)->IsGeneratedContent())
+    return To<LayoutImage>(layout_object)->ImageResource();
 
   if (layout_object->IsSVGImage())
     return To<LayoutSVGImage>(layout_object)->ImageResource();

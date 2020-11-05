@@ -539,12 +539,10 @@ void HTMLCanvasElement::DoDeferredPaintInvalidation() {
 
   FloatRect content_rect;
   if (layout_box) {
-    if (layout_box->IsLayoutReplaced()) {
-      content_rect =
-          FloatRect(ToLayoutReplaced(layout_box)->ReplacedContentRect());
-    } else {
+    if (auto* replaced = DynamicTo<LayoutReplaced>(layout_box))
+      content_rect = FloatRect(replaced->ReplacedContentRect());
+    else
       content_rect = FloatRect(layout_box->PhysicalContentBoxRect());
-    }
   }
 
   if (IsRenderingContext2D()) {
@@ -653,7 +651,7 @@ void HTMLCanvasElement::Reset() {
   if (LayoutObject* layout_object = GetLayoutObject()) {
     if (layout_object->IsCanvas()) {
       if (old_size != Size()) {
-        ToLayoutHTMLCanvas(layout_object)->CanvasSizeChanged();
+        To<LayoutHTMLCanvas>(layout_object)->CanvasSizeChanged();
         if (GetDocument().GetSettings()->GetAcceleratedCompositingEnabled())
           GetLayoutBox()->ContentChanged(kCanvasChanged);
       }

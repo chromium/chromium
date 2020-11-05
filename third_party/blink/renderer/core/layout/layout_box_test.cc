@@ -681,8 +681,8 @@ TEST_P(LayoutBoxTest, DelayedInvalidation) {
   // animated images.
   auto* image =
       ImageResourceContent::CreateLoaded(base::AdoptRef(new AnimatedImage()));
-  ToLayoutImage(obj)->ImageResource()->SetImageResource(image);
-  ASSERT_TRUE(ToLayoutImage(obj)->CachedImage()->GetImage()->MaybeAnimated());
+  To<LayoutImage>(obj)->ImageResource()->SetImageResource(image);
+  ASSERT_TRUE(To<LayoutImage>(obj)->CachedImage()->GetImage()->MaybeAnimated());
 
   obj->ClearPaintInvalidationFlags();
   EXPECT_FALSE(obj->ShouldDoFullPaintInvalidation());

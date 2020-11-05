@@ -2472,12 +2472,11 @@ void LocalFrame::PluginActionAt(const gfx::Point& location,
   if (!IsA<HTMLObjectElement>(*node) && !IsA<HTMLEmbedElement>(*node))
     return;
 
-  LayoutObject* object = node->GetLayoutObject();
-  if (!object || !object->IsLayoutEmbeddedContent())
+  auto* embedded = DynamicTo<LayoutEmbeddedContent>(node->GetLayoutObject());
+  if (!embedded)
     return;
 
-  WebPluginContainerImpl* plugin_view =
-      ToLayoutEmbeddedContent(object)->Plugin();
+  WebPluginContainerImpl* plugin_view = embedded->Plugin();
   if (!plugin_view)
     return;
 

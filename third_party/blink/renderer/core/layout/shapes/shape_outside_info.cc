@@ -203,7 +203,7 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
       GetShapeImageMarginRect(*layout_box_, reference_box_logical_size_);
   const LayoutRect& image_rect =
       (layout_box_->IsLayoutImage())
-          ? ToLayoutImage(layout_box_)->ReplacedContentRect().ToLayoutRect()
+          ? To<LayoutImage>(layout_box_)->ReplacedContentRect().ToLayoutRect()
           : LayoutRect(LayoutPoint(), image_size);
 
   scoped_refptr<Image> image =

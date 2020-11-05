@@ -105,7 +105,7 @@ PhysicalRect InitializeTargetRect(const LayoutObject* target,
   PhysicalRect result;
   if ((flags & IntersectionGeometry::kShouldUseReplacedContentRect) &&
       target->IsLayoutEmbeddedContent()) {
-    result = ToLayoutEmbeddedContent(target)->ReplacedContentRect();
+    result = To<LayoutEmbeddedContent>(target)->ReplacedContentRect();
   } else if (target->IsBox()) {
     result = PhysicalRect(ToLayoutBoxModelObject(target)->BorderBoundingBox());
   } else if (target->IsLayoutInline()) {

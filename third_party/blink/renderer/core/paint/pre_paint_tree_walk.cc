@@ -948,16 +948,15 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
   if (!child_walk_blocked) {
     WalkChildren(&object, iterator, is_wheel_event_regions_enabled);
 
-    if (object.IsLayoutEmbeddedContent()) {
-      const LayoutEmbeddedContent& layout_embedded_content =
-          ToLayoutEmbeddedContent(object);
+    if (const auto* layout_embedded_content =
+            DynamicTo<LayoutEmbeddedContent>(object)) {
       if (auto* embedded_view =
-              layout_embedded_content.GetEmbeddedContentView()) {
+              layout_embedded_content->GetEmbeddedContentView()) {
         if (context().tree_builder_context) {
           auto& current = context().tree_builder_context->fragments[0].current;
           current.paint_offset = PhysicalOffset(RoundedIntPoint(
               current.paint_offset +
-              layout_embedded_content.ReplacedContentRect().offset -
+              layout_embedded_content->ReplacedContentRect().offset -
               PhysicalOffset(embedded_view->FrameRect().Location())));
           // Subpixel accumulation doesn't propagate across embedded view.
           current.directly_composited_container_paint_offset_subpixel_delta =
@@ -968,7 +967,7 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
         } else if (embedded_view->IsPluginView()) {
           // If it is a webview plugin, walk into the content frame view.
           if (auto* plugin_content_frame_view =
-                  FindWebViewPluginContentFrameView(layout_embedded_content))
+                  FindWebViewPluginContentFrameView(*layout_embedded_content))
             Walk(*plugin_content_frame_view);
         } else {
           // We need to do nothing for RemoteFrameView. See crbug.com/579281.

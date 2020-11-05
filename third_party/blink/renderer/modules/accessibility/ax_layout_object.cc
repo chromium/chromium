@@ -669,7 +669,7 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
     if (CanvasHasFallbackContent())
       return false;
 
-    const auto* canvas = ToLayoutHTMLCanvasOrNull(GetLayoutObject());
+    const auto* canvas = DynamicTo<LayoutHTMLCanvas>(GetLayoutObject());
     if (canvas &&
         (canvas->Size().Height() <= 1 || canvas->Size().Width() <= 1)) {
       if (ignored_reasons)

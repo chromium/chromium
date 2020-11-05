@@ -3291,7 +3291,7 @@ void AXNodeObject::AddImageMapChildren() {
   if (!css_box || !css_box->IsLayoutImage())
     return;
 
-  HTMLMapElement* map = ToLayoutImage(css_box)->ImageMap();
+  HTMLMapElement* map = To<LayoutImage>(css_box)->ImageMap();
   if (!map)
     return;
 

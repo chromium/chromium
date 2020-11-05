@@ -207,7 +207,7 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
     if (child) {
       // If the url of `list-style-image` changed, create a new LayoutImage.
       if (!child->IsLayoutImage() ||
-          ToLayoutImage(child)->ImageResource()->ImagePtr() !=
+          To<LayoutImage>(child)->ImageResource()->ImagePtr() !=
               list_style_image->Data()) {
         child->Destroy();
         child = nullptr;

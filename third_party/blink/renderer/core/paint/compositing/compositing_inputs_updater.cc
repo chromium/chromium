@@ -209,7 +209,7 @@ void CompositingInputsUpdater::UpdateSelfAndDescendantsRecursively(
   if (!descendant_has_direct_compositing_reason &&
       layer->GetLayoutObject().IsLayoutEmbeddedContent()) {
     if (LayoutView* embedded_layout_view =
-            ToLayoutEmbeddedContent(layer->GetLayoutObject())
+            To<LayoutEmbeddedContent>(layer->GetLayoutObject())
                 .ChildLayoutView()) {
       descendant_has_direct_compositing_reason |=
           LayerOrDescendantShouldBeComposited(embedded_layout_view->Layer());

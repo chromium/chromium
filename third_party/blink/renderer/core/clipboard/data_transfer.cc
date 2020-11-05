@@ -456,14 +456,10 @@ std::unique_ptr<DragImage> DataTransfer::CreateDragImage(
 static ImageResourceContent* GetImageResourceContent(Element* element) {
   // Attempt to pull ImageResourceContent from element
   DCHECK(element);
-  LayoutObject* layout_object = element->GetLayoutObject();
-  if (!layout_object || !layout_object->IsImage())
-    return nullptr;
-
-  LayoutImage* image = ToLayoutImage(layout_object);
-  if (image->CachedImage() && !image->CachedImage()->ErrorOccurred())
-    return image->CachedImage();
-
+  if (auto* image = DynamicTo<LayoutImage>(element->GetLayoutObject())) {
+    if (image->CachedImage() && !image->CachedImage()->ErrorOccurred())
+      return image->CachedImage();
+  }
   return nullptr;
 }
 

@@ -156,7 +156,7 @@ void ImageInputType::OnAttachWithLayoutObject() {
 
   HTMLImageLoader& image_loader = GetElement().EnsureImageLoader();
   LayoutImageResource* image_resource =
-      ToLayoutImage(layout_object)->ImageResource();
+      To<LayoutImage>(layout_object)->ImageResource();
   image_resource->SetImageResource(image_loader.GetContent());
 }
 

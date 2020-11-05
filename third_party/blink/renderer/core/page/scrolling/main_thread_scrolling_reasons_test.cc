@@ -125,8 +125,7 @@ TEST_F(MainThreadScrollingReasonsTest,
   ASSERT_TRUE(layout_object);
   ASSERT_TRUE(layout_object->IsLayoutEmbeddedContent());
 
-  LayoutEmbeddedContent* layout_embedded_content =
-      ToLayoutEmbeddedContent(layout_object);
+  auto* layout_embedded_content = To<LayoutEmbeddedContent>(layout_object);
   ASSERT_TRUE(layout_embedded_content);
 
   LocalFrameView* inner_frame_view =

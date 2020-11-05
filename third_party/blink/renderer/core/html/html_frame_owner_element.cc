@@ -183,9 +183,7 @@ HTMLFrameOwnerElement::HTMLFrameOwnerElement(const QualifiedName& tag_name,
 LayoutEmbeddedContent* HTMLFrameOwnerElement::GetLayoutEmbeddedContent() const {
   // HTMLObjectElement and HTMLEmbedElement may return arbitrary layoutObjects
   // when using fallback content.
-  if (!GetLayoutObject() || !GetLayoutObject()->IsLayoutEmbeddedContent())
-    return nullptr;
-  return ToLayoutEmbeddedContent(GetLayoutObject());
+  return DynamicTo<LayoutEmbeddedContent>(GetLayoutObject());
 }
 
 void HTMLFrameOwnerElement::SetContentFrame(Frame& frame) {

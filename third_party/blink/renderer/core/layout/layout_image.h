@@ -182,7 +182,12 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
   float image_device_pixel_ratio_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutImage, IsLayoutImage());
+template <>
+struct DowncastTraits<LayoutImage> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsLayoutImage();
+  }
+};
 
 }  // namespace blink
 

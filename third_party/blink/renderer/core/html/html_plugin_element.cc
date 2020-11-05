@@ -247,7 +247,7 @@ void HTMLPlugInElement::AttachLayoutTree(AttachContext& context) {
   }
   if (image_loader_ && layout_object->IsLayoutImage()) {
     LayoutImageResource* image_resource =
-        ToLayoutImage(layout_object)->ImageResource();
+        To<LayoutImage>(layout_object)->ImageResource();
     image_resource->SetImageResource(image_loader_->GetContent());
   }
   if (layout_object->AffectsWhitespaceSiblings())
@@ -462,8 +462,8 @@ void HTMLPlugInElement::DefaultEventHandler(Event& event) {
   LayoutObject* r = GetLayoutObject();
   if (!r || !r->IsLayoutEmbeddedContent())
     return;
-  if (r->IsEmbeddedObject()) {
-    if (ToLayoutEmbeddedObject(r)->ShowsUnavailablePluginIndicator())
+  if (auto* embedded_object = DynamicTo<LayoutEmbeddedObject>(r)) {
+    if (embedded_object->ShowsUnavailablePluginIndicator())
       return;
   }
   WebPluginContainerImpl* plugin = OwnedPlugin();
@@ -566,7 +566,7 @@ bool HTMLPlugInElement::IsImageType() const {
 LayoutEmbeddedObject* HTMLPlugInElement::GetLayoutEmbeddedObject() const {
   // HTMLObjectElement and HTMLEmbedElement may return arbitrary LayoutObjects
   // when using fallback content.
-  return ToLayoutEmbeddedObjectOrNull(GetLayoutObject());
+  return DynamicTo<LayoutEmbeddedObject>(GetLayoutObject());
 }
 
 // We don't use url_, as it may not be the final URL that the object loads,

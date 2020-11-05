@@ -140,8 +140,12 @@ class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
   ScrollbarPart part_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutCustomScrollbarPart,
-                                IsLayoutCustomScrollbarPart());
+template <>
+struct DowncastTraits<LayoutCustomScrollbarPart> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsLayoutCustomScrollbarPart();
+  }
+};
 
 }  // namespace blink
 

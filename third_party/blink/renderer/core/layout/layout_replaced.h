@@ -183,7 +183,12 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   mutable LayoutSize intrinsic_size_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutReplaced, IsLayoutReplaced());
+template <>
+struct DowncastTraits<LayoutReplaced> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsLayoutReplaced();
+  }
+};
 
 }  // namespace blink
 

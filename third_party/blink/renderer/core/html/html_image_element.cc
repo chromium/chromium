@@ -243,12 +243,11 @@ void HTMLImageElement::SetBestFitURLAndDPRFromImageCandidate(
   } else if (!candidate.SrcOrigin()) {
     UseCounter::Count(GetDocument(), WebFeature::kSrcsetXDescriptor);
   }
-  if (GetLayoutObject() && GetLayoutObject()->IsImage()) {
-    ToLayoutImage(GetLayoutObject())
-        ->SetImageDevicePixelRatio(image_device_pixel_ratio_);
+  if (auto* layout_image = DynamicTo<LayoutImage>(GetLayoutObject())) {
+    layout_image->SetImageDevicePixelRatio(image_device_pixel_ratio_);
 
     if (old_image_device_pixel_ratio != image_device_pixel_ratio_)
-      ToLayoutImage(GetLayoutObject())->IntrinsicSizeChanged();
+      layout_image->IntrinsicSizeChanged();
   }
 
   if (intrinsic_sizing_viewport_dependant) {
@@ -430,8 +429,7 @@ LayoutObject* HTMLImageElement::CreateLayoutObject(const ComputedStyle& style,
 
 void HTMLImageElement::AttachLayoutTree(AttachContext& context) {
   HTMLElement::AttachLayoutTree(context);
-  if (GetLayoutObject() && GetLayoutObject()->IsImage()) {
-    LayoutImage* layout_image = ToLayoutImage(GetLayoutObject());
+  if (auto* layout_image = DynamicTo<LayoutImage>(GetLayoutObject())) {
     LayoutImageResource* layout_image_resource = layout_image->ImageResource();
     if (is_fallback_image_)
       layout_image_resource->UseBrokenImage();
@@ -710,7 +708,7 @@ FloatSize HTMLImageElement::DefaultDestinationSize(
   LayoutSize size(image->Size(respect_orientation));
   if (GetLayoutObject() && GetLayoutObject()->IsLayoutImage() &&
       image->HasIntrinsicSize())
-    size.Scale(ToLayoutImage(GetLayoutObject())->ImageDevicePixelRatio());
+    size.Scale(To<LayoutImage>(GetLayoutObject())->ImageDevicePixelRatio());
   return FloatSize(size);
 }
 

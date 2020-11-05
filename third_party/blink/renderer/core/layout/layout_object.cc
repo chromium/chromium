@@ -1393,7 +1393,7 @@ LayoutBlock* LayoutObject::ContainingBlock(AncestorSkipInfo* skip_info) const {
   } else {
     object = Parent();
     if (!object && IsLayoutCustomScrollbarPart()) {
-      object = ToLayoutCustomScrollbarPart(this)
+      object = To<LayoutCustomScrollbarPart>(this)
                    ->GetScrollableArea()
                    ->GetLayoutBox();
     }

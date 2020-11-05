@@ -1739,7 +1739,7 @@ static scoped_refptr<Image> ImageFromNode(const Node& node) {
   if (!layout_object->IsImage())
     return nullptr;
 
-  const LayoutImage& layout_image = ToLayoutImage(*layout_object);
+  const auto& layout_image = To<LayoutImage>(*layout_object);
   const ImageResourceContent* const cached_image = layout_image.CachedImage();
   if (!cached_image || cached_image->ErrorOccurred())
     return nullptr;

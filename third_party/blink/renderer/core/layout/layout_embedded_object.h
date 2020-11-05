@@ -71,7 +71,12 @@ class LayoutEmbeddedObject final : public LayoutEmbeddedContent {
   String unavailable_plugin_replacement_text_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutEmbeddedObject, IsEmbeddedObject());
+template <>
+struct DowncastTraits<LayoutEmbeddedObject> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsEmbeddedObject();
+  }
+};
 
 }  // namespace blink
 

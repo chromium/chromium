@@ -83,8 +83,8 @@ namespace blink {
 static PhysicalRect ContentsRect(const LayoutObject& layout_object) {
   if (!layout_object.IsBox())
     return PhysicalRect();
-  if (layout_object.IsLayoutReplaced())
-    return ToLayoutReplaced(layout_object).ReplacedContentRect();
+  if (auto* replaced = DynamicTo<LayoutReplaced>(layout_object))
+    return replaced->ReplacedContentRect();
   return ToLayoutBox(layout_object).PhysicalContentBoxRect();
 }
 
@@ -135,9 +135,9 @@ static bool ContentLayerSupportsDirectBackgroundComposition(
 }
 
 static WebPluginContainerImpl* GetPluginContainer(LayoutObject& layout_object) {
-  if (!layout_object.IsEmbeddedObject())
-    return nullptr;
-  return ToLayoutEmbeddedObject(layout_object).Plugin();
+  if (auto* embedded_object = DynamicTo<LayoutEmbeddedObject>(layout_object))
+    return embedded_object->Plugin();
+  return nullptr;
 }
 
 // Returns true if the compositor will be responsible for applying the sticky

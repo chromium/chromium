@@ -354,7 +354,7 @@ Image* HitTestResult::GetImage() const {
   LayoutObject* layout_object =
       inner_node_or_image_map_image->GetLayoutObject();
   if (layout_object && layout_object->IsImage()) {
-    LayoutImage* image = ToLayoutImage(layout_object);
+    auto* image = To<LayoutImage>(layout_object);
     if (image->CachedImage() && !image->CachedImage()->ErrorOccurred())
       return image->CachedImage()->GetImage();
   }

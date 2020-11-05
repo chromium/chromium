@@ -65,9 +65,9 @@ std::unique_ptr<protocol::Array<double>> BuildRectForLayout(const int x,
 
 Document* GetEmbeddedDocument(PaintLayer* layer) {
   // Documents are embedded on their own PaintLayer via a LayoutEmbeddedContent.
-  if (layer->GetLayoutObject().IsLayoutEmbeddedContent()) {
-    FrameView* frame_view =
-        ToLayoutEmbeddedContent(layer->GetLayoutObject()).ChildFrameView();
+  if (auto* embedded =
+          DynamicTo<LayoutEmbeddedContent>(layer->GetLayoutObject())) {
+    FrameView* frame_view = embedded->ChildFrameView();
     if (auto* local_frame_view = DynamicTo<LocalFrameView>(frame_view))
       return local_frame_view->GetFrame().GetDocument();
   }

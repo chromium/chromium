@@ -1581,8 +1581,8 @@ static bool NeedsOverflowClipForReplacedContents(
 }
 
 static bool NeedsOverflowClip(const LayoutObject& object) {
-  if (object.IsLayoutReplaced())
-    return NeedsOverflowClipForReplacedContents(ToLayoutReplaced(object));
+  if (const auto* replaced = DynamicTo<LayoutReplaced>(object))
+    return NeedsOverflowClipForReplacedContents(*replaced);
 
   if (object.IsSVGViewportContainer() &&
       SVGLayoutSupport::IsOverflowHidden(object))
@@ -1770,7 +1770,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
                                          FloatRoundedRect());
 
       if (object_.IsLayoutReplaced()) {
-        const LayoutReplaced& replaced = ToLayoutReplaced(object_);
+        const auto& replaced = To<LayoutReplaced>(object_);
 
         // Videos need to be pre-snapped so that they line up with the
         // display_rect and can enable hardware overlays. Adjust the base rect
@@ -1892,17 +1892,16 @@ void FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform() {
       content_to_parent_space =
           SVGRootPainter(To<LayoutSVGRoot>(object_))
               .TransformToPixelSnappedBorderBox(context_.current.paint_offset);
-    } else if (object_.IsImage()) {
-      const LayoutImage& layout_image = ToLayoutImage(object_);
-      PhysicalRect layout_replaced_rect = layout_image.ReplacedContentRect();
+    } else if (const auto* layout_image = DynamicTo<LayoutImage>(object_)) {
+      PhysicalRect layout_replaced_rect = layout_image->ReplacedContentRect();
       layout_replaced_rect.Move(context_.current.paint_offset);
       IntRect replaced_rect = PixelSnappedIntRect(layout_replaced_rect);
       scoped_refptr<Image> image =
-          layout_image.ImageResource()->GetImage(replaced_rect.Size());
+          layout_image->ImageResource()->GetImage(replaced_rect.Size());
       if (image && !image->IsNull()) {
         IntRect src_rect(
             IntPoint(), image->Size(LayoutObject::ShouldRespectImageOrientation(
-                            &layout_image)));
+                            layout_image)));
         content_to_parent_space =
             RectToRect(FloatRect(src_rect), FloatRect(replaced_rect));
       }

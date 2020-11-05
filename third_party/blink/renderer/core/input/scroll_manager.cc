@@ -907,12 +907,11 @@ WebInputEventResult ScrollManager::PassScrollGestureEvent(
     LayoutObject* layout_object) {
   DCHECK(gesture_event.IsScrollEvent());
 
-  if (!last_gesture_scroll_over_embedded_content_view_ || !layout_object ||
-      !layout_object->IsLayoutEmbeddedContent())
+  auto* embedded = DynamicTo<LayoutEmbeddedContent>(layout_object);
+  if (!last_gesture_scroll_over_embedded_content_view_ || !embedded)
     return WebInputEventResult::kNotHandled;
 
-  FrameView* frame_view =
-      ToLayoutEmbeddedContent(layout_object)->ChildFrameView();
+  FrameView* frame_view = embedded->ChildFrameView();
 
   if (!frame_view)
     return WebInputEventResult::kNotHandled;

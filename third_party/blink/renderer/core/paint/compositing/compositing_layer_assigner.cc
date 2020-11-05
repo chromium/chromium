@@ -394,7 +394,7 @@ void CompositingLayerAssigner::AssignLayersToBackingsInternal(
   // If this is an iframe whose content document is composited, then we can't
   // squash layers painted after the iframe with layers painted before it.
   if (layer->GetLayoutObject().IsLayoutEmbeddedContent() &&
-      ToLayoutEmbeddedContent(layer->GetLayoutObject())
+      To<LayoutEmbeddedContent>(layer->GetLayoutObject())
           .ContentDocumentIsCompositing()) {
     squashing_state.have_assigned_backings_to_entire_squashing_layer_subtree =
         false;

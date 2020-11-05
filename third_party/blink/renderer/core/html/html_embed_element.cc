@@ -61,10 +61,8 @@ static inline LayoutEmbeddedContent* FindPartLayoutObject(const Node* n) {
   if (!n->GetLayoutObject())
     n = Traversal<HTMLObjectElement>::FirstAncestor(*n);
 
-  if (n && n->GetLayoutObject() &&
-      n->GetLayoutObject()->IsLayoutEmbeddedContent())
-    return ToLayoutEmbeddedContent(n->GetLayoutObject());
-
+  if (n)
+    return DynamicTo<LayoutEmbeddedContent>(n->GetLayoutObject());
   return nullptr;
 }
 

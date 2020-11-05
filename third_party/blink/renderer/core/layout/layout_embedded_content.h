@@ -117,8 +117,12 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
   int ref_count_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutEmbeddedContent,
-                                IsLayoutEmbeddedContent());
+template <>
+struct DowncastTraits<LayoutEmbeddedContent> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsLayoutEmbeddedContent();
+  }
+};
 
 }  // namespace blink
 

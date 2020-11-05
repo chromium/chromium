@@ -146,10 +146,10 @@ void GraphicsLayerUpdater::UpdateRecursive(
     }
   }
 
-  if (layer.GetLayoutObject().IsLayoutEmbeddedContent()) {
+  if (auto* embedded =
+          DynamicTo<LayoutEmbeddedContent>(layer.GetLayoutObject())) {
     if (PaintLayerCompositor* inner_compositor =
-            PaintLayerCompositor::FrameContentsCompositor(
-                ToLayoutEmbeddedContent(layer.GetLayoutObject()))) {
+            PaintLayerCompositor::FrameContentsCompositor(*embedded)) {
       if (inner_compositor->RootLayerAttachmentDirty())
         needs_rebuild_tree_ = true;
     }

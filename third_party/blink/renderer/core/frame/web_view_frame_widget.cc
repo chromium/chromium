@@ -457,7 +457,7 @@ WebInputEventResult WebViewFrameWidget::HandleKeyEvent(
           // If the plugin supports keyboard focus then we should not send a tab
           // keypress event.
           WebPluginContainerImpl* plugin_view =
-              ToLayoutEmbeddedContent(element->GetLayoutObject())->Plugin();
+              To<LayoutEmbeddedContent>(element->GetLayoutObject())->Plugin();
           if (plugin_view && plugin_view->SupportsKeyboardFocus()) {
             suppress_next_keypress_event_ = true;
           }

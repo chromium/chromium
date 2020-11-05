@@ -212,10 +212,8 @@ void HTMLAreaElement::SetFocused(bool should_be_focused,
     return;
 
   LayoutObject* layout_object = image_element->GetLayoutObject();
-  if (!layout_object || !layout_object->IsImage())
-    return;
-
-  ToLayoutImage(layout_object)->AreaElementFocusChanged(this);
+  if (auto* layout_image = DynamicTo<LayoutImage>(layout_object))
+    layout_image->AreaElementFocusChanged(this);
 }
 
 void HTMLAreaElement::UpdateFocusAppearanceWithOptions(

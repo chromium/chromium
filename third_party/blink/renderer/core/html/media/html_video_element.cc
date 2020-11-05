@@ -166,7 +166,7 @@ void HTMLVideoElement::UpdatePosterImage() {
   }
 
   if (GetLayoutObject()) {
-    ToLayoutImage(GetLayoutObject())
+    To<LayoutImage>(GetLayoutObject())
         ->ImageResource()
         ->SetImageResource(image_content);
     UpdateLayoutObject();

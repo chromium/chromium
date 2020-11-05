@@ -392,7 +392,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
   // if it is composited.
   bool contains_composited_layer =
       (layer->GetLayoutObject().IsLayoutEmbeddedContent() &&
-       ToLayoutEmbeddedContent(layer->GetLayoutObject())
+       To<LayoutEmbeddedContent>(layer->GetLayoutObject())
            .ContentDocumentIsCompositing());
 
   bool will_be_composited_or_squashed =

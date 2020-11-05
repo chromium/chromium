@@ -344,10 +344,9 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
       data.media_flags |= WebContextMenuData::kMediaControls;
   } else if (IsA<HTMLObjectElement>(*result.InnerNode()) ||
              IsA<HTMLEmbedElement>(*result.InnerNode())) {
-    LayoutObject* object = result.InnerNode()->GetLayoutObject();
-    if (object && object->IsLayoutEmbeddedContent()) {
-      WebPluginContainerImpl* plugin_view =
-          ToLayoutEmbeddedContent(object)->Plugin();
+    if (auto* embedded = DynamicTo<LayoutEmbeddedContent>(
+            result.InnerNode()->GetLayoutObject())) {
+      WebPluginContainerImpl* plugin_view = embedded->Plugin();
       if (plugin_view) {
         data.media_type = ContextMenuDataMediaType::kPlugin;
 
