@@ -64,11 +64,13 @@
   </div>
 </div>
 <div class="button-container">
-  <cr-icon-button id="updateStatusButton"
+  <cr-icon-button id="updateStatusButton" disable-ripple
       aria-label="[[getUpdateStatusButtonTooltip_('$i18n{tooltipMarkAsUnread}',
-      '$i18n{tooltipMarkAsRead}', data.read)]]" disable-ripple
-      iron-icon="cr:check" title="[[getUpdateStatusButtonTooltip_(
-      '$i18n{tooltipMarkAsUnread}', '$i18n{tooltipMarkAsRead}', data.read)]]"
+          '$i18n{tooltipMarkAsRead}', data.read)]]"
+      iron-icon="[[getUpdateStatusButtonIcon_('cr:check-circle',
+          'read-later:check-circle-outline', data.read)]]"
+      title="[[getUpdateStatusButtonTooltip_('$i18n{tooltipMarkAsUnread}',
+          '$i18n{tooltipMarkAsRead}', data.read)]]"
       on-click="onUpdateStatusClick_">
   </cr-icon-button>
   <cr-icon-button id="deleteButton" aria-label="$i18n{tooltipDelete}"

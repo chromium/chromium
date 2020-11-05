@@ -78,6 +78,7 @@ preprocess_grit("preprocess_web_components") {
   out_manifest = "$target_gen_dir/$preprocess_web_components_manifest"
   in_files = [
     "app.js",
+    "icons.js",
     "read_later_item.js",
   ]
 }
@@ -117,6 +118,7 @@ js_library("read_later_item") {
 html_to_js("web_components") {
   js_files = [
     "app.js",
+    "icons.js",
     "read_later_item.js",
   ]
 }
