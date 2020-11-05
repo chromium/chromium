@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
@@ -1407,6 +1408,15 @@ static inline bool IsChildHitTestCandidate(LayoutBox* box) {
 PositionWithAffinity LayoutBlock::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
+
+  if (IsLayoutNGObject() && PhysicalFragmentCount() &&
+      NGPhysicalBoxFragment::SupportsPositionForPoint()) {
+    // Layout engine boundary. Enter NG PositionForPoint(). Assert
+    // that we're not block-fragmented here.
+    DCHECK_EQ(PhysicalFragmentCount(), 1u);
+    return GetPhysicalFragment(0)->PositionForPoint(point);
+  }
+
   if (IsTable())
     return LayoutBox::PositionForPoint(point);
 

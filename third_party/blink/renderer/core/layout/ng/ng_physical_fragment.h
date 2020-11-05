@@ -247,6 +247,10 @@ class CORE_EXPORT NGPhysicalFragment
   // from GetNode() when this fragment is content of a pseudo node.
   Node* NodeForHitTest() const { return layout_object_->NodeForHitTest(); }
 
+  Node* NonPseudoNode() const {
+    return IsCSSBox() ? layout_object_->NonPseudoNode() : nullptr;
+  }
+
   bool IsInSelfHitTestingPhase(HitTestAction action) const {
     if (const auto* box = ToLayoutBoxOrNull(GetLayoutObject()))
       return box->IsInSelfHitTestingPhase(action);

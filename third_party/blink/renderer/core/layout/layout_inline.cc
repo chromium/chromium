@@ -1156,8 +1156,14 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
           accumulated_offset + item.OffsetInContainerBlock();
       if (NGBoxFragmentPainter(cursor, item, *box_fragment)
               .NodeAtPoint(result, hit_test_location, child_offset,
-                           accumulated_offset, hit_test_action))
+                           accumulated_offset, hit_test_action)) {
+        // TODO(layout-dev): Make this work with block fragmentation. We should
+        // ideally store the containing box fragment in the hit-test result
+        // here, but doing that might prevent us from finding the right fragment
+        // item later on in PositionForPoint(), if the inline has been offset
+        // from its static position.
         return true;
+      }
     }
     return false;
   }

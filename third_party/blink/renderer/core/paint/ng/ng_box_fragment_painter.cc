@@ -355,6 +355,23 @@ bool NodeAtPointInFragment(const NGPhysicalBoxFragment& fragment,
                                                     accumulated_offset, action);
 }
 
+void UpdateHitTestResult(HitTestResult& result,
+                         const NGPhysicalBoxFragment& fragment,
+                         PhysicalOffset offset) {
+  Node* node = fragment.NodeForHitTest();
+  if (!node)
+    return;
+
+  // We may already have set an inner node, but not a box fragment, if the inner
+  // node was text or non-atomic inline content. Set the containing box fragment
+  // now.
+  if (!result.BoxFragment())
+    result.SetBoxFragment(&fragment);
+
+  if (!result.InnerNode())
+    result.SetNodeAndPosition(node, offset);
+}
+
 // Return an ID for this fragmentainer, which is unique within the fragmentation
 // context. We need to provide this ID when block-fragmenting, so that we can
 // cache the painting of each individual fragment.
@@ -1998,7 +2015,8 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
       // See http://crbug.com/1043471
       if (box_item_ && box_item_->IsInlineBox()) {
         if (hit_test.AddNodeToResult(
-                fragment.NodeForHitTest(), &box_fragment_, bounds_rect,
+                fragment.NodeForHitTest(), /* box_fragment */ nullptr,
+                bounds_rect,
                 physical_offset - box_item_->OffsetInContainerBlock()))
           return true;
       } else if (paint_fragment_ &&
@@ -2107,8 +2125,9 @@ bool NGBoxFragmentPainter::HitTestTextItem(const HitTestContext& hit_test,
   if (!hit_test.location.Intersects(rect))
     return false;
 
-  return hit_test.AddNodeToResult(text_item.NodeForHitTest(), &box_fragment_,
-                                  rect, hit_test.inline_root_offset);
+  return hit_test.AddNodeToResult(text_item.NodeForHitTest(),
+                                  /* box_fragment */ nullptr, rect,
+                                  hit_test.inline_root_offset);
 }
 
 // Replicates logic in legacy InlineFlowBox::NodeAtPoint().
@@ -2258,8 +2277,9 @@ bool NGBoxFragmentPainter::HitTestChildBoxItem(
     // snap, but matches to legacy and fixes crbug.com/976606.
     bounds_rect = PhysicalRect(PixelSnappedIntRect(bounds_rect));
     if (hit_test.location.Intersects(bounds_rect)) {
-      if (hit_test.AddNodeToResult(item.NodeForHitTest(), &box_fragment_,
-                                   bounds_rect, child_offset))
+      if (hit_test.AddNodeToResult(item.NodeForHitTest(),
+                                   /* box_fragment */ nullptr, bounds_rect,
+                                   child_offset))
         return true;
     }
   }
@@ -2346,17 +2366,13 @@ bool NGBoxFragmentPainter::HitTestBlockChildren(
     }
 
     if (hit_child) {
-      if (const LayoutObject* child_object = block_child.GetLayoutObject()) {
-        child_object->UpdateHitTestResult(
-            result, hit_test_location.Point() - accumulated_offset);
-      }
+      UpdateHitTestResult(result, block_child,
+                          hit_test_location.Point() - accumulated_offset);
 
       // Our child may have been an anonymous-block, update the hit-test node
       // to include our node if needed.
-      if (const LayoutObject* object = box_fragment_.GetLayoutObject()) {
-        object->UpdateHitTestResult(
-            result, hit_test_location.Point() - accumulated_offset);
-      }
+      UpdateHitTestResult(result, box_fragment_,
+                          hit_test_location.Point() - accumulated_offset);
 
       return true;
     }

@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
+#include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
@@ -36,6 +37,12 @@ ASSERT_SIZE(NGPhysicalBoxFragment, SameSizeAsNGPhysicalBoxFragment);
 bool HasControlClip(const NGPhysicalBoxFragment& self) {
   const LayoutBox* box = ToLayoutBoxOrNull(self.GetLayoutObject());
   return box && box->HasControlClip();
+}
+
+inline bool IsHitTestCandidate(const NGPhysicalBoxFragment& fragment) {
+  return fragment.Size().height &&
+         fragment.Style().Visibility() == EVisibility::kVisible &&
+         !fragment.IsFloatingOrOutOfFlowPositioned();
 }
 
 }  // namespace
@@ -735,18 +742,104 @@ void NGPhysicalBoxFragment::AddSelfOutlineRects(
 
 PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
     PhysicalOffset point) const {
+  if (layout_object_->IsBox() && !layout_object_->IsLayoutNGObject()) {
+    // Layout engine boundary. Enter legacy PositionForPoint().
+    return layout_object_->PositionForPoint(point);
+  }
+
   if (IsScrollContainer())
     point += PhysicalOffset(PixelSnappedScrolledContentOffset());
+
   if (const NGFragmentItems* items = Items()) {
     NGInlineCursor cursor(*this, *items);
     if (const PositionWithAffinity position =
             cursor.PositionForPointInInlineFormattingContext(point, *this))
       return AdjustForEditingBoundary(position);
-  }
-  // TODO(mstensho): Add support for block children.
-  if (layout_object_->GetNode())
     return layout_object_->CreatePositionWithAffinity(0);
-  return PositionWithAffinity();
+  }
+
+  NGLink closest_child = {nullptr};
+  LayoutUnit shortest_distance = LayoutUnit::Max();
+  const PhysicalSize pixel_size(LayoutUnit(1), LayoutUnit(1));
+  PhysicalRect point_rect(point, pixel_size);
+
+  // This is a general-purpose algorithm for finding the nearest child. There
+  // may be cases where want to introduce specialized algorithms that e.g. takes
+  // the progression direction into account (so that we can break earlier, or
+  // even add special behavior). Children in block containers progress in the
+  // block direction, for instance, while table cells progress in the inline
+  // direction. Flex containers may progress in the inline direction, reverse
+  // inline direction, block direction or reverse block direction. Multicol
+  // containers progress both in the inline direction (columns) and block
+  // direction (column rows and spanners).
+  for (const NGLink& child : Children()) {
+    const auto& box_fragment = To<NGPhysicalBoxFragment>(*child.fragment);
+    if (!IsHitTestCandidate(box_fragment))
+      continue;
+
+    PhysicalRect child_rect(child.offset, child->Size());
+    if (child_rect.Contains(point)) {
+      // We actually hit a child. We're done.
+      closest_child = child;
+      break;
+    }
+
+    LayoutUnit horizontal_distance;
+    if (child_rect.X() > point_rect.X())
+      horizontal_distance = child_rect.X() - point_rect.X();
+    else
+      horizontal_distance = point_rect.Right() - child_rect.Right();
+
+    LayoutUnit vertical_distance;
+    if (child_rect.Y() > point_rect.Y())
+      vertical_distance = child_rect.Y() - point_rect.Y();
+    else
+      vertical_distance = point_rect.Bottom() - child_rect.Bottom();
+
+    const LayoutUnit distance = horizontal_distance * horizontal_distance +
+                                vertical_distance * vertical_distance;
+
+    if (shortest_distance > distance) {
+      // This child is closer to the point than any previous child.
+      shortest_distance = distance;
+      closest_child = child;
+    }
+  }
+
+  if (!closest_child.fragment)
+    return layout_object_->CreatePositionWithAffinity(0);
+
+  const auto& child = To<NGPhysicalBoxFragment>(*closest_child);
+  Node* child_node = child_node = child.NonPseudoNode();
+  PhysicalOffset point_in_child = point - closest_child.offset;
+  if (!child.IsCSSBox() || !child_node)
+    return child.PositionForPoint(point_in_child);
+
+  // First make sure that the editability of the parent and child agree.
+  // TODO(layout-dev): Could we just walk the DOM tree instead here?
+  const LayoutObject* ancestor = layout_object_;
+  while (ancestor && !ancestor->NonPseudoNode())
+    ancestor = ancestor->Parent();
+  if (!ancestor || !ancestor->Parent() ||
+      (ancestor->HasLayer() && ancestor->Parent()->IsLayoutView()) ||
+      HasEditableStyle(*ancestor->NonPseudoNode()) ==
+          HasEditableStyle(*child_node))
+    return child.PositionForPoint(point_in_child);
+
+  // If editiability isn't the same in the ancestor and the child, then we
+  // return a visible position just before or after the child, whichever side is
+  // closer.
+  WritingModeConverter converter(child.Style().GetWritingDirection(), Size());
+  LogicalOffset logical_point = converter.ToLogical(point, pixel_size);
+  LogicalOffset child_logical_offset =
+      converter.ToLogical(closest_child.offset, child.Size());
+  LogicalOffset logical_point_in_child = logical_point - child_logical_offset;
+  LogicalSize child_logical_size = converter.ToLogical(child.Size());
+  LayoutUnit child_middle = child_logical_size.inline_size / 2;
+  if (logical_point_in_child.inline_offset < child_middle)
+    return layout_object_->CreatePositionWithAffinity(child_node->NodeIndex());
+  return layout_object_->CreatePositionWithAffinity(child_node->NodeIndex() + 1,
+                                                    TextAffinity::kUpstream);
 }
 
 UBiDiLevel NGPhysicalBoxFragment::BidiLevel() const {

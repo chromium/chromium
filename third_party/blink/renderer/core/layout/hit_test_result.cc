@@ -147,7 +147,13 @@ void HitTestResult::SetNodeAndPosition(
     Node* node,
     scoped_refptr<const NGPhysicalBoxFragment> box_fragment,
     const PhysicalOffset& position) {
+  SetBoxFragment(std::move(box_fragment));
   SetNodeAndPosition(node, position);
+}
+
+void HitTestResult::SetBoxFragment(
+    scoped_refptr<const NGPhysicalBoxFragment> box_fragment) {
+  DCHECK(!box_fragment || !box_fragment->IsInlineBox());
   box_fragment_ = std::move(box_fragment);
 }
 
@@ -162,9 +168,7 @@ PositionWithAffinity HitTestResult::GetPosition() const {
     return PositionWithAffinity(MostForwardCaretPosition(
         Position(inner_node_, PositionAnchorType::kBeforeChildren)));
   }
-  // TODO(mstensho): Remove check for Items() when the code is ready
-  // for it. Right now it doesn't support block children.
-  if (box_fragment_ && box_fragment_->Items())
+  if (box_fragment_ && NGPhysicalBoxFragment::SupportsPositionForPoint())
     return box_fragment_->PositionForPoint(LocalPoint());
   return layout_object->PositionForPoint(LocalPoint());
 }
@@ -247,6 +251,7 @@ void HitTestResult::SetInnerNode(Node* n) {
     inner_possibly_pseudo_node_ = nullptr;
     inner_node_ = nullptr;
     inner_element_ = nullptr;
+    box_fragment_ = nullptr;
     return;
   }
 
@@ -262,6 +267,23 @@ void HitTestResult::SetInnerNode(Node* n) {
       if (inert_node_ && n != inert_node_ &&
           !n->IsShadowIncludingInclusiveAncestorOf(*inert_node_)) {
         return;
+      }
+    }
+  }
+
+  if (NGPhysicalBoxFragment::SupportsPositionForPoint()) {
+    if (const LayoutBox* layout_box = n->GetLayoutBox()) {
+      // Fragmentation-aware code will set the correct box fragment on its own,
+      // but sometimes we enter legacy layout code when hit-testing, e.g. for
+      // replaced content. In such cases we need to set it here.
+      if (box_fragment_) {
+        DCHECK(!box_fragment_->GetLayoutObject() ||
+               layout_box == box_fragment_->GetLayoutObject());
+      } else if (layout_box->PhysicalFragmentCount() > 0) {
+        // If we set the fragment on our own, make sure that there's only one of
+        // them, since there's no way for us to pick the right one here.
+        DCHECK_EQ(layout_box->PhysicalFragmentCount(), 1u);
+        box_fragment_ = layout_box->GetPhysicalFragment(0);
       }
     }
   }
