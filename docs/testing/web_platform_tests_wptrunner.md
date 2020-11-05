@@ -44,18 +44,16 @@ executing it:
 
 ```
 cd testing/scripts
-./run_wpt_tests.py --isolated-script-test-output=../../out/Release/results.json [test list]
+./run_wpt_tests.py [test list]
 ```
 
-The `--isolated-script-test-output` flag is currently required (see [Known
-Issues](#known-issues)), and the list of tests should be given relative to
-`external/wpt/`, e.g. `webauthn/createcredential-timeout.https.html`.
-Directories are also accepted. Omitting the test list will run all WPT tests.
+The list of tests should be given relative to `external/wpt/`, e.g.
+`webauthn/createcredential-timeout.https.html`. Directories are also accepted.
+Omitting the test list will run all WPT tests.
 
-Results from the run are currently placed relative to
-`--isolated-script-test-output`, in a folder called `layout-test-results` (so
-the above example would put results in `../../out/Release/layout-test-results/`).
-Logs from the browser should be shown by the runner as it executes each test.
+Results from the run are placed in your build folder, in a folder called
+`layout-test-results` (e.g. `../../out/Release/layout-test-results/`). Logs from
+the browser should be shown by the runner as it executes each test.
 
 Useful flags:
 
@@ -132,8 +130,6 @@ platform checks). Most `.ini` baseline files in Chromium should have the form:
 
 ## Known issues
 
-* The `--isolated-script-test-output` flag is currently non-optional for
-  `run_wpt_tests.py`. We intend to infer this from `--target` in the future.
 * There is no debugging support in `run_wpt_tests.py` today. In the future, we
   intend to allow pausing the browser after each test, and (long-term) intend to
   support hooking up gdb to test runs.
