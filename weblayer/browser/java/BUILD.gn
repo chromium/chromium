@@ -100,7 +100,6 @@ android_library("java") {
   sources = [
     "org/chromium/weblayer_private/ActionModeCallback.java",
     "org/chromium/weblayer_private/AutocompleteSchemeClassifierImpl.java",
-    "org/chromium/weblayer_private/AutofillView.java",
     "org/chromium/weblayer_private/BrowserControlsContainerView.java",
     "org/chromium/weblayer_private/BrowserFragmentImpl.java",
     "org/chromium/weblayer_private/BrowserImpl.java",
@@ -110,6 +109,7 @@ android_library("java") {
     "org/chromium/weblayer_private/ChildProcessServiceImpl.java",
     "org/chromium/weblayer_private/ContactsPickerAdapter.java",
     "org/chromium/weblayer_private/ContentViewRenderView.java",
+    "org/chromium/weblayer_private/ContentViewWithAutofill.java",
     "org/chromium/weblayer_private/CookieManagerImpl.java",
     "org/chromium/weblayer_private/CrashReporterControllerImpl.java",
     "org/chromium/weblayer_private/DownloadCallbackProxy.java",

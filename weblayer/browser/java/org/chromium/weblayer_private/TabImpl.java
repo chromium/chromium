@@ -371,11 +371,12 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
                     // Set up |mAutofillProvider| to operate in the new Context. It's safe to assume
                     // the context won't change unless it is first nulled out, since the fragment
                     // must be detached before it can be reattached to a new Context.
-                    mAutofillProvider = new AutofillProvider(
-                            mBrowser.getContext(), mBrowser.getAutofillView(), "WebLayer");
+                    mAutofillProvider = new AutofillProvider(mBrowser.getContext(),
+                            mBrowser.getViewAndroidDelegateContainerView(), "WebLayer");
                     TabImplJni.get().onAutofillProviderChanged(mNativeTab, mAutofillProvider);
                 }
-                mAutofillProvider.onContainerViewChanged(mBrowser.getAutofillView());
+                mAutofillProvider.onContainerViewChanged(
+                        mBrowser.getViewAndroidDelegateContainerView());
                 mAutofillProvider.setWebContents(mWebContents);
 
                 selectionController.setNonSelectionActionModeCallback(

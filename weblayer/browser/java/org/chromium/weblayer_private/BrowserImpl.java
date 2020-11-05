@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.Settings;
 import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.ValueCallback;
 
 import androidx.annotation.NonNull;
@@ -150,10 +149,6 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
     public ContentView getViewAndroidDelegateContainerView() {
         if (mViewController == null) return null;
         return mViewController.getContentView();
-    }
-
-    public ViewGroup getAutofillView() {
-        return getViewController().getAutofillView();
     }
 
     public UrlBarControllerImpl getUrlBarControllerImpl() {
