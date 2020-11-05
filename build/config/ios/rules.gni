@@ -681,6 +681,7 @@ template("ios_app_bundle") {
                              "output_name",
                              "product_type",
                              "visibility",
+                             "xcode_extra_attributes",
                            ])
 
     visibility = [ ":$_arch_executable_target" ]
@@ -726,6 +727,7 @@ template("ios_app_bundle") {
                              "product_type",
                              "sources",
                              "visibility",
+                             "xcode_extra_attributes",
                            ])
 
     visibility = [ ":$_lipo_executable_target($_primary_toolchain)" ]
@@ -888,6 +890,7 @@ template("ios_app_bundle") {
                                  "public_deps",
                                  "testonly",
                                  "visibility",
+                                 "xcode_extra_attributes",
                                ])
 
         output_name = _output_name

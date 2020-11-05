@@ -379,6 +379,10 @@ ios_app_bundle("chrome") {
     variants = ios_chrome_app_variants
   }
 
+  xcode_extra_attributes = {
+    SUPPORTS_MACCATALYST = "YES"
+  }
+
   deps = [
     ":main",
     ":tests_fake_hook",
