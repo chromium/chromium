@@ -338,6 +338,7 @@ source_set("unit_tests") {
     "mediarecorder/track_recorder_unittest.cc",
     "mediarecorder/video_track_recorder_unittest.cc",
     "mediasession/media_session_test.cc",
+    "mediastream/low_latency_video_renderer_algorithm_unittest.cc",
     "mediastream/media_constraints_test.cc",
     "mediastream/media_devices_test.cc",
     "mediastream/media_stream_audio_processor_test.cc",

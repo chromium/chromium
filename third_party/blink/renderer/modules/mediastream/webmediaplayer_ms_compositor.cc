@@ -17,7 +17,6 @@
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
-#include "media/filters/video_renderer_algorithm.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "skia/ext/platform_canvas.h"
@@ -187,11 +186,11 @@ WebMediaPlayerMSCompositor::WebMediaPlayerMSCompositor(
 
   if (remote_video && Platform::Current()->RTCSmoothnessAlgorithmEnabled()) {
     base::AutoLock auto_lock(current_frame_lock_);
-    rendering_frame_buffer_.reset(new media::VideoRendererAlgorithm(
+    rendering_frame_buffer_ = std::make_unique<VideoRendererAlgorithmWrapper>(
         ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
             &WebMediaPlayerMSCompositor::MapTimestampsToRenderTimeTicks,
             CrossThreadUnretained(this))),
-        &media_log_));
+        &media_log_);
   }
 
   // Just for logging purpose.
@@ -348,10 +347,16 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
     return;
   }
 
-  // If we detect a bad frame without |render_time|, we switch off algorithm,
-  // because without |render_time|, algorithm cannot work.
-  // In general, this should not happen.
-  if (!frame->metadata()->reference_time.has_value()) {
+  // If we detect a bad frame without |reference_time|, we switch off algorithm,
+  // because without |reference_time|, algorithm cannot work.
+  // |reference_time| is not set for low-latency video streams and are therefore
+  // rendered without algorithm, unless |maximum_composition_delay_in_frames| is
+  // set in which case a dedicated low-latency algorithm is switched on. Please
+  // note that this is an experimental feature that is only active if certain
+  // experimental parameters are specified in WebRTC. See crbug.com/1138888 for
+  // more information.
+  if (!frame->metadata()->reference_time.has_value() &&
+      !frame->metadata()->maximum_composition_delay_in_frames) {
     DLOG(WARNING)
         << "Incoming VideoFrames have no reference_time, switching off super "
            "sophisticated rendering algorithm";
@@ -359,7 +364,9 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
     RenderWithoutAlgorithm(std::move(frame), is_copy);
     return;
   }
-  base::TimeTicks render_time = *frame->metadata()->reference_time;
+  base::TimeTicks render_time = frame->metadata()->reference_time
+                                    ? *frame->metadata()->reference_time
+                                    : base::TimeTicks();
 
   // The code below handles the case where UpdateCurrentFrame() callbacks stop.
   // These callbacks can stop when the tab is hidden or the page area containing
@@ -409,11 +416,12 @@ bool WebMediaPlayerMSCompositor::UpdateCurrentFrame(
       base::TimeTicks render_time =
           current_frame_->metadata()->reference_time.value_or(
               base::TimeTicks());
-      if (!current_frame_->metadata()->reference_time.has_value()) {
-        DCHECK(!rendering_frame_buffer_)
-            << "VideoFrames need REFERENCE_TIME to use "
-               "sophisticated video rendering algorithm.";
-      }
+      DCHECK(current_frame_->metadata()->reference_time.has_value() ||
+             !rendering_frame_buffer_ ||
+             (rendering_frame_buffer_ &&
+              !rendering_frame_buffer_->NeedsReferenceTime()))
+          << "VideoFrames need REFERENCE_TIME to use "
+             "sophisticated video rendering algorithm.";
       TRACE_EVENT_END2("media", "UpdateCurrentFrame", "Ideal Render Instant",
                        render_time.ToInternalValue(), "Serial", serial_);
     }
@@ -759,11 +767,11 @@ void WebMediaPlayerMSCompositor::SetAlgorithmEnabledForTesting(
   }
 
   if (!rendering_frame_buffer_) {
-    rendering_frame_buffer_.reset(new media::VideoRendererAlgorithm(
+    rendering_frame_buffer_ = std::make_unique<VideoRendererAlgorithmWrapper>(
         WTF::BindRepeating(
             &WebMediaPlayerMSCompositor::MapTimestampsToRenderTimeTicks,
             WTF::Unretained(this)),
-        &media_log_));
+        &media_log_);
   }
 }
 

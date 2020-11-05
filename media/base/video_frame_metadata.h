@@ -178,6 +178,13 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // expected to spend on the screen during playback. Unlike FRAME_DURATION
   // this field takes into account current playback rate.
   base::Optional<base::TimeDelta> wallclock_frame_duration;
+
+  // WebRTC streams only: if present, this field represents the maximum
+  // composition delay that is allowed for this frame. This is respected
+  // in a best effort manner.
+  // This is an experimental feature, see crbug.com/1138888 for more
+  // information.
+  base::Optional<int> maximum_composition_delay_in_frames;
 };
 
 }  // namespace media

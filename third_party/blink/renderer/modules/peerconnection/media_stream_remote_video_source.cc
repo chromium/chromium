@@ -299,6 +299,11 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
   if (!render_immediately)
     video_frame->metadata()->reference_time = render_time;
 
+  if (incoming_frame.max_composition_delay_in_frames()) {
+    video_frame->metadata()->maximum_composition_delay_in_frames =
+        *incoming_frame.max_composition_delay_in_frames();
+  }
+
   video_frame->metadata()->decode_end_time = current_time;
 
   // RTP_TIMESTAMP, PROCESSING_TIME, and CAPTURE_BEGIN_TIME are all exposed

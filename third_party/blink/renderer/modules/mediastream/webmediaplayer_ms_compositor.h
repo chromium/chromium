@@ -20,6 +20,7 @@
 #include "media/base/media_util.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
+#include "third_party/blink/renderer/modules/mediastream/video_renderer_algorithm_wrapper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
@@ -233,7 +234,7 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
 
   // |rendering_frame_buffer_| stores the incoming frames, and provides a frame
   // selection method which returns the best frame for the render interval.
-  std::unique_ptr<media::VideoRendererAlgorithm> rendering_frame_buffer_;
+  std::unique_ptr<VideoRendererAlgorithmWrapper> rendering_frame_buffer_;
 
   // |current_frame_rendered_| is updated on compositor thread only.
   // It's used to track whether |current_frame_| was painted for detecting
