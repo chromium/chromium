@@ -833,6 +833,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   topToolbar.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:topToolbar];
 
+  // Sets the leadingButton title during initialization allows the actionSheet
+  // to be correctly anchored. See: crbug.com/1140982.
+  topToolbar.leadingButton.title =
+      l10n_util::GetNSString(IDS_IOS_TAB_GRID_CLOSE_ALL_BUTTON);
   topToolbar.leadingButton.target = self;
   if (base::FeatureList::IsEnabled(kEnableCloseAllTabsConfirmation)) {
     topToolbar.leadingButton.action =
