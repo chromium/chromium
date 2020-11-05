@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/quick_answers/controller/quick_answers_controller.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -111,6 +112,9 @@ void QuickAnswersMenuObserver::OnContextMenuViewBoundsChanged(
 }
 
 void QuickAnswersMenuObserver::OnMenuClosed() {
+  base::UmaHistogramBoolean("QuickAnswers.ContextMenu.Close",
+                            is_other_command_executed_);
+
   if (!quick_answers_controller_)
     return;
 
