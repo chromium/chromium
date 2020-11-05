@@ -712,8 +712,29 @@ TEST_F(MP4StreamParserTest, Vp9) {
                             VideoColorSpace::MatrixID::BT2020_NCL,
                             gfx::ColorSpace::RangeID::LIMITED));
 
-  // TODO(crbug.com/1123430): We need a test file that actually has HDR metadata
-  // to test the SmDm and CoLL parsing.
+  ASSERT_TRUE(video_decoder_config_.hdr_metadata().has_value());
+
+  const auto& hdr_metadata = *video_decoder_config_.hdr_metadata();
+  EXPECT_EQ(hdr_metadata.max_content_light_level, 1000u);
+  EXPECT_EQ(hdr_metadata.max_frame_average_light_level, 640u);
+
+  const auto& mastering_metadata = hdr_metadata.mastering_metadata;
+
+  constexpr float kColorCoordinateUnit = 1 / 16.0f;
+  EXPECT_NEAR(mastering_metadata.primary_r.x(), 0.68, kColorCoordinateUnit);
+  EXPECT_NEAR(mastering_metadata.primary_r.y(), 0.31998, kColorCoordinateUnit);
+  EXPECT_NEAR(mastering_metadata.primary_g.x(), 0.26496, kColorCoordinateUnit);
+  EXPECT_NEAR(mastering_metadata.primary_g.y(), 0.68998, kColorCoordinateUnit);
+  EXPECT_NEAR(mastering_metadata.primary_b.x(), 0.15, kColorCoordinateUnit);
+  EXPECT_NEAR(mastering_metadata.primary_b.y(), 0.05998, kColorCoordinateUnit);
+  EXPECT_NEAR(mastering_metadata.white_point.x(), 0.314, kColorCoordinateUnit);
+  EXPECT_NEAR(mastering_metadata.white_point.y(), 0.351, kColorCoordinateUnit);
+
+  constexpr float kLuminanceMaxUnit = 1 / 8.0f;
+  EXPECT_NEAR(mastering_metadata.luminance_max, 1000.0f, kLuminanceMaxUnit);
+
+  constexpr float kLuminanceMinUnit = 1 / 14.0;
+  EXPECT_NEAR(mastering_metadata.luminance_min, 0.01f, kLuminanceMinUnit);
 }
 
 TEST_F(MP4StreamParserTest, FourCCToString) {

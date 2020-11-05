@@ -1003,6 +1003,8 @@ bool SMPTE2086MasteringDisplayMetadataBox::Parse(BoxReader* reader) {
   constexpr float kLuminanceMaxUnit = 1 << 8;
   constexpr float kLuminanceMinUnit = 1 << 14;
 
+  RCHECK(reader->ReadFullBoxHeader());
+
   // Technically the color coordinates may be in any order.  The spec recommends
   // RGB and it is assumed that the color coordinates are in such order.
   RCHECK(
@@ -1032,6 +1034,11 @@ FourCC ContentLightLevelInformation::BoxType() const {
 bool ContentLightLevelInformation::Parse(BoxReader* reader) {
   return reader->Read2(&max_content_light_level) &&
          reader->Read2(&max_pic_average_light_level);
+}
+
+bool ContentLightLevel::Parse(BoxReader* reader) {
+  RCHECK(reader->ReadFullBoxHeader());
+  return ContentLightLevelInformation::Parse(reader);
 }
 
 FourCC ContentLightLevel::BoxType() const {

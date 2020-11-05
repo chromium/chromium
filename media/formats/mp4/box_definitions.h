@@ -310,6 +310,7 @@ struct MEDIA_EXPORT ContentLightLevelInformation : Box {
 
 // Same as ContentLightLevelInformation, but with a different fourcc.
 struct MEDIA_EXPORT ContentLightLevel : ContentLightLevelInformation {
+  bool Parse(BoxReader* reader) override;
   FourCC BoxType() const override;
 };
 
