@@ -357,6 +357,13 @@ PositionWithAffinity NGCaretPosition::ToPositionInDOMTreeWithAffinity() const {
       DCHECK(text_offset.has_value());
       const NGOffsetMapping* mapping =
           NGOffsetMapping::GetFor(cursor.Current().GetLayoutObject());
+      if (!mapping) {
+        // TODO(yosin): We're not sure why |mapping| is |nullptr|. It seems
+        // we are attempt to use destroyed/moved |NGFragmentItem|.
+        // See http://crbug.com/1145514
+        NOTREACHED() << cursor << " " << cursor.Current().GetLayoutObject();
+        return PositionWithAffinity();
+      }
       const TextAffinity affinity =
           *text_offset == cursor.Current().TextEndOffset()
               ? TextAffinity::kUpstreamIfPossible
