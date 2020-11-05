@@ -376,6 +376,11 @@ base::Optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
     return base::nullopt;
   }
 
+  // Set incognito mode for ARCore session - this is done unconditionally as we
+  // always want to limit the amount of logging done by ARCore.
+  ArSession_enableIncognitoMode_private(session.get());
+  DVLOG(1) << __func__ << ": ARCore incognito mode enabled";
+
   base::Optional<std::unordered_set<device::mojom::XRSessionFeature>>
       maybe_enabled_features = ConfigureFeatures(
           session.get(), required_features, optional_features, tracked_images);
@@ -434,11 +439,6 @@ ArCoreImpl::ConfigureFeatures(
   std::unordered_set<device::mojom::XRSessionFeature> enabled_features;
   enabled_features.insert(required_features.begin(), required_features.end());
   enabled_features.insert(optional_features.begin(), optional_features.end());
-
-  // Set incognito mode for ARCore session - this is done unconditionally as we
-  // always want to limit the amount of logging done by ARCore.
-  ArSession_enableIncognitoMode_private(ar_session);
-  DVLOG(1) << __func__ << ": ARCore incognito mode enabled";
 
   internal::ScopedArCoreObject<ArConfig*> arcore_config;
   ArConfig_create(
