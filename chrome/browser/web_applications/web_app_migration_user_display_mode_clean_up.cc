@@ -9,6 +9,8 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/web_applications/extensions/bookmark_app_registrar.h"
+#include "chrome/browser/web_applications/extensions/bookmark_app_registry_controller.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
@@ -80,9 +82,13 @@ WebAppMigrationUserDisplayModeCleanUp::WebAppMigrationUserDisplayModeCleanUp(
     OsIntegrationManager* os_integration_manager)
     : profile_(profile),
       sync_bridge_(sync_bridge),
-      bookmark_app_registrar_(profile),
-      bookmark_app_registry_controller_(profile, &bookmark_app_registrar_) {
-  bookmark_app_registrar_.SetSubsystems(os_integration_manager);
+      bookmark_app_registrar_(
+          std::make_unique<extensions::BookmarkAppRegistrar>(profile)),
+      bookmark_app_registry_controller_(
+          std::make_unique<extensions::BookmarkAppRegistryController>(
+              profile,
+              bookmark_app_registrar_.get())) {
+  bookmark_app_registrar_->SetSubsystems(os_integration_manager);
 }
 
 WebAppMigrationUserDisplayModeCleanUp::
@@ -94,7 +100,7 @@ void WebAppMigrationUserDisplayModeCleanUp::Start() {
   sync_service_ = ProfileSyncServiceFactory::GetForProfile(profile_);
   if (sync_service_)
     sync_observer_.Add(sync_service_);
-  bookmark_app_registry_controller_.Init(base::BindOnce(
+  bookmark_app_registry_controller_->Init(base::BindOnce(
       &WebAppMigrationUserDisplayModeCleanUp::OnBookmarkAppRegistryReady,
       weak_ptr_factory_.GetWeakPtr()));
 }
@@ -142,7 +148,7 @@ void WebAppMigrationUserDisplayModeCleanUp::WaitForFirstSyncCycle(
 }
 
 void WebAppMigrationUserDisplayModeCleanUp::OnFirstSyncCycleComplete() {
-  std::vector<AppId> clean_up_ids = bookmark_app_registrar_.GetAppIds();
+  std::vector<AppId> clean_up_ids = bookmark_app_registrar_->GetAppIds();
 
   // Filter down to apps that have a windowed bookmark app and a browser tab BMO
   // app.
@@ -151,7 +157,7 @@ void WebAppMigrationUserDisplayModeCleanUp::OnFirstSyncCycleComplete() {
     if (!web_app)
       return true;
 
-    if (bookmark_app_registrar_.GetAppUserDisplayModeForMigration(app_id) ==
+    if (bookmark_app_registrar_->GetAppUserDisplayModeForMigration(app_id) ==
         DisplayMode::kBrowser) {
       return true;
     }
@@ -163,7 +169,7 @@ void WebAppMigrationUserDisplayModeCleanUp::OnFirstSyncCycleComplete() {
     ScopedRegistryUpdate update(sync_bridge_);
     for (const AppId& app_id : clean_up_ids) {
       update->UpdateApp(app_id)->SetUserDisplayMode(
-          bookmark_app_registrar_.GetAppUserDisplayModeForMigration(app_id));
+          bookmark_app_registrar_->GetAppUserDisplayModeForMigration(app_id));
     }
   }
 

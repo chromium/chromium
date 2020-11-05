@@ -11,12 +11,15 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
-#include "chrome/browser/web_applications/extensions/bookmark_app_registrar.h"
-#include "chrome/browser/web_applications/extensions/bookmark_app_registry_controller.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
 
 class Profile;
+
+namespace extensions {
+class BookmarkAppRegistrar;
+class BookmarkAppRegistryController;
+}  // namespace extensions
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -92,8 +95,9 @@ class WebAppMigrationUserDisplayModeCleanUp final
   syncer::SyncService* sync_service_ = nullptr;
   base::OnceClosure sync_ready_callback_;
 
-  extensions::BookmarkAppRegistrar bookmark_app_registrar_;
-  extensions::BookmarkAppRegistryController bookmark_app_registry_controller_;
+  std::unique_ptr<extensions::BookmarkAppRegistrar> bookmark_app_registrar_;
+  std::unique_ptr<extensions::BookmarkAppRegistryController>
+      bookmark_app_registry_controller_;
 
   ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
       sync_observer_{this};
