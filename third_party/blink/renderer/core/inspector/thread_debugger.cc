@@ -195,17 +195,17 @@ std::unique_ptr<v8_inspector::StringBuffer>
 ThreadDebugger::descriptionForValueSubtype(v8::Local<v8::Context> context,
                                            v8::Local<v8::Value> value) {
   if (V8TrustedHTML::HasInstance(value, isolate_)) {
-    TrustedHTML* trustedHTML =
+    TrustedHTML* trusted_html =
         V8TrustedHTML::ToImplWithTypeCheck(isolate_, value);
-    return ToV8InspectorStringBuffer(trustedHTML->toString());
+    return ToV8InspectorStringBuffer(trusted_html->toString());
   } else if (V8TrustedScript::HasInstance(value, isolate_)) {
-    TrustedScript* trustedScript =
+    TrustedScript* trusted_script =
         V8TrustedScript::ToImplWithTypeCheck(isolate_, value);
-    return ToV8InspectorStringBuffer(trustedScript->toString());
+    return ToV8InspectorStringBuffer(trusted_script->toString());
   } else if (V8TrustedScriptURL::HasInstance(value, isolate_)) {
-    TrustedScriptURL* trustedScriptURL =
+    TrustedScriptURL* trusted_script_url =
         V8TrustedScriptURL::ToImplWithTypeCheck(isolate_, value);
-    return ToV8InspectorStringBuffer(trustedScriptURL->toString());
+    return ToV8InspectorStringBuffer(trusted_script_url->toString());
   }
   return nullptr;
 }
