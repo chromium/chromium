@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.payments;
 
-import android.os.Handler;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -73,7 +72,6 @@ import org.chromium.url.Origin;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -105,14 +103,12 @@ public class ChromePaymentRequestService
     @Nullable
     private PaymentRequestService mPaymentRequestService;
 
-    private final Handler mHandler = new Handler();
     private final RenderFrameHost mRenderFrameHost;
     private final Delegate mDelegate;
     private final WebContents mWebContents;
     private final String mTopLevelOrigin;
     private final String mPaymentRequestOrigin;
     private final Origin mPaymentRequestSecurityOrigin;
-    private final String mMerchantName;
     @Nullable
     private final byte[][] mCertificateChain;
     private final JourneyLogger mJourneyLogger;
@@ -123,12 +119,6 @@ public class ChromePaymentRequestService
     @Nullable
     private final PaymentOptions mPaymentOptions;
     private final boolean mRequestShipping;
-    private final boolean mRequestPayerName;
-    private final boolean mRequestPayerPhone;
-    private final boolean mRequestPayerEmail;
-    private final int mShippingType;
-
-    private boolean mIsHasEnrolledInstrumentResponsePending;
     private boolean mWasRetryCalled;
 
     private boolean mHasClosed;
@@ -143,17 +133,6 @@ public class ChromePaymentRequestService
      * True when at least one url payment method identifier is specified in payment request.
      */
     private boolean mURLPaymentMethodIdentifiersSupported;
-
-    /**
-     * A mapping of the payment method names to the corresponding payment method specific data. If
-     * STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT is enabled, then the key "basic-card-payment-options"
-     * also maps to the following payment options:
-     *  - requestPayerEmail
-     *  - requestPayerName
-     *  - requestPayerPhone
-     *  - requestShipping
-     */
-    private Map<String, PaymentMethodData> mQueryForQuota = new HashMap<>();
 
     /**
      * There are a few situations were the Payment Request can appear, from a code perspective, to
@@ -204,16 +183,11 @@ public class ChromePaymentRequestService
         mIsOffTheRecord = paymentRequestService.isOffTheRecord();
         mDelegate = delegate;
         mWebContents = paymentRequestService.getWebContents();
-        mMerchantName = mWebContents.getTitle();
         mJourneyLogger = paymentRequestService.getJourneyLogger();
 
         mPaymentOptions = paymentRequestService.getPaymentOptions();
         assert mPaymentOptions != null;
         mRequestShipping = mPaymentOptions.requestShipping;
-        mRequestPayerName = mPaymentOptions.requestPayerName;
-        mRequestPayerPhone = mPaymentOptions.requestPayerPhone;
-        mRequestPayerEmail = mPaymentOptions.requestPayerEmail;
-        mShippingType = mPaymentOptions.shippingType;
 
         mPaymentRequestService = paymentRequestService;
         mPaymentUiService = new PaymentUiService(/*delegate=*/this,
@@ -302,7 +276,6 @@ public class ChromePaymentRequestService
                     PaymentOptionsUtils.stringifyRequestedInformation(mPaymentOptions);
             queryForQuota.put("basic-card-payment-options", paymentMethodData);
         }
-        mQueryForQuota = queryForQuota;
     }
 
     // Implements BrowserPaymentRequest:
@@ -1099,40 +1072,6 @@ public class ChromePaymentRequestService
         mPaymentUiService.onRetry(errors);
     }
 
-    // Implement BrowserPaymentRequest:
-    /** Called by the merchant website to check if the user has complete payment apps. */
-    @Override
-    public void canMakePayment() {
-        if (mPaymentRequestService == null) return;
-
-        if (PaymentRequestService.getNativeObserverForTest() != null) {
-            PaymentRequestService.getNativeObserverForTest().onCanMakePaymentCalled();
-        }
-
-        if (mPaymentRequestService.isFinishedQueryingPaymentApps()) {
-            mPaymentRequestService.respondCanMakePaymentQuery();
-        } else {
-            mPaymentRequestService.setCanMakePaymentResponsePending(true);
-        }
-    }
-
-    // Implement BrowserPaymentRequest:
-    /** Called by the merchant website to check if the user has complete payment instruments. */
-    @Override
-    public void hasEnrolledInstrument() {
-        if (mPaymentRequestService == null) return;
-
-        if (PaymentRequestService.getNativeObserverForTest() != null) {
-            PaymentRequestService.getNativeObserverForTest().onHasEnrolledInstrumentCalled();
-        }
-
-        if (mPaymentRequestService.isFinishedQueryingPaymentApps()) {
-            mPaymentRequestService.respondHasEnrolledInstrumentQuery();
-        } else {
-            mPaymentRequestService.setIsHasEnrolledInstrumentResponsePending(true);
-        }
-    }
-
     /**
      * @return Whether canMakePayment() query quota should be enforced. By default, the quota is
      * enforced only on https:// scheme origins. However, the tests also enable the quota on
@@ -1279,14 +1218,7 @@ public class ChromePaymentRequestService
     @Override
     public void onCanMakePaymentCalculated(boolean canMakePayment) {
         if (mPaymentRequestService == null) return;
-
-        mPaymentRequestService.setCanMakePayment(canMakePayment);
-
-        if (!mPaymentRequestService.isCanMakePaymentResponsePending()) return;
-
-        // canMakePayment doesn't need to wait for all apps to be queried because it only needs to
-        // test the existence of a payment handler.
-        mPaymentRequestService.respondCanMakePaymentQuery();
+        mPaymentRequestService.onCanMakePaymentCalculated(canMakePayment);
     }
 
     // PaymentAppFactoryDelegate implementation.

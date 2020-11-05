@@ -247,10 +247,9 @@ public class PaymentRequestService {
             BrowserPaymentRequest.Factory browserPaymentRequestFactory) {
         return new MojoPaymentRequestGateKeeper(
                 (client, methodData, details, options, googlePayBridgeEligible, onClosedListener)
-                        -> PaymentRequestService.createIfParamsValid(renderFrameHost,
-                                isOffTheRecord, browserPaymentRequestFactory, client, methodData,
-                                details, options, googlePayBridgeEligible, onClosedListener,
-                                delegate));
+                        -> createIfParamsValid(renderFrameHost, isOffTheRecord,
+                                browserPaymentRequestFactory, client, methodData, details, options,
+                                googlePayBridgeEligible, onClosedListener, delegate));
     }
 
     /**
@@ -660,26 +659,6 @@ public class PaymentRequestService {
         mPendingApps.add(paymentApp);
     }
 
-    /** @return Whether the response of CanMakePayment is pending. */
-    public boolean isCanMakePaymentResponsePending() {
-        return mIsCanMakePaymentResponsePending;
-    }
-
-    /** Sets pending for the response of CanMakePayment. */
-    public void setCanMakePaymentResponsePending(boolean isPending) {
-        mIsCanMakePaymentResponsePending = isPending;
-    }
-
-    /** @return Whether the response of HasEnrolledInstrument is pending. */
-    public boolean isHasEnrolledInstrumentResponsePending() {
-        return mIsHasEnrolledInstrumentResponsePending;
-    }
-
-    /** Sets pending for HasEnrolledInstrument. */
-    public void setIsHasEnrolledInstrumentResponsePending(boolean isPending) {
-        mIsHasEnrolledInstrumentResponsePending = isPending;
-    }
-
     /** Responds to the CanMakePayment query from the merchant page. */
     public void respondCanMakePaymentQuery() {
         // Every caller should stop referencing this class once close() is called.
@@ -706,18 +685,18 @@ public class PaymentRequestService {
         boolean response = mHasEnrolledInstrument;
         mIsHasEnrolledInstrumentResponsePending = false;
 
+        int result;
         if (CanMakePaymentQuery.canQuery(
                     mWebContents, mTopLevelOrigin, mPaymentRequestOrigin, mQueryForQuota)) {
-            onHasEnrolledInstrument(response
-                            ? HasEnrolledInstrumentQueryResult.HAS_ENROLLED_INSTRUMENT
-                            : HasEnrolledInstrumentQueryResult.HAS_NO_ENROLLED_INSTRUMENT);
+            result = response ? HasEnrolledInstrumentQueryResult.HAS_ENROLLED_INSTRUMENT
+                              : HasEnrolledInstrumentQueryResult.HAS_NO_ENROLLED_INSTRUMENT;
         } else if (mBrowserPaymentRequest.shouldEnforceCanMakePaymentQueryQuota()) {
-            onHasEnrolledInstrument(HasEnrolledInstrumentQueryResult.QUERY_QUOTA_EXCEEDED);
+            result = HasEnrolledInstrumentQueryResult.QUERY_QUOTA_EXCEEDED;
         } else {
-            onHasEnrolledInstrument(response
-                            ? HasEnrolledInstrumentQueryResult.WARNING_HAS_ENROLLED_INSTRUMENT
-                            : HasEnrolledInstrumentQueryResult.WARNING_HAS_NO_ENROLLED_INSTRUMENT);
+            result = response ? HasEnrolledInstrumentQueryResult.WARNING_HAS_ENROLLED_INSTRUMENT
+                              : HasEnrolledInstrumentQueryResult.WARNING_HAS_NO_ENROLLED_INSTRUMENT;
         }
+        mClient.onHasEnrolledInstrument(result);
 
         mJourneyLogger.setHasEnrolledInstrumentValue(response || mIsOffTheRecord);
 
@@ -734,36 +713,21 @@ public class PaymentRequestService {
         return mHasEnrolledInstrument;
     }
 
-    /** Sets whether the instrument has been enrolled. */
-    public void setHasEnrolledInstrument(boolean hasEnrolledInstrument) {
-        mHasEnrolledInstrument = hasEnrolledInstrument;
-    }
-
     /**
-     * Sets the result of CanMakePayment request.
-     * @param canMakePayment Whether the user can make a payment with the merchant specified
-     *         request.
+     * Called when the response of the CanMakePayment query is calculated.
+     * @param canMakePayment Whether any payment app support the requested payment.
      */
-    public void setCanMakePayment(boolean canMakePayment) {
+    public void onCanMakePaymentCalculated(boolean canMakePayment) {
         mCanMakePayment = canMakePayment;
-    }
-
-    /** @return The result of the CanMakePayment request. */
-    public boolean getCanMakePayment() {
-        return mCanMakePayment;
+        if (!mIsCanMakePaymentResponsePending) return;
+        // canMakePayment doesn't need to wait for all apps to be queried because it only needs to
+        // test the existence of a payment handler.
+        respondCanMakePaymentQuery();
     }
 
     /** @return Whether the created payment apps includes any autofill payment app. */
     public boolean getHasNonAutofillApp() {
         return mHasNonAutofillApp;
-    }
-
-    /**
-     * @return The queryForQuota, a mapping of the payment method names to the corresponding payment
-     *         method specific data
-     */
-    public Map<String, PaymentMethodData> getQueryForQuota() {
-        return mQueryForQuota;
     }
 
     /**
@@ -846,20 +810,30 @@ public class PaymentRequestService {
 
     /** The component part of the {@link PaymentRequest#canMakePayment} implementation. */
     /* package */ void canMakePayment() {
-        // Every caller should stop referencing this class once close() is called.
-        assert mBrowserPaymentRequest != null;
+        if (sNativeObserverForTest != null) {
+            sNativeObserverForTest.onCanMakePaymentCalled();
+        }
 
-        mBrowserPaymentRequest.canMakePayment();
+        if (mIsFinishedQueryingPaymentApps) {
+            respondCanMakePaymentQuery();
+        } else {
+            mIsCanMakePaymentResponsePending = true;
+        }
     }
 
     /**
      * The component part of the {@link PaymentRequest#hasEnrolledInstrument} implementation.
      */
     /* package */ void hasEnrolledInstrument() {
-        // Every caller should stop referencing this class once close() is called.
-        assert mBrowserPaymentRequest != null;
+        if (sNativeObserverForTest != null) {
+            sNativeObserverForTest.onHasEnrolledInstrumentCalled();
+        }
 
-        mBrowserPaymentRequest.hasEnrolledInstrument();
+        if (mIsFinishedQueryingPaymentApps) {
+            respondHasEnrolledInstrumentQuery();
+        } else {
+            mIsHasEnrolledInstrumentResponsePending = true;
+        }
     }
 
     /**
@@ -1011,22 +985,6 @@ public class PaymentRequestService {
         mClient.onAbort(abortedSuccessfully);
     }
 
-    /** Invokes {@link PaymentRequestClient.onCanMakePayment}. */
-    public void onCanMakePayment(int result) {
-        // Every caller should stop referencing this class once close() is called.
-        assert mClient != null;
-
-        mClient.onCanMakePayment(result);
-    }
-
-    /** Invokes {@link PaymentRequestClient.onHasEnrolledInstrument}. */
-    public void onHasEnrolledInstrument(int result) {
-        // Every caller should stop referencing this class once close() is called.
-        assert mClient != null;
-
-        mClient.onHasEnrolledInstrument(result);
-    }
-
     /** Invokes {@link PaymentRequestClient.warnNoFavicon}. */
     public void warnNoFavicon() {
         // Every caller should stop referencing this class once close() is called.
@@ -1062,11 +1020,6 @@ public class PaymentRequestService {
     /** @return The origin of the page at which the PaymentRequest is created. */
     public String getPaymentRequestOrigin() {
         return mPaymentRequestOrigin;
-    }
-
-    /** @return The merchant page's title. */
-    public String getMerchantName() {
-        return mMerchantName;
     }
 
     /** @return The origin of the top level frame of the merchant page. */
