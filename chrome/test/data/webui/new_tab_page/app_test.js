@@ -486,6 +486,10 @@ suite('NewTabPageAppTest', () => {
             title: 'Bar Title',
           }
         ]);
+        $$(app, 'ntp-middle-slot-promo')
+            .dispatchEvent(new Event(
+                'ntp-middle-slot-promo-loaded',
+                {bubbles: true, composed: true}));
         testProxy.callbackRouterRemote.setModulesVisible(visible);
         await flushTasks();  // Wait for module descriptor resolution.
 

@@ -288,7 +288,7 @@
   <dom-if if="[[lazyRender_]]" on-dom-change="onLazyRendered_">
     <template>
       <ntp-middle-slot-promo
-          on-ntp-middle-slot-promo-loaded="onMiddleSlotPromoLoaded_" hidden>
+          on-ntp-middle-slot-promo-loaded="onMiddleSlotPromoLoaded_">
       </ntp-middle-slot-promo>
       <template is="dom-repeat" items="[[moduleDescriptors_]]" id="modules"
           on-dom-change="onModulesLoaded_">

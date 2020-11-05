@@ -61,7 +61,8 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
 
     const middleSlotPromo = document.createElement('ntp-middle-slot-promo');
     document.body.appendChild(middleSlotPromo);
-    await eventToPromise('ntp-middle-slot-promo-loaded', document.body);
+    const loaded =
+        eventToPromise('ntp-middle-slot-promo-loaded', document.body);
     await promoBrowserCommandTestProxy.handler.whenCalled(
         'canShowPromoWithCommand');
     assertEquals(
@@ -73,6 +74,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     } else {
       assertEquals(0, testProxy.handler.getCallCount('onPromoRendered'));
     }
+    await loaded;
     return middleSlotPromo;
   }
 
@@ -135,14 +137,17 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     }));
   });
 
-  test('sends loaded event if no promo', async () => {
+  test('promo remains hidden if there is no data', async () => {
+    const promoBrowserCommandTestProxy = PromoBrowserCommandProxy.getInstance();
     const testProxy = BrowserProxy.getInstance();
     testProxy.handler.setResultFor('getPromo', Promise.resolve({promo: null}));
-    const loaded =
-        eventToPromise('ntp-middle-slot-promo-loaded', document.body);
     const middleSlotPromo = document.createElement('ntp-middle-slot-promo');
     document.body.appendChild(middleSlotPromo);
-    await loaded;
+    assertEquals(
+        0,
+        promoBrowserCommandTestProxy.handler.getCallCount(
+            'canShowPromoWithCommand'));
+    assertEquals(0, testProxy.handler.getCallCount('onPromoRendered'));
     assertTrue(middleSlotPromo.hasAttribute('hidden'));
   });
 });
