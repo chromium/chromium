@@ -59,10 +59,7 @@ base::flat_set<ParsingResult> ParseDomainSpecificParamaters(
   const std::string* min_version = script_config.FindStringKey("min_version");
   base::Version version;
   if (!min_version) {
-    warnings.insert(ParsingResult::kInvalidJson);
-    // TODO(crbug.com/1132942): remove this when server side change is in place
-    // and return error.
-    version = base::Version("0");
+    return {ParsingResult::kInvalidJson};
   } else {
     version = base::Version(*min_version);
     if (!version.IsValid()) {

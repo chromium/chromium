@@ -180,7 +180,13 @@ TEST_F(PasswordScriptsFetcherImplTest, PrewarmCache) {
   EXPECT_EQ(1, GetNumberOfPendingRequests());
   // OriginWithScript2 (test.com) is not available anymore.
   SimulateResponseWithContent(
-      R"({"example.com": {"domains": ["https://example.com"]}})");
+      R"({
+        "example.com":
+          {
+            "domains": ["https://example.com"],
+            "min_version": "86"
+          }
+        })");
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(recorded_responses(),
