@@ -10,4 +10,4 @@
     android:gravity="center"
     android:minHeight="44dp"
     android:singleLine="true"
-    android:textAppearance="@style/TextAppearance.TextSmall.Primary.Light"/>
+    android:textAppearance="@style/TextAppearance.TextSmall.Primary.Dark"/>
