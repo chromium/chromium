@@ -21,6 +21,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -35,6 +36,7 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private CallbackHelper mDismissCallback;
+    private Callback<PropertyModel> mEmptyDismissCallback = (model) -> {};
 
     @Override
     public void setUpTest() throws Exception {
@@ -47,9 +49,11 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
     public void testAddAndRemoveSingleActionMessage() throws Exception {
         MessageContainer container = new MessageContainer(getActivity(), null);
         PropertyModel model = createBasicSingleActionMessageModel();
-        SingleActionMessage message = new SingleActionMessage(container, model);
+        SingleActionMessage message =
+                new SingleActionMessage(container, model, mEmptyDismissCallback);
         final MessageBannerCoordinator messageBanner = Mockito.mock(MessageBannerCoordinator.class);
         doNothing().when(messageBanner).show(any(Runnable.class));
+        doNothing().when(messageBanner).setOnTouchRunnable(any(Runnable.class));
         final MessageBannerView view = Mockito.mock(MessageBannerView.class);
         message.setMessageBannerForTesting(messageBanner);
         message.setViewForTesting(view);
@@ -76,14 +80,16 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
         MessageContainer container = new MessageContainer(getActivity(), null);
         PropertyModel m1 = createBasicSingleActionMessageModel();
         PropertyModel m2 = createBasicSingleActionMessageModel();
-        SingleActionMessage message1 = new SingleActionMessage(container, m1);
+        SingleActionMessage message1 =
+                new SingleActionMessage(container, m1, mEmptyDismissCallback);
         final MessageBannerCoordinator messageBanner1 =
                 Mockito.mock(MessageBannerCoordinator.class);
         doNothing().when(messageBanner1).show(any(Runnable.class));
         final MessageBannerView view1 = Mockito.mock(MessageBannerView.class);
         message1.setMessageBannerForTesting(messageBanner1);
         message1.setViewForTesting(view1);
-        SingleActionMessage message2 = new SingleActionMessage(container, m2);
+        SingleActionMessage message2 =
+                new SingleActionMessage(container, m2, mEmptyDismissCallback);
         final MessageBannerCoordinator messageBanner2 =
                 Mockito.mock(MessageBannerCoordinator.class);
         doNothing().when(messageBanner2).show(any(Runnable.class));
@@ -103,6 +109,7 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
                         ApiCompatibilityUtils.getDrawable(
                                 activity.getResources(), android.R.drawable.ic_menu_add))
                 .with(MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER, (v) -> {})
+                .with(MessageBannerProperties.ON_TOUCH_RUNNABLE, () -> {})
                 .with(MessageBannerProperties.ON_DISMISSED,
                         () -> { mDismissCallback.notifyCalled(); })
                 .build();

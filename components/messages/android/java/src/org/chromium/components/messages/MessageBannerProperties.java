@@ -36,12 +36,14 @@ public class MessageBannerProperties {
     // TRANSLATION_Y and ALPHA should only be accessed by the message banner component.
     static final WritableFloatPropertyKey TRANSLATION_Y = new WritableFloatPropertyKey();
     static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
+    static final WritableObjectPropertyKey<Runnable> ON_TOUCH_RUNNABLE =
+            new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {PRIMARY_BUTTON_TEXT,
             PRIMARY_BUTTON_CLICK_LISTENER, TITLE, DESCRIPTION, ICON, SECONDARY_ICON,
-            SECONDARY_ICON_CONTENT_DESCRIPTION, TRANSLATION_Y, ALPHA};
+            SECONDARY_ICON_CONTENT_DESCRIPTION, TRANSLATION_Y, ALPHA, ON_TOUCH_RUNNABLE};
 
     public static final PropertyKey[] SINGLE_ACTION_MESSAGE_KEYS =
             new PropertyKey[] {PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_CLICK_LISTENER, TITLE,
-                    DESCRIPTION, ICON, ON_DISMISSED, TRANSLATION_Y, ALPHA};
+                    DESCRIPTION, ICON, ON_DISMISSED, TRANSLATION_Y, ALPHA, ON_TOUCH_RUNNABLE};
 }

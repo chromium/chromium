@@ -13,13 +13,14 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * Coordinator responsible for creating a message banner.
  */
 class MessageBannerCoordinator {
-    private MessageBannerMediator mMediator;
+    private final MessageBannerMediator mMediator;
 
     /**
      * Constructs the message banner.
      *
      * @param view The inflated {@link MessageBannerView}.
      * @param model The model for the message banner.
+     * @param context The context used to get dimen resources.
      */
     MessageBannerCoordinator(MessageBannerView view, PropertyModel model, Context context) {
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
@@ -40,5 +41,9 @@ class MessageBannerCoordinator {
      */
     void hide(Runnable messageHidden) {
         mMediator.hide(messageHidden);
+    }
+
+    void setOnTouchRunnable(Runnable runnable) {
+        mMediator.setOnTouchRunnable(runnable);
     }
 }

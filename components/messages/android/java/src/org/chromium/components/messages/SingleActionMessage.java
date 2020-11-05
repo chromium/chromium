@@ -4,10 +4,13 @@
 
 package org.chromium.components.messages;
 
+import android.annotation.SuppressLint;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -18,20 +21,28 @@ public class SingleActionMessage implements MessageStateHandler {
     private MessageBannerView mView;
     private final MessageContainer mContainer;
     private final PropertyModel mModel;
+    private final Callback<PropertyModel> mDismissHandler;
+    private MessageAutoDismissTimer mAutoDismissTimer;
 
     /**
      * @param container The container holding messages.
      * @param model The PropertyModel with {@link
      *         MessageBannerProperties#SINGLE_ACTION_MESSAGE_KEYS}.
+     * @param dismissHandler The {@link Callback<PropertyModel>} able to dismiss a message by given
+     *         property model.
      */
-    public SingleActionMessage(MessageContainer container, PropertyModel model) {
+    public SingleActionMessage(MessageContainer container, PropertyModel model,
+            Callback<PropertyModel> dismissHandler) {
         mModel = model;
         mContainer = container;
+        mDismissHandler = dismissHandler;
+        mAutoDismissTimer = new MessageAutoDismissTimer(10 * DateUtils.SECOND_IN_MILLIS);
     }
 
     /**
      * Show a message view on the given {@link MessageContainer}.
      */
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void show() {
         if (mMessageBanner == null) {
@@ -40,7 +51,10 @@ public class SingleActionMessage implements MessageStateHandler {
             mMessageBanner = new MessageBannerCoordinator(mView, mModel, mContainer.getContext());
         }
         mContainer.addMessage(mView);
-        mMessageBanner.show(() -> {});
+        mMessageBanner.show(() -> {
+            mMessageBanner.setOnTouchRunnable(mAutoDismissTimer::resetTimer);
+            mAutoDismissTimer.startTimer(() -> { mDismissHandler.onResult(mModel); });
+        });
     }
 
     /**
@@ -48,6 +62,8 @@ public class SingleActionMessage implements MessageStateHandler {
      */
     @Override
     public void hide() {
+        mAutoDismissTimer.cancelTimer();
+        mMessageBanner.setOnTouchRunnable(null);
         mMessageBanner.hide(() -> mContainer.removeMessage(mView));
     }
 
@@ -56,6 +72,7 @@ public class SingleActionMessage implements MessageStateHandler {
      */
     @Override
     public void dismiss() {
+        mAutoDismissTimer.cancelTimer();
         Runnable onDismissed = mModel.get(MessageBannerProperties.ON_DISMISSED);
         if (onDismissed != null) onDismissed.run();
     }

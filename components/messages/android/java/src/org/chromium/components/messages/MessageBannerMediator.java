@@ -74,6 +74,10 @@ class MessageBannerMediator {
         mAnimatorSet.start();
     }
 
+    void setOnTouchRunnable(Runnable runnable) {
+        mModel.set(MessageBannerProperties.ON_TOUCH_RUNNABLE, runnable);
+    }
+
     private AnimatorSet createAnimatorSet(boolean isShow) {
         final float alphaTo = isShow ? 1.f : 0.f;
         final Animator alphaAnimation =

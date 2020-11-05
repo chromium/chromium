@@ -25,7 +25,7 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
     @Override
     public void enqueueMessage(PropertyModel messageProperties) {
         MessageStateHandler messageStateHandler =
-                new SingleActionMessage(mMessageContainer, messageProperties);
+                new SingleActionMessage(mMessageContainer, messageProperties, this::dismissMessage);
         mMessageQueueManager.enqueueMessage(messageStateHandler, messageProperties);
     }
 

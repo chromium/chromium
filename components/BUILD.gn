@@ -794,6 +794,7 @@ if (is_android) {
       "//components/embedder_support/android:components_embedder_support_junit_tests",
       "//components/gcm_driver/android:components_gcm_driver_junit_tests",
       "//components/media_router/browser/android:junit",
+      "//components/messages/android:junit",
       "//components/messages/android/internal:junit",
       "//components/permissions/android:components_permissions_junit_tests",
       "//components/policy/android:components_policy_junit_tests",
