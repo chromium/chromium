@@ -39,8 +39,8 @@ class MojoDemuxerStreamImpl : public mojom::DemuxerStream {
 
   // Sets an error handler that will be called if a connection error occurs on
   // the bound message pipe.
-  void set_disconnect_handler(const base::Closure& error_handler) {
-    receiver_.set_disconnect_handler(error_handler);
+  void set_disconnect_handler(base::OnceClosure error_handler) {
+    receiver_.set_disconnect_handler(std::move(error_handler));
   }
 
  private:

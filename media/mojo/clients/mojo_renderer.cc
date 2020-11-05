@@ -86,8 +86,8 @@ void MojoRenderer::InitializeRendererFromStreams(
     // Using base::Unretained(this) is safe because |this| owns |mojo_stream|,
     // and the error handler can't be invoked once |mojo_stream| is destroyed.
     mojo_stream->set_disconnect_handler(
-        base::Bind(&MojoRenderer::OnDemuxerStreamConnectionError,
-                   base::Unretained(this), mojo_stream.get()));
+        base::BindOnce(&MojoRenderer::OnDemuxerStreamConnectionError,
+                       base::Unretained(this), mojo_stream.get()));
 
     streams_.push_back(std::move(mojo_stream));
     stream_proxies.push_back(std::move(stream_proxy));

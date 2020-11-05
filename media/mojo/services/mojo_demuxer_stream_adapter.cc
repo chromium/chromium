@@ -19,9 +19,9 @@ namespace media {
 
 MojoDemuxerStreamAdapter::MojoDemuxerStreamAdapter(
     mojo::PendingRemote<mojom::DemuxerStream> demuxer_stream,
-    const base::Closure& stream_ready_cb)
+    base::OnceClosure stream_ready_cb)
     : demuxer_stream_(std::move(demuxer_stream)),
-      stream_ready_cb_(stream_ready_cb),
+      stream_ready_cb_(std::move(stream_ready_cb)),
       type_(UNKNOWN) {
   DVLOG(1) << __func__;
   demuxer_stream_->Initialize(base::BindOnce(
@@ -81,7 +81,7 @@ void MojoDemuxerStreamAdapter::OnStreamReady(
 
   UpdateConfig(std::move(audio_config), std::move(video_config));
 
-  stream_ready_cb_.Run();
+  std::move(stream_ready_cb_).Run();
 }
 
 void MojoDemuxerStreamAdapter::OnBufferReady(

@@ -108,7 +108,7 @@ void InterfaceFactoryImpl::CreateDefaultRenderer(
 
   // base::Unretained() is safe because the callback will be fired by
   // |mojo_renderer_service|, which is owned by |renderer_receivers_|.
-  mojo_renderer_service_ptr->set_bad_message_cb(base::Bind(
+  mojo_renderer_service_ptr->set_bad_message_cb(base::BindRepeating(
       base::IgnoreResult(&mojo::UniqueReceiverSet<mojom::Renderer>::Remove),
       base::Unretained(&renderer_receivers_), receiver_id));
 #endif  // BUILDFLAG(ENABLE_MOJO_RENDERER)

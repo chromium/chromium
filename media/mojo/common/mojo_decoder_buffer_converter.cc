@@ -66,11 +66,11 @@ MojoDecoderBufferReader::MojoDecoderBufferReader(
       bytes_read_(0) {
   DVLOG(1) << __func__;
 
-  MojoResult result =
-      pipe_watcher_.Watch(consumer_handle_.get(), MOJO_HANDLE_SIGNAL_READABLE,
-                          MOJO_WATCH_CONDITION_SATISFIED,
-                          base::Bind(&MojoDecoderBufferReader::OnPipeReadable,
-                                     base::Unretained(this)));
+  MojoResult result = pipe_watcher_.Watch(
+      consumer_handle_.get(), MOJO_HANDLE_SIGNAL_READABLE,
+      MOJO_WATCH_CONDITION_SATISFIED,
+      base::BindRepeating(&MojoDecoderBufferReader::OnPipeReadable,
+                          base::Unretained(this)));
   if (result != MOJO_RESULT_OK) {
     DVLOG(1) << __func__
              << ": Failed to start watching the pipe. result=" << result;

@@ -147,8 +147,8 @@ TEST_F(MojoDecryptorTest, Reset_DuringDecryptAndDecode_Audio) {
 
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(100));
   mojo_decryptor_->DecryptAndDecodeAudio(
-      std::move(buffer),
-      base::Bind(&MojoDecryptorTest::AudioDecoded, base::Unretained(this)));
+      std::move(buffer), base::BindRepeating(&MojoDecryptorTest::AudioDecoded,
+                                             base::Unretained(this)));
   mojo_decryptor_->ResetDecoder(Decryptor::kAudio);
   base::RunLoop().RunUntilIdle();
 }
@@ -170,8 +170,8 @@ TEST_F(MojoDecryptorTest, Reset_DuringDecryptAndDecode_Audio_ChunkedWrite) {
 
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(100));
   mojo_decryptor_->DecryptAndDecodeAudio(
-      std::move(buffer),
-      base::Bind(&MojoDecryptorTest::AudioDecoded, base::Unretained(this)));
+      std::move(buffer), base::BindRepeating(&MojoDecryptorTest::AudioDecoded,
+                                             base::Unretained(this)));
   mojo_decryptor_->ResetDecoder(Decryptor::kAudio);
   base::RunLoop().RunUntilIdle();
 }
@@ -194,8 +194,8 @@ TEST_F(MojoDecryptorTest, Reset_DuringDecryptAndDecode_Video) {
 
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(100));
   mojo_decryptor_->DecryptAndDecodeVideo(
-      std::move(buffer),
-      base::Bind(&MojoDecryptorTest::VideoDecoded, base::Unretained(this)));
+      std::move(buffer), base::BindRepeating(&MojoDecryptorTest::VideoDecoded,
+                                             base::Unretained(this)));
   mojo_decryptor_->ResetDecoder(Decryptor::kVideo);
   base::RunLoop().RunUntilIdle();
 }
@@ -219,8 +219,8 @@ TEST_F(MojoDecryptorTest, Reset_DuringDecryptAndDecode_Video_ChunkedWrite) {
 
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(100));
   mojo_decryptor_->DecryptAndDecodeVideo(
-      std::move(buffer),
-      base::Bind(&MojoDecryptorTest::VideoDecoded, base::Unretained(this)));
+      std::move(buffer), base::BindRepeating(&MojoDecryptorTest::VideoDecoded,
+                                             base::Unretained(this)));
   mojo_decryptor_->ResetDecoder(Decryptor::kVideo);
   base::RunLoop().RunUntilIdle();
 }
@@ -258,11 +258,11 @@ TEST_F(MojoDecryptorTest, Reset_DuringDecryptAndDecode_AudioAndVideo) {
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(100));
 
   mojo_decryptor_->DecryptAndDecodeAudio(
-      buffer,
-      base::Bind(&MojoDecryptorTest::AudioDecoded, base::Unretained(this)));
+      buffer, base::BindRepeating(&MojoDecryptorTest::AudioDecoded,
+                                  base::Unretained(this)));
   mojo_decryptor_->DecryptAndDecodeVideo(
-      std::move(buffer),
-      base::Bind(&MojoDecryptorTest::VideoDecoded, base::Unretained(this)));
+      std::move(buffer), base::BindRepeating(&MojoDecryptorTest::VideoDecoded,
+                                             base::Unretained(this)));
   mojo_decryptor_->ResetDecoder(Decryptor::kAudio);
   mojo_decryptor_->ResetDecoder(Decryptor::kVideo);
   base::RunLoop().RunUntilIdle();
@@ -283,8 +283,8 @@ TEST_F(MojoDecryptorTest, VideoDecodeFreesBuffer) {
 
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(100));
   mojo_decryptor_->DecryptAndDecodeVideo(
-      std::move(buffer),
-      base::Bind(&MojoDecryptorTest::VideoDecoded, base::Unretained(this)));
+      std::move(buffer), base::BindRepeating(&MojoDecryptorTest::VideoDecoded,
+                                             base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -303,8 +303,8 @@ TEST_F(MojoDecryptorTest, VideoDecodeFreesMultipleBuffers) {
   for (int i = 0; i < TIMES; ++i) {
     scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(100));
     mojo_decryptor_->DecryptAndDecodeVideo(
-        std::move(buffer),
-        base::Bind(&MojoDecryptorTest::VideoDecoded, base::Unretained(this)));
+        std::move(buffer), base::BindRepeating(&MojoDecryptorTest::VideoDecoded,
+                                               base::Unretained(this)));
   }
   base::RunLoop().RunUntilIdle();
 }
@@ -327,8 +327,8 @@ TEST_F(MojoDecryptorTest, VideoDecodeHoldThenFreeBuffers) {
   for (int i = 0; i < 2; ++i) {
     scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(100));
     mojo_decryptor_->DecryptAndDecodeVideo(
-        std::move(buffer),
-        base::Bind(&MojoDecryptorTest::VideoDecoded, base::Unretained(this)));
+        std::move(buffer), base::BindRepeating(&MojoDecryptorTest::VideoDecoded,
+                                               base::Unretained(this)));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -354,8 +354,8 @@ TEST_F(MojoDecryptorTest, EOSBuffer) {
 
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(100));
   mojo_decryptor_->DecryptAndDecodeVideo(
-      std::move(buffer),
-      base::Bind(&MojoDecryptorTest::VideoDecoded, base::Unretained(this)));
+      std::move(buffer), base::BindRepeating(&MojoDecryptorTest::VideoDecoded,
+                                             base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -376,8 +376,8 @@ TEST_F(MojoDecryptorTest, DestroyService) {
 
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(100));
   mojo_decryptor_->DecryptAndDecodeVideo(
-      std::move(buffer),
-      base::Bind(&MojoDecryptorTest::VideoDecoded, base::Unretained(this)));
+      std::move(buffer), base::BindRepeating(&MojoDecryptorTest::VideoDecoded,
+                                             base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 }
 

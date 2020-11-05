@@ -45,7 +45,7 @@ mojo::SelfOwnedReceiverRef<mojom::Renderer> MojoRendererService::Create(
                                                    std::move(receiver));
 
   service->set_bad_message_cb(
-      base::Bind(&CloseReceiverOnBadMessage, self_owned_receiver));
+      base::BindRepeating(&CloseReceiverOnBadMessage, self_owned_receiver));
 
   return self_owned_receiver;
 }

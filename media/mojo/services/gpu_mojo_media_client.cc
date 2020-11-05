@@ -245,7 +245,7 @@ std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(
   switch (implementation) {
     case VideoDecoderImplementation::kDefault: {
 #if defined(OS_ANDROID)
-      auto get_stub_cb = base::Bind(
+      auto get_stub_cb = base::BindRepeating(
           &GetCommandBufferStub, gpu_task_runner_, media_gpu_channel_manager_,
           command_buffer_id->channel_token, command_buffer_id->route_id);
       std::unique_ptr<SharedImageVideoProvider> image_provider;

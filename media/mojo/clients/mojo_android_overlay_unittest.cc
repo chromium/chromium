@@ -81,12 +81,12 @@ class MojoAndroidOverlayTest : public ::testing::Test {
   void SetUp() override {
     // Set up default config.
     config_.rect = gfx::Rect(100, 200, 300, 400);
-    config_.ready_cb = base::Bind(&MockClientCallbacks::OnReady,
-                                  base::Unretained(&callbacks_));
-    config_.failed_cb = base::Bind(&MockClientCallbacks::OnFailed,
-                                   base::Unretained(&callbacks_));
-    config_.power_cb = base::Bind(&MockClientCallbacks::OnPowerEfficient,
-                                  base::Unretained(&callbacks_));
+    config_.ready_cb = base::BindOnce(&MockClientCallbacks::OnReady,
+                                      base::Unretained(&callbacks_));
+    config_.failed_cb = base::BindOnce(&MockClientCallbacks::OnFailed,
+                                       base::Unretained(&callbacks_));
+    config_.power_cb = base::BindRepeating(
+        &MockClientCallbacks::OnPowerEfficient, base::Unretained(&callbacks_));
 
     // Make sure that we have an implementation of GpuSurfaceLookup.
     gpu::GpuSurfaceTracker::Get();
