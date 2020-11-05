@@ -710,9 +710,12 @@ void ProfileMenuViewBase::SetSyncInfo(const SyncInfo& sync_info,
   label->SetMultiLine(true);
   label->SetHandlesTooltips(false);
 
-  // Required for accessibility tools to read the description together with the
-  // button text.
+  // Set sync info description as the name of the parent container, so
+  // accessibility tools can read it together with the button text. The role
+  // change is required by Windows ATs.
   sync_info_container_->GetViewAccessibility().OverrideName(description);
+  sync_info_container_->GetViewAccessibility().OverrideRole(
+      ax::mojom::Role::kGroup);
 
   // Add the prominent button at the bottom.
   auto* button =
@@ -818,9 +821,12 @@ void ProfileMenuViewBase::AddSelectableProfile(
         std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kVertical));
     // Give the container an accessible name so accessibility tools can provide
-    // context for the buttons inside it.
+    // context for the buttons inside it. The role change is required by Windows
+    // ATs.
     selectable_profiles_container_->GetViewAccessibility().OverrideName(
         profile_mgmt_heading_);
+    selectable_profiles_container_->GetViewAccessibility().OverrideRole(
+        ax::mojom::Role::kGroup);
   }
 
   DCHECK(!image_model.IsEmpty());
