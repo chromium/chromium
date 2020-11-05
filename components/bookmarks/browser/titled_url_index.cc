@@ -72,12 +72,19 @@ void TitledUrlIndex::Remove(const TitledUrlNode* node) {
 std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
     const base::string16& input_query,
     size_t max_count,
-    query_parser::MatchingAlgorithm matching_algorithm) {
+    query_parser::MatchingAlgorithm matching_algorithm,
+    bool match_ancestor_titles) {
   const base::string16 query = Normalize(input_query);
   std::vector<base::string16> terms = ExtractQueryWords(query);
 
+  // When |match_ancestor_titles| is true, |matches| shouldn't exclude nodes
+  // that don't match every query term, as the query terms may match in the
+  // ancestors. |MatchTitledUrlNodeWithQuery()| below will filter out nodes that
+  // neither match nor ancestor-match every query term.
   TitledUrlNodeSet matches =
-      RetrieveNodesMatchingAllTerms(terms, matching_algorithm);
+      match_ancestor_titles
+          ? RetrieveNodesMatchingAnyTerms(terms, matching_algorithm)
+          : RetrieveNodesMatchingAllTerms(terms, matching_algorithm);
   if (matches.empty())
     return {};
 
@@ -99,8 +106,8 @@ std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
   std::vector<TitledUrlMatch> results;
   for (TitledUrlNodes::const_iterator i = sorted_nodes.begin();
        i != sorted_nodes.end() && results.size() < max_count; ++i) {
-    base::Optional<TitledUrlMatch> match =
-        MatchTitledUrlNodeWithQuery(*i, &parser, query_nodes);
+    base::Optional<TitledUrlMatch> match = MatchTitledUrlNodeWithQuery(
+        *i, &parser, query_nodes, match_ancestor_titles);
     if (match)
       results.push_back(match.value());
   }
@@ -108,7 +115,7 @@ std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
 }
 
 void TitledUrlIndex::SortMatches(const TitledUrlNodeSet& matches,
-                                TitledUrlNodes* sorted_nodes) const {
+                                 TitledUrlNodes* sorted_nodes) const {
   if (sorter_) {
     sorter_->SortMatches(matches, sorted_nodes);
   } else {
@@ -119,7 +126,8 @@ void TitledUrlIndex::SortMatches(const TitledUrlNodeSet& matches,
 base::Optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
     const TitledUrlNode* node,
     query_parser::QueryParser* parser,
-    const query_parser::QueryNodeVector& query_nodes) {
+    const query_parser::QueryNodeVector& query_nodes,
+    bool match_ancestor_titles) {
   if (!node) {
     return base::nullopt;
   }
@@ -128,7 +136,7 @@ base::Optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
   // of QueryParser may filter it out.  For example, the query
   // ["thi"] will match the title [Thinking], but since
   // ["thi"] is quoted we don't want to do a prefix match.
-  query_parser::QueryWordVector title_words, url_words;
+  query_parser::QueryWordVector title_words, url_words, ancestor_words;
   const base::string16 lower_title =
       base::i18n::ToLower(Normalize(node->GetTitledUrlNodeTitle()));
   parser->ExtractQueryWords(lower_title, &title_words);
@@ -136,16 +144,30 @@ base::Optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
   parser->ExtractQueryWords(
       CleanUpUrlForMatching(node->GetTitledUrlNodeUrl(), &adjustments),
       &url_words);
+  if (match_ancestor_titles) {
+    for (auto ancestor : node->GetTitledUrlNodeAncestorTitles()) {
+      parser->ExtractQueryWords(
+          base::i18n::ToLower(Normalize(base::string16(ancestor))),
+          &ancestor_words);
+    }
+  }
+
   query_parser::Snippet::MatchPositions title_matches, url_matches;
+  bool query_has_ancestor_matches = false;
   for (const auto& node : query_nodes) {
     const bool has_title_matches =
         node->HasMatchIn(title_words, &title_matches);
     const bool has_url_matches = node->HasMatchIn(url_words, &url_matches);
-    if (!has_title_matches && !has_url_matches)
+    const bool has_ancestor_matches =
+        match_ancestor_titles && node->HasMatchIn(ancestor_words);
+    query_has_ancestor_matches =
+        query_has_ancestor_matches || has_ancestor_matches;
+    if (!has_title_matches && !has_url_matches && !has_ancestor_matches)
       return base::nullopt;
     query_parser::QueryParser::SortAndCoalesceMatchPositions(&title_matches);
     query_parser::QueryParser::SortAndCoalesceMatchPositions(&url_matches);
   }
+
   TitledUrlMatch match;
   if (lower_title.length() == node->GetTitledUrlNodeTitle().length()) {
     // Only use title matches if the lowercase string is the same length
@@ -162,6 +184,7 @@ base::Optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
   url_matches =
       TitledUrlMatch::ReplaceOffsetsInMatchPositions(url_matches, offsets);
   match.url_match_positions.swap(url_matches);
+  match.has_ancestor_match = query_has_ancestor_matches;
   match.node = node;
   return match;
 }
@@ -184,7 +207,25 @@ TitledUrlIndex::TitledUrlNodeSet TitledUrlIndex::RetrieveNodesMatchingAllTerms(
   return matches;
 }
 
-TitledUrlIndex::TitledUrlNodeSet TitledUrlIndex::RetrieveNodesMatchingTerm(
+TitledUrlIndex::TitledUrlNodeSet TitledUrlIndex::RetrieveNodesMatchingAnyTerms(
+    const std::vector<base::string16>& terms,
+    query_parser::MatchingAlgorithm matching_algorithm) const {
+  if (terms.empty())
+    return {};
+
+  TitledUrlNodes matches =
+      RetrieveNodesMatchingTerm(terms[0], matching_algorithm);
+  for (size_t i = 1; i < terms.size(); ++i) {
+    TitledUrlNodes term_matches =
+        RetrieveNodesMatchingTerm(terms[i], matching_algorithm);
+    std::copy(term_matches.begin(), term_matches.end(),
+              std::back_inserter(matches));
+  }
+
+  return TitledUrlNodeSet(matches);
+}
+
+TitledUrlIndex::TitledUrlNodes TitledUrlIndex::RetrieveNodesMatchingTerm(
     const base::string16& term,
     query_parser::MatchingAlgorithm matching_algorithm) const {
   Index::const_iterator i = index_.lower_bound(term);
@@ -196,7 +237,7 @@ TitledUrlIndex::TitledUrlNodeSet TitledUrlIndex::RetrieveNodesMatchingTerm(
     // Term is too short for prefix match, compare using exact match.
     if (i->first != term)
       return {};  // No title/URL pairs with this term.
-    return i->second;
+    return TitledUrlNodes(i->second.begin(), i->second.end());
   }
 
   // Loop through index adding all entries that start with term to

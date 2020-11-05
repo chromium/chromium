@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/browser/titled_url_node.h"
@@ -44,6 +45,10 @@ class MockTitledUrlNode : public bookmarks::TitledUrlNode {
     return title_;
   }
   const GURL& GetTitledUrlNodeUrl() const override { return url_; }
+  std::vector<base::StringPiece16> GetTitledUrlNodeAncestorTitles()
+      const override {
+    return {};
+  }
 
  private:
   base::string16 title_;

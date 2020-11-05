@@ -9,6 +9,7 @@
 
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
@@ -116,6 +117,14 @@ const base::string16& BookmarkNode::GetTitledUrlNodeTitle() const {
 
 const GURL& BookmarkNode::GetTitledUrlNodeUrl() const {
   return url_;
+}
+
+std::vector<base::StringPiece16> BookmarkNode::GetTitledUrlNodeAncestorTitles()
+    const {
+  std::vector<base::StringPiece16> paths;
+  for (const BookmarkNode* n = this; n->parent(); n = n->parent())
+    paths.push_back(n->parent()->GetTitle());
+  return paths;
 }
 
 BookmarkNode::BookmarkNode(int64_t id,

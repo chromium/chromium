@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
@@ -50,18 +49,27 @@ class TitledUrlIndex {
   void Remove(const TitledUrlNode* node);
 
   // Returns up to |max_count| of matches containing each term from the text
-  // |query| in either the title or the URL. |matching_algorithm| determines
-  // the algorithm used by QueryParser internally to parse |query|.
+  // |query| in either the title, URL, or, if |match_ancestor_titles| is true,
+  // the titles of ancestor nodes. |matching_algorithm| determines the algorithm
+  // used by QueryParser internally to parse |query|.
   std::vector<TitledUrlMatch> GetResultsMatching(
       const base::string16& query,
       size_t max_count,
-      query_parser::MatchingAlgorithm matching_algorithm);
+      query_parser::MatchingAlgorithm matching_algorithm,
+      bool match_ancestor_titles);
 
   // For testing only.
   TitledUrlNodeSet RetrieveNodesMatchingAllTermsForTesting(
       const std::vector<base::string16>& terms,
       query_parser::MatchingAlgorithm matching_algorithm) const {
     return RetrieveNodesMatchingAllTerms(terms, matching_algorithm);
+  }
+
+  // For testing only.
+  TitledUrlNodeSet RetrieveNodesMatchingAnyTermsForTesting(
+      const std::vector<base::string16>& terms,
+      query_parser::MatchingAlgorithm matching_algorithm) const {
+    return RetrieveNodesMatchingAnyTerms(terms, matching_algorithm);
   }
 
  private:
@@ -78,7 +86,8 @@ class TitledUrlIndex {
   base::Optional<TitledUrlMatch> MatchTitledUrlNodeWithQuery(
       const TitledUrlNode* node,
       query_parser::QueryParser* parser,
-      const query_parser::QueryNodeVector& query_nodes);
+      const query_parser::QueryNodeVector& query_nodes,
+      bool match_ancestor_titles);
 
   // Return matches for the specified |terms|. This is an intersection of each
   // term's matches.
@@ -86,8 +95,12 @@ class TitledUrlIndex {
       const std::vector<base::string16>& terms,
       query_parser::MatchingAlgorithm matching_algorithm) const;
 
-  // Return matches for the specified |term|.
-  TitledUrlNodeSet RetrieveNodesMatchingTerm(
+  TitledUrlNodeSet RetrieveNodesMatchingAnyTerms(
+      const std::vector<base::string16>& terms,
+      query_parser::MatchingAlgorithm matching_algorithm) const;
+
+  // Return matches for the specified |term|. May return duplicates.
+  TitledUrlNodes RetrieveNodesMatchingTerm(
       const base::string16& term,
       query_parser::MatchingAlgorithm matching_algorithm) const;
 

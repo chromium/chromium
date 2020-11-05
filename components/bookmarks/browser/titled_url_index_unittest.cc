@@ -10,6 +10,7 @@
 
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -56,8 +57,10 @@ class BookmarkClientMock : public TestBookmarkClient {
 // Minimal implementation of TitledUrlNode.
 class TestTitledUrlNode : public TitledUrlNode {
  public:
-  TestTitledUrlNode(const base::string16& title, const GURL& url)
-      : title_(title), url_(url) {}
+  TestTitledUrlNode(const base::string16& title,
+                    const GURL& url,
+                    const base::string16& ancestor_title)
+      : title_(title), url_(url), ancestor_title_(ancestor_title) {}
 
   ~TestTitledUrlNode() override = default;
 
@@ -67,9 +70,15 @@ class TestTitledUrlNode : public TitledUrlNode {
 
   const GURL& GetTitledUrlNodeUrl() const override { return url_; }
 
+  std::vector<base::StringPiece16> GetTitledUrlNodeAncestorTitles()
+      const override {
+    return {ancestor_title_};
+  }
+
  private:
   base::string16 title_;
   GURL url_;
+  base::string16 ancestor_title_;
 };
 
 class TitledUrlIndexTest : public testing::Test {
@@ -85,12 +94,18 @@ class TitledUrlIndexTest : public testing::Test {
     owned_nodes_.clear();
   }
 
-  TitledUrlNode* AddNode(const std::string& title, const GURL& url) {
-    return AddNode(UTF8ToUTF16(title), url);
+  TitledUrlNode* AddNode(const std::string& title,
+                         const GURL& url,
+                         const std::string& ancestor_title = "") {
+    return AddNode(UTF8ToUTF16(title), url, UTF8ToUTF16(ancestor_title));
   }
 
-  TitledUrlNode* AddNode(const base::string16& title, const GURL& url) {
-    owned_nodes_.push_back(std::make_unique<TestTitledUrlNode>(title, url));
+  TitledUrlNode* AddNode(
+      const base::string16& title,
+      const GURL& url,
+      const base::string16& ancestor_title = base::string16()) {
+    owned_nodes_.push_back(
+        std::make_unique<TestTitledUrlNode>(title, url, ancestor_title));
     index_->Add(owned_nodes_.back().get());
     return owned_nodes_.back().get();
   }
@@ -100,10 +115,13 @@ class TitledUrlIndexTest : public testing::Test {
       AddNode(titles[i], GURL(urls[i]));
   }
 
-  std::vector<TitledUrlMatch> GetResultsMatching(const std::string& query,
-                                                 size_t max_count) {
+  std::vector<TitledUrlMatch> GetResultsMatching(
+      const std::string& query,
+      size_t max_count,
+      bool match_ancestor_titles = false) {
     return index_->GetResultsMatching(UTF8ToUTF16(query), max_count,
-                                      query_parser::MatchingAlgorithm::DEFAULT);
+                                      query_parser::MatchingAlgorithm::DEFAULT,
+                                      match_ancestor_titles);
   }
 
   void ExpectMatches(const std::string& query,
@@ -120,7 +138,7 @@ class TitledUrlIndexTest : public testing::Test {
                      query_parser::MatchingAlgorithm matching_algorithm,
                      const std::vector<std::string>& expected_titles) {
     std::vector<TitledUrlMatch> matches = index_->GetResultsMatching(
-        UTF8ToUTF16(query), 1000, matching_algorithm);
+        UTF8ToUTF16(query), 1000, matching_algorithm, false);
     ASSERT_EQ(expected_titles.size(), matches.size());
     for (const std::string& expected_title : expected_titles) {
       bool found = false;
@@ -568,8 +586,86 @@ TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAllTerms) {
     auto matches = index()->RetrieveNodesMatchingAllTermsForTesting(
         terms, query_parser::MatchingAlgorithm::DEFAULT);
     if (test_data.should_be_retrieved) {
-      EXPECT_TRUE(matches.contains(node));
       EXPECT_EQ(matches.size(), 1u);
+      EXPECT_TRUE(matches.contains(node));
+    } else
+      EXPECT_TRUE(matches.empty());
+  };
+}
+
+TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTerms) {
+  TitledUrlNode* node =
+      AddNode("termA termB otherTerm xyz ab", GURL("http://foo.com"));
+
+  struct TestData {
+    const std::string query;
+    const bool should_be_retrieved;
+  } data[] = {// Should return matches if any input terms match, even if not all
+              // node terms match.
+              {"term not", true},
+              // Should not return duplicate matches.
+              {"term termA termB", true},
+              // Should not early exit when there are no intermediate matches.
+              {"not term", true},
+              // Should not match midword.
+              {"ther", false},
+              // Short input terms should only return exact matches.
+              {"xy", false},
+              {"ab", true}};
+
+  for (const TestData& test_data : data) {
+    SCOPED_TRACE("Query: " + test_data.query);
+    std::vector<base::string16> terms = base::SplitString(
+        base::UTF8ToUTF16(test_data.query), base::UTF8ToUTF16(" "),
+        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    auto matches = index()->RetrieveNodesMatchingAnyTermsForTesting(
+        terms, query_parser::MatchingAlgorithm::DEFAULT);
+    if (test_data.should_be_retrieved) {
+      EXPECT_EQ(matches.size(), 1u);
+      EXPECT_TRUE(matches.contains(node));
+    } else
+      EXPECT_TRUE(matches.empty());
+  };
+}
+
+TEST_F(TitledUrlIndexTest, GetResultsMatchingAncestors) {
+  TitledUrlNode* node = AddNode("leaf pare", GURL("http://foo.com"), "parent");
+
+  struct TestData {
+    const std::string query;
+    const bool match_ancestor_titles;
+    const bool should_be_retrieved;
+    const bool should_have_ancestor_match;
+  } data[] = {
+      // Should exclude matches with ancestor matches when
+      // |match_ancestor_titles| is false.
+      {"leaf parent", false, false, false},
+      // Should allow ancestor matches when |match_ancestor_titles| is true.
+      {"leaf parent", true, true, true},
+      // Should not early exit when there are no accumulated
+      // non-ancestor matches.
+      {"parent leaf", true, true, true},
+      // Should still require at least 1 non-ancestor match when
+      // |match_ancestor_titles| is true.
+      {"parent", true, false, false},
+      // Should set |has_ancestor_match| to true even if a term matched
+      // both an ancestor and title/URL.
+      {"pare", true, true, true},
+      // Short inputs should only match exact title or ancestor terms.
+      {"pa", true, false, false},
+      // Should not return matches if a term matches neither the title
+      // nor ancestor.
+      {"term not parent", true, false, false}};
+
+  for (const TestData& test_data : data) {
+    SCOPED_TRACE("Query: " + test_data.query);
+    auto matches = GetResultsMatching(test_data.query, 10,
+                                      test_data.match_ancestor_titles);
+    if (test_data.should_be_retrieved) {
+      EXPECT_EQ(matches.size(), 1u);
+      EXPECT_EQ(matches[0].node, node);
+      EXPECT_EQ(matches[0].has_ancestor_match,
+                test_data.should_have_ancestor_match);
     } else
       EXPECT_TRUE(matches.empty());
   };
