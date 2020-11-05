@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -103,7 +104,7 @@ PlayerCompositorDelegate::PlayerCompositorDelegate()
                                        base::OnTaskRunnerDeleter(nullptr)) {}
 
 PlayerCompositorDelegate::~PlayerCompositorDelegate() {
-  if (compress_on_close_) {
+  if (compress_on_close_ && paint_preview_service_) {
     paint_preview_service_->GetTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(base::IgnoreResult(&FileManager::CompressDirectory),
@@ -121,6 +122,18 @@ void PlayerCompositorDelegate::Initialize(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("paint_preview",
                                     "PlayerCompositorDelegate CreateCompositor",
                                     TRACE_ID_LOCAL(this));
+  auto* memory_monitor = memory_pressure_monitor();
+  if (memory_monitor &&
+      memory_monitor->GetCurrentPressureLevel() >=
+          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(compositor_error),
+                       static_cast<int>(
+                           CompositorStatus::STOPPED_DUE_TO_MEMORY_PRESSURE)));
+    return;
+  }
+
   paint_preview_compositor_service_ =
       WarmCompositor::GetInstance()->GetOrStartCompositorService(base::BindOnce(
           &PlayerCompositorDelegate::OnCompositorServiceDisconnected,
@@ -249,6 +262,11 @@ void PlayerCompositorDelegate::OnMemoryPressure(
     paint_preview_compositor_client_.reset();
     paint_preview_compositor_service_.reset();
   }
+}
+
+base::MemoryPressureMonitor*
+PlayerCompositorDelegate::memory_pressure_monitor() {
+  return base::MemoryPressureMonitor::Get();
 }
 
 void PlayerCompositorDelegate::OnCompositorReadyStatusAdapter(

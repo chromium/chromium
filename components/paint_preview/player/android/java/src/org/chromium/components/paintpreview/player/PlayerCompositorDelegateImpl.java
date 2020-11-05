@@ -18,6 +18,9 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This class and its native counterpart (player_compositor_delegate.cc) communicate with the Paint
  * Preview compositor.
@@ -26,7 +29,7 @@ import org.chromium.url.GURL;
 class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
     private CompositorListener mCompositorListener;
     private long mNativePlayerCompositorDelegate;
-    private Runnable mOnMemoryPressureRunnable;
+    private List<Runnable> mMemoryPressureListeners = new ArrayList<>();
 
     PlayerCompositorDelegateImpl(NativePaintPreviewServiceProvider service, GURL url,
             String directoryKey, @NonNull CompositorListener compositorListener,
@@ -51,14 +54,14 @@ class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
 
     @CalledByNative
     void onModerateMemoryPressure() {
-        if (mOnMemoryPressureRunnable == null) return;
-
-        mOnMemoryPressureRunnable.run();
+        for (Runnable listener : mMemoryPressureListeners) {
+            listener.run();
+        }
     }
 
     @Override
-    public void setOnMemoryPressure(Runnable runnable) {
-        mOnMemoryPressureRunnable = runnable;
+    public void addMemoryPressureListener(Runnable runnable) {
+        mMemoryPressureListeners.add(runnable);
     }
 
     @Override

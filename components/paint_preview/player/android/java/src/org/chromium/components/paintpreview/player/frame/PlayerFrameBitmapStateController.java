@@ -33,7 +33,9 @@ public class PlayerFrameBitmapStateController {
         mViewport = viewport;
         mContentSize = contentSize;
         mCompositorDelegate = compositorDelegate;
-        mCompositorDelegate.setOnMemoryPressure(this::onMemoryPressure);
+        if (mCompositorDelegate != null) {
+            mCompositorDelegate.addMemoryPressureListener(this::onMemoryPressure);
+        }
         mMediatorDelegate = mediatorDelegate;
         mTaskRunner = taskRunner;
     }

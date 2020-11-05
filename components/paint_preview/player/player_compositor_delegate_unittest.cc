@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
+#include "base/util/memory_pressure/fake_memory_pressure_monitor.h"
 #include "components/paint_preview/browser/directory_key.h"
 #include "components/paint_preview/browser/file_manager.h"
 #include "components/paint_preview/browser/paint_preview_base_service.h"
@@ -183,6 +184,10 @@ class PlayerCompositorDelegateImpl : public PlayerCompositorDelegate {
     status_checked_ = false;
   }
 
+  void SetFakeMemoryPressureMonitor(base::MemoryPressureMonitor* monitor) {
+    memory_pressure_monitor_ = monitor;
+  }
+
   bool WasStatusChecked() const { return status_checked_; }
 
   void OnCompositorReady(CompositorStatus compositor_status,
@@ -194,7 +199,16 @@ class PlayerCompositorDelegateImpl : public PlayerCompositorDelegate {
     status_checked_ = true;
   }
 
+ protected:
+  base::MemoryPressureMonitor* memory_pressure_monitor() override {
+    if (memory_pressure_monitor_)
+      return memory_pressure_monitor_;
+
+    return PlayerCompositorDelegate::memory_pressure_monitor();
+  }
+
  private:
+  base::MemoryPressureMonitor* memory_pressure_monitor_{nullptr};
   CompositorStatus expected_status_{CompositorStatus::OK};
   bool status_checked_{false};
 };
@@ -807,6 +821,41 @@ TEST_F(PlayerCompositorDelegateTest, CriticalMemoryPressure) {
         CreateCompositorService());
     env.RunUntilIdle();
     EXPECT_TRUE(player_compositor_delegate.WasStatusChecked());
+
+    player_compositor_delegate.OnMemoryPressure(
+        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    loop.Run();
+  }
+  env.RunUntilIdle();
+}
+
+TEST_F(PlayerCompositorDelegateTest, CriticalMemoryPressureBeforeStart) {
+  auto* service = GetBaseService();
+  auto file_manager = service->GetFileManager();
+  auto key = file_manager->CreateKey(1U);
+  {
+    // This test skips setting up files as the fakes don't use them. In normal
+    // execution the files are required by the service or no bitmap will be
+    // created.
+    base::RunLoop loop;
+    PlayerCompositorDelegateImpl player_compositor_delegate;
+    util::test::FakeMemoryPressureMonitor memory_pressure_monitor;
+    memory_pressure_monitor.SetAndNotifyMemoryPressure(
+        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    player_compositor_delegate.SetFakeMemoryPressureMonitor(
+        &memory_pressure_monitor);
+    player_compositor_delegate.Initialize(
+        service, GURL(), key,
+        base::BindOnce(
+            [](base::OnceClosure quit, int compositor_status) {
+              EXPECT_EQ(compositor_status,
+                        static_cast<int>(
+                            CompositorStatus::STOPPED_DUE_TO_MEMORY_PRESSURE));
+              std::move(quit).Run();
+            },
+            loop.QuitClosure()),
+        base::TimeDelta::Max(), kMaxParallelRequests);
+    env.RunUntilIdle();
 
     player_compositor_delegate.OnMemoryPressure(
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);

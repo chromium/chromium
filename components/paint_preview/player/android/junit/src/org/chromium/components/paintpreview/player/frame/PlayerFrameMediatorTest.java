@@ -179,7 +179,7 @@ public class PlayerFrameMediatorTest {
         private int mNextRequestId;
 
         @Override
-        public void setOnMemoryPressure(Runnable runnable) {
+        public void addMemoryPressureListener(Runnable runnable) {
             mOnMemoryPressureRunnable = runnable;
         }
 

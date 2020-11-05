@@ -21,6 +21,10 @@
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+namespace base {
+class MemoryPressureMonitor;
+}  // namespace base
+
 namespace gfx {
 class Rect;
 }  // namespace gfx
@@ -112,6 +116,8 @@ class PlayerCompositorDelegate {
 
  protected:
   base::OnceCallback<void(int)> compositor_error_;
+
+  virtual base::MemoryPressureMonitor* memory_pressure_monitor();
 
  private:
   void InitializeInternal(PaintPreviewBaseService* paint_preview_service,

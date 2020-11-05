@@ -66,7 +66,7 @@ public interface PlayerCompositorDelegate {
      * Sets a runnable that is invoked when we are under memory pressure.
      * @param runnable The runnable to be invoked when under memory pressure.
      */
-    void setOnMemoryPressure(Runnable runnable);
+    void addMemoryPressureListener(Runnable runnable);
 
     /**
      * Requests a new bitmap for a frame from the Paint Preview compositor.

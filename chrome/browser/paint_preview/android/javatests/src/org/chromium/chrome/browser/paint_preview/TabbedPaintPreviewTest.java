@@ -315,11 +315,11 @@ public class TabbedPaintPreviewTest {
                 UnguessableToken token = UnguessableToken.CREATOR.createFromParcel(parcel);
                 compositorListener.onCompositorReady(token, new UnguessableToken[] {token},
                         new int[] {500, 500}, new int[] {0, 0}, new int[] {0}, null, null);
-            }, 50);
+            }, 250);
         }
 
         @Override
-        public void setOnMemoryPressure(Runnable runnable) {}
+        public void addMemoryPressureListener(Runnable runnable) {}
 
         @Override
         public int requestBitmap(UnguessableToken frameGuid, Rect clipRect, float scaleFactor,
