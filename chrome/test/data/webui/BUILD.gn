@@ -360,7 +360,6 @@ if (include_js_tests) {
       "media/media_history_webui_browsertest.js",
       "new_tab_page/new_tab_page_browsertest.js",
       "read_later/read_later_browsertest.js",
-      "usb_internals_browsertest.js",
     ]
 
     deps = [ "//chrome/browser/ui" ]
@@ -388,6 +387,7 @@ if (include_js_tests) {
     sources = [
       "downloads/downloads_browsertest.js",
       "engagement/site_engagement_browsertest.js",
+      "usb_internals_browsertest.js",
     ]
     if (is_win || is_mac || is_linux || is_chromeos) {
       sources += [ "discards/discards_browsertest.js" ]

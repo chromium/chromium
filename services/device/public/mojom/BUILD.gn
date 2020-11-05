@@ -178,11 +178,13 @@ mojom("usb") {
     "//third_party/blink/renderer/modules/webusb",
     "//chrome/browser/ui/webui/usb_internals:mojo_bindings_blink",
   ]
+
+  webui_module_path = "/"
 }
 
 mojom("usb_test") {
   generate_java = true
   sources = [ "usb_manager_test.mojom" ]
-
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
+  webui_module_path = "/"
 }

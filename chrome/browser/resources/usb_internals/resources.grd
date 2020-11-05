@@ -26,12 +26,9 @@
       <include name="IDR_USB_INTERNALS_HTML"
                file="usb_internals.html"
                type="BINDATA" />
-      <include name="IDR_USB_INTERNALS_MOJO_JS"
-               file="mojo.js"
-               type="BINDATA" />
-      <include name="IDR_USB_INTERNALS_MOJOM_LITE_JS"
-               file="${root_gen_dir}\chrome\browser\ui\webui\usb_internals\usb_internals.mojom-lite.js"
-               resource_path="usb_internals.mojom-lite.js"
+      <include name="IDR_USB_INTERNALS_MOJOM_WEBUI_JS"
+               file="${root_gen_dir}\mojom-webui\chrome\browser\ui\webui\usb_internals\usb_internals.mojom-webui.js"
+               resource_path="usb_internals.mojom-webui.js"
                use_base_dir="false"
                type="BINDATA" />
       <include name="IDR_USB_INTERNALS_APP_JS"

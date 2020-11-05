@@ -5,13 +5,15 @@
 /**
  * Javascript for usb_internals.html, served from chrome://usb-internals/.
  */
-import './mojo.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 import {TabBox} from 'chrome://resources/js/cr/ui/tabs.m.js';
 
 import {DevicesPage} from './devices_page.js';
+import {UsbInternalsPageHandler} from './usb_internals.mojom-webui.js';
+import {UsbDeviceManagerRemote} from './usb_manager.mojom-webui.js';
+import {UsbDeviceManagerTestRemote} from './usb_manager_test.mojom-webui.js';
 
 window.setupFn = window.setupFn || function() {
   return Promise.resolve();
@@ -44,20 +46,20 @@ class UsbInternalsAppElement extends HTMLElement {
     // actions after the page is loaded but before any script is run.
     await window.setupFn();
 
-    const pageHandler = mojom.UsbInternalsPageHandler.getRemote();
+    const pageHandler = UsbInternalsPageHandler.getRemote();
 
     // Connection to the UsbInternalsPageHandler instance running in the
     // browser process.
-    /** @type {device.mojom.UsbDeviceManagerRemote} */
-    const usbManager = new device.mojom.UsbDeviceManagerRemote;
+    /** @type {UsbDeviceManagerRemote} */
+    const usbManager = new UsbDeviceManagerRemote;
     await pageHandler.bindUsbDeviceManagerInterface(
         usbManager.$.bindNewPipeAndPassReceiver());
 
     /** @private {!DevicesPage} */
     this.devicesPage_ = new DevicesPage(usbManager, assert(this.shadowRoot));
 
-    /** @private {device.mojom.UsbDeviceManagerTestRemote} */
-    this.usbManagerTest_ = new device.mojom.UsbDeviceManagerTestRemote;
+    /** @private {UsbDeviceManagerTestRemote} */
+    this.usbManagerTest_ = new UsbDeviceManagerTestRemote;
     await pageHandler.bindTestInterface(
         this.usbManagerTest_.$.bindNewPipeAndPassReceiver());
 

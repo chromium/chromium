@@ -21,14 +21,14 @@ UsbInternalsUI::UsbInternalsUI(content::WebUI* web_ui)
       content::WebUIDataSource::Create(chrome::kChromeUIUsbInternalsHost);
 
   static constexpr webui::ResourcePath kPaths[] = {
-      {"usb_device.mojom-lite.js", IDR_USB_DEVICE_MOJOM_LITE_JS},
-      {"usb_enumeration_options.mojom-lite.js",
-       IDR_USB_ENUMERATION_OPTIONS_MOJOM_LITE_JS},
-      {"usb_manager.mojom-lite.js", IDR_USB_DEVICE_MANAGER_MOJOM_LITE_JS},
-      {"usb_manager_client.mojom-lite.js",
-       IDR_USB_DEVICE_MANAGER_CLIENT_MOJOM_LITE_JS},
-      {"usb_manager_test.mojom-lite.js",
-       IDR_USB_DEVICE_MANAGER_TEST_MOJOM_LITE_JS},
+      {"usb_device.mojom-webui.js", IDR_USB_DEVICE_MOJOM_WEBUI_JS},
+      {"usb_enumeration_options.mojom-webui.js",
+       IDR_USB_ENUMERATION_OPTIONS_MOJOM_WEBUI_JS},
+      {"usb_manager.mojom-webui.js", IDR_USB_DEVICE_MANAGER_MOJOM_WEBUI_JS},
+      {"usb_manager_client.mojom-webui.js",
+       IDR_USB_DEVICE_MANAGER_CLIENT_MOJOM_WEBUI_JS},
+      {"usb_manager_test.mojom-webui.js",
+       IDR_USB_DEVICE_MANAGER_TEST_MOJOM_WEBUI_JS},
   };
   webui::AddResourcePathsBulk(source, kPaths);
 

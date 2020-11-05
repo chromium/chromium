@@ -11,4 +11,6 @@ mojom("mojo_bindings") {
     "//services/device/public/mojom:usb",
     "//services/device/public/mojom:usb_test",
   ]
+
+  webui_module_path = "/"
 }

@@ -2,13 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://usb-internals/mojo.js';
 import 'chrome://usb-internals/app.js';
 
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import 'chrome://test/mojo_webui_test_support.js';
 
-/** @implements {mojom.UsbInternalsPageHandlerRemote} */
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {UsbControlTransferParams, UsbControlTransferRecipient, UsbControlTransferType, UsbDeviceCallbackRouter, UsbDeviceRemote, UsbOpenDeviceError, UsbTransferStatus} from 'chrome://usb-internals/usb_device.mojom-webui.js';
+import {UsbInternalsPageHandler, UsbInternalsPageHandlerReceiver, UsbInternalsPageHandlerRemote} from 'chrome://usb-internals/usb_internals.mojom-webui.js';
+import {UsbDeviceManagerReceiver, UsbDeviceManagerRemote} from 'chrome://usb-internals/usb_manager.mojom-webui.js';
+
+/** @implements {UsbInternalsPageHandlerRemote} */
 class FakePageHandlerRemote extends TestBrowserProxy {
   constructor(handle) {
     super([
@@ -16,7 +21,7 @@ class FakePageHandlerRemote extends TestBrowserProxy {
       'bindTestInterface',
     ]);
 
-    this.receiver_ = new mojom.UsbInternalsPageHandlerReceiver(this);
+    this.receiver_ = new UsbInternalsPageHandlerReceiver(this);
     this.receiver_.$.bindHandle(handle);
   }
 
@@ -32,7 +37,7 @@ class FakePageHandlerRemote extends TestBrowserProxy {
   }
 }
 
-/** @implements {device.mojom.UsbDeviceManagerRemote} */
+/** @implements {UsbDeviceManagerRemote} */
 class FakeDeviceManagerRemote extends TestBrowserProxy {
   constructor(pendingReceiver) {
     super([
@@ -45,7 +50,7 @@ class FakeDeviceManagerRemote extends TestBrowserProxy {
       'setClient',
     ]);
 
-    this.receiver_ = new device.mojom.UsbDeviceManagerReceiver(this);
+    this.receiver_ = new UsbDeviceManagerReceiver(this);
     this.receiver_.$.bindHandle(pendingReceiver.handle);
 
     this.devices = [];
@@ -88,7 +93,7 @@ class FakeDeviceManagerRemote extends TestBrowserProxy {
   async setClient() {}
 }
 
-/** @implements {device.mojom.UsbDeviceRemote} */
+/** @implements {UsbDeviceRemote} */
 class FakeUsbDeviceRemote extends TestBrowserProxy {
   constructor() {
     super([
@@ -102,9 +107,9 @@ class FakeUsbDeviceRemote extends TestBrowserProxy {
     // device.mojom.UsbDevice defines lots of methods we don't care to mock
     // here. UsbDeviceCallbackRouter callback silently discards messages
     // that have no listeners.
-    this.router = new device.mojom.UsbDeviceCallbackRouter;
+    this.router = new UsbDeviceCallbackRouter;
     this.router.open.addListener(async () => {
-      return {error: device.mojom.UsbOpenDeviceError.OK};
+      return {error: UsbOpenDeviceError.OK};
     });
     this.router.controlTransferIn.addListener(
         (params, length, timeout) =>
@@ -117,7 +122,7 @@ class FakeUsbDeviceRemote extends TestBrowserProxy {
         this.responses.get(usbControlTransferParamsToString(params));
     if (!response) {
       return {
-        status: device.mojom.UsbTransferStatus.TRANSFER_ERROR,
+        status: UsbTransferStatus.TRANSFER_ERROR,
         data: [],
       };
     }
@@ -127,7 +132,7 @@ class FakeUsbDeviceRemote extends TestBrowserProxy {
 
   /**
    * Set a response for a given request.
-   * @param {!device.mojom.UsbControlTransferParams} params
+   * @param {!UsbControlTransferParams} params
    * @param {!Object} response
    */
   setResponse(params, response) {
@@ -140,8 +145,8 @@ class FakeUsbDeviceRemote extends TestBrowserProxy {
    */
   setDeviceDescriptor(response) {
     const params = {};
-    params.type = device.mojom.UsbControlTransferType.STANDARD;
-    params.recipient = device.mojom.UsbControlTransferRecipient.DEVICE;
+    params.type = UsbControlTransferType.STANDARD;
+    params.recipient = UsbControlTransferRecipient.DEVICE;
     params.request = 6;
     params.index = 0;
     params.value = (1 << 8);
@@ -185,7 +190,7 @@ function fakeDeviceInfo(num) {
 function createDeviceWithValidDeviceDescriptor() {
   const deviceRemote = new FakeUsbDeviceRemote();
   deviceRemote.setDeviceDescriptor({
-    status: device.mojom.UsbTransferStatus.COMPLETED,
+    status: UsbTransferStatus.COMPLETED,
     data: [
       0x12, 0x01, 0x00, 0x02, 0x00, 0x00, 0x00, 0x40, 0x50, 0x10, 0xEF, 0x17,
       0x21, 0x03, 0x01, 0x02, 0x00, 0x01
@@ -200,7 +205,7 @@ function createDeviceWithValidDeviceDescriptor() {
 function createDeviceWithShortDeviceDescriptor() {
   const deviceRemote = new FakeUsbDeviceRemote();
   deviceRemote.setDeviceDescriptor({
-    status: device.mojom.UsbTransferStatus.SHORT_PACKET,
+    status: UsbTransferStatus.SHORT_PACKET,
     data: [0x12, 0x01, 0x00, 0x02, 0x00, 0x00, 0x00, 0x40, 0x50],
   });
   return deviceRemote;
@@ -209,7 +214,7 @@ function createDeviceWithShortDeviceDescriptor() {
 /**
  * Converts an ECMAScript string to an instance of mojo_base.mojom.String16.
  * @param {string} string
- * @return {!object}
+ * @return {!String16}
  */
 function stringToMojoString16(string) {
   return {data: Array.from(string, c => c.charCodeAt(0))};
@@ -218,7 +223,7 @@ function stringToMojoString16(string) {
 /**
  * Stringify a UsbControlTransferParams type object to be the key of
  * response map.
- * @param {!device.mojom.UsbControlTransferParams} params
+ * @param {!UsbControlTransferParams} params
  * @return {string}
  */
 function usbControlTransferParamsToString(params) {
@@ -245,8 +250,8 @@ window.deviceDescriptorCompleteFn = () => {
 };
 
 window.setupFn = () => {
-  const pageHandlerInterceptor = new MojoInterfaceInterceptor(
-      mojom.UsbInternalsPageHandler.$interfaceName);
+  const pageHandlerInterceptor =
+      new MojoInterfaceInterceptor(UsbInternalsPageHandler.$interfaceName);
   pageHandlerInterceptor.oninterfacerequest = (e) => {
     pageHandler = new FakePageHandlerRemote(e.handle);
     setupResolver.resolve();

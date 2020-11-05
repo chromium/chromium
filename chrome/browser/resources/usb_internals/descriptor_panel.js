@@ -6,12 +6,13 @@
  * Javascript for DescriptorPanel UI, served from
  *     chrome://usb-internals/.
  */
-import './mojo.js';
 
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 import {Tree, TreeItem} from 'chrome://resources/js/cr/ui/tree.m.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+
+import {UsbControlTransferParams, UsbControlTransferRecipient, UsbControlTransferType, UsbDeviceInterface, UsbTransferStatus} from './usb_device.mojom-webui.js';
 
 const INPUT_TYPE_DECIMAL_WITH_DROPDOWN = 0;
 const INPUT_TYPE_HEX_BYTE = 1;
@@ -116,11 +117,11 @@ const MS_OS_20_PLATFORM_CAPABILITY_UUID = [
 
 export class DescriptorPanel {
   /**
-   * @param {!device.mojom.UsbDeviceInterface} usbDeviceProxy
+   * @param {!UsbDeviceInterface} usbDeviceProxy
    * @param {!HTMLElement} rootElement
    */
   constructor(usbDeviceProxy, rootElement) {
-    /** @type {!device.mojom.UsbDeviceInterface} */
+    /** @type {!UsbDeviceInterface} */
     this.usbDeviceProxy_ = usbDeviceProxy;
 
     /** @type {!HTMLElement} */
@@ -462,10 +463,10 @@ export class DescriptorPanel {
    * Gets device descriptor of current device, and display it.
    */
   async getDeviceDescriptor() {
-    /** @type {!device.mojom.UsbControlTransferParams} */
+    /** @type {!UsbControlTransferParams} */
     const usbControlTransferParams = {
-      type: device.mojom.UsbControlTransferType.STANDARD,
-      recipient: device.mojom.UsbControlTransferRecipient.DEVICE,
+      type: UsbControlTransferType.STANDARD,
+      recipient: UsbControlTransferRecipient.DEVICE,
       request: GET_DESCRIPTOR_REQUEST,
       value: DEVICE_DESCRIPTOR_TYPE << 8,
       index: 0,
@@ -587,10 +588,10 @@ export class DescriptorPanel {
    * Gets configuration descriptor of current device, and display it.
    */
   async getConfigurationDescriptor() {
-    /** @type {!device.mojom.UsbControlTransferParams} */
+    /** @type {!UsbControlTransferParams} */
     const usbControlTransferParams = {
-      type: device.mojom.UsbControlTransferType.STANDARD,
-      recipient: device.mojom.UsbControlTransferRecipient.DEVICE,
+      type: UsbControlTransferType.STANDARD,
+      recipient: UsbControlTransferRecipient.DEVICE,
       request: GET_DESCRIPTOR_REQUEST,
       value: CONFIGURATION_DESCRIPTOR_TYPE << 8,
       index: 0,
@@ -866,10 +867,10 @@ export class DescriptorPanel {
    * @return {!Promise<!Array<number>>}
    */
   async getAllLanguageCodes() {
-    /** @type {!device.mojom.UsbControlTransferParams} */
+    /** @type {!UsbControlTransferParams} */
     const usbControlTransferParams = {
-      type: device.mojom.UsbControlTransferType.STANDARD,
-      recipient: device.mojom.UsbControlTransferRecipient.DEVICE,
+      type: UsbControlTransferType.STANDARD,
+      recipient: UsbControlTransferRecipient.DEVICE,
       request: GET_DESCRIPTOR_REQUEST,
       value: STRING_DESCRIPTOR_TYPE << 8,
       index: 0,
@@ -930,10 +931,10 @@ export class DescriptorPanel {
    */
   async getStringDescriptorForLanguageCode_(
       index, languageCode, treeItem = undefined) {
-    /** @type {!device.mojom.UsbControlTransferParams} */
+    /** @type {!UsbControlTransferParams} */
     const usbControlTransferParams = {
-      type: device.mojom.UsbControlTransferType.STANDARD,
-      recipient: device.mojom.UsbControlTransferRecipient.DEVICE,
+      type: UsbControlTransferType.STANDARD,
+      recipient: UsbControlTransferRecipient.DEVICE,
       request: GET_DESCRIPTOR_REQUEST,
       index: languageCode,
       value: (STRING_DESCRIPTOR_TYPE << 8) | index,
@@ -1088,10 +1089,10 @@ export class DescriptorPanel {
    * descriptor, and display it.
    */
   async getBosDescriptor() {
-    /** @type {!device.mojom.UsbControlTransferParams} */
+    /** @type {!UsbControlTransferParams} */
     const usbControlTransferParams = {
-      type: device.mojom.UsbControlTransferType.STANDARD,
-      recipient: device.mojom.UsbControlTransferRecipient.DEVICE,
+      type: UsbControlTransferType.STANDARD,
+      recipient: UsbControlTransferRecipient.DEVICE,
       request: GET_DESCRIPTOR_REQUEST,
       value: BOS_DESCRIPTOR_TYPE << 8,
       index: 0,
@@ -1450,12 +1451,12 @@ export class DescriptorPanel {
     const vendorCode = rawData[offset + WEB_USB_VENDOR_CODE_OFFSET];
     const urlIndex = rawData[offset + WEB_USB_URL_DESCRIPTOR_INDEX_OFFSET];
 
-    /** @type {!device.mojom.UsbControlTransferParams} */
+    /** @type {!UsbControlTransferParams} */
     const usbControlTransferParams = {
-      recipient: device.mojom.UsbControlTransferRecipient.DEVICE,
+      recipient: UsbControlTransferRecipient.DEVICE,
       // These constants are defined by the WebUSB specification:
       // http://wicg.github.io/webusb/
-      type: device.mojom.UsbControlTransferType.VENDOR,
+      type: UsbControlTransferType.VENDOR,
       request: vendorCode,
       value: urlIndex,
       index: GET_URL_REQUEST,
@@ -1512,12 +1513,12 @@ export class DescriptorPanel {
    * @private
    */
   async getMsOs20DescriptorSet_(vendorCode, msOs20DescriptorSetLength) {
-    /** @type {!device.mojom.UsbControlTransferParams} */
+    /** @type {!UsbControlTransferParams} */
     const usbControlTransferParams = {
-      recipient: device.mojom.UsbControlTransferRecipient.DEVICE,
+      recipient: UsbControlTransferRecipient.DEVICE,
       // These constants are defined by Microsoft OS 2.0 Descriptors
       // Specification (July, 2018).
-      type: device.mojom.UsbControlTransferType.VENDOR,
+      type: UsbControlTransferType.VENDOR,
       request: vendorCode,
       value: 0,
       index: MS_OS_20_DESCRIPTOR_INDEX,
@@ -1554,12 +1555,12 @@ export class DescriptorPanel {
    * @private
    */
   async sendMsOs20DescriptorSetAltEnumCommand_(vendorCode, altEnumCode) {
-    /** @type {!device.mojom.UsbControlTransferParams} */
+    /** @type {!UsbControlTransferParams} */
     const usbControlTransferParams = {
-      recipient: device.mojom.UsbControlTransferRecipient.DEVICE,
+      recipient: UsbControlTransferRecipient.DEVICE,
       // These constants are defined by Microsoft OS 2.0 Descriptors
       // Specification (July, 2018).
-      type: device.mojom.UsbControlTransferType.VENDOR,
+      type: UsbControlTransferType.VENDOR,
       request: vendorCode,
       value: altEnumCode,
       index: MS_OS_20_SET_ALT_ENUMERATION,
@@ -2304,7 +2305,7 @@ export class DescriptorPanel {
 
   /**
    * Gets response of the given request.
-   * @param {!device.mojom.UsbControlTransferParams} usbControlTransferParams
+   * @param {!UsbControlTransferParams} usbControlTransferParams
    * @param {number} length
    * @param {string} direction
    * @private
@@ -2433,18 +2434,17 @@ export class DescriptorPanel {
         const dataLength = getRequestLength(row, i);
 
         if (this.checkEnumParamValid_(
-                type, 'Transfer Type', device.mojom.UsbControlTransferType) &&
+                type, 'Transfer Type', UsbControlTransferType) &&
             this.checkEnumParamValid_(
-                recipient, 'Transfer Recipient',
-                device.mojom.UsbControlTransferRecipient) &&
+                recipient, 'Transfer Recipient', UsbControlTransferRecipient) &&
             this.checkParamValid_(request, 'Transfer Request', 0, 255) &&
             this.checkParamValid_(value, 'wValue', 0, 65535) &&
             this.checkParamValid_(index, 'wIndex', 0, 65535) &&
             this.checkParamValid_(dataLength, 'Length', 0, 65535)) {
-          /** @type {!device.mojom.UsbControlTransferParams} */
+          /** @type {!UsbControlTransferParams} */
           const usbControlTransferParams = {
-            type: device.mojom.UsbControlTransferType[type],
-            recipient: device.mojom.UsbControlTransferRecipient[recipient],
+            type: UsbControlTransferType[type],
+            recipient: UsbControlTransferRecipient[recipient],
             request,
             value,
             index,
@@ -2890,30 +2890,30 @@ function renderRawDataBytes(rawDataByteElement, rawData) {
 function checkTransferSuccess(status, defaultMessage, rootElement) {
   let failReason = '';
   switch (status) {
-    case device.mojom.UsbTransferStatus.COMPLETED:
+    case UsbTransferStatus.COMPLETED:
       return;
-    case device.mojom.UsbTransferStatus.SHORT_PACKET:
+    case UsbTransferStatus.SHORT_PACKET:
       showError('Descriptor is too short.', rootElement);
       return;
-    case device.mojom.UsbTransferStatus.BABBLE:
+    case UsbTransferStatus.BABBLE:
       showError('Descriptor is too long.', rootElement);
       return;
-    case device.mojom.UsbTransferStatus.TRANSFER_ERROR:
+    case UsbTransferStatus.TRANSFER_ERROR:
       failReason = 'Transfer Error';
       break;
-    case device.mojom.UsbTransferStatus.TIMEOUT:
+    case UsbTransferStatus.TIMEOUT:
       failReason = 'Timeout';
       break;
-    case device.mojom.UsbTransferStatus.CANCELLED:
+    case UsbTransferStatus.CANCELLED:
       failReason = 'Transfer was cancelled';
       break;
-    case device.mojom.UsbTransferStatus.STALLED:
+    case UsbTransferStatus.STALLED:
       failReason = 'Transfer Error';
       break;
-    case device.mojom.UsbTransferStatus.DISCONNECT:
+    case UsbTransferStatus.DISCONNECT:
       failReason = 'Transfer stalled';
       break;
-    case device.mojom.UsbTransferStatus.PERMISSION_DENIED:
+    case UsbTransferStatus.PERMISSION_DENIED:
       failReason = 'Permission denied';
       break;
   }

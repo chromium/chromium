@@ -7,28 +7,28 @@
  *     chrome://usb-internals/.
  */
 
-import './mojo.js';
-
 import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 import {Tab, TabPanel} from 'chrome://resources/js/cr/ui/tabs.m.js';
 import {Tree, TreeItem} from 'chrome://resources/js/cr/ui/tree.m.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
 import {DescriptorPanel} from './descriptor_panel.js';
 
-const UsbDeviceRemote = device.mojom.UsbDeviceRemote;
+import {UsbAlternateInterfaceInfo, UsbConfigurationInfo, UsbDeviceInfo, UsbDeviceRemote, UsbEndpointInfo, UsbInterfaceInfo, UsbTransferDirection, UsbTransferType} from './usb_device.mojom-webui.js';
+import {UsbDeviceManagerRemote} from './usb_manager.mojom-webui.js';
 
 /**
  * Page that contains a tab header and a tab panel displaying devices table.
  */
 export class DevicesPage {
   /**
-   * @param {!device.mojom.UsbDeviceManagerRemote} usbManager
+   * @param {!UsbDeviceManagerRemote} usbManager
    * @param {!ShadowRoot} root
    */
   constructor(usbManager, root) {
-    /** @private {!device.mojom.UsbDeviceManagerRemote} */
+    /** @private {!UsbDeviceManagerRemote} */
     this.usbManager_ = usbManager;
     this.root = root;
     this.renderDeviceList_();
@@ -41,7 +41,7 @@ export class DevicesPage {
   async renderDeviceList_() {
     const response = await this.usbManager_.getDevices(null);
 
-    /** @type {!Array<!device.mojom.UsbDeviceInfo>} */
+    /** @type {!Array<!UsbDeviceInfo>} */
     const devices = response.results;
 
     const tableBody = this.root.querySelector('#device-list');
@@ -83,7 +83,7 @@ export class DevicesPage {
 
   /**
    * Switches to the device's tab, creating one if necessary.
-   * @param {!device.mojom.UsbDeviceInfo} device
+   * @param {!UsbDeviceInfo} device
    * @private
    */
   switchToTab_(device) {
@@ -102,8 +102,8 @@ export class DevicesPage {
  */
 class DevicePage {
   /**
-   * @param {!device.mojom.UsbDeviceManagerRemote} usbManager
-   * @param {!device.mojom.UsbDeviceInfo} device
+   * @param {!UsbDeviceManagerRemote} usbManager
+   * @param {!UsbDeviceInfo} device
    * @param {!ShadowRoot} root
    */
   constructor(usbManager, device, root) {
@@ -114,7 +114,7 @@ class DevicePage {
 
   /**
    * Renders a tab to display a tree view showing device's detail information.
-   * @param {!device.mojom.UsbDeviceInfo} device
+   * @param {!UsbDeviceInfo} device
    * @private
    */
   renderTab_(device) {
@@ -198,7 +198,7 @@ class DevicePage {
 
 /**
  * Renders a tree to display the device's detail information.
- * @param {!device.mojom.UsbDeviceInfo} device
+ * @param {!UsbDeviceInfo} device
  * @param {!Tree} root
  */
 function renderDeviceTree(device, root) {
@@ -254,7 +254,7 @@ function renderDeviceTree(device, root) {
 
 /**
  * Renders a tree item to display the device's configuration information.
- * @param {!Array<!device.mojom.UsbConfigurationInfo>} configurationsArray
+ * @param {!Array<!UsbConfigurationInfo>} configurationsArray
  * @param {!Tree} root
  */
 function renderConfigurationTreeItem(configurationsArray, root) {
@@ -276,7 +276,7 @@ function renderConfigurationTreeItem(configurationsArray, root) {
 
 /**
  * Renders a tree item to display the device's interface information.
- * @param {!Array<!device.mojom.UsbInterfaceInfo>} interfacesArray
+ * @param {!Array<!UsbInterfaceInfo>} interfacesArray
  * @param {!TreeItem} root
  */
 function renderInterfacesTreeItem(interfacesArray, root) {
@@ -294,7 +294,7 @@ function renderInterfacesTreeItem(interfacesArray, root) {
 /**
  * Renders a tree item to display the device's alternate interfaces
  * information.
- * @param {!Array<!device.mojom.UsbAlternateInterfaceInfo>} alternatesArray
+ * @param {!Array<!UsbAlternateInterfaceInfo>} alternatesArray
  * @param {!TreeItem} root
  */
 function renderAlternatesTreeItem(alternatesArray, root) {
@@ -324,7 +324,7 @@ function renderAlternatesTreeItem(alternatesArray, root) {
 
 /**
  * Renders a tree item to display the device's endpoints information.
- * @param {!Array<!device.mojom.UsbEndpointInfo>} endpointsArray
+ * @param {!Array<!UsbEndpointInfo>} endpointsArray
  * @param {!TreeItem} root
  */
 function renderEndpointsTreeItem(endpointsArray, root) {
@@ -334,10 +334,10 @@ function renderEndpointsTreeItem(endpointsArray, root) {
     itemLabel += endpoint.endpointNumber;
 
     switch (endpoint.direction) {
-      case device.mojom.UsbTransferDirection.INBOUND:
+      case UsbTransferDirection.INBOUND:
         itemLabel += ' (INBOUND)';
         break;
-      case device.mojom.UsbTransferDirection.OUTBOUND:
+      case UsbTransferDirection.OUTBOUND:
         itemLabel += ' (OUTBOUND)';
         break;
     }
@@ -346,16 +346,16 @@ function renderEndpointsTreeItem(endpointsArray, root) {
 
     let usbTransferType = '';
     switch (endpoint.type) {
-      case device.mojom.UsbTransferType.CONTROL:
+      case UsbTransferType.CONTROL:
         usbTransferType = 'CONTROL';
         break;
-      case device.mojom.UsbTransferType.ISOCHRONOUS:
+      case UsbTransferType.ISOCHRONOUS:
         usbTransferType = 'ISOCHRONOUS';
         break;
-      case device.mojom.UsbTransferType.BULK:
+      case UsbTransferType.BULK:
         usbTransferType = 'BULK';
         break;
-      case device.mojom.UsbTransferType.INTERRUPT:
+      case UsbTransferType.INTERRUPT:
         usbTransferType = 'INTERRUPT';
         break;
     }
@@ -372,7 +372,7 @@ function renderEndpointsTreeItem(endpointsArray, root) {
  * Initialize a descriptor panel.
  * @param {!HTMLElement} tabPanel
  * @param {string} panelType
- * @param {!device.mojom.UsbDeviceRemote} usbDevice
+ * @param {!UsbDeviceRemote} usbDevice
  * @param {string} guid
  * @return {!DescriptorPanel}
  */
@@ -417,7 +417,7 @@ function initialInspectorPanel(tabPanel, panelType, usbDevice, guid) {
 
 /**
  * Parses utf16 coded string.
- * @param {!mojoBase.mojom.String16} arr
+ * @param {!String16} arr
  * @return {string}
  */
 function decodeString16(arr) {

@@ -8,6 +8,15 @@ import("//tools/polymer/html_to_js.gni")
 
 js_type_check("closure_compile") {
   uses_js_modules = true
+  closure_flags = default_closure_args + mojom_js_args + [
+                    "js_module_root=" + rebase_path(".", root_build_dir),
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/usb_internals",
+                            root_build_dir),
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/services/device/public/mojom",
+                            root_build_dir),
+                  ]
   deps = [
     ":app",
     ":descriptor_panel",
@@ -18,7 +27,7 @@ js_type_check("closure_compile") {
 js_library("app") {
   deps = [
     ":devices_page",
-    ":mojo",
+    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_webui_js",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr/ui:tabs.m",
@@ -28,7 +37,7 @@ js_library("app") {
 js_library("devices_page") {
   deps = [
     ":descriptor_panel",
-    ":mojo",
+    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_webui_js",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:util.m",
@@ -39,16 +48,12 @@ js_library("devices_page") {
 
 js_library("descriptor_panel") {
   deps = [
-    ":mojo",
+    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_webui_js",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr:ui.m",
     "//ui/webui/resources/js/cr/ui:tree.m",
   ]
-}
-
-js_library("mojo") {
-  deps = [ "//chrome/browser/ui/webui/usb_internals:mojo_bindings_js_library_for_compile" ]
 }
 
 grit("resources") {
@@ -66,7 +71,7 @@ grit("resources") {
   ]
   deps = [
     ":web_components",
-    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_js",
+    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_webui_js",
   ]
 }
 
