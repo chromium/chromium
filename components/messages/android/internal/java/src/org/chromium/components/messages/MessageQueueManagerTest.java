@@ -4,6 +4,7 @@
 
 package org.chromium.components.messages;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -21,7 +22,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MessageQueueManagerTest {
-    // TODO(crbug.com/1123947): test on suspending and resuming.
     private MessageQueueDelegate mEmptyDelegate = new MessageQueueDelegate() {
         @Override
         public void prepareToShow(Runnable callback) {
@@ -136,5 +136,57 @@ public class MessageQueueManagerTest {
         queueManager.dismissMessage(m1);
         queueManager.dismissMessage(m1);
         verify(m1, times(1)).dismiss();
+    }
+
+    /**
+     * Tests that delegate methods are properly called when queue is suspended
+     * and resumed.
+     */
+    @Test
+    @SmallTest
+    public void testSuspendAndResumeQueue() {
+        MessageQueueDelegate delegate = Mockito.spy(mEmptyDelegate);
+        MessageQueueManager queueManager = new MessageQueueManager();
+        queueManager.setDelegate(delegate);
+        int token = queueManager.suspend();
+        MessageStateHandler m1 = Mockito.mock(MessageStateHandler.class);
+        queueManager.enqueueMessage(m1, m1);
+        verify(delegate, never()).prepareToShow(any());
+        verify(delegate, never()).prepareToHide(any());
+        verify(m1, never()).show();
+        verify(m1, never()).hide();
+
+        queueManager.resume(token);
+        verify(delegate).prepareToShow(any());
+        verify(m1).show();
+
+        queueManager.suspend();
+        verify(delegate).prepareToHide(any());
+        verify(m1).hide();
+    }
+
+    /**
+     * Tests that delegate methods are properly called to show/hide message
+     * when queue is suspended.
+     */
+    @Test
+    @SmallTest
+    public void testDismissOnSuspend() {
+        MessageQueueDelegate delegate = Mockito.spy(mEmptyDelegate);
+        MessageQueueManager queueManager = new MessageQueueManager();
+        queueManager.setDelegate(delegate);
+        queueManager.suspend();
+        MessageStateHandler m1 = Mockito.mock(MessageStateHandler.class);
+        queueManager.enqueueMessage(m1, m1);
+        verify(delegate, never()).prepareToShow(any());
+        verify(delegate, never()).prepareToHide(any());
+        verify(m1, never()).show();
+        verify(m1, never()).hide();
+
+        queueManager.dismissMessage(m1);
+        verify(delegate, never()).prepareToShow(any());
+        verify(delegate, never()).prepareToHide(any());
+        verify(m1, never()).show();
+        verify(m1, never()).hide();
     }
 }
