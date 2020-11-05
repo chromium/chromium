@@ -1692,7 +1692,7 @@ TEST_P(VisualViewportTest, TestChangingContentSizeAffectsScrollBounds) {
       WebScriptSource("var content = document.getElementById(\"content\");"
                       "content.style.width = \"1500px\";"
                       "content.style.height = \"2400px\";"));
-  frame_view.UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  UpdateAllLifecyclePhases();
 
   const auto* scroll_node =
       frame_view.GetLayoutView()->FirstFragment().PaintProperties()->Scroll();

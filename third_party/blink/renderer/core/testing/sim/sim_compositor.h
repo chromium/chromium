@@ -49,11 +49,6 @@ class SimCompositor final : public frame_test_helpers::TestWebWidgetClient {
   SimCanvas::Commands BeginFrame(double time_delta_in_seconds = 0.016,
                                  bool raster = false);
 
-  // Similar to BeginFrame() but doesn't require NeedsBeginFrame(). This is
-  // useful for testing the painting after a frame is throttled (for which
-  // we don't schedule a BeginFrame).
-  SimCanvas::Commands PaintFrame();
-
   // Helpers to query the state of the compositor from tests.
   //
   // Returns true if a main frame has been requested from blink, until the
@@ -80,6 +75,8 @@ class SimCompositor final : public frame_test_helpers::TestWebWidgetClient {
   base::TimeTicks LastFrameTime() const { return last_frame_time_; }
 
  private:
+  SimCanvas::Commands PaintFrame();
+
   // TestWebWidgetClient overrides:
   void DidBeginMainFrame() override;
 

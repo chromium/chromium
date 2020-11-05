@@ -196,7 +196,7 @@ TEST(FileInputTypeTest, BeforePseudoCrash) {
 <input type=file class=c6>
 <input type=file class=c7>
 )HTML");
-  doc.View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  doc.View()->UpdateAllLifecyclePhasesForTest();
   // The test passes if no CHECK failures and no null pointer dereferences.
 }
 

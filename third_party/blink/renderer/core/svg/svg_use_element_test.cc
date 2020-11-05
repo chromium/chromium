@@ -29,14 +29,14 @@ TEST_F(SVGUseElementTest, InstanceInvalidatedWhenNonAttachedTargetRemoved) {
         </unknown>
     </svg>
   )HTML");
-  GetDocument().View()->UpdateAllLifecyclePhases(LifecycleUpdateReason::kTest);
+  UpdateAllLifecyclePhasesForTest();
 
   // Remove #target.
   ASSERT_TRUE(GetDocument().getElementById("target"));
   GetDocument().getElementById("target")->remove();
 
   // This should cause a rebuild of the <use> shadow tree.
-  GetDocument().View()->UpdateAllLifecyclePhases(LifecycleUpdateReason::kTest);
+  UpdateAllLifecyclePhasesForTest();
 
   // There should be no instance for #target anymore, since that element was
   // removed.
@@ -58,7 +58,7 @@ TEST_F(SVGUseElementTest,
       </textPath>
     </svg>
   )HTML");
-  GetDocument().View()->UpdateAllLifecyclePhases(LifecycleUpdateReason::kTest);
+  UpdateAllLifecyclePhasesForTest();
 
   // Move #target in the document (leaving it still "connected").
   Element* target = GetDocument().getElementById("target");
@@ -66,7 +66,7 @@ TEST_F(SVGUseElementTest,
   GetDocument().body()->appendChild(target);
 
   // This should cause a rebuild of the <use> shadow tree.
-  GetDocument().View()->UpdateAllLifecyclePhases(LifecycleUpdateReason::kTest);
+  UpdateAllLifecyclePhasesForTest();
 
   // There should be no instance for #target anymore, since that element was
   // removed.
@@ -85,7 +85,7 @@ TEST_F(SVGUseElementTest, NullInstanceRootWhenNotConnectedToDocument) {
       <use id="target" href="#r"/>
     </svg>
   )HTML");
-  GetDocument().View()->UpdateAllLifecyclePhases(LifecycleUpdateReason::kTest);
+  UpdateAllLifecyclePhasesForTest();
 
   auto* target = To<SVGUseElement>(GetDocument().getElementById("target"));
   ASSERT_TRUE(target);
@@ -105,7 +105,7 @@ TEST_F(SVGUseElementTest, NullInstanceRootWhenConnectedToInactiveDocument) {
       <use id="target" href="#r"/>
     </svg>
   )HTML");
-  GetDocument().View()->UpdateAllLifecyclePhases(LifecycleUpdateReason::kTest);
+  UpdateAllLifecyclePhasesForTest();
 
   auto* target = To<SVGUseElement>(GetDocument().getElementById("target"));
   ASSERT_TRUE(target);
@@ -127,7 +127,7 @@ TEST_F(SVGUseElementTest, NullInstanceRootWhenShadowTreePendingRebuild) {
       <use id="target" href="#r"/>
     </svg>
   )HTML");
-  GetDocument().View()->UpdateAllLifecyclePhases(LifecycleUpdateReason::kTest);
+  UpdateAllLifecyclePhasesForTest();
 
   auto* target = To<SVGUseElement>(GetDocument().getElementById("target"));
   ASSERT_TRUE(target);

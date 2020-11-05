@@ -678,7 +678,7 @@ TEST_F(StyleResolverTest, CSSMarkerPseudoElement) {
   StaticElementList* lis = GetDocument().QuerySelectorAll("li");
   EXPECT_EQ(lis->length(), 10U);
 
-  GetDocument().View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  UpdateAllLifecyclePhasesForTest();
   for (unsigned i = 0; i < lis->length(); ++i) {
     Element* li = lis->item(i);
     PseudoElement* marker = li->GetPseudoElement(kPseudoIdMarker);
@@ -710,7 +710,7 @@ TEST_F(StyleResolverTest, CSSMarkerPseudoElement) {
   }
 
   GetDocument().body()->SetIdAttribute("marker");
-  GetDocument().View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  UpdateAllLifecyclePhasesForTest();
   for (unsigned i = 0; i < lis->length(); ++i) {
     Element* li = lis->item(i);
     PseudoElement* before =

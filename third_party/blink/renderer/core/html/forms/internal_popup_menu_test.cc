@@ -34,7 +34,7 @@ TEST(InternalPopupMenuTest, ShowSelectDisplayNone) {
       </select>
     </div>
   )HTML");
-  document.View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  document.View()->UpdateAllLifecyclePhasesForTest();
 
   auto* div = document.getElementById("container");
   auto* select = To<HTMLSelectElement>(document.getElementById("select"));

@@ -29,11 +29,11 @@ TEST(DragUpdateTest, AffectedByDragUpdate) {
     </div>
   )HTML");
 
-  document.View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  document.View()->UpdateAllLifecyclePhasesForTest();
   unsigned start_count = document.GetStyleEngine().StyleForElementCount();
 
   document.getElementById("div")->SetDragged(true);
-  document.View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  document.View()->UpdateAllLifecyclePhasesForTest();
 
   unsigned element_count =
       document.GetStyleEngine().StyleForElementCount() - start_count;

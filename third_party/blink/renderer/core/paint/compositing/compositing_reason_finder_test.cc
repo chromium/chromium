@@ -233,9 +233,12 @@ TEST_F(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
     <!DOCTYPE html>
     <iframe id=iframe sandbox></iframe>
   )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
   iframe = To<HTMLFrameOwnerElement>(GetDocument().getElementById("iframe"));
+  To<LocalFrame>(iframe->ContentFrame())
+      ->GetDocument()
+      ->OverrideIsInitialEmptyDocument();
+  To<LocalFrame>(iframe->ContentFrame())->View()->BeginLifecycleUpdates();
+  UpdateAllLifecyclePhasesForTest();
   iframe_layout_view =
       To<LocalFrame>(iframe->ContentFrame())->ContentLayoutObject();
   iframe_layer = iframe_layout_view->Layer();

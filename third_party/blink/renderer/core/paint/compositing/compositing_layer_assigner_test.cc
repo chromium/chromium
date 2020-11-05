@@ -114,7 +114,7 @@ TEST_F(CompositedLayerAssignerTest,
     <style>body {will-change: transform; background: blue}</style>
   )HTML");
   LocalFrameView* frame_view = GetDocument().View();
-  frame_view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  frame_view->UpdateAllLifecyclePhasesForTest();
   PaintLayer* top =
       ToLayoutBoxModelObject(GetLayoutObjectByElementId("top"))->Layer();
   EXPECT_EQ(kPaintsIntoOwnBacking, top->GetCompositingState());

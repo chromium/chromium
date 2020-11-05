@@ -361,6 +361,10 @@ class CORE_EXPORT LocalFrameView final
   // Returns whether the lifecycle was successfully updated to PaintClean.
   bool UpdateAllLifecyclePhases(DocumentUpdateReason reason);
 
+  // Runs UpdateAllLifecyclePhases(DocumentUpdateReason::kTest) followed by
+  // RunPostLifecycleSteps(), which is what a full BeginMainFrame() would do.
+  bool UpdateAllLifecyclePhasesForTest();
+
   // Computes the style, layout, compositing and pre-paint lifecycle stages
   // if needed.
   // After calling this method, all frames will be in a lifecycle
@@ -589,6 +593,10 @@ class CORE_EXPORT LocalFrameView final
 
   // Returns true if this frame should not render or schedule visual updates.
   bool ShouldThrottleRendering() const;
+
+  // Same as ShouldThrottleRendering, but with a
+  // DocumentLifecycle::AllowThrottlingScope in scope.
+  bool ShouldThrottleRenderingForTest() const;
 
   bool CanThrottleRendering() const override;
   void UpdateRenderThrottlingStatus(bool hidden_for_throttling,

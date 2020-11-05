@@ -140,8 +140,7 @@ TEST_F(SlotAssignmentTest, ScheduleVisualUpdate) {
     </div>
   )HTML");
 
-  GetDocument().View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-  GetDocument().View()->RunPostLifecycleSteps();
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   auto* div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   GetDocument().getElementById("host")->appendChild(div);

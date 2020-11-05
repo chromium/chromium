@@ -35,7 +35,7 @@ TEST_F(StyleInvalidatorTest, SkipDisplayNone) {
     </div>
   )HTML");
 
-  GetDocument().View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   PendingInvalidations pending;
   {
@@ -64,7 +64,7 @@ TEST_F(StyleInvalidatorTest, SkipDisplayNoneClearPendingNth) {
     </div>
   )HTML");
 
-  GetDocument().View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   PendingInvalidations pending;
   {

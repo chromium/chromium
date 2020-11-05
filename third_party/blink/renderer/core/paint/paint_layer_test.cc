@@ -1199,37 +1199,31 @@ TEST_P(PaintLayerTest, DescendantDependentFlagsStopsAtThrottledFrames) {
   EXPECT_FALSE(GetDocument().View()->IsHiddenForThrottling());
   EXPECT_TRUE(ChildDocument().View()->IsHiddenForThrottling());
 
-  {
-    DocumentLifecycle::AllowThrottlingScope throttling_scope(
-        GetDocument().Lifecycle());
-    EXPECT_FALSE(GetDocument().View()->ShouldThrottleRendering());
-    EXPECT_TRUE(ChildDocument().View()->ShouldThrottleRendering());
+  EXPECT_FALSE(GetDocument().View()->ShouldThrottleRenderingForTest());
+  EXPECT_TRUE(ChildDocument().View()->ShouldThrottleRenderingForTest());
 
-    ChildDocument()
-        .View()
-        ->GetLayoutView()
-        ->Layer()
-        ->DirtyVisibleContentStatus();
+  ChildDocument().View()->GetLayoutView()->Layer()->DirtyVisibleContentStatus();
 
-    EXPECT_TRUE(ChildDocument()
-                    .View()
-                    ->GetLayoutView()
-                    ->Layer()
-                    ->needs_descendant_dependent_flags_update_);
+  EXPECT_TRUE(ChildDocument()
+                  .View()
+                  ->GetLayoutView()
+                  ->Layer()
+                  ->needs_descendant_dependent_flags_update_);
 
-    // Also check that the rest of the lifecycle succeeds without crashing due
-    // to a stale m_needsDescendantDependentFlagsUpdate.
-    UpdateAllLifecyclePhasesForTest();
-
-    // Still dirty, because the frame was throttled.
-    EXPECT_TRUE(ChildDocument()
-                    .View()
-                    ->GetLayoutView()
-                    ->Layer()
-                    ->needs_descendant_dependent_flags_update_);
-  }
-
+  // Also check that the rest of the lifecycle succeeds without crashing due
+  // to a stale m_needsDescendantDependentFlagsUpdate.
   UpdateAllLifecyclePhasesForTest();
+
+  // Still dirty, because the frame was throttled.
+  EXPECT_TRUE(ChildDocument()
+                  .View()
+                  ->GetLayoutView()
+                  ->Layer()
+                  ->needs_descendant_dependent_flags_update_);
+
+  // Do an unthrottled compositing update, this should clear flags;
+  GetDocument().View()->UpdateLifecycleToCompositingCleanPlusScrolling(
+      DocumentUpdateReason::kTest);
   EXPECT_FALSE(ChildDocument()
                    .View()
                    ->GetLayoutView()

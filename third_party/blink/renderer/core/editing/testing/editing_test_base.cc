@@ -75,8 +75,7 @@ ShadowRoot* EditingTestBase::CreateShadowRootForElementWithIDAndSetInnerHTML(
           ->CreateV0ShadowRootForTesting();
   shadow_root.setInnerHTML(String::FromUTF8(shadow_root_content),
                            ASSERT_NO_EXCEPTION);
-  scope.GetDocument().View()->UpdateAllLifecyclePhases(
-      DocumentUpdateReason::kTest);
+  scope.GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   return &shadow_root;
 }
 

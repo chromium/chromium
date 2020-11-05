@@ -329,9 +329,6 @@ void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
       ->GetEventHandler()
       .RecomputeMouseHoverStateIfNeeded();
 
-  DocumentLifecycle::AllowThrottlingScope throttling_scope(
-      LocalRootImpl()->GetFrame()->GetDocument()->Lifecycle());
-
   if (WidgetBase::ShouldRecordBeginMainFrameMetrics()) {
     SCOPED_UMA_AND_UKM_TIMER(
         LocalRootImpl()->GetFrame()->View()->EnsureUkmAggregator(),
@@ -348,6 +345,9 @@ void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
 void WebFrameWidgetImpl::DidBeginMainFrame() {
   DCHECK(LocalRootImpl()->GetFrame());
   WebFrameWidgetBase::DidBeginMainFrame();
+  // TODO(szager): Investigate why WebViewFrameWidget::DidBeginMainFrame
+  // instantiates AllowThrottlingScope before calling
+  // PageWidgetDeleget::DidBeginFrame, but this method doesn't.
   PageWidgetDelegate::DidBeginFrame(*LocalRootImpl()->GetFrame());
 }
 
@@ -387,8 +387,6 @@ void WebFrameWidgetImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,
   if (!LocalRootImpl())
     return;
 
-  DocumentLifecycle::AllowThrottlingScope throttling_scope(
-      LocalRootImpl()->GetFrame()->GetDocument()->Lifecycle());
   PageWidgetDelegate::UpdateLifecycle(*GetPage(), *LocalRootImpl()->GetFrame(),
                                       requested_update, reason);
   View()->UpdatePagePopup();
@@ -1031,8 +1029,8 @@ void WebFrameWidgetImpl::SetRootLayer(scoped_refptr<cc::Layer> layer) {
 
 HitTestResult WebFrameWidgetImpl::CoreHitTestResultAt(
     const gfx::PointF& point_in_viewport) {
-  DocumentLifecycle::AllowThrottlingScope throttling_scope(
-      LocalRootImpl()->GetFrame()->GetDocument()->Lifecycle());
+  // TODO(szager): Is AllowThrottlingScope necessary?
+  DocumentLifecycle::AllowThrottlingScope throttling_scope;
   LocalFrameView* view = LocalRootImpl()->GetFrameView();
   FloatPoint point_in_root_frame(
       view->ViewportToFrame(FloatPoint(point_in_viewport)));

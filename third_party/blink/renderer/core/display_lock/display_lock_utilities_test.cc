@@ -236,6 +236,12 @@ TEST_F(DisplayLockUtilitiesTest, LockedSubtreeCrossingFrames) {
   // Unlock grandparent.
   CommitElement(*grandparent);
 
+  // CommitElement(*grandparent) ran a lifecycle update, but during that update
+  // the iframe document was still throttled, so did not update style. The
+  // iframe document should have become unthrottled at the end of that update,
+  // so it takes an additional lifecycle update to resolve style in the iframe.
+  UpdateAllLifecyclePhasesForTest();
+
   EXPECT_FALSE(
       DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(*grandparent));
   EXPECT_FALSE(DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(*parent));

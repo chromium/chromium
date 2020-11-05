@@ -55,6 +55,8 @@ class PaintControllerPaintTestBase : public RenderingTest {
   // In pre-CompositeAfterPaint, this paints the contents of the main graphics
   // layer only.
   void PaintContents(const IntRect& interest_rect) {
+    // TODO(szager): Move this method to LocalFrameView.
+    DocumentLifecycle::AllowThrottlingScope allow_throttling;
     GetDocument().View()->Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);
     if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
       if (GetLayoutView().Layer()->SelfOrDescendantNeedsRepaint()) {

@@ -1352,9 +1352,6 @@ void WebViewImpl::BeginFrame(base::TimeTicks last_frame_time) {
       anchor->PerformPreRafActions();
   }
 
-  DocumentLifecycle::AllowThrottlingScope throttling_scope(
-      MainFrameImpl()->GetFrame()->GetDocument()->Lifecycle());
-
   base::Optional<LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer> ukm_timer;
   if (WidgetBase::ShouldRecordBeginMainFrameMetrics()) {
     ukm_timer.emplace(MainFrameImpl()
@@ -1371,9 +1368,6 @@ void WebViewImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,
   TRACE_EVENT0("blink", "WebViewImpl::updateAllLifecyclePhases");
   if (!MainFrameImpl())
     return;
-
-  DocumentLifecycle::AllowThrottlingScope throttling_scope(
-      MainFrameImpl()->GetFrame()->GetDocument()->Lifecycle());
 
   PageWidgetDelegate::UpdateLifecycle(*page_, *MainFrameImpl()->GetFrame(),
                                       requested_update, reason);
@@ -3040,8 +3034,8 @@ HitTestResult WebViewImpl::CoreHitTestResultAt(
   if (!MainFrameImpl() || !MainFrameImpl()->GetFrameView())
     return HitTestResult();
 
-  DocumentLifecycle::AllowThrottlingScope throttling_scope(
-      MainFrameImpl()->GetFrame()->GetDocument()->Lifecycle());
+  // TODO(szager): Is AllowThrottlingScope necessary?
+  DocumentLifecycle::AllowThrottlingScope throttling_scope;
   LocalFrameView* view = MainFrameImpl()->GetFrameView();
   FloatPoint point_in_root_frame =
       view->ViewportToFrame(FloatPoint(point_in_viewport));

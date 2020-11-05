@@ -66,8 +66,7 @@ DocumentLifecycle::DeprecatedTransition::~DeprecatedTransition() {
   g_deprecated_transition_stack = previous_;
 }
 
-DocumentLifecycle::AllowThrottlingScope::AllowThrottlingScope(
-    DocumentLifecycle& lifecycle) {
+DocumentLifecycle::AllowThrottlingScope::AllowThrottlingScope() {
   g_allow_throttling_count++;
 }
 
@@ -76,8 +75,7 @@ DocumentLifecycle::AllowThrottlingScope::~AllowThrottlingScope() {
   g_allow_throttling_count--;
 }
 
-DocumentLifecycle::DisallowThrottlingScope::DisallowThrottlingScope(
-    DocumentLifecycle& lifecycle) {
+DocumentLifecycle::DisallowThrottlingScope::DisallowThrottlingScope() {
   saved_count_ = g_allow_throttling_count;
   g_allow_throttling_count = 0;
 }
@@ -422,7 +420,7 @@ void DocumentLifecycle::EnsureStateAtMost(LifecycleState state) {
   state_ = state;
 }
 
-bool DocumentLifecycle::ThrottlingAllowed() const {
+bool DocumentLifecycle::ThrottlingAllowed() {
   return g_allow_throttling_count;
 }
 

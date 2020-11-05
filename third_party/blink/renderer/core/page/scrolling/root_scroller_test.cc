@@ -181,7 +181,7 @@ class RootScrollerTest : public testing::Test,
   }
 
   void UpdateAllLifecyclePhases(LocalFrameView* view) {
-    view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+    view->UpdateAllLifecyclePhasesForTest();
   }
 
   String base_url_;

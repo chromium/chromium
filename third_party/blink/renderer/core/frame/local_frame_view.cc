@@ -378,6 +378,7 @@ void LocalFrameView::ForAllThrottledLocalFrameViews(const Function& function) {
 
 void LocalFrameView::ForAllThrottledLocalFrameViewsForTesting(
     base::RepeatingCallback<void(LocalFrameView&)> callback) {
+  DocumentLifecycle::AllowThrottlingScope allow_throttling;
   ForAllThrottledLocalFrameViews(
       [&callback](LocalFrameView& view) { callback.Run(view); });
 }
@@ -1137,7 +1138,7 @@ void LocalFrameView::ForceUpdateViewportIntersections() {
   // IntersectionObserver targets in this frame (and its frame tree) need to
   // update; but we can't wait for a lifecycle update to run them, because a
   // hidden frame won't run lifecycle updates. Force layout and run them now.
-  DocumentLifecycle::DisallowThrottlingScope disallow_throttling(Lifecycle());
+  DocumentLifecycle::DisallowThrottlingScope disallow_throttling;
   UpdateLifecycleToCompositingCleanPlusScrolling(
       DocumentUpdateReason::kIntersectionObservation);
   UpdateViewportIntersectionsForSubtree(
@@ -2197,6 +2198,7 @@ void LocalFrameView::UpdateGeometriesIfNeeded() {
 }
 
 bool LocalFrameView::UpdateAllLifecyclePhases(DocumentUpdateReason reason) {
+  DocumentLifecycle::AllowThrottlingScope allow_throttling;
   bool updated = GetFrame().LocalFrameRoot().View()->UpdateLifecyclePhases(
       DocumentLifecycle::kPaintClean, reason);
 
@@ -2220,6 +2222,17 @@ bool LocalFrameView::UpdateAllLifecyclePhases(DocumentUpdateReason reason) {
 #endif
 
   return updated;
+}
+
+bool LocalFrameView::UpdateAllLifecyclePhasesForTest() {
+  bool result = UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  {
+    // TODO(szager): If we remove AllowThrottlingScope from
+    // WebViewFrameWidget::DidBeginMainFrame, we should remove it from here too.
+    DocumentLifecycle::AllowThrottlingScope allow_throttling;
+    RunPostLifecycleSteps();
+  }
+  return result;
 }
 
 // TODO(schenney): add a scrolling update lifecycle phase.
@@ -2365,6 +2378,9 @@ bool LocalFrameView::UpdateLifecyclePhases(
   // since it recurses down, not up. Otherwise the lifecycles of the frames
   // might be out of sync.
   DCHECK(frame_->IsLocalRoot() || !IsAttached());
+
+  DCHECK(DocumentLifecycle::ThrottlingAllowed() ||
+         target_state < DocumentLifecycle::kPaintClean);
 
   // Only the following target states are supported.
   DCHECK(target_state == DocumentLifecycle::kLayoutClean ||
@@ -3532,7 +3548,7 @@ void LocalFrameView::SetTracksRasterInvalidations(
     return;
 
   // Ensure the document is up-to-date before tracking invalidations.
-  UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  UpdateAllLifecyclePhasesForTest();
 
   for (Frame* frame = &frame_->Tree().Top(); frame;
        frame = frame->Tree().TraverseNext()) {
@@ -3946,6 +3962,7 @@ void LocalFrameView::PaintOutsideOfLifecycle(
     const CullRect& cull_rect) {
   DCHECK(PaintOutsideOfLifecycleIsAllowed(context, *this));
 
+  DocumentLifecycle::AllowThrottlingScope allow_throttling;
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);
   });
@@ -4369,6 +4386,11 @@ bool LocalFrameView::ShouldThrottleRendering() const {
   }
 
   return true;
+}
+
+bool LocalFrameView::ShouldThrottleRenderingForTest() const {
+  DocumentLifecycle::AllowThrottlingScope allow_throttling;
+  return ShouldThrottleRendering();
 }
 
 bool LocalFrameView::CanThrottleRendering() const {

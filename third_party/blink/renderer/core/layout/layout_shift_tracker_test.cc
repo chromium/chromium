@@ -34,10 +34,6 @@ class LayoutShiftTrackerTest : public RenderingTest {
         WebPointerProperties::Button::kLeft, 0,
         WebInputEvent::Modifiers::kLeftButtonDown, base::TimeTicks::Now()));
   }
-
-  void UpdateAllLifecyclePhases() {
-    GetFrameView().UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-  }
 };
 
 TEST_F(LayoutShiftTrackerTest, IgnoreAfterInput) {
@@ -50,7 +46,7 @@ TEST_F(LayoutShiftTrackerTest, IgnoreAfterInput) {
   GetDocument().getElementById("j")->setAttribute(html_names::kStyleAttr,
                                                   AtomicString("top: 60px"));
   SimulateInput();
-  UpdateAllLifecyclePhases();
+  UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(0.0, GetLayoutShiftTracker().Score());
   EXPECT_TRUE(GetLayoutShiftTracker().ObservedInputOrScroll());
   EXPECT_TRUE(GetLayoutShiftTracker()
@@ -84,7 +80,7 @@ TEST_F(LayoutShiftTrackerTest, CompositedShiftBeforeFirstPaint) {
       DocumentUpdateReason::kTest);
   GetDocument().getElementById("A")->setAttribute(html_names::kClassAttr,
                                                   AtomicString("hide"));
-  UpdateAllLifecyclePhases();
+  UpdateAllLifecyclePhasesForTest();
 }
 
 TEST_F(LayoutShiftTrackerTest, IgnoreSVG) {
@@ -96,7 +92,7 @@ TEST_F(LayoutShiftTrackerTest, IgnoreSVG) {
   )HTML");
   GetDocument().QuerySelector("circle")->setAttribute(svg_names::kCxAttr,
                                                       AtomicString("100"));
-  UpdateAllLifecyclePhases();
+  UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 }
 
@@ -323,7 +319,7 @@ TEST_F(LayoutShiftTrackerTest, StableCompositingChanges) {
 
     static const char* states[] = {"", "pl", "pl tr", "pl", "", "tr", ""};
     element->setAttribute(html_names::kClassAttr, AtomicString(states[state]));
-    UpdateAllLifecyclePhases();
+    UpdateAllLifecyclePhasesForTest();
     return ++state < sizeof states / sizeof *states;
   };
   while (advance()) {
@@ -376,17 +372,17 @@ TEST_F(LayoutShiftTrackerTest, CompositedOverflowExpansion) {
 
   Element* drop = GetDocument().getElementById("drop");
   drop->removeAttribute(html_names::kStyleAttr);
-  UpdateAllLifecyclePhases();
+  UpdateAllLifecyclePhasesForTest();
 
   drop->setAttribute(html_names::kStyleAttr, AtomicString("display: none"));
-  UpdateAllLifecyclePhases();
+  UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 
   Element* comp = GetDocument().getElementById("comp");
   comp->setAttribute(html_names::kClassAttr, AtomicString("sh"));
   drop->removeAttribute(html_names::kStyleAttr);
-  UpdateAllLifecyclePhases();
+  UpdateAllLifecyclePhasesForTest();
 
   // old rect (240 * 120) / (800 * 600) = 0.06
   // new rect, 50% clipped by viewport (240 * 60) / (800 * 600) = 0.03

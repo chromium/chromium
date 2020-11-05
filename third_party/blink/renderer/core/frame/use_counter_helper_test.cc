@@ -62,7 +62,7 @@ class UseCounterHelperTest : public testing::Test {
   HistogramTester histogram_tester_;
 
   void UpdateAllLifecyclePhases(Document& document) {
-    document.View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+    document.View()->UpdateAllLifecyclePhasesForTest();
   }
 };
 

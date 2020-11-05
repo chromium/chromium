@@ -171,7 +171,7 @@ class CORE_EXPORT DocumentLifecycle {
     STACK_ALLOCATED();
 
    public:
-    AllowThrottlingScope(DocumentLifecycle&);
+    AllowThrottlingScope();
     AllowThrottlingScope(const AllowThrottlingScope&) = delete;
     AllowThrottlingScope& operator=(const AllowThrottlingScope&) = delete;
     ~AllowThrottlingScope();
@@ -181,7 +181,7 @@ class CORE_EXPORT DocumentLifecycle {
     STACK_ALLOCATED();
 
    public:
-    DisallowThrottlingScope(DocumentLifecycle&);
+    DisallowThrottlingScope();
     DisallowThrottlingScope(const DisallowThrottlingScope&) = delete;
     DisallowThrottlingScope& operator=(const DisallowThrottlingScope&) = delete;
     ~DisallowThrottlingScope();
@@ -250,7 +250,7 @@ class CORE_EXPORT DocumentLifecycle {
     detach_count_--;
   }
 
-  bool ThrottlingAllowed() const;
+  static bool ThrottlingAllowed();
   bool LifecyclePostponed() const { return life_cycle_postponed_; }
 
 #if DCHECK_IS_ON()

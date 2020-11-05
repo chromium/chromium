@@ -170,7 +170,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
   }
 
   void UpdateAllLifecyclePhases() {
-    GetDocument().View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   }
 
   static constexpr base::TimeDelta kQuantumOfTime =
@@ -473,7 +473,7 @@ TEST_F(TextPaintTimingDetectorTest, PendingTextIsLargest) {
   SetBodyInnerHTML(R"HTML(
   )HTML");
   AppendDivElementToBody("text");
-  GetFrameView().UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  GetFrameView().UpdateAllLifecyclePhasesForTest();
   // We do not call swap-time callback here in order to not set the paint time.
   EXPECT_FALSE(TextRecordOfLargestTextPaint());
 }
@@ -484,10 +484,10 @@ TEST_F(TextPaintTimingDetectorTest, VisitSameNodeTwiceBeforePaintTimeIsSet) {
   SetBodyInnerHTML(R"HTML(
   )HTML");
   Element* text = AppendDivElementToBody("text");
-  GetFrameView().UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  GetFrameView().UpdateAllLifecyclePhasesForTest();
   // Change a property of the text to trigger repaint.
   text->setAttribute(html_names::kStyleAttr, AtomicString("color:red;"));
-  GetFrameView().UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  GetFrameView().UpdateAllLifecyclePhasesForTest();
   InvokeCallback();
   EXPECT_EQ(TextRecordOfLargestTextPaint()->node_id,
             DOMNodeIds::ExistingIdForNode(text));

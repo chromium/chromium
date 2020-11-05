@@ -207,8 +207,7 @@ class AXSelectionDeserializer final {
   const Vector<AXSelection> Deserialize(const std::string& html_snippet,
                                         HTMLElement& element) {
     element.setInnerHTML(String::FromUTF8(html_snippet));
-    element.GetDocument().View()->UpdateAllLifecyclePhases(
-        DocumentUpdateReason::kTest);
+    element.GetDocument().View()->UpdateAllLifecyclePhasesForTest();
     AXObject* root = ax_object_cache_->GetOrCreate(&element);
     if (!root || root->IsDetached())
       return {};
@@ -281,8 +280,7 @@ class AXSelectionDeserializer final {
     // Remove the markers, otherwise they would be duplicated if the AXSelection
     // is re-serialized.
     node->setData(builder.ToString());
-    node->GetDocument().View()->UpdateAllLifecyclePhases(
-        DocumentUpdateReason::kTest);
+    node->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
     //
     // Non-text selection.

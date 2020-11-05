@@ -72,7 +72,7 @@ class StyleEngineTest : public testing::Test {
 
   // A wrapper to add a reason for UpdateAllLifecyclePhases
   void UpdateAllLifecyclePhases() {
-    GetDocument().View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   }
 
   Node* GetStyleRecalcRoot() {
@@ -2224,7 +2224,7 @@ TEST_F(StyleEngineTest, CSSSelectorEmptyWhitespaceOnlyFail) {
     <div></div>
     <div> <!-- --></div>
   )HTML");
-  GetDocument().View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kCSSSelectorEmptyWhitespaceOnlyFail));
@@ -2235,8 +2235,7 @@ TEST_F(StyleEngineTest, CSSSelectorEmptyWhitespaceOnlyFail) {
 
   auto is_counted = [](Element* element) {
     element->setAttribute(blink::html_names::kClassAttr, "match");
-    element->GetDocument().View()->UpdateAllLifecyclePhases(
-        DocumentUpdateReason::kTest);
+    element->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
     return element->GetDocument().IsUseCounted(
         WebFeature::kCSSSelectorEmptyWhitespaceOnlyFail);
   };

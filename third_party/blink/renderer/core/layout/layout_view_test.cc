@@ -50,11 +50,13 @@ TEST_F(LayoutViewTest, DisplayNoneFrame) {
     <iframe id="iframe" style="display:none"></iframe>
   )HTML");
 
-  UpdateAllLifecyclePhasesForTest();
-
   auto* iframe = To<HTMLIFrameElement>(GetDocument().getElementById("iframe"));
   Document* frame_doc = iframe->contentDocument();
   ASSERT_TRUE(frame_doc);
+  frame_doc->OverrideIsInitialEmptyDocument();
+  frame_doc->View()->BeginLifecycleUpdates();
+  UpdateAllLifecyclePhasesForTest();
+
   LayoutObject* view = frame_doc->GetLayoutView();
   ASSERT_TRUE(view);
   EXPECT_FALSE(view->CanHaveChildren());

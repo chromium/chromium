@@ -917,7 +917,7 @@ TEST_P(TextFragmentAnchorScrollTest, ScrollCancelled) {
     <img src="test.png">
   )HTML");
 
-  Compositor().PaintFrame();
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   mojom::blink::ScrollType scroll_type = GetParam();
 
   if (!RuntimeEnabledFeatures::BlockHTMLParserOnStyleSheetsEnabled()) {
@@ -1585,7 +1585,6 @@ TEST_F(TextFragmentAnchorTest, DismissTextHighlightOutOfView) {
     <p id="text">This is a test page</p>
   )HTML");
 
-  Compositor().PaintFrame();
   ASSERT_EQ(0u, GetDocument().Markers().Markers().size());
   SimulateClick(100, 100);
 

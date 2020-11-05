@@ -599,7 +599,7 @@ void Internals::pauseAnimations(double pause_time,
   if (!GetFrame())
     return;
 
-  GetFrame()->View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  GetFrame()->View()->UpdateAllLifecyclePhasesForTest();
   GetFrame()->GetDocument()->Timeline().PauseAnimationsForTesting(pause_time);
 }
 
@@ -735,8 +735,7 @@ Node* Internals::previousInFlatTree(Node* node,
 String Internals::elementLayoutTreeAsText(Element* element,
                                           ExceptionState& exception_state) {
   DCHECK(element);
-  element->GetDocument().View()->UpdateAllLifecyclePhases(
-      DocumentUpdateReason::kTest);
+  element->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   String representation = ExternalRepresentation(element);
   if (representation.IsEmpty()) {
@@ -1882,7 +1881,7 @@ HitTestLayerRectList* Internals::touchEventTargetLayerRects(
     return nullptr;
   }
 
-  document->View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  document->View()->UpdateAllLifecyclePhasesForTest();
 
   auto* hit_test_rects = MakeGarbageCollected<HitTestLayerRectList>();
   for (const auto& layer : document->View()->RootCcLayer()->children()) {
@@ -2125,8 +2124,7 @@ bool Internals::scrollsWithRespectTo(Element* element1,
                                      ExceptionState& exception_state) {
   DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   DCHECK(element1 && element2);
-  element1->GetDocument().View()->UpdateAllLifecyclePhases(
-      DocumentUpdateReason::kTest);
+  element1->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   LayoutObject* layout_object1 = element1->GetLayoutObject();
   LayoutObject* layout_object2 = element2->GetLayoutObject();
@@ -2171,7 +2169,7 @@ String Internals::layerTreeAsText(Document* document,
     return String();
   }
 
-  document->View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  document->View()->UpdateAllLifecyclePhasesForTest();
 
   return document->GetFrame()->GetLayerTreeAsTextForTesting(flags);
 }
@@ -2190,8 +2188,7 @@ String Internals::mainThreadScrollingReasons(
     return String();
   }
 
-  document->GetFrame()->View()->UpdateAllLifecyclePhases(
-      DocumentUpdateReason::kTest);
+  document->GetFrame()->View()->UpdateAllLifecyclePhasesForTest();
 
   return document->GetFrame()->View()->MainThreadScrollingReasonsAsText();
 }
@@ -2207,7 +2204,7 @@ DOMRectList* Internals::nonFastScrollableRects(
     return nullptr;
   }
 
-  frame->View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  frame->View()->UpdateAllLifecyclePhasesForTest();
 
   auto* pac = document->View()->GetPaintArtifactCompositor();
   auto* layer_tree_host = pac->RootLayer()->layer_tree_host();
@@ -2542,7 +2539,7 @@ void Internals::startTrackingRepaints(Document* document,
   }
 
   LocalFrameView* frame_view = document->View();
-  frame_view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  frame_view->UpdateAllLifecyclePhasesForTest();
   frame_view->SetTracksRasterInvalidations(true);
 }
 
@@ -2556,7 +2553,7 @@ void Internals::stopTrackingRepaints(Document* document,
   }
 
   LocalFrameView* frame_view = document->View();
-  frame_view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  frame_view->UpdateAllLifecyclePhasesForTest();
   frame_view->SetTracksRasterInvalidations(false);
 }
 
@@ -2991,8 +2988,7 @@ void Internals::forceCompositingUpdate(Document* document,
     return;
   }
 
-  document->GetFrame()->View()->UpdateAllLifecyclePhases(
-      DocumentUpdateReason::kTest);
+  document->GetFrame()->View()->UpdateAllLifecyclePhasesForTest();
 }
 
 void Internals::setShouldRevealPassword(Element* element,

@@ -30,7 +30,7 @@ class TextControlElementTest : public testing::Test {
   HTMLInputElement& Input() const { return *input_; }
 
   void UpdateAllLifecyclePhases() {
-    GetDocument().View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   }
 
  private:

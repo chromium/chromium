@@ -154,8 +154,7 @@ class CanvasRenderingContext2DTest : public ::testing::Test {
   }
 
   void UpdateAllLifecyclePhasesForTest() {
-    GetDocument().View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-    GetDocument().View()->RunPostLifecycleSteps();
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   }
 
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;

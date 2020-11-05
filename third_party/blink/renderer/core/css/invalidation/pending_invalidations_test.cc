@@ -33,7 +33,7 @@ void PendingInvalidationsTest::SetUp() {
 TEST_F(PendingInvalidationsTest, ScheduleOnDocumentNode) {
   GetDocument().body()->setInnerHTML(
       "<div id='d'></div><i id='i'></i><span></span>");
-  GetDocument().View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   unsigned before_count = GetStyleEngine().StyleForElementCount();
 
@@ -57,7 +57,7 @@ TEST_F(PendingInvalidationsTest, ScheduleOnDocumentNode) {
   EXPECT_FALSE(GetDocument().NeedsStyleRecalc());
   EXPECT_TRUE(GetStyleEngine().NeedsStyleRecalc());
 
-  GetDocument().View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   unsigned after_count = GetStyleEngine().StyleForElementCount();
   EXPECT_EQ(2u, after_count - before_count);
 }
@@ -74,7 +74,7 @@ TEST_F(PendingInvalidationsTest, DescendantInvalidationOnDisplayNone) {
     </div>
   )HTML");
 
-  GetDocument().View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   // We skip scheduling descendant invalidations on display:none elements.
   GetDocument().getElementById("a")->setAttribute(html_names::kClassAttr, "a");

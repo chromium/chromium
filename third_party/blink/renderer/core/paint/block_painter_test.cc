@@ -66,8 +66,7 @@ void SetWheelEventListener(const Document& document, const char* element_id) {
   resolved_options->setPassive(false);
   element->addEventListener(event_type_names::kWheel, listener,
                             resolved_options);
-  document.View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-  document.View()->RunPostLifecycleSteps();
+  document.View()->UpdateAllLifecyclePhasesForTest();
 }
 }  // namespace
 

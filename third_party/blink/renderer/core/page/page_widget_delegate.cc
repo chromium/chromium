@@ -47,6 +47,8 @@ namespace blink {
 
 void PageWidgetDelegate::Animate(Page& page,
                                  base::TimeTicks monotonic_frame_begin_time) {
+  // TODO(szager): Is AllowThrottlingScope necessary?
+  DocumentLifecycle::AllowThrottlingScope allow_throttling;
   page.GetAutoscrollController().Animate();
   page.Animator().ServiceScriptedAnimations(monotonic_frame_begin_time);
   // The ValidationMessage overlay manages its own internal Page that isn't
@@ -64,6 +66,8 @@ void PageWidgetDelegate::UpdateLifecycle(Page& page,
                                          LocalFrame& root,
                                          WebLifecycleUpdate requested_update,
                                          DocumentUpdateReason reason) {
+  // TODO(szager): Is AllowThrottlingScope necessary?
+  DocumentLifecycle::AllowThrottlingScope allow_throttling;
   if (requested_update == WebLifecycleUpdate::kLayout) {
     page.Animator().UpdateLifecycleToLayoutClean(root, reason);
   } else if (requested_update == WebLifecycleUpdate::kPrePaint) {

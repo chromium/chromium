@@ -50,8 +50,7 @@ class StyleEnvironmentVariablesTest : public PageTestBase {
   void InitializeWithHTML(LocalFrame& frame, const String& html_content) {
     // Sets the inner html and runs the document lifecycle.
     frame.GetDocument()->body()->setInnerHTML(html_content);
-    frame.GetDocument()->View()->UpdateAllLifecyclePhases(
-        DocumentUpdateReason::kTest);
+    frame.GetDocument()->View()->UpdateAllLifecyclePhasesForTest();
   }
 
   void InitializeTestPageWithVariableNamed(LocalFrame& frame,
@@ -231,8 +230,7 @@ TEST_F(StyleEnvironmentVariablesTest, MultiDocumentInvalidation_FromRoot) {
 
   // Create an empty page that does not use the variable.
   auto empty_page = std::make_unique<DummyPageHolder>(IntSize(800, 600));
-  empty_page->GetDocument().View()->UpdateAllLifecyclePhases(
-      DocumentUpdateReason::kTest);
+  empty_page->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   StyleEnvironmentVariables::GetRootInstance().SetVariable(kVariableName,
                                                            kVariableTestColor);

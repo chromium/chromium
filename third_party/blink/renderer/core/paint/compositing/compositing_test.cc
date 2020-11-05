@@ -55,8 +55,7 @@ class CompositingTest : public PaintTestConfigurations, public testing::Test {
   // Both sets the inner html and runs the document lifecycle.
   void InitializeWithHTML(LocalFrame& frame, const String& html_content) {
     frame.GetDocument()->body()->setInnerHTML(html_content);
-    frame.GetDocument()->View()->UpdateAllLifecyclePhases(
-        DocumentUpdateReason::kTest);
+    frame.GetDocument()->View()->UpdateAllLifecyclePhasesForTest();
   }
 
   WebLocalFrame* LocalMainFrame() { return web_view_helper_->LocalMainFrame(); }

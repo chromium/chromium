@@ -71,10 +71,6 @@ class SpatialNavigationTest : public RenderingTest {
               LeftSideOfVisualViewport());
   }
 
-  void UpdateAllLifecyclePhases(LocalFrameView* frame_view) {
-    frame_view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-  }
-
   void AssertNormalizedHeight(Element* e, int line_height, bool will_shrink) {
     PhysicalRect search_origin =
         SearchOrigin(RootViewport(e->GetDocument().GetFrame()), e,
@@ -168,7 +164,7 @@ TEST_F(SpatialNavigationTest, FindContainerWhenEnclosingContainerIsIframe) {
       "<!DOCTYPE html>"
       "<a>link</a>");
 
-  UpdateAllLifecyclePhases(ChildDocument().View());
+  UpdateAllLifecyclePhasesForTest();
   Element* iframe = GetDocument().QuerySelector("iframe");
   Element* link = ChildDocument().QuerySelector("a");
   Node* enclosing_container = ScrollableAreaOrDocumentOf(link);
@@ -528,7 +524,7 @@ TEST_F(SpatialNavigationTest,
       "<!DOCTYPE html>"
       "<a id='link'>link</a>");
 
-  UpdateAllLifecyclePhases(ChildDocument().View());
+  UpdateAllLifecyclePhasesForTest();
   Element* link = ChildDocument().QuerySelector("a");
   Element* iframe = GetDocument().QuerySelector("iframe");
 
@@ -564,7 +560,7 @@ TEST_F(SpatialNavigationTest, DivsCanClipIframes) {
       "<!DOCTYPE html>"
       "<a>link</a>");
 
-  UpdateAllLifecyclePhases(ChildDocument().View());
+  UpdateAllLifecyclePhasesForTest();
   Element* div = GetDocument().QuerySelector("div");
   Element* iframe = GetDocument().QuerySelector("iframe");
   Element* link = ChildDocument().QuerySelector("a");
@@ -607,7 +603,7 @@ TEST_F(SpatialNavigationTest, PartiallyVisibleIFrame) {
       "</style>"
       "<a id='child'>link</a>");
 
-  UpdateAllLifecyclePhases(ChildDocument().View());
+  UpdateAllLifecyclePhasesForTest();
   Element* child_element = ChildDocument().getElementById("child");
   Node* enclosing_container = ScrollableAreaOrDocumentOf(child_element);
   EXPECT_EQ(enclosing_container, ChildDocument());
@@ -1129,7 +1125,7 @@ TEST_F(SpatialNavigationTest, HasRemoteFrame) {
                                      base_url);
 
   webview->ResizeWithBrowserControls(gfx::Size(400, 400), 50, 0, false);
-  UpdateAllLifecyclePhases(webview->MainFrameImpl()->GetFrame()->View());
+  UpdateAllLifecyclePhasesForTest();
 
   Element* iframe =
       webview->MainFrameImpl()->GetFrame()->GetDocument()->getElementById(

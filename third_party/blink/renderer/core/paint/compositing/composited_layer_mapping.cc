@@ -1880,16 +1880,14 @@ void CompositedLayerMapping::PaintContents(
 
   // https://code.google.com/p/chromium/issues/detail?id=343772
   DisableCompositingQueryAsserts disabler;
-  // Allow throttling to make sure no painting paths (e.g.,
-  // GraphicsLayer::PaintContents) try to paint throttled content.
-  DocumentLifecycle::AllowThrottlingScope allow_throttling(
-      owning_layer_.GetLayoutObject().GetDocument().Lifecycle());
 #if DCHECK_IS_ON()
   // FIXME: once the state machine is ready, this can be removed and we can
   // refer to that instead.
   if (Page* page = GetLayoutObject().GetFrame()->GetPage())
     page->SetIsPainting(true);
 #endif
+
+  DCHECK(DocumentLifecycle::ThrottlingAllowed());
 
   TRACE_EVENT1(
       "devtools.timeline,rail", "Paint", "data",

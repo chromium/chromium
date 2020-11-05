@@ -754,7 +754,7 @@ TEST_F(MapCoordinatesTest, IFrameTransformed) {
 
   ChildDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0.0, 1000), mojom::blink::ScrollType::kProgrammatic);
-  ChildDocument().View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  ChildDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   Element* target = ChildDocument().getElementById("target");
   ASSERT_TRUE(target);

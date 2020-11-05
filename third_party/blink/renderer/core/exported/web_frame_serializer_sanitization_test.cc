@@ -88,8 +88,7 @@ class WebFrameSerializerSanitizationTest : public testing::Test {
     String file_path("frameserialization/" + file_name);
     RegisterMockedFileURLLoad(parsed_url, file_path, mime_type);
     frame_test_helpers::LoadFrame(MainFrameImpl(), url.Utf8().c_str());
-    MainFrameImpl()->GetFrame()->View()->UpdateAllLifecyclePhases(
-        DocumentUpdateReason::kTest);
+    MainFrameImpl()->GetFrame()->View()->UpdateAllLifecyclePhasesForTest();
     MainFrameImpl()->GetFrame()->GetDocument()->UpdateStyleAndLayoutTree();
     test::RunPendingTasks();
   }
@@ -113,8 +112,7 @@ class WebFrameSerializerSanitizationTest : public testing::Test {
                                    FocusDelegation::kDelegateFocus);
     shadow_root->setInnerHTML(String::FromUTF8(shadow_content),
                               ASSERT_NO_EXCEPTION);
-    scope.GetDocument().View()->UpdateAllLifecyclePhases(
-        DocumentUpdateReason::kTest);
+    scope.GetDocument().View()->UpdateAllLifecyclePhasesForTest();
     return shadow_root;
   }
 

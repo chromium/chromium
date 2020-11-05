@@ -66,8 +66,7 @@ void PageAnimator::ServiceScriptedAnimations(
       }
       // Disallow throttling in case any script needs to do a synchronous
       // lifecycle update in other frames which are throttled.
-      DocumentLifecycle::DisallowThrottlingScope no_throttling_scope(
-          document->Lifecycle());
+      DocumentLifecycle::DisallowThrottlingScope no_throttling_scope;
       if (ScrollableArea* scrollable_area =
               document->View()->GetScrollableArea()) {
         scrollable_area->ServiceScrollAnimations(
@@ -93,8 +92,7 @@ void PageAnimator::ServiceScriptedAnimations(
     }
     document->GetDocumentAnimations().UpdateAnimationTimingForAnimationFrame();
     // TODO(skyostil): This function should not run for documents without views.
-    DocumentLifecycle::DisallowThrottlingScope no_throttling_scope(
-        document->Lifecycle());
+    DocumentLifecycle::DisallowThrottlingScope no_throttling_scope;
     document->ServiceScriptedAnimations(monotonic_animation_start_time);
   }
 

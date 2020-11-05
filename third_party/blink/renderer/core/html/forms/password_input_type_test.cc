@@ -53,8 +53,7 @@ TEST(PasswordInputTypeTest, DidEditFieldEvent) {
   auto page_holder = std::make_unique<DummyPageHolder>(IntSize(2000, 2000));
   MockInsecureInputService mock_service(page_holder->GetFrame());
   page_holder->GetDocument().body()->setInnerHTML("<input type='password'>");
-  page_holder->GetDocument().View()->UpdateAllLifecyclePhases(
-      DocumentUpdateReason::kTest);
+  page_holder->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   blink::test::RunPendingTasks();
   EXPECT_EQ(0u, mock_service.DidEditFieldCalls());
   // Simulate a text field edit.
@@ -78,8 +77,7 @@ TEST(PasswordInputTypeTest, DidEditFieldEventNotSentFromSecureContext) {
   blink::test::RunPendingTasks();
   MockInsecureInputService mock_service(page_holder->GetFrame());
   page_holder->GetDocument().body()->setInnerHTML("<input type='password'>");
-  page_holder->GetDocument().View()->UpdateAllLifecyclePhases(
-      DocumentUpdateReason::kTest);
+  page_holder->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   // Simulate a text field edit.
   page_holder->GetDocument().MaybeQueueSendDidEditFieldInInsecureContext();
   // No message should have been sent from a secure context.

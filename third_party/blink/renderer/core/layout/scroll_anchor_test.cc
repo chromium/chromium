@@ -1083,7 +1083,7 @@ class ScrollAnchorFindInPageTest : public testing::Test {
   }
 
   void UpdateAllLifecyclePhasesForTest() {
-    GetDocument().View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   }
 
   void SetHtmlInnerHTML(const char* content) {

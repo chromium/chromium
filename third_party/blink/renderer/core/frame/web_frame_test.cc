@@ -376,8 +376,7 @@ class WebFrameTest : public testing::Test {
   // Both sets the inner html and runs the document lifecycle.
   void InitializeWithHTML(LocalFrame& frame, const String& html_content) {
     frame.GetDocument()->body()->setInnerHTML(html_content);
-    frame.GetDocument()->View()->UpdateAllLifecyclePhases(
-        DocumentUpdateReason::kTest);
+    frame.GetDocument()->View()->UpdateAllLifecyclePhasesForTest();
   }
 
   void SwapAndVerifyFirstChildConsistency(const char* const message,
@@ -2156,7 +2155,7 @@ TEST_F(WebFrameTest, FrameOwnerPropertiesMargin) {
   LocalFrameView* frame_view = local_frame->GetFrameView();
   frame_view->Resize(800, 600);
   frame_view->SetNeedsLayout();
-  frame_view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  frame_view->UpdateAllLifecyclePhasesForTest();
   // Expect scrollbars to be enabled by default.
   EXPECT_NE(nullptr, frame_view->LayoutViewport()->HorizontalScrollbar());
   EXPECT_NE(nullptr, frame_view->LayoutViewport()->VerticalScrollbar());
@@ -9217,7 +9216,7 @@ TEST_F(WebFrameSwapTest, EventsOnDisconnectedSubDocumentSkipped) {
   event_registry.DidAddEventHandler(
       *child_document, EventHandlerRegistry::kTouchStartOrMoveEventBlocking);
   // Passes if this does not crash or DCHECK.
-  main_frame->View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  main_frame->View()->UpdateAllLifecyclePhasesForTest();
 }
 
 TEST_F(WebFrameSwapTest, EventsOnDisconnectedElementSkipped) {
@@ -9246,7 +9245,7 @@ TEST_F(WebFrameSwapTest, EventsOnDisconnectedElementSkipped) {
       *child_document->body(),
       EventHandlerRegistry::kTouchStartOrMoveEventBlocking);
   // Passes if this does not crash or DCHECK.
-  main_frame->View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  main_frame->View()->UpdateAllLifecyclePhasesForTest();
 }
 
 TEST_F(WebFrameSwapTest, SwapParentShouldDetachChildren) {
@@ -10731,9 +10730,10 @@ TEST_F(WebFrameTest, RotatedIframeViewportIntersection) {
   WebRemoteFrameImpl* remote_frame =
       frame_test_helpers::CreateRemote(&remote_frame_client);
   web_view_helper.LocalMainFrame()->FirstChild()->Swap(remote_frame);
-  web_view->MainFrameImpl()->GetFrame()->View()->UpdateAllLifecyclePhases(
-      DocumentUpdateReason::kTest);
-  web_view->MainFrameImpl()->GetFrame()->View()->RunPostLifecycleSteps();
+  web_view->MainFrameImpl()
+      ->GetFrame()
+      ->View()
+      ->UpdateAllLifecyclePhasesForTest();
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(!remote_frame_host.GetIntersectionState()
                    ->viewport_intersection.IsEmpty());

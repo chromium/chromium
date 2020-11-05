@@ -63,9 +63,6 @@ SimCanvas::Commands SimCompositor::PaintFrame() {
     return SimCanvas::Commands();
 
   auto* frame = web_view_->MainFrameImpl()->GetFrame();
-  DocumentLifecycle::AllowThrottlingScope throttling_scope(
-      frame->GetDocument()->Lifecycle());
-  frame->View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
   PaintRecordBuilder builder;
   frame->View()->PaintOutsideOfLifecycle(builder.Context(),
                                          kGlobalPaintFlattenCompositingLayers);
@@ -77,6 +74,10 @@ SimCanvas::Commands SimCompositor::PaintFrame() {
 }
 
 void SimCompositor::DidBeginMainFrame() {
+  // Note that this will run *before* LocalFrameView::RunPostLifecycleSteps,
+  // due to the calling conventions of PageWidgetDelegate::DidBeginFrame(). As a
+  // result, frame throttling status has not been updated yet, and will be in
+  // the same state as when the lifecycle steps ran.
   *paint_commands_ = PaintFrame();
 }
 

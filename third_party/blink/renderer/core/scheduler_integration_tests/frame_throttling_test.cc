@@ -70,7 +70,7 @@ class FrameThrottlingTest : public PaintTestConfigurations, public SimTest {
   }
 
   void UpdateAllLifecyclePhases() {
-    GetDocument().View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   }
 };
 
@@ -178,22 +178,20 @@ TEST_P(FrameThrottlingTest, IntersectionObservationOverridesThrottling) {
       To<HTMLIFrameElement>(frame_document->getElementById("innerFrame"));
   auto* inner_frame_document = inner_frame_element->contentDocument();
 
-  DocumentLifecycle::AllowThrottlingScope throttling_scope(
-      GetDocument().Lifecycle());
-
   // Hidden cross origin frames are throttled.
   frame_element->setAttribute(kStyleAttr, "transform: translateY(480px)");
   CompositeFrame();
   EXPECT_FALSE(GetDocument().View()->CanThrottleRendering());
   EXPECT_FALSE(frame_document->View()->CanThrottleRendering());
-  EXPECT_TRUE(inner_frame_document->View()->ShouldThrottleRendering());
+  EXPECT_TRUE(inner_frame_document->View()->ShouldThrottleRenderingForTest());
 
   // An intersection observation overrides throttling during a lifecycle update.
   inner_frame_document->View()->SetIntersectionObservationState(
       LocalFrameView::kRequired);
   {
     GetDocument().GetFrame()->View()->SetInLifecycleUpdateForTest(true);
-    EXPECT_FALSE(inner_frame_document->View()->ShouldThrottleRendering());
+    EXPECT_FALSE(
+        inner_frame_document->View()->ShouldThrottleRenderingForTest());
     GetDocument().GetFrame()->View()->SetInLifecycleUpdateForTest(false);
   }
 
@@ -222,7 +220,7 @@ TEST_P(FrameThrottlingTest, IntersectionObservationOverridesThrottling) {
 
   CompositeFrame();
   // The lifecycle update should only be overridden for one frame.
-  EXPECT_TRUE(inner_frame_document->View()->ShouldThrottleRendering());
+  EXPECT_TRUE(inner_frame_document->View()->ShouldThrottleRenderingForTest());
 
   EXPECT_FALSE(inner_view->NeedsLayout());
   EXPECT_TRUE(inner_frame_document->View()
@@ -248,9 +246,6 @@ TEST_P(FrameThrottlingTest, NestedIntersectionObservationStateUpdated) {
       "<iframe id=child-frame sandbox src=child-iframe.html></iframe>");
   child_frame_resource.Complete("");
 
-  DocumentLifecycle::AllowThrottlingScope throttling_scope(
-      GetDocument().Lifecycle());
-
   // Move both frames offscreen to make them throttled.
   auto* frame_element =
       To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
@@ -261,11 +256,11 @@ TEST_P(FrameThrottlingTest, NestedIntersectionObservationStateUpdated) {
   CompositeFrame();
 
   auto* root_view = LocalFrameRoot().GetFrame()->View();
-  ASSERT_FALSE(root_view->ShouldThrottleRendering());
+  ASSERT_FALSE(root_view->ShouldThrottleRenderingForTest());
   auto* frame_view = frame_element->contentDocument()->View();
-  ASSERT_TRUE(frame_view->ShouldThrottleRendering());
+  ASSERT_TRUE(frame_view->ShouldThrottleRenderingForTest());
   auto* child_view = child_frame_element->contentDocument()->View();
-  ASSERT_TRUE(child_view->ShouldThrottleRendering());
+  ASSERT_TRUE(child_view->ShouldThrottleRenderingForTest());
 
   // Force |child_view| to do an intersection observation.
   child_view->SetIntersectionObservationState(LocalFrameView::kRequired);
@@ -301,14 +296,12 @@ TEST_P(FrameThrottlingTest,
   CompositeFrame();
 
   auto* root_frame = LocalFrameRoot().GetFrame();
-  DocumentLifecycle::AllowThrottlingScope throttling_scope(
-      root_frame->GetDocument()->Lifecycle());
   auto* root_frame_view = root_frame->View();
   root_frame_view->SetNeedsLayout();
   root_frame_view->ScheduleAnimation();
   root_frame_view->SetLifecycleUpdatesThrottledForTesting(true);
   ASSERT_TRUE(root_frame->IsLocalRoot());
-  ASSERT_TRUE(root_frame_view->ShouldThrottleRendering());
+  ASSERT_TRUE(root_frame_view->ShouldThrottleRenderingForTest());
 
   auto* child_frame_document =
       To<HTMLIFrameElement>(root_frame->GetDocument()->getElementById("frame"))
@@ -338,24 +331,22 @@ TEST_P(FrameThrottlingTest,
   )HTML");
   frame_resource.Complete("<!doctype html>");
 
-  DocumentLifecycle::AllowThrottlingScope throttling_scope(
-      GetDocument().Lifecycle());
   CompositeFrame();
 
   auto* frame_element =
       To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
   auto* frame_document = frame_element->contentDocument();
   // Hidden cross origin frames are throttled.
-  EXPECT_TRUE(frame_document->View()->ShouldThrottleRendering());
+  EXPECT_TRUE(frame_document->View()->ShouldThrottleRenderingForTest());
 
   // An intersection observation overrides throttling, but this is only during
   // the lifecycle.
   frame_document->View()->SetIntersectionObservationState(
       LocalFrameView::kRequired);
-  EXPECT_TRUE(frame_document->View()->ShouldThrottleRendering());
+  EXPECT_TRUE(frame_document->View()->ShouldThrottleRenderingForTest());
   {
     GetDocument().GetFrame()->View()->SetInLifecycleUpdateForTest(true);
-    EXPECT_FALSE(frame_document->View()->ShouldThrottleRendering());
+    EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
     GetDocument().GetFrame()->View()->SetInLifecycleUpdateForTest(false);
   }
 
@@ -368,7 +359,7 @@ TEST_P(FrameThrottlingTest,
   CompositeFrame();
   EXPECT_EQ(DocumentLifecycle::kLayoutClean,
             frame_document->Lifecycle().GetState());
-  EXPECT_TRUE(frame_document->View()->ShouldThrottleRendering());
+  EXPECT_TRUE(frame_document->View()->ShouldThrottleRenderingForTest());
 }
 
 TEST_P(FrameThrottlingTest, ForAllThrottledLocalFrameViews) {
@@ -382,17 +373,15 @@ TEST_P(FrameThrottlingTest, ForAllThrottledLocalFrameViews) {
   )HTML");
   frame_resource.Complete("<!doctype html>");
 
-  DocumentLifecycle::AllowThrottlingScope throttling_scope(
-      GetDocument().Lifecycle());
   CompositeFrame();
 
   auto* frame_element =
       To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
   auto* frame_document = frame_element->contentDocument();
   // Hidden cross origin frames are throttled.
-  EXPECT_TRUE(frame_document->View()->ShouldThrottleRendering());
+  EXPECT_TRUE(frame_document->View()->ShouldThrottleRenderingForTest());
   // Main frame is not throttled.
-  EXPECT_FALSE(GetDocument().View()->ShouldThrottleRendering());
+  EXPECT_FALSE(GetDocument().View()->ShouldThrottleRenderingForTest());
 
   unsigned throttled_count = 0;
   auto throttled_callback = base::BindLambdaForTesting(
@@ -885,8 +874,6 @@ TEST_P(FrameThrottlingTest, ScrollingCoordinatorShouldSkipThrottledFrame) {
   EXPECT_EQ(DocumentLifecycle::kVisualUpdatePending,
             frame_element->contentDocument()->Lifecycle().GetState());
 
-  DocumentLifecycle::AllowThrottlingScope throttling_scope(
-      GetDocument().Lifecycle());
   // This will call ScrollingCoordinator::UpdateAfterPaint() and should not
   // cause assert failure about isAllowedToQueryCompositingState() in the
   // throttled frame.
@@ -952,8 +939,6 @@ TEST_P(FrameThrottlingTest, ScrollingCoordinatorShouldSkipThrottledLayer) {
   EXPECT_EQ(DocumentLifecycle::kVisualUpdatePending,
             frame_element->contentDocument()->Lifecycle().GetState());
 
-  DocumentLifecycle::AllowThrottlingScope throttling_scope(
-      GetDocument().Lifecycle());
   // This will call ScrollingCoordinator::UpdateAfterPaint() and should not
   // cause an assert failure about isAllowedToQueryCompositingState() in the
   // throttled frame.
@@ -994,8 +979,6 @@ TEST_P(FrameThrottlingTest,
   EXPECT_EQ(DocumentLifecycle::kVisualUpdatePending,
             frame_element->contentDocument()->Lifecycle().GetState());
 
-  DocumentLifecycle::AllowThrottlingScope throttling_scope(
-      GetDocument().Lifecycle());
   // This will call ScrollingCoordinator::UpdateAfterPaint() and should not
   // cause an assert failure about isAllowedToQueryCompositingState() in the
   // throttled frame.
@@ -1008,8 +991,9 @@ TEST_P(FrameThrottlingTest,
   frame_element->setAttribute(kStyleAttr, "transform: translateY(0px)");
   CompositeFrame();  // Unthrottle the frame.
 
-  EXPECT_FALSE(
-      frame_element->contentDocument()->View()->ShouldThrottleRendering());
+  EXPECT_FALSE(frame_element->contentDocument()
+                   ->View()
+                   ->ShouldThrottleRenderingForTest());
   // Handle the pending visual update of the unthrottled frame.
   CompositeFrame();
   EXPECT_EQ(DocumentLifecycle::kPaintClean,
@@ -1069,14 +1053,13 @@ TEST_P(FrameThrottlingTest, ThrottledTopLevelEventHandlerIgnored) {
   auto* frame_element =
       To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
   frame_element->setAttribute(kStyleAttr, "transform: translateY(480px)");
-  DocumentLifecycle::AllowThrottlingScope throttling_scope(
-      GetDocument().Lifecycle());
   CompositeFrame();  // Throttle the frame.
 
   // In here, throttle iframe doesn't throttle the main frame.
-  EXPECT_TRUE(
-      frame_element->contentDocument()->View()->ShouldThrottleRendering());
-  EXPECT_FALSE(GetDocument().View()->ShouldThrottleRendering());
+  EXPECT_TRUE(frame_element->contentDocument()
+                  ->View()
+                  ->ShouldThrottleRenderingForTest());
+  EXPECT_FALSE(GetDocument().View()->ShouldThrottleRenderingForTest());
 
   // In this test, the iframe has the same origin as the main frame, so we have
   // two documents but one graphics layer tree. The test throttles the iframe
@@ -1123,14 +1106,13 @@ TEST_P(FrameThrottlingTest, ThrottledEventHandlerIgnored) {
   auto* frame_element =
       To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
   frame_element->setAttribute(kStyleAttr, "transform: translateY(480px)");
-  DocumentLifecycle::AllowThrottlingScope throttling_scope(
-      GetDocument().Lifecycle());
   CompositeFrame();  // Throttle the frame.
 
   // In here, throttle iframe doesn't throttle the main frame.
-  EXPECT_TRUE(
-      frame_element->contentDocument()->View()->ShouldThrottleRendering());
-  EXPECT_FALSE(GetDocument().View()->ShouldThrottleRendering());
+  EXPECT_TRUE(frame_element->contentDocument()
+                  ->View()
+                  ->ShouldThrottleRenderingForTest());
+  EXPECT_FALSE(GetDocument().View()->ShouldThrottleRenderingForTest());
 
   // In this test, the iframe has the same origin as the main frame, so we have
   // two documents but one graphics layer tree. The test throttles the iframe
@@ -1170,8 +1152,6 @@ TEST_P(FrameThrottlingTest, DumpThrottledFrame) {
   EXPECT_FALSE(Compositor().NeedsBeginFrame());
 
   // The dumped contents should not include the throttled frame.
-  DocumentLifecycle::AllowThrottlingScope throttling_scope(
-      GetDocument().Lifecycle());
   WebString result = WebFrameContentDumper::DumpWebViewAsText(&WebView(), 1024);
   EXPECT_NE(std::string::npos, result.Utf8().find("main"));
   EXPECT_EQ(std::string::npos, result.Utf8().find("throttled"));
@@ -1252,7 +1232,8 @@ TEST_P(FrameThrottlingTest, ThrottleInnerCompositedLayer) {
 
   // If painting of the iframe is throttled, we should only receive drawing
   // commands for the main frame.
-  auto commands_throttled = Compositor().PaintFrame();
+  GetDocument().View()->ScheduleAnimation();
+  auto commands_throttled = Compositor().BeginFrame();
   EXPECT_LT(commands_throttled.DrawCount(), full_draw_count);
 
   // Remove compositing trigger of inner_div.
@@ -1262,12 +1243,10 @@ TEST_P(FrameThrottlingTest, ThrottleInnerCompositedLayer) {
   // triggered by script style/layout access.
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
-  {
-    // And a throttled full lifecycle update.
-    DocumentLifecycle::AllowThrottlingScope throttling_scope(
-        GetDocument().Lifecycle());
-    UpdateAllLifecyclePhases();
-  }
+
+  // And a throttled full lifecycle update.
+  UpdateAllLifecyclePhases();
+
   // The inner div is no longer composited.
   EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "div").size());
 
@@ -1453,7 +1432,7 @@ TEST_P(FrameThrottlingTest, UpdatePaintPropertiesOnUnthrottling) {
   auto* frame_document = frame_element->contentDocument();
   auto* inner_div = frame_document->getElementById("div");
   auto* inner_div_object = inner_div->GetLayoutObject();
-  EXPECT_FALSE(frame_document->View()->ShouldThrottleRendering());
+  EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
 
   frame_element->setAttribute(html_names::kStyleAttr,
                               "transform: translateY(1000px)");
@@ -1466,11 +1445,7 @@ TEST_P(FrameThrottlingTest, UpdatePaintPropertiesOnUnthrottling) {
                           "transform: translateY(20px)");
   EXPECT_FALSE(Compositor().NeedsBeginFrame());
   EXPECT_TRUE(frame_document->View()->CanThrottleRendering());
-  {
-    DocumentLifecycle::AllowThrottlingScope throttling_scope(
-        GetDocument().Lifecycle());
-    UpdateAllLifecyclePhases();
-  }
+  UpdateAllLifecyclePhases();
   EXPECT_FALSE(inner_div_object->FirstFragment().PaintProperties());
 
   // Move the frame back on screen to unthrottle it.
@@ -1570,12 +1545,9 @@ TEST_P(FrameThrottlingTest, RebuildCompositedLayerTreeOnLayerRemoval) {
   CompositeFrame();
   auto* frame_element =
       To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
-  {
-    DocumentLifecycle::AllowThrottlingScope throttling_scope(
-        GetDocument().Lifecycle());
-    EXPECT_TRUE(
-        frame_element->contentDocument()->View()->ShouldThrottleRendering());
-  }
+  EXPECT_TRUE(frame_element->contentDocument()
+                  ->View()
+                  ->ShouldThrottleRenderingForTest());
 
   auto* scroller_element =
       frame_element->contentDocument()->getElementById("scroller");
@@ -1603,20 +1575,14 @@ TEST_P(FrameThrottlingTest, RebuildCompositedLayerTreeOnLayerRemoval) {
       DocumentUpdateReason::kTest);
   EXPECT_EQ(DocumentLifecycle::kLayoutClean,
             frame_element->contentDocument()->Lifecycle().GetState());
-  {
-    DocumentLifecycle::AllowThrottlingScope throttling_scope(
-        GetDocument().Lifecycle());
-    EXPECT_FALSE(
-        frame_element->contentDocument()->View()->ShouldThrottleRendering());
-  }
+  EXPECT_FALSE(frame_element->contentDocument()
+                   ->View()
+                   ->ShouldThrottleRenderingForTest());
 
   CompositeFrame();
-  {
-    DocumentLifecycle::AllowThrottlingScope throttling_scope(
-        GetDocument().Lifecycle());
-    EXPECT_TRUE(
-        frame_element->contentDocument()->View()->ShouldThrottleRendering());
-  }
+  EXPECT_TRUE(frame_element->contentDocument()
+                  ->View()
+                  ->ShouldThrottleRenderingForTest());
   EXPECT_EQ(DocumentLifecycle::kCompositingAssignmentsClean,
             frame_element->contentDocument()->Lifecycle().GetState());
 }
@@ -1645,13 +1611,9 @@ TEST_P(FrameThrottlingTest, LifecycleUpdateAfterUnthrottledCompositingUpdate) {
   GetDocument().View()->UpdateLifecycleToCompositingCleanPlusScrolling(
       DocumentUpdateReason::kTest);
 
-  {
-    // Then do a full lifecycle with throttling enabled. This should not crash.
-    DocumentLifecycle::AllowThrottlingScope throttling_scope(
-        GetDocument().Lifecycle());
-    EXPECT_TRUE(frame_document->View()->ShouldThrottleRendering());
-    UpdateAllLifecyclePhases();
-  }
+  // Then do a full lifecycle with throttling enabled. This should not crash.
+  EXPECT_TRUE(frame_document->View()->ShouldThrottleRenderingForTest());
+  UpdateAllLifecyclePhases();
 }
 
 TEST_P(FrameThrottlingTest, GraphicsLayerCollection) {
@@ -1669,20 +1631,18 @@ TEST_P(FrameThrottlingTest, GraphicsLayerCollection) {
   frame_resource.Complete(
       "<div id='div' style='will-change: transform'>Foo</div>");
 
-  DocumentLifecycle::AllowThrottlingScope throttling_scope(
-      GetDocument().Lifecycle());
   CompositeFrame();
 
   auto* frame_element =
       To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
   auto* frame_document = frame_element->contentDocument();
-  EXPECT_FALSE(frame_document->View()->ShouldThrottleRendering());
+  EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
   auto layer_count = GetDocument().View()->RootCcLayer()->children().size();
 
   // Moving the child fully outside the parent makes it invisible.
   frame_element->setAttribute(kStyleAttr, "transform: translateY(480px)");
   CompositeFrame();
-  EXPECT_TRUE(frame_document->View()->ShouldThrottleRendering());
+  EXPECT_TRUE(frame_document->View()->ShouldThrottleRenderingForTest());
   // Change of throttling will force PaintArtifactCompositor update in the next
   // frame.
   EXPECT_TRUE(
@@ -1692,7 +1652,7 @@ TEST_P(FrameThrottlingTest, GraphicsLayerCollection) {
   GetDocument().GetPage()->Animator().ScheduleVisualUpdate(
       GetDocument().GetFrame());
   CompositeFrame();
-  EXPECT_TRUE(frame_document->View()->ShouldThrottleRendering());
+  EXPECT_TRUE(frame_document->View()->ShouldThrottleRenderingForTest());
   // We no longer collect the graphics layers of the iframe and the composited
   // content.
   EXPECT_GT(layer_count,
@@ -1704,12 +1664,12 @@ TEST_P(FrameThrottlingTest, GraphicsLayerCollection) {
   // Update throttling, which will schedule visual update on unthrottling of the
   // frame.
   CompositeFrame();
-  EXPECT_FALSE(frame_document->View()->ShouldThrottleRendering());
+  EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
   EXPECT_TRUE(
       GetDocument().View()->GetPaintArtifactCompositor()->NeedsUpdate());
 
   CompositeFrame();
-  EXPECT_FALSE(frame_document->View()->ShouldThrottleRendering());
+  EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
   // Now we should collect all graphics layers again.
   EXPECT_EQ(layer_count,
             GetDocument().View()->RootCcLayer()->children().size());

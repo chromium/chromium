@@ -136,7 +136,7 @@ TEST_P(PaintPropertyTreeBuilderTest, FixedPosition) {
   transformed_scroll->setScrollTop(5);
 
   LocalFrameView* frame_view = GetDocument().View();
-  frame_view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  frame_view->UpdateAllLifecyclePhasesForTest();
 
   // target1 is a fixed-position element inside an absolute-position scrolling
   // element.  It should be attached under the viewport to skip scrolling and
@@ -198,7 +198,7 @@ TEST_P(PaintPropertyTreeBuilderTest, PositionAndScroll) {
   Element* scroller = GetDocument().getElementById("scroller");
   scroller->scrollTo(0, 100);
   LocalFrameView* frame_view = GetDocument().View();
-  frame_view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  frame_view->UpdateAllLifecyclePhasesForTest();
   const ObjectPaintProperties* scroller_properties =
       scroller->GetLayoutObject()->FirstFragment().PaintProperties();
   EXPECT_EQ(FloatSize(0, -100),
@@ -529,7 +529,7 @@ TEST_P(PaintPropertyTreeBuilderTest, DocScrollingTraditional) {
   GetDocument().domWindow()->scrollTo(0, 100);
 
   LocalFrameView* frame_view = GetDocument().View();
-  frame_view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  frame_view->UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(DocPreTranslation()->IsIdentity());
   EXPECT_EQ(
       GetDocument().GetPage()->GetVisualViewport().GetScrollTranslationNode(),
@@ -1827,7 +1827,7 @@ TEST_P(PaintPropertyTreeBuilderTest, TransformNodesAcrossSubframes) {
   )HTML");
 
   LocalFrameView* frame_view = GetDocument().View();
-  frame_view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  frame_view->UpdateAllLifecyclePhasesForTest();
 
   LayoutObject* div_with_transform =
       GetLayoutObjectByElementId("divWithTransform");
@@ -1902,7 +1902,7 @@ TEST_P(PaintPropertyTreeBuilderTest, FramesEstablishIsolation) {
   )HTML");
 
   LocalFrameView* frame_view = GetDocument().View();
-  frame_view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  frame_view->UpdateAllLifecyclePhasesForTest();
 
   LayoutObject* frame = ChildFrame().View()->GetLayoutView();
   const auto& frame_contents_properties =
@@ -1962,7 +1962,7 @@ TEST_P(PaintPropertyTreeBuilderTest, FramesEstablishIsolation) {
   // However, isolation stops this recursion.
   GetDocument().getElementById("parent")->setAttribute(html_names::kClassAttr,
                                                        "transformed");
-  frame_view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  frame_view->UpdateAllLifecyclePhasesForTest();
 
   // Verify that our clobbered state is still clobbered.
   EXPECT_EQ(FloatSize(123, 321),
@@ -2000,7 +2000,7 @@ TEST_P(PaintPropertyTreeBuilderTest, TransformNodesInTransformedSubframes) {
     <div id='transform'></div>
   )HTML");
   LocalFrameView* frame_view = GetDocument().View();
-  frame_view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  frame_view->UpdateAllLifecyclePhasesForTest();
 
   // Assert that we have the following tree structure:
   // ...
@@ -6693,7 +6693,7 @@ TEST_P(PaintPropertyTreeBuilderTest, VideoClipRect) {
   video_element->SetInlineStyleProperty(CSSPropertyID::kTop, "0.1px");
   video_element->SetInlineStyleProperty(CSSPropertyID::kLeft, "0.1px");
   LocalFrameView* frame_view = GetDocument().View();
-  frame_view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  frame_view->UpdateAllLifecyclePhasesForTest();
   const ObjectPaintProperties* video_element_properties =
       video_element->GetLayoutObject()->FirstFragment().PaintProperties();
   // |video_element| is now sub-pixel positioned, at 0.1,0.1 320.2x240. With or
@@ -6706,7 +6706,7 @@ TEST_P(PaintPropertyTreeBuilderTest, VideoClipRect) {
   // 321x240. With proper pixel snapping, the clip will be at 10,10,320,240.
   video_element->SetInlineStyleProperty(CSSPropertyID::kTop, "10.4px");
   video_element->SetInlineStyleProperty(CSSPropertyID::kLeft, "10.4px");
-  frame_view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  frame_view->UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(FloatRoundedRect(10, 10, 320, 240),
             video_element_properties->OverflowClip()->UnsnappedClipRect());
 }

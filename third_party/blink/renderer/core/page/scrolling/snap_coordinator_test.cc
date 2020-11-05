@@ -117,8 +117,7 @@ class SnapCoordinatorTest : public testing::Test,
   }
 
   void UpdateAllLifecyclePhasesForTest() {
-    GetDocument().View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-    GetDocument().View()->RunPostLifecycleSteps();
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   }
 
   const cc::SnapContainerData* GetSnapContainerData(LayoutBox& layout_box) {

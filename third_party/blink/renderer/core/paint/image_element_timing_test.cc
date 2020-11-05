@@ -90,7 +90,7 @@ class ImageElementTimingTest : public testing::Test,
         ->MainFrameImpl()
         ->GetFrame()
         ->View()
-        ->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+        ->UpdateAllLifecyclePhasesForTest();
   }
 
   frame_test_helpers::WebViewHelper web_view_helper_;

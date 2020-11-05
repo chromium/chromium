@@ -79,7 +79,7 @@ class PaintWorkletTest : public PageTestBase {
     paint_worklet_to_test->DomWindow()
         ->GetFrame()
         ->View()
-        ->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+        ->UpdateAllLifecyclePhasesForTest();
     paint_worklet_to_test->SetPaintsToSwitch(paint_cnt_to_switch);
     size_t previously_selected_global_scope =
         paint_worklet_to_test->GetActiveGlobalScope();
