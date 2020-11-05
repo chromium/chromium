@@ -49,6 +49,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1346748346194534595">Djathtas</translation>
 <translation id="1351937230027495976">Palos menynë</translation>
 <translation id="1383876407941801731">Kërko</translation>
+<translation id="1390105199421505038">Hiqe dialogun e llogarisë për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1391102559483454063">Aktiv</translation>
 <translation id="1407069428457324124">Tema e errët</translation>
 <translation id="1419738280318246476">Shkyç pajisjen për të kryer veprimin e njoftimit</translation>
@@ -368,6 +369,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4477892968187500306">Kjo pajisje mund të përmbajë aplikacione që nuk janë verifikuar nga Google.</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4481530544597605423">Pajisjet e paçiftuara</translation>
+<translation id="4485060137115666462">Me një klikim me butonin djathtas ose shtypje të gjatë, "Asistenti" shfaq informacione si p.sh. përkufizimi, përkthimi ose konvertimi i njësisë për zgjedhjen tënde.</translation>
 <translation id="4505050298327493054">Hapësira e punës aktive.</translation>
 <translation id="4506458088675900627">Gjesti i bllokut me prekje të "Përmbledhjes" ka ndryshuar</translation>
 <translation id="4513946894732546136">Komente</translation>
@@ -596,6 +598,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6803622936009808957">Nuk mundi të pasqyrojë ekranet sepse nuk u gjetën rezolucione të mbështetura. Në vend të kësaj kaloi në desktopin e zgjeruar.</translation>
 <translation id="6818242057446442178">Një fjalë pas</translation>
 <translation id="6820676911989879663">Bëj një pushim!</translation>
+<translation id="6850010208275816200">Aplikacioni yt aktual është në ekranin e plotë. Nëse aplikacioni kërkon fjalëkalimin, në fillim dil nga ekrani i plotë.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
 <translation id="6857811139397017780">Aktivizo <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Një shifër e mbetur}other{# shifra të mbetura}}</translation>
@@ -646,6 +649,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7398254312354928459">Lidhja e rrjetit u ndërrua</translation>
 <translation id="7405710164030118432">Për të shkyçur pajisjen, fut kodin e qasjes së prindit për Family Link</translation>
 <translation id="741244894080940828">konvertimi</translation>
+<translation id="7413851974711031813">Shtyp Escape për ta mbyllur</translation>
 <translation id="742594950370306541">Kamera është në përdorim.</translation>
 <translation id="742608627846767349">Mirëmëngjesi,</translation>
 <translation id="743058460480092004">Kamera dhe mikrofoni janë në përdorim</translation>

@@ -80,6 +80,14 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">तपाईंले आफ्नो संगठनले व्यवस्थापन नगरेको कुनै साइटमा आफ्नो पासवर्ड प्रविष्ट गर्नुभयो। आफ्नो खाता सुरक्षित गर्न, अन्य एप र साइटहरूमा तपाईंको पासवर्ड पुनः प्रयोग नगर्नुहोस्।</translation>
 <translation id="1263231323834454256">पाठ्य सूची</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        निम्न क्रियाकलाप यो यन्त्रमा सुरक्षित गरिने छैन:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />तपाईंले यो विन्डोमा हेर्ने पेजहरू
+          <ph name="LIST_ITEM" />कुकी तथा साइटको डेटा
+          <ph name="LIST_ITEM" />खातासम्बन्धी जानकारी (<ph name="LINK_BEGIN" />साइन आउट गर्नुहोस्<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">पिकअपको विधि</translation>
 <translation id="1281476433249504884">स्ट्याकर १</translation>
 <translation id="1285320974508926690">यो साइट कहिले पनि अनुवाद नगर्नुहोस्</translation>
@@ -552,6 +560,7 @@
 <translation id="3207960819495026254">बुकमार्क लगाइयो</translation>
 <translation id="3209034400446768650">यो पृष्ठले शुल्क लिन सक्छ</translation>
 <translation id="3212581601480735796">तपाईंले <ph name="HOSTNAME" /> मा गर्ने क्रियाकलापमाथि निगरानी गरिँदै छ</translation>
+<translation id="3212623355668894776">तपाईंले ब्राउजर प्रयोग गरी गर्नुभएको क्रियाकलाप यो यन्त्रबाट मेटाइयोस् भन्नाका खातिर सबै गेस्ट विन्डोहरू बन्द गर्नुहोस्।</translation>
 <translation id="3215092763954878852">WebAuthn प्रयोग गर्न सकिएन</translation>
 <translation id="3218181027817787318">सापेक्ष</translation>
 <translation id="3225919329040284222">सर्भरले अन्तर्निर्मित अपेक्षाहरूसँग नमिल्ने प्रमाणपत्र प्रस्तुत गर्‍यो। यी अपेक्षाहरू विशेष, उच्च-सुरक्षा वेबसाटइहरूको लागि तपाइँलाई सुरक्षा गर्न समावेश गरिएका छन्।</translation>
@@ -912,6 +921,7 @@
 <translation id="4658638640878098064">सिरानको बायाँपट्टि स्टिच</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">भर्चुअल रियालिटी</translation>
+<translation id="4675657451653251260">तपाईं गेस्ट मोडमा Chrome प्रोफाइलको कुनै पनि जानकारी देख्नु हुने छैन। तपाईं पासवर्ड तथा भुक्तानी विधि जस्ता Google खातामा भएका आफ्ना जानकारी प्रयोग गर्न <ph name="LINK_BEGIN" />साइन इन<ph name="LINK_END" /> गर्न सक्नुहुन्छ।</translation>
 <translation id="467662567472608290">यो सर्भरले यो <ph name="DOMAIN" /> को भनि प्रमाणित गर्न सकेन; यसको सुरक्षा प्रमाणपत्रमा त्रुटिहरू छन्। यो कुनै एउटा मिसकन्फिगरेसन वा कुनै आक्रमणकारीले तपाईंको जडानमा गरेको हस्तक्षेपको कारणले गर्दा भएको हुन सक्छ।</translation>
 <translation id="4677585247300749148"><ph name="URL" /> पहुँचसम्बन्धी कार्यक्रमहरूमा प्रतिक्रिया दिन चाहन्छ</translation>
 <translation id="467809019005607715">Google स्लाइड</translation>
@@ -939,6 +949,12 @@
 <translation id="4761104368405085019">आफ्नो माइक्रोफोन प्रयोग गर्नुहोस्</translation>
 <translation id="4764776831041365478"><ph name="URL" /> को वेबपेज अस्थायी रूपमा बन्द भएको हुन सक्छ वा त्यो स्थायी रूपमा एउटा नयाँ वेब ठेगानामा सरेको हुन सक्छ।</translation>
 <translation id="4766713847338118463">फेदमा दुई स्टिच</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        तपाईंले गर्ने निम्न क्रियाकलाप यो यन्त्रमा सुरक्षित गरिन्छ:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />तपाईंले यो विन्डोमा डाउनलोड गर्ने सबै फाइलहरू
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">एउटा अज्ञात त्रुटि देखापर्यो ।</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{पप-अपमाथि रोक लगाइयो}other{# पप-अपहरूमाथि रोक लगाइयो}}</translation>
 <translation id="4780366598804516005">मेलबक्स १</translation>
@@ -1393,6 +1409,7 @@
 <translation id="6587923378399804057">तपाईंले प्रतिलिपि गर्नुभएको लिंक</translation>
 <translation id="6591833882275308647">तपाईंको <ph name="DEVICE_TYPE" /> व्यवस्थित छैन</translation>
 <translation id="6596325263575161958">गुप्तीकरण विकल्पहरू</translation>
+<translation id="6596892391065203054">तपाईंका एड्मिनले यो सामग्री प्रिन्ट गर्ने सुविधा ब्लक गर्नुभएको छ।</translation>
 <translation id="6604181099783169992">चाल वा प्रकाशसम्बन्धी सेन्सरहरू</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
 <translation id="6612358246767739896">संरक्षित सामग्री</translation>
@@ -1876,11 +1893,21 @@
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />मा एउटा निजी जडान स्थापना गर्न सक्दैन किनकि तपाईँको यन्त्रको मिति र समय <ph name="DATE_AND_TIME" /> गलत छन्।</translation>
 <translation id="8564182942834072828">छुट्टा छुट्टै कागजातहरू/क्रमबद्ध नगरिएका प्रतिहरू</translation>
 <translation id="8564985650692024650">तपाईंले आफ्नो <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> को पासवर्ड अन्य साइटहरूमा पुनः प्रयोग गर्नुभएका खण्डमा Chromium ले तपाईंलाई उक्त पासवर्ड रिसेट गर्न सिफारिस गर्दछ।</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        निम्न क्रियाकलाप यो यन्त्रमा सुरक्षित गरिने छैन:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />तपाईंले यो विन्डोमा हेर्ने पेजहरू
+          <ph name="LIST_ITEM" />कुकी तथा साइटको डेटा
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">कार्डहरू अझ छिटो पुष्टि गर्न Touch ID प्रयोग गर्नुहोस्</translation>
 <translation id="858637041960032120">फोन नम्बर थप्नुहोस्</translation>
 <translation id="8589998999637048520">उत्कृष्ट गुणस्तर</translation>
 <translation id="860043288473659153">कार्डवालाको नाम</translation>
 <translation id="8606726445206553943">तपाईँका MIDI यन्त्रहरू प्रयोग गर्नुहोस्</translation>
+<translation id="8612761427948161954">नमस्ते <ph name="USERNAME" />,
+        <ph name="BR" />
+        तपाईं अतिथिका रूपमा ब्राउज गर्दै हुनुहुन्छ</translation>
 <translation id="861775596732816396">आकार ४</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">मिल्दो पासवर्ड फेला परेन। सुरक्षित गरिएका सबै पासवर्डहरू देखाउनुहोस्।</translation>
@@ -2019,6 +2046,7 @@
 <translation id="9183302530794969518">Google कागजात</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> ले असमर्थित प्रोटोकल प्रयोग गर्दछ।</translation>
 <translation id="9191834167571392248">फेदको बायाँपट्टि प्वाल</translation>
+<translation id="9199905725844810519">प्रिन्ट गर्ने सुविधा ब्लक गरिएको छ</translation>
 <translation id="9205078245616868884">तपाईँको डेटालाई तपाईँको सिंक पासफ्रेजमार्फत इन्क्रिप्ट गरिएको छ। सिंक सुरु गर्न त्यो पासफ्रेज प्रविष्टि गर्नुहोस्।</translation>
 <translation id="9207861905230894330">लेख थप्न असफल भयो।</translation>
 <translation id="9213433120051936369">आफूले चाहेअनुसारको रूप बनाउनुहोस्</translation>
