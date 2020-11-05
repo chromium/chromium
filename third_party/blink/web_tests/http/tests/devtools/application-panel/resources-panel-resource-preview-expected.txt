@@ -4,7 +4,7 @@ Initial state:
 Application
   Manifest (selected)
   Service Workers
-  Clear storage
+  Storage
 Storage
   Local Storage
     http://127.0.0.1:8000
@@ -36,7 +36,7 @@ Revealed json-value.js:
 Application
   Manifest
   Service Workers
-  Clear storage
+  Storage
 Storage
   Local Storage
     http://127.0.0.1:8000
@@ -68,7 +68,7 @@ Revealed image.png:
 Application
   Manifest
   Service Workers
-  Clear storage
+  Storage
 Storage
   Local Storage
     http://127.0.0.1:8000
@@ -100,7 +100,7 @@ Revealed resources-panel-resource-preview.js:
 Application
   Manifest
   Service Workers
-  Clear storage
+  Storage
 Storage
   Local Storage
     http://127.0.0.1:8000

@@ -5,7 +5,7 @@ Initial tree...
 Application
  Manifest
  Service Workers
- Clear storage
+ Storage
 Storage
  Local Storage
   http://127.0.0.1:8000
@@ -42,7 +42,7 @@ Remove iframe from page...
 Application
  Manifest
  Service Workers
- Clear storage
+ Storage
 Storage
  Local Storage
   http://127.0.0.1:8000
@@ -73,7 +73,7 @@ Add iframe to page again...
 Application
  Manifest
  Service Workers
- Clear storage
+ Storage
 Storage
  Local Storage
   http://127.0.0.1:8000

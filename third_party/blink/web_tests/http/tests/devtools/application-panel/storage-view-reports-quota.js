@@ -63,13 +63,16 @@
   await UI.viewManager.showView('resources');
 
   var parent = UI.panels.resources._sidebar._applicationTreeElement;
-  var clearStorageElement = parent.children().find(child => child.title === 'Clear storage');
+  var clearStorageElement =
+      parent.children().find(child => child.title === 'Storage');
 
   TestRunner.addResult('Tree element found: ' + !!clearStorageElement);
   clearStorageElement.select();
 
   var clearStorageView = UI.panels.resources.visibleView;
-  TestRunner.addResult('Clear storage view is visible: ' + (clearStorageView instanceof Resources.ClearStorageView));
+  TestRunner.addResult(
+      'Storage view is visible: ' +
+      (clearStorageView instanceof Resources.ClearStorageView));
 
   clearStorageView._clearButton.click();
   await dumpWhenMatches(clearStorageView, usage => usage === 0);
