@@ -15,6 +15,7 @@
 
 #include "base/base_paths.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -43,6 +44,7 @@
 
 #if defined(OS_MAC)
 #include "base/mac/mach_o.h"
+#include "base/mac/rosetta.h"
 #endif  // OS_MAC
 
 #if !BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
@@ -146,9 +148,13 @@ base::FilePath GetCdmPathFromInstallDir(const base::FilePath& install_dir) {
   // If no Widevine CDM is present in the normal native arm64 location, look for
   // one in the x86_64 location. Beware that the architecture embedded in the
   // pathname does not necessarily indicate what architecture the Mach-O file at
-  // that path supports. A separate base::GetMachOArchitectures call must be
-  // made to determine the actual architecture.
-  if (!base::PathExists(cdm_path) &&
+  // that path supports: an x86_64 library may be found in an arm64 location. A
+  // separate base::GetMachOArchitectures call must be made to determine the
+  // actual architecture.
+  //
+  // Since the x86_64 location can only store an x86_64 library, only attempt to
+  // use it if Rosetta is available. It’s not installed by default.
+  if (!base::PathExists(cdm_path) && base::mac::IsRosettaInstalled() &&
       base::EndsWith(cdm_platform_dir.value(), kWidevineCdmArch)) {
     cdm_platform_dir = base::FilePath(
         cdm_platform_dir.value().substr(
@@ -240,6 +246,20 @@ bool WidevineCdmComponentInstallerPolicy::VerifyInstallation(
     const base::FilePath& install_dir) const {
   base::FilePath cdm_path = GetCdmPathFromInstallDir(install_dir);
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+  // Before committing to run an x86_64 version of Widevine under Rosetta, make
+  // sure that Rosetta is actually available. It’s not installed by default.
+  const base::MachOArchitectures architectures =
+      base::GetMachOArchitectures(cdm_path);
+  const bool launch_x86_64 =
+      (architectures & (base::MachOArchitectures::kX86_64 |
+                        base::MachOArchitectures::kARM64)) ==
+      base::MachOArchitectures::kX86_64;
+  if (launch_x86_64 && !base::mac::IsRosettaInstalled()) {
+    return false;
+  }
+#endif  // OS_MAC && ARCH_CPU_ARM64
+
   content::CdmCapability capability;
   return IsCdmManifestCompatibleWithChrome(manifest) &&
          base::PathExists(cdm_path) && ParseCdmManifest(manifest, &capability);
@@ -307,6 +327,12 @@ void WidevineCdmComponentInstallerPolicy::UpdateCdmPath(
       (architectures & (base::MachOArchitectures::kX86_64 |
                         base::MachOArchitectures::kARM64)) ==
       base::MachOArchitectures::kX86_64;
+
+  // In order for this strategy to work, Rosetta must be installed. That should
+  // be guaranteed by VerifyInstallation succeeding.
+  if (launch_x86_64) {
+    DCHECK(base::mac::IsRosettaInstalled());
+  }
 #endif  // OS_MAC && ARCH_CPU_ARM64
 
   content::GetUIThreadTaskRunner({})->PostTask(
