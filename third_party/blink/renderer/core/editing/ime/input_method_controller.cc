@@ -1174,9 +1174,14 @@ String InputMethodController::ComposingText() const {
 }
 
 PlainTextRange InputMethodController::GetSelectionOffsets() const {
-  EphemeralRange range = FirstEphemeralRangeOf(
+  const EphemeralRange range = FirstEphemeralRangeOf(
       GetFrame().Selection().ComputeVisibleSelectionInDOMTreeDeprecated());
-  return PlainTextRangeForEphemeralRange(range).second;
+  if (range.IsNull())
+    return PlainTextRange();
+  const ContainerNode& element =
+      *RootEditableElementOrTreeScopeRootNodeOf(range.StartPosition());
+  cached_text_input_info_.EnsureCached(element);
+  return cached_text_input_info_.GetSelection(range);
 }
 
 EphemeralRange InputMethodController::EphemeralRangeForOffsets(
@@ -1516,6 +1521,20 @@ void InputMethodController::GetLayoutBounds(WebRect* control_bounds,
   *control_bounds = EnclosingIntRect(editable_rect_double);
 }
 
+void InputMethodController::DidLayoutSubtree(
+    const LayoutObject& layout_object) {
+  cached_text_input_info_.DidLayoutSubtree(layout_object);
+}
+
+void InputMethodController::DidUpdateLayout(const LayoutObject& layout_object) {
+  cached_text_input_info_.DidUpdateLayout(layout_object);
+}
+
+void InputMethodController::LayoutObjectWillBeDestroyed(
+    const LayoutObject& layout_object) {
+  cached_text_input_info_.LayoutObjectWillBeDestroyed(layout_object);
+}
+
 WebTextInputInfo InputMethodController::TextInputInfo() const {
   WebTextInputInfo info;
   if (!IsAvailable())
@@ -1547,21 +1566,18 @@ WebTextInputInfo InputMethodController::TextInputInfo() const {
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       GetDocument().Lifecycle());
 
+  cached_text_input_info_.EnsureCached(*element);
+
   // Emits an object replacement character for each replaced element so that
   // it is exposed to IME and thus could be deleted by IME on android.
-  info.value = PlainText(EphemeralRange::RangeOfContents(*element),
-                         TextIteratorBehavior::Builder()
-                             .SetEmitsObjectReplacementCharacter(true)
-                             .SetEmitsSpaceForNbsp(true)
-                             .Build());
-
+  info.value = cached_text_input_info_.GetText();
   if (info.value.IsEmpty())
     return info;
 
-  EphemeralRange first_range = FirstEphemeralRangeOf(
+  const EphemeralRange& first_range = FirstEphemeralRangeOf(
       GetFrame().Selection().ComputeVisibleSelectionInDOMTreeDeprecated());
-  PlainTextRange selection_plain_text_range =
-      PlainTextRangeForEphemeralRange(first_range).second;
+  const PlainTextRange& selection_plain_text_range =
+      cached_text_input_info_.GetSelection(first_range);
   if (selection_plain_text_range.IsNotNull()) {
     info.selection_start = selection_plain_text_range.Start();
     info.selection_end = selection_plain_text_range.End();
@@ -1574,9 +1590,9 @@ WebTextInputInfo InputMethodController::TextInputInfo() const {
         GetImeTextSpansAroundPosition(first_range.StartPosition());
   }
 
-  EphemeralRange range = CompositionEphemeralRange();
-  PlainTextRange composition_plain_text_range =
-      PlainTextRangeForEphemeralRange(range).second;
+  const EphemeralRange& range = CompositionEphemeralRange();
+  const PlainTextRange& composition_plain_text_range =
+      cached_text_input_info_.GetComposition(range);
   if (composition_plain_text_range.IsNotNull()) {
     info.composition_start = composition_plain_text_range.Start();
     info.composition_end = composition_plain_text_range.End();
@@ -1795,6 +1811,7 @@ void InputMethodController::WillChangeFocus() {
 }
 
 void InputMethodController::Trace(Visitor* visitor) const {
+  visitor->Trace(cached_text_input_info_);
   visitor->Trace(frame_);
   visitor->Trace(composition_range_);
   visitor->Trace(active_edit_context_);
@@ -1835,11 +1852,8 @@ WebVector<ui::ImeTextSpan> InputMethodController::GetImeTextSpansAroundPosition(
       const EphemeralRange& marker_ephemeral_range =
           EphemeralRange(Position(node, marker->StartOffset()),
                          Position(node, marker->EndOffset()));
-      // TODO(yosin): We should have another way to converting DOM position
-      // to offset in root editable, because root editable has big text
-      // content, |PlainTextRangeForEphemeralRange()| is slow.
-      PlainTextRange marker_plain_text_range =
-          PlainTextRangeForEphemeralRange(marker_ephemeral_range).second;
+      const PlainTextRange& marker_plain_text_range =
+          cached_text_input_info_.GetPlainTextRange(marker_ephemeral_range);
 
       ime_text_spans.emplace_back(
           ImeTextSpan(type, marker_plain_text_range.Start(),

@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/commands/typing_command.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
+#include "third_party/blink/renderer/core/editing/ime/cached_text_input_info.h"
 #include "third_party/blink/renderer/core/editing/ime/ime_text_span.h"
 #include "third_party/blink/renderer/core/editing/plain_text_range.h"
 #include "third_party/blink/renderer/core/events/input_event.h"
@@ -110,6 +111,11 @@ class CORE_EXPORT InputMethodController final
                                          size_t text_length) const;
   void DeleteSurroundingText(int before, int after);
   void DeleteSurroundingTextInCodePoints(int before, int after);
+
+  void DidLayoutSubtree(const LayoutObject& layout_object);
+  void DidUpdateLayout(const LayoutObject& layout_object);
+  void LayoutObjectWillBeDestroyed(const LayoutObject& layout_object);
+
   WebTextInputInfo TextInputInfo() const;
   // For finding NEXT/PREVIOUS everytime during frame update is a costly
   // operation, so making it specific whenever needed by splitting from
@@ -140,6 +146,10 @@ class CORE_EXPORT InputMethodController final
     return last_vk_visibility_request_;
   }
 
+  CachedTextInputInfo& GetCachedTextInputInfoForTesting() {
+    return cached_text_input_info_;
+  }
+
  private:
   friend class InputMethodControllerTest;
 
@@ -147,6 +157,8 @@ class CORE_EXPORT InputMethodController final
   bool IsAvailable() const;
 
   Member<LocalFrame> frame_;
+  // Root editable text content cache for |TextInputInfo()|.
+  CachedTextInputInfo cached_text_input_info_;
   Member<Range> composition_range_;
   Member<EditContext> active_edit_context_;
   bool has_composition_;

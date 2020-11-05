@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
+#include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -445,6 +446,10 @@ void LayoutBox::WillBeDestroyed() {
       measure_result_->PhysicalFragment().LayoutObjectWillBeDestroyed();
     for (auto result : layout_results_)
       result->PhysicalFragment().LayoutObjectWillBeDestroyed();
+    GetDocument()
+        .GetFrame()
+        ->GetInputMethodController()
+        .LayoutObjectWillBeDestroyed(*this);
   }
 
   SetSnapContainer(nullptr);
@@ -848,6 +853,8 @@ void LayoutBox::LayoutSubtreeRoot() {
       cb = cb->ContainingBlock();
     }
   }
+
+  GetDocument().GetFrame()->GetInputMethodController().DidLayoutSubtree(*this);
 }
 
 void LayoutBox::UpdateLayout() {
@@ -1136,6 +1143,7 @@ void LayoutBox::UpdateAfterLayout() {
 
   Document& document = GetDocument();
   document.IncLayoutCallsCounter();
+  document.GetFrame()->GetInputMethodController().DidUpdateLayout(*this);
   if (IsLayoutNGObject())
     document.IncLayoutCallsCounterNG();
 }
