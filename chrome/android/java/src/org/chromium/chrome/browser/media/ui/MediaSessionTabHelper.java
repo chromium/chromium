@@ -15,12 +15,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.components.browser_ui.media.MediaNotificationImageUtils;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.components.browser_ui.media.MediaNotificationManager;
 import org.chromium.components.browser_ui.media.MediaSessionHelper;
-import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.content_public.browser.WebContents;
+import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 
 /**
  * A tab helper that wraps {@link MediaSessionHelper} and is responsible for Chrome-specific
@@ -30,8 +28,6 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
     private Tab mTab;
     @VisibleForTesting
     MediaSessionHelper mMediaSessionHelper;
-    @VisibleForTesting
-    LargeIconBridge mLargeIconBridge;
 
     @VisibleForTesting
     final TabObserver mTabObserver = new EmptyTabObserver() {
@@ -54,10 +50,6 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
             if (mMediaSessionHelper != null) mMediaSessionHelper.destroy();
             mTab.removeObserver(this);
             mTab = null;
-            if (mLargeIconBridge != null) {
-                mLargeIconBridge.destroy();
-                mLargeIconBridge = null;
-            }
         }
     };
 
@@ -90,22 +82,8 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
     }
 
     @Override
-    public boolean fetchLargeFaviconImage() {
-        WebContents webContents = mTab.getWebContents();
-        String pageUrl = webContents.getLastCommittedUrl();
-        int size = MediaNotificationImageUtils.MINIMAL_MEDIA_IMAGE_SIZE_PX;
-        if (mLargeIconBridge == null) {
-            mLargeIconBridge = new LargeIconBridge(Profile.fromWebContents(webContents));
-        }
-        LargeIconBridge.LargeIconCallback callback = new LargeIconBridge.LargeIconCallback() {
-            @Override
-            public void onLargeIconAvailable(
-                    Bitmap icon, int fallbackColor, boolean isFallbackColorDefault, int iconType) {
-                mMediaSessionHelper.setLargeIcon(icon);
-            }
-        };
-
-        return mLargeIconBridge.getLargeIconForStringUrl(pageUrl, size, callback);
+    public BrowserContextHandle getBrowserContextHandle() {
+        return Profile.fromWebContents(mTab.getWebContents());
     }
 
     @Override

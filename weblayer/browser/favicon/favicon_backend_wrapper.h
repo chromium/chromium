@@ -51,6 +51,10 @@ class FaviconBackendWrapper
       const GURL& page_url,
       const favicon_base::IconTypeSet& icon_types,
       const std::vector<int>& desired_sizes);
+  favicon_base::FaviconRawBitmapResult GetLargestFaviconForUrl(
+      const GURL& page_url,
+      const std::vector<favicon_base::IconTypeSet>& icon_types_list,
+      int minimum_size_in_pixels);
   void SetFaviconsOutOfDateForPage(const GURL& page_url);
   void SetFavicons(const base::flat_set<GURL>& page_urls,
                    favicon_base::IconType icon_type,
@@ -95,8 +99,8 @@ class FaviconBackendWrapper
   // batch commits.
   base::OneShotTimer commit_timer_;
 
-  // The real implementation of the backend. Is there is a problem initializing
-  // the database this will be null.
+  // The real implementation of the backend. If there is a problem
+  // initializing the database this will be null.
   std::unique_ptr<favicon::FaviconBackend> favicon_backend_;
 
   // Timer used to remove items from the database that are likely no longer

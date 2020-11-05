@@ -53,6 +53,7 @@ public final class FaviconCallbackProxy extends IFaviconFetcher.Stub {
 
     @CalledByNative
     private void onFaviconChanged(Bitmap bitmap) throws RemoteException {
+        mTab.onFaviconChanged(bitmap);
         mClient.onFaviconChanged(bitmap);
     }
 

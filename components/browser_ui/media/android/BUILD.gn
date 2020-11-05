@@ -22,6 +22,8 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//components/browser_ui/notifications/android:java",
+    "//components/embedder_support/android:browser_context_java",
+    "//components/favicon/android:java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java",
     "//services/media_session/public/cpp/android:media_session_java",

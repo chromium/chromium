@@ -14,7 +14,9 @@ import org.chromium.components.browser_ui.media.MediaNotificationManager;
 import org.chromium.components.browser_ui.media.MediaSessionHelper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
+import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.weblayer_private.IntentUtils;
+import org.chromium.weblayer_private.TabImpl;
 import org.chromium.weblayer_private.WebLayerImpl;
 
 /**
@@ -34,23 +36,23 @@ public class MediaSessionManager {
         MediaSessionNotificationHelper.serviceDestroyed(getNotificationId());
     }
 
-    public static MediaSessionHelper.Delegate createMediaSessionHelperDelegate(int tabId) {
+    public static MediaSessionHelper.Delegate createMediaSessionHelperDelegate(TabImpl tab) {
         return new MediaSessionHelper.Delegate() {
             @Override
             public Intent createBringTabToFrontIntent() {
-                return IntentUtils.createBringTabToFrontIntent(tabId);
+                return IntentUtils.createBringTabToFrontIntent(tab.getId());
             }
 
             @Override
-            public boolean fetchLargeFaviconImage() {
-                // TODO(crbug.com/1137625): implement.
-                return false;
+            public BrowserContextHandle getBrowserContextHandle() {
+                return tab.getProfile();
             }
 
             @Override
             public MediaNotificationInfo.Builder createMediaNotificationInfoBuilder() {
-                return new MediaNotificationInfo.Builder().setInstanceId(tabId).setId(
-                        getNotificationId());
+                return new MediaNotificationInfo.Builder()
+                        .setInstanceId(tab.getId())
+                        .setId(getNotificationId());
             }
 
             @Override
@@ -62,12 +64,13 @@ public class MediaSessionManager {
 
             @Override
             public void hideMediaNotification() {
-                MediaNotificationManager.hide(tabId, getNotificationId());
+                MediaNotificationManager.hide(tab.getId(), getNotificationId());
             }
 
             @Override
             public void activateAndroidMediaSession() {
-                MediaNotificationManager.activateAndroidMediaSession(tabId, getNotificationId());
+                MediaNotificationManager.activateAndroidMediaSession(
+                        tab.getId(), getNotificationId());
             }
         };
     }

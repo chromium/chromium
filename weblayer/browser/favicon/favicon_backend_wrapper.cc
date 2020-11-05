@@ -75,6 +75,17 @@ FaviconBackendWrapper::GetFaviconsForUrl(
                                              /* fallback_to_host */ false);
 }
 
+favicon_base::FaviconRawBitmapResult
+FaviconBackendWrapper::GetLargestFaviconForUrl(
+    const GURL& page_url,
+    const std::vector<favicon_base::IconTypeSet>& icon_types_list,
+    int minimum_size_in_pixels) {
+  if (!favicon_backend_)
+    return {};
+  return favicon_backend_->GetLargestFaviconForUrl(page_url, icon_types_list,
+                                                   minimum_size_in_pixels);
+}
+
 void FaviconBackendWrapper::SetFaviconsOutOfDateForPage(const GURL& page_url) {
   if (favicon_backend_ &&
       favicon_backend_->SetFaviconsOutOfDateForPage(page_url)) {

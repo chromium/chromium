@@ -5,11 +5,22 @@
 #include "weblayer/browser/favicon/favicon_service_impl_factory.h"
 
 #include "base/files/file_path.h"
+#include "components/favicon/content/large_favicon_provider_getter.h"
+#include "components/favicon/core/core_favicon_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "weblayer/browser/favicon/favicon_service_impl.h"
 
 namespace weblayer {
+
+namespace {
+
+favicon::LargeFaviconProvider* GetLargeFaviconProvider(
+    content::BrowserContext* browser_context) {
+  return FaviconServiceImplFactory::GetForBrowserContext(browser_context);
+}
+
+}  // namespace
 
 // static
 FaviconServiceImpl* FaviconServiceImplFactory::GetForBrowserContext(
@@ -30,7 +41,10 @@ FaviconServiceImplFactory* FaviconServiceImplFactory::GetInstance() {
 FaviconServiceImplFactory::FaviconServiceImplFactory()
     : BrowserContextKeyedServiceFactory(
           "FaviconServiceImpl",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  favicon::SetLargeFaviconProviderGetter(
+      base::BindRepeating(&GetLargeFaviconProvider));
+}
 
 FaviconServiceImplFactory::~FaviconServiceImplFactory() = default;
 

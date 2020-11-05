@@ -18,6 +18,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.SysUtils;
 import org.chromium.components.browser_ui.media.MediaSessionUma.MediaSessionActionSource;
+import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.MediaSessionObserver;
@@ -74,6 +76,8 @@ public class MediaSessionHelper implements MediaImageCallback {
     // Delayed hiding will schedule this delayed task to |mHandler|. The task will be canceled when
     // showing or immediate hiding.
     private Runnable mHideNotificationDelayedTask;
+    @VisibleForTesting
+    public LargeIconBridge mLargeIconBridge;
 
     // Used to override the MediaSession object get from WebContents. This is to work around the
     // static getter {@link MediaSession#fromWebContents()}.
@@ -342,15 +346,8 @@ public class MediaSessionHelper implements MediaImageCallback {
         /** Returns an intent that brings the associated web contents to the front. */
         Intent createBringTabToFrontIntent();
 
-        /**
-         * Called to asynchronously fetch a larger favicon image.
-         *
-         * Normal, smaller favicons are passed in automatically. This call triggers lookup of a
-         * larger icon, which will also be passed in via {@link updateFavicon()}, or not at all if
-         * this method returns false.
-         * @return true if the favicon will be updated.
-         */
-        boolean fetchLargeFaviconImage();
+        /** Returns the {@link BrowserContextHandle} for mWebContents. */
+        BrowserContextHandle getBrowserContextHandle();
 
         /**
          * Creates a {@link MediaNotificationInfo.Builder} with basic embedder-specific
@@ -391,6 +388,8 @@ public class MediaSessionHelper implements MediaImageCallback {
         hideNotificationImmediately();
         if (mWebContentsObserver != null) mWebContentsObserver.destroy();
         mWebContentsObserver = null;
+        if (mLargeIconBridge != null) mLargeIconBridge.destroy();
+        mLargeIconBridge = null;
     }
 
     /**
@@ -440,7 +439,20 @@ public class MediaSessionHelper implements MediaImageCallback {
         // Don't waste time trying to find it.
         if (!mMaybeHasFavicon) return false;
 
-        return mDelegate.fetchLargeFaviconImage();
+        String pageUrl = mWebContents.getLastCommittedUrl();
+        int size = MediaNotificationImageUtils.MINIMAL_MEDIA_IMAGE_SIZE_PX;
+        if (mLargeIconBridge == null) {
+            mLargeIconBridge = new LargeIconBridge(mDelegate.getBrowserContextHandle());
+        }
+        LargeIconBridge.LargeIconCallback callback = new LargeIconBridge.LargeIconCallback() {
+            @Override
+            public void onLargeIconAvailable(
+                    Bitmap icon, int fallbackColor, boolean isFallbackColorDefault, int iconType) {
+                setLargeIcon(icon);
+            }
+        };
+
+        return mLargeIconBridge.getLargeIconForStringUrl(pageUrl, size, callback);
     }
 
     /**

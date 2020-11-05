@@ -314,7 +314,7 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         // before installing this observer.
         if (WebLayerFactoryImpl.getClientMajorVersion() >= 85) {
             mMediaSessionHelper = new MediaSessionHelper(
-                    mWebContents, MediaSessionManager.createMediaSessionHelperDelegate(mId));
+                    mWebContents, MediaSessionManager.createMediaSessionHelperDelegate(this));
         }
     }
 
@@ -1151,6 +1151,13 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         TranslateCompactInfoBar translateInfoBar = (TranslateCompactInfoBar) infobars.get(0);
 
         return translateInfoBar.getTargetLanguageForTesting();
+    }
+
+    /** Called by {@link FaviconCallbackProxy} when the favicon for the current page has changed. */
+    public void onFaviconChanged(Bitmap bitmap) {
+        if (mMediaSessionHelper != null) {
+            mMediaSessionHelper.updateFavicon(bitmap);
+        }
     }
 
     @NativeMethods

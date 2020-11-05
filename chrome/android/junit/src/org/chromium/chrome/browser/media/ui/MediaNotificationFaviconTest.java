@@ -122,7 +122,7 @@ public class MediaNotificationFaviconTest extends MediaNotificationTestBase {
     public void testGetNullNotificationIcon() {
         mTabHolder.simulateFaviconUpdated(null);
         TestLargeIconBridge largeIconBridge = new TestLargeIconBridge();
-        mTabHolder.mMediaSessionTabHelper.mLargeIconBridge = largeIconBridge;
+        mTabHolder.mMediaSessionTabHelper.mMediaSessionHelper.mLargeIconBridge = largeIconBridge;
 
         // Simulate and hide notification.
         mTabHolder.simulateMediaSessionStateChanged(true, false);
@@ -146,7 +146,7 @@ public class MediaNotificationFaviconTest extends MediaNotificationTestBase {
     public void testGetNotificationIcon() {
         mTabHolder.simulateFaviconUpdated(mFavicon);
         TestLargeIconBridge largeIconBridge = new TestLargeIconBridge();
-        mTabHolder.mMediaSessionTabHelper.mLargeIconBridge = largeIconBridge;
+        mTabHolder.mMediaSessionTabHelper.mMediaSessionHelper.mLargeIconBridge = largeIconBridge;
 
         mTabHolder.simulateMediaSessionStateChanged(true, false);
         assertEquals(null, getDisplayedIcon());
@@ -159,7 +159,8 @@ public class MediaNotificationFaviconTest extends MediaNotificationTestBase {
     @Test
     public void testWillReturnLargeIcon() {
         mTabHolder.simulateFaviconUpdated(mFavicon);
-        mTabHolder.mMediaSessionTabHelper.mLargeIconBridge = new TestLargeIconBridge();
+        mTabHolder.mMediaSessionTabHelper.mMediaSessionHelper.mLargeIconBridge =
+                new TestLargeIconBridge();
 
         mTabHolder.simulateMediaSessionStateChanged(true, false);
         assertEquals(0, getCurrentNotificationInfo().defaultNotificationLargeIcon);
