@@ -13,19 +13,21 @@ namespace federated_learning {
 
 namespace {
 
-constexpr char kFlocVersion[] = "1.0.0";
+// Domain one-hot + sim hash + sorting-lsh (behind a feature flag)
+const uint32_t kChromeFlocIdVersion = 1;
 
 }  // namespace
 
 // static
-FlocId FlocId::CreateFromHistory(
+uint64_t FlocId::SimHashHistory(
     const std::unordered_set<std::string>& domains) {
-  return FlocId(SimHashStrings(domains, kMaxNumberOfBitsInFloc));
+  return SimHashStrings(domains, kMaxNumberOfBitsInFloc);
 }
 
 FlocId::FlocId() = default;
 
-FlocId::FlocId(uint64_t id) : id_(id) {}
+FlocId::FlocId(uint64_t id, uint32_t sorting_lsh_version)
+    : id_(id), sorting_lsh_version_(sorting_lsh_version) {}
 
 FlocId::FlocId(const FlocId& id) = default;
 
@@ -40,7 +42,7 @@ bool FlocId::IsValid() const {
 }
 
 bool FlocId::operator==(const FlocId& other) const {
-  return id_ == other.id_;
+  return id_ == other.id_ && sorting_lsh_version_ == other.sorting_lsh_version_;
 }
 
 bool FlocId::operator!=(const FlocId& other) const {
@@ -52,15 +54,12 @@ uint64_t FlocId::ToUint64() const {
   return id_.value();
 }
 
-std::string FlocId::ToDebugHeaderValue() const {
-  if (!id_.has_value())
-    return "null";
-  return ToString();
-}
-
 std::string FlocId::ToString() const {
   DCHECK(id_.has_value());
-  return base::StrCat({base::NumberToString(id_.value()), ".", kFlocVersion});
+
+  return base::StrCat({base::NumberToString(id_.value()), ".",
+                       base::NumberToString(kChromeFlocIdVersion), ".",
+                       base::NumberToString(sorting_lsh_version_)});
 }
 
 }  // namespace federated_learning

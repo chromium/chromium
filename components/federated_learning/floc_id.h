@@ -6,6 +6,7 @@
 #define COMPONENTS_FEDERATED_LEARNING_FLOC_ID_H_
 
 #include "base/optional.h"
+#include "base/version.h"
 
 #include <stdint.h>
 
@@ -19,11 +20,11 @@ namespace federated_learning {
 // https://github.com/jkarlin/floc/blob/master/README.md
 class FlocId {
  public:
-  static FlocId CreateFromHistory(
+  static uint64_t SimHashHistory(
       const std::unordered_set<std::string>& domains);
 
   FlocId();
-  explicit FlocId(uint64_t id);
+  explicit FlocId(uint64_t id, uint32_t sorting_lsh_version);
   FlocId(const FlocId& id);
 
   ~FlocId();
@@ -36,16 +37,16 @@ class FlocId {
   bool IsValid() const;
   uint64_t ToUint64() const;
 
-  // The id followed by a version number. "null" if |id_| is invalid. To be
-  // deprecated soon.
-  std::string ToDebugHeaderValue() const;
-
-  // The id followed by a version number, which is the format be exposed to HTTP
-  // headers or JS API. Precondition: |id_| must be valid.
+  // The id, followed by the chrome floc version, followed by the async floc
+  // component versions (i.e. model and sorting-lsh). This is the format to be
+  // exposed to the JS API. Precondition: |id_| must be valid.
   std::string ToString() const;
 
  private:
   base::Optional<uint64_t> id_;
+
+  // The main version (i.e. 1st int) of the sorting lsh component version.
+  uint32_t sorting_lsh_version_ = 0;
 };
 
 }  // namespace federated_learning

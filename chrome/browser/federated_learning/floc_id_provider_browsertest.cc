@@ -238,10 +238,10 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
 
   void FinishOutstandingSortingLshQueries() {
     base::RunLoop run_loop;
-    FlocId dummy_floc = FlocId(0u);
+    const uint64_t dummy_sim_hash = 0u;
     g_browser_process->floc_sorting_lsh_clusters_service()->ApplySortingLsh(
-        dummy_floc, base::BindLambdaForTesting(
-                        [&](FlocId floc, base::Version) { run_loop.Quit(); }));
+        dummy_sim_hash,
+        base::BindLambdaForTesting([&](FlocId floc) { run_loop.Quit(); }));
     run_loop.Run();
   }
 
@@ -313,15 +313,14 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
   // Turn on sync-history, set up the sorting-lsh file, and trigger the
   // file-ready event.
   void InitializeSortingLsh(
-      const std::vector<std::pair<uint32_t, bool>>& sorting_lsh_entries) {
+      const std::vector<std::pair<uint32_t, bool>>& sorting_lsh_entries,
+      const base::Version& version) {
     sync_service()->SetActiveDataTypes(syncer::ModelTypeSet::All());
     sync_service()->FireStateChanged();
 
-    const base::Version kDummyVersion("1.0.0");
-
     g_browser_process->floc_sorting_lsh_clusters_service()
         ->OnSortingLshClustersFileReady(
-            CreateSortingLshFile(sorting_lsh_entries), kDummyVersion);
+            CreateSortingLshFile(sorting_lsh_entries), version);
 
     FinishOutstandingAsyncQueries();
   }
@@ -443,8 +442,7 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
       specifics.floc_id_computed_event();
   EXPECT_EQ(sync_pb::UserEventSpecifics::FlocIdComputed::NEW,
             event.event_trigger());
-  EXPECT_EQ(FlocId::CreateFromHistory({test_host()}).ToUint64(),
-            event.floc_id());
+  EXPECT_EQ(FlocId::SimHashHistory({test_host()}), event.floc_id());
 }
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
@@ -531,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
   InitializeHistorySync();
 
   // Promise resolved with the expected floc value.
-  EXPECT_EQ(FlocId::CreateFromHistory({test_host()}).ToString(),
+  EXPECT_EQ(FlocId(FlocId::SimHashHistory({test_host()}), 0).ToString(),
             InvokeInterestCohortJsApi(web_contents()));
 }
 
@@ -558,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
       content::ChildFrameAt(web_contents()->GetMainFrame(), 0);
 
   // Promise resolved with the expected floc value.
-  EXPECT_EQ(FlocId::CreateFromHistory({test_host()}).ToString(),
+  EXPECT_EQ(FlocId(FlocId::SimHashHistory({test_host()}), 0).ToString(),
             InvokeInterestCohortJsApi(child));
 }
 
@@ -585,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
       content::ChildFrameAt(web_contents()->GetMainFrame(), 0);
 
   // Promise resolved with the expected floc value.
-  EXPECT_EQ(FlocId::CreateFromHistory({test_host()}).ToString(),
+  EXPECT_EQ(FlocId(FlocId::SimHashHistory({test_host()}), 0).ToString(),
             InvokeInterestCohortJsApi(child));
 }
 
@@ -621,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
   EXPECT_EQ("rejected", InvokeInterestCohortJsApi(child));
 
   // Promise resolved with the expected floc value.
-  EXPECT_EQ(FlocId::CreateFromHistory({test_host()}).ToString(),
+  EXPECT_EQ(FlocId(FlocId::SimHashHistory({test_host()}), 0).ToString(),
             InvokeInterestCohortJsApi(web_contents()));
 }
 
@@ -652,16 +650,16 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshEnabledBrowserTest,
   EXPECT_FALSE(GetFlocId().IsValid());
 
   // All sim_hash will be encoded as 0 during sorting-lsh
-  InitializeSortingLsh({{kMaxNumberOfBitsInFloc, false}});
+  InitializeSortingLsh({{kMaxNumberOfBitsInFloc, false}}, base::Version("9.0"));
 
   // Expect that the FlocIdComputed user event is recorded.
   ASSERT_EQ(1u, user_event_service()->GetRecordedUserEvents().size());
 
   // Check that the original sim_hash is not 0.
-  EXPECT_NE(FlocId(0), FlocId::CreateFromHistory({test_host()}));
+  EXPECT_NE(0u, FlocId::SimHashHistory({test_host()}));
 
   // Expect that the final id is 0 because the sorting-lsh was applied.
-  EXPECT_EQ(FlocId(0), GetFlocId());
+  EXPECT_EQ(FlocId(0, 9), GetFlocId());
 }
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshEnabledBrowserTest,
@@ -680,13 +678,13 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshEnabledBrowserTest,
 
   // All sim_hash will be encoded as 0 during sorting-lsh, and that result will
   // be blocked.
-  InitializeSortingLsh({{kMaxNumberOfBitsInFloc, true}});
+  InitializeSortingLsh({{kMaxNumberOfBitsInFloc, true}}, base::Version("2.0"));
 
   // Expect that the FlocIdComputed user event is recorded.
   ASSERT_EQ(1u, user_event_service()->GetRecordedUserEvents().size());
 
   // Check that the original sim_hash is not 0.
-  EXPECT_NE(FlocId(0), FlocId::CreateFromHistory({test_host()}));
+  EXPECT_NE(0u, FlocId::SimHashHistory({test_host()}));
 
   // Expect that the final id is invalid because it was blocked.
   EXPECT_FALSE(GetFlocId().IsValid());
@@ -707,7 +705,7 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshEnabledBrowserTest,
   EXPECT_FALSE(GetFlocId().IsValid());
 
   // All sim_hash will be encoded as an invalid id.
-  InitializeSortingLsh({});
+  InitializeSortingLsh({}, base::Version("3"));
 
   // Expect that the FlocIdComputed user event is recorded.
   ASSERT_EQ(1u, user_event_service()->GetRecordedUserEvents().size());

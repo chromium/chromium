@@ -58,18 +58,19 @@ class FlocIdProviderImpl : public FlocIdProvider,
   struct ComputeFlocResult {
     ComputeFlocResult() = default;
 
-    ComputeFlocResult(const FlocId& sim_hash, const FlocId& final_hash)
-        : sim_hash(sim_hash), final_hash(final_hash) {}
+    ComputeFlocResult(uint64_t sim_hash, const FlocId& floc_id)
+        : sim_hash_computed(true), sim_hash(sim_hash), floc_id(floc_id) {}
+
+    bool sim_hash_computed = false;
 
     // Sim-hash of the browsing history. This is the baseline value where the
-    // |final_hash| field should be derived from. We'll log this field for the
+    // |floc_id| field should be derived from. We'll log this field for the
     // server to calculate the sorting-lsh cutting points.
-    FlocId sim_hash;
+    uint64_t sim_hash = 0;
 
-    // The floc to be exposed to JS API. It can be set to a value different from
-    // |sim_hash| if we use sorting-lsh based encoding, or can be invalid if the
-    // final value is blocked.
-    FlocId final_hash;
+    // The floc to be exposed to JS API. It's derived from applying the
+    // sorting-lsh & blocklist post-processing on the |sim_hash|.
+    FlocId floc_id;
   };
 
   using CanComputeFlocCallback = base::OnceCallback<void(bool)>;
@@ -140,14 +141,14 @@ class FlocIdProviderImpl : public FlocIdProvider,
   void OnGetRecentlyVisitedURLsCompleted(ComputeFlocCompletedCallback callback,
                                          history::QueryResults results);
 
-  // Apply any additional filtering or transformation on a floc computed from
-  // history. For example, apply the SortingLSH post-processing.
-  void ApplyAdditionalFiltering(ComputeFlocCompletedCallback callback,
-                                const FlocId& sim_hash);
-  void DidApplyAdditionalFiltering(ComputeFlocCompletedCallback callback,
-                                   FlocId sim_hash,
-                                   FlocId final_hash,
-                                   base::Version version);
+  // Apply the sorting-lsh post processing to compute the final versioned floc.
+  // The final floc may be invalid if the file is corrupted or the floc end up
+  // being blocked.
+  void ApplySortingLshPostProcessing(ComputeFlocCompletedCallback callback,
+                                     uint64_t sim_hash);
+  void DidApplySortingLshPostProcessing(ComputeFlocCompletedCallback callback,
+                                        uint64_t sim_hash,
+                                        FlocId floc_id);
 
   // The id to be exposed to the JS API.
   FlocId floc_id_;

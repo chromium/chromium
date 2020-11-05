@@ -37,31 +37,29 @@ using ComputeFlocCompletedCallback =
     FlocIdProviderImpl::ComputeFlocCompletedCallback;
 using CanComputeFlocCallback = FlocIdProviderImpl::CanComputeFlocCallback;
 
+const uint32_t kDummySortingLshVersion = 1;
+
 class MockFlocSortingLshService : public FlocSortingLshClustersService {
  public:
   using FlocSortingLshClustersService::FlocSortingLshClustersService;
 
   void ConfigureSortingLsh(
-      const std::unordered_map<uint64_t, FlocId>& sorting_lsh_map,
-      const base::Version& version) {
+      const std::unordered_map<uint64_t, FlocId>& sorting_lsh_map) {
     sorting_lsh_map_ = sorting_lsh_map;
-    version_ = version;
   }
 
-  void ApplySortingLsh(const FlocId& raw_floc_id,
+  void ApplySortingLsh(uint64_t sim_hash,
                        ApplySortingLshCallback callback) override {
-    if (sorting_lsh_map_.count(raw_floc_id.ToUint64())) {
-      std::move(callback).Run(sorting_lsh_map_.at(raw_floc_id.ToUint64()),
-                              version_);
+    if (sorting_lsh_map_.count(sim_hash)) {
+      std::move(callback).Run(sorting_lsh_map_.at(sim_hash));
       return;
     }
 
-    std::move(callback).Run(FlocId(), version_);
+    std::move(callback).Run(FlocId());
   }
 
  private:
   std::unordered_map<uint64_t, FlocId> sorting_lsh_map_;
-  base::Version version_;
 };
 
 class FakeFlocRemotePermissionService : public FlocRemotePermissionService {
@@ -248,9 +246,10 @@ class FlocIdProviderUnitTest : public testing::Test {
     history_service_->RemoveObserver(floc_id_provider_.get());
   }
 
-  void ApplyAdditionalFiltering(ComputeFlocCompletedCallback callback,
-                                const FlocId& sim_hash) {
-    floc_id_provider_->ApplyAdditionalFiltering(std::move(callback), sim_hash);
+  void ApplySortingLshPostProcessing(ComputeFlocCompletedCallback callback,
+                                     uint64_t sim_hash) {
+    floc_id_provider_->ApplySortingLshPostProcessing(std::move(callback),
+                                                     sim_hash);
   }
 
   void CheckCanComputeFloc(CanComputeFlocCallback callback) {
@@ -376,7 +375,7 @@ TEST_F(FlocIdProviderUnitTest, QualifiedInitialHistory) {
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
   EXPECT_TRUE(floc_id().IsValid());
-  EXPECT_EQ(FlocId::CreateFromHistory({domain}), floc_id());
+  EXPECT_EQ(FlocId::SimHashHistory({domain}), floc_id().ToUint64());
   EXPECT_TRUE(first_floc_computation_triggered());
 
   // Advance the clock by 1 day. Expect a computation, as there's no history in
@@ -437,7 +436,7 @@ TEST_F(FlocIdProviderUnitTest, UnqualifiedInitialHistory) {
   EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(2u, floc_id_provider_->log_event_count());
   EXPECT_TRUE(floc_id().IsValid());
-  EXPECT_EQ(FlocId::CreateFromHistory({domain}), floc_id());
+  EXPECT_EQ(FlocId::SimHashHistory({domain}), floc_id().ToUint64());
 }
 
 TEST_F(FlocIdProviderUnitTest, HistoryDeleteAndScheduledUpdate) {
@@ -469,7 +468,7 @@ TEST_F(FlocIdProviderUnitTest, HistoryDeleteAndScheduledUpdate) {
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
   EXPECT_TRUE(floc_id().IsValid());
-  EXPECT_EQ(FlocId::CreateFromHistory({domain1, domain2}), floc_id());
+  EXPECT_EQ(FlocId::SimHashHistory({domain1, domain2}), floc_id().ToUint64());
 
   // Advance the clock by 12 hours. Expect no more computation.
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(12));
@@ -484,7 +483,7 @@ TEST_F(FlocIdProviderUnitTest, HistoryDeleteAndScheduledUpdate) {
   EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(2u, floc_id_provider_->log_event_count());
   EXPECT_TRUE(floc_id().IsValid());
-  EXPECT_EQ(FlocId::CreateFromHistory({domain2}), floc_id());
+  EXPECT_EQ(FlocId::SimHashHistory({domain2}), floc_id().ToUint64());
 
   // Advance the clock by 23 hours. Expect no more computation, as the timer has
   // been reset due to the recomputation from history deletion.
@@ -523,7 +522,7 @@ TEST_F(FlocIdProviderUnitTest, ScheduledUpdateSameFloc_NoNotification) {
   // Expect that the 1st computation has completed.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId::CreateFromHistory({domain}), floc_id());
+  EXPECT_EQ(FlocId::SimHashHistory({domain}), floc_id().ToUint64());
 
   // Advance the clock by 1 day. Expect one more computation, but the floc
   // didn't change.
@@ -531,7 +530,7 @@ TEST_F(FlocIdProviderUnitTest, ScheduledUpdateSameFloc_NoNotification) {
 
   EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(2u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId::CreateFromHistory({domain}), floc_id());
+  EXPECT_EQ(FlocId::SimHashHistory({domain}), floc_id().ToUint64());
 }
 
 TEST_F(FlocIdProviderUnitTest, CheckCanComputeFloc_Success) {
@@ -620,7 +619,7 @@ TEST_F(FlocIdProviderUnitTest, EventLogging) {
   // Event logging for browser start.
   floc_id_provider_->LogFlocComputedEvent(
       ComputeFlocTrigger::kBrowserStart,
-      ComputeFlocResult(FlocId(12345ULL), FlocId(123ULL)));
+      ComputeFlocResult(12345ULL, FlocId(123ULL, kDummySortingLshVersion)));
 
   EXPECT_EQ(1u, fake_user_event_service_->GetRecordedUserEvents().size());
   const sync_pb::UserEventSpecifics& specifics1 =
@@ -642,7 +641,7 @@ TEST_F(FlocIdProviderUnitTest, EventLogging) {
   // Event logging for scheduled update.
   floc_id_provider_->LogFlocComputedEvent(
       ComputeFlocTrigger::kScheduledUpdate,
-      ComputeFlocResult(FlocId(999ULL), FlocId(777ULL)));
+      ComputeFlocResult(999ULL, FlocId(777ULL, kDummySortingLshVersion)));
 
   EXPECT_EQ(2u, fake_user_event_service_->GetRecordedUserEvents().size());
   const sync_pb::UserEventSpecifics& specifics2 =
@@ -658,10 +657,9 @@ TEST_F(FlocIdProviderUnitTest, EventLogging) {
             event2.event_trigger());
   EXPECT_EQ(999ULL, event2.floc_id());
 
-  // Event logging for invalid floc.
-  floc_id_provider_->LogFlocComputedEvent(
-      ComputeFlocTrigger::kScheduledUpdate,
-      ComputeFlocResult(FlocId(), FlocId()));
+  // Event logging for when sim hash is not computed.
+  floc_id_provider_->LogFlocComputedEvent(ComputeFlocTrigger::kScheduledUpdate,
+                                          ComputeFlocResult());
 
   EXPECT_EQ(3u, fake_user_event_service_->GetRecordedUserEvents().size());
   const sync_pb::UserEventSpecifics& specifics3 =
@@ -680,7 +678,7 @@ TEST_F(FlocIdProviderUnitTest, EventLogging) {
   // Event logging for history delete.
   floc_id_provider_->LogFlocComputedEvent(
       ComputeFlocTrigger::kHistoryDelete,
-      ComputeFlocResult(FlocId(555), FlocId(444)));
+      ComputeFlocResult(555, FlocId(444, kDummySortingLshVersion)));
 
   EXPECT_EQ(4u, fake_user_event_service_->GetRecordedUserEvents().size());
   const sync_pb::UserEventSpecifics& specifics4 =
@@ -697,9 +695,8 @@ TEST_F(FlocIdProviderUnitTest, EventLogging) {
   EXPECT_EQ(555ULL, event4.floc_id());
 
   // Event logging for blocked floc.
-  floc_id_provider_->LogFlocComputedEvent(
-      ComputeFlocTrigger::kScheduledUpdate,
-      ComputeFlocResult(FlocId(87654), FlocId(45678)));
+  floc_id_provider_->LogFlocComputedEvent(ComputeFlocTrigger::kScheduledUpdate,
+                                          ComputeFlocResult(87654, FlocId()));
 
   EXPECT_EQ(5u, fake_user_event_service_->GetRecordedUserEvents().size());
   const sync_pb::UserEventSpecifics& specifics5 =
@@ -827,7 +824,7 @@ TEST_F(FlocIdProviderUnitTest, MultipleHistoryEntries) {
   OnGetRecentlyVisitedURLsCompleted(ComputeFlocTrigger::kBrowserStart,
                                     std::move(query_results));
 
-  EXPECT_EQ(FlocId::CreateFromHistory({"a.test", "b.test"}), floc_id());
+  EXPECT_EQ(FlocId::SimHashHistory({"a.test", "b.test"}), floc_id().ToUint64());
 }
 
 TEST_F(FlocIdProviderUnitTest, TurnSyncOffAndOn) {
@@ -851,7 +848,7 @@ TEST_F(FlocIdProviderUnitTest, TurnSyncOffAndOn) {
   // Expect that the 1st computation has completed.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId::CreateFromHistory({domain}), floc_id());
+  EXPECT_EQ(FlocId::SimHashHistory({domain}), floc_id().ToUint64());
 
   // Turn off sync.
   test_sync_service_->SetTransportState(
@@ -874,22 +871,22 @@ TEST_F(FlocIdProviderUnitTest, TurnSyncOffAndOn) {
 
   EXPECT_EQ(3u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(3u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId::CreateFromHistory({domain}), floc_id());
+  EXPECT_EQ(FlocId::SimHashHistory({domain}), floc_id().ToUint64());
 }
 
 TEST_F(FlocIdProviderUnitTest, GetInterestCohortForJsApiMethod) {
   test_sync_service_->SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
-  set_floc_id(FlocId(123));
+  set_floc_id(FlocId(123, kDummySortingLshVersion));
 
-  EXPECT_EQ(FlocId(123).ToString(),
+  EXPECT_EQ(FlocId(123, kDummySortingLshVersion).ToString(),
             floc_id_provider_->GetInterestCohortForJsApi(
                 /*requesting_origin=*/{}, /*site_for_cookies=*/{}));
 }
 
 TEST_F(FlocIdProviderUnitTest,
        GetInterestCohortForJsApiMethod_SyncHistoryDisabled) {
-  set_floc_id(FlocId(123));
+  set_floc_id(FlocId(123, kDummySortingLshVersion));
   EXPECT_EQ(std::string(),
             floc_id_provider_->GetInterestCohortForJsApi(
                 /*requesting_origin=*/{}, /*site_for_cookies=*/{}));
@@ -899,7 +896,7 @@ TEST_F(FlocIdProviderUnitTest,
        GetInterestCohortForJsApiMethod_ThirdPartyCookiesDisabled) {
   test_sync_service_->SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
-  set_floc_id(FlocId(123));
+  set_floc_id(FlocId(123, kDummySortingLshVersion));
 
   fake_cookie_settings_->set_should_block_third_party_cookies(true);
 
@@ -912,7 +909,7 @@ TEST_F(FlocIdProviderUnitTest,
        GetInterestCohortForJsApiMethod_CookiesContentSettingsDisallowed) {
   test_sync_service_->SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
-  set_floc_id(FlocId(123));
+  set_floc_id(FlocId(123, kDummySortingLshVersion));
 
   fake_cookie_settings_->set_allow_cookies_internal(false);
 
@@ -964,7 +961,8 @@ TEST_F(FlocIdProviderUnitTest, HistoryDeleteDuringInProgressComputation) {
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
   EXPECT_TRUE(floc_id().IsValid());
-  EXPECT_EQ(FlocId::CreateFromHistory({domain1, domain2, domain3}), floc_id());
+  EXPECT_EQ(FlocId::SimHashHistory({domain1, domain2, domain3}),
+            floc_id().ToUint64());
 
   // Advance the clock by 1 day. The "domain1" should expire. However, we pause
   // before the computation completes.
@@ -973,9 +971,10 @@ TEST_F(FlocIdProviderUnitTest, HistoryDeleteDuringInProgressComputation) {
 
   EXPECT_TRUE(floc_computation_in_progress());
   EXPECT_FALSE(pending_recompute_event().has_value());
-  EXPECT_EQ(FlocId::CreateFromHistory({domain1, domain2, domain3}), floc_id());
-  EXPECT_EQ(FlocId::CreateFromHistory({domain2, domain3}),
-            floc_id_provider_->paused_result().final_hash);
+  EXPECT_EQ(FlocId::SimHashHistory({domain1, domain2, domain3}),
+            floc_id().ToUint64());
+  EXPECT_EQ(FlocId::SimHashHistory({domain2, domain3}),
+            floc_id_provider_->paused_result().floc_id.ToUint64());
   EXPECT_EQ(ComputeFlocTrigger::kScheduledUpdate,
             floc_id_provider_->paused_trigger());
 
@@ -1003,7 +1002,7 @@ TEST_F(FlocIdProviderUnitTest, HistoryDeleteDuringInProgressComputation) {
 
   // The final floc should be derived from "domain3".
   EXPECT_TRUE(floc_id().IsValid());
-  EXPECT_EQ(FlocId::CreateFromHistory({domain3}), floc_id());
+  EXPECT_EQ(FlocId::SimHashHistory({domain3}), floc_id().ToUint64());
 }
 
 TEST_F(FlocIdProviderUnitTest, ScheduledUpdateDuringInProgressComputation) {
@@ -1037,7 +1036,7 @@ TEST_F(FlocIdProviderUnitTest, ScheduledUpdateDuringInProgressComputation) {
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
   EXPECT_TRUE(floc_id().IsValid());
-  EXPECT_EQ(FlocId::CreateFromHistory({domain1}), floc_id());
+  EXPECT_EQ(FlocId::SimHashHistory({domain1}), floc_id().ToUint64());
 }
 
 class FlocIdProviderUnitTestSortingLshEnabled : public FlocIdProviderUnitTest {
@@ -1089,39 +1088,36 @@ TEST_F(FlocIdProviderUnitTestSortingLshEnabled,
   bool callback_called = false;
   auto callback = base::BindLambdaForTesting([&](ComputeFlocResult result) {
     EXPECT_FALSE(callback_called);
-    EXPECT_EQ(result.sim_hash, FlocId(3));
-    EXPECT_EQ(result.final_hash, FlocId(2));
+    EXPECT_EQ(result.sim_hash, 3u);
+    EXPECT_EQ(result.floc_id, FlocId(2, 99));
     callback_called = true;
   });
 
   // Map 3 to 2
   sorting_lsh_service_->OnSortingLshClustersFileReady(base::FilePath(),
                                                       base::Version());
-  sorting_lsh_service_->ConfigureSortingLsh({{3, FlocId(2)}},
-                                            base::Version("3.4.5"));
+  sorting_lsh_service_->ConfigureSortingLsh({{3, FlocId(2, 99)}});
 
-  FlocId sim_hash(3);
-  ApplyAdditionalFiltering(std::move(callback), sim_hash);
+  ApplySortingLshPostProcessing(std::move(callback), /*sim_hash=*/3);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(callback_called);
 }
 
 TEST_F(FlocIdProviderUnitTestSortingLshEnabled,
-       ApplyAdditionalFiltering_SortingLshCorrupted) {
+       ApplySortingLshPostProcessing_FileCorrupted) {
   bool callback_called = false;
   auto callback = base::BindLambdaForTesting([&](ComputeFlocResult result) {
     EXPECT_FALSE(callback_called);
-    EXPECT_EQ(result.sim_hash, FlocId(3));
-    EXPECT_EQ(result.final_hash, FlocId());
+    EXPECT_EQ(result.sim_hash, 3u);
+    EXPECT_EQ(result.floc_id, FlocId());
     callback_called = true;
   });
 
   sorting_lsh_service_->OnSortingLshClustersFileReady(base::FilePath(),
                                                       base::Version());
-  sorting_lsh_service_->ConfigureSortingLsh({}, base::Version("3.4.5"));
+  sorting_lsh_service_->ConfigureSortingLsh({});
 
-  FlocId sim_hash(3);
-  ApplyAdditionalFiltering(std::move(callback), sim_hash);
+  ApplySortingLshPostProcessing(std::move(callback), /*sim_hash=*/3);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(callback_called);
 }
@@ -1137,11 +1133,10 @@ TEST_F(FlocIdProviderUnitTestSortingLshEnabled, SortingLshPostProcessing) {
 
   task_environment_.RunUntilIdle();
 
-  FlocId floc_from_history = FlocId::CreateFromHistory({domain});
+  uint64_t sim_hash = FlocId::SimHashHistory({domain});
 
-  // Configure the |sorting_lsh_service_| to map |floc_from_history| to 12345.
-  sorting_lsh_service_->ConfigureSortingLsh(
-      {{floc_from_history.ToUint64(), FlocId(12345)}}, base::Version("3.4.5"));
+  // Configure the |sorting_lsh_service_| to map |sim_hash| to 12345.
+  sorting_lsh_service_->ConfigureSortingLsh({{sim_hash, FlocId(12345, 99)}});
 
   // Trigger the sorting-lsh ready event, and turn on sync & sync-history to
   // trigger the 1st floc computation.
@@ -1159,25 +1154,24 @@ TEST_F(FlocIdProviderUnitTestSortingLshEnabled, SortingLshPostProcessing) {
   // Expect a computation. The floc should be equal to 12345.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId(12345), floc_id());
+  EXPECT_EQ(FlocId(12345, 99), floc_id());
 
-  // Configure the |sorting_lsh_service_| to block |floc_from_history|.
-  sorting_lsh_service_->ConfigureSortingLsh(
-      {{floc_from_history.ToUint64(), FlocId()}}, base::Version("3.4.5"));
+  // Configure the |sorting_lsh_service_| to block |sim_hash|.
+  sorting_lsh_service_->ConfigureSortingLsh({{sim_hash, FlocId()}});
 
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
 
   // Expect one more computation, where the result contains a valid sim_hash and
-  // an invalid final_hash, as it was blocked. The internal floc is set to the
+  // an invalid floc_id, as it was blocked. The internal floc is set to the
   // invalid one.
   EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(2u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(floc_id_provider_->last_log_event_result().sim_hash,
-            floc_from_history);
-  EXPECT_FALSE(floc_id_provider_->last_log_event_result().final_hash.IsValid());
+  EXPECT_TRUE(floc_id_provider_->last_log_event_result().sim_hash_computed);
+  EXPECT_EQ(floc_id_provider_->last_log_event_result().sim_hash, sim_hash);
+  EXPECT_FALSE(floc_id_provider_->last_log_event_result().floc_id.IsValid());
   EXPECT_FALSE(floc_id().IsValid());
 
-  // In the event when the sim_hash is valid and final_hash is invalid, we'll
+  // In the event when the sim_hash is valid and floc_id is invalid, we'll
   // still log it.
   EXPECT_EQ(2u, fake_user_event_service_->GetRecordedUserEvents().size());
   const sync_pb::UserEventSpecifics& specifics =
@@ -1192,18 +1186,18 @@ TEST_F(FlocIdProviderUnitTestSortingLshEnabled, SortingLshPostProcessing) {
       specifics.floc_id_computed_event();
   EXPECT_EQ(sync_pb::UserEventSpecifics::FlocIdComputed::REFRESHED,
             event.event_trigger());
-  EXPECT_EQ(floc_from_history.ToUint64(), event.floc_id());
+  EXPECT_EQ(sim_hash, event.floc_id());
 
-  // Configure the |sorting_lsh_service_| to map |floc_from_history| to 6789.
+  // Configure the |sorting_lsh_service_| to map |sim_hash| to 6789.
   sorting_lsh_service_->ConfigureSortingLsh(
-      {{floc_from_history.ToUint64(), FlocId(6789)}}, base::Version("3.4.5"));
+      {{sim_hash, FlocId(6789, kDummySortingLshVersion)}});
 
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
 
   // Expect one more computation. The floc should be equal to 6789.
   EXPECT_EQ(3u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(3u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId(6789), floc_id());
+  EXPECT_EQ(FlocId(6789, kDummySortingLshVersion), floc_id());
 }
 
 }  // namespace federated_learning

@@ -36,9 +36,9 @@ class CopyingFileInputStream : public google::protobuf::io::CopyingInputStream {
   base::File file_;
 };
 
-FlocId ApplySortingLshOnBackgroundThread(const FlocId& raw_floc_id,
-                                         const base::FilePath& file_path) {
-  DCHECK(raw_floc_id.IsValid());
+FlocId ApplySortingLshOnBackgroundThread(uint64_t sim_hash,
+                                         const base::FilePath& file_path,
+                                         const base::Version& version) {
   base::File sorting_lsh_clusters_file(
       file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!sorting_lsh_clusters_file.IsValid())
@@ -56,12 +56,12 @@ FlocId ApplySortingLshOnBackgroundThread(const FlocId& raw_floc_id,
   // bits should be within the range [0, MaxNumberOfBitsInFloc]. Suppose the
   // list is l, then S(i) = 2^(l[i] & 0b111111) represents the the number of
   // hashes that can be associated with this floc id. The cumulative sum of S(i)
-  // represents the boundary floc values in |raw_floc_id|'s space. We will use
-  // the higher index to encode |raw_floc_id|, i.e. if raw_floc_id is within
-  // range [CumSum(S(i-1)), CumSum(S(i))), |i| will be output floc.
+  // represents the boundary sim_hash values. We will use the higher index to
+  // encode |sim_hash|, i.e. if sim_hash is within range
+  // [CumSum(S(i-1)), CumSum(S(i))), |i| will be output floc.
   //
   // 0 is always an implicit CumSum boundary, i.e. if
-  // 0 <= |raw_floc_id| < 2^(l[0]), then the index 0 will be the output floc.
+  // 0 <= |sim_hash| < 2^(l[0]), then the index 0 will be the output floc.
   //
   // However, if the is_blocked bit (i.e. l[i] & 0b1000000) indicates that the
   // cohort should be blocked, we will output an invalid floc id.
@@ -77,9 +77,8 @@ FlocId ApplySortingLshOnBackgroundThread(const FlocId& raw_floc_id,
   //
   // A stricter sanitization would be to always stream all numbers and check
   // properties. We skip doing this to save some computation cost.
-  uint64_t raw_floc_id_as_int = raw_floc_id.ToUint64();
   const uint64_t kExpectedFinalCumulativeSum = (1ULL << kMaxNumberOfBitsInFloc);
-  DCHECK(raw_floc_id_as_int < kExpectedFinalCumulativeSum);
+  DCHECK_LT(sim_hash, kExpectedFinalCumulativeSum);
 
   uint64_t cumulative_sum = 0;
   uint32_t next_combined;
@@ -105,11 +104,11 @@ FlocId ApplySortingLshOnBackgroundThread(const FlocId& raw_floc_id,
       return FlocId();
 
     // Found the sim-hash upper bound. Use the index as the new floc.
-    if (cumulative_sum > raw_floc_id_as_int) {
+    if (cumulative_sum > sim_hash) {
       if (is_blocked)
         return FlocId();
 
-      return FlocId(index);
+      return FlocId(index, version.components().front());
     }
   }
 
@@ -152,30 +151,21 @@ void FlocSortingLshClustersService::OnSortingLshClustersFileReady(
 }
 
 void FlocSortingLshClustersService::ApplySortingLsh(
-    const FlocId& raw_floc_id,
+    uint64_t sim_hash,
     ApplySortingLshCallback callback) {
-  DCHECK(raw_floc_id.IsValid());
   DCHECK(first_file_ready_seen_);
 
   base::PostTaskAndReplyWithResult(
       background_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&ApplySortingLshOnBackgroundThread, raw_floc_id,
-                     sorting_lsh_clusters_file_path_),
-      base::BindOnce(&FlocSortingLshClustersService::DidApplySortingLsh,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     sorting_lsh_clusters_version_));
+      base::BindOnce(&ApplySortingLshOnBackgroundThread, sim_hash,
+                     sorting_lsh_clusters_file_path_,
+                     sorting_lsh_clusters_version_),
+      std::move(callback));
 }
 
 void FlocSortingLshClustersService::SetBackgroundTaskRunnerForTesting(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner) {
   background_task_runner_ = background_task_runner;
-}
-
-void FlocSortingLshClustersService::DidApplySortingLsh(
-    ApplySortingLshCallback callback,
-    base::Version version,
-    FlocId floc_id) {
-  std::move(callback).Run(std::move(floc_id), std::move(version));
 }
 
 }  // namespace federated_learning

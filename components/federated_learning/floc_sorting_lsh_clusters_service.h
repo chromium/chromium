@@ -29,8 +29,7 @@ namespace federated_learning {
 // File reading and parsing is posted to |background_task_runner_|.
 class FlocSortingLshClustersService {
  public:
-  using ApplySortingLshCallback =
-      base::OnceCallback<void(FlocId, base::Version)>;
+  using ApplySortingLshCallback = base::OnceCallback<void(FlocId)>;
 
   class Observer {
    public:
@@ -55,7 +54,7 @@ class FlocSortingLshClustersService {
                                              const base::Version& version);
 
   // Virtual for testing.
-  virtual void ApplySortingLsh(const FlocId& raw_floc_id,
+  virtual void ApplySortingLsh(uint64_t sim_hash,
                                ApplySortingLshCallback callback);
 
   void SetBackgroundTaskRunnerForTesting(
@@ -63,10 +62,6 @@ class FlocSortingLshClustersService {
 
  private:
   friend class FlocSortingLshClustersServiceTest;
-
-  void DidApplySortingLsh(ApplySortingLshCallback callback,
-                          base::Version version,
-                          FlocId floc_id);
 
   // Runner for tasks that do not influence user experience.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;

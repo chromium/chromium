@@ -32,6 +32,9 @@ constexpr int kQueryHistoryWindowInDays = 7;
 constexpr base::TimeDelta kSwaaNacAccountEnabledCachePeriod =
     base::TimeDelta::FromHours(12);
 
+// The placeholder sorting-lsh version when the sorting-lsh feature is disabled.
+constexpr uint32_t kSortingLshVersionPlaceholder = 0;
+
 }  // namespace
 
 FlocIdProviderImpl::FlocIdProviderImpl(
@@ -96,7 +99,7 @@ void FlocIdProviderImpl::OnComputeFlocCompleted(ComputeFlocTrigger trigger,
   }
 
   LogFlocComputedEvent(trigger, result);
-  floc_id_ = result.final_hash;
+  floc_id_ = result.floc_id;
 
   // Abandon the scheduled task if any, and schedule a new compute-floc task
   // that is |kFlocScheduledUpdateInterval| from now.
@@ -115,10 +118,8 @@ void FlocIdProviderImpl::LogFlocComputedEvent(ComputeFlocTrigger trigger,
   // is likely due to sync just gets enabled but some floc permission settings
   // are disabled. We don't want to mess up with the initial user event
   // messagings (and some sync integration tests would fail otherwise).
-  if (trigger == ComputeFlocTrigger::kBrowserStart &&
-      !result.sim_hash.IsValid()) {
+  if (trigger == ComputeFlocTrigger::kBrowserStart && !result.sim_hash_computed)
     return;
-  }
 
   auto specifics = std::make_unique<sync_pb::UserEventSpecifics>();
   specifics->set_event_time_usec(
@@ -145,8 +146,8 @@ void FlocIdProviderImpl::LogFlocComputedEvent(ComputeFlocTrigger trigger,
 
   floc_id_computed_event->set_event_trigger(event_trigger);
 
-  if (result.sim_hash.IsValid())
-    floc_id_computed_event->set_floc_id(result.sim_hash.ToUint64());
+  if (result.sim_hash_computed)
+    floc_id_computed_event->set_floc_id(result.sim_hash);
 
   user_event_service_->RecordUserEvent(std::move(specifics));
 }
@@ -363,34 +364,32 @@ void FlocIdProviderImpl::OnGetRecentlyVisitedURLsCompleted(
     return;
   }
 
-  ApplyAdditionalFiltering(std::move(callback),
-                           FlocId::CreateFromHistory(domains));
+  ApplySortingLshPostProcessing(std::move(callback),
+                                FlocId::SimHashHistory(domains));
 }
 
-void FlocIdProviderImpl::ApplyAdditionalFiltering(
+void FlocIdProviderImpl::ApplySortingLshPostProcessing(
     ComputeFlocCompletedCallback callback,
-    const FlocId& sim_hash) {
-  DCHECK(sim_hash.IsValid());
-
+    uint64_t sim_hash) {
   if (!base::FeatureList::IsEnabled(
           features::kFlocIdSortingLshBasedComputation)) {
-    std::move(callback).Run(ComputeFlocResult(sim_hash, sim_hash));
+    std::move(callback).Run(ComputeFlocResult(
+        sim_hash, FlocId(sim_hash, kSortingLshVersionPlaceholder)));
     return;
   }
 
   g_browser_process->floc_sorting_lsh_clusters_service()->ApplySortingLsh(
-      sim_hash, base::BindOnce(&FlocIdProviderImpl::DidApplyAdditionalFiltering,
-                               weak_ptr_factory_.GetWeakPtr(),
-                               std::move(callback), sim_hash));
+      sim_hash,
+      base::BindOnce(&FlocIdProviderImpl::DidApplySortingLshPostProcessing,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     sim_hash));
 }
 
-void FlocIdProviderImpl::DidApplyAdditionalFiltering(
+void FlocIdProviderImpl::DidApplySortingLshPostProcessing(
     ComputeFlocCompletedCallback callback,
-    FlocId sim_hash,
-    FlocId final_hash,
-    base::Version version) {
-  std::move(callback).Run(
-      ComputeFlocResult(std::move(sim_hash), std::move(final_hash)));
+    uint64_t sim_hash,
+    FlocId floc_id) {
+  std::move(callback).Run(ComputeFlocResult(sim_hash, std::move(floc_id)));
 }
 
 }  // namespace federated_learning
