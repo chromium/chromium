@@ -338,6 +338,10 @@ BlobReader::Status BlobReader::CalculateSizeImpl(
   DCHECK(!total_size_calculated_);
   DCHECK(size_callback_.is_null());
 
+  if (!blob_data_) {
+    return ReportError(net::ERR_UNEXPECTED);
+  }
+
   net_error_ = net::OK;
   total_size_ = 0;
   const auto& items = blob_data_->items();
