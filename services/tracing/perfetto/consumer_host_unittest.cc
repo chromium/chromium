@@ -105,7 +105,7 @@ class ThreadedPerfettoService : public mojom::TracingSessionClient {
     tracing_enabled_ = true;
   }
 
-  void OnTracingDisabled() override {}
+  void OnTracingDisabled(bool) override {}
 
   void CreateProducer(const std::string& data_source_name,
                       size_t num_packets,
@@ -747,7 +747,7 @@ class MockConsumerHost : public mojom::TracingSessionClient {
   // mojom::TracingSessionClient implementation:
   void OnTracingEnabled() override { wait_for_tracing_enabled_.Quit(); }
 
-  void OnTracingDisabled() override { wait_for_tracing_disabled_.Quit(); }
+  void OnTracingDisabled(bool) override { wait_for_tracing_disabled_.Quit(); }
 
   void WaitForConnectionLost() { wait_for_connection_lost_.Run(); }
 

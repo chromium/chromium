@@ -77,7 +77,7 @@ class TracingControllerImpl : public TracingController,
 
   // tracing::mojom::TracingSessionClient implementation:
   void OnTracingEnabled() override;
-  void OnTracingDisabled() override;
+  void OnTracingDisabled(bool tracing_succeeded) override;
 
   void OnTracingFailed();
 

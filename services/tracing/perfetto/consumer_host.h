@@ -54,7 +54,7 @@ class ConsumerHost : public perfetto::Consumer, public mojom::ConsumerHost {
     void OnPerfettoEvents(const perfetto::ObservableEvents&);
     void OnTraceData(std::vector<perfetto::TracePacket> packets, bool has_more);
     void OnTraceStats(bool success, const perfetto::TraceStats&);
-    void OnTracingDisabled();
+    void OnTracingDisabled(const std::string& error);
     void OnConsumerClientDisconnected();
     void Flush(uint32_t timeout, base::OnceCallback<void(bool)> callback);
 
@@ -145,7 +145,7 @@ class ConsumerHost : public perfetto::Consumer, public mojom::ConsumerHost {
   // and to send finished protobufs over.
   void OnConnect() override;
   void OnDisconnect() override;
-  void OnTracingDisabled() override;
+  void OnTracingDisabled(const std::string& error) override;
   void OnTraceData(std::vector<perfetto::TracePacket> packets,
                    bool has_more) override;
   void OnObservableEvents(const perfetto::ObservableEvents&) override;

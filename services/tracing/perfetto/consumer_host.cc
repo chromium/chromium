@@ -348,7 +348,7 @@ void ConsumerHost::TracingSession::DisableTracing() {
   host_->consumer_endpoint()->DisableTracing();
 }
 
-void ConsumerHost::TracingSession::OnTracingDisabled() {
+void ConsumerHost::TracingSession::OnTracingDisabled(const std::string& error) {
   DCHECK(tracing_session_client_);
 
   if (enable_tracing_ack_timer_.IsRunning()) {
@@ -356,7 +356,8 @@ void ConsumerHost::TracingSession::OnTracingDisabled() {
   }
   DCHECK(!pending_enable_tracing_ack_pids_);
 
-  tracing_session_client_->OnTracingDisabled();
+  tracing_session_client_->OnTracingDisabled(
+      /*tracing_succeeded=*/error.empty());
 
   if (trace_processor_) {
     host_->consumer_endpoint()->ReadBuffers();
@@ -680,10 +681,10 @@ void ConsumerHost::OnConnect() {}
 
 void ConsumerHost::OnDisconnect() {}
 
-void ConsumerHost::OnTracingDisabled() {
+void ConsumerHost::OnTracingDisabled(const std::string& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (tracing_session_) {
-    tracing_session_->OnTracingDisabled();
+    tracing_session_->OnTracingDisabled(error);
   }
 }
 

@@ -160,7 +160,7 @@ class TestTracingClient : public mojom::TracingSessionClient {
 
   // tracing::mojom::TracingSessionClient implementation:
   void OnTracingEnabled() override {}
-  void OnTracingDisabled() override {
+  void OnTracingDisabled(bool) override {
     std::move(tracing_disabled_callback_).Run();
   }
 

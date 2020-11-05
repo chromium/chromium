@@ -293,5 +293,5 @@ interface TracingSessionClient {
   // Called when tracing is disabled; initiated either by a call to
   // TracingSessionHost::DisableTracing or by the service itself if a timeout is
   // specified in the tracing config.
-  OnTracingDisabled();
+  OnTracingDisabled(bool tracing_succeeded);
 };

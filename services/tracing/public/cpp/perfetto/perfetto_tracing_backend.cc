@@ -42,6 +42,8 @@ constexpr size_t kDefaultSMBPageSizeBytes = 32 * 1024;
 // TODO(crbug.com/839071): Figure out a good buffer size.
 constexpr size_t kDefaultSMBSizeBytes = 4 * 1024 * 1024;
 
+constexpr char kErrorTracingFailed[] = "Tracing failed";
+
 }  // namespace
 
 // Implements Perfetto's ProducerEndpoint interface on top of the
@@ -378,6 +380,7 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
 
   void StartTracing() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    tracing_failed_ = false;
     consumer_host_->EnableTracing(
         tracing_session_host_.BindNewPipeAndPassReceiver(),
         tracing_session_client_.BindNewPipeAndPassRemote(), trace_config_);
@@ -520,7 +523,7 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
     }
   }
 
-  void OnTracingDisabled() override {
+  void OnTracingDisabled(bool tracing_succeeded) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // TODO(skyostil): Wire up full data source state. For now Perfetto just
     // needs to know all data sources have stopped.
@@ -531,7 +534,8 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
           perfetto::ObservableEvents::DATA_SOURCE_INSTANCE_STATE_STOPPED);
       consumer_->OnObservableEvents(events);
     }
-    consumer_->OnTracingDisabled();
+    consumer_->OnTracingDisabled(
+        tracing_succeeded && !tracing_failed_ ? "" : kErrorTracingFailed);
   }
 
   // mojo::DataPipeDrainer::Client implementation:
@@ -594,7 +598,7 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
 
   void OnTracingFailed() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // TODO(skyostil): Inform the crew.
+    tracing_failed_ = true;
     tracing_session_host_.reset();
     tracing_session_client_.reset();
     drainer_.reset();
@@ -624,6 +628,7 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
   perfetto::TraceConfig trace_config_;
 
   std::unique_ptr<TracePacketTokenizer> tokenizer_;
+  bool tracing_failed_ = false;
   bool read_buffers_complete_ = false;
   bool trace_data_complete_ = false;
   uint32_t observed_events_mask_ = 0;

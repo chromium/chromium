@@ -626,7 +626,7 @@ void TracingControllerImpl::OnTracingEnabled() {
     std::move(start_tracing_callback_).Run();
 }
 
-void TracingControllerImpl::OnTracingDisabled() {}
+void TracingControllerImpl::OnTracingDisabled(bool) {}
 
 void TracingControllerImpl::OnTracingFailed() {
   CompleteFlush();

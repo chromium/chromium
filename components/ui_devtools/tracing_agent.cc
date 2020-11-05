@@ -127,10 +127,9 @@ class TracingAgent::PerfettoTracingSession
     }
   }
 
-  void OnTracingDisabled() override {
+  void OnTracingDisabled(bool) override {
     // Since we're converting the tracing data to JSON, we will receive the
     // tracing data via ConsumerHost::DisableTracingAndEmitJson().
-    return;
   }
 
   void DisableTracing(

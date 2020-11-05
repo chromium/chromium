@@ -144,7 +144,7 @@ class MockConsumer : public perfetto::Consumer {
   // perfetto::Consumer implementation
   void OnConnect() override;
   void OnDisconnect() override;
-  void OnTracingDisabled() override;
+  void OnTracingDisabled(const std::string& error) override;
 
   void OnTraceData(std::vector<perfetto::TracePacket> packets,
                    bool has_more) override;

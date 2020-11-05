@@ -131,7 +131,8 @@ PerfettoFileTracer::~PerfettoFileTracer() = default;
 
 void PerfettoFileTracer::OnTracingEnabled() {}
 
-void PerfettoFileTracer::OnTracingDisabled() {
+void PerfettoFileTracer::OnTracingDisabled(bool tracing_succeeded) {
+  DCHECK(tracing_succeeded);
   has_been_disabled_ = true;
 }
 

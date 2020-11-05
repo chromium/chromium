@@ -385,11 +385,15 @@ class TracingHandler::PerfettoTracingSession
     }
   }
 
-  void OnTracingDisabled() override {
+  void OnTracingDisabled(bool tracing_succeeded) override {
     // If we're converting to JSON, we will receive the data via
     // ConsumerHost::DisableTracingAndEmitJson().
     if (!use_proto_format_)
       return;
+    if (!tracing_succeeded) {
+      OnTracingSessionFailed();
+      return;
+    }
 
     DCHECK(agent_label_.empty());
     mojo::ScopedDataPipeProducerHandle producer_handle;

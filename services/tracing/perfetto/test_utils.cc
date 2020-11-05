@@ -253,7 +253,7 @@ void MockConsumer::OnConnect() {
   StartTracing();
 }
 void MockConsumer::OnDisconnect() {}
-void MockConsumer::OnTracingDisabled() {}
+void MockConsumer::OnTracingDisabled(const std::string& error) {}
 
 void MockConsumer::OnTraceData(std::vector<perfetto::TracePacket> packets,
                                bool has_more) {

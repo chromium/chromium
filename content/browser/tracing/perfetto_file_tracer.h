@@ -35,7 +35,7 @@ class PerfettoFileTracer : public tracing::mojom::TracingSessionClient {
 
   // tracing::mojom::TracingSessionClient implementation:
   void OnTracingEnabled() override;
-  void OnTracingDisabled() override;
+  void OnTracingDisabled(bool tracing_succeeded) override;
 
   bool is_finished_for_testing() const { return !background_drainer_; }
 
