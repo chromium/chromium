@@ -25,10 +25,10 @@ namespace ash {
 HoldingSpaceTrayIcon::HoldingSpaceTrayIcon(Shelf* shelf) : shelf_(shelf) {
   InitLayout();
 
-  if (features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled())
+  if (features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled()) {
     controller_observer_.Add(HoldingSpaceController::Get());
-
-  shell_observer_.Add(Shell::Get());
+    shell_observer_.Add(Shell::Get());
+  }
 }
 
 HoldingSpaceTrayIcon::~HoldingSpaceTrayIcon() = default;
@@ -142,6 +142,8 @@ void HoldingSpaceTrayIcon::OnHoldingSpaceItemFinalized(
 void HoldingSpaceTrayIcon::OnShelfAlignmentChanged(
     aura::Window* root_window,
     ShelfAlignment old_alignment) {
+  DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
+
   removed_icon_items_.clear();
 
   for (const auto& icon_item : icon_items_)
