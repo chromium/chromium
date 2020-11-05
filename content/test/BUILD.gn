@@ -1110,6 +1110,7 @@ test("content_browsertests") {
     "../browser/renderer_host/navigation_request_browsertest.cc",
     "../browser/renderer_host/page_lifecycle_state_manager_browsertest.cc",
     "../browser/renderer_host/panel_rotation_browsertest.cc",
+    "../browser/renderer_host/policy_container_browsertest.cc",
     "../browser/renderer_host/render_document_host_browsertest.cc",
     "../browser/renderer_host/render_document_host_user_data_browsertest.cc",
     "../browser/renderer_host/render_frame_host_impl_browsertest.cc",
