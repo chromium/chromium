@@ -144,6 +144,7 @@ void OffTheRecordProfileImpl::Init() {
   // Must be done before CreateBrowserContextServices(), since some of them
   // change behavior based on whether the provided context is a guest session.
   set_is_guest_profile(profile_->IsGuestSession());
+  set_is_system_profile(profile_->IsSystemProfile());
 
   BrowserContextDependencyManager::GetInstance()->CreateBrowserContextServices(
       this);
