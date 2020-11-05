@@ -6,11 +6,15 @@
 #define COMPONENTS_EXO_FILE_HELPER_H_
 
 #include <string>
+#include <vector>
+
+#include "base/callback.h"
 
 class GURL;
 
 namespace base {
 class FilePath;
+class Pickle;
 }
 
 namespace exo {

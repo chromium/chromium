@@ -18,6 +18,7 @@
 #include "components/exo/seat.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
+#include "components/exo/test/exo_test_file_helper.h"
 #include "components/exo/test/exo_test_helper.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -105,26 +106,6 @@ class TestDataDeviceDelegate : public DataDeviceDelegate {
   bool can_accept_data_events_for_surface_ = true;
 
   DISALLOW_COPY_AND_ASSIGN(TestDataDeviceDelegate);
-};
-
-class TestFileHelper : public FileHelper {
- public:
-  TestFileHelper() = default;
-
-  // Overridden from FileHelper:
-  std::string GetMimeTypeForUriList() const override { return ""; }
-  bool GetUrlFromPath(const std::string& app_id,
-                      const base::FilePath& path,
-                      GURL* out) override {
-    return true;
-  }
-  bool HasUrlsInPickle(const base::Pickle& pickle) override { return false; }
-  void GetUrlsFromPickle(const std::string& app_id,
-                         const base::Pickle& pickle,
-                         UrlsFromPickleCallback callback) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestFileHelper);
 };
 
 class TestSeat : public Seat {

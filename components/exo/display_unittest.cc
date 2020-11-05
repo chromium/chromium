@@ -18,6 +18,7 @@
 #include "components/exo/sub_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
+#include "components/exo/test/exo_test_file_helper.h"
 #include "components/exo/toast_surface_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -222,22 +223,6 @@ class TestDataDeviceDelegate : public DataDeviceDelegate {
   bool CanAcceptDataEventsForSurface(Surface* surface) const override {
     return false;
   }
-};
-
-class TestFileHelper : public FileHelper {
- public:
-  // Overriden from TestFileHelper:
-  TestFileHelper() {}
-  std::string GetMimeTypeForUriList() const override { return ""; }
-  bool GetUrlFromPath(const std::string& app_id,
-                      const base::FilePath& path,
-                      GURL* out) override {
-    return true;
-  }
-  bool HasUrlsInPickle(const base::Pickle& pickle) override { return false; }
-  void GetUrlsFromPickle(const std::string& app_id,
-                         const base::Pickle& pickle,
-                         UrlsFromPickleCallback callback) override {}
 };
 
 TEST_F(DisplayTest, CreateDataDevice) {

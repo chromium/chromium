@@ -23,6 +23,7 @@
 #include "components/exo/data_offer_delegate.h"
 #include "components/exo/file_helper.h"
 #include "components/exo/test/exo_test_base.h"
+#include "components/exo/test/exo_test_file_helper.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -68,35 +69,6 @@ class TestDataOfferDelegate : public DataOfferDelegate {
   DndAction dnd_action_ = DndAction::kNone;
 
   DISALLOW_COPY_AND_ASSIGN(TestDataOfferDelegate);
-};
-
-class TestFileHelper : public FileHelper {
- public:
-  TestFileHelper() = default;
-
-  // Overridden from FileHelper:
-  std::string GetMimeTypeForUriList() const override { return "text/uri-list"; }
-  bool GetUrlFromPath(const std::string& app_id,
-                      const base::FilePath& path,
-                      GURL* out) override {
-    *out = GURL("file://" + path.AsUTF8Unsafe());
-    return true;
-  }
-  bool HasUrlsInPickle(const base::Pickle& pickle) override { return true; }
-  void GetUrlsFromPickle(const std::string& app_id,
-                         const base::Pickle& pickle,
-                         UrlsFromPickleCallback callback) override {
-    callback_ = std::move(callback);
-  }
-
-  void RunUrlsCallback(std::vector<GURL> urls) {
-    std::move(callback_).Run(urls);
-  }
-
- private:
-  UrlsFromPickleCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFileHelper);
 };
 
 bool ReadString(base::ScopedFD fd, std::string* out) {
