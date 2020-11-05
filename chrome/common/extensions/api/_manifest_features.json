@@ -12,7 +12,7 @@
     "extension_types": ["shared_module"]
   },
   "action": {
-    "channel": "canary",
+    "channel": "stable",
     "extension_types": ["extension"]
   },
   "app.icon_color": {
