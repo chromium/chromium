@@ -1,19 +1,6 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
- **/ function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true,
-    });
-  } else {
-    obj[key] = value;
-  }
-  return obj;
-}
-import { assert } from './util/util.js';
+ **/ import { assert } from './util/util.js';
 
 export class SkipTestCase extends Error {}
 
@@ -21,13 +8,16 @@ export class SkipTestCase extends Error {}
 // A new instance of the Fixture is created for every single test case
 // (i.e. every time the test function is run).
 export class Fixture {
+  eventualExpectations = [];
+  numOutstandingAsyncExpectations = 0;
+
   constructor(rec, params) {
-    _defineProperty(this, 'params', void 0);
-    _defineProperty(this, 'rec', void 0);
-    _defineProperty(this, 'eventualExpectations', []);
-    _defineProperty(this, 'numOutstandingAsyncExpectations', 0);
     this.rec = rec;
-    this.params = params;
+    this._params = params;
+  }
+
+  get params() {
+    return this._params;
   }
 
   // This has to be a member function instead of an async `createFixture` function, because
@@ -45,10 +35,16 @@ export class Fixture {
   async finalize() {
     assert(
       this.numOutstandingAsyncExpectations === 0,
-      'there were outstanding asynchronous expectations (e.g. shouldReject) at the end of the test'
+      'there were outstanding immediateAsyncExpectations (e.g. expectUncapturedError) at the end of the test'
     );
 
-    await Promise.all(this.eventualExpectations);
+    // Loop to exhaust the eventualExpectations in case they chain off each other.
+    while (this.eventualExpectations.length) {
+      const previousExpectations = this.eventualExpectations;
+      this.eventualExpectations = [];
+
+      await Promise.all(previousExpectations);
+    }
   }
 
   warn(msg) {
@@ -83,7 +79,7 @@ export class Fixture {
       niceStack.message = `THREW ${actualName}, instead of ${expectedName}: ${ex}`;
       this.rec.expectationFailed(niceStack);
     } else {
-      niceStack.message = `OK: threw ${actualName}${ex.message}`;
+      niceStack.message = `OK: threw ${actualName}: ${ex.message}`;
       this.rec.debug(niceStack);
     }
   }

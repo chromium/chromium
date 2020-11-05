@@ -126,19 +126,14 @@ got [${failedByteActualValues.join(', ')}]`;
   }
 
   generatePixel(color, format) {
-    var _generatedPixelCache$, _generatedPixelCache$3;
-    if (!generatedPixelCache.get(format)) {
-      generatedPixelCache.set(format, new Map());
+    let entry = generatedPixelCache.get(format);
+    if (entry === undefined) {
+      entry = new Map();
+      generatedPixelCache.set(format, entry);
     }
 
     // None of the dst texture format is 'uint' or 'sint', so we can always use float value.
-    if (
-      !((_generatedPixelCache$ = generatedPixelCache.get(format)) === null ||
-      _generatedPixelCache$ === void 0
-        ? void 0
-        : _generatedPixelCache$.has(color))
-    ) {
-      var _generatedPixelCache$2;
+    if (!entry.has(color)) {
       let pixels;
       switch (color) {
         case Color.Red:
@@ -181,16 +176,10 @@ got [${failedByteActualValues.join(', ')}]`;
           unreachable();
       }
 
-      (_generatedPixelCache$2 = generatedPixelCache.get(format)) === null ||
-      _generatedPixelCache$2 === void 0
-        ? void 0
-        : _generatedPixelCache$2.set(color, pixels);
+      entry.set(color, pixels);
     }
 
-    return (_generatedPixelCache$3 = generatedPixelCache.get(format)) === null ||
-      _generatedPixelCache$3 === void 0
-      ? void 0
-      : _generatedPixelCache$3.get(color);
+    return entry.get(color);
   }
 }
 

@@ -1,25 +1,13 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
- **/ function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true,
-    });
-  } else {
-    obj[key] = value;
-  }
-  return obj;
-}
-import { params, poptions, pbool } from '../../../../common/framework/params_builder.js';
+ **/ import { params, poptions, pbool } from '../../../../common/framework/params_builder.js';
 import { assert, unreachable } from '../../../../common/framework/util/util.js';
 import {
   kTextureAspects,
   kUncompressedTextureFormatInfo,
   kUncompressedTextureFormats,
 } from '../../../capability_info.js';
+import { GPUConst } from '../../../constants.js';
 import { GPUTest } from '../../../gpu_test.js';
 import { createTextureUploadBuffer } from '../../../util/texture/layout.js';
 import { SubresourceRange } from '../../../util/texture/subresource.js';
@@ -158,13 +146,13 @@ export function initializedStateAsStencil(state) {
 }
 
 function getRequiredTextureUsage(format, sampleCount, uninitializeMethod, readMethod) {
-  let usage = GPUTextureUsage.COPY_DST;
+  let usage = GPUConst.TextureUsage.COPY_DST;
 
   switch (uninitializeMethod) {
     case UninitializeMethod.Creation:
       break;
     case UninitializeMethod.StoreOpClear:
-      usage |= GPUTextureUsage.OUTPUT_ATTACHMENT;
+      usage |= GPUConst.TextureUsage.OUTPUT_ATTACHMENT;
       break;
     default:
       unreachable();
@@ -173,18 +161,18 @@ function getRequiredTextureUsage(format, sampleCount, uninitializeMethod, readMe
   switch (readMethod) {
     case ReadMethod.CopyToBuffer:
     case ReadMethod.CopyToTexture:
-      usage |= GPUTextureUsage.COPY_SRC;
+      usage |= GPUConst.TextureUsage.COPY_SRC;
       break;
     case ReadMethod.Sample:
-      usage |= GPUTextureUsage.SAMPLED;
+      usage |= GPUConst.TextureUsage.SAMPLED;
       break;
     case ReadMethod.Storage:
-      usage |= GPUTextureUsage.STORAGE;
+      usage |= GPUConst.TextureUsage.STORAGE;
       break;
     case ReadMethod.DepthTest:
     case ReadMethod.StencilTest:
     case ReadMethod.ColorBlending:
-      usage |= GPUTextureUsage.OUTPUT_ATTACHMENT;
+      usage |= GPUConst.TextureUsage.OUTPUT_ATTACHMENT;
       break;
     default:
       unreachable();
@@ -193,14 +181,14 @@ function getRequiredTextureUsage(format, sampleCount, uninitializeMethod, readMe
   if (sampleCount > 1) {
     // Copies to multisampled textures are not allowed. We need OutputAttachment to initialize
     // canary data in multisampled textures.
-    usage |= GPUTextureUsage.OUTPUT_ATTACHMENT;
+    usage |= GPUConst.TextureUsage.OUTPUT_ATTACHMENT;
   }
 
   if (!kUncompressedTextureFormatInfo[format].copyDst) {
     // Copies are not possible. We need OutputAttachment to initialize
     // canary data.
     assert(kUncompressedTextureFormatInfo[format].renderable);
-    usage |= GPUTextureUsage.OUTPUT_ATTACHMENT;
+    usage |= GPUConst.TextureUsage.OUTPUT_ATTACHMENT;
   }
 
   return usage;
@@ -209,7 +197,6 @@ function getRequiredTextureUsage(format, sampleCount, uninitializeMethod, readMe
 export class TextureZeroInitTest extends GPUTest {
   constructor(rec, params) {
     super(rec, params);
-    _defineProperty(this, 'stateToTexelComponents', void 0);
 
     const stateToTexelComponents = state => {
       const [R, G, B, A] = initializedStateAsColor(state, this.params.format);
@@ -492,11 +479,11 @@ export class TextureZeroInitTest extends GPUTest {
 
           const info = kUncompressedTextureFormatInfo[format];
 
-          if (usage & GPUTextureUsage.OUTPUT_ATTACHMENT && !info.renderable) {
+          if (usage & GPUConst.TextureUsage.OUTPUT_ATTACHMENT && !info.renderable) {
             return false;
           }
 
-          if (usage & GPUTextureUsage.STORAGE && !info.storage) {
+          if (usage & GPUConst.TextureUsage.STORAGE && !info.storage) {
             return false;
           }
 

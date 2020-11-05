@@ -1,19 +1,6 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
- **/ function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true,
-    });
-  } else {
-    obj[key] = value;
-  }
-  return obj;
-}
-import { assert, unreachable } from '../../../common/framework/util/util.js';
+ **/ import { assert, unreachable } from '../../../common/framework/util/util.js';
 import { kUncompressedTextureFormatInfo } from '../../capability_info.js';
 import {
   assertInIntegerRange,
@@ -198,13 +185,13 @@ const kRepresentationInfo = {
 
 class TexelDataRepresentationImpl {
   // TODO: Determine endianness of the GPU data?
+  isGPULittleEndian = true;
 
   constructor(format, componentOrder, componentInfo, sRGB) {
     this.format = format;
     this.componentOrder = componentOrder;
     this.componentInfo = componentInfo;
     this.sRGB = sRGB;
-    _defineProperty(this, 'isGPULittleEndian', true);
   }
 
   totalBitLength() {

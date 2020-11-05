@@ -1,7 +1,7 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
  **/ /// <reference types="@webgpu/types" />
-import { assert } from '../util/util.js';
+import { assert } from '../../common/framework/util/util.js';
 let impl = undefined;
 
 export function getGPU() {

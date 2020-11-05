@@ -1,21 +1,9 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
- **/ function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true,
-    });
-  } else {
-    obj[key] = value;
-  }
-  return obj;
-}
-import { extractPublicParams, publicParamsEquals } from './params_utils.js';
+ **/ import { SkipTestCase } from './fixture.js';
+import { extractPublicParams } from './params_utils.js';
 import { kPathSeparator } from './query/separators.js';
-import { stringifyPublicParams } from './query/stringify_params.js';
+import { stringifyPublicParams, stringifyPublicParamsUniquely } from './query/stringify_params.js';
 import { validQueryPart } from './query/validQueryPart.js';
 import { assert } from './util/util.js';
 
@@ -23,24 +11,22 @@ export function makeTestGroup(fixture) {
   return new TestGroup(fixture);
 }
 
-// Interface for running tests
+// Interfaces for running tests
 
 export function makeTestGroupForUnitTesting(fixture) {
   return new TestGroup(fixture);
 }
 
 class TestGroup {
+  seen = new Set();
+  tests = [];
+
   constructor(fixture) {
-    _defineProperty(this, 'fixture', void 0);
-    _defineProperty(this, 'seen', new Set());
-    _defineProperty(this, 'tests', []);
     this.fixture = fixture;
   }
 
-  *iterate() {
-    for (const test of this.tests) {
-      yield* test.iterate();
-    }
+  iterate() {
+    return this.tests;
   }
 
   checkName(name) {
@@ -58,6 +44,8 @@ class TestGroup {
 
   // TODO: This could take a fixture, too, to override the one for the group.
   test(name) {
+    const testCreationStack = new Error(`Test created: ${name}`);
+
     this.checkName(name);
 
     const parts = name.split(kPathSeparator);
@@ -65,48 +53,71 @@ class TestGroup {
       assert(validQueryPart.test(p), `Invalid test name part ${p}; must match ${validQueryPart}`);
     }
 
-    const test = new TestBuilder(parts, this.fixture);
+    const test = new TestBuilder(parts, this.fixture, testCreationStack);
     this.tests.push(test);
     return test;
   }
 
-  checkCaseNamesAndDuplicates() {
+  validate() {
     for (const test of this.tests) {
-      test.checkCaseNamesAndDuplicates();
+      test.validate();
     }
   }
 }
 
 class TestBuilder {
-  constructor(testPath, fixture) {
-    _defineProperty(this, 'testPath', void 0);
-    _defineProperty(this, 'fixture', void 0);
-    _defineProperty(this, 'testFn', void 0);
-    _defineProperty(this, 'cases', undefined);
+  cases = undefined;
+
+  constructor(testPath, fixture, testCreationStack) {
     this.testPath = testPath;
     this.fixture = fixture;
+    this.testCreationStack = testCreationStack;
+  }
+
+  desc(description) {
+    this.description = description.trim();
+    return this;
   }
 
   fn(fn) {
+    assert(this.testFn === undefined);
     this.testFn = fn;
   }
 
-  checkCaseNamesAndDuplicates() {
+  unimplemented() {
+    assert(this.testFn === undefined);
+    this.testFn = () => {
+      throw new SkipTestCase('test unimplemented');
+    };
+  }
+
+  validate() {
+    const testPathString = this.testPath.join(kPathSeparator);
+    assert(this.testFn !== undefined, () => {
+      let s = `Test is missing .fn(): ${testPathString}`;
+      if (this.testCreationStack.stack) {
+        s += `\n-> test created at:\n${this.testCreationStack.stack}`;
+      }
+      return s;
+    });
+
     if (this.cases === undefined) {
       return;
     }
 
-    // This is n^2.
-    const seen = [];
+    const seen = new Set();
     for (const testcase of this.cases) {
       // stringifyPublicParams also checks for invalid params values
       const testcaseString = stringifyPublicParams(testcase);
+
+      // A (hopefully) unique representation of a params value.
+      const testcaseStringUnique = stringifyPublicParamsUniquely(testcase);
       assert(
-        !seen.some(x => publicParamsEquals(x, testcase)),
-        `Duplicate public test case params: ${testcaseString}`
+        !seen.has(testcaseStringUnique),
+        `Duplicate public test case params for test ${testPathString}: ${testcaseString}`
       );
 
-      seen.push(testcase);
+      seen.add(testcaseStringUnique);
     }
   }
 
@@ -127,10 +138,6 @@ class TestBuilder {
 
 class RunCaseSpecific {
   constructor(testPath, params, fixture, fn) {
-    _defineProperty(this, 'id', void 0);
-    _defineProperty(this, 'params', void 0);
-    _defineProperty(this, 'fixture', void 0);
-    _defineProperty(this, 'fn', void 0);
     this.id = { test: testPath, params: extractPublicParams(params) };
     this.params = params;
     this.fixture = fixture;

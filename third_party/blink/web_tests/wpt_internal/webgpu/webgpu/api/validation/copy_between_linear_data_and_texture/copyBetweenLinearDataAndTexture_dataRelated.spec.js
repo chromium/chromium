@@ -47,11 +47,9 @@ g.test('bound_on_rows_per_image')
     // TODO: Update this if https://github.com/gpuweb/gpuweb/issues/984 changes the spec.
 
     let success = true;
-    if (rowsPerImage !== 0 && rowsPerImage < copyHeight) {
-      success = false;
-    }
-    if (copyDepth > 1 && rowsPerImage < copyHeight) {
-      success = false;
+    if (rowsPerImage < copyHeight) {
+      success && (success = rowsPerImage === 0);
+      success && (success = copyDepth <= 1);
     }
 
     t.testRun(

@@ -1,20 +1,6 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
- **/ let _Symbol$iterator;
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true,
-    });
-  } else {
-    obj[key] = value;
-  }
-  return obj;
-}
-import { publicParamsEquals } from './params_utils.js';
+ **/ import { publicParamsEquals } from './params_utils.js';
 import { assert } from './util/util.js';
 /** Forces a type to resolve its type definitions, to make it readable/debuggable. */
 
@@ -58,12 +44,11 @@ export function pbool(name) {
 export function params() {
   return new ParamsBuilder();
 }
-_Symbol$iterator = Symbol.iterator;
+
 export class ParamsBuilder {
-  constructor() {
-    _defineProperty(this, 'paramSpecs', [{}]);
-  }
-  [_Symbol$iterator]() {
+  paramSpecs = [{}];
+
+  [Symbol.iterator]() {
     const iter = this.paramSpecs[Symbol.iterator]();
     return iter;
   }

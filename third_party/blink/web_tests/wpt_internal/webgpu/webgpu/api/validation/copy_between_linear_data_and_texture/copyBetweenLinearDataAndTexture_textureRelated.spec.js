@@ -4,6 +4,7 @@
 import { params, poptions } from '../../../../common/framework/params_builder.js';
 import { makeTestGroup } from '../../../../common/framework/test_group.js';
 import { kSizedTextureFormats, kSizedTextureFormatInfo } from '../../../capability_info.js';
+import { GPUConst } from '../../../constants.js';
 
 import {
   CopyBetweenLinearDataAndTextureTest,
@@ -58,9 +59,9 @@ g.test('texture_usage_must_be_valid')
       .combine(poptions('method', kAllTestMethods))
       .combine(
         poptions('usage', [
-          GPUTextureUsage.COPY_SRC | GPUTextureUsage.SAMPLED,
-          GPUTextureUsage.COPY_DST | GPUTextureUsage.SAMPLED,
-          GPUTextureUsage.COPY_SRC | GPUTextureUsage.COPY_DST,
+          GPUConst.TextureUsage.COPY_SRC | GPUConst.TextureUsage.SAMPLED,
+          GPUConst.TextureUsage.COPY_DST | GPUConst.TextureUsage.SAMPLED,
+          GPUConst.TextureUsage.COPY_SRC | GPUConst.TextureUsage.COPY_DST,
         ])
       )
   )

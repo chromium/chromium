@@ -1,31 +1,15 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
- **/ function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true,
-    });
-  } else {
-    obj[key] = value;
-  }
-  return obj;
-}
-export const description = `
+ **/ export const description = `
 error scope validation tests.
 `;
 import { Fixture } from '../../../common/framework/fixture.js';
-import { getGPU } from '../../../common/framework/gpu/implementation.js';
 import { makeTestGroup } from '../../../common/framework/test_group.js';
 import { assert, raceWithRejectOnTimeout } from '../../../common/framework/util/util.js';
+import { getGPU } from '../../util/navigator_gpu.js';
 
 class F extends Fixture {
-  constructor(...args) {
-    super(...args);
-    _defineProperty(this, '_device', undefined);
-  }
+  _device = undefined;
 
   get device() {
     assert(this._device !== undefined);

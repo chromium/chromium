@@ -19,7 +19,14 @@
 # ****************************************************************************
 
 #
-# Untriaged
+# Test file splits (These expectations should all be Pass, but tell
+# regenerate_internal_cts_html.sh to run them (and siblings) as separate tests.
+#
+
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,copyTextureToTexture:texture_format_equality:* [ Pass ]
+
+#
+# Untriaged failures
 #
 
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mappedAtCreation,smaller_getMappedRange:* [ Failure ]
@@ -27,13 +34,33 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pass,storeOp:* [ Fail
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:bindingTypeSpecific_optional_members,* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:visibility,* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,render_pass,storeOp:* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,textureUsageInRender:* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,copyBufferToBuffer:copy_with_invalid_buffer: [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type,* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,compute_pass:* [ Failure ]
 
-# Timeouts
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer_mapping:mapAsync,invalidBuffer:* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer_mapping:mapAsync,offsetAndSizeAlignment,* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer_mapping:mapAsync,offsetAndSizeOOB,* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer_mapping:mapAsync,sizeUnspecifiedOOB,* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer_mapping:mapAsync,state,* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer_mapping:mapAsync,usage,* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer_mapping:mapAsync_,* [ Failure ]
+
+# Fails or crashes on numerous combinations of backends, hardware, and validation layers
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pass,resolve:* [ Failure Crash ]
+
+#
+# Untriaged timeouts
+#
+
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,copy_between_linear_data_and_texture,copyBetweenLinearDataAndTexture_dataRelated:* [ Skip ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,copy_between_linear_data_and_texture,copyBetweenLinearDataAndTexture_textureRelated:* [ Skip ]
 wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:* [ Skip ]
 wpt_internal/webgpu/cts.html?q=webgpu:web-platform,copyImageBitmapToTexture:from_ImageData:* [ Skip ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,copyBetweenLinearDataAndTexture:* [ Skip ]
+
+# Has many failures but also is very long, will need splitting
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,textureUsageInPassEncoder:* [ Skip ]
 
 #
 # Test bugs
@@ -85,8 +112,6 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:max_r
 
 # https://github.com/gpuweb/cts/issues/230 these tests need to be updated and Dawn will fail once we implement proper limits
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:max_resources_per_stage,in_bind_group_layout,* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:number_of_dynamic_buffers_exceeds_the_maximum_value,* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createPipelineLayout:number_of_dynamic_buffers_exceeds_the_maximum_value:* [ Failure ]
 
 wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:* [ Skip ]
 

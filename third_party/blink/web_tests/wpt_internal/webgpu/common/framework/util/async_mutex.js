@@ -1,22 +1,8 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
- **/ function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true,
-    });
-  } else {
-    obj[key] = value;
-  }
-  return obj;
-}
-export class AsyncMutex {
-  constructor() {
-    _defineProperty(this, 'newestQueueItem', void 0);
-  }
+ **/ export class AsyncMutex {
+  // The newest item currently waiting for the mutex. This promise is chained so
+  // that it implicitly defines a FIFO queue where this is the "last-in" item.
 
   // Run an async function with a lock on this mutex.
   // Waits until the mutex is available, locks it, runs the function, then releases it.

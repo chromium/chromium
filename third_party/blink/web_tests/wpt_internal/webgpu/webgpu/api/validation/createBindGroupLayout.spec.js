@@ -99,28 +99,25 @@ g.test('bindingTypeSpecific_optional_members')
 
     let success = true;
     if (!(type in kBufferBindingTypeInfo)) {
-      if (hasDynamicOffset !== undefined) success = false;
-      if (minBufferBindingSize !== undefined) success = false;
+      success && (success = hasDynamicOffset === undefined);
+      success && (success = minBufferBindingSize === undefined);
     }
     if (!(type in kTextureBindingTypeInfo)) {
-      if (viewDimension !== undefined) success = false;
+      success && (success = viewDimension === undefined);
     }
     if (kBindingTypeInfo[type].resource !== 'sampledTex') {
-      if (textureComponentType !== undefined) success = false;
-      if (multisampled !== undefined) success = false;
+      success && (success = textureComponentType === undefined);
+      success && (success = multisampled === undefined);
     }
     if (kBindingTypeInfo[type].resource !== 'storageTex') {
-      if (storageTextureFormat !== undefined) success = false;
+      success && (success = storageTextureFormat === undefined);
     } else {
-      if (viewDimension !== undefined && !kTextureViewDimensionInfo[viewDimension].storage) {
-        success = false;
-      }
-      if (
-        storageTextureFormat !== undefined &&
-        !kAllTextureFormatInfo[storageTextureFormat].storage
-      ) {
-        success = false;
-      }
+      success &&
+        (success = viewDimension === undefined || kTextureViewDimensionInfo[viewDimension].storage);
+      success &&
+        (success =
+          storageTextureFormat === undefined ||
+          kAllTextureFormatInfo[storageTextureFormat].storage);
     }
 
     t.expectValidationError(() => {

@@ -1,7 +1,17 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
  **/ export const description = `
-Tests to check array clamping in shaders is correctly implemented including vector / matrix indexing
+Tests to check datatype clamping in shaders is correctly implemented including vector / matrix indexing
+
+- For each shader stage (TODO):
+  - For various memory spaces (storage, uniform, global, function local, shared memory, TODO(in, out))
+    - For dynamic vs. non dynamic buffer bindings (when testing storage or uniform)
+      - For many data types (float, uint, int) x (sized array, unsized array, vec, mat...)
+        - For various types of accesses (read, write, atomic ops)
+          - For various indices in bounds and out of bounds of the data type
+            - Check that accesses are in bounds or discarded (as much as we can tell)
+
+TODO add tests to check that texel fetch operations stay in-bounds.
 `;
 import { params, poptions } from '../../../common/framework/params_builder.js';
 import { makeTestGroup } from '../../../common/framework/test_group.js';
@@ -163,7 +173,8 @@ const typeParams = (() => {
     types[`${baseTypeName}_sizedArray`] = {
       declaration: `${baseTypeName} data[3]`,
       length: 3,
-      std140Length: 2 * 4 + 1,
+      // TODO should really be std140Length: 2 * 4 + 1?
+      std140Length: 3 * 4,
       std430Length: 3,
       zero: baseType.glslZero,
       baseType,
@@ -192,7 +203,7 @@ const typeParams = (() => {
     }
   }
 
-  // Matrices, there are only float matrics in GLSL.
+  // Matrices, there are only float matrices in GLSL.
   for (const transposed of [false, true]) {
     for (let numColumns = 2; numColumns <= 4; numColumns++) {
       for (let numRows = 2; numRows <= 4; numRows++) {
@@ -210,7 +221,8 @@ const typeParams = (() => {
         types[(transposed ? 'transposed_' : '') + typeName] = {
           declaration: (transposed ? 'layout(row_major) ' : '') + `${typeName} data`,
           length: numColumns,
-          std140Length: std140SizePerMinorDim * (majorDim - 1) + minorDim,
+          // TODO should really be std140Length: std140SizePerMinorDim * (majorDim - 1) + minorDim,
+          std140Length: std140SizePerMinorDim * majorDim,
           std430Length: std430SizePerMinorDim * (majorDim - 1) + minorDim,
           zero: `vec${numRows}(0.0f)`,
           baseType: baseTypes['float'],
@@ -231,16 +243,92 @@ g.test('bufferMemory')
         { memory: 'storage', access: 'write' },
         { memory: 'storage', access: 'atomic' },
         { memory: 'uniform', access: 'read' },
+        { memory: 'global', access: 'read' },
+        { memory: 'global', access: 'write' },
+        { memory: 'function', access: 'read' },
+        { memory: 'function', access: 'write' },
+        { memory: 'shared', access: 'read' },
+        { memory: 'shared', access: 'write' },
       ])
 
       // Unsized arrays are only supported with SSBOs
       .unless(p => typeParams[p.type].isUnsizedArray === true && p.memory !== 'storage')
       // Atomics are only supported with integers
-      .unless(p => p.access === 'atomic' && !(typeParams[p.type].baseType.name in ['uint', 'int']))
+      .unless(
+        p => p.access === 'atomic' && !['uint', 'int'].includes(typeParams[p.type].baseType.name)
+      )
+
+      // Layouts are only supported on interfaces
+      .unless(
+        p => p.type.indexOf('transposed') !== -1 && !['uniform', 'storage'].includes(p.memory)
+      )
   )
   .fn(async t => {
+    const { memory, access } = t.params;
+
     const type = typeParams[t.params.type];
     const baseType = type.baseType;
+
+    const usesCanary = ['global', 'function', 'shared'].includes(memory);
+    const usesBuffer = ['uniform', 'storage'].includes(memory);
+
+    let globalSource = '';
+    let testFunctionSource = '';
+    let bufferByteSize = 0;
+
+    // Declare the data that will be accessed to check robust access, as a buffer or a struct
+    // in the global scope or inside the test function itself.
+    const structDecl = `
+      struct S {
+          uint startCanary[10];
+          ${type.declaration};
+          uint endCanary[10];
+      };`;
+
+    switch (memory) {
+      case 'uniform':
+        globalSource += `
+          layout(std140, set = 0, binding = 0) uniform TestData {
+            ${type.declaration};
+          } s;`;
+        bufferByteSize = baseType.byteSize * type.std140Length;
+        break;
+
+      case 'storage':
+        globalSource += `
+          layout(std430, set = 0, binding = 0) buffer TestData {
+            ${type.declaration};
+          } s;`;
+        bufferByteSize = baseType.byteSize * type.std430Length;
+        break;
+
+      case 'global':
+        globalSource += `
+          ${structDecl}
+          S s;`;
+        break;
+
+      case 'function':
+        globalSource += `${structDecl}`;
+        testFunctionSource += 'S s;';
+        break;
+
+      case 'shared':
+        globalSource += `
+          ${structDecl}
+          shared S s;`;
+        break;
+    }
+
+    // Build the test function that will do the tests.
+
+    // If we use a local canary declared in the shader, initialize it.
+    if (usesCanary) {
+      testFunctionSource += `
+        for (uint i = 0; i < 10; i++) {
+          s.startCanary[i] = s.endCanary[i] = 0xFFFFFFFFu;
+        }`;
+    }
 
     const indicesToTest = [
       // Write to the inside of the type so we can check the size computations were correct.
@@ -264,77 +352,81 @@ g.test('bufferMemory')
       `-1 * ${kIntMax}`,
     ];
 
-    let testSource = '';
-    let byteSize = 0;
-
-    // Declare the data that will be accessed to check robust access.
-    if (t.params.memory === 'uniform') {
-      testSource += `
-        layout(std140, set = 0, binding = 0) uniform TestData {
-          ${type.declaration};
-        };`;
-      byteSize = baseType.byteSize * type.std140Length;
-    } else {
-      testSource += `
-        layout(std430, set = 0, binding = 0) buffer TestData {
-          ${type.declaration};
-        };`;
-      byteSize = baseType.byteSize * type.std430Length;
-    }
-
-    // Build the test function that will do the tests.
-    testSource += `
-    uint runTest() {
-  `;
-
+    // Produce the accesses to the variable.
     for (const indexToTest of indicesToTest) {
-      // TODO check with constants too.
+      // TODO check with constants too if WGSL allows it.
       const index = `(${indexToTest}) * one`;
 
-      if (t.params.access === 'read') {
-        testSource += `
-          if(data[${index}] != ${type.zero}) {
-            return __LINE__;
-          }`;
-      } else if (t.params.access === 'write') {
-        testSource += `data[${index}] = ${type.zero};`;
-      } else {
-        testSource += `atomicAdd(data[${index}], 1);`;
+      switch (access) {
+        case 'read':
+          testFunctionSource += `
+            if(s.data[${index}] != ${type.zero}) {
+              return __LINE__;
+            }`;
+          break;
+
+        case 'write':
+          testFunctionSource += `s.data[${index}] = ${type.zero};`;
+          break;
+
+        case 'atomic':
+          testFunctionSource += `atomicAdd(s.data[${index}], 1);`;
+          break;
       }
     }
 
-    testSource += `
-      return 0;
-    }`;
+    // Check that the canaries haven't been modified
+    if (usesCanary) {
+      testFunctionSource += `
+        for (uint i = 0; i < 10; i++) {
+          if (s.startCanary[i] != 0xFFFFFFFFu) {
+            return __LINE__;
+          }
+          if (s.endCanary[i] != 0xFFFFFFFFu) {
+            return __LINE__;
+          }
+        }`;
+    }
 
-    // Create a buffer that contains zeroes in the allowed access area, and 42s everywhere else.
-    const testBuffer = t.device.createBuffer({
-      mappedAtCreation: true,
-      size: 512,
-      usage:
-        GPUBufferUsage.COPY_SRC |
-        GPUBufferUsage.UNIFORM |
-        GPUBufferUsage.STORAGE |
-        GPUBufferUsage.COPY_DST,
-    });
+    // Run the test
 
-    const testInit = testBuffer.getMappedRange();
-    baseType.fillBuffer(testInit, 256, byteSize);
-    const testInitCopy = copyArrayBuffer(testInit);
-    testBuffer.unmap();
+    // First aggregate the test source
+    const testSource = `
+      ${globalSource}
 
-    // Run the shader, accessing the buffer.
-    runShaderTest(t, GPUShaderStage.COMPUTE, testSource, [
-      { binding: 0, resource: { buffer: testBuffer, offset: 256, size: byteSize } },
-    ]);
+      uint runTest() {
+        ${testFunctionSource}
+        return 0;
+      }`;
 
-    // Check that content of the buffer outside of the allowed area didn't change.
-    t.expectSubContents(testBuffer, 0, new Uint8Array(testInitCopy.slice(0, 256)));
-    const dataEnd = 256 + byteSize;
-    t.expectSubContents(testBuffer, dataEnd, new Uint8Array(testInitCopy.slice(dataEnd, 512)));
+    // Run it.
+    if (usesBuffer) {
+      // Create a buffer that contains zeroes in the allowed access area, and 42s everywhere else.
+      const testBuffer = t.device.createBuffer({
+        mappedAtCreation: true,
+        size: 512,
+        usage:
+          GPUBufferUsage.COPY_SRC |
+          GPUBufferUsage.UNIFORM |
+          GPUBufferUsage.STORAGE |
+          GPUBufferUsage.COPY_DST,
+      });
+
+      const testInit = testBuffer.getMappedRange();
+      baseType.fillBuffer(testInit, 256, bufferByteSize);
+      const testInitCopy = copyArrayBuffer(testInit);
+      testBuffer.unmap();
+
+      // Run the shader, accessing the buffer.
+      runShaderTest(t, GPUShaderStage.COMPUTE, testSource, [
+        { binding: 0, resource: { buffer: testBuffer, offset: 256, size: bufferByteSize } },
+      ]);
+
+      // Check that content of the buffer outside of the allowed area didn't change.
+      t.expectSubContents(testBuffer, 0, new Uint8Array(testInitCopy.slice(0, 256)));
+      const dataEnd = 256 + bufferByteSize;
+      t.expectSubContents(testBuffer, dataEnd, new Uint8Array(testInitCopy.slice(dataEnd, 512)));
+    } else {
+      runShaderTest(t, GPUShaderStage.COMPUTE, testSource, []);
+    }
   });
-
-// TODO: also check other shader stages.
-// TODO: also check global, function local, and shared variables.
-// TODO: also check interface variables.
-// TODO: also check storage texture access.

@@ -1,19 +1,6 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
- **/ function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true,
-    });
-  } else {
-    obj[key] = value;
-  }
-  return obj;
-}
-export const description = `
+ **/ export const description = `
 Test vertex attributes behave correctly (no crash / data leak) when accessed out of bounds
 
 Test coverage:
@@ -75,17 +62,6 @@ class DrawCall {
   // Both Draw and DrawIndexed
 
   constructor(device, vertexArrays, vertexCount, partialLastNumber, offsetVertexBuffer) {
-    _defineProperty(this, 'device', void 0);
-    _defineProperty(this, 'vertexBuffers', void 0);
-    _defineProperty(this, 'indexBuffer', void 0);
-    _defineProperty(this, 'offsetVertexBuffer', void 0);
-    _defineProperty(this, 'vertexCount', void 0);
-    _defineProperty(this, 'firstVertex', void 0);
-    _defineProperty(this, 'indexCount', void 0);
-    _defineProperty(this, 'firstIndex', void 0);
-    _defineProperty(this, 'baseVertex', void 0);
-    _defineProperty(this, 'instanceCount', void 0);
-    _defineProperty(this, 'firstInstance', void 0);
     this.device = device;
     this.vertexBuffers = vertexArrays.map(v => this.generateVertexBuffer(v, partialLastNumber));
 

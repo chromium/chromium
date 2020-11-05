@@ -1,19 +1,6 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
- **/ function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true,
-    });
-  } else {
-    obj[key] = value;
-  }
-  return obj;
-}
-import { SkipTestCase } from '../fixture.js';
+ **/ import { SkipTestCase } from '../fixture.js';
 import { now, assert } from '../util/util.js';
 import { LogMessageWithStack } from './log_message.js';
 var LogSeverity;
@@ -30,16 +17,15 @@ const kMaxLogStacks = 2;
 
 /** Holds onto a LiveTestCaseResult owned by the Logger, and writes the results into it. */
 export class TestCaseRecorder {
+  maxLogSeverity = LogSeverity.Pass;
+  startTime = -1;
+  logs = [];
+  logLinesAtCurrentSeverity = 0;
+  debugging = false;
   /** Used to dedup log messages which have identical stacks. */
+  messagesForPreviouslySeenStacks = new Map();
 
   constructor(result, debugging) {
-    _defineProperty(this, 'result', void 0);
-    _defineProperty(this, 'maxLogSeverity', LogSeverity.Pass);
-    _defineProperty(this, 'startTime', -1);
-    _defineProperty(this, 'logs', []);
-    _defineProperty(this, 'logLinesAtCurrentSeverity', 0);
-    _defineProperty(this, 'debugging', false);
-    _defineProperty(this, 'messagesForPreviouslySeenStacks', new Map());
     this.result = result;
     this.debugging = debugging;
   }
@@ -83,7 +69,11 @@ export class TestCaseRecorder {
   }
 
   skipped(ex) {
-    this.logImpl(LogSeverity.Skip, new LogMessageWithStack('SKIP', ex));
+    const message = new LogMessageWithStack('SKIP', ex);
+    if (!this.debugging) {
+      message.setStackHidden();
+    }
+    this.logImpl(LogSeverity.Skip, message);
   }
 
   warn(ex) {
