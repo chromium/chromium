@@ -215,6 +215,10 @@ void GbmSurfaceless::SetForceGlFlushOnSwapBuffers() {
   requires_gl_flush_on_swap_buffers_ = true;
 }
 
+gfx::SurfaceOrigin GbmSurfaceless::GetOrigin() const {
+  return gfx::SurfaceOrigin::kTopLeft;
+}
+
 GbmSurfaceless::~GbmSurfaceless() {
   Destroy();  // The EGL surface must be destroyed before SurfaceOzone.
   surface_factory_->UnregisterSurface(window_->widget());

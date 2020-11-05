@@ -72,6 +72,7 @@ class GbmSurfaceless : public gl::SurfacelessEGL {
   EGLConfig GetConfig() override;
   void SetRelyOnImplicitSync() override;
   void SetForceGlFlushOnSwapBuffers() override;
+  gfx::SurfaceOrigin GetOrigin() const override;
 
  protected:
   ~GbmSurfaceless() override;
