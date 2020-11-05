@@ -2554,10 +2554,7 @@ class AutofillRestrictUnownedFieldsTest
  protected:
   AutofillRestrictUnownedFieldsTest() : restrict_unowned_fields_(GetParam()) {
     std::vector<base::Feature> enabled;
-    std::vector<base::Feature> disabled = {
-        features::kAutofillEnforceMinRequiredFieldsForHeuristics,
-        features::kAutofillEnforceMinRequiredFieldsForQuery,
-        features::kAutofillEnforceMinRequiredFieldsForUpload};
+    std::vector<base::Feature> disabled;
     (restrict_unowned_fields_ ? enabled : disabled)
         .push_back(features::kAutofillRestrictUnownedFieldsToFormlessCheckout);
     scoped_feature_list_.InitWithFeatures(enabled, disabled);

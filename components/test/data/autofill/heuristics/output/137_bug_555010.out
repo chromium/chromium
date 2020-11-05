@@ -1,4 +1,4 @@
-EMAIL_ADDRESS | userName | Username or Email address |  | userName_1-default
+UNKNOWN_TYPE | userName | Username or Email address |  | userName_1-default
 UNKNOWN_TYPE | password | Password |  | userName_1-default
 CREDIT_CARD_NAME_FULL | cardName | Full Name (First Name Last Name) |  | credit-card-cc
 ADDRESS_HOME_LINE1 | id_skCOShipAddress | Shipping Address |  | cardName_1-default

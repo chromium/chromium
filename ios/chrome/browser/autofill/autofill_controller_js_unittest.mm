@@ -1497,7 +1497,7 @@ void AutofillControllerJsTest::TestExtractNewForms(
 
   NSString* actual = ExecuteJavaScriptWithFormat(
       @"var forms = __gCrWeb.autofill.extractNewForms(%" PRIuS ", true); %@",
-      autofill::MinRequiredFieldsForHeuristics(),
+      autofill::kMinRequiredFieldsForHeuristics,
       [verifying_javascripts componentsJoinedByString:@"&&"]);
 
   EXPECT_NSEQ(@YES, actual) << base::SysNSStringToUTF8([NSString
@@ -1506,7 +1506,7 @@ void AutofillControllerJsTest::TestExtractNewForms(
                        ExecuteJavaScriptWithFormat(
                            @"var forms = __gCrWeb.autofill.extractNewForms("
                             "%" PRIuS ", true); __gCrWeb.stringify(forms)",
-                           autofill::MinRequiredFieldsForHeuristics()),
+                           autofill::kMinRequiredFieldsForHeuristics),
                        verifying_javascripts]);
 }
 
@@ -1731,7 +1731,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
 
   NSString* result =
       ExecuteJavaScriptWithFormat(@"__gCrWeb.autofill.extractForms(%zu, true)",
-                                  autofill::MinRequiredFieldsForHeuristics());
+                                  autofill::kMinRequiredFieldsForHeuristics);
   NSArray* resultArray = [NSJSONSerialization
       JSONObjectWithData:[result dataUsingEncoding:NSUTF8StringEncoding]
                  options:0
@@ -1748,7 +1748,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
   result = ExecuteJavaScriptWithFormat(
       @"Object.prototype.toJSON=function(){return 'abcde';};"
        "__gCrWeb.autofill.extractForms(%zu, true)",
-      autofill::MinRequiredFieldsForHeuristics());
+      autofill::kMinRequiredFieldsForHeuristics);
   resultArray = [NSJSONSerialization
       JSONObjectWithData:[result dataUsingEncoding:NSUTF8StringEncoding]
                  options:0
@@ -1764,7 +1764,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
   result = ExecuteJavaScriptWithFormat(
       @"Array.prototype.toJSON=function(){return 'abcde';};"
        "__gCrWeb.autofill.extractForms(%zu, true)",
-      autofill::MinRequiredFieldsForHeuristics());
+      autofill::kMinRequiredFieldsForHeuristics);
   resultArray = [NSJSONSerialization
       JSONObjectWithData:[result dataUsingEncoding:NSUTF8StringEncoding]
                  options:0
@@ -1883,7 +1883,7 @@ TEST_F(AutofillControllerJsTest, ExtractNewForms) {
 
     NSString* result = ExecuteJavaScriptWithFormat(
         @"__gCrWeb.autofill.extractForms(%zu, true)",
-        autofill::MinRequiredFieldsForHeuristics());
+        autofill::kMinRequiredFieldsForHeuristics);
     NSArray* resultArray = [NSJSONSerialization
         JSONObjectWithData:[result dataUsingEncoding:NSUTF8StringEncoding]
                    options:0

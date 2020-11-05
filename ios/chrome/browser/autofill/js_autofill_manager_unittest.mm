@@ -90,7 +90,7 @@ class JsAutofillManagerTest : public ChromeWebTest {
     __block BOOL block_was_called = NO;
     [manager_
         fetchFormsWithMinimumRequiredFieldsCount:
-            autofill::MinRequiredFieldsForHeuristics()
+            autofill::kMinRequiredFieldsForHeuristics
                                          inFrame:main_web_frame()
                                completionHandler:^(NSString* actualResult) {
                                  block_was_called = YES;
@@ -182,7 +182,7 @@ TEST_F(JsAutofillManagerTest, ExtractForms) {
   __block BOOL block_was_called = NO;
   __block NSString* result;
   [manager_ fetchFormsWithMinimumRequiredFieldsCount:
-                autofill::MinRequiredFieldsForHeuristics()
+                autofill::kMinRequiredFieldsForHeuristics
                                              inFrame:main_web_frame()
                                    completionHandler:^(NSString* actualResult) {
                                      block_was_called = YES;
@@ -276,7 +276,7 @@ TEST_F(JsAutofillManagerTest, ExtractForms2) {
   __block BOOL block_was_called = NO;
   __block NSString* result;
   [manager_ fetchFormsWithMinimumRequiredFieldsCount:
-                autofill::MinRequiredFieldsForHeuristics()
+                autofill::kMinRequiredFieldsForHeuristics
                                              inFrame:main_web_frame()
                                    completionHandler:^(NSString* actualResult) {
                                      block_was_called = YES;
@@ -313,7 +313,7 @@ TEST_F(JsAutofillManagerTest, ExtractFormlessForms_RestrictToFormlessCheckout) {
   __block BOOL block_was_called = NO;
   __block NSString* result;
   [manager_ fetchFormsWithMinimumRequiredFieldsCount:
-                autofill::MinRequiredFieldsForHeuristics()
+                autofill::kMinRequiredFieldsForHeuristics
                                              inFrame:main_web_frame()
                                    completionHandler:^(NSString* actualResult) {
                                      block_was_called = YES;
@@ -347,7 +347,7 @@ TEST_F(JsAutofillManagerTest, ExtractFormlessForms_AllFormlessForms) {
   __block BOOL block_was_called = NO;
   __block NSString* result;
   [manager_ fetchFormsWithMinimumRequiredFieldsCount:
-                autofill::MinRequiredFieldsForHeuristics()
+                autofill::kMinRequiredFieldsForHeuristics
                                              inFrame:main_web_frame()
                                    completionHandler:^(NSString* actualResult) {
                                      block_was_called = YES;
@@ -413,7 +413,7 @@ TEST_F(JsAutofillManagerTest, TestExtractedFieldsNames) {
   __block BOOL block_was_called = NO;
   __block NSString* result;
   [manager_ fetchFormsWithMinimumRequiredFieldsCount:
-                autofill::MinRequiredFieldsForHeuristics()
+                autofill::kMinRequiredFieldsForHeuristics
                                              inFrame:main_web_frame()
                                    completionHandler:^(NSString* actualResult) {
                                      block_was_called = YES;
@@ -483,7 +483,7 @@ TEST_F(JsAutofillManagerTest, TestExtractedFieldsIDs) {
   __block BOOL block_was_called = NO;
   __block NSString* result;
   [manager_ fetchFormsWithMinimumRequiredFieldsCount:
-                autofill::MinRequiredFieldsForHeuristics()
+                autofill::kMinRequiredFieldsForHeuristics
                                              inFrame:main_web_frame()
                                    completionHandler:^(NSString* actualResult) {
                                      block_was_called = YES;

@@ -12,4 +12,4 @@ PHONE_HOME_CITY_CODE | altfieldphone1_1 | Alternate Phone: |  | firstName_1_1-de
 PHONE_HOME_NUMBER | altfieldphone2_1 | Alternate Phone: |  | firstName_1_1-default
 PHONE_HOME_NUMBER | altfieldphone3_1 | Alternate Phone: |  | firstName_1_1-default
 UNKNOWN_TYPE | isBillingAddress_1 | Check here if the above shipping address is | on | firstName_1_1-default
-EMAIL_ADDRESS | emailInput | Add Shipping Addresses | Enter Email Address | emailInput_1-default
+UNKNOWN_TYPE | emailInput | Add Shipping Addresses | Enter Email Address | emailInput_1-default

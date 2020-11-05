@@ -1,5 +1,5 @@
-ADDRESS_HOME_ZIP | zipCode | Enter ZIP Code |  | zipCode_1-default
-SEARCH_TERM | Ntt | Search keywords |  | Ntt_1-default
+UNKNOWN_TYPE | zipCode | Enter ZIP Code |  | zipCode_1-default
+UNKNOWN_TYPE | Ntt | Search keywords |  | Ntt_1-default
 ADDRESS_HOME_COUNTRY | country | USA | USA | country_1-default
 ADDRESS_HOME_LINE1 | addressField2 | Address Name: |  | country_1-default
 NAME_FIRST | firstName | First Name: |  | country_1-default

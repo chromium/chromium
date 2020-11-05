@@ -956,8 +956,8 @@ std::string FormStructure::FormSignatureAsStr() const {
 
 bool FormStructure::IsAutofillable() const {
   size_t min_required_fields =
-      std::min({MinRequiredFieldsForHeuristics(), MinRequiredFieldsForQuery(),
-                MinRequiredFieldsForUpload()});
+      std::min({kMinRequiredFieldsForHeuristics, kMinRequiredFieldsForQuery,
+                kMinRequiredFieldsForUpload});
   if (autofill_count() < min_required_fields)
     return false;
 
@@ -999,8 +999,8 @@ bool FormStructure::ShouldBeParsed(LogManager* log_manager) const {
   }
 
   size_t min_required_fields =
-      std::min({MinRequiredFieldsForHeuristics(), MinRequiredFieldsForQuery(),
-                MinRequiredFieldsForUpload()});
+      std::min({kMinRequiredFieldsForHeuristics, kMinRequiredFieldsForQuery,
+                kMinRequiredFieldsForUpload});
   if (active_field_count() < min_required_fields &&
       (!all_fields_are_passwords() ||
        active_field_count() < kRequiredFieldsForFormsWithOnlyPasswordFields) &&
@@ -1040,7 +1040,7 @@ bool FormStructure::ShouldBeParsed(LogManager* log_manager) const {
 }
 
 bool FormStructure::ShouldRunHeuristics() const {
-  return active_field_count() >= MinRequiredFieldsForHeuristics() &&
+  return active_field_count() >= kMinRequiredFieldsForHeuristics &&
          HasAllowedScheme(source_url_) &&
          (is_form_tag_ || is_formless_checkout_ ||
           !base::FeatureList::IsEnabled(
@@ -1049,12 +1049,12 @@ bool FormStructure::ShouldRunHeuristics() const {
 
 bool FormStructure::ShouldBeQueried() const {
   return (has_password_field_ ||
-          active_field_count() >= MinRequiredFieldsForQuery()) &&
+          active_field_count() >= kMinRequiredFieldsForQuery) &&
          ShouldBeParsed();
 }
 
 bool FormStructure::ShouldBeUploaded() const {
-  return active_field_count() >= MinRequiredFieldsForUpload() &&
+  return active_field_count() >= kMinRequiredFieldsForUpload &&
          ShouldBeParsed();
 }
 
@@ -1231,8 +1231,8 @@ void FormStructure::LogQualityMetrics(
   // submission event.
   if (observed_submission) {
     AutofillMetrics::AutofillFormSubmittedState state;
-    if (num_detected_field_types < MinRequiredFieldsForHeuristics() &&
-        num_detected_field_types < MinRequiredFieldsForQuery()) {
+    if (num_detected_field_types < kMinRequiredFieldsForHeuristics &&
+        num_detected_field_types < kMinRequiredFieldsForQuery) {
       state = AutofillMetrics::NON_FILLABLE_FORM_OR_NEW_DATA;
     } else {
       if (did_autofill_all_possible_fields) {

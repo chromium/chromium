@@ -1,4 +1,4 @@
-ADDRESS_HOME_ZIP | zip |  |  | zip_1-default
+UNKNOWN_TYPE | zip |  |  | zip_1-default
 NAME_FIRST | addrsForm[0].firstName | *First Name: |  | addrsForm[0].firstName_1-default
 NAME_MIDDLE_INITIAL | addrsForm[0].middleInitial | Middle Initial: |  | addrsForm[0].firstName_1-default
 NAME_LAST | addrsForm[0].lastName | *Last Name: |  | addrsForm[0].firstName_1-default

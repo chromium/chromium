@@ -122,7 +122,7 @@ FieldCandidatesMap FormField::ParseFormFields(
   // For <form> tags, make an exception for email fields, which are commonly
   // the only recognized field on account registration sites.
   const bool accept_parsing =
-      fillable_fields >= MinRequiredFieldsForHeuristics() ||
+      fillable_fields >= kMinRequiredFieldsForHeuristics ||
       (is_form_tag && email_count > 0);
 
   if (!accept_parsing) {

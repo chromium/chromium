@@ -18,9 +18,9 @@ extern const char kSettingsOrigin[];
 
 // The number of fields required by Autofill to execute its heuristic and
 // crowd-sourcing query/upload routines.
-size_t MinRequiredFieldsForHeuristics();
-size_t MinRequiredFieldsForQuery();
-size_t MinRequiredFieldsForUpload();
+constexpr size_t kMinRequiredFieldsForHeuristics = 3;
+constexpr size_t kMinRequiredFieldsForQuery = 1;
+constexpr size_t kMinRequiredFieldsForUpload = 1;
 
 // The maximum number of form fields we are willing to parse, due to
 // computational costs.  Several examples of forms with lots of fields that are

@@ -13,4 +13,4 @@ ADDRESS_HOME_LINE2 | addrStreet2 | (apt, suite, building, floor, etc) |  | payme
 ADDRESS_HOME_CITY | addrCity | City |  | payment_group_1-default
 ADDRESS_HOME_STATE | addrState | State |   | payment_group_1-default
 ADDRESS_HOME_ZIP | addrZip | Postal code |  | payment_group_1-default
-EMAIL_ADDRESS | email | Enter your email address |  | email_1-default
+UNKNOWN_TYPE | email | Enter your email address |  | email_1-default

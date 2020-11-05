@@ -34,9 +34,6 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
 
-using autofill::features::kAutofillEnforceMinRequiredFieldsForHeuristics;
-using autofill::features::kAutofillEnforceMinRequiredFieldsForQuery;
-using autofill::features::kAutofillEnforceMinRequiredFieldsForUpload;
 using base::ASCIIToUTF16;
 using blink::WebDocument;
 using blink::WebElement;
@@ -271,52 +268,6 @@ TEST_F(AutofillRendererTest, SendForms) {
   expected.name = expected.id_attribute;
   expected.value = ASCIIToUTF16("bobhope@example.com");
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, forms[0].fields[2]);
-}
-
-TEST_F(AutofillRendererTest, NoSmallFormsWhenMinimumEnforced) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      // Enabled.
-      {kAutofillEnforceMinRequiredFieldsForHeuristics,
-       kAutofillEnforceMinRequiredFieldsForQuery,
-       kAutofillEnforceMinRequiredFieldsForUpload},
-      // Disabled.
-      {});
-
-  LoadHTML("<form method='POST'>"
-           "  <input type='text' id='firstname'/>"
-           "  <input type='text' id='middlename'/>"
-           "</form>");
-
-  base::RunLoop run_loop;
-  run_loop.RunUntilIdle();
-  // Verify that "FormsSeen" isn't sent, as there are too few fields.
-  ASSERT_TRUE(fake_driver_.forms());
-  const std::vector<FormData>& forms = *(fake_driver_.forms());
-  ASSERT_EQ(0UL, forms.size());
-}
-
-TEST_F(AutofillRendererTest, SmallFormsFoundWhenMinimumNotEnforced) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      // Enabled.
-      {},
-      // Disabled.
-      {kAutofillEnforceMinRequiredFieldsForHeuristics,
-       kAutofillEnforceMinRequiredFieldsForQuery,
-       kAutofillEnforceMinRequiredFieldsForUpload});
-  LoadHTML(
-      "<form method='POST'>"
-      "  <input type='text' id='firstname'/>"
-      "  <input type='text' id='middlename'/>"
-      "</form>");
-
-  base::RunLoop run_loop;
-  run_loop.RunUntilIdle();
-  // Verify that "FormsSeen" isn't sent, as there are too few fields.
-  ASSERT_TRUE(fake_driver_.forms());
-  const std::vector<FormData>& forms = *(fake_driver_.forms());
-  ASSERT_EQ(1UL, forms.size());
 }
 
 // Regression test for [ http://crbug.com/346010 ].

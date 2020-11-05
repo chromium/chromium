@@ -157,10 +157,7 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           autofill::features::kAutofillEnableSupportForMoreStructureInAddresses,
       },
       // Disabled
-      {autofill::features::kAutofillEnforceMinRequiredFieldsForHeuristics,
-       autofill::features::kAutofillEnforceMinRequiredFieldsForQuery,
-       autofill::features::kAutofillEnforceMinRequiredFieldsForUpload,
-       autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout});
+      {autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout});
 }
 
 FormStructureBrowserTest::~FormStructureBrowserTest() {}

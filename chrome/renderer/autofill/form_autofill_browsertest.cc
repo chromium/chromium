@@ -38,9 +38,6 @@
 #include "third_party/blink/public/web/win/web_font_rendering.h"
 #endif
 
-using autofill::features::kAutofillEnforceMinRequiredFieldsForHeuristics;
-using autofill::features::kAutofillEnforceMinRequiredFieldsForQuery;
-using autofill::features::kAutofillEnforceMinRequiredFieldsForUpload;
 using base::ASCIIToUTF16;
 using blink::WebAutofillState;
 using blink::WebDocument;
@@ -3441,43 +3438,6 @@ TEST_F(FormAutofillTest, OnlyExtractNewForms) {
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[2]);
 }
 
-// We should not extract a form if it has too few fillable fields.
-TEST_F(FormAutofillTest, ExtractFormsTooFewFields) {
-  LoadHTML("<FORM name='TestForm' action='http://cnn.com' method='post'>"
-           "  <INPUT type='text' id='firstname' value='John'/>"
-           "  <INPUT type='text' id='lastname' value='Smith'/>"
-           "  <INPUT type='submit' name='reply-send' value='Send'/>"
-           "</FORM>");
-
-  WebLocalFrame* web_frame = GetMainFrame();
-  ASSERT_NE(nullptr, web_frame);
-
-  // If all minimums are enforced, we ignore this form.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        // Enabled.
-        {kAutofillEnforceMinRequiredFieldsForHeuristics,
-         kAutofillEnforceMinRequiredFieldsForQuery,
-         kAutofillEnforceMinRequiredFieldsForUpload},
-        // Disabled.
-        {});
-    ASSERT_TRUE(FormCache(web_frame).ExtractNewForms(nullptr).empty());
-  }
-
-  // If at least one of the minimums is not enforced, we parse the form.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        // Enabled.
-        {kAutofillEnforceMinRequiredFieldsForHeuristics,
-         kAutofillEnforceMinRequiredFieldsForQuery},
-        // Disabled.
-        {kAutofillEnforceMinRequiredFieldsForUpload});
-    ASSERT_FALSE(FormCache(web_frame).ExtractNewForms(nullptr).empty());
-  }
-}
-
 // We should not report additional forms for empty forms.
 TEST_F(FormAutofillTest, ExtractFormsNoFields) {
   LoadHTML("<FORM name='TestForm' action='http://cnn.com' method='post'>"
@@ -3489,47 +3449,6 @@ TEST_F(FormAutofillTest, ExtractFormsNoFields) {
   FormCache form_cache(web_frame);
   std::vector<FormData> forms = form_cache.ExtractNewForms(nullptr);
   ASSERT_TRUE(forms.empty());
-}
-
-// We should not extract a form if it has too few fillable fields.
-// Make sure radio and checkbox fields don't count.
-TEST_F(FormAutofillTest, ExtractFormsTooFewFieldsSkipsCheckable) {
-  LoadHTML("<FORM name='TestForm' action='http://cnn.com' method='post'>"
-           "  <INPUT type='text' id='firstname' value='John'/>"
-           "  <INPUT type='text' id='lastname' value='Smith'/>"
-           "  <INPUT type='radio' id='a_radio' value='0'/>"
-           "  <INPUT type='checkbox' id='a_check' value='1'/>"
-           "  <INPUT type='submit' name='reply-send' value='Send'/>"
-           "</FORM>");
-
-  WebLocalFrame* web_frame = GetMainFrame();
-  ASSERT_NE(nullptr, web_frame);
-
-  // Without small form support, the form is not parsed.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        // Enabled.
-        {kAutofillEnforceMinRequiredFieldsForHeuristics,
-         kAutofillEnforceMinRequiredFieldsForQuery,
-         kAutofillEnforceMinRequiredFieldsForUpload},
-        // Disabled.
-        {});
-    ASSERT_TRUE(FormCache(web_frame).ExtractNewForms(nullptr).empty());
-  }
-
-  // With small form support, the form is parsed.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        // Enabled.
-        {},
-        // Disabled.
-        {kAutofillEnforceMinRequiredFieldsForHeuristics,
-         kAutofillEnforceMinRequiredFieldsForQuery,
-         kAutofillEnforceMinRequiredFieldsForUpload});
-    ASSERT_FALSE(FormCache(web_frame).ExtractNewForms(nullptr).empty());
-  }
 }
 
 TEST_F(FormAutofillTest, WebFormElementToFormDataAutocomplete) {
@@ -5627,13 +5546,6 @@ TEST_F(FormAutofillTest, FormlessForms) {
 }
 
 TEST_F(FormAutofillTest, FormCache_ExtractNewForms) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      // Enabled.
-      {kAutofillEnforceMinRequiredFieldsForHeuristics,
-       kAutofillEnforceMinRequiredFieldsForQuery},
-      // Disabled.
-      {kAutofillEnforceMinRequiredFieldsForUpload});
   struct {
     const char* description;
     const char* html;

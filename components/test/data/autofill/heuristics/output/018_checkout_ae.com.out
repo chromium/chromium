@@ -1,6 +1,6 @@
 UNKNOWN_TYPE | logonUsername | Secure account sign in | Email Address | logonUsername_1-default
 UNKNOWN_TYPE | logonPassword | password | password | logonUsername_1-default
-ADDRESS_HOME_ZIP | zip | Find a store | Enter ZIP/Postal | zip_1-default
+UNKNOWN_TYPE | zip | Find a store | Enter ZIP/Postal | zip_1-default
 UNKNOWN_TYPE | username | Access your wish list | Email | username_1-default
 UNKNOWN_TYPE | password | Password | Password | username_1-default
 ADDRESS_HOME_COUNTRY | countryType | Country Type | usa | countryType_1-default

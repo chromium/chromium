@@ -14,7 +14,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::features::kAutofillEnforceMinRequiredFieldsForHeuristics;
 using autofill::features::kAutofillFixFillableFieldTypes;
 using base::ASCIIToUTF16;
 
@@ -138,61 +137,20 @@ TEST(FormFieldTest, ParseFormFields) {
       std::make_unique<AutofillField>(field_data, field_data.label));
 
   // Parse a single address line 1 field.
-  {
-    base::test::ScopedFeatureList enforce_min_fields;
-    enforce_min_fields.InitAndEnableFeature(
-        kAutofillEnforceMinRequiredFieldsForHeuristics);
-    // An empty page_language means the language is unknown and patterns of all
-    // languages are used.
-    ASSERT_EQ(
-        0u,
-        FormField::ParseFormFields(fields, /*page_language=*/"", true).size());
-  }
-  {
-    base::test::ScopedFeatureList do_not_enforce_min_fields;
-    do_not_enforce_min_fields.InitAndDisableFeature(
-        kAutofillEnforceMinRequiredFieldsForHeuristics);
-    // An empty page_language means the language is unknown and patterns of all
-    // languages are used.
-    const FieldCandidatesMap field_candidates_map =
-        FormField::ParseFormFields(fields, /*page_language=*/"", true);
-    ASSERT_EQ(1u, field_candidates_map.size());
-    EXPECT_EQ(ADDRESS_HOME_LINE1,
-              field_candidates_map.find(ASCIIToUTF16("Address line1"))
-                  ->second.BestHeuristicType());
-  }
+  ASSERT_EQ(
+      0u,
+      FormField::ParseFormFields(fields, /*page_language=*/"", true).size());
 
   // Parses address line 1 and 2.
   field_data.label = ASCIIToUTF16("Address line2");
   fields.push_back(
       std::make_unique<AutofillField>(field_data, field_data.label));
 
-  {
-    base::test::ScopedFeatureList enforce_min_fields;
-    enforce_min_fields.InitAndEnableFeature(
-        kAutofillEnforceMinRequiredFieldsForHeuristics);
-    // An empty page_language means the language is unknown and patterns of all
-    // languages are used.
-    ASSERT_EQ(
-        0u,
-        FormField::ParseFormFields(fields, /*page_language=*/"", true).size());
-  }
-  {
-    base::test::ScopedFeatureList do_not_enforce_min_fields;
-    do_not_enforce_min_fields.InitAndDisableFeature(
-        kAutofillEnforceMinRequiredFieldsForHeuristics);
-    // An empty page_language means the language is unknown and patterns of all
-    // languages are used.
-    const FieldCandidatesMap field_candidates_map =
-        FormField::ParseFormFields(fields, /*page_language=*/"", true);
-    ASSERT_EQ(2u, field_candidates_map.size());
-    EXPECT_EQ(ADDRESS_HOME_LINE1,
-              field_candidates_map.find(ASCIIToUTF16("Address line1"))
-                  ->second.BestHeuristicType());
-    EXPECT_EQ(ADDRESS_HOME_LINE2,
-              field_candidates_map.find(ASCIIToUTF16("Address line2"))
-                  ->second.BestHeuristicType());
-  }
+  // An empty page_language means the language is unknown and patterns of
+  // all languages are used.
+  ASSERT_EQ(
+      0u,
+      FormField::ParseFormFields(fields, /*page_language=*/"", true).size());
 }
 
 // Test that the minimum number of required fields for the heuristics considers
@@ -213,16 +171,11 @@ TEST(FormFieldTest, ParseFormFieldEnforceMinFillableFields) {
       std::make_unique<AutofillField>(field_data, field_data.label));
 
   // Don't parse forms with 2 fields.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        kAutofillEnforceMinRequiredFieldsForHeuristics);
-    // An empty page_language means the language is unknown and patterns of all
-    // languages are used.
-    EXPECT_EQ(
-        0u,
-        FormField::ParseFormFields(fields, /*page_language=*/"", true).size());
-  }
+  // An empty page_language means the language is unknown and patterns of all
+  // languages are used.
+  EXPECT_EQ(
+      0u,
+      FormField::ParseFormFields(fields, /*page_language=*/"", true).size());
 
   field_data.label = ASCIIToUTF16("Search");
   fields.push_back(
@@ -232,10 +185,7 @@ TEST(FormFieldTest, ParseFormFieldEnforceMinFillableFields) {
   // now, although a search field is not fillable.
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        /*enabled_features=*/
-        {kAutofillEnforceMinRequiredFieldsForHeuristics},
-        /*disabled_features=*/{kAutofillFixFillableFieldTypes});
+    feature_list.InitAndDisableFeature(kAutofillFixFillableFieldTypes);
     // An empty page_language means the language is unknown and patterns of all
     // languages are used.
     EXPECT_EQ(
@@ -247,11 +197,7 @@ TEST(FormFieldTest, ParseFormFieldEnforceMinFillableFields) {
   // fillable (therefore, the form has only 2 fillable fields).
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        /*enabled_features=*/
-        {kAutofillEnforceMinRequiredFieldsForHeuristics,
-         kAutofillFixFillableFieldTypes},
-        /*disabled_features=*/{});
+    feature_list.InitAndEnableFeature(kAutofillFixFillableFieldTypes);
     // An empty page_language means the language is unknown and patterns of all
     // languages are used.
     const FieldCandidatesMap field_candidates_map =

@@ -2062,8 +2062,7 @@ TEST_P(AutofillUploadTest, ThrottlingDisabled) {
       // Enabled.
       {},
       // Disabled
-      {features::kAutofillUploadThrottling,
-       features::kAutofillEnforceMinRequiredFieldsForUpload});
+      {features::kAutofillUploadThrottling});
 
   FormData form;
   FormData small_form;

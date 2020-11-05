@@ -763,9 +763,9 @@ autofillManagerFromWebState:(web::WebState*)webState
   };
   // The document has now been fully loaded. Scan for forms to be extracted.
   size_t min_required_fields =
-      MIN(autofill::MinRequiredFieldsForUpload(),
-          MIN(autofill::MinRequiredFieldsForHeuristics(),
-              autofill::MinRequiredFieldsForQuery()));
+      MIN(autofill::kMinRequiredFieldsForUpload,
+          MIN(autofill::kMinRequiredFieldsForHeuristics,
+              autofill::kMinRequiredFieldsForQuery));
   [self fetchFormsFiltered:NO
                         withName:base::string16()
       minimumRequiredFieldsCount:min_required_fields

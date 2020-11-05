@@ -15,6 +15,6 @@ UNKNOWN_TYPE | ddlDay |  |  | accountType_1-default
 UNKNOWN_TYPE | ddlYear |  |  | accountType_1-default
 UNKNOWN_TYPE | rblGender | Male | M | accountType_1-default
 UNKNOWN_TYPE | rblGender | Female | F | accountType_1-default
-EMAIL_ADDRESS | Email | Email |  | Email_1-default
+UNKNOWN_TYPE | Email | Email |  | Email_1-default
 UNKNOWN_TYPE | Password | Password |  | Email_1-default
 UNKNOWN_TYPE | Remember | Keep me logged in | on | Email_1-default

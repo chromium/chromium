@@ -82,9 +82,6 @@ using ::testing::UnorderedPointwise;
 
 namespace autofill {
 
-using features::kAutofillEnforceMinRequiredFieldsForHeuristics;
-using features::kAutofillEnforceMinRequiredFieldsForQuery;
-using features::kAutofillEnforceMinRequiredFieldsForUpload;
 using mojom::SubmissionSource;
 using SyncSigninState = AutofillSyncSigninState;
 
@@ -2982,92 +2979,6 @@ TEST_F(AutofillMetricsTest, UpiVirtualPaymentAddress) {
   histogram_tester.ExpectTotalCount("Autofill.UserHappiness.Unknown", 0);
 }
 
-// Verify that when a field is annotated with the autocomplete attribute, its
-// predicted type is remembered when quality metrics are logged.
-TEST_F(AutofillMetricsTest, PredictedMetricsWithAutocomplete) {
-  // Allow heuristics to run (and be accepted) for small forms.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      kAutofillEnforceMinRequiredFieldsForHeuristics);
-
-  // Set up our form data. Note that the fields have default values not found
-  // in the user profiles. They will be changed between the time the form is
-  // seen/parsed, and the time it is submitted.
-  FormData form;
-  FormFieldData field;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
-  form.url = GURL("http://example.com/form.html");
-  form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin =
-      url::Origin::Create(GURL("http://example_root.com/form.html"));
-
-  test::CreateTestFormField("Select", "select", "USA", "select-one", &field);
-  form.fields.push_back(field);
-  form.fields.back().autocomplete_attribute = "country";
-
-  test::CreateTestFormField("Unknown", "Unknown", "", "text", &field);
-  form.fields.push_back(field);
-
-  test::CreateTestFormField("Phone", "phone", "", "tel", &field);
-  form.fields.push_back(field);
-
-  std::vector<FormData> forms(1, form);
-
-  base::HistogramTester histogram_tester;
-  autofill_manager_->OnFormsSeen(forms, TimeTicks());
-
-  // We change the value of the text fields to change the default/seen values
-  // (hence the values are not cleared in UpdateFromCache). The new values
-  // match what is in the test profile.
-  form.fields[1].value = base::ASCIIToUTF16("79401");
-  form.fields[2].value = base::ASCIIToUTF16("2345678901");
-  autofill_manager_->OnFormSubmitted(form, false,
-                                     SubmissionSource::FORM_SUBMISSION);
-
-  for (const std::string source : {"Heuristic", "Server", "Overall"}) {
-    std::string histogram_name =
-        "Autofill.FieldPredictionQuality.ByFieldType." + source;
-    // First verify that country was not predicted by client or server.
-    {
-      SCOPED_TRACE("ADDRESS_HOME_COUNTRY");
-      histogram_tester.ExpectBucketCount(
-          histogram_name,
-          GetFieldTypeGroupPredictionQualityMetric(
-              ADDRESS_HOME_COUNTRY,
-              source == "Overall" ? AutofillMetrics::TRUE_POSITIVE
-                                  : AutofillMetrics::FALSE_NEGATIVE_UNKNOWN),
-          1);
-    }
-
-    // We did not predict zip code because it did not have an autocomplete
-    // attribute, nor client or server predictions.
-    {
-      SCOPED_TRACE("ADDRESS_HOME_ZIP");
-      histogram_tester.ExpectBucketCount(
-          histogram_name,
-          GetFieldTypeGroupPredictionQualityMetric(
-              ADDRESS_HOME_ZIP, AutofillMetrics::FALSE_NEGATIVE_UNKNOWN),
-          1);
-    }
-
-    // Phone should have been predicted by the heuristics but not the server.
-    {
-      SCOPED_TRACE("PHONE_HOME_WHOLE_NUMBER");
-      histogram_tester.ExpectBucketCount(
-          histogram_name,
-          GetFieldTypeGroupPredictionQualityMetric(
-              PHONE_HOME_WHOLE_NUMBER,
-              source == "Server" ? AutofillMetrics::FALSE_NEGATIVE_UNKNOWN
-                                 : AutofillMetrics::TRUE_POSITIVE),
-          1);
-    }
-
-    // Sanity check.
-    histogram_tester.ExpectTotalCount(histogram_name, 3);
-  }
-}
-
 // Test that we behave sanely when the cached form differs from the submitted
 // one.
 TEST_F(AutofillMetricsTest, SaneMetricsWithCacheMismatch) {
@@ -3208,8 +3119,6 @@ TEST_F(AutofillMetricsTest, StoredProfileCountAutofillableFormSubmission) {
 // Verify that when submitting a non-autofillable form, the stored profile
 // metric is not logged.
 TEST_F(AutofillMetricsTest, StoredProfileCountNonAutofillableFormSubmission) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(kAutofillEnforceMinRequiredFieldsForHeuristics);
   // Construct a non-fillable form.
   FormData form;
   form.unique_renderer_id = MakeFormRendererId();
@@ -3511,19 +3420,6 @@ TEST_F(AutofillMetricsTest, DeveloperEngagement) {
     histogram_tester.ExpectTotalCount("Autofill.DeveloperEngagement", 0);
   }
 
-  // Otherwise, log developer engagement for all forms.
-  {
-    base::test::ScopedFeatureList features;
-    features.InitAndDisableFeature(
-        kAutofillEnforceMinRequiredFieldsForHeuristics);
-    base::HistogramTester histogram_tester;
-    autofill_manager_->OnFormsSeen(forms, TimeTicks());
-    autofill_manager_->Reset();
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.DeveloperEngagement",
-        AutofillMetrics::FILLABLE_FORM_PARSED_WITHOUT_TYPE_HINTS, 1);
-  }
-
   // Add another field to the form, so that it becomes fillable.
   test::CreateTestFormField("Phone", "phone", "", "text", &field);
   forms.back().fields.push_back(field);
@@ -3609,9 +3505,6 @@ TEST_F(AutofillMetricsTest,
 
   // Ensure no entries are logged when loading a non-fillable form.
   {
-    base::test::ScopedFeatureList features;
-    features.InitAndEnableFeature(
-        kAutofillEnforceMinRequiredFieldsForHeuristics);
     autofill_manager_->OnFormsSeen(forms, AutofillTickClock::NowTicks());
     autofill_manager_->Reset();
 
@@ -3689,14 +3582,6 @@ TEST_F(AutofillMetricsTest,
 // Verify that we correctly log UKM for form parsed with type hints regarding
 // developer engagement.
 TEST_F(AutofillMetricsTest, UkmDeveloperEngagement_LogUpiVpaTypeHint) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      // Enabled.
-      {kAutofillEnforceMinRequiredFieldsForHeuristics,
-       kAutofillEnforceMinRequiredFieldsForQuery,
-       kAutofillEnforceMinRequiredFieldsForUpload},
-      // Disabled.
-      {});
   FormData form;
   form.unique_renderer_id = MakeFormRendererId();
   form.name = ASCIIToUTF16("TestForm");
@@ -3712,27 +3597,11 @@ TEST_F(AutofillMetricsTest, UkmDeveloperEngagement_LogUpiVpaTypeHint) {
   test::CreateTestFormField("Payment", "payment", "", "text", &field);
   field.autocomplete_attribute = "upi-vpa";
   form.fields.push_back(field);
-
-  std::vector<FormData> forms(1, form);
-
-  // Expect the "upi-vpa hint" metric to be logged and the "form loaded" form
-  // interaction event to be logged.
-  {
-    SCOPED_TRACE("VPA is the only hint");
-    autofill_manager_->OnFormsSeen(forms, AutofillTickClock::NowTicks());
-
-    VerifyDeveloperEngagementUkm(
-        test_ukm_recorder_, forms.back(), /*is_for_credit_card=*/false,
-        /* UPI VPA has Unknown form type.*/
-        {FormType::ADDRESS_FORM, FormType::UNKNOWN_FORM_TYPE},
-        {AutofillMetrics::FORM_CONTAINS_UPI_VPA_HINT});
-    PurgeUKM();
-  }
-
-  // Add another field with an author-specified field type to the form.
   test::CreateTestFormField("", "", "", "text", &field);
   field.autocomplete_attribute = "address-line1";
-  forms.back().fields.push_back(field);
+  form.fields.push_back(field);
+
+  std::vector<FormData> forms(1, form);
 
   {
     SCOPED_TRACE("VPA and other autocomplete hint present");
@@ -8096,45 +7965,6 @@ TEST_F(AutofillMetricsTest, AutofillFormSubmittedState) {
   // Clear out the third field's value.
   form.fields[2].value = base::string16();
   forms.front() = form;
-
-  // This form is non-fillable if small form support is disabled (min number
-  // of fields enforced.)
-  {
-    base::test::ScopedFeatureList features;
-    features.InitWithFeatures(
-        // Enabled
-        {kAutofillEnforceMinRequiredFieldsForHeuristics,
-         kAutofillEnforceMinRequiredFieldsForQuery},
-        // Disabled
-        {});
-    base::HistogramTester histogram_tester;
-    base::UserActionTester user_action_tester;
-    autofill_manager_->OnFormSubmitted(form, false,
-                                       SubmissionSource::FORM_SUBMISSION);
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.FormSubmittedState",
-        AutofillMetrics::NON_FILLABLE_FORM_OR_NEW_DATA, 1);
-    EXPECT_EQ(1, user_action_tester.GetActionCount(
-                     "Autofill_FormSubmitted_NonFillable"));
-
-    expected_form_submission_ukm_metrics.push_back(
-        {{UkmFormSubmittedType::kAutofillFormSubmittedStateName,
-          AutofillMetrics::NON_FILLABLE_FORM_OR_NEW_DATA},
-         {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
-         {UkmFormSubmittedType::kIsForCreditCardName, false},
-         {UkmFormSubmittedType::kHasUpiVpaFieldName, false},
-         {UkmFormSubmittedType::kFormTypesName,
-          AutofillMetrics::FormTypesToBitVector(
-              {FormType::ADDRESS_FORM, FormType::UNKNOWN_FORM_TYPE})},
-         {UkmFormSubmittedType::kFormSignatureName,
-          Collapse(CalculateFormSignature(form)).value()}});
-    VerifyUkm(test_ukm_recorder_, form, UkmFormSubmittedType::kEntryName,
-              expected_form_submission_ukm_metrics);
-
-    AppendFieldFillStatusUkm(form, &expected_field_fill_status_ukm_metrics);
-    VerifyUkm(test_ukm_recorder_, form, UkmFieldFillStatusType::kEntryName,
-              expected_field_fill_status_ukm_metrics);
-  }
 }
 
 // Verify that we correctly log the submitted form's state with fields

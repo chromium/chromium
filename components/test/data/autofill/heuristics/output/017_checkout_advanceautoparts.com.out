@@ -1,4 +1,4 @@
-EMAIL_ADDRESS | logonId | Email Address: |  | logonId_1-default
+UNKNOWN_TYPE | logonId | Email Address: |  | logonId_1-default
 UNKNOWN_TYPE | logonPassword | Password: |  | logonId_1-default
 UNKNOWN_TYPE | rememberMe | Remember Me on Future Visits | true | logonId_1-default
 UNKNOWN_TYPE | billingShippingSame | Make shipping the same as my billing address | false | billingShippingSame_1-default
@@ -29,4 +29,4 @@ PHONE_HOME_NUMBER | shipDayPhonePart3 | *Day Phone: |  | shipFirstName_1-default
 PHONE_HOME_CITY_CODE | shipNightPhonePart1 | Night Phone: |  | shipFirstName_1-default
 PHONE_HOME_NUMBER | shipNightPhonePart2 | Night Phone: |  | shipFirstName_1-default
 PHONE_HOME_NUMBER | shipNightPhonePart3 | Night Phone: |  | shipFirstName_1-default
-ADDRESS_HOME_ZIP | zipCode |  |  | zipCode_1-default
+UNKNOWN_TYPE | zipCode |  |  | zipCode_1-default
