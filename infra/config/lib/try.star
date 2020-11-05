@@ -161,9 +161,9 @@ def try_builder(
     if not branches.matches(branch_selector):
         return
 
-    # Disable "chromium.resultdb.result_sink" on all try builders by default.
+    # Enable "chromium.resultdb.result_sink" on try builders at 10%.
     experiments = experiments or {}
-    experiments.setdefault("chromium.resultdb.result_sink", 0)
+    experiments.setdefault("chromium.resultdb.result_sink", 10)
 
     merged_resultdb_bigquery_exports = [
         resultdb.export_test_results(
