@@ -46,6 +46,7 @@ preprocess_grit("preprocess_v2") {
     "nearby_share_settings.js",
     "nearby_share_settings_behavior.html",
     "nearby_share_settings_behavior.js",
+    "nearby_shared_share_type_icons.html",
     "nearby_shared_icons.html",
     "nearby_visibility_page.html",
     "nearby_visibility_page.js",
@@ -65,6 +66,7 @@ preprocess_grit("preprocess_v3") {
     "nearby_share_settings.m.js",
     "nearby_share_settings_behavior.m.js",
     "nearby_shared_icons.m.js",
+    "nearby_shared_share_type_icons.m.js",
     "nearby_visibility_page.m.js",
   ]
 }

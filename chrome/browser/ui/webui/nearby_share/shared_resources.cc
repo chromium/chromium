@@ -10,71 +10,7 @@
 #include "base/logging.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/nearby_share_dialog_resources.h"
-#include "chrome/grit/nearby_share_dialog_resources_map.h"
-#include "chrome/grit/nearby_shared_resources.h"
-#include "chrome/grit/nearby_shared_resources_map.h"
-#include "chrome/grit/nearby_shared_resources_v3.h"
-#include "chrome/grit/nearby_shared_resources_v3_map.h"
-#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
-
-const char kNearbyShareGeneratedPath[] =
-    "@out_folder@/gen/chrome/browser/resources/nearby_share/";
-
-namespace {
-
-void RegisterResourcesWithPrefix(
-    content::WebUIDataSource* data_source,
-    const base::span<const GritResourceMap>& resources,
-    std::string prefix) {
-  std::string generate_path{kNearbyShareGeneratedPath};
-  for (const GritResourceMap& resource : resources) {
-    std::string path = resource.name;
-    if (path.rfind(generate_path, 0) == 0) {
-      path = path.substr(generate_path.size());
-    } else {
-      path = prefix + path;
-    }
-    data_source->AddResourcePath(path, resource.value);
-  }
-}
-
-}  // namespace
-
-void RegisterNearbySharedMojoResources(content::WebUIDataSource* data_source) {
-  data_source->AddResourcePath("mojo/nearby_share.mojom-lite.js",
-                               IDR_NEARBY_SHARE_MOJO_JS);
-  data_source->AddResourcePath("mojo/nearby_share_target_types.mojom-lite.js",
-                               IDR_NEARBY_SHARE_TARGET_TYPES_MOJO_JS);
-  data_source->AddResourcePath("mojo/nearby_share_settings.mojom-lite.js",
-                               IDR_NEARBY_SHARE_SETTINGS_MOJOM_LITE_JS);
-}
-
-void RegisterNearbySharedResources(content::WebUIDataSource* data_source) {
-  RegisterResourcesWithPrefix(
-      data_source,
-      /*resources=*/
-      base::make_span(kNearbySharedResources, kNearbySharedResourcesSize),
-      /*prefix=*/"shared/");
-  RegisterResourcesWithPrefix(
-      data_source,
-      /*resources=*/
-      base::make_span(kNearbySharedResourcesV3, kNearbySharedResourcesV3Size),
-      /*prefix=*/"shared/");
-  RegisterNearbySharedMojoResources(data_source);
-
-  data_source->AddResourcePath("nearby_share_pulse_animation.json",
-                               IDR_NEARBY_SHARE_PULSE_ANIMATION_JSON);
-
-  // To use lottie, the worker-src CSP needs to be updated for the web ui that
-  // is using it. Since as of now there are only a couple of webuis using
-  // lottie animations, this update has to be performed manually. As the usage
-  // increases, set this as the default so manual override is no longer
-  // required.
-  data_source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
-}
 
 void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
