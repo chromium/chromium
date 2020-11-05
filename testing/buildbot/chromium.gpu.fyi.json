@@ -13544,9 +13544,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "skia_renderer_gl_blink_web_tests",
-        "resultdb": {
-          "enable": true
-        },
         "results_handler": "layout tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -13630,9 +13627,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "vulkan_native_blink_web_tests",
-        "resultdb": {
-          "enable": true
-        },
         "results_handler": "layout tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -13978,9 +13972,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "skia_renderer_gl_blink_web_tests",
-        "resultdb": {
-          "enable": true
-        },
         "results_handler": "layout tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -14064,9 +14055,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "vulkan_native_blink_web_tests",
-        "resultdb": {
-          "enable": true
-        },
         "results_handler": "layout tests",
         "swarming": {
           "can_use_on_swarming_builders": true,

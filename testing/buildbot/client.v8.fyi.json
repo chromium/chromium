@@ -1367,9 +1367,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "resultdb": {
-          "enable": true
-        },
         "results_handler": "layout tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1428,9 +1425,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "resultdb": {
-          "enable": true
-        },
         "results_handler": "layout tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1487,9 +1481,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "resultdb": {
-          "enable": true
-        },
         "results_handler": "layout tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1543,9 +1534,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "resultdb": {
-          "enable": true
-        },
         "results_handler": "layout tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1602,9 +1590,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "resultdb": {
-          "enable": true
-        },
         "results_handler": "layout tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1637,9 +1622,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "resultdb": {
-          "enable": true
-        },
         "results_handler": "layout tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
