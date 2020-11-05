@@ -245,6 +245,7 @@ NSString* const kSessionFileName =
 
   @try {
     NSError* error = nil;
+    size_t previous_cert_policy_bytes = web::GetCertPolicyBytesEncoded();
     NSData* sessionData = [NSKeyedArchiver archivedDataWithRootObject:session
                                                 requiringSecureCoding:NO
                                                                 error:&error];
@@ -255,8 +256,12 @@ NSString* const kSessionFileName =
       return;
     }
 
-    UMA_HISTOGRAM_COUNTS_100000("Session.WebStates.SerializedSize",
-                                sessionData.length / 1024);
+    base::UmaHistogramCounts100000(
+        "Session.WebStates.AllSerializedCertPolicyCachesSize",
+        web::GetCertPolicyBytesEncoded() - previous_cert_policy_bytes / 1024);
+
+    base::UmaHistogramCounts100000("Session.WebStates.SerializedSize",
+                                   sessionData.length / 1024);
 
     _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
                             [self performSaveSessionData:sessionData

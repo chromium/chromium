@@ -13,18 +13,11 @@
 #error "This file requires ARC support."
 #endif
 
-namespace web {
-// CRWSessionCertificateStorage serialization keys.
-NSString* const kCertificateSerializationKey = @"CertificateSerializationKey";
-NSString* const kHostSerializationKey = @"HostSerializationKey";
-NSString* const kStatusSerializationKey = @"StatusSerializationKey";
-
-// CRWSessionCertificatePolicyCacheStorage serialization keys.
-NSString* const kCertificateStoragesKey = @"kCertificateStoragesKey";
-NSString* const kCertificateStoragesDeprecatedKey = @"allowedCertificates";
-}  // namespace web
-
 namespace {
+
+// Total bytes serialized during CRWSessionCertificateStorage encoding since the
+// uptime.
+static size_t gBytesEncoded = 0;
 
 // The deprecated serialization technique serialized each certificate policy as
 // an NSArray, where the necessary information is stored at the following
@@ -50,6 +43,22 @@ scoped_refptr<net::X509Certificate> NSDataToCertificate(NSData* data) {
 }
 
 }  // namespace
+
+namespace web {
+// CRWSessionCertificateStorage serialization keys.
+NSString* const kCertificateSerializationKey = @"CertificateSerializationKey";
+NSString* const kHostSerializationKey = @"HostSerializationKey";
+NSString* const kStatusSerializationKey = @"StatusSerializationKey";
+
+// CRWSessionCertificatePolicyCacheStorage serialization keys.
+NSString* const kCertificateStoragesKey = @"kCertificateStoragesKey";
+NSString* const kCertificateStoragesDeprecatedKey = @"allowedCertificates";
+
+size_t GetCertPolicyBytesEncoded() {
+  return gBytesEncoded;
+}
+
+}  // namespace web
 
 #pragma mark - CRWSessionCertificateStorage
 
@@ -110,11 +119,13 @@ scoped_refptr<net::X509Certificate> NSDataToCertificate(NSData* data) {
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
-  [aCoder encodeObject:CertificateToNSData(_certificate.get())
-                forKey:web::kCertificateSerializationKey];
+  NSData* certData = CertificateToNSData(_certificate.get());
+  [aCoder encodeObject:certData forKey:web::kCertificateSerializationKey];
   [aCoder encodeObject:base::SysUTF8ToNSString(_host)
                 forKey:web::kHostSerializationKey];
   [aCoder encodeObject:@(_status) forKey:web::kStatusSerializationKey];
+
+  gBytesEncoded += certData.length + _host.size() + sizeof(_status);
 }
 
 #pragma mark Private

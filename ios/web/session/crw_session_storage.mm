@@ -4,6 +4,7 @@
 
 #import "ios/web/public/session/crw_session_storage.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "ios/web/common/features.h"
 #import "ios/web/navigation/nscoder_util.h"
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
@@ -106,8 +107,12 @@ NSString* const kLastCommittedItemIndexDeprecatedKey =
   [coder encodeInt:self.lastCommittedItemIndex
             forKey:kLastCommittedItemIndexKey];
   [coder encodeObject:self.itemStorages forKey:kItemStoragesKey];
+  size_t previous_cert_policy_bytes = web::GetCertPolicyBytesEncoded();
   [coder encodeObject:self.certPolicyCacheStorage
                forKey:kCertificatePolicyCacheStorageKey];
+  base::UmaHistogramCounts100000(
+      "Session.WebStates.SerializedCertPolicyCacheSize",
+      web::GetCertPolicyBytesEncoded() - previous_cert_policy_bytes / 1024);
   if (_userData)
     _userData->Encode(coder);
   web::UserAgentType userAgentType = _userAgentType;
