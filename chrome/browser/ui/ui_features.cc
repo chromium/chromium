@@ -119,7 +119,7 @@ const base::FeatureParam<double> kTabSearchTitleToHostnameWeightRatio{
 // Enables showing text next to the 3-dot menu when an update is available.
 // See https://crbug.com/1001731
 const base::Feature kUseTextForUpdateButton{"UseTextForUpdateButton",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables a web-based separator that's only used for performance testing. See
 // https://crbug.com/993502.
