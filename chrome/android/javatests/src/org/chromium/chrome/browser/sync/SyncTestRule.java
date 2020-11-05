@@ -31,6 +31,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.protocol.AutofillWalletSpecifics;
@@ -194,14 +195,15 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      * Set up a test account, sign in and enable sync. FirstSetupComplete bit will be set after
      * this. For most purposes this function should be used as this emulates the basic sign in flow.
      * @return the test account that is signed in.
+     * TODO(https://crbug.com/1135510): Return CoreAccountInfo object
      */
     public Account setUpAccountAndEnableSyncForTesting() {
-        Account account =
+        CoreAccountInfo accountInfo =
                 mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mProfileSyncService);
         enableUKM();
         SyncTestUtil.waitForSyncActive();
         SyncTestUtil.triggerSyncAndWaitForCompletion();
-        return account;
+        return AccountUtils.createAccountFromName(accountInfo.getEmail());
     }
 
     /**
@@ -217,13 +219,14 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     /**
      * Set up a test account, sign in but don't mark sync setup complete.
      * @return the test account that is signed in.
+     * TODO(https://crbug.com/1135510): Return CoreAccountInfo object
      */
     public Account setUpTestAccountAndSignInWithSyncSetupAsIncomplete() {
-        Account account = mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(
+        CoreAccountInfo accountInfo = mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(
                 /* profileSyncService= */ null);
         enableUKM();
         SyncTestUtil.waitForSyncTransportActive();
-        return account;
+        return AccountUtils.createAccountFromName(accountInfo.getEmail());
     }
 
     public void startSync() {

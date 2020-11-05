@@ -22,9 +22,9 @@ public final class SyncTestSigninUtils {
      * Sets up the test account and signs in.
      */
     @CalledByNative
-    private static Account setUpAccountAndSignInForTesting() {
+    private static void setUpAccountAndSignInForTesting() {
         sAccountManagerTestRule.waitForSeeding();
-        return sAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        sAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
     }
 
     /**

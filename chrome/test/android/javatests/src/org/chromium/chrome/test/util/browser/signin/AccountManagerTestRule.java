@@ -170,7 +170,7 @@ public class AccountManagerTestRule implements TestRule {
      *
      * This method invokes native code. It shouldn't be called in a Robolectric test.
      */
-    public Account addTestAccountThenSigninAndEnableSync() {
+    public CoreAccountInfo addTestAccountThenSigninAndEnableSync() {
         return addTestAccountThenSigninAndEnableSync(
                 TestThreadUtils.runOnUiThreadBlockingNoException(ProfileSyncService::get));
     }
@@ -183,14 +183,14 @@ public class AccountManagerTestRule implements TestRule {
      * @param profileSyncService ProfileSyncService object to set up sync, if null, sync won't
      *         start.
      */
-    public Account addTestAccountThenSigninAndEnableSync(
+    public CoreAccountInfo addTestAccountThenSigninAndEnableSync(
             @Nullable ProfileSyncService profileSyncService) {
         assert !mIsSignedIn : "An account is already signed in!";
         Account account = addAccountAndWaitForSeeding(TEST_ACCOUNT_EMAIL);
         CoreAccountInfo coreAccountInfo = toCoreAccountInfo(account.name);
         SigninTestUtil.signinAndEnableSync(coreAccountInfo, profileSyncService);
         mIsSignedIn = true;
-        return account;
+        return coreAccountInfo;
     }
 
     /**
