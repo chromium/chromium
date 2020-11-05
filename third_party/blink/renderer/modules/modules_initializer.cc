@@ -178,7 +178,7 @@ void ModulesInitializer::InstallSupplements(LocalFrame& frame) const {
   DCHECK(WebLocalFrameImpl::FromFrame(&frame)->Client());
   InspectorAccessibilityAgent::ProvideTo(&frame);
   ImageDownloaderImpl::ProvideTo(frame);
-  AudioRendererSinkCache::InstallFrameObserver(frame);
+  AudioRendererSinkCache::InstallWindowObserver(*frame.DomWindow());
 }
 
 MediaControls* ModulesInitializer::CreateMediaControls(

@@ -29,48 +29,34 @@ namespace blink {
 
 AudioRendererSinkCache* AudioRendererSinkCache::instance_ = nullptr;
 
-class AudioRendererSinkCache::FrameObserver final
-    : public GarbageCollected<AudioRendererSinkCache::FrameObserver>,
-      public Supplement<LocalFrame>,
+class AudioRendererSinkCache::WindowObserver final
+    : public GarbageCollected<AudioRendererSinkCache::WindowObserver>,
+      public Supplement<LocalDOMWindow>,
       public ExecutionContextLifecycleObserver {
  public:
   static const char kSupplementName[];
-  static FrameObserver* From(LocalFrame& frame) {
-    return Supplement<LocalFrame>::From<FrameObserver>(frame);
-  }
 
-  explicit FrameObserver(LocalFrame& frame)
-      : Supplement<LocalFrame>(frame),
-        ExecutionContextLifecycleObserver(frame.DomWindow()) {}
-  ~FrameObserver() { DCHECK(dropped_frame_cached_); }
+  explicit WindowObserver(LocalDOMWindow& window)
+      : Supplement<LocalDOMWindow>(window),
+        ExecutionContextLifecycleObserver(&window) {}
+  ~WindowObserver() = default;
 
   void Trace(Visitor* visitor) const final {
-    Supplement<LocalFrame>::Trace(visitor);
+    Supplement<LocalDOMWindow>::Trace(visitor);
     ExecutionContextLifecycleObserver::Trace(visitor);
   }
 
   // ExecutionContextLifecycleObserver implementation.
-  void ContextDestroyed() override { DropFrameCache(); }
-
- private:
-  void DropFrameCache() {
-    dropped_frame_cached_ = true;
-
-    if (!AudioRendererSinkCache::instance_)
-      return;
-    if (!GetSupplementable())
-      return;
-
-    LocalFrameToken frame_token = GetSupplementable()->GetLocalFrameToken();
-    AudioRendererSinkCache::instance_->DropSinksForFrame(frame_token);
+  void ContextDestroyed() override {
+    if (auto* cache_instance = AudioRendererSinkCache::instance_)
+      cache_instance->DropSinksForFrame(DomWindow()->GetLocalFrameToken());
   }
 
-  bool dropped_frame_cached_ = false;
-  DISALLOW_COPY_AND_ASSIGN(FrameObserver);
+  DISALLOW_COPY_AND_ASSIGN(WindowObserver);
 };
 
-const char AudioRendererSinkCache::FrameObserver::kSupplementName[] =
-    "AudioRendererSinkCache::FrameObserver";
+const char AudioRendererSinkCache::WindowObserver::kSupplementName[] =
+    "AudioRendererSinkCache::WindowObserver";
 
 namespace {
 
@@ -105,12 +91,11 @@ struct AudioRendererSinkCache::CacheEntry {
 };
 
 // static
-void AudioRendererSinkCache::InstallFrameObserver(LocalFrame& frame) {
-  if (AudioRendererSinkCache::FrameObserver::From(frame))
+void AudioRendererSinkCache::InstallWindowObserver(LocalDOMWindow& window) {
+  if (Supplement<LocalDOMWindow>::From<WindowObserver>(window))
     return;
-  Supplement<LocalFrame>::ProvideTo(
-      frame,
-      MakeGarbageCollected<AudioRendererSinkCache::FrameObserver>(frame));
+  Supplement<LocalDOMWindow>::ProvideTo(
+      window, MakeGarbageCollected<WindowObserver>(window));
 }
 
 AudioRendererSinkCache::AudioRendererSinkCache(

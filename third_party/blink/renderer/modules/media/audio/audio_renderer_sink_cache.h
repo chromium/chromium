@@ -26,7 +26,7 @@ class AudioRendererSink;
 
 namespace blink {
 
-class LocalFrame;
+class LocalDOMWindow;
 
 // Caches AudioRendererSink instances, provides them to the clients for usage,
 // tracks their used/unused state, reuses them to obtain output device
@@ -34,7 +34,7 @@ class LocalFrame;
 // Must live on the main render thread. Thread safe.
 class MODULES_EXPORT AudioRendererSinkCache {
  public:
-  class FrameObserver;
+  class WindowObserver;
 
   // Callback to be used for AudioRendererSink creation
   using CreateSinkCallback =
@@ -42,9 +42,9 @@ class MODULES_EXPORT AudioRendererSinkCache {
           const LocalFrameToken& frame_token,
           const media::AudioSinkParameters& params)>;
 
-  // If called, the cache will drop sinks belonging to the specified frame on
+  // If called, the cache will drop sinks belonging to the specified window on
   // navigation.
-  static void InstallFrameObserver(LocalFrame& frame);
+  static void InstallWindowObserver(LocalDOMWindow&);
 
   // |cleanup_task_runner| will be used to delete sinks when they are unused,
   // AudioRendererSinkCache must outlive any tasks posted to it. Since
@@ -67,7 +67,7 @@ class MODULES_EXPORT AudioRendererSinkCache {
  private:
   friend class AudioRendererSinkCacheTest;
   friend class CacheEntryFinder;
-  friend class AudioRendererSinkCache::FrameObserver;
+  friend class AudioRendererSinkCache::WindowObserver;
 
   struct CacheEntry;
   using CacheContainer = std::vector<CacheEntry>;
