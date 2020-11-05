@@ -133,29 +133,28 @@ void FastInitiationManager::OnRegisterAdvertisementError(
 
 void FastInitiationManager::UnregisterAdvertisement(
     base::OnceClosure callback) {
+  stop_callback_ = std::move(callback);
   advertisement_->RemoveObserver(this);
   advertisement_->Unregister(
       base::BindOnce(&FastInitiationManager::OnUnregisterAdvertisement,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+                     weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FastInitiationManager::OnUnregisterAdvertisementError,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FastInitiationManager::OnUnregisterAdvertisement(
-    base::OnceClosure callback) {
+void FastInitiationManager::OnUnregisterAdvertisement() {
   advertisement_.reset();
-  std::move(callback).Run();
+  std::move(stop_callback_).Run();
   // |this| might be destroyed here, do not access local fields.
 }
 
 void FastInitiationManager::OnUnregisterAdvertisementError(
-    base::OnceClosure callback,
     device::BluetoothAdvertisement::ErrorCode error_code) {
   NS_LOG(WARNING)
       << "FastInitiationManager::StopAdvertising() failed with error code = "
       << error_code;
   advertisement_.reset();
-  std::move(callback).Run();
+  std::move(stop_callback_).Run();
   // |this| might be destroyed here, do not access local fields.
 }
 

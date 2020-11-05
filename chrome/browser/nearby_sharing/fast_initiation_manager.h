@@ -72,9 +72,8 @@ class FastInitiationManager : public device::BluetoothAdvertisement::Observer {
       base::OnceClosure error_callback,
       device::BluetoothAdvertisement::ErrorCode error_code);
   void UnregisterAdvertisement(base::OnceClosure callback);
-  void OnUnregisterAdvertisement(base::OnceClosure callback);
+  void OnUnregisterAdvertisement();
   void OnUnregisterAdvertisementError(
-      base::OnceClosure callback,
       device::BluetoothAdvertisement::ErrorCode error_code);
 
   // Fast Init V1 metadata has 2 bytes, in format
@@ -84,6 +83,7 @@ class FastInitiationManager : public device::BluetoothAdvertisement::Observer {
 
   scoped_refptr<device::BluetoothAdapter> adapter_;
   scoped_refptr<device::BluetoothAdvertisement> advertisement_;
+  base::OnceClosure stop_callback_;
   base::WeakPtrFactory<FastInitiationManager> weak_ptr_factory_{this};
 };
 
