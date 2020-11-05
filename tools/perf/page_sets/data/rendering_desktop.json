@@ -186,6 +186,9 @@
         "linkedin_pinch_2018": {
             "DEFAULT": "rendering_desktop_f083c0f144.wprgo"
         },
+        "lost_crypt": {
+            "DEFAULT": "rendering_desktop_fb80bbcb6f.wprgo"
+        },
         "man_in_blue": {
             "DEFAULT": "rendering_desktop_004.wprgo"
         },
@@ -197,6 +200,9 @@
         },
         "megi_dish": {
             "DEFAULT": "rendering_desktop_004.wprgo"
+        },
+        "microgame_fps": {
+            "DEFAULT": "rendering_desktop_fb80bbcb6f.wprgo"
         },
         "microsoft_asteroid_belt": {
             "DEFAULT": "rendering_desktop_004.wprgo"
@@ -285,6 +291,9 @@
         "san_angeles": {
             "DEFAULT": "rendering_desktop_011.wprgo"
         },
+        "skelebuddies_wasm_2020": {
+            "DEFAULT": "rendering_desktop_fb80bbcb6f.wprgo"
+        },
         "smash_cat": {
             "DEFAULT": "rendering_desktop_004.wprgo"
         },
@@ -293,6 +302,9 @@
         },
         "techcrunch_2018": {
             "DEFAULT": "rendering_desktop_000.wprgo"
+        },
+        "tiny_racing_v3_wasm_2020": {
+            "DEFAULT": "rendering_desktop_fb80bbcb6f.wprgo"
         },
         "twitch_2018": {
             "DEFAULT": "rendering_desktop_000.wprgo"

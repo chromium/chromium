@@ -321,6 +321,9 @@
         "list_recycle_transform": {
             "DEFAULT": "rendering_mobile_018.wprgo"
         },
+        "lost_crypt": {
+            "DEFAULT": "rendering_mobile_fb80bbcb6f.wprgo"
+        },
         "man_in_blue": {
             "DEFAULT": "rendering_mobile_004.wprgo"
         },
@@ -332,6 +335,9 @@
         },
         "megi_dish": {
             "DEFAULT": "rendering_mobile_004.wprgo"
+        },
+        "microgame_fps": {
+            "DEFAULT": "rendering_mobile_fb80bbcb6f.wprgo"
         },
         "microsoft_asteroid_belt": {
             "DEFAULT": "rendering_mobile_004.wprgo"
@@ -522,6 +528,9 @@
         "sfgate_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
+        "skelebuddies_wasm_2020": {
+            "DEFAULT": "rendering_mobile_fb80bbcb6f.wprgo"
+        },
         "slashdot_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
@@ -554,6 +563,9 @@
         },
         "theverge_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
+        },
+        "tiny_racing_v3_wasm_2020": {
+            "DEFAULT": "rendering_mobile_fb80bbcb6f.wprgo"
         },
         "twitch_2018": {
             "DEFAULT": "rendering_mobile_000.wprgo"

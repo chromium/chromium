@@ -135,8 +135,47 @@ class AnimometerWebGLAttribArraysPage(ToughWebglPage):
     story_tags.REPRESENTATIVE_MAC_DESKTOP
   ]
 
+
 class CameraToWebGLPage(ToughWebglPage):
   TAGS = ToughWebglPage.TAGS + [story_tags.USE_FAKE_CAMERA_DEVICE]
   BASE_NAME = 'camera_to_webgl'
   # pylint: disable=line-too-long
   URL = 'https://www.khronos.org/registry/webgl/sdk/tests/extra/texture-from-camera-stress.html?uploadsPerFrame=200'
+
+
+class UnityPage(ToughWebglPage):
+  ABSTRACT_STORY = True
+
+  def RunNavigateSteps(self, action_runner):
+    super(UnityPage, self).RunNavigateSteps(action_runner)
+    # Wait an additional 10 seconds for any loading screens
+    # or interaction to click "Play"
+    action_runner.Wait(10)
+
+  def RunPageInteractions(self, action_runner):
+    with action_runner.CreateInteraction('WebGLAnimation'):
+      action_runner.Wait(30)
+
+
+class SkelebuddiesWasm2020(UnityPage):
+  BASE_NAME = 'skelebuddies_wasm_2020'
+  # pylint: disable=line-too-long
+  URL = 'http://clb.confined.space/emunittest/Skelebuddies-Wasm-Release-2020-10-26-profiling/Skelebuddies.html?playback'
+
+
+class TinyRacingV3Wasm2020(UnityPage):
+  BASE_NAME = 'tiny_racing_v3_wasm_2020'
+  # pylint: disable=line-too-long
+  URL = 'http://clb.confined.space/emunittest/llvm-tinyracing-wasm-release-2020-03-17/TinyRacing.html?playback'
+
+
+class MicrogameFPS(UnityPage):
+  BASE_NAME = 'microgame_fps'
+  # pylint: disable=line-too-long
+  URL = 'http://clb.confined.space/emunittest/microgame-fps_20190922_131915_wasm_release_profiling/index.html?playback'
+
+
+class LostCrypt(UnityPage):
+  BASE_NAME = 'lost_crypt'
+  # pylint: disable=line-too-long
+  URL = 'http://clb.confined.space/emunittest/LostCrypt_20191220_131436_wasm_release/index.html?playback'
