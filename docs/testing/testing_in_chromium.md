@@ -149,13 +149,15 @@ Go to [code coverage dashboard](https://analysis.chromium.org/p/chromium/coverag
 
 ## How to deal with flaky tests
 
-Go to [Flaky portal] to find the report about the flaky tests in your projects.
+Go to [Flake Portal] to find reports about flaky tests in your projects.
 
-If you can not fix the flaky tests in a short time, consider to disable it first,
-then fix it later. [How do I disable a flaky test] is the instruction about how to disable a flaky test.
+* [Addressing Flaky GTests](./gtest_flake_tips.md)
+* [Addressing Flaky Web Tests](./web_tests_addressing_flake.md)
+* [Addressing Flaky WPTs](./web_platform_tests_addressing_flake.md)
 
->TODO: add the link to the instruction about how to reproduce/debug/verify flaky tests.
-
+If you cannot fix a flaky test in a short timeframe, disable it first to reduce
+development pain for other and then fix it later. "[How do I disable a flaky
+test]" has instructions on how to disable a flaky test.
 
 [gtest]: https://github.com/google/googletest
 [Simple gtests]: https://github.com/google/googletest/blob/master/googletest/docs/primer.md#simple-tests
@@ -167,7 +169,7 @@ then fix it later. [How do I disable a flaky test] is the instruction about how 
 [Tast]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/README.md
 [Web Tests]: ./web_tests.md
 [crbug/611756]: https://bugs.chromium.org/p/chromium/issues/detail?id=611756
-[Flaky portal]: https://analysis.chromium.org/p/chromium/flake-portal
+[Flake Portal]: https://analysis.chromium.org/p/chromium/flake-portal
 [Write Fuzz Target]: https://chromium.googlesource.com/chromium/src/+/master/testing/libfuzzer/getting_started.md#write-fuzz-target
 [Telemetry: Run benchmarks locally]: https://chromium.googlesource.com/catapult/+/HEAD/telemetry/docs/run_benchmarks_locally.md
 [Run fuzz target locally]: https://chromium.googlesource.com/chromium/src/+/master/testing/libfuzzer/getting_started.md#build-and-run-fuzz-target-locally
