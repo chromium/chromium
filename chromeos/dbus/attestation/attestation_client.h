@@ -102,20 +102,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) AttestationClient {
     virtual void AllowlistCertificateRequest(
         const ::attestation::GetCertificateRequest& request) = 0;
 
-    // Allowlists the request that has |username|, |request_origin|, |profile|,
-    // and |key_type|, so the certificate requests that comes in afterwards will
-    // be successfully created.
-    virtual void AllowlistLegacyCreateCertificateRequest(
-        const std::string& username,
-        const std::string& request_origin,
-        ::attestation::CertificateProfile profile,
-        ::attestation::KeyType key_type) = 0;
-
-    // Gets the mutable |CreateCertificateRequestReply| that is returned when
-    // queried.
-    virtual ::attestation::CreateCertificateRequestReply*
-    mutable_certificate_request_reply() = 0;
-
     // Gets the history of `DeleteKeys()` requests.
     virtual const std::vector<::attestation::DeleteKeysRequest>&
     delete_keys_history() const = 0;
@@ -177,6 +163,35 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) AttestationClient {
     // Sets the delay to the time we reply to `SignEnterpriseChallenge()`.
     virtual void set_sign_enterprise_challenge_delay(
         const base::TimeDelta& delay) = 0;
+
+    // Sets the status code returned by `CreateEnrollRequestRequest()`.
+    virtual void set_enroll_request_status(
+        ::attestation::AttestationStatus status) = 0;
+    // Gets the fake enroll request when the status is configured to be good.
+    virtual std::string GetFakePcaEnrollRequest() const = 0;
+    // Gets the fake enroll response that is accepted by `FinishEnroll()`.
+    virtual std::string GetFakePcaEnrollResponse() const = 0;
+
+    // Allowlists the request that has `username`, `request_origin`, `profile`,
+    // and `key_type`, so the certificate requests that comes in afterwards will
+    // be successfully created.
+    virtual void AllowlistLegacyCreateCertificateRequest(
+        const std::string& username,
+        const std::string& request_origin,
+        ::attestation::CertificateProfile profile,
+        ::attestation::KeyType key_type) = 0;
+    // Sets the status code returned by `CreateCertificateRequest()`.
+    virtual void set_cert_request_status(
+        ::attestation::AttestationStatus status) = 0;
+    // Gets the fake certificate request when the status is configured to be
+    // good.
+    virtual std::string GetFakePcaCertRequest() const = 0;
+    // Gets the fake enroll response that is accepted by
+    // `FinishCertificateRequest()`.
+    virtual std::string GetFakePcaCertResponse() const = 0;
+    // Gets the fake certificate that is returned by
+    // successful `FinishCertificateRequest()`.
+    virtual std::string GetFakeCertificate() const = 0;
   };
 
   // Not copyable or movable.

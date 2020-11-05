@@ -43,6 +43,17 @@ base::Optional<::attestation::CertificateProfile> ProfileToAttestationProtoEnum(
   return {};
 }
 
+::attestation::ACAType ToAcaType(PrivacyCAType type) {
+  switch (type) {
+    case DEFAULT_PCA:
+      return ::attestation::DEFAULT_ACA;
+    case TEST_PCA:
+      return ::attestation::TEST_ACA;
+  }
+  LOG(DFATAL) << "Unknown type to convert: " << type;
+  return ::attestation::DEFAULT_ACA;
+}
+
 // A reasonable timeout that gives enough time for attestation to be ready,
 // yet does not make the caller wait too long.
 constexpr uint16_t kReadyTimeoutInSeconds = 60;
@@ -84,6 +95,7 @@ AttestationFlow::AttestationFlow(cryptohome::AsyncMethodCaller* async_caller,
   // should get rid of them at one go once `AttestationFlow` doesn't use
   // cryptohome client and its async method caller.
   ALLOW_UNUSED_LOCAL(cryptohome_client_);
+  ALLOW_UNUSED_LOCAL(async_caller_);
 }
 
 AttestationFlow::AttestationFlow(cryptohome::AsyncMethodCaller* async_caller,
@@ -158,8 +170,10 @@ void AttestationFlow::OnPreparedCheckComplete(
     const ::attestation::GetEnrollmentPreparationsReply& reply) {
   if (AttestationClient::IsAttestationPrepared(reply)) {
     // Get the attestation service to create a Privacy CA enrollment request.
-    async_caller_->AsyncTpmAttestationCreateEnrollRequest(
-        server_proxy_->GetType(),
+    ::attestation::CreateEnrollRequestRequest request;
+    request.set_aca_type(ToAcaType(server_proxy_->GetType()));
+    AttestationClient::Get()->CreateEnrollRequest(
+        request,
         base::BindOnce(&AttestationFlow::SendEnrollRequestToPCA,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
     return;
@@ -183,18 +197,19 @@ void AttestationFlow::OnPreparedCheckComplete(
 
 void AttestationFlow::SendEnrollRequestToPCA(
     base::OnceCallback<void(bool)> callback,
-    bool success,
-    const std::string& data) {
-  if (!success) {
-    LOG(ERROR) << "Attestation: Failed to create enroll request.";
+    const ::attestation::CreateEnrollRequestReply& reply) {
+  if (reply.status() != ::attestation::STATUS_SUCCESS) {
+    LOG(ERROR) << "Attestation: Failed to create enroll request; status: "
+               << reply.status();
     std::move(callback).Run(false);
     return;
   }
 
   // Send the request to the Privacy CA.
   server_proxy_->SendEnrollRequest(
-      data, base::BindOnce(&AttestationFlow::SendEnrollResponseToDaemon,
-                           weak_factory_.GetWeakPtr(), std::move(callback)));
+      reply.pca_request(),
+      base::BindOnce(&AttestationFlow::SendEnrollResponseToDaemon,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void AttestationFlow::SendEnrollResponseToDaemon(
@@ -208,17 +223,20 @@ void AttestationFlow::SendEnrollResponseToDaemon(
   }
 
   // Forward the response to the attestation service to complete enrollment.
-  async_caller_->AsyncTpmAttestationEnroll(
-      server_proxy_->GetType(), data,
-      base::BindOnce(&AttestationFlow::OnEnrollComplete,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  ::attestation::FinishEnrollRequest request;
+  request.set_pca_response(data);
+  request.set_aca_type(ToAcaType(server_proxy_->GetType()));
+  AttestationClient::Get()->FinishEnroll(
+      request, base::BindOnce(&AttestationFlow::OnEnrollComplete,
+                              weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void AttestationFlow::OnEnrollComplete(base::OnceCallback<void(bool)> callback,
-                                       bool success,
-                                       cryptohome::MountError /*not_used*/) {
-  if (!success) {
-    LOG(ERROR) << "Attestation: Failed to complete enrollment.";
+void AttestationFlow::OnEnrollComplete(
+    base::OnceCallback<void(bool)> callback,
+    const ::attestation::FinishEnrollReply& reply) {
+  if (reply.status() != ::attestation::STATUS_SUCCESS) {
+    LOG(ERROR) << "Attestation: Failed to complete enrollment; status: "
+               << reply.status();
     std::move(callback).Run(false);
     return;
   }
@@ -265,9 +283,7 @@ void AttestationFlow::StartCertificateRequest(
   }
 
   ::attestation::GetKeyInfoRequest request;
-  request.set_username(
-      cryptohome::CreateAccountIdentifierFromAccountId(account_id)
-          .account_id());
+  request.set_username(cryptohome::Identification(account_id).id());
   request.set_key_label(key_name);
   attestation_client_->GetKeyInfo(
       request, base::BindOnce(&AttestationFlow::OnGetKeyInfoComplete,
@@ -339,20 +355,26 @@ void AttestationFlow::SendCertificateResponseToDaemon(
     return;
   }
 
-  // Forward the response to the attestation service to complete the operation.
-  async_caller_->AsyncTpmAttestationFinishCertRequest(
-      data, key_type, cryptohome::Identification(account_id), key_name,
-      base::BindOnce(&AttestationFlow::OnCertRequestFinished,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  ::attestation::FinishCertificateRequestRequest request;
+  request.set_username(cryptohome::Identification(account_id).id());
+  request.set_key_label(key_name);
+  request.set_pca_response(data);
+  AttestationClient::Get()->FinishCertificateRequest(
+      request, base::BindOnce(&AttestationFlow::OnCertRequestFinished,
+                              weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void AttestationFlow::OnCertRequestFinished(CertificateCallback callback,
-                                            bool success,
-                                            const std::string& data) {
-  if (success)
-    std::move(callback).Run(ATTESTATION_SUCCESS, data);
-  else
-    std::move(callback).Run(ATTESTATION_SERVER_BAD_REQUEST_FAILURE, data);
+void AttestationFlow::OnCertRequestFinished(
+    CertificateCallback callback,
+    const ::attestation::FinishCertificateRequestReply& reply) {
+  if (reply.status() == ::attestation::STATUS_SUCCESS) {
+    std::move(callback).Run(ATTESTATION_SUCCESS, reply.certificate());
+  } else {
+    LOG(ERROR) << "Failed to finish certificate request; status: "
+               << reply.status();
+    std::move(callback).Run(ATTESTATION_SERVER_BAD_REQUEST_FAILURE,
+                            /*pem_certificate_chain=*/"");
+  }
 }
 
 ServerProxy::~ServerProxy() = default;

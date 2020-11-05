@@ -22,6 +22,11 @@ constexpr char kResponseSuffix[] = "_response";
 constexpr char kSignatureSuffix[] = "_signature";
 constexpr char kEnterpriseChallengeResponseSuffix[] = "enterprise_challenge";
 constexpr char kIncludeSpkacSuffix[] = "_with_spkac";
+constexpr char kFakePcaEnrollRequest[] = "fake enroll request";
+constexpr char kFakePcaEnrollResponse[] = "fake enroll response";
+constexpr char kFakePcaCertRequest[] = "fake cert request";
+constexpr char kFakePcaCertResponse[] = "fake cert response";
+constexpr char kFakeCertificate[] = "fake certificate";
 
 // Posts `callback` on the current thread's task runner, passing it the
 // `reply` message.
@@ -66,11 +71,6 @@ FakeAttestationClient::FakeAttestationClient() {
 }
 
 FakeAttestationClient::~FakeAttestationClient() = default;
-
-::attestation::CreateCertificateRequestReply*
-FakeAttestationClient::mutable_certificate_request_reply() {
-  return &certificate_request_reply_;
-}
 
 void FakeAttestationClient::GetKeyInfo(
     const ::attestation::GetKeyInfoRequest& request,
@@ -184,36 +184,61 @@ void FakeAttestationClient::Verify(const ::attestation::VerifyRequest& request,
 void FakeAttestationClient::CreateEnrollRequest(
     const ::attestation::CreateEnrollRequestRequest& request,
     CreateEnrollRequestCallback callback) {
-  NOTIMPLEMENTED();
+  ::attestation::CreateEnrollRequestReply reply;
+  reply.set_status(enroll_request_status_);
+  if (reply.status() == ::attestation::STATUS_SUCCESS) {
+    reply.set_pca_request(GetFakePcaEnrollRequest());
+  }
+  PostProtoResponse(std::move(callback), reply);
 }
 
 void FakeAttestationClient::FinishEnroll(
     const ::attestation::FinishEnrollRequest& request,
     FinishEnrollCallback callback) {
-  NOTIMPLEMENTED();
+  ::attestation::FinishEnrollReply reply;
+  reply.set_status(request.pca_response() == GetFakePcaEnrollResponse()
+                       ? ::attestation::STATUS_SUCCESS
+                       : ::attestation::STATUS_UNEXPECTED_DEVICE_ERROR);
+  PostProtoResponse(std::move(callback), reply);
 }
 
 void FakeAttestationClient::CreateCertificateRequest(
     const ::attestation::CreateCertificateRequestRequest& request,
     CreateCertificateRequestCallback callback) {
+  ::attestation::CreateCertificateRequestReply reply;
+  reply.set_status(cert_request_status_);
+  if (reply.status() != ::attestation::STATUS_SUCCESS) {
+    PostProtoResponse(std::move(callback), reply);
+    return;
+  }
   for (const auto& req : allowlisted_create_requests_) {
     if (req.username() == request.username() &&
         req.request_origin() == request.request_origin() &&
         req.certificate_profile() == request.certificate_profile() &&
         req.key_type() == request.key_type()) {
-      PostProtoResponse(std::move(callback), certificate_request_reply_);
+      reply.set_pca_request(GetFakePcaCertRequest());
+      PostProtoResponse(std::move(callback), reply);
       return;
     }
   }
-  ::attestation::CreateCertificateRequestReply failed_reply;
-  failed_reply.set_status(::attestation::STATUS_UNEXPECTED_DEVICE_ERROR);
-  PostProtoResponse(std::move(callback), failed_reply);
+  reply.set_status(::attestation::STATUS_UNEXPECTED_DEVICE_ERROR);
+  PostProtoResponse(std::move(callback), reply);
 }
 
 void FakeAttestationClient::FinishCertificateRequest(
     const ::attestation::FinishCertificateRequestRequest& request,
     FinishCertificateRequestCallback callback) {
-  NOTIMPLEMENTED();
+  ::attestation::FinishCertificateRequestReply reply;
+  if (request.pca_response() != GetFakePcaCertResponse()) {
+    reply.set_status(::attestation::STATUS_UNEXPECTED_DEVICE_ERROR);
+  }
+  if (reply.status() == ::attestation::STATUS_SUCCESS) {
+    reply.set_certificate(GetFakeCertificate());
+    // Also, insert the certificate into the fake database.
+    GetMutableKeyInfoReply(request.username(), request.key_label())
+        ->set_certificate(GetFakeCertificate());
+  }
+  PostProtoResponse(std::move(callback), reply);
 }
 
 void FakeAttestationClient::Enroll(const ::attestation::EnrollRequest& request,
@@ -373,19 +398,6 @@ void FakeAttestationClient::AllowlistCertificateRequest(
   certificate_indices_.push_back(kCertificateNotAssigned);
 }
 
-void FakeAttestationClient::AllowlistLegacyCreateCertificateRequest(
-    const std::string& username,
-    const std::string& request_origin,
-    ::attestation::CertificateProfile profile,
-    ::attestation::KeyType key_type) {
-  ::attestation::CreateCertificateRequestRequest request;
-  request.set_username(username);
-  request.set_request_origin(request_origin);
-  request.set_certificate_profile(profile);
-  request.set_key_type(key_type);
-  allowlisted_create_requests_.push_back(request);
-}
-
 const std::vector<::attestation::DeleteKeysRequest>&
 FakeAttestationClient::delete_keys_history() const {
   return delete_keys_history_;
@@ -478,6 +490,49 @@ std::string FakeAttestationClient::GetEnterpriseChallengeFakeSignature(
 void FakeAttestationClient::set_sign_enterprise_challenge_delay(
     const base::TimeDelta& delay) {
   sign_enterprise_challenge_delay_ = delay;
+}
+
+void FakeAttestationClient::set_enroll_request_status(
+    ::attestation::AttestationStatus status) {
+  enroll_request_status_ = status;
+}
+
+std::string FakeAttestationClient::GetFakePcaEnrollRequest() const {
+  return kFakePcaEnrollRequest;
+}
+
+std::string FakeAttestationClient::GetFakePcaEnrollResponse() const {
+  return kFakePcaEnrollResponse;
+}
+
+void FakeAttestationClient::AllowlistLegacyCreateCertificateRequest(
+    const std::string& username,
+    const std::string& request_origin,
+    ::attestation::CertificateProfile profile,
+    ::attestation::KeyType key_type) {
+  ::attestation::CreateCertificateRequestRequest request;
+  request.set_username(username);
+  request.set_request_origin(request_origin);
+  request.set_certificate_profile(profile);
+  request.set_key_type(key_type);
+  allowlisted_create_requests_.push_back(request);
+}
+
+void FakeAttestationClient::set_cert_request_status(
+    ::attestation::AttestationStatus status) {
+  cert_request_status_ = status;
+}
+
+std::string FakeAttestationClient::GetFakePcaCertRequest() const {
+  return kFakePcaCertRequest;
+}
+
+std::string FakeAttestationClient::GetFakePcaCertResponse() const {
+  return kFakePcaCertResponse;
+}
+
+std::string FakeAttestationClient::GetFakeCertificate() const {
+  return kFakeCertificate;
 }
 
 AttestationClient::TestInterface* FakeAttestationClient::GetTestInterface() {

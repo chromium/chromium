@@ -105,13 +105,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
   ::attestation::GetStatusReply* mutable_status_reply() override;
   void AllowlistCertificateRequest(
       const ::attestation::GetCertificateRequest& request) override;
-  void AllowlistLegacyCreateCertificateRequest(
-      const std::string& username,
-      const std::string& request_origin,
-      ::attestation::CertificateProfile profile,
-      ::attestation::KeyType key_type) override;
-  ::attestation::CreateCertificateRequestReply*
-  mutable_certificate_request_reply() override;
   const std::vector<::attestation::DeleteKeysRequest>& delete_keys_history()
       const override;
   void ClearDeleteKeysHistory() override;
@@ -143,6 +136,20 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
       bool include_spkac) const override;
   void set_sign_enterprise_challenge_delay(
       const base::TimeDelta& delay) override;
+  void set_enroll_request_status(
+      ::attestation::AttestationStatus status) override;
+  std::string GetFakePcaEnrollRequest() const override;
+  std::string GetFakePcaEnrollResponse() const override;
+  void AllowlistLegacyCreateCertificateRequest(
+      const std::string& username,
+      const std::string& request_origin,
+      ::attestation::CertificateProfile profile,
+      ::attestation::KeyType key_type) override;
+  void set_cert_request_status(
+      ::attestation::AttestationStatus status) override;
+  std::string GetFakePcaCertRequest() const override;
+  std::string GetFakePcaCertResponse() const override;
+  std::string GetFakeCertificate() const override;
 
   AttestationClient::TestInterface* GetTestInterface() override;
 
@@ -153,8 +160,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
   std::deque<bool> preparation_sequences_;
 
   ::attestation::GetStatusReply status_reply_;
-
-  ::attestation::CreateCertificateRequestReply certificate_request_reply_;
 
   // Maintains the allowlisted certificate requests.
   std::vector<::attestation::GetCertificateRequest> allowlisted_requests_;
@@ -234,6 +239,13 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
       allowlisted_sign_enterprise_challenge_keys_;
   // The delay the reply of `SignEnterpriseChallenge()` is posted with.
   base::TimeDelta sign_enterprise_challenge_delay_;
+
+  // The status returned by `CreateEnrollRequest()`.
+  ::attestation::AttestationStatus enroll_request_status_ =
+      ::attestation::STATUS_SUCCESS;
+  // The status returned by `CreateCertificateRequest()`.
+  ::attestation::AttestationStatus cert_request_status_ =
+      ::attestation::STATUS_SUCCESS;
 };
 
 }  // namespace chromeos

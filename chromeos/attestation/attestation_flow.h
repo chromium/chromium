@@ -163,11 +163,10 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlow {
   //
   // Parameters
   //   callback - Called with the success or failure of the enrollment.
-  //   success - The status of request creation.
-  //   data - The request data for the Privacy CA.
-  void SendEnrollRequestToPCA(base::OnceCallback<void(bool)> callback,
-                              bool success,
-                              const std::string& data);
+  //   reply - The reply of `CreateEnrollRequest()`.
+  void SendEnrollRequestToPCA(
+      base::OnceCallback<void(bool)> callback,
+      const ::attestation::CreateEnrollRequestReply& reply);
 
   // Called when the Privacy CA responds to an enrollment request.  The response
   // is asynchronously forwarded as-is to the attestation daemon in order to
@@ -186,11 +185,9 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlow {
   //
   // Parameters
   //   callback - Called with the success or failure of the enrollment.
-  //   success - The status of the enrollment operation.
-  //   not_used - An artifact of the cryptohome D-Bus interface; ignored.
+  //   reply - The reply of `FinishEnroll()`.
   void OnEnrollComplete(base::OnceCallback<void(bool)> callback,
-                        bool success,
-                        cryptohome::MountError not_used);
+                        const ::attestation::FinishEnrollReply& reply);
 
   // Asynchronously initiates the certificate request flow.  Attestation
   // enrollment must complete successfully before this operation can succeed.
@@ -270,15 +267,15 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlow {
                                        bool success,
                                        const std::string& data);
 
-  // Called after cryptohome finishes processing of a certificate request.
+  // Called after attestation service finishes processing of a certificate
+  // request.
   //
   // Parameters
   //   callback - Called when the operation completes.
-  //   success - The status of request finishing.
-  //   data - The certificate data in PEM format.
-  void OnCertRequestFinished(CertificateCallback callback,
-                             bool success,
-                             const std::string& data);
+  //   reply - The reply of `FinishCertificateRequest()`.
+  void OnCertRequestFinished(
+      CertificateCallback callback,
+      const ::attestation::FinishCertificateRequestReply& reply);
 
   cryptohome::AsyncMethodCaller* async_caller_;
   CryptohomeClient* cryptohome_client_;
