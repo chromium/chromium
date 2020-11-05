@@ -412,6 +412,23 @@ TEST_F(AnimationHostTest, TickScrollLinkedAnimation) {
                                           property_trees.scroll_tree, false));
 }
 
+TEST_F(AnimationHostTest, PushPropertiesToImpl) {
+  std::unique_ptr<AnimationHost> host(
+      AnimationHost::CreateForTesting(ThreadInstance::MAIN));
+  std::unique_ptr<AnimationHost> host_impl(
+      AnimationHost::CreateForTesting(ThreadInstance::IMPL));
+
+  host->SetHasCanvasInvalidation(true);
+  host->SetHasInlineStyleMutation(true);
+
+  EXPECT_FALSE(host_impl->HasCanvasInvalidation());
+  EXPECT_FALSE(host_impl->HasJSAnimation());
+
+  host->PushPropertiesTo(host_impl.get());
+  EXPECT_TRUE(host_impl->HasCanvasInvalidation());
+  EXPECT_TRUE(host_impl->HasJSAnimation());
+}
+
 TEST_F(AnimationHostTest, ScrollTimelineOffsetUpdatedByScrollAnimation) {
   client_.RegisterElementId(element_id_, ElementListType::ACTIVE);
   client_impl_.RegisterElementId(element_id_, ElementListType::PENDING);

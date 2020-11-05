@@ -116,6 +116,8 @@ void UkmManager::RecordThroughputUKM(
         CASE_FOR_MAIN_THREAD_TRACKER(TouchScroll);
         CASE_FOR_MAIN_THREAD_TRACKER(Video);
         CASE_FOR_MAIN_THREAD_TRACKER(WheelScroll);
+        CASE_FOR_MAIN_THREAD_TRACKER(CanvasAnimation);
+        CASE_FOR_MAIN_THREAD_TRACKER(JSAnimation);
 #undef CASE_FOR_MAIN_THREAD_TRACKER
         default:
           NOTREACHED();
@@ -261,6 +263,8 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_TRACKER(TouchScroll);
       CASE_FOR_TRACKER(Video);
       CASE_FOR_TRACKER(WheelScroll);
+      CASE_FOR_TRACKER(CanvasAnimation);
+      CASE_FOR_TRACKER(JSAnimation);
 #undef CASE_FOR_TRACKER
       default:
         NOTREACHED();

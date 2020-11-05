@@ -258,6 +258,8 @@ void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl) {
   host_impl->main_thread_animations_count_ = main_thread_animations_count_;
   host_impl->current_frame_had_raf_ = current_frame_had_raf_;
   host_impl->next_frame_has_pending_raf_ = next_frame_has_pending_raf_;
+  host_impl->has_canvas_invalidation_ = has_canvas_invalidation_;
+  host_impl->has_inline_style_mutation_ = has_inline_style_mutation_;
 
   if (needs_push_properties_) {
     needs_push_properties_ = false;

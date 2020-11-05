@@ -2874,7 +2874,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="CompositorLatency"/>
   <affected-histogram name="CompositorLatency.CompositorAnimation"/>
   <affected-histogram name="CompositorLatency.DroppedFrame"/>
-  <affected-histogram name="CompositorLatency.DroppedFrame.Canvas"/>
+  <affected-histogram name="CompositorLatency.DroppedFrame.CanvasAnimation"/>
   <affected-histogram
       name="CompositorLatency.DroppedFrame.CompositorAnimation"/>
   <affected-histogram name="CompositorLatency.DroppedFrame.JSAnimation"/>
@@ -2887,7 +2887,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="CompositorLatency.DroppedFrame.WheelScroll"/>
   <affected-histogram name="CompositorLatency.MainThreadAnimation"/>
   <affected-histogram name="CompositorLatency.MissedDeadlineFrame"/>
-  <affected-histogram name="CompositorLatency.MissedDeadlineFrame.Canvas"/>
+  <affected-histogram
+      name="CompositorLatency.MissedDeadlineFrame.CanvasAnimation"/>
   <affected-histogram
       name="CompositorLatency.MissedDeadlineFrame.CompositorAnimation"/>
   <affected-histogram name="CompositorLatency.MissedDeadlineFrame.JSAnimation"/>
@@ -3153,7 +3154,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="The total time starting from BeginImplFrame to when
              CompositorFramePresentation is done."/>
   <affected-histogram name="CompositorLatency.CompositorOnlyFrame"/>
-  <affected-histogram name="CompositorLatency.CompositorOnlyFrame.Canvas"/>
+  <affected-histogram
+      name="CompositorLatency.CompositorOnlyFrame.CanvasAnimation"/>
   <affected-histogram
       name="CompositorLatency.CompositorOnlyFrame.CompositorAnimation"/>
   <affected-histogram name="CompositorLatency.CompositorOnlyFrame.JSAnimation"/>
@@ -17538,7 +17540,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="SmoothnessSequenceTypes" separator=".">
-  <suffix name="Canvas" label="Main-thread canvas"/>
+  <suffix name="CanvasAnimation" label="Main-thread canvas animation"/>
   <suffix name="CompositorAnimation" label="Compositor-driven animation"/>
   <suffix name="JSAnimation" label="JS-driven animation"/>
   <suffix name="MainThreadAnimation" label="Main-thread driven animation"/>

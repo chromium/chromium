@@ -150,7 +150,7 @@ FrameSequenceMetrics::ThreadType FrameSequenceMetrics::GetEffectiveThread()
 
     case FrameSequenceTrackerType::kMainThreadAnimation:
     case FrameSequenceTrackerType::kRAF:
-    case FrameSequenceTrackerType::kCanvas:
+    case FrameSequenceTrackerType::kCanvasAnimation:
     case FrameSequenceTrackerType::kJSAnimation:
       return ThreadType::kMain;
 
@@ -257,7 +257,8 @@ void FrameSequenceMetrics::ReportMetrics() {
                               type_),
             impl_throughput_);
   }
-  if (main_report) {
+  if (main_report || type_ == FrameSequenceTrackerType::kCanvasAnimation ||
+      type_ == FrameSequenceTrackerType::kJSAnimation) {
     main_throughput_percent_dropped =
         ThroughputData::ReportDroppedFramePercentHistogram(
             this, ThreadType::kMain,
@@ -421,7 +422,9 @@ int FrameSequenceMetrics::ThroughputData::ReportDroppedFramePercentHistogram(
     const ThroughputData& data) {
   const auto sequence_type = metrics->type();
   DCHECK_LT(sequence_type, FrameSequenceTrackerType::kMaxType);
-  DCHECK(CanReportHistogram(metrics, thread_type, data));
+  DCHECK(CanReportHistogram(metrics, thread_type, data) ||
+         sequence_type == FrameSequenceTrackerType::kCanvasAnimation ||
+         sequence_type == FrameSequenceTrackerType::kJSAnimation);
 
   if (metrics->GetEffectiveThread() == thread_type) {
     STATIC_HISTOGRAM_POINTER_GROUP(

@@ -4548,6 +4548,11 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="CanvasAnimation" enum="Boolean">
+    <summary>
+      True when a canvas animation was active this frame.
+    </summary>
+  </metric>
   <metric name="Commit">
     <summary>
       The duration of the commit stage.&quot;
@@ -4593,6 +4598,11 @@ be describing additional metrics about the same event.
         </statistics>
       </history>
     </aggregation>
+  </metric>
+  <metric name="JSAnimation" enum="Boolean">
+    <summary>
+      True when a inline style animation was active this frame.
+    </summary>
   </metric>
   <metric name="MainThreadAnimation" enum="Boolean">
     <summary>
@@ -4973,9 +4983,19 @@ be describing additional metrics about the same event.
       interactions.
     </summary>
   </metric>
+  <metric name="MainThread.CanvasAnimation">
+    <summary>
+      The throughput of the main thread during canvas animation.
+    </summary>
+  </metric>
   <metric name="MainThread.CompositorAnimation">
     <summary>
       The throughput of the main thread during a compositor animation.
+    </summary>
+  </metric>
+  <metric name="MainThread.JSAnimation">
+    <summary>
+      The throughput of the main thread during inline style animation.
     </summary>
   </metric>
   <metric name="MainThread.MainThreadAnimation">
