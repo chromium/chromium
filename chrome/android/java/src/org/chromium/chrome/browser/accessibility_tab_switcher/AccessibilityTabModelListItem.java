@@ -28,10 +28,8 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
-
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.chrome.R;
@@ -286,6 +284,7 @@ public class AccessibilityTabModelListItem extends FrameLayout implements OnClic
         if (showView && mCanUndo) {
             mUndoContents.setVisibility(View.VISIBLE);
             mTabContents.setVisibility(View.INVISIBLE);
+            mUndoContents.requestFocus();
         } else {
             mTabContents.setVisibility(View.VISIBLE);
             mUndoContents.setVisibility(View.INVISIBLE);

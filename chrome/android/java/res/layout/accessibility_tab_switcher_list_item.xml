@@ -19,7 +19,9 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="invisible" >
+        android:visibility="invisible"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/undo_button"
