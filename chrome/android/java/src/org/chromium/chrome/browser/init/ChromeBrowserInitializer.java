@@ -331,6 +331,9 @@ public class ChromeBrowserInitializer {
             startChromeBrowserProcessesSync();
             tasks.start(true);
         }
+
+        ChromeStartupDelegate startupDelegate = AppHooks.get().createChromeStartupDelegate();
+        startupDelegate.init();
     }
 
     private void startChromeBrowserProcessesAsync(boolean startGpuProcess,

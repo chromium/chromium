@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.gsa.GSAHelper;
 import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
+import org.chromium.chrome.browser.init.ChromeStartupDelegate;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.lens.LensController;
@@ -370,5 +371,9 @@ public abstract class AppHooks {
 
     public @Nullable ImageEditorModuleProvider getImageEditorModuleProvider() {
         return null;
+    }
+
+    public ChromeStartupDelegate createChromeStartupDelegate() {
+        return new ChromeStartupDelegate();
     }
 }
