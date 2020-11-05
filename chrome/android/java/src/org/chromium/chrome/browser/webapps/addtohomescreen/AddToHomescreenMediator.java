@@ -84,6 +84,7 @@ class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
         if (mNativeAddToHomescreenMediator == 0) return;
 
         AddToHomescreenMediatorJni.get().addToHomescreen(mNativeAddToHomescreenMediator, title);
+        destroyNative();
     }
 
     @Override
@@ -105,6 +106,13 @@ class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
         if (mNativeAddToHomescreenMediator == 0) return;
 
         AddToHomescreenMediatorJni.get().onUiDismissed(mNativeAddToHomescreenMediator);
+        destroyNative();
+    }
+
+    private void destroyNative() {
+        if (mNativeAddToHomescreenMediator == 0) return;
+
+        AddToHomescreenMediatorJni.get().destroy(mNativeAddToHomescreenMediator);
         mNativeAddToHomescreenMediator = 0;
     }
 
@@ -116,5 +124,6 @@ class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
         void addToHomescreen(long nativeAddToHomescreenMediator, String title);
         void onNativeDetailsShown(long nativeAddToHomescreenMediator);
         void onUiDismissed(long nativeAddToHomescreenMediator);
+        void destroy(long nativeAddToHomescreenMediator);
     }
 }

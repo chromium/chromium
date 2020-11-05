@@ -225,6 +225,8 @@ class AddToHomescreenDialogView implements View.OnClickListener, ModalDialogProp
 
     @Override
     public void onDismiss(PropertyModel model, int dismissalCause) {
+        if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) return;
+
         mDelegate.onViewDismissed();
     }
 

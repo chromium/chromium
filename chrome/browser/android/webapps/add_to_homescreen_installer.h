@@ -24,7 +24,7 @@ class AddToHomescreenInstaller {
     NATIVE_INSTALL_OR_OPEN_SUCCEEDED,
     NATIVE_DETAILS_SHOWN,
     UI_SHOWN,
-    UI_DISMISSED,
+    UI_CANCELLED,
   };
 
   // Installs the app referenced by the data in this object.

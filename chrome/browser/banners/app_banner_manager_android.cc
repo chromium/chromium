@@ -321,7 +321,7 @@ void AppBannerManagerAndroid::RecordEventForAppBanner(
       }
       break;
 
-    case AddToHomescreenInstaller::Event::UI_DISMISSED:
+    case AddToHomescreenInstaller::Event::UI_CANCELLED:
       TrackDismissEvent(DISMISS_EVENT_DISMISSED);
 
       SendBannerDismissed();

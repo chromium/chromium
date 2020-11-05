@@ -121,18 +121,19 @@ void AddToHomescreenMediator::AddToHomescreen(
 }
 
 void AddToHomescreenMediator::OnUiDismissed(JNIEnv* env) {
-  if (!params_) {
-    delete this;
-    return;
+  if (params_) {
+    event_callback_.Run(AddToHomescreenInstaller::Event::UI_CANCELLED,
+                        *params_);
   }
-
-  event_callback_.Run(AddToHomescreenInstaller::Event::UI_DISMISSED, *params_);
-  delete this;
 }
 
 void AddToHomescreenMediator::OnNativeDetailsShown(JNIEnv* env) {
   event_callback_.Run(AddToHomescreenInstaller::Event::NATIVE_DETAILS_SHOWN,
                       *params_);
+}
+
+void AddToHomescreenMediator::Destroy(JNIEnv* env) {
+  delete this;
 }
 
 AddToHomescreenMediator::~AddToHomescreenMediator() = default;

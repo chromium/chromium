@@ -59,6 +59,9 @@ class AddToHomescreenMediator : public AddToHomescreenDataFetcher::Observer {
   // Called from the Java side when details for a native app are shown.
   void OnNativeDetailsShown(JNIEnv* env);
 
+  // Called from the Java side and destructs this object.
+  void Destroy(JNIEnv* env);
+
  private:
   ~AddToHomescreenMediator() override;
 

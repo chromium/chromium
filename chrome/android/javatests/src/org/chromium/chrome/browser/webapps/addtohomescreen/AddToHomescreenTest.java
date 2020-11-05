@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.os.Handler;
 import android.text.TextUtils;
 
 import androidx.test.filters.SmallTest;
@@ -167,7 +168,7 @@ public class AddToHomescreenTest {
 
                 @Override
                 void setCanSubmit(boolean canSubmit) {
-                    mDelegate.onAddToHomescreen(mTitle);
+                    new Handler().post(() -> mDelegate.onAddToHomescreen(mTitle));
                 }
             };
         }
