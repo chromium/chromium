@@ -1,0 +1,55 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_NOTIFICATION_INFOBAR_DELEGATE_H_
+#define IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_NOTIFICATION_INFOBAR_DELEGATE_H_
+
+#include <memory>
+
+#include "base/macros.h"
+#include "base/strings/string16.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
+#include "components/sync/driver/sync_service_observer.h"
+#include "ios/chrome/browser/sync/sync_setup_service.h"
+#include "ui/gfx/image/image.h"
+
+class ChromeBrowserState;
+
+namespace gfx {
+class Image;
+}
+
+namespace infobars {
+class InfoBarManager;
+}
+
+// Shows a sign-in notification in an infobar.
+class SigninNotificationInfoBarDelegate : public ConfirmInfoBarDelegate {
+ public:
+  SigninNotificationInfoBarDelegate(ChromeBrowserState* browser_state);
+  ~SigninNotificationInfoBarDelegate() override;
+
+  // Creates a sign-in notification infobar and adds it to |infobar_manager|.
+  static bool Create(infobars::InfoBarManager* infobar_manager,
+                     ChromeBrowserState* browser_state);
+
+  // InfoBarDelegate implementation.
+  InfoBarIdentifier GetIdentifier() const override;
+
+  // ConfirmInfoBarDelegate implementation.
+  base::string16 GetMessageText() const override;
+  int GetButtons() const override;
+  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  gfx::Image GetIcon() const override;
+  bool Accept() override;
+
+ private:
+  gfx::Image icon_;
+  base::string16 message_;
+  base::string16 button_text_;
+
+  DISALLOW_COPY_AND_ASSIGN(SigninNotificationInfoBarDelegate);
+};
+
+#endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_NOTIFICATION_INFOBAR_DELEGATE_H_

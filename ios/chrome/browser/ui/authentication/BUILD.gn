@@ -20,6 +20,8 @@ source_set("authentication") {
     "resized_avatar_cache.mm",
     "signed_in_accounts_view_controller.h",
     "signed_in_accounts_view_controller.mm",
+    "signin_notification_infobar_delegate.h",
+    "signin_notification_infobar_delegate.mm",
     "signin_promo_view_mediator.h",
     "signin_promo_view_mediator.mm",
   ]
