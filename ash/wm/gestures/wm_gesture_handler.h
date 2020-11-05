@@ -55,8 +55,6 @@ class ASH_EXPORT WmGestureHandler {
   // otherwise.
   bool ProcessScrollEvent(const ui::ScrollEvent& event);
 
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
  private:
   // A struct containing the relevant data during a scroll session.
   struct ScrollData {

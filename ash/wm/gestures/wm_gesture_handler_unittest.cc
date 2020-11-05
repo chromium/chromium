@@ -33,9 +33,6 @@ constexpr int kNumFingersForWindowCycle = 2;
 constexpr int kNumFingersForHighlight = 3;
 constexpr int kNumFingersForDesksSwitch = 4;
 
-constexpr char kOverviewGestureNotificationId[] =
-    "ash.wm.reverse_overview_gesture";
-
 bool InOverviewSession() {
   return Shell::Get()->overview_controller()->InOverviewSession();
 }
@@ -49,18 +46,6 @@ bool IsNaturalScrollOn() {
       Shell::Get()->session_controller()->GetActivePrefService();
   return pref->GetBoolean(prefs::kTouchpadEnabled) &&
          pref->GetBoolean(prefs::kNaturalScroll);
-}
-
-bool IsOverviewReverseGestureNotificationShown() {
-  return message_center::MessageCenter::Get()->FindVisibleNotificationById(
-      kOverviewGestureNotificationId);
-}
-
-void CloseOverviewReverseGestureNotification() {
-  if (IsOverviewReverseGestureNotificationShown()) {
-    message_center::MessageCenter::Get()->RemoveNotification(
-        kOverviewGestureNotificationId, true);
-  }
 }
 
 int GetOffsetX(int offset) {
@@ -141,32 +126,17 @@ TEST_F(WmGestureHandlerTest, WrongVerticalScrolls) {
 
   const float long_scroll = 2 * WmGestureHandler::kVerticalThresholdDp;
 
-  // Swiping down can enter overview but a notification will be shown.
+  // Swiping down cannot enter overview.
   Scroll(0, -long_scroll, 3);
-  EXPECT_TRUE(InOverviewSession());
-  // Notification is shown for the first time.
-  EXPECT_TRUE(IsOverviewReverseGestureNotificationShown());
-  CloseOverviewReverseGestureNotification();
-
-  // Swiping up can exit overview, but a notification will be shown.
-  Scroll(0, long_scroll, 3);
   EXPECT_FALSE(InOverviewSession());
-  // Notification is shown for the second time.
-  EXPECT_TRUE(IsOverviewReverseGestureNotificationShown());
-  CloseOverviewReverseGestureNotification();
 
-  // Swiping down triggers the notification for the last time.
-  Scroll(0, -long_scroll, 3);
-  EXPECT_TRUE(InOverviewSession());
-  // Notification is shown for the third (last) time.
-  EXPECT_TRUE(IsOverviewReverseGestureNotificationShown());
-  CloseOverviewReverseGestureNotification();
-
-  // Doing wrong gesture again won't trigger notification anymore.
+  // Enter overview.
   Scroll(0, long_scroll, 3);
-  EXPECT_FALSE(InOverviewSession());
-  // No notification will be shown anymore.
-  EXPECT_FALSE(IsOverviewReverseGestureNotificationShown());
+  EXPECT_TRUE(InOverviewSession());
+
+  // Swiping up cannot exit overview.
+  Scroll(0, long_scroll, 3);
+  EXPECT_TRUE(InOverviewSession());
 }
 
 // Tests three or four finger horizontal scroll gesture (depending on flags) to

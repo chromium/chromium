@@ -209,8 +209,6 @@ ASH_PUBLIC_EXPORT extern const char kColorModeThemed[];
 
 ASH_PUBLIC_EXPORT extern const char kAppNotificationBadgingEnabled[];
 
-ASH_PUBLIC_EXPORT extern const char kReverseGestureNotificationCount[];
-
 ASH_PUBLIC_EXPORT extern const char kGlobalMediaControlsPinned[];
 
 }  // namespace prefs

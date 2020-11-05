@@ -520,11 +520,11 @@ This file contains the strings for ash.
       <message name="IDS_GESTURE_NOTIFICATION_MESSAGE_LEARN_MORE" desc="The body of the notification to show off new gestures. This notification body links to the help page for the gestures.">
         Use gestures to quickly switch between apps and interact with your Chromebook in tablet mode.
       </message>
-      <message name="IDS_OVERVIEW_REVERSE_GESTURE_NOTIFICATION_TITLE" desc="The title of the notification to change reverse gesture when entering/exiting overview mode">
-        The Overview touchpad gesture has changed
+      <message name="IDS_CHANGE_ENTER_OVERVIEW_REVERSE_GESTURE" desc="The toast of changing enter overview gesture">
+        The touchpad gesture to enter Overview has changed. Swipe up with three fingers to enter Overview.
       </message>
-      <message name="IDS_OVERVIEW_REVERSE_GESTURE_NOTIFICATION_MESSAGE" desc="The body of the notification to change reverse gesture when entering/exiting overview mode">
-        Swipe up with three fingers to open and down to close the Overview.
+      <message name="IDS_CHANGE_EXIT_OVERVIEW_REVERSE_GESTURE" desc="The toast of changing exit overview gesture">
+        The touchpad gesture to exit Overview has changed. Swipe down with three fingers to exit Overview.
       </message>
       <message name="IDS_CHANGE_NEXT_DESK_REVERSE_GESTURE" desc="The toast of changing reverse gesture to switch to the next desk.">
         The touchpad gesture to switch to the next desk has changed. Swipe right with four fingers to switch to the next desk.

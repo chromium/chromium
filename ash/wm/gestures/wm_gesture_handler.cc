@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
-#include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/toast_data.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -32,10 +31,8 @@ namespace ash {
 
 namespace {
 
-constexpr char kOverviewGestureNotificationId[] =
-    "ash.wm.reverse_overview_gesture";
-constexpr int kReverseGestureNotificationShowLimit = 3;
-
+constexpr char kEnterOverviewToastId[] = "ash.wm.reverse_enter_overview_toast";
+constexpr char kExitOverviewToastId[] = "ash.wm.reverse_exit_overview_toast";
 constexpr char kSwitchNextDeskToastId[] = "ash.wm.reverse_next_desk_toast";
 constexpr char kSwitchLastDeskToastId[] = "ash.wm.reverse_last_desk_toast";
 
@@ -43,8 +40,10 @@ constexpr base::TimeDelta kToastDurationMs =
     base::TimeDelta::FromMilliseconds(2500);
 
 // Check if the user used the wrong gestures.
-bool gDidWrongNextDeskGesture = false;
-bool gDidWrongLastDeskGesture = false;
+bool g_did_wrong_enter_overview_gesture = false;
+bool g_did_wrong_exit_overview_gesture = false;
+bool g_did_wrong_next_desk_gesture = false;
+bool g_did_wrong_last_desk_gesture = false;
 
 // Is the reverse scrolling for touchpad on.
 bool IsNaturalScrollOn() {
@@ -71,50 +70,42 @@ float GetOffset(float offset) {
   return IsNaturalScrollOn() ? -offset : offset;
 }
 
-void ShowOverviewGestureNotification() {
-  int reverse_gesture_notification_count =
-      Shell::Get()->session_controller()->GetActivePrefService()->GetInteger(
-          prefs::kReverseGestureNotificationCount);
-
-  if (reverse_gesture_notification_count >=
-      kReverseGestureNotificationShowLimit) {
-    return;
-  }
-
-  base::string16 title = l10n_util::GetStringUTF16(
-      IDS_OVERVIEW_REVERSE_GESTURE_NOTIFICATION_TITLE);
-  base::string16 message = l10n_util::GetStringUTF16(
-      IDS_OVERVIEW_REVERSE_GESTURE_NOTIFICATION_MESSAGE);
-
-  std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE,
-          kOverviewGestureNotificationId, title, message, base::string16(),
-          GURL(),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT,
-              kOverviewGestureNotificationId),
-          message_center::RichNotificationData(), nullptr, gfx::VectorIcon(),
-          message_center::SystemNotificationWarningLevel::NORMAL);
-
-  // Make the notification popup again if it has been in message center.
-  if (message_center::MessageCenter::Get()->FindVisibleNotificationById(
-          kOverviewGestureNotificationId)) {
-    message_center::MessageCenter::Get()->RemoveNotification(
-        kOverviewGestureNotificationId, false);
-  }
-  message_center::MessageCenter::Get()->AddNotification(
-      std::move(notification));
-
-  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
-      prefs::kReverseGestureNotificationCount,
-      reverse_gesture_notification_count + 1);
-}
-
 void ShowReverseGestureToast(const char* toast_id, int message_id) {
   Shell::Get()->toast_manager()->Show(
       ToastData(toast_id, l10n_util::GetStringUTF16(message_id),
                 kToastDurationMs.InMilliseconds(), base::nullopt));
+}
+
+// When reverse scrolling for touchpad is Off, if the user performs wrong
+// vertical gestures (i.e., swiping down/up with three fingers to enter/exit
+// overview), a toast will show up to tell user the correct gesture. The toast
+// will be removed after M89.
+bool MaybeHandleWrongVerticalGesture(float offset_y, bool in_overview) {
+  const bool correct_gesture = in_overview ? (offset_y < 0) : (offset_y > 0);
+
+  if (!features::IsReverseScrollGesturesEnabled() || IsNaturalScrollOn())
+    return correct_gesture;
+
+  bool* const did_wrong_ptr = in_overview ? &g_did_wrong_exit_overview_gesture
+                                          : &g_did_wrong_enter_overview_gesture;
+  const char* toast_id =
+      in_overview ? kExitOverviewToastId : kEnterOverviewToastId;
+
+  if (correct_gesture) {
+    *did_wrong_ptr = false;
+    Shell::Get()->toast_manager()->Cancel(toast_id);
+    return true;
+  }
+
+  if (*did_wrong_ptr) {
+    ShowReverseGestureToast(
+        toast_id, in_overview ? IDS_CHANGE_EXIT_OVERVIEW_REVERSE_GESTURE
+                              : IDS_CHANGE_ENTER_OVERVIEW_REVERSE_GESTURE);
+  } else {
+    *did_wrong_ptr = true;
+  }
+
+  return false;
 }
 
 // The amount the fingers must move in a direction before a continuous gesture
@@ -131,34 +122,16 @@ bool Handle3FingerVerticalScroll(float scroll_y) {
 
   auto* overview_controller = Shell::Get()->overview_controller();
   const bool in_overview = overview_controller->InOverviewSession();
+
+  if (!MaybeHandleWrongVerticalGesture(GetOffset(scroll_y), in_overview))
+    return false;
+
   if (in_overview) {
-    // If touchpad reverse scroll is on, only swip down can exit overview. If
-    // touchpad reverse scroll is off, in M87 swip up can also exit overview but
-    // show notification; in M88, swip up will only show notification; in M89
-    // the notification is removed.
-    if (GetOffset(scroll_y) > 0) {
-      if (!features::IsReverseScrollGesturesEnabled() || IsNaturalScrollOn())
-        return false;
-
-      ShowOverviewGestureNotification();
-    }
-
     base::RecordAction(base::UserMetricsAction("Touchpad_Gesture_Overview"));
     if (overview_controller->AcceptSelection())
       return true;
     overview_controller->EndOverview();
   } else {
-    // If touchpad reverse scroll is on, only swip up can enter overview. If
-    // touchpad reverse scroll is off, in M87 swip down can also enter overview
-    // but show notification; in M88, swip down will only show notification; in
-    // M89 the notification is removed.
-    if (GetOffset(scroll_y) < 0) {
-      if (!features::IsReverseScrollGesturesEnabled() || IsNaturalScrollOn())
-        return false;
-
-      ShowOverviewGestureNotification();
-    }
-
     auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
     if (window_cycle_controller->IsCycling())
       window_cycle_controller->CancelCycling();
@@ -170,42 +143,62 @@ bool Handle3FingerVerticalScroll(float scroll_y) {
   return true;
 }
 
+// When reverse scrolling for touchpad is Off, if the user performs wrong
+// horizontal gestures (i.e., swiping left/right with four fingers to switch to
+// the next/previous desk), a toast will show up to tell user the correct
+// gesture. The toast will be removed after M89.
+void MaybeHandleWrongHorizontalGesture(bool move_left,
+                                       const Desk* previous_desk,
+                                       const Desk* next_desk) {
+  if (!features::IsReverseScrollGesturesEnabled() || IsNaturalScrollOn())
+    return;
+
+  // Perform wrong gesture on the first desk.
+  if (move_left && next_desk && !previous_desk) {
+    if (!g_did_wrong_next_desk_gesture) {
+      g_did_wrong_next_desk_gesture = true;
+    } else {
+      ShowReverseGestureToast(kSwitchNextDeskToastId,
+                              IDS_CHANGE_NEXT_DESK_REVERSE_GESTURE);
+    }
+    return;
+  }
+
+  // Perform wrong gesture on the last desk.
+  if (!move_left && !next_desk && previous_desk) {
+    if (!g_did_wrong_last_desk_gesture) {
+      g_did_wrong_last_desk_gesture = true;
+    } else {
+      ShowReverseGestureToast(kSwitchLastDeskToastId,
+                              IDS_CHANGE_LAST_DESK_REVERSE_GESTURE);
+    }
+    return;
+  }
+
+  g_did_wrong_next_desk_gesture = false;
+  g_did_wrong_last_desk_gesture = false;
+
+  auto* toast_manager = Shell::Get()->toast_manager();
+  toast_manager->Cancel(kSwitchNextDeskToastId);
+  toast_manager->Cancel(kSwitchLastDeskToastId);
+}
+
 // Handles horizontal 4-finger scroll by switching desks if possible.
 // Returns true if the gesture was handled.
 bool HandleDesksSwitchHorizontalScroll(float scroll_x) {
   if (std::fabs(scroll_x) < WmGestureHandler::kHorizontalThresholdDp)
     return false;
 
-  if (features::IsReverseScrollGesturesEnabled() && !IsNaturalScrollOn()) {
-    if (GetOffset(scroll_x) > 0 && !DesksController::Get()->GetNextDesk() &&
-        DesksController::Get()->GetPreviousDesk()) {
-      if (!gDidWrongLastDeskGesture) {
-        gDidWrongLastDeskGesture = true;
-      } else {
-        ShowReverseGestureToast(kSwitchLastDeskToastId,
-                                IDS_CHANGE_LAST_DESK_REVERSE_GESTURE);
-      }
-    } else if (GetOffset(scroll_x) < 0 &&
-               !DesksController::Get()->GetPreviousDesk() &&
-               DesksController::Get()->GetNextDesk()) {
-      if (!gDidWrongNextDeskGesture) {
-        gDidWrongNextDeskGesture = true;
-      } else {
-        ShowReverseGestureToast(kSwitchNextDeskToastId,
-                                IDS_CHANGE_NEXT_DESK_REVERSE_GESTURE);
-      }
-    } else {
-      gDidWrongNextDeskGesture = false;
-      gDidWrongLastDeskGesture = false;
-      Shell::Get()->toast_manager()->Cancel(kSwitchNextDeskToastId);
-      Shell::Get()->toast_manager()->Cancel(kSwitchLastDeskToastId);
-    }
-  }
+  auto* desks_controller = DesksController::Get();
+  const bool move_left = GetOffset(scroll_x) < 0;
+
+  MaybeHandleWrongHorizontalGesture(move_left,
+                                    desks_controller->GetPreviousDesk(),
+                                    desks_controller->GetNextDesk());
 
   // If touchpad reverse scroll is on, the swipe direction will invert.
-  return DesksController::Get()->ActivateAdjacentDesk(
-      /*going_left=*/GetOffset(scroll_x) < 0,
-      DesksSwitchSource::kDeskSwitchTouchpad);
+  return desks_controller->ActivateAdjacentDesk(
+      move_left, DesksSwitchSource::kDeskSwitchTouchpad);
 }
 
 }  // namespace
@@ -314,11 +307,6 @@ bool WmGestureHandler::ProcessEventImpl(int finger_count,
     scroll_data_ = ScrollData();
   scroll_data_->finger_count = finger_count;
   return moved;
-}
-
-// static
-void WmGestureHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(prefs::kReverseGestureNotificationCount, 0);
 }
 
 bool WmGestureHandler::EndScroll() {
