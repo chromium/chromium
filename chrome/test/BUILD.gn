@@ -294,6 +294,8 @@ static_library("test_support") {
       "//components/zoom:test_support",
     ]
     sources += [
+      "../browser/enterprise/reporting/extension_request/extension_request_report_throttler_test.cc",
+      "../browser/enterprise/reporting/extension_request/extension_request_report_throttler_test.h",
       "../browser/ui/tabs/pinned_tab_test_utils.cc",
       "../browser/ui/tabs/pinned_tab_test_utils.h",
       "base/dialog_test_browser_window.cc",

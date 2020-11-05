@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -62,7 +63,18 @@ void BrowserReportGeneratorDesktop::GenerateBuildStateInfo(
 
 // Generates user profiles info in the given report instance.
 void BrowserReportGeneratorDesktop::GenerateProfileInfo(
+    ReportType report_type,
     em::BrowserReport* report) {
+  bool is_extension_request_report =
+      (report_type == ReportType::kExtensionRequest);
+
+  auto* throttler = ExtensionRequestReportThrottler::Get();
+  if (is_extension_request_report && !throttler->IsEnabled())
+    return;
+
+  base::flat_set<base::FilePath> extension_request_profile_paths =
+      throttler->GetProfiles();
+
   for (const auto* entry : g_browser_process->profile_manager()
                                ->GetProfileAttributesStorage()
                                .GetAllProfilesAttributes()) {
@@ -73,12 +85,23 @@ void BrowserReportGeneratorDesktop::GenerateProfileInfo(
       continue;
     }
 #endif  // defined(OS_CHROMEOS)
+
+    base::FilePath profile_path = entry->GetPath();
+    if (is_extension_request_report &&
+        !extension_request_profile_paths.contains(profile_path)) {
+      continue;
+    }
+
     em::ChromeUserProfileInfo* profile =
         report->add_chrome_user_profile_infos();
-    profile->set_id(entry->GetPath().AsUTF8Unsafe());
+    profile->set_id(profile_path.AsUTF8Unsafe());
     profile->set_name(base::UTF16ToUTF8(entry->GetName()));
     profile->set_is_full_report(false);
   }
+
+  if (throttler->IsEnabled() && (report_type == ReportType::kExtensionRequest ||
+                                 report_type == ReportType::kFull))
+    throttler->ResetProfiles();
 }
 
 void BrowserReportGeneratorDesktop::GeneratePluginsIfNeeded(

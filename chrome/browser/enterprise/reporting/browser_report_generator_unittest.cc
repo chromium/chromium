@@ -10,8 +10,10 @@
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler_test.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
@@ -95,6 +97,13 @@ class BrowserReportGeneratorTest : public ::testing::Test {
     plugin_service->RefreshPlugins();
   }
 
+  void InitializeExtensionRequest() {
+    throttler()->AddProfile(
+        profile_manager()->profiles_dir().AppendASCII(kProfileId));
+    throttler()->AddProfile(
+        profile_manager()->profiles_dir().AppendASCII("deleted_profile"));
+  }
+
   void GenerateAndVerify() {
     base::RunLoop run_loop;
     generator_.Generate(
@@ -144,32 +153,44 @@ class BrowserReportGeneratorTest : public ::testing::Test {
     run_loop.Run();
   }
 
-  void GenerateExtensinRequestReportAndVerify() {
+  void GenerateExtensinRequestReportAndVerify(
+      const std::vector<std::string>& expected_request_profile_ids) {
     base::RunLoop run_loop;
     generator_.Generate(
         ReportType::kExtensionRequest,
         base::BindLambdaForTesting(
-            [&run_loop](std::unique_ptr<em::BrowserReport> report) {
+            [&run_loop, &expected_request_profile_ids](
+                std::unique_ptr<em::BrowserReport> report) {
               EXPECT_TRUE(report.get());
               EXPECT_NE(std::string(), report->executable_path());
-
               EXPECT_FALSE(report->has_browser_version());
               EXPECT_FALSE(report->has_channel());
               EXPECT_FALSE(report->has_installed_browser_version());
-              EXPECT_EQ(0, report->chrome_user_profile_infos_size());
+              EXPECT_EQ(expected_request_profile_ids.size(),
+                        static_cast<size_t>(
+                            report->chrome_user_profile_infos_size()));
+              if (expected_request_profile_ids.size() > 0 &&
+                  report->chrome_user_profile_infos_size() > 0) {
+                EXPECT_EQ(expected_request_profile_ids[0],
+                          report->chrome_user_profile_infos(0).id());
+              }
               EXPECT_EQ(0, report->plugins_size());
               run_loop.Quit();
+              ExtensionRequestReportThrottler::Get()->Disable();
             }));
     run_loop.Run();
   }
 
   TestingProfileManager* profile_manager() { return &profile_manager_; }
 
+  ExtensionRequestReportThrottler* throttler() { return throttler_.Get(); }
+
  private:
   ReportingDelegateFactoryDesktop delegate_factory_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   BrowserReportGenerator generator_;
+  ScopedExtensionRequestReportThrottler throttler_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserReportGeneratorTest);
 };
@@ -196,7 +217,23 @@ TEST_F(BrowserReportGeneratorTest, ExtensionRequestOnly) {
   InitializeProfile();
   InitializeIrregularProfiles();
   InitializePlugin();
-  GenerateExtensinRequestReportAndVerify();
+  InitializeExtensionRequest();
+  GenerateExtensinRequestReportAndVerify({profile_manager()
+                                              ->profiles_dir()
+                                              .AppendASCII(kProfileId)
+                                              .AsUTF8Unsafe()});
+}
+
+// It's possible that the extension request report is delayed and by the time
+// report is generated, the extension request report throttler is disabled.
+TEST_F(BrowserReportGeneratorTest, ExtensionRequestOnlyWithoutThrottler) {
+  InitializeUpdate();
+  InitializeProfile();
+  InitializeIrregularProfiles();
+  InitializePlugin();
+  InitializeExtensionRequest();
+  throttler()->Disable();
+  GenerateExtensinRequestReportAndVerify({});
 }
 
 }  // namespace enterprise_reporting

@@ -38,7 +38,8 @@ void BrowserReportGeneratorIOS::GenerateBuildStateInfo(
   // Not used on iOS because there is no in-app auto-update.
 }
 
-void BrowserReportGeneratorIOS::GenerateProfileInfo(em::BrowserReport* report) {
+void BrowserReportGeneratorIOS::GenerateProfileInfo(ReportType report_type,
+                                                    em::BrowserReport* report) {
   for (const auto* entry : GetApplicationContext()
                                ->GetChromeBrowserStateManager()
                                ->GetLoadedBrowserStates()) {

@@ -39,7 +39,8 @@ class BrowserReportGeneratorDesktop : public BrowserReportGenerator::Delegate {
   // Adds the auto-updated version to the given report instance.
   void GenerateBuildStateInfo(em::BrowserReport* report) override;
   // Generates user profiles info in the given report instance.
-  void GenerateProfileInfo(em::BrowserReport* report) override;
+  void GenerateProfileInfo(ReportType report_type,
+                           em::BrowserReport* report) override;
   void GeneratePluginsIfNeeded(
       ReportCallback callback,
       std::unique_ptr<em::BrowserReport> report) override;

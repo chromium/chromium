@@ -300,6 +300,7 @@ TEST_F(ProfileReportGeneratorTest, ExtensionRequestOnlyReport) {
   EXPECT_EQ(0, report->chrome_policies_size());
   EXPECT_EQ(0, report->extensions_size());
   EXPECT_EQ(0, report->policy_fetched_timestamps_size());
+  EXPECT_TRUE(report->is_full_report());
 }
 
 TEST_F(ProfileReportGeneratorTest, ExtensionRequestOnlyReportWithoutPolicy) {
@@ -314,7 +315,8 @@ TEST_F(ProfileReportGeneratorTest, ExtensionRequestOnlyReportWithoutPolicy) {
   auto report = generator_.MaybeGenerate(profile()->GetPath(),
                                          profile()->GetProfileUserName(),
                                          ReportType::kExtensionRequest);
-  EXPECT_FALSE(report);
+  EXPECT_TRUE(report);
+  EXPECT_EQ(0, report->extension_requests_size());
 }
 
 TEST_F(ProfileReportGeneratorTest,
@@ -334,7 +336,8 @@ TEST_F(ProfileReportGeneratorTest,
                                          profile()->GetProfileUserName(),
                                          ReportType::kExtensionRequest);
 
-  EXPECT_FALSE(report);
+  EXPECT_TRUE(report);
+  EXPECT_EQ(0, report->extension_requests_size());
 }
 
 }  // namespace enterprise_reporting

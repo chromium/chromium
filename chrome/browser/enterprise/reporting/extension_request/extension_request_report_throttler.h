@@ -31,15 +31,14 @@ class ExtensionRequestReportThrottler {
   ExtensionRequestReportThrottler();
   ExtensionRequestReportThrottler(const ExtensionRequestReportThrottler&) =
       delete;
+  ExtensionRequestReportThrottler& operator=(
+      const ExtensionRequestReportThrottler&) = delete;
+  ~ExtensionRequestReportThrottler();
 
   void Enable(base::TimeDelta throttle_time,
               base::RepeatingClosure report_trigger);
   void Disable();
   bool IsEnabled() const;
-
-  ExtensionRequestReportThrottler& operator=(
-      const ExtensionRequestReportThrottler&) = delete;
-  ~ExtensionRequestReportThrottler();
 
   // Adds a profile that has new request update.
   void AddProfile(const base::FilePath& profile_path);

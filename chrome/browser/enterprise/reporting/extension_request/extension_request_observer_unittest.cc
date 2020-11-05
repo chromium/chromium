@@ -6,8 +6,10 @@
 
 #include "base/json/json_reader.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "base/util/values/values_util.h"
 #include "base/values.h"
+#include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler_test.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -286,6 +288,28 @@ TEST_F(ExtensionRequestObserverTest, PendingRequestAddedAfterPolicyUpdated) {
   VerifyNotification(true);
   histogram_tester()->ExpectUniqueSample(kPendingListUpdateMetricsName,
                                          /*added*/ 0, 1);
+}
+
+TEST_F(ExtensionRequestObserverTest, UpdateWithReportThrottler) {
+  ScopedExtensionRequestReportThrottler throttler;
+  EXPECT_EQ(0u, throttler.Get()->GetProfiles().size());
+
+  ExtensionRequestObserver observer(profile());
+  EXPECT_EQ(0u, throttler.Get()->GetProfiles().size());
+
+  SetPendingList({kExtensionId1});
+  EXPECT_EQ(1u, throttler.Get()->GetProfiles().size());
+  EXPECT_TRUE(throttler.Get()->GetProfiles().contains(profile()->GetPath()));
+}
+
+TEST_F(ExtensionRequestObserverTest, UpdateWithoutReportThrottler) {
+  ScopedExtensionRequestReportThrottler throttler;
+  throttler.Get()->Disable();
+  ExtensionRequestObserver observer(profile());
+  EXPECT_EQ(0u, throttler.Get()->GetProfiles().size());
+
+  SetPendingList({kExtensionId1});
+  EXPECT_EQ(0u, throttler.Get()->GetProfiles().size());
 }
 
 }  // namespace enterprise_reporting

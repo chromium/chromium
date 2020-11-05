@@ -34,6 +34,7 @@ class BrowserReportGenerator {
     virtual void GenerateBuildStateInfo(
         enterprise_management::BrowserReport* report) = 0;
     virtual void GenerateProfileInfo(
+        ReportType report_type,
         enterprise_management::BrowserReport* report) = 0;
     virtual void GeneratePluginsIfNeeded(
         ReportCallback callback,
