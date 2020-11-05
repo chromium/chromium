@@ -78,7 +78,7 @@ std::map<WebFeature, int> GetAddressSpaceFeatureBucketCounts(
 //  - specification: https://wicg.github.io/cors-rfc1918.
 //  - feature browsertests in content/: RenderFrameHostImplTest.
 //
-class ChromePrivateNetworkRequestBrowserTest : public InProcessBrowserTest {
+class PrivateNetworkRequestBrowserTest : public InProcessBrowserTest {
  public:
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
@@ -112,7 +112,7 @@ class ChromePrivateNetworkRequestBrowserTest : public InProcessBrowserTest {
 // a new tab to a page served by localhost.
 //
 // Regression test for https://crbug.com/1134601.
-IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkRequestBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestBrowserTest,
                        DoesNotRecordAddressSpaceFeatureForInitialNavigation) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkRequestBrowserTest,
 // TODO(crbug.com/1129326): Revisit this once the story around top-level
 // navigations is closer to being resolved. Counting these events will help
 // decide what to do.
-IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkRequestBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestBrowserTest,
                        DoesNotRecordAddressSpaceFeatureForRegularNavigation) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkRequestBrowserTest,
 // space loads a resource from the local network, the correct WebFeature is
 // use-counted.
 // Disabled, as explained in https://crbug.com/1143206
-IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkRequestBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestBrowserTest,
                        DISABLED_RecordsAddressSpaceFeatureForFetch) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkRequestBrowserTest,
 // address space loads a resource from the local network, the correct WebFeature
 // is use-counted.
 IN_PROC_BROWSER_TEST_F(
-    ChromePrivateNetworkRequestBrowserTest,
+    PrivateNetworkRequestBrowserTest,
     DISABLED_RecordsAddressSpaceFeatureForFetchInNonSecureContext) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(
 // about:blank, no address space feature is recorded. It serves as a basis for
 // comparison with the following tests, which test behavior with iframes.
 IN_PROC_BROWSER_TEST_F(
-    ChromePrivateNetworkRequestBrowserTest,
+    PrivateNetworkRequestBrowserTest,
     DoesNotRecordAddressSpaceFeatureForAboutBlankNavigation) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(
 // This test verifies that when a non-secure context served from the public
 // address space loads a child frame from the local network, the correct
 // WebFeature is use-counted.
-IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkRequestBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestBrowserTest,
                        RecordsAddressSpaceFeatureForChildNavigation) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkRequestBrowserTest,
 // address space loads a grand-child frame from the local network, the correct
 // WebFeature is use-counted. If inheritance did not work correctly, the
 // intermediate about:blank frame might confuse the address space logic.
-IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkRequestBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestBrowserTest,
                        RecordsAddressSpaceFeatureForGrandchildNavigation) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
@@ -269,10 +269,10 @@ IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkRequestBrowserTest,
           WebFeature::kAddressSpaceLocalEmbeddedInUnknownNonSecureContext, 1)));
 }
 
-class ChromePrivateNetworkRequestWithFeatureEnabledBrowserTest
-    : public ChromePrivateNetworkRequestBrowserTest {
+class PrivateNetworkRequestWithFeatureEnabledBrowserTest
+    : public PrivateNetworkRequestBrowserTest {
  public:
-  ChromePrivateNetworkRequestWithFeatureEnabledBrowserTest() {
+  PrivateNetworkRequestWithFeatureEnabledBrowserTest() {
     features_.InitAndEnableFeature(
         features::kBlockInsecurePrivateNetworkRequests);
   }
@@ -283,7 +283,7 @@ class ChromePrivateNetworkRequestWithFeatureEnabledBrowserTest
 
 // This test verifies that private network requests that are blocked do not
 // result in a WebFeature being use-counted.
-IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkRequestWithFeatureEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestWithFeatureEnabledBrowserTest,
                        DoesNotRecordAddressSpaceFeatureForBlockedRequests) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();

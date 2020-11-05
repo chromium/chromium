@@ -89,9 +89,5 @@ per-file chrome_back_forward_cache_browsertest.cc=file://content/OWNERS
 per-file chrome_cross_origin_opener_policy_browsertest.cc=file://content/OWNERS
 per-file chrome_cross_origin_opener_policy_browsertest.cc=arthursonzogni@chromium.org
 
-# CORS-RFC1918
-per-file chrome_private_network_request_browsertest.cc=file://content/OWNERS
-per-file chrome_private_network_request_browsertest.cc=titouan@chromium.org
-
 # COMPONENT: UI>Browser
 # TEAM: chromium-reviews@chromium.org
