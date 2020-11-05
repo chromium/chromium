@@ -256,22 +256,13 @@ TEST_P(TabStripTest, GetModelCount) {
 TEST_P(TabStripTest, AccessibilityEvents) {
   views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
 
-  // When adding tabs, SetSelection() is called after AddTabAt(), as
-  // otherwise the index would not be meaningful.
-  tab_strip_->AddTabAt(0, TabRendererData(), false);
-  tab_strip_->AddTabAt(1, TabRendererData(), true);
-  ui::ListSelectionModel selection;
-  selection.SetSelectedIndex(1);
-  tab_strip_->SetSelection(selection);
+  controller_->AddTab(0, false);
+  controller_->AddTab(1, true);
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kSelectionAdd));
   EXPECT_EQ(1, ax_counter.GetCount(ax::mojom::Event::kSelection));
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kSelectionRemove));
 
-  // When removing tabs, SetSelection() is called before RemoveTabAt(), as
-  // otherwise the index would not be meaningful.
-  selection.SetSelectedIndex(0);
-  tab_strip_->SetSelection(selection);
-  tab_strip_->RemoveTabAt(nullptr, 1, true);
+  controller_->RemoveTab(1);
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kSelectionAdd));
   EXPECT_EQ(2, ax_counter.GetCount(ax::mojom::Event::kSelection));
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kSelectionRemove));
@@ -285,17 +276,17 @@ TEST_P(TabStripTest, AccessibilityEvents) {
 
 TEST_P(TabStripTest, AccessibilityData) {
   // When adding tabs, indexes should be set.
-  tab_strip_->AddTabAt(0, TabRendererData(), false);
-  tab_strip_->AddTabAt(1, TabRendererData(), true);
+  controller_->AddTab(0, false);
+  controller_->AddTab(1, true);
   VerifyTabIndices();
 
-  tab_strip_->AddTabAt(0, TabRendererData(), false);
+  controller_->AddTab(0, false);
   VerifyTabIndices();
 
-  tab_strip_->RemoveTabAt(nullptr, 1, false);
+  controller_->RemoveTab(1);
   VerifyTabIndices();
 
-  tab_strip_->MoveTab(1, 0, TabRendererData());
+  controller_->MoveTab(1, 0);
   VerifyTabIndices();
 }
 
@@ -309,7 +300,7 @@ TEST_P(TabStripTest, tab_count) {
 
 TEST_P(TabStripTest, AddTabAt) {
   TestTabStripObserver observer(tab_strip_);
-  tab_strip_->AddTabAt(0, TabRendererData(), false);
+  controller_->AddTab(0, false);
   ASSERT_EQ(1, tab_strip_->tab_count());
   EXPECT_EQ(0, observer.last_tab_added());
   Tab* tab = tab_strip_->tab_at(0);
@@ -318,13 +309,13 @@ TEST_P(TabStripTest, AddTabAt) {
 
 TEST_P(TabStripTest, MoveTab) {
   TestTabStripObserver observer(tab_strip_);
-  tab_strip_->AddTabAt(0, TabRendererData(), false);
-  tab_strip_->AddTabAt(1, TabRendererData(), false);
-  tab_strip_->AddTabAt(2, TabRendererData(), false);
+  controller_->AddTab(0, false);
+  controller_->AddTab(1, false);
+  controller_->AddTab(2, false);
   ASSERT_EQ(3, tab_strip_->tab_count());
   EXPECT_EQ(2, observer.last_tab_added());
   Tab* tab = tab_strip_->tab_at(0);
-  tab_strip_->MoveTab(0, 1, TabRendererData());
+  controller_->MoveTab(0, 1);
   EXPECT_EQ(0, observer.last_tab_moved_from());
   EXPECT_EQ(1, observer.last_tab_moved_to());
   EXPECT_EQ(tab, tab_strip_->tab_at(1));
@@ -361,13 +352,13 @@ TEST_P(TabStripTest, TabViewOrder) {
   controller_->AddTab(2, false);
   EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
 
-  tab_strip_->MoveTab(0, 1, TabRendererData());
+  controller_->MoveTab(0, 1);
   EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-  tab_strip_->MoveTab(1, 2, TabRendererData());
+  controller_->MoveTab(1, 2);
   EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-  tab_strip_->MoveTab(1, 0, TabRendererData());
+  controller_->MoveTab(1, 0);
   EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-  tab_strip_->MoveTab(0, 2, TabRendererData());
+  controller_->MoveTab(0, 2);
   EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
 }
 
@@ -1085,7 +1076,7 @@ TEST_P(TabStripTest, EventsOnClosingTab) {
 TEST_P(TabStripTest, GroupHeaderBasics) {
   tab_strip_parent_->SetBounds(0, 0, 1000, 100);
   bounds_animator()->SetAnimationDuration(base::TimeDelta());
-  tab_strip_->AddTabAt(0, TabRendererData(), false);
+  controller_->AddTab(0, false);
 
   Tab* tab = tab_strip_->tab_at(0);
   const int first_slot_x = tab->x();
@@ -1108,8 +1099,8 @@ TEST_P(TabStripTest, GroupHeaderBetweenTabs) {
   tab_strip_parent_->SetBounds(0, 0, 1000, 100);
   bounds_animator()->SetAnimationDuration(base::TimeDelta());
 
-  tab_strip_->AddTabAt(0, TabRendererData(), false);
-  tab_strip_->AddTabAt(1, TabRendererData(), false);
+  controller_->AddTab(0, false);
+  controller_->AddTab(1, false);
 
   const int second_slot_x = tab_strip_->tab_at(1)->x();
 
@@ -1124,7 +1115,7 @@ TEST_P(TabStripTest, GroupHeaderBetweenTabs) {
 TEST_P(TabStripTest, GroupHeaderMovesRightWithTab) {
   tab_strip_parent_->SetBounds(0, 0, 2000, 100);
   for (int i = 0; i < 4; i++)
-    tab_strip_->AddTabAt(i, TabRendererData(), false);
+    controller_->AddTab(i, false);
   base::Optional<tab_groups::TabGroupId> group =
       tab_groups::TabGroupId::GenerateNew();
   controller_->MoveTabIntoGroup(1, group);
@@ -1142,7 +1133,7 @@ TEST_P(TabStripTest, GroupHeaderMovesRightWithTab) {
 TEST_P(TabStripTest, GroupHeaderMovesLeftWithTab) {
   tab_strip_parent_->SetBounds(0, 0, 2000, 100);
   for (int i = 0; i < 4; i++)
-    tab_strip_->AddTabAt(i, TabRendererData(), false);
+    controller_->AddTab(i, false);
   base::Optional<tab_groups::TabGroupId> group =
       tab_groups::TabGroupId::GenerateNew();
   controller_->MoveTabIntoGroup(2, group);
@@ -1160,7 +1151,7 @@ TEST_P(TabStripTest, GroupHeaderMovesLeftWithTab) {
 TEST_P(TabStripTest, GroupHeaderDoesntMoveReorderingTabsInGroup) {
   tab_strip_parent_->SetBounds(0, 0, 2000, 100);
   for (int i = 0; i < 4; i++)
-    tab_strip_->AddTabAt(i, TabRendererData(), false);
+    controller_->AddTab(i, false);
   base::Optional<tab_groups::TabGroupId> group =
       tab_groups::TabGroupId::GenerateNew();
   controller_->MoveTabIntoGroup(1, group);
@@ -1186,7 +1177,7 @@ TEST_P(TabStripTest, GroupHeaderDoesntMoveReorderingTabsInGroup) {
 TEST_P(TabStripTest, GroupHeaderMovesOnRegrouping) {
   tab_strip_parent_->SetBounds(0, 0, 2000, 100);
   for (int i = 0; i < 3; i++)
-    tab_strip_->AddTabAt(i, TabRendererData(), false);
+    controller_->AddTab(i, false);
   tab_groups::TabGroupId group0 = tab_groups::TabGroupId::GenerateNew();
   controller_->MoveTabIntoGroup(0, group0);
   tab_groups::TabGroupId group1 = tab_groups::TabGroupId::GenerateNew();
@@ -1215,7 +1206,7 @@ TEST_P(TabStripTest, GroupHeaderMovesOnRegrouping) {
 TEST_P(TabStripTest, UngroupedTabMovesLeftOfHeader) {
   tab_strip_parent_->SetBounds(0, 0, 2000, 100);
   for (int i = 0; i < 2; i++)
-    tab_strip_->AddTabAt(i, TabRendererData(), false);
+    controller_->AddTab(i, false);
   tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
   controller_->MoveTabIntoGroup(0, group);
   CompleteAnimationAndLayout();
@@ -1234,9 +1225,9 @@ TEST_P(TabStripTest, DiscontinuousGroup) {
   tab_strip_parent_->SetBounds(0, 0, 1000, 100);
   bounds_animator()->SetAnimationDuration(base::TimeDelta());
 
-  tab_strip_->AddTabAt(0, TabRendererData(), false);
-  tab_strip_->AddTabAt(1, TabRendererData(), false);
-  tab_strip_->AddTabAt(2, TabRendererData(), false);
+  controller_->AddTab(0, false);
+  controller_->AddTab(1, false);
+  controller_->AddTab(2, false);
 
   const int first_slot_x = tab_strip_->tab_at(0)->x();
 
@@ -1251,8 +1242,8 @@ TEST_P(TabStripTest, DiscontinuousGroup) {
 }
 
 TEST_P(TabStripTest, DeleteTabGroupViewsWhenEmpty) {
-  tab_strip_->AddTabAt(0, TabRendererData(), false);
-  tab_strip_->AddTabAt(1, TabRendererData(), false);
+  controller_->AddTab(0, false);
+  controller_->AddTab(1, false);
   base::Optional<tab_groups::TabGroupId> group =
       tab_groups::TabGroupId::GenerateNew();
   controller_->MoveTabIntoGroup(0, group);
@@ -1323,7 +1314,7 @@ TEST_P(TabStripTest, GroupHighlightBasics) {
 TEST_P(TabStripTest, ChangingLayoutTypeResizesTabs) {
   tab_strip_parent_->SetBounds(0, 0, 1000, 100);
 
-  tab_strip_->AddTabAt(0, TabRendererData(), false);
+  controller_->AddTab(0, false);
   Tab* tab = tab_strip_->tab_at(0);
   const int initial_height = tab->height();
 
