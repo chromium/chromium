@@ -15,6 +15,7 @@ include_rules = [
     "+base/metrics",
     "+base/notreached.h",
     "+base/optional.h",
+    "+base/sequenced_task_runner.h",
     "+base/single_thread_task_runner.h",
     "+base/strings",
     "+base/synchronization/lock.h",

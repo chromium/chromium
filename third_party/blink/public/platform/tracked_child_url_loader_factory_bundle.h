@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_LOADER_TRACKED_CHILD_URL_LOADER_FACTORY_BUNDLE_H_
-#define CONTENT_RENDERER_LOADER_TRACKED_CHILD_URL_LOADER_FACTORY_BUNDLE_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_TRACKED_CHILD_URL_LOADER_FACTORY_BUNDLE_H_
+#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_TRACKED_CHILD_URL_LOADER_FACTORY_BUNDLE_H_
 
 #include <memory>
 #include <unordered_map>
 #include <utility>
 
 #include "base/sequenced_task_runner.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
+#include "third_party/blink/public/platform/web_common.h"
 
-namespace content {
+namespace blink {
 
 class HostChildURLLoaderFactoryBundle;
 
 // Holds the internal state of a |TrackedChildURLLoaderFactoryBundle| in a form
 // that is safe to pass across sequences.
-class CONTENT_EXPORT TrackedChildPendingURLLoaderFactoryBundle
-    : public blink::ChildPendingURLLoaderFactoryBundle {
+class BLINK_PLATFORM_EXPORT TrackedChildPendingURLLoaderFactoryBundle
+    : public ChildPendingURLLoaderFactoryBundle {
  public:
   using HostPtrAndTaskRunner =
       std::pair<base::WeakPtr<HostChildURLLoaderFactoryBundle>,
@@ -48,7 +48,7 @@ class CONTENT_EXPORT TrackedChildPendingURLLoaderFactoryBundle
   }
 
  protected:
-  // blink::ChildPendingURLLoaderFactoryBundle overrides.
+  // ChildPendingURLLoaderFactoryBundle overrides.
   scoped_refptr<network::SharedURLLoaderFactory> CreateFactory() override;
 
   std::unique_ptr<HostPtrAndTaskRunner> main_thread_host_bundle_;
@@ -56,7 +56,7 @@ class CONTENT_EXPORT TrackedChildPendingURLLoaderFactoryBundle
   DISALLOW_COPY_AND_ASSIGN(TrackedChildPendingURLLoaderFactoryBundle);
 };
 
-// This class extends |blink::ChildURLLoaderFactoryBundle| to support a
+// This class extends |ChildURLLoaderFactoryBundle| to support a
 // host/observer tracking logic. There will be a single
 // |HostChildURLLoaderFactoryBundle| owned by |RenderFrameImpl| which lives on
 // the main thread, and multiple |TrackedChildURLLoaderFactoryBundle| on the
@@ -65,8 +65,8 @@ class CONTENT_EXPORT TrackedChildPendingURLLoaderFactoryBundle
 // be used to create a tracked bundle to the original host bundle. These two
 // classes are required to bring bundles back online in the event of Network
 // Service crash.
-class CONTENT_EXPORT TrackedChildURLLoaderFactoryBundle
-    : public blink::ChildURLLoaderFactoryBundle,
+class BLINK_PLATFORM_EXPORT TrackedChildURLLoaderFactoryBundle
+    : public ChildURLLoaderFactoryBundle,
       public base::SupportsWeakPtr<TrackedChildURLLoaderFactoryBundle> {
  public:
   using HostPtrAndTaskRunner =
@@ -78,7 +78,7 @@ class CONTENT_EXPORT TrackedChildURLLoaderFactoryBundle
       std::unique_ptr<TrackedChildPendingURLLoaderFactoryBundle>
           pending_factories);
 
-  // blink::ChildURLLoaderFactoryBundle overrides.
+  // ChildURLLoaderFactoryBundle overrides.
   // Returns |std::unique_ptr<TrackedChildPendingURLLoaderFactoryBundle>|.
   std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override;
 
@@ -110,8 +110,8 @@ class CONTENT_EXPORT TrackedChildURLLoaderFactoryBundle
 // methods should be invoked on the main thread or through PostTask. See
 // comments in |TrackedChildURLLoaderFactoryBundle| for details about the
 // tracking logic.
-class CONTENT_EXPORT HostChildURLLoaderFactoryBundle
-    : public blink::ChildURLLoaderFactoryBundle,
+class BLINK_PLATFORM_EXPORT HostChildURLLoaderFactoryBundle
+    : public ChildURLLoaderFactoryBundle,
       public base::SupportsWeakPtr<HostChildURLLoaderFactoryBundle> {
  public:
   using ObserverPtrAndTaskRunner =
@@ -124,7 +124,7 @@ class CONTENT_EXPORT HostChildURLLoaderFactoryBundle
   explicit HostChildURLLoaderFactoryBundle(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
-  // blink::ChildURLLoaderFactoryBundle overrides.
+  // ChildURLLoaderFactoryBundle overrides.
   // Returns |std::unique_ptr<TrackedChildPendingURLLoaderFactoryBundle>|.
   std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override;
   std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -168,6 +168,6 @@ class CONTENT_EXPORT HostChildURLLoaderFactoryBundle
   DISALLOW_COPY_AND_ASSIGN(HostChildURLLoaderFactoryBundle);
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_RENDERER_LOADER_TRACKED_CHILD_URL_LOADER_FACTORY_BUNDLE_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_TRACKED_CHILD_URL_LOADER_FACTORY_BUNDLE_H_

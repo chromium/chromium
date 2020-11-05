@@ -97,7 +97,6 @@
 #include "content/renderer/internal_document_state_data.h"
 #include "content/renderer/loader/navigation_body_loader.h"
 #include "content/renderer/loader/resource_dispatcher.h"
-#include "content/renderer/loader/tracked_child_url_loader_factory_bundle.h"
 #include "content/renderer/loader/web_url_loader_impl.h"
 #include "content/renderer/loader/web_worker_fetch_context_impl.h"
 #include "content/renderer/media/media_permission_dispatcher.h"
@@ -167,6 +166,7 @@
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
+#include "third_party/blink/public/platform/tracked_child_url_loader_factory_bundle.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/weak_wrapper_resource_load_info_notifier.h"
 #include "third_party/blink/public/platform/web_data.h"
@@ -3652,7 +3652,8 @@ void RenderFrameImpl::UpdateSubresourceLoaderFactories(
     loader_factories_ = GetLoaderFactoryBundleFallback();
 
   if (loader_factories_->IsHostChildURLLoaderFactoryBundle()) {
-    static_cast<HostChildURLLoaderFactoryBundle*>(loader_factories_.get())
+    static_cast<blink::HostChildURLLoaderFactoryBundle*>(
+        loader_factories_.get())
         ->UpdateThisAndAllClones(std::move(subresource_loader_factories));
   } else {
 #if DCHECK_IS_ON()
@@ -5855,9 +5856,9 @@ RenderFrameImpl::GetLoaderFactoryBundleFromCreator() {
       frame_->Parent() ? frame_->Parent() : frame_->Opener());
   if (creator) {
     auto bundle_info = base::WrapUnique(
-        static_cast<TrackedChildPendingURLLoaderFactoryBundle*>(
+        static_cast<blink::TrackedChildPendingURLLoaderFactoryBundle*>(
             creator->GetLoaderFactoryBundle()->Clone().release()));
-    return base::MakeRefCounted<TrackedChildURLLoaderFactoryBundle>(
+    return base::MakeRefCounted<blink::TrackedChildURLLoaderFactoryBundle>(
         std::move(bundle_info));
   }
   return nullptr;
@@ -5871,7 +5872,7 @@ RenderFrameImpl::CreateLoaderFactoryBundle(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory) {
   scoped_refptr<blink::ChildURLLoaderFactoryBundle> loader_factories =
-      base::MakeRefCounted<HostChildURLLoaderFactoryBundle>(
+      base::MakeRefCounted<blink::HostChildURLLoaderFactoryBundle>(
           GetTaskRunner(blink::TaskType::kInternalLoading));
 
   // CreateDefaultURLLoaderFactoryBundle can't be called if (as in some tests)

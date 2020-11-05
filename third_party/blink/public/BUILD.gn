@@ -155,6 +155,7 @@ source_set("blink_headers") {
     "platform/scheduler/web_widget_scheduler.h",
     "platform/sync_load_response.h",
     "platform/task_type.h",
+    "platform/tracked_child_url_loader_factory_bundle.h",
     "platform/url_conversion.h",
     "platform/user_metrics_action.h",
     "platform/weak_wrapper_resource_load_info_notifier.h",

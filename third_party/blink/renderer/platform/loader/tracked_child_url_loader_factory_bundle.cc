@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/loader/tracked_child_url_loader_factory_bundle.h"
+#include "third_party/blink/public/platform/tracked_child_url_loader_factory_bundle.h"
 
 #include <utility>
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "content/public/renderer/render_thread.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
-namespace content {
+namespace blink {
 
 TrackedChildPendingURLLoaderFactoryBundle::
     TrackedChildPendingURLLoaderFactoryBundle() = default;
@@ -81,7 +81,7 @@ TrackedChildURLLoaderFactoryBundle::~TrackedChildURLLoaderFactoryBundle() {
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
 TrackedChildURLLoaderFactoryBundle::Clone() {
   auto pending_factories =
-      base::WrapUnique(static_cast<blink::ChildPendingURLLoaderFactoryBundle*>(
+      base::WrapUnique(static_cast<ChildPendingURLLoaderFactoryBundle*>(
           ChildURLLoaderFactoryBundle::Clone().release()));
 
   DCHECK(main_thread_host_bundle_);
@@ -129,7 +129,7 @@ void TrackedChildURLLoaderFactoryBundle::RemoveObserverOnMainThread() {
 void TrackedChildURLLoaderFactoryBundle::OnUpdate(
     std::unique_ptr<network::PendingSharedURLLoaderFactory> info) {
   Update(base::WrapUnique(
-      static_cast<blink::ChildPendingURLLoaderFactoryBundle*>(info.release())));
+      static_cast<ChildPendingURLLoaderFactoryBundle*>(info.release())));
 }
 
 // -----------------------------------------------------------------------------
@@ -138,8 +138,8 @@ HostChildURLLoaderFactoryBundle::HostChildURLLoaderFactoryBundle(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : observer_list_(std::make_unique<ObserverList>()),
       task_runner_(std::move(task_runner)) {
-  DCHECK(RenderThread::Get()) << "HostChildURLLoaderFactoryBundle should live "
-                                 "on the main renderer thread";
+  DCHECK(IsMainThread()) << "HostChildURLLoaderFactoryBundle should live "
+                            "on the main renderer thread";
 }
 
 HostChildURLLoaderFactoryBundle::~HostChildURLLoaderFactoryBundle() = default;
@@ -147,7 +147,7 @@ HostChildURLLoaderFactoryBundle::~HostChildURLLoaderFactoryBundle() = default;
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
 HostChildURLLoaderFactoryBundle::Clone() {
   auto pending_factories =
-      base::WrapUnique(static_cast<blink::ChildPendingURLLoaderFactoryBundle*>(
+      base::WrapUnique(static_cast<ChildPendingURLLoaderFactoryBundle*>(
           ChildURLLoaderFactoryBundle::Clone().release()));
 
   DCHECK(base::SequencedTaskRunnerHandle::IsSet());
@@ -169,7 +169,7 @@ HostChildURLLoaderFactoryBundle::Clone() {
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
 HostChildURLLoaderFactoryBundle::CloneWithoutAppCacheFactory() {
   auto pending_factories =
-      base::WrapUnique(static_cast<blink::ChildPendingURLLoaderFactoryBundle*>(
+      base::WrapUnique(static_cast<ChildPendingURLLoaderFactoryBundle*>(
           ChildURLLoaderFactoryBundle::CloneWithoutAppCacheFactory()
               .release()));
 
@@ -191,7 +191,7 @@ HostChildURLLoaderFactoryBundle::CloneWithoutAppCacheFactory() {
 
 void HostChildURLLoaderFactoryBundle::UpdateThisAndAllClones(
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle> info) {
-  DCHECK(RenderThread::Get()) << "Should run on the main renderer thread";
+  DCHECK(IsMainThread()) << "Should run on the main renderer thread";
   DCHECK(observer_list_);
 
   auto partial_bundle = base::MakeRefCounted<ChildURLLoaderFactoryBundle>();
@@ -214,14 +214,14 @@ bool HostChildURLLoaderFactoryBundle::IsHostChildURLLoaderFactoryBundle()
 void HostChildURLLoaderFactoryBundle::AddObserver(
     TrackedChildURLLoaderFactoryBundle* observer,
     std::unique_ptr<ObserverPtrAndTaskRunner> observer_info) {
-  DCHECK(RenderThread::Get()) << "Should run in the main renderer thread";
+  DCHECK(IsMainThread()) << "Should run in the main renderer thread";
   DCHECK(observer_list_);
   (*observer_list_)[observer] = std::move(observer_info);
 }
 
 void HostChildURLLoaderFactoryBundle::RemoveObserver(
     TrackedChildURLLoaderFactoryBundle* observer) {
-  DCHECK(RenderThread::Get()) << "Should run in the main renderer thread";
+  DCHECK(IsMainThread()) << "Should run in the main renderer thread";
   DCHECK(observer_list_);
   observer_list_->erase(observer);
 }
@@ -235,4 +235,4 @@ void HostChildURLLoaderFactoryBundle::NotifyUpdateOnMainOrWorkerThread(
                      observer_bundle->first, std::move(update_info)));
 }
 
-}  // namespace content
+}  // namespace blink
