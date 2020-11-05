@@ -311,13 +311,15 @@ DOMHighResTimeStamp PerformanceResourceTiming::secureConnectionStart() const {
     return fetchStart();
 
   ResourceLoadTiming* timing = GetResourceLoadTiming();
-  if (!timing || timing->SslStart().is_null()) {
-    // TODO(yoav): add DCHECK or use counter to make sure this never happens.
-    return 0.0;
+  if (timing && !timing->SslStart().is_null()) {
+    return Performance::MonotonicTimeToDOMHighResTimeStamp(
+        time_origin_, timing->SslStart(), allow_negative_value_);
   }
-
-  return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      time_origin_, timing->SslStart(), allow_negative_value_);
+  // We would add a DCHECK(false) here but this case may happen, for instance on
+  // SXG where the behavior has not yet been properly defined. See
+  // https://github.com/w3c/navigation-timing/issues/107. Therefore, we return
+  // fetchStart() for cases where SslStart() is not provided.
+  return fetchStart();
 }
 
 DOMHighResTimeStamp PerformanceResourceTiming::requestStart() const {
