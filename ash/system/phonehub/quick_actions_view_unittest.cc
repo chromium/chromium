@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/views/test/button_test_api.h"
 
 namespace ash {
 
@@ -83,15 +84,15 @@ TEST_F(QuickActionsViewTest, EnableHotspotToggle) {
       TetherController::Status::kConnectionAvailable);
 
   // Simulate a toggle press. Status should be connecting.
-  actions_view()->enable_hotspot_for_testing()->ButtonPressed(nullptr,
-                                                              DummyEvent());
+  views::test::ButtonTestApi test_api(
+      actions_view()->enable_hotspot_for_testing()->icon_button());
+  test_api.NotifyClick(DummyEvent());
   EXPECT_EQ(TetherController::Status::kConnecting,
             tether_controller()->GetStatus());
 
   tether_controller()->SetStatus(TetherController::Status::kConnected);
-  // Toggle again will change the state.
-  actions_view()->enable_hotspot_for_testing()->ButtonPressed(nullptr,
-                                                              DummyEvent());
+  // Toggling again will change the state.
+  test_api.NotifyClick(DummyEvent());
   EXPECT_EQ(TetherController::Status::kConnecting,
             tether_controller()->GetStatus());
 }
@@ -100,24 +101,23 @@ TEST_F(QuickActionsViewTest, SilencePhoneToggle) {
   // Initially, silence phone is not enabled.
   EXPECT_FALSE(dnd_controller()->IsDndEnabled());
 
-  // Toggle the button will enable the feature.
-  actions_view()->silence_phone_for_testing()->ButtonPressed(nullptr,
-                                                             DummyEvent());
+  // Toggling the button will enable the feature.
+  views::test::ButtonTestApi test_api(
+      actions_view()->silence_phone_for_testing()->icon_button());
+  test_api.NotifyClick(DummyEvent());
   EXPECT_TRUE(dnd_controller()->IsDndEnabled());
 
   // Locate phone should be disabled when do not disturb is enabled.
   EXPECT_FALSE(actions_view()->locate_phone_for_testing()->GetEnabled());
 
-  // Togge again to disable.
-  actions_view()->silence_phone_for_testing()->ButtonPressed(nullptr,
-                                                             DummyEvent());
+  // Toggle again to disable.
+  test_api.NotifyClick(DummyEvent());
   EXPECT_FALSE(dnd_controller()->IsDndEnabled());
   EXPECT_TRUE(actions_view()->locate_phone_for_testing()->GetEnabled());
 
   // Test the error state.
   dnd_controller()->SetShouldRequestFail(true);
-  actions_view()->silence_phone_for_testing()->ButtonPressed(nullptr,
-                                                             DummyEvent());
+  test_api.NotifyClick(DummyEvent());
 
   // In error state, do not disturb is disabled but the button should still be
   // on after being pressed.
@@ -136,22 +136,21 @@ TEST_F(QuickActionsViewTest, LocatePhoneToggle) {
   EXPECT_EQ(FindMyDeviceController::Status::kRingingOff,
             find_my_device_controller()->GetPhoneRingingStatus());
 
-  // Toggle the button will enable the feature.
-  actions_view()->locate_phone_for_testing()->ButtonPressed(nullptr,
-                                                            DummyEvent());
+  // Toggling the button will enable the feature.
+  views::test::ButtonTestApi test_api(
+      actions_view()->locate_phone_for_testing()->icon_button());
+  test_api.NotifyClick(DummyEvent());
   EXPECT_EQ(FindMyDeviceController::Status::kRingingOn,
             find_my_device_controller()->GetPhoneRingingStatus());
 
-  // Togge again to disable.
-  actions_view()->locate_phone_for_testing()->ButtonPressed(nullptr,
-                                                            DummyEvent());
+  // Toggle again to disable.
+  test_api.NotifyClick(DummyEvent());
   EXPECT_EQ(FindMyDeviceController::Status::kRingingOff,
             find_my_device_controller()->GetPhoneRingingStatus());
 
   // Test the error state.
   find_my_device_controller()->SetShouldRequestFail(true);
-  actions_view()->locate_phone_for_testing()->ButtonPressed(nullptr,
-                                                            DummyEvent());
+  test_api.NotifyClick(DummyEvent());
 
   // In error state, find my device is disabled but the button should still be
   // on after being pressed.

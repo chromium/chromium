@@ -26,14 +26,10 @@ namespace ash {
 class UnifiedMediaControlsController;
 
 // Media controls view displayed in quick settings.
-class ASH_EXPORT UnifiedMediaControlsView : public views::Button,
-                                            public views::ButtonListener {
+class ASH_EXPORT UnifiedMediaControlsView : public views::Button {
  public:
   explicit UnifiedMediaControlsView(UnifiedMediaControlsController* controller);
   ~UnifiedMediaControlsView() override = default;
-
-  // ButtonListener implementation.
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   void SetIsPlaying(bool playing);
   void SetArtwork(base::Optional<gfx::ImageSkia> artwork);
@@ -57,7 +53,7 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button,
 
   class MediaActionButton : public views::ImageButton {
    public:
-    MediaActionButton(views::ButtonListener* listener,
+    MediaActionButton(UnifiedMediaControlsController* controller,
                       media_session::mojom::MediaSessionAction action,
                       const base::string16& accessible_name);
     ~MediaActionButton() override = default;

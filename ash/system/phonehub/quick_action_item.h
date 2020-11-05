@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/unified/feature_pod_button.h"
-#include "ui/views/controls/button/button.h"
 
 namespace views {
 class Label;
@@ -16,8 +15,7 @@ class Label;
 namespace ash {
 
 // A toggle button with labels used in the quick action view.
-class ASH_EXPORT QuickActionItem : public views::View,
-                                   public views::ButtonListener {
+class ASH_EXPORT QuickActionItem : public views::View {
  public:
   class Delegate {
    public:
@@ -65,9 +63,6 @@ class ASH_EXPORT QuickActionItem : public views::View,
   // clicked and the labels are greyed out.
   void SetEnabled(bool enabled);
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // views::View:
   bool HasFocus() const override;
   void RequestFocus() override;
@@ -76,8 +71,6 @@ class ASH_EXPORT QuickActionItem : public views::View,
   FeaturePodIconButton* icon_button() const { return icon_button_; }
 
  private:
-  Delegate* delegate_ = nullptr;
-
   // Owned by views hierarchy.
   FeaturePodIconButton* icon_button_ = nullptr;
   const gfx::VectorIcon& icon_on_;

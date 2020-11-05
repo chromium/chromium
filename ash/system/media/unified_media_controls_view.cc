@@ -94,10 +94,18 @@ const gfx::VectorIcon& GetVectorIconForMediaAction(MediaSessionAction action) {
 }  // namespace
 
 UnifiedMediaControlsView::MediaActionButton::MediaActionButton(
-    views::ButtonListener* listener,
+    UnifiedMediaControlsController* controller,
     MediaSessionAction action,
     const base::string16& accessible_name)
-    : views::ImageButton(listener) {
+    : views::ImageButton(base::BindRepeating(
+          // Handle dynamically-updated button tags without rebinding.
+          [](UnifiedMediaControlsController* controller,
+             MediaActionButton* button) {
+            controller->PerformAction(
+                media_message_center::GetActionFromButtonTag(*button));
+          },
+          controller,
+          this)) {
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   SetPreferredSize(kMediaButtonSize);
@@ -149,7 +157,13 @@ UnifiedMediaControlsView::MediaActionButton::CreateInkDropRipple() const {
 
 UnifiedMediaControlsView::UnifiedMediaControlsView(
     UnifiedMediaControlsController* controller)
-    : views::Button(this), controller_(controller) {
+    : views::Button(base::BindRepeating(
+          [](UnifiedMediaControlsView* view) {
+            if (!view->is_in_empty_state_)
+              view->controller_->OnMediaControlsViewClicked();
+          },
+          this)),
+      controller_(controller) {
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor));
@@ -218,34 +232,20 @@ UnifiedMediaControlsView::UnifiedMediaControlsView(
       kMediaButtonsPadding));
 
   button_row->AddChildView(std::make_unique<MediaActionButton>(
-      this, MediaSessionAction::kPreviousTrack,
+      controller_, MediaSessionAction::kPreviousTrack,
       l10n_util::GetStringUTF16(
           IDS_ASH_MEDIA_NOTIFICATION_ACTION_PREVIOUS_TRACK)));
 
   play_pause_button_ =
       button_row->AddChildView(std::make_unique<MediaActionButton>(
-          this, MediaSessionAction::kPause,
+          controller_, MediaSessionAction::kPause,
           l10n_util::GetStringUTF16(IDS_ASH_MEDIA_NOTIFICATION_ACTION_PAUSE)));
 
   button_row->AddChildView(std::make_unique<MediaActionButton>(
-      this, MediaSessionAction::kNextTrack,
+      controller_, MediaSessionAction::kNextTrack,
       l10n_util::GetStringUTF16(IDS_ASH_MEDIA_NOTIFICATION_ACTION_NEXT_TRACK)));
 
   button_row_ = AddChildView(std::move(button_row));
-}
-
-void UnifiedMediaControlsView::ButtonPressed(views::Button* sender,
-                                             const ui::Event& event) {
-  if (is_in_empty_state_)
-    return;
-
-  if (sender == this) {
-    controller_->OnMediaControlsViewClicked();
-    return;
-  }
-
-  controller_->PerformAction(
-      media_message_center::GetActionFromButtonTag(*sender));
 }
 
 void UnifiedMediaControlsView::SetIsPlaying(bool playing) {

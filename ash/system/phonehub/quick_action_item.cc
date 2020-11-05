@@ -38,7 +38,7 @@ QuickActionItem::QuickActionItem(Delegate* delegate,
                                  int label_id,
                                  const gfx::VectorIcon& icon_on,
                                  const gfx::VectorIcon& icon_off)
-    : delegate_(delegate), icon_on_(icon_on), icon_off_(icon_off) {
+    : icon_on_(icon_on), icon_off_(icon_off) {
   SetPreferredSize(kUnifiedFeaturePodSize);
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
@@ -46,8 +46,13 @@ QuickActionItem::QuickActionItem(Delegate* delegate,
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  icon_button_ = AddChildView(
-      std::make_unique<FeaturePodIconButton>(this, true /* is_togglable */));
+  icon_button_ = AddChildView(std::make_unique<FeaturePodIconButton>(
+      base::BindRepeating(
+          [](Delegate* delegate, QuickActionItem* item) {
+            delegate->OnButtonPressed(item->IsToggled());
+          },
+          delegate, this),
+      true /* is_togglable */));
 
   auto* label_view = AddChildView(std::make_unique<views::View>());
   label_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -132,11 +137,6 @@ void QuickActionItem::SetEnabled(bool enabled) {
         AshColorProvider::ContentLayerType::kTextColorPrimary));
     sub_label_->SetEnabledColor(sub_label_color_);
   }
-}
-
-void QuickActionItem::ButtonPressed(views::Button* sender,
-                                    const ui::Event& event) {
-  delegate_->OnButtonPressed(IsToggled());
 }
 
 bool QuickActionItem::HasFocus() const {
