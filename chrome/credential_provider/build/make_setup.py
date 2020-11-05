@@ -150,21 +150,31 @@ def main():
   # programs to the archive. If the files added to the archive are changed,
   # make sure to update the kFilenames array in setup_lib.cc.
 
-  # 7zip and copy commands don't have a "silent" mode, so redirecting stdout
-  # and stderr to nul.
-  with open(os.devnull) as nul_file:
-    os.chdir(args.root_build_path)
-    subprocess.check_call(d_cmd + ['*'], stdout=nul_file)
-    subprocess.check_call(u_cmd + ['gaia1_0.dll'], stdout=nul_file)
-    subprocess.check_call(u_cmd + ['gcp_setup.exe'], stdout=nul_file)
-    subprocess.check_call(u_cmd + ['gcp_eventlog_provider.dll'],
-        stdout=nul_file)
-    subprocess.check_call(u_cmd + ['gcpw_extension.exe'], stdout=nul_file)
-    # Move the executable into a subfolder as there needs to be only one
-    # executable in the parent folder.
-    subprocess.check_call(rn_cmd +
-        ['gcpw_extension.exe', os.path.join('extension', 'gcpw_extension.exe')],
-        stdout=nul_file)
+  try:
+    gcpw_log_file = 'gcpw_archive_log_file'
+    if os.path.exists(gcpw_log_file):
+      os.remove(gcpw_log_file)
+
+    # Redirecting output of 7zip and copy commands to a file and only printing
+    # if any of the subprocess commands fail.
+    with open(gcpw_log_file, "w+") as output_file:
+      os.chdir(args.root_build_path)
+      subprocess.check_call(d_cmd + ['*'], stdout=output_file)
+      subprocess.check_call(u_cmd + ['gaia1_0.dll'], stdout=output_file)
+      subprocess.check_call(u_cmd + ['gcp_setup.exe'], stdout=output_file)
+      subprocess.check_call(u_cmd + ['gcp_eventlog_provider.dll'],
+          stdout=output_file)
+      subprocess.check_call(u_cmd + ['gcpw_extension.exe'], stdout=output_file)
+      # Move the executable into a subfolder as there needs to be only one
+      # executable in the parent folder.
+      subprocess.check_call(rn_cmd +
+          ['gcpw_extension', os.path.join('extension', 'gcpw_extension.exe')],
+          stdout=output_file)
+  except subprocess.CalledProcessError as e:
+    print(e.output)
+    with open(gcpw_log_file, "r") as output_file:
+      print(output_file.read())
+    raise e
 
   # Combine the SFX module with the archive to make a self extracting
   # executable.
