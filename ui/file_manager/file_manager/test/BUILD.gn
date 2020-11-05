@@ -27,6 +27,7 @@ action("create_test_main") {
     "menu.js",
     "progress_center.js",
   ]
+  deps = [ "//ui/resources:webui_resources_grd" ]
   args = [ "--output=" + rebase_path(output, root_build_dir) ]
   outputs = [ output ]
 }
