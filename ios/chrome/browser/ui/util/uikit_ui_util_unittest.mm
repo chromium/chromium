@@ -49,11 +49,6 @@ TEST_F(UIKitUIUtilTest, UIViewControllerSupportedOrientationsTest) {
   EXPECT_EQ(expectedMask, [viewController supportedInterfaceOrientations]);
 }
 
-TEST_F(UIKitUIUtilTest, TestGetUiFont) {
-  EXPECT_TRUE(GetUIFont(FONT_HELVETICA, false, 15.0));
-  EXPECT_TRUE(GetUIFont(FONT_HELVETICA_NEUE, true, 15.0));
-}
-
 // Verifies that greyImage never returns retina-scale images.
 TEST_F(UIKitUIUtilTest, TestGreyImage) {
   // Create an image using the device's scale factor.

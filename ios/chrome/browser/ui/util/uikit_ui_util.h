@@ -13,8 +13,6 @@
 
 // UI Util containing functions that require UIKit.
 
-enum { FONT_HELVETICA, FONT_HELVETICA_NEUE, FONT_HELVETICA_NEUE_LIGHT };
-
 // Utility function to set the |element|'s accessibility label to the localized
 // message corresponding to |idsAccessibilityLabel| and its accessibility
 // identifier to |englishUiAutomationName|.
@@ -28,10 +26,6 @@ void SetA11yLabelAndUiAutomationName(
     NSObject<UIAccessibilityIdentification>* element,
     int idsAccessibilityLabel,
     NSString* englishUiAutomationName);
-
-// Returns a UIFont. |fontFace| is one of the defined enumerated values
-// to avoid spelling mistakes.
-UIFont* GetUIFont(int fontFace, bool isBold, CGFloat fontSize);
 
 // Sets dynamic font for the given |font| on iOS 11+ on the givel |label| or
 // |textField|. Use |maybe| versions to keep code short when dynamic types are

@@ -498,7 +498,7 @@ class OpenInControllerBridge
 
   UILabel* label = [[UILabel alloc] init];
   [label setTextColor:[UIColor whiteColor]];
-  [label setFont:GetUIFont(FONT_HELVETICA, true, kLabelTextSize)];
+  [label setFont:[UIFont fontWithName:@"Helvetica-Bold" size:kLabelTextSize]];
   [label setNumberOfLines:0];
   [label setShadowColor:[UIColor blackColor]];
   [label setShadowOffset:CGSizeMake(0.0, 1.0)];

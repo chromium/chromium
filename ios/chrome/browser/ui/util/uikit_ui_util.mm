@@ -57,28 +57,6 @@ void SetA11yLabelAndUiAutomationName(
   [element setAccessibilityIdentifier:englishUiAutomationName];
 }
 
-UIFont* GetUIFont(int fontFace, bool isBold, CGFloat fontSize) {
-  NSString* fontFaceName;
-  switch (fontFace) {
-    case FONT_HELVETICA:
-      fontFaceName = isBold ? @"Helvetica-Bold" : @"Helvetica";
-      break;
-    case FONT_HELVETICA_NEUE:
-      fontFaceName = isBold ? @"HelveticaNeue-Bold" : @"HelveticaNeue";
-      break;
-    case FONT_HELVETICA_NEUE_LIGHT:
-      // FONT_HELVETICA_NEUE_LIGHT does not support Bold.
-      DCHECK(!isBold);
-      fontFaceName = @"HelveticaNeue-Light";
-      break;
-    default:
-      NOTREACHED();
-      fontFaceName = @"Helvetica";
-      break;
-  }
-  return [UIFont fontWithName:fontFaceName size:fontSize];
-}
-
 void SetUILabelScaledFont(UILabel* label, UIFont* font) {
   label.font = [[UIFontMetrics defaultMetrics] scaledFontForFont:font];
   label.adjustsFontForContentSizeCategory = YES;
