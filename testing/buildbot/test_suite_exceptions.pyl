@@ -2777,15 +2777,6 @@
       },
     },
   },
-  'views_unittests_x11': {
-    'modifications': {
-      'Linux Ozone Tester (X11)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.x11_views_unittests.filter',
-        ],
-      },
-    },
-  },
   'viz_unittests': {
     'modifications': {
       'android-inverse-fieldtrials-pie-x86-fyi-rel': {

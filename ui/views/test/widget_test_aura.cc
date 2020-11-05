@@ -126,24 +126,23 @@ gfx::Size WidgetTest::GetNativeWidgetMinimumContentSize(Widget* widget) {
   // be pushed to the window server when they change.
 #if !BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_WIN)
   return widget->GetNativeWindow()->delegate()->GetMinimumSize();
-#elif defined(USE_X11)
-  if (features::IsUsingOzonePlatform()) {
-    // TODO(https://crbug.com/1109114): this is effectively the same as the
-    // NOTREACHED in the #else section. Figure why that is there and fix for
-    // Ozone if needed.
-    NOTREACHED();
-    return gfx::Size();
-  }
+#elif defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if defined(USE_OZONE)
+  if (features::IsUsingOzonePlatform())
+    return widget->GetNativeWindow()->delegate()->GetMinimumSize();
+#endif  // USE_OZONE
+#if defined(USE_X11)
+  EXPECT_FALSE(features::IsUsingOzonePlatform());
   ui::SizeHints hints;
   ui::GetWmNormalHints(
       static_cast<x11::Window>(
           widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget()),
       &hints);
   return gfx::Size(hints.min_width, hints.min_height);
-#else
+#endif  // USE_X11
+#endif  // OS_LINUX && !OS_CHROMEOS
   NOTREACHED();
   return gfx::Size();
-#endif
 }
 
 // static

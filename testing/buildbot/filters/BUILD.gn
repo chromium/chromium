@@ -157,7 +157,6 @@ source_set("interactive_ui_tests_filters") {
 
 source_set("linux_ozone_views_unittests_filters") {
   data = [
-    "//testing/buildbot/filters/ozone-linux.x11_views_unittests.filter",
     "//testing/buildbot/filters/ozone-linux.wayland_views_unittests.filter",
   ]
 }
