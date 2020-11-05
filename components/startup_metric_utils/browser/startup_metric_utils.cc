@@ -144,12 +144,21 @@ base::Optional<uint32_t> GetHardFaultCountForCurrentProcess() {
   //       and threads running on the system. The initial guess suffices for
   //       ~100s of processes and ~1000s of threads.
   std::vector<uint8_t> buffer(32 * 1024);
-  for (size_t tries = 0; tries < 3; ++tries) {
+  constexpr int kMaxNumBufferResize = 2;
+  int num_buffer_resize = 0;
+  for (;;) {
     ULONG return_length = 0;
     const NTSTATUS status =
         query_sys_info(SystemProcessInformation, buffer.data(),
                        static_cast<ULONG>(buffer.size()), &return_length);
-    // Insufficient space in the buffer.
+
+    // NtQuerySystemInformation succeeded.
+    if (NT_SUCCESS(status)) {
+      DCHECK_LE(return_length, buffer.size());
+      break;
+    }
+
+    // NtQuerySystemInformation failed due to insufficient buffer length.
     if (return_length > buffer.size()) {
       // Abort if a large size is required for the buffer. It is undesirable to
       // fill a large buffer just to record histograms.
@@ -157,12 +166,19 @@ base::Optional<uint32_t> GetHardFaultCountForCurrentProcess() {
       if (return_length >= kMaxLength)
         return base::nullopt;
 
-      // Resize the buffer and retry.
-      buffer.resize(return_length);
-      continue;
+      // Resize the buffer and retry, if the buffer hasn't already been resized
+      // too many times.
+      if (num_buffer_resize < kMaxNumBufferResize) {
+        ++num_buffer_resize;
+        buffer.resize(return_length);
+        continue;
+      }
     }
-    if (NT_SUCCESS(status) && return_length <= buffer.size())
-      break;
+
+    // Abort if NtQuerySystemInformation failed for another reason than
+    // insufficient buffer length, or if the buffer was resized too many times.
+    DCHECK(return_length <= buffer.size() ||
+           num_buffer_resize >= kMaxNumBufferResize);
     return base::nullopt;
   }
 
