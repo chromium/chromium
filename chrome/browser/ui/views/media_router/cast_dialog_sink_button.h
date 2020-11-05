@@ -45,6 +45,8 @@ class CastDialogSinkButton : public HoverButton {
                            SetStatusLabelForAvailableSink);
   FRIEND_TEST_ALL_PREFIXES(CastDialogSinkButtonTest,
                            SetStatusLabelForSinkWithIssue);
+  FRIEND_TEST_ALL_PREFIXES(CastDialogSinkButtonTest,
+                           SetStatusLabelForDialSinks);
 
   void OnEnabledChanged();
 

@@ -980,6 +980,7 @@ UIMediaSink MediaRouterUI::ConvertToUISink(const MediaSinkWithCastModes& sink,
   ui_sink.friendly_name = GetSinkFriendlyName(sink.sink);
   ui_sink.icon_type = sink.sink.icon_type();
   ui_sink.cast_modes = sink.cast_modes;
+  ui_sink.provider = sink.sink.provider_id();
 
   if (route) {
     ui_sink.status_text = base::UTF8ToUTF16(route->description());

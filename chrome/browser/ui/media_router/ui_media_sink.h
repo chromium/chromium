@@ -8,6 +8,7 @@
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "components/media_router/common/issue.h"
+#include "components/media_router/common/media_route_provider_helper.h"
 #include "components/media_router/common/media_sink.h"
 #include "url/gurl.h"
 
@@ -56,6 +57,9 @@ struct UIMediaSink {
 
   // The icon to use for the sink.
   SinkIconType icon_type = SinkIconType::GENERIC;
+
+  // The provider of the sink.
+  MediaRouteProviderId provider = MediaRouteProviderId::UNKNOWN;
 
   // The current state of the media sink.
   UIMediaSinkState state = UIMediaSinkState::AVAILABLE;

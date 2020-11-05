@@ -10,6 +10,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/media_router/ui_media_sink.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_helper.h"
 #include "chrome/grit/generated_resources.h"
@@ -68,6 +70,10 @@ std::unique_ptr<views::View> CreatePrimaryIconForSink(const UIMediaSink& sink) {
     return CreateThrobber();
   }
   return CreatePrimaryIconView(CreateSinkIcon(sink.icon_type));
+}
+
+bool IsIncompatibleDialSink(const UIMediaSink& sink) {
+  return sink.provider == MediaRouteProviderId::DIAL && sink.cast_modes.empty();
 }
 
 base::string16 GetStatusTextForSink(const UIMediaSink& sink) {
@@ -153,8 +159,13 @@ void CastDialogSinkButton::OnEnabledChanged() {
         ->SetImage(CreateSinkIcon(sink_.icon_type));
   } else {
     SetTitleTextStyle(views::style::STYLE_DISABLED, background_color);
-    OverrideStatusText(
-        l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SOURCE_NOT_SUPPORTED));
+    if (IsIncompatibleDialSink(sink_)) {
+      OverrideStatusText(
+          l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_AVAILABLE_SPECIFIC_SITES));
+    } else {
+      OverrideStatusText(
+          l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SOURCE_NOT_SUPPORTED));
+    }
     static_cast<views::ImageView*>(icon_view())
         ->SetImage(CreateDisabledSinkIcon(sink_.icon_type));
   }

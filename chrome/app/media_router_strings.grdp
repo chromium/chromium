@@ -110,6 +110,9 @@
   <message name="IDS_MEDIA_ROUTER_SOURCE_NOT_SUPPORTED" desc="Text shown as the status of a Cast device that is not compatible with the selected Cast source (contents).">
     Source not supported
   </message>
+  <message name="IDS_MEDIA_ROUTER_AVAILABLE_SPECIFIC_SITES" desc="Text shown as the status of a Cast device that is not compatible with the selected website but is compatible with other video websites.">
+    Available for specific video sites
+  </message>
 
   <!-- File Dialog -->
   <message name="IDS_MEDIA_ROUTER_FILE_DIALOG_AUDIO_VIDEO_FILTER" desc="Label for the drop down menu in the file selection dialog to show only audio and
