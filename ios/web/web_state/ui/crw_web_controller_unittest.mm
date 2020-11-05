@@ -228,54 +228,6 @@ class CRWWebControllerTest : public WebTestWithWebController {
   NSURL* test_url_;
 };
 
-// Tests that AllowCertificateError is called with correct arguments if
-// WKWebView fails to load a page with bad SSL cert.
-TEST_F(CRWWebControllerTest, SslCertError) {
-  if (base::FeatureList::IsEnabled(web::features::kSSLCommittedInterstitials)) {
-    // |AllowCertificateError| isn't called in the committed interstitials flow
-    // for SSL errors.
-    return;
-  }
-
-  // Last arguments passed to AllowCertificateError must be in default state.
-  ASSERT_FALSE(GetWebClient()->last_cert_error_code());
-  ASSERT_FALSE(GetWebClient()->last_cert_error_ssl_info().is_valid());
-  ASSERT_FALSE(GetWebClient()->last_cert_error_ssl_info().cert_status);
-  ASSERT_FALSE(GetWebClient()->last_cert_error_request_url().is_valid());
-  ASSERT_TRUE(GetWebClient()->last_cert_error_overridable());
-
-  scoped_refptr<net::X509Certificate> cert =
-      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
-  ASSERT_TRUE(cert);
-  base::ScopedCFTypeRef<CFMutableArrayRef> chain(
-      net::x509_util::CreateSecCertificateArrayForX509Certificate(cert.get()));
-  ASSERT_TRUE(chain);
-
-  GURL url("https://chromium.test");
-  NSError* error =
-      [NSError errorWithDomain:NSURLErrorDomain
-                          code:NSURLErrorServerCertificateHasUnknownRoot
-                      userInfo:@{
-                        kNSErrorPeerCertificateChainKey :
-                            base::mac::CFToNSCast(chain.get()),
-                        kNSErrorFailingURLKey : net::NSURLWithGURL(url),
-                      }];
-  NSObject* navigation = [[NSObject alloc] init];
-  [navigation_delegate_ webView:mock_web_view_
-      didStartProvisionalNavigation:static_cast<WKNavigation*>(navigation)];
-  [navigation_delegate_ webView:mock_web_view_
-      didFailProvisionalNavigation:static_cast<WKNavigation*>(navigation)
-                         withError:error];
-
-  // Verify correctness of AllowCertificateError method call.
-  EXPECT_EQ(net::ERR_CERT_INVALID, GetWebClient()->last_cert_error_code());
-  EXPECT_TRUE(GetWebClient()->last_cert_error_ssl_info().is_valid());
-  EXPECT_EQ(net::CERT_STATUS_INVALID,
-            GetWebClient()->last_cert_error_ssl_info().cert_status);
-  EXPECT_EQ(url, GetWebClient()->last_cert_error_request_url());
-  EXPECT_FALSE(GetWebClient()->last_cert_error_overridable());
-}
-
 // Tests that when a committed but not-yet-finished navigation is cancelled,
 // the navigation item's ErrorRetryStateMachine is updated correctly.
 TEST_F(CRWWebControllerTest, CancelCommittedNavigation) {

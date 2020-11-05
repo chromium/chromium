@@ -136,16 +136,6 @@ void NewTabPageTabHelper::DidFinishNavigation(
   SetActive(IsNTPURL(web_state->GetLastCommittedURL()));
 }
 
-void NewTabPageTabHelper::DidChangeVisibleSecurityState(
-    web::WebState* web_state) {
-  if (base::FeatureList::IsEnabled(web::features::kSSLCommittedInterstitials))
-    return;
-  // This is the only callback we receive when loading a bad ssl page.
-  if (!IsNTPURL(web_state->GetVisibleURL())) {
-    SetActive(false);
-  }
-}
-
 void NewTabPageTabHelper::DidStartLoading(web::WebState* web_state) {
   // This is needed to avoid flashing the NTP when loading error pages.
   if (!IsNTPURL(web_state->GetVisibleURL())) {

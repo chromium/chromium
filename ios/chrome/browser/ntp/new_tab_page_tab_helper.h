@@ -58,7 +58,6 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
   void DidStopLoading(web::WebState* web_state) override;
-  void DidChangeVisibleSecurityState(web::WebState* web_state) override;
   void DidStartLoading(web::WebState* web_state) override;
 
   // Enable or disable the tab helper.

@@ -794,19 +794,10 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     DCHECK(web::GetWebClient()->IsAppSpecificURL(
         net::GURLWithNSURL(error.userInfo[NSURLErrorFailingURLErrorKey])));
   } else {
-    // Skip this check when committed interstitials enabled and let the cert
-    // error go through handleLoadError: instead. In this case, a generic
-    // net error page gets shown for cert errors.
-    if (web::IsWKWebViewSSLCertError(error) &&
-        !base::FeatureList::IsEnabled(
-            web::features::kSSLCommittedInterstitials)) {
-      [self handleSSLCertError:error forNavigation:navigation webView:webView];
-    } else {
-      [self handleLoadError:error
-              forNavigation:navigation
-                    webView:webView
-            provisionalLoad:YES];
-    }
+    [self handleLoadError:error
+            forNavigation:navigation
+                  webView:webView
+          provisionalLoad:YES];
   }
 
   self.webStateImpl->GetWebFramesManagerImpl().RemoveAllWebFrames();
@@ -826,8 +817,6 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   if (web::WKNavigationState::NONE !=
           [self.navigationStates stateForNavigation:navigation] &&
       !(context && web::IsWKWebViewSSLCertError(context->GetError()) &&
-        base::FeatureList::IsEnabled(
-            web::features::kSSLCommittedInterstitials) &&
         !base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage))) {
     [self.navigationStates removeNavigation:navigation];
   }
@@ -1258,9 +1247,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
 
   // If the legacy TLS interstitial is not enabled, don't cause errors. The
   // interstitial is also dependent on committed interstitials being enabled.
-  if (!base::FeatureList::IsEnabled(
-          web::features::kSSLCommittedInterstitials) ||
-      !base::FeatureList::IsEnabled(web::features::kIOSLegacyTLSInterstitial)) {
+  if (!base::FeatureList::IsEnabled(web::features::kIOSLegacyTLSInterstitial)) {
     decisionHandler(YES);
     return;
   }
@@ -2229,8 +2216,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   net::SSLInfo info;
   base::Optional<net::SSLInfo> ssl_info = base::nullopt;
 
-  if (web::IsWKWebViewSSLCertError(error) &&
-      base::FeatureList::IsEnabled(web::features::kSSLCommittedInterstitials)) {
+  if (web::IsWKWebViewSSLCertError(error)) {
     web::GetSSLInfoFromWKWebViewSSLCertError(error, &info);
     if (info.cert) {
       // Retrieve verification results from _certVerificationErrors cache to
@@ -2261,16 +2247,6 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
       }
     }
     ssl_info = base::make_optional<net::SSLInfo>(info);
-  } else if (web::IsWKWebViewSSLCertError(error) &&
-             !base::FeatureList::IsEnabled(
-                 web::features::kSSLCommittedInterstitials)) {
-    // This could happen only if certificate is absent or could not be parsed.
-    error = web::NetErrorFromError(error, net::ERR_SSL_SERVER_CERT_BAD_FORMAT);
-#if defined(DEBUG)
-    net::SSLInfo info;
-    web::GetSSLInfoFromWKWebViewSSLCertError(error, &info);
-    CHECK(!error.cert);
-#endif
   }
   NSString* failingURLString =
       error.userInfo[NSURLErrorFailingURLStringErrorKey];

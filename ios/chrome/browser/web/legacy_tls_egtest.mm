@@ -40,7 +40,6 @@
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(web::features::kSSLCommittedInterstitials);
   config.features_enabled.push_back(web::features::kIOSLegacyTLSInterstitial);
   config.relaunch_policy = NoForceRelaunchAndResetState;
   return config;

@@ -377,10 +377,6 @@ extern const char kShowAutofillTypePredictionsDescription[];
 extern const char kSnapshotDrawViewName[];
 extern const char kSnapshotDrawViewDescription[];
 
-// Title and description for the flag to enable SSL committed interstitials.
-extern const char kSSLCommittedInterstitialsName[];
-extern const char kSSLCommittedInterstitialsDescription[];
-
 // Title and description for the flag to control if Chrome Sync should use the
 // sandbox servers.
 extern const char kSyncSandboxName[];

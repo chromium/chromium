@@ -4338,11 +4338,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "ssl-committed-interstitials",
-    "owners": [ "livvielin" ],
-    "expiry_milestone": 87
-  },
-  {
     "name": "stop-in-background",
     "owners": [ "chrome-catan@google.com" ],
     "expiry_milestone": 76

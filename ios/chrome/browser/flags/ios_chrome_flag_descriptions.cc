@@ -420,12 +420,6 @@ const char kSnapshotDrawViewName[] = "Use DrawViewHierarchy for Snapshots";
 const char kSnapshotDrawViewDescription[] =
     "When enabled, snapshots will be taken using |-drawViewHierarchy:|.";
 
-const char kSSLCommittedInterstitialsName[] =
-    "Enable SSL committed interstitials";
-const char kSSLCommittedInterstitialsDescription[] =
-    "When enabled, SSL interstitial pages will be committed rather than using "
-    "an overlay on the page.";
-
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";

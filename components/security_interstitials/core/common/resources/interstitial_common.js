@@ -107,20 +107,10 @@ function sendCommand(cmd) {
   window.domAutomationController.send(cmd);
   // </if>
   // <if expr="is_ios">
-  // TODO(crbug.com/987407): Used to send commands for non-committed
-  // interstitials on iOS. Should be deleted after committed interstitials are
-  // fully launched.
-  if (!loadTimeData.getBoolean('committed_interstitials_enabled')) {
-    const iframe = document.createElement('IFRAME');
-    iframe.setAttribute('src', 'js-command:' + cmd);
-    document.documentElement.appendChild(iframe);
-    iframe.parentNode.removeChild(iframe);
-  } else {
-    // Used to send commands for iOS committed interstitials.
-    /** @suppress {undefinedVars|missingProperties} */ (function() {
-      __gCrWeb.message.invokeOnHost({'command': 'blockingPage.' + cmd});
-    })();
-  }
+  // Send commands for iOS committed interstitials.
+  /** @suppress {undefinedVars|missingProperties} */ (function() {
+    __gCrWeb.message.invokeOnHost({'command': 'blockingPage.' + cmd});
+  })();
   // </if>
 }
 
@@ -147,9 +137,6 @@ function preventDefaultOnPoundLinkClicks() {
  * not getting triggered.
  */
 function setupIosRefresh() {
-  if (!loadTimeData.getBoolean('committed_interstitials_enabled')) {
-    return;
-  }
   const load = () => {
     window.location.replace(loadTimeData.getString('url_to_reload'));
   };

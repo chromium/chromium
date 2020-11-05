@@ -2029,18 +2029,16 @@ TEST_F(WebStateObserverTest, FailedSslConnection) {
           web_state(), url, ui::PageTransition::PAGE_TRANSITION_TYPED, &context,
           &nav_id));
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
-  if (base::FeatureList::IsEnabled(web::features::kSSLCommittedInterstitials)) {
-    // First, a placeholder navigation starts and finishes.
-    EXPECT_CALL(observer_, DidStartLoading(web_state()));
-    EXPECT_CALL(observer_, DidStopLoading(web_state()));
-    EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _));
-    EXPECT_CALL(observer_,
-                PageLoaded(web_state(), PageLoadCompletionStatus::FAILURE));
+  // First, a placeholder navigation starts and finishes.
+  EXPECT_CALL(observer_, DidStartLoading(web_state()));
+  EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _));
+  EXPECT_CALL(observer_,
+              PageLoaded(web_state(), PageLoadCompletionStatus::FAILURE));
 
-    // Finally, the error page itself is loaded.
-    EXPECT_CALL(observer_, DidStartLoading(web_state()));
-    EXPECT_CALL(observer_, DidStopLoading(web_state()));
-  }
+  // Finally, the error page itself is loaded.
+  EXPECT_CALL(observer_, DidStartLoading(web_state()));
+  EXPECT_CALL(observer_, DidStopLoading(web_state()));
 
   test::LoadUrl(web_state(), url);
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
