@@ -752,10 +752,10 @@
         Canadian English keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_CANADIAN_FRENCH" desc="The input method name shows in system tray menu and settings page.">
-        Canadian French keyboard
+        French (Canada)
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_CANADIAN_MULTILINGUAL" desc="The input method name shows in system tray menu and settings page.">
-        Canadian Multilingual keyboard
+        French (Canada) with Multilingual keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_CATALAN" desc="The input method name shows in system tray menu and settings page.">
         Catalan keyboard
@@ -773,22 +773,22 @@
         Danish
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_ESTONIAN" desc="The input method name shows in system tray menu and settings page.">
-        Estonian keyboard
+        Estonian
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_FAROESE" desc="The input method name shows in system tray menu and settings page.">
-        Faroese keyboard
+        Faroese
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_FILIPINO" desc="The input method name shows in system tray menu and settings page.">
         Filipino
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_FINNISH" desc="The input method name shows in system tray menu and settings page.">
-        Finnish keyboard
+        Finnish
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_FRENCH_BEPO" desc="The input method name shows in system tray menu and settings page.">
-        French BÉPO keyboard
+        French (France) with Bépo keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_FRENCH" desc="The input method name shows in system tray menu and settings page.">
-        French keyboard
+        French (France)
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_GEORGIAN" desc="The input method name shows in system tray menu and settings page.">
         Georgian keyboard
@@ -905,7 +905,7 @@
         Swedish keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_SWISS_FRENCH" desc="The input method name shows in system tray menu and settings page.">
-        Swiss French keyboard
+        French (Switzerland)
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_SWISS" desc="The input method name shows in system tray menu and settings page.">
         Swiss keyboard
