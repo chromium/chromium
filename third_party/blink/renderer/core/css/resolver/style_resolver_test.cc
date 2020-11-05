@@ -1094,4 +1094,18 @@ TEST_F(StyleResolverTest, InheritStyleImagesFromDisplayContents) {
       << "-webkit-mask-image is fetched";
 }
 
+// https://crbug.com/1145406
+TEST_F(StyleResolverTest, StyleSheetWithNullRuleSet) {
+  ScopedCSSKeyframesMemoryReductionForTest enabled_scope(true);
+
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>.c6 { animation-name: anim; }</style>
+    <style media=print></style>
+    <div class=c6></div>
+  )HTML");
+
+  // Should not crash inside
+  UpdateAllLifecyclePhasesForTest();
+}
+
 }  // namespace blink

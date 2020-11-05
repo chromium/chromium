@@ -162,6 +162,8 @@ ScopedStyleResolver::KeyframeStylesForAnimationFromActiveSheets(
   StyleRuleKeyframes* vendor_prefixed_result = nullptr;
   for (auto sheet = sheets.rbegin(); sheet != sheets.rend(); ++sheet) {
     RuleSet* rule_set = sheet->second;
+    if (!rule_set)
+      continue;
     if (StyleRuleKeyframes* rule = rule_set->KeyframeStylesForAnimation(name)) {
       if (!rule->IsVendorPrefixed())
         return rule;
