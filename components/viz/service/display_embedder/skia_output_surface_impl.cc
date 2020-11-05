@@ -817,8 +817,10 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
     bool mipmap,
     sk_sp<SkColorSpace> color_space,
     bool is_root_render_pass) {
-  if (!gr_context_thread_safe_)
+  if (!gr_context_thread_safe_) {
+    DLOG(ERROR) << "gr_context_thread_safe_ is null.";
     return SkSurfaceCharacterization();
+  }
 
   auto cache_max_resource_bytes = impl_on_gpu_->max_resource_cache_bytes();
   SkSurfaceProps surface_props =
@@ -1147,6 +1149,7 @@ void SkiaOutputSurfaceImpl::PrepareYUVATextureIndices(
 
 void SkiaOutputSurfaceImpl::ContextLost() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DLOG(ERROR) << "SkiaOutputSurfaceImpl::ContextLost()";
   gr_context_thread_safe_.reset();
   for (auto& observer : observers_)
     observer.OnContextLost();
