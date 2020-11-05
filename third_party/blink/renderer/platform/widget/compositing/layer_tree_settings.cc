@@ -465,8 +465,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     // TODO(penghuang): query supported formats from GPU process.
     if (!cmd.HasSwitch(switches::kDisableRGBA4444Textures) &&
         base::SysInfo::AmountOfPhysicalMemoryMB() <= 512 &&
-        !using_synchronous_compositor &&
-        !base::FeatureList::IsEnabled(::features::kVulkan)) {
+        !using_synchronous_compositor && !::features::IsUsingVulkan()) {
       settings.use_rgba_4444 = viz::RGBA_4444;
 
       // If we are going to unpremultiply and dither these tiles, we need to

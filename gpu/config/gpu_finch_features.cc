@@ -1,8 +1,12 @@
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "gpu/config/gpu_finch_features.h"
+
+#include "base/command_line.h"
 #include "build/chromeos_buildflags.h"
+#include "gpu/config/gpu_switches.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/android_image_reader_compat.h"
@@ -28,6 +32,11 @@ const base::Feature kAndroidSurfaceControl{"AndroidSurfaceControl",
 // Use AImageReader for MediaCodec and MediaPlyer on android.
 const base::Feature kAImageReader{"AImageReader",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
+
+// If webview-draw-functor-uses-vulkan is set, use vulkan for composite and
+// raster.
+const base::Feature kWebViewVulkan{"WebViewVulkan",
+                                   base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 // Enable GPU Rasterization by default. This can still be overridden by
@@ -106,6 +115,7 @@ const base::Feature kVaapiWebPImageDecodeAcceleration{
 // Enable Vulkan graphics backend for compositing and rasterization. Defaults to
 // native implementation if --use-vulkan flag is not used. Otherwise
 // --use-vulkan will be followed.
+// Note Android WebView uses kWebViewVulkan instead of this.
 const base::Feature kVulkan{"Vulkan", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable SkiaRenderer Dawn graphics backend. On Windows this will use D3D12,
@@ -116,6 +126,16 @@ const base::Feature kSkiaDawn{"SkiaDawn", base::FEATURE_DISABLED_BY_DEFAULT};
 // webview.
 const base::Feature kEnableSharedImageForWebview{
     "EnableSharedImageForWebview", base::FEATURE_ENABLED_BY_DEFAULT};
+
+bool IsUsingVulkan() {
+  bool enable = base::FeatureList::IsEnabled(kVulkan);
+#if defined(OS_ANDROID)
+  enable = enable || (base::CommandLine::ForCurrentProcess()->HasSwitch(
+                          switches::kWebViewDrawFunctorUsesVulkan) &&
+                      base::FeatureList::IsEnabled(kWebViewVulkan));
+#endif
+  return enable;
+}
 
 #if defined(OS_ANDROID)
 bool IsAImageReaderEnabled() {

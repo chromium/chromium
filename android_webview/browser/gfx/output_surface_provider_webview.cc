@@ -13,7 +13,6 @@
 #include "android_webview/browser/gfx/skia_output_surface_dependency_webview.h"
 #include "android_webview/browser/gfx/task_queue_web_view.h"
 #include "base/callback_helpers.h"
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "components/viz/common/features.h"
@@ -52,8 +51,7 @@ OutputSurfaceProviderWebview::OutputSurfaceProviderWebview(
 
   renderer_settings_.use_skia_renderer = features::IsUsingSkiaRenderer();
 
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  enable_vulkan_ = command_line->HasSwitch(switches::kWebViewEnableVulkan);
+  enable_vulkan_ = features::IsUsingVulkan();
   DCHECK(!enable_vulkan_ || vulkan_context_provider_);
 
   enable_shared_image_ =

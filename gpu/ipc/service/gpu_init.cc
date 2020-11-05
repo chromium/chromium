@@ -612,12 +612,13 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   InitializeGLThreadSafe(command_line, gpu_preferences_, &gpu_info_,
                          &gpu_feature_info_);
 
-  if (!command_line->HasSwitch(switches::kWebViewEnableVulkan)) {
-    DisableInProcessGpuVulkan(&gpu_feature_info_, &gpu_preferences_);
-  } else if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] ==
-             kGpuFeatureStatusEnabled) {
+  if (command_line->HasSwitch(switches::kWebViewDrawFunctorUsesVulkan) &&
+      base::FeatureList::IsEnabled(features::kWebViewVulkan)) {
     bool result = InitializeVulkan();
+    // There is no fallback for webview.
     CHECK(result);
+  } else {
+    DisableInProcessGpuVulkan(&gpu_feature_info_, &gpu_preferences_);
   }
   default_offscreen_surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
 

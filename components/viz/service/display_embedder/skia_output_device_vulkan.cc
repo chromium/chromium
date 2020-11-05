@@ -311,7 +311,7 @@ bool SkiaOutputDeviceVulkan::Initialize() {
   // always blank until chrome window is rotated once. Workaround this problem
   // by using logic rotation mode.
   // TODO(https://crbug.com/1115065): use hardware orientation mode for vulkan,
-  if (base::FeatureList::GetFieldTrial(features::kVulkan))
+  if (features::IsUsingVulkan())
     capabilities_.orientation_mode = OutputSurface::OrientationMode::kLogic;
 #endif
   // We don't know the number of buffers until the VulkanSwapChain is

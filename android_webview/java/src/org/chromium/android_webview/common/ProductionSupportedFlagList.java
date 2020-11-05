@@ -70,6 +70,9 @@ public final class ProductionSupportedFlagList {
                             + "GPU acceleration on unsupported device configurations."),
             Flag.baseFeature(GpuFeatures.ENABLE_SHARED_IMAGE_FOR_WEBVIEW,
                     "Enables shared images for WebView."),
+            Flag.baseFeature(GpuFeatures.WEBVIEW_VULKAN,
+                    "Use Vulkan for composite. Requires VizForWebView and Android device and "
+                            + "OS support. May crash if enabled on unsupported device."),
             Flag.baseFeature(VizFeatures.VIZ_FOR_WEBVIEW, "Enables Viz for WebView."),
             Flag.baseFeature(
                     GpuFeatures.USE_GLES2_FOR_OOP_R, "Force Skia context to use es2 only."),

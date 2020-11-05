@@ -268,6 +268,7 @@ static const char* const kSwitchNames[] = {
     switches::kV,
     switches::kVModule,
     switches::kUseAdapterLuid,
+    switches::kWebViewDrawFunctorUsesVulkan,
 #if defined(OS_MAC)
     sandbox::policy::switches::kEnableSandboxLogging,
     switches::kDisableAVFoundationOverlays,

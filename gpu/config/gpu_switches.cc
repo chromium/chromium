@@ -88,8 +88,9 @@ const char kGpuRevision[] = "gpu-revision";
 // collection GPU process.
 const char kGpuDriverVersion[] = "gpu-driver-version";
 
-// Used to enable vulkan draw mode instead of interop draw mode for webview.
-const char kWebViewEnableVulkan[] = "webview-enable-vulkan";
+// Indicate that the this is being used by Android WebView and its draw functor
+// is using vulkan.
+const char kWebViewDrawFunctorUsesVulkan[] = "webview-draw-functor-uses-vulkan";
 
 // Enables using protected memory for vulkan resources.
 const char kEnableVulkanProtectedMemory[] = "enable-vulkan-protected-memory";

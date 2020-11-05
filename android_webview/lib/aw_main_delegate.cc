@@ -8,6 +8,7 @@
 
 #include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_media_url_interceptor.h"
+#include "android_webview/browser/gfx/aw_draw_fn_impl.h"
 #include "android_webview/browser/gfx/browser_view_renderer.h"
 #include "android_webview/browser/gfx/gpu_service_web_view.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
@@ -167,6 +168,9 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
     base::android::RegisterApkAssetWithFileDescriptorStore(
         content::kV8Snapshot64DataDescriptor,
         gin::V8Initializer::GetSnapshotFilePath(false, file_type));
+
+    if (AwDrawFnImpl::IsUsingVulkan())
+      cl->AppendSwitch(switches::kWebViewDrawFunctorUsesVulkan);
   }
 #endif  // V8_USE_EXTERNAL_STARTUP_DATA
 
@@ -193,6 +197,16 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
     if (cl->HasSwitch(switches::kWebViewLogJsConsoleMessages)) {
       features.EnableIfNotSet(::features::kLogJsConsoleMessages);
     }
+
+    if (cl->HasSwitch(switches::kWebViewDrawFunctorUsesVulkan)) {
+      // When draw functor uses vulkan, assume that it is safe to enable viz
+      // which depends on shared images.
+      features.EnableIfNotSet(::features::kEnableSharedImageForWebview);
+    }
+
+    // WebView uses kWebViewVulkan to control vulkan. Pre-emptively disable
+    // kVulkan in case it becomes enabled by default.
+    features.DisableIfNotSet(::features::kVulkan);
 
     features.DisableIfNotSet(::features::kWebPayments);
 

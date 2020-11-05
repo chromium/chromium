@@ -185,14 +185,20 @@ GrContextType ParseGrContextType() {
   return base::FeatureList::IsEnabled(features::kMetal) ? GrContextType::kMetal
                                                         : GrContextType::kGL;
 #else
-  return base::FeatureList::IsEnabled(features::kVulkan)
-             ? GrContextType::kVulkan
-             : GrContextType::kGL;
+  return features::IsUsingVulkan() ? GrContextType::kVulkan
+                                   : GrContextType::kGL;
 #endif
 }
 
 VulkanImplementationName ParseVulkanImplementationName(
     const base::CommandLine* command_line) {
+#if defined(OS_ANDROID)
+  if (command_line->HasSwitch(switches::kWebViewDrawFunctorUsesVulkan) &&
+      base::FeatureList::IsEnabled(features::kWebViewVulkan)) {
+    return VulkanImplementationName::kForcedNative;
+  }
+#endif
+
   if (command_line->HasSwitch(switches::kUseVulkan)) {
     auto value = command_line->GetSwitchValueASCII(switches::kUseVulkan);
     if (value.empty() || value == switches::kVulkanImplementationNameNative) {

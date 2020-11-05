@@ -21,6 +21,9 @@ namespace android_webview {
 
 class AwDrawFnImpl {
  public:
+  // Safe to call even on versions where draw_fn functor is not supported.
+  static bool IsUsingVulkan();
+
   AwDrawFnImpl();
   ~AwDrawFnImpl();
 

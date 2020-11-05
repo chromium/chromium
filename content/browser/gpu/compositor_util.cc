@@ -167,7 +167,7 @@ const GpuFeatureData GetGpuFeatureData(
 #if BUILDFLAG(ENABLE_VULKAN)
     {"vulkan",
      SafeGetFeatureStatus(gpu_feature_info, gpu::GPU_FEATURE_TYPE_VULKAN),
-     !base::FeatureList::IsEnabled(features::kVulkan) &&
+     !features::IsUsingVulkan() &&
          !command_line.HasSwitch(switches::kUseVulkan) /* disabled */,
      DisableInfo::NotProblem(), false /* fallback_to_software */},
 #endif
