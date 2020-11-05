@@ -12,7 +12,7 @@
 # tags: [ android-nexus-5 android-nexus-5x android-nexus-6 android-nexus-6p
 #             android-nexus-9 android-pixel-2 android-shield-android-tv
 #         chromeos-board-amd64-generic chromeos-board-kevin
-#         fuchsia-board-qemu-x64 ]
+#         fuchsia-board-astro fuchsia-board-qemu-x64 ]
 # Platform
 # tags: [ desktop
 #         mobile ]
@@ -83,6 +83,7 @@
 [ mac ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
 [ linux ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
 [ android ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
+[ fuchsia ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
 [ mac ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
 crbug.com/808744 [ android ] WebglExtension_EXT_disjoint_timer_query [ Skip ]
 crbug.com/808744 [ fuchsia ] WebglExtension_EXT_disjoint_timer_query [ Skip ]
@@ -140,6 +141,32 @@ crbug.com/867718 [ win angle-d3d9 ] WebglExtension_EXT_disjoint_timer_query [ Sk
 # Fuchsia specific
 [ fuchsia ] WebglExtension_EXT_shader_texture_lod [ Skip ]
 [ fuchsia ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
+[ fuchsia fuchsia-board-astro ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
+[ fuchsia fuchsia-board-astro no-swiftshader-gl ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
+crbug.com/1145858 [ fuchsia fuchsia-board-astro ] conformance/extensions/ext-disjoint-timer-query.html [ Skip ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/extensions/oes-texture-float-with-video.html [ Skip ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
+crbug.com/1145926 [ fuchsia fuchsia-board-astro ] conformance/ogles/GL/faceforward/faceforward_001_to_006.html [ Skip ]
+crbug.com/1145926 [ fuchsia fuchsia-board-astro ] conformance/ogles/GL/step/step_001_to_006.html [ Skip ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Skip ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Skip ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Skip ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Skip ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Skip ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Skip ]
+# OOM on hardware devices
+crbug.com/1145951 [ fuchsia fuchsia-board-astro ] conformance/rendering/multisample-corruption.html [ Skip ]
+crbug.com/1145951 [ fuchsia fuchsia-board-astro ] conformance/context/context-creation-and-destruction.html [ Skip ]
+crbug.com/1145951 [ fuchsia fuchsia-board-astro ] conformance/rendering/preservedrawingbuffer-leak.html [ Skip ]
+
+# Flaky on Fuchsia hardware devices
+[ fuchsia fuchsia-board-astro ] WebglExtension_EXT_float_blend [ Skip ]
+[ fuchsia fuchsia-board-astro ] conformance/rendering/rendering-stencil-large-viewport.html [ Skip ]
+[ fuchsia fuchsia-board-astro ] conformance/canvas/drawingbuffer-static-canvas-test.html [ Skip ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-corner-case-videos.html [ Skip ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-npot-video.html [ Skip ]
 
 # Fails on Android Nvidia Tegra driver version 343, passes on 361
 # We don't have tags for specific driver version so just skip all
