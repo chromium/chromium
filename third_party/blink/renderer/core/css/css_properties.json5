@@ -6022,6 +6022,10 @@
     //    If 'center' is specified and the container's block size is not auto,
     //    it works like "align-self: center" for grid/flex items.
     //    The block child should create new block formatting context.
+    // Note:
+    //    The container of a child with -internal-align-self:block:center needs
+    //    to opt out from simplified layout.  See
+    //    CalculateSizeBasedLayoutCacheStatusWithGeometry().
     {
       name: "-internal-align-self-block",
       property_methods: ["ParseSingleValue"],

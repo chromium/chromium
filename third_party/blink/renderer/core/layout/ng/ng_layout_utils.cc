@@ -241,6 +241,13 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     if (!node.IsBlockFlow() || node.IsLayoutNGCustom())
       return NGLayoutCacheStatus::kNeedsLayout;
 
+    // Textfields are block-flow, but we can't apply simplified layout due to
+    // -internal-align-self-block.
+    // TODO(tkent): We could store a bit on the |NGLayoutResult| which
+    // indicates if we have a child with "-internal-align-self-block:center".
+    if (node.IsTextField())
+      return NGLayoutCacheStatus::kNeedsLayout;
+
     // If we are the document or body element in quirks mode, changing our size
     // means that a scrollbar was added/removed. Require full layout.
     if (node.IsQuirkyAndFillsViewport())

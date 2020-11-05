@@ -163,6 +163,7 @@ class CORE_EXPORT NGLayoutInputNode {
   bool IsTextArea() const { return box_->IsTextAreaIncludingNG(); }
   bool IsTextControl() const { return box_->IsTextControlIncludingNG(); }
   bool IsTextControlPlaceholder() const;
+  bool IsTextField() const { return box_->IsTextFieldIncludingNG(); }
 
   bool IsMathRoot() const { return box_->IsMathMLRoot(); }
   bool IsMathML() const { return box_->IsMathML(); }
