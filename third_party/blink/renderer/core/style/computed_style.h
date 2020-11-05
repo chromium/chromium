@@ -1540,8 +1540,12 @@ class ComputedStyle : public ComputedStyleBase,
       MutableMarginLeftInternal() = v;
     }
   }
-  bool HasMarginBeforeQuirk() const { return MarginBefore().Quirk(); }
-  bool HasMarginAfterQuirk() const { return MarginAfter().Quirk(); }
+  bool HasMarginBeforeQuirk() const {
+    return MayHaveMargin() && MarginBefore().Quirk();
+  }
+  bool HasMarginAfterQuirk() const {
+    return MayHaveMargin() && MarginAfter().Quirk();
+  }
   const Length& MarginBefore() const { return MarginBeforeUsing(*this); }
   const Length& MarginAfter() const { return MarginAfterUsing(*this); }
   const Length& MarginStart() const { return MarginStartUsing(*this); }
