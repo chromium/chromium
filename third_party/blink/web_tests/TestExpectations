@@ -6241,6 +6241,7 @@ crbug.com/1145424 [ Linux ] http/tests/devtools/sources/debugger-ui/reveal-execu
 crbug.com/1145424 [ Win ] http/tests/devtools/sources/debugger-ui/reveal-execution-line.js [ Pass Timeout ]
 crbug.com/1145641 external/wpt/requestidlecallback/callback-invoked.html [ Pass Timeout ]
 crbug.com/1046784 http/tests/devtools/sources/debugger-ui/debugger-inline-values-frames.js [ Pass Timeout ]
+crbug.com/1145742 [ Fuchsia ] virtual/stable/http/tests/navigation/location-assign-adds-history-item.html [ Pass Crash Timeout ]
 
 # Disabled until CL with fix gets merged https://chromium-review.googlesource.com/c/chromium/src/+/2504259
 crbug.com/1127115 inspector-protocol/runtime/runtime-console-log-node-letter-case.js [ Failure ]
