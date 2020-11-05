@@ -100,24 +100,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
   void InstallAttributesIsReady(DBusMethodCallback<bool> callback) override;
   bool InstallAttributesIsInvalid(bool* is_invalid) override;
   bool InstallAttributesIsFirstInstall(bool* is_first_install) override;
-  void AsyncTpmAttestationCreateEnrollRequest(
-      chromeos::attestation::PrivacyCAType pca_type,
-      AsyncMethodCallback callback) override;
-  void AsyncTpmAttestationEnroll(chromeos::attestation::PrivacyCAType pca_type,
-                                 const std::string& pca_response,
-                                 AsyncMethodCallback callback) override;
-  void AsyncTpmAttestationCreateCertRequest(
-      chromeos::attestation::PrivacyCAType pca_type,
-      attestation::AttestationCertificateProfile certificate_profile,
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      const std::string& request_origin,
-      AsyncMethodCallback callback) override;
-  void AsyncTpmAttestationFinishCertRequest(
-      const std::string& pca_response,
-      attestation::AttestationKeyType key_type,
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      const std::string& key_name,
-      AsyncMethodCallback callback) override;
   void TpmGetVersion(DBusMethodCallback<TpmVersionInfo> callback) override;
   void GetKeyDataEx(
       const cryptohome::AccountIdentifier& cryptohome_id,

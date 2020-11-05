@@ -316,57 +316,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
   // succeeds. This method blocks until the call returns.
   virtual bool InstallAttributesIsFirstInstall(bool* is_first_install) = 0;
 
-  // Asynchronously creates an attestation enrollment request.  The callback
-  // will be called when the dbus call completes.  When the operation completes,
-  // the AsyncCallStatusWithDataHandler signal handler is called.  The data that
-  // is sent with the signal is an enrollment request to be sent to the Privacy
-  // CA of type |pca_type|.  The enrollment is completed by calling
-  // AsyncTpmAttestationEnroll.
-  virtual void AsyncTpmAttestationCreateEnrollRequest(
-      chromeos::attestation::PrivacyCAType pca_type,
-      AsyncMethodCallback callback) = 0;
-
-  // Asynchronously finishes an attestation enrollment operation.  The callback
-  // will be called when the dbus call completes.  When the operation completes,
-  // the AsyncCallStatusHandler signal handler is called.  |pca_response| is the
-  // response to the enrollment request emitted by the Privacy CA of type
-  // |pca_type|.
-  virtual void AsyncTpmAttestationEnroll(
-      chromeos::attestation::PrivacyCAType pca_type,
-      const std::string& pca_response,
-      AsyncMethodCallback callback) = 0;
-
-  // Asynchronously creates an attestation certificate request according to
-  // |certificate_profile|.  Some profiles require that the |id| of
-  // the currently active user and an identifier of the |request_origin| be
-  // provided.  |callback| will be called when the dbus call completes.  When
-  // the operation completes, the AsyncCallStatusWithDataHandler signal handler
-  // is called.  The data that is sent with the signal is a certificate request
-  // to be sent to the Privacy CA of type |pca_type|.  The certificate request
-  // is completed by calling AsyncTpmAttestationFinishCertRequest.  The
-  // |id| will not be included in the certificate request for the Privacy CA.
-  virtual void AsyncTpmAttestationCreateCertRequest(
-      chromeos::attestation::PrivacyCAType pca_type,
-      attestation::AttestationCertificateProfile certificate_profile,
-      const cryptohome::AccountIdentifier& id,
-      const std::string& request_origin,
-      AsyncMethodCallback callback) = 0;
-
-  // Asynchronously finishes a certificate request operation.  The callback will
-  // be called when the dbus call completes.  When the operation completes, the
-  // AsyncCallStatusWithDataHandler signal handler is called.  The data that is
-  // sent with the signal is a certificate chain in PEM format.  |pca_response|
-  // is the response to the certificate request emitted by the Privacy CA.
-  // |key_type| determines whether the certified key is to be associated with
-  // the current user.  |key_name| is a name for the key.  If |key_type| is
-  // KEY_USER, a |id| must be provided.  Otherwise |id| is ignored.
-  virtual void AsyncTpmAttestationFinishCertRequest(
-      const std::string& pca_response,
-      attestation::AttestationKeyType key_type,
-      const cryptohome::AccountIdentifier& id,
-      const std::string& key_name,
-      AsyncMethodCallback callback) = 0;
-
   // Asynchronously gets the underlying TPM version information and passes it to
   // the given callback.
   virtual void TpmGetVersion(DBusMethodCallback<TpmVersionInfo> callback) = 0;

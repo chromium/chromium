@@ -10,9 +10,6 @@ using ::testing::_;
 
 namespace cryptohome {
 
-const char MockAsyncMethodCaller::kFakeAttestationEnrollRequest[] = "enrollreq";
-const char MockAsyncMethodCaller::kFakeAttestationCertRequest[] = "certreq";
-const char MockAsyncMethodCaller::kFakeAttestationCert[] = "cert";
 const char MockAsyncMethodCaller::kFakeSanitizedUsername[] = "01234567890ABC";
 const char MockAsyncMethodCaller::kFakeChallengeResponse[] =
     "challenge_response";
@@ -26,37 +23,6 @@ MockAsyncMethodCaller::~MockAsyncMethodCaller() = default;
 void MockAsyncMethodCaller::SetUp(bool success, MountError return_code) {
   success_ = success;
   return_code_ = return_code;
-  ON_CALL(*this, AsyncTpmAttestationCreateEnrollRequest(_, _))
-      .WillByDefault(
-          WithArgs<1>(Invoke(this,
-                             &MockAsyncMethodCaller::FakeCreateEnrollRequest)));
-  ON_CALL(*this, AsyncTpmAttestationEnroll(_, _, _))
-      .WillByDefault(
-          WithArgs<2>(Invoke(this, &MockAsyncMethodCaller::DoCallback)));
-  ON_CALL(*this, AsyncTpmAttestationCreateCertRequest(_, _, _, _, _))
-      .WillByDefault(
-          WithArgs<4>(Invoke(this,
-                             &MockAsyncMethodCaller::FakeCreateCertRequest)));
-  ON_CALL(*this, AsyncTpmAttestationFinishCertRequest(_, _, _, _, _))
-      .WillByDefault(
-          WithArgs<4>(Invoke(this,
-                             &MockAsyncMethodCaller::FakeFinishCertRequest)));
-}
-
-void MockAsyncMethodCaller::DoCallback(Callback callback) {
-  std::move(callback).Run(success_, return_code_);
-}
-
-void MockAsyncMethodCaller::FakeCreateEnrollRequest(DataCallback callback) {
-  std::move(callback).Run(success_, kFakeAttestationEnrollRequest);
-}
-
-void MockAsyncMethodCaller::FakeCreateCertRequest(DataCallback callback) {
-  std::move(callback).Run(success_, kFakeAttestationCertRequest);
-}
-
-void MockAsyncMethodCaller::FakeFinishCertRequest(DataCallback callback) {
-  std::move(callback).Run(success_, kFakeAttestationCert);
 }
 
 void MockAsyncMethodCaller::FakeGetSanitizedUsername(DataCallback callback) {

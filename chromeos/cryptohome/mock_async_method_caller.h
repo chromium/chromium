@@ -53,11 +53,6 @@ class MockAsyncMethodCaller : public AsyncMethodCaller {
   bool success_;
   MountError return_code_;
 
-  void DoCallback(Callback callback);
-  // Default fakes for attestation calls.
-  void FakeCreateEnrollRequest(DataCallback callback);
-  void FakeCreateCertRequest(DataCallback callback);
-  void FakeFinishCertRequest(DataCallback callback);
   void FakeGetSanitizedUsername(DataCallback callback);
   void FakeEnterpriseChallenge(DataCallback callback);
 

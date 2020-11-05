@@ -325,37 +325,6 @@ bool FakeCryptohomeClient::InstallAttributesIsFirstInstall(
   return true;
 }
 
-void FakeCryptohomeClient::AsyncTpmAttestationCreateEnrollRequest(
-    chromeos::attestation::PrivacyCAType pca_type,
-    AsyncMethodCallback callback) {
-  ReturnAsyncMethodData(std::move(callback), std::string());
-}
-
-void FakeCryptohomeClient::AsyncTpmAttestationEnroll(
-    chromeos::attestation::PrivacyCAType pca_type,
-    const std::string& pca_response,
-    AsyncMethodCallback callback) {
-  ReturnAsyncMethodResult(std::move(callback));
-}
-
-void FakeCryptohomeClient::AsyncTpmAttestationCreateCertRequest(
-    chromeos::attestation::PrivacyCAType pca_type,
-    attestation::AttestationCertificateProfile certificate_profile,
-    const cryptohome::AccountIdentifier& cryptohome_id,
-    const std::string& request_origin,
-    AsyncMethodCallback callback) {
-  ReturnAsyncMethodData(std::move(callback), std::string());
-}
-
-void FakeCryptohomeClient::AsyncTpmAttestationFinishCertRequest(
-    const std::string& pca_response,
-    attestation::AttestationKeyType key_type,
-    const cryptohome::AccountIdentifier& cryptohome_id,
-    const std::string& key_name,
-    AsyncMethodCallback callback) {
-  ReturnAsyncMethodData(std::move(callback), std::string());
-}
-
 void FakeCryptohomeClient::TpmGetVersion(
     DBusMethodCallback<TpmVersionInfo> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(

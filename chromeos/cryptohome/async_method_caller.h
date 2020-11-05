@@ -15,8 +15,6 @@
 
 namespace cryptohome {
 
-class Identification;
-
 // Note: This file is placed in ::cryptohome instead of ::chromeos::cryptohome
 // since there is already a namespace ::cryptohome which holds the error code
 // enum (MountError) and referencing ::chromeos::cryptohome and ::cryptohome
@@ -33,50 +31,6 @@ class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) AsyncMethodCaller {
       base::OnceCallback<void(bool success, const std::string& data)>;
 
   virtual ~AsyncMethodCaller() {}
-
-  // Asks cryptohomed to asynchronously create an attestation enrollment
-  // request.  On success the data sent to |callback| is a request to be sent
-  // to the Privacy CA of type |pca_type|.
-  virtual void AsyncTpmAttestationCreateEnrollRequest(
-      chromeos::attestation::PrivacyCAType pca_type,
-      DataCallback callback) = 0;
-
-  // Asks cryptohomed to asynchronously finish an attestation enrollment.
-  // |pca_response| is the response to the enrollment request emitted by the
-  // Privacy CA of type |pca_type|.
-  virtual void AsyncTpmAttestationEnroll(
-      chromeos::attestation::PrivacyCAType pca_type,
-      const std::string& pca_response,
-      Callback callback) = 0;
-
-  // Asks cryptohomed to asynchronously create an attestation certificate
-  // request according to |certificate_profile|.  Some profiles require that the
-  // |user_id| of the currently active user and an identifier of the
-  // |request_origin| be provided.  On success the data sent to |callback| is a
-  // request to be sent to the Privacy CA of type |pca_type|.  The
-  // |request_origin| may be sent to the Privacy CA but the |user_id| will never
-  // be sent.
-  virtual void AsyncTpmAttestationCreateCertRequest(
-      chromeos::attestation::PrivacyCAType pca_type,
-      chromeos::attestation::AttestationCertificateProfile certificate_profile,
-      const Identification& user_id,
-      const std::string& request_origin,
-      DataCallback callback) = 0;
-
-  // Asks cryptohomed to asynchronously finish an attestation certificate
-  // request.  On success the data sent to |callback| is a certificate chain
-  // in PEM format.  |pca_response| is the response to the certificate request
-  // emitted by the Privacy CA.  |key_type| determines whether the certified key
-  // is to be associated with the current user.  |key_name| is a name for the
-  // key.  If |key_type| is KEY_USER, a |user_id| must be provided.  Otherwise
-  // |user_id| is ignored.  For normal GAIA users the |user_id| is
-  // an AccountId-derived string (see AccountId::GetAccountIdKey).
-  virtual void AsyncTpmAttestationFinishCertRequest(
-      const std::string& pca_response,
-      chromeos::attestation::AttestationKeyType key_type,
-      const Identification& user_id,
-      const std::string& key_name,
-      DataCallback callback) = 0;
 
   // Creates the global AsyncMethodCaller instance.
   static void Initialize();
