@@ -4,7 +4,9 @@
 
 #include "base/time/time.h"
 
+#include <threads.h>
 #include <zircon/syscalls.h>
+#include <zircon/threads.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/time/time_override.h"
@@ -83,12 +85,12 @@ zx_time_t TimeTicks::ToZxTime() const {
 
 namespace subtle {
 ThreadTicks ThreadTicksNowIgnoringOverride() {
-  zx_time_t nanos_since_thread_started;
-  zx_status_t status =
-      zx_clock_get(ZX_CLOCK_THREAD, &nanos_since_thread_started);
+  zx_info_thread_stats_t info;
+  zx_status_t status = zx_object_get_info(thrd_get_zx_handle(thrd_current()),
+                                          ZX_INFO_THREAD_STATS, &info,
+                                          sizeof(info), nullptr, nullptr);
   ZX_CHECK(status == ZX_OK, status);
-  DCHECK(nanos_since_thread_started != 0);
-  return ThreadTicks() + TimeDelta::FromNanoseconds(nanos_since_thread_started);
+  return ThreadTicks() + TimeDelta::FromNanoseconds(info.total_runtime);
 }
 }  // namespace subtle
 
