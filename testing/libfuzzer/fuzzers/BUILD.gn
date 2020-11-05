@@ -151,6 +151,10 @@ fuzzer_test("v8_inspector_fuzzer") {
   ]
   dict = "dicts/generated/javascript.dict"
   seed_corpus = "//v8/test/inspector/"
+
+  # The fuzzer is able to handle any input, but since the input is interpreted
+  # as JS code, restricting to ascii only will increase fuzzing efficiency.
+  libfuzzer_options = [ "only_ascii=1" ]
   environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
 }
 
