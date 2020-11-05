@@ -149,9 +149,9 @@ class HTMLConstructionSite final {
   void InsertCommentOnDocument(AtomicHTMLToken*);
   void InsertCommentOnHTMLHtmlElement(AtomicHTMLToken*);
   void InsertHTMLElement(AtomicHTMLToken*);
-  void InsertHTMLTemplateElement(
-      AtomicHTMLToken*,
-      DeclarativeShadowRootType declarative_shadow_root_type);
+  void InsertHTMLTemplateElement(AtomicHTMLToken*,
+                                 DeclarativeShadowRootType,
+                                 bool allow_declarative_shadow_dom);
   void InsertSelfClosingHTMLElementDestroyingToken(AtomicHTMLToken*);
   void InsertFormattingElement(AtomicHTMLToken*);
   void InsertHTMLHeadElement(AtomicHTMLToken*);

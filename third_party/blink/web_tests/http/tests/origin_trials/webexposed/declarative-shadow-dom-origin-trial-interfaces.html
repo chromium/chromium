@@ -13,8 +13,24 @@ test(t => {
   assert_true(HTMLTemplateElement.prototype.hasOwnProperty("shadowRoot"),'Unable to feature detect');
   // Basic feature use
   const div = document.createElement('div');
+  document.allowDeclarativeShadowDom = true;
   div.innerHTML = '<div id="host"><template shadowroot="open"></template></div>';
   const host = div.querySelector('#host');
   assert_true(!!host.shadowRoot,"No shadow root found");
+  document.allowDeclarativeShadowDom = false; // For other tests
 }, 'Declarative Shadow DOM enabled for origin-trial enabled document.');
 </script>
+
+<script>
+async_test((t) => {
+  window.addEventListener('message', (e) => {
+    t.step(() => {
+      assert_true(e.data.gotHost);
+      assert_true(e.data.gotShadow);
+      t.done();
+    });
+  });
+}, 'Origin trial enables the allow-declarative-shadow-dom sandbox flag');
+</script>
+
+<iframe id="iframe" sandbox="allow-same-origin allow-scripts allow-declarative-shadow-dom" src="resources/declarative-child-frame.html"></iframe>

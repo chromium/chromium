@@ -1662,6 +1662,11 @@ class CORE_EXPORT Document : public ContainerNode,
   void MarkFirstPaint();
   void MaybeExecuteDelayedAsyncScripts();
 
+  enum class DeclarativeShadowDomAllowState { kNotSet, kAllow, kDeny };
+  DeclarativeShadowDomAllowState GetDeclarativeShadowDomAllowState() const;
+  void setAllowDeclarativeShadowDom(bool val);
+  bool allowDeclarativeShadowDom() const;
+
   void SetFindInPageActiveMatchNode(Node*);
   const Node* GetFindInPageActiveMatchNode() const;
 
@@ -2200,6 +2205,9 @@ class CORE_EXPORT Document : public ContainerNode,
 
   int async_script_count_ = 0;
   bool first_paint_recorded_ = false;
+
+  DeclarativeShadowDomAllowState declarative_shadow_dom_allow_state_ =
+      DeclarativeShadowDomAllowState::kNotSet;
 
   WeakMember<Node> find_in_page_active_match_node_;
 

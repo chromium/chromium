@@ -45,5 +45,7 @@ enum WebSandboxFlags {
 
   kStorageAccessByUserActivation         =  65536, // 1 << 16
 
+  kDeclarativeShadowDom                  =  131072, // 1 << 17
+
   kAll                                   = -1, // Mask with all bits set.
 };

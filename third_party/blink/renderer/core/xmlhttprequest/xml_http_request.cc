@@ -355,6 +355,8 @@ void XMLHttpRequest::InitResponseDocument() {
   // FIXME: Set Last-Modified.
   response_document_->SetContextFeatures(document->GetContextFeatures());
   response_document_->SetMimeType(FinalResponseMIMETypeWithFallback());
+  response_document_->setAllowDeclarativeShadowDom(
+      allow_declarative_shadow_dom_);
 }
 
 Document* XMLHttpRequest::responseXML(ExceptionState& exception_state) {

@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
+#include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
@@ -610,8 +611,9 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
     const char* method,
     ExceptionState& exception_state) {
   DCHECK(context_element);
-  if (IsA<HTMLTemplateElement>(*context_element) &&
-      !context_element->GetExecutionContext()) {
+  const HTMLTemplateElement* template_element =
+      DynamicTo<HTMLTemplateElement>(*context_element);
+  if (template_element && !template_element->GetExecutionContext()) {
     return nullptr;
   }
 
@@ -620,6 +622,10 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
           ? context_element->GetDocument().EnsureTemplateDocument()
           : context_element->GetDocument();
   DocumentFragment* fragment = DocumentFragment::Create(document);
+  fragment->setAllowDeclarativeShadowDom(
+      context_element->GetDocument().allowDeclarativeShadowDom() ||
+      (template_element && template_element->content() &&
+       template_element->content()->allowDeclarativeShadowDom()));
 
   if (IsA<HTMLDocument>(document)) {
     fragment->ParseHTML(markup, context_element, parser_content_policy);

@@ -1,0 +1,17 @@
+<div id=iframe>
+  <div id=wrapper>
+    <div id=host>
+      <template shadowroot=open>
+        <span id=content>Content</span>
+      </template>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('load', () => {
+  const host = document.querySelector('#host');
+  parent.postMessage({ gotHost: !!host, gotShadow: !!host.shadowRoot }, '*');
+
+});
+</script>

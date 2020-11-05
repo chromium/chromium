@@ -33,6 +33,7 @@ Document* DOMParser::parseFromString(const String& str, const String& type) {
                       .WithTypeFrom(type)
                       .WithExecutionContext(window_)
                       .CreateDocument();
+  doc->setAllowDeclarativeShadowDom(allow_declarative_shadow_dom_);
   doc->SetContent(str);
   doc->SetMimeType(AtomicString(type));
   return doc;

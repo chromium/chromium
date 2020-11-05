@@ -161,10 +161,12 @@ void HTMLIFrameElement::ParseAttribute(
         network::mojom::blink::WebSandboxFlags::kNone;
     if (!value.IsNull()) {
       using network::mojom::blink::WebSandboxFlags;
-      WebSandboxFlags ignored_flags =
-          !RuntimeEnabledFeatures::StorageAccessAPIEnabled()
-              ? WebSandboxFlags::kStorageAccessByUserActivation
-              : WebSandboxFlags::kNone;
+      WebSandboxFlags ignored_flags = WebSandboxFlags::kNone;
+      if (!RuntimeEnabledFeatures::StorageAccessAPIEnabled())
+        ignored_flags |= WebSandboxFlags::kStorageAccessByUserActivation;
+      if (!RuntimeEnabledFeatures::DeclarativeShadowDOMEnabled(
+              GetExecutionContext()))
+        ignored_flags |= WebSandboxFlags::kDeclarativeShadowDom;
 
       auto parsed = network::ParseWebSandboxPolicy(sandbox_->value().Utf8(),
                                                    ignored_flags);

@@ -287,8 +287,30 @@ HTMLDocumentParser::HTMLDocumentParser(HTMLDocument& document,
     : HTMLDocumentParser(document, kAllowScriptingContent, sync_policy) {
   script_runner_ =
       HTMLParserScriptRunner::Create(ReentryPermit(), &document, this);
+
+  // Deny declarative Shadow DOM if explicitly denied.
+  // Allow declarative shadow DOM:
+  //  1. For the main frame (non-fragment) document, or
+  //  2. When explicitly enabled by the allowDeclarativeShadowDom flag, or
+  //  3. For sub-frames that do not have this feature sandboxed.
+  bool allow_declarative_shadow_dom = false;
+  if (document.GetDeclarativeShadowDomAllowState() !=
+      Document::DeclarativeShadowDomAllowState::kDeny) {
+    bool is_main_frame =
+        document.GetFrame() && document.GetFrame()->IsMainFrame();
+    const auto* context = document.GetExecutionContext();
+    allow_declarative_shadow_dom =
+        is_main_frame ||
+        (document.GetDeclarativeShadowDomAllowState() ==
+         Document::DeclarativeShadowDomAllowState::kAllow) ||
+        (!is_main_frame && context &&
+         !context->IsSandboxed(
+             network::mojom::blink::WebSandboxFlags::kDeclarativeShadowDom));
+  }
+
   tree_builder_ = MakeGarbageCollected<HTMLTreeBuilder>(
-      this, document, kAllowScriptingContent, options_);
+      this, document, kAllowScriptingContent, options_,
+      allow_declarative_shadow_dom);
 }
 
 HTMLDocumentParser::HTMLDocumentParser(
@@ -300,7 +322,8 @@ HTMLDocumentParser::HTMLDocumentParser(
                          kForceSynchronousParsing) {
   // No script_runner_ in fragment parser.
   tree_builder_ = MakeGarbageCollected<HTMLTreeBuilder>(
-      this, fragment, context_element, parser_content_policy, options_);
+      this, fragment, context_element, parser_content_policy, options_,
+      fragment->allowDeclarativeShadowDom());
 
   // For now document fragment parsing never reports errors.
   bool report_errors = false;

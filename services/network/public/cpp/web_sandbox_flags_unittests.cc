@@ -35,6 +35,8 @@ TEST(WebSandboxFlagsTest, All) {
       {"allow-top-navigation", {~WebSandboxFlags::kTopNavigation, ""}},
       {"allow-top-navigation-by-user-activation",
        {~WebSandboxFlags::kTopNavigationByUserActivation, ""}},
+      {"allow-declarative-shadow-dom",
+       {~WebSandboxFlags::kDeclarativeShadowDom, ""}},
 
       // Two tokens:
       {"allow-downloads allow-forms",

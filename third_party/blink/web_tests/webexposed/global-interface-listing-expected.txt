@@ -1372,8 +1372,10 @@ interface DOMMatrixReadOnly
     method translate
 interface DOMParser
     attribute @@toStringTag
+    getter allowDeclarativeShadowDom
     method constructor
     method parseFromString
+    setter allowDeclarativeShadowDom
 interface DOMPoint : DOMPointReadOnly
     attribute @@toStringTag
     getter w
@@ -1546,6 +1548,7 @@ interface Document : Node
     getter adoptedStyleSheets
     getter alinkColor
     getter all
+    getter allowDeclarativeShadowDom
     getter anchors
     getter applets
     getter bgColor
@@ -1776,6 +1779,7 @@ interface Document : Node
     method writeln
     setter adoptedStyleSheets
     setter alinkColor
+    setter allowDeclarativeShadowDom
     setter bgColor
     setter body
     setter cookie
@@ -1903,6 +1907,7 @@ interface Document : Node
 interface DocumentFragment : Node
     attribute @@toStringTag
     attribute @@unscopables
+    getter allowDeclarativeShadowDom
     getter childElementCount
     getter children
     getter firstElementChild
@@ -1914,6 +1919,7 @@ interface DocumentFragment : Node
     method querySelector
     method querySelectorAll
     method replaceChildren
+    setter allowDeclarativeShadowDom
 interface DocumentTimeline : AnimationTimeline
     attribute @@toStringTag
     method constructor
@@ -10318,6 +10324,7 @@ interface XMLHttpRequest : XMLHttpRequestEventTarget
     attribute LOADING
     attribute OPENED
     attribute UNSENT
+    getter allowDeclarativeShadowDom
     getter onreadystatechange
     getter readyState
     getter response
@@ -10340,6 +10347,7 @@ interface XMLHttpRequest : XMLHttpRequestEventTarget
     method send
     method setRequestHeader
     method setTrustToken
+    setter allowDeclarativeShadowDom
     setter onreadystatechange
     setter responseType
     setter timeout
