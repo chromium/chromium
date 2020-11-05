@@ -36,7 +36,6 @@ namespace bindings {
 
 class DictionaryBase;
 class EnumerationBase;
-class UnionBase;
 
 CORE_EXPORT void NativeValueTraitsInterfaceNotOfType(
     const WrapperTypeInfo* wrapper_type_info,
@@ -1251,19 +1250,6 @@ struct NativeValueTraits<
     bindings::NativeValueTraitsInterfaceNotOfType(
         wrapper_type_info, argument_index, exception_state);
     return nullptr;
-  }
-};
-
-// Union types
-template <typename T>
-struct NativeValueTraits<
-    T,
-    typename std::enable_if_t<std::is_base_of<bindings::UnionBase, T>::value>>
-    : public NativeValueTraitsBase<T> {
-  static T NativeValue(v8::Isolate* isolate,
-                       v8::Local<v8::Value> value,
-                       ExceptionState& exception_state) {
-    return T::Create(isolate, value, exception_state);
   }
 };
 

@@ -68,6 +68,7 @@ def main():
         'enumeration': bind_gen.generate_enumerations,
         'interface': bind_gen.generate_interfaces,
         'namespace': bind_gen.generate_namespaces,
+        'union': bind_gen.generate_unions,
     }
 
     for task in tasks:

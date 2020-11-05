@@ -95,17 +95,6 @@ inline v8::Local<v8::Value> ToV8(const bindings::EnumerationBase& enumeration,
   return V8String(isolate, enumeration.AsCStr());
 }
 
-// Union type
-
-inline v8::Local<v8::Value> ToV8(const bindings::UnionBase& value,
-                                 v8::Local<v8::Object> creation_context,
-                                 v8::Isolate* isolate) {
-  v8::Local<v8::Value> v8_value =
-      value.CreateV8Object(isolate, creation_context);
-  DCHECK(!v8_value.IsEmpty());
-  return v8_value;
-}
-
 // Primitives
 
 inline v8::Local<v8::Value> ToV8(const String& value,

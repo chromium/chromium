@@ -11,31 +11,21 @@
 
 namespace blink {
 
-class Visitor;
-
 namespace bindings {
 
-// This class is the base class for all IDL dictionary implementations.  This
-// is designed to collaborate with NativeValueTraits and ToV8 with supporting
-// type dispatching (SFINAE, etc.).
-class PLATFORM_EXPORT UnionBase {
-  DISALLOW_NEW();
-
+// UnionBase is the common base class of all the IDL union classes.  Most
+// importantly this class provides a way of type dispatching (e.g. overload
+// resolutions, SFINAE technique, etc.) so that it's possible to distinguish
+// IDL unions from anything else.  Also it provides a common implementation of
+// IDL unions.
+class PLATFORM_EXPORT UnionBase : public GarbageCollected<UnionBase> {
  public:
   virtual ~UnionBase() = default;
 
-  virtual v8::Local<v8::Value> CreateV8Object(
-      v8::Isolate* isolate,
-      v8::Local<v8::Object> creation_context) const = 0;
-
-  void Trace(Visitor*) const {}
+  virtual void Trace(Visitor*) const {}
 
  protected:
   UnionBase() = default;
-  UnionBase(const UnionBase&) = default;
-  UnionBase(UnionBase&&) = default;
-  UnionBase& operator=(const UnionBase&) = default;
-  UnionBase& operator=(UnionBase&&) = default;
 };
 
 }  // namespace bindings
