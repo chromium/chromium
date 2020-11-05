@@ -377,6 +377,9 @@ void TestingProfile::Init() {
   else
     CreateTestingPrefService();
 
+  if (guest_session_ && IsEphemeralGuestProfileEnabled())
+    GetPrefs()->SetBoolean(prefs::kForceEphemeralProfiles, true);
+
   key_->SetPrefs(prefs_.get());
   SimpleKeyMap::GetInstance()->Associate(this, key_.get());
 
@@ -1117,6 +1120,11 @@ TestingProfile* TestingProfile::Builder::BuildOffTheRecord(
   DCHECK(!build_called_);
   DCHECK(original_profile);
   build_called_ = true;
+
+  // Ephemeral guest profiles do not support Incognito.
+  if (original_profile->IsEphemeralGuestProfile() &&
+      otr_profile_id == OTRProfileID::PrimaryID())
+    return nullptr;
 
   // Note: Owned by |original_profile|.
   return new TestingProfile(

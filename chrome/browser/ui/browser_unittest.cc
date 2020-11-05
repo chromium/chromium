@@ -6,6 +6,7 @@
 
 #include "base/macros.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -13,10 +14,9 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/user_names.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_names.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
@@ -160,30 +160,6 @@ TEST_F(BrowserUnitTest, DisableZoomOnCrashedTab) {
   EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_ZOOM_MINUS));
   EXPECT_FALSE(chrome::CanZoomIn(raw_contents));
   EXPECT_FALSE(chrome::CanZoomOut(raw_contents));
-}
-
-// Tests that Browser::Create creates a guest session browser for OTR profile
-// only.
-TEST_F(BrowserUnitTest, CreateGuestSessionBrowser) {
-  TestingProfile::Builder profile_builder;
-  profile_builder.SetGuestSession();
-  std::unique_ptr<TestingProfile> test_profile = profile_builder.Build();
-  TestingProfile::Builder otr_profile_builder;
-  otr_profile_builder.SetGuestSession();
-  otr_profile_builder.BuildIncognito(test_profile.get());
-
-  // Try creating a browser in original guest profile - it should fail.
-  EXPECT_EQ(Browser::BrowserCreationStatus::kErrorProfileUnsuitable,
-            Browser::GetBrowserCreationStatusForProfile(test_profile.get()));
-
-  // Creating a browser in OTR guest profile should succeed.
-  Browser::CreateParams off_the_record_create_params(
-      test_profile->GetPrimaryOTRProfile(), false);
-  std::unique_ptr<BrowserWindow> test_window(CreateBrowserWindow());
-  off_the_record_create_params.window = test_window.get();
-  std::unique_ptr<Browser> otr_browser(
-      Browser::Create(off_the_record_create_params));
-  EXPECT_TRUE(otr_browser);
 }
 
 TEST_F(BrowserUnitTest, CreateBrowserFailsIfProfileDisallowsBrowserWindows) {
@@ -410,3 +386,58 @@ TEST_F(BrowserBookmarkBarTest, StateOnActiveTabChanged) {
   EXPECT_EQ(BookmarkBar::SHOW, browser()->bookmark_bar_state());
   EXPECT_EQ(BookmarkBar::SHOW, window_bookmark_bar_state());
 }
+
+class GuestBrowserUnitTest : public BrowserUnitTest,
+                             public testing::WithParamInterface<bool> {
+ public:
+  GuestBrowserUnitTest() : is_ephemeral_(GetParam()) {
+    // Change the value if Ephemeral is not supported.
+    is_ephemeral_ &=
+        TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+            scoped_feature_list_, is_ephemeral_);
+  }
+
+  bool is_ephemeral() const { return is_ephemeral_; }
+
+ private:
+  bool is_ephemeral_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that Browser::Create creates a guest session browser for appropriate
+// OTR/non-OTR type for old and ephemeral Guest profiles.
+TEST_P(GuestBrowserUnitTest, CreateGuestSessionBrowser) {
+  TestingProfile::Builder profile_builder;
+  profile_builder.SetGuestSession();
+  std::unique_ptr<TestingProfile> test_profile = profile_builder.Build();
+  TestingProfile::Builder otr_profile_builder;
+  otr_profile_builder.SetGuestSession();
+  Profile* guest_profile = nullptr;
+
+  if (is_ephemeral()) {
+    // Try creating an OTR profile for ephemeral Guest profile, it should fail.
+    EXPECT_FALSE(otr_profile_builder.BuildIncognito(test_profile.get()));
+    guest_profile = test_profile.get();
+  } else {
+    // Try creating a browser in original guest profile - it should fail.
+    EXPECT_EQ(Browser::BrowserCreationStatus::kErrorProfileUnsuitable,
+              Browser::GetBrowserCreationStatusForProfile(test_profile.get()));
+
+    // Create OTR profile for the Guest profile.
+    EXPECT_TRUE(otr_profile_builder.BuildIncognito(test_profile.get()));
+    guest_profile = test_profile->GetPrimaryOTRProfile();
+  }
+
+  // Creating a browser should succeed.
+  Browser::CreateParams create_params =
+      Browser::CreateParams(guest_profile, false);
+  std::unique_ptr<BrowserWindow> test_window = CreateBrowserWindow();
+  create_params.window = test_window.get();
+  std::unique_ptr<Browser> browser =
+      std::unique_ptr<Browser>(Browser::Create(create_params));
+  EXPECT_TRUE(browser);
+}
+
+INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
+                         GuestBrowserUnitTest,
+                         /*is_ephemeral=*/testing::Bool());

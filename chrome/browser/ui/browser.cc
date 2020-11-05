@@ -2759,9 +2759,9 @@ void Browser::SyncHistoryWithTabs(int index) {
 
 bool Browser::CanCloseWithInProgressDownloads() {
 #if defined(OS_MAC) || defined(OS_CHROMEOS)
-  // On Mac and ChromeOS, non-incognito download can still continue after window
-  // is closed.
-  if (!profile_->IsOffTheRecord())
+  // On Mac and ChromeOS, non-incognito and non-Guest downloads can still
+  // continue after window is closed.
+  if (!profile_->IsOffTheRecord() && !profile_->IsEphemeralGuestProfile())
     return true;
 #endif
 

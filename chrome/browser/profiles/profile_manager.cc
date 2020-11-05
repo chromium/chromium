@@ -333,8 +333,8 @@ void OnProfileLoaded(ProfileManager::ProfileLoadedCallback client_callback,
 
 #if !defined(OS_ANDROID)
 // Helper function for ScheduleForcedEphemeralProfileForDeletion.
-bool IsProfileEphemeral(ProfileAttributesStorage* storage,
-                        const base::FilePath& profile_dir) {
+bool IsRegisteredAsEphemeral(ProfileAttributesStorage* storage,
+                             const base::FilePath& profile_dir) {
   ProfileAttributesEntry* entry = nullptr;
   return storage->GetProfileAttributesWithPath(profile_dir, &entry) &&
          entry->IsEphemeral();
@@ -1988,6 +1988,12 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
   if (IsProfileDirectoryMarkedForDeletion(path)) {
     // Do nothing if the profile is already being deleted.
   } else if (profile->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles)) {
+    // Avoid scheduling deletion if it's a testing profile that is not
+    // registered with profile manager.
+    if (profile->AsTestingProfile() &&
+        !IsRegisteredAsEphemeral(&GetProfileAttributesStorage(), path)) {
+      return;
+    }
     // Delete if the profile is an ephemeral profile.
     ScheduleForcedEphemeralProfileForDeletion(path);
   }
@@ -2085,7 +2091,7 @@ void ProfileManager::OnNewActiveProfileLoaded(
 void ProfileManager::ScheduleForcedEphemeralProfileForDeletion(
     const base::FilePath& profile_dir) {
   DCHECK_EQ(0u, chrome::GetBrowserCount(GetProfileByPath(profile_dir)));
-  DCHECK(IsProfileEphemeral(&GetProfileAttributesStorage(), profile_dir));
+  DCHECK(IsRegisteredAsEphemeral(&GetProfileAttributesStorage(), profile_dir));
 
   base::Optional<base::FilePath> new_active_profile_dir =
       FindLastActiveProfile(base::BindRepeating(
