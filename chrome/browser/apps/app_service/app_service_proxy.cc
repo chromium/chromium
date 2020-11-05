@@ -189,21 +189,10 @@ void AppServiceProxy::Initialize() {
         lacros_apps_ = std::make_unique<LacrosApps>(app_service_);
       }
     }
-    if (base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions)) {
-      web_apps_ = std::make_unique<WebAppsChromeOs>(app_service_, profile_,
-                                                    &instance_registry_);
-    } else {
-      extension_web_apps_ = std::make_unique<ExtensionAppsChromeOs>(
-          app_service_, profile_, apps::mojom::AppType::kWeb,
-          &instance_registry_);
-    }
+    web_apps_ = std::make_unique<WebAppsChromeOs>(app_service_, profile_,
+                                                  &instance_registry_);
 #else
-    if (base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions)) {
-      web_apps_ = std::make_unique<WebApps>(app_service_, profile_);
-    } else {
-      extension_web_apps_ = std::make_unique<ExtensionApps>(
-          app_service_, profile_, apps::mojom::AppType::kWeb);
-    }
+    web_apps_ = std::make_unique<WebApps>(app_service_, profile_);
     extension_apps_ = std::make_unique<ExtensionApps>(
         app_service_, profile_, apps::mojom::AppType::kExtension);
 #endif
@@ -377,12 +366,7 @@ void AppServiceProxy::Uninstall(const std::string& app_id,
   // On non-ChromeOS, publishers run the remove dialog.
   apps::mojom::AppType app_type = cache_.GetAppType(app_id);
   if (app_type == apps::mojom::AppType::kWeb) {
-    if (!base::FeatureList::IsEnabled(
-            features::kDesktopPWAsWithoutExtensions)) {
-      ExtensionApps::UninstallImpl(profile_, app_id, parent_window);
-    } else {
-      WebApps::UninstallImpl(profile_, app_id, parent_window);
-    }
+    WebApps::UninstallImpl(profile_, app_id, parent_window);
   }
 #endif
 }
@@ -505,8 +489,6 @@ void AppServiceProxy::FlushMojoCallsForTesting() {
   }
   if (web_apps_) {
     web_apps_->FlushMojoCallsForTesting();
-  } else {
-    extension_web_apps_->FlushMojoCallsForTesting();
   }
   if (borealis_apps_) {
     borealis_apps_->FlushMojoCallsForTesting();
@@ -616,8 +598,6 @@ void AppServiceProxy::SetArcIsRegistered() {
   extension_apps_->ObserveArc();
   if (web_apps_) {
     web_apps_->ObserveArc();
-  } else {
-    extension_web_apps_->ObserveArc();
   }
 #endif
 }
@@ -662,8 +642,6 @@ void AppServiceProxy::Shutdown() {
     extension_apps_->Shutdown();
     if (web_apps_) {
       web_apps_->Shutdown();
-    } else {
-      extension_web_apps_->Shutdown();
     }
   }
   borealis_apps_.reset();

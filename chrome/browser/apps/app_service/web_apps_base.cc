@@ -115,7 +115,9 @@ void WebAppsBase::Shutdown() {
 
 const web_app::WebApp* WebAppsBase::GetWebApp(
     const web_app::AppId& app_id) const {
-  return GetRegistrar()->GetAppById(app_id);
+  // GetRegistrar() might return nullptr if the legacy bookmark apps registry is
+  // enabled. This may happen in migration browser tests.
+  return GetRegistrar() ? GetRegistrar()->GetAppById(app_id) : nullptr;
 }
 
 void WebAppsBase::OnWebAppUninstalled(const web_app::AppId& app_id) {
