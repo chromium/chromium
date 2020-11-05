@@ -4,6 +4,7 @@
 
 #include "chrome/browser/component_updater/component_updater_prefs.h"
 
+#include "chrome/browser/component_updater/autofill_states_component_installer.h"
 #include "chrome/browser/component_updater/chrome_component_updater_configurator.h"
 #include "chrome/browser/component_updater/recovery_component_installer.h"
 #include "chrome/common/buildflags.h"
@@ -29,6 +30,8 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
 #if !defined(OS_ANDROID)
   RegisterPrefsForSodaComponent(registry);
 #endif
+
+  AutofillStatesComponentInstallerPolicy::RegisterPrefs(registry);
 }
 
 }  // namespace component_updater

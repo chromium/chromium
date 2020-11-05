@@ -185,7 +185,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(prefs::kAutofillUploadEventsLastResetTimestamp,
                              base::Time());
   registry->RegisterDictionaryPref(prefs::kAutofillSyncTransportOptIn);
-  registry->RegisterStringPref(prefs::kAutofillStatesDataDir, "");
 
   // Deprecated prefs registered for migration.
   registry->RegisterBooleanPref(kAutofillJapanCityFieldMigratedDeprecated,

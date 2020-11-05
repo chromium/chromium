@@ -20,21 +20,17 @@ class FilePath;
 }  // namespace base
 
 namespace component_updater {
-
-// Success callback to be run once the component is downloaded.
-using OnAutofillStatesReadyCallback =
-    base::RepeatingCallback<void(const base::FilePath&)>;
-
 class AutofillStatesComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
-  explicit AutofillStatesComponentInstallerPolicy(
-      OnAutofillStatesReadyCallback callback);
+  explicit AutofillStatesComponentInstallerPolicy(PrefService* pref_service);
   ~AutofillStatesComponentInstallerPolicy() override;
 
   AutofillStatesComponentInstallerPolicy(
       const AutofillStatesComponentInstallerPolicy&) = delete;
   AutofillStatesComponentInstallerPolicy& operator=(
       const AutofillStatesComponentInstallerPolicy&) = delete;
+
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
 #if defined(UNIT_TEST)
   bool VerifyInstallationForTesting(const base::DictionaryValue& manifest,
@@ -46,7 +42,7 @@ class AutofillStatesComponentInstallerPolicy : public ComponentInstallerPolicy {
       const base::Version& version,
       const base::FilePath& install_dir,
       std::unique_ptr<base::DictionaryValue> manifest) {
-    return ComponentReady(version, install_dir, std::move(manifest));
+    ComponentReady(version, install_dir, std::move(manifest));
   }
 #endif
 
@@ -69,7 +65,7 @@ class AutofillStatesComponentInstallerPolicy : public ComponentInstallerPolicy {
   update_client::InstallerAttributes GetInstallerAttributes() const override;
   std::vector<std::string> GetMimeTypes() const override;
 
-  OnAutofillStatesReadyCallback on_component_ready_callback_on_ui_;
+  PrefService* pref_service_;
 };
 
 // Call once during startup to make the component update service aware of

@@ -9,7 +9,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/geo/state_names.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,6 +24,7 @@ class AutofillStatesDataComponentInstallerPolicyTest : public ::testing::Test {
   void SetUp() override {
     ASSERT_TRUE(component_install_dir_.CreateUniqueTempDir());
     filenames_ = {"US", "IN", "DE", "AB"};
+    pref_service_ = autofill::test::PrefServiceForTesting();
   }
 
   const base::Version& version() const { return fake_version_; }
@@ -44,6 +47,7 @@ class AutofillStatesDataComponentInstallerPolicyTest : public ::testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<PrefService> pref_service_;
 
  private:
   base::DictionaryValue manifest_;
@@ -56,8 +60,7 @@ class AutofillStatesDataComponentInstallerPolicyTest : public ::testing::Test {
 // Tests that VerifyInstallation only returns true when all expected files are
 // present.
 TEST_F(AutofillStatesDataComponentInstallerPolicyTest, VerifyInstallation) {
-  AutofillStatesComponentInstallerPolicy policy(
-      base::BindLambdaForTesting([&](const base::FilePath& path) {}));
+  AutofillStatesComponentInstallerPolicy policy(pref_service_.get());
 
   // An empty dir lacks all required files.
   EXPECT_FALSE(policy.VerifyInstallationForTesting(manifest(), GetPath()));
@@ -71,20 +74,14 @@ TEST_F(AutofillStatesDataComponentInstallerPolicyTest, VerifyInstallation) {
   EXPECT_FALSE(policy.VerifyInstallationForTesting(manifest(), GetPath()));
 }
 
-// Tests that ComponentReady calls Lambda.
+// Tests that ComponentReady saves the installed dir path to prefs.
 TEST_F(AutofillStatesDataComponentInstallerPolicyTest,
-       ComponentReady_CallsLambda) {
-  base::FilePath given_path;
-
-  AutofillStatesComponentInstallerPolicy policy(base::BindLambdaForTesting(
-      [&](const base::FilePath& path) { given_path = path; }));
-
+       InstallDirSavedToPrefOnComponentReady) {
+  AutofillStatesComponentInstallerPolicy policy(pref_service_.get());
   policy.ComponentReadyForTesting(version(), GetPath(),
                                   std::make_unique<base::DictionaryValue>());
-
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_EQ(GetPath(), given_path);
+  ASSERT_EQ(GetPath(), pref_service_->GetFilePath(
+                           autofill::prefs::kAutofillStatesDataDir));
 }
 
 }  // namespace component_updater
