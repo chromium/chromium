@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "ui/views/views_export.h"
+#include "ui/views/widget/widget.h"
 
 namespace views {
 
@@ -20,12 +21,17 @@ namespace views {
 // correct behavior.
 class VIEWS_EXPORT MenuCocoaWatcherMac {
  public:
-  explicit MenuCocoaWatcherMac(base::OnceClosure callback);
+  // For window activation changes, the callback is only invoked if
+  // |activation_is_interesting| returns true on the involved Widget (which may
+  // be nullptr).
+  explicit MenuCocoaWatcherMac(Widget::Predicate activation_is_interesting,
+                               base::OnceClosure callback);
   ~MenuCocoaWatcherMac();
 
  private:
   void ExecuteCallback();
 
+  Widget::Predicate activation_is_interesting_;
   // The closure to call when the notification comes in.
   base::OnceClosure callback_;
 

@@ -121,6 +121,13 @@ class VIEWS_EXPORT MenuController
     send_gesture_events_to_owner_ = send_gesture_events_to_owner;
   }
 
+  bool should_take_keyboard_focus() const {
+    return should_take_keyboard_focus_;
+  }
+  void set_should_take_keyboard_focus(bool should_take_keyboard_focus) {
+    should_take_keyboard_focus_ = should_take_keyboard_focus;
+  }
+
   // Returns the owner of child windows.
   // WARNING: this may be NULL.
   Widget* owner() { return owner_; }
@@ -758,6 +765,9 @@ class VIEWS_EXPORT MenuController
 
   // Whether to use the touchable layout.
   bool use_touchable_layout_ = false;
+
+  // Whether to take keyboard focus.
+  bool should_take_keyboard_focus_ = false;
 
   // During mouse event handling, this is the RootView to forward mouse events
   // to. We need this, because if we forward one event to it (e.g., mouse

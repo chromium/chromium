@@ -108,6 +108,9 @@ class VIEWS_EXPORT MenuRunner {
 
     // Indicates that the menu should show mnemonics.
     SHOULD_SHOW_MNEMONICS = 1 << 10,
+
+    // Whether the menu should take keyboard focus immediately when shown.
+    TAKE_KEYBOARD_FOCUS = 1 << 11,
   };
 
   // Creates a new MenuRunner, which may use a native menu if available.

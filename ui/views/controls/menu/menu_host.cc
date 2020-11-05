@@ -128,7 +128,9 @@ void MenuHost::InitMenuHost(Widget* parent,
   // If MenuHost has no parent widget, it needs to be marked
   // Activatable, so that calling Show in ShowMenuHost will
   // get keyboard focus.
-  if (parent == nullptr)
+  const bool take_focus =
+      menu_controller && menu_controller->should_take_keyboard_focus();
+  if (parent == nullptr || take_focus)
     params.activatable = Widget::InitParams::ACTIVATABLE_YES;
 #if defined(OS_WIN)
   // On Windows use the software compositor to ensure that we don't block
@@ -161,10 +163,13 @@ void MenuHost::ShowMenuHost(bool do_capture) {
   // Doing a capture may make us get capture lost. Ignore it while we're in the
   // process of showing.
   base::AutoReset<bool> reseter(&ignore_capture_lost_, true);
-  ShowInactive();
+  MenuController* menu_controller =
+      submenu_->GetMenuItem()->GetMenuController();
+  if (menu_controller && menu_controller->should_take_keyboard_focus())
+    Show();
+  else
+    ShowInactive();
   if (do_capture) {
-    MenuController* menu_controller =
-        submenu_->GetMenuItem()->GetMenuController();
     if (menu_controller && menu_controller->send_gesture_events_to_owner()) {
       // TransferGesture when owner needs gesture events so that the incoming
       // touch events after MenuHost is created are properly translated into

@@ -6,12 +6,37 @@
 
 #include <utility>
 
+#include "build/build_config.h"
 #include "ui/views/controls/menu/menu_runner_handler.h"
 #include "ui/views/controls/menu/menu_runner_impl.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
+
+namespace {
+
+bool ShouldTakeKeyboardFocus(ui::MenuSourceType source_type, int run_types) {
+#if defined(OS_MAC)
+  // An awkward hack: if the menu comes from an editable combobox, we can't take
+  // keyboard focus in the menu even if the menu was opened by the keyboard,
+  // because if we did, the editable combobox would become impossible to type
+  // in. This is inconsistent with opening other menus with the keyboard, and
+  // produces a weird accessibility experience in which editable combobox menus
+  // aren't announced when they appear but other menus are, but there's no real
+  // way around it.
+  return source_type == ui::MENU_SOURCE_KEYBOARD &&
+         !(run_types & MenuRunner::EDITABLE_COMBOBOX);
+#else
+  // A second awkward hack: on Aura platforms, for whatever reason, activating
+  // the menu widget causes there to be *no* active aura::Window, which confuses
+  // MenuPreTargetHandlerAura. Never do that.
+  // TODO(ellyjones): Why does that happen? How can there be no active window?
+  return false;
+#endif
+}
+
+}  // namespace
 
 MenuRunner::MenuRunner(ui::MenuModel* menu_model,
                        int32_t run_types,
@@ -69,7 +94,11 @@ void MenuRunner::RunMenuAt(Widget* parent,
     }
   }
 
-  impl_->RunMenuAt(parent, button_controller, bounds, anchor, run_types_);
+  int32_t types = run_types_;
+  if (ShouldTakeKeyboardFocus(source_type, run_types_))
+    types |= TAKE_KEYBOARD_FOCUS;
+
+  impl_->RunMenuAt(parent, button_controller, bounds, anchor, types);
 }
 
 bool MenuRunner::IsRunning() const {
