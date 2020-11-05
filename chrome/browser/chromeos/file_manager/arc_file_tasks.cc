@@ -135,6 +135,7 @@ void OnArcHandlerList(
   auto* intent_helper_bridge =
       arc::ArcIntentHelperBridge::GetForBrowserContext(profile);
   if (!intent_helper_bridge) {
+    LOG(ERROR) << "Failed to get ArcIntentHelperBridge";
     std::move(callback).Run(std::move(result_list));
     return;
   }
@@ -207,9 +208,12 @@ void FindArcTasksAfterContentUrlsResolved(
       arc_intent_helper = ARC_GET_INSTANCE_FOR_METHOD(
           arc_service_manager->arc_bridge_service()->intent_helper(),
           RequestUrlListHandlerList);
+    } else {
+      LOG(ERROR) << "Failed to get ArcServiceManager";
     }
   }
   if (!arc_intent_helper) {
+    LOG(ERROR) << "Failed to get arc_intent_helper";
     std::move(callback).Run(std::move(result_list));
     return;
   }
@@ -270,6 +274,7 @@ void ExecuteArcTaskAfterContentUrlsResolved(
 
   auto* arc_service_manager = arc::ArcServiceManager::Get();
   if (!arc_service_manager) {
+    LOG(ERROR) << "Failed to get ArcServiceManager";
     std::move(done).Run(
         extensions::api::file_manager_private::TASK_RESULT_FAILED,
         "No ArcServiceManager");
