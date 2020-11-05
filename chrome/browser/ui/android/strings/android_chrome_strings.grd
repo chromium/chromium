@@ -3034,6 +3034,9 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_BOOKMARK_NO_RESULT" desc="Text explaining that no bookmarks are found to match a search query">
         Can’t find that bookmark. Check your spelling or add a new bookmark.
       </message>
+      <message name="IDS_BOOKMARKS_BOTTOM_SHEET_TITLE" desc="The title for the bookmark bottom sheet, shown when trying to add a bookmark. Translation should match TC ID 9191031968346938109.">
+        Add to
+      </message>
       <message name="IDS_EDIT_BOOKMARK" desc='The string prompting the user to edit the content of a bookmark. [CHAR-LIMIT=30]'>
         Edit bookmark
       </message>
