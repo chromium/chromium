@@ -30,6 +30,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
@@ -87,6 +88,7 @@ public class TabbedPaintPreviewTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1145783")
     public void testDisplayedCorrectly() throws ExecutionException, TimeoutException {
         Tab tab = sActivityTestRule.getActivity().getActivityTab();
         TabbedPaintPreview tabbedPaintPreview =
@@ -128,6 +130,7 @@ public class TabbedPaintPreviewTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1145783")
     public void testBrowserControlsPersistent() throws ExecutionException {
         TestControlsVisibilityDelegate visibilityDelegate =
                 TestThreadUtils.runOnUiThreadBlocking(TestControlsVisibilityDelegate::new);
@@ -170,6 +173,7 @@ public class TabbedPaintPreviewTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1145783")
     public void testProgressbar() throws ExecutionException {
         Tab tab = sActivityTestRule.getActivity().getActivityTab();
         TabbedPaintPreview tabbedPaintPreview =
