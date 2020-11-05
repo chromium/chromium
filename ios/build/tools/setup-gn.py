@@ -24,7 +24,7 @@ except ImportError:
   import io
 
 
-SUPPORTED_TARGETS = ('iphoneos', 'iphonesimulator')
+SUPPORTED_TARGETS = ('iphoneos', 'iphonesimulator', 'maccatalyst')
 SUPPORTED_CONFIGS = ('Debug', 'Release', 'Profile', 'Official', 'Coverage')
 
 
@@ -62,19 +62,15 @@ class GnGenerator(object):
   FAT_BUILD_DEFAULT_ARCH = '64-bit'
 
   TARGET_CPU_VALUES = {
-    'iphoneos': {
-      '32-bit': '"arm"',
-      '64-bit': '"arm64"',
-    },
-    'iphonesimulator': {
-      '32-bit': '"x86"',
-      '64-bit': '"x64"',
-    }
+    'iphoneos': '"arm64"',
+    'iphonesimulator': '"x64"',
+    'maccatalyst': '"x64"',
   }
 
   TARGET_ENVIRONMENT_VALUES = {
     'iphoneos': '"device"',
     'iphonesimulator': '"simulator"',
+    'maccatalyst': '"catalyst"'
   }
 
   def __init__(self, settings, config, target):
@@ -103,31 +99,35 @@ class GnGenerator(object):
         if goma_dir:
           args.append(('goma_dir', '"%s"' % os.path.expanduser(goma_dir)))
 
+    args.append(('target_os', '"ios"'))
     args.append(('is_debug', self._config in ('Debug', 'Coverage')))
     args.append(('enable_dsyms', self._config in ('Profile', 'Official')))
     args.append(('enable_stripping', 'enable_dsyms'))
     args.append(('is_official_build', self._config == 'Official'))
     args.append(('is_chrome_branded', 'is_official_build'))
-    args.append(('use_xcode_clang', False))
     args.append(('use_clang_coverage', self._config == 'Coverage'))
     args.append(('is_component_build', False))
 
     if os.environ.get('FORCE_MAC_TOOLCHAIN', '0') == '1':
       args.append(('use_system_xcode', False))
 
-    cpu_values = self.TARGET_CPU_VALUES[self._target]
-    build_arch = self._settings.getstring('build', 'arch')
-    if build_arch == 'fat':
-      target_cpu = cpu_values[self.FAT_BUILD_DEFAULT_ARCH]
-      args.append(('target_cpu', target_cpu))
-      args.append(('additional_target_cpus',
-          [cpu for cpu in cpu_values.itervalues() if cpu != target_cpu]))
-    else:
-      args.append(('target_cpu', cpu_values[build_arch]))
-
+    args.append(('target_cpu', self.TARGET_CPU_VALUES[self._target]))
     args.append((
         'target_environment',
         self.TARGET_ENVIRONMENT_VALUES[self._target]))
+
+    if self._target == 'maccatalyst':
+      # Building for "catalyst" environment has not been open-sourced thus can't
+      # use ToT clang and need to use Xcode's version instead. This version of
+      # clang does not generate the same warning as ToT clang, so do not treat
+      # warnings as errors.
+      # TODO(crbug.com/1145947): remove once clang ToT supports "macabi".
+      args.append(('use_xcode_clang', True))
+      args.append(('treat_warnings_as_errors', False))
+
+      # The "catalyst" environment is only supported from iOS 13.0 SDK. Until
+      # Chrome uses this SDK, it needs to be overridden for "catalyst" builds.
+      args.append(('ios_deployment_target', '"13.0"'))
 
     # Add user overrides after the other configurations so that they can
     # refer to them and override them.
@@ -153,10 +153,11 @@ class GnGenerator(object):
       stream.write('# to configure settings.\n')
       stream.write('\n')
 
-      if self._settings.has_section('$imports$'):
-        for import_rule in self._settings.values('$imports$'):
-          stream.write('import("%s")\n' % import_rule)
-        stream.write('\n')
+      if self._target != 'maccatalyst':
+        if self._settings.has_section('$imports$'):
+          for import_rule in self._settings.values('$imports$'):
+            stream.write('import("%s")\n' % import_rule)
+          stream.write('\n')
 
       gn_args = self._GetGnArgs()
       for name, value in gn_args:
