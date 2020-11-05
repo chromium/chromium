@@ -26,6 +26,8 @@ class ASH_EXPORT ClipboardNudge : public ShelfObserver {
                              HotseatState new_state) override;
   void Close();
 
+  views::Widget* widget() { return widget_.get(); }
+
  private:
   class ClipboardNudgeView;
 

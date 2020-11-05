@@ -87,6 +87,9 @@ class ASH_EXPORT ClipboardNudgeController
   // Hides the nudge widget.
   void HideNudge();
 
+  // Begins the animation for fading in or fading out the clipboard nudge.
+  void StartFadeAnimation(bool show);
+
   // Time the nudge was last shown.
   base::Time last_shown_time_;
 

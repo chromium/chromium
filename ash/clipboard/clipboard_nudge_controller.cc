@@ -20,6 +20,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
 
 namespace {
 
@@ -30,6 +32,30 @@ constexpr char kLastTimeShown[] = "last_time_shown";
 // The maximum number of 1 second buckets used to record the time between
 // showing the nudge and recording the feature being opened/used.
 constexpr int kBucketCount = 61;
+
+// A class for observing the clipboard nudge fade out animation. Once the fade
+// out animation is complete the clipboard nudge will be destroyed.
+class ImplicitNudgeHideAnimationObserver
+    : public ui::ImplicitAnimationObserver {
+ public:
+  explicit ImplicitNudgeHideAnimationObserver(
+      std::unique_ptr<ash::ClipboardNudge> nudge)
+      : nudge_(std::move(nudge)) {}
+  ImplicitNudgeHideAnimationObserver(
+      const ImplicitNudgeHideAnimationObserver&) = delete;
+  ImplicitNudgeHideAnimationObserver& operator=(
+      const ImplicitNudgeHideAnimationObserver&) = delete;
+  ~ImplicitNudgeHideAnimationObserver() override {
+    StopObservingImplicitAnimations();
+    nudge_->Close();
+  }
+
+  // ui::ImplicitAnimationObserver:
+  void OnImplicitAnimationsCompleted() override { delete this; }
+
+ private:
+  std::unique_ptr<ash::ClipboardNudge> nudge_;
+};
 
 }  // namespace
 
@@ -124,6 +150,7 @@ void ClipboardNudgeController::OnActiveUserPrefServiceChanged(
 void ClipboardNudgeController::ShowNudge() {
   // Create and show the nudge.
   nudge_ = std::make_unique<ClipboardNudge>();
+  StartFadeAnimation(/*show=*/true);
 
   // Start a timer to close the nudge after a set amount of time.
   hide_nudge_timer_.Start(FROM_HERE, kNudgeShowTime,
@@ -139,8 +166,43 @@ void ClipboardNudgeController::ShowNudge() {
 }
 
 void ClipboardNudgeController::HideNudge() {
-  nudge_->Close();
-  nudge_.reset();
+  StartFadeAnimation(/*show=*/false);
+}
+
+void ClipboardNudgeController::StartFadeAnimation(bool show) {
+  ui::Layer* layer = nudge_->widget()->GetLayer();
+  gfx::Rect widget_bounds = layer->bounds();
+
+  gfx::Transform scaled_nudge_transform;
+  float x_offset =
+      widget_bounds.width() * (1.0f - kNudgeFadeAnimationScale) / 2.0f;
+  float y_offset =
+      widget_bounds.height() * (1.0f - kNudgeFadeAnimationScale) / 2.0f;
+  scaled_nudge_transform.Translate(x_offset, y_offset);
+  scaled_nudge_transform.Scale(kNudgeFadeAnimationScale,
+                               kNudgeFadeAnimationScale);
+
+  layer->SetOpacity(show ? 0.0f : 1.0f);
+  layer->SetTransform(show ? scaled_nudge_transform : gfx::Transform());
+
+  {
+    // Perform the scaling animation on the clipboard nudge.
+    ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
+    settings.SetTransitionDuration(kNudgeFadeAnimationTime);
+    settings.SetTweenType(kNudgeFadeScalingAnimationTweenType);
+    layer->SetTransform(show ? gfx::Transform() : scaled_nudge_transform);
+  }
+  {
+    // Perform the opacity animation on the clipboard nudge.
+    ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
+    settings.SetTransitionDuration(kNudgeFadeAnimationTime);
+    settings.SetTweenType(kNudgeFadeOpacityAnimationTweenType);
+    layer->SetOpacity(show ? 1.0f : 0.0f);
+    if (!show) {
+      settings.AddObserver(
+          new ImplicitNudgeHideAnimationObserver(std::move(nudge_)));
+    }
+  }
 }
 
 void ClipboardNudgeController::HandleNudgeShown() {
