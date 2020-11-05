@@ -20,6 +20,7 @@
 class GURL;
 
 namespace base {
+class UnguessableToken;
 class WaitableEvent;
 }
 
@@ -66,6 +67,10 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   virtual void AddRoute(int32_t routing_id, IPC::Listener* listener) = 0;
   virtual void RemoveRoute(int32_t routing_id) = 0;
   virtual int GenerateRoutingID() = 0;
+  virtual bool GenerateFrameRoutingID(
+      int32_t& routing_id,
+      base::UnguessableToken& frame_token,
+      base::UnguessableToken& devtools_frame_token) = 0;
 
   // These map to IPC::ChannelProxy methods.
   virtual void AddFilter(IPC::MessageFilter* filter) = 0;

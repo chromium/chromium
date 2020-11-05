@@ -2064,6 +2064,19 @@ class CONTENT_EXPORT RenderFrameHostImpl
       std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params)
       override;
+  void CreateChildFrame(
+      int new_routing_id,
+      mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
+          interface_provider_receiver,
+      mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
+          browser_interface_broker_receiver,
+      blink::mojom::TreeScopeType scope,
+      const std::string& frame_name,
+      const std::string& frame_unique_name,
+      bool is_created_by_script,
+      const blink::FramePolicy& frame_policy,
+      blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
+      blink::mojom::FrameOwnerElementType owner_type) override;
 
   // This function mimics DidCommitProvisionalLoad but is a direct mojo
   // callback from NavigationClient::CommitNavigation.

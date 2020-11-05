@@ -54,6 +54,32 @@ int RenderWidgetHelper::GetNextRoutingID() {
   return next_routing_id_.GetNext() + 1;
 }
 
+bool RenderWidgetHelper::TakeFrameTokensForFrameRoutingID(
+    int32_t routing_id,
+    base::UnguessableToken& frame_token,
+    base::UnguessableToken& devtools_frame_token) {
+  base::AutoLock lock(frame_token_map_lock_);
+  auto iter = frame_token_routing_id_map_.find(routing_id);
+  if (iter == frame_token_routing_id_map_.end())
+    return false;
+  frame_token = iter->second.frame_token;
+  devtools_frame_token = iter->second.devtools_frame_token;
+  frame_token_routing_id_map_.erase(iter);
+  return true;
+}
+
+void RenderWidgetHelper::StoreNextFrameRoutingID(
+    int32_t routing_id,
+    const base::UnguessableToken& frame_token,
+    const base::UnguessableToken& devtools_frame_token) {
+  base::AutoLock lock(frame_token_map_lock_);
+  bool result =
+      frame_token_routing_id_map_
+          .emplace(routing_id, FrameTokens{frame_token, devtools_frame_token})
+          .second;
+  DCHECK(result);
+}
+
 // static
 RenderWidgetHelper* RenderWidgetHelper::FromProcessHostID(
     int render_process_host_id) {

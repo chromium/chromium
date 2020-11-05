@@ -174,17 +174,6 @@ IPC_STRUCT_TRAITS_BEGIN(content::CustomContextMenuContext)
   IPC_STRUCT_TRAITS_MEMBER(link_followed)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(blink::mojom::FrameOwnerProperties)
-  IPC_STRUCT_TRAITS_MEMBER(name)
-  IPC_STRUCT_TRAITS_MEMBER(scrollbar_mode)
-  IPC_STRUCT_TRAITS_MEMBER(margin_width)
-  IPC_STRUCT_TRAITS_MEMBER(margin_height)
-  IPC_STRUCT_TRAITS_MEMBER(allow_fullscreen)
-  IPC_STRUCT_TRAITS_MEMBER(allow_payment_request)
-  IPC_STRUCT_TRAITS_MEMBER(is_display_none)
-  IPC_STRUCT_TRAITS_MEMBER(required_csp)
-IPC_STRUCT_TRAITS_END()
-
 IPC_STRUCT_TRAITS_BEGIN(blink::FrameVisualProperties)
   IPC_STRUCT_TRAITS_MEMBER(screen_info)
   IPC_STRUCT_TRAITS_MEMBER(auto_resize_enabled)
@@ -338,26 +327,6 @@ IPC_STRUCT_TRAITS_BEGIN(content::FrameReplicationState)
   IPC_STRUCT_TRAITS_MEMBER(ad_frame_type)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_BEGIN(FrameHostMsg_CreateChildFrame_Params)
-  IPC_STRUCT_MEMBER(int32_t, parent_routing_id)
-  IPC_STRUCT_MEMBER(blink::mojom::TreeScopeType, scope)
-  IPC_STRUCT_MEMBER(std::string, frame_name)
-  IPC_STRUCT_MEMBER(std::string, frame_unique_name)
-  IPC_STRUCT_MEMBER(bool, is_created_by_script)
-  IPC_STRUCT_MEMBER(blink::FramePolicy, frame_policy)
-  IPC_STRUCT_MEMBER(blink::mojom::FrameOwnerProperties, frame_owner_properties)
-  IPC_STRUCT_MEMBER(blink::mojom::FrameOwnerElementType,
-                    frame_owner_element_type)
-IPC_STRUCT_END()
-
-IPC_STRUCT_BEGIN(FrameHostMsg_CreateChildFrame_Params_Reply)
-  IPC_STRUCT_MEMBER(int32_t, child_routing_id)
-  IPC_STRUCT_MEMBER(mojo::MessagePipeHandle, new_interface_provider)
-  IPC_STRUCT_MEMBER(mojo::MessagePipeHandle, browser_interface_broker_handle)
-  IPC_STRUCT_MEMBER(base::UnguessableToken, frame_token)
-  IPC_STRUCT_MEMBER(base::UnguessableToken, devtools_frame_token)
-IPC_STRUCT_END()
-
 IPC_STRUCT_TRAITS_BEGIN(network::mojom::ContentSecurityPolicyHeader)
   IPC_STRUCT_TRAITS_MEMBER(header_value)
   IPC_STRUCT_TRAITS_MEMBER(type)
@@ -397,18 +366,6 @@ IPC_MESSAGE_ROUTED2(FrameMsg_SetPepperVolume,
 
 // -----------------------------------------------------------------------------
 // Messages sent from the renderer to the browser.
-
-// Sent by the renderer when a child frame is created in the renderer.
-//
-// Each of these messages will have a corresponding mojom::FrameHost::Detach API
-// sent when the frame is detached from the DOM.
-// Note that |params_reply| is an out parameter. Browser process defines it for
-// the renderer process.
-// |params_reply.child_routing_id| may not be assigned MSG_ROUTING_NONE.
-IPC_SYNC_MESSAGE_CONTROL1_1(FrameHostMsg_CreateChildFrame,
-                            FrameHostMsg_CreateChildFrame_Params,
-                            // params_reply
-                            FrameHostMsg_CreateChildFrame_Params_Reply)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 // Notification sent from a renderer to the browser that a Pepper plugin

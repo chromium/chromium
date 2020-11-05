@@ -302,6 +302,15 @@ class CONTENT_EXPORT RenderProcessHostImpl
     child_process_activity_time_ = base::TimeTicks::Now();
   }
 
+  // Return the set of previously stored frame tokens for a |new_routing_id|.
+  // The frame tokens were stored on the IO thread via the
+  // RenderMessageFilter::GenerateFrameRoutingID mojo call. Returns false if
+  // |new_routing_id| was not found in the token table.
+  bool TakeFrameTokensForFrameRoutingID(
+      int32_t new_routing_id,
+      base::UnguessableToken& frame_token,
+      base::UnguessableToken& devtools_frame_token);
+
   // Called when the renderer has fully destroyed the associated RenderView
   // identified by |closed_view_route_id|. This is static because its also
   // called with mock hosts as input in test cases.

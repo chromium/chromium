@@ -163,6 +163,10 @@ class CONTENT_EXPORT RenderThreadImpl
   void AddRoute(int32_t routing_id, IPC::Listener* listener) override;
   void RemoveRoute(int32_t routing_id) override;
   int GenerateRoutingID() override;
+  bool GenerateFrameRoutingID(
+      int32_t& routing_id,
+      base::UnguessableToken& frame_token,
+      base::UnguessableToken& devtools_frame_token) override;
   void AddFilter(IPC::MessageFilter* filter) override;
   void RemoveFilter(IPC::MessageFilter* filter) override;
   void AddObserver(RenderThreadObserver* observer) override;

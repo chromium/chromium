@@ -116,6 +116,16 @@ void RenderMessageFilter::GenerateRoutingID(
   std::move(callback).Run(render_widget_helper_->GetNextRoutingID());
 }
 
+void RenderMessageFilter::GenerateFrameRoutingID(
+    GenerateFrameRoutingIDCallback callback) {
+  int32_t routing_id = render_widget_helper_->GetNextRoutingID();
+  auto frame_token = base::UnguessableToken::Create();
+  auto devtools_frame_token = base::UnguessableToken::Create();
+  render_widget_helper_->StoreNextFrameRoutingID(routing_id, frame_token,
+                                                 devtools_frame_token);
+  std::move(callback).Run(routing_id, frame_token, devtools_frame_token);
+}
+
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 void RenderMessageFilter::SetThreadPriorityOnFileThread(
     base::PlatformThreadId ns_tid,

@@ -3927,14 +3927,14 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
     blink::mojom::FrameOwnerElementType frame_owner_element_type) {
   DCHECK_EQ(frame_, parent);
 
-  // Synchronously notify the browser of a child frame creation to get the
-  // routing_id for the RenderFrame.
-  FrameHostMsg_CreateChildFrame_Params params;
-  params.parent_routing_id = routing_id_;
-  params.scope = scope;
-  params.frame_name = name.Utf8();
-
-  FrameHostMsg_CreateChildFrame_Params_Reply params_reply;
+  // Allocate child routing ID. This is a synchronous call.
+  int child_routing_id;
+  base::UnguessableToken frame_token;
+  base::UnguessableToken devtools_frame_token;
+  if (!RenderThread::Get()->GenerateFrameRoutingID(
+          child_routing_id, frame_token, devtools_frame_token)) {
+    return nullptr;
+  }
 
   // The unique name generation logic was moved out of Blink, so for historical
   // reasons, unique name generation needs to take something called the
@@ -3950,56 +3950,45 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
   // Note that Blink can't be changed to just pass |fallback_name| as |name| in
   // the case |name| is empty: |fallback_name| should never affect the actual
   // browsing context name, only unique name generation.
-  params.is_created_by_script =
+  bool is_created_by_script =
       v8::Isolate::GetCurrent() && v8::Isolate::GetCurrent()->InContext();
-  params.frame_unique_name = unique_name_helper_.GenerateNameForNewChildFrame(
-      params.frame_name.empty() ? fallback_name.Utf8() : params.frame_name,
-      params.is_created_by_script);
-  params.frame_policy = frame_policy;
-  params.frame_owner_properties =
-      *(blink::mojom::FrameOwnerProperties::From(frame_owner_properties).get());
-  params.frame_owner_element_type = frame_owner_element_type;
-  if (!Send(new FrameHostMsg_CreateChildFrame(params, &params_reply))) {
-    // Allocation of routing id failed, so we can't create a child frame. This
-    // can happen if the synchronous IPC message above has failed.  This can
-    // legitimately happen when the browser process has already destroyed
-    // RenderProcessHost, but the renderer process hasn't quit yet.
-    return nullptr;
-  }
+  std::string frame_unique_name =
+      unique_name_helper_.GenerateNameForNewChildFrame(
+          name.IsEmpty() ? fallback_name.Utf8() : name.Utf8(),
+          is_created_by_script);
 
-  DCHECK(params_reply.new_interface_provider.is_valid());
   mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-      child_interface_provider(
-          mojo::ScopedMessagePipeHandle(params_reply.new_interface_provider),
-          0u);
+      child_interface_provider;
+  mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
+      browser_interface_broker;
 
-  DCHECK(params_reply.browser_interface_broker_handle.is_valid());
-
-  // This method is always called by local frames, never remote frames.
+  // Now create the child frame in the browser via an asynchronous call.
+  GetFrameHost()->CreateChildFrame(
+      child_routing_id,
+      child_interface_provider.InitWithNewPipeAndPassReceiver(),
+      browser_interface_broker.InitWithNewPipeAndPassReceiver(), scope,
+      name.Utf8(), frame_unique_name, is_created_by_script, frame_policy,
+      blink::mojom::FrameOwnerProperties::From(frame_owner_properties),
+      frame_owner_element_type);
 
   // Tracing analysis uses this to find main frames when this value is
   // MSG_ROUTING_NONE, and build the frame tree otherwise.
   TRACE_EVENT2("navigation,rail", "RenderFrameImpl::createChildFrame", "id",
-               routing_id_, "child", params_reply.child_routing_id);
+               routing_id_, "child", child_routing_id);
 
   // Create the RenderFrame and WebLocalFrame, linking the two.
   RenderFrameImpl* child_render_frame = RenderFrameImpl::Create(
-      agent_scheduling_group_, render_view_, params_reply.child_routing_id,
-      std::move(child_interface_provider),
-      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>(
-          mojo::ScopedMessagePipeHandle(
-              params_reply.browser_interface_broker_handle),
-          blink::mojom::BrowserInterfaceBroker::Version_),
-      params_reply.devtools_frame_token);
+      agent_scheduling_group_, render_view_, child_routing_id,
+      std::move(child_interface_provider), std::move(browser_interface_broker),
+      devtools_frame_token);
   child_render_frame->unique_name_helper_.set_propagated_name(
-      params.frame_unique_name);
-  if (params.is_created_by_script)
+      frame_unique_name);
+  if (is_created_by_script)
     child_render_frame->unique_name_helper_.Freeze();
   child_render_frame->InitializeBlameContext(this);
   blink::WebLocalFrame* web_frame = parent->CreateLocalChild(
       scope, child_render_frame,
-      child_render_frame->blink_interface_registry_.get(),
-      params_reply.frame_token);
+      child_render_frame->blink_interface_registry_.get(), frame_token);
 
   child_render_frame->in_frame_tree_ = true;
   child_render_frame->Initialize(parent);

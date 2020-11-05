@@ -65,38 +65,6 @@ namespace content {
 
 namespace {
 
-void CreateChildFrameOnUI(
-    int process_id,
-    int parent_routing_id,
-    blink::mojom::TreeScopeType scope,
-    const std::string& frame_name,
-    const std::string& frame_unique_name,
-    bool is_created_by_script,
-    const base::UnguessableToken& frame_token,
-    const base::UnguessableToken& devtools_frame_token,
-    const blink::FramePolicy& frame_policy,
-    const blink::mojom::FrameOwnerProperties& frame_owner_properties,
-    blink::mojom::FrameOwnerElementType owner_type,
-    int new_routing_id,
-    mojo::ScopedMessagePipeHandle interface_provider_receiver_handle,
-    mojo::ScopedMessagePipeHandle browser_interface_broker_handle) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RenderFrameHostImpl* render_frame_host =
-      RenderFrameHostImpl::FromID(process_id, parent_routing_id);
-  // Handles the RenderFrameHost being deleted on the UI thread while
-  // processing a subframe creation message.
-  if (render_frame_host) {
-    render_frame_host->OnCreateChildFrame(
-        new_routing_id,
-        mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>(
-            std::move(interface_provider_receiver_handle)),
-        mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>(
-            std::move(browser_interface_broker_handle)),
-        scope, frame_name, frame_unique_name, is_created_by_script, frame_token,
-        devtools_frame_token, frame_policy, frame_owner_properties, owner_type);
-  }
-}
-
 // Common functionality for converting a sync renderer message to a callback
 // function in the browser. Derive from this, create it on the heap when
 // issuing your callback. When done, write your reply parameters into
@@ -193,7 +161,6 @@ void RenderFrameMessageFilter::ClearResourceContext() {
 bool RenderFrameMessageFilter::OnMessageReceived(const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(RenderFrameMessageFilter, message)
-    IPC_MESSAGE_HANDLER(FrameHostMsg_CreateChildFrame, OnCreateChildFrame)
 #if BUILDFLAG(ENABLE_PLUGINS)
     IPC_MESSAGE_HANDLER(FrameHostMsg_GetPluginInfo, OnGetPluginInfo)
     IPC_MESSAGE_HANDLER_DELAY_REPLY(FrameHostMsg_OpenChannelToPepperPlugin,
@@ -220,41 +187,6 @@ void RenderFrameMessageFilter::OverrideThreadForMessage(
   if (message.type() == FrameHostMsg_GetPluginInfo::ID)
     *thread = BrowserThread::UI;
 #endif  // ENABLE_PLUGINS
-}
-
-void RenderFrameMessageFilter::OnCreateChildFrame(
-    const FrameHostMsg_CreateChildFrame_Params& params,
-    FrameHostMsg_CreateChildFrame_Params_Reply* params_reply) {
-  params_reply->child_routing_id = render_widget_helper_->GetNextRoutingID();
-
-  mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-      interface_provider;
-  auto interface_provider_receiver(
-      interface_provider.InitWithNewPipeAndPassReceiver());
-  params_reply->new_interface_provider =
-      interface_provider.PassPipe().release();
-
-  mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
-      browser_interface_broker;
-  auto browser_interface_broker_receiver =
-      browser_interface_broker.InitWithNewPipeAndPassReceiver();
-  params_reply->browser_interface_broker_handle =
-      browser_interface_broker.PassPipe().release();
-
-  params_reply->frame_token = base::UnguessableToken::Create();
-  params_reply->devtools_frame_token = base::UnguessableToken::Create();
-
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &CreateChildFrameOnUI, render_process_id_, params.parent_routing_id,
-          params.scope, params.frame_name, params.frame_unique_name,
-          params.is_created_by_script, params_reply->frame_token,
-          params_reply->devtools_frame_token, params.frame_policy,
-          params.frame_owner_properties, params.frame_owner_element_type,
-          params_reply->child_routing_id,
-          interface_provider_receiver.PassPipe(),
-          browser_interface_broker_receiver.PassPipe()));
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)

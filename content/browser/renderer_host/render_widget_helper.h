@@ -13,6 +13,8 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -38,6 +40,21 @@ class RenderWidgetHelper
   // Gets the next available routing id.  This is thread safe.
   int GetNextRoutingID();
 
+  // Retrieve a previously stored frame tokens. Returns true if the tokens
+  // were found.
+  bool TakeFrameTokensForFrameRoutingID(
+      int32_t routing_id,
+      base::UnguessableToken& frame_token,
+      base::UnguessableToken& devtools_frame_token);
+
+  // Store a set of frame tokens given a routing id. This is usually called on
+  // the IO thread, and |GetFrameTokensForFrameRoutingID| will be called on the
+  // UI thread at a later point.
+  void StoreNextFrameRoutingID(
+      int32_t routing_id,
+      const base::UnguessableToken& frame_token,
+      const base::UnguessableToken& devtools_frame_token);
+
   // IO THREAD ONLY -----------------------------------------------------------
 
   // Lookup the RenderWidgetHelper from the render_process_host_id. Returns NULL
@@ -53,6 +70,21 @@ class RenderWidgetHelper
   ~RenderWidgetHelper();
 
   int render_process_id_;
+
+  struct FrameTokens {
+    base::UnguessableToken frame_token;
+    base::UnguessableToken devtools_frame_token;
+  };
+
+  // Lock that is used to provide access to |frame_token_routing_id_map_|
+  // from the IO and UI threads.
+  base::Lock frame_token_map_lock_;
+
+  // Map that stores handed out routing IDs and frame tokens. Items
+  // will be removed from this table in GetFrameTokensForRoutingID.
+  // Locked by |lock_|
+  std::map<int32_t, FrameTokens> frame_token_routing_id_map_
+      GUARDED_BY(frame_token_map_lock_);
 
   // The next routing id to use.
   base::AtomicSequenceNumber next_routing_id_;

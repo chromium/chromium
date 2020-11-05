@@ -2841,6 +2841,14 @@ void RenderProcessHostImpl::RemoveRoute(int32_t routing_id) {
   Cleanup();
 }
 
+bool RenderProcessHostImpl::TakeFrameTokensForFrameRoutingID(
+    int32_t new_routing_id,
+    base::UnguessableToken& frame_token,
+    base::UnguessableToken& devtools_frame_token) {
+  return widget_helper_->TakeFrameTokensForFrameRoutingID(
+      new_routing_id, frame_token, devtools_frame_token);
+}
+
 void RenderProcessHostImpl::AddObserver(RenderProcessHostObserver* observer) {
   observers_.AddObserver(observer);
 }

@@ -25,6 +25,7 @@ import "services/service_manager/public/mojom/interface_provider.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/compositing/surface_id.mojom";
 import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
+import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/commit_result/commit_result.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
@@ -32,9 +33,13 @@ import "third_party/blink/public/mojom/feature_policy/document_policy_feature.mo
 import "third_party/blink/public/mojom/feature_policy/feature_policy.mojom";
 import "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom";
 import "third_party/blink/public/mojom/feature_policy/policy_value.mojom";
+import "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom";
+import "third_party/blink/public/mojom/frame/frame_owner_properties.mojom";
+import "third_party/blink/public/mojom/frame/frame_policy.mojom";
 import "third_party/blink/public/mojom/frame/lifecycle.mojom";
 import "third_party/blink/public/mojom/frame/navigation_initiator.mojom";
 import "third_party/blink/public/mojom/frame/policy_container.mojom";
+import "third_party/blink/public/mojom/frame/tree_scope_type.mojom";
 import "third_party/blink/public/mojom/loader/resource_load_info.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
@@ -435,6 +440,23 @@ interface FrameHost {
          pending_associated_receiver<blink.mojom.PopupWidgetHost> popup_host,
          pending_associated_receiver<blink.mojom.WidgetHost> blink_widget_host,
          pending_associated_remote<blink.mojom.Widget> blink_widget);
+
+  // Asynchronously creates a child frame. A routing ID must be allocated first
+  // by calling RenderMessageFilter::GenerateFrameRoutingID()
+  // Each of these messages will have a corresponding mojom::FrameHost::Detach
+  // API sent when the frame is detached from the DOM.
+  CreateChildFrame(int32 child_routing_id,
+                   pending_receiver<service_manager.mojom.InterfaceProvider>
+                     new_interface_provider,
+                   pending_receiver<blink.mojom.BrowserInterfaceBroker>
+                     browser_interface_broker,
+                   blink.mojom.TreeScopeType scope,
+                   string frame_name,
+                   string frame_unique_name,
+                   bool is_created_by_script,
+                   blink.mojom.FramePolicy frame_policy,
+                   blink.mojom.FrameOwnerProperties frame_owner_properties,
+                   blink.mojom.FrameOwnerElementType frame_owner_element_type);
 
   // Creates and returns a KeepAliveHandle.
   IssueKeepAliveHandle(pending_receiver<KeepAliveHandle> keep_alive_handle);

@@ -20,9 +20,6 @@
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 
-struct FrameHostMsg_CreateChildFrame_Params;
-struct FrameHostMsg_CreateChildFrame_Params_Reply;
-
 namespace IPC {
 class MessageFilter;
 class MessageReplyDeserializer;
@@ -63,6 +60,10 @@ class MockRenderThread : public RenderThread {
   void AddRoute(int32_t routing_id, IPC::Listener* listener) override;
   void RemoveRoute(int32_t routing_id) override;
   int GenerateRoutingID() override;
+  bool GenerateFrameRoutingID(
+      int32_t& routing_id,
+      base::UnguessableToken& frame_token,
+      base::UnguessableToken& devtools_frame_token) override;
   void AddFilter(IPC::MessageFilter* filter) override;
   void RemoveFilter(IPC::MessageFilter* filter) override;
   void AddObserver(RenderThreadObserver* observer) override;
@@ -107,6 +108,13 @@ class MockRenderThread : public RenderThread {
   void OnCreateWindow(const mojom::CreateNewWindowParams& params,
                       mojom::CreateNewWindowReply* reply);
 
+  void OnCreateChildFrame(
+      int32_t child_routing_id,
+      mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
+          interface_provider,
+      mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
+          browser_interface_broker);
+
   // Returns the receiver end of the InterfaceProvider interface whose client
   // end was passed in to construct RenderFrame with |routing_id|; if any. The
   // client end will be used by the RenderFrame to service interface receivers
@@ -133,11 +141,6 @@ class MockRenderThread : public RenderThread {
   // This function operates as a regular IPC listener. Subclasses
   // overriding this should first delegate to this implementation.
   virtual bool OnMessageReceived(const IPC::Message& msg);
-
-  // The Frame expects to be returned a valid route_id different from its own.
-  void OnCreateChildFrame(
-      const FrameHostMsg_CreateChildFrame_Params& params,
-      FrameHostMsg_CreateChildFrame_Params_Reply* params_reply);
 
   IPC::TestSink sink_;
 

@@ -133,6 +133,26 @@ class MockFrameHost : public mojom::FrameHost {
       mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget)
       override {}
 
+  void CreateChildFrame(
+      int new_routing_id,
+      mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
+          interface_provider_receiver,
+      mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
+          browser_interface_broker_receiver,
+      blink::mojom::TreeScopeType scope,
+      const std::string& frame_name,
+      const std::string& frame_unique_name,
+      bool is_created_by_script,
+      const blink::FramePolicy& frame_policy,
+      blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
+      blink::mojom::FrameOwnerElementType owner_type) override {
+    MockRenderThread* mock_render_thread =
+        static_cast<MockRenderThread*>(RenderThread::Get());
+    mock_render_thread->OnCreateChildFrame(
+        new_routing_id, std::move(interface_provider_receiver),
+        std::move(browser_interface_broker_receiver));
+  }
+
   void CreatePortal(mojo::PendingAssociatedReceiver<blink::mojom::Portal>,
                     mojo::PendingAssociatedRemote<blink::mojom::PortalClient>,
                     CreatePortalCallback callback) override {

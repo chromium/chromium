@@ -43,8 +43,17 @@ class MockRenderMessageFilterImpl : public mojom::RenderMessageFilter {
 
   // mojom::RenderMessageFilter:
   void GenerateRoutingID(GenerateRoutingIDCallback callback) override {
-    NOTREACHED();
-    std::move(callback).Run(MSG_ROUTING_NONE);
+    std::move(callback).Run(RenderThread::Get()->GenerateRoutingID());
+  }
+
+  void GenerateFrameRoutingID(
+      GenerateFrameRoutingIDCallback callback) override {
+    int routing_id;
+    base::UnguessableToken frame_token;
+    base::UnguessableToken devtools_frame_token;
+    RenderThread::Get()->GenerateFrameRoutingID(routing_id, frame_token,
+                                                devtools_frame_token);
+    std::move(callback).Run(routing_id, frame_token, devtools_frame_token);
   }
 
   void HasGpuProcess(HasGpuProcessCallback callback) override {
@@ -127,8 +136,17 @@ void MockRenderThread::AddRoute(int32_t routing_id, IPC::Listener* listener) {}
 void MockRenderThread::RemoveRoute(int32_t routing_id) {}
 
 int MockRenderThread::GenerateRoutingID() {
-  NOTREACHED();
-  return MSG_ROUTING_NONE;
+  return GetNextRoutingID();
+}
+
+bool MockRenderThread::GenerateFrameRoutingID(
+    int32_t& routing_id,
+    base::UnguessableToken& frame_token,
+    base::UnguessableToken& devtools_frame_token) {
+  routing_id = GetNextRoutingID();
+  frame_token = base::UnguessableToken::Create();
+  devtools_frame_token = base::UnguessableToken::Create();
+  return true;
 }
 
 void MockRenderThread::AddFilter(IPC::MessageFilter* filter) {
@@ -262,29 +280,16 @@ void MockRenderThread::PassInitialInterfaceProviderReceiverForFrame(
   DCHECK(did_insertion);
 }
 
-// The Frame expects to be returned a valid route_id different from its own.
 void MockRenderThread::OnCreateChildFrame(
-    const FrameHostMsg_CreateChildFrame_Params& params,
-    FrameHostMsg_CreateChildFrame_Params_Reply* params_reply) {
-  params_reply->child_routing_id = GetNextRoutingID();
-  mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-      interface_provider;
+    int32_t child_routing_id,
+    mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
+        interface_provider,
+    mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
+        browser_interface_broker) {
   frame_routing_id_to_initial_interface_provider_receivers_.emplace(
-      params_reply->child_routing_id,
-      interface_provider.InitWithNewPipeAndPassReceiver());
-  params_reply->new_interface_provider =
-      interface_provider.PassPipe().release();
-
-  mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
-      browser_interface_broker;
+      child_routing_id, std::move(interface_provider));
   frame_routing_id_to_initial_browser_broker_receivers_.emplace(
-      params_reply->child_routing_id,
-      browser_interface_broker.InitWithNewPipeAndPassReceiver());
-  params_reply->browser_interface_broker_handle =
-      browser_interface_broker.PassPipe().release();
-
-  params_reply->frame_token = base::UnguessableToken::Create();
-  params_reply->devtools_frame_token = base::UnguessableToken::Create();
+      child_routing_id, std::move(browser_interface_broker));
 }
 
 bool MockRenderThread::OnControlMessageReceived(const IPC::Message& msg) {
@@ -298,13 +303,7 @@ bool MockRenderThread::OnControlMessageReceived(const IPC::Message& msg) {
 bool MockRenderThread::OnMessageReceived(const IPC::Message& msg) {
   // Save the message in the sink.
   sink_.OnMessageReceived(msg);
-
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(MockRenderThread, msg)
-    IPC_MESSAGE_HANDLER(FrameHostMsg_CreateChildFrame, OnCreateChildFrame)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
+  return false;
 }
 
 // The View expects to be returned a valid route_id different from its own.
