@@ -327,6 +327,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableProtocolHandlers;
 BLINK_COMMON_EXPORT extern const base::Feature kWebRtcLibvpxEncodeNV12;
 
 BLINK_COMMON_EXPORT extern const base::Feature kLoadingTasksUnfreezable;
+
+BLINK_COMMON_EXPORT extern const base::Feature kCSSKeyframesMemoryReduction;
 }  // namespace features
 }  // namespace blink
 

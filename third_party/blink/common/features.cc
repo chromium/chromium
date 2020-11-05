@@ -798,5 +798,12 @@ const base::Feature kWebRtcLibvpxEncodeNV12{"WebRtcLibvpxEncodeNV12",
 // the page is frozen.
 const base::Feature kLoadingTasksUnfreezable{"LoadingTasksUnfreezable",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Changes ScopedStyleResolve and StyleEngine to use the already stored
+// StyleSheetCollection to find @keyframes rules instead of creating their
+// own hashmaps, so that we can save memory when there are web components
+// with @keyframes rules in their stylesheets.
+const base::Feature kCSSKeyframesMemoryReduction{
+    "CSSKeyframesMemoryReduction", base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace features
 }  // namespace blink
