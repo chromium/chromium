@@ -35,9 +35,6 @@ LoginButton::LoginButton(PressedCallback callback)
                                                          base::nullopt);
 }
 
-LoginButton::LoginButton(views::ButtonListener* listener)
-    : LoginButton(PressedCallback(listener, this)) {}
-
 LoginButton::~LoginButton() = default;
 
 std::unique_ptr<views::InkDropRipple> LoginButton::CreateInkDropRipple() const {

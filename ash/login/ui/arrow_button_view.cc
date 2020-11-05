@@ -73,9 +73,6 @@ ArrowButtonView::ArrowButtonView(PressedCallback callback, int size)
           kArrowIconBackroundRadius));
 }
 
-ArrowButtonView::ArrowButtonView(views::ButtonListener* listener, int size)
-    : ArrowButtonView(PressedCallback(listener, this), size) {}
-
 ArrowButtonView::~ArrowButtonView() = default;
 
 void ArrowButtonView::PaintButtonContents(gfx::Canvas* canvas) {

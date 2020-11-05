@@ -24,7 +24,6 @@ class FeaturePodControllerBase;
 class FeaturePodIconButton : public views::ImageButton {
  public:
   FeaturePodIconButton(PressedCallback callback, bool is_togglable);
-  FeaturePodIconButton(views::ButtonListener* listener, bool is_togglable);
   ~FeaturePodIconButton() override;
 
   // Change the toggle state. See FeaturePodButton::SetToggled.

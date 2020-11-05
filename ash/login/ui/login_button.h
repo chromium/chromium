@@ -15,7 +15,6 @@ namespace ash {
 class ASH_EXPORT LoginButton : public views::ImageButton {
  public:
   explicit LoginButton(PressedCallback callback);
-  explicit LoginButton(views::ButtonListener* listener);
   ~LoginButton() override;
 
   // views::InkDropHost:

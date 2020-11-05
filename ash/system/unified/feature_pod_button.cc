@@ -68,10 +68,6 @@ FeaturePodIconButton::FeaturePodIconButton(PressedCallback callback,
                                              kUnifiedFeaturePodIconPadding);
 }
 
-FeaturePodIconButton::FeaturePodIconButton(views::ButtonListener* listener,
-                                           bool is_togglable)
-    : FeaturePodIconButton(PressedCallback(listener, this), is_togglable) {}
-
 FeaturePodIconButton::~FeaturePodIconButton() = default;
 
 void FeaturePodIconButton::SetToggled(bool toggled) {

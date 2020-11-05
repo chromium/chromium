@@ -114,7 +114,8 @@ TEST_F(LoginUserMenuViewTest, LoginButtonRipple) {
   container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  LoginButton* bubble_opener = new LoginButton(nullptr /*listener*/);
+  LoginButton* bubble_opener =
+      new LoginButton(views::Button::PressedCallback());
   bubble_opener->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   bubble_opener->SetPreferredSize(
       gfx::Size(kBubbleAnchorViewSizeDp, kBubbleAnchorViewSizeDp));

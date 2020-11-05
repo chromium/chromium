@@ -41,9 +41,6 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   explicit LabelButton(PressedCallback callback = PressedCallback(),
                        const base::string16& text = base::string16(),
                        int button_context = style::CONTEXT_BUTTON);
-  explicit LabelButton(ButtonListener* listener,
-                       const base::string16& text = base::string16(),
-                       int button_context = style::CONTEXT_BUTTON);
   LabelButton(const LabelButton&) = delete;
   LabelButton& operator=(const LabelButton&) = delete;
   ~LabelButton() override;

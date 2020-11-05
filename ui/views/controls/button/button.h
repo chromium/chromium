@@ -31,17 +31,6 @@ class Button;
 class ButtonController;
 class Event;
 
-// An interface implemented by an object to let it know that a button was
-// pressed.  DEPRECATED; use PressedCallback instead.
-// TODO(crbug.com/772945): Replace ButtonListener with PressedCallback.
-class VIEWS_EXPORT ButtonListener {
- public:
-  virtual void ButtonPressed(Button* sender, const ui::Event& event) = 0;
-
- protected:
-  virtual ~ButtonListener() = default;
-};
-
 // A View representing a button. A Button is focusable by default and will
 // be part of the focus chain.
 class VIEWS_EXPORT Button : public InkDropHostView,
@@ -101,8 +90,6 @@ class VIEWS_EXPORT Button : public InkDropHostView,
     // this way.
     PressedCallback(Callback callback = Callback());  // NOLINT
     PressedCallback(base::RepeatingClosure closure);  // NOLINT
-    // TODO(crbug.com/772945): Remove.
-    PressedCallback(ButtonListener* listener, Button* button);
     PressedCallback(const PressedCallback&);
     PressedCallback(PressedCallback&&);
     PressedCallback& operator=(const PressedCallback&);
@@ -248,7 +235,6 @@ class VIEWS_EXPORT Button : public InkDropHostView,
 
  protected:
   explicit Button(PressedCallback callback = PressedCallback());
-  explicit Button(ButtonListener* listener);
 
   // Called when the button has been clicked or tapped and should request focus
   // if necessary.
@@ -323,10 +309,8 @@ class VIEWS_EXPORT Button : public InkDropHostView,
   // The button's listener. Notified when clicked.
   PressedCallback callback_;
 
-  // The id tag associated with this button. Used to disambiguate buttons in
-  // the ButtonListener implementation.
-  // TODO(pbos): Remove this after ButtonListener is gone since disambiguation
-  // shouldn't be needed.
+  // The id tag associated with this button. Used to disambiguate buttons.
+  // TODO(pbos): See if this can be removed, e.g. by replacing with SetID().
   int tag_ = -1;
 
   ButtonState state_ = STATE_NORMAL;

@@ -36,9 +36,6 @@ ImageButton::ImageButton(PressedCallback callback)
   SetFlipCanvasOnPaintForRTLUI(true);
 }
 
-ImageButton::ImageButton(ButtonListener* listener)
-    : ImageButton(PressedCallback(listener, this)) {}
-
 ImageButton::~ImageButton() = default;
 
 const gfx::ImageSkia& ImageButton::GetImage(ButtonState state) const {

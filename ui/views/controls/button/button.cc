@@ -102,18 +102,6 @@ Button::PressedCallback::PressedCallback(base::RepeatingClosure closure)
                                  const ui::Event& event) { closure.Run(); },
                               std::move(closure))) {}
 
-Button::PressedCallback::PressedCallback(ButtonListener* listener,
-                                         Button* button)
-    : callback_(listener ? base::BindRepeating(
-                               [](ButtonListener* listener,
-                                  Button* button,
-                                  const ui::Event& event) {
-                                 listener->ButtonPressed(button, event);
-                               },
-                               listener,
-                               button)
-                         : Callback()) {}
-
 Button::PressedCallback::PressedCallback(const PressedCallback&) = default;
 
 Button::PressedCallback::PressedCallback(PressedCallback&&) = default;
@@ -610,9 +598,6 @@ Button::Button(PressedCallback callback)
   button_controller_ = std::make_unique<ButtonController>(
       this, std::make_unique<DefaultButtonControllerDelegate>(this));
 }
-
-Button::Button(ButtonListener* listener)
-    : Button(PressedCallback(listener, this)) {}
 
 void Button::RequestFocusFromEvent() {
   if (request_focus_on_press_)

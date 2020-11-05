@@ -27,7 +27,6 @@ class VIEWS_EXPORT ImageButton : public Button {
   enum VerticalAlignment { ALIGN_TOP = 0, ALIGN_MIDDLE, ALIGN_BOTTOM };
 
   explicit ImageButton(PressedCallback callback = PressedCallback());
-  explicit ImageButton(ButtonListener* listener);
   ~ImageButton() override;
 
   // Returns the image for a given |state|.

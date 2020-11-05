@@ -244,35 +244,6 @@ views::ToggleButton* TrayPopupUtils::CreateToggleButton(
   return toggle;
 }
 
-views::ToggleButton* TrayPopupUtils::CreateToggleButton(
-    views::ButtonListener* listener,
-    int accessible_name_id) {
-  constexpr SkColor kTrackAlpha = 0x66;
-  auto GetColor = [](bool is_on, SkAlpha alpha = SK_AlphaOPAQUE) {
-    AshColorProvider::ContentLayerType type =
-        is_on ? AshColorProvider::ContentLayerType::kIconColorProminent
-              : AshColorProvider::ContentLayerType::kTextColorPrimary;
-
-    return SkColorSetA(AshColorProvider::Get()->GetContentLayerColor(type),
-                       alpha);
-  };
-  views::ToggleButton* toggle =
-      new views::ToggleButton(views::Button::PressedCallback());
-  toggle->SetCallback(views::Button::PressedCallback(listener, toggle));
-  const gfx::Size toggle_size(toggle->GetPreferredSize());
-  const int vertical_padding = (kMenuButtonSize - toggle_size.height()) / 2;
-  const int horizontal_padding =
-      (kTrayToggleButtonWidth - toggle_size.width()) / 2;
-  toggle->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(vertical_padding, horizontal_padding)));
-  toggle->SetAccessibleName(l10n_util::GetStringUTF16(accessible_name_id));
-  toggle->SetThumbOnColor(GetColor(true));
-  toggle->SetThumbOffColor(GetColor(false));
-  toggle->SetTrackOnColor(GetColor(true, kTrackAlpha));
-  toggle->SetTrackOffColor(GetColor(false, kTrackAlpha));
-  return toggle;
-}
-
 std::unique_ptr<views::Painter> TrayPopupUtils::CreateFocusPainter() {
   return views::Painter::CreateSolidFocusPainter(
       AshColorProvider::Get()->GetControlsLayerColor(

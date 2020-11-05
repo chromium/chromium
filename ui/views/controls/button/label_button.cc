@@ -55,11 +55,6 @@ LabelButton::LabelButton(PressedCallback callback,
   SetTextInternal(text);
 }
 
-LabelButton::LabelButton(ButtonListener* listener,
-                         const base::string16& text,
-                         int button_context)
-    : LabelButton(PressedCallback(listener, this), text, button_context) {}
-
 LabelButton::~LabelButton() = default;
 
 gfx::ImageSkia LabelButton::GetImage(ButtonState for_state) const {

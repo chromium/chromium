@@ -24,7 +24,7 @@ class ASH_EXPORT ContinueBrowsingChip : public views::Button {
   ContinueBrowsingChip(ContinueBrowsingChip&) = delete;
   ContinueBrowsingChip operator=(ContinueBrowsingChip&) = delete;
 
-  // views::ButtonListener:
+  // views::Button:
   void OnPaintBackground(gfx::Canvas* canvas) override;
   const char* GetClassName() const override;
 

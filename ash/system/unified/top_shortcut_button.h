@@ -18,9 +18,6 @@ class TopShortcutButton : public views::ImageButton {
   TopShortcutButton(PressedCallback callback,
                     const gfx::VectorIcon& icon,
                     int accessible_name_id);
-  TopShortcutButton(views::ButtonListener* listener,
-                    const gfx::VectorIcon& icon,
-                    int accessible_name_id);
   ~TopShortcutButton() override;
 
   // views::View:

@@ -57,11 +57,6 @@ MdTextButton::MdTextButton(PressedCallback callback,
   UpdatePadding();
 }
 
-MdTextButton::MdTextButton(ButtonListener* listener,
-                           const base::string16& text,
-                           int button_context)
-    : MdTextButton(PressedCallback(listener, this), text, button_context) {}
-
 MdTextButton::~MdTextButton() = default;
 
 void MdTextButton::SetProminent(bool is_prominent) {

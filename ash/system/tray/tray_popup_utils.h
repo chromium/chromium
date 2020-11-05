@@ -15,7 +15,6 @@
 #include "ui/views/controls/button/button.h"
 
 namespace views {
-class ButtonListener;
 class Button;
 class ImageView;
 class InkDrop;
@@ -107,9 +106,6 @@ class TrayPopupUtils {
   // Returns a ToggleButton that has been configured for system menu layout.
   static views::ToggleButton* CreateToggleButton(
       views::Button::PressedCallback callback,
-      int accessible_name_id);
-  static views::ToggleButton* CreateToggleButton(
-      views::ButtonListener* listener,
       int accessible_name_id);
 
   // Creates a default focus painter used for most things in tray popups.

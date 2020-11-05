@@ -30,13 +30,6 @@ TopShortcutButton::TopShortcutButton(PressedCallback callback,
   views::InstallCircleHighlightPathGenerator(this);
 }
 
-TopShortcutButton::TopShortcutButton(views::ButtonListener* listener,
-                                     const gfx::VectorIcon& icon,
-                                     int accessible_name_id)
-    : TopShortcutButton(PressedCallback(listener, this),
-                        icon,
-                        accessible_name_id) {}
-
 TopShortcutButton::~TopShortcutButton() = default;
 
 gfx::Size TopShortcutButton::CalculatePreferredSize() const {
