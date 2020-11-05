@@ -387,10 +387,6 @@ class COMPOSITOR_EXPORT LayerAnimator : public base::RefCounted<LayerAnimator>,
   void AttachLayerToAnimation(int layer_id);
   void DetachLayerFromAnimation();
 
-  void set_animation_metrics_reporter(AnimationMetricsReporter* reporter) {
-    animation_metrics_reporter_ = reporter;
-  }
-
   // This is the queue of animations to run.
   AnimationQueue animation_queue_;
 
@@ -429,9 +425,6 @@ class COMPOSITOR_EXPORT LayerAnimator : public base::RefCounted<LayerAnimator>,
   // Prevents timer adjustments in case when we start multiple animations
   // with preemption strategies that discard previous animations.
   bool adding_animations_;
-
-  // Helper to output UMA performance metrics.
-  AnimationMetricsReporter* animation_metrics_reporter_;
 
   // Observers are notified when layer animations end, are scheduled or are
   // aborted.

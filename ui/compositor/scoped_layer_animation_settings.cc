@@ -120,7 +120,6 @@ ScopedLayerAnimationSettings::ScopedLayerAnimationSettings(
 }
 
 ScopedLayerAnimationSettings::~ScopedLayerAnimationSettings() {
-  animator_->set_animation_metrics_reporter(nullptr);
   animator_->is_transition_duration_locked_ =
       old_is_transition_duration_locked_;
   animator_->SetTransitionDuration(old_transition_duration_);
@@ -141,11 +140,6 @@ void ScopedLayerAnimationSettings::AddObserver(
     ImplicitAnimationObserver* observer) {
   observers_.insert(observer);
   animator_->AddObserver(observer);
-}
-
-void ScopedLayerAnimationSettings::SetAnimationMetricsReporter(
-    AnimationMetricsReporter* reporter) {
-  animator_->set_animation_metrics_reporter(reporter);
 }
 
 void ScopedLayerAnimationSettings::SetTransitionDuration(

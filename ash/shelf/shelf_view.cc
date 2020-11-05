@@ -62,7 +62,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/compositor/animation_metrics_reporter.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"

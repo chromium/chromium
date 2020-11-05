@@ -24,8 +24,6 @@
 
 namespace ui {
 
-class AnimationMetricsReporter;
-class AnimationMetricsRecorder;
 class InterpolatedTransform;
 class LayerAnimationDelegate;
 
@@ -196,14 +194,6 @@ class COMPOSITOR_EXPORT LayerAnimationElement {
   // Assigns the target value to |target|.
   void GetTargetValue(TargetValue* target) const;
 
-  // Sets the reporter to report animation metrics if |reporter| is not null.
-  // Otherwise, cancels the metric reporting.
-  void SetAnimationMetricsReporter(AnimationMetricsReporter* reporter);
-
-  // Called when the animator is attached to/detached from a Compositor.
-  void OnAnimatorAttached(LayerAnimationDelegate* delegate);
-  void OnAnimatorDetached();
-
   // The properties that the element modifies.
   AnimatableProperties properties() const { return properties_; }
 
@@ -262,8 +252,6 @@ class COMPOSITOR_EXPORT LayerAnimationElement {
   int animation_group_id_;
 
   double last_progressed_fraction_;
-
-  std::unique_ptr<AnimationMetricsRecorder> animation_metrics_recorder_;
 
   base::WeakPtrFactory<LayerAnimationElement> weak_ptr_factory_{this};
 

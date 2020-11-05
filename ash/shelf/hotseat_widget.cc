@@ -28,7 +28,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window_targeter.h"
-#include "ui/compositor/animation_metrics_reporter.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -1108,13 +1107,12 @@ HotseatDensity HotseatWidget::CalculateTargetHotseatDensity() const {
   if (ShelfConfig::Get()->is_dense())
     return target_hotseat_density_;
 
-  // Currently the scaling animation of hotseat bounds and that of shelf icons
-  // do not synchronize due to performance issue. As a result, shelf scaling is
-  // not applied to the hotseat state transition, such as the transition from
-  // the home launcher state to the extended state. Hotseat density relies
-  // on the hotseat bounds in the home launcher state instead of the current
-  // hotseat state.
-  // TODO(crbug.com/1081476).
+  // TODO(crbug.com/1081476): Currently the scaling animation of hotseat bounds
+  // and that of shelf icons do not synchronize due to performance issue. As a
+  // result, shelf scaling is not applied to the hotseat state transition, such
+  // as the transition from the home launcher state to the extended state.
+  // Hotseat density relies on the hotseat bounds in the home launcher state
+  // instead of the current hotseat state.
 
   // Try candidate button sizes in decreasing order. If shelf buttons in one
   // size can show without scrolling, return the density type corresponding to

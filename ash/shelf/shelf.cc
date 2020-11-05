@@ -33,7 +33,6 @@
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "ui/compositor/animation_metrics_reporter.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
 

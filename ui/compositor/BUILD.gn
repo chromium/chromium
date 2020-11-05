@@ -7,9 +7,6 @@ import("//testing/test.gni")
 
 component("compositor") {
   sources = [
-    "animation_metrics_recorder.cc",
-    "animation_metrics_recorder.h",
-    "animation_metrics_reporter.h",
     "animation_throughput_reporter.cc",
     "animation_throughput_reporter.h",
     "callback_layer_animation_observer.cc",

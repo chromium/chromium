@@ -36,7 +36,6 @@
 #include "ui/aura/layout_manager.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
-#include "ui/compositor/animation_metrics_reporter.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"

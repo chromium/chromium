@@ -6,8 +6,8 @@
 
 #include "base/test/bind_test_util.h"
 #include "base/timer/timer.h"
-#include "ui/compositor/animation_metrics_reporter.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
+#include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/buildflags.h"
@@ -49,23 +49,6 @@ TEST_F(CompositorAnimationRunnerTest, BasicCoverageTest) {
 
 namespace {
 
-class TestAnimationMetricsReporter : public ui::AnimationMetricsReporter {
- public:
-  TestAnimationMetricsReporter() = default;
-  TestAnimationMetricsReporter(TestAnimationMetricsReporter&) = delete;
-  TestAnimationMetricsReporter& operator=(TestAnimationMetricsReporter&) =
-      delete;
-  ~TestAnimationMetricsReporter() override = default;
-
-  // ui::AnimationMetricsReporter:
-  void Report(int value) override { ++report_count_; }
-
-  int report_count() const { return report_count_; }
-
- private:
-  int report_count_ = 0;
-};
-
 // Test AnimationDelegateView which has a non-zero expected animation duration
 // time, which is required for getting smoothness reports.
 class TestAnimationDelegateViews : public AnimationDelegateViews {
@@ -84,23 +67,31 @@ class TestAnimationDelegateViews : public AnimationDelegateViews {
 
 }  // namespace
 
-// Tests that an attached animation metrics reporter will get smoothness
-// reports.
-TEST_F(CompositorAnimationRunnerTest, AnimationMetricsReporter) {
+// Tests that ui::ThroughputTracker will report for gfx::Animation.
+TEST_F(CompositorAnimationRunnerTest, ThroughputTracker) {
   WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
   widget->Show();
 
   ui::DrawWaiterForTest::WaitForCompositingStarted(widget->GetCompositor());
 
-  TestAnimationMetricsReporter metrics_reporter;
-  TestAnimationMetricsReporter metrics_reporter2;
+  int report_count = 0;
+  int report_count2 = 0;
+
   TestAnimationDelegateViews delegate(widget->GetContentsView());
-  delegate.SetAnimationMetricsReporter(&metrics_reporter);
+
   gfx::LinearAnimation animation(
       kDuration, gfx::LinearAnimation::kDefaultFrameRate, &delegate);
 
   base::RepeatingTimer interval_timer;
   base::RunLoop run_loop;
+
+  ui::ThroughputTracker tracker1 =
+      widget->GetCompositor()->RequestNewThroughputTracker();
+  tracker1.Start(base::BindLambdaForTesting(
+      [&](const cc::FrameSequenceMetrics::CustomReportData& data) {
+        ++report_count;
+        run_loop.Quit();
+      }));
 
   animation.Start();
   EXPECT_TRUE(animation.is_animating());
@@ -111,16 +102,24 @@ TEST_F(CompositorAnimationRunnerTest, AnimationMetricsReporter) {
                            return;
 
                          interval_timer.Stop();
-                         run_loop.Quit();
+                         tracker1.Stop();
                        }));
   run_loop.Run();
-  EXPECT_EQ(1, metrics_reporter.report_count());
-  EXPECT_EQ(0, metrics_reporter2.report_count());
+  EXPECT_EQ(1, report_count);
+  EXPECT_EQ(0, report_count2);
 
   // Tests that switching metrics reporters for the next animation works as
   // expected.
   base::RunLoop run_loop2;
-  delegate.SetAnimationMetricsReporter(&metrics_reporter2);
+
+  ui::ThroughputTracker tracker2 =
+      widget->GetCompositor()->RequestNewThroughputTracker();
+  tracker2.Start(base::BindLambdaForTesting(
+      [&](const cc::FrameSequenceMetrics::CustomReportData& data) {
+        ++report_count2;
+        run_loop2.Quit();
+      }));
+
   animation.Start();
   EXPECT_TRUE(animation.is_animating());
 
@@ -129,11 +128,11 @@ TEST_F(CompositorAnimationRunnerTest, AnimationMetricsReporter) {
                            return;
 
                          interval_timer.Stop();
-                         run_loop2.Quit();
+                         tracker2.Stop();
                        }));
   run_loop2.Run();
-  EXPECT_EQ(1, metrics_reporter.report_count());
-  EXPECT_EQ(1, metrics_reporter2.report_count());
+  EXPECT_EQ(1, report_count);
+  EXPECT_EQ(1, report_count2);
 }
 
 // No DesktopAura on ChromeOS.
