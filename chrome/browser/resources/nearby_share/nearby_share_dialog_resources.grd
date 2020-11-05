@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/nearby_share_dialog_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="grit/nearby_share_dialog_resources_map.cc"
+            type="resource_file_map_source" />
+    <output filename="grit/nearby_share_dialog_resources_map.h"
+            type="resource_map_header" />
+    <output filename="nearby_share_dialog_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <include name="IDR_NEARBY_SHARE_NEARBY_SHARE_DIALOG_HTML"
+               file="nearby_share_dialog.html"
+               type="BINDATA"/>
+
+      <include name="IDR_NEARBY_SHARE_MOJO_JS"
+               file="${root_gen_dir}/chrome/browser/ui/webui/nearby_share/nearby_share.mojom-lite.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_NEARBY_SHARE_TARGET_TYPES_MOJO_JS"
+               file="${root_gen_dir}/chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom-lite.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_NEARBY_SHARE_SETTINGS_MOJOM_LITE_JS"
+               file="${root_gen_dir}/chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom-lite.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_NEARBY_SHARE_DISCOVERY_MANAGER_JS"
+               file="discovery_manager.js"
+               type="BINDATA"/>
+
+      <!-- Generated Polymer 3 elements -->
+      <include name="IDR_NEARBY_SHARE_APP_JS"
+               file="${root_gen_dir}/chrome/browser/resources/nearby_share/app.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_NEARBY_SHARE_ICONS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/nearby_share/icons.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_NEARBY_SHARE_NEARBY_CONFIRMATION_PAGE_JS"
+               file="${root_gen_dir}/chrome/browser/resources/nearby_share/nearby_confirmation_page.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_NEARBY_SHARE_NEARBY_DEVICE_JS"
+               file="${root_gen_dir}/chrome/browser/resources/nearby_share/nearby_device.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_NEARBY_SHARE_NEARBY_DEVICE_ICON_JS"
+               file="${root_gen_dir}/chrome/browser/resources/nearby_share/nearby_device_icon.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_NEARBY_SHARE_NEARBY_DISCOVERY_PAGE_JS"
+               file="${root_gen_dir}/chrome/browser/resources/nearby_share/nearby_discovery_page.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_NEARBY_SHARE_NEARBY_PREVIEW_JS"
+               file="${root_gen_dir}/chrome/browser/resources/nearby_share/nearby_preview.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_NEARBY_SHARE_NEARBY_PROGRESS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/nearby_share/nearby_progress.js"
+               use_base_dir="false" type="BINDATA"/>
+    </includes>
+  </release>
+</grit>

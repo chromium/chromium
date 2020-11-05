@@ -146,9 +146,14 @@
   "chrome/browser/resources/nearby_internals/nearby_internals_resources.grd": {
     "includes": [1630],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/nearby_share/nearby_share_dialog_resources.grd": {
-    "META": {"sizes": {"includes": [100]}},
+  "chrome/browser/resources/nearby_share/nearby_share_dialog_resources.grd": {
     "includes": [1640],
+  },
+  "chrome/browser/resources/nearby_share/shared/nearby_shared_resources.grd": {
+    "includes": [1645],
+  },
+  "chrome/browser/resources/nearby_share/shared/nearby_shared_resources_v3.grd": {
+    "includes": [1650],
   },
   "chrome/browser/resources/new_tab_page/new_tab_page_resources_vulcanized.grd": {
     "includes": [1660],
