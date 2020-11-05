@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/test/trust_token_browsertest.h"
+
 #include <memory>
 #include <string>
 
@@ -43,105 +45,71 @@ namespace content {
 
 namespace {
 
-using network::test::TrustTokenRequestHandler;
 using ::testing::Field;
 using ::testing::HasSubstr;
 using ::testing::IsFalse;
 using ::testing::Optional;
 
-// TrustTokenBrowsertest is a fixture containing boilerplate for initializing an
-// HTTPS test server and passing requests through to an embedded instance of
-// network::test::TrustTokenRequestHandler, which contains the guts of the
-// "server-side" token issuance and redemption logic as well as some consistency
-// checks for subsequent signed requests.
-class TrustTokenBrowsertest : public ContentBrowserTest {
- public:
-  TrustTokenBrowsertest() {
-    auto& field_trial_param =
-        network::features::kTrustTokenOperationsRequiringOriginTrial;
-    features_.InitAndEnableFeatureWithParameters(
-        network::features::kTrustTokens,
-        {{field_trial_param.name,
-          field_trial_param.GetName(
-              network::features::TrustTokenOriginTrialSpec::
-                  kOriginTrialNotRequired)}});
-  }
-
-  // Registers the following handlers:
-  // - default //content/test/data files;
-  // - a special "/issue" endpoint executing Trust Tokens issuance;
-  // - a special "/redeem" endpoint executing redemption; and
-  // - a special "/sign" endpoint that verifies that the received signed request
-  // data is correctly structured and that the provided Sec-Signature header's
-  // verification key was previously bound to a successful token redemption.
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-
-    server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-    server_.AddDefaultHandlers(
-        base::FilePath(FILE_PATH_LITERAL("content/test/data")));
-
-    SetupCrossSiteRedirector(embedded_test_server());
-    SetupCrossSiteRedirector(&server_);
-
-    network::test::RegisterTrustTokenTestHandlers(&server_, &request_handler_);
-
-    ASSERT_TRUE(server_.Start());
-  }
-
- protected:
-  // Provides the network service key commitments from the internal
-  // TrustTokenRequestHandler. All hosts in |hosts| will be provided identical
-  // commitments.
-  void ProvideRequestHandlerKeyCommitmentsToNetworkService(
-      std::vector<base::StringPiece> hosts = {}) {
-    base::flat_map<url::Origin, base::StringPiece> origins_and_commitments;
-    std::string key_commitments = request_handler_.GetKeyCommitmentRecord();
-
-    // TODO(davidvc): This could be extended to make the request handler aware
-    // of different origins, which would allow using different key commitments
-    // per origin.
-    for (base::StringPiece host : hosts) {
-      GURL::Replacements replacements;
-      replacements.SetHostStr(host);
-      origins_and_commitments.insert_or_assign(
-          url::Origin::Create(
-              server_.base_url().ReplaceComponents(replacements)),
-          key_commitments);
-    }
-
-    if (origins_and_commitments.empty()) {
-      origins_and_commitments = {
-          {url::Origin::Create(server_.base_url()), key_commitments}};
-    }
-
-    base::RunLoop run_loop;
-    GetNetworkService()->SetTrustTokenKeyCommitments(
-        network::WrapKeyCommitmentsForIssuers(
-            std::move(origins_and_commitments)),
-        run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
-  // Given a host (e.g. "a.test"), returns the corresponding storage origin
-  // for Trust Tokens state. (This adds the correct scheme---probably https---as
-  // well as |server_|'s port, which can vary from test to test. There's no
-  // ambiguity in the result because the scheme and port are both fixed across
-  // all domains.)
-  std::string IssuanceOriginFromHost(const std::string& host) const {
-    auto ret = url::Origin::Create(server_.GetURL(host, "/")).Serialize();
-    return ret;
-  }
-
-  base::test::ScopedFeatureList features_;
-
-  // TODO(davidvc): Extend this to support more than one key set.
-  TrustTokenRequestHandler request_handler_;
-
-  net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
-};
-
 }  // namespace
+
+TrustTokenBrowsertest::TrustTokenBrowsertest() {
+  auto& field_trial_param =
+      network::features::kTrustTokenOperationsRequiringOriginTrial;
+  features_.InitAndEnableFeatureWithParameters(
+      network::features::kTrustTokens,
+      {{field_trial_param.name,
+        field_trial_param.GetName(network::features::TrustTokenOriginTrialSpec::
+                                      kOriginTrialNotRequired)}});
+}
+
+void TrustTokenBrowsertest::SetUpOnMainThread() {
+  host_resolver()->AddRule("*", "127.0.0.1");
+
+  server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  server_.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("content/test/data")));
+
+  SetupCrossSiteRedirector(embedded_test_server());
+  SetupCrossSiteRedirector(&server_);
+
+  network::test::RegisterTrustTokenTestHandlers(&server_, &request_handler_);
+
+  ASSERT_TRUE(server_.Start());
+}
+
+void TrustTokenBrowsertest::ProvideRequestHandlerKeyCommitmentsToNetworkService(
+    std::vector<base::StringPiece> hosts) {
+  base::flat_map<url::Origin, base::StringPiece> origins_and_commitments;
+  std::string key_commitments = request_handler_.GetKeyCommitmentRecord();
+
+  // TODO(davidvc): This could be extended to make the request handler aware
+  // of different origins, which would allow using different key commitments
+  // per origin.
+  for (base::StringPiece host : hosts) {
+    GURL::Replacements replacements;
+    replacements.SetHostStr(host);
+    origins_and_commitments.insert_or_assign(
+        url::Origin::Create(server_.base_url().ReplaceComponents(replacements)),
+        key_commitments);
+  }
+
+  if (origins_and_commitments.empty()) {
+    origins_and_commitments = {
+        {url::Origin::Create(server_.base_url()), key_commitments}};
+  }
+
+  base::RunLoop run_loop;
+  GetNetworkService()->SetTrustTokenKeyCommitments(
+      network::WrapKeyCommitmentsForIssuers(std::move(origins_and_commitments)),
+      run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+std::string TrustTokenBrowsertest::IssuanceOriginFromHost(
+    const std::string& host) const {
+  auto ret = url::Origin::Create(server_.GetURL(host, "/")).Serialize();
+  return ret;
+}
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEnd) {
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});

@@ -1210,6 +1210,7 @@ test("content_browsertests") {
     "../test/content_browser_test_test.cc",
     "../test/top_frame_population_browsertest.cc",
     "../test/trust_token_browsertest.cc",
+    "../test/trust_token_browsertest.h",
     "../test/trust_token_origin_trial_browsertest.cc",
     "../test/trust_token_parameters_browsertest.cc",
     "../test/url_loader_interceptor_test.cc",
