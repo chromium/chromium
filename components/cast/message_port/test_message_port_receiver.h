@@ -29,6 +29,9 @@ class TestMessagePortReceiver
   // Spins a RunLoop until the associated MessagePort is disconnected.
   void RunUntilDisconnected();
 
+  // Sets the return value of OnMessage
+  void SetOnMessageResult(bool result);
+
   std::vector<
       std::pair<std::string, std::vector<std::unique_ptr<MessagePort>>>>&
   buffer() {
@@ -46,6 +49,7 @@ class TestMessagePortReceiver
   size_t message_count_target_ = 0;
   base::OnceClosure on_receive_satisfied_;
   base::OnceClosure on_disconnect_;
+  bool on_message_result_ = true;
 };
 
 }  // namespace cast_api_bindings

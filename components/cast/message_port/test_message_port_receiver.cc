@@ -12,6 +12,10 @@ TestMessagePortReceiver::TestMessagePortReceiver() = default;
 
 TestMessagePortReceiver::~TestMessagePortReceiver() = default;
 
+void TestMessagePortReceiver::SetOnMessageResult(bool result) {
+  on_message_result_ = result;
+}
+
 bool TestMessagePortReceiver::RunUntilMessageCountEqual(size_t message_count) {
   base::RunLoop run_loop;
   on_receive_satisfied_ = run_loop.QuitClosure();
@@ -34,7 +38,7 @@ bool TestMessagePortReceiver::OnMessage(
     DCHECK(on_receive_satisfied_);
     std::move(on_receive_satisfied_).Run();
   }
-  return true;
+  return on_message_result_;
 }
 
 void TestMessagePortReceiver::OnPipeError() {

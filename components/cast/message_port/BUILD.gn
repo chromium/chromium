@@ -3,11 +3,12 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//testing/test.gni")
 
 source_set("message_port") {
   if (is_fuchsia) {
     public_deps = [ ":message_port_fuchsia" ]
-  } else if (is_chromecast) {
+  } else {
     public_deps = [ ":message_port_cast" ]
   }
 }
@@ -58,6 +59,17 @@ source_set("message_port_cast") {
   ]
 }
 
+source_set("message_port_unittest") {
+  testonly = true
+  sources = [ "message_port_unittest.cc" ]
+  deps = [
+    ":message_port",
+    ":test_message_port_receiver",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
 source_set("test_message_port_receiver") {
   testonly = true
   sources = [
@@ -65,7 +77,7 @@ source_set("test_message_port_receiver") {
     "test_message_port_receiver.h",
   ]
   deps = [
-    ":message_port",
+    ":public",
     "//base",
   ]
 }
