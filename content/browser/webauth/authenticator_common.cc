@@ -1778,7 +1778,6 @@ device::FidoDiscoveryFactory* AuthenticatorCommon::discovery_factory() {
 }
 
 void AuthenticatorCommon::InitDiscoveryFactory() {
-  DCHECK(!discovery_factory_ && !discovery_factory_testing_override_);
   const bool is_u2f_api_request =
       WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
           caller_origin_);

@@ -1713,13 +1713,15 @@ class TestAuthenticatorRequestDelegate
       EnterprisePolicy enterprise_policy,
       AttestationConsent attestation_consent,
       bool is_focused,
-      bool is_uvpaa)
+      bool is_uvpaa,
+      base::OnceClosure started_over_callback)
       : action_callbacks_registered_callback_(
             std::move(action_callbacks_registered_callback)),
         enterprise_policy_(enterprise_policy),
         attestation_consent_(attestation_consent),
         is_focused_(is_focused),
-        is_uvpaa_(is_uvpaa) {}
+        is_uvpaa_(is_uvpaa),
+        started_over_callback_(std::move(started_over_callback)) {}
 
   ~TestAuthenticatorRequestDelegate() override {
     CHECK(attestation_consent_queried_ ||
@@ -1735,6 +1737,11 @@ class TestAuthenticatorRequestDelegate
         << "RegisterActionCallbacks called twice.";
     cancel_callback_.emplace(std::move(cancel_callback));
     std::move(action_callbacks_registered_callback_).Run();
+    if (started_over_callback_) {
+      action_callbacks_registered_callback_ = std::move(started_over_callback_);
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(start_over_callback)));
+    }
   }
 
   bool ShouldPermitIndividualAttestation(
@@ -1796,6 +1803,7 @@ class TestAuthenticatorRequestDelegate
   const AttestationConsent attestation_consent_;
   const bool is_focused_;
   const bool is_uvpaa_;
+  base::OnceClosure started_over_callback_;
   bool attestation_consent_queried_ = false;
 
  private:
@@ -1814,7 +1822,8 @@ class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
         action_callbacks_registered_callback
             ? std::move(action_callbacks_registered_callback)
             : base::DoNothing(),
-        enterprise_policy, attestation_consent, is_focused, is_uvpaa);
+        enterprise_policy, attestation_consent, is_focused, is_uvpaa,
+        std::move(started_over_callback_));
   }
 
   // If set, this closure will be called when the subsequently constructed
@@ -1830,6 +1839,13 @@ class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
   // This emulates scenarios where a nullptr RequestClientDelegate is returned
   // because a request is already in progress.
   bool return_null_delegate = false;
+
+  // If started_over_callback_ is set to a non-null callback, the request will
+  // be restarted after action callbacks are registered, and
+  // |started_over_callback| will replace
+  // |action_callbacks_registered_callback|. This should then be called the
+  // second time action callbacks are registered.
+  base::OnceClosure started_over_callback_;
 };
 
 // A test class that installs and removes an
@@ -2546,6 +2562,44 @@ TEST_F(AuthenticatorContentBrowserClientTest,
   request_started.WaitForCallback();
 }
 
+TEST_F(AuthenticatorContentBrowserClientTest, MakeCredentialStartOver) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+
+  TestRequestStartedCallback request_started;
+  test_client_.action_callbacks_registered_callback =
+      request_started.callback();
+  TestRequestStartedCallback request_restarted;
+  test_client_.started_over_callback_ = request_restarted.callback();
+
+  authenticator->MakeCredential(std::move(options), base::DoNothing());
+  request_started.WaitForCallback();
+  request_restarted.WaitForCallback();
+}
+
+TEST_F(AuthenticatorContentBrowserClientTest, GetAssertionStartOver) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+
+  TestRequestStartedCallback request_started;
+  test_client_.action_callbacks_registered_callback =
+      request_started.callback();
+  TestRequestStartedCallback request_restarted;
+  test_client_.started_over_callback_ = request_restarted.callback();
+
+  authenticator->GetAssertion(std::move(options), base::DoNothing());
+  request_started.WaitForCallback();
+  request_restarted.WaitForCallback();
+}
+
 TEST_F(AuthenticatorContentBrowserClientTest, Unfocused) {
   // When the |ContentBrowserClient| considers the tab to be unfocused,
   // registration requests should fail with a |NOT_FOCUSED| error, but getting
@@ -2680,7 +2734,8 @@ class MockAuthenticatorRequestDelegateObserver
             EnterprisePolicy::NOT_LISTED,
             AttestationConsent::NOT_USED,
             true /* is_focused */,
-            /*is_uvpaa=*/false),
+            /*is_uvpaa=*/false,
+            /*started_over_callback=*/base::OnceClosure()),
         failure_reasons_callback_(std::move(failure_reasons_callback)) {}
   ~MockAuthenticatorRequestDelegateObserver() override = default;
 
