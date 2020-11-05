@@ -284,7 +284,7 @@ void SecureChannel::OnMessageDecoded(const std::string& feature,
   PA_LOG(VERBOSE) << "Received message from " << connection_->GetDeviceAddress()
                   << ": {"
                   << "feature: \"" << feature << "\", "
-                  << "payload: \"" << decoded_message << "\""
+                  << "payload size: " << decoded_message.size() << " byte(s)"
                   << "}";
 
   for (auto& observer : observer_list_)
