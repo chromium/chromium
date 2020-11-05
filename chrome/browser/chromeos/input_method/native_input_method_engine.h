@@ -47,6 +47,10 @@ class NativeInputMethodEngine : public InputMethodEngine {
     return assistive_suggester_;
   }
 
+  AutocorrectManager* get_autocorrect_manager_for_testing() {
+    return autocorrect_manager_;
+  }
+
   // Used to show special UI to user for interacting with autocorrected text.
   void OnAutocorrect(std::string typed_word,
                      std::string corrected_word,

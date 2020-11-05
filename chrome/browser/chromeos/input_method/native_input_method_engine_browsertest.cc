@@ -711,6 +711,43 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   SetFocus(nullptr);
 }
 
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, RevertsAutocorrect) {
+  engine_.Enable(kEngineIdUs);
+  chromeos::TextInputTestHelper helper(GetBrowserInputMethod());
+  SetUpTextInput(helper);
+  const base::string16 corrected_text =
+      base::UTF8ToUTF16("hello corrected world");
+  const base::string16 typed_text = base::UTF8ToUTF16("hello typed world");
+  helper.GetTextInputClient()->InsertText(corrected_text);
+  helper.WaitForSurroundingTextChanged(corrected_text);
+  EXPECT_EQ(ui::IMEBridge::Get()
+                ->GetInputContextHandler()
+                ->GetSurroundingTextInfo()
+                .surrounding_text,
+            corrected_text);
+
+  engine_.OnAutocorrect("typed", "corrected", 6);
+
+  // Move cursor into the corrected word, sending VKEY_LEFT fails, so use JS.
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::ExecuteScript(
+      tab, "document.getElementById('text_id').setSelectionRange(8,8)"));
+
+  helper.WaitForSurroundingTextChanged(corrected_text, gfx::Range(8, 8));
+
+  engine_.get_autocorrect_manager_for_testing()->UndoAutocorrect();
+
+  helper.WaitForSurroundingTextChanged(typed_text);
+
+  EXPECT_EQ(ui::IMEBridge::Get()
+                ->GetInputContextHandler()
+                ->GetSurroundingTextInfo()
+                .surrounding_text,
+            typed_text);
+
+  SetFocus(nullptr);
+}
 class NativeInputMethodEngineAssistiveOff : public InProcessBrowserTest {
  public:
   NativeInputMethodEngineAssistiveOff() {

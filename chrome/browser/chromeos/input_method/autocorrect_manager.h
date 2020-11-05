@@ -32,7 +32,9 @@ class AutocorrectManager {
   // Called by input method engine on autocorrect to initially show underline.
   // Needs to be called after the autocorrected text (corrected_word, offset by
   // start_index code points in SurroundingInfo) has been committed.
-  void MarkAutocorrectRange(const std::string& corrected_word, int start_index);
+  void MarkAutocorrectRange(const std::string& corrected_word,
+                            const std::string& typed_word,
+                            int start_index);
   // To hide the underline after enough keypresses, this class intercepts
   // keystrokes.
   void OnKeyEvent(const InputMethodEngineBase::KeyboardEvent& event);
@@ -43,6 +45,7 @@ class AutocorrectManager {
   void OnSurroundingTextChanged(const base::string16& text,
                                 int cursor_pos,
                                 int anchor_pos);
+  void UndoAutocorrect();
 
  private:
   void ClearUnderline();
@@ -50,6 +53,7 @@ class AutocorrectManager {
   int key_presses_until_underline_hide_ = 0;
   int context_id_ = -1;
   InputMethodEngine* const engine_;
+  std::string last_typed_word_;
 };
 
 }  // namespace chromeos

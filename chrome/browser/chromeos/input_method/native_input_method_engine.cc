@@ -155,7 +155,8 @@ bool NativeInputMethodEngine::IsConnectedForTesting() const {
 void NativeInputMethodEngine::OnAutocorrect(std::string typed_word,
                                             std::string corrected_word,
                                             int start_index) {
-  autocorrect_manager_->MarkAutocorrectRange(corrected_word, start_index);
+  autocorrect_manager_->MarkAutocorrectRange(corrected_word, typed_word,
+                                             start_index);
 }
 
 NativeInputMethodEngine::ImeObserver*
@@ -367,6 +368,8 @@ void NativeInputMethodEngine::ImeObserver::OnAssistiveWindowButtonClicked(
       }
       break;
     case ui::ime::ButtonId::kUndo:
+      autocorrect_manager_->UndoAutocorrect();
+      break;
     case ui::ime::ButtonId::kAddToDictionary:
     case ui::ime::ButtonId::kNone:
       base_observer_->OnAssistiveWindowButtonClicked(button);
