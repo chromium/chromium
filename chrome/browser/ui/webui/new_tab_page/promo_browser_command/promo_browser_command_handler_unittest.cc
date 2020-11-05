@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/webui/new_tab_page/promo_browser_command/promo_browser_command_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/common/pref_names.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -201,8 +203,41 @@ TEST_F(PromoBrowserCommandHandlerTest, DisableHandlingCommands) {
       PromoBrowserCommandHandler::kPromoBrowserCommandHistogramName, 0);
 }
 
-TEST_F(PromoBrowserCommandHandlerTest, CanShowOpenSafetyCheckCommandPromo) {
-  EXPECT_TRUE(CanShowPromoWithCommand(Command::kOpenSafetyCheck));
+TEST_F(PromoBrowserCommandHandlerTest,
+       CanShowPromoWithCommand_OpenSafetyCheck) {
+  // By default, showing the Safety Check promo is allowed.
+  EXPECT_TRUE(CanShowPromoWithCommand(
+      Command::kOpenSafeBrowsingEnhancedProtectionSettings));
+
+  // In enterprise environments, i.e. if any browser policy is applied, showing
+  // the Safety Check promo is not allowed.
+  TestingProfile::Builder builder;
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+  profile->GetTestingPrefService()->SetManagedPref(
+      prefs::kSafeBrowsingEnabled, std::make_unique<base::Value>(true));
+  EXPECT_FALSE(CanShowPromoWithCommand(Command::kOpenSafetyCheck));
+
+  profile->GetTestingPrefService()->RemoveManagedPref(
+      prefs::kSafeBrowsingEnabled);
+  profile->GetTestingPrefService()->SetManagedPref(
+      password_manager::prefs::kCredentialsEnableService,
+      std::make_unique<base::Value>(true));
+  EXPECT_FALSE(CanShowPromoWithCommand(Command::kOpenSafetyCheck));
+
+  // That's true even if the policy in question is not related to the entries
+  // shown in the Safety Check.
+  profile->GetTestingPrefService()->RemoveManagedPref(
+      password_manager::prefs::kCredentialsEnableService);
+  profile->GetTestingPrefService()->SetManagedPref(
+      prefs::kManagedCookiesAllowedForUrls,
+      std::make_unique<base::Value>(true));
+  EXPECT_FALSE(CanShowPromoWithCommand(Command::kOpenSafetyCheck));
+
+  // Once policies are removed, the command works again.
+  profile->GetTestingPrefService()->RemoveManagedPref(
+      prefs::kManagedCookiesAllowedForUrls);
+  EXPECT_TRUE(CanShowPromoWithCommand(
+      Command::kOpenSafeBrowsingEnhancedProtectionSettings));
 }
 
 TEST_F(PromoBrowserCommandHandlerTest, OpenSafetyCheckCommand) {

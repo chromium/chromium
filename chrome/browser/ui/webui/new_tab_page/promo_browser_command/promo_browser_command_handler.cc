@@ -9,6 +9,7 @@
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/command_updater_impl.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/promos/promo_service.h"
 #include "chrome/browser/ui/browser.h"
@@ -51,7 +52,7 @@ void PromoBrowserCommandHandler::CanShowPromoWithCommand(
       // Nothing to do.
       break;
     case Command::kOpenSafetyCheck:
-      can_show = true;
+      can_show = chrome::enterprise_util::HasBrowserPoliciesApplied(profile_);
       break;
     case Command::kOpenSafeBrowsingEnhancedProtectionSettings: {
       bool managed = safe_browsing::SafeBrowsingPolicyHandler::
