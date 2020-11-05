@@ -7,7 +7,7 @@
  */
 
 Polymer({
-  is: 'family-link-notice',
+  is: 'family-link-notice-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 

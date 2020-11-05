@@ -18,7 +18,7 @@ const UIState = {
 };
 
 Polymer({
-  is: 'gaia-password-changed',
+  is: 'gaia-password-changed-element',
 
   behaviors: [
     OobeI18nBehavior,

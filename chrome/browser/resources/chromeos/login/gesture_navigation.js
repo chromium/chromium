@@ -16,7 +16,7 @@ const GesturePage = {
 };
 
 Polymer({
-  is: 'gesture-navigation',
+  is: 'gesture-navigation-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 

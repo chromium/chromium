@@ -16,7 +16,7 @@ const UIState = {
 };
 
 Polymer({
-  is: 'saml-confirm-password',
+  is: 'saml-confirm-password-element',
 
   behaviors: [
     OobeI18nBehavior,

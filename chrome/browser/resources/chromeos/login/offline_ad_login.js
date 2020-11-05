@@ -30,7 +30,7 @@ var EncryptionSelectListType;
 var JoinConfigType;
 
 Polymer({
-  is: 'offline-ad-login',
+  is: 'offline-ad-login-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 

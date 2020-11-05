@@ -7,7 +7,7 @@
  */
 
 Polymer({
-  is: 'oobe-network',
+  is: 'oobe-network-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 

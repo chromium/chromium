@@ -21,7 +21,7 @@ const UIState = {
 };
 
 Polymer({
-  is: 'demo-setup',
+  is: 'demo-setup-element',
 
   behaviors: [
     OobeI18nBehavior,

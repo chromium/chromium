@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 Polymer({
-  is: 'signin-fatal-error',
+  is: 'signin-fatal-error-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 

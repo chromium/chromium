@@ -229,7 +229,7 @@ EulaLoader.instances = {};
  */
 
 Polymer({
-  is: 'oobe-eula-md',
+  is: 'oobe-eula-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 

@@ -8,7 +8,7 @@
  */
 
 Polymer({
-  is: 'app-downloading',
+  is: 'app-downloading-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 

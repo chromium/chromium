@@ -11,7 +11,7 @@
 <link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 
-<dom-module id="enterprise-enrollment">
+<dom-module id="enterprise-enrollment-element">
   <template>
     <style include="oobe-dialog-host"></style>
     <link rel="stylesheet" href="gaia_card_parameters.css">
@@ -60,10 +60,10 @@
         </div>
       </oobe-dialog>
       <div id="step-ad-join" for-step="ad-join">
-        <offline-ad-login id="adJoinUI" is-domain-join
+        <offline-ad-login-element id="adJoinUI" is-domain-join
             class="fit"
             ad-welcome-message-key="oauthEnrollAdDomainJoinWelcomeMessage">
-        </offline-ad-login>
+        </offline-ad-login-element>
       </div>
 
       <!--  ERROR DIALOG -->

@@ -7,7 +7,7 @@
  */
 
 Polymer({
-  is: 'tpm-error-message',
+  is: 'tpm-error-message-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 

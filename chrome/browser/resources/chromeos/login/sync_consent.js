@@ -22,7 +22,7 @@ const UIState = {
 };
 
 Polymer({
-  is: 'sync-consent',
+  is: 'sync-consent-element',
 
   behaviors: [
     OobeI18nBehavior,

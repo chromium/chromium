@@ -17,7 +17,7 @@ const EnableKioskMode = {
 };
 
 Polymer({
-  is: 'kiosk-enable',
+  is: 'kiosk-enable-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 

@@ -8,7 +8,7 @@
  */
 
 Polymer({
-  is: 'arc-tos-root',
+  is: 'arc-tos-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior],
 

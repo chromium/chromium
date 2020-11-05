@@ -26,7 +26,7 @@ const ADB_SIDELOADING_SCREEN_STATE = {
 };
 
 Polymer({
-  is: 'oobe-adb-sideloading-screen',
+  is: 'oobe-adb-sideloading-element',
 
   behaviors: [
     OobeI18nBehavior,

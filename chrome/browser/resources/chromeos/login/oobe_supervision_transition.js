@@ -8,7 +8,7 @@
  */
 
 Polymer({
-  is: 'supervision-transition',
+  is: 'supervision-transition-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 

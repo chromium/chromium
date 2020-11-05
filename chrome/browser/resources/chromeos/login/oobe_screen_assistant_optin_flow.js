@@ -9,7 +9,7 @@
  */
 
 Polymer({
-  is: 'assistant-optin',
+  is: 'assistant-optin-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 

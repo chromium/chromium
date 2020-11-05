@@ -35,7 +35,7 @@ var UpdateUIState = {
 
 
 Polymer({
-  is: 'oobe-update',
+  is: 'oobe-update-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 

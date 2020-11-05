@@ -23,7 +23,7 @@ var EncryptionMigrationUIState = {
 };
 
 Polymer({
-  is: 'encryption-migration',
+  is: 'encryption-migration-element',
 
   behaviors: [
     OobeI18nBehavior,

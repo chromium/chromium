@@ -7,7 +7,7 @@
  */
 
 Polymer({
-  is: 'wrong-hwid',
+  is: 'wrong-hwid-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 

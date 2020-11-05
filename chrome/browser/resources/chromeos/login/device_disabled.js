@@ -7,7 +7,7 @@
  */
 
 Polymer({
-  is: 'device-disabled',
+  is: 'device-disabled-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 

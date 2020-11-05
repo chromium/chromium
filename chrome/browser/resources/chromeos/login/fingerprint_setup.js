@@ -36,7 +36,7 @@ const UIState = {
 };
 
 Polymer({
-  is: 'fingerprint-setup',
+  is: 'fingerprint-setup-element',
 
   behaviors: [
     OobeI18nBehavior,

@@ -7,7 +7,7 @@
  */
 
 Polymer({
-  is: 'parental-handoff',
+  is: 'parental-handoff-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 

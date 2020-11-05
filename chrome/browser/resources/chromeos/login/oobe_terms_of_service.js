@@ -12,7 +12,7 @@ var TermsOfServiceScreenState = {LOADING: 0, LOADED: 1, ERROR: 2};
  * screen.
  */
 Polymer({
-  is: 'terms-of-service',
+  is: 'terms-of-service-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 

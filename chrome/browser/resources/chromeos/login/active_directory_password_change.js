@@ -36,7 +36,7 @@ const ACTIVE_DIRECTORY_PASSWORD_CHANGE_ERROR_STATE = {
 };
 
 Polymer({
-  is: 'active-directory-password-change',
+  is: 'active-directory-password-change-element',
 
   behaviors: [OobeI18nBehavior, LoginScreenBehavior],
 

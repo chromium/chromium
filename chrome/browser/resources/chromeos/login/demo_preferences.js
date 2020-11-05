@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 Polymer({
-  is: 'demo-preferences',
+  is: 'demo-preferences-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 

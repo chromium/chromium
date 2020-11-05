@@ -66,7 +66,7 @@ const DialogMode = {
 };
 
 Polymer({
-  is: 'gaia-signin',
+  is: 'gaia-signin-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 

@@ -44,7 +44,7 @@ const POWERWASH_MODE_DETAILS = new Map([
 ]);
 
 Polymer({
-  is: 'oobe-reset',
+  is: 'oobe-reset-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 

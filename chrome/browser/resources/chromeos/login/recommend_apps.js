@@ -21,7 +21,7 @@ const UIState = {
 };
 
 Polymer({
-  is: 'recommend-apps',
+  is: 'recommend-apps-element',
 
   behaviors: [
     OobeI18nBehavior,

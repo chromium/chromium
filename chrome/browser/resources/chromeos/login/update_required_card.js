@@ -17,7 +17,7 @@
 };
 
 Polymer({
-  is: 'update-required-card',
+  is: 'update-required-card-element',
 
   behaviors: [
     OobeI18nBehavior,

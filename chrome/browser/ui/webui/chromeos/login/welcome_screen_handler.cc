@@ -131,7 +131,7 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
   else
     builder->Add("welcomeScreenGreeting", IDS_WELCOME_SCREEN_GREETING);
 
-  // MD-OOBE (oobe-welcome-md)
+  // MD-OOBE (oobe-welcome-element)
   builder->Add("debuggingFeaturesLink", IDS_WELCOME_ENABLE_DEV_FEATURES_LINK);
   builder->Add("timezoneDropdownLabel", IDS_TIMEZONE_DROPDOWN_LABEL);
   builder->Add("oobeOKButtonText", IDS_OOBE_OK_BUTTON_TEXT);

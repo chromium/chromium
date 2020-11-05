@@ -8,7 +8,7 @@
  */
 
 Polymer({
-  is: 'marketing-opt-in',
+  is: 'marketing-opt-in-element',
 
   properties: {
     isAccessibilitySettingsShown_: {

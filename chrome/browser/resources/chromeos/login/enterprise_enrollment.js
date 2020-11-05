@@ -29,7 +29,7 @@ var INJECTED_WEBVIEW_SCRIPT = String.raw`
 };
 
 Polymer({
-  is: 'enterprise-enrollment',
+  is: 'enterprise-enrollment-element',
 
   behaviors: [
     OobeI18nBehavior,
