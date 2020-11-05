@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -15,6 +16,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "extensions/common/extension_features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -145,9 +147,15 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestBrowserTest,
 // This test verifies that when a secure context served from the public address
 // space loads a resource from the local network, the correct WebFeature is
 // use-counted.
-// Disabled, as explained in https://crbug.com/1143206
 IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestBrowserTest,
-                       DISABLED_RecordsAddressSpaceFeatureForFetch) {
+                       RecordsAddressSpaceFeatureForFetch) {
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kForceWebRequestProxyForTest)) {
+    // Selectively disabled when requests are forced through WebRequest proxy.
+    // TODO(https://crbug.com/1143206): Fix test and remove this conditional.
+    return;
+  }
+
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
 
@@ -166,9 +174,15 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestBrowserTest,
 // This test verifies that when a non-secure context served from the public
 // address space loads a resource from the local network, the correct WebFeature
 // is use-counted.
-IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkRequestBrowserTest,
-    DISABLED_RecordsAddressSpaceFeatureForFetchInNonSecureContext) {
+IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestBrowserTest,
+                       RecordsAddressSpaceFeatureForFetchInNonSecureContext) {
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kForceWebRequestProxyForTest)) {
+    // Selectively disabled when requests are forced through WebRequest proxy.
+    // TODO(https://crbug.com/1143206): Fix test and remove this conditional.
+    return;
+  }
+
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
 
