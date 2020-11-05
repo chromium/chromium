@@ -283,16 +283,12 @@ PropertyNode::iterator PropertyNode::Parse(PropertyNode* node,
   return iter;
 }
 
-//
-// AccessibilityTreeFormatter
-//
-
 // static
 std::string AccessibilityTreeFormatterBase::DumpAccessibilityTreeFromManager(
     BrowserAccessibilityManager* ax_mgr,
     bool internal,
     std::vector<AXPropertyFilter> property_filters) {
-  std::unique_ptr<AccessibilityTreeFormatter> formatter;
+  std::unique_ptr<ui::AXTreeFormatter> formatter;
   if (internal)
     formatter = std::make_unique<AccessibilityTreeFormatterBlink>();
   else
@@ -304,53 +300,6 @@ std::string AccessibilityTreeFormatterBase::DumpAccessibilityTreeFromManager(
           ->BuildAccessibilityTree(ax_mgr->GetRoot());
   formatter->FormatAccessibilityTree(*dict, &accessibility_contents);
   return accessibility_contents;
-}
-
-bool AccessibilityTreeFormatter::MatchesPropertyFilters(
-    const std::vector<AXPropertyFilter>& property_filters,
-    const std::string& text,
-    bool default_result) {
-  bool allow = default_result;
-  for (const auto& filter : property_filters) {
-    // Either
-    //   1) the line matches a filter pattern, for example, AXSubrole=* filter
-    //      will match AXSubrole=AXTerm line or
-    //   2) a property on the line is exactly equal to the filter pattern, for
-    //      example, AXSubrole filter will match AXSubrole=AXTerm line.
-    if (base::MatchPattern(text, filter.match_str) ||
-        (filter.match_str.length() > 0 &&
-         filter.match_str.find('=') == std::string::npos &&
-         filter.match_str[filter.match_str.length() - 1] != '*' &&
-         base::MatchPattern(text, filter.match_str + "=*"))) {
-      switch (filter.type) {
-        case AXPropertyFilter::ALLOW_EMPTY:
-          allow = true;
-          break;
-        case AXPropertyFilter::ALLOW:
-          allow = (!base::MatchPattern(text, "*=''"));
-          break;
-        case AXPropertyFilter::DENY:
-          allow = false;
-          break;
-      }
-    }
-  }
-  return allow;
-}
-
-bool AccessibilityTreeFormatter::MatchesNodeFilters(
-    const std::vector<AXNodeFilter>& node_filters,
-    const base::DictionaryValue& dict) {
-  for (const auto& filter : node_filters) {
-    std::string value;
-    if (!dict.GetString(filter.property, &value)) {
-      continue;
-    }
-    if (base::MatchPattern(value, filter.pattern)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 AccessibilityTreeFormatterBase::AccessibilityTreeFormatterBase() = default;
@@ -479,13 +428,13 @@ bool AccessibilityTreeFormatterBase::HasMatchAllPropertyFilter() const {
 bool AccessibilityTreeFormatterBase::MatchesPropertyFilters(
     const std::string& text,
     bool default_result) const {
-  return AccessibilityTreeFormatter::MatchesPropertyFilters(
-      property_filters_, text, default_result);
+  return ui::AXTreeFormatter::MatchesPropertyFilters(property_filters_, text,
+                                                     default_result);
 }
 
 bool AccessibilityTreeFormatterBase::MatchesNodeFilters(
     const base::DictionaryValue& dict) const {
-  return AccessibilityTreeFormatter::MatchesNodeFilters(node_filters_, dict);
+  return ui::AXTreeFormatter::MatchesNodeFilters(node_filters_, dict);
 }
 
 std::string AccessibilityTreeFormatterBase::FormatCoordinates(

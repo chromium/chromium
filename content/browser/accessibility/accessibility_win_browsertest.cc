@@ -140,7 +140,7 @@ AccessibilityWinBrowserTest::AccessibilityWinBrowserTest() = default;
 AccessibilityWinBrowserTest::~AccessibilityWinBrowserTest() = default;
 
 std::string AccessibilityWinBrowserTest::PrintAXTree() const {
-  std::unique_ptr<AccessibilityTreeFormatter> formatter(
+  std::unique_ptr<ui::AXTreeFormatter> formatter(
       AccessibilityTreeFormatter::Create());
   DCHECK(formatter);
   formatter->set_show_ids(true);

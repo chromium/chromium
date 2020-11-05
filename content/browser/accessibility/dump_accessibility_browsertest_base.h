@@ -125,8 +125,8 @@ class DumpAccessibilityTestBase : public ContentBrowserTest,
   AccessibilityTreeFormatter::FormatterFactory formatter_factory_;
   AccessibilityEventRecorder::EventRecorderFactory event_recorder_factory_;
 
-  // The current AccessibilityTreeFormatter.
-  std::unique_ptr<AccessibilityTreeFormatter> formatter_;
+  // The current AXTreeFormatter.
+  std::unique_ptr<ui::AXTreeFormatter> formatter_;
 
   // Whether we should enable accessibility after navigating to the page,
   // otherwise we enable it first.

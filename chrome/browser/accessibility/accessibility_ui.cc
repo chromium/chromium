@@ -25,7 +25,6 @@
 #include "chrome/grit/dev_ui_browser_resources.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/accessibility_tree_formatter.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_thread.h"
@@ -41,6 +40,7 @@
 #include "net/base/escape.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
+#include "ui/accessibility/platform/inspect/tree_formatter.h"
 #include "ui/base/webui/web_ui_util.h"
 
 #if !defined(OS_ANDROID)
@@ -271,8 +271,8 @@ std::string RecursiveDumpAXPlatformNodeAsString(
   std::vector<std::string> attributes = base::SplitString(
       line, " ", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (std::string attribute : attributes) {
-    if (content::AccessibilityTreeFormatter::MatchesPropertyFilters(
-            property_filters, attribute, false)) {
+    if (ui::AXTreeFormatter::MatchesPropertyFilters(property_filters, attribute,
+                                                    false)) {
       str += attribute + " ";
     }
   }

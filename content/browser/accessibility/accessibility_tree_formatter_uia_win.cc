@@ -258,7 +258,7 @@ const long AccessibilityTreeFormatterUia::pattern_properties_[] = {
     UIA_ToggleToggleStatePropertyId,                  // 30086
 };
 // static
-std::unique_ptr<AccessibilityTreeFormatter>
+std::unique_ptr<ui::AXTreeFormatter>
 AccessibilityTreeFormatterUia::CreateUia() {
   base::win::AssertComInitialized();
   return std::make_unique<AccessibilityTreeFormatterUia>();

@@ -30,6 +30,8 @@
 
 namespace content {
 
+using ui::AXTreeFormatter;
+
 #define EXPECT_ACCESSIBILITY_HIT_TEST_RESULT(css_point, expected_node, \
                                              hit_node)                 \
   SCOPED_TRACE(GetScopedTrace(css_point));                             \
@@ -264,7 +266,7 @@ void AccessibilityHitTestingBrowserTest::SimulatePinchZoom(
 
 std::string
 AccessibilityHitTestingBrowserTest::FormatHitTestAccessibilityTree() {
-  std::unique_ptr<AccessibilityTreeFormatter> accessibility_tree_formatter =
+  std::unique_ptr<AXTreeFormatter> accessibility_tree_formatter =
       AccessibilityTreeFormatterBlink::CreateBlink();
   accessibility_tree_formatter->set_show_ids(true);
   accessibility_tree_formatter->SetPropertyFilters(

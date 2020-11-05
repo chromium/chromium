@@ -125,6 +125,7 @@ using extensions::ExtensionsAPIClient;
 using guest_view::GuestViewManager;
 using guest_view::TestGuestViewManager;
 using guest_view::TestGuestViewManagerFactory;
+using ui::AXTreeFormatter;
 
 const int kNumberLoadTestParts = 10;
 
@@ -3164,7 +3165,7 @@ class PDFExtensionAccessibilityTreeDumpTest
   //  See chrome/test/data/pdf/accessibility/readme.md for more info.
   void ParsePdfForExtraDirectives(
       const std::string& pdf_contents,
-      content::AccessibilityTreeFormatter* formatter,
+      AXTreeFormatter* formatter,
       std::vector<AXPropertyFilter>* property_filters) {
     const char kCommentMark = '%';
     for (const std::string& line : base::SplitString(
@@ -3191,8 +3192,7 @@ class PDFExtensionAccessibilityTreeDumpTest
 
     // Set up the tree formatter. Parse filters and other directives in the test
     // file.
-    std::unique_ptr<content::AccessibilityTreeFormatter> formatter =
-        test_pass_.create_formatter();
+    std::unique_ptr<AXTreeFormatter> formatter = test_pass_.create_formatter();
     std::vector<AXPropertyFilter> property_filters;
     formatter->AddDefaultFilters(&property_filters);
     AddDefaultFilters(&property_filters);

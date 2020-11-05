@@ -1,0 +1,118 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_TREE_FORMATTER_H_
+#define UI_ACCESSIBILITY_PLATFORM_INSPECT_TREE_FORMATTER_H_
+
+#include "ui/accessibility/platform/inspect/inspect.h"
+
+#include "ui/gfx/native_widget_types.h"
+
+namespace base {
+class DictionaryValue;
+}
+
+namespace ui {
+
+class AXPlatformNodeDelegate;
+
+// A utility class for formatting platform-specific accessibility information,
+// for use in testing, debugging, and developer tools.
+// This is extended by a subclass for each platform where accessibility is
+// implemented.
+class AX_EXPORT AXTreeFormatter {
+ public:
+  using AXTreeSelector = AXTreeSelector;
+  using AXPropertyFilter = AXPropertyFilter;
+  using AXNodeFilter = AXNodeFilter;
+
+  virtual ~AXTreeFormatter() = default;
+
+  // Appends default filters of the formatter.
+  virtual void AddDefaultFilters(
+      std::vector<AXPropertyFilter>* property_filters) = 0;
+
+  // Returns true if the given text matches |allow| property filters, or false
+  // if matches |deny| filter. Returns default value if doesn't match any
+  // property filters.
+  static bool MatchesPropertyFilters(
+      const std::vector<AXPropertyFilter>& property_filters,
+      const std::string& text,
+      bool default_result);
+
+  // Check if the given dictionary matches any of the supplied AXNodeFilter(s).
+  static bool MatchesNodeFilters(const std::vector<AXNodeFilter>& node_filters,
+                                 const base::DictionaryValue& dict);
+
+  // Build an accessibility tree for any window.
+  virtual std::unique_ptr<base::DictionaryValue>
+  BuildAccessibilityTreeForWindow(gfx::AcceleratedWidget widget) = 0;
+
+  // Build an accessibility tree for an application with a name matching the
+  // given pattern.
+  virtual std::unique_ptr<base::DictionaryValue>
+  BuildAccessibilityTreeForSelector(const AXTreeSelector&) = 0;
+
+  // Returns a filtered accessibility tree using the current property and node
+  // filters.
+  virtual std::unique_ptr<base::DictionaryValue> FilterAccessibilityTree(
+      const base::DictionaryValue& dict) = 0;
+
+  // Dumps a BrowserAccessibility tree into a string.
+  virtual void FormatAccessibilityTree(const base::DictionaryValue& tree_node,
+                                       std::string* contents) = 0;
+
+  // Test version of FormatAccessibilityTree().
+  // |root| must be non-null and must be in web content.
+  virtual void FormatAccessibilityTreeForTesting(AXPlatformNodeDelegate* root,
+                                                 std::string* contents) = 0;
+
+  // Set regular expression filters that apply to each property of every node
+  // before it's output.
+  virtual void SetPropertyFilters(
+      const std::vector<AXPropertyFilter>& property_filters) = 0;
+
+  // Set regular expression filters that apply to every node before output.
+  virtual void SetNodeFilters(
+      const std::vector<AXNodeFilter>& node_filters) = 0;
+
+  // If true, the internal accessibility id of each node will be included
+  // in its output.
+  virtual void set_show_ids(bool show_ids) = 0;
+
+  // A string that indicates a given line in a file is an allow-empty,
+  // allow or deny filter. Overridden by each platform subclass. Example:
+  // Mac values:
+  //   GetAllowEmptyString() -> "@MAC-ALLOW-EMPTY:"
+  //   GetAllowString() -> "@MAC-ALLOW:"
+  //   GetDenyString() -> "@MAC-DENY:"
+  //   GetDenyNodeString() -> "@MAC-DENY-NODE:"
+  // Example html:
+  // <!--
+  // @MAC-ALLOW-EMPTY:description*
+  // @MAC-ALLOW:roleDescription*
+  // @MAC-DENY:subrole*
+  // @BLINK-DENY-NODE:internalRole=inlineTextBox
+  // -->
+  // <p>Text</p>
+  virtual const std::string GetAllowEmptyString() = 0;
+  virtual const std::string GetAllowString() = 0;
+  virtual const std::string GetDenyString() = 0;
+  virtual const std::string GetDenyNodeString() = 0;
+
+  // A string that indicates event recording should continue at least until a
+  // specific event has been received.
+  // Overridden by each platform subclass.
+  // Example win value:
+  //   GetRunUntilEventString() -> "@WIN-RUN-UNTIL-EVENT"
+  // Example html:
+  // <!--
+  // @WIN-RUN-UNTIL-EVENT:IA2_EVENT_TEXT_CARET_MOVED
+  // -->
+  virtual const std::string GetRunUntilEventString() = 0;
+};
+
+}  // namespace ui
+
+#endif  // UI_ACCESSIBILITY_PLATFORM_INSPECT_TREE_FORMATTER_H_

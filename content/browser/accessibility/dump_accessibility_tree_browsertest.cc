@@ -43,6 +43,7 @@
 namespace content {
 
 using ui::AXPropertyFilter;
+using ui::AXTreeFormatter;
 
 // See content/test/data/accessibility/readme.md for an overview.
 //
@@ -148,7 +149,7 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
   }
 
   std::vector<std::string> Dump(std::vector<std::string>& unused) override {
-    std::unique_ptr<AccessibilityTreeFormatter> formatter(formatter_factory_());
+    std::unique_ptr<AXTreeFormatter> formatter(formatter_factory_());
     formatter->SetPropertyFilters(property_filters_);
     formatter->SetNodeFilters(node_filters_);
     std::string actual_contents;

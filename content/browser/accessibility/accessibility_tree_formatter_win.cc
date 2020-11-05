@@ -99,8 +99,7 @@ class AccessibilityTreeFormatterWin : public AccessibilityTreeFormatterBase {
 };
 
 // static
-std::unique_ptr<AccessibilityTreeFormatter>
-AccessibilityTreeFormatter::Create() {
+std::unique_ptr<ui::AXTreeFormatter> AccessibilityTreeFormatter::Create() {
   base::win::AssertComInitialized();
   return std::make_unique<AccessibilityTreeFormatterWin>();
 }

@@ -140,7 +140,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBase
   virtual std::unique_ptr<base::DictionaryValue> BuildAccessibilityTree(
       BrowserAccessibility* root) = 0;
 
-  // AccessibilityTreeFormatter overrides.
+  // AXTreeFormatter overrides.
   void AddDefaultFilters(
       std::vector<AXPropertyFilter>* property_filters) override;
   std::unique_ptr<base::DictionaryValue> FilterAccessibilityTree(

@@ -26,6 +26,7 @@
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/accessibility_tree_formatter.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
@@ -77,6 +78,7 @@ bool AccessibilityTreeContainsLoadedDocWithUrl(BrowserAccessibility* node,
 }  // namespace
 
 using ui::AXPropertyFilter;
+using ui::AXTreeFormatter;
 
 // DumpAccessibilityTestBase
 DumpAccessibilityTestBase::DumpAccessibilityTestBase()
@@ -145,7 +147,7 @@ void DumpAccessibilityTestBase::ChooseFeatures(
 
 std::string
 DumpAccessibilityTestBase::DumpUnfilteredAccessibilityTreeAsString() {
-  std::unique_ptr<AccessibilityTreeFormatter> formatter(formatter_factory_());
+  std::unique_ptr<AXTreeFormatter> formatter(formatter_factory_());
   std::vector<AXPropertyFilter> property_filters;
   property_filters.emplace_back("*", AXPropertyFilter::ALLOW);
   formatter->SetPropertyFilters(property_filters);

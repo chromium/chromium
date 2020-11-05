@@ -9,8 +9,7 @@ namespace content {
 
 #if !defined(PLATFORM_HAS_NATIVE_ACCESSIBILITY_IMPL)
 // static
-std::unique_ptr<AccessibilityTreeFormatter>
-AccessibilityTreeFormatter::Create() {
+std::unique_ptr<ui::AXTreeFormatter> AccessibilityTreeFormatter::Create() {
   return AccessibilityTreeFormatterBlink::CreateBlink();
 }
 

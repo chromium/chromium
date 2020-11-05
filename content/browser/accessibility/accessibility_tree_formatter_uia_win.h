@@ -24,7 +24,7 @@ class AccessibilityTreeFormatterUia : public AccessibilityTreeFormatterBase {
   AccessibilityTreeFormatterUia();
   ~AccessibilityTreeFormatterUia() override;
 
-  static std::unique_ptr<AccessibilityTreeFormatter> CreateUia();
+  static std::unique_ptr<ui::AXTreeFormatter> CreateUia();
 
   static void SetUpCommandLineForTestPass(base::CommandLine* command_line);
 

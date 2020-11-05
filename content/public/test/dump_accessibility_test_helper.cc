@@ -12,8 +12,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "content/public/browser/accessibility_tree_formatter.h"
 #include "content/public/common/content_switches.h"
+#include "ui/accessibility/platform/inspect/tree_formatter.h"
 
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"

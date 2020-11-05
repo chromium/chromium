@@ -28,7 +28,7 @@ class AXTreeServer final {
 
  private:
   using BuildTree = base::OnceCallback<std::unique_ptr<base::DictionaryValue>(
-      AccessibilityTreeFormatter*)>;
+      ui::AXTreeFormatter*)>;
 
   // Builds and formats the accessible tree.
   void Run(BuildTree build_tree,
@@ -40,7 +40,7 @@ class AXTreeServer final {
       const base::FilePath& filters_path);
 
   // Formats and dumps into console the tree.
-  void Format(AccessibilityTreeFormatter& formatter,
+  void Format(ui::AXTreeFormatter& formatter,
               const base::DictionaryValue& dict,
               bool use_json);
 

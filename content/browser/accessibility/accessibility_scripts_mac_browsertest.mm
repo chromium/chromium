@@ -85,7 +85,7 @@ class AccessibilityScriptsMacBrowserTest : public ContentBrowserTest {
   BrowserAccessibility* root_;
   std::unique_ptr<LineIndexer> line_indexer_;
   std::ostringstream script_output_;
-  std::unique_ptr<AccessibilityTreeFormatter> formatter_;
+  std::unique_ptr<ui::AXTreeFormatter> formatter_;
   DumpAccessibilityTestHelper helper_;
 };
 

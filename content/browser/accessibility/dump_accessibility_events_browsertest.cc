@@ -23,7 +23,6 @@
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/accessibility/dump_accessibility_browsertest_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/browser/accessibility_tree_formatter.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/accessibility_notification_waiter.h"
@@ -32,10 +31,12 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "ui/accessibility/platform/inspect/tree_formatter.h"
 
 namespace content {
 
 using ui::AXPropertyFilter;
+using ui::AXTreeFormatter;
 
 // See content/test/data/accessibility/readme.md for an overview.
 //
@@ -193,10 +194,10 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump(
     // so these tests shouldn't be used to make assertions about event order.
     std::sort(event_logs.begin(), event_logs.end());
 
-    for (size_t i = 0; i < event_logs.size(); ++i) {
-      if (AccessibilityTreeFormatter::MatchesPropertyFilters(
-              property_filters_, event_logs[i], true)) {
-        result.push_back(event_logs[i]);
+    for (auto& event_log : event_logs) {
+      if (AXTreeFormatter::MatchesPropertyFilters(property_filters_, event_log,
+                                                  true)) {
+        result.push_back(event_log);
       }
     }
 

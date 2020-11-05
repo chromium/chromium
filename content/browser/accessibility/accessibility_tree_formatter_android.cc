@@ -114,8 +114,7 @@ class AccessibilityTreeFormatterAndroid
 };
 
 // static
-std::unique_ptr<AccessibilityTreeFormatter>
-AccessibilityTreeFormatter::Create() {
+std::unique_ptr<ui::AXTreeFormatter> AccessibilityTreeFormatter::Create() {
   return std::make_unique<AccessibilityTreeFormatterAndroid>();
 }
 

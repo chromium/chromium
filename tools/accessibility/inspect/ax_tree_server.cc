@@ -21,23 +21,24 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 
+using ui::AXTreeFormatter;
+using ui::AXTreeSelector;
+
 namespace content {
 
 constexpr char kAllowOptEmptyStr[] = "@ALLOW-EMPTY:";
 constexpr char kAllowOptStr[] = "@ALLOW:";
 constexpr char kDenyOptStr[] = "@DENY:";
 
-using ui::AXTreeSelector;
-
 std::unique_ptr<base::DictionaryValue> BuildTreeForSelector(
     const AXTreeSelector& selector,
-    AccessibilityTreeFormatter* formatter) {
+    AXTreeFormatter* formatter) {
   return formatter->BuildAccessibilityTreeForSelector(selector);
 }
 
 std::unique_ptr<base::DictionaryValue> BuildTreeForWindow(
     gfx::AcceleratedWidget widget,
-    AccessibilityTreeFormatter* formatter) {
+    AXTreeFormatter* formatter) {
   return formatter->BuildAccessibilityTreeForWindow(widget);
 }
 
@@ -56,7 +57,7 @@ AXTreeServer::AXTreeServer(gfx::AcceleratedWidget widget,
 void AXTreeServer::Run(BuildTree build_tree,
                        const base::FilePath& filters_path,
                        bool use_json) {
-  std::unique_ptr<AccessibilityTreeFormatter> formatter(
+  std::unique_ptr<AXTreeFormatter> formatter(
       AccessibilityTreeFormatter::Create());
 
   // Set filters.
@@ -120,7 +121,7 @@ std::vector<ui::AXPropertyFilter> AXTreeServer::GetPropertyFilters(
   return filters;
 }
 
-void AXTreeServer::Format(AccessibilityTreeFormatter& formatter,
+void AXTreeServer::Format(AXTreeFormatter& formatter,
                           const base::DictionaryValue& dict,
                           bool use_json) {
   std::string accessibility_contents;

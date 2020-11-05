@@ -60,7 +60,7 @@ void AccessibilityTreeFormatterMacBrowserTest::TestAndCheck(
   waiter.WaitForNotification();
 
   // Set property filters
-  std::unique_ptr<AccessibilityTreeFormatter> formatter =
+  std::unique_ptr<ui::AXTreeFormatter> formatter =
       AccessibilityTreeFormatter::Create();
 
   std::vector<ui::AXPropertyFilter> property_filters;

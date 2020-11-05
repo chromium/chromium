@@ -61,6 +61,8 @@ source_set("platform") {
     # Used by DumpAccTree testsuite and a11y tools
     "inspect/inspect.cc",
     "inspect/inspect.h",
+    "inspect/tree_formatter.cc",
+    "inspect/tree_formatter.h",
   ]
 
   public_deps = [
