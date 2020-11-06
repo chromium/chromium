@@ -677,6 +677,13 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
       // If this is the last transition, add a CHAIN_END marker
       if (redirect_index == (redirects.size() - 1)) {
         t = ui::PageTransitionFromInt(t | ui::PAGE_TRANSITION_CHAIN_END);
+        // In order for a visit to be visible, it must have CHAIN_END. If the
+        // requested transition contained PAGE_TRANSITION_FROM_API_3, then
+        // add it to the CHAIN_END visit so that the visit is not visible.
+        if ((ui::PageTransitionGetQualifier(request_transition) &
+             ui::PAGE_TRANSITION_FROM_API_3) != 0) {
+          t = ui::PageTransitionFromInt(t | ui::PAGE_TRANSITION_FROM_API_3);
+        }
 
         // Since request.publicly_routable is a property of the visit to
         // request.url, it only applies to the final redirect.
