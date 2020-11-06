@@ -21,6 +21,7 @@
 #include "components/autofill_assistant/browser/protocol_utils.h"
 #include "components/autofill_assistant/browser/service/service_impl.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
+#include "components/autofill_assistant/browser/url_utils.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/view_layout.pb.h"
 #include "components/google/core/common/google_util.h"
@@ -87,31 +88,6 @@ bool StateNeedsUiInLiteScript(AutofillAssistantState state) {
     case AutofillAssistantState::RUNNING:
       return false;
   }
-}
-
-// Check whether a domain is a subdomain of another domain.
-bool IsSubdomainOf(const std::string& subdomain,
-                   const std::string& parent_domain) {
-  return base::EndsWith(base::StringPiece(subdomain),
-                        base::StringPiece("." + parent_domain),
-                        base::CompareCase::INSENSITIVE_ASCII);
-}
-
-// Check whether two URLs have the same domain.
-bool HasSameDomainAs(const GURL& a, const GURL& b) {
-  return a.host() == b.host();
-}
-
-// Check whether |subdomain| is a subdomain of a set of domains in |allowlist|.
-bool IsInAllowlist(const std::string& subdomain,
-                   const std::vector<std::string> allowlist) {
-  const GURL subdomain_gurl = GURL(subdomain);
-  for (const std::string& parent_domain : allowlist) {
-    if (HasSameDomainAs(subdomain_gurl, GURL(parent_domain)) ||
-        IsSubdomainOf(subdomain, parent_domain))
-      return true;
-  }
-  return false;
 }
 
 }  // namespace
@@ -834,7 +810,7 @@ void Controller::GetOrCheckScripts() {
     return;
 
   const GURL& url = GetCurrentURL();
-  if (!HasSameDomainAs(script_url_, url)) {
+  if (script_url_.host() != url.host()) {
     StopPeriodicScriptChecks();
     script_url_ = url;
 #ifdef NDEBUG
@@ -908,7 +884,7 @@ void Controller::OnGetScripts(const GURL& url,
 
   // If the domain of the current URL changed since the request was sent, the
   // response is not relevant anymore and can be safely discarded.
-  if (!HasSameDomainAs(script_url_, url))
+  if (script_url_.host() != url.host())
     return;
 
   if (http_status != net::HTTP_OK) {
@@ -1638,7 +1614,7 @@ void Controller::OnFatalError(const std::string& error_message,
   // never will.
   MaybeReportFirstCheckDone();
 
-  if (tracking_ && HasSameDomainAs(script_url_, GetCurrentURL())) {
+  if (tracking_ && script_url_.host() == GetCurrentURL().host()) {
     // When tracking the controller should stays until the browser has navigated
     // away from the last domain that was checked to be able to tell callers
     // that the set of user actions is empty.
@@ -1675,7 +1651,7 @@ void Controller::OnStop(const std::string& message,
 
 void Controller::PerformDelayedShutdownIfNecessary() {
   if (delayed_shutdown_reason_ &&
-      !HasSameDomainAs(script_url_, GetCurrentURL())) {
+      script_url_.host() != GetCurrentURL().host()) {
     Metrics::DropOutReason reason = delayed_shutdown_reason_.value();
     delayed_shutdown_reason_ = base::nullopt;
     tracking_ = false;
@@ -1899,11 +1875,9 @@ void Controller::DidFinishNavigation(
   // from the original assisted domain. Subdomains of the original domain are
   // supported.
   if (state_ == AutofillAssistantState::BROWSE) {
-    auto current_host = web_contents()->GetLastCommittedURL().host();
-    auto script_host = script_url_.host();
-    if (current_host != script_host &&
-        !IsSubdomainOf(current_host, script_host) &&
-        !IsInAllowlist(current_host, browse_domains_allowlist_)) {
+    if (!url_utils::IsInDomainOrSubDomain(GetCurrentURL(), script_url_) &&
+        !url_utils::IsInDomainOrSubDomain(GetCurrentURL(),
+                                          browse_domains_allowlist_)) {
       OnScriptError(l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_GIVE_UP),
                     Metrics::DropOutReason::DOMAIN_CHANGE_DURING_BROWSE_MODE);
     }
