@@ -4,6 +4,9 @@
 
 modules_idl_files = [ "digital_goods_service.idl" ]
 
-modules_dictionary_idl_files = [ "item_details.idl" ]
+modules_dictionary_idl_files = [
+  "item_details.idl",
+  "purchase_details.idl",
+]
 
 modules_dependency_idl_files = [ "dom_window_digital_goods.idl" ]

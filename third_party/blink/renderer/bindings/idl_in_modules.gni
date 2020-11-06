@@ -430,6 +430,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/payments/goods/digital_goods_service.idl",
           "//third_party/blink/renderer/modules/payments/goods/dom_window_digital_goods.idl",
           "//third_party/blink/renderer/modules/payments/goods/item_details.idl",
+          "//third_party/blink/renderer/modules/payments/goods/purchase_details.idl",
           "//third_party/blink/renderer/modules/payments/html_iframe_element_payments.idl",
           "//third_party/blink/renderer/modules/payments/image_object.idl",
           "//third_party/blink/renderer/modules/payments/merchant_validation_event.idl",

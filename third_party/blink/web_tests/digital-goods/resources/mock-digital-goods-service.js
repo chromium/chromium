@@ -28,7 +28,7 @@ class MockDigitalGoods {
     // price is a payments.mojom.PaymentCurrencyAmount.
     itemDetails.price = {};
     itemDetails.price.currency = 'AUD';
-    // Set price.value as on number in |id| dollars.
+    // Set price.value as a number in |id| dollars.
     const matchNum = id.match(/\d+/);
     const num = matchNum ? matchNum[0] : 0;
     itemDetails.price.value = num + '.00';
@@ -74,10 +74,42 @@ class MockDigitalGoods {
     }
     return {code: /*BillingResponseCode.kOk=*/0};
   }
+
+  makePurchaseDetails_(id) {
+    // purchaseDetails is a payments.mojom.PurchaseDetails.
+    let purchaseDetails = {};
+    purchaseDetails.itemId = 'id:' + id;
+    purchaseDetails.purchaseToken = 'purchaseToken:' + id;
+    purchaseDetails.acknowledged = Boolean(id % 2);
+    const purchaseStates = [
+        payments.mojom.PurchaseState.kUnknown,
+        payments.mojom.PurchaseState.kPurchased,
+        payments.mojom.PurchaseState.kPending,
+    ];
+    purchaseDetails.purchaseState = purchaseStates[id % 3];
+    purchaseDetails.purchaseTime = new mojoBase.mojom.Time();
+    // Use idNum as seconds. |microseconds| is since Unix epoch.
+    purchaseDetails.purchaseTime.microseconds = id * 1000 * 1000;
+    purchaseDetails.willAutoRenew = Boolean(id % 2);
+    return purchaseDetails;
+  }
+
+  async listPurchases() {
+    this.actionResolve_('listPurchases');
+
+    let result = [];
+    for (let i = 0; i < 10; i++) {
+      result.push(this.makePurchaseDetails_(i));
+    }
+
+    return {
+      code: /*BillingResponseCode.kOk=*/0,
+      purchaseDetailsList: result
+    };
+  }
 }
 
 let mockDigitalGoods = new MockDigitalGoods();
-
 
 class MockDigitalGoodsFactory {
   constructor() {

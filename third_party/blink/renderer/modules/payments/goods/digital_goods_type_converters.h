@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_item_details.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_purchase_details.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace mojo {
@@ -28,6 +29,16 @@ struct MODULES_EXPORT
     TypeConverter<WTF::String, payments::mojom::blink::BillingResponseCode> {
   static WTF::String Convert(
       const payments::mojom::blink::BillingResponseCode& input);
+};
+
+// Converts a mojo PurchaseDetails into a WebIDL PurchaseDetails.
+// Returns a null IDL struct when a null mojo struct is given as input.
+template <>
+struct MODULES_EXPORT
+    TypeConverter<blink::PurchaseDetails*,
+                  payments::mojom::blink::PurchaseDetailsPtr> {
+  static blink::PurchaseDetails* Convert(
+      const payments::mojom::blink::PurchaseDetailsPtr& input);
 };
 
 }  // namespace mojo

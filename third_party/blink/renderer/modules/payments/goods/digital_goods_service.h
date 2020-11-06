@@ -27,6 +27,7 @@ class DigitalGoodsService final : public ScriptWrappable {
   ScriptPromise acknowledge(ScriptState*,
                             const String& purchase_token,
                             const String& purchase_type);
+  ScriptPromise listPurchases(ScriptState*);
 
   void Trace(Visitor* visitor) const override;
 

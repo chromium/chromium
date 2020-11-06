@@ -1,0 +1,19 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/digital-goods/blob/master/explainer.md
+dictionary PurchaseDetails {
+  required DOMString itemId;
+  required DOMString purchaseToken;
+  boolean acknowledged = false;
+  PurchaseState purchaseState;
+  // Timestamp in ms since 1970-01-01 00:00 UTC.
+  DOMTimeStamp purchaseTime;
+  boolean willAutoRenew = false;
+};
+
+enum PurchaseState {
+  "purchased",
+  "pending",
+};

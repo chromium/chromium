@@ -127,6 +127,31 @@ digital_goods_test(async service => {
   }
 }, {title: 'Acknowledge bad purchase type should error.'});
 
+
+digital_goods_test(async service => {
+  const response = await service.listPurchases();
+  assert_equals(response.length, 10);
+
+  assert_equals(response[0].itemId, 'id:0');
+  assert_equals(response[0].purchaseToken, 'purchaseToken:0');
+  assert_equals(response[0].acknowledged, false);
+  assert_equals(response[0].purchaseState, undefined);
+  // 0 time value passed through as 0.
+  assert_equals(response[0].purchaseTime, 0);
+  assert_equals(response[0].willAutoRenew, false);
+
+  assert_equals(response[1].acknowledged, true);
+  assert_equals(response[1].purchaseState, 'purchased');
+  // Expecting 1 second in ms after Unix epoch.
+  assert_equals(response[1].purchaseTime, 1000);
+  assert_equals(response[1].willAutoRenew, true);
+
+  assert_equals(response[2].purchaseState, 'pending');
+  // Expecting 2 seconds in ms after Unix epoch.
+  assert_equals(response[2].purchaseTime, 2000);
+
+}, {title: 'ListPurchases round trip.'});
+
 digital_goods_test(async service => {
   const response1 = await service.getDetails(['id1']);
   assert_equals(response1.length, 1);

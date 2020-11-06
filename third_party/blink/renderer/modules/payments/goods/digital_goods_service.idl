@@ -12,6 +12,9 @@
 
   [CallWith=ScriptState, MeasureAs=DigitalGoodsAcknowledge]
   Promise<void> acknowledge(DOMString purchaseToken, PurchaseType purchaseType);
+
+  [CallWith=ScriptState, MeasureAs=DigitalGoodsListPurchases]
+  Promise<sequence<PurchaseDetails>> listPurchases();
 };
 
 enum PurchaseType {
