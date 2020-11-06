@@ -127,13 +127,13 @@ interface NearbyConnections {
   // advertisement can be active at a time and calling StartAdvertising() while
   // advertising will fail and return Status::kAlreadyAdvertising.
   //
-  // endpoint_info - The local info to be broadcasted. May contain a human
-  //                 readable name to appear on other devices if broadcasting
-  //                 in high visibility mode.
   // service_id    - An identifier to advertise your app to other endpoints.
   //                 This can be an arbitrary string, so long as it uniquely
   //                 identifies your service. A good default is to use your
   //                 app's package name.
+  // endpoint_info - The local info to be broadcasted. May contain a human
+  //                 readable name to appear on other devices if broadcasting
+  //                 in high visibility mode.
   // options       - The options for advertising.
   // listener      - An interface notified when remote endpoints request a
   //                 connection to this endpoint.
@@ -142,7 +142,7 @@ interface NearbyConnections {
   //   Status::kAlreadyAdvertising if the app is already advertising.
   //   Status::kOutOfOrderApiCall if the app is currently connected to remote
   //       endpoints; call StopAllEndpoints first.
-  StartAdvertising(array<uint8> endpoint_info, string service_id,
+  StartAdvertising(string service_id, array<uint8> endpoint_info,
                    AdvertisingOptions options,
                    pending_remote<ConnectionLifecycleListener> listener)
       => (Status status);
@@ -152,9 +152,11 @@ interface NearbyConnections {
   // itself or goes inactive. Payloads can still be sent to connected
   // endpoints after advertising ends.
   //
+  // service_id - Identifier used in the preceding StartAdvertising() call.
+  //
   // Possible return values include:
   //   Status::kSuccess returned after advertising got stopped.
-  StopAdvertising() => (Status status);
+  StopAdvertising(string service_id) => (Status status);
 
   // Starts discovery for remote endpoints with the specified service ID.
   //
@@ -177,12 +179,15 @@ interface NearbyConnections {
   // goes inactive. Payloads can still be sent to connected endpoints after
   // discovery ends.
   //
+  // service_id - Identifier used in the preceding StartDiscovery() call.
+  //
   // Possible return values include:
   //   Status::kSuccess returned after discovery got stopped.
-  StopDiscovery() => (Status status);
+  StopDiscovery(string service_id) => (Status status);
 
   // Sends a request to connect to a remote endpoint.
   //
+  // service_id    - Service ID used to discover the endpoint.
   // endpoint_info - The local info including a human readable name to appear on
   //                 the remote endpoint.
   // endpoint_id   - The identifier for the remote endpoint to which a
@@ -201,14 +206,17 @@ interface NearbyConnections {
   //   Status::kWifiLanError if we failed to connect because of an
   //       issue with WiFi.
   //   Status::kError if we failed to connect for any other reason.
-  RequestConnection(array<uint8> endpoint_info, string endpoint_id,
-                   ConnectionOptions options,
-                   pending_remote<ConnectionLifecycleListener> listener)
+  RequestConnection(string service_id,
+                    array<uint8> endpoint_info,
+                    string endpoint_id,
+                    ConnectionOptions options,
+                    pending_remote<ConnectionLifecycleListener> listener)
       => (Status status);
 
   // Accepts a connection to a remote endpoint. This method must be called
   // before Payloads can be exchanged with the remote endpoint.
   //
+  // service_id  - Service ID used to bootstrap the connection.
   // endpoint_id - The identifier for the remote endpoint. Should match the
   //               value provided in a call to
   //               ConnectionsLifecycleListener::OnConnectionInitiated().
@@ -220,11 +228,14 @@ interface NearbyConnections {
   //   Status::kOutOfOrderApiCall if
   //       ConnectionsLifecycleListener::OnConnectionInitiated() has not been
   //       called for the |endpoint_id|.
-  AcceptConnection(string endpoint_id, pending_remote<PayloadListener> listener)
+  AcceptConnection(string service_id,
+                   string endpoint_id,
+                   pending_remote<PayloadListener> listener)
       => (Status status);
 
   // Rejects a connection to a remote endpoint.
   //
+  // service_id  - Service ID used to bootstrap the connection.
   // endpoint_id - The identifier for the remote endpoint. Should match the
   //               value provided in a call to
   //               ConnectionsLifecycleListener::OnConnectionInitiated().
@@ -235,20 +246,23 @@ interface NearbyConnections {
   //   Status::kOutOfOrderApiCall if
   //       ConnectionsLifecycleListener::OnConnectionInitiated() has not been
   //       called for the |endpoint_id|.
-  RejectConnection(string endpoint_id) => (Status status);
+  RejectConnection(string service_id, string endpoint_id) => (Status status);
 
   // Disconnects from a remote endpoint. Payloads can no longer be sent
   // to or received from the endpoint after this method is called.
   //
+  // service_id  - Service ID used to bootstrap the connection.
   // endpoint_id - The identifier for the remote endpoint to disconnect from.
   // Possible return values include:
   //   Status::kSuccess disconnected successfully.
-  DisconnectFromEndpoint(string endpoint_id) => (Status status);
+  DisconnectFromEndpoint(string service_id,
+                         string endpoint_id) => (Status status);
 
   // Sends a Payload to a list of remote endpoints. Payloads can only be sent to
   // remote endpoints once a notice of connection acceptance has been delivered
   // via ConnectionsLifecycleListener::OnConnectionResult().
   //
+  // service_id   - Service ID used to bootstrap the connection.
   // endpoint_ids - Array of remote endpoint identifiers for to which the
   //                payload should be sent.
   // payload      - The Payload to be sent.
@@ -263,43 +277,56 @@ interface NearbyConnections {
   //       still occur during transmission (and at different times for different
   //       endpoints), and will be delivered via
   //       PayloadListener::OnPayloadTransferUpdate().
-  SendPayload(array<string> endpoint_ids, Payload payload) => (Status status);
+  SendPayload(string service_id,
+              array<string> endpoint_ids,
+              Payload payload) => (Status status);
 
   // Cancels a Payload currently in-flight to or from remote endpoint(s).
+  //
+  // service_id - Service ID used to bootstrap the connection.
   //
   // payload_id - The identifier for the Payload to be cancelled.
   // Possible return values include:
   //   Status::kSuccess if the payload got cancelled.
-  CancelPayload(int64 payload_id) => (Status status);
+  CancelPayload(string service_id, int64 payload_id) => (Status status);
 
-   // Disconnects from, and removes all traces of, all connected and/or
-   // discovered endpoints. As a side effect of this call, both
-   // StopAdvertising and StopDiscovery are invoked. After calling
-   // StopAllEndpoints, no further operations with remote endpoints will
-   // be possible until a new call to one of StartAdvertising or
-   // StartDiscovery.
-   // Possible return values include:
-   //   Status::kSuccess disconnected from all endpoints successfully.
-  StopAllEndpoints() => (Status status);
+  // Disconnects from, and removes all traces of, all connected and/or
+  // discovered endpoints. As a side effect of this call, both
+  // StopAdvertising and StopDiscovery are invoked. After calling
+  // StopAllEndpoints, no further operations with remote endpoints will
+  // be possible until a new call to one of StartAdvertising or
+  // StartDiscovery.
+  //
+  // service_id   - Service ID used to discover endpoints.
+  //
+  // Possible return values include:
+  //   Status::kSuccess disconnected from all endpoints successfully.
+  StopAllEndpoints(string service_id) => (Status status);
 
   // Sends a request to initiate connection bandwidth upgrade.
   //
+  // service_id  - Service ID used to discover the endpoint.
   // endpoint_id - The identifier for the remote endpoint which will be
   //               switching to a higher connection data rate and possibly
   //               different wireless protocol. On success, calls
   //               ConnectionLifecycleListener::OnBandwidthChanged.
   // Possible return values include:
   //   Status::kSuccess if upgraded successfully.
-  InitiateBandwidthUpgrade(string endpoint_id) => (Status status);
+  InitiateBandwidthUpgrade(string service_id,
+                           string endpoint_id) => (Status status);
 
   // Register a pair of input and output file for handling incoming file
   // payload associated with |payload_id_|, which is determined by feature
   // specific design. The |input_file| should be opened for read access, and
   // |output_file| should be opened for write access.
+  //
+  // service_id  - Service ID used to discover the endpoint.
+  //
   // Possible return values include:
   //   Status::kSuccess if file is registered successfully.
   //   Status::kError if file is not opened correctly.
-  RegisterPayloadFile(int64 payload_id,
+  RegisterPayloadFile(string service_id,
+                      int64 payload_id,
                       mojo_base.mojom.ReadOnlyFile input_file,
                       mojo_base.mojom.File output_file)
       => (Status status);

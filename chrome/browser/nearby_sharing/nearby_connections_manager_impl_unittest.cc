@@ -180,12 +180,13 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
                                                    std::end(kEndpointInfo));
     EXPECT_CALL(nearby_connections_, StartAdvertising)
         .WillOnce(
-            [&](const std::vector<uint8_t>& endpoint_info,
-                const std::string& service_id, AdvertisingOptionsPtr options,
+            [&](const std::string& service_id,
+                const std::vector<uint8_t>& endpoint_info,
+                AdvertisingOptionsPtr options,
                 mojo::PendingRemote<ConnectionLifecycleListener> listener,
                 NearbyConnectionsMojom::StartAdvertisingCallback callback) {
-              EXPECT_EQ(local_endpoint_info, endpoint_info);
               EXPECT_EQ(kServiceId, service_id);
+              EXPECT_EQ(local_endpoint_info, endpoint_info);
               EXPECT_EQ(kStrategy, options->strategy);
               EXPECT_TRUE(options->enforce_topology_constraints);
 
@@ -214,10 +215,12 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
 
     EXPECT_CALL(nearby_connections_, RequestConnection)
         .WillOnce(
-            [&](const std::vector<uint8_t>& endpoint_info,
+            [&](const std::string& service_id,
+                const std::vector<uint8_t>& endpoint_info,
                 const std::string& endpoint_id, ConnectionOptionsPtr options,
                 mojo::PendingRemote<ConnectionLifecycleListener> listener,
                 NearbyConnectionsMojom::RequestConnectionCallback callback) {
+              EXPECT_EQ(kServiceId, service_id);
               EXPECT_EQ(local_endpoint_info, endpoint_info);
               EXPECT_EQ(kRemoteEndpointId, endpoint_id);
 
@@ -238,9 +241,10 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
     base::RunLoop accept_run_loop;
     EXPECT_CALL(nearby_connections_, AcceptConnection)
         .WillOnce(
-            [&](const std::string& endpoint_id,
+            [&](const std::string& service_id, const std::string& endpoint_id,
                 mojo::PendingRemote<PayloadListener> listener,
                 NearbyConnectionsMojom::AcceptConnectionCallback callback) {
+              EXPECT_EQ(kServiceId, service_id);
               EXPECT_EQ(kRemoteEndpointId, endpoint_id);
 
               payload_listener_remote.Bind(std::move(listener));
@@ -280,9 +284,10 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
     base::RunLoop accept_run_loop;
     EXPECT_CALL(nearby_connections_, AcceptConnection)
         .WillOnce(
-            [&](const std::string& endpoint_id,
+            [&](const std::string& service_id, const std::string& endpoint_id,
                 mojo::PendingRemote<PayloadListener> listener,
                 NearbyConnectionsMojom::AcceptConnectionCallback callback) {
+              EXPECT_EQ(kServiceId, service_id);
               EXPECT_EQ(kRemoteEndpointId, endpoint_id);
 
               payload_listener_remote.Bind(std::move(listener));
@@ -332,10 +337,12 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
 
     base::RunLoop run_loop;
     EXPECT_CALL(nearby_connections_, SendPayload)
-        .WillOnce([&](const std::vector<std::string>& endpoint_ids,
+        .WillOnce([&](const std::string& service_id,
+                      const std::vector<std::string>& endpoint_ids,
                       PayloadPtr payload,
                       NearbyConnectionsMojom::SendPayloadCallback callback) {
           ASSERT_EQ(1u, endpoint_ids.size());
+          EXPECT_EQ(kServiceId, service_id);
           EXPECT_EQ(kRemoteEndpointId, endpoint_ids.front());
           ASSERT_TRUE(payload);
           ASSERT_EQ(PayloadContent::Tag::FILE, payload->content->which());
@@ -507,10 +514,12 @@ TEST_P(NearbyConnectionsManagerImplTestConnectionMediums,
                                                  std::end(kEndpointInfo));
   EXPECT_CALL(nearby_connections_, RequestConnection)
       .WillOnce(
-          [&](const std::vector<uint8_t>& endpoint_info,
+          [&](const std::string& service_id,
+              const std::vector<uint8_t>& endpoint_info,
               const std::string& endpoint_id, ConnectionOptionsPtr options,
               mojo::PendingRemote<ConnectionLifecycleListener> listener,
               NearbyConnectionsMojom::RequestConnectionCallback callback) {
+            EXPECT_EQ(kServiceId, service_id);
             EXPECT_EQ(local_endpoint_info, endpoint_info);
             EXPECT_EQ(kRemoteEndpointId, endpoint_id);
             EXPECT_EQ(expected_mediums, options->allowed_mediums);
@@ -570,10 +579,12 @@ TEST_P(NearbyConnectionsManagerImplTestConnectionBluetoothMacAddress,
                                                  std::end(kEndpointInfo));
   EXPECT_CALL(nearby_connections_, RequestConnection)
       .WillOnce(
-          [&](const std::vector<uint8_t>& endpoint_info,
+          [&](const std::string& service_id,
+              const std::vector<uint8_t>& endpoint_info,
               const std::string& endpoint_id, ConnectionOptionsPtr options,
               mojo::PendingRemote<ConnectionLifecycleListener> listener,
               NearbyConnectionsMojom::RequestConnectionCallback callback) {
+            EXPECT_EQ(kServiceId, service_id);
             EXPECT_EQ(local_endpoint_info, endpoint_info);
             EXPECT_EQ(kRemoteEndpointId, endpoint_id);
             EXPECT_EQ(GetParam().expected_bluetooth_mac_address,
@@ -757,9 +768,11 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectWrite) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(nearby_connections_, SendPayload)
-      .WillOnce([&](const std::vector<std::string>& endpoint_ids,
+      .WillOnce([&](const std::string& service_id,
+                    const std::vector<std::string>& endpoint_ids,
                     PayloadPtr payload,
                     NearbyConnectionsMojom::SendPayloadCallback callback) {
+        EXPECT_EQ(kServiceId, service_id);
         ASSERT_EQ(1u, endpoint_ids.size());
         EXPECT_EQ(kRemoteEndpointId, endpoint_ids.front());
         ASSERT_TRUE(payload);
@@ -801,8 +814,9 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectClosed) {
 
   EXPECT_CALL(nearby_connections_, DisconnectFromEndpoint)
       .WillOnce(
-          [&](const std::string& endpoint_id,
+          [&](const std::string& service_id, const std::string& endpoint_id,
               NearbyConnectionsMojom::DisconnectFromEndpointCallback callback) {
+            EXPECT_EQ(kServiceId, service_id);
             EXPECT_EQ(kRemoteEndpointId, endpoint_id);
             std::move(callback).Run(Status::kSuccess);
           });
@@ -874,8 +888,9 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectClosedByClient) {
 
   EXPECT_CALL(nearby_connections_, DisconnectFromEndpoint)
       .WillOnce(
-          [&](const std::string& endpoint_id,
+          [&](const std::string& service_id, const std::string& endpoint_id,
               NearbyConnectionsMojom::DisconnectFromEndpointCallback callback) {
+            EXPECT_EQ(kServiceId, service_id);
             EXPECT_EQ(kRemoteEndpointId, endpoint_id);
             std::move(callback).Run(Status::kSuccess);
           });
@@ -934,8 +949,9 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectCancelPayload) {
 
   base::RunLoop cancel_run_loop;
   EXPECT_CALL(nearby_connections_, CancelPayload)
-      .WillOnce([&](int64_t payload_id,
+      .WillOnce([&](const std::string& service_id, int64_t payload_id,
                     NearbyConnectionsMojom::CancelPayloadCallback callback) {
+        EXPECT_EQ(kServiceId, service_id);
         EXPECT_EQ(kPayloadId, payload_id);
 
         std::move(callback).Run(Status::kSuccess);
@@ -971,10 +987,12 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectTimeout) {
   NearbyConnectionsMojom::RequestConnectionCallback connect_callback;
   EXPECT_CALL(nearby_connections_, RequestConnection)
       .WillOnce(
-          [&](const std::vector<uint8_t>& endpoint_info,
+          [&](const std::string& service_id,
+              const std::vector<uint8_t>& endpoint_info,
               const std::string& endpoint_id, ConnectionOptionsPtr options,
               mojo::PendingRemote<ConnectionLifecycleListener> listener,
               NearbyConnectionsMojom::RequestConnectionCallback callback) {
+            EXPECT_EQ(kServiceId, service_id);
             EXPECT_EQ(local_endpoint_info, endpoint_info);
             EXPECT_EQ(kRemoteEndpointId, endpoint_id);
 
@@ -986,8 +1004,9 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectTimeout) {
   // Timing out should call disconnect.
   EXPECT_CALL(nearby_connections_, DisconnectFromEndpoint)
       .WillOnce(
-          [&](const std::string& endpoint_id,
+          [&](const std::string& service_id, const std::string& endpoint_id,
               NearbyConnectionsMojom::DisconnectFromEndpointCallback callback) {
+            EXPECT_EQ(kServiceId, service_id);
             EXPECT_EQ(kRemoteEndpointId, endpoint_id);
             std::move(callback).Run(Status::kSuccess);
           });
@@ -1095,8 +1114,10 @@ TEST_F(NearbyConnectionsManagerImplTest, IncomingRegisterPayloadPath) {
   base::RunLoop register_payload_run_loop;
   EXPECT_CALL(nearby_connections_, RegisterPayloadFile)
       .WillOnce(
-          [&](int64_t payload_id, base::File input_file, base::File output_file,
+          [&](const std::string& service_id, int64_t payload_id,
+              base::File input_file, base::File output_file,
               NearbyConnectionsMojom::RegisterPayloadFileCallback callback) {
+            EXPECT_EQ(kServiceId, service_id);
             EXPECT_EQ(kPayloadId, payload_id);
             ASSERT_TRUE(input_file.IsValid());
             ASSERT_TRUE(output_file.IsValid());
@@ -1294,8 +1315,8 @@ TEST_P(NearbyConnectionsManagerImplTestMediums, StartAdvertising_Options) {
       incoming_connection_listener;
 
   EXPECT_CALL(nearby_connections_, StartAdvertising)
-      .WillOnce([&](const std::vector<uint8_t>& endpoint_info,
-                    const std::string& service_id,
+      .WillOnce([&](const std::string& service_id,
+                    const std::vector<uint8_t>& endpoint_info,
                     AdvertisingOptionsPtr options,
                     mojo::PendingRemote<ConnectionLifecycleListener> listener,
                     NearbyConnectionsMojom::StartAdvertisingCallback callback) {
@@ -1392,9 +1413,11 @@ TEST_F(NearbyConnectionsManagerImplTest,
 
   // Upgrading bandwidth will succeed.
   EXPECT_CALL(nearby_connections_, InitiateBandwidthUpgrade)
-      .WillOnce([&](const std::string& endpoint_id,
+      .WillOnce([&](const std::string& service_id,
+                    const std::string& endpoint_id,
                     NearbyConnectionsMojom::InitiateBandwidthUpgradeCallback
                         callback) {
+        EXPECT_EQ(kServiceId, service_id);
         EXPECT_EQ(kRemoteEndpointId, endpoint_id);
         std::move(callback).Run(Status::kSuccess);
       });
@@ -1418,9 +1441,11 @@ TEST_F(NearbyConnectionsManagerImplTest,
 
   // Upgrading bandwidth will succeed.
   EXPECT_CALL(nearby_connections_, InitiateBandwidthUpgrade)
-      .WillOnce([&](const std::string& endpoint_id,
+      .WillOnce([&](const std::string& service_id,
+                    const std::string& endpoint_id,
                     NearbyConnectionsMojom::InitiateBandwidthUpgradeCallback
                         callback) {
+        EXPECT_EQ(kServiceId, service_id);
         EXPECT_EQ(kRemoteEndpointId, endpoint_id);
         std::move(callback).Run(Status::kSuccess);
       });

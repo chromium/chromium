@@ -26,11 +26,13 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
-#include "third_party/nearby/src/cpp/core/core.h"
+#include "third_party/nearby/src/cpp/core/internal/service_controller.h"
 
 namespace location {
 namespace nearby {
 namespace connections {
+
+class Core;
 
 // Implementation of the NearbyConnections mojo interface.
 // This class acts as a bridge to the NearbyConnections library which is pulled
@@ -50,7 +52,7 @@ class NearbyConnections : public mojom::NearbyConnections {
       mojom::NearbyConnectionsDependenciesPtr dependencies,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       base::OnceClosure on_disconnect,
-      std::unique_ptr<Core> core = std::make_unique<Core>());
+      std::unique_ptr<ServiceController> service_controller = nullptr);
 
   NearbyConnections(const NearbyConnections&) = delete;
   NearbyConnections& operator=(const NearbyConnections&) = delete;
@@ -85,41 +87,52 @@ class NearbyConnections : public mojom::NearbyConnections {
 
   // mojom::NearbyConnections:
   void StartAdvertising(
-      const std::vector<uint8_t>& endpoint_info,
       const std::string& service_id,
+      const std::vector<uint8_t>& endpoint_info,
       mojom::AdvertisingOptionsPtr options,
       mojo::PendingRemote<mojom::ConnectionLifecycleListener> listener,
       StartAdvertisingCallback callback) override;
-  void StopAdvertising(StopAdvertisingCallback callback) override;
+  void StopAdvertising(const std::string& service_id,
+                       StopAdvertisingCallback callback) override;
   void StartDiscovery(
       const std::string& service_id,
       mojom::DiscoveryOptionsPtr options,
       mojo::PendingRemote<mojom::EndpointDiscoveryListener> listener,
       StartDiscoveryCallback callback) override;
-  void StopDiscovery(StopDiscoveryCallback callback) override;
+  void StopDiscovery(const std::string& service_id,
+                     StopDiscoveryCallback callback) override;
   void RequestConnection(
+      const std::string& service_id,
       const std::vector<uint8_t>& endpoint_info,
       const std::string& endpoint_id,
       mojom::ConnectionOptionsPtr options,
       mojo::PendingRemote<mojom::ConnectionLifecycleListener> listener,
       RequestConnectionCallback callback) override;
-  void DisconnectFromEndpoint(const std::string& endpoint_id,
+  void DisconnectFromEndpoint(const std::string& service_id,
+                              const std::string& endpoint_id,
                               DisconnectFromEndpointCallback callback) override;
-  void AcceptConnection(const std::string& endpoint_id,
+  void AcceptConnection(const std::string& service_id,
+                        const std::string& endpoint_id,
                         mojo::PendingRemote<mojom::PayloadListener> listener,
                         AcceptConnectionCallback callback) override;
-  void RejectConnection(const std::string& endpoint_id,
+  void RejectConnection(const std::string& service_id,
+                        const std::string& endpoint_id,
                         RejectConnectionCallback callback) override;
-  void SendPayload(const std::vector<std::string>& endpoint_ids,
+  void SendPayload(const std::string& service_id,
+                   const std::vector<std::string>& endpoint_ids,
                    mojom::PayloadPtr payload,
                    SendPayloadCallback callback) override;
-  void CancelPayload(int64_t payload_id,
+  void CancelPayload(const std::string& service_id,
+                     int64_t payload_id,
                      CancelPayloadCallback callback) override;
-  void StopAllEndpoints(StopAllEndpointsCallback callback) override;
+  void StopAllEndpoints(const std::string& service_id,
+                        StopAllEndpointsCallback callback) override;
   void InitiateBandwidthUpgrade(
+      const std::string& service_id,
       const std::string& endpoint_id,
       InitiateBandwidthUpgradeCallback callback) override;
-  void RegisterPayloadFile(int64_t payload_id,
+  void RegisterPayloadFile(const std::string& service_id,
+                           int64_t payload_id,
                            base::File input_file,
                            base::File output_file,
                            RegisterPayloadFileCallback callback) override;
@@ -134,6 +147,9 @@ class NearbyConnections : public mojom::NearbyConnections {
   scoped_refptr<base::SingleThreadTaskRunner> GetThreadTaskRunner();
 
  private:
+  Core* GetCore(const std::string& service_id);
+
+  void InitializeOfflineServiceController();
   void OnDisconnect();
 
   mojo::Receiver<mojom::NearbyConnections> nearby_connections_;
@@ -148,9 +164,12 @@ class NearbyConnections : public mojom::NearbyConnections {
   mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>
       webrtc_signaling_messenger_;
 
-  // Core is thread-safe as its operations are always dispatched to a
-  // single-thread executor.
-  std::unique_ptr<Core> core_;
+  std::unique_ptr<ServiceController> service_controller_;
+
+  // Map from service ID to the Core object to be used for that service. Each
+  // service uses its own Core object, but all Core objects share the underlying
+  // ServiceController instance.
+  base::flat_map<std::string, std::unique_ptr<Core>> service_id_to_core_map_;
 
   // input_file_map_ is accessed from background threads.
   base::Lock input_file_lock_;
