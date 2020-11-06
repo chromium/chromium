@@ -13,7 +13,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayout;
-import org.chromium.chrome.browser.compositor.overlays.SceneOverlay;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tab.Tab;

@@ -13,6 +13,8 @@ import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.Context
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchImageControl;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPromoControl;
+import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
+import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.resources.ResourceManager;

@@ -13,7 +13,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/android/compositor/scene_layer/scene_layer.h"
+#include "chrome/browser/ui/android/layouts/scene_layer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"

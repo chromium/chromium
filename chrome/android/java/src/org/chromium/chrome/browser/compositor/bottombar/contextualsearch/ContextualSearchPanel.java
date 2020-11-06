@@ -20,10 +20,10 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.Pane
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPromoControl.ContextualSearchPromoHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
 import org.chromium.chrome.browser.compositor.scene_layer.ContextualSearchSceneLayer;
-import org.chromium.chrome.browser.compositor.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDelegate;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;

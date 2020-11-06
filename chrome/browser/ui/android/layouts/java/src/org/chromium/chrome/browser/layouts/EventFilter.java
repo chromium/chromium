@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.compositor.layouts.eventfilter;
+package org.chromium.chrome.browser.layouts;
 
 import android.content.Context;
 import android.view.MotionEvent;
@@ -10,8 +10,7 @@ import android.view.MotionEvent;
 import androidx.annotation.VisibleForTesting;
 
 /**
- * {@link EventFilter} is an abstract minimal {@link EventFilter}. This class is designed to use or
- * propagate events from an {@link EventFilterHost} view.
+ * A class intended to process input events for non-android views.
  */
 public abstract class EventFilter {
     protected final float mPxToDp;
@@ -107,12 +106,5 @@ public abstract class EventFilter {
             mSimulateIntercepting = onInterceptTouchEvent(event, isKeyboardShowing);
         }
         return onTouchEvent(event);
-    }
-
-    /**
-     * @return Whether or not touch events will be automatically offset.
-     */
-    protected boolean autoOffsetEvents() {
-        return mAutoOffset;
     }
 }

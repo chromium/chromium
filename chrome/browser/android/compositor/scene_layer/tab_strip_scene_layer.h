@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/ui_resource_layer.h"
-#include "chrome/browser/android/compositor/scene_layer/scene_layer.h"
+#include "chrome/browser/ui/android/layouts/scene_layer.h"
 
 namespace cc {
 class SolidColorLayer;

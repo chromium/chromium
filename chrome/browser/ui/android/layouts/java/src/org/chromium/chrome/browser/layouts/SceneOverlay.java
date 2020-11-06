@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.compositor.overlays;
+package org.chromium.chrome.browser.layouts;
 
 import android.graphics.RectF;
 
-import org.chromium.chrome.browser.compositor.layouts.components.VirtualView;
-import org.chromium.chrome.browser.compositor.layouts.eventfilter.EventFilter;
-import org.chromium.chrome.browser.compositor.scene_layer.SceneOverlayLayer;
+import org.chromium.chrome.browser.layouts.components.VirtualView;
+import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.ui.resources.ResourceManager;
 
 import java.util.List;

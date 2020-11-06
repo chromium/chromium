@@ -24,7 +24,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
-import org.chromium.chrome.browser.compositor.layouts.components.VirtualView;
+import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModel;

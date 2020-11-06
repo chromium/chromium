@@ -8,8 +8,8 @@ import android.view.View;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.compositor.scene_layer.SceneLayer;
-import org.chromium.chrome.browser.compositor.scene_layer.SceneOverlayLayer;
+import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
+import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.resources.ResourceManager;
 

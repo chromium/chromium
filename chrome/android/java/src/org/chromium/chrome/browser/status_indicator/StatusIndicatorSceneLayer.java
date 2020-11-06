@@ -9,11 +9,11 @@ import android.graphics.RectF;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.layouts.components.VirtualView;
-import org.chromium.chrome.browser.compositor.layouts.eventfilter.EventFilter;
-import org.chromium.chrome.browser.compositor.overlays.SceneOverlay;
-import org.chromium.chrome.browser.compositor.scene_layer.SceneLayer;
-import org.chromium.chrome.browser.compositor.scene_layer.SceneOverlayLayer;
+import org.chromium.chrome.browser.layouts.EventFilter;
+import org.chromium.chrome.browser.layouts.SceneOverlay;
+import org.chromium.chrome.browser.layouts.components.VirtualView;
+import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
+import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.ui.resources.ResourceManager;
 
 import java.util.List;

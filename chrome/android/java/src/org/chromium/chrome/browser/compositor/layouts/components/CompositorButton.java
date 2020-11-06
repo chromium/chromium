@@ -10,6 +10,7 @@ import android.graphics.RectF;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.layouts.animation.FloatProperty;
+import org.chromium.chrome.browser.layouts.components.VirtualView;
 
 /**
  * {@link CompositorButton} keeps track of state for buttons that are rendered

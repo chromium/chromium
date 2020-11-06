@@ -7,7 +7,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/time/time.h"
-#include "chrome/browser/android/compositor/scene_layer/scene_layer.h"
+#include "chrome/browser/ui/android/layouts/scene_layer.h"
 #include "ui/android/overscroll_glow.h"
 #include "ui/android/window_android_observer.h"
 

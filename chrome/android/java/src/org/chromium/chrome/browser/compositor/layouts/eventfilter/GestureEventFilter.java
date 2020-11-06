@@ -10,6 +10,8 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 
+import org.chromium.chrome.browser.layouts.EventFilter;
+
 /**
  * Filters events that would trigger gestures like scroll and fling.
  */

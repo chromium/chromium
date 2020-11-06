@@ -10,7 +10,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.compositor.scene_layer.SceneLayer;
+import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;

@@ -9,7 +9,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "chrome/browser/android/compositor/scene_layer/scene_layer.h"
+#include "chrome/browser/ui/android/layouts/scene_layer.h"
 #include "ui/android/resources/resource_manager_impl.h"
 
 namespace cc {

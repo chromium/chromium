@@ -10,8 +10,8 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
-import org.chromium.chrome.browser.compositor.layouts.eventfilter.EventFilter;
 import org.chromium.chrome.browser.compositor.layouts.phone.StackLayout;
+import org.chromium.chrome.browser.layouts.EventFilter;
 
 /** Layout wraps {@link StackLayout} to display the single start surface on top. */
 public class StartSurfaceStackLayout extends StackLayout {

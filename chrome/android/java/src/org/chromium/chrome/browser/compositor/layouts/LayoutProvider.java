@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.compositor.layouts;
 import android.graphics.RectF;
 
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.compositor.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.ui.resources.ResourceManager;
 
 /**
