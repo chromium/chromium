@@ -158,6 +158,10 @@ bool IsGuest(Profile* profile) {
   return profile->IsGuestSession() || profile->IsEphemeralGuestProfile();
 }
 
+bool UseNewPicker() {
+  return base::FeatureList::IsEnabled(features::kNewProfilePicker);
+}
+
 }  // namespace
 
 // ProfileMenuView ---------------------------------------------------------
@@ -453,7 +457,9 @@ void ProfileMenuView::BuildIdentity() {
     profile_name = profile_attributes->GetLocalProfileName();
     edit_button_params = EditButtonParams(
         &vector_icons::kEditIcon,
-        l10n_util::GetStringUTF16(IDS_SETTINGS_EDIT_PERSON),
+        UseNewPicker() ? l10n_util::GetStringUTF16(
+                             IDS_PROFILES_CUSTOMIZE_PROFILE_BUTTON_TOOLTIP)
+                       : l10n_util::GetStringUTF16(IDS_SETTINGS_EDIT_PERSON),
         base::BindRepeating(&ProfileMenuView::OnEditProfileButtonClicked,
                             base::Unretained(this)));
   }
@@ -639,7 +645,9 @@ void ProfileMenuView::BuildFeatureButtons() {
 #if !defined(OS_CHROMEOS)
 void ProfileMenuView::BuildProfileManagementHeading() {
   SetProfileManagementHeading(
-      l10n_util::GetStringUTF16(IDS_PROFILES_OTHER_PROFILES_TITLE));
+      UseNewPicker()
+          ? l10n_util::GetStringUTF16(IDS_PROFILES_LIST_PROFILES_TITLE)
+          : l10n_util::GetStringUTF16(IDS_PROFILES_OTHER_PROFILES_TITLE));
 }
 
 void ProfileMenuView::BuildSelectableProfiles() {
@@ -678,7 +686,10 @@ void ProfileMenuView::BuildSelectableProfiles() {
 void ProfileMenuView::BuildProfileManagementFeatureButtons() {
   AddProfileManagementShortcutFeatureButton(
       vector_icons::kSettingsIcon,
-      l10n_util::GetStringUTF16(IDS_PROFILES_MANAGE_USERS_BUTTON),
+      UseNewPicker()
+          ? l10n_util::GetStringUTF16(
+                IDS_PROFILES_MANAGE_PROFILES_BUTTON_TOOLTIP)
+          : l10n_util::GetStringUTF16(IDS_PROFILES_MANAGE_USERS_BUTTON),
       base::BindRepeating(&ProfileMenuView::OnManageProfilesButtonClicked,
                           base::Unretained(this)));
 
