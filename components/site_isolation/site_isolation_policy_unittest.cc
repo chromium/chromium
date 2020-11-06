@@ -27,8 +27,11 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -934,5 +937,120 @@ TEST_F(BuiltInIsolatedOriginsTest, NotAppliedWithFullSiteIsolation) {
   EXPECT_EQ(isolated_origins.size(), 0u);
 }
 #endif
+
+// Helper class for tests that use header-based opt-in origin isolation and
+// simulate a 512MB device, while turning off strict site isolation.  This is
+// used for checking how opt-in origin isolation behaves with site isolation
+// memory thresholds.
+class OptInOriginIsolationPolicyTest : public BaseSiteIsolationTest {
+ public:
+  OptInOriginIsolationPolicyTest() = default;
+
+ protected:
+  void SetUp() override {
+    // Simulate a 512MB device.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kEnableLowEndDeviceMode);
+    EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemoryMB());
+    // Turn off strict site isolation.  This simulates what would happen on
+    // Android.
+    SetEnableStrictSiteIsolation(false);
+    // Enable Origin-Isolation header.
+    feature_list_.InitAndEnableFeature(::features::kOriginIsolationHeader);
+    BaseSiteIsolationTest::SetUp();
+  }
+
+  content::BrowserContext* browser_context() { return &browser_context_; }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  content::TestBrowserContext browser_context_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+
+  base::test::ScopedFeatureList feature_list_;
+
+  DISALLOW_COPY_AND_ASSIGN(OptInOriginIsolationPolicyTest);
+};
+
+// Check that opt-in origin isolation is not applied when below the memory
+// threshold (and when full site isolation is not used).
+TEST_F(OptInOriginIsolationPolicyTest, BelowThreshold) {
+  if (ShouldSkipBecauseOfConflictingCommandLineSwitches())
+    return;
+
+  // Define a memory threshold at 768MB.  This is above the 512MB of physical
+  // memory that this test simulates, so opt-in origin isolation should be
+  // disabled.
+  base::test::ScopedFeatureList memory_feature;
+  memory_feature.InitAndEnableFeatureWithParameters(
+      features::kSitePerProcessOnlyForHighMemoryClients,
+      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "768"}});
+
+  EXPECT_FALSE(content::SiteIsolationPolicy::IsOptInOriginIsolationEnabled());
+
+  // Simulate a navigation to a URL that serves an Origin-Isolation header.
+  // Since we're outside of content/, it's difficult to verify that internal
+  // ChildProcessSecurityPolicy state wasn't changed by opt-in origin
+  // isolation.  Instead, verify that the resulting SiteInstance doesn't
+  // require a dedicated process.  This should be the end result, and it
+  // implicitly checks that ChildProcessSecurityPolicy::IsIsolatedOrigin()
+  // doesn't return true for this origin.
+  const GURL kUrl("https://www.google.com/");
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(browser_context(),
+                                                        nullptr);
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(kUrl,
+                                                           web_contents.get());
+  simulator->Start();
+  auto response_headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  response_headers->SetHeader("Origin-Isolation", "?1");
+  simulator->SetResponseHeaders(response_headers);
+  simulator->Commit();
+
+  content::SiteInstance* site_instance =
+      simulator->GetFinalRenderFrameHost()->GetSiteInstance();
+  EXPECT_FALSE(site_instance->RequiresDedicatedProcess());
+}
+
+// Counterpart to the test above, but verifies that opt-in origin isolation is
+// enabled when above the memory threshold.
+TEST_F(OptInOriginIsolationPolicyTest, AboveThreshold) {
+  if (ShouldSkipBecauseOfConflictingCommandLineSwitches())
+    return;
+
+  // Define a memory threshold at 128MB.  This is below the 512MB of physical
+  // memory that this test simulates, so opt-in origin isolation should be
+  // enabled.
+  base::test::ScopedFeatureList memory_feature;
+  memory_feature.InitAndEnableFeatureWithParameters(
+      features::kSitePerProcessOnlyForHighMemoryClients,
+      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "128"}});
+
+  EXPECT_TRUE(content::SiteIsolationPolicy::IsOptInOriginIsolationEnabled());
+
+  // Simulate a navigation to a URL that serves an Origin-Isolation header.
+  // Verify that the resulting SiteInstance requires a dedicated process.  Note
+  // that this test disables strict site isolation, so this would happen only
+  // if opt-in isolation took place.
+  const GURL kUrl("https://www.google.com/");
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(browser_context(),
+                                                        nullptr);
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(kUrl,
+                                                           web_contents.get());
+  simulator->Start();
+  auto response_headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  response_headers->SetHeader("Origin-Isolation", "?1");
+  simulator->SetResponseHeaders(response_headers);
+  simulator->Commit();
+
+  content::SiteInstance* site_instance =
+      simulator->GetFinalRenderFrameHost()->GetSiteInstance();
+  EXPECT_TRUE(site_instance->RequiresDedicatedProcess());
+}
 
 }  // namespace site_isolation

@@ -1945,6 +1945,11 @@ NavigationRequest::IsOptInIsolationRequested(const GURL& url) {
   if (!response())
     return OptInIsolationCheckResult::NONE;
 
+  // Do not attempt isolation if the environment prevents us from enabling site
+  // isolation (e.g., when we are under the memory threshold on Android).
+  if (!SiteIsolationPolicy::IsOptInOriginIsolationEnabled())
+    return OptInIsolationCheckResult::NONE;
+
   // For now we only check for the presence of hints; we do not yet act on the
   // specific hints.
   const bool requests_via_origin_policy =

@@ -48,6 +48,11 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   // isolated origins on Android.
   static bool ArePreloadedIsolatedOriginsEnabled();
 
+  // Returns true if opt-in origin isolation (e.g., via the "Origin-Isolation"
+  // header) should be enabled.  This is used to turn off opt-in origin
+  // isolation on low-memory Android devices.
+  static bool IsOptInOriginIsolationEnabled();
+
   // Applies isolated origins from all available sources, including the
   // command-line switch, field trials, enterprise policy, and the embedder.
   // See also AreIsolatedOriginsEnabled. These origins apply globally to the

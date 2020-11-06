@@ -133,6 +133,21 @@ bool SiteIsolationPolicy::ArePreloadedIsolatedOriginsEnabled() {
 }
 
 // static
+bool SiteIsolationPolicy::IsOptInOriginIsolationEnabled() {
+  // If strict site isolation is in use (either by default on desktop or via a
+  // user opt-in on Android), unconditionally enable opt-in origin isolation.
+  if (UseDedicatedProcessesForAllSites())
+    return true;
+
+  // Otherwise, if site isolation is disabled (e.g., on Android due to being
+  // under a memory threshold), turn off opt-in origin isolation.
+  if (IsSiteIsolationDisabled())
+    return false;
+
+  return true;
+}
+
+// static
 std::string SiteIsolationPolicy::GetIsolatedOriginsFromCommandLine() {
   std::string cmdline_arg =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
