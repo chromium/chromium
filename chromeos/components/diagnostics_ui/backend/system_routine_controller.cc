@@ -19,6 +19,8 @@ namespace healthd = cros_healthd::mojom;
 
 constexpr uint32_t kCpuCacheDurationInSeconds = 10;
 constexpr uint32_t kCpuFloatingPointDurationInSeconds = 10;
+constexpr uint32_t kCpuPrimeDurationInSeconds = 10;
+constexpr uint64_t kCpuPrimeMaxNumber = 1000000;
 constexpr uint32_t kCpuStressDurationInSeconds = 10;
 constexpr uint32_t kRoutineResultRefreshIntervalInSeconds = 1;
 
@@ -61,6 +63,8 @@ uint32_t GetExpectedRoutineDurationInSeconds(mojom::RoutineType routine_type) {
       return kCpuCacheDurationInSeconds;
     case mojom::RoutineType::kCpuFloatingPoint:
       return kCpuFloatingPointDurationInSeconds;
+    case mojom::RoutineType::kCpuPrime:
+      return kCpuPrimeDurationInSeconds;
     case mojom::RoutineType::kCpuStress:
       return kCpuCacheDurationInSeconds;
   }
@@ -105,6 +109,12 @@ void SystemRoutineController::ExecuteRoutine(mojom::RoutineType routine_type) {
     case mojom::RoutineType::kCpuFloatingPoint:
       diagnostics_service_->RunFloatingPointAccuracyRoutine(
           kCpuFloatingPointDurationInSeconds,
+          base::BindOnce(&SystemRoutineController::OnRoutineStarted,
+                         base::Unretained(this), routine_type));
+      return;
+    case mojom::RoutineType::kCpuPrime:
+      diagnostics_service_->RunPrimeSearchRoutine(
+          kCpuPrimeDurationInSeconds, kCpuPrimeMaxNumber,
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
                          base::Unretained(this), routine_type));
       return;
