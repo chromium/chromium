@@ -129,31 +129,62 @@ void LayoutNGBlockFlowMixin<Base>::AddOutlineRects(
   Base::AddOutlineRects(rects, additional_offset, include_block_overflows);
 }
 
-// Retrieve NGBaseline from the current fragment.
-template <typename Base>
-base::Optional<LayoutUnit> LayoutNGBlockFlowMixin<Base>::FragmentBaseline()
-    const {
-  if (Base::ShouldApplyLayoutContainment())
-    return base::nullopt;
-
-  if (const NGPhysicalFragment* physical_fragment = CurrentFragment())
-    return To<NGPhysicalBoxFragment>(physical_fragment)->Baseline();
-  return base::nullopt;
-}
-
 template <typename Base>
 LayoutUnit LayoutNGBlockFlowMixin<Base>::FirstLineBoxBaseline() const {
-  if (base::Optional<LayoutUnit> offset = FragmentBaseline())
-    return *offset;
-  return Base::FirstLineBoxBaseline();
+  // Please see |Paint()| for these DCHECKs.
+  DCHECK(!Base::CanTraversePhysicalFragments() ||
+         !Base::Parent()->CanTraversePhysicalFragments());
+  DCHECK_LE(Base::PhysicalFragmentCount(), 1u);
+
+  if (const base::Optional<LayoutUnit> baseline =
+          Base::FirstLineBoxBaselineOverride())
+    return *baseline;
+
+  if (Base::PhysicalFragmentCount()) {
+    const NGPhysicalBoxFragment* fragment = Base::GetPhysicalFragment(0);
+    DCHECK(fragment);
+    if (base::Optional<LayoutUnit> offset = fragment->Baseline())
+      return *offset;
+  }
+
+  // This logic is in |LayoutBlock|, but we cannot call |Base| because doing so
+  // may traverse |LayoutObject| tree, which may call this function for a child,
+  // but the child may be block fragmented.
+  if (Base::ChildrenInline()) {
+    return Base::EmptyLineBaseline(
+        Base::IsHorizontalWritingMode() ? kHorizontalLine : kVerticalLine);
+  }
+  return LayoutUnit(-1);
 }
 
 template <typename Base>
 LayoutUnit LayoutNGBlockFlowMixin<Base>::InlineBlockBaseline(
     LineDirectionMode line_direction) const {
-  if (base::Optional<LayoutUnit> offset = FragmentBaseline())
-    return *offset;
-  return Base::InlineBlockBaseline(line_direction);
+  // Please see |Paint()| for these DCHECKs.
+  DCHECK(!Base::CanTraversePhysicalFragments() ||
+         !Base::Parent()->CanTraversePhysicalFragments());
+  DCHECK_LE(Base::PhysicalFragmentCount(), 1u);
+
+  if (const base::Optional<LayoutUnit> baseline =
+          Base::InlineBlockBaselineOverride(line_direction))
+    return *baseline;
+
+  if (Base::PhysicalFragmentCount()) {
+    const NGPhysicalBoxFragment* fragment = Base::GetPhysicalFragment(0);
+    DCHECK(fragment);
+    if (base::Optional<LayoutUnit> offset = fragment->Baseline())
+      return *offset;
+  }
+
+  // This logic is in |LayoutBlock|, but we cannot call |Base| because doing so
+  // may traverse |LayoutObject| tree, which may call this function for a child,
+  // but the child may be block fragmented.
+  for (LayoutBox* child = Base::LastChildBox(); child;
+       child = child->PreviousSiblingBox()) {
+    if (!child->IsFloatingOrOutOfFlowPositioned())
+      return LayoutUnit(-1);
+  }
+  return Base::EmptyLineBaseline(line_direction);
 }
 
 template <typename Base>

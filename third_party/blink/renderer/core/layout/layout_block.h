@@ -476,6 +476,9 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   LayoutUnit FirstLineBoxBaseline() const override;
   LayoutUnit InlineBlockBaseline(LineDirectionMode) const override;
+  base::Optional<LayoutUnit> FirstLineBoxBaselineOverride() const;
+  base::Optional<LayoutUnit> InlineBlockBaselineOverride(
+      LineDirectionMode) const;
 
   bool HitTestOverflowControl(
       HitTestResult&,

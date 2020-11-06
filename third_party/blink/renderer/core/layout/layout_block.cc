@@ -1902,14 +1902,25 @@ LayoutUnit LayoutBlock::MinLineHeightForReplacedObject(
 // them. Just walking the block children in logical order seems rather wrong for
 // those two layout modes, though.
 
-LayoutUnit LayoutBlock::FirstLineBoxBaseline() const {
+base::Optional<LayoutUnit> LayoutBlock::FirstLineBoxBaselineOverride() const {
   NOT_DESTROYED();
-  DCHECK(!ChildrenInline());
   if (ShouldApplyLayoutContainment())
     return LayoutUnit(-1);
 
-  if (IsWritingModeRoot() && !IsRubyRun())
+  // Orthogonal grid items can participate in baseline alignment along column
+  // axis.
+  if (IsWritingModeRoot() && !IsRubyRun() && !IsGridItem())
     return LayoutUnit(-1);
+
+  return base::nullopt;
+}
+
+LayoutUnit LayoutBlock::FirstLineBoxBaseline() const {
+  NOT_DESTROYED();
+  DCHECK(!ChildrenInline());
+  if (const base::Optional<LayoutUnit> baseline =
+          FirstLineBoxBaselineOverride())
+    return *baseline;
 
   for (LayoutBox* curr = FirstChildBox(); curr; curr = curr->NextSiblingBox()) {
     if (!curr->IsFloatingOrOutOfFlowPositioned()) {
@@ -1938,10 +1949,9 @@ bool LayoutBlock::UseLogicalBottomMarginEdgeForInlineBlockBaseline() const {
          ShouldApplyLayoutContainment();
 }
 
-LayoutUnit LayoutBlock::InlineBlockBaseline(
+base::Optional<LayoutUnit> LayoutBlock::InlineBlockBaselineOverride(
     LineDirectionMode line_direction) const {
   NOT_DESTROYED();
-  DCHECK(!ChildrenInline());
   if (UseLogicalBottomMarginEdgeForInlineBlockBaseline()) {
     // We are not calling LayoutBox::baselinePosition here because the caller
     // should add the margin-top/margin-right, not us.
@@ -1951,6 +1961,17 @@ LayoutUnit LayoutBlock::InlineBlockBaseline(
 
   if (IsWritingModeRoot() && !IsRubyRun())
     return LayoutUnit(-1);
+
+  return base::nullopt;
+}
+
+LayoutUnit LayoutBlock::InlineBlockBaseline(
+    LineDirectionMode line_direction) const {
+  NOT_DESTROYED();
+  DCHECK(!ChildrenInline());
+  if (const base::Optional<LayoutUnit> baseline =
+          InlineBlockBaselineOverride(line_direction))
+    return *baseline;
 
   bool have_normal_flow_child = false;
   for (LayoutBox* curr = LastChildBox(); curr;

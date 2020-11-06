@@ -2587,14 +2587,11 @@ int LayoutBlockFlow::LineCount(
 
 LayoutUnit LayoutBlockFlow::FirstLineBoxBaseline() const {
   NOT_DESTROYED();
-  if (ShouldApplyLayoutContainment())
-    return LayoutUnit(-1);
-  // Orthogonal grid items can participante in baseline alignment along column
-  // axis.
-  if (IsWritingModeRoot() && !IsRubyRun() && !IsGridItem())
-    return LayoutUnit(-1);
   if (!ChildrenInline())
     return LayoutBlock::FirstLineBoxBaseline();
+  if (const base::Optional<LayoutUnit> baseline =
+          FirstLineBoxBaselineOverride())
+    return *baseline;
   if (FirstLineBox()) {
     const SimpleFontData* font_data = Style(true)->GetFont().PrimaryFont();
     DCHECK(font_data);
@@ -2629,16 +2626,11 @@ LayoutUnit LayoutBlockFlow::FirstLineBoxBaseline() const {
 LayoutUnit LayoutBlockFlow::InlineBlockBaseline(
     LineDirectionMode line_direction) const {
   NOT_DESTROYED();
-  if (UseLogicalBottomMarginEdgeForInlineBlockBaseline()) {
-    // We are not calling baselinePosition here because the caller should add
-    // the margin-top/margin-right, not us.
-    return line_direction == kHorizontalLine ? Size().Height() + MarginBottom()
-                                             : Size().Width() + MarginLeft();
-  }
-  if (IsWritingModeRoot() && !IsRubyRun())
-    return LayoutUnit(-1);
   if (!ChildrenInline())
     return LayoutBlock::InlineBlockBaseline(line_direction);
+  if (const base::Optional<LayoutUnit> baseline =
+          InlineBlockBaselineOverride(line_direction))
+    return *baseline;
   if (LastLineBox()) {
     const SimpleFontData* font_data =
         Style(LastLineBox() == FirstLineBox())->GetFont().PrimaryFont();

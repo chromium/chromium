@@ -73,8 +73,6 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const final;
 
-  base::Optional<LayoutUnit> FragmentBaseline() const;
-
   void DirtyLinesFromChangedChild(LayoutObject* child,
                                   MarkingBehavior marking_behavior) final;
 
