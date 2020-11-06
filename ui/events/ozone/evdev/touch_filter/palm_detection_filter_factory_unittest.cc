@@ -55,8 +55,8 @@ class PalmDetectionFilterFactoryDeathTest
 TEST_F(PalmDetectionFilterFactoryTest, RadiusesFromLSBRelease) {
   std::string lsb_release = "CHROMEOS_RELEASE_BOARD=hatch\n";
   base::SysInfo::SetChromeOSVersionInfoForTest(lsb_release, base::Time());
-  EXPECT_EQ("0.090477715, 3.9225964", internal::FetchNeuralPalmRadiusPolynomial(
-                                          kohaku_touchscreen_info_, ""));
+  EXPECT_EQ("0.1010944, 3.51837568", internal::FetchNeuralPalmRadiusPolynomial(
+                                         kohaku_touchscreen_info_, ""));
 
   lsb_release = "CHROMEOS_RELEASE_BOARD=reef\n";
   base::SysInfo::SetChromeOSVersionInfoForTest(lsb_release, base::Time());

@@ -69,7 +69,7 @@ std::string FetchNeuralPalmRadiusPolynomial(const EventDeviceInfo& devinfo,
   // TODO(robsc): Investigate a better way of doing this configuration.
   std::string release_board = base::SysInfo::GetLsbReleaseBoard();
   if ("hatch" == release_board) {
-    return "0.090477715, 3.9225964";
+    return "0.1010944, 3.51837568";
   } else if ("reef" == release_board) {
     return "0.17889799, 4.22584412";
   }
@@ -91,10 +91,12 @@ std::unique_ptr<PalmDetectionFilter> CreatePalmDetectionFilter(
   if (base::FeatureList::IsEnabled(kEnableNeuralPalmDetectionFilter) &&
       NeuralStylusPalmDetectionFilter::
           CompatibleWithNeuralStylusPalmDetectionFilter(devinfo)) {
-    std::vector<float> radius_polynomial = internal::ParseRadiusPolynomial(
-        internal::FetchNeuralPalmRadiusPolynomial(
-            devinfo, kNeuralPalmRadiusPolynomial.Get()));
-    // Theres only one model right now.
+    std::string polynomial_string = internal::FetchNeuralPalmRadiusPolynomial(
+        devinfo, kNeuralPalmRadiusPolynomial.Get());
+    VLOG(1) << "Will attempt to use radius polynomial: " << polynomial_string;
+    std::vector<float> radius_polynomial =
+        internal::ParseRadiusPolynomial(polynomial_string);
+    // There's only one model right now.
     std::unique_ptr<NeuralStylusPalmDetectionFilterModel> model =
         std::make_unique<OneDeviceTrainNeuralStylusPalmDetectionFilterModel>(
             radius_polynomial);
