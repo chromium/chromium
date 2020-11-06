@@ -4,7 +4,7 @@
 
 /**
  * @fileoverview
- * 'settings-user-list' shows a list of users whitelisted on this Chrome OS
+ * 'settings-user-list' shows a list of users allowed on this Chrome OS
  * device.
  *
  * Example:
@@ -23,7 +23,7 @@ Polymer({
 
   properties: {
     /**
-     * Current list of whitelisted users.
+     * Current list of allowed users.
      * @private {!Array<!chrome.usersPrivate.User>}
      */
     users_: {
@@ -84,8 +84,8 @@ Polymer({
   },
 
   /**
-   * Helper function that sorts and sets the given list of whitelisted users.
-   * @param {!Array<!chrome.usersPrivate.User>} users List of whitelisted users.
+   * Helper function that sorts and sets the given list of allowed users.
+   * @param {!Array<!chrome.usersPrivate.User>} users List of allowed users.
    */
   setUsers_(users) {
     this.users_ = users;
