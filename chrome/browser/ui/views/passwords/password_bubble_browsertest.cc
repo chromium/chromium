@@ -101,15 +101,34 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_AutoSignin) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_SafeState) {
+// TODO(crbug.com/1146503): Flaky on Linux
+#if defined(OS_LINUX)
+#define MAYBE_InvokeUi_SafeState DISABLED_InvokeUi_SafeState
+#else
+#define MAYBE_InvokeUi_SafeState InvokeUi_SafeState
+#endif
+IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, MAYBE_InvokeUi_SafeState) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_MoreToFixState) {
+// TODO(crbug.com/1146503): Flaky on Linux
+#if defined(OS_LINUX)
+#define MAYBE_InvokeUi_MoreToFixState DISABLED_InvokeUi_MoreToFixState
+#else
+#define MAYBE_InvokeUi_MoreToFixState InvokeUi_MoreToFixState
+#endif
+IN_PROC_BROWSER_TEST_P(
+    PasswordBubbleBrowserTest, MAYBE_InvokeUi_MoreToFixState) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_UnsafeState) {
+// TODO(crbug.com/1146503): Flaky on Linux
+#if defined(OS_LINUX)
+#define MAYBE_InvokeUi_UnsafeState DISABLED_InvokeUi_UnsafeState
+#else
+#define MAYBE_InvokeUi_UnsafeState InvokeUi_UnsafeState
+#endif
+IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, MAYBE_InvokeUi_UnsafeState) {
   ShowAndVerifyUi();
 }
 
