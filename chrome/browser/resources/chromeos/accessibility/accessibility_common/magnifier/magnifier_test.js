@@ -75,8 +75,9 @@ TEST_F(
       });
     });
 
+// Disabled - flaky: https://crbug.com/1145612
 TEST_F(
-    'MagnifierE2ETest', 'MovesDockedMagnifierToActiveDescendant', function() {
+    'MagnifierE2ETest', 'DISABLED_MovesDockedMagnifierToActiveDescendant', function() {
       const site = `
     <div role="group" id="parent" aria-activedescendant="apple">
       <div id="apple" role="treeitem">Apple</div>
