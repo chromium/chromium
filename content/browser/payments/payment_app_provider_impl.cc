@@ -317,9 +317,6 @@ void PaymentAppProviderImpl::SetOpenedWindow(
 void PaymentAppProviderImpl::CloseOpenedWindow() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/1099270): Fix cases where the web contents has already been
-  // destroyed without calling this function, e.g. when the bottom sheet UI is
-  // closed.
   if (payment_handler_window_ && payment_handler_window_->web_contents()) {
     payment_handler_window_->web_contents()->Close();
   }
