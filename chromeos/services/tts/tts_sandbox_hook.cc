@@ -36,10 +36,17 @@ void AddTempDataDirectory(std::vector<BrokerFilePermission>* permissions) {
       BrokerFilePermission::ReadWriteCreateRecursive(rw_dir.value()));
 }
 
+void AddReadOnlyFiles(std::vector<BrokerFilePermission>* permissions) {
+  // These files are required for some syscalls e.g. get_nprocs, sysinfo.
+  permissions->push_back(BrokerFilePermission::ReadOnly("/proc/stat"));
+  permissions->push_back(BrokerFilePermission::ReadOnly("/proc/meminfo"));
+}
+
 std::vector<BrokerFilePermission> GetTtsFilePermissions() {
   std::vector<BrokerFilePermission> permissions;
   AddBundleFolder(&permissions);
   AddTempDataDirectory(&permissions);
+  AddReadOnlyFiles(&permissions);
   return permissions;
 }
 
