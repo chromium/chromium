@@ -309,6 +309,11 @@ import './strings.js';
           e.preventDefault();
         }
       }
+
+      if (e.key === 'Escape') {
+        this.unselectAll();
+        e.preventDefault();
+      }
     },
 
     /** @private */
