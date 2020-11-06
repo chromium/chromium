@@ -16,7 +16,7 @@
     padding-top: 24px;
   }
 </style>
-<div id="thumbnails">
+<div id="thumbnails" hidden$="[[!isPluginActive_]]">
   <template is="dom-repeat" items="[[pageNumbers_]]"
       on-dom-change="onDomChange_">
     <viewer-thumbnail tabindex="0" role="button"

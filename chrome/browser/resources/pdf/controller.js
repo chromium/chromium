@@ -135,6 +135,7 @@ export class ContentController {
  * @enum {string}
  */
 export const PluginControllerEventType = {
+  IS_ACTIVE_CHANGED: 'PluginControllerEventType.IS_ACTIVE_CHANGED',
   PLUGIN_MESSAGE: 'PluginControllerEventType.PLUGIN_MESSAGE',
 };
 
@@ -146,6 +147,11 @@ export const PluginControllerEventType = {
  * @implements {ContentController}
  */
 export class PluginController {
+  constructor() {
+    /** @private {!EventTarget} */
+    this.eventTarget_ = new EventTarget();
+  }
+
   /**
    * @param {!HTMLEmbedElement} plugin
    * @param {!Viewport} viewport
@@ -173,9 +179,6 @@ export class PluginController {
     this.plugin_.addEventListener(
         'message', e => this.handlePluginMessage_(e), false);
 
-    /** @private {!EventTarget} */
-    this.eventTarget_ = new EventTarget();
-
     /**
      * Counter for use with createUid
      * @private {number}
@@ -200,7 +203,14 @@ export class PluginController {
    * @override
    */
   set isActive(isActive) {
+    const wasActive = this.isActive;
     this.isActive_ = isActive;
+    if (this.isActive === wasActive) {
+      return;
+    }
+
+    this.eventTarget_.dispatchEvent(new CustomEvent(
+        PluginControllerEventType.IS_ACTIVE_CHANGED, {detail: this.isActive}));
   }
 
   /**

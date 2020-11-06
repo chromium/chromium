@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {eventToPromise, whenAttributeIs} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.m.js';
+import {eventToPromise, waitAfterNextRender, whenAttributeIs} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.m.js';
 import {PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/controller.js';
 import {ViewerThumbnailBarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/elements/viewer-thumbnail-bar.js';
 import {PAINTED_ATTRIBUTE, ViewerThumbnailElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/elements/viewer-thumbnail.js';
@@ -17,12 +17,8 @@ function createThumbnailBar() {
   document.body.innerHTML = '';
   const thumbnailBar = /** @type {!ViewerThumbnailBarElement} */ (
       document.createElement('viewer-thumbnail-bar'));
+  thumbnailBar.inTest = true;
   document.body.appendChild(thumbnailBar);
-
-  // Deactivate the PluginController, because the plugin element's references
-  // are dangling now that it has been removed from the DOM.
-  PluginController.getInstance().isActive = false;
-
   return thumbnailBar;
 }
 
@@ -294,7 +290,46 @@ const tests = [
 
           chrome.test.succeed();
         });
-  }
+  },
+  function testReactToNoPlugin() {
+    const thumbnailBar = createThumbnailBar();
+    thumbnailBar.docLength = 1;
+
+    // Deactivate the PluginController, causing the thumbnails to hide.
+    const pluginController = PluginController.getInstance();
+    pluginController.isActive = false;
+
+    flush();
+
+    const scroller = thumbnailBar.shadowRoot.querySelector('#thumbnails');
+    chrome.test.assertTrue(scroller.hidden);
+
+    const thumbnail =
+        /** @type {!ViewerThumbnailElement} */ (
+            thumbnailBar.shadowRoot.querySelector('viewer-thumbnail'));
+
+    testAsync(async () => {
+      const whenPaintTriggered = whenThumbnailPainted(thumbnail).then(() => {
+        // The thumbnail shouldn't paint when the controller is inactive.
+        if (!pluginController.isActive) {
+          chrome.test.fail();
+        }
+      });
+
+      // Give the test a chance to fail.
+      await waitAfterNextRender(thumbnailBar);
+
+      // The thumbnail should paint when reactivating the plugin.
+      pluginController.isActive = true;
+      chrome.test.assertFalse(scroller.hidden);
+      await whenPaintTriggered;
+
+      // The thumbnail should clear when deactivating the plugin.
+      pluginController.isActive = false;
+      chrome.test.assertTrue(scroller.hidden);
+      await whenThumbnailCleared(thumbnail);
+    });
+  },
 ];
 
 chrome.test.runTests(tests);

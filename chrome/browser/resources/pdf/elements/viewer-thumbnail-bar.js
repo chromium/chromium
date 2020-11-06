@@ -4,10 +4,11 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PluginController} from '../controller.js';
+import {PluginController, PluginControllerEventType} from '../controller.js';
 import {ViewerThumbnailElement} from './viewer-thumbnail.js';
 
 export class ViewerThumbnailBarElement extends PolymerElement {
@@ -30,12 +31,39 @@ export class ViewerThumbnailBarElement extends PolymerElement {
 
       docLength: Number,
 
+      isPluginActive_: Boolean,
+
       /** @private {Array<number>} */
       pageNumbers_: {
         type: Array,
         computed: 'computePageNumbers_(docLength)',
       },
     };
+  }
+
+  constructor() {
+    super();
+
+    // TODO(dhoss): Remove `this.inTest` when implemented a mock plugin
+    // controller.
+    /** @type {boolean} */
+    this.inTest = false;
+
+    /** @private {!PluginController} */
+    this.pluginController_ = PluginController.getInstance();
+
+    /** @private {boolean} */
+    this.isPluginActive_ = this.pluginController_.isActive;
+
+    /** @private {!EventTracker} */
+    this.tracker_ = new EventTracker();
+
+    // Listen to whether the plugin is active. Thumbnails should be hidden
+    // when the plugin is inactive.
+    this.tracker_.add(
+        this.pluginController_.getEventTarget(),
+        PluginControllerEventType.IS_ACTIVE_CHANGED,
+        e => this.isPluginActive_ = e.detail);
   }
 
   ready() {
@@ -62,12 +90,11 @@ export class ViewerThumbnailBarElement extends PolymerElement {
         }
         thumbnail.setPainted();
 
-        const pluginController = PluginController.getInstance();
-        if (!pluginController.isActive) {
+        if (!this.isPluginActive_ || this.inTest) {
           return;
         }
 
-        pluginController.requestThumbnail(thumbnail.pageNumber)
+        this.pluginController_.requestThumbnail(thumbnail.pageNumber)
             .then(response => {
               const array = new Uint8ClampedArray(response.imageData);
               const imageData = new ImageData(array, response.width);
