@@ -3646,6 +3646,18 @@
       "disabled_extensions": [
         "GL_OES_depth_texture"
       ]
-    }
+    },
+    {
+      "id": 360,
+      "description": "8x MSAA for WebGL contexts is slow on Win Intel",
+      "cr_bugs": [1145793],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "features": [
+        "max_msaa_sample_count_4"
+      ]
+    } 
   ]
 }
