@@ -21,7 +21,7 @@ Blink's needs change.
 Organization
 ------------
 
-The API is organized into two parts:
+The API is organized into three parts:
 
   - public/common
   - public/platform
