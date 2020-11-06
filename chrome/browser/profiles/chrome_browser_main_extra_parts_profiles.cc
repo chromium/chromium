@@ -177,7 +177,6 @@
 #endif
 
 #if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_scheduler_user_service.h"
 #include "chrome/browser/chromeos/login/security_token_session_controller_factory.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #endif
@@ -215,8 +214,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   extensions::EnsureBrowserContextKeyedServiceFactoriesBuilt();
 #endif
 #if defined(OS_CHROMEOS)
-  chromeos::cert_provisioning::CertProvisioningSchedulerUserServiceFactory::
-      GetInstance();
   chromeos::login::SecurityTokenSessionControllerFactory::GetInstance();
   chromeos::EnsureBrowserContextKeyedServiceFactoriesBuilt();
 #endif
