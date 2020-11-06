@@ -55,6 +55,7 @@ interface DiagnosticsService {
   RunBatteryCapacityRoutine() => (RunRoutineResponse response);
 
   // Requests that the BatteryHealth routine is created and started on the
+  // platform. This routine checks the cycle count and percent wear of the
   // battery against inputs configured in cros_config. If no configuration data
   // is present in cros_config, the routine will fall back to fleet-wide default
   // values of 1000 for the maximum allowable cycle count and 50% for maximum
