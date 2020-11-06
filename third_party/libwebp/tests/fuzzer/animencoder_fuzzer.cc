@@ -46,24 +46,32 @@ int AddFrame(WebPAnimEncoder** const enc,
 
   // Read the source picture.
   if (!ExtractSourcePicture(&pic, data, size, bit_pos)) {
-    fprintf(stderr, "Can't read input image.\n");
+    const WebPEncodingError error_code = pic.error_code;
     WebPPictureFree(&pic);
+    if (error_code == VP8_ENC_ERROR_OUT_OF_MEMORY) return 0;
+    fprintf(stderr, "Can't read input image. Error code: %d\n", error_code);
     abort();
   }
 
   // Crop and scale.
   if (*enc == nullptr) {  // First frame will set canvas width and height.
     if (!ExtractAndCropOrScale(&pic, data, size, bit_pos)) {
-      fprintf(stderr, "ExtractAndCropOrScale failed.");
+      const WebPEncodingError error_code = pic.error_code;
       WebPPictureFree(&pic);
+      if (error_code == VP8_ENC_ERROR_OUT_OF_MEMORY) return 0;
+      fprintf(stderr, "ExtractAndCropOrScale failed. Error code: %d\n",
+              error_code);
       abort();
     }
   } else {  // Other frames will be resized to the first frame's dimensions.
     if (!WebPPictureRescale(&pic, *width, *height)) {
-      fprintf(stderr, "WebPPictureRescale failed. Size: %d,%d\n", *width,
-              *height);
+      const WebPEncodingError error_code = pic.error_code;
       WebPAnimEncoderDelete(*enc);
       WebPPictureFree(&pic);
+      if (error_code == VP8_ENC_ERROR_OUT_OF_MEMORY) return 0;
+      fprintf(stderr,
+              "WebPPictureRescale failed. Size: %d,%d. Error code: %d\n",
+              *width, *height, error_code);
       abort();
     }
   }
@@ -74,9 +82,8 @@ int AddFrame(WebPAnimEncoder** const enc,
     *height = pic.height;
     *enc = WebPAnimEncoderNew(*width, *height, &anim_config);
     if (*enc == nullptr) {
-      fprintf(stderr, "WebPAnimEncoderNew failed.\n");
       WebPPictureFree(&pic);
-      abort();
+      return 0;
     }
   }
 
@@ -98,9 +105,11 @@ int AddFrame(WebPAnimEncoder** const enc,
 
   // Encode.
   if (!WebPAnimEncoderAdd(*enc, &pic, timestamp_ms, &config)) {
-    fprintf(stderr, "WebPEncode failed. Error code: %d\n", pic.error_code);
+    const WebPEncodingError error_code = pic.error_code;
     WebPAnimEncoderDelete(*enc);
     WebPPictureFree(&pic);
+    if (error_code == VP8_ENC_ERROR_OUT_OF_MEMORY) return 0;
+    fprintf(stderr, "WebPEncode failed. Error code: %d\n", error_code);
     abort();
   }
 
@@ -147,14 +156,16 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* const data, size_t size) {
 
   // Assemble.
   if (!WebPAnimEncoderAdd(enc, nullptr, timestamp_ms, nullptr)) {
-    fprintf(stderr, "Last WebPAnimEncoderAdd failed.");
+    fprintf(stderr, "Last WebPAnimEncoderAdd failed: %s.\n",
+            WebPAnimEncoderGetError(enc));
     WebPAnimEncoderDelete(enc);
     abort();
   }
   WebPData webp_data;
   WebPDataInit(&webp_data);
   if (!WebPAnimEncoderAssemble(enc, &webp_data)) {
-    fprintf(stderr, "WebPAnimEncoderAssemble failed.");
+    fprintf(stderr, "WebPAnimEncoderAssemble failed: %s.\n",
+            WebPAnimEncoderGetError(enc));
     WebPAnimEncoderDelete(enc);
     WebPDataClear(&webp_data);
     abort();

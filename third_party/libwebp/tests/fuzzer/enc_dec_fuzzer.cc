@@ -42,15 +42,20 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* const data, size_t size) {
 
   // Read the source picture.
   if (!ExtractSourcePicture(&pic, data, size, &bit_pos)) {
-    fprintf(stderr, "Can't read input image.\n");
+    const WebPEncodingError error_code = pic.error_code;
     WebPPictureFree(&pic);
+    if (error_code == VP8_ENC_ERROR_OUT_OF_MEMORY) return 0;
+    fprintf(stderr, "Can't read input image. Error code: %d\n", error_code);
     abort();
   }
 
   // Crop and scale.
   if (!ExtractAndCropOrScale(&pic, data, size, &bit_pos)) {
-    fprintf(stderr, "ExtractAndCropOrScale failed.");
+    const WebPEncodingError error_code = pic.error_code;
     WebPPictureFree(&pic);
+    if (error_code == VP8_ENC_ERROR_OUT_OF_MEMORY) return 0;
+    fprintf(stderr, "ExtractAndCropOrScale failed. Error code: %d\n",
+            error_code);
     abort();
   }
 
@@ -83,9 +88,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* const data, size_t size) {
   pic.writer = WebPMemoryWrite;
   pic.custom_ptr = &memory_writer;
   if (!WebPEncode(&config, &pic)) {
-    fprintf(stderr, "WebPEncode failed. Error code: %d\n", pic.error_code);
+    const WebPEncodingError error_code = pic.error_code;
     WebPMemoryWriterClear(&memory_writer);
     WebPPictureFree(&pic);
+    if (error_code == VP8_ENC_ERROR_OUT_OF_MEMORY) return 0;
+    fprintf(stderr, "WebPEncode failed. Error code: %d\n", error_code);
     abort();
   }
 
