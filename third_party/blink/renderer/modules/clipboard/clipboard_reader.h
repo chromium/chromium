@@ -25,7 +25,8 @@ class ClipboardPromise;
 //
 // ClipboardReader takes as input a ClipboardPromise, from which it expects
 // a clipboard format, and to which it provides a Blob containing an encoded
-// SystemClipboard-originated clipboard payload.
+// SystemClipboard-originated clipboard payload. All System Clipboard
+// operations should be called from the main thread.
 //
 // Subclasses of ClipboardReader should be implemented for each supported
 // format. Subclasses should:
@@ -52,10 +53,13 @@ class ClipboardReader : public GarbageCollected<ClipboardReader> {
   // TaskRunner for interacting with the system clipboard.
   const scoped_refptr<base::SingleThreadTaskRunner> clipboard_task_runner_;
 
-  explicit ClipboardReader(SystemClipboard* system_clipboard,
-                           ClipboardPromise* promise);
+  ClipboardReader(SystemClipboard* system_clipboard, ClipboardPromise* promise);
+  // Send a Blob holding `utf8_bytes` to the owning ClipboardPromise.
+  // An empty `utf8_bytes` indicates that the encoding step failed.
+  virtual void NextRead(Vector<uint8_t> utf8_bytes) = 0;
 
   SystemClipboard* system_clipboard() { return system_clipboard_; }
+  // This ClipboardPromise owns this ClipboardReader.
   Member<ClipboardPromise> promise_;
 
   SEQUENCE_CHECKER(sequence_checker_);

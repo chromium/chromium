@@ -78,12 +78,13 @@ class ClipboardImageReader final : public ClipboardReader {
                                             std::move(png_data)));
   }
 
-  // An empty vector indicates that the encoding step failed.
-  void NextRead(Vector<uint8_t> png_data) {
+  void NextRead(Vector<uint8_t> utf8_bytes) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     Blob* blob = nullptr;
-    if (png_data.size())
-      blob = Blob::Create(png_data.data(), png_data.size(), kMimeTypeImagePng);
+    if (utf8_bytes.size()) {
+      blob =
+          Blob::Create(utf8_bytes.data(), utf8_bytes.size(), kMimeTypeImagePng);
+    }
 
     promise_->OnRead(blob);
   }
@@ -135,7 +136,7 @@ class ClipboardTextReader final : public ClipboardReader {
                                             std::move(utf8_bytes)));
   }
 
-  void NextRead(Vector<uint8_t> utf8_bytes) {
+  void NextRead(Vector<uint8_t> utf8_bytes) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     Blob* blob = nullptr;
     if (utf8_bytes.size()) {
@@ -208,7 +209,7 @@ class ClipboardHtmlReader final : public ClipboardReader {
                                             std::move(utf8_bytes)));
   }
 
-  void NextRead(Vector<uint8_t> utf8_bytes) {
+  void NextRead(Vector<uint8_t> utf8_bytes) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     Blob* blob = nullptr;
     if (utf8_bytes.size()) {
@@ -284,7 +285,7 @@ class ClipboardSvgReader final : public ClipboardReader {
                                             std::move(utf8_bytes)));
   }
 
-  void NextRead(Vector<uint8_t> utf8_bytes) {
+  void NextRead(Vector<uint8_t> utf8_bytes) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     Blob* blob = nullptr;
     if (utf8_bytes.size()) {
@@ -295,8 +296,10 @@ class ClipboardSvgReader final : public ClipboardReader {
   }
 };
 }  // anonymous namespace
+
 // ClipboardReader functions.
 
+// static
 ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
                                          const String& mime_type,
                                          ClipboardPromise* promise) {

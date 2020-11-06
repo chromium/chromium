@@ -63,7 +63,7 @@ class ClipboardWriter : public GarbageCollected<ClipboardWriter>,
   virtual void StartWrite(
       DOMArrayBuffer* raw_data,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) = 0;
-  // This ClipboardPromise owns this.
+  // This ClipboardPromise owns this ClipboardWriter.
   Member<ClipboardPromise> promise_;
 
   // Ensure that System Clipboard operations occur on the main thread.
