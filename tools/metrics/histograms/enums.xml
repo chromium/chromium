@@ -57840,7 +57840,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Unavalable Bluetooth disconnected"/>
   <int value="6" label="Enabled and connecting"/>
   <int value="7" label="Enabled and connected"/>
-  <int value="8" label="Unavailable screen locked"/>
+  <int value="8" label="Unavailable screen locked or suspended"/>
 </enum>
 
 <enum name="PhoneHubInterstitialScreenEvent">

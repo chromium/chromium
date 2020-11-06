@@ -23,6 +23,7 @@
 #include "chromeos/components/phonehub/phone_model.h"
 #include "chromeos/components/phonehub/phone_status_processor.h"
 #include "chromeos/components/phonehub/tether_controller_impl.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 
 namespace chromeos {
@@ -43,7 +44,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           device_sync_client,
           multidevice_setup_client,
           connection_manager_.get(),
-          session_manager::SessionManager::Get())),
+          session_manager::SessionManager::Get(),
+          chromeos::PowerManagerClient::Get())),
       message_receiver_(
           std::make_unique<MessageReceiverImpl>(connection_manager_.get())),
       message_sender_(

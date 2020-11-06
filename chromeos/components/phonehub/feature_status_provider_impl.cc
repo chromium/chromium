@@ -118,16 +118,20 @@ FeatureStatusProviderImpl::FeatureStatusProviderImpl(
     device_sync::DeviceSyncClient* device_sync_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     ConnectionManager* connection_manager,
-    session_manager::SessionManager* session_manager)
+    session_manager::SessionManager* session_manager,
+    PowerManagerClient* power_manager_client)
     : device_sync_client_(device_sync_client),
       multidevice_setup_client_(multidevice_setup_client),
       connection_manager_(connection_manager),
-      session_manager_(session_manager) {
+      session_manager_(session_manager),
+      power_manager_client_(power_manager_client) {
   DCHECK(session_manager_);
+  DCHECK(power_manager_client_);
   device_sync_client_->AddObserver(this);
   multidevice_setup_client_->AddObserver(this);
   connection_manager_->AddObserver(this);
   session_manager_->AddObserver(this);
+  power_manager_client_->AddObserver(this);
 
   device::BluetoothAdapterFactory::Get()->GetAdapter(
       base::BindOnce(&FeatureStatusProviderImpl::OnBluetoothAdapterReceived,
@@ -143,6 +147,7 @@ FeatureStatusProviderImpl::~FeatureStatusProviderImpl() {
   if (bluetooth_adapter_)
     bluetooth_adapter_->RemoveObserver(this);
   session_manager_->RemoveObserver(this);
+  power_manager_client_->RemoveObserver(this);
 }
 
 FeatureStatus FeatureStatusProviderImpl::GetStatus() const {
@@ -246,8 +251,8 @@ FeatureStatus FeatureStatusProviderImpl::ComputeStatus() {
     return FeatureStatus::kNotEligibleForFeature;
   }
 
-  if (session_manager_->IsScreenLocked())
-    return FeatureStatus::kUnavailableScreenLocked;
+  if (session_manager_->IsScreenLocked() || is_suspended_)
+    return FeatureStatus::kLockOrSuspended;
 
   HostStatus host_status = multidevice_setup_client_->GetHostStatus().first;
 
@@ -286,6 +291,20 @@ void FeatureStatusProviderImpl::RecordFeatureStatusOnLogin() {
   UMA_HISTOGRAM_ENUMERATION("PhoneHub.Adoption.LoginFeatureStatus",
                             GetStatus());
   is_login_status_metric_recorded_ = true;
+}
+
+void FeatureStatusProviderImpl::SuspendImminent(
+    power_manager::SuspendImminent::Reason reason) {
+  PA_LOG(INFO) << "Device is suspending";
+  is_suspended_ = true;
+  UpdateStatus();
+}
+
+void FeatureStatusProviderImpl::SuspendDone(
+    const base::TimeDelta& sleep_duration) {
+  PA_LOG(INFO) << "Device has stopped suspending";
+  is_suspended_ = false;
+  UpdateStatus();
 }
 
 }  // namespace phonehub

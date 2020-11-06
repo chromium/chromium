@@ -72,7 +72,7 @@ void ConnectionSchedulerImpl::OnFeatureStatusChanged() {
       FALLTHROUGH;
     case FeatureStatus::kUnavailableBluetoothOff:
       FALLTHROUGH;
-    case FeatureStatus::kUnavailableScreenLocked:
+    case FeatureStatus::kLockOrSuspended:
       DisconnectAndClearBackoffAttempts();
       return;
 

@@ -170,14 +170,13 @@ TEST_F(ConnectionSchedulerImplTest, BackoffRetryWithUpdatedFeatures) {
   EXPECT_EQ(1, GetBackoffFailureCount());
 }
 
-TEST_F(ConnectionSchedulerImplTest, ScheduleConnectionAfterUnlock) {
+TEST_F(ConnectionSchedulerImplTest, ScheduleConnectionSuspended) {
   fake_feature_status_provider_->SetStatus(
       FeatureStatus::kEnabledButDisconnected);
   CreateConnectionScheduler();
 
   // Simulate screen locked and expect no scheduled connections.
-  fake_feature_status_provider_->SetStatus(
-      FeatureStatus::kUnavailableScreenLocked);
+  fake_feature_status_provider_->SetStatus(FeatureStatus::kLockOrSuspended);
   // Expect no scheduled connections on screen lock.
   EXPECT_EQ(0, GetBackoffFailureCount());
   EXPECT_EQ(0u, fake_connection_manager_->num_attempt_connection_calls());

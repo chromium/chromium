@@ -9,6 +9,8 @@
 #include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/phonehub/fake_connection_manager.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "components/session_manager/core/session_manager.h"
@@ -104,9 +106,11 @@ class FeatureStatusProviderImplTest : public testing::Test {
     fake_device_sync_client_.NotifyReady();
 
     session_manager_ = std::make_unique<session_manager::SessionManager>();
+    fake_power_manager_client_ = std::make_unique<FakePowerManagerClient>();
     provider_ = std::make_unique<FeatureStatusProviderImpl>(
         &fake_device_sync_client_, &fake_multidevice_setup_client_,
-        &fake_connection_manager_, session_manager_.get());
+        &fake_connection_manager_, session_manager_.get(),
+        fake_power_manager_client_.get());
     provider_->AddObserver(&fake_observer_);
   }
 
@@ -193,6 +197,7 @@ class FeatureStatusProviderImplTest : public testing::Test {
 
   FakeObserver fake_observer_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
+  std::unique_ptr<FakePowerManagerClient> fake_power_manager_client_;
   std::unique_ptr<FeatureStatusProvider> provider_;
 };
 
@@ -378,9 +383,9 @@ TEST_F(FeatureStatusProviderImplTest, TransitionBetweenAllStatuses) {
   EXPECT_EQ(FeatureStatus::kEnabledButDisconnected, GetStatus());
   EXPECT_EQ(8u, GetNumObserverCalls());
 
-  // Simulate lock screen displayed.
+  // Simulate suspended state, which includes screen locked and power suspended.
   session_manager()->SetSessionState(session_manager::SessionState::LOCKED);
-  EXPECT_EQ(FeatureStatus::kUnavailableScreenLocked, GetStatus());
+  EXPECT_EQ(FeatureStatus::kLockOrSuspended, GetStatus());
   EXPECT_EQ(9u, GetNumObserverCalls());
 
   // Simulate user unlocks the device.
@@ -438,11 +443,30 @@ TEST_F(FeatureStatusProviderImplTest, LockScreenStatusUpdate) {
 
   // Simulate lock screen displayed.
   session_manager()->SetSessionState(session_manager::SessionState::LOCKED);
-  EXPECT_EQ(FeatureStatus::kUnavailableScreenLocked, GetStatus());
+  EXPECT_EQ(FeatureStatus::kLockOrSuspended, GetStatus());
   EXPECT_EQ(2u, GetNumObserverCalls());
 
   // Simulate user unlocks the device.
   session_manager()->SetSessionState(session_manager::SessionState::ACTIVE);
+  EXPECT_EQ(FeatureStatus::kEnabledButDisconnected, GetStatus());
+  EXPECT_EQ(3u, GetNumObserverCalls());
+}
+
+TEST_F(FeatureStatusProviderImplTest, HandlePowerSuspend) {
+  SetEligibleSyncedDevices();
+  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser);
+  EXPECT_EQ(FeatureStatus::kEnabledButDisconnected, GetStatus());
+  EXPECT_EQ(1u, GetNumObserverCalls());
+
+  // Simulate an imminent power suspend event.
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
+      power_manager::SuspendImminent_Reason_OTHER);
+
+  EXPECT_EQ(FeatureStatus::kLockOrSuspended, GetStatus());
+  EXPECT_EQ(2u, GetNumObserverCalls());
+
+  // Simulate a power suspend done event.
+  chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
   EXPECT_EQ(FeatureStatus::kEnabledButDisconnected, GetStatus());
   EXPECT_EQ(3u, GetNumObserverCalls());
 }

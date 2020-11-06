@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/phonehub/connection_manager.h"
 #include "chromeos/components/phonehub/feature_status_provider.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "components/session_manager/core/session_manager.h"
@@ -27,13 +28,15 @@ class FeatureStatusProviderImpl
       public multidevice_setup::MultiDeviceSetupClient::Observer,
       public device::BluetoothAdapter::Observer,
       public ConnectionManager::Observer,
-      public session_manager::SessionManagerObserver {
+      public session_manager::SessionManagerObserver,
+      public chromeos::PowerManagerClient::Observer {
  public:
   FeatureStatusProviderImpl(
       device_sync::DeviceSyncClient* device_sync_client,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       ConnectionManager* connection_manager,
-      session_manager::SessionManager* session_manager);
+      session_manager::SessionManager* session_manager,
+      PowerManagerClient* power_manager_client);
   ~FeatureStatusProviderImpl() override;
 
  private:
@@ -72,16 +75,22 @@ class FeatureStatusProviderImpl
   // SessionManagerObserver:
   void OnSessionStateChanged() override;
 
+  // chromeos::PowerManagerClient::Observer:
+  void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
+  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+
   void RecordFeatureStatusOnLogin();
 
   device_sync::DeviceSyncClient* device_sync_client_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   ConnectionManager* connection_manager_;
   session_manager::SessionManager* session_manager_;
+  PowerManagerClient* power_manager_client_;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   base::Optional<FeatureStatus> status_;
   bool is_login_status_metric_recorded_ = false;
+  bool is_suspended_ = false;
 
   base::WeakPtrFactory<FeatureStatusProviderImpl> weak_ptr_factory_{this};
 };

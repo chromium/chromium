@@ -145,8 +145,7 @@ TEST_F(PhoneHubUiControllerTest, PhoneConnected) {
 }
 
 TEST_F(PhoneHubUiControllerTest, UnavailableScreenLocked) {
-  GetFeatureStatusProvider()->SetStatus(
-      FeatureStatus::kUnavailableScreenLocked);
+  GetFeatureStatusProvider()->SetStatus(FeatureStatus::kLockOrSuspended);
   EXPECT_EQ(PhoneHubUiController::UiState::kHidden, controller_.ui_state());
   EXPECT_FALSE(controller_.CreateContentView(/*bubble_view=*/nullptr).get());
 }
