@@ -7,7 +7,6 @@ PASS new WebSocket(null) threw exception SyntaxError: Failed to construct 'WebSo
 PASS new WebSocket("ws://javascript:a") threw exception SyntaxError: Failed to construct 'WebSocket': The URL 'ws://javascript:a' is invalid..
 PASS new WebSocket("/applet") threw exception SyntaxError: Failed to construct 'WebSocket': The URL '/applet' is invalid..
 PASS new WebSocket("javascript:a") threw exception SyntaxError: Failed to construct 'WebSocket': The URL's scheme must be either 'ws' or 'wss'. 'javascript' is not allowed..
-PASS new WebSocket("ws://127.0.0.1:25/") threw exception SecurityError: Failed to construct 'WebSocket': The port 25 is not allowed..
 PASS (new WebSocket("ws://127.0.0.1:8880/a/../simple")).url is "ws://127.0.0.1:8880/simple"
 PASS (new WebSocket("ws://127.0.0.1:8880/simple?")).url is "ws://127.0.0.1:8880/simple?"
 PASS (new WebSocket("ws://127.0.0.1:8880/simple?k=v")).url is "ws://127.0.0.1:8880/simple?k=v"

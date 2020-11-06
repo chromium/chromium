@@ -1,0 +1,10 @@
+CONSOLE ERROR: line 19: WebSocket connection to 'ws://127.0.0.1:25/' failed: Error in connection establishment: net::ERR_UNSAFE_PORT
+WebSocket: Test port blocking.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS closeEvent.wasClean is false
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/modules/websockets/websocket_channel.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -77,13 +76,6 @@ WebSocketCommon::ConnectResult WebSocketCommon::Connect(
         "The URL contains a fragment identifier ('" +
             url_.FragmentIdentifier() +
             "'). Fragment identifiers are not allowed in WebSocket URLs.");
-    return ConnectResult::kException;
-  }
-
-  if (!IsPortAllowedForScheme(url_)) {
-    state_ = kClosed;
-    exception_state.ThrowSecurityError(
-        "The port " + String::Number(url_.Port()) + " is not allowed.");
     return ConnectResult::kException;
   }
 

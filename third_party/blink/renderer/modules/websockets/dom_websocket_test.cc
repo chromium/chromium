@@ -146,19 +146,6 @@ TEST(DOMWebSocketTest, connectToURLHavingFragmentIdentifier) {
   EXPECT_EQ(DOMWebSocket::kClosed, websocket_scope.Socket().readyState());
 }
 
-TEST(DOMWebSocketTest, invalidPort) {
-  V8TestingScope scope;
-  DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
-  websocket_scope.Socket().Connect("ws://example.com:7", Vector<String>(),
-                                   scope.GetExceptionState());
-
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(DOMExceptionCode::kSecurityError,
-            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
-  EXPECT_EQ("The port 7 is not allowed.", scope.GetExceptionState().Message());
-  EXPECT_EQ(DOMWebSocket::kClosed, websocket_scope.Socket().readyState());
-}
-
 // FIXME: Add a test for Content Security Policy.
 
 TEST(DOMWebSocketTest, invalidSubprotocols) {

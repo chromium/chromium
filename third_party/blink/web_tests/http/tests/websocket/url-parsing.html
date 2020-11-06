@@ -24,9 +24,6 @@ shouldThrow('new WebSocket("/applet")');
 // Non ws URL is not allowed.
 shouldThrow('new WebSocket("javascript:a")');
 
-// UA is allowed to block access to some ports, which we do.
-shouldThrow('new WebSocket("ws://127.0.0.1:25/")');
-
 // Resolve the url string using the resolve a Web address algorithm.
 // Use 127.0.0.1:8880 and existing ws handler to make sure we don't receive unexpected response (so no console message appears)
 shouldBe('(new WebSocket("ws://127.0.0.1:8880/a/../simple")).url', '"ws://127.0.0.1:8880/simple"');
