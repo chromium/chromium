@@ -85,7 +85,8 @@ class BackForwardCacheMetrics
     // BackForwardCache is disabled due to command-line switch (may include
     // cases where the embedder disabled it due to, e.g., enterprise policy).
     kBackForwardCacheDisabledByCommandLine = 35,
-    kMaxValue = kBackForwardCacheDisabledByCommandLine,
+    kFrameTreeNodeStateReset = 36,
+    kMaxValue = kFrameTreeNodeStateReset,
   };
 
   using NotRestoredReasons =

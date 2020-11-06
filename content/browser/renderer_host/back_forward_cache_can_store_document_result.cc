@@ -131,6 +131,9 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "BackForwardCache is disabled through command line (may include "
              "cases where the embedder disabled it due to, e.g., enterprise "
              "policy)";
+    case Reason::kFrameTreeNodeStateReset:
+      return "document-associated state stored in FrameTreeNode was lost after "
+             "navigating away";
   }
 }
 
