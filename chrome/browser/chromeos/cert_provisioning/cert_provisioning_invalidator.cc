@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
@@ -18,6 +19,11 @@ namespace chromeos {
 namespace cert_provisioning {
 
 namespace {
+
+// Topics that start with this prefix are considered to be "public" FCM topics.
+// This allows us to migrate to "private" FCM topics (which would get a
+// different prefix) server-side without client-side changes.
+constexpr char kFcmCertProvisioningPublicTopicPrefix[] = "cert-";
 
 // Shall be expanded to cert.[scope].[topic]
 const char* kOwnerNameFormat = "cert.%s.%s";
@@ -148,8 +154,9 @@ std::string CertProvisioningInvalidationHandler::GetOwnerName() const {
 }
 
 bool CertProvisioningInvalidationHandler::IsPublicTopic(
-    const syncer::Topic& /*topic*/) const {
-  return false;
+    const syncer::Topic& topic) const {
+  return base::StartsWith(topic, kFcmCertProvisioningPublicTopicPrefix,
+                          base::CompareCase::SENSITIVE);
 }
 
 }  // namespace internal
