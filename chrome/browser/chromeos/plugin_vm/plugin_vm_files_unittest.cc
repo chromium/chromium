@@ -73,7 +73,7 @@ class PluginVmFilesTest : public testing::Test {
     return GetMyFilesFolderPath().Append("PvmDefault");
   }
 
-  storage::FileSystemURL GetMyFilesFileSystmeURL(const std::string& path) {
+  storage::FileSystemURL GetMyFilesFileSystemURL(const std::string& path) {
     return mount_points_->CreateExternalFileSystemURL(
         url::Origin(), mount_name_, base::FilePath(path));
   }
@@ -143,7 +143,7 @@ TEST_F(PluginVmFilesTest, LaunchPluginVmApp) {
             launch_plugin_vm_callback = std::move(callback);
           }));
   LaunchPluginVmApp(&profile_, app_id_,
-                    {GetMyFilesFileSystmeURL("PvmDefault/file")},
+                    {GetMyFilesFileSystemURL("PvmDefault/file")},
                     app_launched_callback.Get());
   ASSERT_FALSE(launch_plugin_vm_callback.is_null());
 
@@ -183,7 +183,7 @@ TEST_F(PluginVmFilesTest, LaunchAppFail) {
   // Not enabled.
   fake_plugin_vm_features_.set_enabled(false);
   LaunchPluginVmApp(&profile_, app_id_,
-                    {GetMyFilesFileSystmeURL("PvmDefault/file")},
+                    {GetMyFilesFileSystemURL("PvmDefault/file")},
                     base::BindOnce(capture_result, &actual_result));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(LaunchPluginVmAppResult::FAILED, actual_result);
@@ -191,7 +191,7 @@ TEST_F(PluginVmFilesTest, LaunchAppFail) {
 
   // Path in MyFiles, but not MyFiles/PvmDefault.
   LaunchPluginVmApp(&profile_, app_id_,
-                    {GetMyFilesFileSystmeURL("not/in/PvmDefault")},
+                    {GetMyFilesFileSystemURL("not/in/PvmDefault")},
                     base::BindOnce(capture_result, &actual_result));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(LaunchPluginVmAppResult::FAILED_DIRECTORY_NOT_SHARED,
