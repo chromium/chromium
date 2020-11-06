@@ -313,6 +313,98 @@ TEST_F(URLLoaderClientImplTest, DeferWithResponseBody) {
   EXPECT_EQ("hello", GetRequestPeerContextBody(&request_peer_context_));
 }
 
+TEST_F(URLLoaderClientImplTest, StoppedDeferringBeforeResponseBodyDrained) {
+  // Call OnReceiveResponse, OnStartLoadingResponseBody, OnComplete while
+  // deferred.
+  dispatcher_->SetDefersLoading(request_id_, true);
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(nullptr, &producer_handle, &consumer_handle));
+  url_loader_client_->OnStartLoadingResponseBody(std::move(consumer_handle));
+  network::URLLoaderCompletionStatus status;
+  url_loader_client_->OnComplete(status);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(request_peer_context_.received_response);
+  EXPECT_FALSE(request_peer_context_.complete);
+  EXPECT_EQ("", GetRequestPeerContextBody(&request_peer_context_));
+
+  // Write data to the response body pipe, but don't close the connection yet.
+  uint32_t size = 5;
+  ASSERT_EQ(MOJO_RESULT_OK, producer_handle->WriteData(
+                                "hello", &size, MOJO_WRITE_DATA_FLAG_NONE));
+  EXPECT_EQ(5u, size);
+
+  // Stop deferring. OnComplete message shouldn't be dispatched yet because
+  // we're still waiting for the response body pipe to be closed.
+  dispatcher_->SetDefersLoading(request_id_, false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(request_peer_context_.received_response);
+  EXPECT_FALSE(request_peer_context_.complete);
+  EXPECT_EQ("", GetRequestPeerContextBody(&request_peer_context_));
+
+  // Close the response body pipe.
+  producer_handle.reset();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(request_peer_context_.received_response);
+  EXPECT_TRUE(request_peer_context_.complete);
+  EXPECT_EQ("hello", GetRequestPeerContextBody(&request_peer_context_));
+}
+
+TEST_F(URLLoaderClientImplTest, DeferredWithLongResponseBody) {
+  // Call OnReceiveResponse, OnStartLoadingResponseBody, OnComplete while
+  // deferred.
+  dispatcher_->SetDefersLoading(request_id_, true);
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(nullptr, &producer_handle, &consumer_handle));
+  url_loader_client_->OnStartLoadingResponseBody(std::move(consumer_handle));
+  network::URLLoaderCompletionStatus status;
+  url_loader_client_->OnComplete(status);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(request_peer_context_.received_response);
+  EXPECT_FALSE(request_peer_context_.complete);
+  EXPECT_EQ("", GetRequestPeerContextBody(&request_peer_context_));
+
+  // Write to the response body pipe. It will take several writes.
+  uint32_t body_size = 70000;
+  uint32_t bytes_remaining = body_size;
+  std::string body(body_size, '*');
+  while (bytes_remaining > 0) {
+    uint32_t start_position = body_size - bytes_remaining;
+    uint32_t bytes_sent = bytes_remaining;
+    MojoResult result = producer_handle->WriteData(
+        body.c_str() + start_position, &bytes_sent, MOJO_WRITE_DATA_FLAG_NONE);
+    if (result == MOJO_RESULT_SHOULD_WAIT) {
+      base::RunLoop().RunUntilIdle();
+      continue;
+    }
+    EXPECT_GE(bytes_remaining, bytes_sent);
+    bytes_remaining -= bytes_sent;
+  }
+  producer_handle.reset();
+
+  // Stop deferring.
+  dispatcher_->SetDefersLoading(request_id_, false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(request_peer_context_.received_response);
+  // BodyBuffer hasn't finished writing to the new response body pipe.
+  EXPECT_FALSE(request_peer_context_.complete);
+
+  // Calling GetRequestPeerContextBody to read data from the new response body
+  // pipe will make BodyBuffer write the rest of the body to the pipe.
+  uint32_t read_size = 0;
+  while (read_size < body_size) {
+    read_size = GetRequestPeerContextBody(&request_peer_context_).size();
+    base::RunLoop().RunUntilIdle();
+  }
+  EXPECT_EQ(body_size, read_size);
+  EXPECT_TRUE(request_peer_context_.complete);
+}
+
 // As "transfer size update" message is handled specially in the implementation,
 // we have a separate test.
 TEST_F(URLLoaderClientImplTest, DeferWithTransferSizeUpdated) {

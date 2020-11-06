@@ -14,6 +14,7 @@
 #include "content/public/common/url_utils.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/renderer/loader/resource_dispatcher.h"
+#include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -143,6 +144,100 @@ class URLLoaderClientImpl::DeferredOnComplete final : public DeferredMessage {
   const network::URLLoaderCompletionStatus status_;
 };
 
+class URLLoaderClientImpl::BodyBuffer final
+    : public mojo::DataPipeDrainer::Client {
+ public:
+  BodyBuffer(URLLoaderClientImpl* owner,
+             mojo::ScopedDataPipeConsumerHandle readable,
+             mojo::ScopedDataPipeProducerHandle writable,
+             scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+      : owner_(owner),
+        writable_(std::move(writable)),
+        writable_watcher_(FROM_HERE,
+                          mojo::SimpleWatcher::ArmingPolicy::MANUAL,
+                          std::move(task_runner)) {
+    pipe_drainer_ =
+        std::make_unique<mojo::DataPipeDrainer>(this, std::move(readable));
+  }
+
+  bool active() const { return draining_ || writable_watcher_.IsWatching(); }
+
+  // mojo::DataPipeDrainer::Client
+  void OnDataAvailable(const void* data, size_t num_bytes) override {
+    DCHECK(draining_);
+    const auto span =
+        base::make_span(static_cast<const char*>(data), num_bytes);
+    buffered_body_.insert(buffered_body_.end(), span.begin(), span.end());
+    bytes_remaining_in_buffer_ += num_bytes;
+  }
+
+  void OnDataComplete() override {
+    DCHECK(draining_);
+    draining_ = false;
+    // We've finished draining from the original response body pipe, now wait
+    // until we can write the buffered body to the new pipe.
+    writable_watcher_.Watch(
+        writable_.get(),
+        MOJO_HANDLE_SIGNAL_WRITABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+        base::BindRepeating(&BodyBuffer::WriteBufferedBody,
+                            base::Unretained(this)));
+    writable_watcher_.ArmOrNotify();
+  }
+
+ private:
+  void WriteBufferedBody(MojoResult) {
+    DCHECK(!draining_);
+    while (bytes_remaining_in_buffer_ > 0) {
+      // Try to write all the remaining parts of |buffered_body_|.
+      size_t start_position =
+          buffered_body_.size() - bytes_remaining_in_buffer_;
+      uint32_t bytes_sent =
+          base::saturated_cast<uint32_t>(bytes_remaining_in_buffer_);
+      MojoResult result =
+          writable_->WriteData(buffered_body_.data() + start_position,
+                               &bytes_sent, MOJO_WRITE_DATA_FLAG_NONE);
+      switch (result) {
+        case MOJO_RESULT_OK:
+          break;
+        case MOJO_RESULT_FAILED_PRECONDITION:
+          // The pipe is closed unexpectedly, finish writing now.
+          Finish();
+          return;
+        case MOJO_RESULT_SHOULD_WAIT:
+          writable_watcher_.ArmOrNotify();
+          return;
+        default:
+          NOTREACHED();
+          return;
+      }
+      DCHECK_GE(bytes_remaining_in_buffer_, bytes_sent);
+      bytes_remaining_in_buffer_ -= bytes_sent;
+    }
+
+    Finish();
+  }
+
+  void Finish() {
+    DCHECK(!draining_);
+    // We've read and written all the data from the original pipe.
+    writable_watcher_.Cancel();
+    writable_.reset();
+    // There might be a deferred OnComplete message waiting for us to finish
+    // draining the response body, so flush the deferred messages in
+    // the owner URLLoaderClientImpl.
+    owner_->FlushDeferredMessages();
+  }
+
+  URLLoaderClientImpl* const owner_;
+  mojo::ScopedDataPipeProducerHandle writable_;
+  mojo::SimpleWatcher writable_watcher_;
+  std::unique_ptr<mojo::DataPipeDrainer> pipe_drainer_;
+
+  std::vector<char> buffered_body_;
+  size_t bytes_remaining_in_buffer_ = 0;
+  bool draining_ = true;
+};
+
 URLLoaderClientImpl::URLLoaderClientImpl(
     int request_id,
     ResourceDispatcher* resource_dispatcher,
@@ -223,6 +318,15 @@ void URLLoaderClientImpl::FlushDeferredMessages() {
   if (has_completion_message) {
     DCHECK_GT(messages.size(), 0u);
     DCHECK(messages.back()->IsCompletionMessage());
+    if (body_buffer_ && body_buffer_->active()) {
+      // If we still have an active body buffer, it means we haven't drained all
+      // of the contents of the response body yet. We shouldn't dispatch the
+      // completion message now, so
+      // put the message back into |deferred_messages_| to be sent later after
+      // the body buffer is no longer active.
+      deferred_messages_.emplace_back(std::move(messages.back()));
+      return;
+    }
     messages.back()->HandleMessage(resource_dispatcher_, request_id_);
   }
 }
@@ -322,8 +426,20 @@ void URLLoaderClientImpl::OnStartLoadingResponseBody(
   }
 
   if (NeedsStoringMessage()) {
-    StoreAndDispatch(
-        std::make_unique<DeferredOnStartLoadingResponseBody>(std::move(body)));
+    // When deferring OnStartLoadingResponseBody, we should drain the original
+    // pipe containing the response body into a new pipe so that we won't block
+    // the network service if we're deferred for a long time.
+    mojo::ScopedDataPipeProducerHandle new_body_producer;
+    mojo::ScopedDataPipeConsumerHandle new_body_consumer;
+    MojoResult result =
+        mojo::CreateDataPipe(nullptr, &new_body_producer, &new_body_consumer);
+    // If we fail to make a pipe, we'll treat it as an OOM error.
+    CHECK_EQ(result, MOJO_RESULT_OK);
+    body_buffer_ = std::make_unique<BodyBuffer>(
+        this, std::move(body), std::move(new_body_producer), task_runner_);
+
+    StoreAndDispatch(std::make_unique<DeferredOnStartLoadingResponseBody>(
+        std::move(new_body_consumer)));
   } else {
     resource_dispatcher_->OnStartLoadingResponseBody(request_id_,
                                                      std::move(body));

@@ -77,6 +77,7 @@ class CONTENT_EXPORT URLLoaderClientImpl final
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
  private:
+  class BodyBuffer;
   class DeferredMessage;
   class DeferredOnReceiveResponse;
   class DeferredOnReceiveRedirect;
@@ -90,6 +91,7 @@ class CONTENT_EXPORT URLLoaderClientImpl final
   void OnConnectionClosed();
 
   std::vector<std::unique_ptr<DeferredMessage>> deferred_messages_;
+  std::unique_ptr<BodyBuffer> body_buffer_;
   const int request_id_;
   bool has_received_response_head_ = false;
   bool has_received_response_body_ = false;
