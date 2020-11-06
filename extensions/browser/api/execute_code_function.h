@@ -88,10 +88,6 @@ class ExecuteCodeFunction : public ExtensionFunction {
   // failure and sets |error|.
   bool Execute(const std::string& code_string, std::string* error);
 
-  // Contains extension resource built from path of file which is
-  // specified in JSON arguments.
-  ExtensionResource resource_;
-
   // The URL of the file being injected into the page, in the
   // chrome-extension: scheme.
   GURL script_url_;

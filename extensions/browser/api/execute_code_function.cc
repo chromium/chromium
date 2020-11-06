@@ -14,6 +14,7 @@
 #include "extensions/browser/load_and_localize_file.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_resource.h"
 
 namespace {
 
@@ -165,8 +166,8 @@ ExtensionFunction::ResponseAction ExecuteCodeFunction::Run() {
 
 bool ExecuteCodeFunction::LoadFile(const std::string& file,
                                    std::string* error) {
-  resource_ = extension()->GetResource(file);
-  if (resource_.extension_root().empty() || resource_.relative_path().empty()) {
+  ExtensionResource resource = extension()->GetResource(file);
+  if (resource.extension_root().empty() || resource.relative_path().empty()) {
     *error = kNoCodeOrFileToExecuteError;
     return false;
   }
@@ -178,9 +179,9 @@ bool ExecuteCodeFunction::LoadFile(const std::string& file,
       (ShouldInsertCSS() || ShouldRemoveCSS()) && !extension()->id().empty();
 
   LoadAndLocalizeResource(
-      *extension(), resource_, might_require_localization,
+      *extension(), resource, might_require_localization,
       base::BindOnce(&ExecuteCodeFunction::DidLoadAndLocalizeFile, this,
-                     resource_.relative_path().AsUTF8Unsafe()));
+                     resource.relative_path().AsUTF8Unsafe()));
 
   return true;
 }
