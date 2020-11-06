@@ -231,14 +231,15 @@ void Navigator::DidNavigate(
   DCHECK(navigation_request);
   FrameTreeNode* frame_tree_node = render_frame_host->frame_tree_node();
   FrameTree* frame_tree = frame_tree_node->frame_tree();
-  RenderFrameHostImpl* old_frame_host =
-      frame_tree_node->render_manager()->current_frame_host();
+  base::WeakPtr<RenderFrameHostImpl> old_frame_host =
+      frame_tree_node->render_manager()->current_frame_host()->GetWeakPtr();
 
   bool is_same_document_navigation = controller_->IsURLSameDocumentNavigation(
       params.url, params.origin, was_within_same_document, render_frame_host);
   // If a frame claims the navigation was same-document, it must be the current
   // frame, not a pending one.
-  if (is_same_document_navigation && render_frame_host != old_frame_host) {
+  if (is_same_document_navigation &&
+      render_frame_host != old_frame_host.get()) {
     bad_message::ReceivedBadMessage(render_frame_host->GetProcess(),
                                     bad_message::NI_IN_PAGE_NAVIGATION);
     is_same_document_navigation = false;
@@ -265,13 +266,15 @@ void Navigator::DidNavigate(
     // cache), because on normal same-site navigations the unloading of the old
     // RenderFrameHost happens before commit. We're measuring how often this
     // case happens to determine the risk of this change.
-    DCHECK_NE(old_frame_host, render_frame_host);
+    DCHECK(old_frame_host.get());
+    DCHECK_NE(old_frame_host.get(), render_frame_host);
     DCHECK(frame_tree_node->IsMainFrame());
     DCHECK(!old_frame_host->GetSiteInstance()->IsRelatedSiteInstance(
         render_frame_host->GetSiteInstance()));
     DCHECK(is_cross_document_same_site_navigation);
     bool can_store_in_back_forward_cache =
-        controller_->GetBackForwardCache().CanStorePageNow(old_frame_host);
+        controller_->GetBackForwardCache().CanStorePageNow(
+            old_frame_host.get());
     UMA_HISTOGRAM_BOOLEAN(
         "BackForwardCache.ProactiveSameSiteBISwap.EligibilityDuringCommit",
         can_store_in_back_forward_cache);
@@ -327,8 +330,24 @@ void Navigator::DidNavigate(
   if (!is_same_document_navigation) {
     // Navigating to a new location means a new, fresh set of http headers
     // and/or <meta> elements - we need to reset CSP and Feature Policy.
-    render_frame_host->ResetContentSecurityPolicies();
-    frame_tree_node->ResetForNavigation();
+    // However, if the navigation is restoring the given |render_frame_host|
+    // from back-forward cache, it does not change the document in the given
+    // RenderFrameHost and the existing Content Security Policy should be kept.
+    if (!navigation_request->IsServedFromBackForwardCache())
+      render_frame_host->ResetContentSecurityPolicies();
+
+    auto reset_result = frame_tree_node->ResetForNavigation(
+        navigation_request->IsServedFromBackForwardCache());
+
+    // |old_frame_host| might get immediately deleted after the DidNavigateFrame
+    // call above, so use weak pointer here.
+    if (old_frame_host && old_frame_host->IsInBackForwardCache()) {
+      if (reset_result.changed_frame_policy) {
+        old_frame_host->EvictFromBackForwardCacheWithReason(
+            BackForwardCacheMetrics::NotRestoredReason::
+                kFrameTreeNodeStateReset);
+      }
+    }
   }
 
   // Update the site of the SiteInstance if it doesn't have one yet, unless
