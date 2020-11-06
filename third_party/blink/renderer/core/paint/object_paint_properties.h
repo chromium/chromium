@@ -148,7 +148,8 @@ class CORE_EXPORT ObjectPaintProperties {
   // | +-[ ClipPathMask ]
   // |     Isolated group for painting the mask-based CSS clip-path. This node
   // |     will have SkBlendMode::kDstIn and shall paint last, i.e. after
-  // |     clipped contents.
+  // |     clipped contents. If there is no Mask node, then this node is a
+  // |     direct child of the Effect node.
   // +-[ VerticalScrollbarEffect / HorizontalScrollbarEffect ]
   //       Overlay Scrollbars on Aura and Android need effect node for fade
   //       animation.

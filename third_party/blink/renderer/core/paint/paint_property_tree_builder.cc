@@ -1218,6 +1218,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       }
       OnUpdate(effective_change_type);
 
+      auto mask_direct_compositing_reasons =
+          full_context_.direct_compositing_reasons &
+                  CompositingReason::kDirectReasonsForBackdropFilter
+              ? CompositingReason::kBackdropFilterMask
+              : CompositingReason::kNone;
+
       if (mask_clip) {
         EffectPaintPropertyNode::State mask_state;
         mask_state.local_transform_space = context_.current.transform;
@@ -1225,6 +1231,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
         mask_state.color_filter = CSSMaskPainter::MaskColorFilter(object_);
         mask_state.blend_mode = SkBlendMode::kDstIn;
         mask_state.compositor_element_id = mask_compositor_element_id;
+        mask_state.direct_compositing_reasons = mask_direct_compositing_reasons;
         OnUpdate(properties_->UpdateMask(*properties_->Effect(),
                                          std::move(mask_state)));
       } else {
@@ -1238,6 +1245,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
         clip_path_state.blend_mode = SkBlendMode::kDstIn;
         clip_path_state.compositor_element_id = GetCompositorElementId(
             CompositorElementIdNamespace::kEffectClipPath);
+        if (!mask_clip) {
+          clip_path_state.direct_compositing_reasons =
+              mask_direct_compositing_reasons;
+        }
         OnUpdate(properties_->UpdateClipPathMask(
             properties_->Mask() ? *properties_->Mask() : *properties_->Effect(),
             std::move(clip_path_state)));

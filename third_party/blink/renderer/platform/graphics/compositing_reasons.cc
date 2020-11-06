@@ -63,6 +63,8 @@ constexpr CompositingReasonStringMap kCompositingReasonsStringMap[] = {
      "Has a will-change compositing hint other than transform and opacity"},
     {CompositingReason::kBackdropFilter, "backdropFilter",
      "Has a backdrop filter"},
+    {CompositingReason::kBackdropFilterMask, "backdropFilterMask",
+     "Is a mask for backdrop filter"},
     {CompositingReason::kRootScroller, "rootScroller",
      "Is the document.rootScroller"},
     {CompositingReason::kAssumedOverlap, "assumedOverlap",

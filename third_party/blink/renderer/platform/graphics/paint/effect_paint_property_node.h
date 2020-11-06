@@ -231,13 +231,17 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
   FloatRect MapRect(const FloatRect& input_rect) const;
 
   bool HasDirectCompositingReasons() const {
-    return DirectCompositingReasons() != CompositingReason::kNone;
+    return state_.direct_compositing_reasons != CompositingReason::kNone;
+  }
+  bool RequiresCompositingForBackdropFilterMask() const {
+    return state_.direct_compositing_reasons &
+           CompositingReason::kBackdropFilterMask;
   }
 
   // TODO(crbug.com/900241): Use HaveActiveXXXAnimation() instead of this
   // function when we can track animations for each property type.
   bool RequiresCompositingForAnimation() const {
-    return DirectCompositingReasons() &
+    return state_.direct_compositing_reasons &
            CompositingReason::kComboActiveAnimation;
   }
   bool HasActiveOpacityAnimation() const {
@@ -270,7 +274,7 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
   }
 
   CompositingReasons DirectCompositingReasonsForDebugging() const {
-    return DirectCompositingReasons();
+    return state_.direct_compositing_reasons;
   }
 
   const CompositorElementId& GetCompositorElementId() const {
@@ -285,10 +289,6 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
       : EffectPaintPropertyNodeOrAlias(parent), state_(std::move(state)) {}
 
   using EffectPaintPropertyNodeOrAlias::SetParent;
-
-  CompositingReasons DirectCompositingReasons() const {
-    return state_.direct_compositing_reasons;
-  }
 
   State state_;
 };
