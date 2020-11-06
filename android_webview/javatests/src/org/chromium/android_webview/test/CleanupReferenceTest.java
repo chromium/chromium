@@ -16,9 +16,9 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.CleanupReference;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
