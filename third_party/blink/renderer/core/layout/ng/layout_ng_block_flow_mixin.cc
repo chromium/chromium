@@ -231,6 +231,14 @@ bool LayoutNGBlockFlowMixin<Base>::NodeAtPoint(
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
     HitTestAction action) {
+  // When |this| is NG block fragmented, the painter should traverse fragemnts
+  // instead of |LayoutObject|, because this function cannot handle block
+  // fragmented objects. We can come here only when |this| cannot traverse
+  // fragments, or the parent is legacy.
+  DCHECK(!Base::CanTraversePhysicalFragments() ||
+         !Base::Parent()->CanTraversePhysicalFragments());
+  DCHECK_LE(Base::PhysicalFragmentCount(), 1u);
+
   if (!Base::MayIntersect(result, hit_test_location, accumulated_offset))
     return false;
 
@@ -245,7 +253,9 @@ bool LayoutNGBlockFlowMixin<Base>::NodeAtPoint(
   }
 
   if (UNLIKELY(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())) {
-    if (const NGPhysicalBoxFragment* fragment = CurrentFragment()) {
+    if (Base::PhysicalFragmentCount()) {
+      const NGPhysicalBoxFragment* fragment = Base::GetPhysicalFragment(0);
+      DCHECK(fragment);
       if (fragment->HasItems() ||
           // Check descendants of this fragment because floats may be in the
           // |NGFragmentItems| of the descendants.
