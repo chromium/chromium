@@ -182,9 +182,6 @@ ClipboardHistoryItemView::ClipboardHistoryItemView(
     : clipboard_history_item_(clipboard_history_item), container_(container) {}
 
 void ClipboardHistoryItemView::Init() {
-  SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenuItem);
-
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   // Ensures that MainButton is below any other child views.
@@ -325,21 +322,6 @@ void ClipboardHistoryItemView::SetPseudoFocus(PseudoFocus new_pseudo_focus) {
   pseudo_focus_ = new_pseudo_focus;
   contents_view_->delete_button()->SetVisible(ShouldShowDeleteButton());
   main_button_->SchedulePaint();
-  switch (pseudo_focus_) {
-    case PseudoFocus::kEmpty:
-      break;
-    case PseudoFocus::kMainButton:
-      NotifyAccessibilityEvent(ax::mojom::Event::kSelection,
-                               /*send_native_event=*/true);
-      break;
-    case PseudoFocus::kDeleteButton:
-      contents_view_->delete_button()->NotifyAccessibilityEvent(
-          ax::mojom::Event::kHover, /*send_native_event*/ true);
-      break;
-    case PseudoFocus::kMaxValue:
-      NOTREACHED();
-      break;
-  }
 }
 
 }  // namespace ash
