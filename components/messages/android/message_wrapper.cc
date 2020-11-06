@@ -50,6 +50,12 @@ void MessageWrapper::SetPrimaryButtonText(
                                            jprimary_button_text);
 }
 
+void MessageWrapper::SetIconResourceId(int resource_id) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_MessageWrapper_setIconResourceId(env, java_message_wrapper_,
+                                        resource_id);
+}
+
 void MessageWrapper::HandleActionClick(JNIEnv* env) {
   if (!action_callback_.is_null())
     std::move(action_callback_).Run();

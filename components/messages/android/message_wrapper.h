@@ -33,6 +33,9 @@ class MessageWrapper {
   void SetTitle(const base::string16& title);
   void SetDescription(const base::string16& description);
   void SetPrimaryButtonText(const base::string16& primary_button_text);
+  // When setting a message icon use ResourceMapper::MapToJavaDrawableId to
+  // translate from chromium resource_id to Android drawable resource_id.
+  void SetIconResourceId(int resource_id);
 
   // Following methods forward calls from java to provided callbacks.
   void HandleActionClick(JNIEnv* env);

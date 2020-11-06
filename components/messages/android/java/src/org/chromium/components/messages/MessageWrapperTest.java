@@ -48,16 +48,23 @@ public class MessageWrapperTest {
     @SmallTest
     public void testMessageProperties() {
         MessageWrapper message = MessageWrapper.create(1);
-        message.setTitle("Title");
-        message.setDescription("Description");
-        message.setPrimaryButtonText("Primary button");
         PropertyModel messageProperties = message.getMessageProperties();
-        Assert.assertEquals("Title doesn't match initial value", "Title",
+
+        message.setTitle("Title");
+        Assert.assertEquals("Title doesn't match provided value", "Title",
                 messageProperties.get(MessageBannerProperties.TITLE));
-        Assert.assertEquals("Description doesn't match initial value", "Description",
+
+        message.setDescription("Description");
+        Assert.assertEquals("Description doesn't match provided value", "Description",
                 messageProperties.get(MessageBannerProperties.DESCRIPTION));
-        Assert.assertEquals("Button text doesn't match initial value", "Primary button",
+
+        message.setPrimaryButtonText("Primary button");
+        Assert.assertEquals("Button text doesn't match provided value", "Primary button",
                 messageProperties.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
+
+        message.setIconResourceId(1);
+        Assert.assertEquals("Icon resource id doesn't match provided value", 1,
+                messageProperties.get(MessageBannerProperties.ICON_RESOURCE_ID));
     }
 
     /**

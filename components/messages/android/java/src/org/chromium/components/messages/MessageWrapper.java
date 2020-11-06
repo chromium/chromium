@@ -6,6 +6,8 @@ package org.chromium.components.messages;
 
 import android.view.View;
 
+import androidx.annotation.DrawableRes;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -56,6 +58,11 @@ public final class MessageWrapper {
     @CalledByNative
     void setPrimaryButtonText(String primaryButtonText) {
         mMessageProperties.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT, primaryButtonText);
+    }
+
+    @CalledByNative
+    void setIconResourceId(@DrawableRes int resourceId) {
+        mMessageProperties.set(MessageBannerProperties.ICON_RESOURCE_ID, resourceId);
     }
 
     @CalledByNative
