@@ -2139,8 +2139,8 @@ if (enable_java_templates) {
   #     (optional).
   #   product_config_java_packages: Optional list of java packages. If given, a
   #     ProductConfig.java file will be generated for each package.
-  #   enable_proguard_checks: Turns on -checkdiscard directives and missing
-  #     symbols check in the proguard step (default=true).
+  #   disable_checkdiscard: Turn off -checkdiscard directives in the proguard
+  #     step.
   #   disable_r8_outlining: Turn off outlining during the proguard step.
   #   annotation_processor_deps: List of java_annotation_processor targets to
   #     use when compiling the sources given to this target (optional).
@@ -2387,6 +2387,7 @@ if (enable_java_templates) {
 
     if (_is_static_library_provider) {
       _shared_resources_allowlist_target = _resource_ids_provider_dep
+      disable_checkdiscard = true
     } else if (defined(invoker.shared_resources_allowlist_target)) {
       _shared_resources_allowlist_target =
           invoker.shared_resources_allowlist_target
@@ -2901,8 +2902,8 @@ if (enable_java_templates) {
       if (defined(invoker.negative_main_dex_globs)) {
         not_needed(invoker, [ "negative_main_dex_globs" ])
       }
-      if (defined(invoker.enable_proguard_checks)) {
-        not_needed(invoker, [ "enable_proguard_checks" ])
+      if (defined(invoker.disable_checkdiscard)) {
+        not_needed(invoker, [ "disable_checkdiscard" ])
       }
       if (defined(invoker.disable_r8_outlining)) {
         not_needed(invoker, [ "disable_r8_outlining" ])
@@ -2921,9 +2922,9 @@ if (enable_java_templates) {
       dex(_final_dex_target_name) {
         forward_variables_from(invoker,
                                [
+                                 "disable_checkdiscard",
                                  "disable_r8_outlining",
                                  "dexlayout_profile",
-                                 "enable_proguard_checks",
                                ])
         min_sdk_version = _min_sdk_version
         proguard_enabled = _proguard_enabled
@@ -3476,13 +3477,13 @@ if (enable_java_templates) {
                                "data_deps",
                                "deps",
                                "dexlayout_profile",
+                               "disable_checkdiscard",
                                "disable_r8_outlining",
                                "dist_ijar_path",
                                "enable_lint",
                                "enable_jetify",
                                "enable_multidex",
                                "enable_native_mocks",
-                               "enable_proguard_checks",
                                "enforce_resource_overlays_in_tests",
                                "expected_android_manifest",
                                "expected_android_manifest_base",
@@ -3830,7 +3831,7 @@ if (enable_java_templates) {
         if (defined(invoker.proguard_configs)) {
           proguard_configs += invoker.proguard_configs
         }
-        enable_proguard_checks = false
+        disable_checkdiscard = true
         if (defined(invoker.final_apk_path)) {
           _final_apk_path = final_apk_path
         } else {
