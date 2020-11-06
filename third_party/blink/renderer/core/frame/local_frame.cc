@@ -2050,6 +2050,8 @@ void LocalFrame::SetIsAdSubframe(blink::mojom::AdFrameType ad_frame_type) {
   ad_frame_type_ = ad_frame_type;
   UpdateAdHighlight();
   frame_scheduler_->SetIsAdFrame();
+
+  UseCounter::Count(DomWindow(), WebFeature::kAdFrameDetected);
   InstanceCounters::IncrementCounter(InstanceCounters::kAdSubframeCounter);
 }
 

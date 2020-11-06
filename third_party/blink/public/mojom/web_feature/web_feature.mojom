@@ -3053,6 +3053,7 @@ enum WebFeature {
   kXRFrameGetLightEstimate = 3724,
   kV8HTMLDialogElement_Show_Method = 3725,
   kV8HTMLDialogElement_ShowModal_Method = 3726,
+  kAdFrameDetected = 3727,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
