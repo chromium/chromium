@@ -19,9 +19,6 @@ class TestChromeBrowserStateManager : public ios::ChromeBrowserStateManager {
   explicit TestChromeBrowserStateManager(const base::FilePath& user_data_dir);
   explicit TestChromeBrowserStateManager(
       std::unique_ptr<ChromeBrowserState> browser_state);
-  TestChromeBrowserStateManager(
-      std::unique_ptr<ChromeBrowserState> browser_state,
-      const base::FilePath& user_data_dir);
   ~TestChromeBrowserStateManager() override;
 
   // ChromeBrowserStateManager:
@@ -31,6 +28,10 @@ class TestChromeBrowserStateManager : public ios::ChromeBrowserStateManager {
   std::vector<ChromeBrowserState*> GetLoadedBrowserStates() override;
 
  private:
+  TestChromeBrowserStateManager(
+      std::unique_ptr<ChromeBrowserState> browser_state,
+      const base::FilePath& user_data_dir);
+
   IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
   BrowserStateInfoCache browser_state_info_cache_;

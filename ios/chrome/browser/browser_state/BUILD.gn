@@ -6,6 +6,9 @@ import("//ios/build/chrome_build.gni")
 
 source_set("browser_state") {
   sources = [
+    "browser_state_info_cache.cc",
+    "browser_state_info_cache.h",
+    "browser_state_info_cache_observer.h",
     "browser_state_otr_helper.cc",
     "browser_state_otr_helper.h",
     "chrome_browser_state.h",
@@ -29,6 +32,7 @@ source_set("browser_state") {
     "//components/variations/net",
     "//components/webdata_services",
     "//ios/chrome/browser:chrome_url_constants",
+    "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser/net:net_types",
     "//ios/components/webui:url_constants",
     "//ios/web/public/webui",
@@ -41,9 +45,6 @@ source_set("browser_state_impl") {
   sources = [
     "bookmark_model_loaded_observer.cc",
     "bookmark_model_loaded_observer.h",
-    "browser_state_info_cache.cc",
-    "browser_state_info_cache.h",
-    "browser_state_info_cache_observer.h",
     "browser_state_keyed_service_factories.h",
     "browser_state_keyed_service_factories.mm",
     "chrome_browser_state_impl.cc",
