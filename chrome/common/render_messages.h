@@ -5,8 +5,6 @@
 #ifndef CHROME_COMMON_RENDER_MESSAGES_H_
 #define CHROME_COMMON_RENDER_MESSAGES_H_
 
-#include <string>
-
 #include "chrome/common/web_application_info_provider_param_traits.h"
 #include "ipc/ipc_message_macros.h"
 #include "url/gurl.h"
@@ -20,14 +18,6 @@
 #endif  // INTERNAL_CHROME_COMMON_RENDER_MESSAGES_H_
 
 #define IPC_MESSAGE_START ChromeMsgStart
-
-//-----------------------------------------------------------------------------
-// RenderView messages
-// These are messages sent from the browser to the renderer process.
-
-// Tells the render frame to load all blocked plugins with the given identifier.
-IPC_MESSAGE_ROUTED1(ChromeViewMsg_LoadBlockedPlugins,
-                    std::string /* identifier */)
 
 //-----------------------------------------------------------------------------
 // Misc messages

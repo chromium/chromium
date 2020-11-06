@@ -29,6 +29,15 @@ using content::RenderThread;
 
 namespace plugins {
 
+void LoadablePluginPlaceholder::MaybeLoadBlockedPlugin(
+    const std::string& identifier) {
+  if (!identifier.empty() && identifier != identifier_)
+    return;
+
+  RenderThread::Get()->RecordAction(UserMetricsAction("Plugin_Load_UI"));
+  LoadPlugin();
+}
+
 LoadablePluginPlaceholder::LoadablePluginPlaceholder(
     RenderFrame* render_frame,
     const blink::WebPluginParams& params,
@@ -96,15 +105,6 @@ void LoadablePluginPlaceholder::UpdateMessage() {
 
 bool LoadablePluginPlaceholder::IsErrorPlaceholder() {
   return !allow_loading_;
-}
-
-void LoadablePluginPlaceholder::OnLoadBlockedPlugins(
-    const std::string& identifier) {
-  if (!identifier.empty() && identifier != identifier_)
-    return;
-
-  RenderThread::Get()->RecordAction(UserMetricsAction("Plugin_Load_UI"));
-  LoadPlugin();
 }
 
 void LoadablePluginPlaceholder::OnSetIsPrerendering(bool is_prerendering) {

@@ -26,13 +26,15 @@ class LoadablePluginPlaceholder : public PluginPlaceholderBase {
 
   void AllowLoading() { allow_loading_ = true; }
 
+  // Load the blocked plugin if the identifier matches (or is empty).
+  void MaybeLoadBlockedPlugin(const std::string& identifier);
+
  protected:
   LoadablePluginPlaceholder(content::RenderFrame* render_frame,
                             const blink::WebPluginParams& params,
                             const std::string& html_data);
   ~LoadablePluginPlaceholder() override;
 
-  void OnLoadBlockedPlugins(const std::string& identifier);
   void OnSetIsPrerendering(bool is_prerendering);
 
   void SetMessage(const base::string16& message);

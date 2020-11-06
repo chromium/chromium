@@ -5,6 +5,7 @@
 #include "chrome/renderer/plugins/chrome_plugin_placeholder.h"
 
 #include <memory>
+#include <set>
 #include <utility>
 
 #include "base/command_line.h"
@@ -54,6 +55,36 @@ using content::RenderView;
 
 namespace {
 const ChromePluginPlaceholder* g_last_active_menu = nullptr;
+
+const char kPlaceholderSetKey[] = "kPlaceholderSetKey";
+
+class PlaceholderSet : public base::SupportsUserData::Data {
+ public:
+  ~PlaceholderSet() override = default;
+
+  static PlaceholderSet* Get(content::RenderFrame* render_frame) {
+    DCHECK(render_frame);
+    return static_cast<PlaceholderSet*>(
+        render_frame->GetUserData(kPlaceholderSetKey));
+  }
+
+  static PlaceholderSet* GetOrCreate(content::RenderFrame* render_frame) {
+    PlaceholderSet* set = Get(render_frame);
+    if (!set) {
+      set = new PlaceholderSet();
+      render_frame->SetUserData(kPlaceholderSetKey, base::WrapUnique(set));
+    }
+    return set;
+  }
+
+  std::set<ChromePluginPlaceholder*>& placeholders() { return placeholders_; }
+
+ private:
+  PlaceholderSet() = default;
+
+  std::set<ChromePluginPlaceholder*> placeholders_;
+};
+
 }  // namespace
 
 gin::WrapperInfo ChromePluginPlaceholder::kWrapperInfo = {
@@ -70,18 +101,26 @@ ChromePluginPlaceholder::ChromePluginPlaceholder(
       context_menu_request_id_(0) {
   RenderThread::Get()->AddObserver(this);
   prerender::PrerenderObserverList::AddObserverForFrame(render_frame, this);
+
+  // Keep track of all placeholders associated with |render_frame|.
+  PlaceholderSet::GetOrCreate(render_frame)->placeholders().insert(this);
 }
 
 ChromePluginPlaceholder::~ChromePluginPlaceholder() {
   RenderThread::Get()->RemoveObserver(this);
 
+  // The render frame may already be gone.
   if (render_frame()) {
+    PlaceholderSet* set = PlaceholderSet::Get(render_frame());
+    if (set)
+      set->placeholders().erase(this);
+
     prerender::PrerenderObserverList::RemoveObserverForFrame(render_frame(),
                                                              this);
-  }
 
-  if (context_menu_request_id_ && render_frame())
-    render_frame()->CancelContextMenu(context_menu_request_id_);
+    if (context_menu_request_id_)
+      render_frame()->CancelContextMenu(context_menu_request_id_);
+  }
 }
 
 mojo::PendingRemote<chrome::mojom::PluginRenderer>
@@ -148,18 +187,19 @@ ChromePluginPlaceholder* ChromePluginPlaceholder::CreateBlockedPlugin(
   return blocked_plugin;
 }
 
-void ChromePluginPlaceholder::SetStatus(chrome::mojom::PluginStatus status) {
-  status_ = status;
+// static
+void ChromePluginPlaceholder::ForEach(
+    content::RenderFrame* render_frame,
+    const base::RepeatingCallback<void(ChromePluginPlaceholder*)>& callback) {
+  PlaceholderSet* set = PlaceholderSet::Get(render_frame);
+  if (set) {
+    for (auto* placeholder : set->placeholders())
+      callback.Run(placeholder);
+  }
 }
 
-bool ChromePluginPlaceholder::OnMessageReceived(const IPC::Message& message) {
-  // We don't swallow these messages because multiple blocked plugins and other
-  // objects have an interest in them.
-  IPC_BEGIN_MESSAGE_MAP(ChromePluginPlaceholder, message)
-    IPC_MESSAGE_HANDLER(ChromeViewMsg_LoadBlockedPlugins, OnLoadBlockedPlugins)
-  IPC_END_MESSAGE_MAP()
-
-  return false;
+void ChromePluginPlaceholder::SetStatus(chrome::mojom::PluginStatus status) {
+  status_ = status;
 }
 
 void ChromePluginPlaceholder::ShowPermissionBubbleCallback() {

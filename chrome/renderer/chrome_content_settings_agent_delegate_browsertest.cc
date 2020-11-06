@@ -40,7 +40,7 @@ TEST_F(ChromeContentSettingsAgentDelegateBrowserTest,
   EXPECT_FALSE(delegate->IsPluginTemporarilyAllowed(foo_plugin));
 
   // Temporarily allow the "foo" plugin.
-  delegate->OnLoadBlockedPlugins(foo_plugin);
+  delegate->AllowPluginTemporarily(foo_plugin);
   EXPECT_TRUE(delegate->IsPluginTemporarilyAllowed(foo_plugin));
   EXPECT_FALSE(delegate->IsPluginTemporarilyAllowed(bar_plugin));
 
@@ -55,7 +55,7 @@ TEST_F(ChromeContentSettingsAgentDelegateBrowserTest,
   EXPECT_FALSE(delegate->IsPluginTemporarilyAllowed(bar_plugin));
 
   // Temporarily allow all plugins.
-  delegate->OnLoadBlockedPlugins(std::string());
+  delegate->AllowPluginTemporarily(std::string());
   EXPECT_TRUE(delegate->IsPluginTemporarilyAllowed(foo_plugin));
   EXPECT_TRUE(delegate->IsPluginTemporarilyAllowed(bar_plugin));
 }

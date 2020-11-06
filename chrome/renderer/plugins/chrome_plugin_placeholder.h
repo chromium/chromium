@@ -43,6 +43,11 @@ class ChromePluginPlaceholder final
       content::RenderFrame* render_frame,
       const blink::WebPluginParams& params);
 
+  // Runs |callback| over each plugin placeholder for the given RenderFrame.
+  static void ForEach(
+      content::RenderFrame* render_frame,
+      const base::RepeatingCallback<void(ChromePluginPlaceholder*)>& callback);
+
   void SetStatus(chrome::mojom::PluginStatus status);
 
   mojo::PendingRemote<chrome::mojom::PluginRenderer> BindPluginRenderer();
@@ -62,9 +67,6 @@ class ChromePluginPlaceholder final
   // gin::Wrappable (via PluginPlaceholder) method
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final;
-
-  // content::RenderViewObserver (via PluginPlaceholder) override:
-  bool OnMessageReceived(const IPC::Message& message) override;
 
   // WebViewPlugin::Delegate (via PluginPlaceholder) methods:
   v8::Local<v8::Value> GetV8Handle(v8::Isolate* isolate) override;

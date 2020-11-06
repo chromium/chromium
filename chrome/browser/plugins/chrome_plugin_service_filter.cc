@@ -14,7 +14,7 @@
 #include "chrome/browser/plugins/plugin_metadata.h"
 #include "chrome/browser/plugins/plugin_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/render_messages.h"
+#include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
@@ -24,6 +24,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 using content::BrowserThread;
 using content::PluginService;
@@ -60,11 +61,6 @@ class ProfileContentSettingObserver : public content_settings::Observer {
  private:
   Profile* profile_;
 };
-
-void AuthorizeRenderer(content::RenderFrameHost* render_frame_host) {
-  ChromePluginServiceFilter::GetInstance()->AuthorizePlugin(
-      render_frame_host->GetProcess()->GetID(), base::FilePath());
-}
 
 }  // namespace
 
@@ -152,10 +148,24 @@ void ChromePluginServiceFilter::AuthorizeAllPlugins(
     bool load_blocked,
     const std::string& identifier) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  web_contents->ForEachFrame(base::BindRepeating(&AuthorizeRenderer));
+
+  web_contents->ForEachFrame(
+      base::BindRepeating([](content::RenderFrameHost* render_frame_host) {
+        ChromePluginServiceFilter::GetInstance()->AuthorizePlugin(
+            render_frame_host->GetProcess()->GetID(), base::FilePath());
+      }));
+
   if (load_blocked) {
-    web_contents->SendToAllFrames(new ChromeViewMsg_LoadBlockedPlugins(
-        MSG_ROUTING_NONE, identifier));
+    web_contents->ForEachFrame(base::BindRepeating(
+        [](const std::string& identifier,
+           content::RenderFrameHost* render_frame_host) {
+          mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
+              chrome_render_frame;
+          render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
+              &chrome_render_frame);
+          chrome_render_frame->LoadBlockedPlugins(identifier);
+        },
+        identifier));
   }
 }
 
