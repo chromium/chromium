@@ -34,6 +34,8 @@ constexpr char kHatsSurveyTriggerTesting[] = "testing";
 constexpr char kHatsSurveyTriggerSatisfaction[] = "satisfaction";
 constexpr char kHatsSurveyTriggerSettings[] = "settings";
 constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
+constexpr char kHatsSurveyTriggerDevToolsIssuesCookiesSameSite[] =
+    "devtools-issues-cookies-samesite";
 
 constexpr char kHatsNextSurveyTriggerIDTesting[] =
     "zishSVViB0kPN8UwQ150VGjBKuBP";
@@ -45,6 +47,7 @@ namespace {
 
 const base::Feature* survey_features[] = {
     &features::kHappinessTrackingSurveysForDesktop,
+    &features::kHappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSite,
     &features::kHappinessTrackingSurveysForDesktopSettings,
     &features::kHappinessTrackingSurveysForDesktopSettingsPrivacy};
 

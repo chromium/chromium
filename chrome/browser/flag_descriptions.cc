@@ -3283,6 +3283,15 @@ const char kHappinessTrackingSurveysForDesktopDemoName[] =
 const char kHappinessTrackingSurveysForDesktopDemoDescription[] =
     "Enable showing Happiness Tracking Surveys Demo to users on Desktop";
 
+const char
+    kHappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSiteName[] =
+        "Happiness Tracking Surveys for same-site cookies issues in Chrome "
+        "DevTools on Desktop.";
+const char
+    kHappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSiteDescription
+        [] = "Enable showing Happiness Tracking Surveys for same-site cookies "
+             "issues in Chrome DevTools on Desktop.";
+
 const char kHappinessTrackingSurveysForDesktopSettingsName[] =
     "Happiness Tracking Surveys for Settings";
 const char kHappinessTrackingSurveysForDesktopSettingsDescription[] =

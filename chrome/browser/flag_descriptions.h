@@ -1895,6 +1895,12 @@ extern const char kHappinessTrackingSurveysForDesktopDescription[];
 extern const char kHappinessTrackingSurveysForDesktopDemoName[];
 extern const char kHappinessTrackingSurveysForDesktopDemoDescription[];
 
+extern const char
+    kHappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSiteName[];
+extern const char
+    kHappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSiteDescription
+        [];
+
 extern const char kHappinessTrackingSurveysForDesktopSettingsName[];
 extern const char kHappinessTrackingSurveysForDesktopSettingsDescription[];
 

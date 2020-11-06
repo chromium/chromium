@@ -4831,6 +4831,16 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kHappinessTrackingSurveysForDesktop)},
 
+    {"happiness-tracking-surveys-for-desktop-devtools-issues-cookies-same-site",
+     flag_descriptions::
+         kHappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSiteName,
+     flag_descriptions::
+         kHappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSiteDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         features::
+             kHappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSite)},
+
     {"happiness-tracking-surveys-for-desktop-demo",
      flag_descriptions::kHappinessTrackingSurveysForDesktopDemoName,
      flag_descriptions::kHappinessTrackingSurveysForDesktopDemoDescription,

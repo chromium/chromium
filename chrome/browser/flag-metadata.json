@@ -2812,6 +2812,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "happiness-tracking-surveys-for-desktop-devtools-issues-cookies-same-site",
+    "owners": [ "//third_party/devtools-frontend/src/COMMON_OWNERS" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "happiness-tracking-surveys-for-desktop-migration",
     "owners": [ "msramek", "chrome-friendly-settings@google.com" ],
     "expiry_milestone": 90

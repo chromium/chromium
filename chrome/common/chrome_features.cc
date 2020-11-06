@@ -429,6 +429,13 @@ const base::Feature kHappinessTrackingSurveysForDesktopDemo{
     "HappinessTrackingSurveysForDesktopDemo",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables the Happiness Tracking System for same-site cookies
+// issues in Chrome DevTools on Desktop.
+const base::Feature
+    kHappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSite{
+        "HappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSite",
+        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the migration of Happiness Tracking Surveys on Desktop (to the latest
 // version).
 const base::Feature kHappinessTrackingSurveysForDesktopMigration{
