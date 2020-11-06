@@ -1,6 +1,7 @@
 <link rel="import" href="../../../html/polymer.html">
 
 <link rel="import" href="../../../html/i18n_behavior.html">
+<link rel="import" href="../../../cr_elements/cr_input/cr_input.html">
 <link rel="import" href="base_page.html">
 <link rel="import" href="cellular_setup_delegate.html">
 
@@ -54,8 +55,10 @@
         font-weight: 500;
       }
 
-      #startScanningImage {
+      .button-image {
+        height: 20px;
         margin-inline-end: 8px;
+        width: 20px;
       }
 
       #useCameraAgainButton {
@@ -66,38 +69,66 @@
       }
 
       #scanSuccessImage {
+        height: 20px;
         position: absolute;
+        width: 20px;
        }
 
        #scanSuccessMessage {
         padding-inline-end: 0;
         padding-inline-start: 30px;
       }
+
+      #switchCameraButton {
+        background-color: rgba(0, 0, 0, 0.04);
+        border-radius: 4px;
+        color: var(--google-grey-refresh-300);
+        margin: 8px;
+        padding: 8px;
+        position: absolute;
+        right: 0;
+        z-index: 2;
+      }
+
+      #switchCameraButton img {
+        filter: brightness(2.1);
+      }
     </style>
     <base-page>
       <div slot="page-body">
-        [[i18n('scanQRCode')]]
-        <!-- TODO(crbug.com/1093185): Add flip camera button -->
+        <span id="scanQrCodeDescription">
+          [[i18n('scanQRCode')]]
+        </span>
         <div id="esimQrCodeDetection">
+          <cr-button id="switchCameraButton"
+              on-click="onSwitchCameraButtonPressed_"
+              hidden$="[[isUiElementHidden_(UiElement.SWITCH_CAMERA, state_, hasMultipleCameras_)]]"
+              disabled="[[isUiElementDisabled_(UiElement.SWITCH_CAMERA, state_)]]">
+            <img class="button-image"
+                src="activation_code_page_switch_camera.svg"
+                aria-hidden="true">
+            [[i18n('switchCamera')]]
+          </cr-button>
+          <video id="video"
+              hidden$="[[isUiElementHidden_(UiElement.VIDEO, state_)]]">
+          </video>
           <div class="center" id="startScanningContainer"
-              hidden$="[[!isInitialState_]]">
+              hidden$="[[isUiElementHidden_(UiElement.START_SCANNING, state_)]]">
             <cr-button class="label"
                 id="startScanningButton"
-                on-click="startScanning_">
-              <img class="label-image"
-                  id="startScanningImage"
+                on-click="startScanning_"
+                aria-describedby="scanQrCodeDescription">
+              <img class="button-image"
                   src="activation_code_page_camera.svg"
-                  width="20" height="20"
                   aria-hidden="true">
               [[i18n('useCamera')]]
             </cr-button>
           </div>
           <div class="center" id="scanSuccessContainer"
-              hidden$="[[!activationCode_]]">
+              hidden$="[[isUiElementHidden_(UiElement.SCAN_SUCCESS, state_)]]">
             <div>
               <img id="scanSuccessImage"
                   src="activation_code_page_checked.svg"
-                  width="20" height="20"
                   aria-hidden="true">
               <span class="label" id="scanSuccessMessage">
                 [[i18n('scanQRCodeSuccess')]]
@@ -108,7 +139,6 @@
               [[i18n('qrCodeRetry')]]
             </cr-button>
           </div>
-          <video id="video" hidden$="[[!qrCodeScanInProgress_]]"></video>
         </div>
         <cr-input id="activationCode"
             label="[[i18n('activationCode')]]"

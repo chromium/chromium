@@ -15,6 +15,7 @@
 
 suite('CrComponentsEsimFlowUiTest', function() {
   let eSimPage;
+
   setup(function() {
     eSimPage = document.createElement('esim-flow-ui');
     eSimPage.delegate = new cellular_setup.FakeCellularSetupDelegate();
@@ -49,7 +50,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
         cellularSetup.ButtonState.SHOWN_BUT_DISABLED);
 
     const activationCodePage = eSimPage.$$('#activationCodePage');
-    activationCodePage.activationCode_ = 'ACTIVATION CODE';
+    activationCodePage.$$('#activationCode').value = 'ACTIVATION_CODE';
     Polymer.dom.flush();
 
     assertTrue(

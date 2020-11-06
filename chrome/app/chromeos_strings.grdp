@@ -318,6 +318,9 @@
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_USE_CAMERA" desc="Label for button that uses the camera to scan for QR codes when clicked.">
     Use camera to scan QR code
   </message>
+  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SWITCH_CAMERA" desc="Label for button that toggles the camera between user-facing and environment-facing.">
+    Flip camera
+  </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_SUCCESS" desc="Label informing the user that an an activation code was scanned successfully.">
     Activation code detected
   </message>

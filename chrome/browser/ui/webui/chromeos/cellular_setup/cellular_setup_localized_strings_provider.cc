@@ -49,6 +49,7 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
     {"finalPageErrorTitle", IDS_CELLULAR_SETUP_FINAL_PAGE_ERROR_TITLE},
     {"finalPageErrorMessage", IDS_CELLULAR_SETUP_FINAL_PAGE_ERROR_MESSAGE},
     {"scanQRCode", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE},
+    {"switchCamera", IDS_CELLULAR_SETUP_ESIM_PAGE_SWITCH_CAMERA},
     {"useCamera", IDS_CELLULAR_SETUP_ESIM_PAGE_USE_CAMERA},
     {"scanQRCodeSuccess", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_SUCCESS},
     {"qrCodeRetry", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_RETRY}};

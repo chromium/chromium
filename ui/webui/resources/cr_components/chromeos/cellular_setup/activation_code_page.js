@@ -8,6 +8,24 @@
  */
 const QR_CODE_DETECTION_INTERVAL_MS = 1000;
 
+/** @enum {number} */
+const PageState = {
+  INITIAL: 1,
+  SCANNING_USER_FACING: 2,
+  SCANNING_ENVIRONMENT_FACING: 3,
+  SWITCHING_CAM_USER_TO_ENVIRONMENT: 4,
+  SWITCHING_CAM_ENVIRONMENT_TO_USER: 5,
+  SUCCESS: 6,
+};
+
+/** @enum {number} */
+const UiElement = {
+  START_SCANNING: 1,
+  VIDEO: 2,
+  SCAN_SUCCESS: 3,
+  SWITCH_CAMERA: 4,
+};
+
 /**
  * Page in eSIM Setup flow that accepts activation code. User has option for
  * manual entry or scan a QR code.
@@ -25,18 +43,40 @@ Polymer({
       observer: 'onActivationCodeChanged_',
     },
 
-    /** @private */
-    qrCodeScanInProgress_: {
-      type: Boolean,
-      value: false,
+    /**
+     * @type {!PageState}
+     * @private
+     */
+    state_: {
+      type: Object,
+      value: PageState,
     },
 
     /** @private */
-    isInitialState_: {
+    hasMultipleCameras_: {
       type: Boolean,
-      value: true,
+      value: false,
+      observer: 'onHasMultipleCamerasChanged_',
+    },
+
+    /**
+     * Enum used as an ID for specific UI elements.
+     * A UiElement is passed between html and JS for
+     * certain UI elements to determine their state.
+     *
+     * @type {!UiElement}
+     */
+    UiElement: {
+      type: Object,
+      value: UiElement,
     },
   },
+
+  /**
+   * @type {MediaDevices}
+   * @private
+   */
+  mediaDevices_: null,
 
   /**
    * @type {?MediaStream}
@@ -50,7 +90,13 @@ Polymer({
    */
   qrCodeDetectorTimer_: null,
 
-  /** override */
+  /** @override */
+  ready() {
+    this.setMediaDevices(navigator.mediaDevices);
+    this.state_ = PageState.INITIAL;
+  },
+
+  /** @override */
   detached() {
     if (this.stream_) {
       this.stream_.getTracks()[0].stop();
@@ -58,23 +104,72 @@ Polymer({
     if (this.qrCodeDetectorTimer_) {
       clearTimeout(this.qrCodeDetectorTimer_);
     }
+    this.mediaDevices_.removeEventListener(
+        'devicechange', this.updateHasMultipleCameras_.bind(this));
+  },
+
+  /**
+   * @param {MediaDevices} mediaDevices
+   */
+  setMediaDevices(mediaDevices) {
+    this.mediaDevices_ = mediaDevices;
+    this.mediaDevices_.addEventListener(
+        'devicechange', this.updateHasMultipleCameras_.bind(this));
+  },
+
+  /** @private */
+  updateHasMultipleCameras_() {
+    this.mediaDevices_.enumerateDevices().then(devices => {
+      const numVideoInputDevices =
+          devices.filter(device => device.kind === 'videoinput').length;
+      this.hasMultipleCameras_ = numVideoInputDevices > 1;
+    });
+  },
+
+  /** @private */
+  onHasMultipleCamerasChanged_() {
+    // If the user was using an environment-facing camera and it was removed,
+    // restart scanning with the user-facing camera.
+    if ((this.state_ === PageState.SCANNING_ENVIRONMENT_FACING) &&
+        !this.hasMultipleCameras_) {
+      this.state_ = PageState.SWITCHING_CAM_ENVIRONMENT_TO_USER;
+      this.startScanning_();
+    }
   },
 
   /** private */
   startScanning_() {
-    // TODO(crbug.com/1093185): Add logic for changing stream if user flips
-    // camera. Add error handling for camera not working.
-    navigator.mediaDevices
-        .getUserMedia({video: {height: 130, width: 482}, audio: false})
+    const oldStream = this.stream_;
+    if (this.qrCodeDetectorTimer_) {
+      clearTimeout(this.qrCodeDetectorTimer_);
+    }
+
+    const useUserFacingCamera =
+        this.state_ !== PageState.SWITCHING_CAM_USER_TO_ENVIRONMENT;
+    this.mediaDevices_
+        .getUserMedia({
+          video: {
+            height: 130,
+            width: 482,
+            facingMode: useUserFacingCamera ? 'user' : 'environment'
+          },
+          audio: false
+        })
         .then(stream => {
           this.stream_ = stream;
-          const video = this.$.video;
-          video.srcObject = stream;
-          video.play();
+          if (stream) {
+            const video = this.$.video;
+            video.srcObject = stream;
+            video.play();
+          }
+          if (oldStream) {
+            oldStream.getTracks()[0].stop();
+          }
 
           this.activationCode_ = '';
-          this.qrCodeScanInProgress_ = true;
-          this.isInitialState_ = false;
+          this.state_ = useUserFacingCamera ?
+              PageState.SCANNING_USER_FACING :
+              PageState.SCANNING_ENVIRONMENT_FACING;
 
           this.detectQrCode_(stream);
         });
@@ -97,7 +192,6 @@ Polymer({
             if (activationCode) {
               clearTimeout(this.qrCodeDetectorTimer_);
               this.activationCode_ = activationCode;
-              this.qrCodeScanInProgress_ = false;
             }
           }).bind(this),
           QR_CODE_DETECTION_INTERVAL_MS);
@@ -137,6 +231,7 @@ Polymer({
       if (this.stream_) {
         this.stream_.getTracks()[0].stop();
       }
+      this.state_ = PageState.SUCCESS;
     }
   },
 
@@ -154,5 +249,52 @@ Polymer({
       return activationCode;
     }
     return null;
+  },
+
+  /** @private */
+  onSwitchCameraButtonPressed_() {
+    if (this.state_ === PageState.SCANNING_USER_FACING) {
+      this.state_ = PageState.SWITCHING_CAM_USER_TO_ENVIRONMENT;
+    } else if (this.state_ === PageState.SCANNING_ENVIRONMENT_FACING) {
+      this.state_ = PageState.SWITCHING_CAM_ENVIRONMENT_TO_USER;
+    }
+    this.startScanning_();
+  },
+
+  /**
+   * @param {UiElement} uiElement
+   * @param {PageState} state
+   * @param {boolean} hasMultipleCameras
+   * @private
+   */
+  isUiElementHidden_(uiElement, state, hasMultipleCameras) {
+    switch (uiElement) {
+      case UiElement.START_SCANNING:
+        return state !== PageState.INITIAL;
+      case UiElement.VIDEO:
+        return state !== PageState.SCANNING_USER_FACING &&
+            state !== PageState.SCANNING_ENVIRONMENT_FACING;
+      case UiElement.SCAN_SUCCESS:
+        return state !== PageState.SUCCESS;
+      case UiElement.SWITCH_CAMERA:
+        const isScanning = state === PageState.SCANNING_USER_FACING ||
+            state === PageState.SCANNING_ENVIRONMENT_FACING;
+        return !(isScanning && hasMultipleCameras);
+    }
+  },
+
+  /**
+   * @param {UiElement} uiElement
+   * @param {PageState} state
+   * @private
+   */
+  isUiElementDisabled_(uiElement, state) {
+    switch (uiElement) {
+      case UiElement.SWITCH_CAMERA:
+        return state === PageState.SWITCHING_CAM_USER_TO_ENVIRONMENT ||
+            state === PageState.SWITCHING_CAM_ENVIRONMENT_TO_USER;
+      default:
+        return false;
+    }
   },
 });

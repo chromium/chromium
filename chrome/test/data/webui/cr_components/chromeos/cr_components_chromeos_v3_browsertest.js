@@ -32,7 +32,8 @@ GEN('#include "chromeos/constants/chromeos_features.h"');
  ['NetworkSiminfo', 'network/network_siminfo_test.m.js'],
 ].forEach(test => registerTest('NetworkComponents', ...test));
 
-[['BasePage', 'cellular_setup/base_page_test.m.js'],
+[['ActivationCodePage', 'cellular_setup/activation_code_page_test.m.js'],
+ ['BasePage', 'cellular_setup/base_page_test.m.js'],
  ['ButtonBar', 'cellular_setup/button_bar_test.m.js'],
  ['CellularSetup', 'cellular_setup/cellular_setup_test.m.js'],
  ['EsimFlowUi', 'cellular_setup/esim_flow_ui_test.m.js'],
