@@ -203,6 +203,19 @@ TEST_F(WidgetTest, NativeWindowProperty) {
   EXPECT_EQ(nullptr, widget->GetNativeWindowProperty(key));
 }
 
+TEST_F(WidgetTest, GetParent) {
+  // Create a hierarchy of native widgets.
+  WidgetAutoclosePtr toplevel(CreateTopLevelPlatformWidget());
+  Widget* child = CreateChildPlatformWidget(toplevel->GetNativeView());
+  Widget* grandchild = CreateChildPlatformWidget(child->GetNativeView());
+
+  EXPECT_EQ(nullptr, toplevel->parent());
+  EXPECT_EQ(child, grandchild->parent());
+  EXPECT_EQ(toplevel.get(), child->parent());
+
+  // children should be automatically destroyed with |toplevel|.
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Widget::GetTopLevelWidget tests.
 

@@ -2530,8 +2530,10 @@ class ToplevelWidgetObserverView : public View {
   DISALLOW_COPY_AND_ASSIGN(ToplevelWidgetObserverView);
 };
 
-// Test that a view can track the current top level widget by overriding
-// View::ViewHierarchyChanged() and View::NativeViewHierarchyChanged().
+// Test that
+// a) a view can track the current top level widget by overriding
+//    View::ViewHierarchyChanged() and View::NativeViewHierarchyChanged().
+// b) a widget has the correct parent after reparenting.
 TEST_F(ViewTest, NativeViewHierarchyChanged) {
   std::unique_ptr<Widget> toplevel1(new Widget);
   Widget::InitParams toplevel1_params =
@@ -2549,6 +2551,7 @@ TEST_F(ViewTest, NativeViewHierarchyChanged) {
   Widget::InitParams child_params(Widget::InitParams::TYPE_CONTROL);
   child_params.parent = toplevel1->GetNativeView();
   child->Init(std::move(child_params));
+  EXPECT_EQ(toplevel1.get(), child->parent());
 
   auto owning_observer_view = std::make_unique<ToplevelWidgetObserverView>();
   EXPECT_EQ(nullptr, owning_observer_view->toplevel());
@@ -2560,6 +2563,7 @@ TEST_F(ViewTest, NativeViewHierarchyChanged) {
   Widget::ReparentNativeView(child->GetNativeView(),
                              toplevel2->GetNativeView());
   EXPECT_EQ(toplevel2.get(), observer_view->toplevel());
+  EXPECT_EQ(toplevel2.get(), child->parent());
 
   owning_observer_view =
       observer_view->parent()->RemoveChildViewT(observer_view);

@@ -166,6 +166,7 @@ TEST_F(BubbleDialogDelegateViewTest, CreateDelegate) {
 
   BubbleBorder* border = bubble_delegate->GetBubbleFrameView()->bubble_border_;
   EXPECT_EQ(bubble_delegate->color(), border->background_color());
+  EXPECT_EQ(anchor_widget.get(), bubble_widget->parent());
 
   EXPECT_FALSE(bubble_observer.widget_closed());
   bubble_widget->CloseNow();
@@ -269,6 +270,7 @@ TEST_F(BubbleDialogDelegateViewTest, ResetAnchorWidget) {
   EXPECT_EQ(bubble_delegate, bubble_widget->widget_delegate());
   EXPECT_EQ(bubble_widget, bubble_delegate->GetWidget());
   EXPECT_EQ(anchor_widget.get(), bubble_delegate->anchor_widget());
+  EXPECT_EQ(parent_widget.get(), bubble_widget->parent());
   test::TestWidgetObserver bubble_observer(bubble_widget);
   EXPECT_FALSE(bubble_observer.widget_closed());
 

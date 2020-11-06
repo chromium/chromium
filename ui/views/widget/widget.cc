@@ -245,6 +245,12 @@ void Widget::GetAllOwnedWidgets(gfx::NativeView native_view, Widgets* owned) {
 void Widget::ReparentNativeView(gfx::NativeView native_view,
                                 gfx::NativeView new_parent) {
   internal::NativeWidgetPrivate::ReparentNativeView(native_view, new_parent);
+
+  Widget* child_widget = GetWidgetForNativeView(native_view);
+  Widget* parent_widget =
+      new_parent ? GetWidgetForNativeView(new_parent) : nullptr;
+  if (child_widget)
+    child_widget->parent_ = parent_widget;
 }
 
 // static
@@ -281,6 +287,8 @@ void Widget::Init(InitParams params) {
   if (params.name.empty() && params.delegate &&
       params.delegate->GetContentsView())
     params.name = params.delegate->GetContentsView()->GetClassName();
+
+  parent_ = params.parent ? GetWidgetForNativeView(params.parent) : nullptr;
 
   params.child |= (params.type == InitParams::TYPE_CONTROL);
   is_top_level_ = !params.child;
