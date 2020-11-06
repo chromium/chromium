@@ -1,5 +1,5 @@
 {
-  "x-version": 51,
+  "x-version": 52,
   "adobe-flash-player": {
     "mime_types": [
       "application/futuresplash",
@@ -17,7 +17,8 @@
     "url": "https://support.google.com/chrome/answer/6258784",
     "help_url": "https://support.google.com/chrome/?p=plugin_flash",
     "displayurl": true,
-    "group_name_matcher": "*Shockwave Flash*"
+    "group_name_matcher": "*Shockwave Flash*",
+    "plugin_is_deprecated": true
   },
   "google-chrome-pdf": {
     "mime_types": [
