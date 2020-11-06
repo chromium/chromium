@@ -16,8 +16,6 @@
 #include "ui/base/class_property.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -400,8 +398,7 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public BubbleDialogDelegate,
       View* anchor_view,
       BubbleBorder::Arrow arrow,
       BubbleBorder::Shadow shadow = BubbleBorder::DIALOG_SHADOW);
-  BubbleDialogDelegateView(const BubbleDialogDelegateView&) = delete;
-  BubbleDialogDelegateView& operator=(const BubbleDialogDelegateView&) = delete;
+
   ~BubbleDialogDelegateView() override;
 
   // BubbleDialogDelegate:
@@ -433,13 +430,10 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public BubbleDialogDelegate,
 
   // Update the bubble color from the NativeTheme unless it was explicitly set.
   void UpdateColorsFromTheme();
+
+  DISALLOW_COPY_AND_ASSIGN(BubbleDialogDelegateView);
 };
 
-BEGIN_VIEW_BUILDER(VIEWS_EXPORT, BubbleDialogDelegateView, View)
-END_VIEW_BUILDER
-
 }  // namespace views
-
-DEFINE_VIEW_BUILDER(VIEWS_EXPORT, BubbleDialogDelegateView)
 
 #endif  // UI_VIEWS_BUBBLE_BUBBLE_DIALOG_DELEGATE_VIEW_H_

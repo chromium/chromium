@@ -18,8 +18,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/view_factory.h"
 #include "ui/views/mouse_watcher.h"
 
 namespace views {
@@ -37,8 +35,6 @@ namespace ash {
 class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
                                   public views::MouseWatcherListener {
  public:
-  METADATA_HEADER(TrayBubbleView);
-
   class ASH_EXPORT Delegate {
    public:
     Delegate() {}
@@ -105,8 +101,6 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   };
 
   explicit TrayBubbleView(const InitParams& init_params);
-  TrayBubbleView(const TrayBubbleView&) = delete;
-  TrayBubbleView& operator=(const TrayBubbleView&) = delete;
   ~TrayBubbleView() override;
 
   // Sets up animations, and show the bubble. Must occur after CreateBubble()
@@ -178,6 +172,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  const char* GetClassName() const override;
   void OnThemeChanged() override;
 
   // views::MouseWatcherListener:
@@ -241,13 +236,10 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
 
   base::Optional<StatusAreaWidget::ScopedTrayBubbleCounter>
       tray_bubble_counter_;
+
+  DISALLOW_COPY_AND_ASSIGN(TrayBubbleView);
 };
 
-BEGIN_VIEW_BUILDER(ASH_EXPORT, TrayBubbleView, views::BubbleDialogDelegateView)
-END_VIEW_BUILDER
-
 }  // namespace ash
-
-DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::TrayBubbleView)
 
 #endif  // ASH_SYSTEM_TRAY_TRAY_BUBBLE_VIEW_H_

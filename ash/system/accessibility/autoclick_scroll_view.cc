@@ -12,7 +12,6 @@
 #include "ash/system/accessibility/autoclick_menu_bubble_controller.h"
 #include "ash/system/accessibility/floating_menu_button.h"
 #include "ash/system/unified/custom_shape_button.h"
-#include "base/bind.h"
 #include "base/macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/timer/timer.h"
@@ -22,8 +21,6 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/masked_targeter_delegate.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -47,30 +44,25 @@ SkColor HoveredButtonColor() {
 }  // namespace
 
 // The close button for the automatic clicks scroll bubble.
-class AutoclickScrollCloseButton : public FloatingMenuButton {
+class AutoclickScrollCloseButton : public FloatingMenuButton,
+                                   public views::ButtonListener {
  public:
-  METADATA_HEADER(AutoclickScrollCloseButton);
-
   AutoclickScrollCloseButton()
-      : FloatingMenuButton(
-            base::BindRepeating(&AutoclickScrollCloseButton::OnButtonPressed,
-                                base::Unretained(this)),
-            kAutoclickCloseIcon,
-            IDS_ASH_AUTOCLICK_SCROLL_CLOSE,
-            /*flip_for_rtl=*/false,
-            kScrollButtonCloseSizeDips,
-            /*draw_highlight=*/false,
-            /*is_a11y_togglable=*/false) {
+      : FloatingMenuButton(this,
+                           kAutoclickCloseIcon,
+                           IDS_ASH_AUTOCLICK_SCROLL_CLOSE,
+                           /*flip_for_rtl=*/false,
+                           kScrollButtonCloseSizeDips,
+                           /*draw_highlight=*/false,
+                           /*is_a11y_togglable=*/false) {
     views::View::SetID(
         static_cast<int>(AutoclickScrollView::ButtonId::kCloseScroll));
   }
-  AutoclickScrollCloseButton(const AutoclickScrollCloseButton&) = delete;
-  AutoclickScrollCloseButton& operator=(const AutoclickScrollCloseButton&) =
-      delete;
 
   ~AutoclickScrollCloseButton() override = default;
 
-  void OnButtonPressed() {
+  // views::ButtonListener:
+  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
     Shell::Get()->autoclick_controller()->DoScrollAction(
         AutoclickController::ScrollPadAction::kScrollClose);
     base::RecordAction(base::UserMetricsAction(
@@ -102,28 +94,28 @@ class AutoclickScrollCloseButton : public FloatingMenuButton {
     views::ImageButton::PaintButtonContents(canvas);
   }
 
+  const char* GetClassName() const override {
+    return "AutoclickScrollCloseButton";
+  }
+
  private:
   bool hovered_ = false;
+  DISALLOW_COPY_AND_ASSIGN(AutoclickScrollCloseButton);
 };
-
-BEGIN_METADATA(AutoclickScrollCloseButton, FloatingMenuButton)
-END_METADATA
 
 // A single scroll button (up/down/left/right) for automatic clicks scroll
 // bubble. Subclasses a MaskedTargeterDelegate in order to only get events over
 // the button's custom shape, rather than over the whole rectangle which
 // encloses the button.
 class AutoclickScrollButton : public CustomShapeButton,
-                              public views::MaskedTargeterDelegate {
+                              public views::MaskedTargeterDelegate,
+                              public views::ButtonListener {
  public:
-  METADATA_HEADER(AutoclickScrollButton);
   AutoclickScrollButton(AutoclickController::ScrollPadAction action,
                         const gfx::VectorIcon& icon,
                         int accessible_name_id,
                         AutoclickScrollView::ButtonId id)
-      : CustomShapeButton(
-            base::BindRepeating(&AutoclickScrollButton::OnButtonPressed,
-                                base::Unretained(this))),
+      : CustomShapeButton(PressedCallback(this, this)),
         action_(action),
         icon_(icon) {
     views::View::SetID(static_cast<int>(id));
@@ -153,8 +145,6 @@ class AutoclickScrollButton : public CustomShapeButton,
 
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(), 0.f);
   }
-  AutoclickScrollButton(const AutoclickScrollButton&) = delete;
-  AutoclickScrollButton& operator=(const AutoclickScrollButton&) = delete;
 
   ~AutoclickScrollButton() override {
     Shell::Get()->autoclick_controller()->OnExitedScrollButton();
@@ -190,7 +180,10 @@ class AutoclickScrollButton : public CustomShapeButton,
     scroll_hover_timer_->Reset();
   }
 
-  void OnButtonPressed() { ProcessAction(action_); }
+  // views::ButtonListener:
+  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
+    ProcessAction(action_);
+  }
 
   // CustomShapeButton:
   SkPath CreateCustomShapePath(const gfx::Rect& bounds) const override {
@@ -322,16 +315,17 @@ class AutoclickScrollButton : public CustomShapeButton,
     SchedulePaint();
   }
 
+  const char* GetClassName() const override { return "AutoclickScrollButton"; }
+
  private:
   const AutoclickController::ScrollPadAction action_;
   gfx::Size size_;
   std::unique_ptr<base::RetainingOneShotTimer> scroll_hover_timer_;
   bool active_ = false;
   const gfx::VectorIcon& icon_;
-};
 
-BEGIN_METADATA(AutoclickScrollButton, CustomShapeButton)
-END_METADATA
+  DISALLOW_COPY_AND_ASSIGN(AutoclickScrollButton);
+};
 
 // ------ AutoclickScrollBubbleView  ------ //
 
