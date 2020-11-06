@@ -146,8 +146,9 @@ class MostVisitedSites : public history::TopSitesObserver,
 
   // Sets the observer, and immediately fetches the current suggestions.
   // Does not take ownership of |observer|, which must outlive this object and
-  // must not be null.
-  void SetMostVisitedURLsObserver(Observer* observer, size_t num_sites);
+  // must not be null. |max_num_sites| indicates the the maximum number of most
+  // visited sites to return.
+  void SetMostVisitedURLsObserver(Observer* observer, size_t max_num_sites);
 
   // Sets the client that provides platform-specific homepage preferences.
   // When used to replace an existing client, the new client will first be
@@ -240,6 +241,13 @@ class MostVisitedSites : public history::TopSitesObserver,
   static bool IsHostOrMobilePageKnown(
       const std::set<std::string>& hosts_to_skip,
       const std::string& host);
+
+  // Returns the maximum number of most visited sites to return. The return
+  // value is |max_num_sites_| which is ntp_tiles::kMaxNumMostVisited for
+  // Desktop, unless custom links are enabled in which case an additional tile
+  // may be returned making up to ntp_tiles::kMaxNumCustomLinks custom links
+  // including the "Add shortcut" button.
+  size_t GetMaxNumSites() const;
 
   // Initialize the query to Top Sites. Called if the SuggestionsService
   // returned no data.
@@ -346,6 +354,7 @@ class MostVisitedSites : public history::TopSitesObserver,
   Observer* observer_;
 
   // The maximum number of most visited sites to return.
+  // Do not use directly. Use GetMaxNumSites() instead.
   size_t max_num_sites_;
 
   // False if custom links is disabled and Most Visited sites should be returned

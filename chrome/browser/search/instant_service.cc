@@ -213,8 +213,9 @@ InstantService::InstantService(Profile* profile)
                               weak_ptr_factory_.GetWeakPtr()));
     }
 
-    // 9 tiles are required for the custom links feature in order to balance the
-    // Most Visited rows (this is due to an additional "Add" button).
+    // If custom links are enabled, an additional tile may be returned making up
+    // to ntp_tiles::kMaxNumCustomLinks custom links including the
+    // "Add shortcut" button.
     most_visited_sites_->SetMostVisitedURLsObserver(
         this, ntp_tiles::kMaxNumMostVisited);
     most_visited_sites_->EnableCustomLinks(IsCustomLinksEnabled());
