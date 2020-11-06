@@ -16,32 +16,6 @@ config("absl_component_build") {
   defines = [ "ABSL_CONSUME_DLL" ]
 }
 
-action("generate_def_file") {
-  script = "//third_party/abseil-cpp/generate_def_file.py"
-
-  outputs = [ "$target_gen_dir/absl.def" ]
-
-  if (is_win) {
-    if (current_cpu == "x86") {
-      win_tool_arch = "environment.x86"
-    } else if (current_cpu == "x64") {
-      win_tool_arch = "environment.x64"
-    } else if (current_cpu == "arm64") {
-      win_tool_arch = "environment.arm64"
-    } else {
-      assert(false, "Need environment for this arch")
-    }
-  } else {
-    win_tool_arch = ""
-  }
-
-  args = [
-    rebase_path(outputs[0], root_build_dir),
-    win_tool_arch,
-  ]
-  deps = [ ":absl_component_deps" ]
-}
-
 # TODO(mbonadei): WebRTC tests and binaries use absl flags but they are
 # marked testonly because we don't want them to be usable in Chromium.
 # Add an absl_flags component which depends on the main absl component.
@@ -49,9 +23,33 @@ component("absl") {
   public_deps = [ ":absl_component_deps" ]
   if (is_component_build) {
     public_configs = [ ":absl_component_build" ]
-    if (is_win) {
-      sources = get_target_outputs(":generate_def_file")
-      deps = [ ":generate_def_file" ]
+
+    if (is_win && is_clang) {
+      if (current_cpu == "x64") {
+        if (is_debug) {
+          sources = [ "symbols_x64_dbg.def" ]
+        } else {
+          if (is_asan) {
+            sources = [ "symbols_x64_rel_asan.def" ]
+          } else {
+            sources = [ "symbols_x64_rel.def" ]
+          }
+        }
+      }
+      if (current_cpu == "x86") {
+        if (is_debug) {
+          sources = [ "symbols_x86_dbg.def" ]
+        } else {
+          sources = [ "symbols_x86_rel.def" ]
+        }
+      }
+      if (current_cpu == "arm64") {
+        if (is_debug) {
+          sources = [ "symbols_arm64_dbg.def" ]
+        } else {
+          sources = [ "symbols_arm64_rel.def" ]
+        }
+      }
     }
   }
 }
@@ -99,6 +97,8 @@ group("absl_component_deps") {
       "//third_party/abseil-cpp/absl/debugging:failure_signal_handler",
     ]
   }
+
+  visibility = [ ":absl" ]
 }
 
 group("default") {
