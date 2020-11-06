@@ -3049,6 +3049,8 @@ enum WebFeature {
   kMouseEventRelativePositionForInlineElement = 3720,
   kV8SharedArrayBufferConstructedWithoutIsolation = 3721,
   kV8HTMLVideoElement_GetVideoPlaybackQuality_Method = 3722,
+  kXRWebGLBindingGetReflectionCubeMap = 3723,
+  kXRFrameGetLightEstimate = 3724,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -11,7 +11,7 @@
   [RaisesException] constructor(XRSession session, XRWebGLRenderingContext context);
 
   // Lighting Estimation API
-  [RuntimeEnabled=WebXRLightEstimation, RaisesException]
+  [RuntimeEnabled=WebXRLightEstimation, RaisesException, MeasureAs=XRWebGLBindingGetReflectionCubeMap]
   WebGLTexture? getReflectionCubeMap(XRLightProbe lightProbe);
 
   [RuntimeEnabled=WebXRCameraAccess] WebGLTexture? getCameraImage(XRFrame frame, XRView view);

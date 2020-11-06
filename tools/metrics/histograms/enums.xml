@@ -30170,6 +30170,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3720" label="MouseEventRelativePositionForInlineElement"/>
   <int value="3721" label="V8SharedArrayBufferConstructedWithoutIsolation"/>
   <int value="3722" label="V8HTMLVideoElement_GetVideoPlaybackQuality_Method"/>
+  <int value="3723" label="XRWebGLBindingGetReflectionCubeMap"/>
+  <int value="3724" label="XRFrameGetLightEstimate"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

@@ -27,7 +27,7 @@
   [RuntimeEnabled=WebXRHitTest, RaisesException]
   FrozenArray<XRTransientInputHitTestResult> getHitTestResultsForTransientInput(XRTransientInputHitTestSource hitTestSource);
 
-  [RuntimeEnabled=WebXRLightEstimation, RaisesException]
+  [RuntimeEnabled=WebXRLightEstimation, RaisesException, MeasureAs=XRFrameGetLightEstimate]
   XRLightEstimate? getLightEstimate(XRLightProbe lightProbe);
 
   [RuntimeEnabled=WebXRDepth, RaisesException, MeasureAs=XRFrameGetDepthInformation]
