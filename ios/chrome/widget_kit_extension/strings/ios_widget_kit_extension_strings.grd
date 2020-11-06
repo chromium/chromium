@@ -158,49 +158,50 @@ all other OS specific variables will be false.
   </translations>
   <release seq="1" allow_pseudo="false">
     <messages fallback_to_english="true">
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_GAME_DISPLAY_NAME" desc="Display name for the dino game widget">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_GAME_DISPLAY_NAME" desc="Display name for the dino game widget" meaning="String that appears as title in the installation window for the Dino widget. [CHAR_LIMIT=30][iOS only]">
         Chrome Dino Game
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_GAME_DESCRIPTION" desc="Description for the dino game widget">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_GAME_DESCRIPTION" desc="Description for the dino game widget" meaning="String that appears as description in the installation window for the Dino widget. [CHAR_LIMIT=150][iOS only]">
         Jump into the Chrome Dino game from your Home Screen.
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_GAME_TITLE" desc="Title for the dino game widget">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_GAME_TITLE" desc="Title for the dino game widget" meaning="String that appears in the Dino widget. [CHAR_LIMIT=15][iOS only]">
         Chrome Dino
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_GAME_A11Y_LABEL" desc="Accessibility label for the dino game widget">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_GAME_A11Y_LABEL" desc="Accessibility label for the dino game widget" meaning="Accessibility label for the dino game widget [CHAR_LIMIT=40][iOS only]">
         Jump into Chrome Dino Game
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DISPLAY_NAME" desc="Name for the quick actions widget">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DISPLAY_NAME" desc="Name for the quick actions widget" meaning="String that appears as title in the installation window for the Quick Actions widget. [CHAR_LIMIT=30][iOS only]">
         Quick Actions
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DESCRIPTION" desc="Description for the quick actions widget">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DESCRIPTION" desc="Description for the quick actions widget" meaning="String that appears as description in the installation window for the Quick Actions widget. [CHAR_LIMIT=150][iOS only]">
         Search or navigate in a new tab, in Incognito mode, using your voice, or with a QR code.
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_TITLE" desc="Title for the quick actions widget">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_TITLE" desc="Title for the quick actions widget" meaning="String that appears in the Quick Actions widget. [CHAR_LIMIT=30][iOS only]">
         Search or type URL
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_SEARCH_A11Y_LABEL" desc="Accessibility label for the search action in the quick actions widget">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_SEARCH_A11Y_LABEL" desc="Accessibility label for the search action in the quick actions widget" meaning="Accessibility label for the search action in the quick actions widget [CHAR_LIMIT=40][iOS only]">
         Search or type URL
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_INCOGNITO_A11Y_LABEL" desc="Accessibility label for the incognito search in the quick actions widget">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_INCOGNITO_A11Y_LABEL" desc="Accessibility label for the incognito search in the quick actions widget" meaning="Accessibility label for the incognito search action in the quick actions widget [CHAR_LIMIT=40][iOS only]">
         Incognito Search
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_QR_SCAN_A11Y_LABEL" desc="Accessibility label for the QR scan action in the quick actions widget">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_QR_SCAN_A11Y_LABEL" desc="Accessibility label for the QR scan action in the quick actions widget" meaning="Accessibility label for the QR search action in the quick actions widget [CHAR_LIMIT=40][iOS only]">
         Scan QR Code
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_VOICE_SEARCH_A11Y_LABEL" desc="Accessibility label for the Voice Search action in the quick actions widget">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_VOICE_SEARCH_A11Y_LABEL" desc="Accessibility label for the Voice Search action in the quick actions widget" meaning="Accessibility label for the voice search action in the quick actions widget [CHAR_LIMIT=40][iOS only]">
         Voice Search
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_DISPLAY_NAME" desc="Name for the search widget">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_DISPLAY_NAME" desc="Name for the search widget" meaning="String that appears as title in the installation window for the Search widget. [CHAR_LIMIT=30][iOS only]">
         Search
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_DESCRIPTION" desc="Description for the search widget">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_DESCRIPTION" desc="Description for the search widget" meaning="String that appears as description in the installation window for the Search widget. [CHAR_LIMIT=150][iOS only]">
         Search in Chrome with your favorite search engine.
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_TITLE" desc="Title for the search widget">
-        Search or \ntype URL
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_TITLE" desc="Title for the search widget" meaning="String that appears in the Search widget. Should be splited in two lines, each line with a max of 15 characteres. [CHAR_LIMIT=25][iOS only]">
+        Search or
+type URL
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_A11Y_LABEL" desc="Accessibility label for the search widget">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_A11Y_LABEL" desc="Accessibility label for the search widget" meaning="Accessibility label for the search widget [CHAR_LIMIT=40][iOS only]">
         Search or Type URL
       </message>
     </messages>
