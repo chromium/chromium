@@ -16,7 +16,7 @@
 
 namespace content {
 
-class DevToolsProtocolTest : public ContentBrowserTest,
+class DevToolsProtocolTest : virtual public ContentBrowserTest,
                              public DevToolsAgentHostClient,
                              public WebContentsDelegate {
  public:

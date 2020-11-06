@@ -80,6 +80,8 @@ class PLATFORM_EXPORT ResourceError final {
 
   bool IsCancellation() const;
 
+  bool IsTrustTokenCacheHit() const;
+
   // Returns true if the error was the outcome of a Trust Tokens operation and
   // the error does *not* represent an actionable failure:
   // - If the error was due to a Trust Tokens cache hit, the purpose of this

@@ -1379,6 +1379,18 @@ void InspectorNetworkAgent::DidFailLoading(
     const ResourceError& error,
     const base::UnguessableToken& devtools_frame_or_worker_token) {
   String request_id = IdentifiersFactory::RequestId(loader, identifier);
+
+  // A Trust Token redemption can be served from cache if a valid
+  // Signed-Redemption-Record is present. In this case the request is aborted
+  // with a special error code. Sementically, the request did succeed, so that
+  // is what we report to the frontend.
+  if (error.IsTrustTokenCacheHit()) {
+    GetFrontend()->requestServedFromCache(request_id);
+    GetFrontend()->loadingFinished(
+        request_id, base::TimeTicks::Now().since_origin().InSecondsF(), 0);
+    return;
+  }
+
   bool canceled = error.IsCancellation();
   base::Optional<ResourceRequestBlockedReason> resource_request_blocked_reason =
       error.GetResourceRequestBlockedReason();

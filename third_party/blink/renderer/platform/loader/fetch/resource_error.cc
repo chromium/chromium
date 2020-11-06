@@ -179,8 +179,12 @@ bool ResourceError::IsCancellation() const {
   return error_code_ == net::ERR_ABORTED;
 }
 
+bool ResourceError::IsTrustTokenCacheHit() const {
+  return error_code_ == net::ERR_TRUST_TOKEN_OPERATION_CACHE_HIT;
+}
+
 bool ResourceError::IsUnactionableTrustTokensStatus() const {
-  return error_code_ == net::ERR_TRUST_TOKEN_OPERATION_CACHE_HIT ||
+  return IsTrustTokenCacheHit() ||
          (error_code_ == net::ERR_TRUST_TOKEN_OPERATION_FAILED &&
           trust_token_operation_error_ ==
               network::mojom::TrustTokenOperationStatus::kUnavailable);
