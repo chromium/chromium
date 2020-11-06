@@ -18,12 +18,10 @@ import androidx.annotation.WorkerThread;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
-import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.gms.ChromiumPlayServicesAvailability;
@@ -176,11 +174,6 @@ public class ExternalAuthUtils {
      * @return true if and only if Google Play Services can be used
      */
     public boolean canUseGooglePlayServices(final UserRecoverableErrorHandler errorHandler) {
-        if (CommandLine.getInstance().hasSwitch(
-                    ChromeSwitches.DISABLE_GOOGLE_PLAY_SERVICES_FOR_TESTING)) {
-            return false;
-        }
-
         Context context = ContextUtils.getApplicationContext();
         final int resultCode = checkGooglePlayServicesAvailable(context);
         if (resultCode == ConnectionResult.SUCCESS) return true;
@@ -226,10 +219,6 @@ public class ExternalAuthUtils {
     @WorkerThread
     public boolean canUseFirstPartyGooglePlayServices(
             UserRecoverableErrorHandler userRecoverableErrorHandler) {
-        if (CommandLine.getInstance().hasSwitch(
-                    ChromeSwitches.DISABLE_FIRST_PARTY_GOOGLE_PLAY_SERVICES_FOR_TESTING)) {
-            return false;
-        }
         return canUseGooglePlayServices(userRecoverableErrorHandler) && isChromeGoogleSigned();
     }
 
