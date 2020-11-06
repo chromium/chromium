@@ -209,9 +209,13 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, LinkRelNextWithNSPDisabled) {
 
 // Non-web initiated prerender succeeds and subsequent navigations reuse
 // previously downloaded resources.
-IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, ExternalPrerender) {
-  // std::unique_ptr<PrerenderControllerImpl> controller =
-  //     PrerenderControllerImpl::Create(shell()->browser());
+// TODO(https://crbug.com/1144282): Fix failures on Asan.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_ExternalPrerender DISABLED_ExternalPrerender
+#else
+#define MAYBE_ExternalPrerender ExternalPrerender
+#endif
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, MAYBE_ExternalPrerender) {
   GetProfile()->GetPrerenderController()->Prerender(
       GURL(https_server_->GetURL("/prerendered_page.html")));
 
