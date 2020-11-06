@@ -1188,6 +1188,7 @@ if (!is_component_build) {
         "//base/android/proguard/chromium_apk.flags",
         "//testing/android/proguard_for_test.flags",
       ]
+      enable_proguard_checks = false
     }
   }
 

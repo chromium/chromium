@@ -1245,8 +1245,9 @@ if (enable_java_templates) {
       _args += [ "--disable-outlining" ]
     }
 
-    if (defined(invoker.disable_checkdiscard) && invoker.disable_checkdiscard) {
-      _args += [ "--disable-checkdiscard" ]
+    if (defined(invoker.enable_proguard_checks) &&
+        !invoker.enable_proguard_checks) {
+      _args += [ "--disable-checks" ]
     }
 
     if (defined(invoker.is_static_library) && invoker.is_static_library) {
@@ -1487,8 +1488,8 @@ if (enable_java_templates) {
                                  "data",
                                  "data_deps",
                                  "deps",
-                                 "disable_checkdiscard",
                                  "disable_r8_outlining",
+                                 "enable_proguard_checks",
                                  "expected_proguard_config",
                                  "expected_proguard_config_base",
                                  "is_static_library",
