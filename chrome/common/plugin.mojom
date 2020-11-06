@@ -28,6 +28,9 @@ interface PluginHost {
   BlockedComponentUpdatedPlugin(pending_remote<PluginRenderer> plugin_renderer,
                                 string group_id);
 
+  // Tells the browser to open a PDF file. Used when no PDF Viewer is
+  // available, and the user clicks to view a PDF from the placeholder UI.
+  OpenPDF(url.mojom.Url url);
 };
 
 // Plugin messages sent from renderer to the host requiring user auth actions.

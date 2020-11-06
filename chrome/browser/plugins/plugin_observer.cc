@@ -28,16 +28,23 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/download/public/common/download_url_parameters.h"
 #include "components/infobars/core/simple_alert_infobar_delegate.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/download_manager.h"
 #include "content/public/browser/plugin_service.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/webplugininfo.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -249,6 +256,72 @@ void PluginObserver::CouldNotLoadPlugin(const base::FilePath& plugin_path) {
       PluginService::GetInstance()->GetPluginDisplayNameByPath(plugin_path);
   CreatePluginObserverInfoBar(InfoBarService::FromWebContents(web_contents()),
                               plugin_name);
+}
+
+void PluginObserver::OpenPDF(const GURL& url) {
+  // WebViews should never trigger PDF downloads.
+  auto* guest_view = guest_view::GuestViewBase::FromWebContents(web_contents());
+  if (guest_view && guest_view->IsViewType(extensions::WebViewGuest::Type))
+    return;
+
+  content::RenderFrameHost* render_frame_host =
+      plugin_host_receivers_.GetCurrentTargetFrame();
+
+  if (!content::ChildProcessSecurityPolicy::GetInstance()->CanRequestURL(
+          render_frame_host->GetRoutingID(), url)) {
+    return;
+  }
+
+  content::Referrer referrer = content::Referrer::SanitizeForRequest(
+      url, content::Referrer(web_contents()->GetURL(),
+                             network::mojom::ReferrerPolicy::kDefault));
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("pdf_plugin_placeholder", R"(
+        semantics {
+          sender: "PDF Plugin Placeholder"
+          description:
+            "When the PDF Viewer is unavailable, a placeholder is shown for "
+            "embedded PDFs. This placeholder allows the user to download and "
+            "open the PDF file via a button."
+          trigger:
+            "The user clicks the 'View PDF' button in the PDF placeholder."
+          data: "None."
+          destination: WEBSITE
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This feature can be disabled via 'Download PDF files instead of "
+            "automatically opening them in Chrome' in settings under content. "
+            "The feature is disabled by default."
+          chrome_policy {
+            AlwaysOpenPdfExternally {
+              AlwaysOpenPdfExternally: false
+            }
+          }
+        })");
+  std::unique_ptr<download::DownloadUrlParameters> params =
+      std::make_unique<download::DownloadUrlParameters>(
+          url, render_frame_host->GetRenderViewHost()->GetProcess()->GetID(),
+          render_frame_host->GetRoutingID(), traffic_annotation);
+  params->set_referrer(referrer.url);
+  params->set_referrer_policy(
+      content::Referrer::ReferrerPolicyForUrlRequest(referrer.policy));
+
+  content::BrowserContext::GetDownloadManager(
+      web_contents()->GetBrowserContext())
+      ->DownloadUrl(std::move(params));
+
+#else   // !BUILDFLAG(ENABLE_PLUGINS)
+  content::OpenURLParams open_url_params(
+      url, referrer, WindowOpenDisposition::CURRENT_TAB,
+      ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
+  // On Android, PDFs downloaded with a user gesture are auto-opened.
+  open_url_params.user_gesture = true;
+  web_contents()->OpenURL(open_url_params);
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PluginObserver)

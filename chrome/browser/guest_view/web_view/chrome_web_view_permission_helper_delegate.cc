@@ -12,7 +12,6 @@
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/buildflags.h"
-#include "chrome/common/render_messages.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_id.h"
@@ -52,16 +51,6 @@ ChromeWebViewPermissionHelperDelegate::~ChromeWebViewPermissionHelperDelegate()
 {}
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-bool ChromeWebViewPermissionHelperDelegate::OnMessageReceived(
-    const IPC::Message& message,
-    content::RenderFrameHost* render_frame_host) {
-  IPC_BEGIN_MESSAGE_MAP(ChromeWebViewPermissionHelperDelegate, message)
-    IPC_MESSAGE_HANDLER(ChromeViewHostMsg_OpenPDF, OnOpenPDF)
-    IPC_MESSAGE_UNHANDLED(return false)
-  IPC_END_MESSAGE_MAP()
-
-  return true;
-}
 
 void ChromeWebViewPermissionHelperDelegate::BlockedUnauthorizedPlugin(
     const base::string16& name,
@@ -93,10 +82,6 @@ void ChromeWebViewPermissionHelperDelegate::OnPermissionResponse(
 }
 
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
-
-void ChromeWebViewPermissionHelperDelegate::OnOpenPDF(const GURL& url) {
-  // Intentionally blank since guest views should never trigger PDF downloads.
-}
 
 void ChromeWebViewPermissionHelperDelegate::CanDownload(
     const GURL& url,

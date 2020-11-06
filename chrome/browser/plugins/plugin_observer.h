@@ -56,6 +56,7 @@ class PluginObserver : public content::WebContentsObserver,
       const std::string& identifier) override;
   void ShowFlashPermissionBubble() override;
   void CouldNotLoadPlugin(const base::FilePath& plugin_path) override;
+  void OpenPDF(const GURL& url) override;
 
   void RemovePluginPlaceholderHost(PluginPlaceholderHost* placeholder);
   void RemoveComponentObserver(ComponentObserver* component_observer);

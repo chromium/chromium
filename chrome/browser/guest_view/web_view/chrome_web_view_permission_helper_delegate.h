@@ -51,11 +51,6 @@ class ChromeWebViewPermissionHelperDelegate
       const GURL& url,
       bool allowed_by_default,
       base::OnceCallback<void(bool)> callback) override;
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // content::WebContentsObserver implementation.
-  bool OnMessageReceived(const IPC::Message& message,
-                         content::RenderFrameHost* render_frame_host) override;
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
  private:
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -70,8 +65,6 @@ class ChromeWebViewPermissionHelperDelegate
                             bool allow,
                             const std::string& user_input);
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
-
-  void OnOpenPDF(const GURL& url);
 
   void OnGeolocationPermissionResponse(
       int bridge_id,

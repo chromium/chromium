@@ -47,7 +47,6 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/performance_hints/performance_hints_features.h"
 #include "chrome/browser/performance_hints/performance_hints_observer.h"
-#include "chrome/browser/plugins/pdf_plugin_placeholder_observer.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor_tab_helper.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h"
@@ -284,7 +283,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   }
   OutOfMemoryReporter::CreateForWebContents(web_contents);
   chrome::InitializePageLoadMetricsForWebContents(web_contents);
-  PDFPluginPlaceholderObserver::CreateForWebContents(web_contents);
   if (performance_manager::PerformanceManager::IsAvailable())
     performance_manager::TabPropertiesDecorator::SetIsTab(web_contents, true);
   permissions::PermissionRequestManager::CreateForWebContents(web_contents);
