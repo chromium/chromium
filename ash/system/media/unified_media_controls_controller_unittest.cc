@@ -269,44 +269,35 @@ TEST_F(UnifiedMediaControlsControllerTest, UpdateArtwork) {
   controller()->MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kArtwork, artwork);
   {
-    gfx::Rect expect_bounds(0, 10, 40, 20);
+    gfx::Rect expect_bounds(-20, 0, 80, 40);
     gfx::Rect artwork_bounds = artwork_view()->GetImageBounds();
     EXPECT_EQ(artwork_bounds, expect_bounds);
 
     SkPath path;
-    path.addRoundRect(gfx::RectToSkRect(expect_bounds), kArtworkCornerRadius,
-                      kArtworkCornerRadius);
+    path.addRoundRect(
+        gfx::RectToSkRect(gfx::Rect(0, 0, kArtworkHeight, kArtworkHeight)),
+        kArtworkCornerRadius, kArtworkCornerRadius);
     EXPECT_EQ(path, GetArtworkClipPath());
   }
 
   // Test that artwork will be scaled up if too small.
-  artwork.allocN32Pixels(10, 20);
+  artwork.allocN32Pixels(20, 40);
   controller()->MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kArtwork, artwork);
   {
-    gfx::Rect expect_bounds(10, 0, 20, 40);
+    gfx::Rect expect_bounds(0, -20, 40, 80);
     gfx::Rect artwork_bounds = artwork_view()->GetImageBounds();
     EXPECT_EQ(artwork_bounds, expect_bounds);
-
-    SkPath path;
-    path.addRoundRect(gfx::RectToSkRect(expect_bounds), kArtworkCornerRadius,
-                      kArtworkCornerRadius);
-    EXPECT_EQ(path, GetArtworkClipPath());
   }
 
   // Test that artwork fit right in to the artwork view.
-  artwork.allocN32Pixels(20, kArtworkHeight);
+  artwork.allocN32Pixels(60, kArtworkHeight);
   controller()->MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kArtwork, artwork);
   {
-    gfx::Rect expect_bounds(10, 0, 20, kArtworkHeight);
+    gfx::Rect expect_bounds(-10, 0, 60, kArtworkHeight);
     gfx::Rect artwork_bounds = artwork_view()->GetImageBounds();
     EXPECT_EQ(artwork_bounds, expect_bounds);
-
-    SkPath path;
-    path.addRoundRect(gfx::RectToSkRect(expect_bounds), kArtworkCornerRadius,
-                      kArtworkCornerRadius);
-    EXPECT_EQ(path, GetArtworkClipPath());
   }
 
   // Test that artwork view will be hidden after |kHideArtworkDelay| ms if
@@ -637,6 +628,22 @@ TEST_F(UnifiedMediaControlsControllerTest,
   generator->MoveMouseTo(
       media_controls_view()->GetBoundsInScreen().CenterPoint());
   generator->ClickLeftButton();
+}
+
+TEST_F(UnifiedMediaControlsControllerTest, ArtistVisibility) {
+  auto request_id = base::UnguessableToken::Create();
+  controller()->MediaSessionChanged(request_id);
+
+  media_session::MediaMetadata metadata;
+  metadata.title = base::ASCIIToUTF16("title");
+  controller()->MediaSessionMetadataChanged(metadata);
+
+  // Artist label should be hidden if empty.
+  EXPECT_FALSE(artist_label()->GetVisible());
+
+  metadata.artist = base::ASCIIToUTF16("artist");
+  controller()->MediaSessionMetadataChanged(metadata);
+  EXPECT_TRUE(artist_label()->GetVisible());
 }
 
 }  // namespace ash

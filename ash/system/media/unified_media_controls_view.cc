@@ -31,14 +31,14 @@ using media_session::mojom::MediaSessionAction;
 namespace {
 
 constexpr int kMediaControlsCornerRadius = 8;
-constexpr int kMediaControlsViewPadding = 16;
+constexpr int kMediaControlsViewPadding = 8;
 constexpr int kMediaButtonsPadding = 8;
 constexpr int kMediaButtonIconSize = 20;
 constexpr int kArtworkCornerRadius = 4;
 constexpr int kTitleRowHeight = 20;
 constexpr int kTrackTitleFontSizeIncrease = 1;
 
-constexpr gfx::Insets kTrackColumnInsets = gfx::Insets(1, 0, 1, 0);
+constexpr gfx::Insets kTrackColumnInsets = gfx::Insets(1, 8, 1, 8);
 constexpr gfx::Insets kMediaControlsViewInsets = gfx::Insets(8, 8, 8, 12);
 
 constexpr gfx::Size kEmptyArtworkIconSize = gfx::Size(20, 20);
@@ -47,14 +47,14 @@ constexpr gfx::Size kMediaButtonSize = gfx::Size(32, 32);
 
 gfx::Size ScaleSizeToFitView(const gfx::Size& size,
                              const gfx::Size& view_size) {
-  // If |size| is too big in either dimension or two small in both
+  // If |size| is too small in either dimension or too big in both
   // dimensions, scale it appropriately.
-  if ((size.width() > view_size.width() ||
+  if ((size.width() > view_size.width() &&
        size.height() > view_size.height()) ||
-      (size.width() < view_size.width() &&
+      (size.width() < view_size.width() ||
        size.height() < view_size.height())) {
     const float scale =
-        std::min(view_size.width() / static_cast<float>(size.width()),
+        std::max(view_size.width() / static_cast<float>(size.width()),
                  view_size.height() / static_cast<float>(size.height()));
     return gfx::ScaleToFlooredSize(size, scale);
   }
@@ -186,8 +186,11 @@ UnifiedMediaControlsView::UnifiedMediaControlsView(
   artwork_view_->SetVisible(false);
 
   auto track_column = std::make_unique<views::View>();
-  track_column->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, kTrackColumnInsets));
+  auto* track_column_layout =
+      track_column->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical, kTrackColumnInsets));
+  track_column_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
 
   auto title_row = std::make_unique<views::View>();
   auto* title_row_layout =
@@ -212,6 +215,7 @@ UnifiedMediaControlsView::UnifiedMediaControlsView(
   drop_down_icon_->SetPreferredSize(
       gfx::Size(kTitleRowHeight, kTitleRowHeight));
 
+  title_row_layout->SetFlexForView(title_label_, 1);
   track_column->AddChildView(std::move(title_row));
 
   artist_label_ = track_column->AddChildView(std::make_unique<views::Label>());
@@ -283,6 +287,12 @@ void UnifiedMediaControlsView::SetTitle(const base::string16& title) {
 
 void UnifiedMediaControlsView::SetArtist(const base::string16& artist) {
   artist_label_->SetText(artist);
+
+  if (artist_label_->GetVisible() != artist.empty())
+    return;
+
+  artist_label_->SetVisible(!artist.empty());
+  InvalidateLayout();
 }
 
 void UnifiedMediaControlsView::UpdateActionButtonAvailability(
@@ -344,7 +354,7 @@ void UnifiedMediaControlsView::ShowEmptyState() {
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorSecondary)));
 
-  artwork_view_->SetClipPath(GetArtworkClipPath(kArtworkSize));
+  artwork_view_->SetClipPath(GetArtworkClipPath());
 }
 
 void UnifiedMediaControlsView::OnNewMediaSession() {
@@ -366,17 +376,10 @@ void UnifiedMediaControlsView::OnNewMediaSession() {
   artwork_view_->SetBackground(nullptr);
 }
 
-SkPath UnifiedMediaControlsView::GetArtworkClipPath(
-    base::Optional<gfx::Size> image_size) {
-  // Calculate image bounds since we might need to draw this when image is
-  // not visible (i.e. when quick setting bubble is collapsed).
-  if (!image_size.has_value())
-    image_size = artwork_view_->GetImageBounds().size();
-  int x = (kArtworkSize.width() - image_size->width()) / 2;
-  int y = (kArtworkSize.height() - image_size->height()) / 2;
+SkPath UnifiedMediaControlsView::GetArtworkClipPath() {
   SkPath path;
-  path.addRoundRect(gfx::RectToSkRect(gfx::Rect(x, y, image_size->width(),
-                                                image_size->height())),
+  path.addRoundRect(gfx::RectToSkRect(gfx::Rect(0, 0, kArtworkSize.width(),
+                                                kArtworkSize.height())),
                     kArtworkCornerRadius, kArtworkCornerRadius);
   return path;
 }

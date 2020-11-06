@@ -79,8 +79,7 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button {
     media_session::mojom::MediaSessionAction action_;
   };
 
-  SkPath GetArtworkClipPath(
-      base::Optional<gfx::Size> image_size = base::nullopt);
+  SkPath GetArtworkClipPath();
 
   UnifiedMediaControlsController* const controller_ = nullptr;
 
