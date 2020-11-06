@@ -33,9 +33,11 @@ void MaxVoteAggregator::SetUpstreamVotingChannel(VotingChannel&& channel) {
   channel_ = std::move(channel);
 }
 
-VoteReceipt MaxVoteAggregator::SubmitVote(util::PassKey<VotingChannel>,
-                                          voting::VoterId<Vote> voter_id,
-                                          const Vote& vote) {
+VoteReceipt MaxVoteAggregator::SubmitVote(
+    util::PassKey<VotingChannel>,
+    voting::VoterId<Vote> voter_id,
+    const ExecutionContext* execution_context,
+    const Vote& vote) {
   DCHECK(vote.IsValid());
   DCHECK(channel_.IsValid());
 
@@ -44,8 +46,8 @@ VoteReceipt MaxVoteAggregator::SubmitVote(util::PassKey<VotingChannel>,
   // be added.
 
   // Add the new vote.
-  VoteData& vote_data = vote_data_map_[vote.context()];
-  auto accepted_vote = AcceptedVote(this, voter_id, vote);
+  VoteData& vote_data = vote_data_map_[execution_context];
+  auto accepted_vote = AcceptedVote(this, voter_id, execution_context, vote);
   auto receipt = accepted_vote.IssueReceipt();
   if (vote_data.AddVote(std::move(accepted_vote), next_vote_id_++))
     vote_data.UpstreamVote(&channel_);
@@ -100,7 +102,7 @@ MaxVoteAggregator::VoteDataMap::iterator MaxVoteAggregator::GetVoteData(
   DCHECK(channel_.IsValid());
 
   // Find the votes associated with this execution context.
-  auto it = vote_data_map_.find(vote->vote().context());
+  auto it = vote_data_map_.find(vote->context());
   DCHECK(it != vote_data_map_.end());
   return it;
 }
@@ -162,13 +164,14 @@ size_t MaxVoteAggregator::VoteData::GetVoteIndex(AcceptedVote* vote) {
 void MaxVoteAggregator::VoteData::UpstreamVote(VotingChannel* channel) {
   DCHECK_NE(0u, votes_.size());
   DCHECK(votes_.top().vote.IsValid());
+  const ExecutionContext* execution_context = votes_.top().vote.context();
   const Vote& vote = votes_.top().vote.vote();
 
   // Change our existing vote, or create a new one as necessary.
   if (receipt_.HasVote()) {
     receipt_.ChangeVote(vote.value(), vote.reason());
   } else {
-    receipt_ = channel->SubmitVote(vote);
+    receipt_ = channel->SubmitVote(execution_context, vote);
   }
 }
 

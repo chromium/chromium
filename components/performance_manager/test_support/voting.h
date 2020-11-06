@@ -21,6 +21,7 @@ namespace test {
 template <class VoteImpl>
 class DummyVoteConsumer : public VoteConsumer<VoteImpl> {
  public:
+  using ContextType = typename VoteImpl::ContextType;
   using AcceptedVote = AcceptedVote<VoteImpl>;
   using VotingChannel = VotingChannel<VoteImpl>;
 
@@ -32,6 +33,7 @@ class DummyVoteConsumer : public VoteConsumer<VoteImpl> {
   // VoteConsumer implementation:
   VoteReceipt<VoteImpl> SubmitVote(util::PassKey<VotingChannel>,
                                    voting::VoterId<VoteImpl> voter_id,
+                                   const ContextType* context,
                                    const VoteImpl& vote) override;
   void ChangeVote(util::PassKey<AcceptedVote>,
                   AcceptedVote* old_vote,
@@ -91,9 +93,10 @@ template <class VoteImpl>
 VoteReceipt<VoteImpl> DummyVoteConsumer<VoteImpl>::SubmitVote(
     util::PassKey<VotingChannel>,
     voting::VoterId<VoteImpl> voter_id,
+    const ContextType* context,
     const VoteImpl& vote) {
   // Accept the vote.
-  votes_.emplace_back(AcceptedVote(this, voter_id, vote));
+  votes_.emplace_back(AcceptedVote(this, voter_id, context, vote));
   EXPECT_FALSE(votes_.back().HasReceipt());
   EXPECT_TRUE(votes_.back().IsValid());
   ++valid_vote_count_;
@@ -151,8 +154,8 @@ void DummyVoteConsumer<VoteImpl>::ExpectValidVote(
   EXPECT_EQ(this, accepted_vote.consumer());
   EXPECT_TRUE(accepted_vote.IsValid());
   EXPECT_EQ(voter_id, accepted_vote.voter_id());
+  EXPECT_EQ(context, accepted_vote.context());
   const auto& vote = accepted_vote.vote();
-  EXPECT_EQ(context, vote.context());
   EXPECT_EQ(vote_value, vote.value());
   EXPECT_TRUE(vote.reason());
   if (reason)
@@ -180,7 +183,7 @@ void DummyVoter<VoteImpl>::EmitVote(
     const char* reason) {
   EXPECT_TRUE(voting_channel_.IsValid());
   receipts_.emplace_back(
-      voting_channel_.SubmitVote(VoteImpl(context, vote_value, reason)));
+      voting_channel_.SubmitVote(context, VoteImpl(vote_value, reason)));
 }
 
 }  // namespace test

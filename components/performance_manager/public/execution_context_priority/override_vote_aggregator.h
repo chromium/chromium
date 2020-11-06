@@ -34,6 +34,7 @@ class OverrideVoteAggregator : public VoteConsumer {
   // VoteConsumer implementation:
   VoteReceipt SubmitVote(util::PassKey<VotingChannel>,
                          voting::VoterId<Vote> voter_id,
+                         const ExecutionContext* execution_context,
                          const Vote& vote) override;
   void ChangeVote(util::PassKey<AcceptedVote>,
                   AcceptedVote* old_vote,
@@ -69,7 +70,9 @@ class OverrideVoteAggregator : public VoteConsumer {
 
   // Rebrands |vote| as belonging to this voter, and then sends it along to our
   // |consumer_|. Stores the resulting receipt in |vote_data|.
-  void UpstreamVote(const Vote& vote, VoteData* vote_data);
+  void UpstreamVote(const ExecutionContext* execution_context,
+                    const Vote& vote,
+                    VoteData* vote_data);
 
   // Our two input voters. We'll only accept votes from these voters otherwise
   // we'll DCHECK.

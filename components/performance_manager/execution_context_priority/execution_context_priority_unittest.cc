@@ -137,7 +137,7 @@ TEST(ExecutionContextPriorityTest, VoteReceiptsWork) {
   EXPECT_EQ(1u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
   EXPECT_EQ(voter.voting_channel_.voter_id(), consumer.votes_[0].voter_id());
-  EXPECT_EQ(kDummyExecutionContext1, consumer.votes_[0].vote().context());
+  EXPECT_EQ(kDummyExecutionContext1, consumer.votes_[0].context());
   EXPECT_TRUE(consumer.votes_[0].IsValid());
   ExpectEntangled(voter.receipts_[0], consumer.votes_[0]);
 
@@ -165,20 +165,20 @@ TEST(ExecutionContextPriorityTest, VoteReceiptsWork) {
   EXPECT_EQ(2u, voter.receipts_.size());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(2u, consumer.valid_vote_count_);
-  EXPECT_EQ(kDummyExecutionContext1, consumer.votes_[0].vote().context());
-  EXPECT_EQ(kDummyExecutionContext2, consumer.votes_[1].vote().context());
+  EXPECT_EQ(kDummyExecutionContext1, consumer.votes_[0].context());
+  EXPECT_EQ(kDummyExecutionContext2, consumer.votes_[1].context());
   ExpectEntangled(voter.receipts_[0], consumer.votes_[0]);
   ExpectEntangled(voter.receipts_[1], consumer.votes_[1]);
 
   // Change a vote, but making no change.
   ExpectEntangled(voter.receipts_[0], consumer.votes_[0]);
-  EXPECT_EQ(kDummyExecutionContext1, consumer.votes_[0].vote().context());
+  EXPECT_EQ(kDummyExecutionContext1, consumer.votes_[0].context());
   EXPECT_EQ(base::TaskPriority::LOWEST, consumer.votes_[0].vote().value());
   EXPECT_EQ(DummyVoter::kReason, consumer.votes_[0].vote().reason());
   voter.receipts_[0].ChangeVote(base::TaskPriority::LOWEST,
                                 DummyVoter::kReason);
   ExpectEntangled(voter.receipts_[0], consumer.votes_[0]);
-  EXPECT_EQ(kDummyExecutionContext1, consumer.votes_[0].vote().context());
+  EXPECT_EQ(kDummyExecutionContext1, consumer.votes_[0].context());
   EXPECT_EQ(base::TaskPriority::LOWEST, consumer.votes_[0].vote().value());
   EXPECT_EQ(DummyVoter::kReason, consumer.votes_[0].vote().reason());
 
@@ -186,7 +186,7 @@ TEST(ExecutionContextPriorityTest, VoteReceiptsWork) {
   static const char kReason[] = "another reason";
   voter.receipts_[0].ChangeVote(base::TaskPriority::HIGHEST, kReason);
   ExpectEntangled(voter.receipts_[0], consumer.votes_[0]);
-  EXPECT_EQ(kDummyExecutionContext1, consumer.votes_[0].vote().context());
+  EXPECT_EQ(kDummyExecutionContext1, consumer.votes_[0].context());
   EXPECT_EQ(base::TaskPriority::HIGHEST, consumer.votes_[0].vote().value());
   EXPECT_EQ(kReason, consumer.votes_[0].vote().reason());
 
@@ -195,8 +195,8 @@ TEST(ExecutionContextPriorityTest, VoteReceiptsWork) {
   EXPECT_EQ(2u, voter.receipts_.size());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
-  EXPECT_EQ(kDummyExecutionContext1, consumer.votes_[0].vote().context());
-  EXPECT_EQ(kDummyExecutionContext2, consumer.votes_[1].vote().context());
+  EXPECT_EQ(kDummyExecutionContext1, consumer.votes_[0].context());
+  EXPECT_EQ(kDummyExecutionContext2, consumer.votes_[1].context());
   ExpectNotEntangled(voter.receipts_[0], consumer.votes_[0]);
   ExpectEntangled(voter.receipts_[1], consumer.votes_[1]);
 
@@ -205,7 +205,7 @@ TEST(ExecutionContextPriorityTest, VoteReceiptsWork) {
   EXPECT_EQ(2u, voter.receipts_.size());
   EXPECT_EQ(1u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
-  EXPECT_EQ(kDummyExecutionContext2, consumer.votes_[0].vote().context());
+  EXPECT_EQ(kDummyExecutionContext2, consumer.votes_[0].context());
   EXPECT_FALSE(voter.receipts_[0].HasVote());
   ExpectEntangled(voter.receipts_[1], consumer.votes_[0]);
 
@@ -214,7 +214,7 @@ TEST(ExecutionContextPriorityTest, VoteReceiptsWork) {
   EXPECT_EQ(1u, voter.receipts_.size());
   EXPECT_EQ(1u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
-  EXPECT_EQ(kDummyExecutionContext2, consumer.votes_[0].vote().context());
+  EXPECT_EQ(kDummyExecutionContext2, consumer.votes_[0].context());
   ExpectEntangled(voter.receipts_[0], consumer.votes_[0]);
 
   // Cancel the remaining vote by deleting the receipt.
@@ -222,7 +222,7 @@ TEST(ExecutionContextPriorityTest, VoteReceiptsWork) {
   EXPECT_EQ(0u, voter.receipts_.size());
   EXPECT_EQ(1u, consumer.votes_.size());
   EXPECT_EQ(0u, consumer.valid_vote_count_);
-  EXPECT_EQ(kDummyExecutionContext2, consumer.votes_[0].vote().context());
+  EXPECT_EQ(kDummyExecutionContext2, consumer.votes_[0].context());
   EXPECT_FALSE(consumer.votes_[0].HasReceipt());
   EXPECT_FALSE(consumer.votes_[0].IsValid());
 }
@@ -235,9 +235,9 @@ TEST(ExecutionContextPriorityTest, OverwriteVoteReceipt) {
       consumer.voting_channel_factory_.BuildVotingChannel();
 
   VoteReceipt receipt = voting_channel.SubmitVote(
-      Vote(kDummyExecutionContext1, base::TaskPriority::HIGHEST, kReason1));
+      kDummyExecutionContext1, Vote(base::TaskPriority::HIGHEST, kReason1));
   receipt = voting_channel.SubmitVote(
-      Vote(kDummyExecutionContext2, base::TaskPriority::HIGHEST, kReason1));
+      kDummyExecutionContext2, Vote(base::TaskPriority::HIGHEST, kReason1));
 
   // The first vote was invalidated because its vote receipt was cleaned up.
   consumer.ExpectInvalidVote(0);

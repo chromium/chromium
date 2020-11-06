@@ -136,8 +136,8 @@ TEST(MaxVoteAggregatorTest, VoteDataHeapStressTest) {
       case kInsert: {
         auto priority = RandPriority();
         auto* reason = RandReason();
-        vd.AddVote(AcceptedVote(&consumer, voter_id,
-                                Vote(kExecutionContext0, priority, reason)),
+        vd.AddVote(AcceptedVote(&consumer, voter_id, kExecutionContext0,
+                                Vote(priority, reason)),
                    next_vote_id++);
       } break;
 
@@ -154,7 +154,7 @@ TEST(MaxVoteAggregatorTest, VoteDataHeapStressTest) {
         }
 
         // Update the vote.
-        vote.UpdateVote(Vote(vote.vote().context(), priority, reason));
+        vote.UpdateVote(Vote(priority, reason));
         vd.UpdateVote(index, next_vote_id++);
       } break;
 

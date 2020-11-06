@@ -77,7 +77,7 @@ TEST(VotingTest, VoteReceiptsWork) {
   EXPECT_EQ(1u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
   EXPECT_EQ(voter.voting_channel_.voter_id(), consumer.votes_[0].voter_id());
-  EXPECT_EQ(kDummyContext1, consumer.votes_[0].vote().context());
+  EXPECT_EQ(kDummyContext1, consumer.votes_[0].context());
   EXPECT_TRUE(consumer.votes_[0].IsValid());
   EXPECT_TRUE(IsEntangled(voter.receipts_[0], consumer.votes_[0]));
 
@@ -105,19 +105,19 @@ TEST(VotingTest, VoteReceiptsWork) {
   EXPECT_EQ(2u, voter.receipts_.size());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(2u, consumer.valid_vote_count_);
-  EXPECT_EQ(kDummyContext1, consumer.votes_[0].vote().context());
-  EXPECT_EQ(kDummyContext2, consumer.votes_[1].vote().context());
+  EXPECT_EQ(kDummyContext1, consumer.votes_[0].context());
+  EXPECT_EQ(kDummyContext2, consumer.votes_[1].context());
   EXPECT_TRUE(IsEntangled(voter.receipts_[0], consumer.votes_[0]));
   EXPECT_TRUE(IsEntangled(voter.receipts_[1], consumer.votes_[1]));
 
   // Change a vote, but making no change.
   EXPECT_TRUE(IsEntangled(voter.receipts_[0], consumer.votes_[0]));
-  EXPECT_EQ(kDummyContext1, consumer.votes_[0].vote().context());
+  EXPECT_EQ(kDummyContext1, consumer.votes_[0].context());
   EXPECT_EQ(0, consumer.votes_[0].vote().value());
   EXPECT_EQ(DummyVoter::kReason, consumer.votes_[0].vote().reason());
   voter.receipts_[0].ChangeVote(0, DummyVoter::kReason);
   EXPECT_TRUE(IsEntangled(voter.receipts_[0], consumer.votes_[0]));
-  EXPECT_EQ(kDummyContext1, consumer.votes_[0].vote().context());
+  EXPECT_EQ(kDummyContext1, consumer.votes_[0].context());
   EXPECT_EQ(0, consumer.votes_[0].vote().value());
   EXPECT_EQ(DummyVoter::kReason, consumer.votes_[0].vote().reason());
 
@@ -125,7 +125,7 @@ TEST(VotingTest, VoteReceiptsWork) {
   static const char kReason[] = "another reason";
   voter.receipts_[0].ChangeVote(5, kReason);
   EXPECT_TRUE(IsEntangled(voter.receipts_[0], consumer.votes_[0]));
-  EXPECT_EQ(kDummyContext1, consumer.votes_[0].vote().context());
+  EXPECT_EQ(kDummyContext1, consumer.votes_[0].context());
   EXPECT_EQ(5, consumer.votes_[0].vote().value());
   EXPECT_EQ(kReason, consumer.votes_[0].vote().reason());
 
@@ -134,8 +134,8 @@ TEST(VotingTest, VoteReceiptsWork) {
   EXPECT_EQ(2u, voter.receipts_.size());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
-  EXPECT_EQ(kDummyContext1, consumer.votes_[0].vote().context());
-  EXPECT_EQ(kDummyContext2, consumer.votes_[1].vote().context());
+  EXPECT_EQ(kDummyContext1, consumer.votes_[0].context());
+  EXPECT_EQ(kDummyContext2, consumer.votes_[1].context());
   EXPECT_TRUE(IsNotEntangled(voter.receipts_[0], consumer.votes_[0]));
   EXPECT_TRUE(IsEntangled(voter.receipts_[1], consumer.votes_[1]));
 
@@ -144,7 +144,7 @@ TEST(VotingTest, VoteReceiptsWork) {
   EXPECT_EQ(2u, voter.receipts_.size());
   EXPECT_EQ(1u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
-  EXPECT_EQ(kDummyContext2, consumer.votes_[0].vote().context());
+  EXPECT_EQ(kDummyContext2, consumer.votes_[0].context());
   EXPECT_FALSE(voter.receipts_[0].HasVote());
   EXPECT_TRUE(IsEntangled(voter.receipts_[1], consumer.votes_[0]));
 
@@ -153,7 +153,7 @@ TEST(VotingTest, VoteReceiptsWork) {
   EXPECT_EQ(1u, voter.receipts_.size());
   EXPECT_EQ(1u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
-  EXPECT_EQ(kDummyContext2, consumer.votes_[0].vote().context());
+  EXPECT_EQ(kDummyContext2, consumer.votes_[0].context());
   EXPECT_TRUE(IsEntangled(voter.receipts_[0], consumer.votes_[0]));
 
   // Cancel the remaining vote by deleting the receipt.
@@ -161,7 +161,7 @@ TEST(VotingTest, VoteReceiptsWork) {
   EXPECT_EQ(0u, voter.receipts_.size());
   EXPECT_EQ(1u, consumer.votes_.size());
   EXPECT_EQ(0u, consumer.valid_vote_count_);
-  EXPECT_EQ(kDummyContext2, consumer.votes_[0].vote().context());
+  EXPECT_EQ(kDummyContext2, consumer.votes_[0].context());
   EXPECT_FALSE(consumer.votes_[0].HasReceipt());
   EXPECT_FALSE(consumer.votes_[0].IsValid());
 }
@@ -174,8 +174,8 @@ TEST(VotingTest, OverwriteVoteReceipt) {
       consumer.voting_channel_factory_.BuildVotingChannel();
 
   TestVoteReceipt receipt =
-      voting_channel.SubmitVote(TestVote(kDummyContext1, 5, kReason));
-  receipt = voting_channel.SubmitVote(TestVote(kDummyContext2, 5, kReason));
+      voting_channel.SubmitVote(kDummyContext1, TestVote(5, kReason));
+  receipt = voting_channel.SubmitVote(kDummyContext2, TestVote(5, kReason));
 
   // The first vote was invalidated because its vote receipt was cleaned up.
   consumer.ExpectInvalidVote(0);

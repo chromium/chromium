@@ -192,8 +192,9 @@ void BoostingVoteAggregator::NodeData::DecrementEdgeCount() {
 VoteReceipt BoostingVoteAggregator::NodeData::SetIncomingVote(
     VoteConsumer* consumer,
     voting::VoterId<Vote> voter_id,
+    const ExecutionContext* execution_context,
     const Vote& vote) {
-  incoming_ = AcceptedVote(consumer, voter_id, vote);
+  incoming_ = AcceptedVote(consumer, voter_id, execution_context, vote);
   return incoming_.IssueReceipt();
 }
 
@@ -394,17 +395,19 @@ void BoostingVoteAggregator::CancelBoostingVote(
   }
 }
 
-VoteReceipt BoostingVoteAggregator::SubmitVote(util::PassKey<VotingChannel>,
-                                               voting::VoterId<Vote> voter_id,
-                                               const Vote& vote) {
+VoteReceipt BoostingVoteAggregator::SubmitVote(
+    util::PassKey<VotingChannel>,
+    voting::VoterId<Vote> voter_id,
+    const ExecutionContext* execution_context,
+    const Vote& vote) {
   DCHECK(IsSetup());
   DCHECK_EQ(input_voter_id_, voter_id);
   DCHECK(vote.IsValid());
 
   // Store the vote.
-  auto node_data_it = FindOrCreateNodeData(vote.context());
-  VoteReceipt receipt =
-      node_data_it->second.SetIncomingVote(this, voter_id, vote);
+  auto node_data_it = FindOrCreateNodeData(execution_context);
+  VoteReceipt receipt = node_data_it->second.SetIncomingVote(
+      this, voter_id, execution_context, vote);
 
   NodeDataPtrSet changes;
 
@@ -504,7 +507,7 @@ BoostingVoteAggregator::GetNodeDataByVote(AcceptedVote* vote) {
   DCHECK(vote->voter_id() == input_voter_id_);
   DCHECK(IsSetup());
 
-  auto it = nodes_.find(vote->vote().context());
+  auto it = nodes_.find(vote->context());
   DCHECK(it != nodes_.end());
   DCHECK_EQ(vote, &it->second.incoming());
   return it;
@@ -582,7 +585,7 @@ void BoostingVoteAggregator::UpstreamVoteIfNeeded(
 
   // Create an outgoing vote.
   node_data->SetOutgoingVoteReceipt(
-      channel_.SubmitVote(Vote(execution_context, priority, reason)));
+      channel_.SubmitVote(execution_context, Vote(priority, reason)));
 }
 
 void BoostingVoteAggregator::UpstreamChanges(const NodeDataPtrSet& changes) {

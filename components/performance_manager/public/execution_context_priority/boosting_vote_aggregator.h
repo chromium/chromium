@@ -132,6 +132,7 @@ class BoostingVoteAggregator : public VoteConsumer {
     // For modifying |incoming_|.
     VoteReceipt SetIncomingVote(VoteConsumer* consumer,
                                 voting::VoterId<Vote> voter_id,
+                                const ExecutionContext* execution_context,
                                 const Vote& vote);
     void UpdateIncomingVote(const Vote& vote) { incoming_.UpdateVote(vote); }
 
@@ -269,6 +270,7 @@ class BoostingVoteAggregator : public VoteConsumer {
   // VoteConsumer implementation:
   VoteReceipt SubmitVote(util::PassKey<VotingChannel>,
                          voting::VoterId<Vote> voter_id,
+                         const ExecutionContext* execution_context,
                          const Vote& vote) override;
   void ChangeVote(util::PassKey<AcceptedVote>,
                   AcceptedVote* old_vote,
