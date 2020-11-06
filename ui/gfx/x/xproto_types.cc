@@ -7,6 +7,7 @@
 #include <xcb/xcbext.h>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto_internal.h"
 
@@ -124,8 +125,13 @@ void FutureBase::SyncImpl(RawError* raw_error, RawReply* raw_reply) {
   if (!sequence_)
     return;
   xcb_generic_error_t* error = nullptr;
-  auto* reply = reinterpret_cast<uint8_t*>(
-      xcb_wait_for_reply(connection_->XcbConnection(), *sequence_, &error));
+  void* reply = nullptr;
+  if (!xcb_poll_for_reply(connection_->XcbConnection(), *sequence_, &reply,
+                          &error)) {
+    TRACE_EVENT1("ui", "xcb_wait_for_reply", "request", request_name_);
+    reply =
+        xcb_wait_for_reply(connection_->XcbConnection(), *sequence_, &error);
+  }
   if (reply)
     *raw_reply = base::MakeRefCounted<MallocedRefCountedMemory>(reply);
   if (error)
