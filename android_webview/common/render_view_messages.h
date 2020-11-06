@@ -71,10 +71,6 @@ IPC_MESSAGE_ROUTED0(AwViewMsg_ResetScrollAndScaleState)
 IPC_MESSAGE_ROUTED1(AwViewMsg_SetInitialPageScale,
                     double /* page_scale_factor */)
 
-// Sets the base background color for this view.
-IPC_MESSAGE_ROUTED1(AwViewMsg_SetBackgroundColor,
-                    SkColor)
-
 IPC_MESSAGE_CONTROL1(AwViewMsg_SetJsOnlineProperty,
                      bool /* network_up */)
 

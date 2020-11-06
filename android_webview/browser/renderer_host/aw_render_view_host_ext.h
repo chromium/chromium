@@ -8,9 +8,11 @@
 #include "content/public/browser/web_contents_observer.h"
 
 #include "android_webview/common/aw_hit_test_data.h"
+#include "android_webview/common/mojom/frame.mojom.h"
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -117,6 +119,9 @@ class AwRenderViewHostExt : public content::WebContentsObserver {
 
   // Some WebView users might want to show their own error pages / logic.
   bool will_suppress_error_page_ = false;
+
+  // Associated channel to the webview LocalMainFrame extensions.
+  mojo::AssociatedRemote<mojom::LocalMainFrame> local_main_frame_remote_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

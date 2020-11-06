@@ -162,6 +162,12 @@ AwRenderFrameExt::AwRenderFrameExt(content::RenderFrame* render_frame)
   if (content_capture::features::IsContentCaptureEnabled())
     new content_capture::ContentCaptureSender(render_frame, &registry_);
 
+  // If we are the main frame register an additional mojo interface.
+  if (render_frame->IsMainFrame()) {
+    registry_.AddInterface(base::BindRepeating(
+        &AwRenderFrameExt::BindLocalMainFrame, base::Unretained(this)));
+  }
+
   // Add myself to the RenderFrame => AwRenderFrameExt register.
   GetFrameExtMap()->emplace(render_frame, this);
 }
@@ -228,7 +234,6 @@ bool AwRenderFrameExt::OnMessageReceived(const IPC::Message& message) {
     IPC_MESSAGE_HANDLER(AwViewMsg_ResetScrollAndScaleState,
                         OnResetScrollAndScaleState)
     IPC_MESSAGE_HANDLER(AwViewMsg_SetInitialPageScale, OnSetInitialPageScale)
-    IPC_MESSAGE_HANDLER(AwViewMsg_SetBackgroundColor, OnSetBackgroundColor)
     IPC_MESSAGE_HANDLER(AwViewMsg_SmoothScroll, OnSmoothScroll)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
@@ -329,7 +334,7 @@ void AwRenderFrameExt::OnSetInitialPageScale(double page_scale_factor) {
   webview->SetInitialPageScaleOverride(page_scale_factor);
 }
 
-void AwRenderFrameExt::OnSetBackgroundColor(SkColor c) {
+void AwRenderFrameExt::SetBackgroundColor(SkColor c) {
   blink::WebView* webview = GetWebView();
   if (!webview)
     return;
@@ -363,6 +368,11 @@ blink::WebFrameWidget* AwRenderFrameExt::GetWebFrameWidget() {
 
 void AwRenderFrameExt::OnDestruct() {
   delete this;
+}
+
+void AwRenderFrameExt::BindLocalMainFrame(
+    mojo::PendingAssociatedReceiver<mojom::LocalMainFrame> pending_receiver) {
+  local_main_frame_receiver_.Bind(std::move(pending_receiver));
 }
 
 }  // namespace android_webview

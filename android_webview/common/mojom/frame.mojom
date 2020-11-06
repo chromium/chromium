@@ -1,0 +1,15 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module android_webview.mojom;
+
+import "skia/public/mojom/skcolor.mojom";
+
+// Similar to blink::mojom::LocalMainFrame. This interface adds additional
+// things that webview needs from the main frame.
+interface LocalMainFrame {
+
+  // Sets the base background color for this view.
+  SetBackgroundColor(skia.mojom.SkColor color);
+};
