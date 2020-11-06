@@ -10,18 +10,20 @@
 #include "base/optional.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
+#include "net/base/schemeful_site.h"
 #include "services/network/first_party_sets/first_party_set_parser.h"
 
 namespace network {
 
 namespace {
 
-base::Optional<std::pair<std::string, base::flat_set<std::string>>>
+base::Optional<
+    std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>>
 CanonicalizeSet(const std::vector<std::string>& origins) {
   if (origins.empty())
     return base::nullopt;
 
-  const base::Optional<std::string> maybe_owner =
+  const base::Optional<net::SchemefulSite> maybe_owner =
       FirstPartySetParser::CanonicalizeRegisteredDomain(origins[0],
                                                         true /* emit_errors */);
   if (!maybe_owner.has_value()) {
@@ -29,10 +31,10 @@ CanonicalizeSet(const std::vector<std::string>& origins) {
     return base::nullopt;
   }
 
-  const std::string& owner = *maybe_owner;
-  base::flat_set<std::string> members;
+  const net::SchemefulSite& owner = *maybe_owner;
+  base::flat_set<net::SchemefulSite> members;
   for (auto it = origins.begin() + 1; it != origins.end(); ++it) {
-    const base::Optional<std::string> maybe_member =
+    const base::Optional<net::SchemefulSite> maybe_member =
         FirstPartySetParser::CanonicalizeRegisteredDomain(
             *it, true /* emit_errors */);
     if (maybe_member.has_value() && maybe_member != owner)
@@ -62,10 +64,10 @@ void PreloadedFirstPartySets::SetManuallySpecifiedSet(
   ApplyManuallySpecifiedSet();
 }
 
-base::flat_map<std::string, std::string>* PreloadedFirstPartySets::ParseAndSet(
-    base::StringPiece raw_sets) {
-  std::unique_ptr<base::flat_map<std::string, std::string>> parsed =
-      FirstPartySetParser::ParsePreloadedSets(raw_sets);
+base::flat_map<net::SchemefulSite, net::SchemefulSite>*
+PreloadedFirstPartySets::ParseAndSet(base::StringPiece raw_sets) {
+  std::unique_ptr<base::flat_map<net::SchemefulSite, net::SchemefulSite>>
+      parsed = FirstPartySetParser::ParsePreloadedSets(raw_sets);
   if (parsed) {
     sets_.swap(*parsed);
   } else {
@@ -81,8 +83,8 @@ void PreloadedFirstPartySets::ApplyManuallySpecifiedSet() {
   if (!manually_specified_set_)
     return;
 
-  const std::string& manual_owner = manually_specified_set_->first;
-  const base::flat_set<std::string>& manual_members =
+  const net::SchemefulSite& manual_owner = manually_specified_set_->first;
+  const base::flat_set<net::SchemefulSite>& manual_members =
       manually_specified_set_->second;
 
   sets_.erase(
@@ -96,7 +98,7 @@ void PreloadedFirstPartySets::ApplyManuallySpecifiedSet() {
       sets_.end());
 
   // Next, we must add the manually-added set to the parsed value.
-  for (const std::string& member : manual_members) {
+  for (const net::SchemefulSite& member : manual_members) {
     sets_.emplace(member, manual_owner);
   }
 }

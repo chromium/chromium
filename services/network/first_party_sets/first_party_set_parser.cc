@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/optional.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/schemeful_site.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -24,8 +25,8 @@ namespace {
 
 // Ensures that the string represents an origin that is non-opaque and HTTPS.
 // Returns the registered domain.
-base::Optional<std::string> Canonicalize(const base::StringPiece origin_string,
-                                         bool emit_errors) {
+base::Optional<net::SchemefulSite> Canonicalize(base::StringPiece origin_string,
+                                                bool emit_errors) {
   const url::Origin origin(url::Origin::Create(GURL(origin_string)));
   if (origin.opaque()) {
     if (emit_errors) {
@@ -41,11 +42,9 @@ base::Optional<std::string> Canonicalize(const base::StringPiece origin_string,
     }
     return base::nullopt;
   }
-  const std::string domain_and_registry =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-
-  if (domain_and_registry.empty()) {
+  base::Optional<net::SchemefulSite> site =
+      net::SchemefulSite::CreateIfHasRegisterableDomain(origin);
+  if (!site.has_value()) {
     if (emit_errors) {
       LOG(ERROR) << "First-Party Set origin" << origin_string
                  << " does not have a valid registered domain; ignoring.";
@@ -53,7 +52,7 @@ base::Optional<std::string> Canonicalize(const base::StringPiece origin_string,
     return base::nullopt;
   }
 
-  return domain_and_registry;
+  return site;
 }
 
 const char kFirstPartySetOwnerField[] = "owner";
@@ -70,9 +69,10 @@ const char kFirstPartySetMembersField[] = "members";
 // and augments `elements` to include the elements of the set that was parsed.
 //
 // Returns true if parsing and validation were successful, false otherwise.
-bool ParsePreloadedSet(const base::Value& value,
-                       base::flat_map<std::string, std::string>& map,
-                       base::flat_set<std::string>& elements) {
+bool ParsePreloadedSet(
+    const base::Value& value,
+    base::flat_map<net::SchemefulSite, net::SchemefulSite>& map,
+    base::flat_set<net::SchemefulSite>& elements) {
   if (!value.is_dict())
     return false;
 
@@ -82,7 +82,7 @@ bool ParsePreloadedSet(const base::Value& value,
   if (!maybe_owner)
     return false;
 
-  base::Optional<std::string> canonical_owner =
+  base::Optional<net::SchemefulSite> canonical_owner =
       Canonicalize(std::move(*maybe_owner), false /* emit_errors */);
   if (!canonical_owner.has_value())
     return false;
@@ -105,7 +105,7 @@ bool ParsePreloadedSet(const base::Value& value,
     // another set.
     if (!item.is_string())
       return false;
-    base::Optional<std::string> member =
+    base::Optional<net::SchemefulSite> member =
         Canonicalize(item.GetString(), false /* emit_errors */);
     if (!member.has_value() || elements.contains(*member))
       return false;
@@ -117,13 +117,14 @@ bool ParsePreloadedSet(const base::Value& value,
 
 }  // namespace
 
-base::Optional<std::string> FirstPartySetParser::CanonicalizeRegisteredDomain(
+base::Optional<net::SchemefulSite>
+FirstPartySetParser::CanonicalizeRegisteredDomain(
     const base::StringPiece origin_string,
     bool emit_errors) {
   return Canonicalize(origin_string, emit_errors);
 }
 
-std::unique_ptr<base::flat_map<std::string, std::string>>
+std::unique_ptr<base::flat_map<net::SchemefulSite, net::SchemefulSite>>
 FirstPartySetParser::ParsePreloadedSets(base::StringPiece raw_sets) {
   base::Optional<base::Value> maybe_value = base::JSONReader::Read(
       raw_sets, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
@@ -132,8 +133,9 @@ FirstPartySetParser::ParsePreloadedSets(base::StringPiece raw_sets) {
   if (!maybe_value->is_list())
     return nullptr;
 
-  auto map = std::make_unique<base::flat_map<std::string, std::string>>();
-  base::flat_set<std::string> elements;
+  auto map = std::make_unique<
+      base::flat_map<net::SchemefulSite, net::SchemefulSite>>();
+  base::flat_set<net::SchemefulSite> elements;
   for (const auto& value : maybe_value->GetList()) {
     if (!ParsePreloadedSet(value, *map, elements))
       return nullptr;

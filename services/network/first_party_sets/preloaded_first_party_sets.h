@@ -11,6 +11,8 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "net/base/schemeful_site.h"
+#include "services/network/first_party_sets/first_party_set_parser.h"
 
 namespace network {
 
@@ -35,7 +37,7 @@ class PreloadedFirstPartySets {
   //
   // In case of invalid input, clears the current members-to-owners map, but
   // keeps any manually-specified set (i.e. a set provided on the command line).
-  base::flat_map<std::string, std::string>* ParseAndSet(
+  base::flat_map<net::SchemefulSite, net::SchemefulSite>* ParseAndSet(
       base::StringPiece raw_sets);
 
   int64_t size() const { return sets_.size(); }
@@ -48,8 +50,9 @@ class PreloadedFirstPartySets {
   // `manually_specified_set_`.
   void ApplyManuallySpecifiedSet();
 
-  base::flat_map<std::string, std::string> sets_;
-  base::Optional<std::pair<std::string, base::flat_set<std::string>>>
+  base::flat_map<net::SchemefulSite, net::SchemefulSite> sets_;
+  base::Optional<
+      std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>>
       manually_specified_set_;
 };
 

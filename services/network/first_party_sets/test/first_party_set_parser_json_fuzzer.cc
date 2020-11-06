@@ -9,6 +9,7 @@
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
+#include "net/base/schemeful_site.h"
 #include "testing/libfuzzer/proto/json.pb.h"
 #include "testing/libfuzzer/proto/json_proto_converter.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"

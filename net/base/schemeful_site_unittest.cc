@@ -4,6 +4,7 @@
 
 #include "net/base/schemeful_site.h"
 
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -183,6 +184,35 @@ TEST(SchemefulSiteTest, OpaqueSerialization) {
         SchemefulSite::DeserializeWithNonce(*site.SerializeWithNonce());
     EXPECT_TRUE(deserialized_site);
     EXPECT_EQ(site, *deserialized_site);
+  }
+}
+
+TEST(SchemefulSiteTest, CreateIfHasRegisterableDomain) {
+  for (const auto& site : std::initializer_list<std::string>{
+           "http://a.bar.test",
+           "http://c.test",
+           "http://a.foo.test",
+           "https://a.bar.test",
+           "https://c.test",
+           "https://a.foo.test",
+       }) {
+    url::Origin origin = url::Origin::Create(GURL(site));
+    EXPECT_THAT(SchemefulSite::CreateIfHasRegisterableDomain(origin),
+                testing::Optional(SchemefulSite(origin)))
+        << "site = \"" << site << "\"";
+  }
+
+  for (const auto& site : std::initializer_list<std::string>{
+           "data:text/html,<body>Hello World</body>",
+           "file:///",
+           "file://foo",
+           "http://127.0.0.1:1234",
+           "https://127.0.0.1:1234",
+       }) {
+    url::Origin origin = url::Origin::Create(GURL(site));
+    EXPECT_EQ(SchemefulSite::CreateIfHasRegisterableDomain(origin),
+              base::nullopt)
+        << "site = \"" << site << "\"";
   }
 }
 

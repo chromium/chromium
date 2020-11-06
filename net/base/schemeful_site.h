@@ -5,6 +5,7 @@
 #ifndef NET_BASE_SCHEMEFUL_SITE_H_
 #define NET_BASE_SCHEMEFUL_SITE_H_
 
+#include <ostream>
 #include <string>
 
 #include "base/gtest_prod_util.h"
@@ -58,6 +59,10 @@ class NET_EXPORT SchemefulSite {
   SchemefulSite& operator=(const SchemefulSite& other);
   SchemefulSite& operator=(SchemefulSite&& other);
 
+  // Creates a SchemefulSite iff the passed-in origin has a registerable domain.
+  static base::Optional<SchemefulSite> CreateIfHasRegisterableDomain(
+      const url::Origin&);
+
   // Deserializes a string obtained from `Serialize()` to a `SchemefulSite`.
   // Returns an opaque `SchemefulSite` if the value was invalid in any way.
   static SchemefulSite Deserialize(const std::string& value);
@@ -88,6 +93,15 @@ class NET_EXPORT SchemefulSite {
 
   FRIEND_TEST_ALL_PREFIXES(SchemefulSiteTest, OpaqueSerialization);
 
+  struct ObtainASiteResult {
+    url::Origin origin;
+    bool used_registerable_domain;
+  };
+
+  static ObtainASiteResult ObtainASite(const url::Origin&);
+
+  explicit SchemefulSite(ObtainASiteResult);
+
   // Deserializes a string obtained from `SerializeWithNonce()` to a
   // `SchemefulSite`. Returns nullopt if the value was invalid in any way.
   static base::Optional<SchemefulSite> DeserializeWithNonce(
@@ -113,6 +127,12 @@ class NET_EXPORT SchemefulSite {
   // should NOT be used directly by SchemefulSite consumers.
   url::Origin site_as_origin_;
 };
+
+// Provided to allow gtest to create more helpful error messages, instead of
+// printing hex.
+inline void PrintTo(const SchemefulSite& ss, std::ostream* os) {
+  *os << ss.Serialize();
+}
 
 }  // namespace net
 

@@ -5,6 +5,7 @@
 #include "services/network/first_party_sets/preloaded_first_party_sets.h"
 
 #include "base/json/json_reader.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,6 +20,11 @@ using ::testing::UnorderedElementsAre;
 
 namespace network {
 
+MATCHER_P(SerializesTo, want, "") {
+  const std::string got = arg.Serialize();
+  return testing::ExplainMatchResult(testing::Eq(want), got, result_listener);
+}
+
 TEST(PreloadedFirstPartySets, ParsesJSON) {
   EXPECT_THAT(PreloadedFirstPartySets().ParseAndSet("[]"), Pointee(IsEmpty()));
 }
@@ -32,7 +38,9 @@ TEST(PreloadedFirstPartySets, AcceptsMinimal) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(PreloadedFirstPartySets().ParseAndSet(input),
-              Pointee(UnorderedElementsAre(Pair("aaaa.test", "example.test"))));
+              Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://aaaa.test"),
+                       SerializesTo("https://example.test")))));
 }
 
 TEST(PreloadedFirstPartySets, AcceptsMultipleSets) {
@@ -50,9 +58,12 @@ TEST(PreloadedFirstPartySets, AcceptsMultipleSets) {
   )";
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(PreloadedFirstPartySets().ParseAndSet(input),
-              Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"),
-                                           Pair("member2.test", "foo.test"))));
+  EXPECT_THAT(
+      PreloadedFirstPartySets().ParseAndSet(input),
+      Pointee(UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member2.test"),
+                                        SerializesTo("https://foo.test")))));
 }
 
 TEST(PreloadedFirstPartySets, ClearsPreloadedOnError) {
@@ -71,9 +82,12 @@ TEST(PreloadedFirstPartySets, ClearsPreloadedOnError) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   PreloadedFirstPartySets sets;
-  EXPECT_THAT(sets.ParseAndSet(input),
-              Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"),
-                                           Pair("member2.test", "foo.test"))));
+  EXPECT_THAT(
+      sets.ParseAndSet(input),
+      Pointee(UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member2.test"),
+                                        SerializesTo("https://foo.test")))));
 
   EXPECT_THAT(sets.ParseAndSet("{}"), Pointee(IsEmpty()));
 }
@@ -173,9 +187,10 @@ TEST(PreloadedFirstPartySets,
 TEST(PreloadedFirstPartySets, SetsManuallySpecified_Valid_SingleMember) {
   PreloadedFirstPartySets sets;
   sets.SetManuallySpecifiedSet("https://example.test,https://member.test");
-  EXPECT_THAT(
-      sets.ParseAndSet("[]"),
-      Pointee(UnorderedElementsAre(Pair("member.test", "example.test"))));
+  EXPECT_THAT(sets.ParseAndSet("[]"),
+              Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://member.test"),
+                       SerializesTo("https://example.test")))));
 }
 
 TEST(PreloadedFirstPartySets,
@@ -183,19 +198,22 @@ TEST(PreloadedFirstPartySets,
   PreloadedFirstPartySets sets;
   sets.SetManuallySpecifiedSet(
       "https://www.example.test,https://www.member.test");
-  EXPECT_THAT(
-      sets.ParseAndSet("[]"),
-      Pointee(UnorderedElementsAre(Pair("member.test", "example.test"))));
+  EXPECT_THAT(sets.ParseAndSet("[]"),
+              Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://member.test"),
+                       SerializesTo("https://example.test")))));
 }
 
 TEST(PreloadedFirstPartySets, SetsManuallySpecified_Valid_MultipleMembers) {
   PreloadedFirstPartySets sets;
   sets.SetManuallySpecifiedSet(
       "https://example.test,https://member1.test,https://member2.test");
-  EXPECT_THAT(
-      sets.ParseAndSet("[]"),
-      Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"),
-                                   Pair("member2.test", "example.test"))));
+  EXPECT_THAT(sets.ParseAndSet("[]"),
+              Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://member1.test"),
+                       SerializesTo("https://example.test")),
+                  Pair(SerializesTo("https://member2.test"),
+                       SerializesTo("https://example.test")))));
 }
 
 TEST(PreloadedFirstPartySets, SetsManuallySpecified_Valid_OwnerIsOnlyMember) {
@@ -208,9 +226,10 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_Valid_OwnerIsMember) {
   PreloadedFirstPartySets sets;
   sets.SetManuallySpecifiedSet(
       "https://example.test,https://example.test,https://member1.test");
-  EXPECT_THAT(
-      sets.ParseAndSet("[]"),
-      Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"))));
+  EXPECT_THAT(sets.ParseAndSet("[]"),
+              Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://member1.test"),
+                       SerializesTo("https://example.test")))));
 }
 
 TEST(PreloadedFirstPartySets, SetsManuallySpecified_Valid_RepeatedMember) {
@@ -220,10 +239,12 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_Valid_RepeatedMember) {
        https://member1.test,
        https://member2.test,
        https://member1.test)");
-  EXPECT_THAT(
-      sets.ParseAndSet("[]"),
-      Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"),
-                                   Pair("member2.test", "example.test"))));
+  EXPECT_THAT(sets.ParseAndSet("[]"),
+              Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://member1.test"),
+                       SerializesTo("https://example.test")),
+                  Pair(SerializesTo("https://member2.test"),
+                       SerializesTo("https://example.test")))));
 }
 
 TEST(PreloadedFirstPartySets, SetsManuallySpecified_DeduplicatesOwnerOwner) {
@@ -244,10 +265,14 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_DeduplicatesOwnerOwner) {
   PreloadedFirstPartySets sets;
   sets.SetManuallySpecifiedSet(
       "https://example.test,https://member1.test,https://member2.test");
-  EXPECT_THAT(sets.ParseAndSet(input),
-              Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"),
-                                           Pair("member2.test", "example.test"),
-                                           Pair("member4.test", "bar.test"))));
+  EXPECT_THAT(
+      sets.ParseAndSet(input),
+      Pointee(UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member2.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member4.test"),
+                                        SerializesTo("https://bar.test")))));
 }
 
 TEST(PreloadedFirstPartySets, SetsManuallySpecified_DeduplicatesOwnerMember) {
@@ -268,11 +293,14 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_DeduplicatesOwnerMember) {
   PreloadedFirstPartySets sets;
   sets.SetManuallySpecifiedSet(
       "https://example.test,https://member1.test,https://member3.test");
-  EXPECT_THAT(
-      sets.ParseAndSet(input),
-      Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"),
-                                   Pair("member2.test", "bar.test"),
-                                   Pair("member3.test", "example.test"))));
+  EXPECT_THAT(sets.ParseAndSet(input),
+              Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://member1.test"),
+                       SerializesTo("https://example.test")),
+                  Pair(SerializesTo("https://member2.test"),
+                       SerializesTo("https://bar.test")),
+                  Pair(SerializesTo("https://member3.test"),
+                       SerializesTo("https://example.test")))));
 }
 
 TEST(PreloadedFirstPartySets, SetsManuallySpecified_DeduplicatesMemberOwner) {
@@ -292,11 +320,14 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_DeduplicatesMemberOwner) {
 
   PreloadedFirstPartySets sets;
   sets.SetManuallySpecifiedSet("https://example.test,https://member3.test");
-  EXPECT_THAT(
-      sets.ParseAndSet(input),
-      Pointee(UnorderedElementsAre(Pair("member1.test", "foo.test"),
-                                   Pair("member2.test", "foo.test"),
-                                   Pair("member3.test", "example.test"))));
+  EXPECT_THAT(sets.ParseAndSet(input),
+              Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://member1.test"),
+                       SerializesTo("https://foo.test")),
+                  Pair(SerializesTo("https://member2.test"),
+                       SerializesTo("https://foo.test")),
+                  Pair(SerializesTo("https://member3.test"),
+                       SerializesTo("https://example.test")))));
 }
 
 TEST(PreloadedFirstPartySets, SetsManuallySpecified_DeduplicatesMemberMember) {
@@ -317,11 +348,16 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_DeduplicatesMemberMember) {
   PreloadedFirstPartySets sets;
   sets.SetManuallySpecifiedSet(
       "https://example.test,https://member1.test,https://member2.test");
-  EXPECT_THAT(sets.ParseAndSet(input),
-              Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"),
-                                           Pair("member2.test", "example.test"),
-                                           Pair("member3.test", "foo.test"),
-                                           Pair("member4.test", "bar.test"))));
+  EXPECT_THAT(
+      sets.ParseAndSet(input),
+      Pointee(UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member2.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member3.test"),
+                                        SerializesTo("https://foo.test")),
+                                   Pair(SerializesTo("https://member4.test"),
+                                        SerializesTo("https://bar.test")))));
 }
 
 TEST(PreloadedFirstPartySets, SetsManuallySpecified_ClearsPreloadedOnError) {
@@ -338,15 +374,21 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_ClearsPreloadedOnError) {
   PreloadedFirstPartySets sets;
   sets.SetManuallySpecifiedSet(
       "https://example.test,https://member1.test,https://member2.test");
-  EXPECT_THAT(sets.ParseAndSet(input),
-              Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"),
-                                           Pair("member2.test", "example.test"),
-                                           Pair("member3.test", "bar.test"))));
-
   EXPECT_THAT(
-      sets.ParseAndSet("{}"),
-      Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"),
-                                   Pair("member2.test", "example.test"))));
+      sets.ParseAndSet(input),
+      Pointee(UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member2.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member3.test"),
+                                        SerializesTo("https://bar.test")))));
+
+  EXPECT_THAT(sets.ParseAndSet("{}"),
+              Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://member1.test"),
+                       SerializesTo("https://example.test")),
+                  Pair(SerializesTo("https://member2.test"),
+                       SerializesTo("https://example.test")))));
 }
 
 }  // namespace network

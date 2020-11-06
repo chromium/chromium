@@ -15,6 +15,10 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/values.h"
 
+namespace net {
+class SchemefulSite;
+}
+
 namespace network {
 
 class FirstPartySetParser {
@@ -32,13 +36,13 @@ class FirstPartySetParser {
   // only for *preloaded* sets.
   //
   // Returns nullptr if parsing or validation of any set failed.
-  static std::unique_ptr<base::flat_map<std::string, std::string>>
+  static std::unique_ptr<base::flat_map<net::SchemefulSite, net::SchemefulSite>>
   ParsePreloadedSets(base::StringPiece raw_sets);
 
   // Canonicalizes the passed in origin to a registered domain. In particular,
   // this ensures that the origin is non-opaque, is HTTPS, and has a registered
   // domain. Returns base::nullopt in case of any error.
-  static base::Optional<std::string> CanonicalizeRegisteredDomain(
+  static base::Optional<net::SchemefulSite> CanonicalizeRegisteredDomain(
       const base::StringPiece origin_string,
       bool emit_errors);
 };

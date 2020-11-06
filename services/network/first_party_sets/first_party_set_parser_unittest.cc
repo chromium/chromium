@@ -5,6 +5,7 @@
 #include "services/network/first_party_sets/first_party_set_parser.h"
 
 #include "base/json/json_reader.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -15,6 +16,11 @@ using ::testing::Pointee;
 using ::testing::UnorderedElementsAre;
 
 namespace network {
+
+MATCHER_P(SerializesTo, want, "") {
+  const std::string got = arg.Serialize();
+  return testing::ExplainMatchResult(testing::Eq(want), got, result_listener);
+}
 
 TEST(FirstPartySetParser_Preloaded, RejectsEmpty) {
   // If the input isn't valid JSON, we should
@@ -64,7 +70,9 @@ TEST(FirstPartySetParser, AcceptsMinimal) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
-              Pointee(UnorderedElementsAre(Pair("aaaa.test", "example.test"))));
+              Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://aaaa.test"),
+                       SerializesTo("https://example.test")))));
 }
 
 TEST(FirstPartySetParser, RejectsMissingOwner) {
@@ -197,7 +205,9 @@ TEST(FirstPartySetParser, TruncatesSubdomain_Owner) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
-              Pointee(UnorderedElementsAre(Pair("aaaa.test", "example.test"))));
+              Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://aaaa.test"),
+                       SerializesTo("https://example.test")))));
 }
 
 TEST(FirstPartySetParser, TruncatesSubdomain_Member) {
@@ -211,7 +221,9 @@ TEST(FirstPartySetParser, TruncatesSubdomain_Member) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
-              Pointee(UnorderedElementsAre(Pair("aaaa.test", "example.test"))));
+              Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://aaaa.test"),
+                       SerializesTo("https://example.test")))));
 }
 
 TEST(FirstPartySetParser, AcceptsMultipleSets) {
@@ -231,9 +243,12 @@ TEST(FirstPartySetParser, AcceptsMultipleSets) {
   // Sanity check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
-              Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"),
-                                           Pair("member2.test", "foo.test"))));
+  EXPECT_THAT(
+      FirstPartySetParser::ParsePreloadedSets(input),
+      Pointee(UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member2.test"),
+                                        SerializesTo("https://foo.test")))));
 }
 
 TEST(FirstPartySetParser, RejectsInvalidSets_InvalidOwner) {
@@ -290,9 +305,10 @@ TEST(FirstPartySetParser, AllowsTrailingCommas) {
   ASSERT_TRUE(base::JSONReader::Read(
       input, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS));
 
-  EXPECT_THAT(
-      FirstPartySetParser::ParsePreloadedSets(input),
-      Pointee(UnorderedElementsAre(Pair("member1.test", "example.test"))));
+  EXPECT_THAT(FirstPartySetParser::ParsePreloadedSets(input),
+              Pointee(UnorderedElementsAre(
+                  Pair(SerializesTo("https://member1.test"),
+                       SerializesTo("https://example.test")))));
 }
 
 TEST(FirstPartySetParser, Rejects_SameOwner) {

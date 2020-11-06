@@ -88,6 +88,7 @@ fuzzer_test("first_party_set_parser_fuzzer") {
     ":first_party_sets",
     "//base",
     "//base:i18n",
+    "//net:net",
     "//net:net_fuzzer_test_support",
   ]
   dict = "test/first_party_set_parser_fuzzer.dict"
@@ -100,6 +101,7 @@ fuzzer_test("first_party_set_parser_json_fuzzer") {
     ":first_party_sets",
     "//base",
     "//base:i18n",
+    "//net:net",
     "//testing/libfuzzer/proto:json_proto",
     "//testing/libfuzzer/proto:json_proto_converter",
     "//third_party/libprotobuf-mutator",

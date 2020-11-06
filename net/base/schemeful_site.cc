@@ -12,12 +12,16 @@
 
 namespace net {
 
-namespace {
-
-// Return a new origin using the registerable domain of `origin` if possible and
-// a port of 0. Otherwise, returns the passed in origin. Follows steps specified
-// in https://html.spec.whatwg.org/multipage/origin.html#obtain-a-site
-url::Origin SwitchToRegistrableDomainAndRemovePort(const url::Origin& origin) {
+// Return a tuple containing:
+// * a new origin using the registerable domain of `origin` if possible and
+//   a port of 0; otherwise, the passed-in origin.
+// * a bool indicating whether `origin` had a non-null registerable domain.
+//   (False if `origin` was opaque.)
+//
+// Follows steps specified in
+// https://html.spec.whatwg.org/multipage/origin.html#obtain-a-site
+SchemefulSite::ObtainASiteResult SchemefulSite::ObtainASite(
+    const url::Origin& origin) {
   // There is currently no reason for getting the schemeful site of a web
   // socket, so disallow passing in websocket origins.
   DCHECK_NE(origin.scheme(), url::kWsScheme);
@@ -25,7 +29,7 @@ url::Origin SwitchToRegistrableDomainAndRemovePort(const url::Origin& origin) {
 
   // 1. If origin is an opaque origin, then return origin.
   if (origin.opaque())
-    return origin;
+    return {origin, false /* used_registerable_domain */};
 
   std::string registerable_domain;
 
@@ -48,7 +52,8 @@ url::Origin SwitchToRegistrableDomainAndRemovePort(const url::Origin& origin) {
   //
   // Note that `registerable_domain` could still end up empty, since the
   // `origin` might have a scheme that permits empty hostnames, such as "file".
-  if (registerable_domain.empty())
+  bool used_registerable_domain = !registerable_domain.empty();
+  if (!used_registerable_domain)
     registerable_domain = origin.host();
 
   int port = url::DefaultPortForScheme(origin.scheme().c_str(),
@@ -58,24 +63,33 @@ url::Origin SwitchToRegistrableDomainAndRemovePort(const url::Origin& origin) {
   if (port == url::PORT_UNSPECIFIED)
     port = 0;
 
-  return url::Origin::CreateFromNormalizedTuple(origin.scheme(),
-                                                registerable_domain, port);
+  return {url::Origin::CreateFromNormalizedTuple(origin.scheme(),
+                                                 registerable_domain, port),
+          used_registerable_domain};
 }
 
-}  // namespace
+SchemefulSite::SchemefulSite(ObtainASiteResult result)
+    : site_as_origin_(std::move(result.origin)) {}
 
 SchemefulSite::SchemefulSite(const url::Origin& origin)
-    : site_as_origin_(SwitchToRegistrableDomainAndRemovePort(origin)) {}
+    : SchemefulSite(ObtainASite(origin)) {}
 
 SchemefulSite::SchemefulSite(const GURL& url)
-    : site_as_origin_(
-          SwitchToRegistrableDomainAndRemovePort(url::Origin::Create(url))) {}
+    : SchemefulSite(url::Origin::Create(url)) {}
 
 SchemefulSite::SchemefulSite(const SchemefulSite& other) = default;
 SchemefulSite::SchemefulSite(SchemefulSite&& other) = default;
 
 SchemefulSite& SchemefulSite::operator=(const SchemefulSite& other) = default;
 SchemefulSite& SchemefulSite::operator=(SchemefulSite&& other) = default;
+
+base::Optional<SchemefulSite> SchemefulSite::CreateIfHasRegisterableDomain(
+    const url::Origin& origin) {
+  ObtainASiteResult result = ObtainASite(origin);
+  if (!result.used_registerable_domain)
+    return base::nullopt;
+  return SchemefulSite(std::move(result));
+}
 
 // static
 SchemefulSite SchemefulSite::Deserialize(const std::string& value) {

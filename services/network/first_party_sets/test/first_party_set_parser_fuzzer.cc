@@ -9,6 +9,7 @@
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
+#include "net/base/schemeful_site.h"
 
 struct TestCase {
   TestCase() { CHECK(base::i18n::InitializeICU()); }
