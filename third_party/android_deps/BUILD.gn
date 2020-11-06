@@ -1463,6 +1463,9 @@ java_prebuilt("com_google_errorprone_error_prone_annotation_java") {
 java_prebuilt("com_google_errorprone_error_prone_annotations_java") {
   jar_path = "libs/com_google_errorprone_error_prone_annotations/error_prone_annotations-2.4.0.jar"
   output_name = "com_google_errorprone_error_prone_annotations"
+  supports_android = true
+
+  # Needed to break dependency cycle for errorprone_plugin_java.
   enable_bytecode_checks = false
 }
 
