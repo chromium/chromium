@@ -155,13 +155,6 @@ public interface BrowserPaymentRequest {
      */
     default void onPaymentAppCreated(PaymentApp paymentApp) {}
 
-    // TODO(crbug.com/1144527): this method will be removed once PaymentRequestService has taken
-    // over PaymentRequestUpdateEventListener.
-    /** @return An instance of PaymentRequestUpdateEventListener. */
-    default PaymentRequestUpdateEventListener getPaymentRequestUpdateEventListener() {
-        return null;
-    }
-
     /**
      * @return Whether payment sheet based payment app is supported, e.g., user entering credit
      *      cards on payment sheet.

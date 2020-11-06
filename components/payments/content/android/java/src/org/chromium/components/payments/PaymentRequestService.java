@@ -57,7 +57,8 @@ import java.util.Map;
  * class need to close them with
  * {@link PaymentRequestService#close()}, after which no usage is allowed.
  */
-public class PaymentRequestService implements PaymentAppFactoryDelegate, PaymentAppFactoryParams {
+public class PaymentRequestService implements PaymentAppFactoryDelegate, PaymentAppFactoryParams,
+                                              PaymentRequestUpdateEventListener {
     private static final String TAG = "PaymentRequestServ";
     private static PaymentRequestServiceObserverForTest sObserverForTest;
     private static NativeObserverForTest sNativeObserverForTest;
@@ -981,14 +982,6 @@ public class PaymentRequestService implements PaymentAppFactoryDelegate, Payment
         sObserverForTest = observerForTest;
     }
 
-    /** Invokes {@link PaymentRequestClient.onPaymentMethodChange}. */
-    public void onPaymentMethodChange(String methodName, String stringifiedDetails) {
-        // Every caller should stop referencing this class once close() is called.
-        assert mClient != null;
-
-        mClient.onPaymentMethodChange(methodName, stringifiedDetails);
-    }
-
     /** Invokes {@link PaymentRequestClient.onShippingAddressChange}. */
     public void onShippingAddressChange(PaymentAddress address) {
         // Every caller should stop referencing this class once close() is called.
@@ -1169,7 +1162,7 @@ public class PaymentRequestService implements PaymentAppFactoryDelegate, Payment
     // PaymentAppFactoryParams implementation.
     @Override
     public PaymentRequestUpdateEventListener getPaymentRequestUpdateEventListener() {
-        return mBrowserPaymentRequest.getPaymentRequestUpdateEventListener();
+        return this;
     }
 
     // PaymentAppFactoryParams implementation.
@@ -1200,5 +1193,52 @@ public class PaymentRequestService implements PaymentAppFactoryDelegate, Payment
     /** Sets no payment app is invoked. */
     public void resetInvokedPaymentApp() {
         mInvokedPaymentApp = null;
+    }
+
+    // Implements PaymentRequestUpdateEventListener:
+    @Override
+    public boolean changePaymentMethodFromInvokedApp(String methodName, String stringifiedDetails) {
+        if (TextUtils.isEmpty(methodName) || stringifiedDetails == null
+                || mInvokedPaymentApp == null
+                || mInvokedPaymentApp.isWaitingForPaymentDetailsUpdate() || mClient == null) {
+            return false;
+        }
+        mClient.onPaymentMethodChange(methodName, stringifiedDetails);
+        return true;
+    }
+
+    // Implements PaymentRequestUpdateEventListener:
+    @Override
+    public boolean changeShippingOptionFromInvokedApp(String shippingOptionId) {
+        if (TextUtils.isEmpty(shippingOptionId) || mInvokedPaymentApp == null
+                || mInvokedPaymentApp.isWaitingForPaymentDetailsUpdate() || !mRequestShipping
+                || mSpec.getRawShippingOptions() == null || mClient == null) {
+            return false;
+        }
+
+        boolean isValidId = false;
+        for (PaymentShippingOption option : mSpec.getRawShippingOptions()) {
+            if (shippingOptionId.equals(option.id)) {
+                isValidId = true;
+                break;
+            }
+        }
+        if (!isValidId) return false;
+
+        mClient.onShippingOptionChange(shippingOptionId);
+        return true;
+    }
+
+    // Implements PaymentRequestUpdateEventListener:
+    @Override
+    public boolean changeShippingAddressFromInvokedApp(PaymentAddress shippingAddress) {
+        if (shippingAddress == null || mInvokedPaymentApp == null
+                || mInvokedPaymentApp.isWaitingForPaymentDetailsUpdate() || !mRequestShipping
+                || mClient == null) {
+            return false;
+        }
+
+        onShippingAddressChange(shippingAddress);
+        return true;
     }
 }
