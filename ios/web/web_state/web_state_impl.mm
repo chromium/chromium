@@ -584,6 +584,16 @@ UIView* WebStateImpl::GetView() {
   return [web_controller_ view];
 }
 
+void WebStateImpl::DidCoverWebContent() {
+  [web_controller_ removeWebViewFromViewHierarchy];
+  WasHidden();
+}
+
+void WebStateImpl::DidRevealWebContent() {
+  [web_controller_ addWebViewToViewHierarchy];
+  WasShown();
+}
+
 void WebStateImpl::WasShown() {
   if (IsVisible())
     return;

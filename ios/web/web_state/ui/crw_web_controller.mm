@@ -896,6 +896,14 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   web::CreateFullPagePdf(self.webView, base::BindOnce(completionBlock));
 }
 
+- (void)removeWebViewFromViewHierarchy {
+  [_containerView resetContent];
+}
+
+- (void)addWebViewToViewHierarchy {
+  [self displayWebView];
+}
+
 #pragma mark - CRWTouchTrackingDelegate (Public)
 
 - (void)touched:(BOOL)touched {

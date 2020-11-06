@@ -100,6 +100,10 @@ UIView* TestWebState::GetView() {
   return view_;
 }
 
+void TestWebState::DidCoverWebContent() {}
+
+void TestWebState::DidRevealWebContent() {}
+
 void TestWebState::WasShown() {
   is_visible_ = true;
   for (auto& observer : observers_)

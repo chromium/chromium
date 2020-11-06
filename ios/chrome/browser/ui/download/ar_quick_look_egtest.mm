@@ -39,11 +39,20 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 
   if (request.GetURL().path() == "/") {
     result->set_content(
+        "<html><head><script>"
+        "document.addEventListener('visibilitychange', "
+        "function() {"
+        "document.getElementById('visibility-change').innerHTML = "
+        "document.visibilityState;"
+        "});"
+        "</script></head><body>"
         "<a id='forbidden' href='/forbidden'>Forbidden</a> "
         "<a id='unauthorized' href='/unauthorized'>Unauthorized</a> "
         "<a id='changing-mime-type' href='/changing-mime-type'>Changing Mime "
         "Type</a> "
-        "<a id='good' href='/good'>Good</a>");
+        "<a id='good' href='/good'>Good</a>"
+        "<p id='visibility-change'>None</p>"
+        "</body></html>");
     return result;
   }
 
@@ -183,6 +192,46 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   GREYAssertFalse(
       [goodTitle waitForExistenceWithTimeout:kWaitForARPresentationTimeout],
       @"AR preview dialog UI was presented");
+}
+
+// Tests that the visibilitychange event is fired when quicklook is
+// shown/hidden.
+- (void)testVisibilitychangeEventFired {
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+  // TODO(crbug.com/1114202): The XCUIElement queries in this test are broken on
+  // Xcode 12 beta 4 when running on the iOS 12 simulator.  Disable until Xcode
+  // is fixed.
+  if (@available(iOS 13, *)) {
+  } else {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS12.");
+  }
+#endif
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Good"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"good"];
+
+  [ChromeEarlGrey waitForWebStateContainingText:"hidden"];
+
+  // QLPreviewController UI is rendered out of host process so EarlGrey matcher
+  // can not find QLPreviewController UI.
+  // EG2 test uses XCUIApplication API to check for Quick Look dialog UI
+  // presentation.
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+  XCUIElement* goodTitle = app.staticTexts[@"good"];
+  GREYAssert(
+      [goodTitle waitForExistenceWithTimeout:kWaitForARPresentationTimeout],
+      @"AR preview dialog UI was not presented");
+
+  // Close the QuickLook dialog.
+  XCUIElement* doneButton = app.buttons[@"Done"];
+  GREYAssert(
+      [doneButton waitForExistenceWithTimeout:kWaitForARPresentationTimeout],
+      @"Done button not visible");
+  [doneButton tap];
+
+  // Check that the visibilitychange event is triggered.
+  [ChromeEarlGrey waitForWebStateContainingText:"visible"];
 }
 
 @end

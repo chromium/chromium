@@ -185,6 +185,8 @@ class WebStateImpl : public WebState,
   bool IsWebUsageEnabled() const override;
   void SetWebUsageEnabled(bool enabled) override;
   UIView* GetView() override;
+  void DidCoverWebContent() override;
+  void DidRevealWebContent() override;
   void WasShown() override;
   void WasHidden() override;
   void SetKeepRenderProcessAlive(bool keep_alive) override;

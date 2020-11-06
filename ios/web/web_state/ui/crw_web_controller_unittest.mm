@@ -335,6 +335,25 @@ TEST_F(CRWWebControllerTest, WebViewCreatedAfterEnsureWebViewCreated) {
   }
 }
 
+// Tests that the WebView is correctly removed/added from the view hierarchy.
+TEST_F(CRWWebControllerTest, RemoveWebViewFromViewHierarchy) {
+  // Make sure that the WebController view has a window to avoid stashing the
+  // WebView once created.
+  [UIApplication.sharedApplication.keyWindow addSubview:web_controller().view];
+
+  // Get the web view.
+  [web_controller() removeWebView];
+  WKWebView* web_view = [web_controller() ensureWebViewCreated];
+
+  ASSERT_EQ(web_controller().view, web_view.superview.superview);
+
+  [web_controller() removeWebViewFromViewHierarchy];
+  EXPECT_EQ(nil, web_view.superview.superview);
+
+  [web_controller() addWebViewToViewHierarchy];
+  EXPECT_EQ(web_controller().view, web_view.superview.superview);
+}
+
 // Test fixture to test JavaScriptDialogPresenter.
 class JavaScriptDialogPresenterTest : public WebTestWithWebController {
  protected:
