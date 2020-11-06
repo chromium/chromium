@@ -18,8 +18,8 @@
 namespace cc {
 namespace {
 
-std::unique_ptr<EventMetrics> CloneMetrics(const EventMetrics& metrics) {
-  return std::make_unique<EventMetrics>(metrics);
+MATCHER(UniquePtrMatches, negation ? "do not match" : "match") {
+  return std::get<0>(arg).get() == std::get<1>(arg);
 }
 
 EventsMetricsManager::ScopedMonitor::DoneCallback CreateSimpleDoneCallback(
@@ -41,10 +41,9 @@ EventsMetricsManager::ScopedMonitor::DoneCallback CreateSimpleDoneCallback(
     statements;                   \
   }
 
-using ::testing::Each;
+using ::testing::IsEmpty;
 using ::testing::Message;
-using ::testing::NotNull;
-using ::testing::UnorderedElementsAreArray;
+using ::testing::UnorderedPointwise;
 
 class EventsMetricsManagerTest : public testing::Test {
  public:
@@ -106,8 +105,8 @@ TEST_F(EventsMetricsManagerTest, EventsMetricsSaved) {
   // Out of the above events, only those with an interesting event type, for
   // which SaveActiveEventMetrics() is called inside its monitor scope, are
   // expected to be saved.
-  std::vector<EventMetrics> expected_saved_events = {
-      *events[1].first,
+  const EventMetrics* expected_saved_events[] = {
+      events[1].first.get(),
   };
 
   for (auto& event : events) {
@@ -124,113 +123,126 @@ TEST_F(EventsMetricsManagerTest, EventsMetricsSaved) {
 
   // Check saved event metrics are as expected.
   EXPECT_THAT(manager_.TakeSavedEventsMetrics(),
-              UnorderedElementsAreArray(expected_saved_events));
+              UnorderedPointwise(UniquePtrMatches(), expected_saved_events));
 
   // The first call to TakeSavedEventsMetrics() should remove events metrics
   // from the manager, so the second call should return empty list.
-  EXPECT_THAT(manager_.TakeSavedEventsMetrics(), testing::IsEmpty());
+  EXPECT_THAT(manager_.TakeSavedEventsMetrics(), IsEmpty());
 }
 
 // Tests that metrics for nested event loops are handled properly in a few
 // different configurations.
 TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
-  const std::unique_ptr<EventMetrics> events[] = {
-      EventMetrics::Create(ui::ET_MOUSE_PRESSED, base::nullopt,
-                           AdvanceNowByMs(1), base::nullopt),
-      EventMetrics::Create(ui::ET_MOUSE_RELEASED, base::nullopt,
-                           AdvanceNowByMs(1), base::nullopt),
+  struct {
+    ui::EventType type;
+    base::TimeTicks timestamp;
+  } events[] = {
+      {ui::ET_MOUSE_PRESSED, AdvanceNowByMs(1)},
+      {ui::ET_MOUSE_RELEASED, AdvanceNowByMs(1)},
   };
-  EXPECT_THAT(events, Each(NotNull()));
 
   struct {
-    // Metrics to use for the outer scope.
-    std::unique_ptr<EventMetrics> outer_metrics;
+    // Index of event to use for the outer scope. -1 if no event should be used.
+    int outer_event;
 
     // Whether to save the outer scope metrics before starting the inner scope.
     bool save_outer_metrics_before_inner;
 
-    // Metrics to use for the inner scope.
-    std::unique_ptr<EventMetrics> inner_metrics;
+    // Index of event to use for the inner scope. -1 if no event should be used.
+    int inner_event;
 
     // Whether to save the inner scope metrics.
     bool save_inner_metrics;
 
     // Whether to save the outer scope metrics after the inner scope ended.
     bool save_outer_metrics_after_inner;
-
-    // List of metrics expected to be saved.
-    std::vector<EventMetrics> expected_saved_metrics;
   } configs[] = {
       // Config #0.
       {
-          /*outer_metrics=*/CloneMetrics(*events[0]),
+          /*outer_metrics=*/0,
           /*save_outer_metrics_before_inner=*/true,
-          /*inner_metrics=*/CloneMetrics(*events[1]),
+          /*inner_metrics=*/1,
           /*save_inner_metrics=*/true,
           /*save_outer_metrics_after_inner=*/false,
-          /*expected_saved_metrics=*/{*events[0], *events[1]},
       },
 
       // Config #1.
       {
-          /*outer_metrics=*/CloneMetrics(*events[0]),
+          /*outer_metrics=*/0,
           /*save_outer_metrics_before_inner=*/false,
-          /*inner_metrics=*/CloneMetrics(*events[1]),
+          /*inner_metrics=*/1,
           /*save_inner_metrics=*/true,
           /*save_outer_metrics_after_inner=*/true,
-          /*expected_saved_metrics=*/{*events[0], *events[1]},
       },
 
       // Config #2.
       {
-          /*outer_metrics=*/CloneMetrics(*events[0]),
+          /*outer_metrics=*/0,
           /*save_outer_metrics_before_inner=*/true,
-          /*inner_metrics=*/CloneMetrics(*events[1]),
+          /*inner_metrics=*/1,
           /*save_inner_metrics=*/true,
           /*save_outer_metrics_after_inner=*/true,
-          /*expected_saved_metrics=*/{*events[0], *events[1]},
       },
 
       // Config #3.
       {
-          /*outer_metrics=*/CloneMetrics(*events[0]),
+          /*outer_metrics=*/0,
           /*save_outer_metrics_before_inner=*/false,
-          /*inner_metrics=*/nullptr,
+          /*inner_metrics=*/-1,
           /*save_inner_metrics=*/false,
           /*save_outer_metrics_after_inner=*/true,
-          /*expected_saved_metrics=*/{*events[0]},
       },
 
       // Config #4.
       {
-          /*outer_metrics=*/nullptr,
+          /*outer_metrics=*/-1,
           /*save_outer_metrics_before_inner=*/false,
-          /*inner_metrics=*/CloneMetrics(*events[0]),
+          /*inner_metrics=*/0,
           /*save_inner_metrics=*/true,
           /*save_outer_metrics_after_inner=*/false,
-          /*expected_saved_metrics=*/{*events[0]},
       },
   };
 
   for (size_t i = 0; i < base::size(configs); i++) {
     auto& config = configs[i];
-    {
+    std::vector<const EventMetrics*> expected_saved_metrics;
+
+    {  // Start outer scope.
+      std::unique_ptr<EventMetrics> outer_metrics;
+      if (config.outer_event != -1) {
+        auto& event = events[config.outer_event];
+        outer_metrics = EventMetrics::Create(event.type, base::nullopt,
+                                             event.timestamp, base::nullopt);
+        DCHECK_NE(outer_metrics, nullptr);
+        expected_saved_metrics.push_back(outer_metrics.get());
+      }
       auto outer_monitor = manager_.GetScopedMonitor(
-          CreateSimpleDoneCallback(std::move(config.outer_metrics)));
+          CreateSimpleDoneCallback(std::move(outer_metrics)));
       if (config.save_outer_metrics_before_inner)
         manager_.SaveActiveEventMetrics();
-      {
+
+      {  // Start inner scope.
+        std::unique_ptr<EventMetrics> inner_metrics;
+        if (config.inner_event != -1) {
+          auto& event = events[config.inner_event];
+          inner_metrics = EventMetrics::Create(event.type, base::nullopt,
+                                               event.timestamp, base::nullopt);
+          DCHECK_NE(inner_metrics, nullptr);
+          expected_saved_metrics.push_back(inner_metrics.get());
+        }
         auto inner_monitor = manager_.GetScopedMonitor(
-            CreateSimpleDoneCallback(std::move(config.inner_metrics)));
+            CreateSimpleDoneCallback(std::move(inner_metrics)));
         if (config.save_inner_metrics)
           manager_.SaveActiveEventMetrics();
-      }
+      }  // End inner scope
+
       if (config.save_outer_metrics_after_inner)
         manager_.SaveActiveEventMetrics();
-    }
+    }  // End outer scope.
+
     SCOPED_TRACE(Message() << "Config #" << i);
     EXPECT_THAT(manager_.TakeSavedEventsMetrics(),
-                UnorderedElementsAreArray(config.expected_saved_metrics));
+                UnorderedPointwise(UniquePtrMatches(), expected_saved_metrics));
   }
 }
 

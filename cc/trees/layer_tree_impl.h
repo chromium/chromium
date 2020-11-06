@@ -658,9 +658,8 @@ class CC_EXPORT LayerTreeImpl {
       std::unique_ptr<PendingPageScaleAnimation> pending_animation);
   std::unique_ptr<PendingPageScaleAnimation> TakePendingPageScaleAnimation();
 
-  void AppendEventsMetricsFromMainThread(
-      std::vector<EventMetrics> events_metrics);
-  std::vector<EventMetrics> TakeEventsMetrics();
+  void AppendEventsMetricsFromMainThread(EventMetrics::List events_metrics);
+  EventMetrics::List TakeEventsMetrics();
 
   // Requests that we force send RenderFrameMetadata with the next frame.
   void RequestForceSendMetadata() { force_send_metadata_request_ = true; }
@@ -892,7 +891,7 @@ class CC_EXPORT LayerTreeImpl {
   std::vector<LayerTreeHost::PresentationTimeCallback> presentation_callbacks_;
 
   // Event metrics that are reported back from the main thread.
-  std::vector<EventMetrics> events_metrics_from_main_thread_;
+  EventMetrics::List events_metrics_from_main_thread_;
 
   std::unique_ptr<viz::DelegatedInkMetadata> delegated_ink_metadata_;
 };

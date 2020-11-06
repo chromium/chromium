@@ -1063,8 +1063,9 @@ TEST_F(CompositorFrameReportingControllerTest,
                            base::nullopt),
   };
   EXPECT_THAT(event_metrics_ptrs, Each(NotNull()));
-  std::vector<EventMetrics> events_metrics = {
-      *event_metrics_ptrs[0], *event_metrics_ptrs[1], *event_metrics_ptrs[2]};
+  EventMetrics::List events_metrics(
+      std::make_move_iterator(std::begin(event_metrics_ptrs)),
+      std::make_move_iterator(std::end(event_metrics_ptrs)));
 
   // Submit a compositor frame and notify CompositorFrameReporter of the events
   // affecting the frame.
@@ -1103,7 +1104,9 @@ TEST_F(CompositorFrameReportingControllerTest,
                            base::nullopt),
   };
   EXPECT_THAT(event_metrics_ptrs, Each(NotNull()));
-  std::vector<EventMetrics> events_metrics = {*event_metrics_ptrs[0]};
+  EventMetrics::List events_metrics(
+      std::make_move_iterator(std::begin(event_metrics_ptrs)),
+      std::make_move_iterator(std::end(event_metrics_ptrs)));
 
   // Do a commit with a breakdown of blink stages.
   std::unique_ptr<BeginMainFrameMetrics> blink_breakdown =
@@ -1222,8 +1225,9 @@ TEST_F(CompositorFrameReportingControllerTest,
                            event_time, ui::ScrollInputType::kWheel),
   };
   EXPECT_THAT(event_metrics_ptrs, Each(NotNull()));
-  std::vector<EventMetrics> events_metrics = {
-      *event_metrics_ptrs[0], *event_metrics_ptrs[1], *event_metrics_ptrs[2]};
+  EventMetrics::List events_metrics(
+      std::make_move_iterator(std::begin(event_metrics_ptrs)),
+      std::make_move_iterator(std::end(event_metrics_ptrs)));
 
   // Submit a compositor frame and notify CompositorFrameReporter of the events
   // affecting the frame.
@@ -1283,8 +1287,9 @@ TEST_F(CompositorFrameReportingControllerTest,
                            base::nullopt),
   };
   EXPECT_THAT(event_metrics_ptrs, Each(NotNull()));
-  std::vector<EventMetrics> events_metrics = {
-      *event_metrics_ptrs[0], *event_metrics_ptrs[1], *event_metrics_ptrs[2]};
+  EventMetrics::List events_metrics(
+      std::make_move_iterator(std::begin(event_metrics_ptrs)),
+      std::make_move_iterator(std::end(event_metrics_ptrs)));
 
   // Submit a compositor frame and notify CompositorFrameReporter of the events
   // affecting the frame.

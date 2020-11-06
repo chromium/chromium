@@ -165,7 +165,7 @@ class CC_EXPORT CompositorFrameReporter {
   void SetBlinkBreakdown(std::unique_ptr<BeginMainFrameMetrics> blink_breakdown,
                          base::TimeTicks begin_main_start);
   void SetVizBreakdown(const viz::FrameTimingDetails& viz_breakdown);
-  void SetEventsMetrics(std::vector<EventMetrics> events_metrics);
+  void SetEventsMetrics(EventMetrics::List events_metrics);
 
   int StageHistorySizeForTesting() { return stage_history_.size(); }
 
@@ -293,7 +293,7 @@ class CC_EXPORT CompositorFrameReporter {
   std::vector<StageData> stage_history_;
 
   // List of metrics for events affecting this frame.
-  std::vector<EventMetrics> events_metrics_;
+  EventMetrics::List events_metrics_;
 
   std::bitset<static_cast<size_t>(FrameReportType::kMaxValue) + 1>
       report_types_;

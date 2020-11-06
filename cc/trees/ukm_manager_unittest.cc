@@ -360,8 +360,9 @@ TEST_F(UkmManagerTest, EventLatency) {
                            event_time, ui::ScrollInputType::kWheel),
   };
   EXPECT_THAT(event_metrics_ptrs, ::testing::Each(::testing::NotNull()));
-  std::vector<EventMetrics> events_metrics = {
-      *event_metrics_ptrs[0], *event_metrics_ptrs[1], *event_metrics_ptrs[2]};
+  EventMetrics::List events_metrics(
+      std::make_move_iterator(std::begin(event_metrics_ptrs)),
+      std::make_move_iterator(std::end(event_metrics_ptrs)));
 
   const base::TimeTicks begin_impl_time =
       (now += base::TimeDelta::FromMicroseconds(10));
@@ -418,7 +419,7 @@ TEST_F(UkmManagerTest, EventLatency) {
   EXPECT_EQ(3u, entries.size());
   for (size_t i = 0; i < entries.size(); i++) {
     const auto* entry = entries[i];
-    const auto* event_metrics = event_metrics_ptrs[i].get();
+    const auto* event_metrics = events_metrics[i].get();
 
     EXPECT_NE(ukm::kInvalidSourceId, entry->source_id);
     test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kTestUrl));

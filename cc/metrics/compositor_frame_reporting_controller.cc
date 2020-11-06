@@ -260,8 +260,8 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
         events_metrics.impl_event_metrics.size());
     events_metrics.main_event_metrics.insert(
         events_metrics.main_event_metrics.end(),
-        events_metrics.impl_event_metrics.begin(),
-        events_metrics.impl_event_metrics.end());
+        std::make_move_iterator(events_metrics.impl_event_metrics.begin()),
+        std::make_move_iterator(events_metrics.impl_event_metrics.end()));
   }
 
   if (main_reporter) {

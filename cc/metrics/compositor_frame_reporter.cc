@@ -419,7 +419,7 @@ void CompositorFrameReporter::SetVizBreakdown(
 }
 
 void CompositorFrameReporter::SetEventsMetrics(
-    std::vector<EventMetrics> events_metrics) {
+    EventMetrics::List events_metrics) {
   DCHECK_EQ(0u, events_metrics_.size());
   events_metrics_ = std::move(events_metrics);
 }
@@ -682,13 +682,14 @@ void CompositorFrameReporter::ReportCompositorLatencyHistogram(
 }
 
 void CompositorFrameReporter::ReportEventLatencyHistograms() const {
-  for (const EventMetrics& event_metrics : events_metrics_) {
+  for (const auto& event_metrics : events_metrics_) {
+    DCHECK_NE(event_metrics, nullptr);
     const std::string histogram_base_name =
-        GetEventLatencyHistogramBaseName(event_metrics);
-    const int event_type_index = static_cast<int>(event_metrics.type());
+        GetEventLatencyHistogramBaseName(*event_metrics);
+    const int event_type_index = static_cast<int>(event_metrics->type());
     const int scroll_type_index =
-        event_metrics.scroll_type()
-            ? static_cast<int>(*event_metrics.scroll_type())
+        event_metrics->scroll_type()
+            ? static_cast<int>(*event_metrics->scroll_type())
             : 0;
     const int histogram_base_index =
         event_type_index * kEventLatencyScrollTypeCount + scroll_type_index;
@@ -696,9 +697,10 @@ void CompositorFrameReporter::ReportEventLatencyHistograms() const {
     // For scroll events, report total latency up to gpu-swap-begin. This is
     // useful in comparing new EventLatency metrics with LatencyInfo-based
     // scroll event latency metrics.
-    if (event_metrics.scroll_type() && !viz_breakdown_.swap_timings.is_null()) {
+    if (event_metrics->scroll_type() &&
+        !viz_breakdown_.swap_timings.is_null()) {
       const base::TimeDelta swap_begin_latency =
-          viz_breakdown_.swap_timings.swap_start - event_metrics.time_stamp();
+          viz_breakdown_.swap_timings.swap_start - event_metrics->time_stamp();
       const std::string swap_begin_histogram_name =
           histogram_base_name + ".TotalLatencyToSwapBegin";
       // Note: There's a 1:1 mapping between `histogram_base_index` and
@@ -722,7 +724,7 @@ void CompositorFrameReporter::ReportEventLatencyHistograms() const {
     auto stage_it =
         std::find_if(stage_history_.begin(), stage_history_.end(),
                      [&event_metrics](const StageData& stage) {
-                       return stage.start_time > event_metrics.time_stamp();
+                       return stage.start_time > event_metrics->time_stamp();
                      });
     // TODO(crbug.com/1079116): Ideally, at least the start time of
     // SubmitCompositorFrameToPresentationCompositorFrame stage should be
@@ -735,7 +737,7 @@ void CompositorFrameReporter::ReportEventLatencyHistograms() const {
       continue;
 
     const base::TimeDelta b2r_latency =
-        stage_it->start_time - event_metrics.time_stamp();
+        stage_it->start_time - event_metrics->time_stamp();
     const std::string b2r_histogram_name =
         histogram_base_name + ".BrowserToRendererCompositor";
     // Note: There's a 1:1 mapping between `histogram_base_index` and
@@ -754,7 +756,7 @@ void CompositorFrameReporter::ReportEventLatencyHistograms() const {
       // Total latency is calculated since the event timestamp.
       const base::TimeTicks start_time =
           stage_it->stage_type == StageType::kTotalLatency
-              ? event_metrics.time_stamp()
+              ? event_metrics->time_stamp()
               : stage_it->start_time;
       const base::TimeDelta latency = stage_it->end_time - start_time;
       const int stage_type_index = static_cast<int>(stage_it->stage_type);
@@ -911,18 +913,18 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents() const {
 }
 
 void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
-  for (const EventMetrics& event_metrics : events_metrics_) {
-    const auto trace_id = TRACE_ID_LOCAL(&event_metrics);
+  for (const auto& event_metrics : events_metrics_) {
+    const auto trace_id = TRACE_ID_LOCAL(event_metrics.get());
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-        "cc,input", "EventLatency", trace_id, event_metrics.time_stamp(),
-        "event", event_metrics.GetTypeName());
+        "cc,input", "EventLatency", trace_id, event_metrics->time_stamp(),
+        "event", event_metrics->GetTypeName());
 
     // Find the first stage that happens after the event's arrival in the
     // browser.
     auto stage_it =
         std::find_if(stage_history_.begin(), stage_history_.end(),
                      [&event_metrics](const StageData& stage) {
-                       return stage.start_time > event_metrics.time_stamp();
+                       return stage.start_time > event_metrics->time_stamp();
                      });
     // TODO(crbug.com/1079116): Ideally, at least the start time of
     // SubmitCompositorFrameToPresentationCompositorFrame stage should be
@@ -936,7 +938,7 @@ void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
 
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
         "cc,input", "BrowserToRendererCompositor", trace_id,
-        event_metrics.time_stamp());
+        event_metrics->time_stamp());
     TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
         "cc,input", "BrowserToRendererCompositor", trace_id,
         stage_it->start_time);

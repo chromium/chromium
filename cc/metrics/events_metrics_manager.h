@@ -65,7 +65,7 @@ class CC_EXPORT EventsMetricsManager {
 
   // Empties the list of saved EventMetrics objects, returning them to the
   // caller.
-  std::vector<EventMetrics> TakeSavedEventsMetrics();
+  EventMetrics::List TakeSavedEventsMetrics();
 
   size_t saved_events_metrics_count_for_testing() const {
     return saved_events_.size();
@@ -82,7 +82,7 @@ class CC_EXPORT EventsMetricsManager {
   std::vector<ScopedMonitorImpl*> active_scoped_monitors_;
 
   // List of event metrics saved for reporting.
-  std::vector<EventMetrics> saved_events_;
+  EventMetrics::List saved_events_;
 };
 
 }  // namespace cc

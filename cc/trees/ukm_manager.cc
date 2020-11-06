@@ -276,23 +276,24 @@ void UkmManager::RecordCompositorLatencyUKM(
 }
 
 void UkmManager::RecordEventLatencyUKM(
-    const std::vector<EventMetrics>& events_metrics,
+    const EventMetrics::List& events_metrics,
     const std::vector<CompositorFrameReporter::StageData>& stage_history,
     const viz::FrameTimingDetails& viz_breakdown) const {
   using StageType = CompositorFrameReporter::StageType;
 
-  for (const EventMetrics& event_metrics : events_metrics) {
+  for (const auto& event_metrics : events_metrics) {
     ukm::builders::Graphics_Smoothness_EventLatency builder(source_id_);
 
-    builder.SetEventType(static_cast<int64_t>(event_metrics.type()));
+    builder.SetEventType(static_cast<int64_t>(event_metrics->type()));
 
-    if (event_metrics.scroll_type()) {
+    if (event_metrics->scroll_type()) {
       builder.SetScrollInputType(
-          static_cast<int64_t>(*event_metrics.scroll_type()));
+          static_cast<int64_t>(*event_metrics->scroll_type()));
 
       if (!viz_breakdown.swap_timings.is_null()) {
         builder.SetTotalLatencyToSwapBegin(
-            (viz_breakdown.swap_timings.swap_start - event_metrics.time_stamp())
+            (viz_breakdown.swap_timings.swap_start -
+             event_metrics->time_stamp())
                 .InMicroseconds());
       }
     }
@@ -305,7 +306,7 @@ void UkmManager::RecordEventLatencyUKM(
     auto stage_it = std::find_if(
         stage_history.begin(), stage_history.end(),
         [&event_metrics](const CompositorFrameReporter::StageData& stage) {
-          return stage.start_time > event_metrics.time_stamp();
+          return stage.start_time > event_metrics->time_stamp();
         });
     // TODO(crbug.com/1079116): Ideally, at least the start time of
     // SubmitCompositorFrameToPresentationCompositorFrame stage should be
@@ -318,13 +319,13 @@ void UkmManager::RecordEventLatencyUKM(
       continue;
 
     builder.SetBrowserToRendererCompositor(
-        (stage_it->start_time - event_metrics.time_stamp()).InMicroseconds());
+        (stage_it->start_time - event_metrics->time_stamp()).InMicroseconds());
 
     for (; stage_it != stage_history.end(); ++stage_it) {
       // Total latency is calculated since the event timestamp.
       const base::TimeTicks start_time =
           stage_it->stage_type == StageType::kTotalLatency
-              ? event_metrics.time_stamp()
+              ? event_metrics->time_stamp()
               : stage_it->start_time;
 
       switch (stage_it->stage_type) {

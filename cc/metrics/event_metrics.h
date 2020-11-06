@@ -20,6 +20,8 @@ namespace cc {
 // latency metrics.
 class CC_EXPORT EventMetrics {
  public:
+  using List = std::vector<std::unique_ptr<EventMetrics>>;
+
   // Event types we are interested in. This list should be in the same order as
   // values of EventLatencyEventType enum from enums.xml file.
   enum class EventType {
@@ -76,8 +78,8 @@ class CC_EXPORT EventMetrics {
       base::TimeTicks time_stamp,
       base::Optional<ui::ScrollInputType> scroll_input_type);
 
-  EventMetrics(const EventMetrics&);
-  EventMetrics& operator=(const EventMetrics&);
+  EventMetrics(const EventMetrics&) = delete;
+  EventMetrics& operator=(const EventMetrics&) = delete;
 
   EventType type() const { return type_; }
 
@@ -112,16 +114,16 @@ class CC_EXPORT EventMetrics {
 struct CC_EXPORT EventMetricsSet {
   EventMetricsSet();
   ~EventMetricsSet();
-  EventMetricsSet(std::vector<EventMetrics> main_thread_event_metrics,
-                  std::vector<EventMetrics> impl_thread_event_metrics);
+  EventMetricsSet(EventMetrics::List main_thread_event_metrics,
+                  EventMetrics::List impl_thread_event_metrics);
   EventMetricsSet(EventMetricsSet&&);
   EventMetricsSet& operator=(EventMetricsSet&&);
 
   EventMetricsSet(const EventMetricsSet&) = delete;
   EventMetricsSet& operator=(const EventMetricsSet&) = delete;
 
-  std::vector<EventMetrics> main_event_metrics;
-  std::vector<EventMetrics> impl_event_metrics;
+  EventMetrics::List main_event_metrics;
+  EventMetrics::List impl_event_metrics;
 };
 
 }  // namespace cc

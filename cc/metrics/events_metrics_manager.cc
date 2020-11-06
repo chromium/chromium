@@ -64,8 +64,8 @@ void EventsMetricsManager::SaveActiveEventMetrics() {
   }
 }
 
-std::vector<EventMetrics> EventsMetricsManager::TakeSavedEventsMetrics() {
-  std::vector<EventMetrics> result;
+EventMetrics::List EventsMetricsManager::TakeSavedEventsMetrics() {
+  EventMetrics::List result;
   result.swap(saved_events_);
   return result;
 }
@@ -76,7 +76,7 @@ void EventsMetricsManager::OnScopedMonitorEnded(
   active_scoped_monitors_.pop_back();
 
   if (metrics)
-    saved_events_.push_back(*metrics);
+    saved_events_.push_back(std::move(metrics));
 }
 
 }  // namespace cc

@@ -242,8 +242,9 @@ TEST_F(CompositorFrameReporterTest,
                            base::nullopt),
   };
   EXPECT_THAT(event_metrics_ptrs, Each(NotNull()));
-  std::vector<EventMetrics> events_metrics = {
-      *event_metrics_ptrs[0], *event_metrics_ptrs[1], *event_metrics_ptrs[2]};
+  EventMetrics::List events_metrics(
+      std::make_move_iterator(std::begin(event_metrics_ptrs)),
+      std::make_move_iterator(std::end(event_metrics_ptrs)));
 
   AdvanceNowByMs(3);
   pipeline_reporter_->StartStage(
@@ -295,7 +296,9 @@ TEST_F(CompositorFrameReporterTest,
                            base::nullopt),
   };
   EXPECT_THAT(event_metrics_ptrs, Each(NotNull()));
-  std::vector<EventMetrics> events_metrics = {*event_metrics_ptrs[0]};
+  EventMetrics::List events_metrics(
+      std::make_move_iterator(std::begin(event_metrics_ptrs)),
+      std::make_move_iterator(std::end(event_metrics_ptrs)));
 
   auto begin_impl_time = AdvanceNowByMs(2);
   pipeline_reporter_->StartStage(
@@ -446,8 +449,9 @@ TEST_F(CompositorFrameReporterTest,
                            event_time, ui::ScrollInputType::kWheel),
   };
   EXPECT_THAT(event_metrics_ptrs, Each(NotNull()));
-  std::vector<EventMetrics> events_metrics = {
-      *event_metrics_ptrs[0], *event_metrics_ptrs[1], *event_metrics_ptrs[2]};
+  EventMetrics::List events_metrics(
+      std::make_move_iterator(std::begin(event_metrics_ptrs)),
+      std::make_move_iterator(std::end(event_metrics_ptrs)));
 
   AdvanceNowByMs(3);
   pipeline_reporter_->StartStage(
@@ -519,8 +523,9 @@ TEST_F(CompositorFrameReporterTest,
                            base::nullopt),
   };
   EXPECT_THAT(event_metrics_ptrs, Each(NotNull()));
-  std::vector<EventMetrics> events_metrics = {
-      *event_metrics_ptrs[0], *event_metrics_ptrs[1], *event_metrics_ptrs[2]};
+  EventMetrics::List events_metrics(
+      std::make_move_iterator(std::begin(event_metrics_ptrs)),
+      std::make_move_iterator(std::end(event_metrics_ptrs)));
 
   AdvanceNowByMs(3);
   pipeline_reporter_->StartStage(

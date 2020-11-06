@@ -339,25 +339,20 @@ void WidgetBaseInputHandler::HandleInputEvent(
       ui::LatencyComponentType::INPUT_EVENT_LATENCY_RENDERER_MAIN_COMPONENT);
   cc::LatencyInfoSwapPromiseMonitor swap_promise_monitor(
       &swap_latency_info, widget_->LayerTreeHost()->GetSwapPromiseManager());
+  base::Optional<base::TimeTicks> metrics_timestamp;
   cc::EventsMetricsManager::ScopedMonitor::DoneCallback done_callback;
   if (metrics) {
+    // Get the timestamp of `metrics` before moving it to the following
+    // callback. This timestamp would later be useful in creating
+    // `cc::EventMetrics` objects for injected scroll events.
+    metrics_timestamp = metrics->time_stamp();
     done_callback = base::BindOnce(
-        [](const cc::EventMetrics& metrics, bool handled) {
-          std::unique_ptr<cc::EventMetrics> result;
-          if (handled) {
-            // We are done processing the event and should return its metrics
-            // object for reporting purposes. However, since there might be some
-            // injected scroll events caused by this event, we need the metrics
-            // object of this event as a basis to create metrics objects for
-            // those injected scroll events. Therefore, we return a copy of the
-            // metrics object here instead of moving out of it, and keep the
-            // original metrics object to be used for creating metrics object
-            // for injected scroll events, if necessary.
-            result = std::make_unique<cc::EventMetrics>(metrics);
-          }
+        [](std::unique_ptr<cc::EventMetrics> metrics, bool handled) {
+          std::unique_ptr<cc::EventMetrics> result =
+              handled ? std::move(metrics) : nullptr;
           return result;
         },
-        *metrics);
+        std::move(metrics));
   }
   auto event_metrics_monitor =
       widget_->LayerTreeHost()->GetScopedEventMetricsMonitor(
@@ -470,7 +465,7 @@ void WidgetBaseInputHandler::HandleInputEvent(
   if (handling_state.injected_scroll_params().size()) {
     HandleInjectedScrollGestures(
         std::move(handling_state.injected_scroll_params()), input_event,
-        coalesced_event.latency_info(), metrics.get());
+        coalesced_event.latency_info(), metrics_timestamp);
   }
 
   // Send gesture scroll events and their dispositions to the compositor thread,
@@ -600,7 +595,7 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
     std::vector<InjectScrollGestureParams> injected_scroll_params,
     const WebInputEvent& input_event,
     const ui::LatencyInfo& original_latency_info,
-    const cc::EventMetrics* original_metrics) {
+    base::Optional<base::TimeTicks> original_metrics_timestamp) {
   DCHECK(injected_scroll_params.size());
 
   base::TimeTicks original_timestamp;
@@ -672,16 +667,15 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
           widget_->LayerTreeHost()->GetSwapPromiseManager());
       // For latency metrics, we need the original timestamp of the
       // `input_event` as its current timestamp might have changed due to
-      // coalescing in the pipeline. `original_metrics` which is the metrics
-      // object for the `input_event` contains this original timestamp. We could
-      // have used `original_timestamp` for this purpose, but we don't do that
-      // as `original_timestamp` is extracted from `ui::LatencyInfo` of
-      // `input_event` which we hope to be able to get rid of. Moreover, we plan
-      // to add more breakdown timestamps to `EventMetrcis` which are not
-      // available in `ui::LatencyInfo`.
-      base::TimeTicks time_stamp = original_metrics
-                                       ? original_metrics->time_stamp()
-                                       : gesture_event->TimeStamp();
+      // coalescing in the pipeline. `original_metrics_timestamp` which is the
+      // timestamp from the metrics object for the `input_event` contains this
+      // original timestamp. We could have used `original_timestamp` for this
+      // purpose, but we don't do that as `original_timestamp` is extracted from
+      // `ui::LatencyInfo` of `input_event` which we hope to be able to get rid
+      // of. Moreover, we plan to add more breakdown timestamps to
+      // `EventMetrcis` which are not available in `ui::LatencyInfo`.
+      base::TimeTicks time_stamp =
+          original_metrics_timestamp.value_or(gesture_event->TimeStamp());
       std::unique_ptr<cc::EventMetrics> metrics = cc::EventMetrics::Create(
           gesture_event->GetTypeAsUiEventType(), scroll_update_type, time_stamp,
           gesture_event->GetScrollInputType());

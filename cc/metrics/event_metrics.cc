@@ -128,9 +128,6 @@ EventMetrics::EventMetrics(EventType type,
                            base::Optional<ScrollType> scroll_type)
     : type_(type), time_stamp_(time_stamp), scroll_type_(scroll_type) {}
 
-EventMetrics::EventMetrics(const EventMetrics&) = default;
-EventMetrics& EventMetrics::operator=(const EventMetrics&) = default;
-
 const char* EventMetrics::GetTypeName() const {
   return kInterestingEvents[static_cast<int>(type_)].name;
 }
@@ -149,9 +146,8 @@ bool EventMetrics::operator==(const EventMetrics& other) const {
 // EventMetricsSet
 EventMetricsSet::EventMetricsSet() = default;
 EventMetricsSet::~EventMetricsSet() = default;
-EventMetricsSet::EventMetricsSet(
-    std::vector<EventMetrics> main_thread_event_metrics,
-    std::vector<EventMetrics> impl_thread_event_metrics)
+EventMetricsSet::EventMetricsSet(EventMetrics::List main_thread_event_metrics,
+                                 EventMetrics::List impl_thread_event_metrics)
     : main_event_metrics(std::move(main_thread_event_metrics)),
       impl_event_metrics(std::move(impl_thread_event_metrics)) {}
 EventMetricsSet::EventMetricsSet(EventMetricsSet&& other) = default;

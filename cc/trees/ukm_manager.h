@@ -60,7 +60,7 @@ class CC_EXPORT UkmManager {
       const viz::FrameTimingDetails& viz_breakdown) const;
 
   void RecordEventLatencyUKM(
-      const std::vector<EventMetrics>& events_metrics,
+      const EventMetrics::List& events_metrics,
       const std::vector<CompositorFrameReporter::StageData>& stage_history,
       const viz::FrameTimingDetails& viz_breakdown) const;
 

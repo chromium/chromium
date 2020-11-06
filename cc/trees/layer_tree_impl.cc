@@ -559,7 +559,7 @@ void LayerTreeImpl::PushPropertyTreesTo(LayerTreeImpl* target_tree) {
 
   target_tree->SetPropertyTrees(&property_trees_);
 
-  std::vector<EventMetrics> events_metrics;
+  EventMetrics::List events_metrics;
   events_metrics.swap(events_metrics_from_main_thread_);
   target_tree->AppendEventsMetricsFromMainThread(std::move(events_metrics));
 }
@@ -2629,16 +2629,17 @@ LayerTreeImpl::TakePendingPageScaleAnimation() {
 }
 
 void LayerTreeImpl::AppendEventsMetricsFromMainThread(
-    std::vector<EventMetrics> events_metrics) {
+    EventMetrics::List events_metrics) {
   events_metrics_from_main_thread_.reserve(
       events_metrics_from_main_thread_.size() + events_metrics.size());
   events_metrics_from_main_thread_.insert(
-      events_metrics_from_main_thread_.end(), events_metrics.begin(),
-      events_metrics.end());
+      events_metrics_from_main_thread_.end(),
+      std::make_move_iterator(events_metrics.begin()),
+      std::make_move_iterator(events_metrics.end()));
 }
 
-std::vector<EventMetrics> LayerTreeImpl::TakeEventsMetrics() {
-  std::vector<EventMetrics> main_event_metrics_result;
+EventMetrics::List LayerTreeImpl::TakeEventsMetrics() {
+  EventMetrics::List main_event_metrics_result;
   main_event_metrics_result.swap(events_metrics_from_main_thread_);
   return main_event_metrics_result;
 }

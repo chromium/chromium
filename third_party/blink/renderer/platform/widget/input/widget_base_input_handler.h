@@ -105,14 +105,14 @@ class PLATFORM_EXPORT WidgetBaseInputHandler {
 
   // Creates and handles scroll gestures based on parameters from
   // `injected_scroll_params`. `input_event`, `original_latency_info`, and
-  // `original_metrics` are the original event causing gesture scrolls along
-  // with its latency and metrics info used in generating new gestures along
-  // with their latency and metrics info.
+  // `original_metrics_timestamp` are the original event causing gesture
+  // scrolls, its latency info, and its metrics timestamp, respectively, used in
+  // generating new gestures along with their latency and metrics info.
   void HandleInjectedScrollGestures(
       std::vector<InjectScrollGestureParams> injected_scroll_params,
       const WebInputEvent& input_event,
       const ui::LatencyInfo& original_latency_info,
-      const cc::EventMetrics* original_metrics);
+      base::Optional<base::TimeTicks> original_metrics_timestamp);
 
   WidgetBase* widget_;
 
