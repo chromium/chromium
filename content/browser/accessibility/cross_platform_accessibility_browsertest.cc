@@ -45,9 +45,8 @@
     !defined(THREAD_SANITIZER) && !defined(UNDEFINED_SANITIZER) && \
     !defined(OS_ANDROID)
 #define IS_FAST_BUILD
-#endif
-
 constexpr int kDelayForDeferredUpdatesAfterPageLoad = 150;
+#endif
 
 namespace content {
 
@@ -1476,16 +1475,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_GT(bounds.y(), 0);
 }
 
-// http://crbug.com/1141280
-#if defined(OS_LINUX)
-#define MAYBE_NonInteractiveChangesAreBatched \
-  DISABLED_NonInteractiveChangesAreBatched
-#else
-#define MAYBE_NonInteractiveChangesAreBatched NonInteractiveChangesAreBatched
-#endif
-
+#if defined(IS_FAST_BUILD)  // Avoid flakiness on slower debug/sanitizer builds.
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
-                       MAYBE_NonInteractiveChangesAreBatched) {
+                       NonInteractiveChangesAreBatched) {
   // Ensure that normal DOM changes are batched together, and do not occur
   // more than once every kDelayForDeferredUpdatesAfterPageLoad.
   const char url_str[] =
@@ -1537,6 +1529,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   EXPECT_GT(num_batches, 1);
   EXPECT_LE(num_batches, 1000 / kDelayForDeferredUpdatesAfterPageLoad + 1);
 }
+#endif
 
 #if defined(IS_FAST_BUILD)  // Avoid flakiness on slower debug/sanitizer builds.
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
