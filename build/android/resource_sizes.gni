@@ -70,8 +70,8 @@ template("android_resource_sizes_test") {
   }
 }
 
-# Generates "size config JSON file" to specify data to be passed from bots via
-# recipe to Python scripts for binary size measurement. All filenames are
+# Generates a "size config JSON file" to specify data to be passed from recipes
+# to Python scripts for binary size measurement on bots. All filenames are
 # relative to $root_build_dir. The resulting JSON file is written to
 # "$root_build_dir/config/${invoker.name}_size_config.json".
 #
@@ -83,7 +83,7 @@ template("android_resource_sizes_test") {
 #   supersize_input_file: Main input for SuperSize.
 #   version: Version number, uses to notify build bots that significant changes
 #     has occurred, so that gs:// should be ignored.
-template("android_resource_size_config") {
+template("android_size_bot_config") {
   _full_target_name = get_label_info(target_name, "label_no_toolchain")
   _out_json = {
     _HEADER = "Written by build target '${_full_target_name}'"
