@@ -56,6 +56,9 @@ constexpr gfx::Insets kBubbleButtonPadding(8, 10);
 // The text color of the button.
 constexpr SkColor kBubbleButtonTextColor = SK_ColorWHITE;
 
+// The outline color of the button.
+constexpr SkColor kBubbleButtonBorderColor = gfx::kGoogleGrey300;
+
 // The focus ring color of the button.
 constexpr SkColor kBubbleButtonFocusRingColor = SK_ColorWHITE;
 
@@ -104,9 +107,7 @@ class MdIPHBubbleButton : public MdTextButton {
       bg_color = theme->GetSystemButtonPressedColor(bg_color);
 
     SkColor stroke_color =
-        has_border_
-            ? theme->GetSystemColor(ui::NativeTheme::kColorId_ButtonBorderColor)
-            : kBubbleBackgroundColor;
+        has_border_ ? kBubbleButtonBorderColor : kBubbleBackgroundColor;
 
     SetBackground(CreateBackgroundFromPainter(
         Painter::CreateRoundRectWith1PxBorderPainter(bg_color, stroke_color,
