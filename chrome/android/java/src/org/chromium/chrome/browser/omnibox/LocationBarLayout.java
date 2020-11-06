@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdown;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -376,9 +377,9 @@ public class LocationBarLayout
 
         updateMicButtonVisibility();
 
-        mAssistantVoiceSearchService =
-                new AssistantVoiceSearchService(getContext(), AppHooks.get().getExternalAuthUtils(),
-                        TemplateUrlServiceFactory.get(), GSAState.getInstance(getContext()), this);
+        mAssistantVoiceSearchService = new AssistantVoiceSearchService(getContext(),
+                AppHooks.get().getExternalAuthUtils(), TemplateUrlServiceFactory.get(),
+                GSAState.getInstance(getContext()), this, SharedPreferencesManager.getInstance());
         mVoiceRecognitionHandler.setAssistantVoiceSearchService(mAssistantVoiceSearchService);
         onAssistantVoiceSearchServiceChanged();
         setProfile(mProfileSupplier.get());

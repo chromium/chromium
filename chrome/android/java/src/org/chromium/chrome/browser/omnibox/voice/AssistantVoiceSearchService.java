@@ -4,36 +4,38 @@
 
 package org.chromium.chrome.browser.omnibox.voice;
 
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_LAST_VERSION;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_SUPPORTED;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.LocaleUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAState;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.util.ColorUtils;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Service for state tracking and event delivery to classes that need to observe the state
@@ -42,6 +44,36 @@ import java.util.Set;
 public class AssistantVoiceSearchService implements TemplateUrlService.TemplateUrlServiceObserver {
     private static final String USER_ELIGIBILITY_HISTOGRAM =
             "Assistant.VoiceSearch.UserEligibility";
+    @VisibleForTesting
+    static final String USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM =
+            "Assistant.VoiceSearch.UserEligibility.FailureReason";
+    private static final String DEFAULT_ASSISTANT_AGSA_MIN_VERSION = "11.7";
+    private static final boolean DEFAULT_ASSISTANT_COLORFUL_MIC_ENABLED = false;
+
+    // Cached value for expensive content provider read.
+    // True - Value has been read and is true.
+    // False - Value has been read and is false.
+    // Null - Value hasn't been read.
+    private static Boolean sAgsaSupportsAssistantVoiceSearch;
+
+    @IntDef({EligibilityFailureReason.AGSA_CANT_HANDLE_INTENT,
+            EligibilityFailureReason.AGSA_VERSION_BELOW_MINIMUM,
+            EligibilityFailureReason.AGSA_DOESNT_SUPPORT_VOICE_SEARCH_CHECK_NOT_COMPLETE,
+            EligibilityFailureReason.AGSA_DOESNT_SUPPORT_VOICE_SEARCH,
+            EligibilityFailureReason.CHROME_NOT_GOOGLE_SIGNED,
+            EligibilityFailureReason.AGSA_NOT_GOOGLE_SIGNED, EligibilityFailureReason.MAX_VALUE})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface EligibilityFailureReason {
+        int AGSA_CANT_HANDLE_INTENT = 0;
+        int AGSA_VERSION_BELOW_MINIMUM = 1;
+        int AGSA_DOESNT_SUPPORT_VOICE_SEARCH_CHECK_NOT_COMPLETE = 2;
+        int AGSA_DOESNT_SUPPORT_VOICE_SEARCH = 3;
+        int CHROME_NOT_GOOGLE_SIGNED = 4;
+        int AGSA_NOT_GOOGLE_SIGNED = 5;
+
+        // STOP: When updating this, also update values in enums.xml.
+        int MAX_VALUE = 6;
+    }
 
     /** Allows outside classes to listen for changes in this service. */
     public interface Observer {
@@ -54,46 +86,29 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
         void onAssistantVoiceSearchServiceChanged();
     }
 
-    // Constants for Assistant Voice Search.
-    @VisibleForTesting
-    public static final String DEFAULT_ASSISTANT_AGSA_MIN_VERSION = "11.7";
-    @VisibleForTesting
-    public static final int DEFAULT_ASSISTANT_MIN_ANDROID_SDK_VERSION =
-            Build.VERSION_CODES.LOLLIPOP;
-    @VisibleForTesting
-    public static final int DEFAULT_ASSISTANT_MIN_MEMORY_MB = 1024;
-    @VisibleForTesting
-    static final Set<Locale> DEFAULT_ASSISTANT_LOCALES = new HashSet<>(
-            Arrays.asList(new Locale("en", "us"), new Locale("en", "gb"), new Locale("en", "in"),
-                    new Locale("hi", "in"), new Locale("bn", "in"), new Locale("te", "in"),
-                    new Locale("mr", "in"), new Locale("ta", "in"), new Locale("kn", "in"),
-                    new Locale("ml", "in"), new Locale("gu", "in"), new Locale("ur", "in")));
-    private static final boolean DEFAULT_ASSISTANT_COLORFUL_MIC_ENABLED = false;
-
     // TODO(wylieb): Convert this to an ObserverList and add #addObserver, #removeObserver.
     private final Observer mObserver;
     private final Context mContext;
     private final ExternalAuthUtils mExternalAuthUtils;
     private final TemplateUrlService mTemplateUrlService;
     private final GSAState mGsaState;
+    private final SharedPreferencesManager mSharedPrefsManager;
 
-    private Set<Locale> mSupportedLocales;
     private boolean mIsDefaultSearchEngineGoogle;
     private boolean mIsAssistantVoiceSearchEnabled;
     private boolean mIsColorfulMicEnabled;
     private boolean mShouldShowColorfulMic;
     private String mMinAgsaVersion;
-    private int mMinAndroidSdkVersion;
-    private int mMinMemoryMb;
 
     public AssistantVoiceSearchService(@NonNull Context context,
             @NonNull ExternalAuthUtils externalAuthUtils,
             @NonNull TemplateUrlService templateUrlService, @NonNull GSAState gsaState,
-            @Nullable Observer observer) {
+            @Nullable Observer observer, @NonNull SharedPreferencesManager sharedPrefsManager) {
         mContext = context;
         mExternalAuthUtils = externalAuthUtils;
         mTemplateUrlService = templateUrlService;
         mGsaState = gsaState;
+        mSharedPrefsManager = sharedPrefsManager;
         mObserver = observer;
 
         mTemplateUrlService.addObserver(this);
@@ -132,20 +147,17 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
         mMinAgsaVersion = ChromeFeatureList.getFieldTrialParamByFeature(
                 ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH, "min_agsa_version");
 
-        mMinAndroidSdkVersion = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH, "min_android_sdk",
-                DEFAULT_ASSISTANT_MIN_ANDROID_SDK_VERSION);
-
-        mMinMemoryMb = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH, "min_memory_mb",
-                DEFAULT_ASSISTANT_MIN_MEMORY_MB);
-
-        mSupportedLocales = parseLocalesFromString(ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH, "enabled_locales"));
-
         mIsDefaultSearchEngineGoogle = mTemplateUrlService.isDefaultSearchEngineGoogle();
 
         mShouldShowColorfulMic = isColorfulMicEnabled();
+
+        // Baseline conditions to avoid doing the expensive query to a content provider.
+        if (mIsAssistantVoiceSearchEnabled && mIsDefaultSearchEngineGoogle
+                && !SysUtils.isLowEndDevice()) {
+            checkIfAssistantEnabled();
+        } else {
+            sAgsaSupportsAssistantVoiceSearch = false;
+        }
     }
 
     /**
@@ -158,10 +170,7 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
 
     /** Checks if the client meetings the requirements to use Assistant for voice search. */
     public boolean canRequestAssistantVoiceSearch() {
-        return mIsDefaultSearchEngineGoogle
-                && isDeviceEligibleForAssistant(
-                        ConversionUtils.kilobytesToMegabytes(SysUtils.amountOfPhysicalMemoryKB()),
-                        Locale.getDefault());
+        return mIsDefaultSearchEngineGoogle && isDeviceEligibleForAssistant();
     }
 
     /**
@@ -184,6 +193,41 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
         return AppCompatResources.getColorStateList(context, id);
     }
 
+    /** Does expensive content provider read to determine if AGSA supports Assistant. */
+    private void checkIfAssistantEnabled() {
+        final String currentAgsaVersion = mGsaState.getAgsaVersionName();
+        if (mSharedPrefsManager.contains(ASSISTANT_VOICE_SEARCH_SUPPORTED)
+                && mSharedPrefsManager
+                           .readString(ASSISTANT_LAST_VERSION,
+                                   /* default= */ "n/a")
+                           .equals(currentAgsaVersion)) {
+            sAgsaSupportsAssistantVoiceSearch =
+                    mSharedPrefsManager.readBoolean(ASSISTANT_VOICE_SEARCH_SUPPORTED,
+                            /* default= */ false);
+        } else {
+            DeferredStartupHandler.getInstance().addDeferredTask(() -> {
+                // Only do this once per browser start.
+                if (sAgsaSupportsAssistantVoiceSearch != null) return;
+                sAgsaSupportsAssistantVoiceSearch = false;
+                new AsyncTask<Boolean>() {
+                    @Override
+                    public Boolean doInBackground() {
+                        return mGsaState.agsaSupportsAssistantVoiceSearch();
+                    }
+
+                    @Override
+                    public void onPostExecute(Boolean agsaSupportsAssistantVoiceSearch) {
+                        sAgsaSupportsAssistantVoiceSearch = agsaSupportsAssistantVoiceSearch;
+                        mSharedPrefsManager.writeBoolean(ASSISTANT_VOICE_SEARCH_SUPPORTED,
+                                sAgsaSupportsAssistantVoiceSearch);
+                        mSharedPrefsManager.writeString(
+                                ASSISTANT_LAST_VERSION, currentAgsaVersion);
+                    }
+                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            });
+        }
+    }
+
     /** @return Whether the colorful mic is enabled. */
     private boolean isColorfulMicEnabled() {
         return mContext.getPackageManager() != null && mIsColorfulMicEnabled
@@ -201,22 +245,48 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
 
     /** @return Whether the device is eligible to use assistant. */
     @VisibleForTesting
-    protected boolean isDeviceEligibleForAssistant(long availableMemoryMb, Locale currentLocale) {
+    protected boolean isDeviceEligibleForAssistant() {
         if (!mGsaState.canAgsaHandleIntent(getAssistantVoiceSearchIntent())) {
+            RecordHistogram.recordEnumeratedHistogram(USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM,
+                    EligibilityFailureReason.AGSA_CANT_HANDLE_INTENT,
+                    EligibilityFailureReason.MAX_VALUE);
             return false;
         }
 
         if (mGsaState.isAgsaVersionBelowMinimum(
                     mGsaState.getAgsaVersionName(), getAgsaMinVersion())) {
+            RecordHistogram.recordEnumeratedHistogram(USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM,
+                    EligibilityFailureReason.AGSA_VERSION_BELOW_MINIMUM,
+                    EligibilityFailureReason.MAX_VALUE);
+            return false;
+        }
+
+        // Query AGSA to see if it can handle Assistant voice search.
+        if (sAgsaSupportsAssistantVoiceSearch == null || !sAgsaSupportsAssistantVoiceSearch) {
+            RecordHistogram.recordEnumeratedHistogram(USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM,
+                    sAgsaSupportsAssistantVoiceSearch == null
+                            ? EligibilityFailureReason
+                                      .AGSA_DOESNT_SUPPORT_VOICE_SEARCH_CHECK_NOT_COMPLETE
+                            : EligibilityFailureReason.AGSA_DOESNT_SUPPORT_VOICE_SEARCH,
+                    EligibilityFailureReason.MAX_VALUE);
             return false;
         }
 
         // AGSA will throw an exception if Chrome isn't Google signed.
-        if (!mExternalAuthUtils.isChromeGoogleSigned()) return false;
-        if (!mExternalAuthUtils.isGoogleSigned(IntentHandler.PACKAGE_GSA)) return false;
+        if (!mExternalAuthUtils.isChromeGoogleSigned()) {
+            RecordHistogram.recordEnumeratedHistogram(USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM,
+                    EligibilityFailureReason.CHROME_NOT_GOOGLE_SIGNED,
+                    EligibilityFailureReason.MAX_VALUE);
+            return false;
+        }
+        if (!mExternalAuthUtils.isGoogleSigned(IntentHandler.PACKAGE_GSA)) {
+            RecordHistogram.recordEnumeratedHistogram(USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM,
+                    EligibilityFailureReason.AGSA_NOT_GOOGLE_SIGNED,
+                    EligibilityFailureReason.MAX_VALUE);
+            return false;
+        }
 
-        return mMinMemoryMb <= availableMemoryMb && mMinAndroidSdkVersion <= Build.VERSION.SDK_INT
-                && mSupportedLocales.contains(currentLocale);
+        return true;
     }
 
     /** @return The Intent for Assistant voice search. */
@@ -224,28 +294,6 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
         Intent intent = new Intent(Intent.ACTION_SEARCH);
         intent.setPackage(IntentHandler.PACKAGE_GSA);
         return intent;
-    }
-
-    /**
-     * @return List of locales parsed from the given input string, or a default list if the parsing
-     * fails.
-     */
-    @VisibleForTesting
-    static Set<Locale> parseLocalesFromString(String encodedEnabledLocalesList) {
-        if (TextUtils.isEmpty(encodedEnabledLocalesList)) return DEFAULT_ASSISTANT_LOCALES;
-
-        String[] encodedEnabledLocales = encodedEnabledLocalesList.split(",");
-        HashSet<Locale> enabledLocales = new HashSet<>(encodedEnabledLocales.length);
-        for (int i = 0; i < encodedEnabledLocales.length; i++) {
-            Locale locale = LocaleUtils.forLanguageTag(encodedEnabledLocales[i]);
-            if (TextUtils.isEmpty(locale.getCountry()) || TextUtils.isEmpty(locale.getLanguage())) {
-                // Error with the locale encoding, fallback to the default locales.
-                return DEFAULT_ASSISTANT_LOCALES;
-            }
-            enabledLocales.add(locale);
-        }
-
-        return enabledLocales;
     }
 
     /** Records whether the user is eligible. */
@@ -258,5 +306,10 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
     void setColorfulMicEnabledForTesting(boolean enabled) {
         mIsColorfulMicEnabled = enabled;
         mShouldShowColorfulMic = enabled;
+    }
+
+    // Allows testing the NULL case for Boolean.
+    void setAgsaSupportsAssistantVoiceSearchForTesting(Boolean value) {
+        sAgsaSupportsAssistantVoiceSearch = value;
     }
 }

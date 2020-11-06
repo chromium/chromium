@@ -1890,16 +1890,10 @@ const FeatureEntry::Choice kNotificationSchedulerChoices[] = {
 
 const FeatureEntry::FeatureParam kOmniboxAssistantVoiceSearchGreyMic[] = {
     {"min_agsa_version", "10.95"},
-    {"min_android_sdk", "21"},
-    {"min_memory_mb", "1024"},
-    {"enabled_locales", ""},
     {"colorful_mic", "false"}};
 
 const FeatureEntry::FeatureParam kOmniboxAssistantVoiceSearchColorfulMic[] = {
     {"min_agsa_version", "10.95"},
-    {"min_android_sdk", "21"},
-    {"min_memory_mb", "1024"},
-    {"enabled_locales", ""},
     {"colorful_mic", "true"}};
 
 const FeatureEntry::FeatureVariation kOmniboxAssistantVoiceSearchVariations[] =

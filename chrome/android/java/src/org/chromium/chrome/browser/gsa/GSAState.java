@@ -12,14 +12,18 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
+import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.PackageUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -34,6 +38,8 @@ import java.util.List;
  * A class responsible fore representing the current state of Chrome's integration with GSA.
  */
 public class GSAState {
+    private static final String TAG = "GSAState";
+
     private static final int GSA_VERSION_FOR_DOCUMENT = 300401021;
     private static final int GMS_CORE_VERSION = 6577010;
 
@@ -42,6 +48,14 @@ public class GSAState {
 
     static final String SEARCH_INTENT_ACTION =
             "com.google.android.googlequicksearchbox.TEXT_ASSIST";
+
+    // AGSA's public content provider, used to expose public properties to other apps.
+    static final String GSA_PUBLIC_CONTENT_PROVIDER =
+            String.format("%s.GsaPublicContentProvider", SEARCH_INTENT_PACKAGE);
+    // AGSA-side checks for if Chrome should use Assistant for voice transcription.
+    // This value is a boolean stored as a string.
+    static final String ROTI_CHROME_ENABLED_PROVIDER = String.format(
+            "content://%s/publicvalue/roti_for_chrome_enabled", GSA_PUBLIC_CONTENT_PROVIDER);
 
     /**
      * An instance of GSAState class encapsulating knowledge about the current status.
@@ -220,5 +234,46 @@ public class GSAState {
         } catch (NameNotFoundException e) {
             return null;
         }
+    }
+
+    /**
+     * @return Whether the AGSA app installed on the device supports Assistant voice search. This
+     *         reads from a content provider and shouldn't be called directly on the UI thread.
+     */
+    public boolean agsaSupportsAssistantVoiceSearch() {
+        ThreadUtils.assertOnBackgroundThread();
+
+        Cursor cursor = null;
+        try {
+            cursor = mContext.getContentResolver().query(
+                    Uri.parse(ROTI_CHROME_ENABLED_PROVIDER), null, null, null, null);
+            return parseAgsaAssistantCursorResult(cursor);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed due to unexpected exception.", e);
+            return false;
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    @VisibleForTesting
+    boolean parseAgsaAssistantCursorResult(Cursor cursor) {
+        if (cursor == null) {
+            Log.e(TAG, "Failed due to cursor being null.");
+            return false;
+        }
+        boolean isValidCursor = cursor.moveToFirst();
+        if (!isValidCursor) {
+            Log.e(TAG, "Failed due cursor being empty.");
+            return false;
+        }
+        if (cursor.getType(0) != Cursor.FIELD_TYPE_STRING) {
+            Log.e(TAG, "Failed due cursor having unexpected datatype (expected string).");
+            return false;
+        }
+
+        return Boolean.parseBoolean(cursor.getString(0));
     }
 }

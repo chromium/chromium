@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.database.Cursor;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -103,5 +104,49 @@ public final class GSAStateUnitTest {
         doReturn(null).when(mPackageManager).getPackageInfo(IntentHandler.PACKAGE_GSA, 0);
 
         Assert.assertFalse(mGsaState.canAgsaHandleIntent(intent));
+    }
+
+    @Test
+    public void testPublicGsaContentProvider() {
+        Assert.assertEquals("com.google.android.googlequicksearchbox.GsaPublicContentProvider",
+                GSAState.GSA_PUBLIC_CONTENT_PROVIDER);
+        Assert.assertEquals(
+                "content://com.google.android.googlequicksearchbox.GsaPublicContentProvider/publicvalue/roti_for_chrome_enabled",
+                GSAState.ROTI_CHROME_ENABLED_PROVIDER);
+    }
+
+    @Test
+    public void parseAgsaCursorResult() {
+        Cursor cursor = Mockito.mock(Cursor.class);
+        doReturn(true).when(cursor).moveToFirst();
+        doReturn(Cursor.FIELD_TYPE_STRING).when(cursor).getType(0);
+        doReturn("true").when(cursor).getString(0);
+
+        Assert.assertTrue(mGsaState.parseAgsaAssistantCursorResult(cursor));
+
+        doReturn("false").when(cursor).getString(0);
+        Assert.assertFalse(mGsaState.parseAgsaAssistantCursorResult(cursor));
+    }
+
+    @Test
+    public void parseAgsaCursorResult_cursorNull() {
+        Assert.assertFalse(mGsaState.parseAgsaAssistantCursorResult(null));
+    }
+
+    @Test
+    public void parseAgsaCursorResult_cursorEmpty() {
+        Cursor cursor = Mockito.mock(Cursor.class);
+        doReturn(false).when(cursor).moveToFirst();
+
+        Assert.assertFalse(mGsaState.parseAgsaAssistantCursorResult(cursor));
+    }
+
+    @Test
+    public void parseAgsaCursorResult_invalidType() {
+        Cursor cursor = Mockito.mock(Cursor.class);
+        doReturn(true).when(cursor).moveToFirst();
+        doReturn(Cursor.FIELD_TYPE_INTEGER).when(cursor).getType(0);
+
+        Assert.assertFalse(mGsaState.parseAgsaAssistantCursorResult(cursor));
     }
 }

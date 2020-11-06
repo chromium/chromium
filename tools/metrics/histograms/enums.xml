@@ -20091,6 +20091,15 @@ Called by update_document_policy_enum.py.-->
   <int value="16" label="Angle OpenGL ES EGL"/>
 </enum>
 
+<enum name="EligibilityFailureReason">
+  <int value="0" label="AGSA_CANT_HANDLE_INTENT"/>
+  <int value="1" label="AGSA_VERSION_BELOW_MINIMUM"/>
+  <int value="2" label="AGSA_DOESNT_SUPPORT_VOICE_SEARCH_CHECK_NOT_COMPLETE"/>
+  <int value="3" label="AGSA_DOESNT_SUPPORT_VOICE_SEARCH"/>
+  <int value="4" label="CHROME_NOT_GOOGLE_SIGNED"/>
+  <int value="5" label="AGSA_NOT_GOOGLE_SIGNED"/>
+</enum>
+
 <enum name="EmbeddedWorkerStartingPhase">
   <int value="0" label="NOT_STARTING"/>
   <int value="1" label="ALLOCATING_PROCESS"/>
