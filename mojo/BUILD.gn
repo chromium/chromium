@@ -59,7 +59,6 @@ test("mojo_perftests") {
       "//base",
       "//base/test:test_support",
       "//mojo/core:embedder_internal",
-      "//mojo/core:test_utils",
       "//mojo/core/embedder",
       "//testing/gtest",
     ]

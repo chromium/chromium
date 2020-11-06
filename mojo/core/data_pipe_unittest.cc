@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/test/mojo_test_base.h"
-#include "mojo/core/test_utils.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "mojo/public/c/system/functions.h"
 #include "mojo/public/c/system/message_pipe.h"
@@ -44,6 +43,28 @@ const int kMultiprocessMaxIter = 5;
 
 // Capacity that will cause data pipe creation to fail.
 constexpr size_t kOversizedCapacity = std::numeric_limits<uint32_t>::max();
+
+// A timeout smaller than |TestTimeouts::tiny_timeout()|, as a |MojoDeadline|.
+// Warning: This may lead to flakiness, but this is unavoidable if, e.g., you're
+// trying to ensure that functions with timeouts are reasonably accurate. We
+// want this to be as small as possible without causing too much flakiness.
+base::TimeDelta EpsilonDeadline() {
+  const int64_t tiny_timeout = TestTimeouts::tiny_timeout().InMicroseconds();
+// Originally, our epsilon timeout was 10 ms, which was mostly fine but flaky on
+// some Windows bots. I don't recall ever seeing flakes on other bots. At 30 ms
+// tests seem reliable on Windows bots, but not at 25 ms. We'd like this timeout
+// to be as small as possible (see the description in the .h file).
+//
+// Currently, |tiny_timeout()| is usually 100 ms (possibly scaled under ASAN,
+// etc.). Based on this, set it to (usually be) 30 ms on Windows and 20 ms
+// elsewhere.
+#if defined(OS_WIN) || defined(OS_ANDROID)
+  const int64_t deadline = (tiny_timeout * 3) / 10;
+#else
+  const int64_t deadline = (tiny_timeout * 2) / 10;
+#endif
+  return base::TimeDelta::FromMicroseconds(deadline);
+}
 
 // TODO(rockot): There are many uses of ASSERT where EXPECT would be more
 // appropriate. Fix this.
@@ -948,7 +969,7 @@ TEST_F(DataPipeTest, AllOrNone) {
     if (num_bytes >= 10u * sizeof(int32_t))
       break;
 
-    test::Sleep(test::EpsilonDeadline());
+    base::PlatformThread::Sleep(EpsilonDeadline());
   }
   ASSERT_EQ(10u * sizeof(int32_t), num_bytes);
 
@@ -1154,7 +1175,7 @@ TEST_F(DataPipeTest, WriteCloseProducerRead) {
     if (num_bytes >= 2u * kTestDataSize)
       break;
 
-    test::Sleep(test::EpsilonDeadline());
+    base::PlatformThread::Sleep(EpsilonDeadline());
   }
   ASSERT_EQ(2u * kTestDataSize, num_bytes);
 
@@ -1423,7 +1444,7 @@ TEST_F(DataPipeTest, TwoPhaseMoreInvalidArguments) {
 
   // Wait a bit, to make sure that if a signal were (incorrectly) sent, it'd
   // have time to propagate.
-  test::Sleep(test::EpsilonDeadline());
+  base::PlatformThread::Sleep(EpsilonDeadline());
 
   // Still no data.
   num_bytes = 1000u;
@@ -1441,7 +1462,7 @@ TEST_F(DataPipeTest, TwoPhaseMoreInvalidArguments) {
   ASSERT_EQ(MOJO_RESULT_FAILED_PRECONDITION, EndWriteData(0u));
 
   // Wait a bit (as above).
-  test::Sleep(test::EpsilonDeadline());
+  base::PlatformThread::Sleep(EpsilonDeadline());
 
   // Still no data.
   num_bytes = 1000u;
@@ -1460,7 +1481,7 @@ TEST_F(DataPipeTest, TwoPhaseMoreInvalidArguments) {
   ASSERT_EQ(MOJO_RESULT_FAILED_PRECONDITION, EndWriteData(0u));
 
   // Wait a bit (as above).
-  test::Sleep(test::EpsilonDeadline());
+  base::PlatformThread::Sleep(EpsilonDeadline());
 
   // Still no data.
   num_bytes = 1000u;
@@ -1705,7 +1726,7 @@ bool ReadAllData(MojoHandle consumer,
       if (num_bytes == 0) {
         if (expect_empty) {
           // Expect no more data.
-          test::Sleep(test::TinyDeadline());
+          base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
           MojoReadDataOptions options;
           options.struct_size = sizeof(options);
           options.flags = MOJO_READ_DATA_FLAG_QUERY;

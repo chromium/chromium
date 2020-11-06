@@ -14,7 +14,6 @@
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "mojo/core/test/mojo_test_base.h"
-#include "mojo/core/test_utils.h"
 #include "mojo/public/c/system/core.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/system/message_pipe.h"

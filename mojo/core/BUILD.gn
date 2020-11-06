@@ -264,27 +264,6 @@ if (is_chromeos || is_linux || is_android || is_win) {
   }
 }
 
-source_set("test_utils") {
-  testonly = true
-
-  sources = [
-    "test_utils.cc",
-    "test_utils.h",
-  ]
-
-  public_deps = [
-    "//mojo/public/c/system",
-    "//mojo/public/cpp/system",
-  ]
-
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//mojo/core/test:test_support",
-    "//testing/gtest:gtest",
-  ]
-}
-
 source_set("test_sources") {
   testonly = true
   sources = [
@@ -316,7 +295,6 @@ source_set("test_sources") {
   }
 
   deps = [
-    ":test_utils",
     "//base",
     "//base/test:test_support",
     "//mojo/core:embedder_internal",

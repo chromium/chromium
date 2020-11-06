@@ -30,7 +30,6 @@
 #include "mojo/core/core.h"
 #include "mojo/core/shared_buffer_dispatcher.h"
 #include "mojo/core/test/mojo_test_base.h"
-#include "mojo/core/test_utils.h"
 #include "mojo/public/c/system/core.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"

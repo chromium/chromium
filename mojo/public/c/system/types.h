@@ -124,18 +124,6 @@ const MojoResult MOJO_RESULT_SHOULD_WAIT = 17;
 #define MOJO_RESULT_SHOULD_WAIT ((MojoResult)17)
 #endif
 
-// |MojoDeadline|: Used to specify deadlines (timeouts), in microseconds (except
-// for |MOJO_DEADLINE_INDEFINITE|).
-//   |MOJO_DEADLINE_INDEFINITE| - Used to indicate "forever".
-
-typedef uint64_t MojoDeadline;
-
-#ifdef __cplusplus
-const MojoDeadline MOJO_DEADLINE_INDEFINITE = static_cast<MojoDeadline>(-1);
-#else
-#define MOJO_DEADLINE_INDEFINITE ((MojoDeadline)-1)
-#endif
-
 // Flags passed to |MojoInitialize()| via |MojoInitializeOptions|.
 typedef uint32_t MojoInitializeFlags;
 

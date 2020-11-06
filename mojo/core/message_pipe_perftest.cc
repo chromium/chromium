@@ -19,7 +19,6 @@
 #include "mojo/core/handle_signals_state.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/core/test/test_utils.h"
-#include "mojo/core/test_utils.h"
 #include "mojo/public/c/system/functions.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"

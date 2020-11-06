@@ -9,7 +9,6 @@
 
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
-#include "mojo/core/test_utils.h"
 #include "mojo/public/c/system/types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
