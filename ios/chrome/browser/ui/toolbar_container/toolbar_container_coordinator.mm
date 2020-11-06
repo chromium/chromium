@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
@@ -120,8 +121,16 @@
       [[NSMutableArray alloc] init];
   for (ChromeCoordinator* coordinator in _toolbarCoordinators) {
     if ([coordinator respondsToSelector:@selector(viewController)]) {
+      // Since the selector is defined in a sub-class, the compiler does not
+      // accept calling it on `coordinator` directly. It is possible to call
+      // any defined selector on a object of type `id`. Though in that case,
+      // the compiler does not know which selector to call and the return
+      // type may be incorrect if the selector is overloaded. Add a checked
+      // cast to ensure at runtime that the returned type is correct.
       id toolbarCoordinator = coordinator;
-      [toolbarViewControllers addObject:[toolbarCoordinator viewController]];
+      [toolbarViewControllers
+          addObject:base::mac::ObjCCastStrict<UIViewController>(
+                        [toolbarCoordinator viewController])];
     }
   }
   return toolbarViewControllers;
