@@ -103,8 +103,10 @@ public final class ResourceBundle {
         // The file may not exist if the language split for this locale has not been installed
         // yet, so make sure it exists before returning the asset path.
         try (AssetFileDescriptor afd = manager.openNonAssetFd(assetPath)) {
+            Log.i(TAG, "Found: %s", assetPath);
             return assetPath;
         } catch (IOException e) {
+            Log.e(TAG, "Not found: %s", assetPath);
             if (logError) {
                 Log.e(TAG, "path=%s", assetPath, e);
             }
