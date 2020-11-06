@@ -77,10 +77,14 @@ class Trash {
     this.trashDirs_ = {};
 
     /**
+     * Set of in-progress deletes. Items in this list are ignored by
+     * removeOldItems_(). Use getInProgressKey_() to create a globally unique
+     * key.
+     *
      * @private {!Set<string>}
      * @const
      */
-    this.infoWritesInProgress_ = new Set();
+    this.inProgress_ = new Set();
   }
 
   /**
@@ -193,19 +197,16 @@ class Trash {
    * removeOldItems_() if it is running concurrently.
    *
    * @param {!DirectoryEntry} trashInfoDir /.Trash/info directory.
-   * @param {string} name name for <name>.trashinfo file.
-   * @param {string} path path to use in .trashinfo file.
+   * @param {string} trashInfoName name of the *.trashinfo file.
+   * @param {string} path path to use in *.trashinfo file.
    * @return {!Promise<!FileEntry>}
    * @private
    */
-  async writeTrashInfoFile_(trashInfoDir, name, path) {
-    const filename = `${name}.trashinfo`;
-    this.infoWritesInProgress_.add(filename);
+  async writeTrashInfoFile_(trashInfoDir, trashInfoName, path) {
     return new Promise((resolve, reject) => {
-      trashInfoDir.getFile(filename, {create: true}, infoFile => {
+      trashInfoDir.getFile(trashInfoName, {create: true}, infoFile => {
         infoFile.createWriter(writer => {
           writer.onwriteend = () => {
-            this.infoWritesInProgress_.delete(filename);
             resolve(infoFile);
           };
           writer.onerror = reject;
@@ -249,6 +250,16 @@ class Trash {
   }
 
   /**
+   * Gets a globally unique key to use in the in-progress set.
+   *
+   * @param {!DirectoryEntry} trashInfoDir /.Trash/info directory.
+   * @param {string} trashInfoName name of the *.trashinfo file.
+   */
+  getInProgressKey_(trashInfoDir, trashInfoName) {
+    return `${trashInfoDir.toURL()}/${trashInfoName}`;
+  }
+
+  /**
    * Move a file or a directory to the trash.
    *
    * @param {!Entry} entry The entry to remove.
@@ -260,13 +271,17 @@ class Trash {
     const trashDirs = await this.getTrashDirs_(entry, config);
     const name =
         await fileOperationUtil.deduplicatePath(trashDirs.files, entry.name);
+    const trashInfoName = `${name}.trashinfo`;
 
     // Write trashinfo first, then only move file if info write succeeds.
     // If any step fails, the file will be unchanged, and any partial trashinfo
     // file created will be cleaned up when we remove old items.
+    const inProgressKey = this.getInProgressKey_(trashDirs.info, trashInfoName);
+    this.inProgress_.add(inProgressKey);
     const infoEntry = await this.writeTrashInfoFile_(
-        trashDirs.info, name, config.pathPrefix + entry.fullPath);
+        trashDirs.info, trashInfoName, config.pathPrefix + entry.fullPath);
     const filesEntry = await this.moveTo_(entry, trashDirs.files, name);
+    this.inProgress_.delete(inProgressKey);
     return new TrashItem(entry.name, filesEntry, infoEntry, config.pathPrefix);
   }
 
@@ -369,8 +384,9 @@ class Trash {
             continue;
           }
 
-          // Ignore any write-in-progress files.
-          if (this.infoWritesInProgress_.has(entry.name)) {
+          // Ignore any in-progress files.
+          if (this.inProgress_.has(
+                  this.getInProgressKey_(trashDirs.info, entry.name))) {
             console.log(`Ignoring write in progress ${entry.toURL()}`);
             continue;
           }
