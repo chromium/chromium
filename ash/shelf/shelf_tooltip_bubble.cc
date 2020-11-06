@@ -4,6 +4,7 @@
 
 #include "ash/shelf/shelf_tooltip_bubble.h"
 
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ui/aura/window.h"
@@ -48,8 +49,12 @@ ShelfTooltipBubble::ShelfTooltipBubble(views::View* anchor,
   SetLayoutManager(std::make_unique<views::FillLayout>());
   views::Label* label = new views::Label(text);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  const SkColor tooltip_background = SkColorSetA(gfx::kGoogleGrey900, 0xE6);
-  const SkColor tooltip_text = SkColorSetA(gfx::kGoogleGrey200, 0xFF);
+  // TODO (https://crbug.com/1146125) Enable inverted tooltip colors.
+  const SkColor tooltip_background = AshColorProvider::Get()->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kTransparent80);
+  const SkColor tooltip_text = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary);
+
   set_color(tooltip_background);
   label->SetEnabledColor(tooltip_text);
   label->SetBackgroundColor(tooltip_background);
