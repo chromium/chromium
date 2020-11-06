@@ -134,7 +134,6 @@ settings_auto_imports = [
   "chrome/browser/resources/settings/i18n_setup.html|loadTimeData",
   "chrome/browser/resources/settings/prefs/prefs_behavior.html|PrefsBehavior",
   "chrome/browser/resources/settings/prefs/prefs_types.html|CrSettingsPrefs",
-  "chrome/browser/resources/settings/printing_page/printing_browser_proxy.html|PrintingBrowserProxyImpl",
   "chrome/browser/resources/settings/router.html|Router,Route,RouteObserverBehavior",
 ]
 

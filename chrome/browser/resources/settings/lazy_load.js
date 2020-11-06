@@ -40,7 +40,6 @@ import 'chrome://resources/cr_components/certificate_manager/certificate_manager
 import './a11y_page/a11y_page.js';
 import './downloads_page/downloads_page.js';
 import './languages_page/languages_page.js';
-import './printing_page/printing_page.js';
 import './reset_page/reset_page.js';
 // <if expr="not chromeos">
 import './system_page/system_page.js';

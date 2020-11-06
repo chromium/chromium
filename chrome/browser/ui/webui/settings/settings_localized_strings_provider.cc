@@ -1240,47 +1240,6 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
   AddSyncPageStrings(html_source);
 }
 
-void AddPrintingStrings(content::WebUIDataSource* html_source,
-                        Profile* profile) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-    {"printingPageTitle", IDS_SETTINGS_PRINTING},
-    {"printingNotificationsLabel", IDS_SETTINGS_PRINTING_NOTIFICATIONS_LABEL},
-    {"printingManageCloudPrintDevices",
-     IDS_SETTINGS_PRINTING_MANAGE_CLOUD_PRINT_DEVICES},
-    {"cloudPrintersTitle", IDS_SETTINGS_PRINTING_CLOUD_PRINTERS},
-#if !defined(OS_CHROMEOS)
-    {"localPrintersTitle", IDS_SETTINGS_PRINTING_LOCAL_PRINTERS_TITLE},
-#endif
-  };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
-
-  html_source->AddString("cloudPrintersUrl",
-                         cloud_devices::GetCloudPrintPrintersURL().spec());
-
-  html_source->AddBoolean("cloudPrintDeprecationWarningsSuppressed",
-                          profile->GetPrefs()->GetBoolean(
-                              prefs::kCloudPrintDeprecationWarningsSuppressed));
-
-  const bool enterprise_managed = webui::IsEnterpriseManaged();
-  html_source->AddLocalizedString(
-      "cloudPrintWarning",
-      enterprise_managed
-          ? IDS_SETTINGS_PRINTING_GOOGLE_CLOUD_PRINT_NOT_SUPPORTED_WARNING_ENTERPRISE
-          : IDS_SETTINGS_PRINTING_GOOGLE_CLOUD_PRINT_NOT_SUPPORTED_WARNING);
-
-  if (enterprise_managed) {
-    html_source->AddLocalizedString(
-        "cloudPrintFullWarning",
-        IDS_SETTINGS_PRINTING_GOOGLE_CLOUD_PRINT_NOT_SUPPORTED_WARNING_ENTERPRISE);
-  } else {
-    html_source->AddString(
-        "cloudPrintFullWarning",
-        l10n_util::GetStringFUTF16(
-            IDS_SETTINGS_PRINTING_GOOGLE_CLOUD_PRINT_NOT_SUPPORTED_FULL_WARNING,
-            base::ASCIIToUTF16(cloud_devices::kCloudPrintDeprecationHelpURL)));
-  }
-}
-
 void AddPrivacyStrings(content::WebUIDataSource* html_source,
                        Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -2459,7 +2418,6 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddLanguagesStrings(html_source, profile);
   AddOnStartupStrings(html_source);
   AddPeopleStrings(html_source, profile);
-  AddPrintingStrings(html_source, profile);
   AddPrivacyStrings(html_source, profile);
   AddSafetyCheckStrings(html_source);
   AddResetStrings(html_source, profile);

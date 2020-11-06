@@ -172,9 +172,6 @@ function createBrowserSettingsRoutes() {
       r.DOWNLOADS = r.ADVANCED.createSection('/downloads', 'downloads');
     }
 
-    r.PRINTING = r.ADVANCED.createSection('/printing', 'printing');
-    r.CLOUD_PRINTERS = r.PRINTING.createChild('/cloudPrinters');
-
     r.ACCESSIBILITY = r.ADVANCED.createSection('/accessibility', 'a11y');
 
     // <if expr="chromeos or is_linux">

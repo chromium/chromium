@@ -142,7 +142,6 @@ preprocess_grit("preprocess") {
       "default_browser_page/default_browser_browser_proxy.js",
       "people_page/import_data_browser_proxy.js",
       "people_page/manage_profile_browser_proxy.js",
-      "printing_page/printing_browser_proxy.js",
       "system_page/system_page_browser_proxy.js",
     ]
   }
@@ -229,8 +228,6 @@ preprocess_grit("preprocess_generated") {
     "prefs/prefs_behavior.m.js",
     "prefs/prefs_types.m.js",
     "prefs/pref_util.m.js",
-    "printing_page/cloud_printers.js",
-    "printing_page/printing_page.js",
     "privacy_page/collapse_radio_button.js",
     "privacy_page/cookies_page.js",
     "privacy_page/do_not_track_toggle.js",
@@ -450,7 +447,6 @@ group("closure_compile_module") {
     "on_startup_page:closure_compile_module",
     "people_page:closure_compile_module",
     "prefs:closure_compile_module",
-    "printing_page:closure_compile_module",
     "privacy_page:closure_compile_module",
     "reset_page:closure_compile_module",
     "safety_check_page:closure_compile_module",
@@ -653,7 +649,6 @@ group("polymer3_elements") {
     "on_startup_page:web_components",
     "people_page:polymer3_elements",
     "prefs:polymer3_elements",
-    "printing_page:web_components",
     "privacy_page:polymer3_elements",
     "reset_page:web_components",
     "safety_check_page:web_components",

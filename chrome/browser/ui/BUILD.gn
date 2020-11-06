@@ -4441,12 +4441,6 @@ static_library("ui") {
       "//components/printing/browser",
       "//printing",
     ]
-    if (!is_chromeos && !is_android) {
-      sources += [
-        "webui/settings/printing_handler.cc",
-        "webui/settings/printing_handler.h",
-      ]
-    }
     if (use_cups) {
       configs += [ "//printing:cups" ]
     }

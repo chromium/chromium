@@ -176,14 +176,6 @@
                 </settings-downloads-page>
               </settings-section>
             </template>
-            <template is="dom-if" if="[[showPage_(pageVisibility.printing)]]"
-                restamp>
-              <settings-section page-title="$i18n{printingPageTitle}"
-                  section="printing">
-                <settings-printing-page prefs="{{prefs}}">
-                </settings-printing-page>
-              </settings-section>
-            </template>
             <template is="dom-if" if="[[showPage_(pageVisibility.a11y)]]"
                 restamp>
               <settings-section page-title="$i18n{a11yPageTitle}"

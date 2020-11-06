@@ -80,7 +80,7 @@ suite('AdvancedPage', function() {
   });
 
   test('advanced pages', function() {
-    const sections = ['a11y', 'languages', 'downloads', 'printing', 'reset'];
+    const sections = ['a11y', 'languages', 'downloads', 'reset'];
     for (let i = 0; i < sections.length; i++) {
       const section = getSection(
           /** @type {!SettingsBasicPageElement} */ (basicPage), sections[i]);

@@ -21,8 +21,7 @@ export function ensureLazyLoaded() {
       'certificate-manager',
       // </if>
       'settings-a11y-page', 'settings-downloads-page',
-      'settings-languages-page', 'settings-printing-page',
-      'settings-reset-page',
+      'settings-languages-page', 'settings-reset-page',
       // <if expr="not chromeos">
       'settings-system-page',
       // </if>

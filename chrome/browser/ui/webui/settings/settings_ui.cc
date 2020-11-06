@@ -130,10 +130,6 @@
 #include "chrome/browser/ui/webui/settings/native_certificates_handler.h"
 #endif  // defined(USE_NSS_CERTS)
 
-#if BUILDFLAG(ENABLE_PRINTING) && !defined(OS_CHROMEOS)
-#include "chrome/browser/ui/webui/settings/printing_handler.h"
-#endif
-
 namespace settings {
 
 // static
@@ -228,10 +224,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   AddSettingsPageUIHandler(std::make_unique<DefaultBrowserHandler>());
   AddSettingsPageUIHandler(std::make_unique<ManageProfileHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<SystemHandler>());
-#endif
-
-#if BUILDFLAG(ENABLE_PRINTING) && !defined(OS_CHROMEOS)
-  AddSettingsPageUIHandler(std::make_unique<PrintingHandler>());
 #endif
 
 #if defined(OS_WIN)

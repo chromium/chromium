@@ -956,32 +956,9 @@
     Notifications will be disabled
   </message>
 
-  <!-- Printing -->
+  <!-- Printing (used by OS Settings page) -->
   <message name="IDS_SETTINGS_PRINTING" desc="Title of the printing page and navigation item to get there.">
     Printing
-  </message>
-  <message name="IDS_SETTINGS_PRINTING_NOTIFICATIONS_LABEL" desc="Label for the checkbox which enabled notifications when new printers are added to the user's network">
-    Show notifications when new printers are detected on the network
-  </message>
-  <message name="IDS_SETTINGS_PRINTING_MANAGE_CLOUD_PRINT_DEVICES" desc="Text for the button which allows users to manage their Google Cloud Print devices">
-    Manage Cloud Print devices
-  </message>
-  <if expr="not chromeos">
-    <message name="IDS_SETTINGS_PRINTING_LOCAL_PRINTERS_TITLE" desc="In Printing Settings, the title of local printers setting section on OS other than Chrome OS.">
-      Printers
-    </message>
-  </if>
-  <message name="IDS_SETTINGS_PRINTING_CLOUD_PRINTERS" desc="In Printing Settings, the title of the google cloud printers setting section.">
-    Google Cloud Print
-  </message>
-  <message name="IDS_SETTINGS_PRINTING_GOOGLE_CLOUD_PRINT_NOT_SUPPORTED_WARNING" desc="Warning shown to the user to inform them that Google Cloud Print will no longer be supported.">
-    Google Cloud Print will no longer be supported after December 31
-  </message>
-  <message name="IDS_SETTINGS_PRINTING_GOOGLE_CLOUD_PRINT_NOT_SUPPORTED_FULL_WARNING" desc="Warning shown to the user to inform them that Google Cloud Print will no longer be supported. Same as above, with the addition of the learn more link.">
-    Google Cloud Print will no longer be supported after December 31. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_SETTINGS_PRINTING_GOOGLE_CLOUD_PRINT_NOT_SUPPORTED_WARNING_ENTERPRISE" desc="Warning shown to users managed by enterprise policy to inform them that Google Cloud Print will no longer be supported.">
-    Google Cloud Print will no longer be supported after December 31. Contact your administrator.
   </message>
 
   <!-- Downloads Page -->
