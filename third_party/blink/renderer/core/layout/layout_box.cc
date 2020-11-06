@@ -1258,7 +1258,8 @@ LayoutUnit LayoutBox::LogicalHeightWithVisibleOverflow() const {
 LayoutUnit LayoutBox::ConstrainLogicalWidthByMinMax(
     LayoutUnit logical_width,
     LayoutUnit available_width,
-    const LayoutBlock* cb) const {
+    const LayoutBlock* cb,
+    bool allow_intrinsic) const {
   NOT_DESTROYED();
   const ComputedStyle& style_to_use = StyleRef();
 
@@ -1270,11 +1271,13 @@ LayoutUnit LayoutBox::ConstrainLogicalWidthByMinMax(
     logical_width = transferred_min_max.ClampSizeToMinAndMax(logical_width);
   }
 
-  if (!style_to_use.LogicalMaxWidth().IsNone())
+  if (!style_to_use.LogicalMaxWidth().IsNone() &&
+      (allow_intrinsic || !style_to_use.LogicalMaxWidth().IsIntrinsic())) {
     logical_width = std::min(
         logical_width,
         ComputeLogicalWidthUsing(kMaxSize, style_to_use.LogicalMaxWidth(),
                                  available_width, cb));
+  }
 
   // If we have an aspect-ratio, check if we need to apply min-width: auto.
   Length min_length = style_to_use.LogicalMinWidth();
@@ -1285,6 +1288,8 @@ LayoutUnit LayoutBox::ConstrainLogicalWidthByMinMax(
     if (ShouldComputeLogicalWidthFromAspectRatio())
       min_length = Length::MinIntrinsic();
   }
+  if (!allow_intrinsic && style_to_use.LogicalMinWidth().IsIntrinsic())
+    return logical_width;
   return std::max(logical_width, ComputeLogicalWidthUsing(kMinSize, min_length,
                                                           available_width, cb));
 }
@@ -4055,7 +4060,8 @@ bool LayoutBox::ComputeLogicalWidthFromAspectRatio(
       InlineSizeFromAspectRatio(border_padding, StyleRef().LogicalAspectRatio(),
                                 StyleRef().BoxSizing(), logical_height_for_ar);
   *out_logical_width = ConstrainLogicalWidthByMinMax(
-      logical_width, container_width_in_inline_direction, ContainingBlock());
+      logical_width, container_width_in_inline_direction, ContainingBlock(),
+      /* allow_intrinsic */ false);
   return true;
 }
 

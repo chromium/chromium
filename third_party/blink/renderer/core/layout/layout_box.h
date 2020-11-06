@@ -317,7 +317,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   LayoutUnit ConstrainLogicalWidthByMinMax(LayoutUnit,
                                            LayoutUnit,
-                                           const LayoutBlock*) const;
+                                           const LayoutBlock*,
+                                           bool allow_intrinsic = true) const;
   LayoutUnit ConstrainLogicalHeightByMinMax(
       LayoutUnit logical_height,
       LayoutUnit intrinsic_content_height) const;
