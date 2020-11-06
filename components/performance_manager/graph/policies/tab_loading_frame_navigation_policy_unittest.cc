@@ -266,10 +266,10 @@ TEST_F(TabLoadingFrameNavigationPolicyTest, OnlyHttpContentsThrottled) {
   }
 
   {
-    // Expect about:// contents not to be throttled.
+    // Expect about:blank contents not to be throttled.
     SCOPED_TRACE("about");
     content::NavigationSimulator::NavigateAndCommitFromBrowser(
-        web_contents(), GURL("about://blank"));
+        web_contents(), GURL("about:blank"));
     EXPECT_FALSE(policy()->ShouldThrottleWebContents(web_contents()));
     ExpectThrottledPageCount(0);
   }

@@ -316,7 +316,7 @@ TEST_F(SiteDataRecorderTest, FeatureEventsGetForwardedWhenInBackground) {
     EXPECT_CALL(*mock_writer, NotifySiteUnloaded(TabVisibility::kBackground));
   }));
 
-  NavigatePageNodeOnUIThread(web_contents(), GURL("about://blank"));
+  NavigatePageNodeOnUIThread(web_contents(), GURL("about:blank"));
 }
 
 TEST_F(SiteDataRecorderTest, FeatureEventsIgnoredWhenLoadingInBackground) {

@@ -21,7 +21,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class DialogOverlayImplTest {
-    private static final String BLANK_URL = "about://blank";
+    private static final String BLANK_URL = "about:blank";
 
     @Rule
     public DialogOverlayImplTestRule mActivityTestRule =

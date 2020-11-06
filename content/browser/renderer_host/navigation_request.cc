@@ -1040,6 +1040,31 @@ NavigationRequest::NavigationRequest(
   DCHECK(browser_initiated_ || common_params_->initiator_origin.has_value());
   DCHECK(!IsRendererDebugURL(common_params_->url));
   DCHECK(common_params_->method == "POST" || !common_params_->post_data);
+  ScopedNavigationRequestCrashKeys crash_keys(this);
+
+  // There should be no navigations to about:newtab, about:version or other
+  // similar URLs (see https://crbug.com/1145717):
+  //
+  // 1. For URLs coming from outside the browser (e.g. from user input into the
+  //    omnibox, from other apps, etc) the //content embedder should fix
+  //    the URL using the url_formatter::FixupURL API from
+  //    //components/url_formatter (which would for example translate
+  //    "about:version" into "chrome://version/", "localhost:1234" into
+  //    "http://localhost:1234/", etc.).
+  //
+  // 2. Most tests should directly use correct, final URLs (e.g.
+  //    chrome://version instead of about:version;  or about:blank instead of
+  //    about://blank).  Similarly, links in the product (e.g. links inside
+  //    chrome://about/) should use correct, final URLs.
+  //
+  // 3. Renderer-initiated navigations (e.g. ones initiated via
+  //    <a href="...">...</a> links embedded in web pages) should typically be
+  //    blocked (via RenderProcessHostImpl::FilterURL).
+  if (GetURL().SchemeIs(url::kAboutScheme) && !GetURL().IsAboutBlank() &&
+      !GetURL().IsAboutSrcdoc()) {
+    NOTREACHED();
+    base::debug::DumpWithoutCrashing();
+  }
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("navigation", "NavigationRequest",
                                     navigation_id_, "navigation_request",

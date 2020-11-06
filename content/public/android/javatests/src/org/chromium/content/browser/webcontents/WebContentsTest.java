@@ -45,7 +45,7 @@ public class WebContentsTest {
     @Rule
     public ContentShellActivityTestRule mActivityTestRule = new ContentShellActivityTestRule();
 
-    private static final String TEST_URL_1 = "about://blank";
+    private static final String TEST_URL_1 = "about:blank";
     private static final String TEST_URL_2 = UrlUtils.encodeHtmlDataUri("<html>1</html>");
     private static final String WEB_CONTENTS_KEY = "WEBCONTENTSKEY";
     private static final String PARCEL_STRING_TEST_DATA = "abcdefghijklmnopqrstuvwxyz";
