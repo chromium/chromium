@@ -903,6 +903,19 @@ cr.define('cr.ui.login.debug', function() {
       kind: ScreenKind.NORMAL,
     },
     {
+      id: 'parental-handoff',
+      kind: ScreenKind.NORMAL,
+      states: [{
+        id: 'parental-handoff',
+        data: {
+          title: 'Now it\'s Child 1\'s turn',
+          subtitle:
+              'You can hand this Chromebook to Child 1. Setup is almost done,' +
+              ' then it\'s time to explore.'
+        },
+      }],
+    },
+    {
       id: 'multidevice-setup',
       kind: ScreenKind.NORMAL,
     },
