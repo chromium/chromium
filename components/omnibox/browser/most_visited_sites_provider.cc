@@ -122,8 +122,10 @@ bool MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(
     return false;
 
   // Only serve Most Visited suggestions when the current context is page visit.
-  if (page_class != metrics::OmniboxEventProto::OTHER)
+  if (page_class != metrics::OmniboxEventProto::OTHER &&
+      page_class != metrics::OmniboxEventProto::ANDROID_SEARCH_WIDGET) {
     return false;
+  }
 
   // When omnibox contains pre-populated content, only show zero suggest for
   // pages with URLs the user will recognize.

@@ -161,6 +161,9 @@ message OmniboxEventProto {
     // having focus in the realbox.
     NTP_REALBOX = 15;
 
+    // Android's Search Widget started directly from Launcher.
+    ANDROID_SEARCH_WIDGET = 16;
+
     // When adding new classifications, please consider adding them in
     // chromium's chrome/browser/resources/omnibox/omnibox.html
     // so that these new options are displayed on about:omnibox.

@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.AndroidPermissionDelegate;
@@ -278,6 +279,11 @@ public class VoiceRecognitionHandlerTest {
         @Override
         public int getSecurityLevel() {
             return 0;
+        }
+
+        @Override
+        public int getPageClassification(boolean isFocusedFromFakebox) {
+            return PageClassification.NTP_VALUE;
         }
 
         @Override

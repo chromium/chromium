@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.NewTabPageDelegate;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 
 class SearchBoxDataProvider implements LocationBarDataProvider {
@@ -123,6 +124,11 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     @Override
     public int getSecurityLevel() {
         return ConnectionSecurityLevel.NONE;
+    }
+
+    @Override
+    public int getPageClassification(boolean isFocusedFromFakebox) {
+        return PageClassification.ANDROID_SEARCH_WIDGET_VALUE;
     }
 
     @Override

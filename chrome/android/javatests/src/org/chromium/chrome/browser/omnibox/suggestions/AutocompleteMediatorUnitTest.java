@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -339,7 +340,7 @@ public class AutocompleteMediatorUnitTest {
         Profile profile = Mockito.mock(Profile.class);
         String url = "http://www.example.com";
         String title = "Title";
-        int pageClassification = 2;
+        int pageClassification = PageClassification.BLANK_VALUE;
         when(mLocationBarDataProvider.getProfile()).thenReturn(profile);
         when(mLocationBarDataProvider.getCurrentUrl()).thenReturn(url);
         when(mLocationBarDataProvider.getTitle()).thenReturn(title);
@@ -361,7 +362,7 @@ public class AutocompleteMediatorUnitTest {
     public void onTextChanged_nonEmptyTextTriggersSuggestions() {
         Profile profile = Mockito.mock(Profile.class);
         String url = "http://www.example.com";
-        int pageClassification = 2;
+        int pageClassification = PageClassification.BLANK_VALUE;
         when(mLocationBarDataProvider.getProfile()).thenReturn(profile);
         when(mLocationBarDataProvider.getCurrentUrl()).thenReturn(url);
         when(mLocationBarDataProvider.hasTab()).thenReturn(true);
@@ -384,7 +385,7 @@ public class AutocompleteMediatorUnitTest {
     public void onTextChanged_cancelsPendingRequests() {
         Profile profile = Mockito.mock(Profile.class);
         String url = "http://www.example.com";
-        int pageClassification = 2;
+        int pageClassification = PageClassification.BLANK_VALUE;
         when(mLocationBarDataProvider.getProfile()).thenReturn(profile);
         when(mLocationBarDataProvider.getCurrentUrl()).thenReturn(url);
         when(mLocationBarDataProvider.hasTab()).thenReturn(true);
@@ -473,7 +474,7 @@ public class AutocompleteMediatorUnitTest {
         Profile profile = Mockito.mock(Profile.class);
         String url = "http://www.example.com";
         String title = "Title";
-        int pageClassification = 2;
+        int pageClassification = PageClassification.BLANK_VALUE;
         when(mLocationBarDataProvider.getProfile()).thenReturn(profile);
         when(mLocationBarDataProvider.getCurrentUrl()).thenReturn(url);
         when(mLocationBarDataProvider.getTitle()).thenReturn(title);
@@ -499,7 +500,7 @@ public class AutocompleteMediatorUnitTest {
         Profile profile = Mockito.mock(Profile.class);
         String url = "http://www.example.com";
         String title = "Title";
-        int pageClassification = 2;
+        int pageClassification = PageClassification.BLANK_VALUE;
         when(mLocationBarDataProvider.getProfile()).thenReturn(profile);
         when(mLocationBarDataProvider.getCurrentUrl()).thenReturn(url);
         when(mLocationBarDataProvider.getTitle()).thenReturn(title);

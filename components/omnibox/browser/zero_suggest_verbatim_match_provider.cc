@@ -27,6 +27,7 @@ bool IsVerbatimMatchEligible(
         SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT:
       return base::FeatureList::IsEnabled(
           omnibox::kOmniboxSearchReadyIncognito);
+    case metrics::OmniboxEventProto::ANDROID_SEARCH_WIDGET:
     case metrics::OmniboxEventProto::OTHER:
       return true;
     default:
