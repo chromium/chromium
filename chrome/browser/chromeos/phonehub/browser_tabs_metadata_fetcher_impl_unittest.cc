@@ -227,6 +227,17 @@ TEST_F(BrowserTabsMetadataFetcherImplTest, NoTabsOpen) {
 
   AttemptFetch();
   CheckIsExpectedMetadata({});
+
+  auto synced_session_window_two =
+      std::make_unique<sync_sessions::SyncedSessionWindow>();
+
+  // Add a tab without navigation(s), i.e no available metadata.
+  auto tab = std::make_unique<sessions::SessionTab>();
+  synced_session_window_two->wrapped_window.tabs.push_back(std::move(tab));
+  AddWindow(std::move(synced_session_window_two));
+
+  AttemptFetch();
+  CheckIsExpectedMetadata({});
 }
 
 TEST_F(BrowserTabsMetadataFetcherImplTest, BelowMaximumNumberOfTabs) {
