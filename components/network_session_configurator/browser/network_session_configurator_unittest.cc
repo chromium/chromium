@@ -146,6 +146,45 @@ TEST_F(NetworkSessionConfiguratorTest, EnableQuicFromParams) {
   EXPECT_TRUE(params_.enable_quic);
 }
 
+TEST_F(NetworkSessionConfiguratorTest, ValidQuicParams) {
+  quic::ParsedQuicVersion version = quic::ParsedQuicVersion::Draft29();
+  std::map<std::string, std::string> field_trial_params;
+  field_trial_params["enable_quic"] = "true";
+  field_trial_params["channel"] = "T";
+  field_trial_params["epoch"] = "20201019";
+  field_trial_params["quic_version"] = quic::AlpnForVersion(version);
+  variations::AssociateVariationParams("QUIC", "ValidQuicParams",
+                                       field_trial_params);
+  base::FieldTrialList::CreateFieldTrial("QUIC", "ValidQuicParams");
+
+  ParseFieldTrials();
+
+  EXPECT_TRUE(params_.enable_quic);
+  EXPECT_EQ(quic_params_.supported_versions,
+            quic::ParsedQuicVersionVector{version});
+  EXPECT_NE(quic_params_.supported_versions,
+            net::DefaultSupportedQuicVersions());
+}
+
+TEST_F(NetworkSessionConfiguratorTest, InvalidQuicParams) {
+  quic::ParsedQuicVersion version = quic::ParsedQuicVersion::Draft29();
+  std::map<std::string, std::string> field_trial_params;
+  field_trial_params["enable_quic"] = "true";
+  // These params are missing channel and epoch.
+  field_trial_params["quic_version"] = quic::AlpnForVersion(version);
+  variations::AssociateVariationParams("QUIC", "InvalidQuicParams",
+                                       field_trial_params);
+  base::FieldTrialList::CreateFieldTrial("QUIC", "InvalidQuicParams");
+
+  ParseFieldTrials();
+
+  EXPECT_TRUE(params_.enable_quic);
+  EXPECT_EQ(quic_params_.supported_versions,
+            net::DefaultSupportedQuicVersions());
+  EXPECT_NE(quic_params_.supported_versions,
+            quic::ParsedQuicVersionVector{version});
+}
+
 TEST_F(NetworkSessionConfiguratorTest, EnableQuicForDataReductionProxy) {
   base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
   base::FieldTrialList::CreateFieldTrial("DataReductionProxyUseQuic",

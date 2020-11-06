@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
@@ -20,11 +19,11 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/network_session_configurator/common/network_features.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/variations/variations_switches.h"
 #include "net/base/host_mapping_rules.h"
 #include "net/http/http_stream_factory.h"
 #include "net/quic/platform/impl/quic_flags_impl.h"
@@ -482,82 +481,6 @@ quic::ParsedQuicVersionVector GetQuicVersions(
     }
     if (found_obsolete_version) {
       UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.FinchObsoleteVersion", true);
-      // OQV prefix stands for Obsolete QUIC Version.
-      // OQV_quic_versions.
-      static base::debug::CrashKeyString* quic_versions_key =
-          base::debug::AllocateCrashKeyString(
-              "OQV_quic_versions", base::debug::CrashKeySize::Size32);
-      base::debug::ScopedCrashKeyString quic_versions_scoped_key(
-          quic_versions_key, trial_versions_str);
-      // OQV_time.
-      static base::debug::CrashKeyString* time_key =
-          base::debug::AllocateCrashKeyString(
-              "OQV_time", base::debug::CrashKeySize::Size32);
-      uint64_t seconds_since_epoch =
-          static_cast<uint64_t>(base::Time::Now().ToDoubleT());
-      seconds_since_epoch = (seconds_since_epoch / 3600) *
-                            3600;  // Only provide granularity of 1h.
-      std::string time_string = base::NumberToString(seconds_since_epoch);
-      base::debug::ScopedCrashKeyString time_scoped_key(time_key, time_string);
-      // OQV_finch_seed.
-      static base::debug::CrashKeyString* finch_seed_key =
-          base::debug::AllocateCrashKeyString(
-              "OQV_finch_seed", base::debug::CrashKeySize::Size32);
-      std::string finch_seed = variations::GetSeedVersion();
-      if (finch_seed.empty()) {
-        finch_seed = "OQV_empty";
-      }
-      base::debug::ScopedCrashKeyString finch_scoped_key(finch_seed_key,
-                                                         finch_seed);
-      // OQV_seed_expiry.
-      static base::debug::CrashKeyString* seed_expiry_key =
-          base::debug::AllocateCrashKeyString(
-              "OQV_seed_expiry", base::debug::CrashKeySize::Size32);
-      base::HistogramBase* histogram_seed_expiry =
-          base::LinearHistogram::FactoryGet(
-              "Variations.CreateTrials.SeedExpiry", 1, 3, 4,
-              base::HistogramBase::kUmaTargetedHistogramFlag);
-      std::unique_ptr<base::HistogramSamples> samples_seed_expiry =
-          histogram_seed_expiry->SnapshotSamples();
-      std::string seed_expiry_string =
-          "c" + base::NumberToString(samples_seed_expiry->TotalCount()) + "s" +
-          base::NumberToString(samples_seed_expiry->sum());
-      base::debug::ScopedCrashKeyString seed_expiry_scoped_key(
-          seed_expiry_key, seed_expiry_string);
-      // OQV_seed_freshness.
-      static base::debug::CrashKeyString* seed_freshness_key =
-          base::debug::AllocateCrashKeyString(
-              "OQV_seed_freshness", base::debug::CrashKeySize::Size32);
-      base::HistogramBase* histogram_seed_freshness =
-          base::Histogram::FactoryGet(
-              "Variations.SeedFreshness", 1,
-              base::TimeDelta::FromDays(30).InMinutes(), 50,
-              base::HistogramBase::kUmaTargetedHistogramFlag);
-      std::unique_ptr<base::HistogramSamples> samples_seed_freshness =
-          histogram_seed_freshness->SnapshotSamples();
-      std::string seed_freshness_string =
-          "c" + base::NumberToString(samples_seed_freshness->TotalCount()) +
-          "s" + base::NumberToString(samples_seed_freshness->sum());
-      base::debug::ScopedCrashKeyString seed_freshness_scoped_key(
-          seed_freshness_key, seed_freshness_string);
-      // OQV_finch_safe.
-      static base::debug::CrashKeyString* finch_safe_key =
-          base::debug::AllocateCrashKeyString(
-              "OQV_finch_safe", base::debug::CrashKeySize::Size32);
-      base::HistogramBase* histogram_finch_safe =
-          base::BooleanHistogram::FactoryGet(
-              "Variations.SafeMode.FellBackToSafeMode2",
-              base::HistogramBase::kUmaTargetedHistogramFlag);
-      std::unique_ptr<base::HistogramSamples> samples_finch_safe =
-          histogram_finch_safe->SnapshotSamples();
-      std::string finch_safe_string =
-          "c" + base::NumberToString(samples_finch_safe->TotalCount()) + "s" +
-          base::NumberToString(samples_finch_safe->sum());
-      base::debug::ScopedCrashKeyString finch_safe_scoped_key(
-          finch_safe_key, finch_safe_string);
-      // Now save all this state into a fake crash. See b/167728915 and
-      // crbug.com/1139877 for analysis details.
-      base::debug::DumpWithoutCrashing();
     }
     trial_versions = filtered_versions;
   }
@@ -571,7 +494,44 @@ bool ShouldEnableServerPushCancelation(
       "true");
 }
 
-void ConfigureQuicParams(base::StringPiece quic_trial_group,
+bool AreQuicParamsValid(const base::CommandLine& command_line,
+                        base::StringPiece quic_trial_group,
+                        const VariationParameters& quic_trial_params) {
+  if (command_line.HasSwitch(variations::switches::kForceFieldTrialParams)) {
+    // Skip validation of params from the command line.
+    return true;
+  }
+  if (!base::LowerCaseEqualsASCII(
+          GetVariationParam(quic_trial_params, "enable_quic"), "true")) {
+    // Params that don't explicitly enable QUIC do not carry channel or epoch.
+    return true;
+  }
+  const std::string channel_string =
+      GetVariationParam(quic_trial_params, "channel");
+  if (channel_string.length() != 1) {
+    // Params without a valid channel are invalid.
+    return false;
+  }
+  const std::string epoch_string =
+      GetVariationParam(quic_trial_params, "epoch");
+  if (epoch_string.length() != 8) {
+    // Params without a valid epoch are invalid.
+    return false;
+  }
+  int epoch;
+  if (!base::StringToInt(epoch_string, &epoch)) {
+    // Failed to parse epoch as int.
+    return false;
+  }
+  if (epoch < 20201019) {
+    // All channels currently have an epoch of at least 20201019.
+    return false;
+  }
+  return true;
+}
+
+void ConfigureQuicParams(const base::CommandLine& command_line,
+                         base::StringPiece quic_trial_group,
                          const VariationParameters& quic_trial_params,
                          bool is_quic_force_disabled,
                          const std::string& quic_user_agent_id,
@@ -580,6 +540,14 @@ void ConfigureQuicParams(base::StringPiece quic_trial_group,
   if (ShouldDisableQuic(quic_trial_group, quic_trial_params,
                         is_quic_force_disabled)) {
     params->enable_quic = false;
+  }
+
+  const bool params_are_valid =
+      AreQuicParamsValid(command_line, quic_trial_group, quic_trial_params);
+  UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.FinchConfigIsValid", params_are_valid);
+  if (!params_are_valid) {
+    // Skip parsing of invalid params.
+    return;
   }
 
   params->enable_server_push_cancellation =
@@ -723,7 +691,7 @@ void ParseCommandLineAndFieldTrials(const base::CommandLine& command_line,
   VariationParameters quic_trial_params;
   if (!variations::GetVariationParams(kQuicFieldTrialName, &quic_trial_params))
     quic_trial_params.clear();
-  ConfigureQuicParams(quic_trial_group, quic_trial_params,
+  ConfigureQuicParams(command_line, quic_trial_group, quic_trial_params,
                       is_quic_force_disabled, quic_user_agent_id, params,
                       quic_params);
 

@@ -2778,6 +2778,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.FinchConfigIsValid" enum="Boolean"
+    expires_after="2021-05-11">
+  <owner>dschinazi@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Logged every time we parse a QUIC Finch config, and logs whether the config
+    was valid. Invalid configs are most likely to be obsolete configs.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicSession.FinchObsoleteVersion" enum="Boolean"
     expires_after="2021-05-11">
   <owner>dschinazi@chromium.org</owner>
