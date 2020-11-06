@@ -245,6 +245,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   // DOM and layout tree access.
   AtomicString Language() const override;
+  bool HasAttribute(const QualifiedName&) const override;
+  const AtomicString& GetAttribute(const QualifiedName&) const override;
 
   // Modify or take an action on an object.
   bool OnNativeFocusAction() final;
@@ -294,6 +296,10 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, UpdateChildrenIfNecessary);
 
  private:
+  bool HasInternalsAttribute(Element&, const QualifiedName&) const;
+  const AtomicString& GetInternalsAttribute(Element&,
+                                            const QualifiedName&) const;
+
   Member<Node> node_;
 
   bool IsNativeCheckboxInMixedState() const;

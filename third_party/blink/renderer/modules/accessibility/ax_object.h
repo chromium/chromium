@@ -1113,8 +1113,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual Element* AnchorElement() const { return nullptr; }
   virtual Element* ActionElement() const { return nullptr; }
   virtual AtomicString Language() const;
-  bool HasAttribute(const QualifiedName&) const;
-  const AtomicString& GetAttribute(const QualifiedName&) const;
+  virtual bool HasAttribute(const QualifiedName&) const { return false; }
+  virtual const AtomicString& GetAttribute(const QualifiedName&) const {
+    return g_null_atom;
+  }
 
   // Scrollable containers.
   bool IsScrollableContainer() const;
@@ -1353,9 +1355,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   ax::mojom::blink::Role RemapAriaRoleDueToParent(ax::mojom::blink::Role) const;
   unsigned ComputeAriaColumnIndex() const;
   unsigned ComputeAriaRowIndex() const;
-  bool HasInternalsAttribute(Element&, const QualifiedName&) const;
-  const AtomicString& GetInternalsAttribute(Element&,
-                                            const QualifiedName&) const;
   bool ComputeIsHiddenViaStyle() const;
 
   // This returns true if the element associated with this AXObject is has
