@@ -200,6 +200,8 @@ WireMessage::WireMessage(const WireMessage& other)
       body_(other.body_),
       sequence_number_(other.sequence_number_) {}
 
+WireMessage& WireMessage::operator=(const WireMessage& other) = default;
+
 }  // namespace secure_channel
 
 }  // namespace chromeos

@@ -302,6 +302,7 @@ source_set("unit_tests") {
     "foreground_eid_generator_unittest.cc",
     "multiplexed_channel_impl_unittest.cc",
     "nearby_connection_manager_impl_unittest.cc",
+    "nearby_connection_unittest.cc",
     "nearby_initiator_operation_unittest.cc",
     "pending_ble_connection_request_base_unittest.cc",
     "pending_ble_initiator_connection_request_unittest.cc",

@@ -27,6 +27,8 @@ class WireMessage {
 
   WireMessage(const WireMessage& other);
 
+  WireMessage& operator=(const WireMessage& other);
+
   // Creates a WireMessage containing |body| (a serialized JSON) as the message
   // body.
   explicit WireMessage(const std::string& body);
@@ -53,18 +55,18 @@ class WireMessage {
 
  private:
   // The message payload.
-  const std::string payload_;
+  std::string payload_;
 
   // The feature which sends or intends to receive this message (e.g.,
   // EasyUnlock).
-  const std::string feature_;
+  std::string feature_;
 
   // The message body. When this is set |payload_| and |feature_| are empty, and
   // vice-versa.
-  const std::string body_;
+  std::string body_;
 
   // Sequence number for this message; set to -1 if no sequence number if set.
-  const int sequence_number_ = -1;
+  int sequence_number_ = -1;
 };
 
 }  // namespace secure_channel
