@@ -2460,8 +2460,12 @@ void RenderWidgetHostViewAndroid::OnSwipeToMoveCursorGestureAck(
     }
     case blink::WebInputEvent::Type::kGestureScrollUpdate: {
       gfx::RectF rect = touch_selection_controller_->GetRectBetweenBounds();
-      selection_popup_controller_->OnDragUpdate(
-          gfx::PointF(event.PositionInWidget().x(), rect.right_center().y()));
+      // Suppress this when the input is not focused, in which case rect will be
+      // 0x0.
+      if (rect.width() != 0.f || rect.height() != 0.f) {
+        selection_popup_controller_->OnDragUpdate(
+            gfx::PointF(event.PositionInWidget().x(), rect.right_center().y()));
+      }
       break;
     }
     case blink::WebInputEvent::Type::kGestureScrollEnd: {
