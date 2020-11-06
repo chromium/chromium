@@ -9,11 +9,9 @@ import sys
 import unittest
 import zipfile
 
-# pylint: disable=import-error
-import mock
-from mock import call
-from mock import patch
-# pylint: enable=import-error
+import mock  # pylint: disable=import-error
+from mock import call  # pylint: disable=import-error
+from mock import patch  # pylint: disable=import-error
 
 sys.path.append(
     os.path.join(

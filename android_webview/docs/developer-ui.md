@@ -155,9 +155,9 @@ If you're intending to launch a feature in WebView or start a field trial (AKA
 Finch experiment), we **highly encourage** you to [add to the
 list](/android_webview/java/src/org/chromium/android_webview/common/ProductionSupportedFlagList.java)
 (ex. [CL](https://crrev.com/c/2008007), [CL](https://crrev.com/c/2066144)).
-After that, follow [these
-steps](/tools/metrics/histograms/README.md#Flag-Histograms) to collect metrics
-about your feature usage.
+After that, update `enums.xml` by running
+`android_webview/tools/generate_flag_labels.py` (see [this
+doc](/tools/metrics/histograms/README.md#Flag-Histograms) for more context).
 
 Exposing your feature this way has several benefits:
 
@@ -170,6 +170,8 @@ Exposing your feature this way has several benefits:
 - You (and teammates) can dogfood your feature.
 - If users or third-party app developers report bugs, this UI is the only way
   they can toggle your feature to help root-cause the regression.
+- You can see metrics for your feature's adoption with the
+  "Launch.FlagsAtStartup" histogram.
 
 ### See also
 

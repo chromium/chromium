@@ -41904,6 +41904,7 @@ from previous Chrome versions.
   <int value="-1913801713"
       label="UploadCrashReportsUsingJobScheduler:disabled"/>
   <int value="-1912999136" label="enable-automatic-password-saving:enabled"/>
+  <int value="-1911918596" label="WebviewAccelerateSmallCanvases:disabled"/>
   <int value="-1911316813" label="BlockTabUnders:disabled"/>
   <int value="-1911153473" label="enable-easy-signin"/>
   <int value="-1910305102" label="EnhancedDeskAnimations:enabled"/>
@@ -42101,6 +42102,8 @@ from previous Chrome versions.
   <int value="-1728605240" label="UseXpsForPrintingFromPdf:enabled"/>
   <int value="-1727530898" label="LookalikeUrlNavigationSuggestionsUI:enabled"/>
   <int value="-1727173228" label="OmniboxZeroSuggestionsOnNTP:enabled"/>
+  <int value="-1726572968"
+      label="WebViewCpuAffinityRestrictToLittleCores:disabled"/>
   <int value="-1725507605" label="enable-web-midi"/>
   <int value="-1722208902" label="CCTModuleCustomRequestHeader:disabled"/>
   <int value="-1720653947" label="WebRtcHybridAgc:disabled"/>
@@ -42308,6 +42311,7 @@ from previous Chrome versions.
   <int value="-1525129540"
       label="OmniboxUIExperimentRevealSteadyStateUrlPathQueryAndRefOnHover:disabled"/>
   <int value="-1524323669" label="InstalledAppsInCbd:enabled"/>
+  <int value="-1521339691" label="UseGles2ForOopR:disabled"/>
   <int value="-1521296022"
       label="UpdateNotificationScheduleServiceImmediateShowOption:disabled"/>
   <int value="-1521160841" label="DismissNtpPromos:enabled"/>
@@ -42939,6 +42943,8 @@ from previous Chrome versions.
   <int value="-953215709" label="StorageAccessAPI:enabled"/>
   <int value="-951394314" label="top-chrome-md"/>
   <int value="-950793721" label="TranslateUI2016Q2:disabled"/>
+  <int value="-950411190"
+      label="WebViewCpuAffinityRestrictToLittleCores:enabled"/>
   <int value="-950384924" label="OmniboxDisableInstantExtendedLimit:enabled"/>
   <int value="-949178861" label="enable-new-avatar-menu"/>
   <int value="-948930847" label="EnableOopPrintDrivers:enabled"/>
@@ -43358,6 +43364,7 @@ from previous Chrome versions.
   <int value="-512702391"
       label="AutofillEnableCardNicknameManagement:disabled"/>
   <int value="-510488450" label="disable-pnacl"/>
+  <int value="-508488651" label="WebviewAccelerateSmallCanvases:enabled"/>
   <int value="-508346329" label="TerminalSystemAppLegacySettings:disabled"/>
   <int value="-508250572" label="ServiceWorkerLongRunningMessage:disabled"/>
   <int value="-508143738" label="disable-accelerated-fixed-root-background"/>
@@ -43569,6 +43576,7 @@ from previous Chrome versions.
   <int value="-304951461" label="TextSuggestionsTouchBar:enabled"/>
   <int value="-304886342" label="QuickAnswersTranslation:disabled"/>
   <int value="-304777110" label="PreconnectToSearch:disabled"/>
+  <int value="-303992327" label="SwipeToMoveCursor:disabled"/>
   <int value="-300542825" label="ChromeShareQRCode:disabled"/>
   <int value="-300018686" label="disable-cloud-import"/>
   <int value="-299841473" label="top-document-isolation:enabled"/>
@@ -43801,6 +43809,7 @@ from previous Chrome versions.
   <int value="-73282711" label="EnableAppListSearchAutocomplete:enabled"/>
   <int value="-72455054" label="WebVrAutopresent:disabled"/>
   <int value="-70595606" label="ash-enable-unified-desktop"/>
+  <int value="-70434056" label="UseGles2ForOopR:enabled"/>
   <int value="-69427025" label="OfflinePagesPrefetchingUI:enabled"/>
   <int value="-68877684" label="BackgroundVideoTrackOptimization:enabled"/>
   <int value="-68619312" label="PassiveDocumentWheelEventListeners:disabled"/>
@@ -44370,6 +44379,7 @@ from previous Chrome versions.
   <int value="502551931" label="IncognitoStrings:enabled"/>
   <int value="503189154" label="ViewsBrowserWindows:disabled"/>
   <int value="503245473" label="disable-translate-new-ux"/>
+  <int value="504549229" label="WebViewDisplayCutout:disabled"/>
   <int value="504717928" label="PasswordsWeaknessCheck:disabled"/>
   <int value="504994663" label="GenericSensor:disabled"/>
   <int value="505561325" label="OpenXR:disabled"/>
@@ -44379,6 +44389,7 @@ from previous Chrome versions.
   <int value="510814146" label="OfflineBookmarks:enabled"/>
   <int value="511179195" label="ShoppingAssist:disabled"/>
   <int value="511392922" label="SharedClipboardReceiver:enabled"/>
+  <int value="512508240" label="WebViewExtraHeadersSameDomainOnly:disabled"/>
   <int value="513258875" label="WinrtSensorsImplementation:disabled"/>
   <int value="513356954" label="InstantTethering:disabled"/>
   <int value="513372959" label="ViewsProfileChooser:enabled"/>
@@ -44528,6 +44539,7 @@ from previous Chrome versions.
   <int value="654199907" label="AllowSyncXHRInPageDismissal:disabled"/>
   <int value="654879464" label="WalletRequiresFirstSyncSetupComplete:enabled"/>
   <int value="656864700" label="FillOnAccountSelectHttp:disabled"/>
+  <int value="657832926" label="SwipeToMoveCursor:enabled"/>
   <int value="659086147" label="OverlayScrollbarFlashWhenMouseEnter:enabled"/>
   <int value="661020875" label="AutofillSaveCardShowNoThanks:disabled"/>
   <int value="662001716" label="ToolbarIphAndroid:disabled"/>
@@ -44740,6 +44752,7 @@ from previous Chrome versions.
   <int value="870664435" label="DownloadProgressInfoBar:disabled"/>
   <int value="871435095" label="EnableAggregatedMlAppRanking:disabled"/>
   <int value="871713352" label="ImprovedLanguageSettings:enabled"/>
+  <int value="876349279" label="WebViewExtraHeadersSameDomainOnly:enabled"/>
   <int value="876879670" label="OfflinePagesInDownloadHomeOpenInCct:enabled"/>
   <int value="877059804" label="AutofillPreventMixedFormsFilling:disabled"/>
   <int value="877235225" label="GlobalMediaControlsForChromeOS:enabled"/>
@@ -45540,6 +45553,7 @@ from previous Chrome versions.
   <int value="1660491118" label="AllowAmbientEQ:enabled"/>
   <int value="1661354480" label="BlockInsecurePrivateNetworkRequests:disabled"/>
   <int value="1661925474" label="silent-debugger-extension-api"/>
+  <int value="1663574600" label="WebViewDisplayCutout:enabled"/>
   <int value="1664401033" label="ColorCorrectRendering:enabled"/>
   <int value="1665349789" label="spurious-power-button-window"/>
   <int value="1665400247" label="OsSettingsDeepLinking:enabled"/>
