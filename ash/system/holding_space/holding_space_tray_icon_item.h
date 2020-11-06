@@ -43,8 +43,8 @@ class ASH_EXPORT HoldingSpaceTrayIconItem
   HoldingSpaceTrayIconItem& operator=(const HoldingSpaceTrayIconItem&) = delete;
   ~HoldingSpaceTrayIconItem() override;
 
-  // Animates this item in.
-  void AnimateIn();
+  // Animates this item in at the specified `index`.
+  void AnimateIn(size_t index);
 
   // Animates this item out, invoking the specified closure on completion.
   void AnimateOut(base::OnceClosure animate_out_closure);

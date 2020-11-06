@@ -164,7 +164,18 @@ HoldingSpaceTrayIconItem::HoldingSpaceTrayIconItem(HoldingSpaceTrayIcon* icon,
 
 HoldingSpaceTrayIconItem::~HoldingSpaceTrayIconItem() = default;
 
-void HoldingSpaceTrayIconItem::AnimateIn() {
+void HoldingSpaceTrayIconItem::AnimateIn(size_t index) {
+  DCHECK(transform_.IsIdentity());
+
+  if (index > 0u) {
+    gfx::Vector2dF translation(index * kTrayItemSize / 2, 0);
+    AdjustForShelfAlignmentAndTextDirection(&translation);
+    transform_.Translate(translation);
+  }
+
+  if (!NeedsLayer())
+    return;
+
   CreateLayer();
 
   gfx::Transform pre_transform(transform_);
@@ -172,6 +183,12 @@ void HoldingSpaceTrayIconItem::AnimateIn() {
   layer_->SetTransform(pre_transform);
 
   icon_->layer()->Add(layer_.get());
+
+  if (index > 0u) {
+    ui::Layer* const parent = layer_->parent();
+    const std::vector<ui::Layer*> children = parent->children();
+    parent->StackBelow(layer_.get(), children[children.size() - index - 1]);
+  }
 
   ui::ScopedLayerAnimationSettings animation_settings(layer_->GetAnimator());
   SetUpAnimation(&animation_settings);

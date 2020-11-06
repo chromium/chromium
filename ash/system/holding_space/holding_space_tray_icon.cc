@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
@@ -91,16 +92,18 @@ void HoldingSpaceTrayIcon::OnHoldingSpaceModelDetached(
     OnHoldingSpaceItemRemoved(item.get());
 }
 
-// TODO(crbug.com/1142572): Handle only finalized items.
 void HoldingSpaceTrayIcon::OnHoldingSpaceItemAdded(
     const HoldingSpaceItem* item) {
   DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
+
+  if (!item->IsFinalized())
+    return;
 
   for (std::unique_ptr<HoldingSpaceTrayIconItem>& icon_item : icon_items_)
     icon_item->AnimateShift();
 
   icon_items_.push_back(std::make_unique<HoldingSpaceTrayIconItem>(this, item));
-  icon_items_.back()->AnimateIn();
+  icon_items_.back()->AnimateIn(/*index=*/0u);
 
   UpdatePreferredSize();
 }
@@ -133,10 +136,34 @@ void HoldingSpaceTrayIcon::OnHoldingSpaceItemRemoved(
   UpdatePreferredSize();
 }
 
-// TODO(crbug.com/1142572): Implement.
 void HoldingSpaceTrayIcon::OnHoldingSpaceItemFinalized(
     const HoldingSpaceItem* item) {
-  NOTIMPLEMENTED();
+  DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
+
+  if (icon_items_.empty()) {
+    OnHoldingSpaceItemAdded(item);
+    return;
+  }
+
+  size_t index = 0;
+  for (const auto& candidate :
+       HoldingSpaceController::Get()->model()->items()) {
+    if (candidate->id() == item->id())
+      break;
+    if (candidate->IsFinalized())
+      ++index;
+  }
+
+  for (size_t i = 0; i < index; ++i)
+    icon_items_[i]->AnimateShift();
+
+  auto icon_item = std::make_unique<HoldingSpaceTrayIconItem>(this, item);
+  icon_items_.insert(icon_items_.begin() + index, std::move(icon_item));
+
+  // NOTE: UI ordering is inverse of model ordering so take `index` from end.
+  icon_items_[index]->AnimateIn(icon_items_.size() - index - 1);
+
+  UpdatePreferredSize();
 }
 
 void HoldingSpaceTrayIcon::OnShelfAlignmentChanged(
