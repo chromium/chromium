@@ -168,7 +168,10 @@ def main():
       # Move the executable into a subfolder as there needs to be only one
       # executable in the parent folder.
       subprocess.check_call(rn_cmd +
-          ['gcpw_extension', os.path.join('extension', 'gcpw_extension.exe')],
+          [
+            'gcpw_extension.exe',
+            os.path.join('extension', 'gcpw_extension.exe')
+          ],
           stdout=output_file)
   except subprocess.CalledProcessError as e:
     print(e.output)
