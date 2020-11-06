@@ -24,7 +24,7 @@ namespace blink {
 
 namespace {  // anonymous namespace for ClipboardReader's derived classes.
 
-// Reads an image from the System Clipboard as a blob with image/png content.
+// Reads an image from the System Clipboard as a Blob with image/png content.
 class ClipboardImageReader final : public ClipboardReader {
  public:
   explicit ClipboardImageReader(SystemClipboard* system_clipboard,
@@ -89,7 +89,7 @@ class ClipboardImageReader final : public ClipboardReader {
   }
 };
 
-// Reads an image from the System Clipboard as a blob with text/plain content.
+// Reads an image from the System Clipboard as a Blob with text/plain content.
 class ClipboardTextReader final : public ClipboardReader {
  public:
   explicit ClipboardTextReader(SystemClipboard* system_clipboard,
@@ -123,7 +123,7 @@ class ClipboardTextReader final : public ClipboardReader {
       scoped_refptr<base::SingleThreadTaskRunner> clipboard_task_runner) {
     DCHECK(!IsMainThread());
 
-    // Encode WTF String to UTF-8, the standard text format for blobs.
+    // Encode WTF String to UTF-8, the standard text format for Blobs.
     StringUTF8Adaptor utf8_text(plain_text);
     Vector<uint8_t> utf8_bytes;
     utf8_bytes.ReserveInitialCapacity(utf8_text.size());
@@ -146,7 +146,7 @@ class ClipboardTextReader final : public ClipboardReader {
   }
 };
 
-// Reads HTML from the System Clipboard as a blob with text/html content.
+// Reads HTML from the System Clipboard as a Blob with text/html content.
 class ClipboardHtmlReader final : public ClipboardReader {
  public:
   explicit ClipboardHtmlReader(SystemClipboard* system_clipboard,
@@ -219,7 +219,7 @@ class ClipboardHtmlReader final : public ClipboardReader {
   }
 };
 
-// Reads SVG from the System Clipboard as a blob with image/svg content.
+// Reads SVG from the System Clipboard as a Blob with image/svg content.
 class ClipboardSvgReader final : public ClipboardReader {
  public:
   ClipboardSvgReader(SystemClipboard* system_clipboard,
@@ -272,7 +272,7 @@ class ClipboardSvgReader final : public ClipboardReader {
       scoped_refptr<base::SingleThreadTaskRunner> clipboard_task_runner) {
     DCHECK(!IsMainThread());
 
-    // Encode WTF String to UTF-8, the standard text format for blobs.
+    // Encode WTF String to UTF-8, the standard text format for Blobs.
     StringUTF8Adaptor utf8_text(plain_text);
     Vector<uint8_t> utf8_bytes;
     utf8_bytes.ReserveInitialCapacity(utf8_text.size());

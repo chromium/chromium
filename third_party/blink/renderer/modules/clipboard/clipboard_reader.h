@@ -14,13 +14,27 @@ namespace blink {
 class SystemClipboard;
 class ClipboardPromise;
 
-// Interface for reading async-clipboard-compatible types from the sanitized
+// Interface for reading an individual Clipboard API format from the sanitized
 // System Clipboard as a Blob.
 //
 // Reading a type from the system clipboard to a Blob is accomplished by:
-// (1) Reading the item from the system clipboard.
-// (2) Encoding the blob's contents.
-// (3) Writing the contents to a blob.
+// (1) Reading - the format from the system clipboard.
+// (2) Encoding - the system clipboard's contents for a format. Encoding may be
+//     time-consuming, and so is done on a background thread whenever possible.
+// (3) Writing - the decoded contents to a Blob.
+//
+// ClipboardReader takes as input a ClipboardPromise, from which it expects
+// a clipboard format, and to which it provides a Blob containing an encoded
+// SystemClipboard-originated clipboard payload.
+//
+// Subclasses of ClipboardReader should be implemented for each supported
+// format. Subclasses should:
+// (1) Begin execution by implementing ClipboardReader::Read().
+// (2) Encode the payload on a background thread (if possible) by implementing
+//     a static EncodeOnBackgroundThread() function. This function is called by
+//     Read() via worker_pool::PostTask().
+// (3) Create a Blob and send it to the ClipboardPromise by implementing
+//     ClipboardReader::NextRead().
 class ClipboardReader : public GarbageCollected<ClipboardReader> {
  public:
   // Returns nullptr if there is no implementation for the given mime_type.
