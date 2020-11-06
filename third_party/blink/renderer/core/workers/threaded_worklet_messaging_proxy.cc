@@ -78,7 +78,7 @@ void ThreadedWorkletMessagingProxy::Initialize(
   // Worklets share the pre-initialized backing thread so that we don't have to
   // specify the backing thread startup data.
   InitializeWorkerThread(std::move(global_scope_creation_params),
-                         thread_startup_data);
+                         thread_startup_data, base::nullopt);
 }
 
 void ThreadedWorkletMessagingProxy::Trace(Visitor* visitor) const {

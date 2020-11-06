@@ -5,14 +5,17 @@
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
 
 #include "base/stl_util.h"
+#include "content/browser/worker_host/dedicated_worker_host.h"
 
 namespace content {
 
 DedicatedWorkerServiceImpl::DedicatedWorkerInfo::DedicatedWorkerInfo(
     int worker_process_id,
-    GlobalFrameRoutingId ancestor_render_frame_host_id)
+    GlobalFrameRoutingId ancestor_render_frame_host_id,
+    DedicatedWorkerHost* host)
     : worker_process_id(worker_process_id),
-      ancestor_render_frame_host_id(ancestor_render_frame_host_id) {}
+      ancestor_render_frame_host_id(ancestor_render_frame_host_id),
+      dedicated_worker_host(host) {}
 
 DedicatedWorkerServiceImpl::DedicatedWorkerInfo::DedicatedWorkerInfo(
     const DedicatedWorkerInfo& info) = default;
@@ -53,12 +56,14 @@ void DedicatedWorkerServiceImpl::EnumerateDedicatedWorkers(Observer* observer) {
 void DedicatedWorkerServiceImpl::NotifyWorkerCreated(
     const blink::DedicatedWorkerToken& worker_token,
     int worker_process_id,
-    GlobalFrameRoutingId ancestor_render_frame_host_id) {
-  bool inserted = dedicated_worker_infos_
-                      .emplace(worker_token, DedicatedWorkerInfo(
-                                                 worker_process_id,
-                                                 ancestor_render_frame_host_id))
-                      .second;
+    GlobalFrameRoutingId ancestor_render_frame_host_id,
+    DedicatedWorkerHost* host) {
+  bool inserted =
+      dedicated_worker_infos_
+          .emplace(worker_token,
+                   DedicatedWorkerInfo(worker_process_id,
+                                       ancestor_render_frame_host_id, host))
+          .second;
   DCHECK(inserted);
 
   for (Observer& observer : observers_) {
@@ -94,6 +99,15 @@ void DedicatedWorkerServiceImpl::NotifyWorkerFinalResponseURLDetermined(
 bool DedicatedWorkerServiceImpl::HasToken(
     const blink::DedicatedWorkerToken& worker_token) const {
   return dedicated_worker_infos_.count(worker_token);
+}
+
+DedicatedWorkerHost*
+DedicatedWorkerServiceImpl::GetDedicatedWorkerHostFromToken(
+    const blink::DedicatedWorkerToken& dedicated_worker_token) const {
+  auto it = dedicated_worker_infos_.find(dedicated_worker_token);
+  if (it == dedicated_worker_infos_.end())
+    return nullptr;
+  return it->second.dedicated_worker_host;
 }
 
 }  // namespace content

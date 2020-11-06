@@ -147,7 +147,8 @@ class DedicatedWorkerMessagingProxyForTest
         std::move(params),
         WorkerBackingThreadStartupData(
             WorkerBackingThreadStartupData::HeapLimitMode::kDefault,
-            WorkerBackingThreadStartupData::AtomicsWaitMode::kAllow));
+            WorkerBackingThreadStartupData::AtomicsWaitMode::kAllow),
+        worker_object_proxy_->token());
     GetWorkerThread()->EvaluateClassicScript(script_url, source,
                                              nullptr /* cached_meta_data */,
                                              v8_inspector::V8StackTraceId());

@@ -106,6 +106,11 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   bool Close() override;
   base::TimeTicks GetLastActivityTime() override;
 
+  base::Optional<network::CrossOriginEmbedderPolicy>
+  cross_origin_embedder_policy(const std::string& id) override;
+  base::Optional<network::CrossOriginOpenerPolicy> cross_origin_opener_policy(
+      const std::string& id) override;
+
   RenderFrameHostImpl* GetFrameHostForTesting() { return frame_host_; }
 
  private:

@@ -67,7 +67,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
   scoped_process_host_observer_.Add(worker_process_host_);
 
   service_->NotifyWorkerCreated(token_, worker_process_host_->GetID(),
-                                ancestor_render_frame_host_id_);
+                                ancestor_render_frame_host_id_, this);
 }
 
 DedicatedWorkerHost::~DedicatedWorkerHost() {

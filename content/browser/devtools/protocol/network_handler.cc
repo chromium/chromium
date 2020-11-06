@@ -2395,7 +2395,7 @@ makeCrossOriginOpenerPolicyStatus(
   return protocol_coop;
 }
 std::unique_ptr<protocol::Network::CrossOriginEmbedderPolicyStatus>
-makeCrossOriginOpenerEmbedderStatus(
+makeCrossOriginEmbedderPolicyStatus(
     const network::CrossOriginEmbedderPolicy& coep) {
   auto protocol_coep =
       protocol::Network::CrossOriginEmbedderPolicyStatus::Create()
@@ -2417,26 +2417,19 @@ makeCrossOriginOpenerEmbedderStatus(
 DispatchResponse NetworkHandler::GetSecurityIsolationStatus(
     Maybe<String> frame_id,
     std::unique_ptr<protocol::Network::SecurityIsolationStatus>* out_info) {
-  if (!frame_id.isJust() || !host_) {
-    // TODO(sigurds): Support for workers.
-    return Response::InvalidParams("Currently only frames are supported");
+  scoped_refptr<DevToolsAgentHostImpl> host =
+      DevToolsAgentHostImpl::GetForId(host_id_);
+  std::string id = frame_id.fromMaybe("");
+  auto maybe_coep = host->cross_origin_embedder_policy(id);
+  auto maybe_coop = host->cross_origin_opener_policy(id);
+  auto status = protocol::Network::SecurityIsolationStatus::Create().Build();
+  if (maybe_coep) {
+    status->SetCoep(makeCrossOriginEmbedderPolicyStatus(*maybe_coep));
   }
-  FrameTreeNode* frame_tree_node = FrameTreeNodeFromDevToolsFrameToken(
-      host_->frame_tree_node(), frame_id.takeJust());
-  if (!frame_tree_node) {
-    return Response::InvalidParams("No frame with given id found");
+  if (maybe_coop) {
+    status->SetCoop(makeCrossOriginOpenerPolicyStatus(*maybe_coop));
   }
-  RenderFrameHostImpl* rfhi = frame_tree_node->current_frame_host();
-
-  auto coep =
-      makeCrossOriginOpenerEmbedderStatus(rfhi->cross_origin_embedder_policy());
-  auto coop =
-      makeCrossOriginOpenerPolicyStatus(rfhi->cross_origin_opener_policy());
-
-  *out_info = protocol::Network::SecurityIsolationStatus::Create()
-                  .SetCoep(std::move(coep))
-                  .SetCoop(std::move(coop))
-                  .Build();
+  *out_info = std::move(status);
   return Response::Success();
 }
 

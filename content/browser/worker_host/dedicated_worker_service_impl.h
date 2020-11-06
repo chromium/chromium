@@ -11,6 +11,8 @@
 
 namespace content {
 
+class DedicatedWorkerHost;
+
 class CONTENT_EXPORT DedicatedWorkerServiceImpl
     : public DedicatedWorkerService {
  public:
@@ -27,7 +29,8 @@ class CONTENT_EXPORT DedicatedWorkerServiceImpl
   // Notifies all observers about a new worker.
   void NotifyWorkerCreated(const blink::DedicatedWorkerToken& worker_token,
                            int worker_process_id,
-                           GlobalFrameRoutingId ancestor_render_frame_host_id);
+                           GlobalFrameRoutingId ancestor_render_frame_host_id,
+                           DedicatedWorkerHost* host);
 
   // Notifies all observers about a worker being destroyed.
   void NotifyBeforeWorkerDestroyed(
@@ -44,12 +47,19 @@ class CONTENT_EXPORT DedicatedWorkerServiceImpl
   // tokens to be detected, and the offending renderer to be shutdown.
   bool HasToken(const blink::DedicatedWorkerToken& worker_token) const;
 
+  // Returns the DedicatedWorkerHost associated with this token. Clients should
+  // not hold on to the pointer, as it may become invalid when the worker exits.
+  DedicatedWorkerHost* GetDedicatedWorkerHostFromToken(
+      const blink::DedicatedWorkerToken& worker_token) const;
+
  private:
   base::ObserverList<Observer> observers_;
 
+  // TODO(chromium:1145158): Remove this struct.
   struct DedicatedWorkerInfo {
     DedicatedWorkerInfo(int worker_process_id,
-                        GlobalFrameRoutingId ancestor_render_frame_host_id);
+                        GlobalFrameRoutingId ancestor_render_frame_host_id,
+                        DedicatedWorkerHost* dedicated_worker_host);
     ~DedicatedWorkerInfo();
 
     DedicatedWorkerInfo(const DedicatedWorkerInfo& info);
@@ -58,6 +68,9 @@ class CONTENT_EXPORT DedicatedWorkerServiceImpl
     int worker_process_id;
     GlobalFrameRoutingId ancestor_render_frame_host_id;
     base::Optional<GURL> final_response_url;
+    // This rawptr is valid while the corresponding DedicatedWorkerInfo is kept
+    // by DedicatedWorkerServiceImpl.
+    DedicatedWorkerHost* dedicated_worker_host;
   };
   base::flat_map<blink::DedicatedWorkerToken, DedicatedWorkerInfo>
       dedicated_worker_infos_;

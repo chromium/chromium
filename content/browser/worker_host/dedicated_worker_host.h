@@ -102,6 +102,11 @@ class DedicatedWorkerHost final : public RenderProcessHostObserver {
 
   void ReportNoBinderForInterface(const std::string& error);
 
+  const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
+      const {
+    return cross_origin_embedder_policy_;
+  }
+
  private:
   // RenderProcessHostObserver:
   void RenderProcessExited(RenderProcessHost* render_process_host,

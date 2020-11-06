@@ -9,6 +9,7 @@
 #include "base/optional.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
@@ -55,7 +56,8 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
     const FetchClientSettingsObjectSnapshot& outside_settings_object,
     const v8_inspector::V8StackTraceId& stack_id,
     const String& source_code,
-    RejectCoepUnsafeNone reject_coep_unsafe_none) {
+    RejectCoepUnsafeNone reject_coep_unsafe_none,
+    const blink::DedicatedWorkerToken& token) {
   DCHECK(IsParentContextThread());
   if (AskedToTerminate()) {
     // Worker.terminate() could be called from JS before the thread was
@@ -65,7 +67,8 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
 
   InitializeWorkerThread(
       std::move(creation_params),
-      CreateBackingThreadStartupData(GetExecutionContext()->GetIsolate()));
+      CreateBackingThreadStartupData(GetExecutionContext()->GetIsolate()),
+      token);
 
   // Step 13: "Obtain script by switching on the value of options's type
   // member:"

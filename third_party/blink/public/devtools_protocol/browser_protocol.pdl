@@ -5528,8 +5528,8 @@ domain Network
 
   experimental type SecurityIsolationStatus extends object
     properties
-      CrossOriginOpenerPolicyStatus coop
-      CrossOriginEmbedderPolicyStatus coep
+      optional CrossOriginOpenerPolicyStatus coop
+      optional CrossOriginEmbedderPolicyStatus coep
 
   # Returns information about the COEP/COOP isolation status.
   experimental command getSecurityIsolationStatus

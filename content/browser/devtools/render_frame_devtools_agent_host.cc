@@ -26,6 +26,7 @@
 #include "content/browser/devtools/protocol/dom_handler.h"
 #include "content/browser/devtools/protocol/emulation_handler.h"
 #include "content/browser/devtools/protocol/fetch_handler.h"
+#include "content/browser/devtools/protocol/handler_helpers.h"
 #include "content/browser/devtools/protocol/input_handler.h"
 #include "content/browser/devtools/protocol/inspector_handler.h"
 #include "content/browser/devtools/protocol/io_handler.h"
@@ -876,6 +877,32 @@ void RenderFrameDevToolsAgentHost::UpdateResourceLoaderFactories() {
     for (size_t i = 0; i < node->child_count(); ++i)
       queue.push(node->child_at(i));
   }
+}
+
+base::Optional<network::CrossOriginEmbedderPolicy>
+RenderFrameDevToolsAgentHost::cross_origin_embedder_policy(
+    const std::string& id) {
+  FrameTreeNode* frame_tree_node =
+      protocol::FrameTreeNodeFromDevToolsFrameToken(
+          frame_host_->frame_tree_node(), id);
+  if (!frame_tree_node) {
+    return base::nullopt;
+  }
+  RenderFrameHostImpl* rfhi = frame_tree_node->current_frame_host();
+  return rfhi->cross_origin_embedder_policy();
+}
+
+base::Optional<network::CrossOriginOpenerPolicy>
+RenderFrameDevToolsAgentHost::cross_origin_opener_policy(
+    const std::string& id) {
+  FrameTreeNode* frame_tree_node =
+      protocol::FrameTreeNodeFromDevToolsFrameToken(
+          frame_host_->frame_tree_node(), id);
+  if (!frame_tree_node) {
+    return base::nullopt;
+  }
+  RenderFrameHostImpl* rfhi = frame_tree_node->current_frame_host();
+  return rfhi->cross_origin_opener_policy();
 }
 
 }  // namespace content

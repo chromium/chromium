@@ -9,6 +9,7 @@
 
 #include "base/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -46,7 +47,8 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
       ExecutionContext* parent_context,
       WorkerThread*,
       const KURL&,
-      const String& global_scope_name);
+      const String& global_scope_name,
+      const base::Optional<const DedicatedWorkerToken>& token);
   static void WorkerThreadTerminated(ExecutionContext* parent_context,
                                      WorkerThread*);
 

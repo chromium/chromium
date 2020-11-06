@@ -419,4 +419,14 @@ RenderProcessHost* DevToolsAgentHostImpl::GetProcessHost() {
   return nullptr;
 }
 
+base::Optional<network::CrossOriginEmbedderPolicy>
+DevToolsAgentHostImpl::cross_origin_embedder_policy(const std::string& id) {
+  return base::nullopt;
+}
+
+base::Optional<network::CrossOriginOpenerPolicy>
+DevToolsAgentHostImpl::cross_origin_opener_policy(const std::string& id) {
+  return base::nullopt;
+}
+
 }  // namespace content

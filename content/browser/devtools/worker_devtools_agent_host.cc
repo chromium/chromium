@@ -9,7 +9,10 @@
 #include "content/browser/devtools/protocol/io_handler.h"
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/protocol/target_handler.h"
+#include "content/browser/devtools/shared_worker_devtools_agent_host.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/storage_partition_impl.h"
+#include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/public/common/child_process_host.h"
 
 namespace content {
@@ -95,6 +98,24 @@ bool WorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
 
 void WorkerDevToolsAgentHost::DetachSession(DevToolsSession* session) {
   // Destroying session automatically detaches in renderer.
+}
+
+DedicatedWorkerHost* WorkerDevToolsAgentHost::GetDedicatedWorkerHost() {
+  RenderProcessHost* process = RenderProcessHost::FromID(process_id_);
+  auto* storage_partition_impl =
+      static_cast<StoragePartitionImpl*>(process->GetStoragePartition());
+  auto* service = storage_partition_impl->GetDedicatedWorkerService();
+  return service->GetDedicatedWorkerHostFromToken(
+      blink::DedicatedWorkerToken(devtools_worker_token_));
+}
+
+base::Optional<network::CrossOriginEmbedderPolicy>
+WorkerDevToolsAgentHost::cross_origin_embedder_policy(const std::string&) {
+  DedicatedWorkerHost* host = GetDedicatedWorkerHost();
+  if (!host) {
+    return base::nullopt;
+  }
+  return host->cross_origin_embedder_policy();
 }
 
 }  // namespace content

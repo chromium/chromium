@@ -400,7 +400,7 @@ void DedicatedWorker::ContinueStart(
                                       response_address_space),
       std::move(worker_main_script_load_params), options_, script_url,
       *outside_fetch_client_settings_object_, v8_stack_trace_id_, source_code,
-      reject_coep_unsafe_none);
+      reject_coep_unsafe_none, token_);
 }
 
 std::unique_ptr<GlobalScopeCreationParams>

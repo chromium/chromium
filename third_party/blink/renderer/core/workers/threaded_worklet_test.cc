@@ -223,7 +223,7 @@ class ThreadedWorkletMessagingProxyForTest
             BeginFrameProviderParams(), nullptr /* parent_feature_policy */,
             GetExecutionContext()->GetAgentClusterID(),
             GetExecutionContext()->GetExecutionContextToken()),
-        base::nullopt);
+        base::nullopt, base::nullopt);
   }
 
  private:

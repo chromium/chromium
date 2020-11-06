@@ -21,6 +21,8 @@
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "net/cookies/site_for_cookies.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/cross_origin_opener_policy.h"
 
 namespace content {
 
@@ -88,6 +90,11 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
     }
     return result;
   }
+
+  virtual base::Optional<network::CrossOriginEmbedderPolicy>
+  cross_origin_embedder_policy(const std::string& id);
+  virtual base::Optional<network::CrossOriginOpenerPolicy>
+  cross_origin_opener_policy(const std::string& id);
 
  protected:
   explicit DevToolsAgentHostImpl(const std::string& id);
