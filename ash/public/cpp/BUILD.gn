@@ -126,8 +126,6 @@ component("cpp") {
     "fps_counter.h",
     "frame_header.cc",
     "frame_header.h",
-    "frame_utils.cc",
-    "frame_utils.h",
     "gesture_action_type.h",
     "holding_space/holding_space_client.h",
     "holding_space/holding_space_color_provider.cc",

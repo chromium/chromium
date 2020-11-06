@@ -5,13 +5,13 @@
 #include "chrome/browser/ui/views/frame/browser_frame_header_ash.h"
 
 #include "ash/public/cpp/ash_constants.h"
-#include "ash/public/cpp/frame_utils.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/check.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPaint.h"
@@ -147,7 +147,7 @@ views::CaptionButtonLayoutSize BrowserFrameHeaderAsh::GetButtonLayoutSize()
   if (ash::TabletMode::Get() && ash::TabletMode::Get()->InTabletMode())
     return views::CaptionButtonLayoutSize::kBrowserCaptionMaximized;
 
-  return ash::ShouldUseRestoreFrame(target_widget())
+  return chromeos::ShouldUseRestoreFrame(target_widget())
              ? views::CaptionButtonLayoutSize::kBrowserCaptionRestored
              : views::CaptionButtonLayoutSize::kBrowserCaptionMaximized;
 }

@@ -22,8 +22,8 @@
 
 #if defined(OS_CHROMEOS)
 #include "ash/public/cpp/app_types.h"
-#include "ash/public/cpp/frame_utils.h"
 #include "chrome/browser/ui/views/touch_selection_menu_runner_chromeos.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #endif
 
@@ -172,7 +172,7 @@ void ChromeViewsDelegate::OnBeforeWidgetInit(
   // We need to determine opacity if it's not already specified.
   if (params->opacity == views::Widget::InitParams::WindowOpacity::kInferred) {
 #if defined(OS_CHROMEOS)
-    ash::ResolveInferredOpacity(params);
+    chromeos::ResolveInferredOpacity(params);
 #else
     params->opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
 #endif

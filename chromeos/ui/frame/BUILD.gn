@@ -22,6 +22,8 @@ source_set("frame") {
     "caption_buttons/frame_size_button_delegate.h",
     "caption_buttons/snap_controller.cc",
     "caption_buttons/snap_controller.h",
+    "frame_utils.cc",
+    "frame_utils.h",
     "immersive/immersive_context.cc",
     "immersive/immersive_context.h",
     "immersive/immersive_focus_watcher.cc",

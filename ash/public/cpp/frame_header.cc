@@ -4,11 +4,11 @@
 
 #include "ash/public/cpp/frame_header.h"
 
-#include "ash/public/cpp/frame_utils.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/logging.h"  // DCHECK
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/class_property.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -367,7 +367,8 @@ void FrameHeader::LayoutHeaderInternal() {
   // TODO(crbug.com/1092005): Investigate if we can move this to
   // CaptionButtonModel and just check the model in
   // chromeos::FrameCaptionButtonContainerView.
-  const bool use_restore_frame = ash::ShouldUseRestoreFrame(target_widget_);
+  const bool use_restore_frame =
+      chromeos::ShouldUseRestoreFrame(target_widget_);
   caption_button_container()->SetButtonImage(
       views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE,
       use_restore_frame ? maximize_icon : restore_icon);

@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/default_frame_header.h"
-#include "ash/public/cpp/frame_utils.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/window_util.h"
 #include "base/metrics/user_metrics.h"
@@ -40,6 +39,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -256,7 +256,7 @@ gfx::Rect BrowserNonClientFrameViewAsh::GetWindowBoundsForClientBounds(
 }
 
 int BrowserNonClientFrameViewAsh::NonClientHitTest(const gfx::Point& point) {
-  int hit_test = ash::FrameBorderNonClientHitTest(this, point);
+  int hit_test = chromeos::FrameBorderNonClientHitTest(this, point);
 
   // When the window is restored we want a large click target above the tabs
   // to drag the window, so redirect clicks in the tab's shadow to caption.

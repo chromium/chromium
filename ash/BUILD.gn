@@ -2675,6 +2675,7 @@ static_library("test_support") {
     "//base/test:test_support",
     "//cc:test_support",
     "//chromeos/services/assistant/public/cpp",
+    "//chromeos/ui/frame",
     "//ui/accessibility/mojom",
     "//ui/platform_window/common",
 

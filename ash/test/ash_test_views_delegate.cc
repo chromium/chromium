@@ -4,8 +4,8 @@
 
 #include "ash/test/ash_test_views_delegate.h"
 
-#include "ash/public/cpp/frame_utils.h"
 #include "ash/shell.h"
+#include "chromeos/ui/frame/frame_utils.h"
 
 namespace ash {
 
@@ -20,7 +20,7 @@ void AshTestViewsDelegate::OnBeforeWidgetInit(
     params->context = Shell::GetRootWindowForNewWindows();
 
   if (params->opacity == views::Widget::InitParams::WindowOpacity::kInferred)
-    ResolveInferredOpacity(params);
+    chromeos::ResolveInferredOpacity(params);
 
   TestViewsDelegate::OnBeforeWidgetInit(params, delegate);
 }

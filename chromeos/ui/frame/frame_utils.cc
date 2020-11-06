@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/frame_utils.h"
+#include "chromeos/ui/frame/frame_utils.h"
 
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -15,7 +15,7 @@
 #include "ui/views/window/hit_test_utils.h"
 #include "ui/views/window/non_client_view.h"
 
-namespace ash {
+namespace chromeos {
 
 using WindowOpacity = views::Widget::InitParams::WindowOpacity;
 
@@ -94,4 +94,4 @@ bool ShouldUseRestoreFrame(const views::Widget* widget) {
   return true;
 }
 
-}  // namespace ash
+}  // namespace chromeos

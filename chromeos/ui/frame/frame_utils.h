@@ -5,7 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_FRAME_UTILS_H_
 #define ASH_PUBLIC_CPP_FRAME_UTILS_H_
 
-#include "ash/public/cpp/ash_public_export.h"
+#include "base/component_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/widget/widget.h"
 
@@ -17,20 +17,21 @@ namespace views {
 class NonClientFrameView;
 }
 
-namespace ash {
+namespace chromeos {
 
 // Returns the HitTestCompat for the specified point.
-ASH_PUBLIC_EXPORT int FrameBorderNonClientHitTest(
-    views::NonClientFrameView* view,
-    const gfx::Point& point_in_widget);
+COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
+int FrameBorderNonClientHitTest(views::NonClientFrameView* view,
+                                const gfx::Point& point_in_widget);
 
 // Resolve the inferred opacity and updates the params.
-ASH_PUBLIC_EXPORT void ResolveInferredOpacity(
-    views::Widget::InitParams* params);
+COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
+void ResolveInferredOpacity(views::Widget::InitParams* params);
 
 // Checks whether we should draw the restored window frame on |widget|.
-ASH_PUBLIC_EXPORT bool ShouldUseRestoreFrame(const views::Widget* widget);
+COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
+bool ShouldUseRestoreFrame(const views::Widget* widget);
 
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // ASH_PUBLIC_CPP_FRAME_UTILS_H_
