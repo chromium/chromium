@@ -35,6 +35,7 @@ CrosAmdGpuProcessPolicy::~CrosAmdGpuProcessPolicy() {}
 ResultExpr CrosAmdGpuProcessPolicy::EvaluateSyscall(int sysno) const {
   switch (sysno) {
     case __NR_fstatfs:
+    case __NR_sched_setaffinity:
     case __NR_sched_setscheduler:
     case __NR_sysinfo:
     case __NR_uname:
