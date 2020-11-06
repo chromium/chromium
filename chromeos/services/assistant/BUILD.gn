@@ -63,7 +63,6 @@ component("lib") {
     sources += [
       "assistant_device_settings_delegate.cc",
       "assistant_device_settings_delegate.h",
-      "assistant_manager_service_delegate.h",
       "assistant_manager_service_delegate_impl.cc",
       "assistant_manager_service_delegate_impl.h",
       "assistant_manager_service_impl.cc",
@@ -74,7 +73,6 @@ component("lib") {
       "chromium_api_delegate.h",
       "chromium_http_connection.cc",
       "chromium_http_connection.h",
-      "cros_platform_api.h",
       "media_session/assistant_media_session.cc",
       "media_session/assistant_media_session.h",
       "platform/audio_device_owner.cc",
@@ -101,10 +99,6 @@ component("lib") {
       "platform/volume_control_impl.h",
       "platform_api_impl.cc",
       "platform_api_impl.h",
-      "proxy/assistant_proxy.cc",
-      "proxy/assistant_proxy.h",
-      "proxy/service_controller.cc",
-      "proxy/service_controller.h",
       "utils.cc",
       "utils.h",
     ]
@@ -118,11 +112,13 @@ component("lib") {
 
     deps += [
       ":buildflags",
+      ":cros_libassistant",
       "//chromeos/assistant/internal",
       "//chromeos/assistant/internal:libassistant",
       "//chromeos/assistant/internal/proto/google3",
       "//chromeos/dbus",
       "//chromeos/resources",
+      "//chromeos/services/assistant/proxy",
       "//chromeos/services/network_config/public/mojom",
       "//chromeos/strings",
       "//libassistant/shared/internal_api:fuchsia_api_helper",
@@ -136,6 +132,25 @@ component("lib") {
       "//services/network/public/mojom",
       "//ui/base",
       "//url",
+    ]
+  }
+}
+
+# This source_set contains the border APIs that interact with Libassistant.
+# TODO(b/171748795): During the migration to a Libassistant mojom service,
+# these APIs are used both by the mojom service and from this directory.
+# Once the migration is complete these should no longer be used here and
+# everything should have been moved to the mojom service.
+
+if (enable_cros_libassistant) {
+  source_set("cros_libassistant") {
+    sources = [
+      "assistant_manager_service_delegate.h",
+      "cros_platform_api.h",
+    ]
+    deps = [
+      "//base",
+      "//libassistant/shared/public",
     ]
   }
 }
@@ -202,6 +217,7 @@ source_set("tests") {
       "//chromeos/assistant/internal:tests",
       "//chromeos/assistant/internal/proto/google3",
       "//chromeos/dbus",
+      "//chromeos/services/assistant:cros_libassistant",
       "//chromeos/services/network_config/public/mojom",
       "//services/audio/public/cpp:test_support",
       "//services/device/public/cpp:test_support",
