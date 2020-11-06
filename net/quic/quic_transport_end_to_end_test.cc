@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
@@ -122,8 +123,8 @@ class QuicTransportEndToEndTest : public TestWithTaskEnvironment {
   }
 
   GURL GetURL(const std::string& suffix) {
-    return GURL{quiche::QuicheStrCat(
-        "quic-transport://test.example.com:", port_, suffix)};
+    return GURL{base::StrCat({"quic-transport://test.example.com:",
+                              base::NumberToString(port_), suffix})};
   }
 
   void StartServer(std::unique_ptr<quic::ProofSource> proof_source = nullptr) {

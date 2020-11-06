@@ -1412,7 +1412,7 @@ std::string QuicTestPacketMaker::GenerateHttp3PriorityData(
   priority_update.prioritized_element_type = quic::REQUEST_STREAM;
   priority_update.prioritized_element_id = stream_id;
   priority_update.priority_field_value =
-      quiche::QuicheStrCat("u=", static_cast<int>(priority));
+      base::StrCat({"u=", base::NumberToString(priority)});
   std::unique_ptr<char[]> buffer;
   quic::QuicByteCount frame_length =
       quic::HttpEncoder::SerializePriorityUpdateFrame(priority_update, &buffer);

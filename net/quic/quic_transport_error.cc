@@ -4,7 +4,7 @@
 
 #include "net/quic/quic_transport_error.h"
 
-#include "net/third_party/quiche/src/common/platform/api/quiche_str_cat.h"
+#include "base/strings/strcat.h"
 
 namespace net {
 
@@ -13,7 +13,7 @@ std::string QuicTransportErrorToString(const QuicTransportError& error) {
       ExtendedErrorToString(error.net_error, error.quic_error);
   if (error.details == message)
     return message;
-  return quiche::QuicheStrCat(message, " (", error.details, ")");
+  return base::StrCat({message, " (", error.details, ")"});
 }
 
 std::ostream& operator<<(std::ostream& os, const QuicTransportError& error) {
