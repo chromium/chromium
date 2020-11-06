@@ -39,8 +39,7 @@ public class IncognitoTabModelImpl implements IncognitoTabModel {
     private final ObserverList<IncognitoTabModelObserver> mIncognitoObservers =
             new ObserverList<>();
     private TabModel mDelegateModel;
-    private boolean mIsAddingTab;
-    private boolean mIsClosingTab;
+    private int mCountOfAddingOrClosingTabs;
     private boolean mActive;
 
     /**
@@ -70,8 +69,8 @@ public class IncognitoTabModelImpl implements IncognitoTabModel {
      */
     protected void destroyIncognitoIfNecessary() {
         ThreadUtils.assertOnUiThread();
-        if (!isEmpty() || mDelegateModel instanceof EmptyTabModel || mIsAddingTab
-                || mIsClosingTab) {
+        if (!isEmpty() || mDelegateModel instanceof EmptyTabModel
+                || mCountOfAddingOrClosingTabs != 0) {
             return;
         }
 
@@ -111,18 +110,18 @@ public class IncognitoTabModelImpl implements IncognitoTabModel {
 
     @Override
     public boolean closeTab(Tab tab) {
-        mIsClosingTab = true;
+        mCountOfAddingOrClosingTabs++;
         boolean retVal = mDelegateModel.closeTab(tab);
-        mIsClosingTab = false;
+        mCountOfAddingOrClosingTabs--;
         destroyIncognitoIfNecessary();
         return retVal;
     }
 
     @Override
     public boolean closeTab(Tab tab, boolean animate, boolean uponExit, boolean canUndo) {
-        mIsClosingTab = true;
+        mCountOfAddingOrClosingTabs++;
         boolean retVal = mDelegateModel.closeTab(tab, animate, uponExit, canUndo);
-        mIsClosingTab = false;
+        mCountOfAddingOrClosingTabs--;
         destroyIncognitoIfNecessary();
         return retVal;
     }
@@ -130,10 +129,10 @@ public class IncognitoTabModelImpl implements IncognitoTabModel {
     @Override
     public boolean closeTab(
             Tab tab, Tab recommendedNextTab, boolean animate, boolean uponExit, boolean canUndo) {
-        mIsClosingTab = true;
+        mCountOfAddingOrClosingTabs++;
         boolean retVal =
                 mDelegateModel.closeTab(tab, recommendedNextTab, animate, uponExit, canUndo);
-        mIsClosingTab = false;
+        mCountOfAddingOrClosingTabs--;
         destroyIncognitoIfNecessary();
         return retVal;
     }
@@ -145,19 +144,25 @@ public class IncognitoTabModelImpl implements IncognitoTabModel {
 
     @Override
     public void closeMultipleTabs(List<Tab> tabs, boolean canUndo) {
+        mCountOfAddingOrClosingTabs++;
         mDelegateModel.closeMultipleTabs(tabs, canUndo);
+        mCountOfAddingOrClosingTabs--;
         destroyIncognitoIfNecessary();
     }
 
     @Override
     public void closeAllTabs() {
+        mCountOfAddingOrClosingTabs++;
         mDelegateModel.closeAllTabs();
+        mCountOfAddingOrClosingTabs--;
         destroyIncognitoIfNecessary();
     }
 
     @Override
     public void closeAllTabs(boolean allowDelegation, boolean uponExit) {
+        mCountOfAddingOrClosingTabs++;
         mDelegateModel.closeAllTabs(allowDelegation, uponExit);
+        mCountOfAddingOrClosingTabs--;
         destroyIncognitoIfNecessary();
     }
 
@@ -239,12 +244,12 @@ public class IncognitoTabModelImpl implements IncognitoTabModel {
     @Override
     public void addTab(
             Tab tab, int index, @TabLaunchType int type, @TabCreationState int creationState) {
-        mIsAddingTab = true;
+        mCountOfAddingOrClosingTabs++;
         ensureTabModelImpl();
         boolean shouldTriggerFirstTabCreated = getCount() == 0;
         mDelegateModel.addTab(tab, index, type, creationState);
         notifyIncognitoObserverFirstTabCreated(shouldTriggerFirstTabCreated);
-        mIsAddingTab = false;
+        mCountOfAddingOrClosingTabs--;
     }
 
     @Override
@@ -279,7 +284,9 @@ public class IncognitoTabModelImpl implements IncognitoTabModel {
 
     @Override
     public void removeTab(Tab tab) {
+        mCountOfAddingOrClosingTabs++;
         mDelegateModel.removeTab(tab);
+        mCountOfAddingOrClosingTabs--;
         // Call destroyIncognitoIfNecessary() in case the last incognito tab in this model is
         // reparented to a different activity. See crbug.com/611806.
         destroyIncognitoIfNecessary();
