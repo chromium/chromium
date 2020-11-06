@@ -39,6 +39,7 @@ test("cast_metrics_unittest") {
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//chromecast/base:dummy_cast_sys_info",
+    "//components/metrics",
     "//services/network/public/cpp",
     "//testing/gmock:gmock",
     "//testing/gtest:gtest",

@@ -154,7 +154,6 @@ bool CastMetricsServiceClient::GetBrand(std::string* brand_code) {
 }
 
 ::metrics::SystemProfileProto::Channel CastMetricsServiceClient::GetChannel() {
-
 #if defined(OS_ANDROID) || defined(OS_FUCHSIA)
   switch (cast_sys_info_->GetBuildType()) {
     case CastSysInfo::BUILD_ENG:
@@ -238,6 +237,14 @@ CastMetricsServiceClient::CreateUploader(
 
 base::TimeDelta CastMetricsServiceClient::GetStandardUploadInterval() {
   return base::TimeDelta::FromMinutes(kStandardUploadIntervalMinutes);
+}
+
+::metrics::MetricsLogStore::StorageLimits
+CastMetricsServiceClient::GetStorageLimits() const {
+  auto limits = ::metrics::MetricsServiceClient::GetStorageLimits();
+  if (delegate_)
+    delegate_->ApplyMetricsStorageLimits(&limits);
+  return limits;
 }
 
 bool CastMetricsServiceClient::IsConsentGiven() const {

@@ -25,12 +25,12 @@ constexpr int kMetricsUploadIntervalSecMinimum = 20;
 // then we will discard the log, and not try to retransmit it. We also don't
 // persist the log to the prefs for transmission during the next chrome session
 // if this limit is exceeded.
-const size_t kMaxOngoingLogSize = 100 * 1024;
+constexpr size_t kMaxOngoingLogSize = 100 * 1024;  // 100 KiB
 
 // The number of bytes of logs to save of each type (initial/ongoing). This
 // ensures that a reasonable amount of history will be stored even if there is a
 // long series of very small logs.
-constexpr size_t kMinLogQueueSize = 300 * 1000;  // ~300kB
+constexpr size_t kMinLogQueueSize = 300 * 1024;  // 300 KiB
 
 // The minimum number of "initial" logs to save, and hope to send during a
 // future Chrome session. Initial logs contain crash stats, and are pretty
