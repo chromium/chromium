@@ -111,6 +111,14 @@ class CrossOriginOpenerPolicyBrowserTest
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
  protected:
+  WebContentsImpl* web_contents() const {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
+  RenderFrameHostImpl* current_frame_host() {
+    return web_contents()->GetMainFrame();
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -126,23 +134,37 @@ class CrossOriginOpenerPolicyBrowserTest
     ASSERT_TRUE(https_server()->Start());
   }
 
+ private:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
-
-  WebContentsImpl* web_contents() const {
-    return static_cast<WebContentsImpl*>(shell()->web_contents());
-  }
-
-  RenderFrameHostImpl* current_frame_host() {
-    return web_contents()->GetMainFrame();
   }
 
   base::test::ScopedFeatureList feature_list_;
   base::test::ScopedFeatureList feature_list_for_render_document_;
   base::test::ScopedFeatureList feature_list_for_back_forward_cache_;
   net::EmbeddedTestServer https_server_;
+};
+
+// Same as CrossOriginOpenerPolicyBrowserTest, but disable SharedArrayBuffer by
+// default for non crossOriginIsolated process. This is the state we will reach
+// after resolving: https://crbug.com/1144104
+class NoSharedArrayBufferByDefault : public CrossOriginOpenerPolicyBrowserTest {
+ public:
+  NoSharedArrayBufferByDefault() {
+    // Disable SharedArrayBuffer in non crossOriginIsolated process.
+    feature_list_.InitWithFeatures(
+        // Enabled:
+        {},
+        // Disabled:
+        {
+            features::kSharedArrayBuffer,
+            features::kWebAssemblyThreads,
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 using VirtualBrowsingContextGroupTest = CrossOriginOpenerPolicyBrowserTest;
@@ -2379,6 +2401,7 @@ static auto kTestParams =
                      testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All, CrossOriginOpenerPolicyBrowserTest, kTestParams);
 INSTANTIATE_TEST_SUITE_P(All, VirtualBrowsingContextGroupTest, kTestParams);
+INSTANTIATE_TEST_SUITE_P(All, NoSharedArrayBufferByDefault, kTestParams);
 
 namespace {
 
@@ -2589,6 +2612,158 @@ IN_PROC_BROWSER_TEST_F(CoopReportingOriginTrialBrowserTest,
   )");
   std::string reports = eval.ExtractString();
   EXPECT_THAT(reports, HasSubstr("coop-access-violation"));
+}
+
+IN_PROC_BROWSER_TEST_P(NoSharedArrayBufferByDefault, BaseCase) {
+  GURL url = https_server()->GetURL("a.com", "/empty.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_EQ(false, EvalJs(current_frame_host(), "self.crossOriginIsolated"));
+  EXPECT_EQ(false,
+            EvalJs(current_frame_host(), "'SharedArrayBuffer' in globalThis"));
+}
+
+IN_PROC_BROWSER_TEST_P(NoSharedArrayBufferByDefault, CoopCoepIsolated) {
+  GURL url =
+      https_server()->GetURL("a.com",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Cross-Origin-Embedder-Policy: require-corp");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_EQ(true, EvalJs(current_frame_host(), "self.crossOriginIsolated"));
+  EXPECT_EQ(true,
+            EvalJs(current_frame_host(), "'SharedArrayBuffer' in globalThis"));
+}
+
+IN_PROC_BROWSER_TEST_P(NoSharedArrayBufferByDefault,
+                       CoopCoepTransferSharedArrayBufferToIframe) {
+  CHECK(!base::FeatureList::IsEnabled(features::kSharedArrayBuffer));
+  GURL url =
+      https_server()->GetURL("a.com",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Cross-Origin-Embedder-Policy: require-corp");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_TRUE(ExecJs(current_frame_host(),
+                     "g_iframe = document.createElement('iframe');"
+                     "g_iframe.src = location.href;"
+                     "document.body.appendChild(g_iframe);"));
+  WaitForLoadStop(web_contents());
+
+  RenderFrameHostImpl* main_document = current_frame_host();
+  RenderFrameHostImpl* sub_document =
+      current_frame_host()->child_at(0)->current_frame_host();
+
+  EXPECT_EQ(true, EvalJs(main_document, "self.crossOriginIsolated"));
+  EXPECT_EQ(true, EvalJs(sub_document, "self.crossOriginIsolated"));
+
+  EXPECT_TRUE(ExecJs(sub_document, R"(
+    g_sab_size = new Promise(resolve => {
+      addEventListener("message", event => resolve(event.data.byteLength));
+    });
+  )"));
+
+  EXPECT_TRUE(ExecJs(main_document, R"(
+    let sab = new SharedArrayBuffer(1234);
+    g_iframe.contentWindow.postMessage(sab, "*");
+  )"));
+
+  EXPECT_EQ(1234, EvalJs(sub_document, "g_sab_size"));
+}
+
+// Transfer a SharedArrayBuffer in between two COOP+COEP document with a
+// parent/child relationship. The child has set Feature-Policy:
+// cross-origin-isolated 'none'. As a result, it can't receive the object.
+IN_PROC_BROWSER_TEST_P(
+    NoSharedArrayBufferByDefault,
+    CoopCoepTransferSharedArrayBufferToNoCrossOriginIsolatedIframe) {
+  CHECK(!base::FeatureList::IsEnabled(features::kSharedArrayBuffer));
+  GURL main_url =
+      https_server()->GetURL("a.com",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Cross-Origin-Embedder-Policy: require-corp");
+  GURL iframe_url =
+      https_server()->GetURL("a.com",
+                             "/set-header?"
+                             "Cross-Origin-Embedder-Policy: require-corp&"
+                             "Cross-Origin-Resource-Policy: cross-origin&"
+                             "Feature-Policy: cross-origin-isolated 'none'");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  EXPECT_TRUE(ExecJs(current_frame_host(),
+                     JsReplace("g_iframe = document.createElement('iframe');"
+                               "g_iframe.src = $1;"
+                               "document.body.appendChild(g_iframe);",
+                               iframe_url)));
+  WaitForLoadStop(web_contents());
+
+  RenderFrameHostImpl* main_document = current_frame_host();
+  RenderFrameHostImpl* sub_document =
+      current_frame_host()->child_at(0)->current_frame_host();
+
+  EXPECT_EQ(true, EvalJs(main_document, "self.crossOriginIsolated"));
+  EXPECT_EQ(false, EvalJs(sub_document, "self.crossOriginIsolated"));
+
+  auto postSharedArrayBuffer = EvalJs(main_document, R"(
+    let sab = new SharedArrayBuffer(1234);
+    g_iframe.contentWindow.postMessage(sab,"*");
+  )");
+
+  EXPECT_THAT(
+      postSharedArrayBuffer.error,
+      HasSubstr(
+          "Failed to execute 'postMessage' on 'Window': SharedArrayBuffer "
+          "transfer requires self.crossOriginIsolated"));
+}
+
+// Transfer a SharedArrayBuffer in between two COOP+COEP document with a
+// parent/child relationship. The child has set Feature-Policy:
+// cross-origin-isolated 'none'. This non-cross-origin-isolated document can
+// transfer a SharedArrayBuffer toward the cross-origin-isolated one.
+// See https://crbug.com/1144838 for discussions about this behavior.
+IN_PROC_BROWSER_TEST_P(
+    NoSharedArrayBufferByDefault,
+    CoopCoepTransferSharedArrayBufferFromNoCrossOriginIsolatedIframe) {
+  CHECK(!base::FeatureList::IsEnabled(features::kSharedArrayBuffer));
+  GURL main_url =
+      https_server()->GetURL("a.com",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Cross-Origin-Embedder-Policy: require-corp");
+  GURL iframe_url =
+      https_server()->GetURL("a.com",
+                             "/set-header?"
+                             "Cross-Origin-Embedder-Policy: require-corp&"
+                             "Cross-Origin-Resource-Policy: cross-origin&"
+                             "Feature-Policy: cross-origin-isolated 'none'");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  EXPECT_TRUE(ExecJs(current_frame_host(),
+                     JsReplace("g_iframe = document.createElement('iframe');"
+                               "g_iframe.src = $1;"
+                               "document.body.appendChild(g_iframe);",
+                               iframe_url)));
+  WaitForLoadStop(web_contents());
+
+  RenderFrameHostImpl* main_document = current_frame_host();
+  RenderFrameHostImpl* sub_document =
+      current_frame_host()->child_at(0)->current_frame_host();
+
+  EXPECT_EQ(true, EvalJs(main_document, "self.crossOriginIsolated"));
+  EXPECT_EQ(false, EvalJs(sub_document, "self.crossOriginIsolated"));
+
+  EXPECT_TRUE(ExecJs(main_document, R"(
+    g_sab_size = new Promise(resolve => {
+      addEventListener("message", event => resolve(event.data.byteLength));
+    });
+  )"));
+
+  // TODO(https://crbug.com/1144838): Being able to share SharedArrayBuffer from
+  // a document with self.crossOriginIsolated == false sounds wrong.
+  EXPECT_TRUE(ExecJs(sub_document, R"(
+    let sab = new SharedArrayBuffer(1234);
+    parent.postMessage(sab, "*");
+  )"));
+
+  EXPECT_EQ(1234, EvalJs(main_document, "g_sab_size"));
 }
 
 }  // namespace content
