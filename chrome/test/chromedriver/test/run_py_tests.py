@@ -3065,7 +3065,7 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     self._driver.Load(self.GetHttpsUrlForFile(
         '/chromedriver/webauthn_test.html', 'chromedriver.test'))
     self._driver.AddVirtualAuthenticator(
-        protocol = 'ctap2',
+        protocol = 'ctap2_1',
         transport = 'usb',
         hasResidentKey = True,
         hasUserVerification = True,
@@ -3077,6 +3077,23 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     self.assertEquals('OK', result['status'])
     self.assertEquals(['usb'], result['credential']['transports'])
     self.assertEquals(True, result['extensions']['largeBlob']['supported'])
+
+  def testAddVirtualAuthenticatorProtocolVersion(self):
+    self._driver.Load(self.GetHttpsUrlForFile(
+        '/chromedriver/webauthn_test.html', 'chromedriver.test'))
+    for protocol in ['ctap1/u2f', 'ctap2', 'ctap2_1']:
+      authenticator_id = self._driver.AddVirtualAuthenticator(
+          protocol = protocol,
+          transport = 'usb',
+      )
+      self.assertTrue(len(authenticator_id) > 0)
+
+    self.assertRaisesRegexp(
+        chromedriver.UnsupportedOperation,
+        'INVALID is not a recognized protocol version',
+        self._driver.AddVirtualAuthenticator,
+            protocol = 'INVALID',
+            transport = 'usb')
 
   def testAddVirtualBadExtensions(self):
     self.assertRaisesRegexp(
@@ -3188,7 +3205,7 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
         '/chromedriver/webauthn_test.html', 'chromedriver.test'))
 
     authenticatorId = self._driver.AddVirtualAuthenticator(
-        protocol = 'ctap2',
+        protocol = 'ctap2_1',
         transport = 'usb',
         hasResidentKey = True,
         hasUserVerification = True,
@@ -3268,7 +3285,7 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     self._driver.Load(self.GetHttpsUrlForFile(
         '/chromedriver/webauthn_test.html', 'chromedriver.test'))
     authenticatorId = self._driver.AddVirtualAuthenticator(
-        protocol = 'ctap2',
+        protocol = 'ctap2_1',
         transport = 'usb',
         hasResidentKey = True,
         hasUserVerification = True,

@@ -26,6 +26,8 @@ static constexpr char kDevToolsDidNotReturnExpectedValue[] =
     "DevTools did not return the expected value";
 static constexpr char kUnrecognizedExtension[] =
     " is not a recognized extension";
+static constexpr char kUnrecognizedProtocol[] =
+    " is not a recognized protocol version";
 
 // Creates a base::DictionaryValue by cloning the parameters specified by
 // |mapping| from |params|.
@@ -136,17 +138,21 @@ Status ExecuteAddVirtualAuthenticator(WebView* web_view,
     }
   }
 
-  // Large blobs require CTAP 2.1. At the moment webdriver does not allow
-  // specifying the CTAP version. Since there is no other web visible
-  // difference between the versions until credProps is introduced, force the
-  // virtual authenticator to CTAP 2.1.
-  mapped_params.SetPath("options.ctap2Version", base::Value("ctap2_1"));
-
   // The spec calls u2f "ctap1/u2f", convert the value here since devtools does
   // not support slashes on enums.
   std::string* protocol = mapped_params.FindStringPath("options.protocol");
-  if (protocol && *protocol == "ctap1/u2f")
-    *protocol = "u2f";
+  if (protocol) {
+    if (*protocol == "ctap1/u2f") {
+      *protocol = "u2f";
+    } else if (*protocol == "ctap2") {
+      mapped_params.SetPath("options.ctap2Version", base::Value("ctap2_0"));
+    } else if (*protocol == "ctap2_1") {
+      *protocol = "ctap2";
+      mapped_params.SetPath("options.ctap2Version", base::Value("ctap2_1"));
+    } else {
+      return Status(kUnsupportedOperation, *protocol + kUnrecognizedProtocol);
+    }
+  }
 
   std::unique_ptr<base::Value> result;
   Status status = web_view->SendCommandAndGetResult(

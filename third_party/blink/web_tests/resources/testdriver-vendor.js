@@ -309,6 +309,11 @@
         break;
       case "ctap2":
         mojoOptions.protocol = blink.test.mojom.ClientToAuthenticatorProtocol.CTAP2;
+        mojoOptions.ctap2Version = blink.test.mojom.Ctap2Version.CTAP2_0;
+        break;
+      case "ctap2_1":
+        mojoOptions.protocol = blink.test.mojom.ClientToAuthenticatorProtocol.CTAP2;
+        mojoOptions.ctap2Version = blink.test.mojom.Ctap2Version.CTAP2_1;
         break;
       default:
         throw "Unknown protocol "  + options.protocol;
@@ -337,9 +342,6 @@
     mojoOptions.hasUserVerification = options.hasUserVerification;
     mojoOptions.hasLargeBlob = options.extensions.indexOf("largeBlob") !== -1;
     mojoOptions.isUserPresent = options.isUserConsenting;
-    // Force CTAP 2.1 to support large blob. This does not have any impact on
-    // WPTs until credProps is tested on WPTs, at which point we'll expose this.
-    mojoOptions.ctap2Version = blink.test.mojom.Ctap2Version.CTAP2_1;
 
     let authenticator = (await manager.createAuthenticator(mojoOptions)).authenticator;
     await authenticator.setUserVerified(options.isUserVerified);
