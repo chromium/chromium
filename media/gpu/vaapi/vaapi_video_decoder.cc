@@ -488,7 +488,11 @@ void VaapiVideoDecoder::ApplyResolutionChange() {
     vaapi_wrapper_ = std::move(new_vaapi_wrapper);
   }
 
-  vaapi_wrapper_->CreateContext(pic_size);
+  if (!vaapi_wrapper_->CreateContext(pic_size)) {
+    VLOGF(1) << "Failed creating context";
+    SetState(State::kError);
+    return;
+  }
 
   // If we reset during resolution change, then there is no decode tasks. In
   // this case we do nothing and wait for next input. Otherwise, continue
