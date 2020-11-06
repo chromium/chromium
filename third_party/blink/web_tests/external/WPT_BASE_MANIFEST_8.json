@@ -220768,7 +220768,7 @@
          []
         ],
         "drawing-text-to-the-canvas.yaml": [
-         "0f8a118ca8d3f68aea6a0a54a2a5d5524790a34d",
+         "0d7bbfde91df96144a143c028927297e6a254648",
          []
         ],
         "fill-and-stroke-styles.yaml": [
@@ -220862,7 +220862,7 @@
          []
         ],
         "text.yaml": [
-         "9a895bc5185a055dc0aa4a4fa86031181454f641",
+         "30a0ad1a6fe5ef721ea91820ed95354c66710582",
          []
         ],
         "the-canvas-state.yaml": [
@@ -250661,7 +250661,7 @@
       []
      ],
      "requirements_firefox.txt": [
-      "8b45703a5596ed0d1f4ae577af31b8afd2f0bc8f",
+      "5585609e5c3de329db9d97c134ea793287b66d03",
       []
      ],
      "requirements_ie.txt": [
@@ -342310,6 +342310,13 @@
          {}
         ]
        ],
+       "2d.text.drawing.style.textRendering.settings.html": [
+        "f0b5ff4226d0fa905a695b0a03140c7434261182",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.text.measure.actualBoundingBox.html": [
         "44cff25d1afa82ba5f960784548b81e50025e787",
         [
@@ -356776,6 +356783,20 @@
         "1dac9f5c1f34996ce7c0a18737bd58b40ed0da92",
         [
          "html/canvas/offscreen/text/2d.text.drawing.style.spacing.worker.html",
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.textRendering.settings.html": [
+        "8b744526dbf3e9ddff4126cb72fe6af7a09a5b3c",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.textRendering.settings.worker.js": [
+        "059edbeb4e8a061c830a1c24c09b51c24d73d330",
+        [
+         "html/canvas/offscreen/text/2d.text.drawing.style.textRendering.settings.worker.html",
          {}
         ]
        ],
