@@ -262,7 +262,7 @@ export class NativeLayerStub extends TestBrowserProxy {
   cancelPendingPrintRequest() {}
 
   /** @override */
-  openSettingsPrintPage() {}
+  managePrinters() {}
 
   /**
    * @param {!NativeInitialSettings} settings The settings

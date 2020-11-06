@@ -98,12 +98,17 @@
     margin-bottom: 16px;
   }
 
-  iron-icon {
+  .destinations-status iron-icon {
     --google-orange-600: rgb(232, 113, 10);  /* e8710a */
     fill: var(--google-orange-600);
     flex-shrink: 0;
     padding-inline-end: 8px;
     padding-inline-start: 4px;
+  }
+
+  cr-button iron-icon {
+    --iron-icon-fill-color: currentColor;
+    margin-inline-start: 8px;
   }
 
   #warning-message {
@@ -145,8 +150,9 @@
     </print-preview-provisional-destination-resolver>
   </div>
   <div slot="button-container">
-    <cr-button on-click="onOpenSettingsPrintPage_">
+    <cr-button on-click="onManageButtonClick_">
       $i18n{manage}
+      <iron-icon icon="cr:open-in-new"></iron-icon>
     </cr-button>
     <cr-button class="cancel-button" on-click="onCancelButtonClick_">
       $i18n{cancel}

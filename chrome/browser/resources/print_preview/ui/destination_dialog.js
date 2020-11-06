@@ -435,8 +435,8 @@ Polymer({
   },
 
   /** @private */
-  onOpenSettingsPrintPage_() {
+  onManageButtonClick_() {
     this.metrics_.record(Metrics.DestinationSearchBucket.MANAGE_BUTTON_CLICKED);
-    NativeLayerImpl.getInstance().openSettingsPrintPage();
+    NativeLayerImpl.getInstance().managePrinters();
   },
 });

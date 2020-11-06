@@ -234,9 +234,9 @@ class PrintPreviewHandler : public content::WebUIMessageHandler,
   // preview is displayed.
   void HandleGetInitialSettings(const base::ListValue* args);
 
-  // Opens printer settings in the Chrome OS Settings App or the
-  // chrome://settings page.
-  void HandleOpenPrinterSettings(const base::ListValue* args);
+  // Opens printer settings in the Chrome OS Settings App or OS's printer manger
+  // dialog. |args| is unused.
+  void HandleManagePrinters(const base::ListValue* args);
 
 #if defined(OS_CHROMEOS)
   // Gets the EULA URL.

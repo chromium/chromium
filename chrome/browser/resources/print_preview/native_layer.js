@@ -226,10 +226,10 @@ export class NativeLayer {
   getPreview(printTicket) {}
 
   /**
-   * Opens the chrome://settings printing page. For Chrome OS, open the
-   * printing settings in the Settings App.
+   * Opens the OS's printer manager dialog. For Chrome OS, open the printing
+   * settings in the Settings App.
    */
-  openSettingsPrintPage() {}
+  managePrinters() {}
 
   /**
    * Requests that the document be printed.
@@ -348,8 +348,8 @@ export class NativeLayerImpl {
   }
 
   /** @override */
-  openSettingsPrintPage() {
-    chrome.send('openPrinterSettings');
+  managePrinters() {
+    chrome.send('managePrinters');
   }
 
   /** @override */
