@@ -17,6 +17,7 @@
 <translation id="1369915414381695676">Сайтът <ph name="SITE_NAME" /> е добавен</translation>
 <translation id="1383876407941801731">Търсене</translation>
 <translation id="1384959399684842514">Изтеглянето е на пауза</translation>
+<translation id="1415402041810619267">URL адресът е съкратен</translation>
 <translation id="1431402976894535801">Блокиране на сайтовете, така че да не знаят дали присъствате</translation>
 <translation id="1446450296470737166">Разр. на пълния контрол над MIDI</translation>
 <translation id="1509960214886564027">Функциите в много сайтове може да не работят правилно</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">Разрешаване на сайтовете да възпроизвеждат защитено съдържание</translation>
 <translation id="4468959413250150279">Спиране на звука за конкретен сайт.</translation>
 <translation id="4479647676395637221">Извеждане на запитване, преди да се разреши на сайтовете да използват камерата (препоръчително)</translation>
+<translation id="4505788138578415521">URL адресът е разгънат</translation>
 <translation id="4534723447064627427">За да разрешите на <ph name="APP_NAME" /> да осъществява достъп до микрофона ви, той трябва да бъде включен и от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="4570913071927164677">Подробности</translation>
 <translation id="4645575059429386691">Управлява се от ваш родител</translation>

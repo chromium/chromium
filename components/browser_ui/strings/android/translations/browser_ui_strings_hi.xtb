@@ -17,6 +17,7 @@
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> साइट जोड़ी गई</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384959399684842514">डाउनलोड रोका गया</translation>
+<translation id="1415402041810619267">यूआरएल छोटा हो गया</translation>
 <translation id="1431402976894535801">जब कोई साइट यह जानना चाहे कि आप डिवाइस का इस्तेमाल कब करते हैं, तो उसे ब्लॉक करें</translation>
 <translation id="1446450296470737166">MIDI डिवाइस के पूरे नियंत्रण की अनुमति दें</translation>
 <translation id="1509960214886564027">शायद कई साइटों पर सुविधाएं ठीक से काम न करें</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">साइटों को सभी सुरक्षित सामग्री चलाने दें</translation>
 <translation id="4468959413250150279">किसी खास साइट के लिए आवाज़ बंद करें.</translation>
 <translation id="4479647676395637221">साइटों को अपने कैमरे का इस्तेमाल करने देने से पहले अनुमति लेना ज़रूरी बनाएं (सुझाया गया )</translation>
+<translation id="4505788138578415521">यूआरएल बड़ा हो गया</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> को माइक्रोफ़ोन का ऐक्सेस देने के लिए, <ph name="BEGIN_LINK" />Android की सेटिंग<ph name="END_LINK" /> में जाकर भी माइक्रोफ़ोन चालू करें.</translation>
 <translation id="4570913071927164677">विवरण</translation>
 <translation id="4645575059429386691">आपके अभिभावक द्वारा प्रबंधित</translation>

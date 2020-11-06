@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">التطبيقات</translation>
 <translation id="2872961005593481000">إيقاف التشغيل</translation>
 <translation id="3008341117444806826">إعادة التحميل</translation>
+<translation id="3009958530611748826">اختيار مجلّد لحفظ عمليات المسح الضوئي فيه</translation>
 <translation id="3083667275341675831">بيانات تشخيص الاتصال</translation>
 <translation id="3091839911843451378">تعذَّرت الطباعة - توقّفت الطابعة</translation>
 <translation id="3188257591659621405">ملفاتي</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">مهام الطباعة</translation>
 <translation id="3527036260304016759">تعذَّرت الطباعة - خطأ غير معروف</translation>
 <translation id="360565022852130722">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP 802.1x ضعيف.</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> مراجعة)</translation>
 <translation id="3749289110408117711">اسم الملف</translation>
 <translation id="38114475217616659">محو السجلّ بأكمله</translation>
 <translation id="3820172043799983114">رقم التعريف الشخصي غير صالح.</translation>
@@ -79,10 +81,12 @@
 <translation id="4731797938093519117">وصول أحد الوالدين</translation>
 <translation id="4773299976671772492">متوقفة</translation>
 <translation id="4808449224298348341">تم إلغاء مهمة الطباعة للمستند <ph name="DOCUMENT_TITLE" />.</translation>
+<translation id="4832079907277790330">اختيار مجلّد في تطبيق "الملفات"...</translation>
 <translation id="4890353053343094602">اختيار كلمة مرور جديدة فورًا</translation>
 <translation id="4917889632206600977">توقّفت الطابعة - نفد الورق</translation>
 <translation id="4932733599132424254">التاريخ</translation>
 <translation id="4985509611418653372">تشغيل</translation>
+<translation id="4991056862642197104">يُرجى وضع المستند والنقر على الزر "المسح ضوئيًا" للبدء.</translation>
 <translation id="5094480857972195099">يدير النطاق <ph name="ENROLLMENT_DOMAIN" /> هذا المستخدم، ويمكنه إدارة الإعدادات ورصد نشاط المستخدم عن بُعد.</translation>
 <translation id="520299634122159966">لا تتوفّر أجهزة مسح ضوئي.</translation>
 <translation id="5212543919916444558">يتعذَّر عليَّ العثور على شيء مفيد في هذه الشاشة.
@@ -120,6 +124,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">نوع الملف</translation>
 <translation id="7561454561030345039">يتولّى مشرفك إدارة هذا الإجراء.</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7690294790491645610">تأكيد كلمة المرور الجديدة</translation>
 <translation id="7805768142964895445">الحالة</translation>

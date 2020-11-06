@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Този месец</translation>
 <translation id="1637811476055996098">Избор на файлове</translation>
 <translation id="1650423536718072820">изнесен цитат</translation>
+<translation id="1681022320378710418">текущ час</translation>
 <translation id="1727886345390570319">скриване на менюто за надписи</translation>
 <translation id="1729654308190250600">Моля, въведете имейл адрес.</translation>
 <translation id="1758486001363313524">Други...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Моля, въведете URL адрес.</translation>
 <translation id="3175736971608411871">таймер</translation>
 <translation id="3199563858620722075">разгъващ се списък</translation>
+<translation id="3220661731597678625">текуща стъпка</translation>
 <translation id="3329013043687509092">Насищане</translation>
 <translation id="3450233048674729344">Стойността трябва да е по-малка или равна на <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">дефиниция</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">видео</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4812940957355064477">Моля, въведете номер.</translation>
+<translation id="4912200001568447310">текущ елемент</translation>
 <translation id="4912536737030637138">библиографски запис</translation>
 <translation id="4915360478455618802">Показване на инструмента за избор на час</translation>
 <translation id="492244087561876220">коментар</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Мултимедийното съдържание не може да бъде възпроизведено.</translation>
 <translation id="537648784377940524">Най-ранната дата (<ph name="MIN_DATE_OR_TIME" />) трябва да е преди най-късната (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">фигура</translation>
+<translation id="5425179576310518467">текуща дата</translation>
 <translation id="5453733299334684579">елемент от дърво</translation>
 <translation id="5466621249238537318">Моля, изберете един или повече файлове.</translation>
 <translation id="5468998798572797635">изход от цял екран</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">индикатор</translation>
 <translation id="6166809985690652833">послеслов</translation>
 <translation id="6209276755895393898">Изглежда, че това е: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">текуща страница</translation>
 <translation id="6213469881011901533">терминологичен речник</translation>
 <translation id="6281588256137006900">Яркост</translation>
 <translation id="6281763101136022427">url адрес</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Моля, удължете този текст до поне <ph name="MIN_CHARACTERS" /> знака (понастоящем използвате 1 знак).</translation>
 <translation id="7034405885550056553">предложение</translation>
 <translation id="709897737746224366">Моля, спазвайте изисквания формат.</translation>
+<translation id="7102274145889307184">текущо местоположение</translation>
 <translation id="7118469954320184356">Няма описание.</translation>
 <translation id="7139483182332611405">предисловие</translation>
 <translation id="7214187073215825913">информация за съдържанието</translation>

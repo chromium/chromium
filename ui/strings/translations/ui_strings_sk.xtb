@@ -152,6 +152,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktívne dnes}=1{Aktívne včera}few{Aktívne pred # dňami}many{Aktívne pred # dňa}other{Aktívne pred # dňami}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 deň a }few{# dni a }many{# dňa a }other{# dní a }}</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5843690142429128814">Obrázok.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{o 1 r.}few{o # r.}many{o # r.}other{o # r.}}</translation>
 <translation id="588258955323874662">Celá obrazovka</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{Zostáva 1 sekunda}few{Zostávajú # sekundy}many{Zostáva # sekundy}other{Zostáva # sekúnd}}</translation>
@@ -192,6 +193,7 @@
 <translation id="6845533974506654842">stlačiť</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{Zostáva 1 hodina}few{Zostávajú # hodiny}many{Zostáva # hodiny}other{Zostáva # hodín}}</translation>
 <translation id="688711909580084195">Nepomenovaná webová stránka</translation>
+<translation id="6902419395050653510">Obsah HTML.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{zostáva 1 rok}few{zostávajú # roky}many{zostáva # roka}other{zostáva # rokov}}</translation>
 <translation id="6945221475159498467">Vybrať</translation>

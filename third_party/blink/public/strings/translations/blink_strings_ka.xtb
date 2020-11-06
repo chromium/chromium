@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">ამ თვეში</translation>
 <translation id="1637811476055996098">აირჩიეთ ფაილები</translation>
 <translation id="1650423536718072820">მკვეთრი ციტატა</translation>
+<translation id="1681022320378710418">ამჟამინდელი დრო</translation>
 <translation id="1727886345390570319">დახურული სუბტიტრების მენიუს დამალვა</translation>
 <translation id="1729654308190250600">გთხოვთ შეიყვანოთ შევსებული ელექტრონული ფოსტის მისამართი.</translation>
 <translation id="1758486001363313524">სხვა…</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">გთხოვთ შეიყვანოთ URL.</translation>
 <translation id="3175736971608411871">ტაიმერი</translation>
 <translation id="3199563858620722075">კომბო-ველი</translation>
+<translation id="3220661731597678625">ამჟამინდელი ნაბიჯი</translation>
 <translation id="3329013043687509092">გაჯერება</translation>
 <translation id="3450233048674729344">მნიშვნელობა უნდა იყოს ნაკლები ან უდრიდეს <ph name="MAXIMUM" />-ს.</translation>
 <translation id="3486220673238053218">განსაზღვრება</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">ვიდეო</translation>
 <translation id="479989351350248267">ძიება</translation>
 <translation id="4812940957355064477">გთხოვთ შეიყვანეთ ნომერი.</translation>
+<translation id="4912200001568447310">ამჟამინდელი ერთეული</translation>
 <translation id="4912536737030637138">ბიბლიოგრაფიის ჩანაწერი</translation>
 <translation id="4915360478455618802">დროის ამომრჩევის ჩვენება</translation>
 <translation id="492244087561876220">კომენტარი</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">მედიის დაკვრა ვერ მოხერხდა.</translation>
 <translation id="537648784377940524">მინიმალური თარიღი (<ph name="MIN_DATE_OR_TIME" />) წინ უნდა უსწრებდეს მაქსიმალურ თარიღს (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">მონაცემი</translation>
+<translation id="5425179576310518467">ამჟამინდელი თარიღი</translation>
 <translation id="5453733299334684579">ხის ელემენტი</translation>
 <translation id="5466621249238537318">აირჩიეთ ერთი ან მეტი ფაილი.</translation>
 <translation id="5468998798572797635">სრული ეკრანის რეჟიმიდან გასვლა</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">მთვლელი</translation>
 <translation id="6166809985690652833">ბოლოსიტყვაობა</translation>
 <translation id="6209276755895393898">როგორც ჩანს, ეს არის <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">ამჟამინდელი გვერდი</translation>
 <translation id="6213469881011901533">ტერმინების ლექსიკონი</translation>
 <translation id="6281588256137006900">სიღიავე</translation>
 <translation id="6281763101136022427">URL</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">გთხოვთ, გაზარდოთ ეს ტექსტი <ph name="MIN_CHARACTERS" /> ან მეტ სიმბოლომდე (ამჟამად 1 სიმბოლოს იყენებთ).</translation>
 <translation id="7034405885550056553">შემოთავაზება</translation>
 <translation id="709897737746224366">გთხოვთ, შეუსაბამეთ მოთხოვნილ ფორმატს.</translation>
+<translation id="7102274145889307184">ამჟამინდელი მდებარეობა</translation>
 <translation id="7118469954320184356">აღწერილობა მიუწვდომელია.</translation>
 <translation id="7139483182332611405">წინათქმა</translation>
 <translation id="7214187073215825913">ინფორმაცია კონტენტის შესახებ</translation>

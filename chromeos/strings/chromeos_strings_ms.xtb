@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">Apl</translation>
 <translation id="2872961005593481000">Mematikan</translation>
 <translation id="3008341117444806826">MUAT SEMULA</translation>
+<translation id="3009958530611748826">Pilih folder untuk menyimpan imbasan</translation>
 <translation id="3083667275341675831">Diagnostik Ketersambungan</translation>
 <translation id="3091839911843451378">Gagal - Dihentikan</translation>
 <translation id="3188257591659621405">Fail saya</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">Tugas Cetak</translation>
 <translation id="3527036260304016759">Gagal - Ralat tidak diketahui</translation>
 <translation id="360565022852130722">Rangkaian Wi-Fi selamat dengan protokol lemah WEP 802.1x</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ulasan)</translation>
 <translation id="3749289110408117711">Nama fail</translation>
 <translation id="38114475217616659">Kosongkan semua sejarah</translation>
 <translation id="3820172043799983114">PIN tidak sah.</translation>
@@ -79,10 +81,12 @@
 <translation id="4731797938093519117">Akses ibu bapa</translation>
 <translation id="4773299976671772492">Dihentikan</translation>
 <translation id="4808449224298348341">Tugas cetak <ph name="DOCUMENT_TITLE" /> dibatalkan</translation>
+<translation id="4832079907277790330">Pilih folder dalam apl Files...</translation>
 <translation id="4890353053343094602">Pilih kata laluan baharu secepat mungkin</translation>
 <translation id="4917889632206600977">Dihentikan - Kehabisan kertas</translation>
 <translation id="4932733599132424254">Tarikh</translation>
 <translation id="4985509611418653372">Jalankan</translation>
+<translation id="4991056862642197104">Letakkan dokumen anda dan klik Imbas untuk bermula</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> mengurus pengguna ini dan mungkin mengurus tetapan dan memantau aktiviti pengguna dari jauh.</translation>
 <translation id="520299634122159966">Tiada pengimbas tersedia</translation>
 <translation id="5212543919916444558">Saya tidak menemui apa-apa pada skrin anda yang boleh saya bantu.
@@ -120,6 +124,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Jenis fail</translation>
 <translation id="7561454561030345039">Tindakan ini diurus oleh pentadbir anda</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7690294790491645610">Sahkan kata laluan baharu</translation>
 <translation id="7805768142964895445">Status</translation>

@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Sluk</translation>
 <translation id="3008341117444806826">OPDATER</translation>
+<translation id="3009958530611748826">Vælg en mappe, du vil gemme i</translation>
 <translation id="3083667275341675831">Diagnosticering af forbindelse</translation>
 <translation id="3091839911843451378">Handlingen mislykkedes – Stoppede</translation>
 <translation id="3188257591659621405">Mine filer</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">Udskriftsjob</translation>
 <translation id="3527036260304016759">Handlingen mislykkedes – Ukendt fejl</translation>
 <translation id="360565022852130722">Wi-Fi-netværket er beskyttet med den svage protokol WEP 802.1x</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> anmeldelser)</translation>
 <translation id="3749289110408117711">Filnavn</translation>
 <translation id="38114475217616659">Ryd hele historikken</translation>
 <translation id="3820172043799983114">Ugyldig pinkode.</translation>
@@ -79,10 +81,12 @@
 <translation id="4731797938093519117">Forældreadgang</translation>
 <translation id="4773299976671772492">Stoppet</translation>
 <translation id="4808449224298348341">Udskriftsjobbet <ph name="DOCUMENT_TITLE" /> blev annulleret</translation>
+<translation id="4832079907277790330">Vælg mappe i appen Filer...</translation>
 <translation id="4890353053343094602">Vælg omgående en ny adgangskode</translation>
 <translation id="4917889632206600977">Stoppet – Papirbakken er tom</translation>
 <translation id="4932733599132424254">Dato</translation>
 <translation id="4985509611418653372">Kør</translation>
+<translation id="4991056862642197104">Indsæt dit dokument, og klik på Scan for at komme i gang</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> administrerer denne bruger, og vedkommende kan administrere indstillinger og holde øje med brugeraktivitet via fjernadgang.</translation>
 <translation id="520299634122159966">Der er ingen tilgængelige scannere</translation>
 <translation id="5212543919916444558">Jeg kan ikke finde noget på skærmen, jeg kan hjælpe med. Prøv at trykke på mikrofonen for at spørge mig om noget.</translation>
@@ -119,6 +123,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Filtype</translation>
 <translation id="7561454561030345039">Denne handling administreres af din administrator</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7690294790491645610">Bekræft den nye adgangskode</translation>
 <translation id="7805768142964895445">Status</translation>

@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">Колдонмолор</translation>
 <translation id="2872961005593481000">Жабуу</translation>
 <translation id="3008341117444806826">ЖАҢЫРТУУ</translation>
+<translation id="3009958530611748826">Скандалган нерселерди сактоо үчүн папка тандаңыз</translation>
 <translation id="3083667275341675831">Байланыштагы мүчүлүштүктөрдү аныктоо</translation>
 <translation id="3091839911843451378">Басылып чыгарылган жок - Принтер токтоп калды</translation>
 <translation id="3188257591659621405">Менин файлдарым</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">Басып чыгаруу тапшырмалары</translation>
 <translation id="3527036260304016759">Басылып чыгарылган жок - Белгисиз ката</translation>
 <translation id="360565022852130722">WiFi тармагынын WEP 802.1x протоколунун коопсуздугу начар</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> сын-пикир)</translation>
 <translation id="3749289110408117711">Файлдын аталышы</translation>
 <translation id="38114475217616659">Таржымалды толук тазалоо</translation>
 <translation id="3820172043799983114">PIN код жараксыз.</translation>
@@ -79,10 +81,12 @@
 <translation id="4731797938093519117">Ата-эненин кирүү уруксаты</translation>
 <translation id="4773299976671772492">Токтотулду</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> документин басып чыгаруу токтотулду</translation>
+<translation id="4832079907277790330">Files колдонмосунда папка тандоо...</translation>
 <translation id="4890353053343094602">Дароо жаңы сырсөз тандаңыз</translation>
 <translation id="4917889632206600977">Токтоду – Кагаз түгөнүп калды</translation>
 <translation id="4932733599132424254">Күнү</translation>
 <translation id="4985509611418653372">Иштетүү</translation>
+<translation id="4991056862642197104">Баштоо үчүн документиңизди коюп, "Скандоо" баскычын басыңыз</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> алыстан жөндөөлөрдү башкарып, колдонуучунун аракеттерин көзөмөлдөй алат.</translation>
 <translation id="520299634122159966">Жеткиликтүү сканерлер жок</translation>
 <translation id="5212543919916444558">Экраныңызда эч нерсе көрүнгөн жок.
@@ -120,6 +124,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Файлдын түрү</translation>
 <translation id="7561454561030345039">Бул аракетти администраторуңуз башкарат</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7690294790491645610">Жаңы сырсөздү ырастаңыз</translation>
 <translation id="7805768142964895445">Статусу</translation>

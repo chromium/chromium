@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">Εφαρμογές </translation>
 <translation id="2872961005593481000">Τερματισμός λειτουργίας</translation>
 <translation id="3008341117444806826">ΑΝΑΝΕΩΣΗ</translation>
+<translation id="3009958530611748826">Επιλέξτε έναν φάκελο στον οποίο θέλετε να γίνεται αποθήκευση.</translation>
 <translation id="3083667275341675831">Διαγνωστικά συνδεσιμότητας</translation>
 <translation id="3091839911843451378">Σφάλμα - Σταμάτησε</translation>
 <translation id="3188257591659621405">Τα αρχεία μου</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">Εργασίες εκτύπωσης</translation>
 <translation id="3527036260304016759">Σφάλμα - Άγνωστο σφάλμα</translation>
 <translation id="360565022852130722">Η ασφάλεια του δικτύου Wi-Fi βασίζεται σε αδύναμο πρωτόκολλο WEP 802.1x.</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> αξιολογήσεις)</translation>
 <translation id="3749289110408117711">Όνομα αρχείου</translation>
 <translation id="38114475217616659">Εκκαθάριση όλου του ιστορικού</translation>
 <translation id="3820172043799983114">Μη έγκυρο PIN.</translation>
@@ -79,10 +81,12 @@
 <translation id="4731797938093519117">Γονική πρόσβαση</translation>
 <translation id="4773299976671772492">Διακόπηκε</translation>
 <translation id="4808449224298348341">Ακυρώθηκε η εργασία εκτύπωσης <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4832079907277790330">Επιλογή φακέλου στην εφαρμογή Αρχεία…</translation>
 <translation id="4890353053343094602">Επιλέξτε άμεσα έναν νέο</translation>
 <translation id="4917889632206600977">Διακοπή - Τελείωσε το χαρτί</translation>
 <translation id="4932733599132424254">Ημερομηνία</translation>
 <translation id="4985509611418653372">Εκτέλεση</translation>
+<translation id="4991056862642197104">Τοποθετήστε το έγγραφό σας και κάντε κλικ στη Σάρωση για να ξεκινήσετε.</translation>
 <translation id="5094480857972195099">Ο τομέας <ph name="ENROLLMENT_DOMAIN" /> διαχειρίζεται αυτόν τον χρήστη και ενδέχεται να διαχειρίζεται απομακρυσμένα τις ρυθμίσεις και να παρακολουθεί τη δραστηριότητα του χρήστη.</translation>
 <translation id="520299634122159966">Δεν υπάρχουν διαθέσιμοι σαρωτές.</translation>
 <translation id="5212543919916444558">Δεν βρέθηκε κάτι με το οποίο να μπορώ να σας βοηθήσω στην οθόνη σας.
@@ -120,6 +124,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Τύπος αρχείου</translation>
 <translation id="7561454561030345039">Η διαχείριση αυτής της ενέργειας γίνεται από τον διαχειριστή σας.</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7690294790491645610">Επιβεβαίωση νέου κωδικού πρόσβασης</translation>
 <translation id="7805768142964895445">Κατάσταση</translation>

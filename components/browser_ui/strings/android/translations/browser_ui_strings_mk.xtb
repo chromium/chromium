@@ -17,6 +17,7 @@
 <translation id="1369915414381695676">Локацијата <ph name="SITE_NAME" /> е додадена</translation>
 <translation id="1383876407941801731">Барај</translation>
 <translation id="1384959399684842514">Преземањето е паузирано</translation>
+<translation id="1415402041810619267">URL-адресата е скратена</translation>
 <translation id="1431402976894535801">Не дозволувај сајтовите да знаат дали сум присутен</translation>
 <translation id="1446450296470737166">Дозволи контрола над MIDI-уреди</translation>
 <translation id="1509960214886564027">Функциите на многу сајтови може да не функционираат</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">Дозволи сајтовите да пуштаат заштитени содржини</translation>
 <translation id="4468959413250150279">Исклучете го звукот за одреден сајт.</translation>
 <translation id="4479647676395637221">Прво прашај пред да дозволиш сајтовите да ја користат камерата (се препорачува)</translation>
+<translation id="4505788138578415521">URL-адресата е проширена</translation>
 <translation id="4534723447064627427">За да овозможите <ph name="APP_NAME" /> да пристапува до вашиот микрофон, вклучете ја дозволата за микрофонот и во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="4570913071927164677">Детали</translation>
 <translation id="4645575059429386691">Управувано од вашиот родител</translation>

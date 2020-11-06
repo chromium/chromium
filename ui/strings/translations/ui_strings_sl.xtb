@@ -151,6 +151,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktivna danes}=1{Aktivna pred 1 dnevom}one{Aktivna pred # dnevom}two{Aktivna pred # dnevoma}few{Aktivna pred # dnevi}other{Aktivna pred # dnevi}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 dan in }one{# dan in }two{# dneva in }few{# dni in }other{# dni in }}</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5843690142429128814">Slika.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{čez 1 l}one{čez # l}two{čez # l}few{čez # l}other{čez # l}}</translation>
 <translation id="588258955323874662">Celozaslonsko</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{Še 1 s}one{Še # s}two{Še # s}few{Še # s}other{Še # s}}</translation>
@@ -191,6 +192,7 @@
 <translation id="6845533974506654842">pritisni</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{Še 1 h}one{Še # h}two{Še # h}few{Še # h}other{Še # h}}</translation>
 <translation id="688711909580084195">Spletna stran brez naslova</translation>
+<translation id="6902419395050653510">Vsebina HTML.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{Še 1 leto}one{Še # leto}two{Še # leti}few{Še # leta}other{Še # let}}</translation>
 <translation id="6945221475159498467">Izberi</translation>

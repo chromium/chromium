@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Αυτόν το μήνα</translation>
 <translation id="1637811476055996098">Επιλογή αρχείων</translation>
 <translation id="1650423536718072820">ελκυστική φράση</translation>
+<translation id="1681022320378710418">τρέχουσα ώρα</translation>
 <translation id="1727886345390570319">απόκρυψη μενού υποτίτλων</translation>
 <translation id="1729654308190250600">Καταχωρίστε μια διεύθυνση ηλεκτρονικού ταχυδρομείου.</translation>
 <translation id="1758486001363313524">Άλλες…</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Εισαγάγετε μια διεύθυνση URL.</translation>
 <translation id="3175736971608411871">χρονόμετρο</translation>
 <translation id="3199563858620722075">σύνθετο πλαίσιο</translation>
+<translation id="3220661731597678625">τρέχον βήμα</translation>
 <translation id="3329013043687509092">Κορεσμός</translation>
 <translation id="3450233048674729344">Η τιμή πρέπει να είναι μικρότερη ή ίση του <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">ορισμός</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">βίντεο</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4812940957355064477">Εισαγάγετε έναν αριθμό.</translation>
+<translation id="4912200001568447310">τρέχον στοιχείο</translation>
 <translation id="4912536737030637138">βιβλιογραφική καταχώριση</translation>
 <translation id="4915360478455618802">Εμφάνιση εργαλείου επιλογής ώρας</translation>
 <translation id="492244087561876220">σχόλιο</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Δεν είναι δυνατή η αναπαραγωγή μέσων.</translation>
 <translation id="537648784377940524">Η ελάχιστη ημερομηνία (<ph name="MIN_DATE_OR_TIME" />) πρέπει να είναι προγενέστερη της μέγιστης ημερομηνίας (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">αριθμός</translation>
+<translation id="5425179576310518467">τρέχουσα ημερομηνία</translation>
 <translation id="5453733299334684579">στοιχείο δέντρου</translation>
 <translation id="5466621249238537318">Επιλέξτε ένα ή περισσότερα αρχεία.</translation>
 <translation id="5468998798572797635">έξοδος από πλήρη οθόνη</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">μετρητής</translation>
 <translation id="6166809985690652833">επίλογος</translation>
 <translation id="6209276755895393898">Φαίνεται πως είναι: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">τρέχουσα σελίδα</translation>
 <translation id="6213469881011901533">γλωσσάρι</translation>
 <translation id="6281588256137006900">Φωτεινότητα</translation>
 <translation id="6281763101136022427">URL</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Αυξήστε την έκταση αυτού του κειμένου στους <ph name="MIN_CHARACTERS" /> χαρακτήρες ή περισσότερο (αυτήν τη στιγμή χρησιμοποιείτε 1 χαρακτήρα).</translation>
 <translation id="7034405885550056553">πρόταση</translation>
 <translation id="709897737746224366">Αντιστοιχίστε τη ζητούμενη μορφή.</translation>
+<translation id="7102274145889307184">τρέχουσα τοποθεσία</translation>
 <translation id="7118469954320184356">Δεν υπάρχει διαθέσιμη περιγραφή.</translation>
 <translation id="7139483182332611405">πρόλογος</translation>
 <translation id="7214187073215825913">πληροφορίες για το περιεχόμενο</translation>

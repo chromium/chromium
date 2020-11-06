@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">W tym miesiącu</translation>
 <translation id="1637811476055996098">Wybierz pliki</translation>
 <translation id="1650423536718072820">cytat</translation>
+<translation id="1681022320378710418">bieżąca godzina</translation>
 <translation id="1727886345390570319">ukrywanie menu napisów</translation>
 <translation id="1729654308190250600">Podaj adres e-mail.</translation>
 <translation id="1758486001363313524">Inny...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Wprowadź adres URL.</translation>
 <translation id="3175736971608411871">licznik czasu</translation>
 <translation id="3199563858620722075">pole złożone</translation>
+<translation id="3220661731597678625">bieżący krok</translation>
 <translation id="3329013043687509092">Nasycenie</translation>
 <translation id="3450233048674729344">Wartość nie może być większa niż <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">definicja</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">film</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4812940957355064477">Wpisz liczbę.</translation>
+<translation id="4912200001568447310">bieżący element</translation>
 <translation id="4912536737030637138">pozycja bibliograficzna</translation>
 <translation id="4915360478455618802">Pokaż selektor godziny</translation>
 <translation id="492244087561876220">komentarz</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Nie można odtworzyć multimediów.</translation>
 <translation id="537648784377940524">Data minimalna (<ph name="MIN_DATE_OR_TIME" />) musi przypadać przed datą maksymalną (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">figura</translation>
+<translation id="5425179576310518467">bieżąca data</translation>
 <translation id="5453733299334684579">element drzewa</translation>
 <translation id="5466621249238537318">Wybierz jeden lub kilka plików.</translation>
 <translation id="5468998798572797635">zamknij pełny ekran</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">miernik</translation>
 <translation id="6166809985690652833">posłowie</translation>
 <translation id="6209276755895393898">Wygląda jak: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">bieżąca strona</translation>
 <translation id="6213469881011901533">słownik</translation>
 <translation id="6281588256137006900">Jasność</translation>
 <translation id="6281763101136022427">url</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Wydłuż ten tekst co najmniej do <ph name="MIN_CHARACTERS" /> znaków (teraz używasz jednego znaku).</translation>
 <translation id="7034405885550056553">sugestia</translation>
 <translation id="709897737746224366">Podaj wartość w wymaganym formacie.</translation>
+<translation id="7102274145889307184">bieżąca lokalizacja</translation>
 <translation id="7118469954320184356">Brak opisu.</translation>
 <translation id="7139483182332611405">wstęp</translation>
 <translation id="7214187073215825913">informacje o treści</translation>

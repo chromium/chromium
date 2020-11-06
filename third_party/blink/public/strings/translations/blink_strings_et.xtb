@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">See kuu</translation>
 <translation id="1637811476055996098">Vali failid</translation>
 <translation id="1650423536718072820">tsitaat</translation>
+<translation id="1681022320378710418">praegune kellaaeg</translation>
 <translation id="1727886345390570319">peida subtiitrite menüü</translation>
 <translation id="1729654308190250600">Sisestage mittetühi e-posti aadress.</translation>
 <translation id="1758486001363313524">Muu ...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Sisestage URL.</translation>
 <translation id="3175736971608411871">taimer</translation>
 <translation id="3199563858620722075">liitkast</translation>
+<translation id="3220661731597678625">praegune toiming</translation>
 <translation id="3329013043687509092">Küllastus</translation>
 <translation id="3450233048674729344">Väärtus peab olema väiksem või võrdne <ph name="MAXIMUM" />-ga.</translation>
 <translation id="3486220673238053218">definitsioon</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="479989351350248267">otsing</translation>
 <translation id="4812940957355064477">Sisestage arv.</translation>
+<translation id="4912200001568447310">praegune üksus</translation>
 <translation id="4912536737030637138">bibliograafia kirje</translation>
 <translation id="4915360478455618802">Kuva kellaaja valija</translation>
 <translation id="492244087561876220">kommentaar</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Meediasisu ei saa esitada.</translation>
 <translation id="537648784377940524">Minimaalne kuupäev (<ph name="MIN_DATE_OR_TIME" />) peab olema enne maksimaalset kuupäeva (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">joonis</translation>
+<translation id="5425179576310518467">praegune kuupäev</translation>
 <translation id="5453733299334684579">puuüksus</translation>
 <translation id="5466621249238537318">Valige üks või mitu faili.</translation>
 <translation id="5468998798572797635">täisekraanilt väljumine</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">mõõdik</translation>
 <translation id="6166809985690652833">järelsõna</translation>
 <translation id="6209276755895393898">Näib olevat: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">praegune leht</translation>
 <translation id="6213469881011901533">sõnastik</translation>
 <translation id="6281588256137006900">Heledus</translation>
 <translation id="6281763101136022427">url</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Pikendage teksti vähemalt <ph name="MIN_CHARACTERS" /> tähemärgini (kasutate praegu ühte tähemärki).</translation>
 <translation id="7034405885550056553">soovitus</translation>
 <translation id="709897737746224366">Vastendage nõutav vorming.</translation>
+<translation id="7102274145889307184">praegune asukoht</translation>
 <translation id="7118469954320184356">Kirjeldust pole.</translation>
 <translation id="7139483182332611405">eessõna</translation>
 <translation id="7214187073215825913">sisu teave</translation>

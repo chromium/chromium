@@ -314,6 +314,7 @@
 <translation id="3285080554353377245">Chrome භාවිත කරන ආකාරය පිළිබඳ වීඩියෝ</translation>
 <translation id="3288003805934695103">පිටුව නැවත පූරණය කරමින්</translation>
 <translation id="32895400574683172">දැනුම්දීම්වලට ඉඩ දේ</translation>
+<translation id="3290991969712132877">ඉක්මණින් මෙහි පැමිණීමට, තවත් විකල්ප බොත්තමෙන් මෙම පිටුව ඔබගේ මුල් තිරයට එක් කරන්න</translation>
 <translation id="3295530008794733555">වේගයෙන් බ්‍රවුස් කරන්න. දත්ත අඩුවෙන් භාවිතා කරන්න.</translation>
 <translation id="3298243779924642547">සැහැල්ලු</translation>
 <translation id="3303414029551471755">අන්තර්ගතය බාගැනීම අරඹන්නද?</translation>
@@ -470,6 +471,7 @@
 <translation id="4532845899244822526">ෆෝල්ඩරය තෝරන්න</translation>
 <translation id="4538018662093857852">සැහැල්ලු ප්‍රකාරය ක්‍රියාත්මක කරන්න</translation>
 <translation id="4550003330909367850">ඔබේ මුරපදය මෙහි බැලීමට හෝ පිටපත් කිරීම සඳහා, මෙම උපාංගයේ තිර අගුල සකසන්න.</translation>
+<translation id="4557685098773234337">ඉක්මණින් මෙහි පැමිණීමට, මෙම පිටුව ඔබගේ මුල් තිරයට එක් කරන්න</translation>
 <translation id="4558311620361989323">වෙබ් පිටු කෙටි මං</translation>
 <translation id="4561979708150884304">සබැඳුමක් නැත</translation>
 <translation id="4565377596337484307">මුරපදය සඟවන්න</translation>
@@ -499,6 +501,7 @@
 <translation id="4720982865791209136">Chrome වැඩි දියුණුවට උදවු කරන්න. <ph name="BEGIN_LINK" />සමීක්ෂණය ගන්න<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">ඔබගේ ඉහළම අඩවි බලන්න</translation>
 <translation id="4732120983431207637">එතීම ලිහන්නා</translation>
+<translation id="4732693703583195378">ඔබට වඩාත් පහසුවෙන් මෙහි පැමිණිය හැකි ලෙස මෙම අඩවිය ඔබගේ ටැබ්ලටයේ මුල් තිරයට එක් කරන්න</translation>
 <translation id="4738836084190194332">අවසන් වරට සමමුහුර්ත කළේ: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">නව ටැබයක් විවෘත කරන්න</translation>
 <translation id="4759238208242260848">බාගැනීම්</translation>
@@ -536,6 +539,7 @@
 <translation id="4925120120285606924"><ph name="CURRENT_DATE_ISO" /> තිර රුව</translation>
 <translation id="49268022542405662">ඔබේ මුරපද පාඨ ගොනුවක් ලෙස නිර්යාත කිරීම සහ බාගැනීම සිදු වේ. ඒවා ගමනාන්ත ෆෝල්ඩරයට ප්‍රවේශය ඇති ඕනෑම කෙනෙකුට සහ ඕනෑම යෙදුමකට දෘශ්‍යමාන වෙයි.</translation>
 <translation id="4932247056774066048">ඔබ <ph name="DOMAIN_NAME" /> විසින් කළමනා කරනු ලබන ගිණුමකින් වැරෙන බැවින්, ඔබේ Chrome දත්ත මෙම උපාංගයෙන් මකනු ලැබේ. එය ඔබේ Google ගිණුම තුළ පවතියි.</translation>
+<translation id="4936039914467572121">මෙම අඩවියට ඉක්මනින් එන්න</translation>
 <translation id="4943703118917034429">අතථ්‍ය යථාර්ථය</translation>
 <translation id="4943872375798546930">ප්‍රතිඵල නැත</translation>
 <translation id="4961107849584082341">මෙම පිටුව ඕනෑම භාෂාවකට පරිවර්තන කරන්න</translation>
@@ -647,6 +651,7 @@
 <translation id="5763382633136178763">Incognito ටැබ</translation>
 <translation id="5763514718066511291">මෙම යෙදුම සඳහා URL පිටපත් කිරීමට තට්ටු කරන්න</translation>
 <translation id="5765780083710877561">විස්තරය:</translation>
+<translation id="5767013862801005129"><ph name="TAB_TITLE" />, ටැබය ප්‍රතිසාධනය කරන ලදි</translation>
 <translation id="5776970333778123608">වැදගත් නොවන දත්ත</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> න් <ph name="SPACE_USED" /> භාවිතා කරමින්</translation>
 <translation id="5795872532621730126">සොයන්න සහ බ්‍රවස් කරන්න</translation>
@@ -952,6 +957,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">නව කතන්දර සඳහා ආපසු පරීක්ෂා කරන්න</translation>
 <translation id="7791543448312431591">එක් කරන්න</translation>
+<translation id="7798392620021911922">ටැබ <ph name="TAB_COUNT" />ක් ප්‍රතිසාධනය කරන ලදි</translation>
 <translation id="780301667611848630">එපා, ස්තූතියි</translation>
 <translation id="7810647596859435254">විවෘත කරන්න...</translation>
 <translation id="7821588508402923572">ඔබගේ දත්ත සුරැකුම් මෙහි දිස් වනු ඇත</translation>
@@ -1137,6 +1143,7 @@
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">මූලිකය පෙන්වන්න</translation>
 <translation id="9148126808321036104">නැවත පිවිසෙන්න</translation>
+<translation id="9149286894143103695">ඔබට වඩාත් පහසුවෙන් මෙහි පැමිණිය හැකි ලෙස මෙම අඩවිය ඔබගේ දුරකථනයේ මුල් තිරයට එක් කරන්න</translation>
 <translation id="9155898266292537608">වචනයක් මත ඉක්මන් තට්ටු කිරීමකින් ඔබට සොයා ගත හැකිය</translation>
 <translation id="9169507124922466868">සංචලන ඉතිහාසය අඩක් විවෘතයි</translation>
 <translation id="9191031968346938109">වෙත එක් කරන්න…</translation>

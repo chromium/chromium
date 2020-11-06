@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Encerrar</translation>
 <translation id="3008341117444806826">ATUALIZAR</translation>
+<translation id="3009958530611748826">Selecione uma pasta onde guardar</translation>
 <translation id="3083667275341675831">Diagnóstico de conetividade</translation>
 <translation id="3091839911843451378">Falha – Parou</translation>
 <translation id="3188257591659621405">Os meus ficheiros</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">Tarefas de Impressão</translation>
 <translation id="3527036260304016759">Falha – Erro desconhecido</translation>
 <translation id="360565022852130722">A rede WiFi está protegida com um protocolo pouco seguro WEP 802.1x.</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> opiniões)</translation>
 <translation id="3749289110408117711">Nome do ficheiro</translation>
 <translation id="38114475217616659">Limpar todo o histórico</translation>
 <translation id="3820172043799983114">PIN inválido.</translation>
@@ -79,10 +81,12 @@
 <translation id="4731797938093519117">Acesso parental</translation>
 <translation id="4773299976671772492">Parado</translation>
 <translation id="4808449224298348341">Foi cancelada a tarefa de impressão de <ph name="DOCUMENT_TITLE" />.</translation>
+<translation id="4832079907277790330">Selecionar pasta na app Files…</translation>
 <translation id="4890353053343094602">Escolha uma nova de imediato</translation>
 <translation id="4917889632206600977">Parada – Sem papel</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Executar</translation>
+<translation id="4991056862642197104">Posicione o documento e clique em Analisar para começar.</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> gere este utilizador e pode gerir remotamente as definições e monitorizar a atividade do utilizador.</translation>
 <translation id="520299634122159966">Nenhum leitor disponível.</translation>
 <translation id="5212543919916444558">Não consigo encontrar nada no ecrã com que possa ajudar.
@@ -120,6 +124,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tipo de ficheiro</translation>
 <translation id="7561454561030345039">Esta ação é gerida pelo seu administrador.</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7690294790491645610">Confirmar a nova palavra-passe</translation>
 <translation id="7805768142964895445">Estado</translation>

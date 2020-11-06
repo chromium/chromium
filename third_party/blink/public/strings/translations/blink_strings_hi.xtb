@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">इस माह</translation>
 <translation id="1637811476055996098">फ़ाइलें चुनें</translation>
 <translation id="1650423536718072820">पुलकोट</translation>
+<translation id="1681022320378710418">मौजूदा समय</translation>
 <translation id="1727886345390570319">बंद कैप्शन मेन्यू छिपाएं</translation>
 <translation id="1729654308190250600">कृपया गैर-खाली ईमेल पता डालें.</translation>
 <translation id="1758486001363313524">अन्य...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">कृपया यूआरएल डालें.</translation>
 <translation id="3175736971608411871">टाइमर</translation>
 <translation id="3199563858620722075">कॉम्बो बॉक्स</translation>
+<translation id="3220661731597678625">मौजूदा चरण</translation>
 <translation id="3329013043687509092">संतृप्तता</translation>
 <translation id="3450233048674729344">मान <ph name="MAXIMUM" /> से कम या इसके बराबर होना चाहिए.</translation>
 <translation id="3486220673238053218">परिभाषा</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">वीडियो</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4812940957355064477">कृपया कोई संख्या डालें.</translation>
+<translation id="4912200001568447310">मौजूदा आइटम</translation>
 <translation id="4912536737030637138">संदर्भ सूची प्रविष्टि</translation>
 <translation id="4915360478455618802">समय चुनने वाला टूल दिखाएं</translation>
 <translation id="492244087561876220">टिप्पणी</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">मीडिया नहीं चला पा रहे हैं.</translation>
 <translation id="537648784377940524">शुरुआती तारीख (<ph name="MIN_DATE_OR_TIME" />), आखिरी तारीख (<ph name="MAX_DATE_OR_TIME" />) से पहले की होनी चाहिए.</translation>
 <translation id="5406322316791861025">आकृति</translation>
+<translation id="5425179576310518467">मौजूदा तारीख</translation>
 <translation id="5453733299334684579">ट्री आइटम</translation>
 <translation id="5466621249238537318">कृपया एक या ज़्यादा फ़ाइल को चुनें.</translation>
 <translation id="5468998798572797635">फ़ुल स्क्रीन से बाहर निकलें</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">मीटर</translation>
 <translation id="6166809985690652833">उपसंहार</translation>
 <translation id="6209276755895393898">यह इमेज इस बारे में लगती है: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">मौजूदा पेज</translation>
 <translation id="6213469881011901533">शब्दावली</translation>
 <translation id="6281588256137006900">रंगों का हल्कापन</translation>
 <translation id="6281763101136022427">यूआरएल</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">कृपया इस लेख को <ph name="MIN_CHARACTERS" /> या उससे ज़्यादा वर्णों तक बढ़ाएं (आप इस समय 1 वर्ण का उपयोग कर रहे हैं).</translation>
 <translation id="7034405885550056553">सुझाव</translation>
 <translation id="709897737746224366">कृपया अनुरोधित प्रारूप का मिलान करें.</translation>
+<translation id="7102274145889307184">मौजूदा जगह की जानकारी</translation>
 <translation id="7118469954320184356">कोई जानकारी मौजूद नहीं है.</translation>
 <translation id="7139483182332611405">आमुख</translation>
 <translation id="7214187073215825913">सामग्री की जानकारी</translation>

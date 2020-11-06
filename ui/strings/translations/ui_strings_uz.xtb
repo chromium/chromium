@@ -152,6 +152,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{Bugun onlayn edi}=1{1 kun oldin onlayn edi}other{# kun oldin onlayn edi}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 kun va }other{# kun va }}</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5843690142429128814">Rasm.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{1 yildan keyin}other{# yildan keyin}}</translation>
 <translation id="588258955323874662">Butun ekran</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 soniya qoldi}other{# soniya qoldi}}</translation>
@@ -192,6 +193,7 @@
 <translation id="6845533974506654842">bosish</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 soat qoldi}other{# soat qoldi}}</translation>
 <translation id="688711909580084195">Nomlanmagan veb-sahifa</translation>
+<translation id="6902419395050653510">HTML kontent.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{1 yil qoldi}other{# yil qoldi}}</translation>
 <translation id="6945221475159498467">Tanlash</translation>

@@ -8,6 +8,7 @@
 <translation id="1036672894875463507">Јас сум вашиот „Помошник на Google“, тука сум да ви помагам во текот на денот!
 Еве неколку работи што може да ги пробате за почеток.</translation>
 <translation id="1037492556044956303">Додаден е <ph name="DEVICE_NAME" /></translation>
+<translation id="1047773237499189053">Достапна е нова функција. Користете го копчето со стрелка нагоре за да дознаете повеќе.</translation>
 <translation id="1056775291175587022">Нема мрежи</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Мобилен уред: <ph name="ADDRESS" /></translation>
@@ -20,6 +21,7 @@
 <translation id="1153356358378277386">Спарени уреди</translation>
 <translation id="1175572348579024023">Лизгај</translation>
 <translation id="1178581264944972037">Пауза</translation>
+<translation id="118532027333893379">Допрете каде било за да го снимите целиот екран</translation>
 <translation id="1190609913194133056">Центар за известување</translation>
 <translation id="1195412055398077112">прескенирање</translation>
 <translation id="119944043368869598">Избриши ги сите</translation>
@@ -125,6 +127,7 @@
 <translation id="2127372758936585790">Полнач со ниско напојување</translation>
 <translation id="2132302418721800944">Снимање цел екран</translation>
 <translation id="2135456203358955318">Закотвена лупа</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: Обиди се пак</translation>
 <translation id="2208323208084708176">Режим на единствена работна површина</translation>
 <translation id="2220572644011485463">PIN или лозинка</translation>
 <translation id="2222338659135520253">Потребно е најавување</translation>
@@ -136,6 +139,7 @@
 <translation id="229397294990920565">Мобилниот интернет се исклучува...</translation>
 <translation id="2295777434187870477">Микрофонот е вклучен. Ако смените, ќе се исклучи звукот на влезот.</translation>
 <translation id="2298170939937364391">Овозможена е лупата за цел екран. Притиснете Ctrl+Search+M повторно за да ја исклучите.</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Кликнете на дијалогот за да ги видите резултатите во „Помошникот“.</translation>
 <translation id="2302092602801625023">Оваа сметка е управувана од Family Link</translation>
 <translation id="2303600792989757991">Префрли преглед во прозорец</translation>
 <translation id="2322173485024759474">Назад за една буква</translation>
@@ -163,6 +167,7 @@
 <translation id="2484513351006226581">Притиснете <ph name="KEYBOARD_SHORTCUT" /> за да го префрлите распоредот на тастатурата.</translation>
 <translation id="2501920221385095727">Лепливи копчиња</translation>
 <translation id="2509468283778169019">Вклучено е CAPS LOCK</translation>
+<translation id="2536159006530886390">Не може да се поврзе на интернет.</translation>
 <translation id="2542089167727451762">Допрете ја сликата на профилот</translation>
 <translation id="255671100581129685">„Помошникот на Google“ не е достапен во јавна сесија.</translation>
 <translation id="256712445991462162">закотвена лупа</translation>
@@ -184,6 +189,7 @@
 <translation id="2727977024730340865">Приклучен на полнач со мало напојување. Полнењето на батеријата може да не е веродостојно.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">Сега ќе бидете одјавени.</translation>
+<translation id="28232023175184696">Не може да се поврзе на интернет. Кликнете за повторен обид.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> не поддржува <ph name="SPECIFIED_RESOLUTION" />. Резолуцијата е сменета во <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Полица</translation>
 <translation id="2841907151129139818">Се префрливте во режим на таблет</translation>
@@ -325,6 +331,7 @@
 <translation id="4129129681837227511">За да гледате известувања на заклучениот екран, отклучете за да ја промените поставката</translation>
 <translation id="4146833061457621061">Пушти музика</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> е управуван од <ph name="DOMAIN" /></translation>
+<translation id="415719264485676252">Снимањето на екранот е блокирано</translation>
 <translation id="4157822100366708405">Поставки за темна тема</translation>
 <translation id="4181841719683918333">Јазици</translation>
 <translation id="4195877955194704651">Копче за автоматско кликнување</translation>
@@ -393,6 +400,7 @@
 <translation id="4710243778082831592">Поставки за IME</translation>
 <translation id="4731797938093519117">Пристап за родители</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
+<translation id="4744944742468440486">Информации поврзани со вашиот избор</translation>
 <translation id="4759238208242260848">Преземања</translation>
 <translation id="4774338217796918551">Вратете се утре во <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Лозинка за <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -512,6 +520,7 @@
 <translation id="595202126637698455">Овозможено е следење на изведбата</translation>
 <translation id="5957083217255311415">Мобилниот интернет е исклучен.</translation>
 <translation id="5958529069007801266">Надгледуван корисник</translation>
+<translation id="5960825221082587934">Дозволете „Помошникот“ да ви прикажува информации, како дефиниција, превод или конверзија на единиците за вашиот избор.</translation>
 <translation id="5977415296283489383">Слушалки</translation>
 <translation id="5978382165065462689">Споделување контрола на вашиот екран преку далечинска помош.</translation>
 <translation id="5980301590375426705">Излези од гостин</translation>
@@ -595,6 +604,7 @@
 <translation id="6777216307882431711">Се напојуваат поврзани USB-C уреди</translation>
 <translation id="6790428901817661496">Репродуцирај</translation>
 <translation id="6803622936009808957">Не можеа да се отсликаат екрани затоа што не се пронајдени поддржани резолуции. Наместо тоа, влеговме во проширен десктоп.</translation>
+<translation id="6816797338148849397">Достапни се информации поврзани со вашиот избор. Користете го копчето со стрелка нагоре за да пристапите.</translation>
 <translation id="6818242057446442178">Назад за еден збор</translation>
 <translation id="6820676911989879663">Направете пауза!</translation>
 <translation id="6850010208275816200">Моменталната апликација е на цел екран. Ако апликацијата ви ја побара лозинката, прво излезете од цел екран.</translation>
@@ -658,6 +668,7 @@
 <translation id="7497767806359279797">Изберете јазик и тастатура</translation>
 <translation id="7526573455193969409">Мрежата можеби се следи</translation>
 <translation id="7536035074519304529">IP адреса: <ph name="ADDRESS" /></translation>
+<translation id="7542906349682405018">Администраторот го оневозможил снимањето на содржините на вашиот екран.</translation>
 <translation id="7548434653388805669">Време за спиење</translation>
 <translation id="7551643184018910560">Прикачи на полицата</translation>
 <translation id="7561982940498449837">Затвори го менито</translation>
@@ -785,6 +796,7 @@
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Поврзан е полнач со ниско напојување</translation>
 <translation id="8683506306463609433">Следењето на изведбата е активно</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Користете го копчето со стрелка налево или со стрелка надесно за да управувате со функцијава.</translation>
 <translation id="8712637175834984815">Сфатив</translation>
 <translation id="8721053961083920564">Вклучување/исклучување звук. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">Можеби се обидува да ви ги украде ударите на тастатурата</translation>
@@ -805,6 +817,7 @@
 <translation id="8874184842967597500">Не е поврзано</translation>
 <translation id="8877788021141246043">Потсетник</translation>
 <translation id="8878886163241303700">Проширување екран</translation>
+<translation id="8883473964424809116">Кликнете за да ги отворите поставките за „Помошникот на Google“.</translation>
 <translation id="890616557918890486">Промени го изворот</translation>
 <translation id="8909138438987180327">Батеријата е на <ph name="PERCENTAGE" /> %.</translation>
 <translation id="8913384980486163186">Тематски (стандарден)</translation>

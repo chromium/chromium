@@ -152,6 +152,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktif hari ini}=1{Aktif 1 hari yang lalu}other{Aktif # hari yang lalu}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 hari dan }other{# hari dan }}</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5843690142429128814">Imej.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{dalam 1t}other{dalam #t}}</translation>
 <translation id="588258955323874662">Skrin penuh</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 saat lagi}other{# saat lagi}}</translation>
@@ -192,6 +193,7 @@
 <translation id="6845533974506654842">tekan</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 jam lagi}other{# jam lagi}}</translation>
 <translation id="688711909580084195">Laman Web Tidak Bertajuk</translation>
+<translation id="6902419395050653510">Kandungan HTML.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{Berbaki 1 tahun}other{Berbaki # tahun}}</translation>
 <translation id="6945221475159498467">Pilih</translation>

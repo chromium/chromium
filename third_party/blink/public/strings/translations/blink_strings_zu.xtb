@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Le nyanga</translation>
 <translation id="1637811476055996098">Khetha amafayela</translation>
 <translation id="1650423536718072820">i-pullquote</translation>
+<translation id="1681022320378710418">isikhathi samanje</translation>
 <translation id="1727886345390570319">fihla imenyu yamazwibela avaliwe</translation>
 <translation id="1729654308190250600">Sicela ufake ikheli le imeyili elinokuthile.</translation>
 <translation id="1758486001363313524">Okunye...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Sicela ufake i-URL.</translation>
 <translation id="3175736971608411871">isibali sesikhathi</translation>
 <translation id="3199563858620722075">ibhokisi lekhombo</translation>
+<translation id="3220661731597678625">isinyathelo samanje</translation>
 <translation id="3329013043687509092">Gcwalisa isikhala</translation>
 <translation id="3450233048674729344">Inani kumele libe ngaphansi noma lilingane nokungu-<ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">incazelo</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">ividiyo</translation>
 <translation id="479989351350248267">sesha</translation>
 <translation id="4812940957355064477">Sicela ufake inombolo.</translation>
+<translation id="4912200001568447310">into yamanje</translation>
 <translation id="4912536737030637138">ukufakwa kwe-bibliography</translation>
 <translation id="4915360478455618802">Bonisa isikhi sesikhathi</translation>
 <translation id="492244087561876220">amazwana</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Ayikwazi ukudlala imidiya.</translation>
 <translation id="537648784377940524">Idethi encane (<ph name="MIN_DATE_OR_TIME" />) kumele ifike ngaphambi kwedethi enkulu (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">izibalo</translation>
+<translation id="5425179576310518467">idethi yamanje</translation>
 <translation id="5453733299334684579">into yesihlahla</translation>
 <translation id="5466621249238537318">Sicela ukhethe ifayela elilodwa noma amaningi.</translation>
 <translation id="5468998798572797635">phuma kusikrini esigcwele</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">imitha</translation>
 <translation id="6166809985690652833">amazwi angemuva</translation>
 <translation id="6209276755895393898">Kubonakala kuyilokhu: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">ikhasi lamanje</translation>
 <translation id="6213469881011901533">iglosari</translation>
 <translation id="6281588256137006900">Ukukhanya</translation>
 <translation id="6281763101136022427">i-url</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Sicela welule lo mbhalo kuya kuzinhlamvu ezingu-<ph name="MIN_CHARACTERS" /> noma ngaphezulu (okwamanje usebenzisa uhlamvu olungu1.</translation>
 <translation id="7034405885550056553">isiphakamiso</translation>
 <translation id="709897737746224366">Sicela ufanise ifomethi eceliwe.</translation>
+<translation id="7102274145889307184">indawo yamanje</translation>
 <translation id="7118469954320184356">Ayikho incazelo ekhona.</translation>
 <translation id="7139483182332611405">isingeniso</translation>
 <translation id="7214187073215825913">ulwazi lokuqukethwe</translation>

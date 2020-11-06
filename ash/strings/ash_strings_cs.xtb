@@ -8,6 +8,7 @@
 <translation id="1036672894875463507">Jsem váš Asistent Google a můžu vám celý den pomáhat!
 Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1037492556044956303">Bylo přidáno zařízení <ph name="DEVICE_NAME" /></translation>
+<translation id="1047773237499189053">K dispozici je nová funkce, další informace zobrazíte šipkou nahoru.</translation>
 <translation id="1056775291175587022">Žádné sítě</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mobilní telefon: <ph name="ADDRESS" /></translation>
@@ -20,6 +21,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1153356358378277386">Spárovaná zařízení</translation>
 <translation id="1175572348579024023">Posunout</translation>
 <translation id="1178581264944972037">Pozastavit</translation>
+<translation id="118532027333893379">Klepnutím kamkoliv pořídíte snímek celé obrazovky</translation>
 <translation id="1190609913194133056">Centrum oznámení</translation>
 <translation id="1195412055398077112">přesah obrazu</translation>
 <translation id="119944043368869598">Vymazat vše</translation>
@@ -125,6 +127,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2127372758936585790">Nabíječka má příliš nízký výkon</translation>
 <translation id="2132302418721800944">Zaznamenat celou obrazovku</translation>
 <translation id="2135456203358955318">Zabudovaná lupa</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: Zkusit znovu</translation>
 <translation id="2208323208084708176">Jednotný režim klasické plochy</translation>
 <translation id="2220572644011485463">PIN nebo heslo</translation>
 <translation id="2222338659135520253">Je vyžadováno přihlášení</translation>
@@ -136,6 +139,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="229397294990920565">Vypínání mobilních dat…</translation>
 <translation id="2295777434187870477">Mikrofon je zapnutý, přepnutím ho ztlumíte.</translation>
 <translation id="2298170939937364391">Je zapnutá lupa celé obrazovky. Vypnete ji opětovným stisknutím kombinace kláves Ctrl+Hledat+M.</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Kliknutím na dialogové okno zobrazíte výsledek v Asistentovi.</translation>
 <translation id="2302092602801625023">Tento účet spravuje služba Family Link</translation>
 <translation id="2303600792989757991">Přepnutí přehledu okna</translation>
 <translation id="2322173485024759474">Zpět o písmeno</translation>
@@ -163,6 +167,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2484513351006226581">Rozložení klávesnice změníte stisknutím kláves <ph name="KEYBOARD_SHORTCUT" /></translation>
 <translation id="2501920221385095727">Jedním prstem</translation>
 <translation id="2509468283778169019">CAPS LOCK je zapnutý</translation>
+<translation id="2536159006530886390">Nelze se připojit k internetu.</translation>
 <translation id="2542089167727451762">Klepněte na profilovou fotku</translation>
 <translation id="255671100581129685">Asistent Google není ve veřejné relaci k dispozici.</translation>
 <translation id="256712445991462162">zabudovaná lupa</translation>
@@ -184,6 +189,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2727977024730340865">Byla připojena nabíječka s nízkým výkonem. Nabíjení baterie nemusí probíhat spolehlivě.</translation>
 <translation id="2792498699870441125">Alt + Vyhledávání</translation>
 <translation id="2819276065543622893">Nyní budete odhlášeni.</translation>
+<translation id="28232023175184696">Nelze se připojit k internetu. Kliknutím to zkuste znovu.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> rozlišení <ph name="SPECIFIED_RESOLUTION" /> nepodporuje. Rozlišení bylo změněno na <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Polička</translation>
 <translation id="2841907151129139818">Přepnuto do režimu tabletu</translation>
@@ -324,6 +330,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4129129681837227511">Chcete-li zobrazovat oznámení na obrazovce uzamčení, odemkněte zařízení a změňte příslušné nastavení.</translation>
 <translation id="4146833061457621061">Přehrát hudbu</translation>
 <translation id="4149156641122542261">Zařízení <ph name="DEVICE_TYPE" /> spravované doménou <ph name="DOMAIN" /></translation>
+<translation id="415719264485676252">Snímky obrazovky jsou zablokovány</translation>
 <translation id="4157822100366708405">Nastavení tmavého motivu</translation>
 <translation id="4181841719683918333">Jazyky</translation>
 <translation id="4195877955194704651">Tlačítko automatických kliknutí</translation>
@@ -392,6 +399,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4710243778082831592">Nastavení editoru IME</translation>
 <translation id="4731797938093519117">Rodičovský přístup</translation>
 <translation id="4734965478015604180">Na šířku</translation>
+<translation id="4744944742468440486">Informace související s vaším výběrem</translation>
 <translation id="4759238208242260848">Stažené soubory</translation>
 <translation id="4774338217796918551">Vrať se v <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Heslo pro účet <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -511,6 +519,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="595202126637698455">Sledování výkonu aktivováno</translation>
 <translation id="5957083217255311415">Mobilní data jsou vypnuta.</translation>
 <translation id="5958529069007801266">Dozorovaný uživatel</translation>
+<translation id="5960825221082587934">Povolit Asistentovi, aby vám zobrazoval informace, jako je definice, překlad nebo převod jednotek související s vybraným obsahem.</translation>
 <translation id="5977415296283489383">Sluchátka</translation>
 <translation id="5978382165065462689">Ovládání obrazovky je sdíleno prostřednictvím Vzdálené pomoci.</translation>
 <translation id="5980301590375426705">Odhlásit hosta</translation>
@@ -594,6 +603,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6777216307882431711">Napájení připojených zařízení USB-C</translation>
 <translation id="6790428901817661496">Přehrát</translation>
 <translation id="6803622936009808957">Zobrazení nelze zrcadlit, protože nebyla nalezena podporovaná rozlišení. Místo toho se spustil režim rozšířené pracovní plochy.</translation>
+<translation id="6816797338148849397">K dispozici jsou informace související s vaším výběrem. Zobrazíte je pomocí šipky nahoru.</translation>
 <translation id="6818242057446442178">Zpět o slovo</translation>
 <translation id="6820676911989879663">Dejte si pauzu.</translation>
 <translation id="6850010208275816200">Aktuální aplikace je v režimu celé obrazovky. Pokud vás aplikace požádá o heslo, nejdřív režim celé obrazovky ukončete.</translation>
@@ -657,6 +667,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7497767806359279797">Vybrat jazyk a klávesnici</translation>
 <translation id="7526573455193969409">Síť může být sledována</translation>
 <translation id="7536035074519304529">IP adresa: <ph name="ADDRESS" /></translation>
+<translation id="7542906349682405018">Možnost pořizovat snímky obsahu obrazovky zablokoval váš administrátor.</translation>
 <translation id="7548434653388805669">Čas jít spát</translation>
 <translation id="7551643184018910560">Připnout k poličce</translation>
 <translation id="7561982940498449837">Zavřít nabídku</translation>
@@ -784,6 +795,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Byla připojena nabíječka s nízkým napětím</translation>
 <translation id="8683506306463609433">Trasování výkonu je aktivní</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Tuto funkci můžete spravovat šipkami doleva nebo doprava.</translation>
 <translation id="8712637175834984815">Hotovo</translation>
 <translation id="8721053961083920564">Zapnout či vypnout zvuk. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">Je možné, že se pokouší odcizit vaše stisknutí kláves.</translation>
@@ -804,6 +816,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8874184842967597500">Nepřipojeno</translation>
 <translation id="8877788021141246043">Nastavit připomenutí</translation>
 <translation id="8878886163241303700">Rozšíření obrazovky</translation>
+<translation id="8883473964424809116">Kliknutím otevřete nastavení Asistenta Google.</translation>
 <translation id="890616557918890486">Změnit zdroj</translation>
 <translation id="8909138438987180327">Baterie je nabitá na <ph name="PERCENTAGE" /> %.</translation>
 <translation id="8913384980486163186">Podle motivu (výchozí)</translation>

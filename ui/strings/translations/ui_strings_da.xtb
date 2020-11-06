@@ -152,6 +152,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktiv i dag}=1{Aktiv for 1 dag siden}one{Aktiv for # dag siden}other{Aktiv for # dage siden}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 dag og }one{# dage og }other{# dage og }}</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5843690142429128814">Billede.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{om 1 år}one{om # år}other{om # år}}</translation>
 <translation id="588258955323874662">Fuld skærm</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 sekund tilbage}one{# sekunder tilbage}other{# sekunder tilbage}}</translation>
@@ -192,6 +193,7 @@
 <translation id="6845533974506654842">tryk</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 time tilbage}one{# timer tilbage}other{# timer tilbage}}</translation>
 <translation id="688711909580084195">Unavngivet webside</translation>
+<translation id="6902419395050653510">HTML-indhold.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/sek.</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{Der er 1 år tilbage}one{Der er # år tilbage}other{Der er # år tilbage}}</translation>
 <translation id="6945221475159498467">Vælg</translation>

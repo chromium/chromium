@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Šis mėnuo</translation>
 <translation id="1637811476055996098">Pasirinkti failus</translation>
 <translation id="1650423536718072820">citata</translation>
+<translation id="1681022320378710418">dabartinis laikas</translation>
 <translation id="1727886345390570319">slėpti subtitrų meniu</translation>
 <translation id="1729654308190250600">Įveskite el. pašto adresą (nepalikite lauko tuščio).</translation>
 <translation id="1758486001363313524">Kita...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Įveskite URL.</translation>
 <translation id="3175736971608411871">laikmatis</translation>
 <translation id="3199563858620722075">jungtinis laukelis</translation>
+<translation id="3220661731597678625">dabartinis veiksmas</translation>
 <translation id="3329013043687509092">Spalvų sodrumas</translation>
 <translation id="3450233048674729344">Vertė turi būti <ph name="MAXIMUM" /> arba mažesnė.</translation>
 <translation id="3486220673238053218">apibrėžimas</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">vaizdo įrašas</translation>
 <translation id="479989351350248267">ieškoti</translation>
 <translation id="4812940957355064477">Įveskite skaičių.</translation>
+<translation id="4912200001568447310">dabartinis elementas</translation>
 <translation id="4912536737030637138">bibliografijos įrašas</translation>
 <translation id="4915360478455618802">Rodyti laiko rinkiklį</translation>
 <translation id="492244087561876220">komentaras</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Nepavyko paleisti medijos.</translation>
 <translation id="537648784377940524">Anksčiausia data (<ph name="MIN_DATE_OR_TIME" />) turi būti prieš vėliausią datą (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">iliustracija</translation>
+<translation id="5425179576310518467">dabartinė data</translation>
 <translation id="5453733299334684579">medžio elementas</translation>
 <translation id="5466621249238537318">Pasirinkite bent vieną failą.</translation>
 <translation id="5468998798572797635">išeiti iš viso ekrano režimo</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">matuoklis</translation>
 <translation id="6166809985690652833">baigiamasis žodis</translation>
 <translation id="6209276755895393898">Tai tikriausiai yra: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">dabartinis puslapis</translation>
 <translation id="6213469881011901533">aiškinamasis terminų žodynas</translation>
 <translation id="6281588256137006900">Šviesumas</translation>
 <translation id="6281763101136022427">url</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Pailginkite šį tekstą iki <ph name="MIN_CHARACTERS" /> simb. ar daugiau (šiuo metu naudojate 1 simbolį).</translation>
 <translation id="7034405885550056553">pasiūlymas</translation>
 <translation id="709897737746224366">Priderinkite reikalaujamą formatą.</translation>
+<translation id="7102274145889307184">dabartinė vietovė</translation>
 <translation id="7118469954320184356">Nepasiekiamas joks aprašas.</translation>
 <translation id="7139483182332611405">įvadas</translation>
 <translation id="7214187073215825913">turinio informacija</translation>

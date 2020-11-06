@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Þessi mánuður</translation>
 <translation id="1637811476055996098">Veldu skrár</translation>
 <translation id="1650423536718072820">útdregin tilvitnun</translation>
+<translation id="1681022320378710418">núverandi tími</translation>
 <translation id="1727886345390570319">fela valmynd skjátexta</translation>
 <translation id="1729654308190250600">Sláðu inn gilt netfang.</translation>
 <translation id="1758486001363313524">Annað...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Sláðu inn vefslóð.</translation>
 <translation id="3175736971608411871">teljari</translation>
 <translation id="3199563858620722075">fellivalmynd</translation>
+<translation id="3220661731597678625">núverandi skref</translation>
 <translation id="3329013043687509092">Mettun</translation>
 <translation id="3450233048674729344">Gildið þarf að vera minna en eða jafnt og <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">skilgreining</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">myndskeið</translation>
 <translation id="479989351350248267">leita</translation>
 <translation id="4812940957355064477">Sláðu inn tölu.</translation>
+<translation id="4912200001568447310">núverandi atriði</translation>
 <translation id="4912536737030637138">færsla í heimildaskrá</translation>
 <translation id="4915360478455618802">Sýna tímaval</translation>
 <translation id="492244087561876220">athugasemd</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Ekki er hægt að spila efni.</translation>
 <translation id="537648784377940524">Lágmarksdagsetning (<ph name="MIN_DATE_OR_TIME" />) verður að vera á undan hámarksdagsetningu (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">mynd</translation>
+<translation id="5425179576310518467">núverandi dagsetning</translation>
 <translation id="5453733299334684579">trjáatriði</translation>
 <translation id="5466621249238537318">Veldu eina eða fleiri skrár.</translation>
 <translation id="5468998798572797635">hætta að nota allan skjáinn</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">mælir</translation>
 <translation id="6166809985690652833">eftirmáli</translation>
 <translation id="6209276755895393898">Virðist vera: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">núverandi síða</translation>
 <translation id="6213469881011901533">orðalisti</translation>
 <translation id="6281588256137006900">Ljósleiki</translation>
 <translation id="6281763101136022427">vefslóð</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Lengdu þennan texta í <ph name="MIN_CHARACTERS" /> stafi eða meira (sem stendur notarðu einn staf).</translation>
 <translation id="7034405885550056553">tillaga</translation>
 <translation id="709897737746224366">Fylgdu umbeðnu sniði.</translation>
+<translation id="7102274145889307184">núverandi staðsetning</translation>
 <translation id="7118469954320184356">Engin lýsing tiltæk.</translation>
 <translation id="7139483182332611405">formáli</translation>
 <translation id="7214187073215825913">upplýsingar um efni</translation>

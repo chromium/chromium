@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Үстүбүздөгү ай</translation>
 <translation id="1637811476055996098">Файлдарды тандаңыз</translation>
 <translation id="1650423536718072820">үзүндү</translation>
+<translation id="1681022320378710418">учурдагы убакыт</translation>
 <translation id="1727886345390570319">коштомо жазуулар менюсун жашыруу</translation>
 <translation id="1729654308190250600">Бош эмес электрондук почта дарегин киргизиңиз.</translation>
 <translation id="1758486001363313524">Башка…</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">URL жазыңыз.</translation>
 <translation id="3175736971608411871">таймер</translation>
 <translation id="3199563858620722075">айкалыштырылган кутуча</translation>
+<translation id="3220661731597678625">учурдагы кадам</translation>
 <translation id="3329013043687509092">Каныктыруу</translation>
 <translation id="3450233048674729344">Маани <ph name="MAXIMUM" /> кичирээк же барабар болушу керек.</translation>
 <translation id="3486220673238053218">аныктама</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">видео</translation>
 <translation id="479989351350248267">издөө</translation>
 <translation id="4812940957355064477">Номер киргизиңиз.</translation>
+<translation id="4912200001568447310">учурдагы элемент</translation>
 <translation id="4912536737030637138">библиографиялык жазуу</translation>
 <translation id="4915360478455618802">Убакыт тандагычты көрсөтүү</translation>
 <translation id="492244087561876220">пикир</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Аудио ойнотулбай жатат.</translation>
 <translation id="537648784377940524">Минималдуу күн (<ph name="MIN_DATE_OR_TIME" />) Максималдуу күндөн мурда болушу керек (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">сөлөкөт</translation>
+<translation id="5425179576310518467">учурдагы күн</translation>
 <translation id="5453733299334684579">дарактагы нерсе</translation>
 <translation id="5466621249238537318">Бир же бир нече файл тандаңыз.</translation>
 <translation id="5468998798572797635">толук экран режиминен чыгуу</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">ченегич</translation>
 <translation id="6166809985690652833">соңку сөз</translation>
 <translation id="6209276755895393898">Төмөнкү болуп чыкты: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">учурдагы бет</translation>
 <translation id="6213469881011901533">глоссарий</translation>
 <translation id="6281588256137006900">Жарыктык</translation>
 <translation id="6281763101136022427">url</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Бул текстти <ph name="MIN_CHARACTERS" /> белгиге же андан көбүрөөк кылып узартыңыз (учурда 1 белги турат).</translation>
 <translation id="7034405885550056553">сунуш</translation>
 <translation id="709897737746224366">Суралган форматка туураланыз.</translation>
+<translation id="7102274145889307184">учурдагы жер</translation>
 <translation id="7118469954320184356">Эч кандай сүрөттөмө жок.</translation>
 <translation id="7139483182332611405">кириш сөз</translation>
 <translation id="7214187073215825913">мазмун маалыматы</translation>

@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">هذا الشهر</translation>
 <translation id="1637811476055996098">اختيار الملفات</translation>
 <translation id="1650423536718072820">اقتباس مستمد</translation>
+<translation id="1681022320378710418">الوقت الحالي</translation>
 <translation id="1727886345390570319">إخفاء قائمة مقاطع الترجمة والشرح</translation>
 <translation id="1729654308190250600">يُرجى إدخال عنوان البريد الإلكتروني وعدم ترك الحق فارغًا.</translation>
 <translation id="1758486001363313524">آخر...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">‏يُرجى إدخال عنوان URL.</translation>
 <translation id="3175736971608411871">الموقّت</translation>
 <translation id="3199563858620722075">مربع تحرير وسرد</translation>
+<translation id="3220661731597678625">الخطوة الحالية</translation>
 <translation id="3329013043687509092">تشبع اللون</translation>
 <translation id="3450233048674729344">يجب أن تكون القيمة أقل من أو تساوي <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">تعريف</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">فيديو</translation>
 <translation id="479989351350248267">بحث</translation>
 <translation id="4812940957355064477">يُرجى إدخال عدد.</translation>
+<translation id="4912200001568447310">العنصر الحالي</translation>
 <translation id="4912536737030637138">إدخال قائمة مراجع</translation>
 <translation id="4915360478455618802">عرض منتقي الوقت</translation>
 <translation id="492244087561876220">تعليق</translation>
@@ -149,6 +152,7 @@
 <translation id="537648784377940524">يجب أن يكون الحد الأدنى للتاريخ (<ph name="MIN_DATE_OR_TIME" />
 ) قبل الحد الأقصى للتاريخ (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">شكل</translation>
+<translation id="5425179576310518467">التاريخ الحالي</translation>
 <translation id="5453733299334684579">عنصر متفرع</translation>
 <translation id="5466621249238537318">يُرجى اختيار ملف واحد أو أكثر.</translation>
 <translation id="5468998798572797635">إنهاء وضع ملء الشاشة</translation>
@@ -178,6 +182,7 @@
 <translation id="6164829606128959761">متر</translation>
 <translation id="6166809985690652833">كلمة ختامية</translation>
 <translation id="6209276755895393898">يبدو أن: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">الصفحة الحالية</translation>
 <translation id="6213469881011901533">مسرد مصطلحات</translation>
 <translation id="6281588256137006900">الإضاءة</translation>
 <translation id="6281763101136022427">‏عنوان URL</translation>
@@ -212,6 +217,7 @@
 <translation id="6989848892321993519">يُرجى إطالة هذا النص إلى <ph name="MIN_CHARACTERS" /> من الحروف أو أكثر (أنت الآن تستخدم حرفًا واحدًا).</translation>
 <translation id="7034405885550056553">اقتراح</translation>
 <translation id="709897737746224366">يُرجى مطابقة التنسيق المطلوب.</translation>
+<translation id="7102274145889307184">الموقع الجغرافي الحالي</translation>
 <translation id="7118469954320184356">لا يتوفر أي وصف.</translation>
 <translation id="7139483182332611405">تمهيد</translation>
 <translation id="7214187073215825913">معلومات المحتوى</translation>

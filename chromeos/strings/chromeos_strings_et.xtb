@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">Rakendused</translation>
 <translation id="2872961005593481000">Lülita välja</translation>
 <translation id="3008341117444806826">VÄRSKENDA</translation>
+<translation id="3009958530611748826">Valige kaust, kuhu salvestada</translation>
 <translation id="3083667275341675831">Ühenduvuse diagnostika</translation>
 <translation id="3091839911843451378">Ebaõnnestus – peatatud</translation>
 <translation id="3188257591659621405">Minu failid</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">Prinditööd</translation>
 <translation id="3527036260304016759">Ebaõnnestus – tundmatu viga</translation>
 <translation id="360565022852130722">WiFi-võrk on kaitstud nõrga protokolliga (WEP 802.1x)</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> arvustust)</translation>
 <translation id="3749289110408117711">Faili nimi</translation>
 <translation id="38114475217616659">Kustuta kogu ajalugu</translation>
 <translation id="3820172043799983114">Vale PIN-kood.</translation>
@@ -79,10 +81,12 @@
 <translation id="4731797938093519117">Vanema juurdepääs</translation>
 <translation id="4773299976671772492">Peatatud</translation>
 <translation id="4808449224298348341">Prinditöö <ph name="DOCUMENT_TITLE" /> tühistati</translation>
+<translation id="4832079907277790330">Valige rakenduses Failid kaust …</translation>
 <translation id="4890353053343094602">Valige kohe uus</translation>
 <translation id="4917889632206600977">Peatatud – paber on otsas</translation>
 <translation id="4932733599132424254">Kuupäev</translation>
 <translation id="4985509611418653372">Käitati</translation>
+<translation id="4991056862642197104">Asetage oma dokument paigale ja klõpsake alustamiseks käsul Skanni</translation>
 <translation id="5094480857972195099">Seda kasutajat haldab domeen <ph name="ENROLLMENT_DOMAIN" />, mis võib eemalt hallata seadeid ja jälgida kasutaja tegevusi.</translation>
 <translation id="520299634122159966">Ühtegi skannerit pole saadaval</translation>
 <translation id="5212543919916444558">Ma ei leia teie ekraanilt midagi, mille puhul saaksin aidata.
@@ -120,6 +124,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Faili tüüp</translation>
 <translation id="7561454561030345039">Seda toimingut haldab administraator.</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7690294790491645610">Kinnitage uus parool</translation>
 <translation id="7805768142964895445">Olek</translation>

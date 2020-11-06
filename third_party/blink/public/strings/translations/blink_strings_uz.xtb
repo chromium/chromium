@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Bu oy</translation>
 <translation id="1637811476055996098">Fayllarni tanlash</translation>
 <translation id="1650423536718072820">iqtibos</translation>
+<translation id="1681022320378710418">joriy vaqt</translation>
 <translation id="1727886345390570319">taglavha menyusini yopish</translation>
 <translation id="1729654308190250600">Bo‘sh bo‘lmagan e-pochta manzilini kiriting.</translation>
 <translation id="1758486001363313524">Boshqa...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">URL kiriting.</translation>
 <translation id="3175736971608411871">taymer</translation>
 <translation id="3199563858620722075">ro‘yxatli maydon</translation>
+<translation id="3220661731597678625">joriy qadam</translation>
 <translation id="3329013043687509092">To‘liqlik</translation>
 <translation id="3450233048674729344">Qiymat <ph name="MAXIMUM" /> ga teng yoki undan kichik bo‘lishi kerak.</translation>
 <translation id="3486220673238053218">ta’rif</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="479989351350248267">qidiruv</translation>
 <translation id="4812940957355064477">Raqam kiriting.</translation>
+<translation id="4912200001568447310">joriy element</translation>
 <translation id="4912536737030637138">bibliografiya yozuvi</translation>
 <translation id="4915360478455618802">Vaqt tanlash oynasini chiqarish</translation>
 <translation id="492244087561876220">fikr</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Media fayl ijro etilmadi.</translation>
 <translation id="537648784377940524">Minimal sana (<ph name="MIN_DATE_OR_TIME" />) maksimal sanadan (<ph name="MAX_DATE_OR_TIME" />) oldin boʻlsin.</translation>
 <translation id="5406322316791861025">shakl</translation>
+<translation id="5425179576310518467">joriy sana</translation>
 <translation id="5453733299334684579">daraxt elementi</translation>
 <translation id="5466621249238537318">Bir yoki bir nechta faylni tanlang</translation>
 <translation id="5468998798572797635">to‘liq ekran rejimidan chiqish</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">hisoblagich</translation>
 <translation id="6166809985690652833">xotima</translation>
 <translation id="6209276755895393898">Bizningcha bu: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">joriy sahifa</translation>
 <translation id="6213469881011901533">lug‘at</translation>
 <translation id="6281588256137006900">Yorqinlik</translation>
 <translation id="6281763101136022427">url</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Matndagi belgilar soni <ph name="MIN_CHARACTERS" /> tadan ko‘p bo‘lishi kerak (siz esa 1 ta belgi kiritdingiz).</translation>
 <translation id="7034405885550056553">taklif</translation>
 <translation id="709897737746224366">Talab etilgan formatga rioya qiling.</translation>
+<translation id="7102274145889307184">joriy joylashuv</translation>
 <translation id="7118469954320184356">Tavsif berilmagan.</translation>
 <translation id="7139483182332611405">so‘zboshi</translation>
 <translation id="7214187073215825913">kontent axboroti</translation>

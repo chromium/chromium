@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Гэты месяц</translation>
 <translation id="1637811476055996098">Выбраць файлы</translation>
 <translation id="1650423536718072820">яскравая цытата</translation>
+<translation id="1681022320378710418">бягучы час</translation>
 <translation id="1727886345390570319">закрыць меню субцітраў</translation>
 <translation id="1729654308190250600">Увядзіце адрас электроннай пошты.</translation>
 <translation id="1758486001363313524">Іншая...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Увядзіце URL-адрас.</translation>
 <translation id="3175736971608411871">таймер</translation>
 <translation id="3199563858620722075">камбінаванае акно</translation>
+<translation id="3220661731597678625">бягучы крок</translation>
 <translation id="3329013043687509092">Насычанасць</translation>
 <translation id="3450233048674729344">Значэнне павінна быць меншым або роўным <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">азначэнне</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">відэа</translation>
 <translation id="479989351350248267">пошук</translation>
 <translation id="4812940957355064477">Увядзіце лік.</translation>
+<translation id="4912200001568447310">бягучы элемент</translation>
 <translation id="4912536737030637138">бібліяграфічны запіс</translation>
 <translation id="4915360478455618802">Паказаць сродак выбару часу</translation>
 <translation id="492244087561876220">каментарый</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Не ўдалося прайграць мультымедыйны файл.</translation>
 <translation id="537648784377940524">Мінімальная дата (<ph name="MIN_DATE_OR_TIME" />) павінна быць ранейшая за максімальную (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">фігура</translation>
+<translation id="5425179576310518467">бягучая дата</translation>
 <translation id="5453733299334684579">элемент дрэва</translation>
 <translation id="5466621249238537318">Выберыце адзін або некалькі файлаў.</translation>
 <translation id="5468998798572797635">выключыць поўнаэкранны рэжым</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">лічыльнік</translation>
 <translation id="6166809985690652833">пасляслоўе</translation>
 <translation id="6209276755895393898">Здаецца, гэта наступнае: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">бягучая старонка</translation>
 <translation id="6213469881011901533">гласарый</translation>
 <translation id="6281588256137006900">Светласць</translation>
 <translation id="6281763101136022427">url-адрасы</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Павялічце колькасць сімвалаў у гэтым тэксце як мінімум да <ph name="MIN_CHARACTERS" /> (зараз у вас 1 сімвал).</translation>
 <translation id="7034405885550056553">прапанова</translation>
 <translation id="709897737746224366">Прытрымлівайцеся ўказанага фармату.</translation>
+<translation id="7102274145889307184">бягучае месцазнаходжанне</translation>
 <translation id="7118469954320184356">Няма апісання.</translation>
 <translation id="7139483182332611405">прадмова</translation>
 <translation id="7214187073215825913">звесткі пра змесціва</translation>

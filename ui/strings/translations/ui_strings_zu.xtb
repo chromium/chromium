@@ -152,6 +152,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{Iyasebenza namhlanje}=1{Isebenze ngosuku olungu-1 oludlule}one{Isebenze ngezinsuku ezingu-# ezedlule}other{Isebenze ngezinsuku ezingu-# ezedlule}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 usuku ne- }one{# izinsuku ne- }other{# izinsuku ne- }}</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5843690142429128814">Isithombe.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{nge-1y}one{nge-#y}other{nge-#y}}</translation>
 <translation id="588258955323874662">Isikrini esigcwele</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 isekhondi elisele}one{# amasekhondi asele}other{# amasekhondi asele}}</translation>
@@ -192,6 +193,7 @@
 <translation id="6845533974506654842">cindezela</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 ihora elisele}one{# amahora asele}other{# amahora asele}}</translation>
 <translation id="688711909580084195">Ikhasi lewebhu elingenasihloko</translation>
+<translation id="6902419395050653510">Okuqukethwe kwe-HTML.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{1 unyaka osele}one{# iminyaka esele}other{# iminyaka esele}}</translation>
 <translation id="6945221475159498467">Khetha</translation>

@@ -8,6 +8,7 @@
 <translation id="1036672894875463507">Soc el teu Assistent de Google i et puc ajudar en qualsevol moment del dia.
 A continuació t'indico algunes coses que pots provar per començar.</translation>
 <translation id="1037492556044956303">S'ha afegit <ph name="DEVICE_NAME" /></translation>
+<translation id="1047773237499189053">Hi ha una nova funció disponible. Fes servir la tecla de fletxa amunt per obtenir més informació.</translation>
 <translation id="1056775291175587022">Cap xarxa</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mòbil: <ph name="ADDRESS" /></translation>
@@ -20,6 +21,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1153356358378277386">Dispositius vinculats</translation>
 <translation id="1175572348579024023">Desplaça</translation>
 <translation id="1178581264944972037">Posa en pausa</translation>
+<translation id="118532027333893379">Toca en qualsevol lloc per capturar la pantalla completa</translation>
 <translation id="1190609913194133056">Centre de notificacions</translation>
 <translation id="1195412055398077112">ajusta la mida</translation>
 <translation id="119944043368869598">Esborra-ho tot</translation>
@@ -125,6 +127,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2127372758936585790">Carregador de baix consum</translation>
 <translation id="2132302418721800944">Grava la pantalla completa</translation>
 <translation id="2135456203358955318">Lupa acoblada</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />. Torna-ho a provar</translation>
 <translation id="2208323208084708176">Mode d'escriptori unificat</translation>
 <translation id="2220572644011485463">PIN o contrasenya</translation>
 <translation id="2222338659135520253">Cal iniciar la sessió</translation>
@@ -136,6 +139,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="229397294990920565">S'estan desactivant les dades mòbils...</translation>
 <translation id="2295777434187870477">El micròfon està activat. Utilitza el commutador per silenciar l'entrada.</translation>
 <translation id="2298170939937364391">La lupa de pantalla completa està activada. Torna a prémer Ctrl+Cerca+M per desactivar-la.</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" />; fes clic al quadre de diàleg per veure el resultat a l'Assistent.</translation>
 <translation id="2302092602801625023">Family Link gestiona aquest compte</translation>
 <translation id="2303600792989757991">Commuta la visió general de la finestra</translation>
 <translation id="2322173485024759474">Enrere per lletra</translation>
@@ -163,6 +167,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2484513351006226581">Prem <ph name="KEYBOARD_SHORTCUT" /> per canviar la disposició del teclat.</translation>
 <translation id="2501920221385095727">Tecles permanents</translation>
 <translation id="2509468283778169019">BLOQ MAJ està activat.</translation>
+<translation id="2536159006530886390">No es pot connectar a Internet.</translation>
 <translation id="2542089167727451762">Toca la teva imatge de perfil</translation>
 <translation id="255671100581129685">L'Assistent de Google no està disponible a les sessions públiques.</translation>
 <translation id="256712445991462162">la lupa acoblada</translation>
@@ -184,6 +189,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2727977024730340865">S'ha connectat a un carregador de baix consum. És possible que la càrrega de la bateria no sigui fiable.</translation>
 <translation id="2792498699870441125">Alt+Cerca</translation>
 <translation id="2819276065543622893">Ara se us tancarà la sessió.</translation>
+<translation id="28232023175184696">No es pot connectar a Internet. Fes clic per tornar-ho a provar.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> no admet la resolució <ph name="SPECIFIED_RESOLUTION" />. La resolució ha canviat a <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Prestatge</translation>
 <translation id="2841907151129139818">S'ha canviat a mode de tauleta</translation>
@@ -324,6 +330,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4129129681837227511">Per veure notificacions a la pantalla de bloqueig, desbloqueja el dispositiu per canviar aquesta opció</translation>
 <translation id="4146833061457621061">Reprodueix música</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> gestionat per <ph name="DOMAIN" /></translation>
+<translation id="415719264485676252">L'opció de capturar la pantalla està bloquejada</translation>
 <translation id="4157822100366708405">Configuració del tema fosc</translation>
 <translation id="4181841719683918333">Idiomes</translation>
 <translation id="4195877955194704651">Botó Clics automàtics</translation>
@@ -392,6 +399,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4710243778082831592">Configuració d'IME</translation>
 <translation id="4731797938093519117">Accés parental</translation>
 <translation id="4734965478015604180">Horitzontal</translation>
+<translation id="4744944742468440486">Informació relacionada amb la teva selecció</translation>
 <translation id="4759238208242260848">Baixades</translation>
 <translation id="4774338217796918551">Pots tornar demà a les <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Contrasenya per a <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -511,6 +519,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="595202126637698455">Traça del rendiment activada</translation>
 <translation id="5957083217255311415">Les dades mòbils estan desactivades.</translation>
 <translation id="5958529069007801266">Usuari supervisat</translation>
+<translation id="5960825221082587934">Permet que l'Assistent mostri informació com ara la definició, la traducció o la conversió d'unitats associades a la teva selecció.</translation>
 <translation id="5977415296283489383">Auricular</translation>
 <translation id="5978382165065462689">Es comparteix el control de la pantalla mitjançant l'Assistència remota.</translation>
 <translation id="5980301590375426705">Tanca com a convidat</translation>
@@ -594,6 +603,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6777216307882431711">S'estan alimentant els dispositius USB-C connectats</translation>
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="6803622936009808957">No s'han pogut projectar les pantalles, perquè no s'ha trobat cap resolució compatible. S'ha entrat al mode d'escriptori ampliat.</translation>
+<translation id="6816797338148849397">Hi ha disponible informació relacionada amb la teva selecció. Utilitza la tecla de fletxa amunt per accedir-hi.</translation>
 <translation id="6818242057446442178">Enrere per paraula</translation>
 <translation id="6820676911989879663">Fes una pausa</translation>
 <translation id="6850010208275816200">L'aplicació actual està oberta en pantalla completa. Si et demana la contrasenya, primer has de sortir de la pantalla completa.</translation>
@@ -657,6 +667,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7497767806359279797">Tria l'idioma i el teclat</translation>
 <translation id="7526573455193969409">És possible que la xarxa estigui supervisada</translation>
 <translation id="7536035074519304529">Adreça IP: <ph name="ADDRESS" /></translation>
+<translation id="7542906349682405018">L'administrador ha bloquejat la possibilitat de capturar el contingut de la pantalla.</translation>
 <translation id="7548434653388805669">Ara toca anar a dormir</translation>
 <translation id="7551643184018910560">Fixa al prestatge</translation>
 <translation id="7561982940498449837">Tanca el menú</translation>
@@ -784,6 +795,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">S'ha connectat un carregador de baix consum</translation>
 <translation id="8683506306463609433">Traça del rendiment activa</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilitza les tecles de fletxa dreta o esquerra per gestionar aquesta funció.</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="8721053961083920564">Activa o desactiva el volum. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">Pot ser que estigui provant de robar-te les combinacions de tecles</translation>
@@ -804,6 +816,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8874184842967597500">No connectada</translation>
 <translation id="8877788021141246043">Configura un recordatori</translation>
 <translation id="8878886163241303700">Ampliació de la pantalla</translation>
+<translation id="8883473964424809116">Fes clic per obrir la configuració de l'Assistent de Google.</translation>
 <translation id="890616557918890486">Canvia la font</translation>
 <translation id="8909138438987180327">La bateria està a un <ph name="PERCENTAGE" />%.</translation>
 <translation id="8913384980486163186">Amb temàtica (opció predeterminada)</translation>

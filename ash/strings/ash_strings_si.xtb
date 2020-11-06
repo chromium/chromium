@@ -8,6 +8,7 @@
 <translation id="1036672894875463507">ඔබේ Google සහකරු වන මම මෙහි සිටින්නේ උබේ දවස පුරා ඔබට උදවු කිරීමටයි!
 පටන් ගැනීමට ඔබට උත්සාහ කළ හැකි දේ සමහරක් මෙන්න.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> එක් කරන ලදී</translation>
+<translation id="1047773237499189053">නව විශේෂාංගයක් ලබා ගත හැකිය, තව දැන ගැනීමට ඉහළට ඊතල යතුර භාවිත කරන්න.</translation>
 <translation id="1056775291175587022">ජාල නැත</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">සෙලියුලර්: <ph name="ADDRESS" /></translation>
@@ -20,6 +21,7 @@
 <translation id="1153356358378277386">යුගලිත උපාංග</translation>
 <translation id="1175572348579024023">අනුචලන කරන්න</translation>
 <translation id="1178581264944972037">විරාමය</translation>
+<translation id="118532027333893379">පූර්ණ තිරය ග්‍රහණය කිරීමට ඕනෑම තැනක තට්ටු කරන්න</translation>
 <translation id="1190609913194133056">දැනුම්දීම් මධ්‍යස්ථානය</translation>
 <translation id="1195412055398077112">ඕවර්ස්කෑන්</translation>
 <translation id="119944043368869598">සියල්ල පිරිසිදු කරන්න</translation>
@@ -125,6 +127,7 @@
 <translation id="2127372758936585790">බලය අඩු චාජරයකි</translation>
 <translation id="2132302418721800944">පූර්ණ තිරය පටිගත කරන්න</translation>
 <translation id="2135456203358955318">ඈඳන ලද විශාලකය</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: යළි උත්සාහ කරන්න</translation>
 <translation id="2208323208084708176">එකාබද්ධ ඩෙස්ක්ටොප් ප්‍රකාරය</translation>
 <translation id="2220572644011485463">PIN අංකය හෝ මුරපදය</translation>
 <translation id="2222338659135520253">පුරනය අවශ්‍යයි</translation>
@@ -136,6 +139,7 @@
 <translation id="229397294990920565">ජංගම දත්ත අක්‍රිය කෙරේ...</translation>
 <translation id="2295777434187870477">මයිකය ක්‍රියාත්මකයි, ටොගල කිරීම ආදානය නිහඬ කරනු ඇත.</translation>
 <translation id="2298170939937364391">පූර්ණ තිර විශාලකය සබලයි. එය ක්‍රියාවිරහිත කිරීම ටොගල කිරීමට නැවත Ctrl+Search+H ඔබන්න.</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" />; සහායක තුළ ප්‍රතිඵලය බැලීමට සංවාද කොටුව ක්ලික් කරන්න.</translation>
 <translation id="2302092602801625023">මෙම ගිණුම Family Link විසින් කළමනා කෙරේ</translation>
 <translation id="2303600792989757991">ටොගල් කවුළු සමාලෝචනය</translation>
 <translation id="2322173485024759474">අකුරෙන් ආපසු</translation>
@@ -163,6 +167,7 @@
 <translation id="2484513351006226581">යතුරු පුවරු පිරිසැලසුම මාරු කිරීමට <ph name="KEYBOARD_SHORTCUT" /> ඔබන්න.</translation>
 <translation id="2501920221385095727">ඇලෙන යතුරු</translation>
 <translation id="2509468283778169019">කැප්ස් ලොක් සක්‍රීයයි</translation>
+<translation id="2536159006530886390">අන්තර්ජාලයට සම්බන්ධ විය නොහැකිය.</translation>
 <translation id="2542089167727451762">ඔබේ පැතිකඩ රූපයට තට්ටු කරන්න</translation>
 <translation id="255671100581129685">ප්‍රසිද්ධ සැසියකදී Google සහකරු නොලැබේ.</translation>
 <translation id="256712445991462162">ඩොක් කළ විශාලකය</translation>
@@ -184,6 +189,7 @@
 <translation id="2727977024730340865">අඩු බල චාජරයකට ප්ලග් ඉන් කර ඇත. බැටරිය චාජ් කිරිම විශ්වාස නැති විය හැක.</translation>
 <translation id="2792498699870441125">Alt+සෙවීම</translation>
 <translation id="2819276065543622893">ඔබව දැන් වරනු ඇත.</translation>
+<translation id="28232023175184696">අන්තර්ජාලයට සම්බන්ධ විය නොහැකිය. නැවත උත්සාහ කිරීමට ක්ලික් කරන්න.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> සඳහා සහය නොදක්වයි. විභේදනය <ph name="FALLBACK_RESOLUTION" /> ට වෙනස් කළා.</translation>
 <translation id="2825619548187458965">තට්ටුව</translation>
 <translation id="2841907151129139818">ටැබ්ලට් ප්‍රකාරයට මාරු විය</translation>
@@ -324,6 +330,7 @@
 <translation id="4129129681837227511">ඔබේ අඟුලු තිරයේ දැනුම්දීම් බැලීමට, සැකසීම් වෙනස් කිරීමට අඟුලු අරින්න</translation>
 <translation id="4146833061457621061">සංගීතය වාදනය කරන්න</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> <ph name="DOMAIN" /> විසින් කළමනා කෙරේ</translation>
+<translation id="415719264485676252">තිරය ග්‍රහණය කිරීම අවහිර කර ඇත</translation>
 <translation id="4157822100366708405">අඳුරු තේමා සැකසීම්</translation>
 <translation id="4181841719683918333">භාෂා</translation>
 <translation id="4195877955194704651">ස්වයංක්‍රීය ක්ලික් බොත්තම</translation>
@@ -392,6 +399,7 @@
 <translation id="4710243778082831592">IME සැකසීම්</translation>
 <translation id="4731797938093519117">මාපිය ප්‍රවේශය</translation>
 <translation id="4734965478015604180">තිරස්</translation>
+<translation id="4744944742468440486">ඔබගේ තේරීමට අදාළ තොරතුරු</translation>
 <translation id="4759238208242260848">බාගැනීම්</translation>
 <translation id="4774338217796918551">හෙට <ph name="COME_BACK_TIME" />ට ආපසු එන්න.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> සඳහා රහස්වචනය</translation>
@@ -511,6 +519,7 @@
 <translation id="595202126637698455">ක්‍රියාකරිත්ව හඹායෑම සබල කෙරිණි</translation>
 <translation id="5957083217255311415">ජංගම දත්ත ක්‍රියාවිරහිතයි.</translation>
 <translation id="5958529069007801266">අධීක්ෂණය කරන ලද භාවිතකරු</translation>
+<translation id="5960825221082587934">සහායකට අර්ථ දැක්වීම, පරිවර්තනය හෝ ඒකක පරිවර්තනය වැනි තොරතුරු පෙන්වීමට ඉඩ දෙන්න.</translation>
 <translation id="5977415296283489383">කන් යොමු</translation>
 <translation id="5978382165065462689">දුරස්ථ සහයක මගින් ඔබේ තිරයේ පාලනය බෙදාගනී.</translation>
 <translation id="5980301590375426705">අමුත්තා පිටවන්න</translation>
@@ -594,6 +603,7 @@
 <translation id="6777216307882431711">සම්බන්ධිත USB-C උපාංග බල ගැන්වේ</translation>
 <translation id="6790428901817661496">වාදනය කරන්න</translation>
 <translation id="6803622936009808957">සහාය වන විසඳුම් හමු නොවුන නිසා ප්‍රදර්ශන කැඩපත්කරනය කළ නොහැකි විය. ඒ වෙනුවට දිගු කළ ඩෙස්ක්ටොප් එකට ඇතුළු විය.</translation>
+<translation id="6816797338148849397">ඔබේ තේරීමට අදාළ තොරතුරු ලබා ගත නොහැකිය. ප්‍රවේශ වීමට ඉහළට ඊතල යතුර භාවිත කරන්න.</translation>
 <translation id="6818242057446442178">වචනයෙන් ආපසු</translation>
 <translation id="6820676911989879663">විවේකයක් ගන්න!</translation>
 <translation id="6850010208275816200">ඔබගේ වත්මන් යෙදුම පූර්ණ තිරයයි. යෙදුම ඔබගේ මුරපදය ඉල්ලුවහොත් පළමුව පූර්ණ තිරයෙන් පිටවන්න.</translation>
@@ -657,6 +667,7 @@
 <translation id="7497767806359279797">භාෂාව සහ යතුරු පුවරුව තෝරන්න</translation>
 <translation id="7526573455193969409">ජාලය නිරීක්ෂණය විය හැක</translation>
 <translation id="7536035074519304529">IP ලිපිනය: <ph name="ADDRESS" /></translation>
+<translation id="7542906349682405018">ඔබගේ තිරයේ ඇති අන්තර්ගතයේ තිර ග්‍රහණයක් ගැනීමට ඇති හැකියාව ඔබේ පරිපාලක විසින් අවහිර කර ඇත.</translation>
 <translation id="7548434653388805669">නිදා ගන්නා වේලාවයි</translation>
 <translation id="7551643184018910560">රාක්කය වෙත අමුණන්න</translation>
 <translation id="7561982940498449837">මෙනුව වසන්න</translation>
@@ -784,6 +795,7 @@
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">අඩු-බල ආරෝපකය සමබන්ධ කර ඇත</translation>
 <translation id="8683506306463609433">කාර්ය සාධන අනුරේඛනය සක්‍රියයි</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> මෙම විශේෂාංගය කළමනාකරණය කිරීමට වම් හෝ දකුණු ඊතල යතුරු භාවිත කරන්න.</translation>
 <translation id="8712637175834984815">එය ලැබුණා</translation>
 <translation id="8721053961083920564">හඬ ටොගල් කරන්න. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">එය ඔබගේ යතුරු පහර සොරකම් කිරීමට උත්සාහ ගන්නවා විය හැක</translation>
@@ -804,6 +816,7 @@
 <translation id="8874184842967597500">සබඳවී නොමැත</translation>
 <translation id="8877788021141246043">මතක් කිරීමක් සකසන්න</translation>
 <translation id="8878886163241303700">තිරය දික් කරයි</translation>
+<translation id="8883473964424809116">Google සහායක සැකසීම් විවෘත කිරීමට ක්ලික් කරන්න.</translation>
 <translation id="890616557918890486">මූලාශ්‍රය වෙනස් කරන්න</translation>
 <translation id="8909138438987180327">බැටරි ප්‍රතිශතය <ph name="PERCENTAGE" /> කි.</translation>
 <translation id="8913384980486163186">තේමාව (පෙරනිමි)</translation>

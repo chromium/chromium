@@ -8,6 +8,7 @@
 <translation id="1036672894875463507">Аз съм Google Асистент и съм на ваше разположение по всяко време!
 Ето някои неща, с които можете да започнете.</translation>
 <translation id="1037492556044956303">Добавихте <ph name="DEVICE_NAME" /></translation>
+<translation id="1047773237499189053">Налице е нова функция. Използвайте стрелката нагоре, за да научите повече.</translation>
 <translation id="1056775291175587022">Няма мрежи</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Мобилно устройство: <ph name="ADDRESS" /></translation>
@@ -20,6 +21,7 @@
 <translation id="1153356358378277386">Сдвоени устройства</translation>
 <translation id="1175572348579024023">Превъртане</translation>
 <translation id="1178581264944972037">Пауза</translation>
+<translation id="118532027333893379">Докоснете произволно място, за да се заснеме целият екран</translation>
 <translation id="1190609913194133056">Център за известия</translation>
 <translation id="1195412055398077112">допълнителна област</translation>
 <translation id="119944043368869598">Изчистване на всички</translation>
@@ -125,6 +127,7 @@
 <translation id="2127372758936585790">Зарядно устройство с малка мощност</translation>
 <translation id="2132302418721800944">Записване на целия екран</translation>
 <translation id="2135456203358955318">Лупа в прикрепен режим</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: Нов опит</translation>
 <translation id="2208323208084708176">Режим на обединен работен плот</translation>
 <translation id="2220572644011485463">ПИН код или парола</translation>
 <translation id="2222338659135520253">Изисква се вход в профила</translation>
@@ -136,6 +139,7 @@
 <translation id="229397294990920565">Мобилните данни се изключват…</translation>
 <translation id="2295777434187870477">Микрофонът е включен. Превключването ще го заглуши.</translation>
 <translation id="2298170939937364391">Лупата за увеличаване на целия екран е активирана. За да я изключите, натиснете отново Ctrl + клавиша „Търсене“ + M.</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Кликнете върху диалоговия прозорец, за да прегледате резултата в Асистент.</translation>
 <translation id="2302092602801625023">Този профил се управлява от Family Link</translation>
 <translation id="2303600792989757991">Превключване на общия преглед на прозорците</translation>
 <translation id="2322173485024759474">Придвижване назад с една буква</translation>
@@ -163,6 +167,7 @@
 <translation id="2484513351006226581">Натиснете <ph name="KEYBOARD_SHORTCUT" /> за превключване на клавиатурната подредба.</translation>
 <translation id="2501920221385095727">Оставащи клавиши</translation>
 <translation id="2509468283778169019">„CAPS LOCK“ е включен</translation>
+<translation id="2536159006530886390">Няма връзка с интернет.</translation>
 <translation id="2542089167727451762">Докоснете изображението на потребителския си профил</translation>
 <translation id="255671100581129685">Google Асистент не е налице по време на публична сесия.</translation>
 <translation id="256712445991462162">лупата в прикрепен режим</translation>
@@ -184,6 +189,7 @@
 <translation id="2727977024730340865">Използва се зарядно устройство с малка мощност. Зареждането на батерията може да не е надеждно.</translation>
 <translation id="2792498699870441125">Alt + търсене</translation>
 <translation id="2819276065543622893">Ще излезете сега.</translation>
+<translation id="28232023175184696">Няма връзка с интернет. Кликнете, за да опитате отново.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> не поддържа <ph name="SPECIFIED_RESOLUTION" />. Разделителната способност бе променена на <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Лавица</translation>
 <translation id="2841907151129139818">Превключихте към режима на таблет</translation>
@@ -324,6 +330,7 @@
 <translation id="4129129681837227511">За да виждате известия на заключения екран, отключете устройството и променете настройката</translation>
 <translation id="4146833061457621061">„Play music“ („Пусни музика“)</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> се управлява от <ph name="DOMAIN" /></translation>
+<translation id="415719264485676252">Заснемането на екрана е блокирано</translation>
 <translation id="4157822100366708405">Настройки за тъмната тема</translation>
 <translation id="4181841719683918333">Езици</translation>
 <translation id="4195877955194704651">Бутон за менюто за автоматични кликвания</translation>
@@ -392,6 +399,7 @@
 <translation id="4710243778082831592">Настройки за редактора за метод на въвеждане</translation>
 <translation id="4731797938093519117">Достъп на родител</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
+<translation id="4744944742468440486">Информация за избраното от вас</translation>
 <translation id="4759238208242260848">Изтегляния</translation>
 <translation id="4774338217796918551">Заповядайте отново утре в <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Парола за <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -511,6 +519,7 @@
 <translation id="595202126637698455">Проследяването на ефективността е активирано</translation>
 <translation id="5957083217255311415">Мобилните данни са изключени.</translation>
 <translation id="5958529069007801266">Контролиран потребител</translation>
+<translation id="5960825221082587934">Позволяване на Асистент да показва информация за избраното от вас, като например определение, превод или преобразуване на мерни единици.</translation>
 <translation id="5977415296283489383">Слушалки</translation>
 <translation id="5978382165065462689">Споделяте контрола върху екрана си чрез отдалечено съдействие.</translation>
 <translation id="5980301590375426705">Изход като гост</translation>
@@ -594,6 +603,7 @@
 <translation id="6777216307882431711">Свързаните устройства с USB-C се захранват</translation>
 <translation id="6790428901817661496">Пускане</translation>
 <translation id="6803622936009808957">Дисплеите не можаха да се дублират, тъй като не бяха намерени поддържани разделителни способности. Вместо това влязохте в режима за разширен работен плот.</translation>
+<translation id="6816797338148849397">Има информация, свързана с избраното от вас. За достъп използвайте стрелката нагоре.</translation>
 <translation id="6818242057446442178">Придвижване назад с една дума</translation>
 <translation id="6820676911989879663">Време е за почивка!</translation>
 <translation id="6850010208275816200">Текущото приложение е в режим на цял екран. Ако то поиска да въведете паролата си, първо излезте от този режим.</translation>
@@ -657,6 +667,7 @@
 <translation id="7497767806359279797">Избор на език и клавиатура</translation>
 <translation id="7526573455193969409">Мрежата може да е под наблюдение</translation>
 <translation id="7536035074519304529">IP адрес: <ph name="ADDRESS" /></translation>
+<translation id="7542906349682405018">Заснемането на екрана е блокирано от администратора ви.</translation>
 <translation id="7548434653388805669">Време е за сън</translation>
 <translation id="7551643184018910560">Фиксиране в лавицата</translation>
 <translation id="7561982940498449837">Затваряне на менюто</translation>
@@ -784,6 +795,7 @@
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Свързано е зарядно устройство с малка мощност</translation>
 <translation id="8683506306463609433">Проследяването на ефективността е активно</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Използвайте клавишите със стрелки наляво и надясно, за да управлявате тази функция.</translation>
 <translation id="8712637175834984815">Разбрах</translation>
 <translation id="8721053961083920564">Превключване на звука. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">Тя може да се опитва да записва кои клавиши натискате</translation>
@@ -804,6 +816,7 @@
 <translation id="8874184842967597500">Няма връзка</translation>
 <translation id="8877788021141246043">„Set a reminder“ („Задай напомняне“)</translation>
 <translation id="8878886163241303700">Разгъване на екрана</translation>
+<translation id="8883473964424809116">Кликнете, за да отворите настройките на Google Асистент.</translation>
 <translation id="890616557918890486">Промяна на източника</translation>
 <translation id="8909138438987180327">Батерията е на <ph name="PERCENTAGE" /> процента.</translation>
 <translation id="8913384980486163186">Тематичен (по подразбиране)</translation>

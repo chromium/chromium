@@ -17,6 +17,7 @@
 <translation id="1369915414381695676">تمت إضافة الموقع <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">البحث</translation>
 <translation id="1384959399684842514">تم إيقاف التنزيل مؤقتًا</translation>
+<translation id="1415402041810619267">‏تم اقتطاع عنوان URL</translation>
 <translation id="1431402976894535801">منع المواقع الإلكترونية من معرفة متى تستخدم الجهاز</translation>
 <translation id="1446450296470737166">‏السماح بالتحكم الكامل لأجهزة MIDI</translation>
 <translation id="1509960214886564027">قد تتوقف الميزات عن العمل في العديد من المواقع الإلكترونية.</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">السماح للمواقع الإلكترونية بتشغيل المحتوى المَحمي</translation>
 <translation id="4468959413250150279">كتم صوت موقع إلكتروني معين.</translation>
 <translation id="4479647676395637221">السؤال أولاً قبل السماح للمواقع الإلكترونية باستخدام الكاميرا (موصى به)</translation>
+<translation id="4505788138578415521">‏تم توسيع عنوان URL.</translation>
 <translation id="4534723447064627427">‏للسماح لتطبيق <ph name="APP_NAME" /> بالوصول إلى الميكروفون، يُرجى أيضًا تفعيل الميكروفون في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="4570913071927164677">التفاصيل</translation>
 <translation id="4645575059429386691">يديره والداك</translation>

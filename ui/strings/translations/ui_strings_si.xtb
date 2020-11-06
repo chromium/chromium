@@ -152,6 +152,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{අද ක්‍රියාත්මකයි}=1{1 දිනකට පෙර ක්‍රියාත්මකයි}one{දින #-කට පෙර ක්‍රියාත්මකයි}other{දින #-කට පෙර ක්‍රියාත්මකයි}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{දින 1 ක් සහ }one{දින # ක් සහ }other{දින # ක් සහ }}</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5843690142429128814">රූපය.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{1 වසරකින්}one{වසර #කින්}other{වසර #කින්}}</translation>
 <translation id="588258955323874662">සම්පුර්ණ තිරය</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{තත්පර 1 ක් ඉතිරියි}one{තත්පර # ක් ඉතිරියි}other{තත්පර # ක් ඉතිරියි}}</translation>
@@ -192,6 +193,7 @@
 <translation id="6845533974506654842">ඔබන්න</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{පැය 1 ක් ඉතිරියි}one{පැය # ක් ඉතිරියි}other{පැය # ක් ඉතිරියි}}</translation>
 <translation id="688711909580084195">නම් නොකළ වෙබ් පිටුව</translation>
+<translation id="6902419395050653510">HTML අන්තර්ගතය.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{වසර 1ක් ඉතිරියි}one{වසර #ක් ඉතිරියි}other{වසර #ක් ඉතිරියි}}</translation>
 <translation id="6945221475159498467">තෝරන්න</translation>

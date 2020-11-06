@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Այս ամիս</translation>
 <translation id="1637811476055996098">Ընտրել ֆայլեր</translation>
 <translation id="1650423536718072820">մեջբերում</translation>
+<translation id="1681022320378710418">ընթացիկ ժամը</translation>
 <translation id="1727886345390570319">թաքցնել փակված ենթագրերի ընտրացանկը</translation>
 <translation id="1729654308190250600">Էլփոստի հասցեի տողը չպետք է դատարկ լինի:</translation>
 <translation id="1758486001363313524">Այլ…</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Մուտքագրեք URL:</translation>
 <translation id="3175736971608411871">ժամաչափ</translation>
 <translation id="3199563858620722075">ցուցակով դաշտ</translation>
+<translation id="3220661731597678625">ընթացիկ քայլը</translation>
 <translation id="3329013043687509092">Հագեցում</translation>
 <translation id="3450233048674729344">Արժեքը պետք է փոքր կամ հավասար լինի <ph name="MAXIMUM" />-ին:</translation>
 <translation id="3486220673238053218">սահմանում</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4812940957355064477">Մուտքագրեք համար:</translation>
+<translation id="4912200001568447310">ընթացիկ տարրը</translation>
 <translation id="4912536737030637138">բիբլիոգրաֆիական գրառում</translation>
 <translation id="4915360478455618802">Ցուցադրել ժամի ընտրիչը</translation>
 <translation id="492244087561876220">մեկնաբանություն</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Չհաջողվեց նվագարկել մեդիա ֆայլը:</translation>
 <translation id="537648784377940524">Նվազագույն ամսաթիվը (<ph name="MIN_DATE_OR_TIME" />) պետք է լինի առավելագույն ամսաթվից առաջ (<ph name="MAX_DATE_OR_TIME" />)։</translation>
 <translation id="5406322316791861025">պատկեր</translation>
+<translation id="5425179576310518467">ընթացիկ ամսաթիվը</translation>
 <translation id="5453733299334684579">ծառի տարր</translation>
 <translation id="5466621249238537318">Ընտրեք մեկ կամ մի քանի ֆայլ:</translation>
 <translation id="5468998798572797635">ելնել լիաէկրան ռեժիմից</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">հաշվիչ</translation>
 <translation id="6166809985690652833">հետգրություն</translation>
 <translation id="6209276755895393898">Կարող է լինել՝ <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">ընթացիկ էջը</translation>
 <translation id="6213469881011901533">բառացանկ</translation>
 <translation id="6281588256137006900">Գույնի բացություն</translation>
 <translation id="6281763101136022427">URL</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Տեքստը <ph name="MIN_CHARACTERS" /> գրանշանից պակաս չի կարող լինել (ներկայումս 1 գրանշան է)։</translation>
 <translation id="7034405885550056553">առաջարկ</translation>
 <translation id="709897737746224366">Հետևեք պահանջված ձևաչափին:</translation>
+<translation id="7102274145889307184">ընթացիկ տեղադրությունը</translation>
 <translation id="7118469954320184356">Նկարագրություն չկա:</translation>
 <translation id="7139483182332611405">ներածական</translation>
 <translation id="7214187073215825913">տեղեկություններ բովանդակության մասին</translation>

@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Denne måned</translation>
 <translation id="1637811476055996098">Vælg filer</translation>
 <translation id="1650423536718072820">opmærksomhedsskabende citat</translation>
+<translation id="1681022320378710418">aktuelt klokkeslæt</translation>
 <translation id="1727886345390570319">skjul menuen for undertekster</translation>
 <translation id="1729654308190250600">Angiv en mailadresse, der ikke er tom.</translation>
 <translation id="1758486001363313524">Andet...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Angiv en webadresse.</translation>
 <translation id="3175736971608411871">timer</translation>
 <translation id="3199563858620722075">kombifelt</translation>
+<translation id="3220661731597678625">aktuelt trin</translation>
 <translation id="3329013043687509092">Mætning</translation>
 <translation id="3450233048674729344">Værdien skal være mindre end eller lig med <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">definition</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="479989351350248267">søg</translation>
 <translation id="4812940957355064477">Angiv et nummer.</translation>
+<translation id="4912200001568447310">aktuelt element</translation>
 <translation id="4912536737030637138">bibliografipost</translation>
 <translation id="4915360478455618802">Vis tidsvælger</translation>
 <translation id="492244087561876220">kommentar</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Mediet kunne ikke afspilles.</translation>
 <translation id="537648784377940524">Minimumsdatoen (<ph name="MIN_DATE_OR_TIME" />) skal finde sted før maksimumsdatoen (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">tal</translation>
+<translation id="5425179576310518467">aktuel dato</translation>
 <translation id="5453733299334684579">træelement</translation>
 <translation id="5466621249238537318">Vælg en eller flere filer.</translation>
 <translation id="5468998798572797635">afslut fuld skærm</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">måler</translation>
 <translation id="6166809985690652833">efterskrift</translation>
 <translation id="6209276755895393898">Det lader til at være: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">aktuel side</translation>
 <translation id="6213469881011901533">ordliste</translation>
 <translation id="6281588256137006900">Lysstyrke</translation>
 <translation id="6281763101136022427">webadresse</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Forlæng denne tekst til <ph name="MIN_CHARACTERS" /> eller flere tegn (du bruger i øjeblikket ét tegn).</translation>
 <translation id="7034405885550056553">forslag</translation>
 <translation id="709897737746224366">Find et match til det anmodede format.</translation>
+<translation id="7102274145889307184">aktuel placering</translation>
 <translation id="7118469954320184356">Der er ingen beskrivelse.</translation>
 <translation id="7139483182332611405">forord</translation>
 <translation id="7214187073215825913">oplysninger om indholdet</translation>

@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Ebben a hónapban</translation>
 <translation id="1637811476055996098">Fájlok kiválasztása</translation>
 <translation id="1650423536718072820">kiemelt idézet</translation>
+<translation id="1681022320378710418">aktuális idő</translation>
 <translation id="1727886345390570319">a feliratok menü elrejtése</translation>
 <translation id="1729654308190250600">Kérjük, ne hagyja üresen az e-mail-cím mezőjét.</translation>
 <translation id="1758486001363313524">Más...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Adjon meg egy URL-t.</translation>
 <translation id="3175736971608411871">időzítő</translation>
 <translation id="3199563858620722075">legördülő lista</translation>
+<translation id="3220661731597678625">aktuális lépés</translation>
 <translation id="3329013043687509092">Telítettség</translation>
 <translation id="3450233048674729344">Az érték legyen kisebb vagy egyenlő, mint <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">definíció</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4812940957355064477">Kérjük, adjon meg egy számot.</translation>
+<translation id="4912200001568447310">aktuális elem</translation>
 <translation id="4912536737030637138">bibliográfiai bejegyzés</translation>
 <translation id="4915360478455618802">Időválasztó megjelenítése</translation>
 <translation id="492244087561876220">megjegyzés</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Nem sikerült a médiafájl lejátszása.</translation>
 <translation id="537648784377940524">A minimális dátumnak (<ph name="MIN_DATE_OR_TIME" />) a maximális dátum (<ph name="MAX_DATE_OR_TIME" />) elé kell esnie.</translation>
 <translation id="5406322316791861025">alak</translation>
+<translation id="5425179576310518467">aktuális dátum</translation>
 <translation id="5453733299334684579">faelem</translation>
 <translation id="5466621249238537318">Kérjük, válasszon ki egy vagy több fájlt.</translation>
 <translation id="5468998798572797635">kilépés a teljes képernyős nézetből</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">mérő</translation>
 <translation id="6166809985690652833">utószó</translation>
 <translation id="6209276755895393898">Úgy tűnik, hogy a következőről van szó: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">aktuális oldal</translation>
 <translation id="6213469881011901533">szószedet</translation>
 <translation id="6281588256137006900">Világosság</translation>
 <translation id="6281763101136022427">url</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Legalább <ph name="MIN_CHARACTERS" /> karakter hosszú szöveget adjon meg (jelenleg 1 karaktert használ).</translation>
 <translation id="7034405885550056553">javaslat</translation>
 <translation id="709897737746224366">Kérjük, tartsa magát a kívánt formátumhoz.</translation>
+<translation id="7102274145889307184">aktuális hely</translation>
 <translation id="7118469954320184356">Nincs leírás.</translation>
 <translation id="7139483182332611405">bevezető</translation>
 <translation id="7214187073215825913">tartalom adatai</translation>
