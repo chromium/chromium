@@ -3051,6 +3051,8 @@ enum WebFeature {
   kV8HTMLVideoElement_GetVideoPlaybackQuality_Method = 3722,
   kXRWebGLBindingGetReflectionCubeMap = 3723,
   kXRFrameGetLightEstimate = 3724,
+  kV8HTMLDialogElement_Show_Method = 3725,
+  kV8HTMLDialogElement_ShowModal_Method = 3726,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

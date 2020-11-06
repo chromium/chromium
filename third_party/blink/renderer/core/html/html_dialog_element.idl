@@ -30,7 +30,7 @@
 ] interface HTMLDialogElement : HTMLElement {
     [CEReactions, Reflect] attribute boolean open;
     attribute DOMString returnValue;
-    [CEReactions] void show();
-    [CEReactions, RaisesException] void showModal();
+    [CEReactions, Measure] void show();
+    [CEReactions, Measure, RaisesException] void showModal();
     [CEReactions] void close(optional DOMString returnValue);
 };
