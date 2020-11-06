@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/holding_space/holding_space_tray_icon_item.h"
+#include "ash/system/holding_space/holding_space_tray_icon_preview.h"
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
@@ -151,20 +151,21 @@ class ContentsImage : public gfx::ImageSkia {
 
 }  // namespace
 
-// HoldingSpaceTrayIconItem ----------------------------------------------------
+// HoldingSpaceTrayIconPreview -------------------------------------------------
 
-HoldingSpaceTrayIconItem::HoldingSpaceTrayIconItem(HoldingSpaceTrayIcon* icon,
-                                                   const HoldingSpaceItem* item)
+HoldingSpaceTrayIconPreview::HoldingSpaceTrayIconPreview(
+    HoldingSpaceTrayIcon* icon,
+    const HoldingSpaceItem* item)
     : icon_(icon), item_(item) {
   contents_image_ = std::make_unique<ContentsImage>(
-      item_, base::BindRepeating(&HoldingSpaceTrayIconItem::InvalidateLayer,
+      item_, base::BindRepeating(&HoldingSpaceTrayIconPreview::InvalidateLayer,
                                  base::Unretained(this)));
   icon_observer_.Add(icon_);
 }
 
-HoldingSpaceTrayIconItem::~HoldingSpaceTrayIconItem() = default;
+HoldingSpaceTrayIconPreview::~HoldingSpaceTrayIconPreview() = default;
 
-void HoldingSpaceTrayIconItem::AnimateIn(size_t index) {
+void HoldingSpaceTrayIconPreview::AnimateIn(size_t index) {
   DCHECK(transform_.IsIdentity());
 
   if (index > 0u) {
@@ -196,7 +197,7 @@ void HoldingSpaceTrayIconItem::AnimateIn(size_t index) {
   layer_->SetTransform(transform_);
 }
 
-void HoldingSpaceTrayIconItem::AnimateOut(
+void HoldingSpaceTrayIconPreview::AnimateOut(
     base::OnceClosure animate_out_closure) {
   animate_out_closure_ = std::move(animate_out_closure);
 
@@ -213,7 +214,7 @@ void HoldingSpaceTrayIconItem::AnimateOut(
   layer_->SetVisible(false);
 }
 
-void HoldingSpaceTrayIconItem::AnimateShift() {
+void HoldingSpaceTrayIconPreview::AnimateShift() {
   gfx::Vector2dF translation(kTrayItemSize / 2, 0);
   AdjustForShelfAlignmentAndTextDirection(&translation);
   transform_.Translate(translation);
@@ -233,7 +234,7 @@ void HoldingSpaceTrayIconItem::AnimateShift() {
   }
 }
 
-void HoldingSpaceTrayIconItem::AnimateUnshift() {
+void HoldingSpaceTrayIconPreview::AnimateUnshift() {
   gfx::Vector2dF translation(-kTrayItemSize / 2, 0);
   AdjustForShelfAlignmentAndTextDirection(&translation);
   transform_.Translate(translation);
@@ -263,7 +264,7 @@ void HoldingSpaceTrayIconItem::AnimateUnshift() {
   layer_->SetOpacity(1.f);
 }
 
-void HoldingSpaceTrayIconItem::OnShelfAlignmentChanged(
+void HoldingSpaceTrayIconPreview::OnShelfAlignmentChanged(
     ShelfAlignment old_shelf_alignment,
     ShelfAlignment new_shelf_alignment) {
   // If shelf orientation has not changed, no action needs to be taken.
@@ -307,7 +308,8 @@ void HoldingSpaceTrayIconItem::OnShelfAlignmentChanged(
 }
 
 // TODO(crbug.com/1142572): Support theming.
-void HoldingSpaceTrayIconItem::OnPaintLayer(const ui::PaintContext& context) {
+void HoldingSpaceTrayIconPreview::OnPaintLayer(
+    const ui::PaintContext& context) {
   const gfx::Rect contents_bounds = GetContentsBounds();
 
   ui::PaintRecorder recorder(context, gfx::Size(kTrayItemSize, kTrayItemSize));
@@ -330,13 +332,13 @@ void HoldingSpaceTrayIconItem::OnPaintLayer(const ui::PaintContext& context) {
   }
 }
 
-void HoldingSpaceTrayIconItem::OnDeviceScaleFactorChanged(
+void HoldingSpaceTrayIconPreview::OnDeviceScaleFactorChanged(
     float old_device_scale_factor,
     float new_device_scale_factor) {
   InvalidateLayer();
 }
 
-void HoldingSpaceTrayIconItem::OnImplicitAnimationsCompleted() {
+void HoldingSpaceTrayIconPreview::OnImplicitAnimationsCompleted() {
   if (layer_->visible())
     return;
 
@@ -348,18 +350,18 @@ void HoldingSpaceTrayIconItem::OnImplicitAnimationsCompleted() {
     std::move(animate_out_closure_).Run();
 }
 
-void HoldingSpaceTrayIconItem::OnViewBoundsChanged(views::View* view) {
+void HoldingSpaceTrayIconPreview::OnViewBoundsChanged(views::View* view) {
   DCHECK_EQ(icon_, view);
   if (layer_)
     UpdateLayerBounds();
 }
 
-void HoldingSpaceTrayIconItem::OnViewIsDeleting(views::View* view) {
+void HoldingSpaceTrayIconPreview::OnViewIsDeleting(views::View* view) {
   DCHECK_EQ(icon_, view);
   icon_observer_.Remove(icon_);
 }
 
-void HoldingSpaceTrayIconItem::CreateLayer() {
+void HoldingSpaceTrayIconPreview::CreateLayer() {
   DCHECK(!layer_);
   layer_ = std::make_unique<ui::Layer>(ui::LAYER_TEXTURED);
   layer_->SetFillsBoundsOpaquely(false);
@@ -368,7 +370,7 @@ void HoldingSpaceTrayIconItem::CreateLayer() {
   UpdateLayerBounds();
 }
 
-bool HoldingSpaceTrayIconItem::NeedsLayer() const {
+bool HoldingSpaceTrayIconPreview::NeedsLayer() const {
   // With horizontal shelf in RTL, `primary_axis_translation` is expected to be
   // negative prior to taking its absolute value since it represents an offset
   // relative to the parent layer's right bound.
@@ -377,15 +379,15 @@ bool HoldingSpaceTrayIconItem::NeedsLayer() const {
           /*horizontal=*/transform_.To2dTranslation().x(),
           /*vertical=*/transform_.To2dTranslation().y()));
   return primary_axis_translation <
-         kHoldingSpaceTrayIconMaxVisibleItems * kTrayItemSize / 2;
+         kHoldingSpaceTrayIconMaxVisiblePreviews * kTrayItemSize / 2;
 }
 
-void HoldingSpaceTrayIconItem::InvalidateLayer() {
+void HoldingSpaceTrayIconPreview::InvalidateLayer() {
   if (layer_)
     layer_->SchedulePaint(gfx::Rect(layer_->size()));
 }
 
-void HoldingSpaceTrayIconItem::AdjustForShelfAlignmentAndTextDirection(
+void HoldingSpaceTrayIconPreview::AdjustForShelfAlignmentAndTextDirection(
     gfx::Vector2dF* vector_2df) {
   if (!icon_->shelf()->IsHorizontalAlignment()) {
     const float x = vector_2df->x();
@@ -399,7 +401,7 @@ void HoldingSpaceTrayIconItem::AdjustForShelfAlignmentAndTextDirection(
     vector_2df->Scale(-1.f);
 }
 
-void HoldingSpaceTrayIconItem::UpdateLayerBounds() {
+void HoldingSpaceTrayIconPreview::UpdateLayerBounds() {
   DCHECK(layer_);
   // With a horizontal shelf in RTL, `layer_` is aligned with its parent layer's
   // right bound and translated with a negative offset. In all other cases,

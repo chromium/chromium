@@ -21,7 +21,7 @@
 
 namespace ash {
 
-class HoldingSpaceTrayIconItem;
+class HoldingSpaceTrayIconPreview;
 class Shelf;
 
 // TODO(crbug.com/1142572): Implement content forward icon w/ motion spec.
@@ -67,20 +67,20 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   void InitLayout();
   void UpdatePreferredSize();
 
-  // Invoked when the specified icon item has completed animated out. At this
-  // point it is owned by `removed_icon_items_` and should be destroyed.
-  void OnHoldingSpaceTrayIconItemAnimatedOut(HoldingSpaceTrayIconItem*);
+  // Invoked when the specified preview has completed animating out. At this
+  // point it is owned by `removed_previews_` and should be destroyed.
+  void OnHoldingSpaceTrayIconPreviewAnimatedOut(HoldingSpaceTrayIconPreview*);
 
   // The shelf associated with this holding space tray icon.
   Shelf* const shelf_;
 
-  // An icon item is added to the tray icon to visually represent each holding
-  // space item. Upon creation, icon items are added to `icon_items_` where they
-  // are owned until being animated out. Upon being animated out, icon items are
-  // moved to `removed_icon_items_` where they are owned until the out animation
-  // completes and are subsequently destroyed.
-  std::vector<std::unique_ptr<HoldingSpaceTrayIconItem>> icon_items_;
-  std::vector<std::unique_ptr<HoldingSpaceTrayIconItem>> removed_icon_items_;
+  // A preview is added to the tray icon to visually represent each holding
+  // space item. Upon creation, previews are added to `previews_` where they
+  // are owned until being animated out. Upon being animated out, previews are
+  // moved to `removed_previews_` where they are owned until the out animation
+  // completes and they are subsequently destroyed.
+  std::vector<std::unique_ptr<HoldingSpaceTrayIconPreview>> previews_;
+  std::vector<std::unique_ptr<HoldingSpaceTrayIconPreview>> removed_previews_;
 
   ScopedObserver<HoldingSpaceController, HoldingSpaceControllerObserver>
       controller_observer_{this};
