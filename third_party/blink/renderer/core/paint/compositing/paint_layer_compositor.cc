@@ -216,10 +216,11 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeededRecursiveInternal(
     // TODO(bbudge) Remove this check when trusted Pepper plugins are gone.
     if (local_frame->GetDocument()->IsActive() &&
         local_frame->ContentLayoutObject()) {
-      local_frame->ContentLayoutObject()
-          ->Compositor()
-          ->UpdateAssignmentsIfNeededRecursiveInternal(
-              target_state, compositing_reasons_stats);
+      auto* child_compositor = local_frame->ContentLayoutObject()->Compositor();
+      child_compositor->UpdateAssignmentsIfNeededRecursiveInternal(
+          target_state, compositing_reasons_stats);
+      if (child_compositor->root_layer_attachment_dirty_)
+        SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
     }
   }
 

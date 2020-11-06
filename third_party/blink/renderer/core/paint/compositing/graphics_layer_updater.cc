@@ -146,15 +146,6 @@ void GraphicsLayerUpdater::UpdateRecursive(
     }
   }
 
-  if (auto* embedded =
-          DynamicTo<LayoutEmbeddedContent>(layer.GetLayoutObject())) {
-    if (PaintLayerCompositor* inner_compositor =
-            PaintLayerCompositor::FrameContentsCompositor(*embedded)) {
-      if (inner_compositor->RootLayerAttachmentDirty())
-        needs_rebuild_tree_ = true;
-    }
-  }
-
   PaintLayer* first_child = layer.FirstChild();
   // If we have children but the update is blocked, then we should clear the
   // first child to block recursion.
