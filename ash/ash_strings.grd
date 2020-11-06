@@ -2456,6 +2456,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_IN_SESSION_AUTH_ACCESSIBLE_TITLE" desc="Accessibility text read by chromevox to indicate which website / app we are authenticating for.">
         Verify your identity: <ph name="ORIGIN_NAME">$1<ex>example.com</ex></ph> would like to confirm it's you
       </message>
+      <message name="IDS_ASH_IN_SESSION_AUTH_PIN_PLACEHOLDER" desc="Text to display as placeholder in the PIN input field when PIN autosubmit is disabled.">
+        PIN
+      </message>
       <message name="IDS_ASH_IN_SESSION_AUTH_PIN_INCORRECT" desc="Text shown in the auth dialog to tell the user that incorrect PIN was entered">
         Incorrect PIN
       </message>
@@ -2463,7 +2466,7 @@ This file contains the strings for ash.
         Too many attempts
       </message>
       <message name="IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_AVAILABLE" desc="Text shown in the auth dialog to remind user that fingerprint auth is supported">
-        Authenticate with fingerprint
+        Touch the fingerprint sensor
       </message>
       <message name="IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_TOUCH_SENSOR" desc="Text shown in the auth dialog to warn the user they should touch the fingerprint sensor instead of the fingerprint icon">
         Please touch the sensor

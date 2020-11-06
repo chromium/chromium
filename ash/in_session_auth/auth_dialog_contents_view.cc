@@ -424,10 +424,7 @@ void AuthDialogContentsView::AddPinTextInputView() {
   pin_text_input_view_->SetVisible(true);
 
   pin_text_input_view_->SetPlaceholderText(
-      (auth_methods_ & kAuthPin)
-          ? l10n_util::GetStringUTF16(
-                IDS_ASH_LOGIN_POD_PASSWORD_PIN_PLACEHOLDER)
-          : l10n_util::GetStringUTF16(IDS_ASH_LOGIN_POD_PASSWORD_PLACEHOLDER));
+      l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_PIN_PLACEHOLDER));
 }
 
 void AuthDialogContentsView::AddPinDigitInputView() {
