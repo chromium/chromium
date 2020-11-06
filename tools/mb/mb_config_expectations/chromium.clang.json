@@ -400,6 +400,15 @@
       "win_linker_timing": true
     }
   },
+  "ToTWindowsCoverage": {
+    "gn_args": {
+      "is_clang": true,
+      "is_debug": false,
+      "llvm_force_head_revision": true,
+      "symbol_level": 1,
+      "use_clang_coverage": true
+    }
+  },
   "ToTiOS": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
