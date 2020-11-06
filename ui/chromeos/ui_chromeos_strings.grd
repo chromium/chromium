@@ -824,19 +824,19 @@
         Italian
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_JAPANESE" desc="The input method name shows in system tray menu and settings page. Native name in Japanese is '英数入力（日本語キーボード用）'. This refers to the keyboard with Japanese JIS layout that types Latin alphanumeric and symbol characters.">
-        Alphanumeric input (for Japanese keyboard)
+        Alphanumeric with Japanese keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_KAZAKH" desc="The input method name shows in system tray menu and settings page.">
-        Kazakh keyboard
+        Kazakh
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_LATIN_AMERICAN" desc="The input method name shows in system tray menu and settings page.">
         Latin American keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_LATVIAN" desc="The input method name shows in system tray menu and settings page.">
-        Latvian keyboard
+        Latvian
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_LITHUANIAN" desc="The input method name shows in system tray menu and settings page.">
-        Lithuanian keyboard
+        Lithuanian
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_MACEDONIAN" desc="The input method name shows in system tray menu and settings page.">
         Macedonian keyboard
@@ -963,10 +963,10 @@
         Dayi input method
       </message>
       <message name="IDS_IME_NAME_INPUTMETHOD_MOZC_JP" desc="The input method name shows in system tray menu, this is Google Japanese input method on Japanese JIS keyboard layout. Native name in Japanese is '日本語入力（日本語キーボード用）'.">
-        Japanese input (for Japanese keyboard)
+        Japanese
       </message>
       <message name="IDS_IME_NAME_INPUTMETHOD_MOZC_US" desc="The input method name shows in system tray menu, this is Google Japanese input method on US ANSI keyboard layout. Native name in Japanese is '日本語入力（USキーボード用）'">
-        Japanese input (for US keyboard)
+        Japanese with US keyboard
       </message>
       <message name="IDS_IME_NAME_INPUTMETHOD_PINYIN" desc="The input method name shows in system tray menu, this is Pinyin input method for Simplified Chinese.">
         Pinyin input method
@@ -987,7 +987,7 @@
         Cantonese input method
       </message>
       <message name="IDS_IME_NAME_INPUTMETHOD_HANGUL" desc="The input method name shows in system tray menu, this is Korean Hangul input method.">
-        Korean input method
+        Korean
       </message>
       <message name="IDS_IME_NAME_INPUTMETHOD_HANGUL_2_SET" desc="The input method name shows in system tray menu, this is Korean Hangul input method, 2 Set mode.">
         Hangul 2 Set
@@ -1030,13 +1030,13 @@
         Hindi keyboard (Phonetic)
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_KANNADA_PHONETIC" desc="The input method name shows in system tray menu and settings page.">
-        Kannada keyboard (Phonetic)
+        Kannada Phonetic
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_KHMER" desc="The input method name shows in system tray menu and settings page.">
-        Khmer keyboard
+        Khmer
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_LAO" desc="The input method name shows in system tray menu and settings page.">
-        Lao keyboard
+        Lao
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_MALAYALAM_PHONETIC" desc="The input method name shows in system tray menu and settings page.">
         Malayalam keyboard (Phonetic)
@@ -1132,8 +1132,8 @@
       <message name="IDS_IME_NAME_TRANSLITERATION_HI" desc="The input method name shows in system tray menu and settings page.">
         Hindi
       </message>
-      <message name="IDS_IME_NAME_TRANSLITERATION_KN" desc="The input method name shows in system tray menu and settings page. Please translate only for 'transliteration'.">
-        Transliteration (namaskaram &#x2192; &#x0ca8;&#x0cae;&#x0cb8;&#x0ccd;&#x0c95;&#x0cbe;&#x0cb0;)
+      <message name="IDS_IME_NAME_TRANSLITERATION_KN" desc="The input method name shows in system tray menu and settings page.">
+        Kannada Transliteration
       </message>
       <message name="IDS_IME_NAME_TRANSLITERATION_ML" desc="The input method name shows in system tray menu and settings page. Please translate only for 'transliteration'.">
         Transliteration (namaskar &#x2192; &#x0d28;&#x0d2e;&#x0d38;&#x0d4d;&#x0d15;&#x0d3e;&#x0d30;&#x0d02;)
