@@ -3726,6 +3726,21 @@
     "policy_pref_mapping_tests": { "scroll_to_text_fragment_enabled": {} }
   },
 
+  "TargetBlankImpliesNoOpener": {
+    "os": ["win", "linux", "mac", "chromeos", "android"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": { "TargetBlankImpliesNoOpener": false },
+        "prefs": {
+          "policy.target_blank_implies_noopener": {
+            "local_state": true,
+            "value": false
+          }
+        }
+      }
+    ]
+  },
+
   "GloballyScopeHTTPAuthCacheEnabled": {
     "os": ["win", "linux", "mac", "chromeos", "android"],
     "test_policy": { "GloballyScopeHTTPAuthCacheEnabled": true },

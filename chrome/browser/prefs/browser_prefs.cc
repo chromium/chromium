@@ -604,6 +604,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
       policy::policy_prefs::kIntensiveWakeUpThrottlingEnabled, false);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kUserAgentClientHintsEnabled, true);
+  registry->RegisterBooleanPref(
+      policy::policy_prefs::kTargetBlankImpliesNoOpener, true);
 #if defined(OS_ANDROID)
   registry->RegisterBooleanPref(policy::policy_prefs::kBackForwardCacheEnabled,
                                 true);

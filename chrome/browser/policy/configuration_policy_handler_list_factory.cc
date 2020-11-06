@@ -1300,6 +1300,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kLookalikeWarningAllowlistDomains,
     prefs::kLookalikeWarningAllowlistDomains,
     base::Value::Type::LIST },
+  { key::kTargetBlankImpliesNoOpener,
+    policy::policy_prefs::kTargetBlankImpliesNoOpener,
+    base::Value::Type::BOOLEAN },
 
 #if defined(OS_ANDROID)
   { key::kTosDialogBehavior,

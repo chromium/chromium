@@ -743,4 +743,8 @@ void WebRuntimeFeatures::EnableWebID(bool enable) {
   RuntimeEnabledFeatures::SetWebIDEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableTargetBlankImpliesNoOpener(bool enable) {
+  RuntimeEnabledFeatures::SetTargetBlankImpliesNoOpenerEnabled(enable);
+}
+
 }  // namespace blink

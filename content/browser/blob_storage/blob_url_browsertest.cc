@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, LinkToSameOriginBlobWithAuthority) {
       "link.innerText = 'Click Me!';"
       "link.href = 'blob:http://spoof.com@' + "
       "    URL.createObjectURL(new Blob(['potato'])).split('://')[1];"
-      "link.target = '_blank';"
+      "link.rel = 'opener'; link.target = '_blank';"
       "link.click()"));
 
   // The link should create a new tab.

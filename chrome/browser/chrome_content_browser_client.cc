@@ -2326,6 +2326,12 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
             blink::switches::kUserAgentClientHintDisable);
       }
 
+      if (!local_state->GetBoolean(
+              policy::policy_prefs::kTargetBlankImpliesNoOpener)) {
+        command_line->AppendSwitch(
+            switches::kDisableTargetBlankImpliesNoOpener);
+      }
+
 #if defined(OS_ANDROID)
       // Communicating to content/ for BackForwardCache.
       if (prefs->HasPrefPath(policy::policy_prefs::kBackForwardCacheEnabled) &&

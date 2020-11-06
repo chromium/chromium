@@ -56,6 +56,11 @@ const char kIntensiveWakeUpThrottlingEnabled[] =
 const char kUserAgentClientHintsEnabled[] =
     "policy.user_agent_client_hints_enabled";
 
+// Boolean that controls whether a window spawned from an anchor targeting
+// _blank receives an opener. TODO(crbug.com/898942): Remove this in Chrome 95.
+const char kTargetBlankImpliesNoOpener[] =
+    "policy.target_blank_implies_noopener";
+
 #if defined(OS_ANDROID)
 // Boolean policy preference to disable the BackForwardCache feature.
 const char kBackForwardCacheEnabled[] = "policy.back_forward_cache_enabled";

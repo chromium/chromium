@@ -26,6 +26,7 @@ function verifyRegistration(scheme) {
   const url = `${scheme}:path`;
   const a = document.body.appendChild(document.createElement('a'));
   a.href = url;
+  a.rel = 'opener';
   a.target = '_blank';
   return new Promise((resolve, reject) => {
     window.addEventListener('message', function(event) {

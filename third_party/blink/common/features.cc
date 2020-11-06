@@ -813,5 +813,10 @@ const base::Feature kLoadingTasksUnfreezable{"LoadingTasksUnfreezable",
 // with @keyframes rules in their stylesheets.
 const base::Feature kCSSKeyframesMemoryReduction{
     "CSSKeyframesMemoryReduction", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Kill switch for the new behavior whereby anchors with target=_blank get
+// noopener behavior by default. TODO(crbug.com/898942): Remove in Chrome 95.
+const base::Feature kTargetBlankImpliesNoOpener{
+    "TargetBlankImpliesNoOpener", base::FEATURE_ENABLED_BY_DEFAULT};
 }  // namespace features
 }  // namespace blink

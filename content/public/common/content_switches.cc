@@ -258,6 +258,11 @@ const char kDisableSpeechAPI[]              = "disable-speech-api";
 // Disables the speech synthesis part of Web Speech API.
 const char kDisableSpeechSynthesisAPI[]     = "disable-speech-synthesis-api";
 
+// Used to communicate managed policy for the TargetBlankImpliesNoOpenerDisable
+// behavioral change.
+extern const char kDisableTargetBlankImpliesNoOpener[] =
+    "target-blank-implies-no-opener-disable";
+
 // Disables adding the test certs in the network process.
 const char kDisableTestCerts[]              = "disable-test-root-certs";
 

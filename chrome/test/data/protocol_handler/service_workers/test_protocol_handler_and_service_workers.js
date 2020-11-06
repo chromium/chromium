@@ -24,6 +24,7 @@ function registerHTMLHandler() {
 async function handledByServiceWorker(url) {
   const a = document.body.appendChild(document.createElement('a'));
   a.href = url;
+  a.rel = 'opener';
   a.target = '_blank';
   let handled_by_service_worker;
   await new Promise(resolve => {

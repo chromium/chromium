@@ -330,10 +330,19 @@ void HTMLAnchorElement::SetRel(const AtomicString& value) {
     link_relations_ |= kRelationNoReferrer;
   if (new_link_relations.Contains("noopener"))
     link_relations_ |= kRelationNoOpener;
+  if (new_link_relations.Contains("opener"))
+    link_relations_ |= kRelationOpener;
 }
 
 const AtomicString& HTMLAnchorElement::GetName() const {
   return GetNameAttribute();
+}
+
+const AtomicString& HTMLAnchorElement::GetEffectiveTarget() const {
+  const AtomicString& target = FastGetAttribute(html_names::kTargetAttr);
+  if (!target.IsEmpty())
+    return target;
+  return GetDocument().BaseTarget();
 }
 
 int HTMLAnchorElement::DefaultTabIndex() const {
@@ -525,7 +534,7 @@ void HTMLAnchorElement::HandleClick(Event& event) {
 
   request.SetRequestContext(mojom::blink::RequestContextType::HYPERLINK);
   request.SetHasUserGesture(LocalFrame::HasTransientUserActivation(frame));
-  const AtomicString& target = FastGetAttribute(html_names::kTargetAttr);
+  const AtomicString& target = GetEffectiveTarget();
   FrameLoadRequest frame_request(window, request);
   frame_request.SetNavigationPolicy(NavigationPolicyFromEvent(&event));
   frame_request.SetClientRedirectReason(ClientNavigationReason::kAnchorClick);
@@ -533,8 +542,12 @@ void HTMLAnchorElement::HandleClick(Event& event) {
     frame_request.SetNoReferrer();
     frame_request.SetNoOpener();
   }
-  if (HasRel(kRelationNoOpener))
+  if (HasRel(kRelationNoOpener) ||
+      (EqualIgnoringASCIICase(target, "_blank") && !HasRel(kRelationOpener) &&
+       RuntimeEnabledFeatures::TargetBlankImpliesNoOpenerEnabled())) {
     frame_request.SetNoOpener();
+  }
+
   frame_request.SetTriggeringEventInfo(
       event.isTrusted() ? TriggeringEventInfo::kFromTrustedEvent
                         : TriggeringEventInfo::kFromUntrustedEvent);
@@ -543,11 +556,7 @@ void HTMLAnchorElement::HandleClick(Event& event) {
   frame->MaybeLogAdClickNavigation();
 
   Frame* target_frame =
-      frame->Tree()
-          .FindOrCreateFrameForNavigation(
-              frame_request,
-              target.IsEmpty() ? GetDocument().BaseTarget() : target)
-          .frame;
+      frame->Tree().FindOrCreateFrameForNavigation(frame_request, target).frame;
 
   // If hrefTranslate is enabled and set restrict processing it
   // to same frame or navigations with noopener set.

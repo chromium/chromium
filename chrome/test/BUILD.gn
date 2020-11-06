@@ -1238,6 +1238,7 @@ if (!is_android) {
       "../browser/policy/signed_exchange_browsertest.cc",
       "../browser/policy/site_isolation_policy_browsertest.cc",
       "../browser/policy/url_blacklist_policy_browsertest.cc",
+      "../browser/policy/window_opener_policy_browsertest.cc",
       "../browser/portal/portal_browsertest.cc",
       "../browser/portal/portal_recently_audible_browsertest.cc",
       "../browser/predictors/loading_predictor_browsertest.cc",

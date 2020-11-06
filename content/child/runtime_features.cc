@@ -368,6 +368,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            blink::features::kParentNodeReplaceChildren},
           {"RawClipboard", blink::features::kRawClipboard},
           {"StorageAccessAPI", blink::features::kStorageAccessAPI},
+          {"TargetBlankImpliesNoOpener",
+           blink::features::kTargetBlankImpliesNoOpener},
           {"TrustedDOMTypes", features::kTrustedDOMTypes},
           {"UserAgentClientHint", features::kUserAgentClientHint},
           {"WebAppManifestDisplayOverride",
@@ -410,6 +412,8 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
       {wrf::EnablePresentationAPI, switches::kDisablePresentationAPI, false},
       {wrf::EnableRemotePlaybackAPI, switches::kDisableRemotePlaybackAPI,
        false},
+      {wrf::EnableTargetBlankImpliesNoOpener,
+       switches::kDisableTargetBlankImpliesNoOpener, false},
       {wrf::EnableTimerThrottlingForBackgroundTabs,
        switches::kDisableBackgroundTimerThrottling, false},
       // End of Stable Features

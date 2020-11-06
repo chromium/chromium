@@ -8,7 +8,7 @@ header("Content-Security-Policy: sandbox allow-scripts allow-popups allow-popups
     <script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
-    <a target='_blank' href='/security/resources/post-origin-to-opener.html'></a>
+    <a target='_blank' rel="opener" href='/security/resources/post-origin-to-opener.html'></a>
     <script>
         if (window.testRunner) {
             testRunner.setCanOpenWindows();

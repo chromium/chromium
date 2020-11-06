@@ -58,6 +58,7 @@ enum {
   //     RelationTag         = 0x00010000,
   //     RelationUp          = 0x00020000,
   kRelationNoOpener = 0x00040000,
+  kRelationOpener = 0x00080000
 };
 
 class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
@@ -72,6 +73,10 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
   void SetHref(const AtomicString&);
 
   const AtomicString& GetName() const;
+
+  // Returns the anchor's |target| attribute, unless it is empty, in which case
+  // the BaseTarget from the document is returned.
+  const AtomicString& GetEffectiveTarget() const;
 
   KURL Url() const final;
   void SetURL(const KURL&) final;

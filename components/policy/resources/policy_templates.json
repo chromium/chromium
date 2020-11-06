@@ -7455,6 +7455,29 @@
       'desc': '''This policy only takes effect when the policy <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME">SecurityTokenSessionBehavior</ph> is set to <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK">LOCK</ph> or <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT">LOGOUT</ph>, and a user who authenticates via a smart card removes that smart card. Then, this policy specifies for how many seconds a notification which informs the user of the impending action is displayed. This notification is blocking the screen. The action will only happen after this notification expires. The user can prevent the action from happening by re-inserting the smart card before the notification expires. If this policy is set to zero, no notification will be displayed and the action happens immediately.'''
     },
     {
+      'name': 'TargetBlankImpliesNoOpener',
+      'owners': ['ericlaw@microsoft.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:88-', 'chrome_os:88-', 'android:88-'],
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': False,
+      },
+      'example_value': False,
+      'default': True,
+      'id': 802,
+      'caption': '''Do not set <ph name="WINDOW_OPENER_PROPERTY">window.opener</ph> for links targeting <ph name="BLANK_PAGE_NAME">_blank</ph>''',
+      'tags': [],
+      'desc': '''Setting the policy to Disabled allows popups targeting <ph name="BLANK_PAGE_NAME">_blank</ph> to access (via JavaScript) the page that requested to open the popup.
+
+      Setting the policy to Enabled or leaving it unset causes the <ph name="WINDOW_OPENER_PROPERTY">window.opener</ph> property to be set to <ph name="NULL_VALUE">null</ph> unless the anchor specifies <ph name="REL_OPENER_ATTRIBUTE">rel="opener"</ph>.
+
+      This policy will be removed in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 95.
+
+      See https://chromestatus.com/feature/6140064063029248.''',
+    },
+    {
       'name': 'InstantEnabled',
       'owners': ['file://components/policy/resources/OWNERS'],
       'type': 'main',
@@ -24248,6 +24271,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 801,
+  'highest_id_currently_used': 802,
   'highest_atomic_group_id_currently_used': 40
 }

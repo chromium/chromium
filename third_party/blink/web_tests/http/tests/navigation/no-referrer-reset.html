@@ -1,10 +1,10 @@
 <html><body>
 This tests whether referrer information gets properly set and reset when "noreferrer" links are present. We do the following:<br/>
-1. Open a link in a new window: referrer is sent and window.opener is sent.<br/>
+1. Open a rel="opener" link in a new window: referrer is sent and window.opener is sent.<br/>
 2. Click a rel="noreferrer" link: referrer is null, but window.opener remains set since the link was not opened with target="_blank".<br/>
 3. Click a link without rel="noreferrer": referrer is sent, but window.opener is still set.
 <br/>
-<a id="link" href="resources/no-referrer-reset-helper.php" target="_blank">Start reset test</a>
+<a id="link" rel="opener" href="resources/no-referrer-reset-helper.php" target="_blank">Start reset test</a>
 <script>
     window.name = "consoleWindow";
     window.noreferrerStepDone = false;
@@ -18,7 +18,7 @@ This tests whether referrer information gets properly set and reset when "norefe
     eventSender.mouseMoveTo(target.offsetLeft + 2, target.offsetTop + 2);
     eventSender.mouseDown();
     eventSender.mouseUp();
-    
+
 function log(msg)
 {
     var line = document.createElement('div');

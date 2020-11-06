@@ -93,6 +93,7 @@ const char kOpenUrlViaClickTargetFunc[] =
     "(function(url) {\n"
     "  var lnk = document.createElement(\"a\");\n"
     "  lnk.href = url;\n"
+    "  lnk.rel = 'opener';\n"
     "  lnk.target = \"_blank\";\n"
     "  document.body.appendChild(lnk);\n"
     "  lnk.click();\n"
