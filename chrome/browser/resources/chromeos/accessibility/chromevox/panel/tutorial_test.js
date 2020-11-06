@@ -437,8 +437,8 @@ TEST_F('ChromeVoxTutorialTest', 'AutoReadTitle', function() {
   });
 });
 
-// Tests that the content of a non-interactive lesson is read when shown.
-TEST_F('ChromeVoxTutorialTest', 'AutoReadLesson', function() {
+// Tests that we read a hint for navigating a lesson when it is shown.
+TEST_F('ChromeVoxTutorialTest', 'LessonHint', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
@@ -454,10 +454,7 @@ TEST_F('ChromeVoxTutorialTest', 'AutoReadLesson', function() {
           tutorial.showLesson(0);
         })
         .expectSpeech('On, Off, and Stop', 'Heading 1')
-        .expectSpeech(
-            'To temporarily stop ChromeVox from speaking, ' +
-            'press the Control key.')
-        .expectSpeech('To turn ChromeVox on or off, use Control+Alt+Z.')
+        .expectSpeech('Press Search + left/right arrow to navigate the lesson')
         .replay();
   });
 });

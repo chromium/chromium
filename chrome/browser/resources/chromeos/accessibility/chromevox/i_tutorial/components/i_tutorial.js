@@ -558,9 +558,6 @@ Polymer({
       // Read the title since initial focus gets placed on the first piece of
       // text content.
       this.readCurrentLessonTitle();
-    } else {
-      // Otherwise, automatically read current lesson content.
-      setTimeout(this.readCurrentLessonContent.bind(this), 1000);
     }
   },
 
