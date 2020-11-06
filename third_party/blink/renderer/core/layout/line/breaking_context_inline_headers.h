@@ -79,6 +79,7 @@ class BreakingContext {
         at_start_(true),
         ignoring_spaces_(false),
         current_character_is_space_(false),
+        is_space_or_other_space_separator_(false),
         applied_start_width_(applied_start_width),
         include_end_width_(true),
         auto_wrap_(false),
@@ -205,6 +206,7 @@ class BreakingContext {
   bool at_start_;
   bool ignoring_spaces_;
   bool current_character_is_space_;
+  bool is_space_or_other_space_separator_;
   bool previous_character_is_space_;
   bool has_former_opportunity_;
   unsigned current_start_offset_;  // initial offset for the current text
@@ -290,9 +292,14 @@ inline bool RequiresLineBox(
     return true;
 
   UChar current = it.Current();
+  if (whitespace_position == kLeadingWhitespace &&
+      current == kIdeographicSpaceCharacter &&
+      line_info.PreviousLineBrokeCleanly())
+    return true;
   bool not_just_whitespace = current != kSpaceCharacter &&
                              current != kTabulationCharacter &&
                              current != kSoftHyphenCharacter &&
+                             current != kIdeographicSpaceCharacter &&
                              (current != kNewlineCharacter ||
                               it.GetLineLayoutItem().PreservesNewline());
   return not_just_whitespace || IsEmptyInline(it.GetLineLayoutItem());
@@ -376,8 +383,10 @@ inline void BreakingContext::InitializeForCurrentObject() {
 
   // Ensure the whitespace in constructions like '<span style="white-space:
   // pre-wrap">text <span><span> text</span>' does not collapse.
-  if (collapse_white_space_ && !ComputedStyle::CollapseWhiteSpace(last_ws_))
+  if (collapse_white_space_ && !ComputedStyle::CollapseWhiteSpace(last_ws_)) {
     current_character_is_space_ = false;
+    is_space_or_other_space_separator_ = false;
+  }
 
   // Since current_ iterates all along the text's length, we need to store the
   // initial offset of the current handle text so that we can then identify
@@ -629,6 +638,7 @@ inline void BreakingContext::HandleEmptyInline() {
       // If this object is at the start of the line, we need to behave like list
       // markers and start ignoring spaces.
       current_character_is_space_ = true;
+      is_space_or_other_space_separator_ = true;
       ignoring_spaces_ = true;
     } else {
       // If we are after a trailing space but aren't ignoring spaces yet then
@@ -666,6 +676,7 @@ inline void BreakingContext::HandleReplaced() {
   line_info_.SetEmpty(false);
   ignoring_spaces_ = false;
   current_character_is_space_ = false;
+  is_space_or_other_space_separator_ = false;
   trailing_objects_.Clear();
 
   // Optimize for a common case. If we can't find whitespace after the list
@@ -682,6 +693,7 @@ inline void BreakingContext::HandleReplaced() {
       // Like with inline flows, we start ignoring spaces to make sure that any
       // additional spaces we see will be discarded.
       current_character_is_space_ = true;
+      is_space_or_other_space_separator_ = true;
       ignoring_spaces_ = true;
     }
     if (LineLayoutListMarker(current_.GetLineLayoutItem()).IsInside())
@@ -709,6 +721,8 @@ ALWAYS_INLINE void BreakingContext::SetCurrentCharacterIsSpace(UChar c) {
   current_character_is_space_ =
       c == kSpaceCharacter || c == kTabulationCharacter ||
       (!preserves_newline_ && (c == kNewlineCharacter));
+  is_space_or_other_space_separator_ =
+      current_character_is_space_ || c == kIdeographicSpaceCharacter;
 }
 
 inline float FirstPositiveWidth(const WordMeasurements& word_measurements) {
@@ -1063,9 +1077,12 @@ inline bool BreakingContext::HandleText(WordMeasurements& word_measurements,
   UChar last_character = layout_text_info_.line_break_iterator_.LastCharacter();
   UChar second_to_last_character =
       layout_text_info_.line_break_iterator_.SecondToLastCharacter();
+  bool previous_is_space_or_other_space_separator = false;
   for (; current_.Offset() < layout_text.TextLength();
        current_.FastIncrementInTextNode()) {
     previous_character_is_space_ = current_character_is_space_;
+    previous_is_space_or_other_space_separator =
+        is_space_or_other_space_separator_;
     UChar c = current_.Current();
     SetCurrentCharacterIsSpace(c);
 
@@ -1128,7 +1145,7 @@ inline bool BreakingContext::HandleText(WordMeasurements& word_measurements,
       }
 
       PrepareForNextCharacter(layout_text, prohibit_break_inside,
-                              previous_character_is_space_);
+                              previous_is_space_or_other_space_separator);
       at_start_ = false;
       NextCharacter(c, last_character, second_to_last_character);
       continue;
@@ -1168,8 +1185,8 @@ inline bool BreakingContext::HandleText(WordMeasurements& word_measurements,
     // We keep track of the total width contributed by trailing space as we
     // often want to exclude it when determining
     // if a run fits on a line.
-    if (collapse_white_space_ && previous_character_is_space_ &&
-        current_character_is_space_ && last_width_measurement)
+    if (collapse_white_space_ && previous_is_space_or_other_space_separator &&
+        is_space_or_other_space_separator_ && last_width_measurement)
       width_.SetTrailingWhitespaceWidth(last_width_measurement);
 
     // If this is the end of the first word in run of text then make sure we
@@ -1287,7 +1304,7 @@ inline bool BreakingContext::HandleText(WordMeasurements& word_measurements,
     }
 
     PrepareForNextCharacter(layout_text, prohibit_break_inside,
-                            previous_character_is_space_);
+                            previous_is_space_or_other_space_separator);
     at_start_ = false;
     is_line_empty = line_info_.IsEmpty();
     NextCharacter(c, last_character, second_to_last_character);
@@ -1322,7 +1339,7 @@ inline bool BreakingContext::HandleText(WordMeasurements& word_measurements,
   width_.AddUncommittedWidth(last_width_measurement +
                              additional_width_from_ancestors);
 
-  if (collapse_white_space_ && current_character_is_space_ &&
+  if (collapse_white_space_ && is_space_or_other_space_separator_ &&
       last_width_measurement)
     width_.SetTrailingWhitespaceWidth(last_width_measurement +
                                       additional_width_from_ancestors);
@@ -1367,7 +1384,7 @@ inline bool BreakingContext::HandleText(WordMeasurements& word_measurements,
 inline void BreakingContext::PrepareForNextCharacter(
     const LineLayoutText& layout_text,
     bool& prohibit_break_inside,
-    bool previous_character_is_space) {
+    bool previous_is_space_or_other_space_separator) {
   if (layout_text.IsSVGInlineText() && current_.Offset()) {
     // Force creation of new InlineBoxes for each absolute positioned character
     // (those that start new text chunks).
@@ -1379,11 +1396,12 @@ inline void BreakingContext::PrepareForNextCharacter(
     current_.SetNextBreakablePosition(layout_text.TextLength());
     prohibit_break_inside = false;
   }
-  if (current_character_is_space_ && !previous_character_is_space) {
+  if (current_character_is_space_ && !previous_character_is_space_) {
     start_of_ignored_spaces_.SetLineLayoutItem(current_.GetLineLayoutItem());
     start_of_ignored_spaces_.SetOffset(current_.Offset());
   }
-  if (!current_character_is_space_ && previous_character_is_space) {
+  if (!is_space_or_other_space_separator_ &&
+      previous_is_space_or_other_space_separator) {
     if (auto_wrap_ && current_style_->BreakOnlyAfterWhiteSpace()) {
       line_break_.MoveTo(current_.GetLineLayoutItem(), current_.Offset(),
                          current_.NextBreakablePosition());
@@ -1462,10 +1480,13 @@ inline bool BreakingContext::TrailingSpaceExceedsAvailableWidth(
     bool apply_word_spacing,
     bool word_spacing,
     const Font& font) {
+  bool is_other_space_separator =
+      current_.Current() == kIdeographicSpaceCharacter;
   // If we break only after white-space, consider the current character
   // as candidate width for this line.
-  if (width_.FitsOnLine() && current_character_is_space_ &&
-      current_style_->BreakOnlyAfterWhiteSpace()) {
+  if (width_.FitsOnLine() && (is_other_space_separator ||
+                              (current_character_is_space_ &&
+                               current_style_->BreakOnlyAfterWhiteSpace()))) {
     float char_width = TextWidth(layout_text, current_.Offset(), 1, font,
                                  width_.CurrentWidth(), collapse_white_space_,
                                  &word_measurement.fallback_fonts,
