@@ -135,6 +135,8 @@ void WaylandToplevelWindow::Show(bool inactive) {
 
   if (auto* drag_controller = connection()->window_drag_controller())
     drag_controller->OnToplevelWindowCreated(this);
+
+  WaylandWindow::Show(inactive);
 }
 
 void WaylandToplevelWindow::Hide() {

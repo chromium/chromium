@@ -185,17 +185,8 @@ bool SkiaOutputDeviceBufferQueue::IsPrimaryPlaneOverlay() const {
 void SkiaOutputDeviceBufferQueue::SchedulePrimaryPlane(
     const base::Optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>&
         plane) {
-  if (background_image_) {
-    if (!background_image_is_scheduled_)
-      background_image_->BeginPresent();
-
-    // WaylandWindow can attach a null wl_buffer to its surface to hide its
-    // content so needs to reschedule |background_image_| so that
-    // the wl_surface has a non-null wl_buffer when the window re-appears.
-    //
-    // TODO(fangzhoug): It should not be necessary to schedule
-    // |background_image_| every frame. Make this a responsibility of
-    // WaylandWindow instead.
+  if (background_image_ && !background_image_is_scheduled_) {
+    background_image_->BeginPresent();
     presenter_->ScheduleBackground(background_image_.get());
     background_image_is_scheduled_ = true;
   }

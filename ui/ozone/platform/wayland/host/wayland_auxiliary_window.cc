@@ -24,6 +24,7 @@ void WaylandAuxiliaryWindow::Show(bool inactive) {
 
   CreateSubsurface();
   UpdateBufferScale(false);
+  WaylandWindow::Show(inactive);
 }
 
 void WaylandAuxiliaryWindow::Hide() {

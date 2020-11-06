@@ -122,7 +122,8 @@ void WaylandWindow::SetPointerFocus(bool focus) {
 }
 
 void WaylandWindow::Show(bool inactive) {
-  NOTREACHED();
+  if (background_buffer_id_ != 0u)
+    should_attach_background_buffer_ = true;
 }
 
 void WaylandWindow::Hide() {
@@ -643,11 +644,17 @@ bool WaylandWindow::CommitOverlays(
   }
 
   root_surface_->SetViewportDestination(bounds_px_.size());
+
   if (overlays.front()->z_order == INT32_MIN) {
+    background_buffer_id_ = overlays.front()->buffer_id;
+    should_attach_background_buffer_ = true;
+  }
+
+  if (should_attach_background_buffer_) {
     connection_->buffer_manager_host()->CommitBufferInternal(
-        root_surface(), overlays.front()->buffer_id,
-        /*damage_region=*/gfx::Rect(0, 0, 1, 1),
+        root_surface(), background_buffer_id_, /*damage_region=*/gfx::Rect(),
         /*wait_for_frame_callback=*/true);
+    should_attach_background_buffer_ = false;
   } else {
     // Subsurfaces are set to sync, above surface configs will only take effect
     // when root_surface is committed.

@@ -291,7 +291,6 @@ void GbmSurfacelessWayland::OnSubmission(BufferId buffer_id,
       break;
     }
   }
-  DCHECK(erased);
 
   // Following while loop covers below scenario:
   //   frame_1 submitted a buffer_1 for overlay; frame_2 submitted a buffer_2
@@ -353,8 +352,6 @@ void GbmSurfacelessWayland::OnPresentation(
       }
     }
   }
-
-  DCHECK(erased);
 
   while (!pending_presentation_frames_.empty() &&
          pending_presentation_frames_.front()

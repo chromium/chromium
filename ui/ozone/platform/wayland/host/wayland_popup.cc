@@ -47,6 +47,7 @@ void WaylandPopup::Show(bool inactive) {
 
   UpdateBufferScale(false);
   connection()->ScheduleFlush();
+  WaylandWindow::Show(inactive);
 }
 
 void WaylandPopup::Hide() {

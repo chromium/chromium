@@ -12,6 +12,7 @@
 #include <xdg-shell-server-protocol.h>
 #include <xdg-shell-unstable-v6-server-protocol.h>
 
+#include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,6 +23,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
@@ -80,6 +82,15 @@ class ScopedWlArray {
  private:
   wl_array array_;
 };
+
+base::ScopedFD MakeFD() {
+  base::FilePath temp_path;
+  EXPECT_TRUE(base::CreateTemporaryFile(&temp_path));
+  auto file =
+      base::File(temp_path, base::File::FLAG_READ | base::File::FLAG_WRITE |
+                                base::File::FLAG_CREATE_ALWAYS);
+  return base::ScopedFD(file.TakePlatformFile());
+}
 
 }  // namespace
 
@@ -1877,6 +1888,87 @@ TEST_P(WaylandWindowTest, DestroysCreatesPopupsOnHideShow) {
 
   EXPECT_TRUE(mock_surface->xdg_surface());
   EXPECT_TRUE(mock_surface->xdg_surface()->xdg_popup());
+}
+
+TEST_P(WaylandWindowTest, RemovesReattachesBackgroundOnHideShow) {
+  EXPECT_TRUE(connection_->buffer_manager_host());
+
+  auto interface_ptr = connection_->buffer_manager_host()->BindInterface();
+  buffer_manager_gpu_->Initialize(std::move(interface_ptr), {}, false);
+
+  // Setup wl_buffers.
+  constexpr uint32_t buffer_id1 = 1;
+  constexpr uint32_t buffer_id2 = 2;
+  gfx::Size buffer_size(1024, 768);
+  auto length = 1024 * 768 * 4;
+  buffer_manager_gpu_->CreateShmBasedBuffer(MakeFD(), length, buffer_size,
+                                            buffer_id1);
+  buffer_manager_gpu_->CreateShmBasedBuffer(MakeFD(), length, buffer_size,
+                                            buffer_id2);
+
+  Sync();
+
+  // Create window.
+  MockPlatformWindowDelegate delegate;
+  auto window = CreateWaylandWindowWithParams(
+      PlatformWindowType::kWindow, gfx::kNullAcceleratedWidget,
+      gfx::Rect(0, 0, 100, 100), &delegate);
+  ASSERT_TRUE(window);
+  auto states = InitializeWlArrayWithActivatedState();
+
+  Sync();
+
+  // Configure window to be ready to attach wl_buffers.
+  auto* mock_surface = server_.GetObject<wl::MockSurface>(
+      window->root_surface()->GetSurfaceId());
+  EXPECT_TRUE(mock_surface->xdg_surface());
+  EXPECT_TRUE(mock_surface->xdg_surface()->xdg_toplevel());
+  SendConfigureEvent(mock_surface->xdg_surface(), 100, 100, 1, states.get());
+
+  // Commit a frame with only background.
+  std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlays;
+  ui::ozone::mojom::WaylandOverlayConfigPtr background{
+      ui::ozone::mojom::WaylandOverlayConfig::New()};
+  background->z_order = INT32_MIN;
+  background->transform = gfx::OVERLAY_TRANSFORM_NONE;
+  background->buffer_id = buffer_id1;
+  overlays.push_back(std::move(background));
+  buffer_manager_gpu_->CommitOverlays(window->GetWidget(), std::move(overlays));
+  mock_surface->SendFrameCallback();
+
+  Sync();
+
+  EXPECT_NE(mock_surface->attached_buffer(), nullptr);
+
+  // Hiding window attaches a nil wl_buffer as background.
+  window->Hide();
+  mock_surface->SendFrameCallback();
+
+  Sync();
+
+  EXPECT_EQ(mock_surface->attached_buffer(), nullptr);
+
+  mock_surface->ReleaseBuffer(mock_surface->prev_attached_buffer());
+  window->Show(false);
+
+  Sync();
+
+  SendConfigureEvent(mock_surface->xdg_surface(), 100, 100, 2, states.get());
+
+  // Commit a frame with only the primary_plane.
+  overlays.clear();
+  ui::ozone::mojom::WaylandOverlayConfigPtr primary{
+      ui::ozone::mojom::WaylandOverlayConfig::New()};
+  primary->z_order = 0;
+  primary->transform = gfx::OVERLAY_TRANSFORM_NONE;
+  primary->buffer_id = buffer_id2;
+  overlays.push_back(std::move(primary));
+  buffer_manager_gpu_->CommitOverlays(window->GetWidget(), std::move(overlays));
+
+  Sync();
+
+  // WaylandWindow should automatically reattach the background.
+  EXPECT_NE(mock_surface->attached_buffer(), nullptr);
 }
 
 // Tests that if the window gets hidden and shown again, the title, app id and
