@@ -571,10 +571,6 @@ public class EditorDialog
                 for (int i = 0; i < mEditableTextFields.size(); i++) {
                     mEditableTextFields.get(i).setEnabled(true);
                 }
-                // Note that keyboard will not show for dropdown field since it's not necessary.
-                if (getCurrentFocus() != null) {
-                    KeyboardVisibilityDelegate.getInstance().showKeyboard(getCurrentFocus());
-                }
                 mDialogInOutAnimator = null;
                 initFocus();
             }
@@ -584,20 +580,21 @@ public class EditorDialog
     }
 
     private void initFocus() {
-        // Immediately focus the first invalid field to make it faster to edit.
-        final List<EditorFieldView> invalidViews = getViewsWithInvalidInformation(false);
-        if (!invalidViews.isEmpty()) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    invalidViews.get(0).scrollToAndFocus();
-                    if (sObserverForTest != null) sObserverForTest.onEditorReadyToEdit();
-                }
-            });
-        } else {
-            // The first field will be focused, we are ready to edit.
+        mHandler.post(() -> {
+            List<EditorFieldView> invalidViews = getViewsWithInvalidInformation(false);
+            if (!invalidViews.isEmpty()) {
+                // Immediately focus the first invalid field to make it faster to edit.
+                invalidViews.get(0).scrollToAndFocus();
+            } else {
+                // Trigger default focus as it is not triggered automatically on Android P+.
+                mLayout.requestFocus();
+            }
+            // Note that keyboard will not be shown for dropdown field since it's not necessary.
+            if (getCurrentFocus() != null) {
+                KeyboardVisibilityDelegate.getInstance().showKeyboard(getCurrentFocus());
+            }
             if (sObserverForTest != null) sObserverForTest.onEditorReadyToEdit();
-        }
+        });
     }
 
     private List<EditorFieldView> getViewsWithInvalidInformation(boolean findAll) {
