@@ -38,6 +38,7 @@ enum DiagnosticRoutineEnum {
   kDnsResolverPresent = 19,
   kDnsLatency = 20,
   kDnsResolution = 21,
+  kCaptivePortal = 22,
 };
 
 // Enumeration of the possible DiskRead routine's command type

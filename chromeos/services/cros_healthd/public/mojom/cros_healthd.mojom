@@ -369,6 +369,16 @@ interface CrosHealthdDiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   RunDnsResolutionRoutine() => (RunRoutineResponse response);
+
+  // Requests that the CaptivePortal routine is created and started on the
+  // platform. This routine checks whether the internet connection is behind
+  // a captive portal. This routine is only available if GetAvailableRoutines
+  // returned kCaptivePortal.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunCaptivePortalRoutine() => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.
