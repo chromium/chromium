@@ -12,6 +12,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -82,6 +83,7 @@ class ClientSideDetectionHostBrowserTest : public InProcessBrowserTest {
   ~ClientSideDetectionHostBrowserTest() override = default;
 };
 
+#if BUILDFLAG(FULL_SAFE_BROWSING)
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostBrowserTest,
                        VerifyVisualFeatureCollection) {
   FakeClientSideDetectionService fake_csd_service;
@@ -139,5 +141,6 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostBrowserTest,
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback()).Run(page_url, true);
 }
+#endif
 
 }  // namespace safe_browsing

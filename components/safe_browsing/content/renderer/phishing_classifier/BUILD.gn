@@ -28,6 +28,7 @@ source_set("phishing_classifier") {
     deps = [
       "//cc/paint",
       "//components/paint_preview/common",
+      "//components/safe_browsing:buildflags",
       "//components/safe_browsing/content/common:interfaces",
       "//components/safe_browsing/content/renderer",
       "//components/safe_browsing/core:client_model_proto",
