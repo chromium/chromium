@@ -22,6 +22,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
+import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,7 @@ public class SwipeGestureListenerTest {
     private SwipeGestureListener mListener;
 
     @Mock
-    private EmptySwipeHandler mHandler;
+    private SwipeHandler mHandler;
 
     @Before
     public void setUp() {
@@ -79,7 +80,14 @@ public class SwipeGestureListenerTest {
         ArgumentCaptor<MotionEvent> argumentCaptor = ArgumentCaptor.forClass(MotionEvent.class);
         Mockito.verify(mHandler).onSwipeStarted(
                 Mockito.eq(expectedDirection), argumentCaptor.capture());
-        Assert.assertEquals(argumentCaptor.getValue().getRawX(), eventStream.get(0).getRawX(), 0.1);
+        boolean found = false;
+        for (MotionEvent event : eventStream) {
+            if (Math.abs(event.getRawX() - argumentCaptor.getValue().getRawX()) < 0.1) {
+                found = true;
+                break;
+            }
+        }
+        Assert.assertTrue("Can not found the expected first move event", found);
 
         Mockito.verify(mHandler).onSwipeFinished(argumentCaptor.capture());
         Assert.assertEquals(argumentCaptor.getValue().getRawX(),

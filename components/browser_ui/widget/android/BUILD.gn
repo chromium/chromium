@@ -52,7 +52,6 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/widget/displaystyle/ViewResizer.java",
     "java/src/org/chromium/components/browser_ui/widget/dragreorder/DragReorderableListAdapter.java",
     "java/src/org/chromium/components/browser_ui/widget/dragreorder/DragStateDelegate.java",
-    "java/src/org/chromium/components/browser_ui/widget/gesture/EmptySwipeHandler.java",
     "java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java",
     "java/src/org/chromium/components/browser_ui/widget/highlight/PulseDrawable.java",
     "java/src/org/chromium/components/browser_ui/widget/highlight/PulseInterpolator.java",
