@@ -10,10 +10,48 @@ specify a priori).
 
 [TOC]
 
-## Naming Your Histogram
+## Defining Useful Metrics
 
-Histogram names should be in the form Group.Name or Group.Subgroup.Name,
-etc., where each group organizes related histograms.
+### Directly Measure What You Want
+
+Measure exactly what you want, whether that's the time used for a function call,
+the number of bytes transmitted to fetch a page, the number of items in a list,
+etc. Do not assume you can calculate what you want from other histograms, as
+most ways of doing this are incorrect.
+
+For example, suppose you want to measure the runtime of a function that just
+calls two subfunctions, each of which is instrumented with histogram logging.
+You might assume that you can simply sum the histograms for those two functions
+to get the total time, but that results in misleading data. If we knew which
+emissions came from which calls, we could pair them up and derive the total time
+for the function. However, histograms are pre-aggregated client-side, which
+means that there's no way to recover which emissions should be paired up. If you
+simply add up the two histograms to get a total duration histogram, you're
+implicitly assuming the two histograms' values are independent, which may not be
+the case.
+
+Directly measure what you care about; don't try to derive it from other data.
+
+### Provide Context
+
+When defining a new metric, think ahead about how you will analyze the
+data. Often, this will require providing context in order for the data to be
+interpretable.
+
+For enumerated histograms in particular, that often means including a bucket
+that can be used as a baseline for understanding the data recorded to other
+buckets: see the [enumerated histogram section](#Enum-Histograms).
+
+### Naming Your Histogram
+
+Histograms are taxonomized into categories, using dot (`.`) characters as
+separators. Thus, histogram names should be in the form Category.Name or
+Category.Subcategory.Name, etc., where each category organizes related
+histograms.
+
+It should be quite rare to introduce new top-level categories into the existing
+taxonomy. If you're tempted to do so, please look through the existing
+categories to see whether any matches the metric(s) that you are adding.
 
 ## Coding (Emitting to Histograms)
 
@@ -62,22 +100,6 @@ macros; see [reasons above](#Coding-Emitting-to-Histograms).
 
 ## Picking Your Histogram Type
 
-### Directly Measure What You Want
-
-Measure exactly what you want, whether that's the time used for a function call,
-the number of bytes transmitted to fetch a page, the number of items in a list,
-etc. Do not assume you can calculate what you want from other histograms. Most
-ways of doing this are incorrect. For example, suppose you want to know the time
-taken by a function that calls two other functions, both of which have histogram
-logging for their respective times. You might assume that you can simply sum the
-histograms for those two functions to get the total time, but this is incorrect.
-If we knew which emissions came from which calls, we could pair them up and
-derive the total time for the function. However, histogram entries do not come
-with timestamps to let us pair them up appropriately. If you simply add up the
-two histograms to get the total histogram, you're implicitly assuming those
-values are independent, which may not be the case. Directly measure what you
-care about; don't try to derive it from other data.
-
 ### Enum Histograms
 
 Enumerated histogram are most appropriate when you have a list of connected /
@@ -90,11 +112,20 @@ However, the total count does not have to be meaningful for an enum histogram
 to still be the right choice.
 
 Enumerated histograms are also appropriate for counting events. Use a simple
-boolean histogram. It's okay if you only log to one bucket (say, `true`). It's
-usually best, though not necessary, if you have a comparison point in the same
+boolean histogram. It's usually best if you have a comparison point in the same
 histogram. For example, if you want to count pages opened from the history page,
 it might be a useful comparison to have the same histogram record the number of
 times the history page was opened.
+
+In rarer cases, it's okay if you only log to one bucket (say, `true`). However,
+think about whether this will provide enough [context](#Provide-Context). For
+example, suppose we want to understand how often users interact with a button.
+Just knowning that users clicked this particular button 1 million times in a day
+is not very informative on its own: The size of Chrome's user base is constantly
+changing, only a subset of users have consented to metrics reporting, different
+platforms have different sampling rates for metrics reporting, and so on. The
+data would be much easier to make sense of if it included a baseline: how often
+is the button shown?
 
 If only a few buckets are emitted to, consider using a [sparse
 histogram](#When-To-Use-Sparse-Histograms).
