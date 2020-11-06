@@ -23,7 +23,7 @@ constexpr int kLabelPreferredHeight = 16;
 
 // The margins of the delete button.
 constexpr gfx::Insets kDeleteButtonMargins =
-    gfx::Insets(/*top=*/0, /*left=*/0, /*bottom=*/0, /*right=*/4);
+    gfx::Insets(/*top=*/0, /*left=*/8, /*bottom=*/0, /*right=*/4);
 }  // namespace
 
 namespace ash {
