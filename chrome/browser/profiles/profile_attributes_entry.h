@@ -84,13 +84,16 @@ class ProfileAttributesEntry {
   // address used to sign in and the empty string for profiles that aren't
   // signed in to chrome.
   base::string16 GetUserName() const;
-  // Gets the icon used as this profile's avatar.
+  // Gets the icon used as this profile's avatar. High res icon are downloaded
+  // only if `download_high_res` is true, otherwise a low-res fallback is
+  // returned.
   // TODO(crbug.com/1100835): Rename |size_for_placeholder_avatar| to |size| and
   // make this function resize all avatars appropriately. Remove the default
   // value of |size_for_placeholder_avatar| when all callsites pass some value.
   // Consider adding a |shape| parameter and get rid of
   // profiles::GetSizedAvatarIcon().
-  gfx::Image GetAvatarIcon(int size_for_placeholder_avatar = 74) const;
+  gfx::Image GetAvatarIcon(int size_for_placeholder_avatar = 74,
+                           bool use_high_res_file = true) const;
   std::string GetLocalAuthCredentials() const;
   std::string GetPasswordChangeDetectionToken() const;
   // Returns true if the profile is currently running any background apps. Note

@@ -92,10 +92,6 @@ gfx::Image GetAvatarIconForTitleBar(const gfx::Image& image,
 gfx::Image GetAvatarIconForNSMenu(const base::FilePath& profile_path);
 #endif
 
-// Returns a bitmap with a couple of columns shaved off so it is more square,
-// so that when resized to a square aspect ratio it looks pretty.
-SkBitmap GetAvatarIconAsSquare(const SkBitmap& source_bitmap, int scale_factor);
-
 // Gets the number of default avatar icons that exist.
 size_t GetDefaultAvatarIconCount();
 
@@ -166,6 +162,10 @@ size_t GetRandomAvatarIconIndex(
 #if defined(OS_WIN)
 // Get the 2x avatar image for a ProfileAttributesEntry.
 SkBitmap GetWin2xAvatarImage(ProfileAttributesEntry* entry);
+
+// Returns a bitmap with a couple of columns shaved off so it is more square,
+// so that when resized to a square aspect ratio it looks pretty.
+SkBitmap GetWin2xAvatarIconAsSquare(const SkBitmap& source_bitmap);
 
 // Badges |app_icon_bitmap| with |avatar_bitmap| at the bottom right corner and
 // returns the resulting SkBitmap.

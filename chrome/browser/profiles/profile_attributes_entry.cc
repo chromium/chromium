@@ -296,7 +296,8 @@ base::string16 ProfileAttributesEntry::GetUserName() const {
 }
 
 gfx::Image ProfileAttributesEntry::GetAvatarIcon(
-    int size_for_placeholder_avatar) const {
+    int size_for_placeholder_avatar,
+    bool use_high_res_file) const {
   if (IsUsingGAIAPicture()) {
     const gfx::Image* image = GetGAIAPicture();
     if (image)
@@ -312,9 +313,11 @@ gfx::Image ProfileAttributesEntry::GetAvatarIcon(
 #if !defined(OS_ANDROID)
   // Use the high resolution version of the avatar if it exists. Mobile doesn't
   // need the high resolution version so no need to fetch it.
-  const gfx::Image* image = GetHighResAvatar();
-  if (image)
-    return *image;
+  if (use_high_res_file) {
+    const gfx::Image* image = GetHighResAvatar();
+    if (image)
+      return *image;
+  }
 #endif
 
   const int icon_index = GetAvatarIconIndex();
