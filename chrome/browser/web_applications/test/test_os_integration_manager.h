@@ -58,6 +58,10 @@ class TestOsIntegrationManager : public OsIntegrationManager {
     return did_add_to_desktop_;
   }
 
+  base::Optional<InstallOsHooksOptions> get_last_install_options() const {
+    return last_options_;
+  }
+
   void SetNextCreateShortcutsResult(const AppId& app_id, bool success);
 
   void SetFileHandlerManager(
@@ -68,6 +72,7 @@ class TestOsIntegrationManager : public OsIntegrationManager {
   size_t num_register_run_on_os_login_calls_ = 0;
   size_t num_add_app_to_quick_launch_bar_calls_ = 0;
   base::Optional<bool> did_add_to_desktop_;
+  base::Optional<InstallOsHooksOptions> last_options_;
 
   bool can_create_shortcuts_ = true;
   std::map<AppId, bool> next_create_shortcut_results_;

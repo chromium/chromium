@@ -92,18 +92,18 @@ TestSystemWebAppInstallation::TestSystemWebAppInstallation(SystemAppType type,
   }
 
   test_web_app_provider_creator_ = std::make_unique<TestWebAppProviderCreator>(
-      base::BindOnce(&TestSystemWebAppInstallation::CreateWebAppProvider,
-                     // base::Unretained is safe here. This callback is called
-                     // at TestingProfile::Init, which is at test startup.
-                     // TestSystemWebAppInstallation is intended to have the
-                     // same lifecycle as the test, it won't be destroyed before
-                     // the test finishes.
-                     base::Unretained(this), info));
+      base::BindRepeating(&TestSystemWebAppInstallation::CreateWebAppProvider,
+                          // base::Unretained is safe here. This callback is
+                          // called at TestingProfile::Init, which is at test
+                          // startup. TestSystemWebAppInstallation is intended
+                          // to have the same lifecycle as the test, it won't be
+                          // destroyed before the test finishes.
+                          base::Unretained(this), info));
 }
 
 TestSystemWebAppInstallation::TestSystemWebAppInstallation() {
   test_web_app_provider_creator_ = std::make_unique<
-      TestWebAppProviderCreator>(base::BindOnce(
+      TestWebAppProviderCreator>(base::BindRepeating(
       &TestSystemWebAppInstallation::CreateWebAppProviderWithNoSystemWebApps,
       // base::Unretained is safe here. This callback is called
       // at TestingProfile::Init, which is at test startup.

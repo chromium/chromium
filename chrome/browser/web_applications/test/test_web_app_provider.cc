@@ -151,7 +151,7 @@ std::unique_ptr<KeyedService> TestWebAppProviderCreator::CreateWebAppProvider(
   Profile* profile = Profile::FromBrowserContext(context);
   if (!AreWebAppsEnabled(profile) || !callback_)
     return nullptr;
-  return std::move(callback_).Run(profile);
+  return callback_.Run(profile);
 }
 
 }  // namespace web_app

@@ -776,9 +776,22 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
     return;
   }
 
-  RecordAppBanner(web_contents(), web_app_info->start_url);
   RecordWebAppInstallationTimestamp(profile_->GetPrefs(), app_id,
                                     install_source_);
+
+  if (install_params_ && !install_params_->locally_installed) {
+    DCHECK(background_installation_);
+    DCHECK(!(install_params_->add_to_applications_menu ||
+             install_params_->add_to_desktop ||
+             install_params_->add_to_quick_launch_bar ||
+             install_params_->run_on_os_login))
+        << "Cannot create os hooks for a non-locally installed ";
+    CallInstallCallback(app_id, InstallResultCode::kSuccessNewInstall);
+    return;
+  }
+
+  // Only record the AppBanner stats for locally installed apps.
+  RecordAppBanner(web_contents(), web_app_info->start_url);
 
   InstallOsHooksOptions options;
 
@@ -791,23 +804,22 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
     options.add_to_quick_launch_bar = false;
 
   if (install_params_) {
+    DCHECK(install_params_->locally_installed);
     options.os_hooks[OsHookType::kShortcuts] =
         install_params_->add_to_applications_menu;
     options.add_to_desktop = install_params_->add_to_desktop;
     options.add_to_quick_launch_bar = install_params_->add_to_quick_launch_bar;
     options.os_hooks[OsHookType::kRunOnOsLogin] =
         install_params_->run_on_os_login;
+    options.os_hooks[OsHookType::kShortcutsMenu] =
+        install_params_->add_to_applications_menu;
+    // TODO(crbug.com/1087219): Determine if file handlers should be
+    // configured from somewhere else rather than always true.
+    options.os_hooks[OsHookType::kFileHandlers] = true;
   }
-
-  // TODO(crbug.com/1087219): Determine if file handlers should be
-  // configured from somewhere else rather than always true.
-  options.os_hooks[OsHookType::kFileHandlers] = true;
-  options.os_hooks[OsHookType::kShortcutsMenu] = true;
-
   auto hooks_created_callback =
       base::BindOnce(&WebAppInstallTask::OnOsHooksCreated, GetWeakPtr(),
                      web_app_info->open_as_window, app_id);
-
   os_integration_manager_->InstallOsHooks(app_id,
                                           std::move(hooks_created_callback),
                                           std::move(web_app_info), options);

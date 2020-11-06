@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,6 +20,8 @@
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
+#include "chrome/browser/web_applications/test/test_os_integration_manager.h"
+#include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -34,19 +37,28 @@
 namespace web_app {
 namespace {
 
+std::unique_ptr<KeyedService> CreateTestWebAppProvider(Profile* profile) {
+  auto provider = std::make_unique<TestWebAppProvider>(profile);
+  provider->SetOsIntegrationManager(
+      std::make_unique<TestOsIntegrationManager>(profile, nullptr, nullptr));
+  provider->Start();
+  DCHECK(provider);
+  return provider;
+}
+
 class TwoClientWebAppsBMOSyncTest : public SyncTest {
  public:
-  TwoClientWebAppsBMOSyncTest() : SyncTest(TWO_CLIENT) {}
+  TwoClientWebAppsBMOSyncTest()
+      : SyncTest(TWO_CLIENT),
+        test_web_app_provider_creator_(
+            std::make_unique<TestWebAppProviderCreator>(
+                base::BindRepeating(&CreateTestWebAppProvider))) {}
   ~TwoClientWebAppsBMOSyncTest() override = default;
 
   bool SetupClients() override {
     bool result = SyncTest::SetupClients();
     if (!result)
       return result;
-    // All of the tests need to have os integration suppressed & the
-    // WebAppProvider ready.
-    os_hooks_suppress_ =
-        web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
     for (Profile* profile : GetAllProfiles()) {
       auto* web_app_provider = WebAppProvider::Get(profile);
       web_app_provider->install_finalizer()
@@ -148,6 +160,11 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
     return *web_app_registrar;
   }
 
+  TestOsIntegrationManager& GetOSIntegrationManager(Profile* profile) {
+    return reinterpret_cast<TestOsIntegrationManager&>(
+        WebAppProvider::Get(profile)->os_integration_manager());
+  }
+
   extensions::AppSorting* GetAppSorting(Profile* profile) {
     return extensions::ExtensionSystem::Get(profile)->app_sorting();
   }
@@ -167,7 +184,7 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
   }
 
  private:
-  ScopedOsHooksSuppress os_hooks_suppress_;
+  std::unique_ptr<TestWebAppProviderCreator> test_web_app_provider_creator_;
 
   DISALLOW_COPY_AND_ASSIGN(TwoClientWebAppsBMOSyncTest);
 };
@@ -561,6 +578,56 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, UninstallSynced) {
   }
 
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
+}
+
+IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NoShortcutsCreatedOnSync) {
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Install & uninstall on profile 0, and validate profile 1 sees it.
+  {
+    base::RunLoop loop;
+    base::RepeatingCallback<void(const AppId&)> on_installed_closure;
+    base::RepeatingCallback<void(const AppId&)> on_hooks_closure;
+#if defined(OS_CHROMEOS)
+    on_installed_closure = base::DoNothing();
+    on_hooks_closure = base::BindLambdaForTesting(
+        [&](const AppId& installed_app_id) { loop.Quit(); });
+#else
+    on_installed_closure = base::BindLambdaForTesting(
+        [&](const AppId& installed_app_id) { loop.Quit(); });
+    on_hooks_closure = base::BindLambdaForTesting(
+        [](const AppId& installed_app_id) { FAIL(); });
+#endif
+    WebAppInstallObserver app_listener(GetProfile(1));
+    app_listener.SetWebAppInstalledDelegate(on_installed_closure);
+    app_listener.SetWebAppInstalledWithOsHooksDelegate(on_hooks_closure);
+    InstallAppAsUserInitiated(GetProfile(0));
+    loop.Run();
+    EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
+  }
+  EXPECT_EQ(
+      1u, GetOSIntegrationManager(GetProfile(0)).num_create_shortcuts_calls());
+#if defined(OS_CHROMEOS)
+  auto last_options =
+      GetOSIntegrationManager(GetProfile(1)).get_last_install_options();
+  EXPECT_TRUE(last_options.has_value());
+  OsHooksResults expected_os_hook_requests;
+  expected_os_hook_requests[OsHookType::kShortcuts] = true;
+  expected_os_hook_requests[OsHookType::kRunOnOsLogin] = false;
+  expected_os_hook_requests[OsHookType::kShortcutsMenu] = true;
+  expected_os_hook_requests[OsHookType::kFileHandlers] = true;
+  EXPECT_EQ(expected_os_hook_requests, last_options->os_hooks);
+  EXPECT_TRUE(last_options->add_to_desktop);
+  EXPECT_FALSE(last_options->add_to_quick_launch_bar);
+  EXPECT_EQ(
+      1u, GetOSIntegrationManager(GetProfile(1)).num_create_shortcuts_calls());
+#else
+  EXPECT_FALSE(GetOSIntegrationManager(GetProfile(1))
+                   .get_last_install_options()
+                   .has_value());
+#endif
 }
 
 }  // namespace

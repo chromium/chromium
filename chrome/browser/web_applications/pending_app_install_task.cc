@@ -267,6 +267,8 @@ void PendingAppInstallTask::OnWebAppInstalled(bool is_placeholder,
   InstallOsHooksOptions options;
   options.os_hooks[OsHookType::kShortcuts] =
       install_options_.add_to_applications_menu;
+  options.os_hooks[OsHookType::kShortcutsMenu] =
+      install_options_.add_to_applications_menu;
   options.add_to_desktop = install_options_.add_to_desktop;
   options.add_to_quick_launch_bar = install_options_.add_to_quick_launch_bar;
   options.os_hooks[OsHookType::kRunOnOsLogin] =
@@ -275,7 +277,6 @@ void PendingAppInstallTask::OnWebAppInstalled(bool is_placeholder,
   // TODO(crbug.com/1087219): Determine if |register_file_handlers| should be
   // configured from somewhere else rather than always true.
   options.os_hooks[OsHookType::kFileHandlers] = true;
-  options.os_hooks[OsHookType::kShortcutsMenu] = true;
 
   os_integration_manager_->InstallOsHooks(
       app_id,

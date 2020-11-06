@@ -83,9 +83,12 @@ class TestWebAppProvider : public WebAppProvider {
 // BrowserContextKeyedService initialization pipeline.
 class TestWebAppProviderCreator {
  public:
-  using CreateWebAppProviderCallback =
+  using OnceCreateWebAppProviderCallback =
       base::OnceCallback<std::unique_ptr<KeyedService>(Profile* profile)>;
+  using CreateWebAppProviderCallback =
+      base::RepeatingCallback<std::unique_ptr<KeyedService>(Profile* profile)>;
 
+  explicit TestWebAppProviderCreator(OnceCreateWebAppProviderCallback callback);
   explicit TestWebAppProviderCreator(CreateWebAppProviderCallback callback);
   ~TestWebAppProviderCreator();
 

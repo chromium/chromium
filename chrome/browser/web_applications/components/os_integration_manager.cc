@@ -124,6 +124,10 @@ void OsIntegrationManager::InstallOsHooks(
           &OsHooksBarrierInfo::Run,
           base::Owned(new OsHooksBarrierInfo(std::move(callback))));
 
+  DCHECK(options.os_hooks[OsHookType::kShortcuts] ||
+         !options.os_hooks[OsHookType::kShortcutsMenu])
+      << "Cannot install shortcuts menu without installing shortcuts.";
+
   // TODO(ortuno): Make adding a shortcut to the applications menu independent
   // from adding a shortcut to desktop.
   if (options.os_hooks[OsHookType::kShortcuts] &&
