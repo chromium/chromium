@@ -146,14 +146,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Tests that the switch to open tab button isn't displayed for the current tab.
-- (void)testNotSwitchButtonOnCurrentTab {
-// TODO(crbug.com/1128463): Test is flaky on iPad simulator.
+// TODO(crbug.com/1128463): Test is flaky on simulators.
 #if TARGET_IPHONE_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"This test is flaky on iPad simulators.");
-  }
+#define MAYBE_testNotSwitchButtonOnCurrentTab \
+  DISABLED_testNotSwitchButtonOnCurrentTab
+#else
+#define MAYBE_testNotSwitchButtonOnCurrentTab testNotSwitchButtonOnCurrentTab
 #endif
-
+- (void)MAYBE_testNotSwitchButtonOnCurrentTab {
 // TODO(crbug.com/1067817): Test won't pass on iPad devices.
 #if !TARGET_IPHONE_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -276,14 +276,15 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey waitForMainTabCount:1];
 }
 
-- (void)testDontCloseNTPWhenSwitchingWithForwardHistory {
-// TODO(crbug.com/1128463): Test is flaky on iPad simulator.
+// TODO(crbug.com/1128463): Test is flaky on simulators.
 #if TARGET_IPHONE_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"This test is flaky on iPad simulators.");
-  }
+#define MAYBE_testDontCloseNTPWhenSwitchingWithForwardHistory \
+  DISABLED_testDontCloseNTPWhenSwitchingWithForwardHistory
+#else
+#define MAYBE_testDontCloseNTPWhenSwitchingWithForwardHistory \
+  testDontCloseNTPWhenSwitchingWithForwardHistory
 #endif
-
+- (void)MAYBE_testDontCloseNTPWhenSwitchingWithForwardHistory {
 // TODO(crbug.com/1067817): Test won't pass on iPad devices.
 #if !TARGET_IPHONE_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
