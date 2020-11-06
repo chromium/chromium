@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/css/css_scroll_timeline.h"
 
+#include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/css/css_element_offset_value.h"
 #include "third_party/blink/renderer/core/css/css_id_selector_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -220,6 +221,11 @@ CSSScrollTimeline::CSSScrollTimeline(Document* document, const Options& options)
       rule_(options.rule_) {
   DCHECK(options.IsValid());
   DCHECK(rule_);
+  document->GetDocumentAnimations().CacheCSSScrollTimeline(*this);
+}
+
+const AtomicString& CSSScrollTimeline::Name() const {
+  return rule_->GetName();
 }
 
 bool CSSScrollTimeline::Matches(const Options& options) const {

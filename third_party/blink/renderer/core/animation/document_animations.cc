@@ -33,6 +33,7 @@
 #include "cc/animation/animation_host.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
+#include "third_party/blink/renderer/core/animation/css/css_scroll_timeline.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/pending_animations.h"
 #include "third_party/blink/renderer/core/animation/worklet_animation_controller.h"
@@ -161,9 +162,20 @@ HeapVector<Member<Animation>> DocumentAnimations::getAnimations(
   return animations;
 }
 
+void DocumentAnimations::CacheCSSScrollTimeline(CSSScrollTimeline& timeline) {
+  // We cache the least seen CSSScrollTimeline for a given name.
+  cached_css_timelines_.Set(timeline.Name(), &timeline);
+}
+
+CSSScrollTimeline* DocumentAnimations::FindCachedCSSScrollTimeline(
+    const AtomicString& name) {
+  return To<CSSScrollTimeline>(cached_css_timelines_.at(name));
+}
+
 void DocumentAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(timelines_);
+  visitor->Trace(cached_css_timelines_);
 }
 
 void DocumentAnimations::GetAnimationsTargetingTreeScope(

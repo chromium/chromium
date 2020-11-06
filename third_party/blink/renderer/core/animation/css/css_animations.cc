@@ -448,22 +448,40 @@ CSSScrollTimeline* CreateCSSScrollTimeline(
   return scroll_timeline;
 }
 
+CSSScrollTimeline* FindMatchingCachedTimeline(
+    Document& document,
+    const AtomicString& name,
+    const CSSScrollTimeline::Options& options) {
+  auto* cached_timeline = DynamicTo<CSSScrollTimeline>(
+      document.GetDocumentAnimations().FindCachedCSSScrollTimeline(name));
+  if (cached_timeline && cached_timeline->Matches(options))
+    return cached_timeline;
+  return nullptr;
+}
+
 AnimationTimeline* ComputeTimeline(Element* element,
                                    const StyleNameOrKeyword& timeline_name,
                                    StyleRuleScrollTimeline* rule,
                                    AnimationTimeline* existing_timeline) {
+  Document& document = element->GetDocument();
   if (timeline_name.IsKeyword()) {
     if (timeline_name.GetKeyword() == CSSValueID::kAuto)
-      return &element->GetDocument().Timeline();
+      return &document.Timeline();
     DCHECK_EQ(timeline_name.GetKeyword(), CSSValueID::kNone);
     return nullptr;
   }
   if (rule) {
     CSSScrollTimeline::Options options(element, *rule);
 
-    // When the incoming options match the existing timeline, we can continue
-    // to use the existing timeline, since creating a new timeline from
-    // the options would just yield an identical timeline.
+    const AtomicString& name = timeline_name.GetName().GetValue();
+    // When multiple animations refer to the same @scroll-timeline, the same
+    // CSSScrollTimeline instance should be shared.
+    if (auto* timeline = FindMatchingCachedTimeline(document, name, options))
+      return timeline;
+    // When the incoming options match the existing timeline (associated with
+    // an existing animation), we can continue to use the existing timeline,
+    // since creating a new timeline from the options would just yield an
+    // identical timeline.
     if (auto* timeline = DynamicTo<CSSScrollTimeline>(existing_timeline)) {
       if (timeline->Matches(options))
         return existing_timeline;

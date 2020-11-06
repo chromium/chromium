@@ -40,12 +40,18 @@ class CORE_EXPORT CSSScrollTimeline : public ScrollTimeline {
 
   CSSScrollTimeline(Document*, const Options&);
 
+  const AtomicString& Name() const;
+
   bool Matches(const Options&) const;
 
   // AnimationTimeline implementation.
   bool IsCSSScrollTimeline() const override { return true; }
   void AnimationAttached(Animation*) override;
   void AnimationDetached(Animation*) override;
+
+  // If a CSSScrollTimeline matching |options| already exists, return that
+  // timeline. Otherwise returns nullptr.
+  static CSSScrollTimeline* FindMatchingTimeline(const Options&);
 
   void Trace(Visitor*) const override;
 

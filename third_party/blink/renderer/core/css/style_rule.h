@@ -226,7 +226,7 @@ class CORE_EXPORT StyleRuleScrollTimeline : public StyleRuleBase {
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
-  const String& GetName() const { return name_; }
+  const AtomicString& GetName() const { return name_; }
   const CSSValue* GetSource() const { return source_; }
   const CSSValue* GetOrientation() const { return orientation_; }
   const CSSValue* GetStart() const { return start_; }
@@ -234,7 +234,7 @@ class CORE_EXPORT StyleRuleScrollTimeline : public StyleRuleBase {
   const CSSValue* GetTimeRange() const { return time_range_; }
 
  private:
-  String name_;
+  AtomicString name_;
   Member<const CSSValue> source_;
   Member<const CSSValue> orientation_;
   Member<const CSSValue> start_;

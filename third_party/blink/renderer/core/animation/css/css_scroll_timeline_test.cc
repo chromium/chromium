@@ -151,4 +151,70 @@ TEST_F(CSSScrollTimelineTest, IdObserverRuleInsertion) {
   EXPECT_FALSE(HasObservers("offset2"));
 }
 
+TEST_F(CSSScrollTimelineTest, SharedTimelines) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim1 { to { top: 200px; } }
+      @keyframes anim2 { to { left: 200px; } }
+      @keyframes anim3 { to { right: 200px; } }
+      @scroll-timeline timeline1 {
+        source: selector(#scroller);
+        time-range: 10s;
+      }
+      @scroll-timeline timeline2 {
+        source: selector(#scroller);
+        time-range: 10s;
+      }
+      #scroller {
+        height: 100px;
+        overflow: scroll;
+      }
+      #scroller > div {
+        height: 200px;
+      }
+    </style>
+    <div id=scroller><div></div></div>
+    <main id=main></main>
+  )HTML");
+  // #scroller etc is created in a separate lifecycle phase to ensure that
+  // we get a layout box for #scroller before the animations are started.
+
+  Element* main = GetDocument().getElementById("main");
+  ASSERT_TRUE(main);
+  main->setInnerHTML(R"HTML(
+    <style>
+      #element1, #element2 {
+        animation-name: anim1, anim2, anim3;
+        animation-duration: 10s;
+        animation-timeline: timeline1, timeline1, timeline2;
+      }
+    </style>
+    <div id=element1></div>
+    <div id=element2></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* element1 = GetDocument().getElementById("element1");
+  Element* element2 = GetDocument().getElementById("element2");
+  ASSERT_TRUE(element1);
+  ASSERT_TRUE(element2);
+  HeapVector<Member<Animation>> animations1 = element1->getAnimations();
+  HeapVector<Member<Animation>> animations2 = element2->getAnimations();
+  EXPECT_EQ(3u, animations1.size());
+  EXPECT_EQ(3u, animations2.size());
+
+  // The animations associated with anim1 and anim2 should share the same
+  // timeline instance, also across elements.
+  EXPECT_EQ(animations1[0]->timeline(), animations1[1]->timeline());
+  EXPECT_EQ(animations1[1]->timeline(), animations2[0]->timeline());
+  EXPECT_EQ(animations2[0]->timeline(), animations2[1]->timeline());
+
+  // The animation associated with anim3 uses a different timeline
+  // from anim1/2.
+  EXPECT_EQ(animations1[2]->timeline(), animations2[2]->timeline());
+
+  EXPECT_NE(animations2[2]->timeline(), animations1[0]->timeline());
+  EXPECT_NE(animations2[2]->timeline(), animations1[1]->timeline());
+}
+
 }  // namespace blink
