@@ -16,8 +16,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-import android.accounts.Account;
-
 import androidx.fragment.app.FragmentActivity;
 
 import org.junit.After;
@@ -107,9 +105,8 @@ public class AccountPickerDelegateTest {
                 .thenReturn(mIdentityManagerMock);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
 
-        Account account =
+        mCoreAccountInfo =
                 mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        mCoreAccountInfo = mAccountManagerTestRule.toCoreAccountInfo(account.name);
 
         mDelegate = new AccountPickerDelegate(
                 mWindowAndroidMock, mTabMock, mWebSigninBridgeFactoryMock, CONTINUE_URL);

@@ -16,7 +16,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-import android.accounts.Account;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.LargeTest;
@@ -45,6 +44,7 @@ import org.chromium.chrome.test.util.ActivityUtils;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.GAIAServiceType;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
@@ -108,7 +108,7 @@ public class SigninSignoutIntegrationTest {
     @Test
     @LargeTest
     public void testSignIn() {
-        Account account = mAccountManagerTestRule.addAccountAndWaitForSeeding(
+        CoreAccountInfo coreAccountInfo = mAccountManagerTestRule.addAccountAndWaitForSeeding(
                 AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         SigninActivity signinActivity = ActivityUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
@@ -122,10 +122,8 @@ public class SigninSignoutIntegrationTest {
         verify(mSignInStateObserverMock).onSignedIn();
         verify(mSignInStateObserverMock, never()).onSignedOut();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(account.name,
-                    mSigninManager.getIdentityManager()
-                            .getPrimaryAccountInfo(ConsentLevel.SYNC)
-                            .getEmail());
+            Assert.assertEquals(coreAccountInfo,
+                    mSigninManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SYNC));
         });
     }
 
@@ -226,10 +224,10 @@ public class SigninSignoutIntegrationTest {
     }
 
     private void signIn() {
-        Account account = mAccountManagerTestRule.addAccountAndWaitForSeeding(
+        CoreAccountInfo coreAccountInfo = mAccountManagerTestRule.addAccountAndWaitForSeeding(
                 AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSigninManager.signinAndEnableSync(SigninAccessPoint.SETTINGS, account, null);
+            mSigninManager.signinAndEnableSync(SigninAccessPoint.SETTINGS, coreAccountInfo, null);
         });
         assertSignedIn();
     }

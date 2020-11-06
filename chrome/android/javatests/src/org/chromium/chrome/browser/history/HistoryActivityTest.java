@@ -13,7 +13,6 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-import android.accounts.Account;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -55,6 +54,7 @@ import org.chromium.components.browser_ui.widget.DateDividedAdapter;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewHolder;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -559,7 +559,7 @@ public class HistoryActivityTest {
 
         // Sign in to account. Note that if supervised user is set before sign in, the supervised
         // user setting will be reset.
-        final Account account =
+        final CoreAccountInfo coreAccountInfo =
                 mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Profile profile = Profile.getLastUsedRegularProfile();
@@ -567,12 +567,12 @@ public class HistoryActivityTest {
             IdentityServicesProvider.get().getSigninManager(profile).addSignInStateObserver(
                     mTestObserver);
             IdentityServicesProvider.get().getSigninManager(profile).signinAndEnableSync(
-                    SigninAccessPoint.UNKNOWN, account, null);
+                    SigninAccessPoint.UNKNOWN, coreAccountInfo, null);
         });
 
         mTestObserver.onSigninStateChangedCallback.waitForCallback(
                 0, 1, SyncTestUtil.TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        Assert.assertEquals(account, mAccountManagerTestRule.getCurrentSignedInAccount());
+        Assert.assertEquals(coreAccountInfo, mAccountManagerTestRule.getCurrentSignedInAccount());
 
         // Wait for recycler view changes after sign in.
         CriteriaHelper.pollUiThread(() -> !mRecyclerView.isAnimating());

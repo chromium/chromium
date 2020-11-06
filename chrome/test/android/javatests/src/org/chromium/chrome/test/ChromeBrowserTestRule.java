@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.test;
 
-import android.accounts.Account;
-
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -40,7 +38,7 @@ public class ChromeBrowserTestRule implements TestRule {
     /**
      * Adds an account of the given accountName to the fake AccountManagerFacade.
      */
-    public Account addAccount(String accountName) {
+    public CoreAccountInfo addAccount(String accountName) {
         return mAccountManagerTestRule.addAccount(accountName);
     }
 

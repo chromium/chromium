@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.password_manager.settings;
 
 import static org.mockito.Mockito.when;
 
-import android.accounts.Account;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -53,13 +51,12 @@ public class PasswordViewingTypeTest {
 
     private ChromeBasePreference mPasswordsPref;
     private String mAuthority;
-    private Account mAccount;
     @Mock
     private AndroidSyncSettings mAndroidSyncSettings;
 
     @Before
     public void setUp() {
-        mAccount = mChromeBrowserTestRule.addAccount("account@example.com");
+        mChromeBrowserTestRule.addAccount("account@example.com");
         mSettingsActivityTestRule.startSettingsActivity();
         MainSettings mainSettings = mSettingsActivityTestRule.getFragment();
         mPasswordsPref =

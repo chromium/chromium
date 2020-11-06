@@ -169,26 +169,29 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     /**
      * Adds an account of default account name to AccountManagerFacade and waits for the seeding.
+     * TODO(https://crbug.com/1117006): Return CoreAccountInfo object
      */
     public Account addTestAccount() {
-        Account account = mAccountManagerTestRule.addAccountAndWaitForSeeding(
-                AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        Assert.assertFalse(SyncTestUtil.isSyncRequested());
-        return account;
+        return addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
     }
 
     /**
      * Adds an account of given account name to AccountManagerFacade and waits for the seeding.
      */
     public Account addAccount(String accountName) {
-        return mAccountManagerTestRule.addAccountAndWaitForSeeding(accountName);
+        CoreAccountInfo coreAccountInfo =
+                mAccountManagerTestRule.addAccountAndWaitForSeeding(accountName);
+        Assert.assertFalse(SyncTestUtil.isSyncRequested());
+        return CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo);
     }
 
     /**
      * Returns the currently signed in account.
+     * TODO(https://crbug.com/1117006): Return CoreAccountInfo object
      */
     public Account getCurrentSignedInAccount() {
-        return mAccountManagerTestRule.getCurrentSignedInAccount();
+        return CoreAccountInfo.getAndroidAccountFrom(
+                mAccountManagerTestRule.getCurrentSignedInAccount());
     }
 
     /**

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.test.util.browser.signin;
 
-import android.accounts.Account;
-
 import androidx.annotation.Nullable;
 
 import org.junit.Assert;
@@ -31,14 +29,13 @@ import java.util.concurrent.TimeoutException;
  */
 public final class SigninTestUtil {
     /**
-     * Returns the currently signed in account.
+     * Returns the currently signed in coreAccountInfo.
      */
-    static Account getCurrentAccount() {
+    static CoreAccountInfo getCurrentAccount() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return CoreAccountInfo.getAndroidAccountFrom(
-                    IdentityServicesProvider.get()
-                            .getIdentityManager(Profile.getLastUsedRegularProfile())
-                            .getPrimaryAccountInfo(ConsentLevel.SYNC));
+            return IdentityServicesProvider.get()
+                    .getIdentityManager(Profile.getLastUsedRegularProfile())
+                    .getPrimaryAccountInfo(ConsentLevel.SYNC);
         });
     }
 

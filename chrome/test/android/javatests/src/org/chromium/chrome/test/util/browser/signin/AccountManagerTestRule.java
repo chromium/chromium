@@ -91,21 +91,19 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
-     * TODO(https://crbug.com/1117006): Change the return type of addAccount() to CoreAccountInfo
-     *
      * Add an account to the fake AccountManagerFacade.
-     * @return The account added.
+     * @return The CoreAccountInfo for the account added.
      */
-    public Account addAccount(Account account) {
+    public CoreAccountInfo addAccount(Account account) {
         mFakeAccountManagerFacade.addAccount(account);
-        return account;
+        return toCoreAccountInfo(account.name);
     }
 
     /**
      * Add an account of the given accountName to the fake AccountManagerFacade.
-     * @return The account added.
+     * @return The CoreAccountInfo for the account added.
      */
-    public Account addAccount(String accountName) {
+    public CoreAccountInfo addAccount(String accountName) {
         return addAccount(AccountUtils.createAccountFromName(accountName));
     }
 
@@ -114,10 +112,10 @@ public class AccountManagerTestRule implements TestRule {
      * ProfileDataSource of the fake AccountManagerFacade.
      * @return The account added.
      */
-    public Account addAccount(ProfileDataSource.ProfileData profileData) {
-        Account account = addAccount(profileData.getAccountName());
+    public CoreAccountInfo addAccount(ProfileDataSource.ProfileData profileData) {
+        CoreAccountInfo coreAccountInfo = addAccount(profileData.getAccountName());
         mFakeAccountManagerFacade.setProfileData(profileData.getAccountName(), profileData);
-        return account;
+        return coreAccountInfo;
     }
 
     /**
@@ -133,12 +131,12 @@ public class AccountManagerTestRule implements TestRule {
      *
      * This method invokes native code. It shouldn't be called in a Robolectric test.
      */
-    public Account addAccountAndWaitForSeeding(String accountName) {
-        Account account = mFakeAccountManagerFacade.getProfileDataSource() == null
+    public CoreAccountInfo addAccountAndWaitForSeeding(String accountName) {
+        CoreAccountInfo coreAccountInfo = mFakeAccountManagerFacade.getProfileDataSource() == null
                 ? addAccount(accountName)
                 : addAccount(createProfileDataFromName(accountName));
         waitForSeeding();
-        return account;
+        return coreAccountInfo;
     }
 
     /**
@@ -158,8 +156,7 @@ public class AccountManagerTestRule implements TestRule {
      */
     public CoreAccountInfo addTestAccountThenSignin() {
         assert !mIsSignedIn : "An account is already signed in!";
-        Account account = addAccountAndWaitForSeeding(TEST_ACCOUNT_EMAIL);
-        CoreAccountInfo coreAccountInfo = toCoreAccountInfo(account.name);
+        CoreAccountInfo coreAccountInfo = addAccountAndWaitForSeeding(TEST_ACCOUNT_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         mIsSignedIn = true;
         return coreAccountInfo;
@@ -186,8 +183,7 @@ public class AccountManagerTestRule implements TestRule {
     public CoreAccountInfo addTestAccountThenSigninAndEnableSync(
             @Nullable ProfileSyncService profileSyncService) {
         assert !mIsSignedIn : "An account is already signed in!";
-        Account account = addAccountAndWaitForSeeding(TEST_ACCOUNT_EMAIL);
-        CoreAccountInfo coreAccountInfo = toCoreAccountInfo(account.name);
+        CoreAccountInfo coreAccountInfo = addAccountAndWaitForSeeding(TEST_ACCOUNT_EMAIL);
         SigninTestUtil.signinAndEnableSync(coreAccountInfo, profileSyncService);
         mIsSignedIn = true;
         return coreAccountInfo;
@@ -209,7 +205,7 @@ public class AccountManagerTestRule implements TestRule {
      *
      * This method invokes native code. It shouldn't be called in a Robolectric test.
      */
-    public Account getCurrentSignedInAccount() {
+    public CoreAccountInfo getCurrentSignedInAccount() {
         return SigninTestUtil.getCurrentAccount();
     }
 

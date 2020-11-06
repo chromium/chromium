@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.sync;
 
-import android.accounts.Account;
-
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.signin.base.CoreAccountInfo;
 
 /**
  * Utility class for sign-in functionalities in native Sync browser tests.
@@ -40,9 +39,9 @@ public final class SyncTestSigninUtils {
      */
     @CalledByNative
     private static void tearDownAuthForTesting() {
-        Account account = sAccountManagerTestRule.getCurrentSignedInAccount();
-        if (account != null) {
-            sAccountManagerTestRule.removeAccountAndWaitForSeeding(account.name);
+        CoreAccountInfo coreAccountInfo = sAccountManagerTestRule.getCurrentSignedInAccount();
+        if (coreAccountInfo != null) {
+            sAccountManagerTestRule.removeAccountAndWaitForSeeding(coreAccountInfo.getEmail());
         }
         sAccountManagerTestRule.tearDownRule();
     }
