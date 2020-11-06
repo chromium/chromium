@@ -99,9 +99,23 @@ sync_pb::ModelTypeState CreateDummyModelTypeState() {
   return model_type_state;
 }
 
+// |node| must not be nullptr.
+sync_pb::BookmarkMetadata CreateNodeMetadata(
+    const bookmarks::BookmarkNode* node,
+    const std::string& server_id) {
+  sync_pb::BookmarkMetadata bookmark_metadata;
+  bookmark_metadata.set_id(node->id());
+  bookmark_metadata.mutable_metadata()->set_server_id(server_id);
+  bookmark_metadata.mutable_metadata()->set_client_tag_hash(
+      syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS, node->guid())
+          .value());
+  return bookmark_metadata;
+}
+
 void AssertState(const BookmarkModelTypeProcessor* processor,
                  const std::vector<BookmarkInfo>& bookmarks) {
   const SyncedBookmarkTracker* tracker = processor->GetTrackerForTest();
+  ASSERT_THAT(tracker, NotNull());
 
   // Make sure the tracker contains all bookmarks in |bookmarks| + the
   // 3 permanent nodes.
@@ -438,9 +452,8 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDecodeSyncMetadata) {
   bookmark_metadata->mutable_metadata()->set_server_id(kMobileBookmarksId);
 
   // Add an entry for the bookmark node.
-  bookmark_metadata = model_metadata.add_bookmarks_metadata();
-  bookmark_metadata->set_id(bookmarknode->id());
-  bookmark_metadata->mutable_metadata()->set_server_id(kNodeId);
+  *model_metadata.add_bookmarks_metadata() =
+      CreateNodeMetadata(bookmarknode, kNodeId);
 
   // Create a new processor and init it with the metadata str.
   BookmarkModelTypeProcessor new_processor(bookmark_undo_service());
@@ -677,8 +690,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   // Add an entry for the bookmark node.
   bookmark_metadata = model_metadata.add_bookmarks_metadata();
-  bookmark_metadata->set_id(node->id());
-  bookmark_metadata->mutable_metadata()->set_server_id(kNodeId);
+  *bookmark_metadata = CreateNodeMetadata(node, kNodeId);
   // Mark the entity as unsynced.
   bookmark_metadata->mutable_metadata()->set_sequence_number(2);
   bookmark_metadata->mutable_metadata()->set_acked_sequence_number(1);

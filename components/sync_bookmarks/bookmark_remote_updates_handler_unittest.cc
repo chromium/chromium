@@ -16,6 +16,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/hash_util.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
@@ -66,20 +67,25 @@ enum class ExpectedRemoteBookmarkUpdateError {
   kMaxValue = kParentNotFolder,
 };
 
-sync_pb::BookmarkMetadata CreateNodeMetadata(int64_t node_id,
-                                             const std::string& server_id) {
+// |node| must not be nullptr.
+sync_pb::BookmarkMetadata CreateNodeMetadata(
+    const bookmarks::BookmarkNode* node,
+    const std::string& server_id) {
   sync_pb::BookmarkMetadata bookmark_metadata;
-  bookmark_metadata.set_id(node_id);
+  bookmark_metadata.set_id(node->id());
   bookmark_metadata.mutable_metadata()->set_server_id(server_id);
+  bookmark_metadata.mutable_metadata()->set_client_tag_hash(
+      syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS, node->guid())
+          .value());
   return bookmark_metadata;
 }
 
 sync_pb::BookmarkMetadata CreateNodeMetadata(
-    int64_t node_id,
+    const bookmarks::BookmarkNode* node,
     const std::string& server_id,
     const syncer::UniquePosition& unique_position) {
   sync_pb::BookmarkMetadata bookmark_metadata =
-      CreateNodeMetadata(node_id, server_id);
+      CreateNodeMetadata(node, server_id);
   *bookmark_metadata.mutable_metadata()->mutable_unique_position() =
       unique_position.ToProto();
   return bookmark_metadata;
@@ -103,13 +109,13 @@ sync_pb::BookmarkModelMetadata CreateMetadataForPermanentNodes(
   model_metadata.set_bookmarks_full_title_reuploaded(true);
 
   *model_metadata.add_bookmarks_metadata() =
-      CreateNodeMetadata(bookmark_model->bookmark_bar_node()->id(),
+      CreateNodeMetadata(bookmark_model->bookmark_bar_node(),
                          /*server_id=*/kBookmarkBarId);
   *model_metadata.add_bookmarks_metadata() =
-      CreateNodeMetadata(bookmark_model->mobile_node()->id(),
+      CreateNodeMetadata(bookmark_model->mobile_node(),
                          /*server_id=*/kMobileBookmarksId);
   *model_metadata.add_bookmarks_metadata() =
-      CreateNodeMetadata(bookmark_model->other_node()->id(),
+      CreateNodeMetadata(bookmark_model->other_node(),
                          /*server_id=*/kOtherBookmarksId);
 
   return model_metadata;
@@ -1752,6 +1758,10 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 // past bug (see https://crbug.com/1071061).
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
        ShouldProcessUpdateWhileDuplicateEntities) {
+  base::test::ScopedFeatureList override_features;
+  override_features.InitAndDisableFeature(
+      kInvalidateBookmarkSyncMetadataIfClientTagMissing);
+
   const std::string kTitle = "Title";
   const std::string kNewTitle = "New Title";
   const GURL kUrl("http://www.url.com");
@@ -1774,7 +1784,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   sync_pb::BookmarkMetadata* node_metadata =
       model_metadata.add_bookmarks_metadata();
   *node_metadata =
-      CreateNodeMetadata(node->id(), kLocalId,
+      CreateNodeMetadata(node, kLocalId,
                          syncer::UniquePosition::InitialPosition(
                              syncer::UniquePosition::RandomSuffix()));
   sync_pb::BookmarkMetadata* tombstone_metadata =
@@ -1782,8 +1792,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   *tombstone_metadata = CreateTombstoneMetadata(kServerId);
 
   // Be sure that there is not client tag hashes yet.
-  ASSERT_FALSE(node_metadata->metadata().has_client_tag_hash());
-  ASSERT_FALSE(tombstone_metadata->metadata().has_client_tag_hash());
+  node_metadata->mutable_metadata()->clear_client_tag_hash();
+  tombstone_metadata->mutable_metadata()->clear_client_tag_hash();
 
   std::unique_ptr<SyncedBookmarkTracker> tracker =
       SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
@@ -1826,6 +1836,10 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 // difference is that in this test both entities are tombstones.
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
        ShouldProcessUpdateWhileDuplicateTombstones) {
+  base::test::ScopedFeatureList override_features;
+  override_features.InitAndDisableFeature(
+      kInvalidateBookmarkSyncMetadataIfClientTagMissing);
+
   const std::string kTitle = "Title";
   const std::string kNewTitle = "New Title";
   const GURL kUrl("http://www.url.com");
@@ -1849,8 +1863,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   *tombstone_metadata = CreateTombstoneMetadata(kServerId);
 
   // Be sure that there is not client tag hashes yet.
-  ASSERT_FALSE(node_metadata->metadata().has_client_tag_hash());
-  ASSERT_FALSE(tombstone_metadata->metadata().has_client_tag_hash());
+  node_metadata->mutable_metadata()->clear_client_tag_hash();
+  tombstone_metadata->mutable_metadata()->clear_client_tag_hash();
 
   std::unique_ptr<SyncedBookmarkTracker> tracker =
       SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
@@ -1900,7 +1914,11 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
-       ShouldProcessRemoveUpdateWhileDuplicateEntities) {
+       ShouldProcessRemoteUpdateWhileDuplicateEntities) {
+  base::test::ScopedFeatureList override_features;
+  override_features.InitAndDisableFeature(
+      kInvalidateBookmarkSyncMetadataIfClientTagMissing);
+
   const std::string kTitle = "Title";
   const std::string kNewTitle = "New Title";
   const GURL kUrl("http://www.url.com");
@@ -1923,7 +1941,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   sync_pb::BookmarkMetadata* node_metadata =
       model_metadata.add_bookmarks_metadata();
   *node_metadata =
-      CreateNodeMetadata(node->id(), kLocalId,
+      CreateNodeMetadata(node, kLocalId,
                          syncer::UniquePosition::InitialPosition(
                              syncer::UniquePosition::RandomSuffix()));
   sync_pb::BookmarkMetadata* tombstone_metadata =
@@ -1931,8 +1949,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   *tombstone_metadata = CreateTombstoneMetadata(kServerId);
 
   // Be sure that there is not client tag hashes yet.
-  ASSERT_FALSE(node_metadata->metadata().has_client_tag_hash());
-  ASSERT_FALSE(tombstone_metadata->metadata().has_client_tag_hash());
+  node_metadata->mutable_metadata()->clear_client_tag_hash();
+  tombstone_metadata->mutable_metadata()->clear_client_tag_hash();
 
   std::unique_ptr<SyncedBookmarkTracker> tracker =
       SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
@@ -2043,10 +2061,9 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   sync_pb::BookmarkMetadata* node_metadata =
       model_metadata.add_bookmarks_metadata();
   *node_metadata =
-      CreateNodeMetadata(node->id(), kFolderId,
+      CreateNodeMetadata(node, kFolderId,
                          syncer::UniquePosition::InitialPosition(
                              syncer::UniquePosition::RandomSuffix()));
-  ASSERT_FALSE(node_metadata->metadata().has_client_tag_hash());
   const int64_t server_version = node_metadata->metadata().server_version();
 
   std::unique_ptr<SyncedBookmarkTracker> tracker =
@@ -2059,7 +2076,6 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       tracker->GetEntityForSyncId(kFolderId);
   ASSERT_THAT(entity, NotNull());
   ASSERT_FALSE(entity->IsUnsynced());
-  ASSERT_FALSE(entity->has_final_guid());
 
   syncer::UpdateResponseDataList updates;
   // Create an update with the same server version as local entity has. This
@@ -2134,11 +2150,11 @@ TEST(BookmarkRemoteUpdatesHandlerTest, ShouldComputeRightChildNodeIndex) {
   sync_pb::BookmarkModelMetadata model_metadata =
       CreateMetadataForPermanentNodes(bookmark_model.get());
   *model_metadata.add_bookmarks_metadata() =
-      CreateNodeMetadata(node1->id(), "folder1_id", pos1);
+      CreateNodeMetadata(node1, "folder1_id", pos1);
   *model_metadata.add_bookmarks_metadata() =
-      CreateNodeMetadata(node2->id(), "folder2_id", pos2);
+      CreateNodeMetadata(node2, "folder2_id", pos2);
   *model_metadata.add_bookmarks_metadata() =
-      CreateNodeMetadata(node3->id(), "folder3_id", pos3);
+      CreateNodeMetadata(node3, "folder3_id", pos3);
 
   std::unique_ptr<SyncedBookmarkTracker> tracker =
       SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
