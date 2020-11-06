@@ -1053,9 +1053,9 @@ TEST_F(CaptureModeTest, DoNotHandleEventDuringCountDown) {
 
 // Tests that metrics are recorded properly for capture mode entry points.
 TEST_F(CaptureModeTest, CaptureModeEntryPointHistograms) {
-  const char kClamshellHistogram[] =
+  constexpr char kClamshellHistogram[] =
       "Ash.CaptureModeController.EntryPoint.ClamshellMode";
-  const char kTabletHistogram[] =
+  constexpr char kTabletHistogram[] =
       "Ash.CaptureModeController.EntryPoint.TabletMode";
   base::HistogramTester histogram_tester;
 
@@ -1114,10 +1114,10 @@ TEST_F(CaptureModeTest, CaptureModeEntryPointHistograms) {
   histogram_tester.ExpectTotalCount(kTabletHistogram, 4);
 
   // Check that histogram isn't counted if we don't actually enter capture mode.
-  controller->Start(ash::CaptureModeEntryType::kAccelTakePartialScreenshot);
+  controller->Start(CaptureModeEntryType::kAccelTakePartialScreenshot);
   histogram_tester.ExpectBucketCount(
       kTabletHistogram, CaptureModeEntryType::kAccelTakePartialScreenshot, 2);
-  controller->Start(ash::CaptureModeEntryType::kAccelTakePartialScreenshot);
+  controller->Start(CaptureModeEntryType::kAccelTakePartialScreenshot);
   histogram_tester.ExpectBucketCount(
       kTabletHistogram, CaptureModeEntryType::kAccelTakePartialScreenshot, 2);
 }
@@ -1218,6 +1218,64 @@ TEST_F(CaptureModeTest, ShuttingDownWhileRecording) {
   // Exiting the test now will shut down ash while recording is in progress,
   // there should be no crashes when
   // VideoRecordingWatcher::OnChromeTerminating() terminates the recording.
+}
+
+// Tests that metrics are recorded properly for capture mode snap buttons.
+TEST_F(CaptureModeTest, CaptureModeBarButtonTypeHistograms) {
+  constexpr char kClamshellHistogram[] =
+      "Ash.CaptureModeController.BarButtons.ClamshellMode";
+  constexpr char kTabletHistogram[] =
+      "Ash.CaptureModeController.BarButtons.TabletMode";
+  base::HistogramTester histogram_tester;
+
+  CaptureModeController::Get()->Start(CaptureModeEntryType::kQuickSettings);
+  auto* event_generator = GetEventGenerator();
+
+  // Tests each snap button in clamshell mode.
+  ClickOnView(GetImageToggleButton(), event_generator);
+  histogram_tester.ExpectBucketCount(
+      kClamshellHistogram, CaptureModeBarButtonType::kScreenCapture, 1);
+
+  ClickOnView(GetVideoToggleButton(), event_generator);
+  histogram_tester.ExpectBucketCount(
+      kClamshellHistogram, CaptureModeBarButtonType::kScreenRecord, 1);
+
+  ClickOnView(GetFullscreenToggleButton(), event_generator);
+  histogram_tester.ExpectBucketCount(kClamshellHistogram,
+                                     CaptureModeBarButtonType::kFull, 1);
+
+  ClickOnView(GetRegionToggleButton(), event_generator);
+  histogram_tester.ExpectBucketCount(kClamshellHistogram,
+                                     CaptureModeBarButtonType::kRegion, 1);
+
+  ClickOnView(GetWindowToggleButton(), event_generator);
+  histogram_tester.ExpectBucketCount(kClamshellHistogram,
+                                     CaptureModeBarButtonType::kWindow, 1);
+
+  // Enter tablet mode and test the snap buttons.
+  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
+  tablet_mode_controller->SetEnabledForTest(true);
+  ASSERT_TRUE(tablet_mode_controller->InTabletMode());
+
+  ClickOnView(GetImageToggleButton(), event_generator);
+  histogram_tester.ExpectBucketCount(
+      kTabletHistogram, CaptureModeBarButtonType::kScreenCapture, 1);
+
+  ClickOnView(GetVideoToggleButton(), event_generator);
+  histogram_tester.ExpectBucketCount(
+      kTabletHistogram, CaptureModeBarButtonType::kScreenRecord, 1);
+
+  ClickOnView(GetFullscreenToggleButton(), event_generator);
+  histogram_tester.ExpectBucketCount(kTabletHistogram,
+                                     CaptureModeBarButtonType::kFull, 1);
+
+  ClickOnView(GetRegionToggleButton(), event_generator);
+  histogram_tester.ExpectBucketCount(kTabletHistogram,
+                                     CaptureModeBarButtonType::kRegion, 1);
+
+  ClickOnView(GetWindowToggleButton(), event_generator);
+  histogram_tester.ExpectBucketCount(kTabletHistogram,
+                                     CaptureModeBarButtonType::kWindow, 1);
 }
 
 }  // namespace ash

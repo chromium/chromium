@@ -9,6 +9,7 @@
 #include "ash/capture_mode/capture_mode_button.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_source_view.h"
 #include "ash/capture_mode/capture_mode_type_view.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -112,6 +113,7 @@ void CaptureModeBarView::OnCaptureTypeChanged(CaptureModeType new_type) {
 }
 
 void CaptureModeBarView::OnCloseButtonPressed() {
+  RecordCaptureModeBarButtonType(CaptureModeBarButtonType::kExit);
   CaptureModeController::Get()->Stop();
 }
 

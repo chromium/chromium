@@ -9220,6 +9220,15 @@ Called by update_bad_message_reasons.py.-->
   <int value="4" label="AVFoundation is enabled and is loaded succesfully"/>
 </enum>
 
+<enum name="CaptureModeBarButtonType">
+  <int value="0" label="Screen Capture Button"/>
+  <int value="1" label="Screen Record Button"/>
+  <int value="2" label="Full Button"/>
+  <int value="3" label="Region Button"/>
+  <int value="4" label="Window Button"/>
+  <int value="5" label="Exit Button"/>
+</enum>
+
 <enum name="CaptureModeEntryType">
   <int value="0" label="Partial Screenshot Accelerator"/>
   <int value="1" label="Window Screenshot Accelerator"/>

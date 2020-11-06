@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/video_recording_watcher.h"
@@ -48,8 +49,6 @@ namespace {
 
 CaptureModeController* g_instance = nullptr;
 
-constexpr char kEntryHistogramName[] = "Ash.CaptureModeController.EntryPoint";
-
 constexpr char kRecordTimeHistogramName[] =
     "Ash.CaptureModeController.ScreenRecordingLength";
 
@@ -77,14 +76,6 @@ enum ScreenshotNotificationButtonIndex {
 enum VideoNotificationButtonIndex {
   BUTTON_DELETE_VIDEO = 0,
 };
-
-// Appends the proper suffix to |prefix| based on whether the user is in tablet
-// mode or not.
-std::string GetCaptureModeHistogramName(std::string prefix) {
-  prefix.append(Shell::Get()->IsInTabletMode() ? ".TabletMode"
-                                               : ".ClamshellMode");
-  return prefix;
-}
 
 // Returns the date extracted from |timestamp| as a string to be part of
 // captured file names. Note that naturally formatted dates includes slashes
@@ -305,8 +296,7 @@ void CaptureModeController::Start(CaptureModeEntryType entry_type) {
     return;
   }
 
-  base::UmaHistogramEnumeration(
-      GetCaptureModeHistogramName(kEntryHistogramName), entry_type);
+  RecordCaptureModeEntryType(entry_type);
   capture_mode_session_ = std::make_unique<CaptureModeSession>(this);
 }
 

@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/capture_mode/capture_mode_histogram_enums.h"
+#include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/video_file_handler.h"
 #include "ash/public/cpp/capture_mode_delegate.h"

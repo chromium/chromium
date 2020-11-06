@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_toggle_button.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -69,10 +70,12 @@ void CaptureModeTypeView::OnCaptureTypeChanged(CaptureModeType new_type) {
 }
 
 void CaptureModeTypeView::OnImageToggle() {
+  RecordCaptureModeBarButtonType(CaptureModeBarButtonType::kScreenCapture);
   CaptureModeController::Get()->SetType(CaptureModeType::kImage);
 }
 
 void CaptureModeTypeView::OnVideoToggle() {
+  RecordCaptureModeBarButtonType(CaptureModeBarButtonType::kScreenRecord);
   CaptureModeController::Get()->SetType(CaptureModeType::kVideo);
 }
 
