@@ -295,9 +295,7 @@ config("compiler") {
     if (fatal_linker_warnings && !is_apple && current_os != "aix") {
       ldflags += [ "-Wl,--fatal-warnings" ]
     }
-    if (fatal_linker_warnings && is_apple &&
-        # TODO(https://crbug.com/1107955): Enable in arm64 component builds.
-        !(is_mac && target_cpu == "arm64" && is_component_build)) {
+    if (fatal_linker_warnings && is_apple) {
       ldflags += [ "-Wl,-fatal_warnings" ]
     }
   } else {

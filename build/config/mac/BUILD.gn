@@ -28,17 +28,6 @@ config("compiler") {
     common_mac_flags += [
       "-arch",
       current_cpu,
-
-      # The baseline CPU for macOS on arm64 is the Apple A12 (Vortex/Tempest),
-      # and clang should default to this when building for this OS/CPU
-      # combination. Apple clang embedded in Xcode 12 does, but trunk clang does
-      # not, instead targeting the Apple A7 (Cyclone), the proper baseline CPU
-      # for iOS on arm64. https://reviews.llvm.org/D82699 would fix it, but it
-      # hasn't gained any traction. Specify the baseline CPU explicitly here.
-      #
-      # TODO(https://crbug.com/1119249): Remove this when trunk clang has a
-      # better default.
-      "-mcpu=apple-a12",
     ]
   } else {
     assert(false, "unknown current_cpu $current_cpu")
