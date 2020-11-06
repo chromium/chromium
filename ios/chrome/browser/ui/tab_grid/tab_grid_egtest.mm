@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/tab_grid/features.h"
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_constants.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
+#include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -12,6 +15,7 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/http_server_util.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -28,6 +32,16 @@ char kTitle2[] = "Page 2";
 char kResponse1[] = "Test Page 1 content";
 char kResponse2[] = "Test Page 2 content";
 char kResponse3[] = "Test Page 3 content";
+
+// Matcher for the 'Close All' confirmation button.
+id<GREYMatcher> CloseAllTabsConfirmationWithNumberOfTabs(
+    NSInteger numberOfTabs) {
+  NSString* closeTabs =
+      base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+          IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_CONFIRMATION, numberOfTabs));
+  return grey_allOf(grey_accessibilityLabel(closeTabs),
+                    grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+}
 }  // namespace
 
 @interface TabGridTestCase : WebHttpServerChromeTestCase {
@@ -218,6 +232,46 @@ char kResponse3[] = "Test Page 3 content";
 
   [ChromeEarlGrey
       verifyShareActionWithPageTitle:[NSString stringWithUTF8String:kTitle1]];
+}
+
+// Tests that tapping on "Close All" shows a confirmation dialog.
+// It also tests that tapping on "Close x Tab(s)" on the confirmation dialog
+// displays an empty grid and tapping on "Cancel" doesn't modify the grid.
+- (void)testCloseAllTabsConfirmation {
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+
+  // Taps on "Close All" and Confirm.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCloseAllButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:CloseAllTabsConfirmationWithNumberOfTabs(
+                                          1)] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      assertWithMatcher:grey_nil()];
+
+  // Checks that "Close All" is grayed out.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCloseAllButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+
+  // Creates a new tab then come back to tab grid.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+
+  // Taps on "Close All" and Cancel.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCloseAllButton()]
+      performAction:grey_tap()];
+  if (IsIPadIdiom()) {
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::TabGridCloseAllButton()]
+        performAction:grey_tap()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
+        performAction:grey_tap()];
+  }
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 #pragma mark - Helper Methods
