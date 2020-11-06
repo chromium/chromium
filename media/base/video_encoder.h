@@ -39,7 +39,7 @@ class MEDIA_EXPORT VideoEncoder {
     Options(const Options&);
     ~Options();
     base::Optional<uint64_t> bitrate;
-    double framerate = 30.0;
+    base::Optional<double> framerate;
 
     int width = 0;
     int height = 0;

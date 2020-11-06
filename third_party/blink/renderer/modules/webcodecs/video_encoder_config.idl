@@ -17,7 +17,7 @@ dictionary VideoEncoderConfig {
 
   unsigned long long bitrate;
 
-  required double framerate;
+  double framerate;
 
   required unsigned long width;
   required unsigned long height;

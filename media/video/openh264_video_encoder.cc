@@ -27,7 +27,8 @@ Status SetUpOpenH264Params(const VideoEncoder::Options& options,
   params->bEnableDenoise = false;
   // Set to 1 due to https://crbug.com/583348
   params->iMultipleThreadIdc = 1;
-  params->fMaxFrameRate = options.framerate;
+  if (options.framerate.has_value())
+    params->fMaxFrameRate = options.framerate.value();
   params->iPicHeight = options.height;
   params->iPicWidth = options.width;
 

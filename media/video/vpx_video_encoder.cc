@@ -4,6 +4,7 @@
 
 #include "media/video/vpx_video_encoder.h"
 
+#include "base/numerics/ranges.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
@@ -275,12 +276,13 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
       break;
   }
 
-  auto timestamp = frame->timestamp().InMicroseconds();
-  auto duration = GetFrameDuration(*frame);
+  auto duration_us = GetFrameDuration(*frame).InMicroseconds();
+  auto timestamp_us = frame->timestamp().InMicroseconds();
+  last_frame_timestamp_ = frame->timestamp();
   auto deadline = VPX_DL_REALTIME;
   vpx_codec_flags_t flags = key_frame ? VPX_EFLAG_FORCE_KF : 0;
-  auto vpx_error = vpx_codec_encode(codec_.get(), &vpx_image_, timestamp,
-                                    duration, flags, deadline);
+  auto vpx_error = vpx_codec_encode(codec_.get(), &vpx_image_, timestamp_us,
+                                    duration_us, flags, deadline);
 
   if (vpx_error != VPX_CODEC_OK) {
     std::string msg = base::StringPrintf("VPX encoding error: %s (%s)",
@@ -321,12 +323,21 @@ void VpxVideoEncoder::ChangeOptions(const Options& options, StatusCB done_cb) {
   return;
 }
 
-uint64_t VpxVideoEncoder::GetFrameDuration(const VideoFrame& frame) {
-  base::TimeDelta default_duration =
-      base::TimeDelta::FromSecondsD(1.0 / options_.framerate);
-  return frame.metadata()
-      ->frame_duration.value_or(default_duration)
-      .InMicroseconds();
+base::TimeDelta VpxVideoEncoder::GetFrameDuration(const VideoFrame& frame) {
+  // Frame has duration in metadata, use it.
+  if (frame.metadata()->frame_duration.has_value())
+    return frame.metadata()->frame_duration.value();
+
+  // Options have framerate specified, use it.
+  if (options_.framerate.has_value())
+    return base::TimeDelta::FromSecondsD(1.0 / options_.framerate.value());
+
+  // No real way to figure out duration, use time passed since the last frame
+  // as an educated guess, but clamp it within a reasonable limits.
+  constexpr auto min_duration = base::TimeDelta::FromSecondsD(1.0 / 60.0);
+  constexpr auto max_duration = base::TimeDelta::FromSecondsD(1.0 / 24.0);
+  auto duration = frame.timestamp() - last_frame_timestamp_;
+  return base::ClampToRange(duration, min_duration, max_duration);
 }
 
 VpxVideoEncoder::~VpxVideoEncoder() {

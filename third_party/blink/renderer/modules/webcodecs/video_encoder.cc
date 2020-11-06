@@ -83,7 +83,8 @@ std::unique_ptr<media::VideoEncoder> CreateAcceleratedVideoEncoder(
     double max_supported_framerate =
         double{supported_profile.max_framerate_numerator} /
         supported_profile.max_framerate_denominator;
-    if (options.framerate > max_supported_framerate)
+    if (options.framerate.has_value() &&
+        options.framerate.value() > max_supported_framerate)
       continue;
 
     found_supported_profile = true;
@@ -198,7 +199,8 @@ std::unique_ptr<VideoEncoder::ParsedConfig> VideoEncoder::ParseConfig(
     return nullptr;
   }
 
-  parsed->options.framerate = config->framerate();
+  if (config->hasFramerate())
+    parsed->options.framerate = config->framerate();
 
   if (config->hasBitrate())
     parsed->options.bitrate = config->bitrate();
