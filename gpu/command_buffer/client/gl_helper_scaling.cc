@@ -523,33 +523,44 @@ class ScalerImpl : public GLHelper::ScalerInterface {
                     src_rect.size() == gfx::SizeF(result_size))
                        ? GL_NEAREST
                        : GL_LINEAR;
-    // Bind to the source texture and set the filitering and clamp to the edge,
-    // as required by all shader programs.
-    ScopedTextureBinder<GL_TEXTURE_2D> texture_binder(gl_, src_texture);
-    gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
-    gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-    gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    // Prepare the shader program for drawing.
-    ScopedBufferBinder<GL_ARRAY_BUFFER> buffer_binder(
-        gl_, scaler_helper_->vertex_attributes_buffer_);
-    shader_program_->UseProgram(src_texture_size, src_rect, result_size,
-                                spec_.scale_x, spec_.flip_output,
-                                color_weights_);
+    // Set the active texture unit to 0 for the ScopedTextureBinder below, then
+    // restore the original value when done. (crbug.com/1103385)
+    GLint oldActiveTexture = 0;
+    gl_->GetIntegerv(GL_ACTIVE_TEXTURE, &oldActiveTexture);
+    gl_->ActiveTexture(GL_TEXTURE0);
+    {
+      // Bind to the source texture and set the filitering and clamp to the
+      // edge, as required by all shader programs.
+      ScopedTextureBinder<GL_TEXTURE_2D> texture_binder(gl_, src_texture);
+      gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+      gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+      gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    // Execute the draw.
-    gl_->Viewport(0, 0, result_size.width(), result_size.height());
-    const GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT0 + 1};
-    if (dest_texture_1 > 0) {
-      DCHECK_LE(2, scaler_helper_->helper_->MaxDrawBuffers());
-      gl_->DrawBuffersEXT(2, buffers);
+      // Prepare the shader program for drawing.
+      ScopedBufferBinder<GL_ARRAY_BUFFER> buffer_binder(
+          gl_, scaler_helper_->vertex_attributes_buffer_);
+      shader_program_->UseProgram(src_texture_size, src_rect, result_size,
+                                  spec_.scale_x, spec_.flip_output,
+                                  color_weights_);
+
+      // Execute the draw.
+      gl_->Viewport(0, 0, result_size.width(), result_size.height());
+      const GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT0 + 1};
+      if (dest_texture_1 > 0) {
+        DCHECK_LE(2, scaler_helper_->helper_->MaxDrawBuffers());
+        gl_->DrawBuffersEXT(2, buffers);
+      }
+      gl_->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+      if (dest_texture_1 > 0) {
+        // Set the draw buffers back to not disrupt external operations.
+        gl_->DrawBuffersEXT(1, buffers);
+      }
+
+      // ScopedTextureBinder ends here, before restoring ActiveTexture state.
     }
-    gl_->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    if (dest_texture_1 > 0) {
-      // Set the draw buffers back to not disrupt external operations.
-      gl_->DrawBuffersEXT(1, buffers);
-    }
+    gl_->ActiveTexture(oldActiveTexture);
   }
 
   GLES2Interface* gl_;
