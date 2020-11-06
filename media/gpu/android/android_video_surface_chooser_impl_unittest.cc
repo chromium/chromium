@@ -189,11 +189,13 @@ class AndroidVideoSurfaceChooserImplTest
       std::unique_ptr<MockAndroidOverlay> overlay) {
     Factory* factory = new Factory(
         std::move(overlay),
-        base::Bind(&AndroidVideoSurfaceChooserImplTest::MockOnOverlayCreated,
-                   base::Unretained(this)));
+        base::BindRepeating(
+            &AndroidVideoSurfaceChooserImplTest::MockOnOverlayCreated,
+            base::Unretained(this)));
 
     // Leaky!
-    return base::Bind(&Factory::ReturnOverlay, base::Unretained(factory));
+    return base::BindRepeating(&Factory::ReturnOverlay,
+                               base::Unretained(factory));
   }
 
   // Called by the factory when it's run.

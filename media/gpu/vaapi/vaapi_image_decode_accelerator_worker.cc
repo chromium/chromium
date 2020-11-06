@@ -113,8 +113,8 @@ VaapiImageDecodeAcceleratorWorker::Create() {
   // Media.VaapiImageDecodeAcceleratorWorker.VAAPIError UMA to be able to record
   // WebP and JPEG failures separately.
   const auto uma_cb =
-      base::Bind(&ReportVaapiErrorToUMA,
-                 "Media.VaapiImageDecodeAcceleratorWorker.VAAPIError");
+      base::BindRepeating(&ReportVaapiErrorToUMA,
+                          "Media.VaapiImageDecodeAcceleratorWorker.VAAPIError");
   VaapiImageDecoderVector decoders;
 
   auto jpeg_decoder = std::make_unique<VaapiJpegDecoder>();

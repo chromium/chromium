@@ -133,8 +133,8 @@ void V4L2DevicePoller::DevicePollTask() {
     }
 
     DVLOGF(4) << "Poll returned, calling event callback.";
-    client_task_runner_->PostTask(FROM_HERE,
-                                  base::Bind(event_callback_, event_pending));
+    client_task_runner_->PostTask(
+        FROM_HERE, base::BindRepeating(event_callback_, event_pending));
   }
 }
 

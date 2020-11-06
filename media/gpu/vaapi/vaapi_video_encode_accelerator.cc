@@ -340,8 +340,8 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
                            : VaapiWrapper::kEncode;
     vaapi_wrapper_ = VaapiWrapper::CreateForVideoCodec(
         mode, config.output_profile,
-        base::Bind(&ReportVaapiErrorToUMA,
-                   "Media.VaapiVideoEncodeAccelerator.VAAPIError"));
+        base::BindRepeating(&ReportVaapiErrorToUMA,
+                            "Media.VaapiVideoEncodeAccelerator.VAAPIError"));
     if (!vaapi_wrapper_) {
       VLOGF(1) << "Failed initializing VAAPI for profile "
                << GetProfileName(config.output_profile);
@@ -732,8 +732,9 @@ std::unique_ptr<VaapiEncodeJob> VaapiVideoEncodeAccelerator::CreateEncodeJob(
     if (!vpp_vaapi_wrapper_) {
       vpp_vaapi_wrapper_ = VaapiWrapper::Create(
           VaapiWrapper::kVideoProcess, VAProfileNone,
-          base::Bind(&ReportVaapiErrorToUMA,
-                     "Media.VaapiVideoEncodeAccelerator.Vpp.VAAPIError"));
+          base::BindRepeating(
+              &ReportVaapiErrorToUMA,
+              "Media.VaapiVideoEncodeAccelerator.Vpp.VAAPIError"));
       if (!vpp_vaapi_wrapper_) {
         NOTIFY_ERROR(kPlatformFailureError,
                      "Failed to initialize VppVaapiWrapper");

@@ -134,16 +134,16 @@ bool VaapiMjpegDecodeAccelerator::Initialize(
 
   client_ = client;
 
-  if (!decoder_.Initialize(
-          base::Bind(&ReportVaapiErrorToUMA,
-                     "Media.VaapiMjpegDecodeAccelerator.VAAPIError"))) {
+  if (!decoder_.Initialize(base::BindRepeating(
+          &ReportVaapiErrorToUMA,
+          "Media.VaapiMjpegDecodeAccelerator.VAAPIError"))) {
     return false;
   }
 
   vpp_vaapi_wrapper_ = VaapiWrapper::Create(
       VaapiWrapper::kVideoProcess, VAProfileNone,
-      base::Bind(&ReportVaapiErrorToUMA,
-                 "Media.VaapiMjpegDecodeAccelerator.Vpp.VAAPIError"));
+      base::BindRepeating(&ReportVaapiErrorToUMA,
+                          "Media.VaapiMjpegDecodeAccelerator.Vpp.VAAPIError"));
   if (!vpp_vaapi_wrapper_) {
     VLOGF(1) << "Failed initializing VAAPI for VPP";
     return false;

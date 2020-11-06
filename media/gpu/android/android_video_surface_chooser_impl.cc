@@ -213,19 +213,20 @@ void AndroidVideoSurfaceChooserImpl::SwitchToOverlay(
   // We bind all of our callbacks with weak ptrs, since we don't know how long
   // the client will hold on to overlays.  They could, in principle, show up
   // long after the client is destroyed too, if codec destruction hangs.
-  config.ready_cb = base::Bind(&AndroidVideoSurfaceChooserImpl::OnOverlayReady,
-                               weak_factory_.GetWeakPtr());
+  config.ready_cb =
+      base::BindOnce(&AndroidVideoSurfaceChooserImpl::OnOverlayReady,
+                     weak_factory_.GetWeakPtr());
   config.failed_cb =
-      base::Bind(&AndroidVideoSurfaceChooserImpl::OnOverlayFailed,
-                 weak_factory_.GetWeakPtr());
+      base::BindOnce(&AndroidVideoSurfaceChooserImpl::OnOverlayFailed,
+                     weak_factory_.GetWeakPtr());
   config.rect = current_state_.initial_position;
   config.secure = current_state_.is_secure;
 
   // Request power efficient overlays and callbacks if we're supposed to.
   config.power_efficient = needs_power_efficient;
-  config.power_cb =
-      base::Bind(&AndroidVideoSurfaceChooserImpl::OnPowerEfficientState,
-                 weak_factory_.GetWeakPtr());
+  config.power_cb = base::BindRepeating(
+      &AndroidVideoSurfaceChooserImpl::OnPowerEfficientState,
+      weak_factory_.GetWeakPtr());
 
   overlay_ = overlay_factory_.Run(std::move(config));
   if (!overlay_)

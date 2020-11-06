@@ -177,7 +177,8 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
   const VideoCodecProfile profile = config.profile();
   vaapi_wrapper_ = VaapiWrapper::CreateForVideoCodec(
       VaapiWrapper::kDecode, profile,
-      base::Bind(&ReportVaapiErrorToUMA, "Media.VaapiVideoDecoder.VAAPIError"));
+      base::BindRepeating(&ReportVaapiErrorToUMA,
+                          "Media.VaapiVideoDecoder.VAAPIError"));
   UMA_HISTOGRAM_BOOLEAN("Media.VaapiVideoDecoder.VaapiWrapperCreationSuccess",
                         vaapi_wrapper_.get());
   if (!vaapi_wrapper_.get()) {
@@ -490,8 +491,8 @@ void VaapiVideoDecoder::ApplyResolutionChange() {
     profile_ = decoder_->GetProfile();
     auto new_vaapi_wrapper = VaapiWrapper::CreateForVideoCodec(
         VaapiWrapper::kDecode, profile_,
-        base::Bind(&ReportVaapiErrorToUMA,
-                   "Media.VaapiVideoDecoder.VAAPIError"));
+        base::BindRepeating(&ReportVaapiErrorToUMA,
+                            "Media.VaapiVideoDecoder.VAAPIError"));
     if (!new_vaapi_wrapper.get()) {
       DLOG(WARNING) << "Failed creating VaapiWrapper";
       SetState(State::kError);

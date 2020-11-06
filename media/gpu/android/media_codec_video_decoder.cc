@@ -232,10 +232,10 @@ MediaCodecVideoDecoder::MediaCodecVideoDecoder(
           base::FeatureList::IsEnabled(media::kAllowNonSecureOverlays)) {
   DVLOG(2) << __func__;
   surface_chooser_helper_.chooser()->SetClientCallbacks(
-      base::Bind(&MediaCodecVideoDecoder::OnSurfaceChosen,
-                 weak_factory_.GetWeakPtr()),
-      base::Bind(&MediaCodecVideoDecoder::OnSurfaceChosen,
-                 weak_factory_.GetWeakPtr(), nullptr));
+      base::BindRepeating(&MediaCodecVideoDecoder::OnSurfaceChosen,
+                          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&MediaCodecVideoDecoder::OnSurfaceChosen,
+                          weak_factory_.GetWeakPtr(), nullptr));
 }
 
 std::unique_ptr<VideoDecoder> MediaCodecVideoDecoder::Create(
@@ -500,9 +500,9 @@ void MediaCodecVideoDecoder::StartLazyInit() {
     overlay_mode = VideoFrameFactory::OverlayMode::kDontRequestPromotionHints;
 
   video_frame_factory_->Initialize(
-      overlay_mode,
-      base::Bind(&MediaCodecVideoDecoder::OnVideoFrameFactoryInitialized,
-                 weak_factory_.GetWeakPtr()));
+      overlay_mode, base::BindRepeating(
+                        &MediaCodecVideoDecoder::OnVideoFrameFactoryInitialized,
+                        weak_factory_.GetWeakPtr()));
 }
 
 void MediaCodecVideoDecoder::OnVideoFrameFactoryInitialized(
@@ -815,9 +815,10 @@ void MediaCodecVideoDecoder::StartTimerOrPumpCodec() {
   // at this frequency is likely overkill in the steady state.
   const auto kPollingPeriod = base::TimeDelta::FromMilliseconds(10);
   if (!pump_codec_timer_.IsRunning()) {
-    pump_codec_timer_.Start(FROM_HERE, kPollingPeriod,
-                            base::Bind(&MediaCodecVideoDecoder::PumpCodec,
-                                       base::Unretained(this), false));
+    pump_codec_timer_.Start(
+        FROM_HERE, kPollingPeriod,
+        base::BindRepeating(&MediaCodecVideoDecoder::PumpCodec,
+                            base::Unretained(this), false));
   }
 }
 

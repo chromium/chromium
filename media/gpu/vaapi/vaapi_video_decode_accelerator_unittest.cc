@@ -150,11 +150,12 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
                                         public VideoDecodeAccelerator::Client {
  public:
   VaapiVideoDecodeAcceleratorTest()
-      : vda_(base::Bind([] { return true; }),
-             base::Bind([](uint32_t client_texture_id,
-                           uint32_t texture_target,
-                           const scoped_refptr<gl::GLImage>& image,
-                           bool can_bind_to_sampler) { return true; })),
+      : vda_(
+            base::BindRepeating([] { return true; }),
+            base::BindRepeating([](uint32_t client_texture_id,
+                                   uint32_t texture_target,
+                                   const scoped_refptr<gl::GLImage>& image,
+                                   bool can_bind_to_sampler) { return true; })),
         decoder_thread_("VaapiVideoDecodeAcceleratorTestThread"),
         mock_decoder_(new ::testing::StrictMock<MockAcceleratedVideoDecoder>),
         mock_vaapi_picture_factory_(new MockVaapiPictureFactory()),

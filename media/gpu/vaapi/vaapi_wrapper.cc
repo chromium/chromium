@@ -1958,7 +1958,7 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
     needs_va_put_image = true;
   }
   base::ScopedClosureRunner vaimage_deleter(
-      base::Bind(&DestroyVAImage, va_display_, image));
+      base::BindOnce(&DestroyVAImage, va_display_, image));
 
   if (image.format.fourcc != VA_FOURCC_NV12) {
     LOG(ERROR) << "Unsupported image format: " << image.format.fourcc;

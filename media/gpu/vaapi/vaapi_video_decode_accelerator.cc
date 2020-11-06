@@ -205,8 +205,8 @@ bool VaapiVideoDecodeAccelerator::Initialize(const Config& config,
 
   vaapi_wrapper_ = VaapiWrapper::CreateForVideoCodec(
       VaapiWrapper::kDecode, profile,
-      base::Bind(&ReportVaapiErrorToUMA,
-                 "Media.VaapiVideoDecodeAccelerator.VAAPIError"));
+      base::BindRepeating(&ReportVaapiErrorToUMA,
+                          "Media.VaapiVideoDecodeAccelerator.VAAPIError"));
 
   UMA_HISTOGRAM_BOOLEAN("Media.VAVDA.VaapiWrapperCreationSuccess",
                         vaapi_wrapper_.get());
@@ -349,7 +349,7 @@ void VaapiVideoDecodeAccelerator::QueueInputBuffer(
     auto input_buffer = std::make_unique<InputBuffer>(
         bitstream_id, std::move(buffer),
         BindToCurrentLoop(
-            base::Bind(&Client::NotifyEndOfBitstreamBuffer, client_)));
+            base::BindOnce(&Client::NotifyEndOfBitstreamBuffer, client_)));
     input_buffers_.push(std::move(input_buffer));
   }
 
@@ -615,8 +615,8 @@ void VaapiVideoDecodeAccelerator::TryFinishSurfaceSetChange() {
     profile_ = new_profile;
     auto new_vaapi_wrapper = VaapiWrapper::CreateForVideoCodec(
         VaapiWrapper::kDecode, profile_,
-        base::Bind(&ReportVaapiErrorToUMA,
-                   "Media.VaapiVideoDecodeAccelerator.VAAPIError"));
+        base::BindRepeating(&ReportVaapiErrorToUMA,
+                            "Media.VaapiVideoDecodeAccelerator.VAAPIError"));
     RETURN_AND_NOTIFY_ON_FAILURE(new_vaapi_wrapper.get(),
                                  "Failed creating VaapiWrapper",
                                  INVALID_ARGUMENT, );
@@ -710,8 +710,9 @@ void VaapiVideoDecodeAccelerator::AssignPictureBuffers(
     if (!vpp_vaapi_wrapper_) {
       vpp_vaapi_wrapper_ = VaapiWrapper::Create(
           VaapiWrapper::kVideoProcess, VAProfileNone,
-          base::Bind(&ReportVaapiErrorToUMA,
-                     "Media.VaapiVideoDecodeAccelerator.Vpp.VAAPIError"));
+          base::BindRepeating(
+              &ReportVaapiErrorToUMA,
+              "Media.VaapiVideoDecodeAccelerator.Vpp.VAAPIError"));
       RETURN_AND_NOTIFY_ON_FAILURE(vpp_vaapi_wrapper_,
                                    "Failed to initialize VppVaapiWrapper",
                                    PLATFORM_FAILURE, );
