@@ -52,6 +52,41 @@ namespace {
 
 constexpr char kUserName[] = "test@chromium.org";
 
+constexpr char kScanForDlpAndMalware[] = R"(
+{
+  "service_provider": "google",
+  "enable": [
+    {
+      "url_list": ["*"],
+      "tags": ["dlp", "malware"]
+    }
+  ]
+})";
+
+constexpr char kScanForMalware[] = R"(
+{
+  "service_provider": "google",
+  "enable": [
+    {
+      "url_list": ["*"],
+      "tags": ["malware"]
+    }
+  ]
+})";
+
+constexpr char kScanForDlp[] = R"(
+{
+  "service_provider": "google",
+  "enable": [
+    {
+      "url_list": ["*"],
+      "tags": ["dlp"]
+    }
+  ]
+})";
+
+constexpr char kNoScan[] = R"({"service_provider": "google"})";
+
 const std::set<std::string>* ExeMimeTypes() {
   static std::set<std::string> set = {"application/x-msdownload",
                                       "application/x-ms-dos-executable",
@@ -236,8 +271,8 @@ class DeepScanningRequestTest : public testing::Test {
 };
 
 TEST_F(DeepScanningRequestTest, ChecksFeatureFlags) {
-  SetDlpPolicyForConnectors(CHECK_UPLOADS_AND_DOWNLOADS);
-  SetMalwarePolicyForConnectors(SEND_UPLOADS_AND_DOWNLOADS);
+  SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED,
+                       kScanForDlpAndMalware);
 
   // Try each request with settings indicating both DLP and Malware requests
   // should be sent to show features work correctly.
@@ -287,8 +322,8 @@ TEST_F(DeepScanningRequestTest, GeneratesCorrectRequestFromPolicy) {
   EnableAllFeatures();
 
   {
-    SetDlpPolicyForConnectors(CHECK_UPLOADS_AND_DOWNLOADS);
-    SetMalwarePolicyForConnectors(SEND_UPLOADS_AND_DOWNLOADS);
+    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED,
+                         kScanForDlpAndMalware);
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
         base::DoNothing(), &download_protection_service_, settings().value());
@@ -311,8 +346,8 @@ TEST_F(DeepScanningRequestTest, GeneratesCorrectRequestFromPolicy) {
   }
 
   {
-    SetDlpPolicyForConnectors(CHECK_NONE);
-    SetMalwarePolicyForConnectors(SEND_UPLOADS_AND_DOWNLOADS);
+    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED,
+                         kScanForMalware);
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
         base::DoNothing(), &download_protection_service_, settings().value());
@@ -327,12 +362,7 @@ TEST_F(DeepScanningRequestTest, GeneratesCorrectRequestFromPolicy) {
   }
 
   {
-    SetDlpPolicyForConnectors(CHECK_UPLOADS_AND_DOWNLOADS);
-    // The Connector policies need at least 1 pattern to be enabled, so adding
-    // this pattern is necessary to have equivalent behaviour.
-    AddUrlToListForConnectors(prefs::kURLsToCheckComplianceOfDownloadedContent,
-                              tab_url_.host());
-    SetMalwarePolicyForConnectors(DO_NOT_SCAN);
+    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, kScanForDlp);
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
         base::DoNothing(), &download_protection_service_, settings().value());
@@ -346,8 +376,7 @@ TEST_F(DeepScanningRequestTest, GeneratesCorrectRequestFromPolicy) {
   }
 
   {
-    SetDlpPolicyForConnectors(CHECK_NONE);
-    SetMalwarePolicyForConnectors(DO_NOT_SCAN);
+    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, kNoScan);
     EXPECT_FALSE(settings().has_value());
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
@@ -434,12 +463,8 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
 };
 
 TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
-  SetDlpPolicyForConnectors(CHECK_UPLOADS_AND_DOWNLOADS);
-  // The Connector policies need at least 1 pattern to be enabled, so adding
-  // this pattern is necessary to have equivalent behaviour.
-  AddUrlToListForConnectors(prefs::kURLsToCheckComplianceOfDownloadedContent,
-                            tab_url_.host());
-  SetMalwarePolicyForConnectors(SEND_UPLOADS_AND_DOWNLOADS);
+  SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED,
+                       kScanForDlpAndMalware);
 
   {
     DeepScanningRequest request(
@@ -870,8 +895,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
 TEST_F(DeepScanningRequestTest, ShouldUploadBinary_MalwareListPolicy) {
   SetFeatures(/*enabled*/ {enterprise_connectors::kEnterpriseConnectorsEnabled},
               /*disabled*/ {});
-  SetMalwarePolicyForConnectors(SEND_UPLOADS_AND_DOWNLOADS);
-  ClearUrlsToCheckComplianceOfDownloadsForConnectors();
+  SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, kScanForMalware);
 
   content::DownloadItemUtils::AttachInfo(&item_, profile_, nullptr);
   EXPECT_CALL(item_, GetURL()).WillRepeatedly(ReturnRef(download_url_));
@@ -886,14 +910,24 @@ TEST_F(DeepScanningRequestTest, ShouldUploadBinary_MalwareListPolicy) {
 
   // With the new malware policy list set, the item should not be uploaded since
   // DeepScanningRequest honours that policy.
-  AddUrlToListForConnectors(prefs::kURLsToNotCheckForMalwareOfDownloadedContent,
-                            download_url_.host());
+  SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED,
+                       base::StringPrintf(
+                           R"({
+                            "service_provider": "google",
+                            "enable": [
+                              {"url_list": ["*"], "tags": ["malware"]}
+                            ],
+                            "disable": [
+                              {"url_list": ["%s"], "tags": ["malware"]}
+                            ]
+                          })",
+                           download_url_.host().c_str()));
   EXPECT_FALSE(settings().has_value());
 }
 
 TEST_F(DeepScanningRequestTest, PopulatesRequest) {
-  SetDlpPolicyForConnectors(CHECK_UPLOADS_AND_DOWNLOADS);
-  SetMalwarePolicyForConnectors(SEND_UPLOADS_AND_DOWNLOADS);
+  SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED,
+                       kScanForDlpAndMalware);
 
   EnableAllFeatures();
   DeepScanningRequest request(

@@ -606,31 +606,6 @@ class DownloadProtectionServiceTestBase
     update.Get()->AppendString(domain);
   }
 
-  void SetPasswordProtectedAllowedPref(
-      AllowPasswordProtectedFilesValues value) {
-    SetAllowPasswordProtectedFilesPolicyForConnectors(value);
-  }
-
-  void SetBlockLargeFilesPref(BlockLargeFileTransferValues value) {
-    SetBlockLargeFileTransferPolicyForConnectors(value);
-  }
-
-  void SetBlockUnsupportedFiletypePref(BlockUnsupportedFiletypesValues value) {
-    SetBlockUnsupportedFileTypesPolicyForConnectors(value);
-  }
-
-  void SetSendFilesForMalwareCheckPref(SendFilesForMalwareCheckValues value) {
-    SetMalwarePolicyForConnectors(value);
-  }
-
-  void SetCheckContentCompliancePref(CheckContentComplianceValues value) {
-    SetDlpPolicyForConnectors(value);
-  }
-
-  void SetUrlToCheckContentCompliance(const std::string& url_pattern) {
-    AddUrlsToCheckComplianceOfDownloadsForConnectors({url_pattern});
-  }
-
   // Helper function to simulate a user gesture, then a link click.
   // The usual NavigateAndCommit is unsuitable because it creates
   // browser-initiated navigations, causing us to drop the referrer.
@@ -3036,10 +3011,15 @@ TEST_P(DeepScanningDownloadTest, PasswordProtectedArchivesBlockedByPreference) {
       BinaryUploadService::Result::FILE_ENCRYPTED,
       enterprise_connectors::ContentAnalysisResponse());
 
-  for (AllowPasswordProtectedFilesValues pref : {ALLOW_NONE, ALLOW_UPLOADS}) {
-    SetSendFilesForMalwareCheckPref(
-        SendFilesForMalwareCheckValues::SEND_DOWNLOADS);
-    SetPasswordProtectedAllowedPref(pref);
+  {
+    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, R"(
+                         {
+                           "service_provider": "google",
+                           "enable": [
+                             {"url_list": ["*"], "tags": ["malware"]}
+                           ],
+                           "block_password_protected": true
+                         })");
     PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
 
     RunLoop run_loop;
@@ -3052,9 +3032,15 @@ TEST_P(DeepScanningDownloadTest, PasswordProtectedArchivesBlockedByPreference) {
     EXPECT_TRUE(HasClientDownloadRequest());
   }
 
-  for (AllowPasswordProtectedFilesValues pref :
-       {ALLOW_DOWNLOADS, ALLOW_UPLOADS_AND_DOWNLOADS}) {
-    SetPasswordProtectedAllowedPref(pref);
+  {
+    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, R"(
+                         {
+                           "service_provider": "google",
+                           "enable": [
+                             {"url_list": ["*"], "tags": ["malware"]}
+                           ],
+                           "block_password_protected": false
+                         })");
     PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
 
     RunLoop run_loop;
@@ -3098,11 +3084,15 @@ TEST_P(DeepScanningDownloadTest, LargeFileBlockedByPreference) {
       BinaryUploadService::Result::FILE_TOO_LARGE,
       enterprise_connectors::ContentAnalysisResponse());
 
-  for (BlockLargeFileTransferValues pref :
-       {BLOCK_LARGE_DOWNLOADS, BLOCK_LARGE_UPLOADS_AND_DOWNLOADS}) {
-    SetSendFilesForMalwareCheckPref(
-        SendFilesForMalwareCheckValues::SEND_DOWNLOADS);
-    SetBlockLargeFilesPref(pref);
+  {
+    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, R"(
+                         {
+                           "service_provider": "google",
+                           "enable": [
+                             {"url_list": ["*"], "tags": ["malware"]}
+                           ],
+                           "block_large_files": true
+                         })");
     PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
 
     RunLoop run_loop;
@@ -3115,8 +3105,15 @@ TEST_P(DeepScanningDownloadTest, LargeFileBlockedByPreference) {
     EXPECT_TRUE(HasClientDownloadRequest());
   }
 
-  for (BlockLargeFileTransferValues pref : {BLOCK_NONE, BLOCK_LARGE_UPLOADS}) {
-    SetBlockLargeFilesPref(pref);
+  {
+    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, R"(
+                         {
+                           "service_provider": "google",
+                           "enable": [
+                             {"url_list": ["*"], "tags": ["malware"]}
+                           ],
+                           "block_large_files": false
+                         })");
     PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
 
     RunLoop run_loop;
@@ -3161,19 +3158,21 @@ TEST_P(DeepScanningDownloadTest, UnsupportedFiletypeBlockedByPreference) {
               MatchDownloadWhitelistUrl(_))
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
-      .Times(4);
+      .Times(2);
   EXPECT_CALL(*binary_feature_extractor_.get(),
               ExtractImageFeatures(
                   tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _))
-      .Times(4);
+      .Times(2);
 
-  SetCheckContentCompliancePref(CheckContentComplianceValues::CHECK_DOWNLOADS);
-  SetUrlToCheckContentCompliance("www.evil.com");
-
-  for (BlockUnsupportedFiletypesValues pref :
-       {BLOCK_UNSUPPORTED_FILETYPES_DOWNLOADS,
-        BLOCK_UNSUPPORTED_FILETYPES_UPLOADS_AND_DOWNLOADS}) {
-    SetBlockUnsupportedFiletypePref(pref);
+  {
+    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, R"(
+                         {
+                           "service_provider": "google",
+                           "enable": [
+                             {"url_list": ["evil.com"], "tags": ["dlp"]}
+                           ],
+                           "block_unsupported_file_types": true
+                         })");
     PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
 
     RunLoop run_loop;
@@ -3186,10 +3185,15 @@ TEST_P(DeepScanningDownloadTest, UnsupportedFiletypeBlockedByPreference) {
     EXPECT_TRUE(HasClientDownloadRequest());
   }
 
-  for (BlockUnsupportedFiletypesValues pref :
-       {BLOCK_UNSUPPORTED_FILETYPES_NONE,
-        BLOCK_UNSUPPORTED_FILETYPES_UPLOADS}) {
-    SetBlockUnsupportedFiletypePref(pref);
+  {
+    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, R"(
+                         {
+                           "service_provider": "google",
+                           "enable": [
+                             {"url_list": ["evil.com"], "tags": ["dlp"]}
+                           ],
+                           "block_unsupported_file_types": false
+                         })");
     PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
 
     RunLoop run_loop;
@@ -3886,8 +3890,16 @@ TEST_P(DeepScanningDownloadTest, PolicyEnabled) {
               ExtractImageFeatures(
                   tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
 
-  SetSendFilesForMalwareCheckPref(
-      SendFilesForMalwareCheckValues::SEND_DOWNLOADS);
+  SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED,
+                       R"({
+                            "service_provider": "google",
+                            "enable": [
+                              {
+                                "url_list": ["*"],
+                                "tags": ["malware"]
+                              }
+                            ]
+                          })");
 
   TestBinaryUploadService* test_upload_service =
       static_cast<TestBinaryUploadService*>(
@@ -3933,7 +3945,7 @@ TEST_P(DeepScanningDownloadTest, PolicyDisabled) {
               ExtractImageFeatures(
                   tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
 
-  SetSendFilesForMalwareCheckPref(SendFilesForMalwareCheckValues::DO_NOT_SCAN);
+  ClearAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED);
 
   TestBinaryUploadService* test_upload_service =
       static_cast<TestBinaryUploadService*>(
@@ -3980,11 +3992,15 @@ TEST_P(DeepScanningDownloadTest, SafeVerdictPrecedence) {
                 ExtractImageFeatures(
                     tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
 
-    SetSendFilesForMalwareCheckPref(
-        SendFilesForMalwareCheckValues::SEND_DOWNLOADS);
-    SetCheckContentCompliancePref(
-        CheckContentComplianceValues::CHECK_DOWNLOADS);
-    SetUrlToCheckContentCompliance("evil.com");
+    SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, R"(
+                         {
+                           "service_provider": "google",
+                           "enable": [
+                             {"url_list": ["*"], "tags": ["malware"]},
+                             {"url_list": ["evil.com"], "tags": ["dlp"]}
+                           ],
+                           "block_password_protected": true
+                         })");
 
     TestBinaryUploadService* test_upload_service =
         static_cast<TestBinaryUploadService*>(
