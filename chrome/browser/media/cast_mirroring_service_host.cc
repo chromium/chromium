@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/logging.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/single_thread_task_runner.h"
@@ -24,7 +25,7 @@
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "components/mirroring/mojom/session_observer.mojom.h"
 #include "components/mirroring/mojom/session_parameters.mojom.h"
-#include "content/public/browser/audio_loopback_stream_creator.h"
+#include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_streams_registry.h"
@@ -35,8 +36,6 @@
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/video_capture_device_launcher.h"
 #include "content/public/browser/web_contents.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -49,10 +48,14 @@ using content::BrowserThread;
 
 namespace mirroring {
 
+namespace {
+
+using media::mojom::AudioInputStream;
+using media::mojom::AudioInputStreamClient;
+using media::mojom::AudioInputStreamObserver;
+
 // Default resolution constraint.
 constexpr gfx::Size kMaxResolution(1920, 1080);
-
-namespace {
 
 void CreateVideoCaptureHostOnIO(
     const std::string& device_id,
@@ -106,7 +109,7 @@ content::DesktopMediaID BuildMediaIdForWebContents(
   media_id.web_contents_id = content::WebContentsMediaCaptureId(
       contents->GetMainFrame()->GetProcess()->GetID(),
       contents->GetMainFrame()->GetRoutingID(),
-      true /* enable_audio_throttling */, true /* disable_local_echo */);
+      true /* enable_auto_throttling */, true /* disable_local_echo */);
   return media_id;
 }
 
@@ -285,37 +288,141 @@ void CastMirroringServiceHost::GetNetworkContext(
 }
 
 void CastMirroringServiceHost::CreateAudioStream(
-    mojo::PendingRemote<mojom::AudioStreamCreatorClient> client,
+    mojo::PendingRemote<mojom::AudioStreamCreatorClient> requestor,
     const media::AudioParameters& params,
     uint32_t total_segments) {
-  content::WebContents* source_web_contents = nullptr;
+  if (!audio_stream_factory_) {
+    content::GetAudioService().BindStreamFactory(
+        audio_stream_factory_.BindNewPipeAndPassReceiver());
+  }
+
   if (source_media_id_.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) {
-    source_web_contents = web_contents();
-    if (!source_web_contents) {
+    content::WebContents* const contents = web_contents();
+    if (!contents) {
       VLOG(1) << "Failed to create audio stream: Invalid source.";
       return;
     }
-  }
+    const base::UnguessableToken group_id = contents->GetAudioGroupId();
 
-  if (!audio_stream_creator_) {
-    audio_stream_creator_ = content::AudioLoopbackStreamCreator::
-        CreateInProcessAudioLoopbackStreamCreator();
+    // Fix for regression: https://crbug.com/1111026
+    //
+    // Muting of the browser tab's local audio output starts when the first
+    // WebContents loopback capture stream is requested. The mute is held so
+    // that switching audio capture on/off (between mirroring and remoting
+    // modes) does not cause ~1 second blips of audio to bother the user. When
+    // this CastMirroringServiceHost is destroyed, the "Muter" will go away,
+    // restoring local audio output.
+    //
+    // There may be other browser features that also mute the same tab (before
+    // or during mirroring). The Audio Service allows multiple Muters for the
+    // same tab, and so the mute state will remain in-place if requested by
+    // those other features.
+    if (!web_contents_audio_muter_) {
+      audio_stream_factory_->BindMuter(
+          web_contents_audio_muter_.BindNewEndpointAndPassReceiver(), group_id);
+    }
+
+    CreateAudioStreamForTab(std::move(requestor), params, total_segments,
+                            group_id);
+  } else {
+    CreateAudioStreamForDesktop(std::move(requestor), params, total_segments);
   }
-  audio_stream_creator_->CreateLoopbackStream(
-      source_web_contents, params, total_segments,
-      base::BindRepeating(
-          [](mojo::PendingRemote<mojom::AudioStreamCreatorClient> client,
-             mojo::PendingRemote<media::mojom::AudioInputStream> stream,
-             mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
-                 client_receiver,
+}
+
+void CastMirroringServiceHost::CreateAudioStreamForTab(
+    mojo::PendingRemote<mojom::AudioStreamCreatorClient> requestor,
+    const media::AudioParameters& params,
+    uint32_t total_segments,
+    const base::UnguessableToken& group_id) {
+  // Stream control message pipes. The pipe endpoints will end up at the Audio
+  // Service and the Mirroring Service, not here.
+  mojo::MessagePipe pipe_to_audio_service;
+  mojo::MessagePipe pipe_to_mirroring_service;
+
+  // The Audio Service's CreateLoopbackStream() API requires an observer, but
+  // CastMirroringServiceHost does not care about any of the events. Also, the
+  // Audio Service requires that something has to be bound to the receive end of
+  // the message pipe or it will kill the stream. Thus, a dummy is provided
+  // here.
+  class DummyObserver final : public AudioInputStreamObserver {
+    void DidStartRecording() final {}
+  };
+  mojo::MessagePipe observer_pipe;
+  mojo::MakeSelfOwnedReceiver(std::make_unique<DummyObserver>(),
+                              mojo::PendingReceiver<AudioInputStreamObserver>(
+                                  std::move(observer_pipe.handle1)));
+
+  // The following insane glob of code asks the Audio Service to create a
+  // loopback stream using the |group_id| as the selector for the tab's audio
+  // outputs. One end of the message pipes is passed to the Audio Service via
+  // the CreateLoopbackStream() call. Then, when the reply comes back, the other
+  // end of the message pipes is passed to the Mirroring Service (the
+  // |requestor|), along with the audio data pipe.
+  audio_stream_factory_->CreateLoopbackStream(
+      mojo::PendingReceiver<AudioInputStream>(
+          std::move(pipe_to_audio_service.handle1)),
+      mojo::PendingRemote<AudioInputStreamClient>(
+          std::move(pipe_to_mirroring_service.handle0), 0),
+      mojo::PendingRemote<AudioInputStreamObserver>(
+          std::move(observer_pipe.handle0), 0),
+      params, total_segments, group_id,
+      base::BindOnce(
+          [](mojo::PendingRemote<mojom::AudioStreamCreatorClient> requestor,
+             mojo::PendingRemote<AudioInputStream> stream,
+             mojo::PendingReceiver<AudioInputStreamClient> client,
              media::mojom::ReadOnlyAudioDataPipePtr data_pipe) {
-            mojo::Remote<mojom::AudioStreamCreatorClient> audio_client(
-                std::move(client));
-            audio_client->StreamCreated(std::move(stream),
-                                        std::move(client_receiver),
-                                        std::move(data_pipe));
+            mojo::Remote<mojom::AudioStreamCreatorClient>(std::move(requestor))
+                ->StreamCreated(std::move(stream), std::move(client),
+                                std::move(data_pipe));
           },
-          base::Passed(&client)));
+          std::move(requestor),
+          mojo::PendingRemote<AudioInputStream>(
+              std::move(pipe_to_audio_service.handle0), 0),
+          mojo::PendingReceiver<AudioInputStreamClient>(
+              std::move(pipe_to_mirroring_service.handle1))));
+}
+
+void CastMirroringServiceHost::CreateAudioStreamForDesktop(
+    mojo::PendingRemote<mojom::AudioStreamCreatorClient> requestor,
+    const media::AudioParameters& params,
+    uint32_t total_segments) {
+  // Stream control message pipes. The pipe endpoints will end up at the Audio
+  // Service and the Mirroring Service, not here.
+  mojo::MessagePipe pipe_to_audio_service;
+  mojo::MessagePipe pipe_to_mirroring_service;
+
+  // This does the mostly the same thing as the similar insane glob of code in
+  // the CreateAudioStreamForTab() method. Here, system-wide audio is requested
+  // from the platform, and so the CreateInputStream() API is used instead of
+  // CreateLoopbackStream(). CreateInputStream() is more complex, having a
+  // number of optional parameters that people seem to just keep adding more of
+  // over time, with little consideration for maintainable code structure, and
+  // add to the fun we're having here.
+  //
+  // See if you can spot all 6 unused fields! :P
+  audio_stream_factory_->CreateInputStream(
+      mojo::PendingReceiver<AudioInputStream>(
+          std::move(pipe_to_audio_service.handle1)),
+      mojo::PendingRemote<AudioInputStreamClient>(
+          std::move(pipe_to_mirroring_service.handle0), 0),
+      mojo::NullRemote(), mojo::NullRemote(),
+      media::AudioDeviceDescription::kLoopbackWithMuteDeviceId, params,
+      total_segments, false, base::ReadOnlySharedMemoryRegion(),
+      base::BindOnce(
+          [](mojo::PendingRemote<mojom::AudioStreamCreatorClient> requestor,
+             mojo::PendingRemote<AudioInputStream> stream,
+             mojo::PendingReceiver<AudioInputStreamClient> client,
+             media::mojom::ReadOnlyAudioDataPipePtr data_pipe, bool,
+             const base::Optional<base::UnguessableToken>&) {
+            mojo::Remote<mojom::AudioStreamCreatorClient>(std::move(requestor))
+                ->StreamCreated(std::move(stream), std::move(client),
+                                std::move(data_pipe));
+          },
+          std::move(requestor),
+          mojo::PendingRemote<AudioInputStream>(
+              std::move(pipe_to_audio_service.handle0), 0),
+          mojo::PendingReceiver<AudioInputStreamClient>(
+              std::move(pipe_to_mirroring_service.handle1))));
 }
 
 void CastMirroringServiceHost::ConnectToRemotingSource(
@@ -331,8 +438,9 @@ void CastMirroringServiceHost::ConnectToRemotingSource(
 }
 
 void CastMirroringServiceHost::WebContentsDestroyed() {
-  audio_stream_creator_.reset();
   mirroring_service_.reset();
+  web_contents_audio_muter_.reset();
+  audio_stream_factory_.reset();
   gpu_client_.reset();
 }
 
