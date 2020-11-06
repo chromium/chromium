@@ -1028,7 +1028,7 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
         Previous Tab
       </message>
       <message name="IDS_IOS_LOCATION_MODAL_TITLE" desc="The title of the locaton permissions modal [Length: unlimited] [iOS only].">
-          Use Your Current Location.
+          Use Your Current Location
       </message>
       <message name="IDS_IOS_LOCATION_MODAL_PRIMARY_BUTTON" desc="The primary button of the locaton permissions modal [Length: unlimited] [iOS only].">
           Allow Location...
