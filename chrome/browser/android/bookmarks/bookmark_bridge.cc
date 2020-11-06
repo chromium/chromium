@@ -1133,9 +1133,6 @@ void BookmarkBridge::ExtensiveBookmarkChangesEnded(BookmarkModel* model) {
 }
 
 void BookmarkBridge::PartnerShimChanged(PartnerBookmarksShim* shim) {
-  if (!IsLoaded())
-    return;
-
   BookmarkModelChanged();
 }
 
@@ -1149,6 +1146,10 @@ void BookmarkBridge::ShimBeingDeleted(PartnerBookmarksShim* shim) {
 
 void BookmarkBridge::ReadingListLoaded() {
   NotifyIfDoneLoading();
+}
+
+void BookmarkBridge::ReadingListChanged() {
+  BookmarkModelChanged();
 }
 
 void BookmarkBridge::ReorderChildren(
