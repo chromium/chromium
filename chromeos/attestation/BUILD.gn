@@ -15,8 +15,6 @@ component("attestation") {
     "//chromeos/dbus:common",
     "//chromeos/dbus/attestation",
     "//chromeos/dbus/attestation:attestation_proto",
-    "//chromeos/dbus/cryptohome",
-    "//chromeos/dbus/cryptohome:cryptohome_proto",
     "//components/account_id",
     "//crypto",
   ]
