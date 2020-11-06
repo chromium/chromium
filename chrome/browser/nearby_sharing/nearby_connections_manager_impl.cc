@@ -147,7 +147,8 @@ void NearbyConnectionsManagerImpl::StartDiscovery(
       kServiceId,
       DiscoveryOptions::New(
           kStrategy, std::move(allowed_mediums),
-          device::BluetoothUUID(kFastAdvertisementServiceUuid)),
+          device::BluetoothUUID(kFastAdvertisementServiceUuid),
+          /*is_out_of_band_connection=*/false),
       endpoint_discovery_listener_.BindNewPipeAndPassRemote(),
       std::move(callback));
 }

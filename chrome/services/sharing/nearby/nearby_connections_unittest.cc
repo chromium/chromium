@@ -200,13 +200,13 @@ class NearbyConnectionsTest : public testing::Test {
   void OnDisconnect() { disconnect_run_loop_.Quit(); }
 
   ClientProxy* StartDiscovery(
-      FakeEndpointDiscoveryListener& fake_discovery_listener) {
+      FakeEndpointDiscoveryListener& fake_discovery_listener,
+      bool is_out_of_band_connection = false) {
     ClientProxy* client_proxy;
     EXPECT_CALL(*service_controller_ptr_, StartDiscovery)
-        .WillOnce([&client_proxy](ClientProxy* client,
-                                  const std::string& service_id,
-                                  const ConnectionOptions& options,
-                                  const DiscoveryListener& listener) {
+        .WillOnce([&](ClientProxy* client, const std::string& service_id,
+                      const ConnectionOptions& options,
+                      const DiscoveryListener& listener) {
           client_proxy = client;
           EXPECT_EQ(kServiceId, service_id);
           EXPECT_EQ(Strategy::kP2pPointToPoint, options.strategy);
@@ -214,8 +214,13 @@ class NearbyConnectionsTest : public testing::Test {
           EXPECT_FALSE(options.allowed.ble);
           EXPECT_FALSE(options.allowed.web_rtc);
           EXPECT_TRUE(options.allowed.wifi_lan);
-          EXPECT_EQ(kFastAdvertisementServiceUuid,
-                    options.fast_advertisement_service_uuid);
+          if (is_out_of_band_connection) {
+            EXPECT_TRUE(options.is_out_of_band_connection);
+          } else {
+            EXPECT_FALSE(options.is_out_of_band_connection);
+            EXPECT_EQ(kFastAdvertisementServiceUuid,
+                      options.fast_advertisement_service_uuid);
+          }
           client->StartedDiscovery(service_id, options.strategy, listener,
                                    /*mediums=*/{});
           return Status{Status::kAlreadyDiscovering};
@@ -229,7 +234,8 @@ class NearbyConnectionsTest : public testing::Test {
                                         /*ble=*/false,
                                         /*web_rtc=*/false,
                                         /*wifi_lan=*/true),
-            device::BluetoothUUID(kFastAdvertisementServiceUuid)),
+            device::BluetoothUUID(kFastAdvertisementServiceUuid),
+            is_out_of_band_connection),
         fake_discovery_listener.receiver.BindNewPipeAndPassRemote(),
         base::BindLambdaForTesting([&](mojom::Status status) {
           EXPECT_EQ(mojom::Status::kAlreadyDiscovering, status);
@@ -453,6 +459,15 @@ TEST_F(NearbyConnectionsTest, StopDiscovery) {
 
   // StopDiscovery is also called when Core is destroyed.
   EXPECT_CALL(*service_controller_ptr_, StopDiscovery(testing::_)).Times(1);
+}
+
+TEST_F(NearbyConnectionsTest, InjectEndpoint) {
+  FakeEndpointDiscoveryListener fake_discovery_listener;
+  StartDiscovery(fake_discovery_listener,
+                 /*is_out_of_band_connection=*/true);
+
+  // TODO(khorimoto): Finish this test when InjectBluetoothEndpoint() Mojo API
+  // is added.
 }
 
 TEST_F(NearbyConnectionsTest, RequestConnectionInitiated) {

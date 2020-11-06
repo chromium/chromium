@@ -297,11 +297,18 @@ void NearbyConnections::StartDiscovery(
     mojom::DiscoveryOptionsPtr options,
     mojo::PendingRemote<mojom::EndpointDiscoveryListener> listener,
     StartDiscoveryCallback callback) {
+  // Left as empty string if no value has been passed in |options|.
+  std::string fast_advertisement_service_uuid;
+  if (options->fast_advertisement_service_uuid) {
+    fast_advertisement_service_uuid =
+        options->fast_advertisement_service_uuid->canonical_value();
+  }
+
   ConnectionOptions connection_options{
       .strategy = StrategyFromMojom(options->strategy),
       .allowed = MediumSelectorFromMojom(options->allowed_mediums.get()),
-      .fast_advertisement_service_uuid =
-          options->fast_advertisement_service_uuid.canonical_value()};
+      .is_out_of_band_connection = options->is_out_of_band_connection,
+      .fast_advertisement_service_uuid = fast_advertisement_service_uuid};
   mojo::SharedRemote<mojom::EndpointDiscoveryListener> remote(
       std::move(listener));
   DiscoveryListener discovery_listener{

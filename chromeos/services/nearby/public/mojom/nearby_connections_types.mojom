@@ -153,7 +153,11 @@ struct DiscoveryOptions {
   // of allowed and supported mediums will be used to scan.
   MediumSelection allowed_mediums;
   // The fast advertisement service id to scan for in BLE.
-  bluetooth.mojom.UUID fast_advertisement_service_uuid;
+  bluetooth.mojom.UUID? fast_advertisement_service_uuid;
+  // Whether this connection request skips over the normal discovery flow to
+  // inject discovery information synced outside the Nearby Connections library.
+  // Intended to be used in conjunction with InjectEndpoint().
+  bool is_out_of_band_connection = false;
 };
 
 // Options for a call to NearbyConnections::RequestConnection().
