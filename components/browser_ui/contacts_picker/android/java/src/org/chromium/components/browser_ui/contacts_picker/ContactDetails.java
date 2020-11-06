@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.contacts_picker;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.blink.mojom.ContactIconBlob;
@@ -227,7 +228,7 @@ public class ContactDetails implements Comparable<ContactDetails> {
      * @return The contact details registered for this contact.
      */
     public AbbreviatedContactDetails getAbbreviatedContactDetails(boolean includeAddresses,
-            boolean includeEmails, boolean includeTels, @Nullable Resources resources) {
+            boolean includeEmails, boolean includeTels, @NonNull Resources resources) {
         AbbreviatedContactDetails results = new AbbreviatedContactDetails();
 
         results.overflowAddressCount = "";

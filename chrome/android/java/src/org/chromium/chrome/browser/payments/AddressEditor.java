@@ -168,18 +168,18 @@ public class AddressEditor
 
         // If |toEdit| is null, we're creating a new autofill profile with the country code of the
         // default locale on this device.
-        boolean isNewAddress = toEdit == null;
+        final String editTitle;
+        final AutofillAddress address;
+        if (toEdit == null) {
+            address = new AutofillAddress(mContext, new AutofillProfile());
+            editTitle = mContext.getString(R.string.autofill_create_profile);
+        } else {
+            address = toEdit;
+            editTitle = toEdit.getEditTitle();
+        }
 
-        // Ensure that |address| and |mProfile| are always not null.
-        final AutofillAddress address =
-                isNewAddress ? new AutofillAddress(mContext, new AutofillProfile()) : toEdit;
+        mEditor = new EditorModel(editTitle);
         mProfile = address.getProfile();
-
-        // The title of the editor depends on whether we're adding a new address or editing an
-        // existing address.
-        mEditor =
-                new EditorModel(isNewAddress ? mContext.getString(R.string.autofill_create_profile)
-                                             : toEdit.getEditTitle());
 
         // When edit is called, a new form is started, so the country on the
         // dropdown list is not changed. => mRecentlySelectedCountry should be null.

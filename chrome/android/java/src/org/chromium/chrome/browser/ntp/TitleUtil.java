@@ -21,7 +21,7 @@ public final class TitleUtil {
      * it. Otherwise, returns a shortened form of the URL.
      */
     public static String getTitleForDisplay(@Nullable String title, @Nullable GURL url) {
-        if (!TextUtils.isEmpty(title) || GURL.isEmptyOrInvalid(url)) {
+        if (!TextUtils.isEmpty(title) || url == null || GURL.isEmptyOrInvalid(url)) {
             return title;
         }
 

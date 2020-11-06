@@ -1225,7 +1225,7 @@ class BottomSheet extends FrameLayout
     protected void onSheetContentChanged(@Nullable final BottomSheetContent content) {
         mSheetContent = content;
 
-        if (isFullHeightWrapContent()) {
+        if (content != null && isFullHeightWrapContent()) {
             // Listen for layout/size changes.
             if (!content.setContentSizeListener(this::onContentSizeChanged)) {
                 content.getContentView().addOnLayoutChangeListener(this);

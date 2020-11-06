@@ -96,6 +96,7 @@ public class TrustedWebActivityClientLocationDelegationTest {
             @Override
             public void onExtraCallback(String callbackName, @Nullable Bundle bundle) {
                 if (TextUtils.equals(callbackName, EXTRA_NEW_LOCATION_AVAILABLE_CALLBACK)) {
+                    Assert.assertNotNull(bundle);
                     Assert.assertTrue(bundle.containsKey("latitude"));
                     Assert.assertTrue(bundle.containsKey("longitude"));
                     Assert.assertTrue(bundle.containsKey("timeStamp"));
@@ -123,6 +124,7 @@ public class TrustedWebActivityClientLocationDelegationTest {
             @Override
             public void onExtraCallback(String callbackName, @Nullable Bundle bundle) {
                 if (TextUtils.equals(callbackName, EXTRA_NEW_LOCATION_ERROR_CALLBACK)) {
+                    Assert.assertNotNull(bundle);
                     Assert.assertTrue(bundle.containsKey("message"));
                     locationError.notifyCalled();
                 }

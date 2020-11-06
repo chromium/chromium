@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.CollectionUtil;
@@ -159,7 +160,7 @@ public class ShareServiceImpl implements ShareService {
         public void share(ShareParams params);
     }
 
-    public ShareServiceImpl(@Nullable WebContents webContents, WebShareDelegate delegate) {
+    public ShareServiceImpl(@NonNull WebContents webContents, WebShareDelegate delegate) {
         mWindow = webContents.getTopLevelNativeWindow();
         mDelegate = delegate;
     }

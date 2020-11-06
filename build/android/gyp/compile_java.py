@@ -32,7 +32,6 @@ _JAVAC_EXTRACTOR = os.path.join(build_utils.DIR_SOURCE_ROOT, 'third_party',
 # Full list of checks: https://errorprone.info/bugpatterns
 ERRORPRONE_WARNINGS_TO_DISABLE = [
     # These should really be turned on.
-    'ParameterNotNullable',
     'CollectionUndefinedEquality',
     'ModifyCollectionInEnhancedForLoop',
     # The following are super useful, but existing issues need to be fixed first
@@ -183,6 +182,7 @@ ERRORPRONE_WARNINGS_TO_ENABLE = [
     'InvalidThrows',
     'LongLiteralLowerCaseSuffix',
     'MultiVariableDeclaration',
+    'ParameterNotNullable',
     'RedundantOverride',
     'StaticQualifiedUsingExpression',
     'StringEquality',

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.webapps;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebappDisclosureController;
@@ -49,7 +49,7 @@ public class WebApkActivityCoordinator implements Destroyable {
     }
 
     public void onDeferredStartupWithStorage(
-            @Nullable WebappDataStorage storage, boolean didCreateStorage) {
+            @NonNull WebappDataStorage storage, boolean didCreateStorage) {
         assert storage != null;
         storage.incrementLaunchCount();
 

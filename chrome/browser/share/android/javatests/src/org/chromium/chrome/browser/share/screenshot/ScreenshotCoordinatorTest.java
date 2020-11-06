@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,6 +61,7 @@ public class ScreenshotCoordinatorTest {
 
         @Override
         public void capture(@Nullable Runnable callback) {
+            Assert.assertNotNull(callback);
             callback.run();
         }
 

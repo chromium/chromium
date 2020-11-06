@@ -352,19 +352,24 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument>
             final Callback<AutofillPaymentInstrument> cancelCallback) {
         super.edit(toEdit, doneCallback, cancelCallback);
 
-        // If |toEdit| is null, we're creating a new credit card.
-        final boolean isNewCard = toEdit == null;
+        final boolean isNewCard;
+        final AutofillPaymentInstrument instrument;
+        final EditorModel editor;
 
-        // Ensure that |instrument| and |card| are never null.
-        final AutofillPaymentInstrument instrument = isNewCard
-                ? new AutofillPaymentInstrument(mWebContents, new CreditCard(),
-                        null /* billingAddress */, null /* methodName */)
-                : toEdit;
+        if (toEdit == null) {
+            // We're creating a new credit card.
+            isNewCard = true;
+            // Ensure that |instrument| is never null.
+            instrument = new AutofillPaymentInstrument(mWebContents, new CreditCard(),
+                    null /* billingAddress */, null /* methodName */);
+            editor = new EditorModel(mContext.getString(R.string.payments_add_card));
+        } else {
+            isNewCard = false;
+            instrument = toEdit;
+            editor = new EditorModel(toEdit.getEditTitle());
+        }
+
         final CreditCard card = instrument.getCard();
-
-        final EditorModel editor = new EditorModel(
-                isNewCard ? mContext.getString(R.string.payments_add_card) : toEdit.getEditTitle());
-
         if (card.getIsLocal()) {
             Calendar calendar = null;
             try {
