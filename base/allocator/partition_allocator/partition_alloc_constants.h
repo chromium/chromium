@@ -127,7 +127,7 @@ MaxSystemPagesPerSlotSpan() {
 //     +-----------------------+
 //
 // TagBitmap is only present when ENABLE_TAG_FOR_MTE_CHECKED_PTR is defined.
-// QuarantineBitmaps are inserted for partitions that have PCScan enabled.
+// QuarantineBitmaps are inserted for partitions that may have PCScan enabled.
 //
 // Each slot span is a contiguous range of one or more `PartitionPage`s. Note
 // that slot spans of different sizes may co-exist with one super page. Even

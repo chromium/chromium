@@ -294,14 +294,17 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   // space.
   char* tag_bitmap = super_page + PartitionPageSize();
   char* quarantine_bitmaps = tag_bitmap + ReservedTagBitmapSize();
-  size_t quarantine_bitmaps_size = 0;
+  size_t quarantine_bitmaps_reserved_size = 0;
+  size_t quarantine_bitmaps_size_to_commit = 0;
   if (root->scannable) {
-    size_t needed_size = 2 * sizeof(QuarantineBitmap);
-    quarantine_bitmaps_size =
-        (needed_size + PartitionPageSize() - 1) & PartitionPageBaseMask();
+    quarantine_bitmaps_reserved_size = ReservedQuarantineBitmapsSize();
+    quarantine_bitmaps_size_to_commit = CommittedQuarantineBitmapsSize();
   }
-  PA_DCHECK(quarantine_bitmaps_size % PartitionPageSize() == 0);
-  char* ret = quarantine_bitmaps + quarantine_bitmaps_size;
+  PA_DCHECK(quarantine_bitmaps_reserved_size % PartitionPageSize() == 0);
+  PA_DCHECK(quarantine_bitmaps_size_to_commit % SystemPageSize() == 0);
+  PA_DCHECK(quarantine_bitmaps_size_to_commit <=
+            quarantine_bitmaps_reserved_size);
+  char* ret = quarantine_bitmaps + quarantine_bitmaps_reserved_size;
   root->next_partition_page = ret + slot_span_reserved_size;
   root->next_partition_page_end = root->next_super_page - PartitionPageSize();
   PA_DCHECK(ret == SuperPagePayloadBegin(super_page, root->scannable));
@@ -349,6 +352,30 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
 #endif
   root->next_tag_bitmap_page = next_tag_bitmap_page;
 #endif
+
+  // If PCScan is used, keep the quarantine bitmap committed, just release the
+  // unused part of partition page, if any. If PCScan isn't used, release the
+  // entire reserved region (PartitionRoot::EnablePCScan will be responsible
+  // for committing it when enabling PCScan).
+  if (root->pcscan.has_value()) {
+    PA_DCHECK(root->scannable);
+    if (quarantine_bitmaps_reserved_size > quarantine_bitmaps_size_to_commit) {
+      SetSystemPagesAccess(
+          quarantine_bitmaps + quarantine_bitmaps_size_to_commit,
+          quarantine_bitmaps_reserved_size - quarantine_bitmaps_size_to_commit,
+          PageInaccessible);
+    }
+  } else {
+    // If partition isn't scannable, no quarantine bitmaps were reserved, hence
+    // nothing to decommit.
+    if (root->scannable) {
+      PA_DCHECK(quarantine_bitmaps_reserved_size > 0);
+      SetSystemPagesAccess(quarantine_bitmaps, quarantine_bitmaps_reserved_size,
+                           PageInaccessible);
+    } else {
+      PA_DCHECK(quarantine_bitmaps_reserved_size == 0);
+    }
+  }
 
   // If we were after a specific address, but didn't get it, assume that
   // the system chose a lousy address. Here most OS'es have a default

@@ -230,12 +230,38 @@ ALWAYS_INLINE char* PartitionSuperPageToMetadataArea(char* ptr) {
   return reinterpret_cast<char*>(pointer_as_uint + SystemPageSize());
 }
 
+// Size that should be reserved for 2 back-to-back quarantine bitmaps (if
+// present) inside a super page. Elements of a super page are
+// partition-page-aligned, hence the returned size is a multiple of partition
+// page size.
+ALWAYS_INLINE size_t ReservedQuarantineBitmapsSize() {
+  return (2 * sizeof(QuarantineBitmap) + PartitionPageSize() - 1) &
+         PartitionPageBaseMask();
+}
+
+// Size that should be committed for 2 back-to-back quarantine bitmaps (if
+// present) inside a super page. It is a multiple of system page size.
+ALWAYS_INLINE size_t CommittedQuarantineBitmapsSize() {
+  return (2 * sizeof(QuarantineBitmap) + SystemPageSize() - 1) &
+         SystemPageBaseMask();
+}
+
+// Returns the pointer to the first, of two, quarantine bitmap in the super
+// page. It's the caller's responsibility to ensure that the bitmaps even exist.
+ALWAYS_INLINE QuarantineBitmap* SuperPageQuarantineBitmaps(
+    char* super_page_base) {
+  PA_DCHECK(
+      !(reinterpret_cast<uintptr_t>(super_page_base) % kSuperPageAlignment));
+  return reinterpret_cast<QuarantineBitmap*>(
+      super_page_base + PartitionPageSize() + ReservedTagBitmapSize());
+}
+
 ALWAYS_INLINE char* SuperPagePayloadBegin(char* super_page_base,
                                           bool with_pcscan) {
   PA_DCHECK(
       !(reinterpret_cast<uintptr_t>(super_page_base) % kSuperPageAlignment));
   return super_page_base + PartitionPageSize() + ReservedTagBitmapSize() +
-         (with_pcscan ? 2 * sizeof(QuarantineBitmap) : 0);
+         (with_pcscan ? ReservedQuarantineBitmapsSize() : 0);
 }
 
 ALWAYS_INLINE char* SuperPagePayloadEnd(char* super_page_base) {
@@ -489,10 +515,9 @@ ALWAYS_INLINE QuarantineBitmap* QuarantineBitmapFromPointer(
     size_t pcscan_epoch,
     void* ptr) {
   PA_DCHECK(!IsManagedByPartitionAllocDirectMap(ptr));
-  auto* super_page = reinterpret_cast<char*>(reinterpret_cast<uintptr_t>(ptr) &
-                                             kSuperPageBaseMask);
-  auto* first_bitmap = reinterpret_cast<QuarantineBitmap*>(
-      super_page + PartitionPageSize() + ReservedTagBitmapSize());
+  auto* super_page_base = reinterpret_cast<char*>(
+      reinterpret_cast<uintptr_t>(ptr) & kSuperPageBaseMask);
+  auto* first_bitmap = SuperPageQuarantineBitmaps(super_page_base);
   auto* second_bitmap = first_bitmap + 1;
 
   if (type == QuarantineBitmapType::kScanner)
