@@ -17,7 +17,7 @@
 class ResourceMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
-  using ResourceMimeType = FrameData::ResourceMimeType;
+  using ResourceMimeType = ad_metrics::ResourceMimeType;
   ResourceMetricsObserver();
   ~ResourceMetricsObserver() override;
 

@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, VerifySameOriginWithoutNavigate) {
   // Navigate away and ensure we report same origin.
   ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
   histogram_tester.ExpectUniqueSample(kSubresourceFilterOriginStatusHistogram,
-                                      FrameData::OriginStatus::kSame, 1);
+                                      ad_metrics::OriginStatus::kSame, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, VerifyCrossOriginWithoutNavigate) {
@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
   // Navigate away and ensure we report cross origin.
   ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
   histogram_tester.ExpectUniqueSample(kSubresourceFilterOriginStatusHistogram,
-                                      FrameData::OriginStatus::kCross, 1);
+                                      ad_metrics::OriginStatus::kCross, 1);
 }
 
 // Ad script creates a frame and navigates it same origin.
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
   // Navigate away and ensure we report same origin.
   ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
   histogram_tester.ExpectUniqueSample(kSubresourceFilterOriginStatusHistogram,
-                                      FrameData::OriginStatus::kSame, 1);
+                                      ad_metrics::OriginStatus::kSame, 1);
 }
 
 // Test that a subframe with a non-ad url but loaded by ad script is an ad.

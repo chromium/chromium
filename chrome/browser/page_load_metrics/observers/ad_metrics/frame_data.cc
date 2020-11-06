@@ -23,9 +23,6 @@
 
 namespace {
 
-using OriginStatus = FrameData::OriginStatus;
-using OriginStatusWithThrottling = FrameData::OriginStatusWithThrottling;
-
 // A frame with area less than kMinimumVisibleFrameArea is not considered
 // visible.
 const int kMinimumVisibleFrameArea = 25;
@@ -33,15 +30,17 @@ const int kMinimumVisibleFrameArea = 25;
 // Controls what types of heavy ads will be unloaded by the intervention.
 const base::FeatureParam<int> kHeavyAdUnloadPolicyParam = {
     &features::kHeavyAdIntervention, "kUnloadPolicy",
-    static_cast<int>(FrameData::HeavyAdUnloadPolicy::kAll)};
+    static_cast<int>(ad_metrics::HeavyAdUnloadPolicy::kAll)};
 
 }  // namespace
 
-// static
-constexpr base::TimeDelta FrameData::kCpuWindowSize;
+namespace ad_metrics {
+
+ResourceLoadAggregator::ResourceLoadAggregator() = default;
+ResourceLoadAggregator::~ResourceLoadAggregator() = default;
 
 // static
-FrameData::ResourceMimeType FrameData::GetResourceMimeType(
+ResourceMimeType ResourceLoadAggregator::GetResourceMimeType(
     const page_load_metrics::mojom::ResourceDataUpdatePtr& resource) {
   if (blink::IsSupportedImageMimeType(resource->mime_type))
     return ResourceMimeType::kImage;
@@ -64,13 +63,8 @@ FrameData::ResourceMimeType FrameData::GetResourceMimeType(
   return ResourceMimeType::kOther;
 }
 
-FrameData::FrameData() = default;
-FrameData::~FrameData() = default;
-
-void FrameData::ProcessResourceLoadInFrame(
-    const page_load_metrics::mojom::ResourceDataUpdatePtr& resource,
-    int process_id,
-    const page_load_metrics::ResourceTracker& resource_tracker) {
+void ResourceLoadAggregator::ProcessResourceLoad(
+    const page_load_metrics::mojom::ResourceDataUpdatePtr& resource) {
   bytes_ += resource->delta_bytes;
   network_bytes_ += resource->delta_bytes;
 
@@ -93,63 +87,40 @@ void FrameData::ProcessResourceLoadInFrame(
   }
 }
 
-void FrameData::AdjustAdBytes(int64_t unaccounted_ad_bytes,
-                              ResourceMimeType mime_type) {
+void ResourceLoadAggregator::AdjustAdBytes(int64_t unaccounted_ad_bytes,
+                                           ResourceMimeType mime_type) {
   ad_network_bytes_ += unaccounted_ad_bytes;
   ad_bytes_ += unaccounted_ad_bytes;
   ad_bytes_by_mime_[static_cast<size_t>(mime_type)] += unaccounted_ad_bytes;
 }
 
-void FrameData::UpdateCpuUsage(base::TimeTicks update_time,
-                               base::TimeDelta update) {
-  // Update the overall usage for all of the relevant buckets.
-  cpu_by_activation_period_[static_cast<size_t>(user_activation_status_)] +=
-      update;
+PeakCpuAggregator::PeakCpuAggregator() = default;
+PeakCpuAggregator::~PeakCpuAggregator() = default;
 
-  // If the frame has been activated, then we don't update the peak usage.
-  if (user_activation_status_ == UserActivationStatus::kReceivedActivation)
-    return;
+// static
+constexpr base::TimeDelta PeakCpuAggregator::kWindowSize;
 
-  // Update the peak usage.
-  UpdatePeakWindowedPercent(update, update_time, cpu_total_for_current_window_,
-                            cpu_updates_for_current_window_,
-                            peak_windowed_cpu_percent_);
-}
-
-base::TimeDelta FrameData::GetActivationCpuUsage(
-    UserActivationStatus status) const {
-  return cpu_by_activation_period_[static_cast<int>(status)];
-}
-
-base::TimeDelta FrameData::GetTotalCpuUsage() const {
-  base::TimeDelta total_cpu_time;
-  for (base::TimeDelta cpu_time : cpu_by_activation_period_)
-    total_cpu_time += cpu_time;
-  return total_cpu_time;
-}
-
-size_t FrameData::GetAdNetworkBytesForMime(ResourceMimeType mime_type) const {
-  return ad_bytes_by_mime_[static_cast<size_t>(mime_type)];
-}
-
-void FrameData::UpdatePeakWindowedPercent(
+void PeakCpuAggregator::UpdatePeakWindowedPercent(
     base::TimeDelta cpu_usage_update,
-    base::TimeTicks update_time,
-    base::TimeDelta& current_window_total,
-    base::queue<CpuUpdateData>& current_window_updates,
-    int& peak_windowed_percent) {
-  current_window_total += cpu_usage_update;
-  current_window_updates.push(CpuUpdateData(update_time, cpu_usage_update));
-  base::TimeTicks cutoff_time = update_time - kCpuWindowSize;
-  while (!current_window_updates.empty() &&
-         current_window_updates.front().update_time < cutoff_time) {
-    current_window_total -= current_window_updates.front().usage_info;
-    current_window_updates.pop();
+    base::TimeTicks update_time) {
+  current_window_total_ += cpu_usage_update;
+  current_window_updates_.push(CpuUpdateData(update_time, cpu_usage_update));
+  base::TimeTicks cutoff_time = update_time - kWindowSize;
+  while (!current_window_updates_.empty() &&
+         current_window_updates_.front().update_time < cutoff_time) {
+    current_window_total_ -= current_window_updates_.front().usage_info;
+    current_window_updates_.pop();
   }
-  int current_windowed_percent = 100 * current_window_total.InMilliseconds() /
-                                 kCpuWindowSize.InMilliseconds();
-  if (current_windowed_percent > peak_windowed_percent)
-    peak_windowed_percent = current_windowed_percent;
+  int current_windowed_percent = 100 * current_window_total_.InMilliseconds() /
+                                 kWindowSize.InMilliseconds();
+  if (current_windowed_percent > peak_windowed_percent_)
+    peak_windowed_percent_ = current_windowed_percent;
+}
+
+void MemoryUsageAggregator::UpdateUsage(int64_t delta_bytes) {
+  current_bytes_used_ += delta_bytes;
+  if (current_bytes_used_ > max_bytes_used_)
+    max_bytes_used_ = current_bytes_used_;
 }
 
 FrameTreeData::FrameTreeData(FrameTreeNodeId root_frame_tree_node_id,
@@ -169,9 +140,13 @@ void FrameTreeData::MaybeUpdateFrameDepth(
     frame_depth_ = render_frame_host->GetFrameDepth() - root_frame_depth_;
 }
 
+void FrameTreeData::UpdateMemoryUsage(int64_t delta_bytes) {
+  memory_usage_.UpdateUsage(delta_bytes);
+}
+
 bool FrameTreeData::ShouldRecordFrameForMetrics() const {
-  return bytes() != 0 || !GetTotalCpuUsage().is_zero() ||
-         v8_max_memory_bytes_used_ > 0;
+  return resource_data().bytes() != 0 || !GetTotalCpuUsage().is_zero() ||
+         memory_usage_.max_bytes_used() > 0;
 }
 
 void FrameTreeData::RecordAdFrameLoadUkmEvent(ukm::SourceId source_id) const {
@@ -182,15 +157,16 @@ void FrameTreeData::RecordAdFrameLoadUkmEvent(ukm::SourceId source_id) const {
   ukm::builders::AdFrameLoad builder(source_id);
   builder
       .SetLoading_NetworkBytes(
-          ukm::GetExponentialBucketMinForBytes(network_bytes()))
-      .SetLoading_CacheBytes2(
-          ukm::GetExponentialBucketMinForBytes((bytes() - network_bytes())))
+          ukm::GetExponentialBucketMinForBytes(resource_data().network_bytes()))
+      .SetLoading_CacheBytes2(ukm::GetExponentialBucketMinForBytes(
+          (resource_data().bytes() - resource_data().network_bytes())))
       .SetLoading_VideoBytes(ukm::GetExponentialBucketMinForBytes(
-          GetAdNetworkBytesForMime(ResourceMimeType::kVideo)))
+          resource_data().GetAdNetworkBytesForMime(ResourceMimeType::kVideo)))
       .SetLoading_JavascriptBytes(ukm::GetExponentialBucketMinForBytes(
-          GetAdNetworkBytesForMime(ResourceMimeType::kJavascript)))
+          resource_data().GetAdNetworkBytesForMime(
+              ResourceMimeType::kJavascript)))
       .SetLoading_ImageBytes(ukm::GetExponentialBucketMinForBytes(
-          GetAdNetworkBytesForMime(ResourceMimeType::kImage)))
+          resource_data().GetAdNetworkBytesForMime(ResourceMimeType::kImage)))
       .SetLoading_NumResources(num_resources_);
 
   builder.SetCpuTime_Total(GetTotalCpuUsage().InMilliseconds());
@@ -200,7 +176,7 @@ void FrameTreeData::RecordAdFrameLoadUkmEvent(ukm::SourceId source_id) const {
             .InMilliseconds());
   }
 
-  builder.SetCpuTime_PeakWindowedPercent(peak_windowed_cpu_percent_);
+  builder.SetCpuTime_PeakWindowedPercent(peak_cpu_.peak_windowed_percent());
 
   builder
       .SetVisibility_FrameWidth(
@@ -221,7 +197,7 @@ void FrameTreeData::RecordAdFrameLoadUkmEvent(ukm::SourceId source_id) const {
   builder.Record(ukm_recorder->Get());
 }
 
-FrameData::OriginStatusWithThrottling
+OriginStatusWithThrottling
 FrameTreeData::GetCreativeOriginStatusWithThrottling() const {
   bool is_throttled = !first_eligible_to_paint().has_value();
 
@@ -284,13 +260,13 @@ void FrameTreeData::UpdateFrameVisibility() {
           : FrameVisibility::kNonVisible;
 }
 
-FrameData::HeavyAdStatus FrameTreeData::ComputeHeavyAdStatus(
+HeavyAdStatus FrameTreeData::ComputeHeavyAdStatus(
     bool use_network_threshold_noise,
     HeavyAdUnloadPolicy policy) const {
   if (policy == HeavyAdUnloadPolicy::kCpuOnly ||
       policy == HeavyAdUnloadPolicy::kAll) {
     // Check if the frame meets the peak CPU usage threshold.
-    if (peak_windowed_cpu_percent_ >=
+    if (peak_windowed_cpu_percent() >=
         heavy_ad_thresholds::kMaxPeakWindowedPercent) {
       return HeavyAdStatus::kPeakCpu;
     }
@@ -307,42 +283,30 @@ FrameData::HeavyAdStatus FrameTreeData::ComputeHeavyAdStatus(
         (use_network_threshold_noise ? heavy_ad_network_threshold_noise_ : 0);
 
     // Check if the frame meets the network threshold, possible including noise.
-    if (network_bytes_ >= network_threshold)
+    if (resource_data().network_bytes() >= network_threshold)
       return HeavyAdStatus::kNetwork;
   }
   return HeavyAdStatus::kNone;
 }
 
-int64_t FrameTreeData::UpdateMemoryUsage(FrameTreeNodeId frame_node_id,
-                                         uint64_t current_bytes) {
-  auto it = v8_current_memory_usage_map_.find(frame_node_id);
-  uint64_t previous_bytes =
-      (it != v8_current_memory_usage_map_.end()) ? it->second : 0UL;
+void FrameTreeData::UpdateCpuUsage(base::TimeTicks update_time,
+                                   base::TimeDelta update) {
+  // Update the overall usage for all of the relevant buckets.
+  cpu_usage_[static_cast<size_t>(user_activation_status_)] += update;
 
-  v8_current_memory_usage_map_[frame_node_id] = current_bytes;
+  // If the frame has been activated, then we don't update the peak usage.
+  if (user_activation_status_ == UserActivationStatus::kReceivedActivation)
+    return;
 
-  int64_t delta = current_bytes - previous_bytes;
-  v8_current_memory_bytes_used_ += delta;
-
-  if (v8_current_memory_bytes_used_ > v8_max_memory_bytes_used_)
-    v8_max_memory_bytes_used_ = v8_current_memory_bytes_used_;
-
-  return delta;
+  // Update the peak usage.
+  peak_cpu_.UpdatePeakWindowedPercent(update, update_time);
 }
 
-int64_t FrameTreeData::OnFrameDeleted(FrameTreeNodeId frame_node_id) {
-  auto it = v8_current_memory_usage_map_.find(frame_node_id);
-
-  if (it == v8_current_memory_usage_map_.end())
-    return 0;
-
-  DCHECK(v8_current_memory_bytes_used_ >= it->second);
-  v8_current_memory_bytes_used_ -= it->second;
-
-  int64_t delta = -it->second;
-  v8_current_memory_usage_map_.erase(it);
-
-  return delta;
+base::TimeDelta FrameTreeData::GetTotalCpuUsage() const {
+  base::TimeDelta total_cpu_time;
+  for (base::TimeDelta cpu_time : cpu_usage_)
+    total_cpu_time += cpu_time;
+  return total_cpu_time;
 }
 
 void FrameTreeData::UpdateForNavigation(
@@ -373,7 +337,12 @@ void FrameTreeData::ProcessResourceLoadInFrame(
   content::GlobalRequestID global_id(process_id, resource->request_id);
   if (!resource_tracker.HasPreviousUpdateForResource(global_id))
     num_resources_++;
-  FrameData::ProcessResourceLoadInFrame(resource, process_id, resource_tracker);
+  resource_data_.ProcessResourceLoad(resource);
+}
+
+void FrameTreeData::AdjustAdBytes(int64_t unaccounted_ad_bytes,
+                                  ResourceMimeType mime_type) {
+  resource_data_.AdjustAdBytes(unaccounted_ad_bytes, mime_type);
 }
 
 void FrameTreeData::SetFrameSize(gfx::Size frame_size) {
@@ -386,7 +355,7 @@ void FrameTreeData::SetDisplayState(bool is_display_none) {
   UpdateFrameVisibility();
 }
 
-FrameData::HeavyAdAction FrameTreeData::MaybeTriggerHeavyAdIntervention() {
+HeavyAdAction FrameTreeData::MaybeTriggerHeavyAdIntervention() {
   // TODO(johnidel): This method currently does a lot of heavy lifting: tracking
   // noised and unnoised metrics, determining feature action, and branching
   // based on configuration. Consider splitting this out and letting AdsPLMO do
@@ -441,10 +410,32 @@ FrameData::HeavyAdAction FrameTreeData::MaybeTriggerHeavyAdIntervention() {
 AggregateFrameData::AggregateFrameData() = default;
 AggregateFrameData::~AggregateFrameData() = default;
 
-void AggregateFrameData::UpdateNonAdCpuUsage(base::TimeTicks update_time,
-                                             base::TimeDelta update) {
-  UpdatePeakWindowedPercent(update, update_time,
-                            non_ad_cpu_total_for_current_window_,
-                            non_ad_cpu_updates_for_current_window_,
-                            peak_windowed_non_ad_cpu_percent_);
+void AggregateFrameData::UpdateCpuUsage(base::TimeTicks update_time,
+                                        base::TimeDelta update,
+                                        bool is_ad) {
+  // Update the overall usage for all of the relevant buckets.
+  cpu_usage_ += update;
+
+  // Update the peak usage.
+  total_peak_cpu_.UpdatePeakWindowedPercent(update, update_time);
+  if (!is_ad)
+    non_ad_peak_cpu_.UpdatePeakWindowedPercent(update, update_time);
 }
+
+void AggregateFrameData::ProcessResourceLoadInFrame(
+    const page_load_metrics::mojom::ResourceDataUpdatePtr& resource,
+    bool is_main_frame) {
+  resource_data_.ProcessResourceLoad(resource);
+  if (is_main_frame)
+    main_frame_resource_data_.ProcessResourceLoad(resource);
+}
+
+void AggregateFrameData::AdjustAdBytes(int64_t unaccounted_ad_bytes,
+                                       ResourceMimeType mime_type,
+                                       bool is_main_frame) {
+  resource_data_.AdjustAdBytes(unaccounted_ad_bytes, mime_type);
+  if (is_main_frame)
+    main_frame_resource_data_.AdjustAdBytes(unaccounted_ad_bytes, mime_type);
+}
+
+}  // namespace ad_metrics

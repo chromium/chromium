@@ -58,7 +58,8 @@ void ResourceMetricsObserver::RecordResourceMimeHistograms(
       resource->cache_type != page_load_metrics::mojom::CacheType::kNotCached;
   int64_t data_length = was_cached ? resource->encoded_body_length
                                    : resource->received_data_length;
-  ResourceMimeType mime_type = FrameData::GetResourceMimeType(resource);
+  ResourceMimeType mime_type =
+      ad_metrics::ResourceLoadAggregator::GetResourceMimeType(resource);
   if (mime_type == ResourceMimeType::kImage) {
     RESOURCE_BYTES_HISTOGRAM("Mime.Image", was_cached, data_length);
   } else if (mime_type == ResourceMimeType::kJavascript) {
