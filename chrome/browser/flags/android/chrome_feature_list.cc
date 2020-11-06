@@ -385,6 +385,9 @@ const base::Feature kChromeSharingHub{"ChromeSharingHub",
 const base::Feature kChromeSharingHubV15{"ChromeSharingHubV15",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kChromeStartupDelegate{"ChromeStartupDelegate",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kCommandLineOnNonRooted{"CommandLineOnNonRooted",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
