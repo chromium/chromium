@@ -111,11 +111,11 @@ class AvatarMenu :
   ~AvatarMenu() override;
 
   // Sets |image| to the avatar corresponding to the profile at |profile_path|.
-  // Returns the image load status.
+  // For built-in profile avatars, returns the non-high res version. Returns the
+  // image load status.
   static ImageLoadStatus GetImageForMenuButton(
       const base::FilePath& profile_path,
-      gfx::Image* image,
-      int preferred_size);
+      gfx::Image* image);
 
   // Opens a Browser with the specified profile in response to the user
   // selecting an item. If |always_create| is true then a new window is created

@@ -178,10 +178,8 @@ void DrawTaskbarDecoration(gfx::NativeWindow window, const gfx::Image* image) {
   // gfx::Image isn't thread safe.
   std::unique_ptr<SkBitmap> bitmap;
   if (image) {
-    // If `image` is an old avatar, then it's guaranteed to by 2x by code in
-    // ProfileAttributesEntry::GetAvatarIcon().
-    bitmap.reset(new SkBitmap(
-        profiles::GetWin2xAvatarIconAsSquare(*image->ToSkBitmap())));
+    bitmap.reset(
+        new SkBitmap(profiles::GetAvatarIconAsSquare(*image->ToSkBitmap(), 1)));
   }
 
   PostSetOverlayIcon(hwnd, std::move(bitmap), "");
@@ -206,8 +204,8 @@ void UpdateTaskbarDecoration(Profile* profile, gfx::NativeWindow window) {
   // with the default shortcut being pinned, we add the runtime badge for
   // safety. See crbug.com/313800.
   gfx::Image decoration;
-  AvatarMenu::ImageLoadStatus status = AvatarMenu::GetImageForMenuButton(
-      profile->GetPath(), &decoration, kOverlayIconSize);
+  AvatarMenu::ImageLoadStatus status =
+      AvatarMenu::GetImageForMenuButton(profile->GetPath(), &decoration);
 
   // If the user is using a Gaia picture and the picture is still being loaded,
   // wait until the load finishes. This taskbar decoration will be triggered

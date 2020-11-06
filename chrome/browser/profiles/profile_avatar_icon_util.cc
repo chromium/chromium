@@ -54,9 +54,6 @@
 namespace {
 
 #if defined(OS_WIN)
-const int kOldAvatarIconWidth = 38;
-const int kOldAvatarIconHeight = 31;
-
 // 2x sized versions of the old profile avatar icons.
 // TODO(crbug.com/937834): Clean this up.
 const int kProfileAvatarIconResources2x[] = {
@@ -88,6 +85,9 @@ SkBitmap GetSkBitmapCopy(const gfx::Image& image) {
   return bitmap_copy;
 }
 #endif  // OS_WIN
+
+const int kOldAvatarIconWidth = 38;
+const int kOldAvatarIconHeight = 31;
 
 // Determine what the scaled height of the avatar icon should be for a
 // specified width, to preserve the aspect ratio.
@@ -419,15 +419,13 @@ gfx::Image GetAvatarIconForTitleBar(const gfx::Image& image,
 
 #if defined(OS_MAC)
 gfx::Image GetAvatarIconForNSMenu(const base::FilePath& profile_path) {
-  // TODO(crbug.com/857064): Call ProfileAttributesEntry::GetAvatarIcon()
-  // directly and pass in in larger desired size so that it can be smoothly
-  // clipped to a circle.
-  constexpr int kMenuAvatarIconSize = 38;
+  // Always use the low-res, small default avatars in the menu.
   gfx::Image icon;
-  AvatarMenu::GetImageForMenuButton(profile_path, &icon, kMenuAvatarIconSize);
+  AvatarMenu::GetImageForMenuButton(profile_path, &icon);
 
   // The image might be too large and need to be resized, e.g. if this is a
   // signed-in user using the GAIA profile photo.
+  constexpr int kMenuAvatarIconSize = 38;
   if (icon.Width() > kMenuAvatarIconSize ||
       icon.Height() > kMenuAvatarIconSize) {
     icon = profiles::GetSizedAvatarIcon(
@@ -436,6 +434,26 @@ gfx::Image GetAvatarIconForNSMenu(const base::FilePath& profile_path) {
   return icon;
 }
 #endif
+
+SkBitmap GetAvatarIconAsSquare(const SkBitmap& source_bitmap,
+                               int scale_factor) {
+  SkBitmap square_bitmap;
+  if ((source_bitmap.width() == scale_factor * kOldAvatarIconWidth) &&
+      (source_bitmap.height() == scale_factor * kOldAvatarIconHeight)) {
+    // If |source_bitmap| matches the old avatar icon dimensions, i.e. it's an
+    // old avatar icon, shave a couple of columns so the |source_bitmap| is more
+    // square. So when resized to a square aspect ratio it looks pretty.
+    gfx::Rect frame(scale_factor * profiles::kAvatarIconSize,
+                    scale_factor * profiles::kAvatarIconSize);
+    frame.Inset(scale_factor * 2, 0, scale_factor * 2, 0);
+    source_bitmap.extractSubset(&square_bitmap, gfx::RectToSkIRect(frame));
+  } else {
+    // If it's not an old avatar icon, the image should be square.
+    DCHECK_EQ(source_bitmap.width(), source_bitmap.height());
+    square_bitmap = source_bitmap;
+  }
+  return square_bitmap;
+}
 
 // Helper methods for accessing, transforming and drawing avatar icons.
 size_t GetDefaultAvatarIconCount() {
@@ -711,30 +729,13 @@ SkBitmap GetWin2xAvatarImage(ProfileAttributesEntry* entry) {
   return GetSkBitmapCopy(entry->GetAvatarIcon(IconUtil::kLargeIconSize));
 }
 
-SkBitmap GetWin2xAvatarIconAsSquare(const SkBitmap& source_bitmap) {
-  constexpr int kIconScaleFactor = 2;
-  if ((source_bitmap.width() != kIconScaleFactor * kOldAvatarIconWidth) ||
-      (source_bitmap.height() != kIconScaleFactor * kOldAvatarIconHeight)) {
-    // It's not an old avatar icon, the image should be square.
-    DCHECK_EQ(source_bitmap.width(), source_bitmap.height());
-    return source_bitmap;
-  }
-
-  // If |source_bitmap| matches the old avatar icon dimensions, i.e. it's an
-  // old avatar icon, shave a couple of columns so the |source_bitmap| is more
-  // square. So when resized to a square aspect ratio it looks pretty.
-  gfx::Rect frame(gfx::SkIRectToRect(source_bitmap.bounds()));
-  frame.Inset(/*horizontal=*/kIconScaleFactor * 2, /*vertical=*/0);
-  SkBitmap cropped_bitmap;
-  source_bitmap.extractSubset(&cropped_bitmap, gfx::RectToSkIRect(frame));
-  return cropped_bitmap;
-}
-
 SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
                                          const SkBitmap& avatar_bitmap) {
+  constexpr int kAvatarBitmapScaleFactor = 2;
   // TODO(dfried): This function often doesn't actually do the thing it claims
   // to. We should probably fix it.
-  SkBitmap source_bitmap = profiles::GetWin2xAvatarIconAsSquare(avatar_bitmap);
+  SkBitmap source_bitmap =
+      profiles::GetAvatarIconAsSquare(avatar_bitmap, kAvatarBitmapScaleFactor);
 
   int avatar_badge_width = kProfileAvatarBadgeSizeWin;
   if (app_icon_bitmap.width() != kShortcutIconSizeWin) {
