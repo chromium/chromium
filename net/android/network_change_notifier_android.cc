@@ -59,12 +59,12 @@
 
 #include "net/android/network_change_notifier_android.h"
 
+#include <string>
 #include <unordered_set>
 
 #include "base/android/build_info.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
@@ -97,6 +97,8 @@ class NetworkChangeNotifierAndroid::BlockingThreadObjects {
             // We're only interested in tunnel interface changes.
             base::BindRepeating(NotifyNetworkChangeNotifierObservers),
             std::unordered_set<std::string>()) {}
+  BlockingThreadObjects(const BlockingThreadObjects&) = delete;
+  BlockingThreadObjects& operator=(const BlockingThreadObjects&) = delete;
 
   void Init() {
     address_tracker_.Init();
@@ -110,8 +112,6 @@ class NetworkChangeNotifierAndroid::BlockingThreadObjects {
  private:
   // Used to detect tunnel state changes.
   internal::AddressTrackerLinux address_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingThreadObjects);
 };
 
 NetworkChangeNotifierAndroid::~NetworkChangeNotifierAndroid() {

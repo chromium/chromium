@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
@@ -25,6 +24,8 @@ class ProxyServer;
 class NET_EXPORT ProxyDelegate {
  public:
   ProxyDelegate() = default;
+  ProxyDelegate(const ProxyDelegate&) = delete;
+  ProxyDelegate& operator=(const ProxyDelegate&) = delete;
   virtual ~ProxyDelegate() = default;
 
   // Called as the proxy is being resolved for |url| for a |method| request.
@@ -56,9 +57,6 @@ class NET_EXPORT ProxyDelegate {
   virtual Error OnTunnelHeadersReceived(
       const ProxyServer& proxy_server,
       const HttpResponseHeaders& response_headers) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyDelegate);
 };
 
 }  // namespace net

@@ -240,7 +240,7 @@ class TestUDPClientSocket : public MockUDPClientSocket {
 // Creates TestUDPClientSockets and keeps endpoints reported via OnConnect.
 class TestSocketFactory : public MockClientSocketFactory {
  public:
-  TestSocketFactory() : fail_next_socket_(false) {}
+  TestSocketFactory() = default;
   ~TestSocketFactory() override = default;
 
   std::unique_ptr<DatagramClientSocket> CreateDatagramClientSocket(
@@ -282,14 +282,12 @@ class TestSocketFactory : public MockClientSocketFactory {
   };
 
   std::vector<RemoteNameserver> remote_endpoints_;
-  bool fail_next_socket_;
+  bool fail_next_socket_ = false;
   bool diverse_source_ports_ = true;
 
  private:
   StaticSocketDataProvider empty_data_;
   uint16_t next_source_port_ = 123;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSocketFactory);
 };
 
 int TestUDPClientSocket::Connect(const IPEndPoint& endpoint) {

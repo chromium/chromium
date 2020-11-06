@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/synchronization/lock.h"
@@ -55,6 +54,10 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   //   // Creates Java NetworkChangeNotifierAutoDetect class instance.
   //   NetworkChangeNotifier.registerToReceiveNotificationsAlways();
   NetworkChangeNotifierDelegateAndroid();
+  NetworkChangeNotifierDelegateAndroid(
+      const NetworkChangeNotifierDelegateAndroid&) = delete;
+  NetworkChangeNotifierDelegateAndroid& operator=(
+      const NetworkChangeNotifierDelegateAndroid&) = delete;
   ~NetworkChangeNotifierDelegateAndroid();
 
   // Called from NetworkChangeNotifier.java on the JNI thread whenever
@@ -172,8 +175,6 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   double connection_max_bandwidth_;
   NetworkHandle default_network_;
   NetworkMap network_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkChangeNotifierDelegateAndroid);
 };
 
 }  // namespace net

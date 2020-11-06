@@ -31,7 +31,6 @@
 
 #include "base/files/file.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/single_thread_task_runner.h"
@@ -57,6 +56,7 @@ class FileStream::Context : public base::MessagePumpForIO::IOHandler {
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 class FileStream::Context {
 #endif
+
  public:
   ////////////////////////////////////////////////////////////////////////////
   // Platform-dependent methods implemented in
@@ -65,6 +65,8 @@ class FileStream::Context {
 
   explicit Context(scoped_refptr<base::TaskRunner> task_runner);
   Context(base::File file, scoped_refptr<base::TaskRunner> task_runner);
+  Context(const Context&) = delete;
+  Context& operator=(const Context&) = delete;
 #if defined(OS_WIN)
   ~Context() override;
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
@@ -118,12 +120,11 @@ class FileStream::Context {
     OpenResult(base::File file, IOResult error_code);
     OpenResult(OpenResult&& other);
     OpenResult& operator=(OpenResult&& other);
+    OpenResult(const OpenResult&) = delete;
+    OpenResult& operator=(const OpenResult&) = delete;
 
     base::File file;
     IOResult error_code;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(OpenResult);
   };
 
   ////////////////////////////////////////////////////////////////////////////
@@ -240,8 +241,6 @@ class FileStream::Context {
   // Tracks the result of the IO completion operation. Set in OnIOComplete.
   int result_ = 0;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(Context);
 };
 
 }  // namespace net

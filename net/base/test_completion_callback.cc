@@ -32,9 +32,8 @@ void TestCompletionCallbackBaseInternal::WaitForResult() {
   have_result_ = false;  // Auto-reset for next callback.
 }
 
-TestCompletionCallbackBaseInternal::TestCompletionCallbackBaseInternal()
-    : have_result_(false) {
-}
+TestCompletionCallbackBaseInternal::TestCompletionCallbackBaseInternal() =
+    default;
 
 TestCompletionCallbackBaseInternal::~TestCompletionCallbackBaseInternal() =
     default;

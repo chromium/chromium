@@ -4,7 +4,6 @@
 
 #include "net/base/backoff_entry.h"
 
-#include "base/macros.h"
 #include "base/time/tick_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,6 +19,8 @@ BackoffEntry::Policy base_policy = { 0, 1000, 2.0, 0.0, 20000, 2000, false };
 class TestTickClock : public base::TickClock {
  public:
   TestTickClock() = default;
+  TestTickClock(const TestTickClock&) = delete;
+  TestTickClock& operator=(const TestTickClock&) = delete;
   ~TestTickClock() override = default;
 
   TimeTicks NowTicks() const override { return now_ticks_; }
@@ -27,7 +28,6 @@ class TestTickClock : public base::TickClock {
 
  private:
   TimeTicks now_ticks_;
-  DISALLOW_COPY_AND_ASSIGN(TestTickClock);
 };
 
 TEST(BackoffEntryTest, BaseTest) {

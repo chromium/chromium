@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 
@@ -41,6 +40,10 @@ namespace internal {
 
 class TestCompletionCallbackBaseInternal {
  public:
+  TestCompletionCallbackBaseInternal(
+      const TestCompletionCallbackBaseInternal&) = delete;
+  TestCompletionCallbackBaseInternal& operator=(
+      const TestCompletionCallbackBaseInternal&) = delete;
   bool have_result() const { return have_result_; }
 
  protected:
@@ -54,9 +57,7 @@ class TestCompletionCallbackBaseInternal {
   // RunLoop.  Only non-NULL during the call to WaitForResult, so the class is
   // reusable.
   std::unique_ptr<base::RunLoop> run_loop_;
-  bool have_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCompletionCallbackBaseInternal);
+  bool have_result_ = false;
 };
 
 template <typename R>
@@ -68,7 +69,11 @@ template <typename R, typename IsPendingHelper = NetErrorIsPendingHelper<R>>
 class TestCompletionCallbackTemplate
     : public TestCompletionCallbackBaseInternal {
  public:
-  virtual ~TestCompletionCallbackTemplate() override {}
+  TestCompletionCallbackTemplate(const TestCompletionCallbackTemplate&) =
+      delete;
+  TestCompletionCallbackTemplate& operator=(
+      const TestCompletionCallbackTemplate&) = delete;
+  ~TestCompletionCallbackTemplate() override = default;
 
   R WaitForResult() {
     TestCompletionCallbackBaseInternal::WaitForResult();
@@ -93,8 +98,6 @@ class TestCompletionCallbackTemplate
 
  private:
   R result_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCompletionCallbackTemplate);
 };
 
 }  // namespace internal
@@ -103,15 +106,14 @@ class TestClosure : public internal::TestCompletionCallbackBaseInternal {
  public:
   using internal::TestCompletionCallbackBaseInternal::WaitForResult;
 
-  TestClosure() {}
+  TestClosure() = default;
+  TestClosure(const TestClosure&) = delete;
+  TestClosure& operator=(const TestClosure&) = delete;
   ~TestClosure() override;
 
   base::OnceClosure closure() {
     return base::BindOnce(&TestClosure::DidSetResult, base::Unretained(this));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestClosure);
 };
 
 // Base class overridden by custom implementations of TestCompletionCallback.
@@ -123,43 +125,45 @@ typedef internal::TestCompletionCallbackTemplate<int64_t>
 
 class TestCompletionCallback : public TestCompletionCallbackBase {
  public:
-  TestCompletionCallback() {}
+  TestCompletionCallback() = default;
+  TestCompletionCallback(const TestCompletionCallback&) = delete;
+  TestCompletionCallback& operator=(const TestCompletionCallback&) = delete;
   ~TestCompletionCallback() override;
 
   CompletionOnceCallback callback() {
     return base::BindOnce(&TestCompletionCallback::SetResult,
                           base::Unretained(this));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestCompletionCallback);
 };
 
 class TestInt64CompletionCallback : public TestInt64CompletionCallbackBase {
  public:
-  TestInt64CompletionCallback() {}
+  TestInt64CompletionCallback() = default;
+  TestInt64CompletionCallback(const TestInt64CompletionCallback&) = delete;
+  TestInt64CompletionCallback& operator=(const TestInt64CompletionCallback&) =
+      delete;
   ~TestInt64CompletionCallback() override;
 
   Int64CompletionOnceCallback callback() {
     return base::BindOnce(&TestInt64CompletionCallback::SetResult,
                           base::Unretained(this));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestInt64CompletionCallback);
 };
 
 // Makes sure that the buffer is not referenced when the callback runs.
 class ReleaseBufferCompletionCallback: public TestCompletionCallback {
  public:
   explicit ReleaseBufferCompletionCallback(IOBuffer* buffer);
+  ReleaseBufferCompletionCallback(const ReleaseBufferCompletionCallback&) =
+      delete;
+  ReleaseBufferCompletionCallback& operator=(
+      const ReleaseBufferCompletionCallback&) = delete;
   ~ReleaseBufferCompletionCallback() override;
 
  private:
   void SetResult(int result) override;
 
   IOBuffer* buffer_;
-  DISALLOW_COPY_AND_ASSIGN(ReleaseBufferCompletionCallback);
 };
 
 }  // namespace net

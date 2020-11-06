@@ -9,7 +9,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/android/network_change_notifier_delegate_android.h"
 #include "net/base/net_export.h"
@@ -50,6 +49,9 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierAndroid
     : public NetworkChangeNotifier,
       public NetworkChangeNotifierDelegateAndroid::Observer {
  public:
+  NetworkChangeNotifierAndroid(const NetworkChangeNotifierAndroid&) = delete;
+  NetworkChangeNotifierAndroid& operator=(const NetworkChangeNotifierAndroid&) =
+      delete;
   ~NetworkChangeNotifierAndroid() override;
 
   // NetworkChangeNotifier:
@@ -102,8 +104,6 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierAndroid
   std::unique_ptr<BlockingThreadObjects, base::OnTaskRunnerDeleter>
       blocking_thread_objects_;
   bool force_network_handles_supported_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkChangeNotifierAndroid);
 };
 
 }  // namespace net

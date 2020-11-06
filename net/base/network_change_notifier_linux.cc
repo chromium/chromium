@@ -4,10 +4,11 @@
 
 #include "net/base/network_change_notifier_linux.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -23,6 +24,8 @@ class NetworkChangeNotifierLinux::BlockingThreadObjects {
  public:
   explicit BlockingThreadObjects(
       const std::unordered_set<std::string>& ignored_interfaces);
+  BlockingThreadObjects(const BlockingThreadObjects&) = delete;
+  BlockingThreadObjects& operator=(const BlockingThreadObjects&) = delete;
 
   // Plumbing for NetworkChangeNotifier::GetCurrentConnectionType.
   // Safe to call from any thread.
@@ -43,8 +46,6 @@ class NetworkChangeNotifierLinux::BlockingThreadObjects {
   // Used to detect online/offline state and IP address changes.
   internal::AddressTrackerLinux address_tracker_;
   NetworkChangeNotifier::ConnectionType last_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingThreadObjects);
 };
 
 NetworkChangeNotifierLinux::BlockingThreadObjects::BlockingThreadObjects(

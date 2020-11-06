@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -34,6 +33,8 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierWin
       public base::win::ObjectWatcher::Delegate {
  public:
   NetworkChangeNotifierWin();
+  NetworkChangeNotifierWin(const NetworkChangeNotifierWin&) = delete;
+  NetworkChangeNotifierWin& operator=(const NetworkChangeNotifierWin&) = delete;
   ~NetworkChangeNotifierWin() override;
 
   // Begins listening for a single subsequent address change.  If it fails to
@@ -47,9 +48,9 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierWin
 
  protected:
   // For unit tests only.
-  bool is_watching() { return is_watching_; }
+  bool is_watching() const { return is_watching_; }
   void set_is_watching(bool is_watching) { is_watching_ = is_watching; }
-  int sequential_failures() { return sequential_failures_; }
+  int sequential_failures() const { return sequential_failures_; }
 
  private:
   friend class NetworkChangeNotifierWinTest;
@@ -96,7 +97,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierWin
   // False when not currently watching for network change events.  This only
   // happens on initialization and when WatchForAddressChangeInternal fails and
   // there is a pending task to try again.  Needed for safe cleanup.
-  bool is_watching_;
+  bool is_watching_ = false;
 
   base::win::ObjectWatcher addr_watcher_;
   OVERLAPPED addr_overlapped_;
@@ -104,7 +105,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierWin
   base::OneShotTimer timer_;
 
   // Number of times WatchForAddressChange has failed in a row.
-  int sequential_failures_;
+  int sequential_failures_ = 0;
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
@@ -121,8 +122,6 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierWin
 
   // Used for calling WatchForAddressChange again on failure.
   base::WeakPtrFactory<NetworkChangeNotifierWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkChangeNotifierWin);
 };
 
 }  // namespace net

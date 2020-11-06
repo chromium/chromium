@@ -12,8 +12,7 @@ namespace net {
 
 UploadBytesElementReader::UploadBytesElementReader(const char* bytes,
                                                    uint64_t length)
-    : bytes_(bytes), length_(length), offset_(0) {
-}
+    : bytes_(bytes), length_(length) {}
 
 UploadBytesElementReader::~UploadBytesElementReader() = default;
 

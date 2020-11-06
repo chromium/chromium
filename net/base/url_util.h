@@ -12,7 +12,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
@@ -61,6 +60,8 @@ NET_EXPORT GURL AppendOrReplaceQueryParameter(const GURL& url,
 class NET_EXPORT QueryIterator {
  public:
   explicit QueryIterator(const GURL& url);
+  QueryIterator(const QueryIterator&) = delete;
+  QueryIterator& operator=(const QueryIterator&) = delete;
   ~QueryIterator();
 
   std::string GetKey() const;
@@ -77,8 +78,6 @@ class NET_EXPORT QueryIterator {
   url::Component key_;
   url::Component value_;
   std::string unescaped_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(QueryIterator);
 };
 
 // Looks for |search_key| in the query portion of |url|. Returns true if the

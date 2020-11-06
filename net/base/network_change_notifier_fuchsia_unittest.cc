@@ -7,6 +7,7 @@
 #include <fuchsia/hardware/ethernet/cpp/fidl.h>
 #include <fuchsia/netstack/cpp/fidl_test_base.h>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -102,7 +103,9 @@ std::vector<fuchsia::netstack::NetInterface> CloneNetInterfaces(
 // Partial fake implementation of a Netstack.
 class FakeNetstack : public fuchsia::netstack::testing::Netstack_TestBase {
  public:
-  explicit FakeNetstack() : binding_(this) {}
+  FakeNetstack() = default;
+  FakeNetstack(const FakeNetstack&) = delete;
+  FakeNetstack& operator=(const FakeNetstack&) = delete;
   ~FakeNetstack() override = default;
 
   void Bind(
@@ -143,18 +146,18 @@ class FakeNetstack : public fuchsia::netstack::testing::Netstack_TestBase {
   }
 
   std::vector<fuchsia::netstack::NetInterface> interfaces_;
-  fidl::Binding<fuchsia::netstack::Netstack> binding_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNetstack);
+  fidl::Binding<fuchsia::netstack::Netstack> binding_{this};
 };
 
 class FakeNetstackAsync {
  public:
-  explicit FakeNetstackAsync() : thread_("Netstack Thread") {
+  FakeNetstackAsync() : thread_("Netstack Thread") {
     base::Thread::Options options(base::MessagePumpType::IO, 0);
     CHECK(thread_.StartWithOptions(options));
     netstack_ = base::SequenceBound<FakeNetstack>(thread_.task_runner());
   }
+  FakeNetstackAsync(const FakeNetstackAsync&) = delete;
+  FakeNetstackAsync& operator=(const FakeNetstackAsync&) = delete;
   ~FakeNetstackAsync() = default;
 
   void Bind(
@@ -178,8 +181,6 @@ class FakeNetstackAsync {
  private:
   base::Thread thread_;
   base::SequenceBound<FakeNetstack> netstack_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNetstackAsync);
 };
 
 template <class T>
@@ -294,7 +295,11 @@ class FakeIPAddressObserver : public NetworkChangeNotifier::IPAddressObserver {
 
 class NetworkChangeNotifierFuchsiaTest : public testing::Test {
  public:
-  NetworkChangeNotifierFuchsiaTest() {}
+  NetworkChangeNotifierFuchsiaTest() = default;
+  NetworkChangeNotifierFuchsiaTest(const NetworkChangeNotifierFuchsiaTest&) =
+      delete;
+  NetworkChangeNotifierFuchsiaTest& operator=(
+      const NetworkChangeNotifierFuchsiaTest&) = delete;
   ~NetworkChangeNotifierFuchsiaTest() override = default;
 
   // Creates a NetworkChangeNotifier and spins the MessageLoop to allow it to
@@ -341,9 +346,6 @@ class NetworkChangeNotifierFuchsiaTest : public testing::Test {
 
   std::unique_ptr<FakeConnectionTypeObserver> type_observer_;
   std::unique_ptr<FakeIPAddressObserver> ip_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkChangeNotifierFuchsiaTest);
 };
 
 TEST_F(NetworkChangeNotifierFuchsiaTest, InitialState) {

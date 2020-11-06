@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -38,6 +37,8 @@ void CallClosureAfterCheckingResult(base::OnceClosure closure,
 class ExampleEmployer {
  public:
   ExampleEmployer();
+  ExampleEmployer(const ExampleEmployer&) = delete;
+  ExampleEmployer& operator=(const ExampleEmployer&) = delete;
   ~ExampleEmployer();
 
   // Posts to the current thread a task which itself posts |callback| to the
@@ -48,7 +49,6 @@ class ExampleEmployer {
   class ExampleWorker;
   friend class ExampleWorker;
   scoped_refptr<ExampleWorker> request_;
-  DISALLOW_COPY_AND_ASSIGN(ExampleEmployer);
 };
 
 // Helper class; this is how ExampleEmployer schedules work.

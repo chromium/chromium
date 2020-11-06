@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/base/upload_progress.h"
@@ -29,6 +28,9 @@ class NET_EXPORT UploadDataStream {
   // cache to formulate a cache key. This value should be unique across browser
   // sessions. A value of 0 is used to indicate an unspecified identifier.
   UploadDataStream(bool is_chunked, int64_t identifier);
+
+  UploadDataStream(const UploadDataStream&) = delete;
+  UploadDataStream& operator=(const UploadDataStream&) = delete;
 
   virtual ~UploadDataStream();
 
@@ -146,8 +148,6 @@ class NET_EXPORT UploadDataStream {
   CompletionOnceCallback callback_;
 
   NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(UploadDataStream);
 };
 
 }  // namespace net

@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 
@@ -20,8 +19,10 @@ class UploadFileElementReader;
 // An interface to read an upload data element.
 class NET_EXPORT UploadElementReader {
  public:
-  UploadElementReader() {}
-  virtual ~UploadElementReader() {}
+  UploadElementReader() = default;
+  UploadElementReader(const UploadElementReader&) = delete;
+  UploadElementReader& operator=(const UploadElementReader&) = delete;
+  virtual ~UploadElementReader() = default;
 
   // Returns this instance's pointer as UploadBytesElementReader when possible,
   // otherwise returns NULL.
@@ -60,9 +61,6 @@ class NET_EXPORT UploadElementReader {
   virtual int Read(IOBuffer* buf,
                    int buf_length,
                    CompletionOnceCallback callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UploadElementReader);
 };
 
 }  // namespace net

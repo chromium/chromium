@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <string>
 #include <vector>
 
 #include "base/bind.h"
@@ -29,7 +30,10 @@ namespace {
 
 class PrioritizedTaskRunnerTest : public testing::Test {
  public:
-  PrioritizedTaskRunnerTest() {}
+  PrioritizedTaskRunnerTest() = default;
+  PrioritizedTaskRunnerTest(const PrioritizedTaskRunnerTest&) = delete;
+  PrioritizedTaskRunnerTest& operator=(const PrioritizedTaskRunnerTest&) =
+      delete;
 
   void PushName(const std::string& task_name) {
     base::AutoLock auto_lock(callback_names_lock_);
@@ -101,9 +105,6 @@ class PrioritizedTaskRunnerTest : public testing::Test {
   std::vector<std::string> callback_names_;
   base::Lock callback_names_lock_;
   base::WaitableEvent waitable_event_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrioritizedTaskRunnerTest);
 };
 
 TEST_F(PrioritizedTaskRunnerTest, PostTaskAndReplyThreadCheck) {

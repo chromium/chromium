@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/time/time.h"
@@ -109,6 +108,9 @@ class NET_EXPORT NetworkChangeNotifier {
   // DEPRECATED. Please use NetworkChangeObserver instead. crbug.com/754695.
   class NET_EXPORT IPAddressObserver {
    public:
+    IPAddressObserver(const IPAddressObserver&) = delete;
+    IPAddressObserver& operator=(const IPAddressObserver&) = delete;
+
     // Will be called when the IP address of the primary interface changes.
     // This includes when the primary interface itself changes.
     virtual void OnIPAddressChanged() = 0;
@@ -121,13 +123,13 @@ class NET_EXPORT NetworkChangeNotifier {
     friend NetworkChangeNotifier;
     scoped_refptr<base::ObserverListThreadSafe<IPAddressObserver>>
         observer_list_;
-
-    DISALLOW_COPY_AND_ASSIGN(IPAddressObserver);
   };
 
   // DEPRECATED. Please use NetworkChangeObserver instead. crbug.com/754695.
   class NET_EXPORT ConnectionTypeObserver {
    public:
+    ConnectionTypeObserver(const ConnectionTypeObserver&) = delete;
+    ConnectionTypeObserver& operator=(const ConnectionTypeObserver&) = delete;
     // Will be called when the connection type of the system has changed.
     // See NetworkChangeNotifier::GetConnectionType() for important caveats
     // about the unreliability of using this signal to infer the ability to
@@ -142,12 +144,13 @@ class NET_EXPORT NetworkChangeNotifier {
     friend NetworkChangeNotifier;
     scoped_refptr<base::ObserverListThreadSafe<ConnectionTypeObserver>>
         observer_list_;
-
-    DISALLOW_COPY_AND_ASSIGN(ConnectionTypeObserver);
   };
 
   class NET_EXPORT DNSObserver {
    public:
+    DNSObserver(const DNSObserver&) = delete;
+    DNSObserver& operator=(const DNSObserver&) = delete;
+
     // Will be called when the DNS settings of the system may have changed.
     virtual void OnDNSChanged() = 0;
 
@@ -158,12 +161,13 @@ class NET_EXPORT NetworkChangeNotifier {
    private:
     friend NetworkChangeNotifier;
     scoped_refptr<base::ObserverListThreadSafe<DNSObserver>> observer_list_;
-
-    DISALLOW_COPY_AND_ASSIGN(DNSObserver);
   };
 
   class NET_EXPORT NetworkChangeObserver {
    public:
+    NetworkChangeObserver(const NetworkChangeObserver&) = delete;
+    NetworkChangeObserver& operator=(const NetworkChangeObserver&) = delete;
+
     // OnNetworkChanged will be called when a change occurs to the host
     // computer's hardware or software that affects the route network packets
     // take to any network server. Some examples:
@@ -199,12 +203,13 @@ class NET_EXPORT NetworkChangeNotifier {
     friend NetworkChangeNotifier;
     scoped_refptr<base::ObserverListThreadSafe<NetworkChangeObserver>>
         observer_list_;
-
-    DISALLOW_COPY_AND_ASSIGN(NetworkChangeObserver);
   };
 
   class NET_EXPORT MaxBandwidthObserver {
    public:
+    MaxBandwidthObserver(const MaxBandwidthObserver&) = delete;
+    MaxBandwidthObserver& operator=(const MaxBandwidthObserver&) = delete;
+
     // Called when a change occurs to the network's maximum bandwidth as
     // defined in http://w3c.github.io/netinfo/. Also called on type change,
     // even if the maximum bandwidth doesn't change. See the documentation of
@@ -221,8 +226,6 @@ class NET_EXPORT NetworkChangeNotifier {
     friend NetworkChangeNotifier;
     scoped_refptr<base::ObserverListThreadSafe<MaxBandwidthObserver>>
         observer_list_;
-
-    DISALLOW_COPY_AND_ASSIGN(MaxBandwidthObserver);
   };
 
   // Opaque handle for device-wide connection to a particular network. For
@@ -244,6 +247,9 @@ class NET_EXPORT NetworkChangeNotifier {
   // unimplemented.
   class NET_EXPORT NetworkObserver {
    public:
+    NetworkObserver(const NetworkObserver&) = delete;
+    NetworkObserver& operator=(const NetworkObserver&) = delete;
+
     // Called when device connects to |network|. For example device associates
     // with a WiFi access point. This does not imply the network has Internet
     // access as it may well be behind a captive portal.
@@ -266,13 +272,13 @@ class NET_EXPORT NetworkChangeNotifier {
    private:
     friend NetworkChangeNotifier;
     scoped_refptr<base::ObserverListThreadSafe<NetworkObserver>> observer_list_;
-
-    DISALLOW_COPY_AND_ASSIGN(NetworkObserver);
   };
 
   // An invalid NetworkHandle.
   static const NetworkHandle kInvalidNetworkHandle;
 
+  NetworkChangeNotifier(const NetworkChangeNotifier&) = delete;
+  NetworkChangeNotifier& operator=(const NetworkChangeNotifier&) = delete;
   virtual ~NetworkChangeNotifier();
 
   // Returns the factory or nullptr if it is not set.
@@ -615,8 +621,6 @@ class NET_EXPORT NetworkChangeNotifier {
   // Whether observers can be added. This may only be false during construction
   // in tests. See comment above the constructor.
   bool can_add_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkChangeNotifier);
 };
 
 }  // namespace net

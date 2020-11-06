@@ -4,6 +4,7 @@
 
 #include "net/base/file_stream.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -513,6 +514,11 @@ class TestWriteReadCompletionCallback {
             base::MakeRefCounted<DrainableIOBuffer>(CreateTestDataBuffer(),
                                                     kTestDataSize)) {}
 
+  TestWriteReadCompletionCallback(const TestWriteReadCompletionCallback&) =
+      delete;
+  TestWriteReadCompletionCallback& operator=(
+      const TestWriteReadCompletionCallback&) = delete;
+
   int WaitForResult() {
     DCHECK(!waiting_for_result_);
     while (!have_result_) {
@@ -591,8 +597,6 @@ class TestWriteReadCompletionCallback {
   int* total_bytes_read_;
   std::string* data_read_;
   scoped_refptr<DrainableIOBuffer> drainable_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWriteReadCompletionCallback);
 };
 
 TEST_F(FileStreamTest, WriteRead) {
@@ -650,6 +654,10 @@ class TestWriteCloseCompletionCallback {
         drainable_(
             base::MakeRefCounted<DrainableIOBuffer>(CreateTestDataBuffer(),
                                                     kTestDataSize)) {}
+  TestWriteCloseCompletionCallback(const TestWriteCloseCompletionCallback&) =
+      delete;
+  TestWriteCloseCompletionCallback& operator=(
+      const TestWriteCloseCompletionCallback&) = delete;
 
   int WaitForResult() {
     DCHECK(!waiting_for_result_);
@@ -698,8 +706,6 @@ class TestWriteCloseCompletionCallback {
   FileStream* stream_;
   int* total_bytes_written_;
   scoped_refptr<DrainableIOBuffer> drainable_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWriteCloseCompletionCallback);
 };
 
 TEST_F(FileStreamTest, WriteClose) {

@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_macros.h"
@@ -120,7 +119,11 @@ void DynamicStoreCallback(SCDynamicStoreRef /* store */,
 
 class NetworkConfigWatcherMacThread : public base::Thread {
  public:
-  NetworkConfigWatcherMacThread(NetworkConfigWatcherMac::Delegate* delegate);
+  explicit NetworkConfigWatcherMacThread(
+      NetworkConfigWatcherMac::Delegate* delegate);
+  NetworkConfigWatcherMacThread(const NetworkConfigWatcherMacThread&) = delete;
+  NetworkConfigWatcherMacThread& operator=(
+      const NetworkConfigWatcherMacThread&) = delete;
   ~NetworkConfigWatcherMacThread() override;
 
  protected:
@@ -142,8 +145,6 @@ class NetworkConfigWatcherMacThread : public base::Thread {
   int num_retry_;
 #endif  // !defined(OS_IOS)
   base::WeakPtrFactory<NetworkConfigWatcherMacThread> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConfigWatcherMacThread);
 };
 
 NetworkConfigWatcherMacThread::NetworkConfigWatcherMacThread(

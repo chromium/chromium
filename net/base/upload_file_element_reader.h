@@ -13,7 +13,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -55,6 +54,8 @@ class NET_EXPORT UploadFileElementReader : public UploadElementReader {
                           uint64_t range_length,
                           const base::Time& expected_modification_time);
 
+  UploadFileElementReader(const UploadFileElementReader&) = delete;
+  UploadFileElementReader& operator=(const UploadFileElementReader&) = delete;
   ~UploadFileElementReader() override;
 
   const base::FilePath& path() const { return path_; }
@@ -130,8 +131,6 @@ class NET_EXPORT UploadFileElementReader : public UploadElementReader {
   bool init_called_while_operation_pending_;
 
   base::WeakPtrFactory<UploadFileElementReader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UploadFileElementReader);
 };
 
 }  // namespace net

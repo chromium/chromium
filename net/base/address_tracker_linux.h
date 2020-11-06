@@ -21,7 +21,6 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -96,12 +95,13 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux {
    public:
     AddressTrackerAutoLock(const AddressTrackerLinux& tracker,
                            base::Lock& lock);
+    AddressTrackerAutoLock(const AddressTrackerAutoLock&) = delete;
+    AddressTrackerAutoLock& operator=(const AddressTrackerAutoLock&) = delete;
     ~AddressTrackerAutoLock();
 
    private:
     const AddressTrackerLinux& tracker_;
     base::Lock& lock_;
-    DISALLOW_COPY_AND_ASSIGN(AddressTrackerAutoLock);
   };
 
   // A function that returns the name of an interface given the interface index

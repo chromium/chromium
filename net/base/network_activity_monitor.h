@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
@@ -37,6 +36,9 @@ class NET_EXPORT_PRIVATE NetworkActivityMonitor {
   // Returns the singleton instance of the monitor.
   static NetworkActivityMonitor* GetInstance();
 
+  NetworkActivityMonitor(const NetworkActivityMonitor&) = delete;
+  NetworkActivityMonitor& operator=(const NetworkActivityMonitor&) = delete;
+
   void IncrementBytesReceived(uint64_t bytes_received);
   void IncrementBytesSent(uint64_t bytes_sent);
 
@@ -61,8 +63,6 @@ class NET_EXPORT_PRIVATE NetworkActivityMonitor {
 
   base::TimeTicks last_received_ticks_;
   base::TimeTicks last_sent_ticks_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkActivityMonitor);
 };
 
 }  // namespace net

@@ -14,6 +14,9 @@ namespace {
 
 class NotificationThreadMac {
  public:
+  NotificationThreadMac(const NotificationThreadMac&) = delete;
+  NotificationThreadMac& operator=(const NotificationThreadMac&) = delete;
+
   scoped_refptr<base::SingleThreadTaskRunner> task_runner() const {
     return task_runner_;
   }
@@ -38,8 +41,6 @@ class NotificationThreadMac {
 
   // Saved TaskRunner handle that can be accessed from any thread.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationThreadMac);
 };
 
 }  // namespace

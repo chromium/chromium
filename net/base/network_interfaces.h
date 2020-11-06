@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
@@ -125,11 +124,10 @@ enum WifiOptions {
 
 class NET_EXPORT ScopedWifiOptions {
  public:
-  ScopedWifiOptions() {}
+  ScopedWifiOptions() = default;
+  ScopedWifiOptions(const ScopedWifiOptions&) = delete;
+  ScopedWifiOptions& operator=(const ScopedWifiOptions&) = delete;
   virtual ~ScopedWifiOptions();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedWifiOptions);
 };
 
 // Set temporary options on all wifi interfaces.

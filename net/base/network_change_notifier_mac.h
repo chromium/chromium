@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -24,6 +23,8 @@ namespace net {
 class NetworkChangeNotifierMac: public NetworkChangeNotifier {
  public:
   NetworkChangeNotifierMac();
+  NetworkChangeNotifierMac(const NetworkChangeNotifierMac&) = delete;
+  NetworkChangeNotifierMac& operator=(const NetworkChangeNotifierMac&) = delete;
   ~NetworkChangeNotifierMac() override;
 
   // NetworkChangeNotifier implementation:
@@ -35,6 +36,8 @@ class NetworkChangeNotifierMac: public NetworkChangeNotifier {
    public:
     explicit Forwarder(NetworkChangeNotifierMac* net_config_watcher)
         : net_config_watcher_(net_config_watcher) {}
+    Forwarder(const Forwarder&) = delete;
+    Forwarder& operator=(const Forwarder&) = delete;
 
     // NetworkConfigWatcherMac::Delegate implementation:
     void Init() override;
@@ -44,7 +47,6 @@ class NetworkChangeNotifierMac: public NetworkChangeNotifier {
 
    private:
     NetworkChangeNotifierMac* const net_config_watcher_;
-    DISALLOW_COPY_AND_ASSIGN(Forwarder);
   };
 
  private:
@@ -75,8 +77,6 @@ class NetworkChangeNotifierMac: public NetworkChangeNotifier {
 
   Forwarder forwarder_;
   std::unique_ptr<const NetworkConfigWatcherMac> config_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkChangeNotifierMac);
 };
 
 }  // namespace net

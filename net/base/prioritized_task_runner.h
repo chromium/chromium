@@ -6,6 +6,7 @@
 #define NET_BASE_PRIORITIZED_TASK_RUNNER_H_
 
 #include <stdint.h>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
@@ -47,7 +48,9 @@ class NET_EXPORT_PRIVATE PrioritizedTaskRunner
     : public base::RefCountedThreadSafe<PrioritizedTaskRunner> {
  public:
   enum class ReplyRunnerType { kStandard, kPrioritized };
-  PrioritizedTaskRunner(scoped_refptr<base::TaskRunner> task_runner);
+  explicit PrioritizedTaskRunner(scoped_refptr<base::TaskRunner> task_runner);
+  PrioritizedTaskRunner(const PrioritizedTaskRunner&) = delete;
+  PrioritizedTaskRunner& operator=(const PrioritizedTaskRunner&) = delete;
 
   // Similar to TaskRunner::PostTaskAndReply, except that the task runs at
   // |priority|. Priority 0 is the highest priority and will run before other
@@ -88,6 +91,8 @@ class NET_EXPORT_PRIVATE PrioritizedTaskRunner
         uint32_t priority,
         uint32_t task_count);
     Job();
+    Job(const Job&) = delete;
+    Job& operator=(const Job&) = delete;
     ~Job();
 
     Job(Job&& other);
@@ -98,9 +103,6 @@ class NET_EXPORT_PRIVATE PrioritizedTaskRunner
     base::OnceClosure reply;
     uint32_t priority = 0;
     uint32_t task_count = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Job);
   };
 
   struct JobComparer {
@@ -131,8 +133,6 @@ class NET_EXPORT_PRIVATE PrioritizedTaskRunner
   // cause periodic priority inversion. This should be infrequent enough to be
   // of negligible impact.
   uint32_t task_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PrioritizedTaskRunner);
 };
 
 }  // namespace net

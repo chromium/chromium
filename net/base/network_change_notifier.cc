@@ -9,7 +9,6 @@
 #include <unordered_set>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -114,6 +113,9 @@ class NetworkChangeNotifier::NetworkChangeCalculator
     AddIPAddressObserver(this);
   }
 
+  NetworkChangeCalculator(const NetworkChangeCalculator&) = delete;
+  NetworkChangeCalculator& operator=(const NetworkChangeCalculator&) = delete;
+
   ~NetworkChangeCalculator() override {
     DCHECK(thread_checker_.CalledOnValidThread());
     RemoveConnectionTypeObserver(this);
@@ -176,8 +178,6 @@ class NetworkChangeNotifier::NetworkChangeCalculator
   base::OneShotTimer timer_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkChangeCalculator);
 };
 
 class NetworkChangeNotifier::SystemDnsConfigObserver

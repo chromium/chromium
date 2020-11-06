@@ -15,7 +15,6 @@
 #include <memory>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 
@@ -40,6 +39,8 @@ class NET_EXPORT FileStream {
   FileStream(base::File file,
              const scoped_refptr<base::TaskRunner>& task_runner);
 
+  FileStream(const FileStream&) = delete;
+  FileStream& operator=(const FileStream&) = delete;
   // The underlying file is closed automatically.
   virtual ~FileStream();
 
@@ -165,8 +166,6 @@ class NET_EXPORT FileStream {
   // without explicitly calling Close, the file should be closed asynchronously
   // without delaying FileStream's destructor.
   std::unique_ptr<Context> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileStream);
 };
 
 }  // namespace net

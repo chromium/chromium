@@ -4,6 +4,8 @@
 
 #include "net/base/elements_upload_data_stream.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "net/base/io_buffer.h"

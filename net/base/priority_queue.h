@@ -9,12 +9,12 @@
 #include <stdint.h>
 
 #include <list>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 
 #if !defined(NDEBUG)
@@ -139,6 +139,8 @@ class PriorityQueue {
 #endif
   }
 
+  PriorityQueue(const PriorityQueue&) = delete;
+  PriorityQueue& operator=(const PriorityQueue&) = delete;
   ~PriorityQueue() { DCHECK_CALLED_ON_VALID_THREAD(thread_checker_); }
 
   // Adds |value| with |priority| to the queue. Returns a pointer to the
@@ -374,8 +376,6 @@ class PriorityQueue {
   size_t size_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PriorityQueue);
 };
 
 }  // namespace net

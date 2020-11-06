@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -16,17 +15,16 @@ namespace net {
 // and User-Agent header values.
 class NET_EXPORT HttpUserAgentSettings {
  public:
-  HttpUserAgentSettings() {}
-  virtual ~HttpUserAgentSettings() {}
+  HttpUserAgentSettings() = default;
+  HttpUserAgentSettings(const HttpUserAgentSettings&) = delete;
+  HttpUserAgentSettings& operator=(const HttpUserAgentSettings&) = delete;
+  virtual ~HttpUserAgentSettings() = default;
 
   // Gets the value of 'Accept-Language' header field.
   virtual std::string GetAcceptLanguage() const = 0;
 
   // Gets the UA string.
   virtual std::string GetUserAgent() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HttpUserAgentSettings);
 };
 
 }  // namespace net

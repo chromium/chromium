@@ -11,7 +11,6 @@
 #include "base/atomicops.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
 
@@ -45,7 +44,7 @@ class NET_EXPORT DirectoryLister  {
     virtual void OnListDone(int error) = 0;
 
    protected:
-    virtual ~DirectoryListerDelegate() {}
+    virtual ~DirectoryListerDelegate() = default;
   };
 
   // Listing options
@@ -65,6 +64,9 @@ class NET_EXPORT DirectoryLister  {
   DirectoryLister(const base::FilePath& dir,
                   ListingType type,
                   DirectoryListerDelegate* delegate);
+
+  DirectoryLister(const DirectoryLister&) = delete;
+  DirectoryLister& operator=(const DirectoryLister&) = delete;
 
   // Will invoke Cancel().
   ~DirectoryLister();
@@ -89,6 +91,8 @@ class NET_EXPORT DirectoryLister  {
   class Core : public base::RefCountedThreadSafe<Core> {
    public:
     Core(const base::FilePath& dir, ListingType type, DirectoryLister* lister);
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
 
     // May only be called on a worker pool thread.
     void Start();
@@ -120,8 +124,6 @@ class NET_EXPORT DirectoryLister  {
     // worker pool thread for performance reasons and to ensure |lister_| isn't
     // called after cancellation on the origin thread.
     base::subtle::Atomic32 cancelled_;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   // Call into the corresponding DirectoryListerDelegate. Must not be called
@@ -131,8 +133,6 @@ class NET_EXPORT DirectoryLister  {
 
   scoped_refptr<Core> core_;
   DirectoryListerDelegate* const delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(DirectoryLister);
 };
 
 }  // namespace net

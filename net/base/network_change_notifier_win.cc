@@ -37,8 +37,6 @@ const int kWatchForAddressChangeRetryIntervalMs = 500;
 
 NetworkChangeNotifierWin::NetworkChangeNotifierWin()
     : NetworkChangeNotifier(NetworkChangeCalculatorParamsWin()),
-      is_watching_(false),
-      sequential_failures_(0),
       blocking_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
       last_computed_connection_type_(RecomputeCurrentConnectionType()),

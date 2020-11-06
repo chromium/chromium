@@ -5,7 +5,6 @@
 #ifndef NET_BASE_LOGGING_NETWORK_CHANGE_OBSERVER_H_
 #define NET_BASE_LOGGING_NETWORK_CHANGE_OBSERVER_H_
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 
@@ -24,6 +23,9 @@ class NET_EXPORT LoggingNetworkChangeObserver
   // Note: |net_log| must remain valid throughout the lifetime of this
   // LoggingNetworkChangeObserver.
   explicit LoggingNetworkChangeObserver(NetLog* net_log);
+  LoggingNetworkChangeObserver(const LoggingNetworkChangeObserver&) = delete;
+  LoggingNetworkChangeObserver& operator=(const LoggingNetworkChangeObserver&) =
+      delete;
   ~LoggingNetworkChangeObserver() override;
 
  private:
@@ -48,8 +50,6 @@ class NET_EXPORT LoggingNetworkChangeObserver
       NetworkChangeNotifier::NetworkHandle network) override;
 
   NetLog* net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoggingNetworkChangeObserver);
 };
 
 }  // namespace net

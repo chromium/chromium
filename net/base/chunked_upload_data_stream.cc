@@ -27,11 +27,7 @@ ChunkedUploadDataStream::Writer::Writer(
     : upload_data_stream_(upload_data_stream) {}
 
 ChunkedUploadDataStream::ChunkedUploadDataStream(int64_t identifier)
-    : UploadDataStream(true, identifier),
-      read_index_(0),
-      read_offset_(0),
-      all_data_appended_(false),
-      read_buffer_len_(0) {}
+    : UploadDataStream(true, identifier) {}
 
 ChunkedUploadDataStream::~ChunkedUploadDataStream() = default;
 

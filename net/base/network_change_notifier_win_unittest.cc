@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -33,6 +32,10 @@ class TestNetworkChangeNotifierWin : public NetworkChangeNotifierWin {
     last_announced_offline_ = false;
   }
 
+  TestNetworkChangeNotifierWin(const TestNetworkChangeNotifierWin&) = delete;
+  TestNetworkChangeNotifierWin& operator=(const TestNetworkChangeNotifierWin&) =
+      delete;
+
   ~TestNetworkChangeNotifierWin() override {
     // This is needed so we don't try to stop watching for IP address changes,
     // as we never actually started.
@@ -49,9 +52,6 @@ class TestNetworkChangeNotifierWin : public NetworkChangeNotifierWin {
 
   // From NetworkChangeNotifierWin.
   MOCK_METHOD0(WatchForAddressChangeInternal, bool());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkChangeNotifierWin);
 };
 
 class TestIPAddressObserver : public NetworkChangeNotifier::IPAddressObserver {
@@ -60,14 +60,14 @@ class TestIPAddressObserver : public NetworkChangeNotifier::IPAddressObserver {
     NetworkChangeNotifier::AddIPAddressObserver(this);
   }
 
+  TestIPAddressObserver(const TestIPAddressObserver&) = delete;
+  TestIPAddressObserver& operator=(const TestIPAddressObserver&) = delete;
+
   ~TestIPAddressObserver() {
     NetworkChangeNotifier::RemoveIPAddressObserver(this);
   }
 
   MOCK_METHOD0(OnIPAddressChanged, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestIPAddressObserver);
 };
 
 bool ExitMessageLoopAndReturnFalse() {

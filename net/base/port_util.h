@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
@@ -36,12 +35,12 @@ NET_EXPORT void SetExplicitlyAllowedPorts(const std::string& allowed_ports);
 class NET_EXPORT ScopedPortException {
  public:
   explicit ScopedPortException(int port);
+  ScopedPortException(const ScopedPortException&) = delete;
+  ScopedPortException& operator=(const ScopedPortException&) = delete;
   ~ScopedPortException();
 
  private:
   int port_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedPortException);
 };
 
 }  // namespace net

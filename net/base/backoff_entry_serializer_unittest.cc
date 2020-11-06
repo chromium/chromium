@@ -4,7 +4,6 @@
 
 #include "net/base/backoff_entry.h"
 
-#include "base/macros.h"
 #include "base/time/tick_clock.h"
 #include "base/values.h"
 #include "net/base/backoff_entry_serializer.h"
@@ -31,6 +30,8 @@ BackoffEntry::Policy base_policy = {
 class TestTickClock : public base::TickClock {
  public:
   TestTickClock() = default;
+  TestTickClock(const TestTickClock&) = delete;
+  TestTickClock& operator=(const TestTickClock&) = delete;
   ~TestTickClock() override = default;
 
   TimeTicks NowTicks() const override { return now_ticks_; }
@@ -38,8 +39,6 @@ class TestTickClock : public base::TickClock {
 
  private:
   TimeTicks now_ticks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTickClock);
 };
 
 TEST(BackoffEntrySerializerTest, SerializeNoFailures) {
