@@ -326,27 +326,17 @@ void ContentSettingsStore::ClearContentSettingsForExtensionAndContentType(
     const std::string& ext_id,
     ExtensionPrefsScope scope,
     ContentSettingsType content_type) {
-  bool notify = false;
   {
     base::AutoLock lock(lock_);
     OriginIdentifierValueMap* map = GetValueMap(ext_id, scope);
     DCHECK(map);
 
-    // Get all of the resource identifiers for this |content_type|.
-    std::set<ResourceIdentifier> resource_identifiers;
-    for (const auto& entry : *map) {
-      if (entry.first.content_type == content_type)
-        resource_identifiers.insert(entry.first.resource_identifier);
-    }
+    if (map->find(content_type) == map->end())
+      return;
 
-    notify = !resource_identifiers.empty();
-
-    for (const ResourceIdentifier& resource_identifier : resource_identifiers)
-      map->DeleteValues(content_type, resource_identifier);
+    map->DeleteValues(content_type, std::string());
   }
-  if (notify) {
     NotifyOfContentSettingChanged(ext_id, scope != kExtensionPrefsScopeRegular);
-  }
 }
 
 std::unique_ptr<base::ListValue> ContentSettingsStore::GetSettingsForExtension(
@@ -361,7 +351,7 @@ std::unique_ptr<base::ListValue> ContentSettingsStore::GetSettingsForExtension(
   for (const auto& it : *map) {
     const auto& key = it.first;
     std::unique_ptr<RuleIterator> rule_iterator(
-        map->GetRuleIterator(key.content_type, key.resource_identifier,
+        map->GetRuleIterator(key, std::string(),
                              nullptr));  // We already hold the lock.
     if (!rule_iterator)
       continue;
@@ -378,11 +368,7 @@ std::unique_ptr<base::ListValue> ContentSettingsStore::GetSettingsForExtension(
           rule.secondary_pattern.ToString());
       setting_dict->SetString(
           content_settings_api_constants::kContentSettingsTypeKey,
-          content_settings_helpers::ContentSettingsTypeToString(
-              key.content_type));
-      setting_dict->SetString(
-          content_settings_api_constants::kResourceIdentifierKey,
-          key.resource_identifier);
+          content_settings_helpers::ContentSettingsTypeToString(key));
       ContentSetting content_setting =
           content_settings::ValueToContentSetting(&rule.value);
       DCHECK_NE(CONTENT_SETTING_DEFAULT, content_setting);
@@ -464,9 +450,6 @@ void ContentSettingsStore::SetExtensionContentSettingFromList(
       // Plugin content settings are no longer supported for extensions.
       continue;
     }
-    std::string resource_identifier;
-    dict->GetString(content_settings_api_constants::kResourceIdentifierKey,
-                    &resource_identifier);
 
     std::string content_setting_string;
     dict->GetString(content_settings_api_constants::kContentSettingKey,
@@ -479,12 +462,8 @@ void ContentSettingsStore::SetExtensionContentSettingFromList(
     // settings to |CONTENT_SETTING_DEFAULT|.
     DCHECK_NE(CONTENT_SETTING_DEFAULT, setting);
 
-    SetExtensionContentSetting(extension_id,
-                               primary_pattern,
-                               secondary_pattern,
-                               content_settings_type,
-                               resource_identifier,
-                               setting,
+    SetExtensionContentSetting(extension_id, primary_pattern, secondary_pattern,
+                               content_settings_type, std::string(), setting,
                                scope);
   }
 }

@@ -16,9 +16,9 @@
 TEST(OriginIdentifierValueMapTest, SetGetValue) {
   content_settings::OriginIdentifierValueMap map;
 
-  EXPECT_EQ(NULL, map.GetValue(GURL("http://www.google.com"),
-                               GURL("http://www.google.com"),
-                               ContentSettingsType::COOKIES, std::string()));
+  EXPECT_EQ(nullptr, map.GetValue(GURL("http://www.google.com"),
+                                  GURL("http://www.google.com"),
+                                  ContentSettingsType::COOKIES, std::string()));
   map.SetValue(ContentSettingsPattern::FromString("[*.]google.com"),
                ContentSettingsPattern::FromString("[*.]google.com"),
                ContentSettingsType::COOKIES, std::string(), base::Time(),
@@ -29,66 +29,64 @@ TEST(OriginIdentifierValueMapTest, SetGetValue) {
       map.GetValue(GURL("http://www.google.com"), GURL("http://www.google.com"),
                    ContentSettingsType::COOKIES, std::string())));
 
-  EXPECT_EQ(NULL, map.GetValue(GURL("http://www.google.com"),
-                               GURL("http://www.youtube.com"),
-                               ContentSettingsType::COOKIES, std::string()));
+  EXPECT_EQ(nullptr, map.GetValue(GURL("http://www.google.com"),
+                                  GURL("http://www.youtube.com"),
+                                  ContentSettingsType::COOKIES, std::string()));
 
-  EXPECT_EQ(NULL, map.GetValue(GURL("http://www.youtube.com"),
-                               GURL("http://www.google.com"),
-                               ContentSettingsType::COOKIES, std::string()));
+  EXPECT_EQ(nullptr, map.GetValue(GURL("http://www.youtube.com"),
+                                  GURL("http://www.google.com"),
+                                  ContentSettingsType::COOKIES, std::string()));
 
-  EXPECT_EQ(NULL, map.GetValue(GURL("http://www.google.com"),
-                               GURL("http://www.google.com"),
-                               ContentSettingsType::POPUPS, std::string()));
-
-  EXPECT_EQ(NULL, map.GetValue(GURL("http://www.google.com"),
-                               GURL("http://www.google.com"),
-                               ContentSettingsType::COOKIES, "resource_id"));
+  EXPECT_EQ(nullptr, map.GetValue(GURL("http://www.google.com"),
+                                  GURL("http://www.google.com"),
+                                  ContentSettingsType::POPUPS, std::string()));
 }
 
 TEST(OriginIdentifierValueMapTest, SetDeleteValue) {
   content_settings::OriginIdentifierValueMap map;
 
-  EXPECT_EQ(NULL, map.GetValue(GURL("http://www.google.com"),
-                               GURL("http://www.google.com"),
-                               ContentSettingsType::PLUGINS, "java-plugin"));
+  EXPECT_EQ(nullptr, map.GetValue(GURL("http://www.google.com"),
+                                  GURL("http://www.google.com"),
+                                  ContentSettingsType::PLUGINS, std::string()));
 
   // Set sample values.
   map.SetValue(ContentSettingsPattern::FromString("[*.]google.com"),
                ContentSettingsPattern::FromString("[*.]google.com"),
-               ContentSettingsType::PLUGINS, "java-plugin", base::Time(),
+               ContentSettingsType::PLUGINS, std::string(), base::Time(),
                base::Value(1), {});
 
   int actual_value;
   EXPECT_TRUE(map.GetValue(GURL("http://www.google.com"),
                            GURL("http://www.google.com"),
-                           ContentSettingsType::PLUGINS, "java-plugin")
+                           ContentSettingsType::PLUGINS, std::string())
                   ->GetAsInteger(&actual_value));
   EXPECT_EQ(1, actual_value);
-  EXPECT_EQ(NULL, map.GetValue(GURL("http://www.google.com"),
-                               GURL("http://www.google.com"),
-                               ContentSettingsType::PLUGINS, "flash-plugin"));
+  EXPECT_EQ(
+      nullptr,
+      map.GetValue(GURL("http://www.google.com"), GURL("http://www.google.com"),
+                   ContentSettingsType::NOTIFICATIONS, std::string()));
   // Delete non-existing value.
   map.DeleteValue(ContentSettingsPattern::FromString("[*.]google.com"),
                   ContentSettingsPattern::FromString("[*.]google.com"),
-                  ContentSettingsType::PLUGINS, "flash-plugin");
-  EXPECT_EQ(NULL, map.GetValue(GURL("http://www.google.com"),
-                               GURL("http://www.google.com"),
-                               ContentSettingsType::PLUGINS, "flash-plugin"));
+                  ContentSettingsType::NOTIFICATIONS, "flash-plugin");
+  EXPECT_EQ(
+      nullptr,
+      map.GetValue(GURL("http://www.google.com"), GURL("http://www.google.com"),
+                   ContentSettingsType::NOTIFICATIONS, std::string()));
   EXPECT_TRUE(map.GetValue(GURL("http://www.google.com"),
                            GURL("http://www.google.com"),
-                           ContentSettingsType::PLUGINS, "java-plugin")
+                           ContentSettingsType::PLUGINS, std::string())
                   ->GetAsInteger(&actual_value));
   EXPECT_EQ(1, actual_value);
 
   // Delete existing value.
   map.DeleteValue(ContentSettingsPattern::FromString("[*.]google.com"),
                   ContentSettingsPattern::FromString("[*.]google.com"),
-                  ContentSettingsType::PLUGINS, "java-plugin");
+                  ContentSettingsType::PLUGINS, std::string());
 
-  EXPECT_EQ(NULL, map.GetValue(GURL("http://www.google.com"),
-                               GURL("http://www.google.com"),
-                               ContentSettingsType::PLUGINS, "java-plugin"));
+  EXPECT_EQ(nullptr, map.GetValue(GURL("http://www.google.com"),
+                                  GURL("http://www.google.com"),
+                                  ContentSettingsType::PLUGINS, std::string()));
 }
 
 TEST(OriginIdentifierValueMapTest, Clear) {
@@ -98,7 +96,7 @@ TEST(OriginIdentifierValueMapTest, Clear) {
   // Set two values.
   map.SetValue(ContentSettingsPattern::FromString("[*.]google.com"),
                ContentSettingsPattern::FromString("[*.]google.com"),
-               ContentSettingsType::PLUGINS, "java-plugin", base::Time(),
+               ContentSettingsType::PLUGINS, std::string(), base::Time(),
                base::Value(1), {});
   map.SetValue(ContentSettingsPattern::FromString("[*.]google.com"),
                ContentSettingsPattern::FromString("[*.]google.com"),
@@ -108,16 +106,16 @@ TEST(OriginIdentifierValueMapTest, Clear) {
   int actual_value;
   EXPECT_TRUE(map.GetValue(GURL("http://www.google.com"),
                            GURL("http://www.google.com"),
-                           ContentSettingsType::PLUGINS, "java-plugin")
+                           ContentSettingsType::PLUGINS, std::string())
                   ->GetAsInteger(&actual_value));
   EXPECT_EQ(1, actual_value);
 
   // Clear the map.
   map.clear();
   EXPECT_TRUE(map.empty());
-  EXPECT_EQ(NULL, map.GetValue(GURL("http://www.google.com"),
-                               GURL("http://www.google.com"),
-                               ContentSettingsType::PLUGINS, "java-plugin"));
+  EXPECT_EQ(nullptr, map.GetValue(GURL("http://www.google.com"),
+                                  GURL("http://www.google.com"),
+                                  ContentSettingsType::PLUGINS, std::string()));
 }
 
 TEST(OriginIdentifierValueMapTest, ListEntryPrecedences) {
@@ -172,7 +170,8 @@ TEST(OriginIdentifierValueMapTest, IterateNonempty) {
                {});
 
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
-      map.GetRuleIterator(ContentSettingsType::COOKIES, std::string(), NULL));
+      map.GetRuleIterator(ContentSettingsType::COOKIES, std::string(),
+                          nullptr));
   ASSERT_TRUE(rule_iterator->HasNext());
   content_settings::Rule rule = rule_iterator->Next();
   EXPECT_EQ(sub_pattern, rule.primary_pattern);
@@ -210,7 +209,8 @@ TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
 
   {
     std::unique_ptr<content_settings::RuleIterator> rule_iterator(
-        map.GetRuleIterator(ContentSettingsType::COOKIES, std::string(), NULL));
+        map.GetRuleIterator(ContentSettingsType::COOKIES, std::string(),
+                            nullptr));
     ASSERT_TRUE(rule_iterator->HasNext());
     content_settings::Rule rule = rule_iterator->Next();
     EXPECT_EQ(sub_pattern, rule.primary_pattern);
@@ -239,7 +239,8 @@ TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
 
   {
     std::unique_ptr<content_settings::RuleIterator> rule_iterator =
-        map.GetRuleIterator(ContentSettingsType::COOKIES, std::string(), NULL);
+        map.GetRuleIterator(ContentSettingsType::COOKIES, std::string(),
+                            nullptr);
     ASSERT_TRUE(rule_iterator->HasNext());
     content_settings::Rule rule = rule_iterator->Next();
     EXPECT_EQ(sub_pattern, rule.primary_pattern);

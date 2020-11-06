@@ -106,22 +106,14 @@ void EphemeralProvider::ClearAllContentSettingsRules(
     ContentSettingsType content_type) {
   DCHECK(CalledOnValidThread());
 
-  // Get all resource identifiers for this |content_type|.
-  std::set<ResourceIdentifier> resource_identifiers;
-  for (OriginIdentifierValueMap::EntryMap::const_iterator entry =
-           content_settings_rules_.begin();
-       entry != content_settings_rules_.end(); entry++) {
-    if (entry->first.content_type == content_type)
-      resource_identifiers.insert(entry->first.resource_identifier);
-  }
+  if (content_settings_rules_.find(content_type) ==
+      content_settings_rules_.end())
+    return;
 
-  for (const ResourceIdentifier& resource_identifier : resource_identifiers)
-    content_settings_rules_.DeleteValues(content_type, resource_identifier);
+  content_settings_rules_.DeleteValues(content_type, std::string());
 
-  if (!resource_identifiers.empty()) {
-    NotifyObservers(ContentSettingsPattern(), ContentSettingsPattern(),
-                    content_type, ResourceIdentifier());
-  }
+  NotifyObservers(ContentSettingsPattern(), ContentSettingsPattern(),
+                  content_type, ResourceIdentifier());
 }
 
 void EphemeralProvider::ShutdownOnUIThread() {

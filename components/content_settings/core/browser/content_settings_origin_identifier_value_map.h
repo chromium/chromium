@@ -29,14 +29,6 @@ class RuleIterator;
 
 class OriginIdentifierValueMap {
  public:
-  struct EntryMapKey {
-    ContentSettingsType content_type;
-    ResourceIdentifier resource_identifier;
-    EntryMapKey(ContentSettingsType content_type,
-                const ResourceIdentifier& resource_identifier);
-    bool operator<(const OriginIdentifierValueMap::EntryMapKey& other) const;
-  };
-
   struct PatternPair {
     ContentSettingsPattern primary_pattern;
     ContentSettingsPattern secondary_pattern;
@@ -55,7 +47,7 @@ class OriginIdentifierValueMap {
   };
 
   typedef std::map<PatternPair, ValueEntry> Rules;
-  typedef std::map<EntryMapKey, Rules> EntryMap;
+  typedef std::map<ContentSettingsType, Rules> EntryMap;
 
   EntryMap::iterator begin() {
     return entries_.begin();
@@ -71,6 +63,10 @@ class OriginIdentifierValueMap {
 
   EntryMap::const_iterator end() const {
     return entries_.end();
+  }
+
+  EntryMap::iterator find(ContentSettingsType content_type) {
+    return entries_.find(content_type);
   }
 
   bool empty() const {

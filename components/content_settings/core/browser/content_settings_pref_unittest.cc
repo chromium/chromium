@@ -43,49 +43,6 @@ constexpr char kLastModifiedKey[] = "last_modified";
 constexpr char kSettingKey[] = "setting";
 constexpr char kTagKey[] = "tag";
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-constexpr char kPluginsContentSettingPrefName[] = "content_settings.plugins";
-constexpr char kPerResourceTag[] = "per_resource";
-
-// Tests that a particular pref has the expected values with and without a
-// resource id
-void LegacyPersistedPluginTests(
-    ContentSettingsPref* content_settings_pref,
-    const std::string& pattern,
-    const GURL& host,
-    const std::string& resource,
-    ContentSetting no_resource_id_perf_expected_value,
-    ContentSetting with_resource_id_perf_expected_value) {
-  auto pattern_pair = ParsePatternString(pattern);
-  // Retrieving the pref without a resource id for pattern works and
-  // its value is the expected one.
-  EXPECT_EQ(no_resource_id_perf_expected_value,
-            content_settings::ValueToContentSetting(
-                content_settings::TestUtils::GetContentSettingValueAndPatterns(
-                    content_settings_pref->GetRuleIterator("", false).get(),
-                    host, GURL(), &(pattern_pair.first), &(pattern_pair.second))
-                    .get()));
-
-  // Retrieving the pref with a resource id will throw.
-  EXPECT_DCHECK_DEATH(
-      content_settings_pref->GetRuleIterator(resource, false)->HasNext());
-
-  // Allow resource ids for testing in order to test that the perf was correctly
-  // loaded from the json. This basically verifies that we did build a correct
-  // json and it was parsed and loaded without any issues.
-  content_settings_pref->set_allow_resource_identifiers_for_testing();
-  EXPECT_EQ(
-      with_resource_id_perf_expected_value,
-      content_settings::ValueToContentSetting(
-          content_settings::TestUtils::GetContentSettingValueAndPatterns(
-              content_settings_pref->GetRuleIterator(resource, false).get(),
-              host, GURL(), &(pattern_pair.first), &(pattern_pair.second))
-              .get()));
-  content_settings_pref->reset_allow_resource_identifiers_for_testing();
-}
-
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
-
 // Creates a JSON dictionary representing a dummy content setting exception
 // value in preferences. The setting will be marked with the |tag| like so:
 //
@@ -205,82 +162,6 @@ TEST(ContentSettingsPref, CanonicalizationWhileReadingFromPrefs) {
   EXPECT_THAT(patterns_to_tags_in_prefs,
               testing::UnorderedElementsAreArray(kExpectedPatternsToTags));
 }
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-// Test that a legagcy persisted plugin setting does not cause errors and has
-// a sane behaviour.
-TEST(ContentSettingsPref, LegacyPersistedPluginSetting) {
-  const GURL kHost1("http://example.com/");
-  const GURL kHost2("http://other-example.com/");
-  constexpr char kPattern1[] = "http://example.com,*";
-  constexpr char kPattern2[] = "http://other-example.com,*";
-  constexpr char kResource[] = "someplugin";
-
-  TestingPrefServiceSimple prefs;
-  prefs.registry()->RegisterDictionaryPref(kPluginsContentSettingPrefName);
-
-  // Build a json simulating some pre-existing plugin settings situation where
-  // a mix of per_resource and regular settings are present:
-  // "content_settings.plugins": {
-  //   kPattern1: {
-  //    "setting": 1, <-- CONTENT_SETTING_ALLOW
-  //    "per_resource": {
-  //      "someplugin": 2 <-- CONTENT_SETTING_BLOCK
-  //    }
-  //   }
-  //   kPattern2: {
-  //    "per_resource": {
-  //      "someplugin": 1 <-- CONTENT_SETTING_ALLOW
-  //    }
-  //   }
-  // }
-
-  auto original_pref_value = std::make_unique<base::DictionaryValue>();
-
-  base::Value per_resource_value1(base::Value::Type::DICTIONARY);
-  per_resource_value1.SetKey(kResource, base::Value(CONTENT_SETTING_BLOCK));
-
-  base::Value pref_value1(base::Value::Type::DICTIONARY);
-  pref_value1.SetKey(kLastModifiedKey, base::Value("13189876543210000"));
-  pref_value1.SetKey(kSettingKey, base::Value(CONTENT_SETTING_ALLOW));
-  pref_value1.SetKey(kPerResourceTag, std::move(per_resource_value1));
-
-  original_pref_value->SetKey(kPattern1, std::move(pref_value1));
-
-  base::Value per_resource_value2(base::Value::Type::DICTIONARY);
-  per_resource_value2.SetKey(kResource, base::Value(CONTENT_SETTING_ALLOW));
-
-  base::Value pref_value2(base::Value::Type::DICTIONARY);
-  pref_value2.SetKey(kLastModifiedKey, base::Value("13189876543210000"));
-  pref_value2.SetKey(kPerResourceTag, std::move(per_resource_value2));
-
-  original_pref_value->SetKey(kPattern2, std::move(pref_value2));
-
-  prefs.SetUserPref(kPluginsContentSettingPrefName,
-                    std::move(original_pref_value));
-
-  PrefChangeRegistrar registrar;
-  registrar.Init(&prefs);
-  ContentSettingsPref content_settings_pref(
-      ContentSettingsType::PLUGINS, &prefs, &registrar,
-      kPluginsContentSettingPrefName, false, false, base::DoNothing());
-
-  // For kPattern1 retrieving the setting without a resource id returns the
-  // CONTENT_SETTING_ALLOW value and retrieving it with the resource id (after
-  // allowing resource ids for testing) returns CONTENT_SETTING_BLOCK.
-  LegacyPersistedPluginTests(&content_settings_pref, kPattern1, kHost1,
-                             kResource, CONTENT_SETTING_ALLOW,
-                             CONTENT_SETTING_BLOCK);
-
-  // For kPattern2 retrieving the setting without a resource id returns the
-  // CONTENT_SETTING_DEFAULT value since it was not set in the first place and
-  // retrieving it with the resource id (after allowing resource ids for
-  // testing) returns CONTENT_SETTING_ALLOW.
-  LegacyPersistedPluginTests(&content_settings_pref, kPattern2, kHost2,
-                             kResource, CONTENT_SETTING_DEFAULT,
-                             CONTENT_SETTING_ALLOW);
-}
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 // If we are reading from prefs and we have any persistend settings that have
 // expired we should remove these to prevent unbounded growth and bloat.
