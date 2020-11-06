@@ -176,7 +176,9 @@ public class DisplayCutoutTestRule<T extends ChromeActivity> extends ChromeActiv
     }
 
     protected void tearDown() {
-        getActivity().getFullscreenManager().removeObserver(mListener);
+        if (!getActivity().isActivityFinishingOrDestroyed()) {
+            getActivity().getFullscreenManager().removeObserver(mListener);
+        }
         mTestServer.stopAndDestroyServer();
     }
 
