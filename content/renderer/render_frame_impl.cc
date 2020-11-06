@@ -48,6 +48,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_constants_internal.h"
@@ -4850,6 +4851,21 @@ blink::WebString RenderFrameImpl::UserAgentOverride() {
     return WebString::FromUTF8(render_view_->GetRendererPreferences()
                                    .user_agent_override.ua_string_override);
   }
+
+#if BUILDFLAG(IS_LACROS)
+  // TODO(https://crbug.com/1114866): Implement proper L3 CDM support for
+  // Lacros. This is scheduled for Q2 2021. After that we can remove this hack.
+  WebSecurityOrigin frame_origin = frame_->GetDocument().GetSecurityOrigin();
+  if (frame_origin.Host().Utf8() == "www.netflix.com") {
+    WebString user_agent = RenderThreadImpl::current()->GetUserAgent();
+    std::string user_agent_utf8 =
+        user_agent.Utf8(WebString::UTF8ConversionMode::kStrict);
+    base::ReplaceSubstringsAfterOffset(&user_agent_utf8, /*start_offset=*/0,
+                                       " CrOS ", " Linux ");
+    return WebString::FromUTF8(user_agent_utf8);
+  }
+#endif
+
   return blink::WebString();
 }
 
