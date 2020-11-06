@@ -49,6 +49,7 @@ class FakeInSessionAuthDialogController
   void AuthenticateUserWithFingerprint(
       base::OnceCallback<void(bool, ash::FingerprintState)> callback) override {
   }
+  void OpenInSessionAuthHelpPage() override {}
   void Cancel() override {}
 };
 

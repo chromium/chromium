@@ -39,7 +39,7 @@ void InSessionAuthDialogControllerImpl::ShowAuthenticationDialog(
   // Concurrent requests are not supported.
   DCHECK(!dialog_);
 
-  window_tracker_.Add(source_window);
+  source_window_tracker_.Add(source_window);
   finish_callback_ = std::move(finish_callback);
 
   AccountId account_id =
@@ -97,7 +97,7 @@ void InSessionAuthDialogControllerImpl::OnPinCanAuthenticate(
     return;
   }
 
-  if (!window_tracker_.Contains(source_window)) {
+  if (!source_window_tracker_.Contains(source_window)) {
     LOG(ERROR) << "Source window is no longer available.";
     Cancel();
     return;
@@ -116,7 +116,7 @@ void InSessionAuthDialogControllerImpl::OnPinCanAuthenticate(
   AuthDialogContentsView::AuthMethodsMetadata auth_metadata;
   auth_metadata.autosubmit_pin_length =
       user_manager::known_user::GetUserPinLength(account_id);
-  window_tracker_.Remove(source_window);
+  source_window_tracker_.Remove(source_window);
   Shell::Get()->focus_controller()->AddObserver(this);
   dialog_ = std::make_unique<InSessionAuthDialog>(
       auth_methods, source_window, origin_name, auth_metadata, avatar);
@@ -131,7 +131,7 @@ void InSessionAuthDialogControllerImpl::DestroyAuthenticationDialog() {
     client_->EndFingerprintAuthSession();
 
   dialog_.reset();
-  window_tracker_.RemoveAll();
+  source_window_tracker_.RemoveAll();
   Shell::Get()->focus_controller()->RemoveObserver(this);
 }
 
@@ -197,9 +197,25 @@ void InSessionAuthDialogControllerImpl::Cancel() {
 void InSessionAuthDialogControllerImpl::OnWindowFocused(
     aura::Window* gained_focus,
     aura::Window* lost_focus) {
-  if (dialog_ && lost_focus == dialog_->widget()->GetNativeWindow()) {
-    Cancel();
+  if (should_ignore_focus_change_)
+    return;
+
+  if (!dialog_)
+    return;
+
+  // No-op if focus moved to the help page or back to the dialog.
+  if (help_window_tracker_.Contains(gained_focus) ||
+      gained_focus == dialog_->widget()->GetNativeWindow()) {
+    return;
   }
+
+  Cancel();
+}
+
+void InSessionAuthDialogControllerImpl::OpenInSessionAuthHelpPage() {
+  DCHECK(client_);
+  base::AutoReset<bool> scoped_ignore_focus(&should_ignore_focus_change_, true);
+  help_window_tracker_.Add(client_->OpenInSessionAuthHelpPage());
 }
 
 }  // namespace ash

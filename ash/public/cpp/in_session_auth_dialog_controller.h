@@ -50,6 +50,9 @@ class ASH_PUBLIC_EXPORT InSessionAuthDialogController {
   virtual void AuthenticateUserWithFingerprint(
       base::OnceCallback<void(bool, FingerprintState)> callback) = 0;
 
+  // Opens a help article in Chrome.
+  virtual void OpenInSessionAuthHelpPage() = 0;
+
   // Cancels all operations and destroys the dialog.
   virtual void Cancel() = 0;
 

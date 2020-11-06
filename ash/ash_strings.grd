@@ -2492,6 +2492,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_ACCESSIBLE_DISABLED_FROM_ATTEMPTS" desc="Accessibility text read by chromevox when the user has made too many unsuccessful fingerprint unlock attempts; fingerprint is now disabled until the user authenticates with a different authentication method">
         Too many fingerprint attempts
       </message>
+      <message name="IDS_ASH_IN_SESSION_AUTH_HELP" desc="Label of a button in the auth dialog to open a help article">
+        Need help?
+      </message>
 
       <!-- Multi-profiles intro dialog -->
       <message name="IDS_ASH_MULTIPROFILES_INTRO_HEADLINE" desc="Describes which feature multi-profiles intro dialog presents.">

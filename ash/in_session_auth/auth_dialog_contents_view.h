@@ -14,6 +14,7 @@
 namespace views {
 class BoxLayout;
 class Label;
+class LabelButton;
 }  // namespace views
 
 namespace ash {
@@ -112,6 +113,9 @@ class AuthDialogContentsView : public views::View {
   void OnFingerprintAuthComplete(bool success,
                                  FingerprintState fingerprint_state);
 
+  // Called when the "Need help?" button is pressed.
+  void OnNeedHelpButtonPressed(const ui::Event& event);
+
   // Debug container which holds the entire debug UI.
   views::View* container_ = nullptr;
 
@@ -143,6 +147,9 @@ class AuthDialogContentsView : public views::View {
   LoginPinView* pin_pad_view_ = nullptr;
 
   FingerprintView* fingerprint_view_ = nullptr;
+
+  // A button to show a help center article.
+  views::LabelButton* help_button_ = nullptr;
 
   // Flags of auth methods that should be visible.
   uint32_t auth_methods_ = 0u;

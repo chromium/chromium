@@ -526,9 +526,21 @@ void AuthDialogContentsView::AddActionButtonsView() {
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal));
   buttons_layout->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kEnd);
+      views::BoxLayout::MainAxisAlignment::kStart);
 
-  // TODO(b/156258540): Add a "Need help?" button that links to a HC article.
+  help_button_ =
+      action_view_container_->AddChildView(std::make_unique<views::LabelButton>(
+          base::BindRepeating(&AuthDialogContentsView::OnNeedHelpButtonPressed,
+                              base::Unretained(this)),
+          l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_HELP),
+          views::style::CONTEXT_BUTTON));
+  help_button_->SetEnabledTextColors(SK_ColorDKGRAY);
+  action_view_container_->SetPreferredSize(
+      gfx::Size(kContainerPreferredWidth, help_button_->height()));
+}
+
+void AuthDialogContentsView::OnNeedHelpButtonPressed(const ui::Event& event) {
+  InSessionAuthDialogController::Get()->OpenInSessionAuthHelpPage();
 }
 
 void AuthDialogContentsView::OnAuthSubmit(const base::string16& pin) {

@@ -48,6 +48,7 @@ class InSessionAuthDialogControllerImpl
                                OnAuthenticateCallback callback) override;
   void AuthenticateUserWithFingerprint(
       base::OnceCallback<void(bool, FingerprintState)> callback) override;
+  void OpenInSessionAuthHelpPage() override;
   void Cancel() override;
 
   // aura::client::FocusChangeObserver overrides
@@ -85,9 +86,14 @@ class InSessionAuthDialogControllerImpl
 
   std::unique_ptr<InSessionAuthDialog> dialog_;
 
-  aura::WindowTracker window_tracker_;
+  aura::WindowTracker source_window_tracker_;
+
+  // Tracks windows that show the help article about in-session auth.
+  aura::WindowTracker help_window_tracker_;
 
   std::unique_ptr<WebAuthnRequestRegistrarImpl> webauthn_request_registrar_;
+
+  bool should_ignore_focus_change_ = false;
 
   base::WeakPtrFactory<InSessionAuthDialogControllerImpl> weak_factory_{this};
 };

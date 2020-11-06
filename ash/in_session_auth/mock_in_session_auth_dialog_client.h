@@ -50,6 +50,8 @@ class MockInSessionAuthDialogClient : public InSessionAuthDialogClient {
               AuthenticateUserWithFingerprint,
               (base::OnceCallback<void(bool, FingerprintState)> callback),
               (override));
+
+  MOCK_METHOD(aura::Window*, OpenInSessionAuthHelpPage, (), (const override));
 };
 
 }  // namespace ash
