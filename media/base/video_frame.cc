@@ -606,6 +606,11 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
     return nullptr;
   }
 
+  const size_t num_planes =
+      NumberOfPlanesForLinearBufferFormat(gpu_memory_buffer->GetFormat());
+  std::vector<ColorPlaneLayout> planes(num_planes);
+  for (size_t i = 0; i < num_planes; ++i)
+    planes[i].stride = gpu_memory_buffer->stride(i);
   uint64_t modifier = gfx::NativePixmapHandle::kNoModifier;
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   if (gpu_memory_buffer->GetType() == gfx::NATIVE_PIXMAP) {
@@ -615,17 +620,24 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
       DLOG(ERROR) << "Failed to clone the GpuMemoryBufferHandle";
       return nullptr;
     }
+    if (gmb_handle.native_pixmap_handle.planes.size() != num_planes) {
+      DLOG(ERROR) << "Invalid number of planes="
+                  << gmb_handle.native_pixmap_handle.planes.size()
+                  << ", expected num_planes=" << num_planes;
+      return nullptr;
+    }
+    for (size_t i = 0; i < num_planes; ++i) {
+      const auto& plane = gmb_handle.native_pixmap_handle.planes[i];
+      planes[i].stride = plane.stride;
+      planes[i].offset = plane.offset;
+      planes[i].size = plane.size;
+    }
     modifier = gmb_handle.native_pixmap_handle.modifier;
   }
 #endif
 
-  const size_t num_planes =
-      NumberOfPlanesForLinearBufferFormat(gpu_memory_buffer->GetFormat());
-  std::vector<int32_t> strides;
-  for (size_t i = 0; i < num_planes; ++i)
-    strides.push_back(gpu_memory_buffer->stride(i));
-  const auto layout = VideoFrameLayout::CreateWithStrides(
-      *format, coded_size, std::move(strides),
+  const auto layout = VideoFrameLayout::CreateWithPlanes(
+      *format, coded_size, std::move(planes),
       VideoFrameLayout::kBufferAddressAlignment, modifier);
   if (!layout) {
     DLOG(ERROR) << __func__ << " Invalid layout";
