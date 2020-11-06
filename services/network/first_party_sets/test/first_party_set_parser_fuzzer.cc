@@ -7,6 +7,18 @@
 #include <cstdint>
 #include <memory>
 
+#include "base/at_exit.h"
+#include "base/i18n/icu_util.h"
+
+struct TestCase {
+  TestCase() { CHECK(base::i18n::InitializeICU()); }
+
+  // used by ICU integration.
+  base::AtExitManager at_exit_manager;
+};
+
+TestCase* test_case = new TestCase();
+
 namespace network {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {

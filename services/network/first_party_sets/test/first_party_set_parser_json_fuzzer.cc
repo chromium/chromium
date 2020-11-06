@@ -7,9 +7,20 @@
 #include <stdlib.h>
 #include <iostream>
 
+#include "base/at_exit.h"
+#include "base/i18n/icu_util.h"
 #include "testing/libfuzzer/proto/json.pb.h"
 #include "testing/libfuzzer/proto/json_proto_converter.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
+
+struct TestCase {
+  TestCase() { CHECK(base::i18n::InitializeICU()); }
+
+  // used by ICU integration.
+  base::AtExitManager at_exit_manager;
+};
+
+TestCase* test_case = new TestCase();
 
 DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
   json_proto::JsonProtoConverter converter;
