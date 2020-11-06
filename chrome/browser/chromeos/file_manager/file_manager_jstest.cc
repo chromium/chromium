@@ -94,7 +94,8 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileOperationManagerTest) {
   RunTestURL("background/js/file_operation_manager_unittest_gen.html");
 }
 
-IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FilesAppEntryTypes) {
+// TODO(crbug.com/1146484): Test is flaky.
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DISABLED_FilesAppEntryTypes) {
   RunTestURL("common/js/files_app_entry_types_unittest.m_gen.html");
 }
 
