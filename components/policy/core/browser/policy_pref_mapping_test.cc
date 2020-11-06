@@ -400,7 +400,7 @@ void VerifyAllPoliciesHaveATestCase(const base::FilePath& test_case_path) {
     LOG_IF(WARNING, !has_test_case_for_this_os)
         << "Policy " << policy->first
         << " is marked as supported on this OS in policy_templates.json but "
-        << "have a test for this platform in policy_test_cases.json.";
+        << "there is no test for this platform in policy_test_cases.json.";
   }
 }
 
