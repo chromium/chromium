@@ -19,12 +19,17 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 #if defined(OS_POSIX) && !defined(OS_NACL_SFI)
 #include "base/message_loop/message_pump_libevent.h"
 #endif
 
 using ::testing::_;
 using ::testing::AnyNumber;
+using ::testing::AtMost;
 using ::testing::Invoke;
 using ::testing::Return;
 
@@ -37,10 +42,12 @@ class MockMessagePumpDelegate : public MessagePump::Delegate {
   MockMessagePumpDelegate() = default;
 
   // MessagePump::Delegate:
-  void BeforeDoInternalWork() override {}
   void BeforeWait() override {}
   MOCK_METHOD0(DoWork, MessagePump::Delegate::NextWorkInfo());
   MOCK_METHOD0(DoIdleWork, bool());
+
+  MOCK_METHOD0(OnBeginNativeWork, void(void));
+  MOCK_METHOD0(OnEndNativeWork, void(void));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockMessagePumpDelegate);
@@ -51,6 +58,39 @@ class MessagePumpTest : public ::testing::TestWithParam<MessagePumpType> {
   MessagePumpTest() : message_pump_(MessagePump::Create(GetParam())) {}
 
  protected:
+  void AddPreDoWorkExpectations(
+      testing::StrictMock<MockMessagePumpDelegate>& delegate) {
+#if defined(OS_WIN)
+    if (GetParam() == MessagePumpType::UI) {
+      // The Windows MessagePumpForUI may do native work from ::PeekMessage()
+      // and labels itself as such.
+      EXPECT_CALL(delegate, OnBeginNativeWork);
+      EXPECT_CALL(delegate, OnEndNativeWork);
+
+      // If the above event was MessagePumpForUI's own kMsgHaveWork internal
+      // event, it will process another event to replace it (ref.
+      // ProcessPumpReplacementMessage).
+      EXPECT_CALL(delegate, OnBeginNativeWork).Times(AtMost(1));
+      EXPECT_CALL(delegate, OnEndNativeWork).Times(AtMost(1));
+    }
+#endif  // defined(OS_WIN)
+  }
+
+  void AddPostDoWorkExpectations(
+      testing::StrictMock<MockMessagePumpDelegate>& delegate) {
+#if defined(OS_POSIX) && !defined(OS_NACL_SFI)
+    if ((GetParam() == MessagePumpType::UI &&
+         std::is_same<MessagePumpForUI, MessagePumpLibevent>::value) ||
+        (GetParam() == MessagePumpType::IO &&
+         std::is_same<MessagePumpForIO, MessagePumpLibevent>::value)) {
+      // MessagePumpLibEvent checks for native notifications once after
+      // processing a DoWork().
+      EXPECT_CALL(delegate, OnBeginNativeWork);
+      EXPECT_CALL(delegate, OnEndNativeWork);
+    }
+#endif  // defined(OS_POSIX) && !defined(OS_NACL_SFI)
+  }
+
   std::unique_ptr<MessagePump> message_pump_;
 };
 
@@ -60,7 +100,10 @@ TEST_P(MessagePumpTest, QuitStopsWork) {
   testing::InSequence sequence;
   testing::StrictMock<MockMessagePumpDelegate> delegate;
 
-  // Not expecting any calls to DoIdleWork after quitting.
+  AddPreDoWorkExpectations(delegate);
+
+  // Not expecting any calls to DoIdleWork after quitting, nor any of the
+  // PostDoWorkExpectations, quitting should be instantaneous.
   EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
     message_pump_->Quit();
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
@@ -76,6 +119,8 @@ TEST_P(MessagePumpTest, QuitStopsWorkWithNestedRunLoop) {
   testing::StrictMock<MockMessagePumpDelegate> delegate;
   testing::StrictMock<MockMessagePumpDelegate> nested_delegate;
 
+  AddPreDoWorkExpectations(delegate);
+
   // We first schedule a call to DoWork, which runs a nested run loop. After
   // the nested loop exits, we schedule another DoWork which quits the outer
   // (original) run loop. The test verifies that there are no extra calls to
@@ -85,6 +130,8 @@ TEST_P(MessagePumpTest, QuitStopsWorkWithNestedRunLoop) {
     // A null NextWorkInfo indicates immediate follow-up work.
     return MessagePump::Delegate::NextWorkInfo();
   }));
+
+  AddPreDoWorkExpectations(nested_delegate);
   EXPECT_CALL(nested_delegate, DoWork).WillOnce(Invoke([&] {
     // Quit the nested run loop.
     message_pump_->Quit();
@@ -94,10 +141,15 @@ TEST_P(MessagePumpTest, QuitStopsWorkWithNestedRunLoop) {
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
   }));
 
+  // PostDoWorkExpectations for the first DoWork.
+  AddPostDoWorkExpectations(delegate);
+
   // The outer pump may or may not trigger idle work at this point.
   // TODO(scheduler-dev): This is unexpected, attempt to remove this legacy
   // allowance.
   EXPECT_CALL(delegate, DoIdleWork()).Times(AnyNumber());
+
+  AddPreDoWorkExpectations(delegate);
 
   EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
     message_pump_->Quit();
@@ -124,7 +176,8 @@ class TimerSlackTestDelegate : public MessagePump::Delegate {
     action_.store(NONE);
   }
 
-  void BeforeDoInternalWork() override {}
+  void OnBeginNativeWork() override {}
+  void OnEndNativeWork() override {}
   void BeforeWait() override {}
 
   MessagePump::Delegate::NextWorkInfo DoWork() override {
@@ -197,6 +250,9 @@ TEST_P(MessagePumpTest, TimerSlackWithLongDelays) {
 TEST_P(MessagePumpTest, RunWithoutScheduleWorkInvokesDoWork) {
   testing::InSequence sequence;
   testing::StrictMock<MockMessagePumpDelegate> delegate;
+
+  AddPreDoWorkExpectations(delegate);
+
   EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
     message_pump_->Quit();
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
@@ -210,8 +266,12 @@ TEST_P(MessagePumpTest, RunWithoutScheduleWorkInvokesDoWork) {
 TEST_P(MessagePumpTest, NestedRunWithoutScheduleWorkInvokesDoWork) {
   testing::InSequence sequence;
   testing::StrictMock<MockMessagePumpDelegate> delegate;
+
+  AddPreDoWorkExpectations(delegate);
+
   EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
     testing::StrictMock<MockMessagePumpDelegate> nested_delegate;
+    AddPreDoWorkExpectations(nested_delegate);
     EXPECT_CALL(nested_delegate, DoWork).WillOnce(Invoke([this] {
       message_pump_->Quit();
       return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};

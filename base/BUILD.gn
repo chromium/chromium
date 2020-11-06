@@ -621,6 +621,7 @@ component("base") {
     "task/sequence_manager/task_time_observer.h",
     "task/sequence_manager/tasks.cc",
     "task/sequence_manager/tasks.h",
+    "task/sequence_manager/thread_controller.cc",
     "task/sequence_manager/thread_controller.h",
     "task/sequence_manager/thread_controller_impl.cc",
     "task/sequence_manager/thread_controller_impl.h",

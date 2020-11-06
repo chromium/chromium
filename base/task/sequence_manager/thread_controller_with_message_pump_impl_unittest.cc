@@ -12,7 +12,9 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
+#include "base/stl_util.h"
 #include "base/task/sequence_manager/thread_controller_power_monitor.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/mock_callback.h"
@@ -38,15 +40,38 @@ class ThreadControllerForTest
                           const SequenceManager::Settings& settings)
       : ThreadControllerWithMessagePumpImpl(std::move(pump), settings) {}
 
+  ~ThreadControllerForTest() override {
+    if (trace_observer)
+      RunLevelTracker::SetTraceObserverForTesting(nullptr);
+  }
+
+  using ThreadControllerWithMessagePumpImpl::BeforeWait;
   using ThreadControllerWithMessagePumpImpl::DoIdleWork;
   using ThreadControllerWithMessagePumpImpl::DoWork;
   using ThreadControllerWithMessagePumpImpl::EnsureWorkScheduled;
+  using ThreadControllerWithMessagePumpImpl::OnBeginNativeWork;
+  using ThreadControllerWithMessagePumpImpl::OnEndNativeWork;
   using ThreadControllerWithMessagePumpImpl::Quit;
   using ThreadControllerWithMessagePumpImpl::Run;
 
   using ThreadControllerWithMessagePumpImpl::MainThreadOnlyForTesting;
   using ThreadControllerWithMessagePumpImpl::
       ThreadControllerPowerMonitorForTesting;
+
+  class MockTraceObserver : public internal::ThreadController::RunLevelTracker::
+                                TraceObserverForTesting {
+   public:
+    MOCK_METHOD0(OnThreadControllerActiveBegin, void());
+    MOCK_METHOD0(OnThreadControllerActiveEnd, void());
+  };
+
+  void InstallTraceObserver() {
+    trace_observer.emplace();
+    RunLevelTracker::SetTraceObserverForTesting(&trace_observer.value());
+  }
+
+  // Optionally emplaced, strict from then on.
+  Optional<testing::StrictMock<MockTraceObserver>> trace_observer;
 };
 
 class MockMessagePump : public MessagePump {
@@ -736,6 +761,790 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, TimeTicks::Max());
   testing::Mock::VerifyAndClearExpectations(&task1);
   testing::Mock::VerifyAndClearExpectations(&task2);
+}
+
+TEST_F(ThreadControllerWithMessagePumpTest,
+       ThreadControllerActiveSingleApplicationTask) {
+  ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
+
+  thread_controller_.InstallTraceObserver();
+
+  testing::InSequence sequence;
+
+  RunLoop run_loop;
+  EXPECT_CALL(*thread_controller_.trace_observer,
+              OnThreadControllerActiveBegin);
+  EXPECT_CALL(*message_pump_, Run(_))
+      .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
+        // Don't expect a call to OnThreadControllerActiveBegin on the first
+        // pass as the Run() call already triggered the active state.
+        bool first_pass = true;
+
+        // Post 1 task, run it, go idle, repeat 5 times. Expected to enter/exit
+        // "ThreadController active" state 5 consecutive times.
+        for (int i = 0; i < 5; ++i, first_pass = false) {
+          if (!first_pass) {
+            EXPECT_CALL(*thread_controller_.trace_observer,
+                        OnThreadControllerActiveBegin);
+          }
+          MockCallback<OnceClosure> task;
+          task_source_.AddTask(FROM_HERE, task.Get(), TimeTicks());
+          EXPECT_CALL(task, Run());
+          EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                    TimeTicks::Max());
+
+          testing::Mock::VerifyAndClearExpectations(
+              &*thread_controller_.trace_observer);
+
+          EXPECT_CALL(*thread_controller_.trace_observer,
+                      OnThreadControllerActiveEnd);
+          EXPECT_FALSE(thread_controller_.DoIdleWork());
+
+          testing::Mock::VerifyAndClearExpectations(
+              &*thread_controller_.trace_observer);
+        }
+      }));
+
+  RunLoop().Run();
+}
+
+TEST_F(ThreadControllerWithMessagePumpTest,
+       ThreadControllerActiveMultipleApplicationTasks) {
+  ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
+
+  thread_controller_.InstallTraceObserver();
+
+  testing::InSequence sequence;
+
+  RunLoop run_loop;
+  EXPECT_CALL(*thread_controller_.trace_observer,
+              OnThreadControllerActiveBegin);
+  EXPECT_CALL(*message_pump_, Run(_))
+      .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
+        MockCallback<OnceClosure> tasks[5];
+        // Post 5 tasks, run them, go idle. Expected to only exit
+        // "ThreadController active" state at the end.
+        for (auto& t : tasks)
+          task_source_.AddTask(FROM_HERE, t.Get(), TimeTicks());
+        for (size_t i = 0; i < size(tasks); ++i) {
+          const TimeTicks expected_delayed_run_time =
+              i < size(tasks) - 1 ? TimeTicks() : TimeTicks::Max();
+
+          EXPECT_CALL(tasks[i], Run());
+          EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                    expected_delayed_run_time);
+        }
+
+        EXPECT_CALL(*thread_controller_.trace_observer,
+                    OnThreadControllerActiveEnd);
+        EXPECT_FALSE(thread_controller_.DoIdleWork());
+      }));
+
+  RunLoop().Run();
+}
+
+TEST_F(ThreadControllerWithMessagePumpTest,
+       ThreadControllerActiveAdvancedNesting) {
+  ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
+
+  thread_controller_.InstallTraceObserver();
+
+  testing::InSequence sequence;
+
+  RunLoop run_loop;
+  EXPECT_CALL(*thread_controller_.trace_observer,
+              OnThreadControllerActiveBegin);
+  EXPECT_CALL(*message_pump_, Run(_))
+      .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
+        MockCallback<OnceClosure> tasks[5];
+
+        // A: Post 2 tasks
+        // B: Run one of them (enter active)
+        //   C: Enter a nested loop (enter nested active)
+        //     D: Run the next task (remain nested active)
+        //     E: Go idle (exit active)
+        //     F: Post 2 tasks
+        //     G: Run one
+        //     H: exit nested loop (enter nested active, exit nested active)
+        // I: Run the next one, go idle (remain active, exit active)
+        // J: Post/run one more task, go idle (enter active, exit active)
+        // 😅
+
+        // A:
+        task_source_.AddTask(FROM_HERE, tasks[0].Get(), TimeTicks());
+        task_source_.AddTask(FROM_HERE, tasks[1].Get(), TimeTicks());
+
+        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([]() {
+          // C1:
+          RunLoop(RunLoop::Type::kNestableTasksAllowed).Run();
+        }));
+        EXPECT_CALL(*thread_controller_.trace_observer,
+                    OnThreadControllerActiveBegin);
+        // C2:
+        EXPECT_CALL(*message_pump_, Run(_))
+            .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
+              // D:
+              EXPECT_CALL(tasks[1], Run());
+              EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                        TimeTicks::Max());
+              testing::Mock::VerifyAndClearExpectations(
+                  &*thread_controller_.trace_observer);
+
+              // E:
+              EXPECT_CALL(*thread_controller_.trace_observer,
+                          OnThreadControllerActiveEnd);
+              EXPECT_FALSE(thread_controller_.DoIdleWork());
+              testing::Mock::VerifyAndClearExpectations(
+                  &*thread_controller_.trace_observer);
+
+              // F:
+              task_source_.AddTask(FROM_HERE, tasks[2].Get(), TimeTicks());
+              task_source_.AddTask(FROM_HERE, tasks[3].Get(), TimeTicks());
+
+              EXPECT_CALL(*thread_controller_.trace_observer,
+                          OnThreadControllerActiveBegin);
+
+              // G:
+              EXPECT_CALL(tasks[2], Run());
+              EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                        TimeTicks());
+              testing::Mock::VerifyAndClearExpectations(
+                  &*thread_controller_.trace_observer);
+
+              // H
+              EXPECT_CALL(*thread_controller_.trace_observer,
+                          OnThreadControllerActiveEnd);
+            }));
+        // B:
+        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, TimeTicks());
+
+        // I:
+        EXPECT_CALL(tasks[3], Run());
+        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                  TimeTicks::Max());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
+
+        EXPECT_CALL(*thread_controller_.trace_observer,
+                    OnThreadControllerActiveEnd);
+        EXPECT_FALSE(thread_controller_.DoIdleWork());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
+
+        // J:
+        task_source_.AddTask(FROM_HERE, tasks[4].Get(), TimeTicks());
+        EXPECT_CALL(*thread_controller_.trace_observer,
+                    OnThreadControllerActiveBegin);
+        EXPECT_CALL(tasks[4], Run());
+        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                  TimeTicks::Max());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
+
+        EXPECT_CALL(*thread_controller_.trace_observer,
+                    OnThreadControllerActiveEnd);
+        EXPECT_FALSE(thread_controller_.DoIdleWork());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
+      }));
+
+  RunLoop().Run();
+}
+
+TEST_F(ThreadControllerWithMessagePumpTest,
+       ThreadControllerActiveNestedNativeLoop) {
+  ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
+
+  thread_controller_.InstallTraceObserver();
+
+  testing::InSequence sequence;
+
+  RunLoop run_loop;
+  EXPECT_CALL(*thread_controller_.trace_observer,
+              OnThreadControllerActiveBegin);
+  EXPECT_CALL(*message_pump_, Run(_))
+      .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
+        MockCallback<OnceClosure> tasks[2];
+
+        // A: Post 2 application tasks
+        // B: Run one of them which allows nested application tasks (enter
+        //    active)
+        //   C: Enter a native nested loop
+        //     D: Run a native task (enter nested active)
+        //     E: Run an application task (remain nested active)
+        //     F: Go idle (exit nested active)
+        //     G: Run a native task (enter nested active)
+        //     H: Exit native nested loop (end nested active)
+        // I: Go idle (exit active)
+
+        // A:
+        task_source_.AddTask(FROM_HERE, tasks[0].Get(), TimeTicks());
+        task_source_.AddTask(FROM_HERE, tasks[1].Get(), TimeTicks());
+
+        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
+          // C:
+          EXPECT_FALSE(thread_controller_.IsTaskExecutionAllowed());
+          EXPECT_CALL(*message_pump_, ScheduleWork());
+          thread_controller_.SetTaskExecutionAllowed(true);
+          // i.e. simulate that something runs code within the scope of a
+          // ScopedAllowApplicationTasksInNativeNestedLoop and ends up entering
+          // a nested native loop which would invoke OnBeginNativeWork()
+
+          // D:
+          EXPECT_CALL(*thread_controller_.trace_observer,
+                      OnThreadControllerActiveBegin);
+          thread_controller_.OnBeginNativeWork();
+          testing::Mock::VerifyAndClearExpectations(
+              &*thread_controller_.trace_observer);
+          thread_controller_.OnEndNativeWork();
+
+          // E:
+          EXPECT_CALL(tasks[1], Run());
+          EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                    TimeTicks::Max());
+          testing::Mock::VerifyAndClearExpectations(
+              &*thread_controller_.trace_observer);
+
+          // F:
+          EXPECT_CALL(*thread_controller_.trace_observer,
+                      OnThreadControllerActiveEnd);
+          EXPECT_FALSE(thread_controller_.DoIdleWork());
+          testing::Mock::VerifyAndClearExpectations(
+              &*thread_controller_.trace_observer);
+
+          // G:
+          EXPECT_CALL(*thread_controller_.trace_observer,
+                      OnThreadControllerActiveBegin);
+          thread_controller_.OnBeginNativeWork();
+          testing::Mock::VerifyAndClearExpectations(
+              &*thread_controller_.trace_observer);
+          thread_controller_.OnEndNativeWork();
+
+          // H:
+          EXPECT_CALL(*thread_controller_.trace_observer,
+                      OnThreadControllerActiveEnd);
+          thread_controller_.SetTaskExecutionAllowed(false);
+        }));
+
+        // B:
+        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                  TimeTicks::Max());
+
+        // I:
+        EXPECT_CALL(*thread_controller_.trace_observer,
+                    OnThreadControllerActiveEnd);
+        EXPECT_FALSE(thread_controller_.DoIdleWork());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
+      }));
+
+  RunLoop().Run();
+}
+
+TEST_F(ThreadControllerWithMessagePumpTest,
+       ThreadControllerActiveUnusedNativeLoop) {
+  ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
+
+  thread_controller_.InstallTraceObserver();
+
+  testing::InSequence sequence;
+
+  RunLoop run_loop;
+  EXPECT_CALL(*thread_controller_.trace_observer,
+              OnThreadControllerActiveBegin);
+  EXPECT_CALL(*message_pump_, Run(_))
+      .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
+        MockCallback<OnceClosure> tasks[2];
+
+        // A: Post 2 application tasks
+        // B: Run one of them (enter active)
+        //   C: Allow entering a native loop but don't enter one (no-op)
+        //   D: Complete the task without having entered a native loop (no-op)
+        // E: Run an application task (remain nested active)
+        // F: Go idle (exit active)
+
+        // A:
+        task_source_.AddTask(FROM_HERE, tasks[0].Get(), TimeTicks());
+        task_source_.AddTask(FROM_HERE, tasks[1].Get(), TimeTicks());
+
+        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
+          // C:
+          EXPECT_FALSE(thread_controller_.IsTaskExecutionAllowed());
+          EXPECT_CALL(*message_pump_, ScheduleWork());
+          thread_controller_.SetTaskExecutionAllowed(true);
+
+          // D:
+          thread_controller_.SetTaskExecutionAllowed(false);
+        }));
+
+        // B:
+        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, TimeTicks());
+
+        // E:
+        EXPECT_CALL(tasks[1], Run());
+        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                  TimeTicks::Max());
+
+        // F:
+        EXPECT_CALL(*thread_controller_.trace_observer,
+                    OnThreadControllerActiveEnd);
+        EXPECT_FALSE(thread_controller_.DoIdleWork());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
+      }));
+
+  RunLoop().Run();
+}
+
+TEST_F(ThreadControllerWithMessagePumpTest,
+       ThreadControllerActiveNestedNativeLoopWithoutAllowance) {
+  ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
+
+  thread_controller_.InstallTraceObserver();
+
+  testing::InSequence sequence;
+
+  RunLoop run_loop;
+  EXPECT_CALL(*thread_controller_.trace_observer,
+              OnThreadControllerActiveBegin);
+  EXPECT_CALL(*message_pump_, Run(_))
+      .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
+        MockCallback<OnceClosure> tasks[2];
+
+        // A: Post 2 application tasks
+        // B: Run one of them (enter active)
+        //   C: Enter a native nested loop (without having allowed nested
+        //      application tasks in B.)
+        //     D: Run a native task (enter nested active)
+        // E: End task C. (which implicitly means the native loop is over).
+        // F: Run an application task (remain active)
+        // G: Go idle (exit active)
+
+        // A:
+        task_source_.AddTask(FROM_HERE, tasks[0].Get(), TimeTicks());
+        task_source_.AddTask(FROM_HERE, tasks[1].Get(), TimeTicks());
+
+        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
+          // C:
+          // D:
+          EXPECT_CALL(*thread_controller_.trace_observer,
+                      OnThreadControllerActiveBegin);
+          thread_controller_.OnBeginNativeWork();
+          testing::Mock::VerifyAndClearExpectations(
+              &*thread_controller_.trace_observer);
+          thread_controller_.OnEndNativeWork();
+
+          // E:
+          EXPECT_CALL(*thread_controller_.trace_observer,
+                      OnThreadControllerActiveEnd);
+        }));
+
+        // B:
+        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, TimeTicks());
+
+        // F:
+        EXPECT_CALL(tasks[1], Run());
+        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                  TimeTicks::Max());
+
+        // G:
+        EXPECT_CALL(*thread_controller_.trace_observer,
+                    OnThreadControllerActiveEnd);
+        EXPECT_FALSE(thread_controller_.DoIdleWork());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
+      }));
+
+  RunLoop().Run();
+}
+
+TEST_F(ThreadControllerWithMessagePumpTest,
+       ThreadControllerActiveMultipleNativeLoopsUnderOneApplicationTask) {
+  ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
+
+  thread_controller_.InstallTraceObserver();
+
+  testing::InSequence sequence;
+
+  RunLoop run_loop;
+  EXPECT_CALL(*thread_controller_.trace_observer,
+              OnThreadControllerActiveBegin);
+  EXPECT_CALL(*message_pump_, Run(_))
+      .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
+        MockCallback<OnceClosure> tasks[2];
+
+        // A: Post 1 application task
+        // B: Run it
+        //   C: Enter a native nested loop (application tasks allowed)
+        //     D: Run a native task (enter nested active)
+        //     E: Exit nested loop (missed by RunLevelTracker -- no-op)
+        //   F: Enter another native nested loop (application tasks allowed)
+        //     G: Run a native task (no-op)
+        //     H: Exit nested loop (no-op)
+        //   I: End task (exit nested active)
+        // J: Go idle (exit active)
+
+        // A:
+        task_source_.AddTask(FROM_HERE, tasks[0].Get(), TimeTicks());
+
+        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
+          for (int i = 0; i < 2; ++i) {
+            // C & F:
+            EXPECT_FALSE(thread_controller_.IsTaskExecutionAllowed());
+            EXPECT_CALL(*message_pump_, ScheduleWork());
+            thread_controller_.SetTaskExecutionAllowed(true);
+
+            // D & G:
+            if (i == 0) {
+              EXPECT_CALL(*thread_controller_.trace_observer,
+                          OnThreadControllerActiveBegin);
+            }
+            thread_controller_.OnBeginNativeWork();
+            testing::Mock::VerifyAndClearExpectations(
+                &*thread_controller_.trace_observer);
+            thread_controller_.OnEndNativeWork();
+
+            // E & H:
+            thread_controller_.SetTaskExecutionAllowed(false);
+            testing::Mock::VerifyAndClearExpectations(
+                &*thread_controller_.trace_observer);
+          }
+
+          // I:
+          EXPECT_CALL(*thread_controller_.trace_observer,
+                      OnThreadControllerActiveEnd);
+        }));
+
+        // B:
+        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                  TimeTicks::Max());
+
+        // J:
+        EXPECT_CALL(*thread_controller_.trace_observer,
+                    OnThreadControllerActiveEnd);
+        EXPECT_FALSE(thread_controller_.DoIdleWork());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
+      }));
+
+  RunLoop().Run();
+}
+
+TEST_F(ThreadControllerWithMessagePumpTest,
+       ThreadControllerActiveNativeLoopsReachingIdle) {
+  ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
+
+  thread_controller_.InstallTraceObserver();
+
+  testing::InSequence sequence;
+
+  RunLoop run_loop;
+  EXPECT_CALL(*thread_controller_.trace_observer,
+              OnThreadControllerActiveBegin);
+  EXPECT_CALL(*message_pump_, Run(_))
+      .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
+        MockCallback<OnceClosure> task;
+
+        // A: Post 1 application task
+        // B: Run it
+        //   C: Enter a native nested loop (application tasks allowed)
+        //     D: Run a native task (enter nested active)
+        //     E: Reach idle (nested inactive)
+        //     F: Run another task (nested active)
+        //     G: Exit nested loop (missed by RunLevelTracker -- no-op)
+        //   H: End task B (exit nested active)
+        // I: Go idle (exit active)
+        //
+        // This exercises the heuristic in
+        // ThreadControllerWithMessagePumpImpl::SetTaskExecutionAllowed() to
+        // detect the end of a nested native loop before the end of the task
+        // that triggered it. When application tasks are not allowed however,
+        // there's nothing we can do detect and two native nested loops in a
+        // row. They may look like a single one if the first one is quit before
+        // it reaches idle.
+
+        // A:
+        task_source_.AddTask(FROM_HERE, task.Get(), TimeTicks());
+
+        EXPECT_CALL(task, Run()).WillOnce(Invoke([&]() {
+          // C:
+          EXPECT_FALSE(thread_controller_.IsTaskExecutionAllowed());
+          EXPECT_CALL(*message_pump_, ScheduleWork());
+          thread_controller_.SetTaskExecutionAllowed(true);
+
+          // D:
+          EXPECT_CALL(*thread_controller_.trace_observer,
+                      OnThreadControllerActiveBegin);
+          thread_controller_.OnBeginNativeWork();
+          testing::Mock::VerifyAndClearExpectations(
+              &*thread_controller_.trace_observer);
+          thread_controller_.OnEndNativeWork();
+
+          // E:
+          EXPECT_CALL(*thread_controller_.trace_observer,
+                      OnThreadControllerActiveEnd);
+          thread_controller_.BeforeWait();
+          testing::Mock::VerifyAndClearExpectations(
+              &*thread_controller_.trace_observer);
+
+          // F:
+          EXPECT_CALL(*thread_controller_.trace_observer,
+                      OnThreadControllerActiveBegin);
+          thread_controller_.OnBeginNativeWork();
+          testing::Mock::VerifyAndClearExpectations(
+              &*thread_controller_.trace_observer);
+          thread_controller_.OnEndNativeWork();
+
+          // G:
+          thread_controller_.SetTaskExecutionAllowed(false);
+
+          // H:
+          EXPECT_CALL(*thread_controller_.trace_observer,
+                      OnThreadControllerActiveEnd);
+        }));
+
+        // B:
+        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                  TimeTicks::Max());
+
+        // I:
+        EXPECT_CALL(*thread_controller_.trace_observer,
+                    OnThreadControllerActiveEnd);
+        EXPECT_FALSE(thread_controller_.DoIdleWork());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
+      }));
+
+  RunLoop().Run();
+}
+
+TEST_F(ThreadControllerWithMessagePumpTest,
+       ThreadControllerActiveQuitNestedWhileApplicationIdle) {
+  ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
+
+  thread_controller_.InstallTraceObserver();
+
+  testing::InSequence sequence;
+
+  RunLoop run_loop;
+  EXPECT_CALL(*thread_controller_.trace_observer,
+              OnThreadControllerActiveBegin);
+  EXPECT_CALL(*message_pump_, Run(_))
+      .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
+        MockCallback<OnceClosure> tasks[2];
+
+        // A: Post 2 application tasks
+        // B: Run the first task
+        //   C: Enter a native nested loop (application tasks allowed)
+        //     D: Run the second task (enter nested active)
+        //     E: Reach idle
+        //     F: Run a native task (not visible to RunLevelTracker)
+        //     G: F quits the native nested loop (no-op)
+        //   H: End task B (exit nested active)
+        // I: Go idle (exit active)
+
+        // A:
+        task_source_.AddTask(FROM_HERE, tasks[0].Get(), TimeTicks());
+        task_source_.AddTask(FROM_HERE, tasks[1].Get(), TimeTicks());
+
+        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
+          // C:
+          EXPECT_FALSE(thread_controller_.IsTaskExecutionAllowed());
+          EXPECT_CALL(*message_pump_, ScheduleWork());
+          thread_controller_.SetTaskExecutionAllowed(true);
+
+          // D:
+          EXPECT_CALL(*thread_controller_.trace_observer,
+                      OnThreadControllerActiveBegin);
+          EXPECT_CALL(tasks[1], Run());
+          EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                    TimeTicks::Max());
+          testing::Mock::VerifyAndClearExpectations(
+              &*thread_controller_.trace_observer);
+
+          // E:
+          EXPECT_CALL(*thread_controller_.trace_observer,
+                      OnThreadControllerActiveEnd);
+          thread_controller_.BeforeWait();
+          testing::Mock::VerifyAndClearExpectations(
+              &*thread_controller_.trace_observer);
+
+          // F + G:
+          thread_controller_.SetTaskExecutionAllowed(false);
+
+          // H:
+        }));
+
+        // B:
+        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                  TimeTicks::Max());
+
+        // I:
+        EXPECT_CALL(*thread_controller_.trace_observer,
+                    OnThreadControllerActiveEnd);
+        EXPECT_FALSE(thread_controller_.DoIdleWork());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
+      }));
+
+  RunLoop().Run();
+}
+
+// This test verifies the edge case where the first task on the stack is native
+// task which spins a native nested loop. That inner-loop should be allowed to
+// execute application tasks as the outer-loop didn't consume
+// |task_execution_allowed == true|. RunLevelTracker should support this use
+// case as well.
+TEST_F(ThreadControllerWithMessagePumpTest,
+       ThreadControllerActiveNestedWithinNativeAllowsApplicationTasks) {
+  ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
+
+  thread_controller_.InstallTraceObserver();
+
+  testing::InSequence sequence;
+
+  RunLoop run_loop;
+  EXPECT_CALL(*thread_controller_.trace_observer,
+              OnThreadControllerActiveBegin);
+  EXPECT_CALL(*message_pump_, Run(_))
+      .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
+        // Start this test idle for a change.
+        EXPECT_CALL(*thread_controller_.trace_observer,
+                    OnThreadControllerActiveEnd);
+        EXPECT_FALSE(thread_controller_.DoIdleWork());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
+
+        MockCallback<OnceClosure> task;
+
+        // A: Post 1 application task
+        // B: Run a native task
+        //   C: Enter a native nested loop (application tasks still allowed)
+        //     D: Run the application task (enter nested active)
+        // E: End the native task (exit nested active)
+        // F: Go idle (exit active)
+
+        // A:
+        task_source_.AddTask(FROM_HERE, task.Get(), TimeTicks());
+
+        EXPECT_CALL(*thread_controller_.trace_observer,
+                    OnThreadControllerActiveBegin)
+            .WillOnce(Invoke([&]() {
+              // C:
+              EXPECT_TRUE(thread_controller_.IsTaskExecutionAllowed());
+
+              // D:
+              EXPECT_CALL(*thread_controller_.trace_observer,
+                          OnThreadControllerActiveBegin);
+              EXPECT_CALL(task, Run());
+              EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                        TimeTicks::Max());
+              testing::Mock::VerifyAndClearExpectations(
+                  &*thread_controller_.trace_observer);
+            }));
+
+        // B:
+        thread_controller_.OnBeginNativeWork();
+
+        // E:
+        EXPECT_CALL(*thread_controller_.trace_observer,
+                    OnThreadControllerActiveEnd);
+        thread_controller_.OnEndNativeWork();
+
+        // F:
+        EXPECT_CALL(*thread_controller_.trace_observer,
+                    OnThreadControllerActiveEnd);
+        EXPECT_FALSE(thread_controller_.DoIdleWork());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
+      }));
+
+  RunLoop().Run();
+}
+
+// Same as ThreadControllerActiveNestedWithinNativeAllowsApplicationTasks but
+// with a dummy ScopedAllowApplicationTasksInNativeNestedLoop that is a
+// true=>true no-op for SetTaskExecutionAllowed(). This is a regression test
+// against another discussed implementation for RunLevelTracker which
+// would have used ScopedAllowApplicationTasksInNativeNestedLoop as a hint of
+// nested native loops. Doing so would have been incorrect because it assumes
+// that ScopedAllowApplicationTasksInNativeNestedLoop always toggles the
+// allowance away-from and back-to |false|.
+TEST_F(ThreadControllerWithMessagePumpTest,
+       ThreadControllerActiveDummyScopedAllowApplicationTasks) {
+  ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
+
+  thread_controller_.InstallTraceObserver();
+
+  testing::InSequence sequence;
+
+  RunLoop run_loop;
+  EXPECT_CALL(*thread_controller_.trace_observer,
+              OnThreadControllerActiveBegin);
+  EXPECT_CALL(*message_pump_, Run(_))
+      .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
+        // Start this test idle for a change.
+        EXPECT_CALL(*thread_controller_.trace_observer,
+                    OnThreadControllerActiveEnd);
+        EXPECT_FALSE(thread_controller_.DoIdleWork());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
+
+        MockCallback<OnceClosure> task;
+
+        // A: Post 1 application task
+        // B: Run a native task
+        //   C: Enter dummy ScopedAllowApplicationTasksInNativeNestedLoop
+        //   D: Enter a native nested loop (application tasks still allowed)
+        //     E: Run the application task (enter nested active)
+        //   F: Exit dummy scope (SetTaskExecutionAllowed(true)).
+        // G: End the native task (exit nested active)
+        // H: Go idle (exit active)
+
+        // A:
+        task_source_.AddTask(FROM_HERE, task.Get(), TimeTicks());
+
+        EXPECT_CALL(*thread_controller_.trace_observer,
+                    OnThreadControllerActiveBegin)
+            .WillOnce(Invoke([&]() {
+              // C + D:
+              EXPECT_TRUE(thread_controller_.IsTaskExecutionAllowed());
+              EXPECT_CALL(*message_pump_, ScheduleWork());
+              thread_controller_.SetTaskExecutionAllowed(true);
+              testing::Mock::VerifyAndClearExpectations(
+                  &*thread_controller_.trace_observer);
+
+              // E:
+              EXPECT_CALL(*thread_controller_.trace_observer,
+                          OnThreadControllerActiveBegin);
+              EXPECT_CALL(task, Run());
+              EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                        TimeTicks::Max());
+              testing::Mock::VerifyAndClearExpectations(
+                  &*thread_controller_.trace_observer);
+
+              // F:
+              EXPECT_CALL(*message_pump_, ScheduleWork());
+              thread_controller_.SetTaskExecutionAllowed(true);
+            }));
+
+        // B:
+        thread_controller_.OnBeginNativeWork();
+
+        // G:
+        EXPECT_CALL(*thread_controller_.trace_observer,
+                    OnThreadControllerActiveEnd);
+        thread_controller_.OnEndNativeWork();
+
+        // H:
+        EXPECT_CALL(*thread_controller_.trace_observer,
+                    OnThreadControllerActiveEnd);
+        EXPECT_FALSE(thread_controller_.DoIdleWork());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer);
+      }));
+
+  RunLoop().Run();
 }
 
 }  // namespace sequence_manager

@@ -5,6 +5,10 @@
 #ifndef BASE_TASK_SEQUENCE_MANAGER_THREAD_CONTROLLER_H_
 #define BASE_TASK_SEQUENCE_MANAGER_THREAD_CONTROLLER_H_
 
+#include <stack>
+#include <vector>
+
+#include "base/base_export.h"
 #include "base/message_loop/message_pump.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -119,6 +123,109 @@ class ThreadController {
   virtual void RemoveNestingObserver(RunLoop::NestingObserver* observer) = 0;
   virtual const scoped_refptr<AssociatedThreadId>& GetAssociatedThread()
       const = 0;
+
+ protected:
+  // Tracks the state of each run-level (main and nested ones) in its associated
+  // ThreadController. It does so using two high-level principles:
+  //  1) #task-in-task-implies-nested :
+  //     If the |state_| is kRunningTask and another task starts
+  //     (OnTaskStarted()), it implies this inner-task is running from a nested
+  //     loop and another RunLevel is pushed onto |run_levels_|.
+  //  2) #done-task-while-not-running-implies-done-nested
+  //     If the current task completes (OnTaskEnded()) and |state_| is not
+  //     kRunningTask, the top RunLevel was an (already exited) nested loop and
+  //     will be popped off |run_levels_|.
+  // We need this logic because native nested loops can run from any task
+  // without a RunLoop being involved, see
+  // ThreadControllerWithMessagePumpTest.ThreadControllerActive* tests for
+  // examples. Using these two heuristics is the simplest way, trying to capture
+  // all the ways in which native+application tasks can nest is harder than
+  // reacting as it happens.
+  //
+  // Note 1: "native tasks" are only captured if the MessagePump is
+  // instrumented to see them and shares them with ThreadController (via
+  // MessagePump::Delegate::OnBeginNativeWork). As such it is still possible to
+  // view trace events emanating from native tasks without "ThreadController
+  // active" being active.
+  // Note 2: Non-instrumented native tasks do not break the two high-level
+  // principles above because:
+  //  A) If a non-instrumented task enters a nested loop, either:
+  //     i) No instrumented tasks run within the loop so it's invisible.
+  //     ii) Instrumented tasks run *and* current state is kRunningTask ((A) is
+  //         a task within an instrumented task):
+  //         #task-in-task-implies-nested triggers and the nested loop is
+  //         visible.
+  //     iii) Instrumented tasks run *and* current state is kIdle or
+  //          kSelectingNextTask ((A) is a task run by a native loop):
+  //          #task-in-task-implies-nested doesn't trigger and tasks (iii) look
+  //          like a non-nested continuation of tasks at the current RunLevel.
+  //  B) When task (A) exits its nested loop and completes, either:
+  //     i) The loop was invisible so no RunLevel was created for it and
+  //        #done-task-while-not-running-implies-done-nested doesn't trigger so
+  //        it balances out.
+  //     ii) Instrumented tasks did run in which case |state_| is
+  //         kSelectingNextTask or kIdle. When the task in which (A) runs
+  //         completes #done-task-while-not-running-implies-done-nested triggers
+  //         and everything balances out.
+  //     iii) Same as (ii) but we're back to kSelectingNextTask or kIdle as
+  //          before and (A) was a no-op on the RunLevels.
+  class BASE_EXPORT RunLevelTracker {
+   public:
+    enum State {
+      // Waiting for work.
+      kIdle,
+      // Between two tasks but not idle.
+      kSelectingNextTask,
+      // Running and currently processing a unit of work.
+      kRunningTask,
+    };
+
+    RunLevelTracker();
+    ~RunLevelTracker();
+
+    void OnRunLoopStarted(State initial_state);
+    void OnRunLoopEnded();
+    void OnTaskStarted();
+    void OnTaskEnded();
+    void OnIdle();
+
+    size_t num_run_levels() const { return run_levels_.size(); }
+
+    // Observers changes of state sent as trace-events so they can be tested.
+    class TraceObserverForTesting {
+     public:
+      virtual ~TraceObserverForTesting() = default;
+
+      virtual void OnThreadControllerActiveBegin() = 0;
+      virtual void OnThreadControllerActiveEnd() = 0;
+    };
+
+    static void SetTraceObserverForTesting(
+        TraceObserverForTesting* trace_observer_for_testing);
+
+   private:
+    class RunLevel {
+     public:
+      explicit RunLevel(State initial_state);
+      ~RunLevel();
+
+      // Moveable for STL compat. Marks |other| as idle so it noops on
+      // destruction after handing off its responsibility.
+      RunLevel(RunLevel&& other);
+      RunLevel& operator=(RunLevel&& other);
+
+      void UpdateState(State new_state);
+
+      State state() const { return state_; }
+
+     private:
+      State state_ = kIdle;
+    };
+
+    std::stack<RunLevel, std::vector<RunLevel>> run_levels_;
+
+    static TraceObserverForTesting* trace_observer_for_testing_;
+  };
 };
 
 }  // namespace internal

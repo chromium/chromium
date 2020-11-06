@@ -41,9 +41,19 @@ ThreadControllerImpl::ThreadControllerImpl(
   delayed_do_work_closure_ =
       BindRepeating(&ThreadControllerImpl::DoWork, weak_factory_.GetWeakPtr(),
                     WorkType::kDelayed);
+
+  // Unlike ThreadControllerWithMessagePumpImpl, ThreadControllerImpl isn't
+  // explicitly Run(). Rather, DoWork() will be invoked at some point in the
+  // future when the associated thread begins pumping messages.
+  main_sequence_only().run_level_tracker.OnRunLoopStarted(
+      RunLevelTracker::kIdle);
 }
 
-ThreadControllerImpl::~ThreadControllerImpl() = default;
+ThreadControllerImpl::~ThreadControllerImpl() {
+  // Balances OnRunLoopStarted() in the constructor to satisfy the exit criteria
+  // of ~RunLevelTracker().
+  main_sequence_only().run_level_tracker.OnRunLoopEnded();
+}
 
 ThreadControllerImpl::MainSequenceOnly::MainSequenceOnly() = default;
 
@@ -78,8 +88,9 @@ void ThreadControllerImpl::ScheduleWork() {
                "ThreadControllerImpl::ScheduleWork::PostTask");
 
   if (work_deduplicator_.OnWorkRequested() ==
-      ShouldScheduleWork::kScheduleImmediate)
+      ShouldScheduleWork::kScheduleImmediate) {
     task_runner_->PostTask(FROM_HERE, immediate_do_work_closure_);
+  }
 }
 
 void ThreadControllerImpl::SetNextDelayedDoWork(LazyNow* lazy_now,
@@ -181,11 +192,13 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
       // Trace events should finish before we call DidRunTask to ensure that
       // SequenceManager trace events do not interfere with them.
       TRACE_TASK_EXECUTION("ThreadControllerImpl::RunTask", *task);
+      DCHECK_GT(main_sequence_only().run_level_tracker.num_run_levels(), 0U);
+      main_sequence_only().run_level_tracker.OnTaskStarted();
       task_annotator_.RunTask("SequenceManager RunTask", task);
+      if (!weak_ptr)
+        return;
+      main_sequence_only().run_level_tracker.OnTaskEnded();
     }
-
-    if (!weak_ptr)
-      return;
 
     sequence_->DidRunTask();
 
@@ -193,14 +206,14 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
     // When we're running inside a nested RunLoop it may quit anytime, so any
     // outstanding pending tasks must run in the outer RunLoop
     // (see SequenceManagerTestWithMessageLoop.QuitWhileNested test).
-    // Unfortunately, it's MessageLoop who's receving that signal and we can't
+    // Unfortunately, it's MessageLoop who's receiving that signal and we can't
     // know it before we return from DoWork, hence, OnExitNestedRunLoop
     // will be called later. Since we must implement ThreadController and
     // SequenceManager in conformance with MessageLoop task runners, we need
     // to disable this batching optimization while nested.
     // Implementing MessagePump::Delegate ourselves will help to resolve this
     // issue.
-    if (main_sequence_only().nesting_depth > 0)
+    if (main_sequence_only().run_level_tracker.num_run_levels() > 1)
       break;
   }
 
@@ -230,14 +243,17 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
     return;
   }
 
-  // Check if there's no future work.
+  // No more immediate work.
+  main_sequence_only().run_level_tracker.OnIdle();
+
+  // Any future work?
   if (delay_till_next_task == TimeDelta::Max()) {
     main_sequence_only().next_delayed_do_work = TimeTicks::Max();
     cancelable_delayed_do_work_closure_.Cancel();
     return;
   }
 
-  // Check if we've already requested the required delay.
+  // Already requested next delay?
   TimeTicks next_task_at = lazy_now.Now() + delay_till_next_task;
   if (next_task_at == main_sequence_only().next_delayed_do_work)
     return;
@@ -272,7 +288,8 @@ ThreadControllerImpl::GetAssociatedThread() const {
 }
 
 void ThreadControllerImpl::OnBeginNestedRunLoop() {
-  main_sequence_only().nesting_depth++;
+  main_sequence_only().run_level_tracker.OnRunLoopStarted(
+      RunLevelTracker::kSelectingNextTask);
 
   // Just assume we have a pending task and post a DoWork to make sure we don't
   // grind to a halt while nested.
@@ -284,9 +301,9 @@ void ThreadControllerImpl::OnBeginNestedRunLoop() {
 }
 
 void ThreadControllerImpl::OnExitNestedRunLoop() {
-  main_sequence_only().nesting_depth--;
   if (nesting_observer_)
     nesting_observer_->OnExitNestedRunLoop();
+  main_sequence_only().run_level_tracker.OnRunLoopEnded();
 }
 
 void ThreadControllerImpl::SetWorkBatchSize(int work_batch_size) {

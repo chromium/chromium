@@ -188,7 +188,9 @@ void ThreadControllerWithMessagePumpImpl::MaybeStartHangWatchScopeEnabled() {
   // Nested runloops are covered by the parent loop hang watch scope.
   // TODO(crbug/1034046): Provide more granular scoping that reuses the parent
   // scope deadline.
-  if (main_thread_only().runloop_count == 1 && base::HangWatcher::IsEnabled()) {
+  // TODO(crbug/1034046): Also track native work outside a top-level RunLoop.
+  if (main_thread_only().run_level_tracker.num_run_levels() == 1 &&
+      base::HangWatcher::IsEnabled()) {
     hang_watch_scope_.emplace(
         base::HangWatchScopeEnabled::kDefaultHangWatchTime);
   }
@@ -225,22 +227,36 @@ ThreadControllerWithMessagePumpImpl::GetAssociatedThread() const {
   return associated_thread_;
 }
 
-void ThreadControllerWithMessagePumpImpl::BeforeDoInternalWork() {
+void ThreadControllerWithMessagePumpImpl::OnBeginNativeWork() {
   MaybeStartHangWatchScopeEnabled();
   work_id_provider_->IncrementWorkId();
+  main_thread_only().run_level_tracker.OnTaskStarted();
 }
 
-void ThreadControllerWithMessagePumpImpl::BeforeWait() {
+void ThreadControllerWithMessagePumpImpl::OnEndNativeWork() {
+  work_id_provider_->IncrementWorkId();
+
   // Nested runloops are covered by the parent loop hang watch scope.
   // TODO(crbug/1034046): Provide more granular scoping that reuses the parent
   // scope deadline.
-  if (main_thread_only().runloop_count == 1) {
-    // Waiting for work cannot be covered by a hang watch scope because that
-    // means the thread can be idle for unbounded time.
+  if (main_thread_only().run_level_tracker.num_run_levels() == 1)
     hang_watch_scope_.reset();
-  }
 
+  main_thread_only().run_level_tracker.OnTaskEnded();
+}
+
+void ThreadControllerWithMessagePumpImpl::BeforeWait() {
   work_id_provider_->IncrementWorkId();
+
+  // Nested runloops are covered by the parent loop hang watch scope.
+  // TODO(crbug/1034046): Provide more granular scoping that reuses the parent
+  // scope deadline.
+  // TODO(crbug/1034046): There should never be an outstanding
+  // |hang_watch_scope_| here, DCHECK?
+  if (main_thread_only().run_level_tracker.num_run_levels() == 1)
+    hang_watch_scope_.reset();
+
+  main_thread_only().run_level_tracker.OnIdle();
 }
 
 MessagePump::Delegate::NextWorkInfo
@@ -296,6 +312,9 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
                "ThreadControllerImpl::DoWork");
 
   if (!main_thread_only().task_execution_allowed) {
+    // Broadcast in a trace event that application tasks were disallowed. This
+    // helps spot nested loops that intentionally starve application tasks.
+    TRACE_EVENT0("base", "ThreadController: application tasks disallowed");
     if (main_thread_only().quit_runloop_after == TimeTicks::Max())
       return TimeDelta::Max();
     return main_thread_only().quit_runloop_after - continuation_lazy_now->Now();
@@ -329,7 +348,9 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
       // Trace events should finish before we call DidRunTask to ensure that
       // SequenceManager trace events do not interfere with them.
       TRACE_TASK_EXECUTION("ThreadControllerImpl::RunTask", *task);
+      main_thread_only().run_level_tracker.OnTaskStarted();
       task_annotator_.RunTask("SequenceManager RunTask", task);
+      main_thread_only().run_level_tracker.OnTaskEnded();
     }
 
 #if DCHECK_IS_ON()
@@ -401,6 +422,8 @@ bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
     return false;
   }
 
+  main_thread_only().run_level_tracker.OnIdle();
+
   // Check if any runloop timeout has expired.
   if (main_thread_only().quit_runloop_after != TimeTicks::Max() &&
       main_thread_only().quit_runloop_after <= time_source_->NowTicks()) {
@@ -431,11 +454,13 @@ void ThreadControllerWithMessagePumpImpl::Run(bool application_tasks_allowed,
   AutoReset<bool> quit_when_idle_requested(&quit_when_idle_requested_, false);
 #endif
 
+  main_thread_only().run_level_tracker.OnRunLoopStarted(
+      RunLevelTracker::kSelectingNextTask);
+
   // Quit may have been called outside of a Run(), so |quit_pending| might be
   // true here. We can't use InTopLevelDoWork() in Quit() as this call may be
   // outside top-level DoWork but still in Run().
   main_thread_only().quit_pending = false;
-  main_thread_only().runloop_count++;
   if (application_tasks_allowed && !main_thread_only().task_execution_allowed) {
     // Allow nested task execution as explicitly requested.
     DCHECK(RunLoop::IsNestedOnCurrentThread());
@@ -451,12 +476,13 @@ void ThreadControllerWithMessagePumpImpl::Run(bool application_tasks_allowed,
     DVLOG(1) << "ThreadControllerWithMessagePumpImpl::Quit";
 #endif
 
-  main_thread_only().runloop_count--;
+  main_thread_only().run_level_tracker.OnRunLoopEnded();
   main_thread_only().quit_pending = false;
 
   // Reset the hang watch scope upon exiting the outermost loop since the
-  // execution it covers is now completely over.
-  if (main_thread_only().runloop_count == 0)
+  // execution it covers is now completely over. TODO(crbug/1034046): There
+  // should never be an outstanding |hang_watch_scope_| here, DCHECK?
+  if (main_thread_only().run_level_tracker.num_run_levels() == 0)
     hang_watch_scope_.reset();
 }
 
@@ -484,8 +510,9 @@ void ThreadControllerWithMessagePumpImpl::Quit() {
 
 void ThreadControllerWithMessagePumpImpl::EnsureWorkScheduled() {
   if (work_deduplicator_.OnWorkRequested() ==
-      ShouldScheduleWork::kScheduleImmediate)
+      ShouldScheduleWork::kScheduleImmediate) {
     pump_->ScheduleWork();
+  }
 }
 
 void ThreadControllerWithMessagePumpImpl::SetTaskExecutionAllowed(
@@ -528,7 +555,7 @@ void ThreadControllerWithMessagePumpImpl::AttachToMessagePump() {
 #endif
 
 bool ThreadControllerWithMessagePumpImpl::ShouldQuitRunLoopWhenIdle() {
-  if (main_thread_only().runloop_count == 0)
+  if (main_thread_only().run_level_tracker.num_run_levels() == 0)
     return false;
   // It's only safe to call ShouldQuitWhenIdle() when in a RunLoop.
   return ShouldQuitWhenIdle();
