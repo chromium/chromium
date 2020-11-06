@@ -27,7 +27,6 @@ import org.mockito.Mockito;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -49,8 +48,8 @@ public class StartupPaintPreviewTest {
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
     @Rule
-    public final BlankCTATabInitialStateRule<ChromeTabbedActivity> mInitialStateRule =
-            new BlankCTATabInitialStateRule<>(sActivityTestRule, true);
+    public final BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, true);
 
     private static final String TEST_URL = "/chrome/test/data/android/about.html";
 

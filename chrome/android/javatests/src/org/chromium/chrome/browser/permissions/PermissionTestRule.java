@@ -15,7 +15,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
@@ -50,7 +50,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
  * a persistence toggle is expected, whether it should be explicitly toggled, whether to trigger the
  * JS call with a gesture, and whether an infobar or a dialog is expected.
  */
-public class PermissionTestRule extends ChromeActivityTestRule<ChromeActivity> {
+public class PermissionTestRule extends ChromeTabbedActivityTestRule {
     private InfoBarTestAnimationListener mListener;
     private EmbeddedTestServer mTestServer;
     private boolean mUseHttpsServer;
@@ -117,7 +117,6 @@ public class PermissionTestRule extends ChromeActivityTestRule<ChromeActivity> {
     }
 
     public PermissionTestRule(boolean useHttpsServer) {
-        super(ChromeActivity.class);
         mUseHttpsServer = useHttpsServer;
     }
 

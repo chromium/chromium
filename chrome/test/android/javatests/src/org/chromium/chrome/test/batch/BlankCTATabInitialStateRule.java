@@ -9,11 +9,11 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -22,13 +22,11 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  *
  * State is stored statically, and so the Activity may be reused across multiple test suites within
  * the same {@link Batch}.
- *
- * @param <T> The type of {@link ChromeActivity}.
  */
-public class BlankCTATabInitialStateRule<T extends ChromeActivity> implements TestRule {
-    private static ChromeActivity sActivity;
+public class BlankCTATabInitialStateRule implements TestRule {
+    private static ChromeTabbedActivity sActivity;
 
-    private final ChromeActivityTestRule<T> mActivityTestRule;
+    private final ChromeTabbedActivityTestRule mActivityTestRule;
     private final boolean mClearAllTabState;
 
     /**
@@ -37,7 +35,7 @@ public class BlankCTATabInitialStateRule<T extends ChromeActivity> implements Te
      *     renderer process between each test.
      */
     public BlankCTATabInitialStateRule(
-            ChromeActivityTestRule<T> activityTestRule, boolean clearAllTabState) {
+            ChromeTabbedActivityTestRule activityTestRule, boolean clearAllTabState) {
         super();
         mActivityTestRule = activityTestRule;
         mClearAllTabState = clearAllTabState;
@@ -54,7 +52,7 @@ public class BlankCTATabInitialStateRule<T extends ChromeActivity> implements Te
                     mActivityTestRule.startMainActivityOnBlankPage();
                     sActivity = mActivityTestRule.getActivity();
                 } else {
-                    mActivityTestRule.setActivity((T) sActivity);
+                    mActivityTestRule.setActivity(sActivity);
                     if (mClearAllTabState) {
                         resetTabStateThorough();
                     } else {

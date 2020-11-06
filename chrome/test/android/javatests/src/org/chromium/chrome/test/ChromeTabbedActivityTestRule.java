@@ -5,21 +5,48 @@
 package org.chromium.chrome.test;
 
 import android.app.ActivityOptions;
+import android.app.Instrumentation;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Browser;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.lifecycle.Stage;
+import android.text.TextUtils;
 
 import org.junit.Assert;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.Log;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.DeferredStartupHandler;
+import org.chromium.chrome.browser.omnibox.UrlBar;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.MenuUtils;
+import org.chromium.chrome.test.util.NewTabPageTestUtils;
+import org.chromium.chrome.test.util.WaitForFocusHelper;
+import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
+
+import java.util.concurrent.TimeoutException;
 
 /**
  * Custom ActivityTestRule for tests using ChromeTabbedActivity
  */
 public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeTabbedActivity> {
+    private static final String TAG = "ChromeTabbedATR";
+
     public ChromeTabbedActivityTestRule() {
         super(ChromeTabbedActivity.class);
     }
@@ -37,5 +64,168 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
                 getActivity().getPackageName());
         getActivity().startActivity(launchIntent, noAnimationLaunchOptions());
         ApplicationTestUtils.waitForActivityState(getActivity(), Stage.RESUMED);
+    }
+
+    /**
+     * Simulates starting Main Activity from launcher, blocks until it is started.
+     */
+    public void startMainActivityFromLauncher() {
+        startMainActivityWithURL(null);
+    }
+
+    /**
+     * Starts the Main activity on the specified URL. Passing a null URL ensures the default page is
+     * loaded, which is the NTP with a new profile .
+     */
+    public void startMainActivityWithURL(String url) {
+        // Only launch Chrome.
+        Intent intent =
+                new Intent(TextUtils.isEmpty(url) ? Intent.ACTION_MAIN : Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        startMainActivityFromIntent(intent, url);
+    }
+
+    /**
+     * Starts the Main activity and open a blank page.
+     * This is faster and less flakyness-prone than starting on the NTP.
+     */
+    public void startMainActivityOnBlankPage() {
+        startMainActivityWithURL("about:blank");
+    }
+
+    /**
+     * Starts the Main activity as if it was started from an external application, on the
+     * specified URL.
+     */
+    public void startMainActivityFromExternalApp(String url, String appId) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        if (appId != null) {
+            intent.putExtra(Browser.EXTRA_APPLICATION_ID, appId);
+        }
+        startMainActivityFromIntent(intent, url);
+    }
+
+    /**
+     * Starts the Main activity using the passed intent, and using the specified URL.
+     * This method waits for DEFERRED_STARTUP to fire as well as a subsequent
+     * idle-sync of the main looper thread, and the initial tab must either
+     * complete its load or it must crash before this method will return.
+     */
+    public void startMainActivityFromIntent(Intent intent, String url) {
+        prepareUrlIntent(intent, url);
+
+        DeferredStartupHandler.setExpectingActivityStartupForTesting();
+        startActivityCompletely(intent);
+        waitForActivityNativeInitializationComplete();
+
+        CriteriaHelper.pollUiThread(
+                () -> getActivity().getActivityTab() != null, "Tab never selected/initialized.");
+        Tab tab = getActivity().getActivityTab();
+
+        ChromeTabUtils.waitForTabPageLoaded(tab, (String) null);
+
+        if (tab != null && UrlUtilities.isNTPUrl(ChromeTabUtils.getUrlStringOnUiThread(tab))
+                && !getActivity().isInOverviewMode()) {
+            NewTabPageTestUtils.waitForNtpLoaded(tab);
+        }
+
+        Assert.assertTrue("Deferred startup never completed. Did you try to start an Activity "
+                        + "that was already started?",
+                DeferredStartupHandler.waitForDeferredStartupCompleteForTesting(
+                        ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));
+
+        Assert.assertNotNull(tab);
+        Assert.assertNotNull(tab.getView());
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+    }
+
+    /**
+     * Open an incognito tab by invoking the 'new incognito' menu item.
+     * Returns when receiving the 'PAGE_LOAD_FINISHED' notification.
+     */
+    public Tab newIncognitoTabFromMenu() {
+        final CallbackHelper createdCallback = new CallbackHelper();
+        final CallbackHelper selectedCallback = new CallbackHelper();
+
+        TabModel incognitoTabModel = getActivity().getTabModelSelector().getModel(true);
+        TabModelObserver observer = new TabModelObserver() {
+            @Override
+            public void didAddTab(
+                    Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+                createdCallback.notifyCalled();
+            }
+
+            @Override
+            public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
+                selectedCallback.notifyCalled();
+            }
+        };
+        incognitoTabModel.addObserver(observer);
+
+        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
+                getActivity(), R.id.new_incognito_tab_menu_id);
+
+        try {
+            createdCallback.waitForCallback(0);
+        } catch (TimeoutException ex) {
+            Assert.fail("Never received tab created event");
+        }
+        try {
+            selectedCallback.waitForCallback(0);
+        } catch (TimeoutException ex) {
+            Assert.fail("Never received tab selected event");
+        }
+        incognitoTabModel.removeObserver(observer);
+
+        Tab tab = getActivity().getActivityTab();
+
+        ChromeTabUtils.waitForTabPageLoaded(tab, (String) null);
+        NewTabPageTestUtils.waitForNtpLoaded(tab);
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        Log.d(TAG, "newIncognitoTabFromMenu <<");
+        return tab;
+    }
+
+    /**
+     * New multiple incognito tabs by invoking the 'new incognito' menu item n times.
+     * @param n The number of tabs you want to create.
+     */
+    public void newIncognitoTabsFromMenu(int n) {
+        while (n > 0) {
+            newIncognitoTabFromMenu();
+            --n;
+        }
+    }
+
+    /**
+     * Looks up the Omnibox in the view hierarchy and types the specified
+     * text into it, requesting focus and using an inter-character delay of
+     * 200ms.
+     *
+     * @param oneCharAtATime Whether to type text one character at a time or all at once.
+     *
+     * @throws InterruptedException
+     */
+    public void typeInOmnibox(String text, boolean oneCharAtATime) throws InterruptedException {
+        final UrlBar urlBar = getActivity().findViewById(R.id.url_bar);
+        Assert.assertNotNull(urlBar);
+
+        WaitForFocusHelper.acquireFocusForView(urlBar);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            if (!oneCharAtATime) {
+                urlBar.setText(text);
+            }
+        });
+
+        if (oneCharAtATime) {
+            final Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+            for (int i = 0; i < text.length(); ++i) {
+                instrumentation.sendStringSync(text.substring(i, i + 1));
+                // Let's put some delay between key strokes to simulate a user pressing the keys.
+                Thread.sleep(20);
+            }
+        }
     }
 }

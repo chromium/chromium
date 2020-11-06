@@ -15,19 +15,17 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Base class for Chrome's ContentProvider tests.
  * Sets up a local ChromeBrowserProvider associated to a mock resolver in an isolated context.
  */
-public class ProviderTestRule extends ChromeActivityTestRule<ChromeActivity> {
+public class ProviderTestRule extends ChromeTabbedActivityTestRule {
     private IsolatedContext mContext;
 
-    public ProviderTestRule() {
-        super(ChromeActivity.class);
-    }
+    public ProviderTestRule() {}
 
     @Override
     public Statement apply(final Statement base, Description description) {
