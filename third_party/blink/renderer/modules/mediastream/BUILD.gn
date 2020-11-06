@@ -64,6 +64,8 @@ blink_modules_sources("mediastream") {
     "media_stream_video_source.cc",
     "media_stream_video_track.cc",
     "media_stream_video_track.h",
+    "media_stream_video_track_underlying_sink.cc",
+    "media_stream_video_track_underlying_sink.h",
     "media_stream_video_track_underlying_source.cc",
     "media_stream_video_track_underlying_source.h",
     "navigator_media_stream.cc",
