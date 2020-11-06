@@ -734,13 +734,11 @@ void AXObject::GetSparseAXAttributes(
     AXSparseAttributeClient& sparse_attribute_client) const {
   AXSparseAttributeAOMPropertyClient property_client(*ax_object_cache_,
                                                      sparse_attribute_client);
-  HashSet<QualifiedName> shadowed_aria_attributes;
   AccessibleNode* accessible_node = GetAccessibleNode();
 
   // Virtual nodes for AOM are still tied to the AXTree.
   if (accessible_node && IsVirtualObject())
-    accessible_node->GetAllAOMProperties(&property_client,
-                                         shadowed_aria_attributes);
+    accessible_node->GetAllAOMProperties(&property_client);
 
   Element* element = GetElement();
   if (!element)
@@ -752,8 +750,6 @@ void AXObject::GetSparseAXAttributes(
   HashSet<QualifiedName> set_attributes;
   for (const Attribute& attr : attributes) {
     set_attributes.insert(attr.GetName());
-    if (shadowed_aria_attributes.Contains(attr.GetName()))
-      continue;
 
     AXSparseAttributeSetter* setter =
         ax_sparse_attribute_setter_map.at(attr.GetName());
@@ -1037,11 +1033,20 @@ void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) {
 }
 
 void AXObject::SerializePartialSparseAttributes(ui::AXNodeData* node_data) {
+  if (IsVirtualObject()) {
+    AccessibleNode* accessible_node = GetAccessibleNode();
+    if (accessible_node) {
+      AXNodeDataAOMPropertyClient property_client(*ax_object_cache_,
+                                                  *node_data);
+      accessible_node->GetAllAOMProperties(&property_client);
+    }
+  }
+
   Element* element = GetElement();
   if (!element)
     return;
 
-  TempSetterMap& setter_map = GetTempSetterMap(node_data);
+  TempSetterMap& setter_map = GetTempSetterMap();
   AttributeCollection attributes = element->AttributesWithoutUpdate();
   HashSet<QualifiedName> set_attributes;
   for (const Attribute& attr : attributes) {
@@ -1049,7 +1054,7 @@ void AXObject::SerializePartialSparseAttributes(ui::AXNodeData* node_data) {
     AXSparseSetterFunc callback = setter_map.at(attr.GetName());
 
     if (callback)
-      callback.Run(node_data, attr.Value());
+      callback.Run(this, node_data, attr.Value());
   }
 
   if (!element->DidAttachInternals())
@@ -1063,7 +1068,7 @@ void AXObject::SerializePartialSparseAttributes(ui::AXNodeData* node_data) {
     AXSparseSetterFunc callback = setter_map.at(attr);
 
     if (callback)
-      callback.Run(node_data, internals_attributes.at(attr));
+      callback.Run(this, node_data, internals_attributes.at(attr));
   }
 }
 

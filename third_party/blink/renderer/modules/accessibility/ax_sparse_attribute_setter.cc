@@ -10,42 +10,29 @@
 namespace blink {
 
 void SetIntAttribute(ax::mojom::blink::IntAttribute attribute,
+                     AXObject* object,
                      ui::AXNodeData* node_data,
                      const AtomicString& value) {
   node_data->AddIntAttribute(attribute, value.ToInt());
 }
 
-class BoolAttributeSetter : public AXSparseAttributeSetter {
- public:
-  BoolAttributeSetter(AXBoolAttribute attribute) : attribute_(attribute) {}
+void SetBoolAttribute(ax::mojom::blink::BoolAttribute attribute,
+                      AXObject* object,
+                      ui::AXNodeData* node_data,
+                      const AtomicString& value) {
+  // ARIA booleans are true if not "false" and not specifically undefined.
+  bool is_true = !AccessibleNode::IsUndefinedAttrValue(value) &&
+                 !EqualIgnoringASCIICase(value, "false");
+  if (is_true)  // Not necessary to add if false
+    node_data->AddBoolAttribute(attribute, true);
+}
 
- private:
-  AXBoolAttribute attribute_;
-
-  void Run(const AXObject& obj,
-           AXSparseAttributeClient& attribute_map,
-           const AtomicString& value) override {
-    // ARIA booleans are true if not "false" and not specifically undefined.
-    bool is_true = !AccessibleNode::IsUndefinedAttrValue(value) &&
-                   !EqualIgnoringASCIICase(value, "false");
-    if (is_true)  // Not necessary to add if false
-      attribute_map.AddBoolAttribute(attribute_, true);
-  }
-};
-
-class StringAttributeSetter : public AXSparseAttributeSetter {
- public:
-  StringAttributeSetter(AXStringAttribute attribute) : attribute_(attribute) {}
-
- private:
-  AXStringAttribute attribute_;
-
-  void Run(const AXObject& obj,
-           AXSparseAttributeClient& attribute_map,
-           const AtomicString& value) override {
-    attribute_map.AddStringAttribute(attribute_, value);
-  }
-};
+void SetStringAttribute(ax::mojom::blink::StringAttribute attribute,
+                        AXObject* object,
+                        ui::AXNodeData* node_data,
+                        const AtomicString& value) {
+  node_data->AddStringAttribute(attribute, value.Utf8());
+}
 
 class ObjectAttributeSetter : public AXSparseAttributeSetter {
  public:
@@ -158,23 +145,18 @@ AXSparseAttributeSetterMap& GetSparseAttributeSetterMap() {
     ax_sparse_attribute_setter_map.Set(
         html_names::kAriaErrormessageAttr,
         new ObjectAttributeSetter(AXObjectAttribute::kAriaErrorMessage));
-    ax_sparse_attribute_setter_map.Set(
-        html_names::kAriaKeyshortcutsAttr,
-        new StringAttributeSetter(AXStringAttribute::kAriaKeyShortcuts));
-    ax_sparse_attribute_setter_map.Set(
-        html_names::kAriaRoledescriptionAttr,
-        new StringAttributeSetter(AXStringAttribute::kAriaRoleDescription));
-    ax_sparse_attribute_setter_map.Set(
-        html_names::kAriaBusyAttr,
-        new BoolAttributeSetter(AXBoolAttribute::kAriaBusy));
   }
   return ax_sparse_attribute_setter_map;
 }
 
 // TODO(meredithl): move the rest of the sparse attributes to this map.
-TempSetterMap& GetTempSetterMap(ui::AXNodeData* node_data) {
+TempSetterMap& GetTempSetterMap() {
   DEFINE_STATIC_LOCAL(TempSetterMap, temp_setter_map, ());
   if (temp_setter_map.IsEmpty()) {
+    temp_setter_map.Set(
+        html_names::kAriaBusyAttr,
+        WTF::BindRepeating(&SetBoolAttribute,
+                           ax::mojom::blink::BoolAttribute::kBusy));
     temp_setter_map.Set(
         html_names::kAriaColcountAttr,
         WTF::BindRepeating(&SetIntAttribute,
@@ -201,6 +183,15 @@ TempSetterMap& GetTempSetterMap(ui::AXNodeData* node_data) {
         html_names::kAriaRowspanAttr,
         WTF::BindRepeating(&SetIntAttribute,
                            ax::mojom::blink::IntAttribute::kAriaCellRowSpan));
+    temp_setter_map.Set(
+        html_names::kAriaRoledescriptionAttr,
+        WTF::BindRepeating(
+            &SetStringAttribute,
+            ax::mojom::blink::StringAttribute::kRoleDescription));
+    temp_setter_map.Set(
+        html_names::kAriaKeyshortcutsAttr,
+        WTF::BindRepeating(&SetStringAttribute,
+                           ax::mojom::blink::StringAttribute::kKeyShortcuts));
   }
 
   return temp_setter_map;
@@ -208,34 +199,11 @@ TempSetterMap& GetTempSetterMap(ui::AXNodeData* node_data) {
 
 void AXSparseAttributeAOMPropertyClient::AddStringProperty(
     AOMStringProperty property,
-    const String& value) {
-  AXStringAttribute attribute;
-  switch (property) {
-    case AOMStringProperty::kKeyShortcuts:
-      attribute = AXStringAttribute::kAriaKeyShortcuts;
-      break;
-    case AOMStringProperty::kRoleDescription:
-      attribute = AXStringAttribute::kAriaRoleDescription;
-      break;
-    default:
-      return;
-  }
-  sparse_attribute_client_.AddStringAttribute(attribute, value);
-}
+    const String& value) {}
 
 void AXSparseAttributeAOMPropertyClient::AddBooleanProperty(
     AOMBooleanProperty property,
-    bool value) {
-  AXBoolAttribute attribute;
-  switch (property) {
-    case AOMBooleanProperty::kBusy:
-      attribute = AXBoolAttribute::kAriaBusy;
-      break;
-    default:
-      return;
-  }
-  sparse_attribute_client_.AddBoolAttribute(attribute, value);
-}
+    bool value) {}
 
 void AXSparseAttributeAOMPropertyClient::AddFloatProperty(
     AOMFloatProperty property,
@@ -294,5 +262,46 @@ void AXSparseAttributeAOMPropertyClient::AddRelationListProperty(
 
   sparse_attribute_client_.AddObjectVectorAttribute(attribute, objects);
 }
+
+void AXNodeDataAOMPropertyClient::AddStringProperty(AOMStringProperty property,
+                                                    const String& value) {
+  ax::mojom::blink::StringAttribute attribute;
+  switch (property) {
+    case AOMStringProperty::kKeyShortcuts:
+      attribute = ax::mojom::blink::StringAttribute::kKeyShortcuts;
+      break;
+    case AOMStringProperty::kRoleDescription:
+      attribute = ax::mojom::blink::StringAttribute::kRoleDescription;
+      break;
+    default:
+      return;
+  }
+  node_data_.AddStringAttribute(attribute, value.Utf8());
+}
+
+void AXNodeDataAOMPropertyClient::AddBooleanProperty(
+    AOMBooleanProperty property,
+    bool value) {
+  ax::mojom::blink::BoolAttribute attribute;
+  switch (property) {
+    case AOMBooleanProperty::kBusy:
+      attribute = ax::mojom::blink::BoolAttribute::kBusy;
+      break;
+    default:
+      return;
+  }
+  node_data_.AddBoolAttribute(attribute, value);
+}
+
+void AXNodeDataAOMPropertyClient::AddFloatProperty(AOMFloatProperty property,
+                                                   float value) {}
+
+void AXNodeDataAOMPropertyClient::AddRelationProperty(
+    AOMRelationProperty property,
+    const AccessibleNode& value) {}
+
+void AXNodeDataAOMPropertyClient::AddRelationListProperty(
+    AOMRelationListProperty property,
+    const AccessibleNodeList& relations) {}
 
 }  // namespace blink

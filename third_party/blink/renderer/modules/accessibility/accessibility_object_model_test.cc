@@ -271,26 +271,11 @@ class SparseAttributeAdapter : public AXSparseAttributeClient {
   SparseAttributeAdapter() = default;
   ~SparseAttributeAdapter() = default;
 
-  HashMap<AXBoolAttribute, bool> bool_attributes;
-  HashMap<AXIntAttribute, int32_t> int_attributes;
-  HashMap<AXUIntAttribute, uint32_t> uint_attributes;
-  HashMap<AXStringAttribute, String> string_attributes;
   HeapHashMap<AXObjectAttribute, Member<AXObject>> object_attributes;
   HeapHashMap<AXObjectVectorAttribute, Member<HeapVector<Member<AXObject>>>>
       object_vector_attributes;
 
  private:
-  void AddBoolAttribute(AXBoolAttribute attribute, bool value) override {
-    ASSERT_TRUE(bool_attributes.find(attribute) == bool_attributes.end());
-    bool_attributes.insert(attribute, value);
-  }
-
-  void AddStringAttribute(AXStringAttribute attribute,
-                          const String& value) override {
-    ASSERT_TRUE(string_attributes.find(attribute) == string_attributes.end());
-    string_attributes.insert(attribute, value);
-  }
-
   void AddObjectAttribute(AXObjectAttribute attribute,
                           AXObject& value) override {
     ASSERT_TRUE(object_attributes.find(attribute) == object_attributes.end());
@@ -331,10 +316,13 @@ TEST_F(AccessibilityObjectModelTest, SparseAttributes) {
   SparseAttributeAdapter sparse_attributes;
   ax_target->GetSparseAXAttributes(sparse_attributes);
 
-  ASSERT_EQ("Ctrl+K", sparse_attributes.string_attributes.at(
-                          AXStringAttribute::kAriaKeyShortcuts));
-  ASSERT_EQ("Widget", sparse_attributes.string_attributes.at(
-                          AXStringAttribute::kAriaRoleDescription));
+  ui::AXNodeData node_data;
+  ax_target->Serialize(&node_data, ui::kAXModeComplete);
+
+  ASSERT_EQ("Ctrl+K", node_data.GetStringAttribute(
+                          ax::mojom::blink::StringAttribute::kKeyShortcuts));
+  ASSERT_EQ("Widget", node_data.GetStringAttribute(
+                          ax::mojom::blink::StringAttribute::kRoleDescription));
   ASSERT_EQ(ax::mojom::Role::kListBoxOption,
             sparse_attributes.object_attributes
                 .at(AXObjectAttribute::kAriaActiveDescendant)
@@ -363,10 +351,10 @@ TEST_F(AccessibilityObjectModelTest, SparseAttributes) {
   SparseAttributeAdapter sparse_attributes2;
   ax_target->GetSparseAXAttributes(sparse_attributes2);
 
-  ASSERT_EQ("Ctrl+K", sparse_attributes2.string_attributes.at(
-                          AXStringAttribute::kAriaKeyShortcuts));
-  ASSERT_EQ("Widget", sparse_attributes2.string_attributes.at(
-                          AXStringAttribute::kAriaRoleDescription));
+  ASSERT_EQ("Ctrl+K", node_data.GetStringAttribute(
+                          ax::mojom::blink::StringAttribute::kKeyShortcuts));
+  ASSERT_EQ("Widget", node_data.GetStringAttribute(
+                          ax::mojom::blink::StringAttribute::kRoleDescription));
   ASSERT_EQ(ax::mojom::Role::kListBoxOption,
             sparse_attributes2.object_attributes
                 .at(AXObjectAttribute::kAriaActiveDescendant)

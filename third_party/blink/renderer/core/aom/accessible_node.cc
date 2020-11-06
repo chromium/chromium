@@ -455,32 +455,25 @@ int32_t AccessibleNode::GetPropertyOrARIAAttribute(Element* element,
   return attr_value.ToInt();
 }
 
-void AccessibleNode::GetAllAOMProperties(
-    AOMPropertyClient* client,
-    HashSet<QualifiedName>& shadowed_aria_attributes) {
+void AccessibleNode::GetAllAOMProperties(AOMPropertyClient* client) {
   for (auto& item : string_properties_) {
     client->AddStringProperty(item.first, item.second);
-    shadowed_aria_attributes.insert(GetCorrespondingARIAAttribute(item.first));
   }
   for (auto& item : boolean_properties_) {
     client->AddBooleanProperty(item.first, item.second);
-    shadowed_aria_attributes.insert(GetCorrespondingARIAAttribute(item.first));
   }
   for (auto& item : float_properties_) {
     client->AddFloatProperty(item.first, item.second);
-    shadowed_aria_attributes.insert(GetCorrespondingARIAAttribute(item.first));
   }
   for (auto& item : relation_properties_) {
     if (!item.second)
       continue;
     client->AddRelationProperty(item.first, *item.second);
-    shadowed_aria_attributes.insert(GetCorrespondingARIAAttribute(item.first));
   }
   for (auto& item : relation_list_properties_) {
     if (!item.second)
       continue;
     client->AddRelationListProperty(item.first, *item.second);
-    shadowed_aria_attributes.insert(GetCorrespondingARIAAttribute(item.first));
   }
 }
 

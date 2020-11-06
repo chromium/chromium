@@ -392,32 +392,6 @@ class SparseAttributeAXPropertyAdapter
   Member<AXObject> ax_object_;
   protocol::Array<AXProperty>& properties_;
 
-  void AddBoolAttribute(AXBoolAttribute attribute, bool value) override {
-    switch (attribute) {
-      case AXBoolAttribute::kAriaBusy:
-        properties_.emplace_back(
-            CreateProperty(AXPropertyNameEnum::Busy,
-                           CreateValue(value, AXValueTypeEnum::Boolean)));
-        break;
-    }
-  }
-
-  void AddStringAttribute(AXStringAttribute attribute,
-                          const String& value) override {
-    switch (attribute) {
-      case AXStringAttribute::kAriaKeyShortcuts:
-        properties_.emplace_back(
-            CreateProperty(AXPropertyNameEnum::Keyshortcuts,
-                           CreateValue(value, AXValueTypeEnum::String)));
-        break;
-      case AXStringAttribute::kAriaRoleDescription:
-        properties_.emplace_back(
-            CreateProperty(AXPropertyNameEnum::Roledescription,
-                           CreateValue(value, AXValueTypeEnum::String)));
-        break;
-    }
-  }
-
   void AddObjectAttribute(AXObjectAttribute attribute,
                           AXObject& object) override {
     switch (attribute) {
@@ -475,6 +449,44 @@ void FillRelationships(AXObject& ax_object,
                                       html_names::kAriaOwnsAttr, ax_object));
   }
   results.clear();
+}
+
+void FillSparseAttributes(AXObject& ax_object,
+                          protocol::Array<AXProperty>& properties) {
+  SparseAttributeAXPropertyAdapter adapter(ax_object, properties);
+  ax_object.GetSparseAXAttributes(adapter);
+
+  ui::AXNodeData node_data;
+  ax_object.Serialize(&node_data, ui::kAXModeComplete);
+
+  if (node_data.HasBoolAttribute(ax::mojom::blink::BoolAttribute::kBusy)) {
+    const auto is_busy =
+        node_data.GetBoolAttribute(ax::mojom::blink::BoolAttribute::kBusy);
+    properties.emplace_back(
+        CreateProperty(AXPropertyNameEnum::Busy,
+                       CreateValue(is_busy, AXValueTypeEnum::Boolean)));
+  }
+
+  if (node_data.HasStringAttribute(
+          ax::mojom::blink::StringAttribute::kKeyShortcuts)) {
+    const auto key_shortcuts = node_data.GetStringAttribute(
+        ax::mojom::blink::StringAttribute::kKeyShortcuts);
+    properties.emplace_back(
+        CreateProperty(AXPropertyNameEnum::Keyshortcuts,
+                       CreateValue(WTF::String(key_shortcuts.c_str()),
+                                   AXValueTypeEnum::String)));
+  }
+
+  if (node_data.HasStringAttribute(
+          ax::mojom::blink::StringAttribute::kRoleDescription)) {
+    const auto role_description = node_data.GetStringAttribute(
+        ax::mojom::blink::StringAttribute::kRoleDescription);
+    properties.emplace_back(
+        CreateProperty(AXPropertyNameEnum::Roledescription,
+                       CreateValue(WTF::String(role_description.c_str()),
+                                   AXValueTypeEnum::String)));
+  }
+  return;
 }
 
 std::unique_ptr<AXValue> CreateRoleNameValue(ax::mojom::Role role) {
@@ -675,9 +687,7 @@ std::unique_ptr<AXNode> InspectorAccessibilityAgent::BuildProtocolAXObject(
   FillWidgetStates(ax_object, *(properties.get()));
   FillRelationships(ax_object, *(properties.get()));
 
-  SparseAttributeAXPropertyAdapter adapter(ax_object, *properties);
-  ax_object.GetSparseAXAttributes(adapter);
-
+  FillSparseAttributes(ax_object, *properties);
   AXObject::NameSources name_sources;
   String computed_name = ax_object.GetName(&name_sources);
   if (!name_sources.IsEmpty()) {

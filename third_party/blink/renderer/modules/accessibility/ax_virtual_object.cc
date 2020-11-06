@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_virtual_object.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_sparse_attribute_setter.h"
 
 namespace blink {
 
@@ -85,5 +86,4 @@ void AXVirtualObject::Trace(Visitor* visitor) const {
   visitor->Trace(accessible_node_);
   AXObject::Trace(visitor);
 }
-
 }  // namespace blink

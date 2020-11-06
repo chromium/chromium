@@ -67,8 +67,6 @@ class BLINK_EXPORT WebAXSparseAttributeClient {
   WebAXSparseAttributeClient() = default;
   virtual ~WebAXSparseAttributeClient() = default;
 
-  virtual void AddBoolAttribute(WebAXBoolAttribute, bool) = 0;
-  virtual void AddStringAttribute(WebAXStringAttribute, const WebString&) = 0;
   virtual void AddObjectAttribute(WebAXObjectAttribute, const WebAXObject&) = 0;
   virtual void AddObjectVectorAttribute(WebAXObjectVectorAttribute,
                                         const WebVector<WebAXObject>&) = 0;

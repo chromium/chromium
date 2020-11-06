@@ -96,17 +96,6 @@ class WebAXSparseAttributeClientAdapter : public AXSparseAttributeClient {
  private:
   WebAXSparseAttributeClient& attribute_map_;
 
-  void AddBoolAttribute(AXBoolAttribute attribute, bool value) override {
-    attribute_map_.AddBoolAttribute(static_cast<WebAXBoolAttribute>(attribute),
-                                    value);
-  }
-
-  void AddStringAttribute(AXStringAttribute attribute,
-                          const String& value) override {
-    attribute_map_.AddStringAttribute(
-        static_cast<WebAXStringAttribute>(attribute), value);
-  }
-
   void AddObjectAttribute(AXObjectAttribute attribute,
                           AXObject& value) override {
     attribute_map_.AddObjectAttribute(

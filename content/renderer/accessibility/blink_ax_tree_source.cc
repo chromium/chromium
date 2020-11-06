@@ -93,33 +93,6 @@ class AXNodeDataSparseAttributeAdapter
  private:
   ui::AXNodeData* dst_;
 
-  void AddBoolAttribute(blink::WebAXBoolAttribute attribute,
-                        bool value) override {
-    switch (attribute) {
-      case blink::WebAXBoolAttribute::kAriaBusy:
-        dst_->AddBoolAttribute(ax::mojom::BoolAttribute::kBusy, value);
-        break;
-      default:
-        NOTREACHED();
-    }
-  }
-
-  void AddStringAttribute(blink::WebAXStringAttribute attribute,
-                          const blink::WebString& value) override {
-    switch (attribute) {
-      case blink::WebAXStringAttribute::kAriaKeyShortcuts:
-        dst_->AddStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts,
-                                 value.Utf8());
-        break;
-      case blink::WebAXStringAttribute::kAriaRoleDescription:
-        dst_->AddStringAttribute(ax::mojom::StringAttribute::kRoleDescription,
-                                 value.Utf8());
-        break;
-      default:
-        NOTREACHED();
-    }
-  }
-
   void AddObjectAttribute(WebAXObjectAttribute attribute,
                           const WebAXObject& value) override {
     switch (attribute) {

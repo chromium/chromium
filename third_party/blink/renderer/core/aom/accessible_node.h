@@ -190,11 +190,8 @@ class CORE_EXPORT AccessibleNode : public EventTargetWithInlineData {
                                              bool& is_null);
 
   // Iterates over all AOM properties. For each one, calls AOMPropertyClient
-  // with the value of the AOM property if set. Updates
-  // |shadowed_aria_attributes| to contain a list of the ARIA attributes that
-  // would be shadowed by these AOM properties.
-  void GetAllAOMProperties(AOMPropertyClient*,
-                           HashSet<QualifiedName>& shadowed_aria_attributes);
+  // with the value of the AOM property if set.
+  void GetAllAOMProperties(AOMPropertyClient*);
 
   AccessibleNode* activeDescendant() const;
   void setActiveDescendant(AccessibleNode*);

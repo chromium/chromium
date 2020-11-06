@@ -82,8 +82,6 @@ enum class AOMRelationListProperty;
 
 class AXSparseAttributeClient {
  public:
-  virtual void AddBoolAttribute(AXBoolAttribute, bool) = 0;
-  virtual void AddStringAttribute(AXStringAttribute, const String&) = 0;
   virtual void AddObjectAttribute(AXObjectAttribute, AXObject&) = 0;
   virtual void AddObjectVectorAttribute(AXObjectVectorAttribute,
                                         HeapVector<Member<AXObject>>*) = 0;

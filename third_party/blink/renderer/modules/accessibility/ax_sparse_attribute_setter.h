@@ -41,11 +41,12 @@ AXSparseAttributeSetterMap& GetSparseAttributeSetterMap();
 // AXSparseAttributeSetterMap will be used once all sparse attributes are
 // migrated.
 using AXSparseSetterFunc =
-    base::RepeatingCallback<void(ui::AXNodeData* node_data,
+    base::RepeatingCallback<void(AXObject* ax_object,
+                                 ui::AXNodeData* node_data,
                                  const AtomicString& value)>;
 using TempSetterMap = HashMap<QualifiedName, AXSparseSetterFunc>;
 
-TempSetterMap& GetTempSetterMap(ui::AXNodeData* node_data);
+TempSetterMap& GetTempSetterMap();
 
 // An implementation of AOMPropertyClient that calls
 // AXSparseAttributeClient for an AOM property.
@@ -68,6 +69,25 @@ class AXSparseAttributeAOMPropertyClient : public AOMPropertyClient {
  private:
   Persistent<AXObjectCacheImpl> ax_object_cache_;
   AXSparseAttributeClient& sparse_attribute_client_;
+};
+
+class AXNodeDataAOMPropertyClient : public AOMPropertyClient {
+ public:
+  AXNodeDataAOMPropertyClient(AXObjectCacheImpl& ax_object_cache,
+                              ui::AXNodeData& node_data)
+      : ax_object_cache_(ax_object_cache), node_data_(node_data) {}
+
+  void AddStringProperty(AOMStringProperty, const String& value) override;
+  void AddBooleanProperty(AOMBooleanProperty, bool value) override;
+  void AddFloatProperty(AOMFloatProperty, float value) override;
+  void AddRelationProperty(AOMRelationProperty,
+                           const AccessibleNode& value) override;
+  void AddRelationListProperty(AOMRelationListProperty,
+                               const AccessibleNodeList& relations) override;
+
+ private:
+  Persistent<AXObjectCacheImpl> ax_object_cache_;
+  ui::AXNodeData& node_data_;
 };
 
 }  // namespace blink
