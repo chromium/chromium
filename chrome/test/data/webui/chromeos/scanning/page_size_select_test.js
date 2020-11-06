@@ -9,6 +9,8 @@ import {getPageSizeString} from 'chrome://scanning/scanning_app_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
+import {changeSelect} from './scanning_app_test_utils.js';
+
 const PageSize = {
   A4: chromeos.scanning.mojom.PageSize.kIsoA4,
   Letter: chromeos.scanning.mojom.PageSize.kNaLetter,
@@ -33,7 +35,8 @@ export function pageSizeSelectTest() {
 
   test('initializePageSizeSelect', () => {
     // Before options are added, the dropdown should be disabled and empty.
-    const select = pageSizeSelect.$$('select');
+    const select =
+        /** @type {!HTMLSelectElement} */ (pageSizeSelect.$$('select'));
     assertTrue(!!select);
     assertTrue(select.disabled);
     assertEquals(0, select.length);
@@ -55,11 +58,12 @@ export function pageSizeSelectTest() {
     assertEquals(firstPageSize.toString(), select.value);
 
     // Selecting a different option should update the selected value.
-    select.value = secondPageSize.toString();
-    select.dispatchEvent(new CustomEvent('change'));
-    flush();
-
-    assertEquals(secondPageSize.toString(), pageSizeSelect.selectedPageSize);
+    return changeSelect(
+               select, secondPageSize.toString(), /* selectedIndex */ null)
+        .then(() => {
+          assertEquals(
+              secondPageSize.toString(), pageSizeSelect.selectedPageSize);
+        });
   });
 
   test('pageSizeSelectDisabled', () => {

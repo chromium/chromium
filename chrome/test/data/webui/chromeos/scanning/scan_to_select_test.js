@@ -7,8 +7,8 @@ import 'chrome://scanning/scan_to_select.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
 
+import {changeSelect} from './scanning_app_test_utils.js';
 import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
 
 export function scanToSelectTest() {
@@ -58,10 +58,9 @@ export function scanToSelectTest() {
     // Simulate clicking the 'Select folder' option.
     scanningBrowserProxy.setSelectedPath(
         {baseName: myDownloads, filePath: myDownloadsPath});
-    const select = scanToSelect.$$('select');
-    select.selectedIndex = 1;
-    select.dispatchEvent(new CustomEvent('change'));
-    return flushTasks()
+    const select =
+        /** @type {!HTMLSelectElement} */ (scanToSelect.$$('select'));
+    return changeSelect(select, /* value */ null, /* selectedIndex */ 1)
         .then(() => {
           assertEquals(myDownloadsPath, scanToSelect.selectedFilePath);
           assertEquals(
@@ -71,9 +70,7 @@ export function scanToSelectTest() {
 
           scanningBrowserProxy.setSelectedPath(
               {baseName: googleDrive, filePath: googleDrivePath});
-          select.selectedIndex = 1;
-          select.dispatchEvent(new CustomEvent('change'));
-          return flushTasks();
+          return changeSelect(select, /* value */ null, /* selectedIndex */ 1);
         })
         .then(() => {
           assertEquals(googleDrivePath, scanToSelect.selectedFilePath);
@@ -93,10 +90,9 @@ export function scanToSelectTest() {
     // Simulate clicking the 'Select folder' option.
     scanningBrowserProxy.setSelectedPath(
         {baseName: myDownloads, filePath: myDownloadsPath});
-    const select = scanToSelect.$$('select');
-    select.selectedIndex = 1;
-    select.dispatchEvent(new CustomEvent('change'));
-    return flushTasks()
+    const select =
+        /** @type {!HTMLSelectElement} */ (scanToSelect.$$('select'));
+    return changeSelect(select, /* value */ null, /* selectedIndex */ 1)
         .then(() => {
           assertEquals(myDownloadsPath, scanToSelect.selectedFilePath);
           assertEquals(
@@ -106,9 +102,7 @@ export function scanToSelectTest() {
 
           // Simulate canceling the select dialog
           scanningBrowserProxy.setSelectedPath({baseName: '', filePath: ''});
-          select.selectedIndex = 1;
-          select.dispatchEvent(new CustomEvent('change'));
-          return flushTasks();
+          return changeSelect(select, /* value */ null, /* selectedIndex */ 1);
         })
         .then(() => {
           assertEquals(myDownloadsPath, scanToSelect.selectedFilePath);

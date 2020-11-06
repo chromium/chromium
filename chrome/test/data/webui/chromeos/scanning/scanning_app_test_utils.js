@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {flushTasks} from '../../test_util.m.js';
+
 /**
  * @param {!mojoBase.mojom.UnguessableToken} id
  * @param {string} displayName
@@ -27,11 +29,28 @@ export function createScannerSource(type, name, pageSizes) {
  * @param {string} str
  * @return {!mojoBase.mojom.String16}
  */
-export function strToMojoString16(str) {
+function strToMojoString16(str) {
   let arr = [];
   for (var i = 0; i < str.length; i++) {
     arr[i] = str.charCodeAt(i);
   }
 
   return {data: arr};
+}
+
+/**
+ * @param {!HTMLSelectElement} select
+ * @param {?string} value
+ * @param {?number} selectedIndex
+ * @return {!Promise}
+ */
+export function changeSelect(select, value, selectedIndex) {
+  if (value) {
+    select.value = value;
+  }
+  if (selectedIndex) {
+    select.selectedIndex = selectedIndex;
+  }
+  select.dispatchEvent(new CustomEvent('change'));
+  return flushTasks();
 }

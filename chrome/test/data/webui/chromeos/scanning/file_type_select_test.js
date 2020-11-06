@@ -8,6 +8,8 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
+import {changeSelect} from './scanning_app_test_utils.js';
+
 const FileType = {
   JPG: chromeos.scanning.mojom.FileType.kJpg,
   PDF: chromeos.scanning.mojom.FileType.kPdf,
@@ -33,7 +35,8 @@ export function fileTypeSelectTest() {
   test('initializeFileTypeSelect', () => {
     // The dropdown should be initialized as enabled with three options. The
     // default option should be PNG.
-    const select = fileTypeSelect.$$('select');
+    const select =
+        /** @type {!HTMLSelectElement} */ (fileTypeSelect.$$('select'));
     assertTrue(!!select);
     assertFalse(select.disabled);
     assertEquals(3, select.length);
@@ -43,10 +46,11 @@ export function fileTypeSelectTest() {
     assertEquals(FileType.PNG.toString(), select.value);
 
     // Selecting a different option should update the selected value.
-    select.value = FileType.JPG.toString();
-    select.dispatchEvent(new CustomEvent('change'));
-    flush();
-
-    assertEquals(FileType.JPG.toString(), fileTypeSelect.selectedFileType);
+    return changeSelect(
+               select, FileType.JPG.toString(), /* selectedIndex */ null)
+        .then(() => {
+          assertEquals(
+              FileType.JPG.toString(), fileTypeSelect.selectedFileType);
+        });
   });
 }
