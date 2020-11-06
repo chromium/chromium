@@ -21,6 +21,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "content/browser/service_worker/service_worker_disk_cache.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -578,22 +579,74 @@ void ServiceWorkerStorage::PerformStorageCleanup(base::OnceClosure callback) {
       std::move(callback));
 }
 
-std::unique_ptr<ServiceWorkerResourceReaderImpl>
-ServiceWorkerStorage::CreateResourceReader(int64_t resource_id) {
-  return std::make_unique<ServiceWorkerResourceReaderImpl>(
-      resource_id, disk_cache()->GetWeakPtr());
+void ServiceWorkerStorage::CreateResourceReader(
+    int64_t resource_id,
+    mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceReader>
+        receiver) {
+  DCHECK_NE(resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
+  switch (state_) {
+    case STORAGE_STATE_DISABLED:
+      return;
+    case STORAGE_STATE_INITIALIZING:
+    case STORAGE_STATE_UNINITIALIZED:
+      LazyInitialize(base::BindOnce(&ServiceWorkerStorage::CreateResourceReader,
+                                    weak_factory_.GetWeakPtr(), resource_id,
+                                    std::move(receiver)));
+      return;
+    case STORAGE_STATE_INITIALIZED:
+      break;
+  }
+
+  mojo::MakeSelfOwnedReceiver(std::make_unique<ServiceWorkerResourceReaderImpl>(
+                                  resource_id, disk_cache()->GetWeakPtr()),
+                              std::move(receiver));
 }
 
-std::unique_ptr<ServiceWorkerResourceWriterImpl>
-ServiceWorkerStorage::CreateResourceWriter(int64_t resource_id) {
-  return std::make_unique<ServiceWorkerResourceWriterImpl>(
-      resource_id, disk_cache()->GetWeakPtr());
+void ServiceWorkerStorage::CreateResourceWriter(
+    int64_t resource_id,
+    mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceWriter>
+        receiver) {
+  DCHECK_NE(resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
+  switch (state_) {
+    case STORAGE_STATE_DISABLED:
+      return;
+    case STORAGE_STATE_INITIALIZING:
+    case STORAGE_STATE_UNINITIALIZED:
+      LazyInitialize(base::BindOnce(&ServiceWorkerStorage::CreateResourceWriter,
+                                    weak_factory_.GetWeakPtr(), resource_id,
+                                    std::move(receiver)));
+      return;
+    case STORAGE_STATE_INITIALIZED:
+      break;
+  }
+
+  mojo::MakeSelfOwnedReceiver(std::make_unique<ServiceWorkerResourceWriterImpl>(
+                                  resource_id, disk_cache()->GetWeakPtr()),
+                              std::move(receiver));
 }
 
-std::unique_ptr<ServiceWorkerResourceMetadataWriterImpl>
-ServiceWorkerStorage::CreateResourceMetadataWriter(int64_t resource_id) {
-  return std::make_unique<ServiceWorkerResourceMetadataWriterImpl>(
-      resource_id, disk_cache()->GetWeakPtr());
+void ServiceWorkerStorage::CreateResourceMetadataWriter(
+    int64_t resource_id,
+    mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceMetadataWriter>
+        receiver) {
+  DCHECK_NE(resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
+  switch (state_) {
+    case STORAGE_STATE_DISABLED:
+      return;
+    case STORAGE_STATE_INITIALIZING:
+    case STORAGE_STATE_UNINITIALIZED:
+      LazyInitialize(base::BindOnce(
+          &ServiceWorkerStorage::CreateResourceMetadataWriter,
+          weak_factory_.GetWeakPtr(), resource_id, std::move(receiver)));
+      return;
+    case STORAGE_STATE_INITIALIZED:
+      break;
+  }
+
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<ServiceWorkerResourceMetadataWriterImpl>(
+          resource_id, disk_cache()->GetWeakPtr()),
+      std::move(receiver));
 }
 
 void ServiceWorkerStorage::StoreUncommittedResourceId(

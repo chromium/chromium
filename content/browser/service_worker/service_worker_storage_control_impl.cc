@@ -7,7 +7,6 @@
 #include "content/browser/service_worker/service_worker_resource_ops.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
 
@@ -249,26 +248,20 @@ void ServiceWorkerStorageControlImpl::GetNewResourceId(
 void ServiceWorkerStorageControlImpl::CreateResourceReader(
     int64_t resource_id,
     mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceReader> reader) {
-  DCHECK_NE(resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
-  mojo::MakeSelfOwnedReceiver(storage_->CreateResourceReader(resource_id),
-                              std::move(reader));
+  storage_->CreateResourceReader(resource_id, std::move(reader));
 }
 
 void ServiceWorkerStorageControlImpl::CreateResourceWriter(
     int64_t resource_id,
     mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceWriter> writer) {
-  DCHECK_NE(resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
-  mojo::MakeSelfOwnedReceiver(storage_->CreateResourceWriter(resource_id),
-                              std::move(writer));
+  storage_->CreateResourceWriter(resource_id, std::move(writer));
 }
 
 void ServiceWorkerStorageControlImpl::CreateResourceMetadataWriter(
     int64_t resource_id,
     mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceMetadataWriter>
         writer) {
-  DCHECK_NE(resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
-  mojo::MakeSelfOwnedReceiver(
-      storage_->CreateResourceMetadataWriter(resource_id), std::move(writer));
+  storage_->CreateResourceMetadataWriter(resource_id, std::move(writer));
 }
 
 void ServiceWorkerStorageControlImpl::StoreUncommittedResourceId(

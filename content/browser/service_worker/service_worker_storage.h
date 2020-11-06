@@ -179,12 +179,18 @@ class CONTENT_EXPORT ServiceWorkerStorage {
 
   // Creates a resource accessor. Never returns nullptr but an accessor may be
   // associated with the disabled disk cache if the storage is disabled.
-  std::unique_ptr<ServiceWorkerResourceReaderImpl> CreateResourceReader(
-      int64_t resource_id);
-  std::unique_ptr<ServiceWorkerResourceWriterImpl> CreateResourceWriter(
-      int64_t resource_id);
-  std::unique_ptr<ServiceWorkerResourceMetadataWriterImpl>
-  CreateResourceMetadataWriter(int64_t resource_id);
+  void CreateResourceReader(
+      int64_t resource_id,
+      mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceReader>
+          receiver);
+  void CreateResourceWriter(
+      int64_t resource_id,
+      mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceWriter>
+          receiver);
+  void CreateResourceMetadataWriter(
+      int64_t resource_id,
+      mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceMetadataWriter>
+          receiver);
 
   // Adds |resource_id| to the set of resources that are in the disk cache
   // but not yet stored with a registration.

@@ -20,6 +20,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "ipc/ipc_message.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_response_headers.h"
@@ -77,88 +78,6 @@ void DatabaseStatusCallback(
     ServiceWorkerDatabase::Status status) {
   *result = status;
   std::move(quit_closure).Run();
-}
-
-ReadResponseHeadResult ReadResponseHead(ServiceWorkerStorage* storage,
-                                        int64_t id) {
-  std::unique_ptr<ServiceWorkerResourceReaderImpl> reader =
-      storage->CreateResourceReader(id);
-
-  ReadResponseHeadResult out;
-  base::RunLoop loop;
-  reader->ReadResponseHead(base::BindLambdaForTesting(
-      [&](int result, network::mojom::URLResponseHeadPtr response_head,
-          base::Optional<mojo_base::BigBuffer> metadata) {
-        out.result = result;
-        out.response_head = std::move(response_head);
-        out.metadata = std::move(metadata);
-        loop.Quit();
-      }));
-  loop.Run();
-  return out;
-}
-
-int WriteBasicResponse(ServiceWorkerStorage* storage, int64_t id) {
-  const std::string kHttpHeaders =
-      "HTTP/1.0 200 HONKYDORY\0Content-Length: 5\0\0";
-  const std::string kHttpBody = "Hello";
-
-  std::string headers(kHttpHeaders, base::size(kHttpHeaders));
-  mojo_base::BigBuffer body(
-      base::as_bytes(base::make_span(kHttpBody.data(), kHttpBody.length())));
-
-  std::unique_ptr<ServiceWorkerResourceWriterImpl> writer =
-      storage->CreateResourceWriter(id);
-
-  int rv = 0;
-  {
-    auto response_head = network::mojom::URLResponseHead::New();
-    response_head->request_time = base::Time::Now();
-    response_head->response_time = base::Time::Now();
-    response_head->headers = new net::HttpResponseHeaders(headers);
-    response_head->content_length = body.size();
-
-    base::RunLoop loop;
-    writer->WriteResponseHead(std::move(response_head),
-                              base::BindLambdaForTesting([&](int result) {
-                                rv = result;
-                                loop.Quit();
-                              }));
-    loop.Run();
-    if (rv < 0)
-      return rv;
-  }
-
-  {
-    base::RunLoop loop;
-    writer->WriteData(std::move(body),
-                      base::BindLambdaForTesting([&](int result) {
-                        rv = result;
-                        loop.Quit();
-                      }));
-    loop.Run();
-  }
-
-  return rv;
-}
-
-int WriteResponseMetadata(ServiceWorkerStorage* storage,
-                          int64_t id,
-                          const std::string& metadata) {
-  mojo_base::BigBuffer buffer(
-      base::as_bytes(base::make_span(metadata.data(), metadata.length())));
-
-  std::unique_ptr<ServiceWorkerResourceMetadataWriterImpl> metadata_writer =
-      storage->CreateResourceMetadataWriter(id);
-  int rv = 0;
-  base::RunLoop loop;
-  metadata_writer->WriteMetadata(std::move(buffer),
-                                 base::BindLambdaForTesting([&](int result) {
-                                   rv = result;
-                                   loop.Quit();
-                                 }));
-  loop.Run();
-  return rv;
 }
 
 class ServiceWorkerStorageTest : public testing::Test {
@@ -490,6 +409,101 @@ class ServiceWorkerStorageTest : public testing::Test {
     return result;
   }
 
+  ReadResponseHeadResult ReadResponseHead(int64_t id) {
+    ReadResponseHeadResult out;
+    base::RunLoop loop;
+
+    mojo::Remote<storage::mojom::ServiceWorkerResourceReader> reader;
+    storage()->CreateResourceReader(id, reader.BindNewPipeAndPassReceiver());
+    reader.set_disconnect_handler(base::BindLambdaForTesting([&]() {
+      out.result = net::ERR_CACHE_MISS;
+      loop.Quit();
+    }));
+
+    reader->ReadResponseHead(base::BindLambdaForTesting(
+        [&](int result, network::mojom::URLResponseHeadPtr response_head,
+            base::Optional<mojo_base::BigBuffer> metadata) {
+          out.result = result;
+          out.response_head = std::move(response_head);
+          out.metadata = std::move(metadata);
+          loop.Quit();
+        }));
+    loop.Run();
+    return out;
+  }
+
+  int WriteBasicResponse(int64_t id) {
+    const std::string kHttpHeaders =
+        "HTTP/1.0 200 HONKYDORY\0Content-Length: 5\0\0";
+    const std::string kHttpBody = "Hello";
+
+    std::string headers(kHttpHeaders, base::size(kHttpHeaders));
+    mojo_base::BigBuffer body(
+        base::as_bytes(base::make_span(kHttpBody.data(), kHttpBody.length())));
+
+    mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> writer;
+    storage()->CreateResourceWriter(id, writer.BindNewPipeAndPassReceiver());
+
+    int rv = 0;
+    {
+      auto response_head = network::mojom::URLResponseHead::New();
+      response_head->request_time = base::Time::Now();
+      response_head->response_time = base::Time::Now();
+      response_head->headers = new net::HttpResponseHeaders(headers);
+      response_head->content_length = body.size();
+
+      base::RunLoop loop;
+      writer.set_disconnect_handler(base::BindLambdaForTesting([&]() {
+        rv = net::ERR_FAILED;
+        loop.Quit();
+      }));
+      writer->WriteResponseHead(std::move(response_head),
+                                base::BindLambdaForTesting([&](int result) {
+                                  rv = result;
+                                  loop.Quit();
+                                }));
+      loop.Run();
+      if (rv < 0)
+        return rv;
+    }
+
+    {
+      base::RunLoop loop;
+      writer->WriteData(std::move(body),
+                        base::BindLambdaForTesting([&](int result) {
+                          rv = result;
+                          loop.Quit();
+                        }));
+      loop.Run();
+    }
+
+    return rv;
+  }
+
+  int WriteResponseMetadata(int64_t id, const std::string& metadata) {
+    mojo_base::BigBuffer buffer(
+        base::as_bytes(base::make_span(metadata.data(), metadata.length())));
+
+    mojo::Remote<storage::mojom::ServiceWorkerResourceMetadataWriter>
+        metadata_writer;
+    storage()->CreateResourceMetadataWriter(
+        id, metadata_writer.BindNewPipeAndPassReceiver());
+
+    int rv = 0;
+    base::RunLoop loop;
+    metadata_writer.set_disconnect_handler(base::BindLambdaForTesting([&]() {
+      rv = net::ERR_FAILED;
+      loop.Quit();
+    }));
+    metadata_writer->WriteMetadata(std::move(buffer),
+                                   base::BindLambdaForTesting([&](int result) {
+                                     rv = result;
+                                     loop.Quit();
+                                   }));
+    loop.Run();
+    return rv;
+  }
+
   ServiceWorkerDatabase::Status StoreRegistrationData(
       storage::mojom::ServiceWorkerRegistrationDataPtr registration_data,
       std::vector<ResourceRecord> resources) {
@@ -559,11 +573,10 @@ TEST_F(ServiceWorkerStorageTest, DisabledStorage) {
 
   // Response reader and writer created by the disabled storage should fail to
   // access the disk cache.
-  ReadResponseHeadResult out = ReadResponseHead(storage(), kResourceId);
+  ReadResponseHeadResult out = ReadResponseHead(kResourceId);
   EXPECT_EQ(out.result, net::ERR_CACHE_MISS);
-  EXPECT_EQ(WriteBasicResponse(storage(), kResourceId), net::ERR_FAILED);
-  EXPECT_EQ(WriteResponseMetadata(storage(), kResourceId, "foo"),
-            net::ERR_FAILED);
+  EXPECT_EQ(WriteBasicResponse(kResourceId), net::ERR_FAILED);
+  EXPECT_EQ(WriteResponseMetadata(kResourceId, "foo"), net::ERR_FAILED);
 
   const std::string kUserDataKey = "key";
   std::vector<std::string> user_data_out;
@@ -829,7 +842,7 @@ class ServiceWorkerStorageDiskTest : public ServiceWorkerStorageTest {
 
     ASSERT_EQ(StoreRegistrationData(std::move(data), std::move(resources)),
               ServiceWorkerDatabase::Status::kOk);
-    WriteBasicResponse(storage(), 1);
+    WriteBasicResponse(1);
   }
 };
 
