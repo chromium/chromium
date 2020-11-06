@@ -19,7 +19,7 @@
 #include "chrome/renderer/lite_video/lite_video_url_loader_throttle.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_params.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_url_loader_throttle.h"
-#include "components/prerender/renderer/prerender_helper.h"
+#include "components/no_state_prefetch/renderer/prerender_helper.h"
 #include "components/safe_browsing/content/renderer/renderer_url_loader_throttle.h"
 #include "components/safe_browsing/core/features.h"
 #include "content/public/common/content_features.h"

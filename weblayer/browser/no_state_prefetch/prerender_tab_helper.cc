@@ -4,7 +4,7 @@
 
 #include "weblayer/browser/no_state_prefetch/prerender_tab_helper.h"
 
-#include "components/prerender/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "weblayer/browser/no_state_prefetch/prerender_manager_factory.h"

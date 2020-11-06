@@ -5,7 +5,7 @@
 #include "weblayer/browser/safe_browsing/url_checker_delegate_impl.h"
 
 #include "base/bind.h"
-#include "components/prerender/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_task_traits.h"

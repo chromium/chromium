@@ -7,7 +7,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
-#include "components/prerender/browser/prerender_contents.h"
+#include "components/no_state_prefetch/browser/prerender_contents.h"
 #include "components/safe_browsing/core/features.h"
 #include "content/public/browser/navigation_handle.h"
 

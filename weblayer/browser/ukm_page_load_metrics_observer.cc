@@ -5,8 +5,8 @@
 #include "weblayer/browser/ukm_page_load_metrics_observer.h"
 
 #include "build/build_config.h"
-#include "components/prerender/browser/prerender_manager.h"
-#include "components/prerender/browser/prerender_util.h"
+#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/prerender_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"

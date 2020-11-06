@@ -21,7 +21,7 @@
 #include "chrome/renderer/custom_menu_commands.h"
 #include "chrome/renderer/plugins/plugin_uma.h"
 #include "components/content_settings/renderer/content_settings_agent_impl.h"
-#include "components/prerender/renderer/prerender_observer_list.h"
+#include "components/no_state_prefetch/renderer/prerender_observer_list.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/untrustworthy_context_menu_params.h"

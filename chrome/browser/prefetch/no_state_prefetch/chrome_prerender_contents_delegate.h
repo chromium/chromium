@@ -4,7 +4,7 @@
 #ifndef CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_CHROME_PRERENDER_CONTENTS_DELEGATE_H_
 #define CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_CHROME_PRERENDER_CONTENTS_DELEGATE_H_
 
-#include "components/prerender/browser/prerender_contents_delegate.h"
+#include "components/no_state_prefetch/browser/prerender_contents_delegate.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 

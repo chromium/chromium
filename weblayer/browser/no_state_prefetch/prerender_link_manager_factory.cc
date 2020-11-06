@@ -5,8 +5,8 @@
 #include "weblayer/browser/no_state_prefetch/prerender_link_manager_factory.h"
 
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/prerender/browser/prerender_link_manager.h"
-#include "components/prerender/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/prerender_link_manager.h"
+#include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "weblayer/browser/no_state_prefetch/prerender_manager_factory.h"
 
 namespace weblayer {

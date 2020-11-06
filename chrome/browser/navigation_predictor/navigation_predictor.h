@@ -15,7 +15,7 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "components/prerender/browser/prerender_handle.h"
+#include "components/no_state_prefetch/browser/prerender_handle.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

@@ -4,8 +4,8 @@
 
 #include "weblayer/browser/no_state_prefetch/prerender_utils.h"
 
-#include "components/prerender/browser/prerender_contents.h"
-#include "components/prerender/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/prerender_contents.h"
+#include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "weblayer/browser/no_state_prefetch/prerender_manager_factory.h"
 

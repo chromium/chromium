@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_proxying_url_loader_factory.h"
-#include "components/prerender/browser/prerender_handle.h"
+#include "components/no_state_prefetch/browser/prerender_handle.h"
 #include "content/public/browser/content_browser_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

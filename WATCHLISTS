@@ -1593,7 +1593,7 @@
     'prerender': {
       'filepath': 'chrome/browser/prefetch/no_state_prefetch/' \
                   '|content/browser/prerender/' \
-                  '|components/prerender/'
+                  '|components/no_state_prefetch/'
     },
     'presentation': {
       'filepath': 'content/browser/presentation/' \

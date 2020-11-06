@@ -6,9 +6,9 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
-#include "components/prerender/browser/prerender_contents.h"
-#include "components/prerender/browser/prerender_processor_impl.h"
-#include "components/prerender/common/prerender_canceler.mojom.h"
+#include "components/no_state_prefetch/browser/prerender_contents.h"
+#include "components/no_state_prefetch/browser/prerender_processor_impl.h"
+#include "components/no_state_prefetch/common/prerender_canceler.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"

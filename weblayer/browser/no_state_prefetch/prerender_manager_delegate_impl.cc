@@ -4,7 +4,7 @@
 
 #include "weblayer/browser/no_state_prefetch/prerender_manager_delegate_impl.h"
 
-#include "components/prerender/browser/prerender_contents_delegate.h"
+#include "components/no_state_prefetch/browser/prerender_contents_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "weblayer/browser/browser_context_impl.h"

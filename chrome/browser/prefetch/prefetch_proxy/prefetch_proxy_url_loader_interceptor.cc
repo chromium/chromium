@@ -21,7 +21,7 @@
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_url_loader.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetched_mainframe_response_container.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/prerender/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"

@@ -7,7 +7,7 @@
 
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-#include "components/prerender/browser/prerender_link_manager.h"
+#include "components/no_state_prefetch/browser/prerender_link_manager.h"
 
 namespace content {
 class BrowserContext;

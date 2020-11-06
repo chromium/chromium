@@ -5,7 +5,7 @@
 #include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_processor_impl_delegate.h"
 
 #include "chrome/browser/prefetch/no_state_prefetch/prerender_link_manager_factory.h"
-#include "components/prerender/browser/prerender_link_manager.h"
+#include "components/no_state_prefetch/browser/prerender_link_manager.h"
 #include "content/public/browser/browser_context.h"
 
 namespace prerender {

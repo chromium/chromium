@@ -13,7 +13,7 @@
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #include "components/navigation_interception/intercept_navigation_throttle.h"
 #include "components/navigation_interception/navigation_params.h"
-#include "components/prerender/browser/prerender_contents.h"
+#include "components/no_state_prefetch/browser/prerender_contents.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"

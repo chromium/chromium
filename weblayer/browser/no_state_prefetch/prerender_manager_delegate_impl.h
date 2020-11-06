@@ -6,7 +6,7 @@
 #define WEBLAYER_BROWSER_NO_STATE_PREFETCH_PRERENDER_MANAGER_DELEGATE_IMPL_H_
 
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/prerender/browser/prerender_manager_delegate.h"
+#include "components/no_state_prefetch/browser/prerender_manager_delegate.h"
 
 namespace content {
 class BrowserContext;

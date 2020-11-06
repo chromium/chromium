@@ -5,8 +5,8 @@
 #include "weblayer/browser/no_state_prefetch/prerender_controller_impl.h"
 
 #include "build/build_config.h"
-#include "components/prerender/browser/prerender_handle.h"
-#include "components/prerender/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/prerender_handle.h"
+#include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"

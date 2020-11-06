@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "components/prerender/renderer/prerender_helper.h"
+#include "components/no_state_prefetch/renderer/prerender_helper.h"
 #include "components/safe_browsing/content/renderer/renderer_url_loader_throttle.h"
 #include "content/public/renderer/render_thread.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"

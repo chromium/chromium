@@ -5,7 +5,7 @@
 #ifndef WEBLAYER_BROWSER_NO_STATE_PREFETCH_PRERENDER_PROCESSOR_IMPL_DELEGATE_IMPL_H_
 #define WEBLAYER_BROWSER_NO_STATE_PREFETCH_PRERENDER_PROCESSOR_IMPL_DELEGATE_IMPL_H_
 
-#include "components/prerender/browser/prerender_processor_impl_delegate.h"
+#include "components/no_state_prefetch/browser/prerender_processor_impl_delegate.h"
 
 namespace content {
 class BrowserContext;

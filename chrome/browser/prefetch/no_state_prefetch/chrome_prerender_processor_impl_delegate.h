@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_CHROME_PRERENDER_PROCESSOR_IMPL_DELEGATE_H_
 #define CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_CHROME_PRERENDER_PROCESSOR_IMPL_DELEGATE_H_
 
-#include "components/prerender/browser/prerender_processor_impl_delegate.h"
+#include "components/no_state_prefetch/browser/prerender_processor_impl_delegate.h"
 
 namespace content {
 class BrowserContext;

@@ -27,7 +27,7 @@
 #include "chrome/browser/reputation/reputation_service.h"
 #include "components/lookalikes/core/lookalike_url_ui_util.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
-#include "components/prerender/browser/prerender_contents.h"
+#include "components/no_state_prefetch/browser/prerender_contents.h"
 #include "components/reputation/core/safety_tips_config.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/ukm/content/source_url_recorder.h"
