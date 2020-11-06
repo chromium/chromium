@@ -547,9 +547,11 @@ public class LocationBarLayout
             return;
         }
 
+        // Ensure the UrlBar has focus before entering text. If the UrlBar is not focused,
+        // autocomplete text will be updated but the visible text will not.
+        setUrlBarFocus(true, null, OmniboxFocusReason.SEARCH_QUERY);
         setUrlBarText(UrlBarData.forNonUrlText(query), UrlBar.ScrollType.NO_SCROLL,
                 SelectionState.SELECT_ALL);
-        setUrlBarFocus(true, null, OmniboxFocusReason.SEARCH_QUERY);
         mAutocompleteCoordinator.startAutocompleteForQuery(query);
         post(new Runnable() {
             @Override

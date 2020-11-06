@@ -247,6 +247,18 @@ public class LocationBarLayoutTest {
         });
     }
 
+    @Test
+    @SmallTest
+    public void testSetSearchQueryFocuses() {
+        final LocationBarLayout locationBar = getLocationBar();
+        final String query = "testing query";
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            locationBar.setSearchQuery(query);
+            Assert.assertEquals(query, locationBar.mUrlCoordinator.getTextWithoutAutocomplete());
+        });
+    }
+
     /*
      *  Search engine logo tests.
      */
