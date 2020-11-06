@@ -106,7 +106,8 @@ const char kURLsToNotCheckComplianceOfUploadedContent[] =
     "policy.urls_to_not_check_compliance_of_uploaded_content";
 const char kAdvancedProtectionAllowed[] =
     "safebrowsing.advanced_protection_allowed";
-
+const char kSafeBrowsingMetricsLastLogTime[] =
+    "safebrowsing.metrics_last_log_time";
 }  // namespace prefs
 
 namespace safe_browsing {
@@ -220,6 +221,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
       REAL_TIME_CHECK_DISABLED);
+  registry->RegisterInt64Pref(prefs::kSafeBrowsingMetricsLastLogTime, 0);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

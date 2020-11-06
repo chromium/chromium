@@ -114,6 +114,10 @@ extern const char kURLsToNotCheckComplianceOfUploadedContent[];
 // features to users enrolled in the Advanced Protection Program.
 extern const char kAdvancedProtectionAllowed[];
 
+// Integer epoch timestamp in seconds. Indicates the last logging time of Safe
+// Browsing metrics.
+extern const char kSafeBrowsingMetricsLastLogTime[];
+
 }  // namespace prefs
 
 namespace safe_browsing {
@@ -219,6 +223,8 @@ enum DelayDeliveryUntilVerdictValues {
 };
 
 // Enum representing possible values of the Safe Browsing state.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.safe_browsing
 enum SafeBrowsingState {
@@ -228,6 +234,8 @@ enum SafeBrowsingState {
   STANDARD_PROTECTION = 1,
   // The user selected enhanced protection.
   ENHANCED_PROTECTION = 2,
+
+  kMaxValue = ENHANCED_PROTECTION,
 };
 
 enum EnterpriseRealTimeUrlCheckMode {

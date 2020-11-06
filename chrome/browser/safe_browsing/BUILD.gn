@@ -117,6 +117,7 @@ static_library("safe_browsing") {
       "user_interaction_observer.h",
     ]
     deps += [
+      ":metrics_collector",
       ":url_lookup_service_factory",
       ":verdict_cache_manager_factory",
       "//chrome/common/safe_browsing:proto",
@@ -374,6 +375,23 @@ static_library("advanced_protection") {
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/identity_manager",
+    "//content/public/browser",
+  ]
+}
+
+source_set("metrics_collector") {
+  sources = [
+    "safe_browsing_metrics_collector.cc",
+    "safe_browsing_metrics_collector.h",
+    "safe_browsing_metrics_collector_factory.cc",
+    "safe_browsing_metrics_collector_factory.h",
+  ]
+
+  deps = [
+    "//components/keyed_service/content",
+    "//components/prefs",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//content/public/browser",
   ]
 }

@@ -64157,6 +64157,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="Disable Safe Browsing dialog denied."/>
 </enum>
 
+<enum name="SafeBrowsingState">
+  <int value="0" label="Safe Browsing disabled."/>
+  <int value="1" label="Standard protection."/>
+  <int value="2" label="Enhanced protection."/>
+</enum>
+
 <enum name="SafeBrowsingStoreAvailabilityResult">
   <int value="0" label="Unknown"/>
   <int value="1" label="Not Enabled"/>
