@@ -956,6 +956,10 @@ message SelectorProto {
 
   // A filter that starts with one or more elements and returns one on more
   // elements. Filters are meant to be applied sequentially.
+  //
+  // The returned elements will be sorted by their order in the document.
+  // Elements that were matched via the labelled filter will have the same order
+  // as their label.
   message Filter {
     oneof filter {
       // Enter the document of an iframe or shadow root. The next filters apply

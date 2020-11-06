@@ -111,20 +111,12 @@ bool ElementFinder::JsFilterBuilder::AddFilter(
     const SelectorProto::Filter& filter) {
   switch (filter.filter_case()) {
     case SelectorProto::Filter::kCssSelector:
-      // clang-format off
-      AddLine({
-        "elements = elements.flatMap((e) => Array.from(e.querySelectorAll(",
-        AddArgument(filter.css_selector()),
-        ")));"
-      });
-
-      // Elements are temporarily put into a set to get rid of duplicates, which
+      // We querySelectorAll the current elements and remove duplicates, which
       // are likely when using inner text before CSS selector filters. We must
       // not return duplicates as they cause incorrect TOO_MANY_ELEMENTS errors.
-      AddLine(R"(if (elements.length > 1) {
-        elements = Array.from(new Set(elements));
-      })");
-      // clang-format on
+      DefineQueryAllDeduplicated();
+      AddLine({"elements = queryAllDeduplicated(elements, ",
+               AddArgument(filter.css_selector()), ");"});
       return true;
 
     case SelectorProto::Filter::kInnerText:
@@ -263,6 +255,34 @@ std::string ElementFinder::JsFilterBuilder::AddArgument(
   int index = arguments_.size();
   arguments_.emplace_back(value);
   return base::StrCat({"args[", base::NumberToString(index), "]"});
+}
+
+void ElementFinder::JsFilterBuilder::DefineQueryAllDeduplicated() {
+  // Ensure that we don't define the function more than once.
+  if (defined_query_all_deduplicated_)
+    return;
+
+  defined_query_all_deduplicated_ = true;
+
+  AddLine(R"(
+    const queryAllDeduplicated = function(roots, selector) {
+      if (roots.length == 0) {
+        return [];
+      }
+
+      const matchesSet = new Set();
+      const matches = [];
+      roots.forEach((root) => {
+        root.querySelectorAll(selector).forEach((elem) => {
+          if (!matchesSet.has(elem)) {
+            matchesSet.add(elem);
+            matches.push(elem);
+          }
+        });
+      });
+      return matches;
+    }
+  )");
 }
 
 ElementFinder::Result::Result() = default;
@@ -580,28 +600,29 @@ void ElementFinder::OnGetDocumentElement(
   // Use the node as root for the rest of the evaluation.
   current_matches_.emplace_back(object_id);
 
-  DecrementResponseCountAndContinue();
+  ExecuteNextTask();
 }
 
 void ElementFinder::ApplyJsFilters(const JsFilterBuilder& builder,
                                    const std::vector<std::string>& object_ids) {
   DCHECK(!object_ids.empty());  // Guaranteed by ExecuteNextTask()
-  pending_response_count_ = object_ids.size();
+  PrepareBatchTasks(object_ids.size());
   std::string function = builder.BuildFunction();
-  for (const std::string& object_id : object_ids) {
+  for (size_t task_id = 0; task_id < object_ids.size(); task_id++) {
     devtools_client_->GetRuntime()->CallFunctionOn(
         runtime::CallFunctionOnParams::Builder()
-            .SetObjectId(object_id)
+            .SetObjectId(object_ids[task_id])
             .SetArguments(builder.BuildArgumentList())
             .SetFunctionDeclaration(function)
             .Build(),
         current_frame_id_,
         base::BindOnce(&ElementFinder::OnApplyJsFilters,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(), task_id));
   }
 }
 
 void ElementFinder::OnApplyJsFilters(
+    size_t task_id,
     const DevtoolsClient::ReplyStatus& reply_status,
     std::unique_ptr<runtime::CallFunctionOnResult> result) {
   if (!result) {
@@ -626,20 +647,19 @@ void ElementFinder::OnApplyJsFilters(
   // The result can be empty (nothing found), an array (multiple matches
   // found) or a single node.
   std::string object_id;
-  if (SafeGetObjectId(result->GetResult(), &object_id)) {
-    if (result->GetResult()->HasSubtype() &&
-        result->GetResult()->GetSubtype() ==
-            runtime::RemoteObjectSubtype::ARRAY) {
-      // Return early because ResolveMatchArrayRecursive will call
-      // DecrementResponseCountAndContinue() once it has finished processing the
-      // array.
-      ResolveMatchArrayRecursive(object_id, /* index= */ 0);
-      return;
-    } else {
-      current_matches_.emplace_back(object_id);
-    }
+  if (!SafeGetObjectId(result->GetResult(), &object_id)) {
+    ReportNoMatchingElement(task_id);
+    return;
   }
-  DecrementResponseCountAndContinue();
+
+  if (result->GetResult()->HasSubtype() &&
+      result->GetResult()->GetSubtype() ==
+          runtime::RemoteObjectSubtype::ARRAY) {
+    ReportMatchingElementsArray(task_id, object_id);
+    return;
+  }
+
+  ReportMatchingElement(task_id, object_id);
 }
 
 void ElementFinder::ResolvePseudoElement(
@@ -654,18 +674,21 @@ void ElementFinder::ResolvePseudoElement(
   }
 
   DCHECK(!object_ids.empty());  // Guaranteed by ExecuteNextTask()
-  pending_response_count_ = object_ids.size();
-  for (const std::string& object_id : object_ids) {
+  PrepareBatchTasks(object_ids.size());
+  for (size_t task_id = 0; task_id < object_ids.size(); task_id++) {
     devtools_client_->GetDOM()->DescribeNode(
-        dom::DescribeNodeParams::Builder().SetObjectId(object_id).Build(),
+        dom::DescribeNodeParams::Builder()
+            .SetObjectId(object_ids[task_id])
+            .Build(),
         current_frame_id_,
         base::BindOnce(&ElementFinder::OnDescribeNodeForPseudoElement,
-                       weak_ptr_factory_.GetWeakPtr(), pseudo_type));
+                       weak_ptr_factory_.GetWeakPtr(), pseudo_type, task_id));
   }
 }
 
 void ElementFinder::OnDescribeNodeForPseudoElement(
     dom::PseudoType pseudo_type,
+    size_t task_id,
     const DevtoolsClient::ReplyStatus& reply_status,
     std::unique_ptr<dom::DescribeNodeResult> result) {
   if (!result || !result->GetNode()) {
@@ -685,21 +708,25 @@ void ElementFinder::OnDescribeNodeForPseudoElement(
                 .Build(),
             current_frame_id_,
             base::BindOnce(&ElementFinder::OnResolveNodeForPseudoElement,
-                           weak_ptr_factory_.GetWeakPtr()));
+                           weak_ptr_factory_.GetWeakPtr(), task_id));
         return;
       }
     }
   }
-  DecrementResponseCountAndContinue();
+
+  ReportNoMatchingElement(task_id);
 }
 
 void ElementFinder::OnResolveNodeForPseudoElement(
+    size_t task_id,
     const DevtoolsClient::ReplyStatus& reply_status,
     std::unique_ptr<dom::ResolveNodeResult> result) {
   if (result && result->GetObject() && result->GetObject()->HasObjectId()) {
-    current_matches_.emplace_back(result->GetObject()->GetObjectId());
+    ReportMatchingElement(task_id, result->GetObject()->GetObjectId());
+    return;
   }
-  DecrementResponseCountAndContinue();
+
+  ReportNoMatchingElement(task_id);
 }
 
 void ElementFinder::EnterFrame(const std::string& object_id) {
@@ -771,7 +798,7 @@ void ElementFinder::OnDescribeNodeForFrame(
   // to remain backward compatible, don't complain and just continue filtering
   // with the current element as root.
   current_matches_.emplace_back(object_id);
-  DecrementResponseCountAndContinue();
+  ExecuteNextTask();
 }
 
 void ElementFinder::OnResolveNode(
@@ -789,7 +816,7 @@ void ElementFinder::OnResolveNode(
   }
   // Use the node as root for the rest of the evaluation.
   current_matches_.emplace_back(object_id);
-  DecrementResponseCountAndContinue();
+  ExecuteNextTask();
 }
 
 content::RenderFrameHost* ElementFinder::FindCorrespondingRenderFrameHost(
@@ -960,8 +987,37 @@ void ElementFinder::OnProximityFilterJs(
   ExecuteNextTask();
 }
 
-void ElementFinder::ResolveMatchArrayRecursive(
+void ElementFinder::PrepareBatchTasks(int n) {
+  tasks_results_.clear();
+  tasks_results_.resize(n);
+}
+
+void ElementFinder::ReportMatchingElement(size_t task_id,
+                                          const std::string& object_id) {
+  tasks_results_[task_id] =
+      std::make_unique<std::vector<std::string>>(1, object_id);
+  MaybeFinalizeBatchTasks();
+}
+
+void ElementFinder::ReportNoMatchingElement(size_t task_id) {
+  tasks_results_[task_id] = std::make_unique<std::vector<std::string>>();
+  MaybeFinalizeBatchTasks();
+}
+
+void ElementFinder::ReportMatchingElementsArray(
+    size_t task_id,
+    const std::string& array_object_id) {
+  // Recursively add each element ID to a vector then report it as this task
+  // result.
+  ReportMatchingElementsArrayRecursive(
+      task_id, array_object_id, std::make_unique<std::vector<std::string>>(),
+      /* index= */ 0);
+}
+
+void ElementFinder::ReportMatchingElementsArrayRecursive(
+    size_t task_id,
     const std::string& array_object_id,
+    std::unique_ptr<std::vector<std::string>> acc,
     int index) {
   std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
   AddRuntimeCallArgument(index, &arguments);
@@ -972,12 +1028,15 @@ void ElementFinder::ResolveMatchArrayRecursive(
           .SetFunctionDeclaration(std::string(kGetArrayElement))
           .Build(),
       current_frame_id_,
-      base::BindOnce(&ElementFinder::OnResolveMatchArray,
-                     weak_ptr_factory_.GetWeakPtr(), array_object_id, index));
+      base::BindOnce(&ElementFinder::OnReportMatchingElementsArrayRecursive,
+                     weak_ptr_factory_.GetWeakPtr(), task_id, array_object_id,
+                     std::move(acc), index));
 }
 
-void ElementFinder::OnResolveMatchArray(
+void ElementFinder::OnReportMatchingElementsArrayRecursive(
+    size_t task_id,
     const std::string& array_object_id,
+    std::unique_ptr<std::vector<std::string>> acc,
     int index,
     const DevtoolsClient::ReplyStatus& reply_status,
     std::unique_ptr<runtime::CallFunctionOnResult> result) {
@@ -993,25 +1052,34 @@ void ElementFinder::OnResolveMatchArray(
   std::string object_id;
   if (!SafeGetObjectId(result->GetResult(), &object_id)) {
     // We've reached the end of the array.
-    DecrementResponseCountAndContinue();
+    tasks_results_[task_id] = std::move(acc);
+    MaybeFinalizeBatchTasks();
     return;
   }
 
-  current_matches_.emplace_back(object_id);
+  acc->emplace_back(object_id);
 
   // Fetch the next element.
-  ResolveMatchArrayRecursive(array_object_id, index + 1);
+  ReportMatchingElementsArrayRecursive(task_id, array_object_id, std::move(acc),
+                                       index + 1);
 }
 
-void ElementFinder::DecrementResponseCountAndContinue() {
-  if (pending_response_count_ > 1) {
-    pending_response_count_--;
-    return;
+void ElementFinder::MaybeFinalizeBatchTasks() {
+  // Return early if one of the tasks is still pending.
+  for (const auto& result : tasks_results_) {
+    if (!result) {
+      return;
+    }
   }
 
-  pending_response_count_ = 0;
+  // Add all matching elements to current_matches_.
+  for (const auto& result : tasks_results_) {
+    current_matches_.insert(current_matches_.end(), result->begin(),
+                            result->end());
+  }
+  tasks_results_.clear();
+
   ExecuteNextTask();
-  return;
 }
 
 }  // namespace autofill_assistant

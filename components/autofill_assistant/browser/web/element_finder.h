@@ -103,6 +103,7 @@ class ElementFinder : public WebControllerWorker {
    private:
     std::vector<std::string> arguments_;
     std::vector<std::string> lines_;
+    bool defined_query_all_deduplicated_ = false;
 
     // A number that's increased by each call to DeclareVariable() to make sure
     // we generate unique variables.
@@ -135,6 +136,13 @@ class ElementFinder : public WebControllerWorker {
     void AddLine(const std::vector<std::string>& line) {
       lines_.emplace_back(base::StrCat(line));
     }
+
+    // Define a |queryAllDeduplicated(roots, selector)| JS function that calls
+    // querySelectorAll(selector) on all |roots| (in order) and returns a
+    // deduplicated list of the matching elements.
+    // Calling this function a second time does not do anything; the function
+    // will be defined only once.
+    void DefineQueryAllDeduplicated();
   };
 
   // Finds the element, starting at |frame| and calls |callback|.
@@ -159,9 +167,47 @@ class ElementFinder : public WebControllerWorker {
   // Figures out what to do next given the current state.
   //
   // Most background operations in this worker end by updating the state and
-  // calling ExecuteNextTask() again either directly or through
-  // DecrementResponseCountAndContinue().
+  // calling ExecuteNextTask() again either directly or through Report*().
   void ExecuteNextTask();
+
+  // Prepare a batch of |n| tasks that are sent at the same time to compute one
+  // or more matching elements.
+  //
+  // After calling this, Report*(i, ...) should be called *exactly once* for all
+  // 0 <= i < n to report the tasks results.
+  //
+  // Once all tasks reported their result, the object ID of all matching
+  // elements will be added to |current_matches_| and ExecuteNextTask() will be
+  // called.
+  void PrepareBatchTasks(int n);
+
+  // Report that task with ID |task_id| didn't match any element.
+  void ReportNoMatchingElement(size_t task_id);
+
+  // Report that task with ID |task_id| matched a single element with ID
+  // |object_id|.
+  void ReportMatchingElement(size_t task_id, const std::string& object_id);
+
+  // Report that task with ID |task_id| matched multiple elements that are
+  // stored in the JS array with ID |object_id|.
+  void ReportMatchingElementsArray(size_t task_id,
+                                   const std::string& array_object_id);
+  void ReportMatchingElementsArrayRecursive(
+      size_t task_id,
+      const std::string& array_object_id,
+      std::unique_ptr<std::vector<std::string>> acc,
+      int index);
+  void OnReportMatchingElementsArrayRecursive(
+      size_t task_id,
+      const std::string& array_object_id,
+      std::unique_ptr<std::vector<std::string>> acc,
+      int index,
+      const DevtoolsClient::ReplyStatus& reply_status,
+      std::unique_ptr<runtime::CallFunctionOnResult> result);
+
+  // If all batch tasks reported their result, add all tasks results to
+  // |current_matches_| then call ExecuteNextTask().
+  void MaybeFinalizeBatchTasks();
 
   // Make sure there's exactly one match, set it |object_id_out| then return
   // true.
@@ -213,7 +259,7 @@ class ElementFinder : public WebControllerWorker {
       std::unique_ptr<runtime::CallFunctionOnResult> result);
 
   // Gets a document element from the current frame and us it as root for the
-  // rest of the tasks.
+  // rest of the tasks, then call ExecuteNextTask().
   void GetDocumentElement();
   void OnGetDocumentElement(const DevtoolsClient::ReplyStatus& reply_status,
                             std::unique_ptr<runtime::EvaluateResult> result);
@@ -221,7 +267,8 @@ class ElementFinder : public WebControllerWorker {
   // Handle Javascript filters
   void ApplyJsFilters(const JsFilterBuilder& builder,
                       const std::vector<std::string>& object_ids);
-  void OnApplyJsFilters(const DevtoolsClient::ReplyStatus& reply_status,
+  void OnApplyJsFilters(size_t task_id,
+                        const DevtoolsClient::ReplyStatus& reply_status,
                         std::unique_ptr<runtime::CallFunctionOnResult> result);
 
   // Handle PSEUDO_TYPE
@@ -229,9 +276,11 @@ class ElementFinder : public WebControllerWorker {
                             const std::vector<std::string>& object_ids);
   void OnDescribeNodeForPseudoElement(
       dom::PseudoType pseudo_type,
+      size_t task_id,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<dom::DescribeNodeResult> result);
   void OnResolveNodeForPseudoElement(
+      size_t task_id,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<dom::ResolveNodeResult> result);
 
@@ -255,21 +304,6 @@ class ElementFinder : public WebControllerWorker {
   void OnProximityFilterJs(
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::CallFunctionOnResult> result);
-
-  // Get all elements from |array_object_id| starting from |index| and put them
-  // into |current_matches_|, then call DecrementResponseCountAndContinue().
-  void ResolveMatchArrayRecursive(const std::string& array_object_id,
-                                  int index);
-
-  void OnResolveMatchArray(
-      const std::string& array_object_id,
-      int index,
-      const DevtoolsClient::ReplyStatus& reply_status,
-      std::unique_ptr<runtime::CallFunctionOnResult> result);
-
-  // Tracks pending_response_count_ and call ExecuteNextTask() once the count
-  // has reached 0.
-  void DecrementResponseCountAndContinue();
 
   // Fill |current_matches_js_array_| with the values in |current_matches_|
   // starting from |index|, then clear |current_matches_| and call
@@ -313,16 +347,9 @@ class ElementFinder : public WebControllerWorker {
   // True if current_matches are pseudo-elements.
   bool matching_pseudo_elements_ = false;
 
-  // Number of responses still pending.
-  //
-  // Before starting several background operations in parallel, set this counter
-  // to the number of operations and make sure that
-  // DecrementResponseCountAndContinue() is called once the result of the
-  // operation has been processed and the state of ElementFinder updated.
-  // DecrementResponseCountAndContinue() will then make sure to call
-  // ExecuteNextTask() again once this counter has reached 0 to continue the
-  // work.
-  size_t pending_response_count_ = 0;
+  // The result of the background tasks. |tasks_results_[i]| contains the
+  // elements matched by task i, or nullptr if the task is still running.
+  std::vector<std::unique_ptr<std::vector<std::string>>> tasks_results_;
 
   std::vector<Result> frame_stack_;
 
