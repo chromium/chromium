@@ -79,8 +79,6 @@ bool IsLiteVideoNotAllowedForPageTransition(ui::PageTransition page_transition);
 // should be stopped.
 int GetMaxRebuffersPerFrame();
 
-bool DisableLiteVideoOnMediaPlayerSeek();
-
 }  // namespace features
 }  // namespace lite_video
 
