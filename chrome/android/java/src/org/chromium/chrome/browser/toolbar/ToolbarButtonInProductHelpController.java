@@ -148,7 +148,7 @@ public class ToolbarButtonInProductHelpController
                         R.string.iph_download_infobar_download_continuing_text)
                         .setAnchorView(mActivity.getToolbarManager().getMenuButtonView())
                         .setOnShowCallback(
-                                () -> turnOnHighlightForMenuItem(R.id.downloads_menu_id, true))
+                                () -> turnOnHighlightForMenuItem(R.id.downloads_menu_id))
                         .setOnDismissCallback(this::turnOffHighlightForMenuItem)
                         .build());
     }
@@ -210,7 +210,7 @@ public class ToolbarButtonInProductHelpController
                         .setOnShowCallback(
                                 ()
                                         -> turnOnHighlightForMenuItem(
-                                                getDataReductionMenuItemHighlight(), false))
+                                                getDataReductionMenuItemHighlight()))
                         .setOnDismissCallback(this::turnOffHighlightForMenuItem)
                         .build());
     }
@@ -235,7 +235,7 @@ public class ToolbarButtonInProductHelpController
                         .setOnShowCallback(
                                 ()
                                         -> turnOnHighlightForMenuItem(
-                                                getDataReductionMenuItemHighlight(), false))
+                                                getDataReductionMenuItemHighlight()))
                         .setOnDismissCallback(dismissCallback)
                         .build());
     }
@@ -259,7 +259,7 @@ public class ToolbarButtonInProductHelpController
                         R.string.iph_download_home_accessibility_text)
                         .setAnchorView(mActivity.getToolbarManager().getMenuButtonView())
                         .setOnShowCallback(
-                                () -> turnOnHighlightForMenuItem(R.id.downloads_menu_id, true))
+                                () -> turnOnHighlightForMenuItem(R.id.downloads_menu_id))
                         .setOnDismissCallback(this::turnOffHighlightForMenuItem)
                         .build());
     }
@@ -282,8 +282,7 @@ public class ToolbarButtonInProductHelpController
                         .setOnShowCallback(
                                 ()
                                         -> turnOnHighlightForMenuItem(
-                                                AppMenuPropertiesDelegateImpl.getOfflinePageId(),
-                                                true))
+                                                AppMenuPropertiesDelegateImpl.getOfflinePageId()))
                         .setOnDismissCallback(this::turnOffHighlightForMenuItem)
                         .setAnchorView(mActivity.getToolbarManager().getMenuButtonView())
                         .build());
@@ -312,7 +311,7 @@ public class ToolbarButtonInProductHelpController
                         R.string.iph_translate_menu_button_text,
                         R.string.iph_translate_menu_button_accessibility_text)
                         .setOnShowCallback(
-                                () -> turnOnHighlightForMenuItem(R.id.translate_id, false))
+                                () -> turnOnHighlightForMenuItem(R.id.translate_id))
                         .setOnDismissCallback(this::turnOffHighlightForMenuItem)
                         .setAnchorView(mActivity.getToolbarManager().getMenuButtonView())
                         .build());
@@ -334,15 +333,15 @@ public class ToolbarButtonInProductHelpController
                         R.string.video_tutorials_iph_tap_here_to_start,
                         R.string.video_tutorials_iph_tap_here_to_start)
                         .setAnchorView(mActivity.getToolbarManager().getMenuButtonView())
-                        .setOnShowCallback(() -> turnOnHighlightForMenuItem(menuItemId, true))
+                        .setOnShowCallback(() -> turnOnHighlightForMenuItem(menuItemId))
                         .setOnDismissCallback(this::turnOffHighlightForMenuItem)
                         .build());
         tryNowTracker.tryNowUIShown(FeatureType.DOWNLOAD);
     }
 
-    private void turnOnHighlightForMenuItem(Integer highlightMenuItemId, boolean circleHighlight) {
+    private void turnOnHighlightForMenuItem(Integer highlightMenuItemId) {
         if (mAppMenuHandler != null) {
-            mAppMenuHandler.setMenuHighlight(highlightMenuItemId, circleHighlight);
+            mAppMenuHandler.setMenuHighlight(highlightMenuItemId);
         }
     }
 

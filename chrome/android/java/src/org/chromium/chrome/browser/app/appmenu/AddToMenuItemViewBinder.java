@@ -112,7 +112,7 @@ class AddToMenuItemViewBinder extends ArrayAdapter<MenuItem>
                 if (highlightedItemId != null
                         && item.getSubMenu().getItem(i).getItemId() == highlightedItemId) {
                     mHighlightedItemId = highlightedItemId;
-                    ViewHighlighter.turnOnHighlight(convertView, false);
+                    ViewHighlighter.turnOnRectangularHighlight(convertView);
                 }
             }
         }
@@ -164,7 +164,7 @@ class AddToMenuItemViewBinder extends ArrayAdapter<MenuItem>
                 AppCompatResources.getColorStateList(convertView.getContext(), theme));
 
         if (mHighlightedItemId != null && item.getItemId() == mHighlightedItemId) {
-            ViewHighlighter.turnOnHighlight(convertView, false);
+            ViewHighlighter.turnOnRectangularHighlight(convertView);
         } else {
             ViewHighlighter.turnOffHighlight(convertView);
         }

@@ -63,21 +63,31 @@ public class ViewHighlighter {
     }
 
     /**
-     * Create a highlight layer over the view.
+     * Create a circular highlight layer over the view.
      * @param view The view to be highlighted.
-     * @param circular Whether the highlight should be a circle or rectangle.
      */
-    public static void turnOnHighlight(View view, boolean circular) {
+    public static void turnOnCircularHighlight(View view) {
         if (view == null) return;
 
-        PulseDrawable pulseDrawable = circular ? PulseDrawable.createCircle(view.getContext())
-                                               : PulseDrawable.createRectangle(view.getContext());
+        PulseDrawable pulseDrawable = PulseDrawable.createCircle(view.getContext());
 
         attachViewAsHighlight(view, pulseDrawable);
     }
 
     /**
-     * Create a rectangle highlight layer over the view.
+     * Create a rectangular highlight layer over the view.
+     * @param view The view to be highlighted.
+     */
+    public static void turnOnRectangularHighlight(View view) {
+        if (view == null) return;
+
+        PulseDrawable pulseDrawable = PulseDrawable.createRectangle(view.getContext());
+
+        attachViewAsHighlight(view, pulseDrawable);
+    }
+
+    /**
+     * Create a rectangular highlight layer over the view.
      * @param view The view to be highlighted.
      * @param cornerRadius The corner radius in pixels of the rectangle.
      */

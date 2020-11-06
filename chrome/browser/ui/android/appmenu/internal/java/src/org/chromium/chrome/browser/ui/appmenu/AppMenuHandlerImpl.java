@@ -61,11 +61,6 @@ class AppMenuHandlerImpl
     private Integer mHighlightMenuId;
 
     /**
-     *  Whether the highlighted item should use a circle highlight or not.
-     */
-    private boolean mCircleHighlight;
-
-    /**
      * Constructs an AppMenuHandlerImpl object.
      * @param delegate Delegate used to check the desired AppMenu properties on show.
      * @param appMenuDelegate The AppMenuDelegate to handle menu item selection.
@@ -114,15 +109,14 @@ class AppMenuHandlerImpl
 
     @Override
     public void clearMenuHighlight() {
-        setMenuHighlight(null, false);
+        setMenuHighlight(null);
     }
 
     @Override
-    public void setMenuHighlight(Integer highlightItemId, boolean circleHighlight) {
+    public void setMenuHighlight(Integer highlightItemId) {
         if (mHighlightMenuId == null && highlightItemId == null) return;
         if (mHighlightMenuId != null && mHighlightMenuId.equals(highlightItemId)) return;
         mHighlightMenuId = highlightItemId;
-        mCircleHighlight = circleHighlight;
         boolean highlighting = mHighlightMenuId != null;
         for (AppMenuObserver observer : mObservers) observer.onMenuHighlightChanged(highlighting);
     }
@@ -222,7 +216,7 @@ class AppMenuHandlerImpl
         }
         mAppMenu.show(wrapper, anchorView, isByPermanentButton, rotation, appRect, pt.y,
                 footerResourceId, headerResourceId, mDelegate.getGroupDividerId(), mHighlightMenuId,
-                mCircleHighlight, mDelegate.getCustomViewBinders());
+                mDelegate.getCustomViewBinders());
         mAppMenuDragHelper.onShow(startDragging);
         clearMenuHighlight();
         RecordUserAction.record("MobileMenuShow");

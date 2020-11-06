@@ -36,9 +36,8 @@ public interface AppMenuHandler {
      * highlighted for one menu usage.  After that the highlight will be cleared.
      * @param highlightItemId The id of a menu item to highlight or {@code null} to turn off the
      *                        highlight.
-     * @param circleHighlight Whether the highlighted item should use a circle highlight or not.
      */
-    void setMenuHighlight(Integer highlightItemId, boolean circleHighlight);
+    void setMenuHighlight(Integer highlightItemIdt);
 
     /**
      * Clears the menu highlight.

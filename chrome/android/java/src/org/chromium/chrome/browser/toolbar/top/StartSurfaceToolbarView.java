@@ -160,7 +160,7 @@ class StartSurfaceToolbarView extends RelativeLayout {
     void setNewTabButtonHighlight(boolean highlight) {
         if (mNewTabButton == null) return;
         if (highlight) {
-            ViewHighlighter.turnOnHighlight(mNewTabButton, true);
+            ViewHighlighter.turnOnCircularHighlight(mNewTabButton);
         } else {
             ViewHighlighter.turnOffHighlight(mNewTabButton);
         }

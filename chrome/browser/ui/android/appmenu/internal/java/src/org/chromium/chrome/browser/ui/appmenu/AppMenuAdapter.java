@@ -310,7 +310,11 @@ class AppMenuAdapter extends BaseAdapter {
 
         if (getCustomItemViewType(item) == CustomViewBinder.NOT_HANDLED) {
             // IPH for custom view is handled by themselves.
-            setupHighlight(convertView, item, false);
+            if (mHighlightedItemId != null && item.getItemId() == mHighlightedItemId) {
+                ViewHighlighter.turnOnRectangularHighlight(convertView);
+            } else {
+                ViewHighlighter.turnOffHighlight(convertView);
+            }
         }
 
         convertView.setTag(R.id.menu_item_view_type, itemViewType);
@@ -359,7 +363,11 @@ class AppMenuAdapter extends BaseAdapter {
 
         button.setOnLongClickListener(v -> mAppMenuClickHandler.onItemLongClick(item, v));
 
-        setupHighlight(button, item, true);
+        if (mHighlightedItemId != null && item.getItemId() == mHighlightedItemId) {
+            ViewHighlighter.turnOnCircularHighlight(button);
+        } else {
+            ViewHighlighter.turnOffHighlight(button);
+        }
 
         // Menu items may be hidden by command line flags before they get to this point.
         button.setVisibility(item.isVisible() ? View.VISIBLE : View.GONE);
@@ -563,13 +571,5 @@ class AppMenuAdapter extends BaseAdapter {
     @VisibleForTesting
     Map<CustomViewBinder, Integer> getViewTypeOffsetMapForTests() {
         return mViewTypeOffsetMap;
-    }
-
-    private void setupHighlight(View view, MenuItem item, boolean circle) {
-        if (mHighlightedItemId != null && item.getItemId() == mHighlightedItemId) {
-            ViewHighlighter.turnOnHighlight(view, circle);
-        } else {
-            ViewHighlighter.turnOffHighlight(view);
-        }
     }
 }

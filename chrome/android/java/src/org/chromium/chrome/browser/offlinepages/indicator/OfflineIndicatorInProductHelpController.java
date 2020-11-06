@@ -81,7 +81,7 @@ public class OfflineIndicatorInProductHelpController
 
     private void turnOnHighlightForDownloadsMenuItem() {
         if (mAppMenuHandler == null) return;
-        mAppMenuHandler.setMenuHighlight(R.id.downloads_menu_id, true);
+        mAppMenuHandler.setMenuHighlight(R.id.downloads_menu_id);
     }
 
     private void turnOffHighlightForDownloadsMenuItem() {

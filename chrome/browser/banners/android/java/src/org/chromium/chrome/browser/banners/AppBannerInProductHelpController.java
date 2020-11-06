@@ -65,7 +65,7 @@ public class AppBannerInProductHelpController implements UnownedUserData {
     }
 
     private void turnOnHighlightForMenu() {
-        mAppMenuHandler.setMenuHighlight(mHiglightMenuItemId, true);
+        mAppMenuHandler.setMenuHighlight(mHiglightMenuItemId);
     }
 
     private void turnOffHighlightForMenu() {

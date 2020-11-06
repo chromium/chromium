@@ -1000,6 +1000,16 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         return R.id.offline_page_id;
     }
 
+    /**
+     * @return The "Add to Home screen" menu items id in the app menu.
+     */
+    public static int getAddToHomescreenId() {
+         if (getThreeButtonActionBarType() == ThreeButtonActionBarType.ADD_TO_OPTION) {
+            return R.id.add_to_homescreen_menu_id;
+        }
+        return R.id.add_to_homescreen_id;
+    }
+
     @Override
     public boolean recordAppMenuSimilarSelectionIfNeeded(
             int previousMenuItemId, int currentMenuItemId) {

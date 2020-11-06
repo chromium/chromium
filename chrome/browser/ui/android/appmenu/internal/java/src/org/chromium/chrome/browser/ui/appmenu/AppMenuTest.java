@@ -294,7 +294,7 @@ public class AppMenuTest extends DummyUiActivityTestCase {
         Assert.assertFalse(mMenuObserver.menuHighlighting);
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mAppMenuHandler.setMenuHighlight(R.id.menu_item_one, false));
+                () -> mAppMenuHandler.setMenuHighlight(R.id.menu_item_one));
         mMenuObserver.menuHighlightChangedCallback.waitForCallback(0);
         Assert.assertTrue(mMenuObserver.menuHighlighting);
 
@@ -317,7 +317,7 @@ public class AppMenuTest extends DummyUiActivityTestCase {
         Assert.assertFalse(mMenuObserver.menuHighlighting);
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mAppMenuHandler.setMenuHighlight(R.id.icon_one, false));
+                () -> mAppMenuHandler.setMenuHighlight(R.id.icon_one));
         mMenuObserver.menuHighlightChangedCallback.waitForCallback(0);
         Assert.assertTrue(mMenuObserver.menuHighlighting);
 

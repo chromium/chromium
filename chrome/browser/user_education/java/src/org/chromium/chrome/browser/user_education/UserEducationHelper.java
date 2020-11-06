@@ -95,7 +95,11 @@ public class UserEducationHelper {
         textBubble.setAutoDismissTimeout(iphCommand.autoDismissTimeout);
 
         if (iphCommand.shouldHighlight) {
-            ViewHighlighter.turnOnHighlight(anchorView, iphCommand.circleHighlight);
+            if (iphCommand.circleHighlight) {
+                ViewHighlighter.turnOnCircularHighlight(anchorView);
+            } else {
+                ViewHighlighter.turnOnRectangularHighlight(anchorView);
+            }
         }
 
         rectProvider.setInsetPx(iphCommand.insetRect);

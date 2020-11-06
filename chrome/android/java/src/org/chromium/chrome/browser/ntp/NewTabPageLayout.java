@@ -929,7 +929,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         iphCommandBuilder.setAnchorView(anchorView).setCircleHighlight(showHighlight);
         if (showHighlight) {
             iphCommandBuilder.setOnShowCallback(
-                    () -> ViewHighlighter.turnOnHighlight(anchorView, true /*circular*/));
+                    () -> ViewHighlighter.turnOnCircularHighlight(anchorView));
             iphCommandBuilder.setOnDismissCallback(() -> new Handler().postDelayed(() -> {
                 ViewHighlighter.turnOffHighlight(anchorView);
             }, ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS));

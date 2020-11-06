@@ -42,15 +42,15 @@ public class ViewHighlighterTest {
         ViewHighlighter.turnOffHighlight(tintedImageButton);
         checkHighlightOff(tintedImageButton);
 
-        ViewHighlighter.turnOnHighlight(tintedImageButton, true);
-        ViewHighlighter.turnOnHighlight(tintedImageButton, true);
+        ViewHighlighter.turnOnCircularHighlight(tintedImageButton);
+        ViewHighlighter.turnOnCircularHighlight(tintedImageButton);
         checkHighlightOn(tintedImageButton);
 
         ViewHighlighter.turnOffHighlight(tintedImageButton);
         ViewHighlighter.turnOffHighlight(tintedImageButton);
         checkHighlightOff(tintedImageButton);
 
-        ViewHighlighter.turnOnHighlight(tintedImageButton, false);
+        ViewHighlighter.turnOnRectangularHighlight(tintedImageButton);
         checkHighlightOn(tintedImageButton);
     }
 
@@ -63,13 +63,13 @@ public class ViewHighlighterTest {
         ViewHighlighter.turnOffHighlight(tintedImageButton);
         checkHighlightOff(tintedImageButton);
 
-        ViewHighlighter.turnOnHighlight(tintedImageButton, true);
+        ViewHighlighter.turnOnCircularHighlight(tintedImageButton);
         checkHighlightOn(tintedImageButton);
 
         ViewHighlighter.turnOffHighlight(tintedImageButton);
         checkHighlightOff(tintedImageButton);
 
-        ViewHighlighter.turnOnHighlight(tintedImageButton, false);
+        ViewHighlighter.turnOnRectangularHighlight(tintedImageButton);
         checkHighlightOn(tintedImageButton);
     }
 

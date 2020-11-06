@@ -263,7 +263,7 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
     void setNewTabButtonHighlight(boolean highlight) {
         if (mNewTabImageButton == null) return;
         if (highlight) {
-            ViewHighlighter.turnOnHighlight(mNewTabImageButton, true);
+            ViewHighlighter.turnOnCircularHighlight(mNewTabImageButton);
         } else {
             ViewHighlighter.turnOffHighlight(mNewTabImageButton);
         }

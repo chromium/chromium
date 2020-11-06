@@ -112,7 +112,7 @@ class ChipViewMenuItemViewBinder implements CustomViewBinder {
         }
 
         if (highlightedItemId != null && mainMenuItem.getItemId() == highlightedItemId) {
-            ViewHighlighter.turnOnHighlight(holder.title, false);
+            ViewHighlighter.turnOnRectangularHighlight(holder.title);
         } else {
             ViewHighlighter.turnOffHighlight(holder.title);
         }

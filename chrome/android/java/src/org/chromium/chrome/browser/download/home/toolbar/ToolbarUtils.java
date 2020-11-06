@@ -84,7 +84,7 @@ public class ToolbarUtils {
     private static void toggleHighlightForDownloadSettingsTextBubble(
             View anchorView, boolean shouldHighlight) {
         if (shouldHighlight) {
-            ViewHighlighter.turnOnHighlight(anchorView, true);
+            ViewHighlighter.turnOnCircularHighlight(anchorView);
         } else {
             ViewHighlighter.turnOffHighlight(anchorView);
         }

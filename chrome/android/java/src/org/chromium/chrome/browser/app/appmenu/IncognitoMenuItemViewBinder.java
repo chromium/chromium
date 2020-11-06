@@ -68,7 +68,7 @@ class IncognitoMenuItemViewBinder implements CustomViewBinder {
         }
         convertView.setOnClickListener(v -> appMenuClickHandler.onItemClick(item));
         if (highlightedItemId != null && item.getItemId() == highlightedItemId) {
-            ViewHighlighter.turnOnHighlight(convertView, false);
+            ViewHighlighter.turnOnRectangularHighlight(convertView);
         } else {
             ViewHighlighter.turnOffHighlight(convertView);
         }
