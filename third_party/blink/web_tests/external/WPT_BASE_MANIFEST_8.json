@@ -109368,6 +109368,71 @@
         {}
        ]
       ],
+      "full-width-leading-spaces-001.html": [
+       "c23e4fdbc76e6f4c70cf936aaba2e7f5f51b734e",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/full-width-leading-spaces-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "full-width-leading-spaces-002.html": [
+       "610e5ae4632e6014c7de997a2a259ff4310dd96d",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "full-width-leading-spaces-003.html": [
+       "610e5ae4632e6014c7de997a2a259ff4310dd96d",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "full-width-leading-spaces-004.html": [
+       "eb7d24f042c4cd952c0fb4b8826abf70633fdaab",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "full-width-leading-spaces-005.html": [
+       "8fd86a900298c0e715cd7f65d469c726faf72240",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "line-edge-white-space-collapse-001.html": [
        "4e144e6c330191435f183936c2ab2437ec4f7609",
        [
@@ -110429,6 +110494,210 @@
         {}
        ]
       ],
+      "trailing-ideographic-space-005.html": [
+       "b33531bff998f46d8dfdba3a45757db03ff0cb62",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-004-ref.html",
+          "=="
+         ],
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-alt-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "trailing-ideographic-space-006.html": [
+       "f5a8ab1dfbec8b494bb542e948e7c456112e29a3",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-003-ref.html",
+          "=="
+         ],
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-alt-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "trailing-ideographic-space-007.html": [
+       "d58d5ba9cf21f1e606f3ebc32edb19629a9b677a",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-003-ref.html",
+          "=="
+         ],
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-alt-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "trailing-ideographic-space-008.html": [
+       "50de162540f56c09cc859934c4d3c0c5d10b522d",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-003-ref.html",
+          "=="
+         ],
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-alt-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "trailing-ideographic-space-009.html": [
+       "2a642bbc6fd26369087915d2cf6674737e9bba10",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-004-ref.html",
+          "=="
+         ],
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-alt-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "trailing-ideographic-space-010.html": [
+       "eef3613edd0045592a7f6749724904faadb8f73d",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-004-ref.html",
+          "=="
+         ],
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-alt-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "trailing-ideographic-space-011.html": [
+       "381d7a41b001a969615699b60752ff79c0f926ec",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-011-ref.html",
+          "=="
+         ],
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-alt-011-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "trailing-ideographic-space-012.html": [
+       "2b73db18202d1b27feda9fb9fc9e779b943a82b6",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-pre-wrap-trailing-spaces-004-ref.html",
+          "=="
+         ],
+         [
+          "/css/css-text/white-space/reference/white-space-pre-wrap-trailing-spaces-alt-004-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "trailing-ideographic-space-013.html": [
+       "fa8195e4a8286d767f84de4762f5be69eb3c43b6",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-pre-wrap-trailing-spaces-004-ref.html",
+          "=="
+         ],
+         [
+          "/css/css-text/white-space/reference/white-space-pre-wrap-trailing-spaces-alt-004-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "trailing-ideographic-space-014.html": [
+       "8eab5924c57fe6ebaa7618980e3dd6d8bcccb3c4",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-pre-wrap-trailing-spaces-004-ref.html",
+          "=="
+         ],
+         [
+          "/css/css-text/white-space/reference/white-space-pre-wrap-trailing-spaces-alt-004-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "trailing-ideographic-space-015.html": [
+       "efcb2c8a0575a2204a6d03af60c5d95bc76d26f7",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-011-ref.html",
+          "=="
+         ],
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-alt-011-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "trailing-ideographic-space-016.html": [
+       "3e65785f39dc20049e0e16e09f95efedbef1edd5",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-011-ref.html",
+          "=="
+         ],
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-alt-011-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "trailing-ogham-001.html": [
        "f687c7cdc377679a3eeb392254e6f68c883c504f",
        [
@@ -111080,12 +111349,16 @@
        ]
       ],
       "white-space-pre-wrap-trailing-spaces-004.html": [
-       "cde64415b7b074d0efe35ffa189b27f0b0327ded",
+       "d2fda889bc08aecb1e2f12ed3e34d3db5ea5ced1",
        [
         null,
         [
          [
           "/css/css-text/white-space/reference/white-space-pre-wrap-trailing-spaces-004-ref.html",
+          "=="
+         ],
+         [
+          "/css/css-text/white-space/reference/white-space-pre-wrap-trailing-spaces-alt-004-ref.html",
           "=="
          ]
         ],
@@ -200149,6 +200422,10 @@
         "30a4ffd303d55f6228b886aa658822975601967a",
         []
        ],
+       "full-width-leading-spaces-001-ref.html": [
+        "2b9cf1c3b27edbe44a1009366e47d245e4cb7a8b",
+        []
+       ],
        "line-edge-white-space-collapse-001-ref.html": [
         "02fa594255f00396f66e86837409cd579282f7de",
         []
@@ -200237,8 +200514,16 @@
         "a72e050031c5da7aad65eece88da65ace8293f52",
         []
        ],
+       "trailing-ideographic-space-011-ref.html": [
+        "a2efec249064cdd8ed2ee6888863c513ccb52da2",
+        []
+       ],
        "trailing-ideographic-space-alt-003-ref.html": [
         "9f579f29e0c897c744e1b06d5d2d60e85612f823",
+        []
+       ],
+       "trailing-ideographic-space-alt-011-ref.html": [
+        "03023f5359c62f71138696f8e90c6468de65b9d8",
         []
        ],
        "trailing-ogham-001-ref.html": [
@@ -200334,7 +200619,7 @@
         []
        ],
        "white-space-pre-wrap-trailing-spaces-004-ref.html": [
-        "0cbc7b231f0e3c7dd524ed94562663baf04667ed",
+        "6f79dfbeb3fd63a3b49d6c3831886b76ab1b5240",
         []
        ],
        "white-space-pre-wrap-trailing-spaces-012-ref.html": [
@@ -200351,6 +200636,10 @@
        ],
        "white-space-pre-wrap-trailing-spaces-015-ref.html": [
         "ffcabadeb3295072ef95c3e1e71ac27fa3706834",
+        []
+       ],
+       "white-space-pre-wrap-trailing-spaces-alt-004-ref.html": [
+        "de92f22e627bf844ac02aa9366f4e1dbcf0ca35b",
         []
        ],
        "white-space-pre-wrap-trailing-spaces-alt-012-ref.html": [
@@ -235936,6 +236225,10 @@
      "02416b270f8c2774cbd54deb79d8eafce510b604",
      []
     ],
+    "historical.https.html.ini": [
+     "95e9f7cbddf2b92128a648993f33661bed4f2f39",
+     []
+    ],
     "idlharness.https.window-expected.txt": [
      "dd488a102bd26faccc66e17a2a192eb6ff7883e9",
      []
@@ -236036,8 +236329,16 @@
      "6ce291242ae95fffa1a86775c2a1479651b2349b",
      []
     ],
+    "show-consume-activation.https.html.ini": [
+     "250a63eb826a8fe990032dc48e5cb1d94ec4e491",
+     []
+    ],
     "show-method-optional-promise-rejects.https-expected.txt": [
      "5c59a10ca4585bf3da64d37ce95e88f8ed6bc1af",
+     []
+    ],
+    "show-method-optional-promise-rejects.https.html.ini": [
+     "3208674bff0c30e3257a1568b61c43b81b171b26",
      []
     ],
     "show-method-postmessage-iframe.html": [
@@ -242220,6 +242521,14 @@
      "13b5ae9d5913bb93e3bb9e8d1bf750771330b138",
      []
     ],
+    "declarative": {
+     "support": {
+      "declarative-child-frame.html": [
+       "10608b4875e0bd7d0169cf109b62b2b3612a8288",
+       []
+      ]
+     }
+    },
     "directionality-001-ref.html": [
      "7a2eaeb8681e860a52e5bf1268665fb896e4a950",
      []
@@ -254012,14 +254321,6 @@
     ],
     "Create-Secure-url-with-space.any.worker-expected.txt": [
      "6e141336536a22be05d71b3764743f3ff6c65dce",
-     []
-    ],
-    "Create-blocked-port.any-expected.txt": [
-     "7981fbf21e3649e81a3237e8338e48993d5eccc8",
-     []
-    ],
-    "Create-blocked-port.any.worker-expected.txt": [
-     "7981fbf21e3649e81a3237e8338e48993d5eccc8",
      []
     ],
     "Create-on-worker-shutdown.any-expected.txt": [
@@ -286331,6 +286632,13 @@
        {}
       ]
      ],
+     "flex-aspect-ratio-img-row-013.html": [
+      "07b4302bfb1d58cb9ec3cc9b706dd0df05e72bc5",
+      [
+       null,
+       {}
+      ]
+     ],
      "flex-basis-009.html": [
       "3e2026958fdd899349126ebe4778fb62a692d631",
       [
@@ -300733,8 +301041,15 @@
        ]
       ]
      },
-     "preserve-3d-flat-grouping-properties.tentative.html": [
-      "2d4bb4854976b489c8aeff6c0fc0dcaf5884b1dd",
+     "preserve-3d-flat-grouping-properties-containing-block.tentative.html": [
+      "e30607c1197ddc13b76daf768686be13a9351a05",
+      [
+       null,
+       {}
+      ]
+     ],
+     "preserve-3d-flat-grouping-properties.html": [
+      "9d2423f98819dc11a5369e449f9e6d1de0bfad00",
       [
        null,
        {}
@@ -367711,7 +368026,7 @@
         ]
        ],
        "input-valueasnumber.html": [
-        "321c981c74d2293694fecf18284126b089aca1c2",
+        "1af75eafa3e3743435e19a65cb1c30b67d1504dd",
         [
          null,
          {}
@@ -378428,6 +378743,13 @@
       {}
      ]
     ],
+    "fixed-position-move.html": [
+     "877c2ba4b34615c41a5b21dbf114df69eef04352",
+     [
+      null,
+      {}
+     ]
+    ],
     "fully-clipped-visual-rect.html": [
      "bfd74a2407e2d91cdb2a13b86945b040aeb6dcca",
      [
@@ -378608,6 +378930,20 @@
     ],
     "sources.html": [
      "599a5c471b38d53481d347f4053dd67fe58607ee",
+     [
+      null,
+      {}
+     ]
+    ],
+    "sticky-descendant-move.html": [
+     "afab89592de311f000c461415e77b83227780423",
+     [
+      null,
+      {}
+     ]
+    ],
+    "sticky-layout-no-change.html": [
+     "8f3b2cf37382766fae97acd4f8059365f2479bae",
      [
       null,
       {}
@@ -403042,7 +403378,7 @@
       ]
      ],
      "at-scroll-timeline-start-end.html": [
-      "c53de5d865f37c49340e3ca85d3dc31a8ab6e48d",
+      "e881d0d676bc3d1612af0677e3d1206e750cab81",
       [
        null,
        {}
@@ -406164,14 +406500,21 @@
       ]
      ],
      "declarative-shadow-dom-attachment.tentative.html": [
-      "b78902c4b59dc26ac819fbe24809621201fdc0ca",
+      "73b43829f1a093140a83b92e383e9a02ad3b4a6f",
       [
        null,
        {}
       ]
      ],
      "declarative-shadow-dom-basic.tentative.html": [
-      "92e667fdbcf9c3828e97732795af9d682c59645b",
+      "f17e304fe75995b492a23dfdf082a0f5e5bc48c6",
+      [
+       null,
+       {}
+      ]
+     ],
+     "declarative-shadow-dom-opt-in.tentative.html": [
+      "b314adb85c40097c17d838fe1645110df39059e7",
       [
        null,
        {}
