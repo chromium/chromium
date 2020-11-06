@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,7 +24,6 @@ import org.chromium.chrome.browser.util.KeyNavigationUtil;
 /**
  * A widget for showing a list of omnibox suggestions.
  */
-@VisibleForTesting
 public class OmniboxSuggestionsRecyclerView
         extends RecyclerView implements OmniboxSuggestionsDropdown {
     private final @NonNull OmniboxSuggestionsDropdownDelegate mDropdownDelegate;
