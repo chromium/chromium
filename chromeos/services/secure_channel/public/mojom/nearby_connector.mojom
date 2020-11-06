@@ -1,0 +1,11 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.secure_channel.mojom;
+
+// Service ID to use. Nearby Connections requires a service ID to be associated
+// with each connection request.
+const string kServiceId = "secure_channel";
+
+// TODO(khorimoto): Add SecureChannel interfaces for Nearby Connections.

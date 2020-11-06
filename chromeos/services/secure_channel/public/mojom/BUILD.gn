@@ -5,7 +5,10 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [ "secure_channel.mojom" ]
+  sources = [
+    "nearby_connector.mojom",
+    "secure_channel.mojom",
+  ]
 
   public_deps = [
     "//chromeos/components/multidevice/mojom",
