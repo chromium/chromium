@@ -572,8 +572,14 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, PopupInWindow_IsWindowTrue) {
       static_cast<int>(WindowOpenDisposition::NEW_POPUP));
 }
 
+// TODO(crbug.com/1146598): Test is flaky on Lacros.
+#if BUILDFLAG(IS_LACROS)
+#define MAYBE_PopupNoRedirect_RedirectCountZero DISABLED_PopupNoRedirect_RedirectCountZero
+#else
+#define MAYBE_PopupNoRedirect_RedirectCountZero PopupNoRedirect_RedirectCountZero
+#endif
 IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
-                       PopupNoRedirect_RedirectCountZero) {
+                       MAYBE_PopupNoRedirect_RedirectCountZero) {
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
   ui_test_utils::NavigateToURL(browser(), first_url);
 
