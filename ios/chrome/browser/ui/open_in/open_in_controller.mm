@@ -55,9 +55,6 @@ const NSTimeInterval kOverlayViewAnimationDuration = 0.3;
 // Time interval after which the |openInToolbar_| is automatically hidden.
 const NSTimeInterval kOpenInToolbarDisplayDuration = 2.0;
 
-// Text size used for the label indicating a download in progress.
-const CGFloat kLabelTextSize = 22.0;
-
 // Alpha value for the background view of |overlayedView_|.
 const CGFloat kOverlayedViewBackgroundAlpha = 0.6;
 
@@ -498,7 +495,7 @@ class OpenInControllerBridge
 
   UILabel* label = [[UILabel alloc] init];
   [label setTextColor:[UIColor whiteColor]];
-  [label setFont:[UIFont fontWithName:@"Helvetica-Bold" size:kLabelTextSize]];
+  [label setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
   [label setNumberOfLines:0];
   [label setShadowColor:[UIColor blackColor]];
   [label setShadowOffset:CGSizeMake(0.0, 1.0)];
