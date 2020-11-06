@@ -99,10 +99,6 @@ collect_idl_files("web_idl_in_core") {
 
   inputs = static_idl_files_in_core
 
-  # Supplemental IDL definitions to support the migration from the old bindings
-  # generator to the new one.
-  inputs += [ "${bindings_scripts_dir}/web_idl/migration_adapter.idl" ]
-
   output = "${bindings_output_dir}/web_idl_in_core.pickle"
 }
 
