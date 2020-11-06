@@ -403,6 +403,9 @@ NewTabPageHandler::~NewTabPageHandler() {
   for (auto bitmap_request_id : bitmap_request_ids_) {
     bitmap_fetcher_service_->CancelRequest(bitmap_request_id);
   }
+  if (select_file_dialog_) {
+    select_file_dialog_->ListenerDestroyed();
+  }
 }
 
 // static
