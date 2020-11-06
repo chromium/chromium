@@ -6,12 +6,10 @@
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/chromeos/borealis/borealis_app_launcher.h"
-#include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
-#include "chrome/browser/chromeos/borealis/borealis_context_manager_factory.h"
-#include "chrome/browser/chromeos/borealis/borealis_context_manager_impl.h"
 #include "chrome/browser/chromeos/borealis/borealis_features.h"
 #include "chrome/browser/chromeos/borealis/borealis_service.h"
 #include "chrome/browser/chromeos/borealis/borealis_util.h"
@@ -167,32 +165,8 @@ void BorealisApps::Launch(const std::string& app_id,
                           int32_t event_flags,
                           apps::mojom::LaunchSource launch_source,
                           int64_t display_id) {
-  DCHECK_EQ(borealis::kBorealisAppId, app_id);
-  DCHECK(borealis::BorealisService::GetForProfile(profile_)
-             ->Features()
-             .IsAllowed());
-  if (borealis::BorealisService::GetForProfile(profile_)
-          ->Features()
-          .IsEnabled()) {
-    borealis::BorealisContextManagerFactory::GetForProfile(profile_)
-        ->StartBorealis(base::BindOnce(
-            [](const std::string& app_id,
-               borealis::BorealisContextManager::Result result) {
-              if (!result.Ok()) {
-                LOG(ERROR) << "Failed to launch " << app_id << ": "
-                           << result.FailureReason();
-                return;
-              }
-              borealis::BorealisAppLauncher::Launch(result.Success(), app_id,
-                                                    base::DoNothing());
-            },
-            app_id));
-    return;
-  }
-  borealis::ShowBorealisInstallerView(profile_);
-
-  // TODO(b/162562622): Fix the launcher so it runs borealis (if its already
-  // installed) and support launching apps.
+  borealis::BorealisService::GetForProfile(profile_)->AppLauncher().Launch(
+      app_id, base::DoNothing());
 }
 
 void BorealisApps::GetMenuModel(const std::string& app_id,

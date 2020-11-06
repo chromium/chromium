@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_BOREALIS_BOREALIS_SERVICE_IMPL_H_
 #define CHROME_BROWSER_CHROMEOS_BOREALIS_BOREALIS_SERVICE_IMPL_H_
 
+#include "chrome/browser/chromeos/borealis/borealis_app_launcher.h"
 #include "chrome/browser/chromeos/borealis/borealis_service.h"
 
 #include "chrome/browser/chromeos/borealis/borealis_features.h"
@@ -17,12 +18,15 @@ class BorealisServiceImpl : public BorealisService {
 
   ~BorealisServiceImpl() override;
 
-  BorealisFeatures& Features() override;
-
  private:
+  // BorealisService overrides.
+  BorealisFeatures& Features() override;
+  BorealisAppLauncher& AppLauncher() override;
+
   Profile* const profile_;
 
   BorealisFeatures features_;
+  BorealisAppLauncher app_launcher_;
 };
 
 }  // namespace borealis

@@ -4,11 +4,17 @@
 
 #include "chrome/browser/chromeos/borealis/borealis_app_launcher.h"
 
+#include "base/bind.h"
 #include "chrome/browser/chromeos/borealis/borealis_context.h"
+#include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
+#include "chrome/browser/chromeos/borealis/borealis_context_manager_factory.h"
+#include "chrome/browser/chromeos/borealis/borealis_features.h"
+#include "chrome/browser/chromeos/borealis/borealis_service.h"
 #include "chrome/browser/chromeos/borealis/borealis_util.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/dbus/cicerone_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -29,7 +35,6 @@ void BorealisAppLauncher::Launch(const BorealisContext& ctx,
   base::Optional<guest_os::GuestOsRegistryService::Registration> reg =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(ctx.profile())
           ->GetRegistration(app_id);
-
   if (!reg) {
     std::move(callback).Run(LaunchResult::kUnknownApp);
     return;
@@ -66,6 +71,36 @@ void BorealisAppLauncher::Launch(const BorealisContext& ctx,
                 std::move(callback).Run(LaunchResult::kSuccess);
               },
               std::move(callback)));
+}
+
+BorealisAppLauncher::BorealisAppLauncher(Profile* profile)
+    : profile_(profile) {}
+
+void BorealisAppLauncher::Launch(std::string app_id,
+                                 OnLaunchedCallback callback) {
+  DCHECK(BorealisService::GetForProfile(profile_)->Features().IsAllowed());
+  if (!borealis::BorealisService::GetForProfile(profile_)
+           ->Features()
+           .IsEnabled()) {
+    borealis::ShowBorealisInstallerView(profile_);
+    return;
+  }
+
+  BorealisContextManagerFactory::GetForProfile(profile_)->StartBorealis(
+      base::BindOnce(
+          [](std::string app_id,
+             BorealisAppLauncher::OnLaunchedCallback callback,
+             BorealisContextManager::Result result) {
+            if (!result.Ok()) {
+              LOG(ERROR) << "Failed to launch " << app_id << ": "
+                         << result.FailureReason();
+              std::move(callback).Run(LaunchResult::kError);
+              return;
+            }
+            BorealisAppLauncher::Launch(result.Success(), std::move(app_id),
+                                        std::move(callback));
+          },
+          std::move(app_id), std::move(callback)));
 }
 
 }  // namespace borealis

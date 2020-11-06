@@ -13,6 +13,8 @@ namespace borealis {
 
 class BorealisFeatures;
 
+class BorealisAppLauncher;
+
 // A common location for all the interdependant components of borealis.
 class BorealisService : public KeyedService {
  public:
@@ -22,6 +24,8 @@ class BorealisService : public KeyedService {
   ~BorealisService() override = default;
 
   virtual BorealisFeatures& Features() = 0;
+
+  virtual BorealisAppLauncher& AppLauncher() = 0;
 };
 
 }  // namespace borealis
