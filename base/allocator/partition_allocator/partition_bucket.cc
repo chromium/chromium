@@ -209,15 +209,15 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
     PartitionRoot<thread_safe>* root,
     int flags,
     uint16_t num_partition_pages,
-    size_t committed_size) {
+    size_t slot_span_committed_size) {
   PA_DCHECK(!(reinterpret_cast<uintptr_t>(root->next_partition_page) %
               PartitionPageSize()));
   PA_DCHECK(!(reinterpret_cast<uintptr_t>(root->next_partition_page_end) %
               PartitionPageSize()));
   PA_DCHECK(num_partition_pages <= NumPartitionPagesPerSuperPage());
-  PA_DCHECK(committed_size % SystemPageSize() == 0);
-  size_t total_size = PartitionPageSize() * num_partition_pages;
-  PA_DCHECK(committed_size <= total_size);
+  PA_DCHECK(slot_span_committed_size % SystemPageSize() == 0);
+  size_t slot_span_reserved_size = PartitionPageSize() * num_partition_pages;
+  PA_DCHECK(slot_span_committed_size <= slot_span_reserved_size);
   size_t num_partition_pages_left =
       (root->next_partition_page_end - root->next_partition_page) >>
       PartitionPageShift();
@@ -228,10 +228,10 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
 
     // Fresh System Pages in the SuperPages are decommited. Commit them
     // before vending them back.
-    SetSystemPagesAccess(ret, committed_size, PageReadWrite);
+    SetSystemPagesAccess(ret, slot_span_committed_size, PageReadWrite);
 
-    root->next_partition_page += total_size;
-    root->IncreaseCommittedPages(committed_size);
+    root->next_partition_page += slot_span_reserved_size;
+    root->IncreaseCommittedPages(slot_span_committed_size);
 
 #if ENABLE_TAG_FOR_MTE_CHECKED_PTR
     PA_DCHECK(root->next_tag_bitmap_page);
@@ -254,7 +254,8 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
     }
 #if MTE_CHECKED_PTR_SET_TAG_AT_FREE
     // TODO(tasak): Consider initializing each slot with a different tag.
-    PartitionTagSetValue(ret, total_size, root->GetNewPartitionTag());
+    PartitionTagSetValue(ret, slot_span_reserved_size,
+                         root->GetNewPartitionTag());
 #endif
 #endif
     return ret;
@@ -283,9 +284,9 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   root->total_size_of_super_pages.fetch_add(kSuperPageSize,
                                             std::memory_order_relaxed);
 
-  // |total_size| MUST be less than kSuperPageSize - (PartitionPageSize()*2).
-  // This is a trustworthy value because num_partition_pages is not user
-  // controlled.
+  // |slot_span_reserved_size| MUST be less than kSuperPageSize -
+  // (PartitionPageSize()*2). This is a trustworthy value because
+  // num_partition_pages is not user controlled.
   //
   // TODO(ajwong): Introduce a DCHECK.
   root->next_super_page = super_page + kSuperPageSize;
@@ -301,17 +302,24 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   }
   PA_DCHECK(quarantine_bitmaps_size % PartitionPageSize() == 0);
   char* ret = quarantine_bitmaps + quarantine_bitmaps_size;
-  root->next_partition_page = ret + total_size;
+  root->next_partition_page = ret + slot_span_reserved_size;
   root->next_partition_page_end = root->next_super_page - PartitionPageSize();
   PA_DCHECK(ret == SuperPagePayloadBegin(super_page, root->scannable));
   PA_DCHECK(root->next_partition_page_end == SuperPagePayloadEnd(super_page));
 
-  // The first slot span is accessible. The given committed_size is equal to
-  // the system-page-aligned size of the slot span.
-  SetSystemPagesAccess(ret + committed_size,
-                       (super_page + kSuperPageSize) - (ret + committed_size),
-                       PageInaccessible);
-  root->IncreaseCommittedPages(committed_size);
+  // The first slot span is accessible. The given slot_span_committed_size is
+  // equal to the system-page-aligned size of the slot span.
+  //
+  // The remainder of the slot span past slot_span_committed_size, as well as
+  // all future slot spans inside the super page are decommitted
+  //
+  // TODO(ajwong): Refactor Page Allocator API so the super page comes in
+  // decommited initially.
+  SetSystemPagesAccess(
+      ret + slot_span_committed_size,
+      (super_page + kSuperPageSize) - (ret + slot_span_committed_size),
+      PageInaccessible);
+  root->IncreaseCommittedPages(slot_span_committed_size);
 
   // Make the first partition page in the super page a guard page, but leave a
   // hole in the middle.
@@ -322,8 +330,8 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
                        PartitionPageSize() - (SystemPageSize() * 2),
                        PageInaccessible);
 #if ENABLE_TAG_FOR_MTE_CHECKED_PTR
-  // Make the first |total_size| region of the tag bitmap accessible.
-  // The rest of the region is set to inaccessible.
+  // Make the first |slot_span_reserved_size| region of the tag bitmap
+  // accessible. The rest of the region is set to inaccessible.
   char* next_tag_bitmap_page = reinterpret_cast<char*>(
       bits::Align(reinterpret_cast<uintptr_t>(
                       PartitionTagPointer(root->next_partition_page)),
@@ -336,28 +344,11 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
                        PageInaccessible);
 #if MTE_CHECKED_PTR_SET_TAG_AT_FREE
   // TODO(tasak): Consider initializing each slot with a different tag.
-  PartitionTagSetValue(ret, total_size, root->GetNewPartitionTag());
+  PartitionTagSetValue(ret, slot_span_reserved_size,
+                       root->GetNewPartitionTag());
 #endif
   root->next_tag_bitmap_page = next_tag_bitmap_page;
 #endif
-
-  //  SetSystemPagesAccess(super_page + (kSuperPageSize -
-  //  PartitionPageSize()),
-  //                             PartitionPageSize(), PageInaccessible);
-  // All remaining slotspans for the unallocated PartitionPages inside the
-  // SuperPage are conceptually decommitted. Correctly set the state here
-  // so they do not occupy resources.
-  //
-  // TODO(ajwong): Refactor Page Allocator API so the SuperPage comes in
-  // decommited initially.
-  // TODO(bartekn): Also decommit quarantine bitmap pages here, and commit them
-  // only when EnablePCScan() is called.
-  SetSystemPagesAccess(
-      super_page + PartitionPageSize() + ReservedTagBitmapSize() +
-          quarantine_bitmaps_size + total_size,
-      (kSuperPageSize - PartitionPageSize() - ReservedTagBitmapSize() -
-       quarantine_bitmaps_size - total_size),
-      PageInaccessible);
 
   // If we were after a specific address, but didn't get it, assume that
   // the system chose a lousy address. Here most OS'es have a default
