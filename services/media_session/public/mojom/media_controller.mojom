@@ -8,123 +8,131 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/media_session/public/mojom/media_session.mojom";
 
+// Next Method ID: 3
+[Stable, Uuid="1ed3225e-33c8-487b-b79f-4c3ec13ad623"]
 interface MediaControllerManager {
   // Creates a MediaController linked to a specific session with |request_id|.
   // This should match the |request_id| from the AudioFocusRequestState.
-  CreateMediaControllerForSession(
+  CreateMediaControllerForSession@0(
       pending_receiver<MediaController> receiver,
       mojo_base.mojom.UnguessableToken request_id);
 
   // Creates a MediaController linked to the active session. This will
   // automatically route commands to the correct session if the active session
   // changes. If there is no active session then commands will be no-ops.
-  CreateActiveMediaController(pending_receiver<MediaController> receiver);
+  CreateActiveMediaController@1(pending_receiver<MediaController> receiver);
 
   // Suspends all media sessions.
-  SuspendAllSessions();
+  SuspendAllSessions@2();
 };
 
 // Controls a MediaSession. If the media session is not controllable then the
 // commands will be no-ops.
+// Next Method ID: 14
+[Stable]
 interface MediaController {
   // Suspend the media session.
-  Suspend();
+  Suspend@0();
 
   // Resume the media session.
-  Resume();
+  Resume@1();
 
   // Stop the media session.
-  Stop();
+  Stop@2();
 
   // This will either suspend or resume the media session based on the
   // playback state.
-  ToggleSuspendResume();
+  ToggleSuspendResume@3();
 
   // Adds an observer that will forward events from the active media session.
   // If the active session changes then observers do not need to be readded.
   // Adding the observer will update the observer with the latest state.
-  AddObserver(pending_remote<MediaControllerObserver> observer);
+  AddObserver@4(pending_remote<MediaControllerObserver> observer);
 
   // Skip to the previous track. If there is no previous track then this will be
   // a no-op.
-  PreviousTrack();
+  PreviousTrack@5();
 
   // Skip to the next track. If there is no next track then this will be a
   // no-op.
-  NextTrack();
+  NextTrack@6();
 
   // Seek the media session. If the media cannot seek then this will be a
   // no-op. The |seek_time| is the time delta that the media will seek by and
   // supports both positive and negative values. This value cannot be zero.
   // The |kDefaultSeekTimeSeconds| provides a default value for seeking by a
   // few seconds.
-  Seek(mojo_base.mojom.TimeDelta seek_time);
+  Seek@7(mojo_base.mojom.TimeDelta seek_time);
 
   // Creates an image observer that will be notified when the image of |type|
   // for the underlying media session has changed. The image will be at least
   // |minimum_size_pc| and closest to |desired_size_px|.
-  ObserveImages(
+  ObserveImages@8(
       MediaSessionImageType type, int32 minimum_size_px, int32 desired_size_px,
       pending_remote<MediaControllerImageObserver> observer);
 
   // Seek the media session to a non-negative |seek_time| from the beginning of
   // the current playing media. If the media cannot seek then this will be a
   // no-op.
-  SeekTo(mojo_base.mojom.TimeDelta seek_time);
+  SeekTo@9(mojo_base.mojom.TimeDelta seek_time);
 
   // Scrub ("fast seek") the media session to a non-negative |seek_time| from
   // the beginning of the current playing media. If the media cannot scrub then
   // this will be a no-op. The client should call |SeekTo| to finish the
   // scrubbing operation.
-  ScrubTo(mojo_base.mojom.TimeDelta seek_time);
+  ScrubTo@10(mojo_base.mojom.TimeDelta seek_time);
 
   // Enter picture-in-picture.
-  EnterPictureInPicture();
+  EnterPictureInPicture@11();
 
   // Exit picture-in-picture.
-  ExitPictureInPicture();
+  ExitPictureInPicture@12();
 
   // Routes the audio from this Media Session to the given output device. If
   // |id| is null, we will route to the default output device.
-  SetAudioSinkId(string? id);
+  SetAudioSinkId@13(string? id);
 };
 
 // The observer for observing media controller events. This is different to a
 // MediaSessionObserver because a media controller can have nullable session
 // info which will be null if it is not bound to a media session. This would
 // be invalid for a media session because it must always have some state.
+// Next Method ID: 5
+[Stable]
 interface MediaControllerObserver {
   // Called when the state of the bound media session changes. If |info| is
   // empty then the controller is no longer bound to a media session.
-  MediaSessionInfoChanged(MediaSessionInfo? info);
+  MediaSessionInfoChanged@0(MediaSessionInfo? info);
 
   // Called when the bound media session has changed metadata. If |metadata|
   // is null then it can be reset, e.g. the media that ws being played has
   // been stopped.
-  MediaSessionMetadataChanged(MediaMetadata? metadata);
+  MediaSessionMetadataChanged@1(MediaMetadata? metadata);
 
   // Called when the bound media session action list has changed. This tells
   // the observer which actions can be used to control the session.
-  MediaSessionActionsChanged(array<MediaSessionAction> action);
+  MediaSessionActionsChanged@2(array<MediaSessionAction> action);
 
   // Called when the bound media session changes. This tells the observer the
   // |request_id| of the new session of null if it is not bound to a session.
-  MediaSessionChanged(mojo_base.mojom.UnguessableToken? request_id);
+  MediaSessionChanged@3(mojo_base.mojom.UnguessableToken? request_id);
 
   // Called when the position of the bound media session has changed. If
   // |position| is empty then the media session does not have a position or
   // the controller is no longer bound to a media session. Position is updated
   // anytime the position state (playback rate, duration) is changed or the
   // media is seeked.
-  MediaSessionPositionChanged(MediaPosition? position);
+  MediaSessionPositionChanged@4(MediaPosition? position);
 };
 
 // The observer for observing when images associated with a media controller
 // change. This is a separate observer because not all clients need to handle
 // images.
+// Next Method ID: 1
+[Stable]
 interface MediaControllerImageObserver {
   // Called when the observed media controller has a new image of |type|.
   // It may be null if there is no image.
-  MediaControllerImageChanged(
+  MediaControllerImageChanged@0(
       MediaSessionImageType type, MediaImageBitmap? bitmap);
 };

@@ -15,6 +15,8 @@ import "mojo/public/mojom/base/big_string.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "services/device/public/mojom/hid.mojom";
+import "services/media_session/public/mojom/audio_focus.mojom";
+import "services/media_session/public/mojom/media_controller.mojom";
 import "url/mojom/url.mojom";
 
 // LacrosInfo is a set of parameters passed to ash from lacros-chrome
@@ -36,8 +38,8 @@ struct LacrosInfo {
 // milestone when you added it, to help us reason about compatibility between
 // lacros-chrome and older ash-chrome binaries.
 //
-// Next version: 6
-// Next method id: 9
+// Next version: 7
+// Next method id: 12
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e"]
 interface AshChromeService {
   // Binds Chrome OS Account Manager for Identity management.
@@ -74,6 +76,24 @@ interface AshChromeService {
   // Binds the Feedback interface for showing feedback UI.
   // Added in M87.
   [MinVersion=3] BindFeedback@5(pending_receiver<Feedback> receiver);
+
+  // Binds the Media Session service (controller) for enabling media playback
+  // control.
+  // Added in M88.
+  [MinVersion=6] BindMediaSessionController@9(
+      pending_receiver<media_session.mojom.MediaControllerManager> receiver);
+
+  // Binds the Media Session service (audio focus) for enabling media sessions
+  // to register with the service so they can be controlled.
+  // Added in M88.
+  [MinVersion=6] BindMediaSessionAudioFocus@10(
+      pending_receiver<media_session.mojom.AudioFocusManager> receiver);
+
+  // Binds the Media Session service (audio focus debug) for enabling debugging
+  // of media playback sessions.
+  // Added in M88.
+  [MinVersion=6] BindMediaSessionAudioFocusDebug@11(
+      pending_receiver<media_session.mojom.AudioFocusManagerDebug> receiver);
 
   // Passes generic lacros information such as lacros version, etc into ash
   // in |lacros_info| during startup.
