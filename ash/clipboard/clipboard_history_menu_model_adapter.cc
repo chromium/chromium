@@ -14,6 +14,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_types.h"
@@ -320,6 +321,10 @@ views::MenuItemView* ClipboardHistoryMenuModelAdapter::AppendMenuItem(
     return nullptr;
 
   views::MenuItemView* container = menu->AppendMenuItem(command_id);
+
+  // Ignore `container` in accessibility events handling. Let `item_view`
+  // handle.
+  container->GetViewAccessibility().OverrideIsIgnored(true);
 
   // Margins are managed by `ClipboardHistoryItemView`.
   container->SetMargins(/*top_margin=*/0, /*bottom_margin=*/0);
