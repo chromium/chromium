@@ -83,10 +83,8 @@ void ElementPositionGetter::OnGetBoxModelForStableCheck(
   // Return the center of the element.
   const std::vector<double>* content_box = result->GetModel()->GetContent();
   DCHECK_EQ(content_box->size(), 8u);
-  int new_point_x =
-      round((round((*content_box)[0]) + round((*content_box)[2])) * 0.5);
-  int new_point_y =
-      round((round((*content_box)[3]) + round((*content_box)[5])) * 0.5);
+  int new_point_x = round(((*content_box)[0] + (*content_box)[2]) * 0.5);
+  int new_point_y = round(((*content_box)[3] + (*content_box)[5]) * 0.5);
 
   // Wait for at least three rounds (~600ms = 3*check_interval_) for visual
   // state update callback since it might take longer time to return or never
