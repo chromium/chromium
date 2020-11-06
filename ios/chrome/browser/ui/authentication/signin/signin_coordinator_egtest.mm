@@ -556,7 +556,15 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
 // choosing UI. Depending on the timing, the account removal may occur after
 // the UI has retrieved the list of valid accounts. The test ensures that in
 // this case no account is presented to the user.
-- (void)testAccountInvalidatedDuringSignin {
+// TODO(crbug.com/1146459): Test is flaky on simulators.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testAccountInvalidatedDuringSignin \
+  DISABLED_testAccountInvalidatedDuringSignin
+#else
+#define MAYBE_testAccountInvalidatedDuringSignin \
+  testAccountInvalidatedDuringSignin
+#endif
+- (void)MAYBE_testAccountInvalidatedDuringSignin {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
