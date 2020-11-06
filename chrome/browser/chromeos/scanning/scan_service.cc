@@ -31,6 +31,9 @@ constexpr char kActiveUserMyFilesPath[] = "/home/chronos/user/MyFiles";
 // The conversion quality when converting from PNG to JPG.
 constexpr int kJpgQuality = 100;
 
+// The max progress percent that can be reported for a scanned page.
+constexpr uint32_t kMaxProgressPercent = 100;
+
 // Converts |png_img| to JPG.
 std::string PngToJpg(const std::string& png_img) {
   std::vector<uint8_t> jpg_img;
@@ -76,25 +79,31 @@ void ScanService::GetScannerCapabilities(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ScanService::Scan(const base::UnguessableToken& scanner_id,
-                       mojo_ipc::ScanSettingsPtr settings,
-                       ScanCallback callback) {
+void ScanService::StartScan(
+    const base::UnguessableToken& scanner_id,
+    mojo_ipc::ScanSettingsPtr settings,
+    mojo::PendingRemote<mojo_ipc::ScanJobObserver> observer,
+    StartScanCallback callback) {
   const std::string scanner_name = GetScannerName(scanner_id);
   if (scanner_name.empty() || !FilePathSupported(settings->scan_to_path)) {
     std::move(callback).Run(false);
     return;
   }
 
+  scan_job_observer_.Bind(std::move(observer));
+
   base::Time::Now().LocalExplode(&start_time_);
   save_failed_ = false;
   lorgnette_scanner_manager_->Scan(
       scanner_name, mojo::ConvertTo<lorgnette::ScanSettings>(settings),
-      base::NullCallback(),
+      base::BindRepeating(&ScanService::OnProgressPercentReceived,
+                          weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&ScanService::OnPageReceived,
                           weak_ptr_factory_.GetWeakPtr(),
                           settings->scan_to_path, settings->file_type),
       base::BindOnce(&ScanService::OnScanCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr()));
+  std::move(callback).Run(true);
 }
 
 void ScanService::BindInterface(
@@ -147,10 +156,26 @@ void ScanService::OnScannerCapabilitiesReceived(
       mojo::ConvertTo<mojo_ipc::ScannerCapabilitiesPtr>(capabilities.value()));
 }
 
+void ScanService::OnProgressPercentReceived(uint32_t progress_percent,
+                                            uint32_t page_number) {
+  DCHECK_LE(progress_percent, kMaxProgressPercent);
+  DCHECK(scan_job_observer_.is_connected());
+  scan_job_observer_->OnPageProgress(page_number, progress_percent);
+}
+
 void ScanService::OnPageReceived(const base::FilePath& scan_to_path,
                                  const mojo_ipc::FileType file_type,
                                  std::string scanned_image,
                                  uint32_t page_number) {
+  // TODO(b/172670649): Update LorgnetteManagerClient to pass scan data as a
+  // vector.
+  // In case the last reported progress percent was less than 100, send one
+  // final progress event before the page complete event.
+  DCHECK(scan_job_observer_.is_connected());
+  scan_job_observer_->OnPageProgress(page_number, kMaxProgressPercent);
+  scan_job_observer_->OnPageComplete(
+      std::vector<uint8_t>(scanned_image.begin(), scanned_image.end()));
+
   std::string filename;
   std::string file_ext;
   switch (file_type) {
@@ -182,8 +207,10 @@ void ScanService::OnPageReceived(const base::FilePath& scan_to_path,
   }
 }
 
-void ScanService::OnScanCompleted(ScanCallback callback, bool success) {
-  std::move(callback).Run(success && !save_failed_);
+void ScanService::OnScanCompleted(bool success) {
+  DCHECK(scan_job_observer_.is_connected());
+  scan_job_observer_->OnScanComplete(success && !save_failed_);
+  scan_job_observer_.reset();
 }
 
 bool ScanService::FilePathSupported(const base::FilePath& file_path) {

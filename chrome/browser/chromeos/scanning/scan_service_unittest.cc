@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/scanning/scan_service.h"
 
+#include <cstdint>
 #include <map>
 #include <string>
 #include <vector>
@@ -22,6 +23,8 @@
 #include "chromeos/components/scanning/mojom/scanning.mojom-test-utils.h"
 #include "chromeos/components/scanning/mojom/scanning.mojom.h"
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -65,6 +68,49 @@ lorgnette::ScannerCapabilities CreateLorgnetteScannerCapabilities() {
 
 }  // namespace
 
+class FakeScanJobObserver : public mojo_ipc::ScanJobObserver {
+ public:
+  FakeScanJobObserver() = default;
+  ~FakeScanJobObserver() override = default;
+
+  FakeScanJobObserver(const FakeScanJobObserver&) = delete;
+  FakeScanJobObserver& operator=(const FakeScanJobObserver&) = delete;
+
+  // mojo_ipc::ScanJobObserver:
+  void OnPageProgress(uint32_t page_number,
+                      uint32_t progress_percent) override {
+    progress_ = progress_percent;
+  }
+
+  void OnPageComplete(const std::vector<uint8_t>& page_data) override {
+    page_complete_ = true;
+  }
+
+  void OnScanComplete(bool success) override { scan_success_ = success; }
+
+  // Creates a pending remote that can be passed in calls to
+  // ScanService::StartScan().
+  mojo::PendingRemote<mojo_ipc::ScanJobObserver> GenerateRemote() {
+    if (receiver_.is_bound())
+      receiver_.reset();
+
+    mojo::PendingRemote<mojo_ipc::ScanJobObserver> remote;
+    receiver_.Bind(remote.InitWithNewPipeAndPassReceiver());
+    return remote;
+  }
+
+  // Returns true if the scan completed successfully.
+  bool scan_success() const {
+    return progress_ == 100 && page_complete_ && scan_success_;
+  }
+
+ private:
+  uint32_t progress_ = 0;
+  bool page_complete_ = false;
+  bool scan_success_ = false;
+  mojo::Receiver<mojo_ipc::ScanJobObserver> receiver_{this};
+};
+
 class ScanServiceTest : public testing::Test {
  public:
   ScanServiceTest() = default;
@@ -95,18 +141,21 @@ class ScanServiceTest : public testing::Test {
   }
 
   // Performs a scan with the scanner identified by |scanner_id| with the given
-  // |settings| by calling ScanService::Scan() via the mojo::Remote.
+  // |settings| by calling ScanService::StartScan() via the mojo::Remote.
   bool Scan(const base::UnguessableToken& scanner_id,
             mojo_ipc::ScanSettingsPtr settings) {
     bool success;
     mojo_ipc::ScanServiceAsyncWaiter(scan_service_remote_.get())
-        .Scan(scanner_id, std::move(settings), &success);
+        .StartScan(scanner_id, std::move(settings),
+                   fake_scan_job_observer_.GenerateRemote(), &success);
+    scan_service_remote_.FlushForTesting();
     return success;
   }
 
  protected:
   base::ScopedTempDir temp_dir_;
   FakeLorgnetteScannerManager fake_lorgnette_scanner_manager_;
+  FakeScanJobObserver fake_scan_job_observer_;
   ScanService scan_service_{&fake_lorgnette_scanner_manager_, base::FilePath(),
                             base::FilePath()};
 
@@ -242,6 +291,7 @@ TEST_F(ScanServiceTest, Scan) {
     settings.file_type = type.second;
     EXPECT_TRUE(Scan(scanners[0]->id, settings.Clone()));
     EXPECT_TRUE(base::PathExists(saved_scan_path));
+    EXPECT_TRUE(fake_scan_job_observer_.scan_success());
   }
 }
 

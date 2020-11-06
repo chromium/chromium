@@ -89,6 +89,24 @@ struct Scanner {
   mojo_base.mojom.String16 display_name;
 };
 
+// Observer interface used to send remote updates about an in-progress scan job
+// to the Scan app (chrome://scanning) receiver. When the corresponding scan job
+// is complete, the remote and receiver are disconnected.
+interface ScanJobObserver {
+  // Called when the progress percent of the page currently being scanned
+  // changes. |page_number| indicates which page the update is for.
+  OnPageProgress(uint32 page_number, uint32 progress_percent);
+
+  // Called when scanning a page is complete. |page_data| contains the page's
+  // image data encoded as a PNG.
+  // TODO(jschettler): Send a lower resolution preview.
+  OnPageComplete(array<uint8> page_data);
+
+  // Called when the scan is complete. |success| indicates whether the scan
+  // completed successfully.
+  OnScanComplete(bool success);
+};
+
 // Interface used to obtain information about and interact with connected
 // scanners. It is implemented in the browser and exposed to the Scan app
 // (chrome://scanning).
@@ -104,8 +122,9 @@ interface ScanService {
   GetScannerCapabilities(mojo_base.mojom.UnguessableToken scanner_id)
       => (ScannerCapabilities capabilities);
 
-  // Performs a scan using the provided |settings|.
-  // TODO(jschettler): Send a ScanJobObserver to get scan job updates.
-  Scan(mojo_base.mojom.UnguessableToken scanner_id, ScanSettings settings)
-      => (bool success);
+  // Starts a scan with the scanner identified by |scanner_id| using the
+  // provided |settings|. Scan job events are reported to the client via the
+  // |observer|. |success| indicates whether the scan started successfully.
+  StartScan(mojo_base.mojom.UnguessableToken scanner_id, ScanSettings settings,
+      pending_remote<ScanJobObserver> observer) => (bool success);
 };

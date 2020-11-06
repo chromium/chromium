@@ -45,6 +45,12 @@ Polymer({
 
   behaviors: [I18nBehavior],
 
+  /**
+   * Receives scan job notifications.
+   * @private {?chromeos.scanning.mojom.ScanJobObserverReceiver}
+   */
+  scanJobObserverReceiver_: null,
+
   /** @private {?chromeos.scanning.mojom.ScanServiceInterface} */
   scanService_: null,
 
@@ -84,6 +90,12 @@ Polymer({
 
     /** @type {string} */
     selectedResolution: String,
+
+    /** @private {!Array<string>} */
+    objectUrls_: {
+      type: Array,
+      value: () => [],
+    },
 
     /** @private {!Array<chromeos.scanning.mojom.PageSize>} */
     selectedSourcePageSizes_: {
@@ -126,6 +138,48 @@ Polymer({
         /*@type {!{scanners: !ScannerArr}}*/ (response) => {
           this.onScannersReceived_(response);
         });
+  },
+
+  /** @override */
+  detached() {
+    if (this.scanJobObserverReceiver_) {
+      this.scanJobObserverReceiver_.$.close();
+    }
+  },
+
+  /**
+   * Overrides chromeos.scanning.mojom.ScanJobObserverInterface.
+   * @param {number} pageNumber
+   * @param {number} progressPercent
+   */
+  onPageProgress(pageNumber, progressPercent) {
+    // TODO(jschettler): Move this text to the preview area and add a progress
+    // bar to display the progress.
+    this.statusText_ =
+        'Scanning page ' + pageNumber + ': ' + progressPercent + '%';
+  },
+
+  /**
+   * Overrides chromeos.scanning.mojom.ScanJobObserverInterface.
+   * @param {!Array<number>} pageData
+   */
+  onPageComplete(pageData) {
+    // TODO(jschettler): Display the scanned images in the preview area when the
+    // scan is complete.
+    const blob = new Blob([Uint8Array.from(pageData)], {'type': 'image/png'});
+    this.push('objectUrls_', URL.createObjectURL(blob));
+  },
+
+  /**
+   * Overrides chromeos.scanning.mojom.ScanJobObserverInterface.
+   * @param {boolean} success
+   */
+  onScanComplete(success) {
+    this.statusText_ = success ?
+        'Scan complete! File(s) saved to ' + this.selectedFilePath + '.' :
+        'Scan failed.';
+    this.settingsDisabled_ = false;
+    this.scanButtonDisabled_ = false;
   },
 
   /**
@@ -222,9 +276,7 @@ Polymer({
       return;
     }
 
-    this.statusText_ = 'Scanning...';
-    this.settingsDisabled_ = true;
-    this.scanButtonDisabled_ = true;
+    this.objectUrls_ = [];
 
     const settings = {
       'sourceName': this.selectedSource,
@@ -234,11 +286,23 @@ Polymer({
       'pageSize': pageSizeFromString(this.selectedPageSize),
       'resolutionDpi': Number(this.selectedResolution),
     };
+
+    if (!this.scanJobObserverReceiver_) {
+      this.scanJobObserverReceiver_ =
+          new chromeos.scanning.mojom.ScanJobObserverReceiver(
+              /**
+               * @type {!chromeos.scanning.mojom.ScanJobObserverInterface}
+               */
+              (this));
+    }
+
     this.scanService_
-        .scan(this.scannerIds_.get(this.selectedScannerId), settings)
+        .startScan(
+            this.scannerIds_.get(this.selectedScannerId), settings,
+            this.scanJobObserverReceiver_.$.bindNewPipeAndPassRemote())
         .then(
             /*@type {!{success: boolean}}*/ (response) => {
-              this.onScanCompleted_(response);
+              this.onStartScanResponse_(response);
             });
   },
 
@@ -246,16 +310,15 @@ Polymer({
    * @param {!{success: boolean}} response
    * @private
    */
-  onScanCompleted_(response) {
-    if (response.success) {
-      this.statusText_ =
-          'Scan complete! File(s) saved to ' + this.selectedFilePath + '.';
-    } else {
-      this.statusText_ = 'Scan failed.';
+  onStartScanResponse_(response) {
+    if (!response.success) {
+      this.statusText_ = 'Failed to start scan.';
+      return;
     }
 
-    this.settingsDisabled_ = false;
-    this.scanButtonDisabled_ = false;
+    this.statusText_ = 'Scanning page 1: 0%';
+    this.settingsDisabled_ = true;
+    this.scanButtonDisabled_ = true;
   },
 
   /** @private */

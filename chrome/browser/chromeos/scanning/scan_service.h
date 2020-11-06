@@ -19,7 +19,9 @@
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 
@@ -42,9 +44,10 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
   void GetScanners(GetScannersCallback callback) override;
   void GetScannerCapabilities(const base::UnguessableToken& scanner_id,
                               GetScannerCapabilitiesCallback callback) override;
-  void Scan(const base::UnguessableToken& scanner_id,
-            scanning::mojom::ScanSettingsPtr settings,
-            ScanCallback callback) override;
+  void StartScan(const base::UnguessableToken& scanner_id,
+                 scanning::mojom::ScanSettingsPtr settings,
+                 mojo::PendingRemote<scanning::mojom::ScanJobObserver> observer,
+                 StartScanCallback callback) override;
 
   // Binds receiver_ by consuming |pending_receiver|.
   void BindInterface(
@@ -70,6 +73,11 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
       GetScannerCapabilitiesCallback callback,
       const base::Optional<lorgnette::ScannerCapabilities>& capabilities);
 
+  // Receives progress updates after calling LorgnetteScannerManager::Scan().
+  // |page_number| indicates the page the |progress_percent| corresponds to.
+  void OnProgressPercentReceived(uint32_t progress_percent,
+                                 uint32_t page_number);
+
   // Processes each |scanned_image| received after calling
   // LorgnetteScannerManager::Scan(). |scan_to_path| is where images will be
   // saved, and |file_type| specifies the file type to use when saving scanned
@@ -80,7 +88,7 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
                       uint32_t page_number);
 
   // Processes the final result of calling LorgnetteScannerManager::Scan().
-  void OnScanCompleted(ScanCallback callback, bool success);
+  void OnScanCompleted(bool success);
 
   // TODO(jschettler): Replace this with a generic helper function when one is
   // available.
@@ -99,6 +107,10 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
   // Receives and dispatches method calls to this implementation of the
   // chromeos::scanning::mojom::ScanService interface.
   mojo::Receiver<scanning::mojom::ScanService> receiver_{this};
+
+  // Used to send scan job events to an observer. The remote is bound when a
+  // scan job is started and is disconnected when the scan job is complete.
+  mojo::Remote<scanning::mojom::ScanJobObserver> scan_job_observer_;
 
   // Unowned. Used to get scanner information and perform scans.
   LorgnetteScannerManager* lorgnette_scanner_manager_;
