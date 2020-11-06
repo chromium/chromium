@@ -462,12 +462,48 @@ TEST_F(NearbyConnectionsTest, StopDiscovery) {
 }
 
 TEST_F(NearbyConnectionsTest, InjectEndpoint) {
-  FakeEndpointDiscoveryListener fake_discovery_listener;
-  StartDiscovery(fake_discovery_listener,
-                 /*is_out_of_band_connection=*/true);
+  const std::vector<uint8_t> bluetooth_mac_address(
+      std::begin(kBluetoothMacAddress), std::end(kBluetoothMacAddress));
+  const EndpointData endpoint_data = CreateEndpointData(1);
 
-  // TODO(khorimoto): Finish this test when InjectBluetoothEndpoint() Mojo API
-  // is added.
+  base::RunLoop discovery_run_loop;
+  FakeEndpointDiscoveryListener fake_discovery_listener;
+  fake_discovery_listener.endpoint_found_cb =
+      base::BindLambdaForTesting([&](const std::string& endpoint_id,
+                                     mojom::DiscoveredEndpointInfoPtr info) {
+        EXPECT_EQ(endpoint_data.remote_endpoint_id, endpoint_id);
+        EXPECT_EQ(endpoint_data.remote_endpoint_info, info->endpoint_info);
+        EXPECT_EQ(kServiceId, info->service_id);
+        discovery_run_loop.Quit();
+      });
+
+  ClientProxy* client_proxy = StartDiscovery(
+      fake_discovery_listener, /*is_out_of_band_connection=*/true);
+
+  EXPECT_CALL(*service_controller_ptr_, InjectEndpoint)
+      .WillOnce([&](ClientProxy* client, const std::string& service_id,
+                    const OutOfBandConnectionMetadata& metadata) {
+        EXPECT_EQ(kServiceId, service_id);
+        EXPECT_EQ(Medium::BLUETOOTH, metadata.medium);
+        EXPECT_EQ(bluetooth_mac_address,
+                  ByteArrayToMojom(metadata.remote_bluetooth_mac_address));
+        client_proxy->OnEndpointFound(
+            kServiceId, endpoint_data.remote_endpoint_id,
+            ByteArrayFromMojom(endpoint_data.remote_endpoint_info),
+            /*mediums=*/{});
+        return Status{Status::kSuccess};
+      });
+
+  base::RunLoop inject_run_loop;
+  nearby_connections_->InjectBluetoothEndpoint(
+      kServiceId, bluetooth_mac_address,
+      base::BindLambdaForTesting([&](mojom::Status status) {
+        EXPECT_EQ(mojom::Status::kSuccess, status);
+        inject_run_loop.Quit();
+      }));
+
+  discovery_run_loop.Run();
+  inject_run_loop.Run();
 }
 
 TEST_F(NearbyConnectionsTest, RequestConnectionInitiated) {

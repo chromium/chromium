@@ -66,6 +66,12 @@ class MockNearbyConnections : public NearbyConnectionsMojom {
               (const std::string& service_id, StopDiscoveryCallback),
               (override));
   MOCK_METHOD(void,
+              InjectBluetoothEndpoint,
+              (const std::string& service_id,
+               const std::vector<uint8_t>& remote_bluetooth_mac_address,
+               InjectBluetoothEndpointCallback callback),
+              (override));
+  MOCK_METHOD(void,
               RequestConnection,
               (const std::string& service_id,
                const std::vector<uint8_t>& endpoint_info,

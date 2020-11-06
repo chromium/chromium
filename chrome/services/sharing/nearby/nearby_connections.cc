@@ -346,6 +346,19 @@ void NearbyConnections::StopDiscovery(const std::string& service_id,
       ->StopDiscovery(ResultCallbackFromMojom(std::move(callback)));
 }
 
+void NearbyConnections::InjectBluetoothEndpoint(
+    const std::string& service_id,
+    const std::vector<uint8_t>& remote_bluetooth_mac_address,
+    InjectBluetoothEndpointCallback callback) {
+  OutOfBandConnectionMetadata oob_metadata{
+      .medium = Medium::BLUETOOTH,
+      .remote_bluetooth_mac_address =
+          ByteArrayFromMojom(remote_bluetooth_mac_address)};
+  GetCore(service_id)
+      ->InjectEndpoint(service_id, oob_metadata,
+                       ResultCallbackFromMojom(std::move(callback)));
+}
+
 void NearbyConnections::RequestConnection(
     const std::string& service_id,
     const std::vector<uint8_t>& endpoint_info,

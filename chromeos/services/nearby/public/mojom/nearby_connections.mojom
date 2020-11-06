@@ -185,6 +185,25 @@ interface NearbyConnections {
   //   Status::kSuccess returned after discovery got stopped.
   StopDiscovery(string service_id) => (Status status);
 
+  // Attempts an out-of-band discovery from a previous call to StartDiscovery()
+  // which included the is_out_of_band_discovery option. If successful, this
+  // call results in the EndpointDiscoveryListener::OnEndpointFound() callback
+  // corresponding to the |listener| parameter to StartDiscovery() being
+  // invoked.
+  //
+  // Before invoking this function, StartDiscovery() should have been called
+  // with DiscoveryOptions that set |is_out_of_band_connection| to true.
+  // After this call completes, it is safe to invoke StopDiscovery().
+  //
+  // service_id - Identifier used in the preceding StartDiscovery() call.
+  // Possible return values include:
+  //   Status::kSuccess if endpoint injection was attempted.
+  //   Status::kError if |remote_bluetooth_mac_address| is malformed.
+  //   Status::kOutOfOrderApiCall if the app is not discovering.
+  InjectBluetoothEndpoint(
+      string service_id,
+      array<uint8, 6> remote_bluetooth_mac_address) => (Status status);
+
   // Sends a request to connect to a remote endpoint.
   //
   // service_id    - Service ID used to discover the endpoint.

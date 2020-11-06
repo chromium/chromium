@@ -101,6 +101,10 @@ class NearbyConnections : public mojom::NearbyConnections {
       StartDiscoveryCallback callback) override;
   void StopDiscovery(const std::string& service_id,
                      StopDiscoveryCallback callback) override;
+  void InjectBluetoothEndpoint(
+      const std::string& service_id,
+      const std::vector<uint8_t>& remote_bluetooth_mac_address,
+      InjectBluetoothEndpointCallback callback) override;
   void RequestConnection(
       const std::string& service_id,
       const std::vector<uint8_t>& endpoint_info,
