@@ -1904,18 +1904,22 @@ TEST_F(UnderlayTest, UpdateDamageWhenChangingUnderlays) {
 }
 
 TEST_F(UnderlayTest, UpdateDamageRectWhenNoPromotion) {
-  // In the first pass there is an overlay promotion and the expected damage
-  // size should be unchanged.
-  // In the second pass there is no overlay promotion, but the damage should be
-  // the union of the damage_rect with CreateRenderPass's output_rect which is
-  // {0, 0, 256, 256}.
-  bool has_fullscreen_candidate[] = {true, false};
-  gfx::Rect damages[] = {gfx::Rect(0, 0, 32, 32), gfx::Rect(0, 0, 312, 16)};
-  gfx::Rect expected_damages[] = {gfx::Rect(0, 0, 32, 32),
+  // In the first pass there is an overlay promotion and the expected damage is
+  // a union of the hole made for the underlay and the incoming damage. In the
+  // second pass there is no occluding damage so the incoming damage is
+  // attributed to the overlay candidate and the final output damage is zero. In
+  // the third pass there is no overlay promotion, but the damage should be the
+  // union of the damage_rect with CreateRenderPass's output_rect which is {0,
+  // 0, 256, 256}. This is due to the demotion of the current overlay.
+  bool has_fullscreen_candidate[] = {true, true, false};
+  gfx::Rect damages[] = {gfx::Rect(0, 0, 32, 32), gfx::Rect(0, 0, 32, 32),
+                         gfx::Rect(0, 0, 312, 16)};
+  gfx::Rect expected_damages[] = {gfx::Rect(0, 0, 256, 256),
+                                  gfx::Rect(0, 0, 0, 0),
                                   gfx::Rect(0, 0, 312, 256)};
-  size_t expected_candidate_size[] = {1, 0};
+  size_t expected_candidate_size[] = {1, 1, 0};
 
-  for (int i = 0; i < 2; ++i) {
+  for (size_t i = 0; i < base::size(expected_damages); ++i) {
     auto pass = CreateRenderPass();
 
     if (has_fullscreen_candidate[i]) {

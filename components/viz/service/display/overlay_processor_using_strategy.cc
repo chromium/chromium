@@ -157,6 +157,15 @@ void OverlayProcessorUsingStrategy::UpdateDamageRect(
       bool always_unoccluded =
           overlay.is_unoccluded && previous_frame_underlay_was_unoccluded;
 
+      // We need to make sure that when we change the overlay we damage the
+      // region where the underlay will be positioned. This is because a
+      // black transparent hole is made for the underlay to show through
+      // but its possible that the damage for this quad is less than the
+      // complete size of the underlay.  https://crbug.com/1130733
+      if (!same_underlay_rect) {
+        damage_rect->Union(this_frame_underlay_rect);
+      }
+
       if (same_underlay_rect && !transition_from_occluded_to_unoccluded &&
           (always_unoccluded || overlay.no_occluding_damage)) {
         damage_rect->Subtract(this_frame_underlay_rect);
