@@ -165,7 +165,7 @@ void IOSSSLBlockingPage::HandleScriptCommand(
   // the page to re-initiate the original navigation.
   if (command_num == security_interstitials::CMD_PROCEED) {
     web_state_->GetSessionCertificatePolicyCache()->RegisterAllowedCertificate(
-        ssl_info_.cert, origin_url.host(), ssl_info_.cert_status);
+        ssl_info_.cert, request_url().host(), ssl_info_.cert_status);
     web_state_->GetNavigationManager()->Reload(web::ReloadType::NORMAL,
                                                /*check_for_repost=*/true);
     return;
