@@ -29,6 +29,12 @@
 namespace {
 constexpr base::TimeDelta kTabsChangeDelay =
     base::TimeDelta::FromMilliseconds(50);
+
+#if defined(OS_CHROMEOS)
+constexpr char kFeedbackCategoryTag[] = "FromTabSearch";
+#else
+constexpr char kFeedbackCategoryTag[] = "FromTabSearchBrowser";
+#endif
 }
 
 TabSearchPageHandler::TabSearchPageHandler(
@@ -137,7 +143,7 @@ void TabSearchPageHandler::ShowFeedbackPage() {
                            chrome::FeedbackSource::kFeedbackSourceTabSearch,
                            std::string() /* description_template */,
                            std::string() /* description_placeholder_text */,
-                           std::string("FromTabSearch") /* category_tag */,
+                           std::string(kFeedbackCategoryTag) /* category_tag */,
                            std::string() /* extra_diagnostics */);
 }
 
