@@ -5,9 +5,13 @@
 package org.chromium.chrome.browser.autofill_assistant.carousel;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+
+import org.chromium.base.Callback;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 /**
  * A chip to display to the user.
@@ -73,6 +77,15 @@ public class AssistantChip {
     /** The callback that will be triggered when this chip is clicked. */
     private final Runnable mSelectedListener;
 
+    /**
+     * The list of popup items to show when the chip is tapped. When specified, the regular {@code
+     * mSelectedListener} will be automatically replaced with a callback to display the popup menu.
+     */
+    private @Nullable List<String> mPopupItems;
+
+    /** The callback to invoke when the n'th item in {@code mPopupItems} is selected. */
+    private @Nullable Callback<Integer> mOnPopupItemSelected;
+
     public AssistantChip(@Type int type, @Icon int icon, String text, boolean disabled,
             boolean sticky, boolean visible, Runnable selectedListener) {
         mType = type;
@@ -118,6 +131,19 @@ public class AssistantChip {
 
     public Runnable getSelectedListener() {
         return mSelectedListener;
+    }
+
+    public void setPopupItems(List<String> popupItems, Callback<Integer> onSelectedCallback) {
+        mPopupItems = popupItems;
+        mOnPopupItemSelected = onSelectedCallback;
+    }
+
+    public @Nullable List<String> getPopupItems() {
+        return mPopupItems;
+    }
+
+    public @Nullable Callback<Integer> getOnPopupItemSelectedCallback() {
+        return mOnPopupItemSelected;
     }
 
     @Override

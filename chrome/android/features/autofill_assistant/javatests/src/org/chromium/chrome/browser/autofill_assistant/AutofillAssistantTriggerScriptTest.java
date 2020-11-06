@@ -5,11 +5,17 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.hamcrest.core.StringContains.containsString;
+import static org.mockito.Mockito.verify;
 
 import android.support.test.InstrumentationRegistry;
 import android.view.Gravity;
@@ -23,6 +29,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.autofill_assistant.R;
@@ -47,6 +56,15 @@ import java.util.List;
 public class AutofillAssistantTriggerScriptTest {
     private static final String TEST_PAGE = "/components/test/data/autofill_assistant/html/"
             + "autofill_assistant_target_website.html";
+
+    @Mock
+    Runnable mRunnableMockCancelSession;
+
+    @Mock
+    Runnable mRunnableMockCancelForever;
+
+    @Rule
+    public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
@@ -118,6 +136,14 @@ public class AutofillAssistantTriggerScriptTest {
             List<AssistantChip> leftAlignedChips = triggerScript.getLeftAlignedChipsForTest();
             leftAlignedChips.add(new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE,
                     AssistantChip.Icon.OVERFLOW, "", false, false, true, () -> {}));
+            leftAlignedChips.get(0).setPopupItems(
+                    Arrays.asList("Not for this session", "Never show again"), result -> {
+                        if (result == 0) {
+                            mRunnableMockCancelSession.run();
+                        } else if (result == 1) {
+                            mRunnableMockCancelForever.run();
+                        }
+                    });
 
             List<AssistantChip> rightAlignedChips = triggerScript.getRightAlignedChipsForTest();
             rightAlignedChips.add(new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE,
@@ -142,5 +168,19 @@ public class AutofillAssistantTriggerScriptTest {
                 .check(matches(isDisplayed()));
         onView(withText("Not now")).check(matches(isDisplayed()));
         onView(withText("Fast checkout")).check(matches(isDisplayed()));
+
+        onView(withContentDescription(R.string.autofill_assistant_overflow_options))
+                .perform(click());
+        onView(withText("Not for this session"))
+                .inRoot(withDecorView(withClassName(containsString("Popup"))))
+                .perform(click());
+        verify(mRunnableMockCancelSession).run();
+
+        onView(withContentDescription(R.string.autofill_assistant_overflow_options))
+                .perform(click());
+        onView(withText("Never show again"))
+                .inRoot(withDecorView(withClassName(containsString("Popup"))))
+                .perform(click());
+        verify(mRunnableMockCancelForever).run();
     }
 }
