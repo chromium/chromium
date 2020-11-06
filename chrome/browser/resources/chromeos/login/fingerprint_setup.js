@@ -173,7 +173,6 @@ Polymer({
    * Enable/disable lottie animation.
    * @param {boolean} playing True if animation should be playing.
    */
-
   setAnimationState_(playing) {
     if (this.shouldUseLottieAnimation_) {
       const lottieElement = /** @type{CrLottieElement} */ (

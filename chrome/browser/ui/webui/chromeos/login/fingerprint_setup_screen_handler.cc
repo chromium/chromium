@@ -44,20 +44,36 @@ void FingerprintSetupScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_FINGERPINT_SETUP_SCREEN_INSTRUCTION_MOVE_FINGER);
   builder->Add("setupFingerprintScanTryAgain",
                IDS_OOBE_FINGERPINT_SETUP_SCREEN_INSTRUCTION_TRY_AGAIN);
-  int description_id;
+
+  int description_id, aria_label_id;
   switch (quick_unlock::GetFingerprintLocation()) {
     case quick_unlock::FingerprintLocation::TABLET_POWER_BUTTON:
       description_id =
           IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_POWER_BUTTON_DESCRIPTION;
+      aria_label_id =
+          IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_POWER_BUTTON_ARIA_LABEL;
       break;
     case quick_unlock::FingerprintLocation::KEYBOARD_BOTTOM_LEFT:
+      description_id =
+          IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION;
+      aria_label_id =
+          IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD_BOTTOM_LEFT_ARIA_LABEL;
+      break;
     case quick_unlock::FingerprintLocation::KEYBOARD_BOTTOM_RIGHT:
+      description_id =
+          IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION;
+      aria_label_id =
+          IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD_BOTTOM_RIGHT_ARIA_LABEL;
+      break;
     case quick_unlock::FingerprintLocation::KEYBOARD_TOP_RIGHT:
       description_id =
           IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION;
+      aria_label_id =
+          IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD_TOP_RIGHT_ARIA_LABEL;
       break;
   }
   builder->Add("setupFingerprintScreenDescription", description_id);
+  builder->Add("setupFingerprintScreenAriaLabel", aria_label_id);
 }
 
 void FingerprintSetupScreenHandler::RegisterMessages() {
