@@ -6221,6 +6221,9 @@ crbug.com/1046784 http/tests/devtools/sources/debugger-ui/debugger-inline-values
 crbug.com/1145742 [ Fuchsia ] virtual/stable/http/tests/navigation/location-assign-adds-history-item.html [ Pass Crash Timeout ]
 crbug.com/1145716 fast/forms/calendar-picker/datetimelocal-picker-open-to-focused-field.html [ Pass Timeout ]
 
+# Sheriff 2020-11-05
+crbug.com/1146221 [ Linux ] http/tests/devtools/sources/debugger-ui/debugger-inline-values.js [ Pass Timeout ]
+
 # Disabled until CL with fix gets merged https://chromium-review.googlesource.com/c/chromium/src/+/2504259
 crbug.com/1127115 inspector-protocol/runtime/runtime-console-log-node-letter-case.js [ Failure ]
 crbug.com/1127115 inspector-protocol/runtime/runtime-console-log-node-document-type.js [ Failure ]
