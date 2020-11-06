@@ -6,7 +6,9 @@
 
 #include "chrome/browser/chromeos/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/chromeos/secure_channel/nearby_connector_impl.h"
+#include "chrome/browser/chromeos/secure_channel/secure_channel_client_provider.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace chromeos {
@@ -44,7 +46,11 @@ KeyedService* NearbyConnectorFactory::BuildServiceInstanceFor(
   if (!nearby_process_manager)
     return nullptr;
 
-  return new NearbyConnectorImpl(nearby_process_manager);
+  auto nearby_connector =
+      std::make_unique<NearbyConnectorImpl>(nearby_process_manager);
+  SecureChannelClientProvider::GetInstance()->GetClient()->SetNearbyConnector(
+      nearby_connector.get());
+  return nearby_connector.release();
 }
 
 bool NearbyConnectorFactory::ServiceIsCreatedWithBrowserContext() const {

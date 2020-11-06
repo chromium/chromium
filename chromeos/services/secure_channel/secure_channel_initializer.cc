@@ -9,6 +9,7 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/secure_channel/secure_channel_impl.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/dbus/bluez_dbus_manager.h"
 
 namespace chromeos {
 
@@ -56,6 +57,10 @@ SecureChannelInitializer::ConnectionRequestArgs::~ConnectionRequestArgs() =
 
 SecureChannelInitializer::SecureChannelInitializer(
     scoped_refptr<base::TaskRunner> task_runner) {
+  // May not be initialized in tests.
+  if (!bluez::BluezDBusManager::IsInitialized())
+    return;
+
   PA_LOG(VERBOSE) << "SecureChannelInitializer::SecureChannelInitializer(): "
                   << "Fetching Bluetooth adapter. All requests received before "
                   << "the adapter is fetched will be queued.";
@@ -113,6 +118,16 @@ void SecureChannelInitializer::InitiateConnectionToDevice(
       connection_priority, std::move(delegate), false /* is_listen_request */));
 }
 
+void SecureChannelInitializer::SetNearbyConnector(
+    mojo::PendingRemote<mojom::NearbyConnector> nearby_connector) {
+  if (secure_channel_impl_) {
+    secure_channel_impl_->SetNearbyConnector(std::move(nearby_connector));
+    return;
+  }
+
+  nearby_connector_ = std::move(nearby_connector);
+}
+
 void SecureChannelInitializer::OnBluetoothAdapterReceived(
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
   PA_LOG(VERBOSE) << "SecureChannelInitializer::OnBluetoothAdapterReceived(): "
@@ -120,6 +135,9 @@ void SecureChannelInitializer::OnBluetoothAdapterReceived(
                   << "requests to the service.";
 
   secure_channel_impl_ = SecureChannelImpl::Factory::Create(bluetooth_adapter);
+
+  if (nearby_connector_)
+    secure_channel_impl_->SetNearbyConnector(std::move(nearby_connector_));
 
   while (!pending_args_.empty()) {
     std::unique_ptr<ConnectionRequestArgs> args_to_pass =

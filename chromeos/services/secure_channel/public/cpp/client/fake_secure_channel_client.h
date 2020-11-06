@@ -131,6 +131,7 @@ class FakeSecureChannelClient : public SecureChannelClient {
       const std::string& feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) override;
+  void SetNearbyConnector(NearbyConnector* nearby_connector) override {}
 
  private:
   // First element of pair is remote device, second is local device.

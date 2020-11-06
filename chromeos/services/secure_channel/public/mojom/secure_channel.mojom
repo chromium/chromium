@@ -5,6 +5,7 @@
 module chromeos.secure_channel.mojom;
 
 import "chromeos/components/multidevice/mojom/multidevice_types.mojom";
+import "chromeos/services/secure_channel/public/mojom/nearby_connector.mojom";
 
 enum ConnectionAttemptFailureReason {
   // The local device could not authenticate with the remote device. This likely
@@ -55,7 +56,11 @@ enum ConnectionAttemptFailureReason {
   // Tried to connect using a role which is unsupported for the connection
   // medium (e.g., Nearby Connections only supports the listener role, not the
   // initiator role).
-  UNSUPPORTED_ROLE_FOR_MEDIUM
+  UNSUPPORTED_ROLE_FOR_MEDIUM,
+
+  // Tried requesting a connection via Nearby Connections, but no
+  // NearbyConnector was provided.
+  MISSING_NEARBY_CONNECTOR
 };
 
 enum ConnectionCreationDetail {
@@ -183,6 +188,9 @@ interface ConnectionDelegate {
 // establish connections to phones belonging to each account on the device, so
 // each of these connection attempts uses a different local device.
 //
+// If a Nearby-based connection is requested, clients must first invoke
+// SetNearbyConnector().
+//
 // Note: Each API function results in either one connection (success case)
 // or zero connections (failure case). Clients wishing to initiate another
 // connection after the first one has completed should invoke the API again.
@@ -216,4 +224,9 @@ interface SecureChannel {
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
       pending_remote<ConnectionDelegate> delegate);
+
+  // Sets a NearbyConnector to be used by future connection requests. Must be
+  // called before requesting a connection with
+  // ConnectionMedium::kNearbyConnections. Should only be called once.
+  SetNearbyConnector(pending_remote<NearbyConnector> nearby_connector);
 };

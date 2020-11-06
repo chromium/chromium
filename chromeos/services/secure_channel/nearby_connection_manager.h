@@ -13,6 +13,9 @@
 #include "base/macros.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 #include "chromeos/services/secure_channel/nearby_initiator_failure_type.h"
+#include "chromeos/services/secure_channel/public/mojom/nearby_connector.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 
@@ -26,6 +29,11 @@ class NearbyConnectionManager {
   NearbyConnectionManager(const NearbyConnectionManager&) = delete;
   NearbyConnectionManager& operator=(const NearbyConnectionManager&) = delete;
   virtual ~NearbyConnectionManager();
+
+  // Note: NearbyConnector must be set before connections can be requested.
+  void SetNearbyConnector(
+      mojo::PendingRemote<mojom::NearbyConnector> nearby_connector);
+  bool IsNearbyConnectorSet() const;
 
   using ConnectionSuccessCallback =
       base::OnceCallback<void(std::unique_ptr<AuthenticatedChannel>)>;
@@ -52,6 +60,8 @@ class NearbyConnectionManager {
   virtual void PerformCancelNearbyInitiatorConnectionAttempt(
       const DeviceIdPair& device_id_pair) = 0;
 
+  mojom::NearbyConnector* GetNearbyConnector();
+
   const base::flat_set<DeviceIdPair>& GetDeviceIdPairsForRemoteDevice(
       const std::string& remote_device_id) const;
   bool DoesAttemptExist(const DeviceIdPair& device_id_pair);
@@ -77,6 +87,7 @@ class NearbyConnectionManager {
       const DeviceIdPair& device_id_pair);
   void RemoveRequestMetadata(const DeviceIdPair& device_id_pair);
 
+  mojo::Remote<mojom::NearbyConnector> nearby_connector_;
   base::flat_map<std::string, base::flat_set<DeviceIdPair>>
       remote_device_id_to_id_pair_map_;
   base::flat_map<DeviceIdPair,

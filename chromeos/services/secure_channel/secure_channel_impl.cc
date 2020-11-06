@@ -126,6 +126,11 @@ void SecureChannelImpl::InitiateConnectionToDevice(
       ConnectionRole::kInitiatorRole, connection_priority, connection_medium);
 }
 
+void SecureChannelImpl::SetNearbyConnector(
+    mojo::PendingRemote<mojom::NearbyConnector> nearby_connector) {
+  nearby_connection_manager_->SetNearbyConnector(std::move(nearby_connector));
+}
+
 void SecureChannelImpl::OnDisconnected(
     const ConnectionDetails& connection_details) {
   auto pending_requests_it =
@@ -218,9 +223,9 @@ void SecureChannelImpl::ProcessConnectionRequest(
   switch (connection_medium) {
     case ConnectionMedium::kNearbyConnections:
       // Nearby Connections only supports certain roles.
-      if (CheckForInvalidNearbyRole(api_fn_name,
-                                    client_connection_parameters.get(),
-                                    connection_role)) {
+      if (CheckForInvalidNearbyRequest(api_fn_name,
+                                       client_connection_parameters.get(),
+                                       connection_role)) {
         return;
       }
 
@@ -362,7 +367,7 @@ bool SecureChannelImpl::CheckForInvalidInputDevice(
   return true;
 }
 
-bool SecureChannelImpl::CheckForInvalidNearbyRole(
+bool SecureChannelImpl::CheckForInvalidNearbyRequest(
     ApiFunctionName api_fn_name,
     ClientConnectionParameters* client_connection_parameters,
     ConnectionRole connection_role) {
@@ -370,6 +375,14 @@ bool SecureChannelImpl::CheckForInvalidNearbyRole(
     RejectRequestForReason(
         api_fn_name,
         mojom::ConnectionAttemptFailureReason::UNSUPPORTED_ROLE_FOR_MEDIUM,
+        client_connection_parameters);
+    return true;
+  }
+
+  if (!nearby_connection_manager_->IsNearbyConnectorSet()) {
+    RejectRequestForReason(
+        api_fn_name,
+        mojom::ConnectionAttemptFailureReason::MISSING_NEARBY_CONNECTOR,
         client_connection_parameters);
     return true;
   }

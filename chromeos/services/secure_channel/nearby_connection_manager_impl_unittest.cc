@@ -15,6 +15,7 @@
 #include "chromeos/services/secure_channel/fake_secure_channel_connection.h"
 #include "chromeos/services/secure_channel/fake_secure_channel_disconnector.h"
 #include "chromeos/services/secure_channel/nearby_connection.h"
+#include "chromeos/services/secure_channel/public/cpp/client/fake_nearby_connector.h"
 #include "chromeos/services/secure_channel/secure_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,7 +40,8 @@ class FakeNearbyConnectionFactory : public NearbyConnection::Factory {
  private:
   // cryptauth::NearbyConnection::Factory:
   std::unique_ptr<Connection> CreateInstance(
-      multidevice::RemoteDeviceRef remote_device) override {
+      multidevice::RemoteDeviceRef remote_device,
+      mojom::NearbyConnector* nearby_connector) override {
     auto instance = std::make_unique<FakeConnection>(remote_device);
     last_created_instance_ = instance.get();
     return instance;
@@ -146,6 +148,12 @@ class SecureChannelNearbyConnectionManagerImplTest : public testing::Test {
 
     manager_ = NearbyConnectionManagerImpl::Factory::Create(
         fake_ble_scanner_.get(), fake_secure_channel_disconnector_.get());
+
+    EXPECT_FALSE(manager_->IsNearbyConnectorSet());
+    fake_nearby_connector_ = std::make_unique<FakeNearbyConnector>();
+    manager_->SetNearbyConnector(
+        fake_nearby_connector_->GeneratePendingRemote());
+    EXPECT_TRUE(manager_->IsNearbyConnectorSet());
   }
 
   void TearDown() override {
@@ -361,6 +369,7 @@ class SecureChannelNearbyConnectionManagerImplTest : public testing::Test {
   std::unique_ptr<FakeBleScanner> fake_ble_scanner_;
   std::unique_ptr<FakeSecureChannelDisconnector>
       fake_secure_channel_disconnector_;
+  std::unique_ptr<FakeNearbyConnector> fake_nearby_connector_;
 
   std::unique_ptr<NearbyConnectionManager> manager_;
 };

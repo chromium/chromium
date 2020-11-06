@@ -26,6 +26,18 @@ NearbyConnectionManager::NearbyConnectionManager() = default;
 
 NearbyConnectionManager::~NearbyConnectionManager() = default;
 
+void NearbyConnectionManager::SetNearbyConnector(
+    mojo::PendingRemote<mojom::NearbyConnector> nearby_connector) {
+  if (nearby_connector_)
+    nearby_connector_.reset();
+
+  nearby_connector_.Bind(std::move(nearby_connector));
+}
+
+bool NearbyConnectionManager::IsNearbyConnectorSet() const {
+  return nearby_connector_.is_bound();
+}
+
 void NearbyConnectionManager::AttemptNearbyInitiatorConnection(
     const DeviceIdPair& device_id_pair,
     ConnectionSuccessCallback success_callback,
@@ -54,6 +66,12 @@ void NearbyConnectionManager::CancelNearbyInitiatorConnectionAttempt(
   PA_LOG(VERBOSE) << "Canceling Nearby connection attempt for: "
                   << device_id_pair;
   PerformCancelNearbyInitiatorConnectionAttempt(device_id_pair);
+}
+
+mojom::NearbyConnector* NearbyConnectionManager::GetNearbyConnector() {
+  if (!nearby_connector_.is_bound())
+    return nullptr;
+  return nearby_connector_.get();
 }
 
 const base::flat_set<DeviceIdPair>&

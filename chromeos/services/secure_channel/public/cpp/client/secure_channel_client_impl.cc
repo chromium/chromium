@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/task_runner.h"
 #include "chromeos/services/secure_channel/public/cpp/client/connection_attempt_impl.h"
+#include "chromeos/services/secure_channel/public/cpp/client/nearby_connector.h"
 
 namespace chromeos {
 
@@ -88,6 +89,12 @@ SecureChannelClientImpl::ListenForConnectionFromDevice(
           connection_attempt->GenerateRemote()));
 
   return connection_attempt;
+}
+
+void SecureChannelClientImpl::SetNearbyConnector(
+    NearbyConnector* nearby_connector) {
+  secure_channel_remote_->SetNearbyConnector(
+      nearby_connector->GeneratePendingRemote());
 }
 
 void SecureChannelClientImpl::PerformInitiateConnectionToDevice(

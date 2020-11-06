@@ -51,6 +51,8 @@ class FakeSecureChannel : public SecureChannelBase {
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
       mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
+  void SetNearbyConnector(
+      mojo::PendingRemote<mojom::NearbyConnector> nearby_connector) override {}
 
   mojo::Remote<mojom::ConnectionDelegate> delegate_from_last_listen_call_;
   mojo::Remote<mojom::ConnectionDelegate> delegate_from_last_initiate_call_;

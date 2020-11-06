@@ -18,6 +18,7 @@ namespace chromeos {
 namespace secure_channel {
 
 class ConnectionAttempt;
+class NearbyConnector;
 
 // Provides clients access to the SecureChannel API.
 //
@@ -67,6 +68,7 @@ class SecureChannelClient {
       const std::string& feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) = 0;
+  virtual void SetNearbyConnector(NearbyConnector* nearby_connector) = 0;
 
  protected:
   SecureChannelClient() = default;

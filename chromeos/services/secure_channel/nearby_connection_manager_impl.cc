@@ -93,7 +93,7 @@ void NearbyConnectionManagerImpl::OnReceivedAdvertisement(
 
   // Create a connection to the device.
   std::unique_ptr<Connection> connection =
-      NearbyConnection::Factory::Create(remote_device);
+      NearbyConnection::Factory::Create(remote_device, GetNearbyConnector());
 
   SetAuthenticatingChannel(
       remote_device.GetDeviceId(),

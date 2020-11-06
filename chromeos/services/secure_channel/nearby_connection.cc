@@ -4,6 +4,7 @@
 
 #include "chromeos/services/secure_channel/nearby_connection.h"
 
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 
 namespace chromeos {
@@ -16,11 +17,13 @@ NearbyConnection::Factory* NearbyConnection::Factory::factory_instance_ =
 
 // static
 std::unique_ptr<Connection> NearbyConnection::Factory::Create(
-    multidevice::RemoteDeviceRef remote_device) {
+    multidevice::RemoteDeviceRef remote_device,
+    mojom::NearbyConnector* nearby_connector) {
   if (factory_instance_)
-    return factory_instance_->CreateInstance(remote_device);
+    return factory_instance_->CreateInstance(remote_device, nearby_connector);
 
-  return base::WrapUnique(new NearbyConnection(remote_device));
+  return base::WrapUnique(
+      new NearbyConnection(remote_device, nearby_connector));
 }
 
 // static
@@ -28,8 +31,11 @@ void NearbyConnection::Factory::SetFactoryForTesting(Factory* factory) {
   factory_instance_ = factory;
 }
 
-NearbyConnection::NearbyConnection(multidevice::RemoteDeviceRef remote_device)
-    : Connection(remote_device) {}
+NearbyConnection::NearbyConnection(multidevice::RemoteDeviceRef remote_device,
+                                   mojom::NearbyConnector* nearby_connector)
+    : Connection(remote_device), nearby_connector_(nearby_connector) {
+  DCHECK(nearby_connector_);
+}
 
 NearbyConnection::~NearbyConnection() {
   // TODO(https://crbug.com/1106937): Clean up potentially-lingering connection.

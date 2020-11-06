@@ -34,12 +34,14 @@
 #include "chromeos/services/secure_channel/fake_timer_factory.h"
 #include "chromeos/services/secure_channel/nearby_connection_manager_impl.h"
 #include "chromeos/services/secure_channel/pending_connection_manager_impl.h"
+#include "chromeos/services/secure_channel/public/cpp/client/fake_nearby_connector.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/services/secure_channel/secure_channel_disconnector_impl.h"
 #include "chromeos/services/secure_channel/secure_channel_initializer.h"
 #include "chromeos/services/secure_channel/timer_factory_impl.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -480,6 +482,8 @@ class SecureChannelServiceTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    bluez::BluezDBusManager::GetSetterForTesting();
+    bluez::BluezDBusManager::InitializeFake();
     mock_adapter_ =
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
     is_adapter_powered_ = true;
@@ -493,6 +497,8 @@ class SecureChannelServiceTest : public testing::Test {
     device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
 
     test_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+
+    fake_nearby_connector_ = std::make_unique<FakeNearbyConnector>();
 
     fake_timer_factory_factory_ = std::make_unique<FakeTimerFactoryFactory>();
     TimerFactoryImpl::Factory::SetFactoryForTesting(
@@ -778,9 +784,15 @@ class SecureChannelServiceTest : public testing::Test {
         ->CancelClientRequest();
   }
 
-  void FinishInitialization() {
+  void FinishInitialization(bool set_nearby_connector = true) {
     // The PendingConnectionManager should not have yet been created.
     EXPECT_FALSE(fake_pending_connection_manager());
+
+    if (set_nearby_connector) {
+      secure_channel_remote_->SetNearbyConnector(
+          fake_nearby_connector_->GeneratePendingRemote());
+      secure_channel_remote_.FlushForTesting();
+    }
 
     EXPECT_TRUE(test_task_runner_->HasPendingTask());
     test_task_runner_->RunUntilIdle();
@@ -1046,6 +1058,7 @@ class SecureChannelServiceTest : public testing::Test {
 
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
   scoped_refptr<base::TestSimpleTaskRunner> test_task_runner_;
+  std::unique_ptr<FakeNearbyConnector> fake_nearby_connector_;
 
   std::unique_ptr<FakeTimerFactoryFactory> fake_timer_factory_factory_;
   std::unique_ptr<TestRemoteDeviceCacheFactory>
@@ -1248,17 +1261,13 @@ TEST_F(SecureChannelServiceTest,
 }
 
 TEST_F(SecureChannelServiceTest,
-       InitiateConnection_Nearby_LocalDeviceMissingBluetoothAddress) {
-  FinishInitialization();
-
-  multidevice::RemoteDevice local_device = test_devices()[1];
-  local_device.bluetooth_public_address.clear();
+       InitiateConnection_Nearby_MissingNearbyConnector) {
+  FinishInitialization(/*set_nearby_connector=*/false);
 
   CallInitiateConnectionToDeviceAndVerifyRejection(
-      test_devices()[0], local_device, "feature",
+      test_devices()[0], test_devices()[1], "feature",
       ConnectionMedium::kNearbyConnections, ConnectionPriority::kLow,
-      mojom::ConnectionAttemptFailureReason::
-          LOCAL_DEVICE_INVALID_BLUETOOTH_ADDRESS);
+      mojom::ConnectionAttemptFailureReason::MISSING_NEARBY_CONNECTOR);
 }
 
 TEST_F(SecureChannelServiceTest, ListenForConnection_Nearby) {

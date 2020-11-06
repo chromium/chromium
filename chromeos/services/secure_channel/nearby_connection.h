@@ -6,6 +6,7 @@
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_NEARBY_CONNECTION_H_
 
 #include "chromeos/services/secure_channel/connection.h"
+#include "chromeos/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 
 namespace chromeos {
 
@@ -19,13 +20,15 @@ class NearbyConnection : public Connection {
   class Factory {
    public:
     static std::unique_ptr<Connection> Create(
-        multidevice::RemoteDeviceRef remote_device);
+        multidevice::RemoteDeviceRef remote_device,
+        mojom::NearbyConnector* nearby_connector);
     static void SetFactoryForTesting(Factory* factory);
     virtual ~Factory() = default;
 
    protected:
     virtual std::unique_ptr<Connection> CreateInstance(
-        multidevice::RemoteDeviceRef remote_device) = 0;
+        multidevice::RemoteDeviceRef remote_device,
+        mojom::NearbyConnector* nearby_connector) = 0;
 
    private:
     static Factory* factory_instance_;
@@ -34,13 +37,16 @@ class NearbyConnection : public Connection {
   ~NearbyConnection() override;
 
  private:
-  NearbyConnection(multidevice::RemoteDeviceRef remote_device);
+  NearbyConnection(multidevice::RemoteDeviceRef remote_device,
+                   mojom::NearbyConnector* nearby_connector);
 
   // Connection:
   void Connect() override;
   void Disconnect() override;
   std::string GetDeviceAddress() override;
   void SendMessageImpl(std::unique_ptr<WireMessage> message) override;
+
+  mojom::NearbyConnector* nearby_connector_;
 };
 
 }  // namespace secure_channel

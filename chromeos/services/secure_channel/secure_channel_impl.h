@@ -114,6 +114,8 @@ class SecureChannelImpl : public mojom::SecureChannel,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
       mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
+  void SetNearbyConnector(
+      mojo::PendingRemote<mojom::NearbyConnector> nearby_connector) override;
 
   // ActiveConnectionManager::Delegate:
   void OnDisconnected(const ConnectionDetails& connection_details) override;
@@ -154,7 +156,7 @@ class SecureChannelImpl : public mojom::SecureChannel,
 
   // Checks for whether |connection_role| is valid for a connection via the
   // Nearby Connections library.
-  bool CheckForInvalidNearbyRole(
+  bool CheckForInvalidNearbyRequest(
       ApiFunctionName api_fn_name,
       ClientConnectionParameters* client_connection_parameters,
       ConnectionRole connection_role);
