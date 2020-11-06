@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
@@ -13,7 +12,11 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.support.test.InstrumentationRegistry;
+import android.view.Gravity;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -57,6 +60,23 @@ public class AutofillAssistantTriggerScriptTest {
 
     protected BottomSheetController getBottomSheetController() {
         return AutofillAssistantUiTestUtil.getBottomSheetController(mTestRule.getActivity());
+    }
+
+    /**
+     * Creates a linear layout at the bottom of the screen for use in tests. Showing content
+     * directly in the bottom sheet has been flaky in the past (see e.g., crbug.com/1146084).
+     */
+    private LinearLayout createViewContainerForTest() {
+        CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.gravity = Gravity.BOTTOM;
+
+        LinearLayout container = new LinearLayout(mTestRule.getActivity());
+        container.setOrientation(LinearLayout.VERTICAL);
+
+        ViewGroup chromeCoordinatorView = mTestRule.getActivity().findViewById(R.id.coordinator);
+        chromeCoordinatorView.addView(container, lp);
+        return container;
     }
 
     @Test
@@ -106,7 +126,11 @@ public class AutofillAssistantTriggerScriptTest {
         });
 
         triggerScript.disableBottomSheetAnimationsForTesting(true);
-        TestThreadUtils.runOnUiThreadBlocking(triggerScript::show);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            triggerScript.update();
+            createViewContainerForTest().addView(
+                    triggerScript.getBottomSheetContentForTest().getContentView());
+        });
         onView(withId(R.id.autofill_assistant)).check(matches(isDisplayed()));
         onView(withId(R.id.header)).check(matches(isDisplayed()));
         onView(withId(R.id.poodle_wrapper)).check(matches(isDisplayed()));
@@ -117,9 +141,5 @@ public class AutofillAssistantTriggerScriptTest {
                 .check(matches(isDisplayed()));
         onView(withText("Not now")).check(matches(isDisplayed()));
         onView(withText("Fast checkout")).check(matches(isDisplayed()));
-
-        TestThreadUtils.runOnUiThreadBlocking(triggerScript::hide);
-        onView(withId(R.id.autofill_assistant)).check(doesNotExist());
-        TestThreadUtils.runOnUiThreadBlocking(triggerScript::destroy);
     }
 }

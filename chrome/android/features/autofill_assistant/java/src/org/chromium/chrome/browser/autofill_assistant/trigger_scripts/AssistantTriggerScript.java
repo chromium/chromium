@@ -147,6 +147,10 @@ public class AssistantTriggerScript {
     public List<AssistantChip> getRightAlignedChipsForTest() {
         return mRightAlignedChips;
     }
+    @VisibleForTesting
+    public AssistantBottomSheetContent getBottomSheetContentForTest() {
+        return mContent;
+    }
 
     private void addChipsToContainer(LinearLayout container, List<AssistantChip> chips) {
         for (int i = 0; i < chips.size(); ++i) {
@@ -164,13 +168,17 @@ public class AssistantTriggerScript {
 
     // TODO(b/171776026): before calling this method, native needs to send the necessary
     // information to populate and update the views.
-    public void show() {
+    @VisibleForTesting
+    public void update() {
         mChipsContainer.removeAllViews();
         addChipsToContainer(mChipsContainer, mLeftAlignedChips);
         mChipsContainer.addView(new Space(mContext),
                 new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1.0f));
         addChipsToContainer(mChipsContainer, mRightAlignedChips);
+    }
 
+    public void show() {
+        update();
         mBottomSheetController.removeObserver(mBottomSheetObserver);
         mBottomSheetController.addObserver(mBottomSheetObserver);
         BottomSheetUtils.showContentAndMaybeExpand(mBottomSheetController, mContent,
