@@ -2562,21 +2562,6 @@
             ]
         }
     ],
-    "EnableCloseAllTabsConfirmation": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableCloseAllTabsConfirmation"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableContextMenuPerformanceHints": [
         {
             "platforms": [
