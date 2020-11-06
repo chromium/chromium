@@ -125,9 +125,7 @@ bool CanMouseDownStartSelect(Node* node) {
 PositionInFlatTreeWithAffinity PositionWithAffinityOfHitTestResult(
     const HitTestResult& hit_test_result) {
   return FromPositionInDOMTree<EditingInFlatTreeStrategy>(
-      hit_test_result.InnerPossiblyPseudoNode()
-          ->GetLayoutObject()
-          ->PositionForPoint(hit_test_result.LocalPoint()));
+      hit_test_result.GetPosition());
 }
 
 DocumentMarker* SpellCheckMarkerAtPosition(
