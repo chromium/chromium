@@ -54,7 +54,7 @@ public class SavePasswordInfoBar extends ConfirmInfoBar {
 
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.AUTOFILL_ENABLE_PASSWORD_INFO_BAR_ACCOUNT_INDICATION_FOOTER)
-                && !TextUtils.isEmpty(mAccountInfo.getEmail())
+                && mAccountInfo != null && !TextUtils.isEmpty(mAccountInfo.getEmail())
                 && mAccountInfo.getAccountImage() != null) {
             Resources res = layout.getResources();
             int smallIconSize = res.getDimensionPixelSize(R.dimen.infobar_small_icon_size);
