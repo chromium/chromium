@@ -167,6 +167,7 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
 
   // InProcessBrowserTest:
   void SetUpInProcessBrowserTestFixture() override;
+  void SetUp() override;
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 

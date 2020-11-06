@@ -517,6 +517,8 @@ static_library("test_support") {
     "stub_password_manager_client.h",
     "stub_password_manager_driver.cc",
     "stub_password_manager_driver.h",
+    "sync_username_test_base.cc",
+    "sync_username_test_base.h",
     "test_password_store.cc",
     "test_password_store.h",
   ]
@@ -524,13 +526,17 @@ static_library("test_support") {
   public_deps = [
     ":browser",
     ":hash_password_manager",
+    "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser/leak_detection",
     "//components/safe_browsing:buildflags",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync:test_support",
     "//components/ukm",
     "//services/network/public/cpp",
     "//testing/gmock",
+    "//testing/gtest",
     "//url",
   ]
   deps = [
@@ -538,7 +544,6 @@ static_library("test_support") {
     "//base",
     "//components/autofill/core/common",
     "//net:net",
-    "//testing/gtest",
   ]
 }
 
@@ -664,8 +669,6 @@ source_set("unit_tests") {
     "store_metrics_reporter_unittest.cc",
     "sync/password_sync_bridge_unittest.cc",
     "sync_credentials_filter_unittest.cc",
-    "sync_username_test_base.cc",
-    "sync_username_test_base.h",
     "ui/bulk_leak_check_service_adapter_unittest.cc",
     "ui/compromised_credentials_reader_unittest.cc",
     "ui/insecure_credentials_manager_unittest.cc",

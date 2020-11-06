@@ -119,6 +119,7 @@
 #include "chrome/browser/password_manager/android/account_chooser_dialog_android.h"
 #include "chrome/browser/password_manager/android/auto_signin_first_run_dialog_android.h"
 #include "chrome/browser/password_manager/android/auto_signin_prompt_controller.h"
+#include "chrome/browser/password_manager/android/credential_leak_controller_android.h"
 #include "chrome/browser/password_manager/android/generated_password_saved_infobar_delegate_android.h"
 #include "chrome/browser/password_manager/android/password_accessory_controller.h"
 #include "chrome/browser/password_manager/android/password_accessory_controller_impl.h"
@@ -139,8 +140,11 @@
 #include "extensions/common/constants.h"
 #endif
 
+#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
+#endif
+
 #if defined(OS_ANDROID)
-#include "chrome/browser/password_manager/android/credential_leak_controller_android.h"
 using password_manager::CredentialCache;
 #endif
 
@@ -1166,7 +1170,14 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
       content_credential_manager_(this),
       password_generation_driver_receivers_(web_contents, this),
       observer_(nullptr),
+#if defined(OS_CHROMEOS) || defined(OS_ANDROID)
       credentials_filter_(this, base::BindRepeating(&GetSyncService, profile_)),
+#else
+      credentials_filter_(
+          this,
+          base::BindRepeating(&GetSyncService, profile_),
+          DiceWebSigninInterceptorFactory::GetForProfile(profile_)),
+#endif
 #if !defined(OS_ANDROID)
       account_storage_auth_helper_(profile_, &password_feature_manager_),
 #endif

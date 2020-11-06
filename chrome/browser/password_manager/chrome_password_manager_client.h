@@ -31,7 +31,6 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detection_manager.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
-#include "components/password_manager/core/browser/sync_credentials_filter.h"
 #include "components/prefs/pref_member.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/render_widget_host.h"
@@ -48,6 +47,12 @@ class PasswordAccessoryController;
 class TouchToFillController;
 #else
 #include "chrome/browser/ui/passwords/account_storage_auth_helper.h"
+#endif
+
+#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#include "components/password_manager/core/browser/sync_credentials_filter.h"
+#else
+#include "chrome/browser/password_manager/multi_profile_credentials_filter.h"
 #endif
 
 class ChromeBiometricAuthenticator;
@@ -385,7 +390,12 @@ class ChromePasswordManagerClient
   // point.
   BooleanPrefMember saving_passwords_enabled_;
 
+#if defined(OS_CHROMEOS) || defined(OS_ANDROID)
+  // ChromeOS and Android don't support multiple profiles
   const password_manager::SyncCredentialsFilter credentials_filter_;
+#else
+  const MultiProfileCredentialsFilter credentials_filter_;
+#endif
 
   std::unique_ptr<autofill::LogManager> log_manager_;
 

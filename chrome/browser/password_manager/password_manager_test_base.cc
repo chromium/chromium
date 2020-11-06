@@ -431,6 +431,11 @@ PasswordManagerBrowserTestBase::PasswordManagerBrowserTestBase()
 
 PasswordManagerBrowserTestBase::~PasswordManagerBrowserTestBase() = default;
 
+void PasswordManagerBrowserTestBase::SetUp() {
+  ASSERT_TRUE(https_test_server().InitializeAndListen());
+  CertVerifierBrowserTest::SetUp();
+}
+
 void PasswordManagerBrowserTestBase::SetUpOnMainThread() {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -438,7 +443,7 @@ void PasswordManagerBrowserTestBase::SetUpOnMainThread() {
   static constexpr base::FilePath::CharType kDocRoot[] =
       FILE_PATH_LITERAL("chrome/test/data");
   https_test_server().ServeFilesFromSourceDirectory(base::FilePath(kDocRoot));
-  ASSERT_TRUE(https_test_server().Start());
+  https_test_server().StartAcceptingConnections();
 
   // Setup the mock host resolver
   host_resolver()->AddRule("*", "127.0.0.1");
