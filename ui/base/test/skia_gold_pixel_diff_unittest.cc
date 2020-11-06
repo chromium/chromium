@@ -346,5 +346,36 @@ TEST_F(SkiaGoldPixelDiffTest, MakeGerritCommentInvalidFlag) {
   EXPECT_TRUE(ret);
 }
 
+TEST_F(SkiaGoldPixelDiffTest, DryRunLocally) {
+  auto* cmd_line = base::CommandLine::ForCurrentProcess();
+  cmd_line->RemoveSwitch(switches::kTestLauncherBotMode);
+
+  MockSkiaGoldPixelDiff mock_pixel;
+  EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
+  EXPECT_CALL(
+      mock_pixel,
+      LaunchProcess(AllOf(Property(&base::CommandLine::GetCommandLineString,
+                                   HasSubstr(FILE_PATH_LITERAL("--dryrun"))))))
+      .Times(1);
+  mock_pixel.Init("Prefix");
+  bool ret = mock_pixel.CompareScreenshot("test", GetTestBitmap());
+  EXPECT_TRUE(ret);
+}
+
+TEST_F(SkiaGoldPixelDiffTest, NotDryRunOnBots) {
+  auto* cmd_line = base::CommandLine::ForCurrentProcess();
+  cmd_line->AppendSwitch(switches::kTestLauncherBotMode);
+
+  MockSkiaGoldPixelDiff mock_pixel;
+  EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
+  EXPECT_CALL(mock_pixel, LaunchProcess(AllOf(Property(
+                              &base::CommandLine::GetCommandLineString,
+                              Not(HasSubstr(FILE_PATH_LITERAL("--dryrun")))))))
+      .Times(3);
+  mock_pixel.Init("Prefix");
+  bool ret = mock_pixel.CompareScreenshot("test", GetTestBitmap());
+  EXPECT_TRUE(ret);
+}
+
 }  // namespace test
 }  // namespace ui

@@ -12,6 +12,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 
 #include "base/command_line.h"
+#include "base/environment.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -55,6 +56,7 @@ const char* kCodeReviewSystemKey = "code-review-system";
 
 const char* kNoLuciAuth = "no-luci-auth";
 const char* kBypassSkiaGoldFunctionality = "bypass-skia-gold-functionality";
+const char* kDryRun = "dryrun";
 
 namespace {
 
@@ -143,6 +145,12 @@ bool FillInTestEnvironment(const base::FilePath& keys_file) {
     return false;
   }
   return true;
+}
+
+bool BotModeEnabled(const base::CommandLine* command_line) {
+  std::unique_ptr<base::Environment> env(base::Environment::Create());
+  return command_line->HasSwitch(switches::kTestLauncherBotMode) ||
+         env->HasVar("CHROMIUM_TEST_LAUNCHER_BOT_MODE");
 }
 
 }  // namespace
@@ -245,8 +253,7 @@ void SkiaGoldPixelDiff::Init(const std::string& screenshot_prefix,
       code_review_system_ = "gerrit";
     }
   }
-  if (cmd_line->HasSwitch(kNoLuciAuth) ||
-      !cmd_line->HasSwitch(switches::kTestLauncherBotMode)) {
+  if (cmd_line->HasSwitch(kNoLuciAuth) || !BotModeEnabled(cmd_line)) {
     luci_auth_ = false;
   }
   initialized_ = true;
@@ -276,6 +283,10 @@ bool SkiaGoldPixelDiff::UploadToSkiaGoldServer(
   cmd.AppendSwitchASCII("corpus", corpus_);
   cmd.AppendSwitchPath("png-file", local_file_path);
   cmd.AppendSwitchPath("work-dir", working_dir_);
+
+  if (!BotModeEnabled(base::CommandLine::ForCurrentProcess())) {
+    cmd.AppendSwitch(kDryRun);
+  }
 
   std::map<std::string, std::string> optional_keys;
   if (!ShouldMakeGerritCommentsOnFailures()) {
