@@ -15,7 +15,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
-#include "third_party/blink/renderer/bindings/core/v8/js_event_handler.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -1133,9 +1132,7 @@ static void MixinEventHandlerAttributeAttributeGetter(const v8::FunctionCallback
 
   TestInterfaceImplementation* impl = V8TestInterface::ToImpl(holder);
 
-  EventListener* cpp_value(WTF::GetPtr(impl->mixinEventHandlerAttribute()));
-
-  V8SetReturnValue(info, JSEventHandler::AsV8Value(info.GetIsolate(), impl, cpp_value));
+  V8SetReturnValueFast(info, WTF::GetPtr(impl->mixinEventHandlerAttribute()), impl);
 }
 
 static void MixinEventHandlerAttributeAttributeSetter(
@@ -1148,9 +1145,18 @@ static void MixinEventHandlerAttributeAttributeSetter(
 
   TestInterfaceImplementation* impl = V8TestInterface::ToImpl(holder);
 
-  // Prepare the value to be set.
+  ExceptionState exception_state(isolate, ExceptionState::kSetterContext, "TestInterface", "mixinEventHandlerAttribute");
 
-  impl->setMixinEventHandlerAttribute(JSEventHandler::CreateOrNull(v8_value, JSEventHandler::HandlerType::kEventHandler));
+  // Prepare the value to be set.
+  EventHandlerNonNull* cpp_value{ V8EventHandlerNonNull::ToImplWithTypeCheck(info.GetIsolate(), v8_value) };
+
+  // Type check per: http://heycam.github.io/webidl/#es-interface
+  if (!cpp_value && !IsUndefinedOrNull(v8_value)) {
+    exception_state.ThrowTypeError("The provided value is not of type 'EventHandlerNonNull'.");
+    return;
+  }
+
+  impl->setMixinEventHandlerAttribute(cpp_value);
 }
 
 static void MixinRuntimeEnabledNodeAttributeAttributeGetter(const v8::FunctionCallbackInfo<v8::Value>& info) {
