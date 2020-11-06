@@ -1944,6 +1944,10 @@
       status: "experimental",
     },
     {
+      name: "TrustedTypesUseCodeLike",
+      status: "experimental",
+    },
+    {
       name: "TrustTokens",
       origin_trial_feature_name: "TrustTokens",
       origin_trial_allows_third_party: true,

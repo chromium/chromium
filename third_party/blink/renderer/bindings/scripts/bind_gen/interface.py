@@ -5336,6 +5336,15 @@ ${prototype_template}->SetIntrinsicDataProperty(
     V8AtomicString(${isolate}, "forEach"), v8::kArrayProto_forEach, v8::None);
 """))
 
+    if interface and "IsCodeLike" in interface.extended_attributes:
+        body.append(
+            CxxUnlikelyIfNode(
+                cond="RuntimeEnabledFeatures::TrustedTypesUseCodeLikeEnabled()",
+                body=[
+                    TextNode("// [IsCodeLike]"),
+                    TextNode("${instance_object_template}->SetCodeLike();"),
+                ]))
+
     if "Global" in class_like.extended_attributes:
         body.append(
             TextNode("""\

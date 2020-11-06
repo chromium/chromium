@@ -379,13 +379,15 @@ static bool ContentSecurityPolicyCodeGenerationCheck(
 
 static std::pair<bool, v8::MaybeLocal<v8::String>>
 TrustedTypesCodeGenerationCheck(v8::Local<v8::Context> context,
-                                v8::Local<v8::Value> source) {
+                                v8::Local<v8::Value> source,
+                                bool is_code_like) {
   v8::Isolate* isolate = context->GetIsolate();
   ExceptionState exception_state(isolate, ExceptionState::kExecutionContext,
                                  "eval", "");
 
   // If the input is not a string or TrustedScript, pass it through.
-  if (!source->IsString() && !V8TrustedScript::HasInstance(source, isolate)) {
+  if (!source->IsString() && !is_code_like &&
+      !V8TrustedScript::HasInstance(source, isolate)) {
     return {true, v8::MaybeLocal<v8::String>()};
   }
 
@@ -400,6 +402,12 @@ TrustedTypesCodeGenerationCheck(v8::Local<v8::Context> context,
     return {false, v8::MaybeLocal<v8::String>()};
   }
 
+  if (is_code_like && string_or_trusted_script.IsString()) {
+    string_or_trusted_script = StringOrTrustedScript::FromTrustedScript(
+        MakeGarbageCollected<TrustedScript>(
+            string_or_trusted_script.GetAsString()));
+  }
+
   String stringified_source = TrustedTypesCheckForScript(
       string_or_trusted_script, ToExecutionContext(context), exception_state);
   if (exception_state.HadException()) {
@@ -412,7 +420,12 @@ TrustedTypesCodeGenerationCheck(v8::Local<v8::Context> context,
 
 static v8::ModifyCodeGenerationFromStringsResult
 CodeGenerationCheckCallbackInMainThread(v8::Local<v8::Context> context,
-                                        v8::Local<v8::Value> source) {
+                                        v8::Local<v8::Value> source,
+                                        bool is_code_like) {
+  // The TC39 "Dynamic Code Brand Check" feature is currently behind a flag.
+  if (!RuntimeEnabledFeatures::TrustedTypesUseCodeLikeEnabled())
+    is_code_like = false;
+
   // With Trusted Types, we always run the TT check first because of reporting,
   // and because a default policy might want to stringify or modify the original
   // source. When TT enforcement is disabled, codegen is always allowed, and we
@@ -420,7 +433,7 @@ CodeGenerationCheckCallbackInMainThread(v8::Local<v8::Context> context,
   bool codegen_allowed_by_tt = false;
   v8::MaybeLocal<v8::String> stringified_source;
   std::tie(codegen_allowed_by_tt, stringified_source) =
-      TrustedTypesCodeGenerationCheck(context, source);
+      TrustedTypesCodeGenerationCheck(context, source, is_code_like);
 
   if (!codegen_allowed_by_tt) {
     return {false, v8::MaybeLocal<v8::String>()};

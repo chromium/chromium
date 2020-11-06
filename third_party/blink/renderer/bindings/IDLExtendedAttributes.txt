@@ -64,6 +64,7 @@ HighEntropy=|Direct
 HTMLConstructor
 ImmutablePrototype
 ImplementedAs=*
+IsCodeLike
 LegacyLenientSetter
 LegacyLenientThis
 LegacyNoInterfaceObject
