@@ -579,13 +579,13 @@ void SkiaOutputSurfaceImpl::EndPaint(base::OnceClosure on_finished) {
     // Draw on the root render pass.
     current_buffer_modified_ = true;
     sk_sp<SkDeferredDisplayList> overdraw_ddl;
-    if (debug_settings_->show_overdraw_feedback) {
+    if (overdraw_surface_recorder_) {
       overdraw_ddl = overdraw_surface_recorder_->detach();
       DCHECK(overdraw_ddl);
       overdraw_canvas_.reset();
-      nway_canvas_.reset();
       overdraw_surface_recorder_.reset();
     }
+    nway_canvas_.reset();
 
     auto task = base::BindOnce(
         &SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame,
