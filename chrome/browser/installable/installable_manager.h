@@ -218,6 +218,7 @@ class InstallableManager
       content::ServiceWorkerCapability capability);
   void OnDidCheckOfflineCapability(
       base::TimeTicks check_service_worker_start_time,
+      bool enforce_offline_capability,
       content::OfflineCapability capability,
       int64_t service_worker_registration_id);
 

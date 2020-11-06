@@ -719,15 +719,22 @@ void InstallableManager::OnDidCheckHasServiceWorker(
     case content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER:
       if (base::FeatureList::IsEnabled(
               blink::features::kCheckOfflineCapability)) {
+        const bool enforce_offline_capability =
+            (blink::features::kCheckOfflineCapabilityParam.Get() ==
+             blink::features::CheckOfflineCapabilityMode::kEnforce);
+
         service_worker_context_->CheckOfflineCapability(
             manifest().scope,
             base::BindOnce(&InstallableManager::OnDidCheckOfflineCapability,
                            weak_factory_.GetWeakPtr(),
-                           check_service_worker_start_time));
-        return;
-      } else {
-        worker_->has_worker = true;
+                           check_service_worker_start_time,
+                           enforce_offline_capability));
+
+        // Execution continues in OnDidCheckOfflineCapability.
+        if (enforce_offline_capability)
+          return;
       }
+      worker_->has_worker = true;
       break;
     case content::ServiceWorkerCapability::SERVICE_WORKER_NO_FETCH_HANDLER:
       worker_->has_worker = false;
@@ -749,10 +756,14 @@ void InstallableManager::OnDidCheckHasServiceWorker(
       break;
   }
 
-  InstallableMetrics::RecordCheckServiceWorkerTime(
-      base::TimeTicks::Now() - check_service_worker_start_time);
-  InstallableMetrics::RecordCheckServiceWorkerStatus(
-      InstallableMetrics::ConvertFromServiceWorkerCapability(capability));
+  // These are recorded in OnDidCheckOfflineCapability() when
+  // CheckOfflineCapability is enabled.
+  if (!base::FeatureList::IsEnabled(blink::features::kCheckOfflineCapability)) {
+    InstallableMetrics::RecordCheckServiceWorkerTime(
+        base::TimeTicks::Now() - check_service_worker_start_time);
+    InstallableMetrics::RecordCheckServiceWorkerStatus(
+        InstallableMetrics::ConvertFromServiceWorkerCapability(capability));
+  }
 
   worker_->fetched = true;
   WorkOnTask();
@@ -760,8 +771,17 @@ void InstallableManager::OnDidCheckHasServiceWorker(
 
 void InstallableManager::OnDidCheckOfflineCapability(
     base::TimeTicks check_service_worker_start_time,
+    bool enforce_offline_capability,
     content::OfflineCapability capability,
     int64_t service_worker_registration_id) {
+  InstallableMetrics::RecordCheckServiceWorkerTime(
+      base::TimeTicks::Now() - check_service_worker_start_time);
+  InstallableMetrics::RecordCheckServiceWorkerStatus(
+      InstallableMetrics::ConvertFromOfflineCapability(capability));
+
+  if (!enforce_offline_capability)
+    return;
+
   switch (capability) {
     case content::OfflineCapability::kSupported:
       worker_->has_worker = true;
@@ -771,11 +791,6 @@ void InstallableManager::OnDidCheckOfflineCapability(
       worker_->error = NOT_OFFLINE_CAPABLE;
       break;
   }
-
-  InstallableMetrics::RecordCheckServiceWorkerTime(
-      base::TimeTicks::Now() - check_service_worker_start_time);
-  InstallableMetrics::RecordCheckServiceWorkerStatus(
-      InstallableMetrics::ConvertFromOfflineCapability(capability));
 
   worker_->fetched = true;
   WorkOnTask();

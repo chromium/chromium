@@ -756,6 +756,14 @@ const base::Feature kContentCaptureUserActivatedDelay = {
 // See https://crbug.com/965802 for more details.
 const base::Feature kCheckOfflineCapability{"CheckOfflineCapability",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<CheckOfflineCapabilityMode>::Option
+    check_offline_capability_types[] = {
+        {CheckOfflineCapabilityMode::kWarnOnly, "warn_only"},
+        {CheckOfflineCapabilityMode::kEnforce, "enforce"}};
+const base::FeatureParam<CheckOfflineCapabilityMode>
+    kCheckOfflineCapabilityParam{&kCheckOfflineCapability, "check_mode",
+                                 CheckOfflineCapabilityMode::kWarnOnly,
+                                 &check_offline_capability_types};
 
 // The "BackForwardCacheABExperimentControl" feature indicates the state of the
 // same-site BackForwardCache experiment. This information is used when sending

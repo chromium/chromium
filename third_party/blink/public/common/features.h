@@ -309,6 +309,12 @@ BLINK_COMMON_EXPORT extern const base::Feature
     kContentCaptureUserActivatedDelay;
 
 BLINK_COMMON_EXPORT extern const base::Feature kCheckOfflineCapability;
+enum class CheckOfflineCapabilityMode {
+  kWarnOnly,
+  kEnforce,
+};
+BLINK_COMMON_EXPORT extern const base::FeatureParam<CheckOfflineCapabilityMode>
+    kCheckOfflineCapabilityParam;
 
 BLINK_COMMON_EXPORT extern const base::Feature
     kBackForwardCacheABExperimentControl;

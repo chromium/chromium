@@ -318,8 +318,9 @@ class InstallableManagerOfflineCapabilityBrowserTest
         : is_offline_check_feature_enabled_(std::get<0>(GetParam())),
           is_service_worker_offline_supported_(std::get<1>(GetParam())) {
       if (is_offline_check_feature_enabled_) {
-        scoped_feature_list_.InitAndEnableFeature(
-            blink::features::kCheckOfflineCapability);
+        scoped_feature_list_.InitAndEnableFeatureWithParameters(
+            blink::features::kCheckOfflineCapability,
+            {{"check_mode", "enforce"}});
       } else {
         scoped_feature_list_.InitAndDisableFeature(
             blink::features::kCheckOfflineCapability);

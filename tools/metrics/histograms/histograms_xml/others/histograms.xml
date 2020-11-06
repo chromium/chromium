@@ -15896,9 +15896,10 @@ regressions. -->
   <owner>shimazu@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
-    Records the result of the promotability check that decides if a PWA install
-    prompt appears depending on that the site has a service worker with offline
-    support.
+    Records the result of the check if a PWA has a service worker with a fetch
+    event handler when the CheckOfflineCapability feature is disabled. When the
+    feature is enabled, records the result of the check if a PWA supports
+    offline pages with a service worker.
   </summary>
 </histogram>
 
@@ -15908,9 +15909,10 @@ regressions. -->
   <owner>shimazu@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
-    Records the time to complete the promotability check that decides if a PWA
-    install prompt appears depending on that the site has a service worker with
-    offline support.
+    Records the time to complete the check if a PWA has a service worker with a
+    fetch event handler when the CheckOfflineCapability feature is disabled.
+    When the feature is enabled, records the time to complete the check if a PWA
+    supports offline pages with a service worker.
   </summary>
 </histogram>
 
