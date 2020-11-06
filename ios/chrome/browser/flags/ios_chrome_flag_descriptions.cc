@@ -290,11 +290,23 @@ const char kIOSLookalikeUrlNavigationSuggestionsUIDescription[] =
     "When enabled, an interstitial will be shown on navigations to lookalike "
     "URLs.";
 
-const char kLocationPermissionsPromptName[] =
-    "Location Permisssions Prompt Experiment";
-const char kLocationPermissionsPromptDescription[] =
-    "When enabled, a different user experience flow will be shown to ask for "
-    "location permissions.";
+const char kLocationFirstRunModalName[] =
+    "Location Permisssions First Run Modal";
+const char kLocationFirstRunModalDescription[] =
+    "When enabled, a modal detailing location data usage in Chrome will be "
+    "presented just before triggering the native location permissions prompt.";
+
+const char kLocationRemoveFirstRunPromptName[] =
+    "Remove Location Permissions Prompt in First Run";
+const char kLocationRemoveFirstRunPromptDescription[] =
+    "When enabled, a location permissions prompt will not be triggered right "
+    "after First Run anymore.";
+
+const char kLocationStringChangeName[] =
+    "Use New Location Permissions Prompt String";
+const char kLocationStringChangeDescription[] =
+    "When enabled, a better string will used in the location permissions "
+    "prompt.";
 
 const char kLockBottomToolbarName[] = "Lock bottom toolbar";
 const char kLockBottomToolbarDescription[] =

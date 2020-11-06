@@ -74,5 +74,11 @@ const base::Feature kModernTabStrip{"ModernTabStrip",
 const base::Feature kIncognitoAuthentication{
     "enable-incognito-authentication-ios", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kLocationPermissionsPrompt{
-    "LocationPermissionsPrompt", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kLocationRemoveFirstRunPrompt{
+    "LocationRemoveFirstRunPrompt", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kLocationStringChange{"LocationStringChange",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kLocationFirstRunModal{"LocationFirstRunModal",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};

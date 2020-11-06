@@ -522,16 +522,14 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
     used_testing_config = true;
   }
 #endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
-  const base::FieldTrial::EntropyProvider& low_entry_provider_ref =
-      *low_entropy_provider.get();
   bool used_seed = false;
   if (!used_testing_config) {
     used_seed = CreateTrialsFromSeed(std::move(low_entropy_provider),
                                      feature_list.get(), safe_seed_manager);
   }
 
-  platform_field_trials->SetupFeatureControllingFieldTrials(
-      used_seed, low_entry_provider_ref, feature_list.get());
+  platform_field_trials->SetupFeatureControllingFieldTrials(used_seed,
+                                                            feature_list.get());
 
   base::FeatureList::SetInstance(std::move(feature_list));
 

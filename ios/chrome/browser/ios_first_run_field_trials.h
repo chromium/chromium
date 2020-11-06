@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_IOS_FIRST_RUN_FIELD_TRIALS_H_
-#define IOS_CHROME_BROWSER_UI_FIRST_RUN_IOS_FIRST_RUN_FIELD_TRIALS_H_
+#ifndef IOS_CHROME_BROWSER_IOS_FIRST_RUN_FIELD_TRIALS_H_
+#define IOS_CHROME_BROWSER_IOS_FIRST_RUN_FIELD_TRIALS_H_
 
 #include <string>
 #include <vector>
@@ -41,20 +41,11 @@ class FirstRunFieldTrialConfig {
   FirstRunFieldTrialConfig(const std::string& trial_name);
   ~FirstRunFieldTrialConfig();
 
-  // Creates and returns a one-time randomized FieldTrial with
-  // |disabled_group_name| with groups configured with Google Variation IDs.
-  scoped_refptr<base::FieldTrial> CreateOneTimeRandomizedTrial(
-      const std::string& disabled_group_name,
-      const base::FieldTrial::EntropyProvider& low_entropy_provider);
-
   // Adds a new FieldTrial group of |name| with a probability of |percentage|.
   // |variation| defines a server-side variation configuration.
   void AddGroup(const std::string& name,
                 variations::VariationID variation,
                 base::FieldTrial::Probability percentage);
-
-  // Gets the probability sum of every group in the trial.
-  int GetTotalProbability();
 
   // Returns a vector of FieldTrial groups for this FieldTrial configuration.
   const std::vector<FirstRunFieldTrialGroup>& groups() const { return groups_; }
@@ -68,4 +59,4 @@ class FirstRunFieldTrialConfig {
   DISALLOW_COPY_AND_ASSIGN(FirstRunFieldTrialConfig);
 };
 
-#endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_IOS_FIRST_RUN_FIELD_TRIALS_H_
+#endif  // IOS_CHROME_BROWSER_IOS_FIRST_RUN_FIELD_TRIALS_H_
