@@ -52,7 +52,9 @@ def main():
         args.dwp, '-e', args.unstripped_output, '-o',
         args.unstripped_output + '.dwp'
     ]
-    subprocess.check_call(dwp_args)
+    # Suppress output here because it doesn't seem to be useful. The most
+    # common error is a segfault, which will happen if files are missing.
+    subprocess.check_output(dwp_args, stderr=subprocess.STDOUT)
 
 
 if __name__ == '__main__':
