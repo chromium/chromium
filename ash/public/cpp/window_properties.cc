@@ -38,7 +38,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kForceVisibleInMiniViewKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(chromeos::WindowStateType,
                              kPrePipWindowStateTypeKey,
                              chromeos::WindowStateType::kDefault)
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowManagerManagesOpacityKey, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(bool, kMinimizeOnBackKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kPipOriginalWindowKey, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(float, kPipSnapFractionKey, nullptr)
@@ -64,7 +63,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(SkColor,
 DEFINE_UI_CLASS_PROPERTY_KEY(SkColor,
                              kFrameInactiveColorKey,
                              chromeos::kDefaultFrameColor)
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kFrameRestoreLookKey, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(base::string16,
                                    kWindowOverviewTitleKey,
                                    nullptr)

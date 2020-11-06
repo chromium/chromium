@@ -100,10 +100,6 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kForceVisibleInMiniViewKey;
 
-// A property key to tell if the window's opacity should be managed by WM.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
-    kWindowManagerManagesOpacityKey;
-
 // A property key to store whether we should minimize a window when a system
 // synthesized back event (back gesture, back button) is processed by this
 // window and when this window is at the bottom of its navigation stack.
@@ -188,11 +184,6 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<SkColor>* const
 // A property key to store the inactive color on the window frame.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<SkColor>* const
     kFrameInactiveColorKey;
-// A property key that is set to true when the window frame should look like it
-// is in restored state, but actually isn't. Set while dragging a maximized
-// window.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
-    kFrameRestoreLookKey;
 
 // A property key whose value is shown in alt-tab/overview mode. If non-value
 // is set, the window's title is used.

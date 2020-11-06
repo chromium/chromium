@@ -21,6 +21,12 @@ enum class WindowPinType;
 
 // Alphabetical sort.
 
+// A property key that is set to true when the window frame should look like it
+// is in restored state, but actually isn't. Set while dragging a maximized
+// window.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const ui::ClassProperty<bool>* const kFrameRestoreLookKey;
+
 // Whether the shelf should be hidden when this window is put into fullscreen.
 // Exposed because some windows want to explicitly opt-out of this.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
@@ -44,6 +50,10 @@ extern const ui::ClassProperty<gfx::Rect*>* const
 // If true, the window is currently showing in overview mode.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const ui::ClassProperty<bool>* const kIsShowingInOverviewKey;
+
+// A property key to tell if the window's opacity should be managed by WM.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const ui::ClassProperty<bool>* const kWindowManagerManagesOpacityKey;
 
 // A property key to indicate ash's extended window state.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)

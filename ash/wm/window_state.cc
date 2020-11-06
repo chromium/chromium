@@ -53,6 +53,7 @@ namespace {
 
 using ::chromeos::kHideShelfWhenFullscreenKey;
 using ::chromeos::kImmersiveIsActive;
+using ::chromeos::kWindowManagerManagesOpacityKey;
 using ::chromeos::kWindowPinTypeKey;
 using ::chromeos::WindowPinType;
 using ::chromeos::WindowStateType;

@@ -508,7 +508,7 @@ void BrowserNonClientFrameViewAsh::OnWindowPropertyChanged(aura::Window* window,
   if (key == aura::client::kShowStateKey) {
     frame_header_->OnShowStateChanged(
         window->GetProperty(aura::client::kShowStateKey));
-  } else if (key == ash::kFrameRestoreLookKey) {
+  } else if (key == chromeos::kFrameRestoreLookKey) {
     frame_header_->view()->InvalidateLayout();
   }
 }

@@ -32,6 +32,7 @@
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace/phantom_window_controller.h"
 #include "base/metrics/user_metrics.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/window.h"
@@ -48,6 +49,7 @@ namespace ash {
 
 namespace {
 
+using ::chromeos::kFrameRestoreLookKey;
 using ::chromeos::WindowStateType;
 
 constexpr double kMinHorizVelocityForWindowSwipe = 1100;
