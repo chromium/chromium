@@ -29,12 +29,12 @@ import org.mockito.Mockito;
 import org.chromium.IsReadyToPayService;
 import org.chromium.IsReadyToPayServiceCallback;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.payments.intent.IsReadyToPayServiceHelper;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 
 /**
  * Tests for IsReadyToPayServiceHelper.

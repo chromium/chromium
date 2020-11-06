@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.MockSafeBrowsingApiHandler;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -32,7 +33,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.components.subresource_filter.AdsBlockedInfoBar;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
