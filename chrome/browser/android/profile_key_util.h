@@ -9,22 +9,15 @@ class ProfileKey;
 
 namespace android {
 
-// This gets the profile key belonging to the last used profile on android, (or
-// the "main" one in reduced mode). This works in both reduced mode and full
-// browser mode.
+// This gets the profile key belonging to the last used regular profile on
+// android, (or the regular one in reduced mode). This works in both reduced
+// mode and full browser mode.
 //
 // BE WARNED you should only use this if it would have been acceptable to use
 // ProfileManager::GetLastUsedProfile() in the same context. If your usecase
 // cares about different profiles and their keys, then you should plumb through
 // the correct key instead.
 ProfileKey* GetLastUsedRegularProfileKey();
-
-// BE WARNED you should only use this if it would have been acceptable to use
-// ProfileManager::GetLastUsedProfile() in the same context. If your usecase
-// cares about different profiles and their keys, then you should plumb through
-// the correct key instead.
-// DEPRECATED, use GetLastUsedRegularProfileKey() instead.
-ProfileKey* GetLastUsedProfileKey();
 
 }  // namespace android
 

@@ -27,9 +27,4 @@ ProfileKey* GetLastUsedRegularProfileKey() {
   return key;
 }
 
-// DEPRECATED, use GetLastUsedRegularProfileKey() instead.
-ProfileKey* GetLastUsedProfileKey() {
-  return GetLastUsedRegularProfileKey();
-}
-
 }  // namespace android
