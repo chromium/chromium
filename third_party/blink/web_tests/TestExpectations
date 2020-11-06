@@ -173,7 +173,7 @@ crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-path-context-
 crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-state-persistence-no-dirty.html [ Pass Failure ]
 crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-transform-skewed.html [ Failure ]
 crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-unbalanced-save.html [ Failure ]
-crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Pass Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Pass Failure Timeout ]
 crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Pass Failure ]
 crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/color-space/transferFromImageBitmap.html [ Pass Failure ]
 crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/drawImage-with-globalAlpha.html [ Failure ]
@@ -6259,3 +6259,6 @@ crbug.com/1146221 [ Linux ] http/tests/devtools/sources/debugger-ui/debugger-inl
 # Disabled until CL with fix gets merged https://chromium-review.googlesource.com/c/chromium/src/+/2504259
 crbug.com/1127115 inspector-protocol/runtime/runtime-console-log-node-letter-case.js [ Failure ]
 crbug.com/1127115 inspector-protocol/runtime/runtime-console-log-node-document-type.js [ Failure ]
+
+# Sheriff 2020-11-06
+crbug.com/1146560 [ Win ] fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Failure Pass ]
