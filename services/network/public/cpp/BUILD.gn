@@ -105,6 +105,8 @@ component("cpp") {
     "spki_hash_set.h",
     "supports_loading_mode/supports_loading_mode_parser.cc",
     "supports_loading_mode/supports_loading_mode_parser.h",
+    "trust_token_http_headers.cc",
+    "trust_token_http_headers.h",
     "trust_token_operation_authorization.h",
     "weak_wrapper_shared_url_loader_factory.cc",
     "weak_wrapper_shared_url_loader_factory.h",

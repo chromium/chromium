@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_TRUST_TOKENS_TEST_TRUST_TOKEN_REQUEST_HANDLER_H_
 #define SERVICES_NETWORK_TRUST_TOKENS_TEST_TRUST_TOKEN_REQUEST_HANDLER_H_
 
+#include <set>
 #include <string>
 
 #include "base/optional.h"
@@ -16,6 +17,11 @@
 
 namespace network {
 namespace test {
+
+struct TrustTokenSignedRequest {
+  GURL destination;
+  net::HttpRequestHeaders headers;
+};
 
 // TrustTokenRequestHandler encapsulates server-side Trust Tokens issuance and
 // redemption logic and implements some integrity and correctness checks for
@@ -107,38 +113,24 @@ class TrustTokenRequestHandler {
   static const base::TimeDelta kSrrLifetime;
   base::Optional<std::string> Redeem(base::StringPiece redemption_request);
 
-  // Inspects |request| to see if its contents are the expected the result of a
-  // client-side signing operation.
-  //
-  // If the configured signing outcome (see Options) is kFailure, returns true
-  // exactly when the request contains an empty Sec-Signed-Redemption-Record
-  // header and no Sec-Signature header.
-  //
-  // If the configured signing outcome (see Options) is kSuccess, returns true
-  // exactly when:
-  // - the request bears a well-formed Sec-Signature header with a valid
-  // signature over the request's canonical signing data; and
-  // - the signature's public key's hash was bound to a previous redemption
-  // request; and
-  // - the request contains a well-formed signed redemption record whose
-  // signature verifies against the issuer's published SRR key.
-  //
-  // Otherwise, returns false and, if |error_out| is not null, sets |error_out|
-  // to a helpful error message.
-  //
-  // TODO(davidvc): This currently doesn't support signRequestData: 'omit'.
-  bool VerifySignedRequest(const GURL& destination,
-                           const net::HttpRequestHeaders& headers,
-                           std::string* error_out = nullptr);
+  // Stores a representation of a signed request with the given destination and
+  // headers in a manner that can be retrieved for inspection by calling
+  // |last_incoming_signed_request|.
+  void RecordSignedRequest(const GURL& destination,
+                           const net::HttpRequestHeaders& headers);
 
-  // Returns the verification error from the most recent unsuccessful
-  // VerifySignedRequest call, if any.
-  base::Optional<std::string> LastVerificationError();
+  // Returns the public key hashes received in prior redemption requests.
+  std::set<std::string> hashes_of_redemption_bound_public_keys() const;
+
+  // Returns a structured representation of the last signed request received.
+  base::Optional<TrustTokenSignedRequest> last_incoming_signed_request() const;
 
  private:
   struct Rep;  // Contains state internal to this class's implementation.
 
-  // Guards this class's internal state.
+  // Guards this class's internal state. This makes sure we're reading writes to
+  // the state that occur while handling requests, which takes place off of the
+  // main sequence due to how net::EmbeddedTestServer works.
   mutable base::Lock mutex_;
   std::unique_ptr<Rep> rep_ GUARDED_BY(mutex_);
 };

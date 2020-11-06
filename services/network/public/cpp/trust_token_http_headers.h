@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_HTTP_HEADERS_H_
-#define SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_HTTP_HEADERS_H_
+#ifndef SERVICES_NETWORK_PUBLIC_CPP_TRUST_TOKEN_HTTP_HEADERS_H_
+#define SERVICES_NETWORK_PUBLIC_CPP_TRUST_TOKEN_HTTP_HEADERS_H_
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/strings/string_piece_forward.h"
 
 namespace network {
@@ -61,8 +62,9 @@ constexpr char kTrustTokensRequestHeaderSecTrustTokensAdditionalSigningData[] =
 //
 // In particular, this does *not* contain Signed-Headers because this header's
 // value is provided by the Trust Token API's client.
+COMPONENT_EXPORT(NETWORK_CPP)
 const std::vector<base::StringPiece>& TrustTokensRequestHeaders();
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_HTTP_HEADERS_H_
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_TRUST_TOKEN_HTTP_HEADERS_H_

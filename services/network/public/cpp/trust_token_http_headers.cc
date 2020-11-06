@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/trust_tokens/trust_token_http_headers.h"
+#include "services/network/public/cpp/trust_token_http_headers.h"
 
 #include "base/no_destructor.h"
 #include "base/strings/string_piece.h"

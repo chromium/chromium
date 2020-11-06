@@ -15,3 +15,6 @@ per-file cross_origin_resource_policy*=lukasza@chromium.org
 per-file cross_origin_opener_policy*=ahemery@chromium.org
 per-file cross_origin_opener_policy*=clamy@chromium.org
 per-file cross_origin_opener_policy*=pmeuleman@chromium.org
+
+# Files and features related to component:Internals>Network>TrustTokens
+per-file trust_token*=file://services/network/trust_tokens/OWNERS

@@ -19,10 +19,10 @@
 #include "crypto/sha2.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/structured_headers.h"
+#include "services/network/public/cpp/trust_token_http_headers.h"
 #include "services/network/trust_tokens/ed25519_trust_token_request_signer.h"
 #include "services/network/trust_tokens/scoped_boringssl_bytes.h"
 #include "services/network/trust_tokens/test/signed_request_verification_util.h"
-#include "services/network/trust_tokens/trust_token_http_headers.h"
 #include "services/network/trust_tokens/trust_token_request_canonicalizer.h"
 #include "services/network/trust_tokens/trust_token_request_signing_helper.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
@@ -99,10 +99,10 @@ struct TrustTokenRequestHandler::Rep {
   // encoding of a structure matching the format specified in the design doc.
   //
   // If this is the case, returns true and stores the contained
-  // browser-generated public key hash in |hashes_of_redemption_bound_key_pairs|
-  // for comparison against subsequent signed requests. Otherwise, returns false
-  // and, if |error| is not null, sets |error| to a human-readable explanation
-  // of why the input was not valid.
+  // browser-generated public key hash in
+  // |hashes_of_redemption_bound_public_keys| for comparison against subsequent
+  // signed requests. Otherwise, returns false and, if |error| is not null, sets
+  // |error| to a human-readable explanation of why the input was not valid.
   bool ConfirmClientDataIntegrityAndStoreKeyHash(
       base::span<const uint8_t> client_data,
       std::string* error = nullptr);
@@ -110,14 +110,11 @@ struct TrustTokenRequestHandler::Rep {
   // Maintains all key pairs bound to successful redemptions.
   // TODO(davidvc): This can be expanded to map per top-frame origin for
   // tests across multiple origins.
-  // TODO(davidvc): We can also expand the verification logic here to confirm
-  // the private metadata field decodes appropriately.
-  std::set<std::string> hashes_of_redemption_bound_key_pairs;
+  std::set<std::string> hashes_of_redemption_bound_public_keys;
 
-  // Contains a human-readable string explaining why the most recent signed
-  // request verification to fail failed, or nullopt if no verification has
-  // failed.
-  base::Optional<std::string> last_verification_error;
+  // This is a structured representation of the most recent input to
+  // RecordSignedRequest.
+  base::Optional<TrustTokenSignedRequest> last_incoming_signed_request;
 };
 
 bssl::UniquePtr<TRUST_TOKEN_ISSUER>
@@ -205,7 +202,7 @@ bool TrustTokenRequestHandler::Rep::ConfirmClientDataIntegrityAndStoreKeyHash(
     return false;
   }
 
-  hashes_of_redemption_bound_key_pairs.insert(std::string(key_hash));
+  hashes_of_redemption_bound_public_keys.insert(std::string(key_hash));
 
   return true;
 }
@@ -335,121 +332,25 @@ base::Optional<std::string> TrustTokenRequestHandler::Redeem(
   return base::Base64Encode(decoded_redemption_response.as_span());
 }
 
-bool TrustTokenRequestHandler::VerifySignedRequest(
+void TrustTokenRequestHandler::RecordSignedRequest(
     const GURL& destination,
-    const net::HttpRequestHeaders& headers,
-    std::string* error_out) {
-  std::string dummy_error;
-  if (!error_out)
-    error_out = &dummy_error;
-
-  // In order to avoid deadlock, this must be before VerifySignedRequest's
-  // |lock|'s definition. This is so that |set_last_error_on_return|'s
-  // destructor (and associated callback) are run after the function-scoped
-  // AutoLock is destroyed (and releases the mutex).
-  base::ScopedClosureRunner set_last_error_on_return(
-      base::BindLambdaForTesting([error_out, this]() {
-        base::AutoLock lock(mutex_);
-        if (!error_out->empty())
-          rep_->last_verification_error = *error_out;
-      }));
-
+    const net::HttpRequestHeaders& headers) {
   base::AutoLock lock(mutex_);
 
-  std::string sec_signed_redemption_record_header;
-  if (!headers.GetHeader(kTrustTokensRequestHeaderSecSignedRedemptionRecord,
-                         &sec_signed_redemption_record_header)) {
-    *error_out = "Request missing its SRR header";
-
-    return false;
-  }
-
-  // If there was a client-side failure, expect an empty SRR header and no other
-  // Trust Tokens headers.
-  if (rep_->client_signing_outcome == SigningOutcome::kFailure) {
-    if (!sec_signed_redemption_record_header.empty()) {
-      *error_out = "Client-side failure but nonempty SRR header: " +
-                   sec_signed_redemption_record_header;
-      return false;
-    }
-    if (headers.HasHeader(kTrustTokensRequestHeaderSecSignature)) {
-      *error_out = "Client-side failure but received Sec-Signature header";
-      return false;
-    }
-    if (headers.HasHeader(kTrustTokensRequestHeaderSecTime)) {
-      *error_out = "Client-side failure but received Sec-Time header";
-      return false;
-    }
-    if (headers.HasHeader(kTrustTokensRequestHeaderSignedHeaders)) {
-      *error_out = "Client-side failure but received Signed-Headers header";
-      return false;
-    }
-    return true;
-  }
-  DCHECK_EQ(rep_->client_signing_outcome, SigningOutcome::kSuccess);
-
-  std::map<SuitableTrustTokenOrigin, std::string> redemption_records_per_issuer;
-  // On failure, |ExtractRedemptionRecordsFromHeader| has set the error.
-  if (!ExtractRedemptionRecordsFromHeader(sec_signed_redemption_record_header,
-                                          &redemption_records_per_issuer,
-                                          error_out)) {
-    return false;
-  }
-
-  for (const auto& issuer_and_record : redemption_records_per_issuer) {
-    // TODO(davidvc): Check that the issuer corresponds to "this server's
-    // domain" once this handler is scoped to a single domain.
-    std::string srr_body;
-    switch (VerifyTrustTokenSignedRedemptionRecord(
-        issuer_and_record.second,
-        base::StringPiece(
-            reinterpret_cast<const char*>(rep_->srr_verification.data()),
-            rep_->srr_verification.size()),
-        &srr_body)) {
-      case SrrVerificationStatus::kSignatureVerificationError:
-        if (error_out) {
-          *error_out = "Request SRR signature failed to verify";
-        }
-        return false;
-      case SrrVerificationStatus::kParseError:
-        if (error_out) {
-          *error_out = "Request SRR header failed to parse";
-        }
-        return false;
-      case SrrVerificationStatus::kSuccess:
-        break;
-    }
-
-    if (!ConfirmSrrBodyIntegrity(srr_body, error_out))
-      return false;  // On failure, |ConfirmSrrBodyIntegrity| has set the error.
-  }
-
-  std::map<std::string, std::string> verification_keys;
-
-  if (!ReconstructSigningDataAndVerifySignatures(destination, headers,
-                                                 /*verifier=*/{}, error_out,
-                                                 &verification_keys)) {
-    return false;
-  }
-
-  for (const auto& issuer_and_key : verification_keys) {
-    if (!base::Contains(rep_->hashes_of_redemption_bound_key_pairs,
-                        crypto::SHA256HashString(issuer_and_key.second))) {
-      if (error_out) {
-        *error_out =
-            "Got a request signed with a verification key whose hash was not "
-            "previously bound to a redemption request.";
-      }
-      return false;
-    }
-  }
-
-  return true;
+  rep_->last_incoming_signed_request =
+      TrustTokenSignedRequest{destination, headers};
 }
 
-base::Optional<std::string> TrustTokenRequestHandler::LastVerificationError() {
+std::set<std::string>
+TrustTokenRequestHandler::hashes_of_redemption_bound_public_keys() const {
   base::AutoLock lock(mutex_);
-  return rep_->last_verification_error;
+  return rep_->hashes_of_redemption_bound_public_keys;
+}
+
+base::Optional<TrustTokenSignedRequest>
+TrustTokenRequestHandler::last_incoming_signed_request() const {
+  base::AutoLock lock(mutex_);
+  return rep_->last_incoming_signed_request;
 }
 
 void TrustTokenRequestHandler::UpdateOptions(Options options) {

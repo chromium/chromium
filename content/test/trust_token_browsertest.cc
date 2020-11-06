@@ -21,6 +21,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_monitor.h"
 #include "content/shell/browser/shell.h"
+#include "crypto/sha2.h"
 #include "net/base/escape.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -29,8 +30,10 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/trust_token_http_headers.h"
 #include "services/network/public/cpp/trust_token_parameterization.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
+#include "services/network/trust_tokens/test/signed_request_verification_util.h"
 #include "services/network/trust_tokens/test/test_server_handler_registration.h"
 #include "services/network/trust_tokens/test/trust_token_request_handler.h"
 #include "services/network/trust_tokens/test/trust_token_test_util.h"
@@ -45,10 +48,94 @@ namespace content {
 
 namespace {
 
+using network::test::TrustTokenRequestHandler;
+using SignedRequest = network::test::TrustTokenSignedRequest;
+using ::testing::AllOf;
 using ::testing::Field;
 using ::testing::HasSubstr;
 using ::testing::IsFalse;
+using ::testing::IsSubsetOf;
+using ::testing::Not;
 using ::testing::Optional;
+using ::testing::StrEq;
+using ::testing::Truly;
+
+MATCHER_P(HasHeader, name, base::StringPrintf("Has header %s", name)) {
+  if (!arg.headers.HasHeader(name)) {
+    *result_listener << base::StringPrintf("%s wasn't present", name);
+    LOG(INFO) << __LINE__;
+    return false;
+  }
+  *result_listener << base::StringPrintf("%s was present", name);
+  return true;
+}
+
+MATCHER_P2(HasHeader,
+           name,
+           other_matcher,
+           "has header " + std::string(name) + " that " +
+               ::testing::DescribeMatcher<std::string>(other_matcher)) {
+  std::string header;
+  if (!arg.headers.GetHeader(name, &header)) {
+    *result_listener << base::StringPrintf("%s wasn't present", name);
+    LOG(INFO) << __LINE__;
+    return false;
+  }
+  LOG(INFO) << header;
+  return ::testing::ExplainMatchResult(other_matcher, header, result_listener);
+}
+
+MATCHER(SignaturesAreWellFormedAndVerify,
+        "The signed request has a well-formed Sec-Signature header where all "
+        "signatures verify.") {
+  std::string error;
+  if (!network::test::ReconstructSigningDataAndVerifySignatures(
+          arg.destination, arg.headers, /*verifier=*/{}, &error)) {
+    *result_listener << "Verifying the signed request encountered error "
+                     << error;
+    return false;
+  }
+  return true;
+}
+
+MATCHER_P(SecSignatureHeaderKeyHashes,
+          other_matcher,
+          "The given matcher matches the verification key hashes in the "
+          "Sec-Signature header") {
+  std::map<std::string, std::string> verification_keys_per_issuer;
+
+  std::string error;
+  if (!network::test::ReconstructSigningDataAndVerifySignatures(
+          arg.destination, arg.headers,
+          /*verifier=*/{}, &error, &verification_keys_per_issuer)) {
+    *result_listener << "Veriying the signed request encountered error "
+                     << error;
+    return false;
+  }
+
+  std::set<std::string> hashed_verification_keys;
+  for (const auto& kv : verification_keys_per_issuer)
+    hashed_verification_keys.insert(crypto::SHA256HashString(kv.second));
+
+  return ::testing::ExplainMatchResult(other_matcher, hashed_verification_keys,
+                                       result_listener);
+}
+
+MATCHER(
+    ReflectsSigningFailure,
+    "The given signed request reflects a client-side signing failure, having "
+    "an empty redemption record and no other request-signing headers.") {
+  return ::testing::ExplainMatchResult(
+      AllOf(
+          HasHeader(network::kTrustTokensRequestHeaderSecSignedRedemptionRecord,
+                    StrEq("")),
+          Not(HasHeader(network::kTrustTokensRequestHeaderSecTime)),
+          Not(HasHeader(
+              network::
+                  kTrustTokensRequestHeaderSecTrustTokensAdditionalSigningData)),
+          Not(HasHeader(network::kTrustTokensRequestHeaderSecSignature))),
+      arg, result_listener);
+}
 
 }  // namespace
 
@@ -132,7 +219,15 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEnd) {
       "Success",
       EvalJs(shell(), JsReplace(command, IssuanceOriginFromHost("a.test"))));
 
-  EXPECT_EQ(request_handler_.LastVerificationError(), base::nullopt);
+  EXPECT_THAT(
+      request_handler_.last_incoming_signed_request(),
+      Optional(AllOf(
+          Not(HasHeader(network::kTrustTokensRequestHeaderSecTime)),
+          HasHeader(
+              network::kTrustTokensRequestHeaderSecSignedRedemptionRecord),
+          SignaturesAreWellFormedAndVerify(),
+          SecSignatureHeaderKeyHashes(IsSubsetOf(
+              request_handler_.hashes_of_redemption_bound_public_keys())))));
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, XhrEndToEnd) {
@@ -187,8 +282,15 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, XhrEndToEnd) {
       "Success",
       EvalJs(shell(), JsReplace(command, IssuanceOriginFromHost("a.test"))));
 
-  EXPECT_EQ(request_handler_.LastVerificationError(), base::nullopt)
-      << *request_handler_.LastVerificationError();
+  EXPECT_THAT(
+      request_handler_.last_incoming_signed_request(),
+      Optional(AllOf(
+          Not(HasHeader(network::kTrustTokensRequestHeaderSecTime)),
+          HasHeader(
+              network::kTrustTokensRequestHeaderSecSignedRedemptionRecord),
+          SignaturesAreWellFormedAndVerify(),
+          SecSignatureHeaderKeyHashes(IsSubsetOf(
+              request_handler_.hashes_of_redemption_bound_public_keys())))));
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IframeEndToEnd) {
@@ -214,11 +316,20 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IframeEndToEnd) {
   execute_op_via_iframe("/issue", R"({"type": "token-request"})");
   execute_op_via_iframe("/redeem", R"({"type": "srr-token-redemption"})");
   execute_op_via_iframe(
-      "/sign",
-      JsReplace(
-          R"({"type": "send-srr", "signRequestData": "include", "issuer": $1})",
-          IssuanceOriginFromHost("a.test")));
-  EXPECT_EQ(request_handler_.LastVerificationError(), base::nullopt);
+      "/sign", JsReplace(
+                   R"({"type": "send-srr", "signRequestData": "include",
+                       "issuers": [$1]})",
+                   IssuanceOriginFromHost("a.test")));
+
+  EXPECT_THAT(
+      request_handler_.last_incoming_signed_request(),
+      Optional(AllOf(
+          Not(HasHeader(network::kTrustTokensRequestHeaderSecTime)),
+          HasHeader(
+              network::kTrustTokensRequestHeaderSecSignedRedemptionRecord),
+          SignaturesAreWellFormedAndVerify(),
+          SecSignatureHeaderKeyHashes(IsSubsetOf(
+              request_handler_.hashes_of_redemption_bound_public_keys())))));
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, HasTrustTokenAfterIssuance) {
@@ -265,7 +376,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   // We use EvalJs here, not ExecJs, because EvalJs waits for promises to
   // resolve.
   EXPECT_EQ("Success", EvalJs(shell(), command));
-  EXPECT_EQ(request_handler_.LastVerificationError(), base::nullopt);
+
+  EXPECT_THAT(request_handler_.last_incoming_signed_request(),
+              Optional(ReflectsSigningFailure()));
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndInIsolatedWorld) {
@@ -295,7 +408,16 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndInIsolatedWorld) {
       EvalJs(shell(), JsReplace(command, IssuanceOriginFromHost("a.test")),
              EXECUTE_SCRIPT_DEFAULT_OPTIONS,
              /*world_id=*/30));
-  EXPECT_EQ(request_handler_.LastVerificationError(), base::nullopt);
+
+  EXPECT_THAT(
+      request_handler_.last_incoming_signed_request(),
+      Optional(AllOf(
+          Not(HasHeader(network::kTrustTokensRequestHeaderSecTime)),
+          HasHeader(
+              network::kTrustTokensRequestHeaderSecSignedRedemptionRecord),
+          SignaturesAreWellFormedAndVerify(),
+          SecSignatureHeaderKeyHashes(IsSubsetOf(
+              request_handler_.hashes_of_redemption_bound_public_keys())))));
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsTimers) {
@@ -543,15 +665,27 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, AdditionalSigningData) {
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(cmd, IssuanceOriginFromHost("a.test"))));
 
-  EXPECT_EQ(request_handler_.LastVerificationError(), base::nullopt);
+  auto has_additional_signing_data = [](std::string header) {
+    return base::Contains(
+        base::SplitString(header, ",", base::TRIM_WHITESPACE,
+                          base::SPLIT_WANT_ALL),
+        base::ToLowerASCII(
+            network::
+                kTrustTokensRequestHeaderSecTrustTokensAdditionalSigningData));
+  };
+
+  EXPECT_THAT(
+      request_handler_.last_incoming_signed_request(),
+      Optional(AllOf(
+          HasHeader(
+              network::
+                  kTrustTokensRequestHeaderSecTrustTokensAdditionalSigningData),
+          HasHeader(network::kTrustTokensRequestHeaderSignedHeaders,
+                    Truly(has_additional_signing_data)),
+          SignaturesAreWellFormedAndVerify())));
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, OverlongAdditionalSigningData) {
-  TrustTokenRequestHandler::Options options;
-  options.client_signing_outcome =
-      TrustTokenRequestHandler::SigningOutcome::kFailure;
-  request_handler_.UpdateOptions(std::move(options));
-
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
 
   GURL start_url = server_.GetURL("a.test", "/title1.html");
@@ -586,16 +720,12 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, OverlongAdditionalSigningData) {
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(cmd, IssuanceOriginFromHost("a.test"),
                                       overlong_signing_data)));
-  EXPECT_EQ(request_handler_.LastVerificationError(), base::nullopt);
+  EXPECT_THAT(request_handler_.last_incoming_signed_request(),
+              Optional(ReflectsSigningFailure()));
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
                        AdditionalSigningDataNotAValidHeader) {
-  TrustTokenRequestHandler::Options options;
-  options.client_signing_outcome =
-      TrustTokenRequestHandler::SigningOutcome::kFailure;
-  request_handler_.UpdateOptions(std::move(options));
-
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
 
   GURL start_url = server_.GetURL("a.test", "/title1.html");
@@ -620,7 +750,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   EXPECT_EQ(
       "Success",
       EvalJs(shell(), JsReplace(command, IssuanceOriginFromHost("a.test"))));
-  EXPECT_EQ(request_handler_.LastVerificationError(), base::nullopt);
+  EXPECT_THAT(request_handler_.last_incoming_signed_request(),
+              Optional(ReflectsSigningFailure()));
 }
 
 // Issuance should fail if we don't have keys for the issuer at hand.
@@ -1149,7 +1280,15 @@ IN_PROC_BROWSER_TEST_F(
           signRequestData: 'headers-only' } }).then(()=>'Success');)",
                                       IssuanceOriginFromHost("b.test"))));
 
-  EXPECT_EQ(request_handler_.LastVerificationError(), base::nullopt);
+  EXPECT_THAT(
+      request_handler_.last_incoming_signed_request(),
+      Optional(AllOf(
+          Not(HasHeader(network::kTrustTokensRequestHeaderSecTime)),
+          HasHeader(
+              network::kTrustTokensRequestHeaderSecSignedRedemptionRecord),
+          SignaturesAreWellFormedAndVerify(),
+          SecSignatureHeaderKeyHashes(IsSubsetOf(
+              request_handler_.hashes_of_redemption_bound_public_keys())))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(
@@ -1159,7 +1298,8 @@ IN_PROC_BROWSER_TEST_F(
                                       IssuanceOriginFromHost("a.test"))));
 
   // There shouldn't have been an a.test SRR attached to the request.
-  EXPECT_TRUE(request_handler_.LastVerificationError());
+  EXPECT_THAT(request_handler_.last_incoming_signed_request(),
+              Optional(ReflectsSigningFailure()));
 }
 
 // When a redemption request is made in no-cors mode, a cross-origin redirect
@@ -1199,7 +1339,15 @@ IN_PROC_BROWSER_TEST_F(
         .then(()=>'Success'); )",
                                       IssuanceOriginFromHost("a.test"))));
 
-  EXPECT_EQ(request_handler_.LastVerificationError(), base::nullopt);
+  EXPECT_THAT(
+      request_handler_.last_incoming_signed_request(),
+      Optional(AllOf(
+          Not(HasHeader(network::kTrustTokensRequestHeaderSecTime)),
+          HasHeader(
+              network::kTrustTokensRequestHeaderSecSignedRedemptionRecord),
+          SignaturesAreWellFormedAndVerify(),
+          SecSignatureHeaderKeyHashes(IsSubsetOf(
+              request_handler_.hashes_of_redemption_bound_public_keys())))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(
@@ -1209,8 +1357,9 @@ IN_PROC_BROWSER_TEST_F(
         .then(()=>'Success'); )",
                                       IssuanceOriginFromHost("b.test"))));
 
-  // There shouldn't have been an a.test SRR attached to the request.
-  EXPECT_TRUE(request_handler_.LastVerificationError());
+  // There shouldn't have been a b.test SRR attached to the request.
+  EXPECT_THAT(request_handler_.last_incoming_signed_request(),
+              Optional(ReflectsSigningFailure()));
 }
 
 // When a redemption request is made in no-cors mode, a cross-origin redirect

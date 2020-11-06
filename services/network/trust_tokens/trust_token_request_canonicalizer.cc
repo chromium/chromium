@@ -10,8 +10,8 @@
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/network/public/cpp/trust_token_http_headers.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
-#include "services/network/trust_tokens/trust_token_http_headers.h"
 #include "services/network/trust_tokens/trust_token_request_signing_helper.h"
 
 namespace network {
