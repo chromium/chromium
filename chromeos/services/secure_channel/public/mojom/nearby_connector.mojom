@@ -8,4 +8,15 @@ module chromeos.secure_channel.mojom;
 // with each connection request.
 const string kServiceId = "secure_channel";
 
-// TODO(khorimoto): Add SecureChannel interfaces for Nearby Connections.
+// Sends messages over a Nearby Connection.
+interface NearbyMessageSender {
+  // Sends |message|, returning whether the message was sent successfully.
+  SendMessage(string message) => (bool success);
+};
+
+// Receives messages over a Nearby connection.
+interface NearbyMessageReceiver {
+  // Called whenever a message is received over the connection.
+  OnMessageReceived(string message);
+};
+

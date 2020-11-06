@@ -1,0 +1,166 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_NEARBY_CONNECTION_BROKER_IMPL_H_
+#define CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_NEARBY_CONNECTION_BROKER_IMPL_H_
+
+#include <memory>
+#include <ostream>
+
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/chromeos/secure_channel/nearby_connection_broker.h"
+#include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
+
+namespace chromeos {
+namespace secure_channel {
+
+class NearbyEndpointFinder;
+
+// NearbyConnectionBroker implementation which utilizes NearbyEndpointFinder to
+// find an endpoint, then uses Nearby Connections to create and maintain a
+// connection. The overall process consists of:
+//   (1) Finding an endpoint via NearbyEndpointFinder.
+//   (2) Requesting a connection using that endpoint.
+//   (3) Accepting a connection.
+//   (4) Exchanging messages over the connection.
+//
+// Deleting an instance of this class tears down any active connection and
+// performs cleanup if necessary.
+//
+// TODO(khorimoto): Add the ability to upgrade bandwidth to WebRTC and to
+// receive payloads.
+class NearbyConnectionBrokerImpl
+    : public NearbyConnectionBroker,
+      public location::nearby::connections::mojom::ConnectionLifecycleListener,
+      public location::nearby::connections::mojom::PayloadListener {
+ public:
+  class Factory {
+   public:
+    static std::unique_ptr<NearbyConnectionBroker> Create(
+        const std::vector<uint8_t>& bluetooth_public_address,
+        NearbyEndpointFinder* endpoint_finder,
+        mojo::PendingReceiver<mojom::NearbyMessageSender>
+            message_sender_receiver,
+        mojo::PendingRemote<mojom::NearbyMessageReceiver>
+            message_receiver_remote,
+        const mojo::SharedRemote<
+            location::nearby::connections::mojom::NearbyConnections>&
+            nearby_connections,
+        base::OnceClosure on_connected_callback,
+        base::OnceClosure on_disconnected_callback);
+    static void SetFactoryForTesting(Factory* test_factory);
+
+    virtual ~Factory() = default;
+
+   protected:
+    virtual std::unique_ptr<NearbyConnectionBroker> CreateInstance(
+        const std::vector<uint8_t>& bluetooth_public_address,
+        NearbyEndpointFinder* endpoint_finder,
+        mojo::PendingReceiver<mojom::NearbyMessageSender>
+            message_sender_receiver,
+        mojo::PendingRemote<mojom::NearbyMessageReceiver>
+            message_receiver_remote,
+        const mojo::SharedRemote<
+            location::nearby::connections::mojom::NearbyConnections>&
+            nearby_connections,
+        base::OnceClosure on_connected_callback,
+        base::OnceClosure on_disconnected_callback) = 0;
+  };
+
+  ~NearbyConnectionBrokerImpl() override;
+
+ private:
+  enum class ConnectionStatus {
+    kUninitialized,
+    kDiscoveringEndpoint,
+    kRequestingConnection,
+    kWaitingForConnectionInitiation,
+    kAcceptingConnection,
+    kWaitingForConnectionToBeAcceptedByRemoteDevice,
+    kConnected,
+    kDisconnected,
+  };
+  friend std::ostream& operator<<(
+      std::ostream& stream,
+      NearbyConnectionBrokerImpl::ConnectionStatus status);
+
+  NearbyConnectionBrokerImpl(
+      const std::vector<uint8_t>& bluetooth_public_address,
+      NearbyEndpointFinder* endpoint_finder,
+      mojo::PendingReceiver<mojom::NearbyMessageSender> message_sender_receiver,
+      mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
+      const mojo::SharedRemote<
+          location::nearby::connections::mojom::NearbyConnections>&
+          nearby_connections,
+      base::OnceClosure on_connected_callback,
+      base::OnceClosure on_disconnected_callback);
+
+  void TransitionToStatus(ConnectionStatus connection_status);
+  void TransitionToDisconnected();
+
+  void OnEndpointDiscovered(
+      const std::string& endpoint_id,
+      location::nearby::connections::mojom::DiscoveredEndpointInfoPtr info);
+  void OnDiscoveryFailure();
+
+  void OnRequestConnectionResult(
+      location::nearby::connections::mojom::Status status);
+  void OnAcceptConnectionResult(
+      location::nearby::connections::mojom::Status status);
+  void OnSendPayloadResult(SendMessageCallback callback,
+                           location::nearby::connections::mojom::Status status);
+
+  // mojom::NearbyMessageSender:
+  void SendMessage(const std::string& message,
+                   SendMessageCallback callback) override;
+
+  // location::nearby::connections::mojom::ConnectionLifecycleListener:
+  void OnConnectionInitiated(
+      const std::string& endpoint_id,
+      location::nearby::connections::mojom::ConnectionInfoPtr info) override;
+  void OnConnectionAccepted(const std::string& endpoint_id) override;
+  void OnConnectionRejected(
+      const std::string& endpoint_id,
+      location::nearby::connections::mojom::Status status) override;
+  void OnDisconnected(const std::string& endpoint_id) override;
+  void OnBandwidthChanged(
+      const std::string& endpoint_id,
+      location::nearby::connections::mojom::Medium medium) override;
+
+  // location::nearby::connections::mojom::PayloadListener:
+  void OnPayloadReceived(
+      const std::string& endpoint_id,
+      location::nearby::connections::mojom::PayloadPtr payload) override;
+  void OnPayloadTransferUpdate(
+      const std::string& endpoint_id,
+      location::nearby::connections::mojom::PayloadTransferUpdatePtr update)
+      override;
+
+  NearbyEndpointFinder* endpoint_finder_;
+  mojo::SharedRemote<location::nearby::connections::mojom::NearbyConnections>
+      nearby_connections_;
+
+  mojo::Receiver<
+      location::nearby::connections::mojom::ConnectionLifecycleListener>
+      connection_lifecycle_listener_receiver_{this};
+  mojo::Receiver<location::nearby::connections::mojom::PayloadListener>
+      payload_listener_receiver_{this};
+
+  ConnectionStatus connection_status_ = ConnectionStatus::kUninitialized;
+  int64_t next_sent_payload_id_ = 0L;
+
+  // Set once an endpoint is discovered.
+  std::string remote_endpoint_id_;
+
+  base::WeakPtrFactory<NearbyConnectionBrokerImpl> weak_ptr_factory_{this};
+};
+
+std::ostream& operator<<(std::ostream& stream,
+                         NearbyConnectionBrokerImpl::ConnectionStatus status);
+
+}  // namespace secure_channel
+}  // namespace chromeos
+
+#endif  // CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_NEARBY_CONNECTION_BROKER_IMPL_H_
