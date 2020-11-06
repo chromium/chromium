@@ -460,6 +460,7 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
     /**
      * Returns whether this Tab is visible.
      */
+    @CalledByNative
     public boolean isVisible() {
         return isActiveTab()
                 && ((mBrowser.isStarted() && mBrowser.isViewAttachedToWindow())
