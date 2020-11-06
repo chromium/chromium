@@ -22,7 +22,7 @@
 #include "chrome/browser/chromeos/remote_apps/remote_apps_manager.h"
 #include "chrome/browser/chromeos/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/speech/extension_api/tts_engine_extension_observer.h"
+#include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/components/camera_app_ui/camera_app_ui.h"
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"
@@ -79,7 +79,7 @@ void BindHandwritingRecognizerRequestor(
 void BindTtsStream(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<chromeos::tts::mojom::TtsStream> receiver) {
-  TtsEngineExtensionObserver::GetInstance(
+  TtsEngineExtensionObserverChromeOS::GetInstance(
       Profile::FromBrowserContext(render_frame_host->GetBrowserContext()))
       ->BindTtsStream(std::move(receiver));
 }

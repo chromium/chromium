@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/speech/extension_api/tts_engine_extension_observer.h"
+#include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
 
 #include "base/check.h"
 #include "base/memory/singleton.h"
+#include "chrome/browser/chromeos/service_sandbox_type.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,9 +21,6 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/common/permissions/permissions_data.h"
-
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/service_sandbox_type.h"
 
 namespace {
 
@@ -77,32 +75,32 @@ void UpdateGoogleSpeechSynthesisKeepAliveCountOnReload(
 }
 
 }  // namespace
-#endif  // defined(OS_CHROMEOS)
 
 // Factory to load one instance of TtsExtensionLoaderChromeOs per profile.
-class TtsEngineExtensionObserverFactory
+class TtsEngineExtensionObserverChromeOSFactory
     : public BrowserContextKeyedServiceFactory {
  public:
-  static TtsEngineExtensionObserver* GetForProfile(Profile* profile) {
-    return static_cast<TtsEngineExtensionObserver*>(
+  static TtsEngineExtensionObserverChromeOS* GetForProfile(Profile* profile) {
+    return static_cast<TtsEngineExtensionObserverChromeOS*>(
         GetInstance()->GetServiceForBrowserContext(profile, true));
   }
 
-  static TtsEngineExtensionObserverFactory* GetInstance() {
-    return base::Singleton<TtsEngineExtensionObserverFactory>::get();
+  static TtsEngineExtensionObserverChromeOSFactory* GetInstance() {
+    return base::Singleton<TtsEngineExtensionObserverChromeOSFactory>::get();
   }
 
  private:
-  friend struct base::DefaultSingletonTraits<TtsEngineExtensionObserverFactory>;
+  friend struct base::DefaultSingletonTraits<
+      TtsEngineExtensionObserverChromeOSFactory>;
 
-  TtsEngineExtensionObserverFactory()
+  TtsEngineExtensionObserverChromeOSFactory()
       : BrowserContextKeyedServiceFactory(
-            "TtsEngineExtensionObserver",
+            "TtsEngineExtensionObserverChromeOS",
             BrowserContextDependencyManager::GetInstance()) {
     DependsOn(extensions::EventRouterFactory::GetInstance());
   }
 
-  ~TtsEngineExtensionObserverFactory() override {}
+  ~TtsEngineExtensionObserverChromeOSFactory() override {}
 
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override {
@@ -113,17 +111,19 @@ class TtsEngineExtensionObserverFactory
 
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override {
-    return new TtsEngineExtensionObserver(static_cast<Profile*>(profile));
+    return new TtsEngineExtensionObserverChromeOS(
+        static_cast<Profile*>(profile));
   }
 };
 
-TtsEngineExtensionObserver* TtsEngineExtensionObserver::GetInstance(
-    Profile* profile) {
-  return TtsEngineExtensionObserverFactory::GetInstance()->GetForProfile(
-      profile);
+TtsEngineExtensionObserverChromeOS*
+TtsEngineExtensionObserverChromeOS::GetInstance(Profile* profile) {
+  return TtsEngineExtensionObserverChromeOSFactory::GetInstance()
+      ->GetForProfile(profile);
 }
 
-TtsEngineExtensionObserver::TtsEngineExtensionObserver(Profile* profile)
+TtsEngineExtensionObserverChromeOS::TtsEngineExtensionObserverChromeOS(
+    Profile* profile)
     : extension_registry_observer_(this), profile_(profile) {
   extension_registry_observer_.Add(
       extensions::ExtensionRegistry::Get(profile_));
@@ -134,23 +134,17 @@ TtsEngineExtensionObserver::TtsEngineExtensionObserver(Profile* profile)
   event_router->RegisterObserver(this, tts_engine_events::kOnSpeak);
   event_router->RegisterObserver(this, tts_engine_events::kOnStop);
 
-#if defined(OS_CHROMEOS)
   accessibility_status_subscription_ =
       chromeos::AccessibilityManager::Get()->RegisterCallback(
           base::BindRepeating(
-              &TtsEngineExtensionObserver::OnAccessibilityStatusChanged,
+              &TtsEngineExtensionObserverChromeOS::OnAccessibilityStatusChanged,
               base::Unretained(this)));
-#endif
 }
 
-TtsEngineExtensionObserver::~TtsEngineExtensionObserver() = default;
+TtsEngineExtensionObserverChromeOS::~TtsEngineExtensionObserverChromeOS() =
+    default;
 
-const std::set<std::string> TtsEngineExtensionObserver::GetTtsExtensions() {
-  return engine_extension_ids_;
-}
-
-#if defined(OS_CHROMEOS)
-void TtsEngineExtensionObserver::BindTtsStream(
+void TtsEngineExtensionObserverChromeOS::BindTtsStream(
     mojo::PendingReceiver<chromeos::tts::mojom::TtsStream> receiver) {
   // At this point, the component extension has loaded, and the js has requested
   // a TtsStream be bound. It's safe now to update the keep alive count for
@@ -172,13 +166,12 @@ void TtsEngineExtensionObserver::BindTtsStream(
   content::GetAudioService().BindStreamFactory(std::move(factory_receiver));
   tts_service_->BindTtsStream(std::move(receiver), std::move(factory_remote));
 }
-#endif  // defined(OS_CHROMEOS)
 
-void TtsEngineExtensionObserver::Shutdown() {
+void TtsEngineExtensionObserverChromeOS::Shutdown() {
   extensions::EventRouter::Get(profile_)->UnregisterObserver(this);
 }
 
-bool TtsEngineExtensionObserver::IsLoadedTtsEngine(
+bool TtsEngineExtensionObserverChromeOS::IsLoadedTtsEngine(
     const std::string& extension_id) {
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
@@ -193,7 +186,7 @@ bool TtsEngineExtensionObserver::IsLoadedTtsEngine(
   return false;
 }
 
-void TtsEngineExtensionObserver::OnListenerAdded(
+void TtsEngineExtensionObserverChromeOS::OnListenerAdded(
     const extensions::EventListenerInfo& details) {
   if (!IsLoadedTtsEngine(details.extension_id))
     return;
@@ -201,7 +194,7 @@ void TtsEngineExtensionObserver::OnListenerAdded(
   content::TtsController::GetInstance()->VoicesChanged();
 }
 
-void TtsEngineExtensionObserver::OnExtensionLoaded(
+void TtsEngineExtensionObserverChromeOS::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension) {
   if (extension->permissions_data()->HasAPIPermission(
@@ -210,7 +203,7 @@ void TtsEngineExtensionObserver::OnExtensionLoaded(
   }
 }
 
-void TtsEngineExtensionObserver::OnExtensionUnloaded(
+void TtsEngineExtensionObserverChromeOS::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension,
     extensions::UnloadedExtensionReason reason) {
@@ -219,15 +212,12 @@ void TtsEngineExtensionObserver::OnExtensionUnloaded(
   if (erase_count > 0)
     content::TtsController::GetInstance()->VoicesChanged();
 
-#if defined(OS_CHROMEOS)
   if (tts_service_ &&
       extension->id() == extension_misc::kGoogleSpeechSynthesisExtensionId)
     tts_service_.reset();
-#endif  // defined(OS_CHROMEOS)
 }
 
-#if defined(OS_CHROMEOS)
-void TtsEngineExtensionObserver::OnAccessibilityStatusChanged(
+void TtsEngineExtensionObserverChromeOS::OnAccessibilityStatusChanged(
     const chromeos::AccessibilityStatusEventDetails& details) {
   if (details.notification_type != chromeos::AccessibilityNotificationType::
                                        ACCESSIBILITY_TOGGLE_SPOKEN_FEEDBACK &&
@@ -240,4 +230,3 @@ void TtsEngineExtensionObserver::OnAccessibilityStatusChanged(
   // increment. Decrements only occur when toggling off here.
   UpdateGoogleSpeechSynthesisKeepAliveCount(profile(), details.enabled);
 }
-#endif

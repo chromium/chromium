@@ -13,15 +13,15 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/speech/extension_api/tts_engine_extension_observer.h"
+#include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
 #include "chrome/browser/ui/webui/settings/accessibility_main_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/accessibility_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/captions_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/chromeos/switch_access_handler.h"
+#include "chrome/browser/ui/webui/settings/chromeos/tts_handler.h"
 #include "chrome/browser/ui/webui/settings/font_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
-#include "chrome/browser/ui/webui/settings/tts_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -756,8 +756,9 @@ void AccessibilitySection::UpdateTextToSpeechEnginesSearchTags() {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.RemoveSearchTags(GetTextToSpeechEnginesSearchConcepts());
 
-  const std::set<std::string> extensions =
-      TtsEngineExtensionObserver::GetInstance(profile())->GetTtsExtensions();
+  const std::set<std::string>& extensions =
+      TtsEngineExtensionObserverChromeOS::GetInstance(profile())
+          ->engine_extension_ids();
   if (!extensions.empty()) {
     updater.AddSearchTags(GetTextToSpeechEnginesSearchConcepts());
   }

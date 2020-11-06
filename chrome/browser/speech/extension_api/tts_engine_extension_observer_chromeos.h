@@ -2,42 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SPEECH_EXTENSION_API_TTS_ENGINE_EXTENSION_OBSERVER_H_
-#define CHROME_BROWSER_SPEECH_EXTENSION_API_TTS_ENGINE_EXTENSION_OBSERVER_H_
+#ifndef CHROME_BROWSER_SPEECH_EXTENSION_API_TTS_ENGINE_EXTENSION_OBSERVER_CHROMEOS_H_
+#define CHROME_BROWSER_SPEECH_EXTENSION_API_TTS_ENGINE_EXTENSION_OBSERVER_CHROMEOS_H_
 
 #include "base/macros.h"
 #include "base/scoped_observer.h"
+#include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
+#include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/audio_service.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
-#include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
-#endif
-
 class Profile;
 
 // Profile-keyed class that observes the extension registry to determine load of
 // extension-based tts engines.
-class TtsEngineExtensionObserver
+class TtsEngineExtensionObserverChromeOS
     : public KeyedService,
       public extensions::EventRouter::Observer,
       public extensions::ExtensionRegistryObserver {
  public:
-  static TtsEngineExtensionObserver* GetInstance(Profile* profile);
+  static TtsEngineExtensionObserverChromeOS* GetInstance(Profile* profile);
 
   // Gets the currently loaded TTS extension ids.
-  const std::set<std::string> GetTtsExtensions();
+  const std::set<std::string>& engine_extension_ids() {
+    return engine_extension_ids_;
+  }
 
   Profile* profile() { return profile_; }
 
-#if defined(OS_CHROMEOS)
   void BindTtsStream(
       mojo::PendingReceiver<chromeos::tts::mojom::TtsStream> receiver);
-#endif  // defined(OS_CHROMEOS)
 
   // Implementation of KeyedService.
   void Shutdown() override;
@@ -53,15 +50,13 @@ class TtsEngineExtensionObserver
                            extensions::UnloadedExtensionReason reason) override;
 
  private:
-  explicit TtsEngineExtensionObserver(Profile* profile);
-  ~TtsEngineExtensionObserver() override;
+  explicit TtsEngineExtensionObserverChromeOS(Profile* profile);
+  ~TtsEngineExtensionObserverChromeOS() override;
 
   bool IsLoadedTtsEngine(const std::string& extension_id);
 
-#if defined(OS_CHROMEOS)
   void OnAccessibilityStatusChanged(
       const chromeos::AccessibilityStatusEventDetails& details);
-#endif
 
   ScopedObserver<extensions::ExtensionRegistry,
                  extensions::ExtensionRegistryObserver>
@@ -71,16 +66,14 @@ class TtsEngineExtensionObserver
 
   std::set<std::string> engine_extension_ids_;
 
-#if defined(OS_CHROMEOS)
   std::unique_ptr<chromeos::AccessibilityStatusSubscription>
       accessibility_status_subscription_;
 
   mojo::Remote<chromeos::tts::mojom::TtsService> tts_service_;
-#endif
 
-  friend class TtsEngineExtensionObserverFactory;
+  friend class TtsEngineExtensionObserverChromeOSFactory;
 
-  DISALLOW_COPY_AND_ASSIGN(TtsEngineExtensionObserver);
+  DISALLOW_COPY_AND_ASSIGN(TtsEngineExtensionObserverChromeOS);
 };
 
-#endif  // CHROME_BROWSER_SPEECH_EXTENSION_API_TTS_ENGINE_EXTENSION_OBSERVER_H_
+#endif  // CHROME_BROWSER_SPEECH_EXTENSION_API_TTS_ENGINE_EXTENSION_OBSERVER_CHROMEOS_H_
