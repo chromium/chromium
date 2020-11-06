@@ -896,8 +896,12 @@ Used by h265_parser_unittest.cc.
 Used by h265_parser_unittest.cc. Copied from bbb_hevc_176x144_176kbps_60fps.hevc
 in Android repo.
 
-#### bear-frame0.hevc
-SPS, PPS and single IDR frame from bear.hevc for h265_decoder_unittest.cc.
+#### bear-sps-pps.hevc
+SPS and PPS from bear.hevc for h265_decoder_unittest.cc.
+
+#### bear-frame\{0,1,2,3,4,5\}.hevc
+Single IDR, P, B, B, B, P frames respectively from bear.hevc for
+h265_decoder_unittest.cc.
 
 ###  WebM files for testing multiple tracks.
 

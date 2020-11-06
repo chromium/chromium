@@ -78,8 +78,19 @@ void H265Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
 }
 
 void H265Decoder::Reset() {
+  curr_pic_ = nullptr;
   curr_nalu_ = nullptr;
+  curr_slice_hdr_ = nullptr;
+  last_slice_hdr_ = nullptr;
+  curr_sps_id_ = -1;
+  curr_pps_id_ = -1;
 
+  prev_tid0_pic_ = nullptr;
+  ref_pic_list_.clear();
+  ref_pic_list0_.clear();
+  ref_pic_list1_.clear();
+
+  dpb_.Clear();
   parser_.Reset();
   accelerator_->Reset();
 
@@ -124,6 +135,8 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
       par_res = parser_.AdvanceToNextNALU(curr_nalu_.get());
       if (par_res == H265Parser::kEOStream) {
         curr_nalu_.reset();
+        // We receive one frame per buffer, so we can output the frame now.
+        CHECK_ACCELERATOR_RESULT(FinishPrevFrameIfPresent());
         return kRanOutOfStreamData;
       }
       if (par_res != H265Parser::kOk) {
@@ -142,9 +155,103 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
       continue;
     }
 
-    bool need_new_buffers;
     switch (curr_nalu_->nal_unit_type) {
+      case H265NALU::BLA_W_LP:  // fallthrough
+      case H265NALU::BLA_W_RADL:
+      case H265NALU::BLA_N_LP:
+      case H265NALU::IDR_W_RADL:
+      case H265NALU::IDR_N_LP:
+      case H265NALU::TRAIL_N:
+      case H265NALU::TRAIL_R:
+      case H265NALU::TSA_N:
+      case H265NALU::TSA_R:
+      case H265NALU::STSA_N:
+      case H265NALU::STSA_R:
+      case H265NALU::RADL_N:
+      case H265NALU::RADL_R:
+      case H265NALU::RASL_N:
+      case H265NALU::RASL_R:
+      case H265NALU::CRA_NUT:
+        if (!curr_slice_hdr_) {
+          curr_slice_hdr_.reset(new H265SliceHeader());
+          if (last_slice_hdr_) {
+            // This is a multi-slice picture, so we should copy all of the prior
+            // slice header data to the new slice and use those as the default
+            // values that don't have syntax elements present.
+            memcpy(curr_slice_hdr_.get(), last_slice_hdr_.get(),
+                   sizeof(H265SliceHeader));
+            last_slice_hdr_.reset();
+          }
+          par_res =
+              parser_.ParseSliceHeader(*curr_nalu_, curr_slice_hdr_.get());
+          if (par_res == H265Parser::kMissingParameterSet) {
+            // We may still be able to recover if we skip until we find the
+            // SPS/PPS.
+            curr_slice_hdr_.reset();
+            last_slice_hdr_.reset();
+            break;
+          }
+          if (par_res != H265Parser::kOk)
+            SET_ERROR_AND_RETURN();
+          if (!curr_slice_hdr_->irap_pic && state_ == kAfterReset) {
+            // We can't resume from a non-IRAP picture.
+            curr_slice_hdr_.reset();
+            last_slice_hdr_.reset();
+            break;
+          }
+
+          state_ = kTryPreprocessCurrentSlice;
+          if (curr_slice_hdr_->slice_pic_parameter_set_id != curr_pps_id_) {
+            bool need_new_buffers = false;
+            if (!ProcessPPS(curr_slice_hdr_->slice_pic_parameter_set_id,
+                            &need_new_buffers)) {
+              SET_ERROR_AND_RETURN();
+            }
+
+            if (need_new_buffers) {
+              curr_pic_ = nullptr;
+              return kConfigChange;
+            }
+          }
+        }
+
+        if (state_ == kTryPreprocessCurrentSlice) {
+          CHECK_ACCELERATOR_RESULT(PreprocessCurrentSlice());
+          state_ = kEnsurePicture;
+        }
+
+        if (state_ == kEnsurePicture) {
+          if (curr_pic_) {
+            // |curr_pic_| already exists, so skip to ProcessCurrentSlice().
+            state_ = kTryCurrentSlice;
+          } else {
+            // New picture, try to start a new one or tell client we need more
+            // surfaces.
+            curr_pic_ = accelerator_->CreateH265Picture();
+            if (!curr_pic_)
+              return kRanOutOfSurfaces;
+            if (current_decrypt_config_)
+              curr_pic_->set_decrypt_config(current_decrypt_config_->Clone());
+
+            curr_pic_->first_picture_ = first_picture_;
+            first_picture_ = false;
+            state_ = kTryNewFrame;
+          }
+        }
+
+        if (state_ == kTryNewFrame) {
+          CHECK_ACCELERATOR_RESULT(StartNewFrame(curr_slice_hdr_.get()));
+          state_ = kTryCurrentSlice;
+        }
+
+        DCHECK_EQ(state_, kTryCurrentSlice);
+        CHECK_ACCELERATOR_RESULT(ProcessCurrentSlice());
+        state_ = kDecoding;
+        last_slice_hdr_.swap(curr_slice_hdr_);
+        curr_slice_hdr_.reset();
+        break;
       case H265NALU::SPS_NUT:
+        CHECK_ACCELERATOR_RESULT(FinishPrevFrameIfPresent());
         int sps_id;
         par_res = parser_.ParseSPS(&sps_id);
         if (par_res != H265Parser::kOk)
@@ -152,17 +259,31 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
 
         break;
       case H265NALU::PPS_NUT:
+        CHECK_ACCELERATOR_RESULT(FinishPrevFrameIfPresent());
         int pps_id;
         par_res = parser_.ParsePPS(*curr_nalu_, &pps_id);
         if (par_res != H265Parser::kOk)
           SET_ERROR_AND_RETURN();
 
-        if (!ProcessPPS(pps_id, &need_new_buffers))
-          SET_ERROR_AND_RETURN();
-
-        if (need_new_buffers)
-          return kConfigChange;
-
+        break;
+      case H265NALU::EOS_NUT:
+        first_picture_ = true;
+        FALLTHROUGH;
+      case H265NALU::EOB_NUT:  // fallthrough
+      case H265NALU::AUD_NUT:
+      case H265NALU::RSV_NVCL41:
+      case H265NALU::RSV_NVCL42:
+      case H265NALU::RSV_NVCL43:
+      case H265NALU::RSV_NVCL44:
+      case H265NALU::UNSPEC48:
+      case H265NALU::UNSPEC49:
+      case H265NALU::UNSPEC50:
+      case H265NALU::UNSPEC51:
+      case H265NALU::UNSPEC52:
+      case H265NALU::UNSPEC53:
+      case H265NALU::UNSPEC54:
+      case H265NALU::UNSPEC55:
+        CHECK_ACCELERATOR_RESULT(FinishPrevFrameIfPresent());
         break;
       default:
         DVLOG(4) << "Skipping NALU type: " << curr_nalu_->nal_unit_type;
@@ -242,8 +363,109 @@ bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
   return true;
 }
 
+H265Decoder::H265Accelerator::Status H265Decoder::PreprocessCurrentSlice() {
+  const H265SliceHeader* slice_hdr = curr_slice_hdr_.get();
+  DCHECK(slice_hdr);
+
+  if (slice_hdr->first_slice_segment_in_pic_flag) {
+    // New picture, so first finish the previous one before processing it.
+    H265Accelerator::Status result = FinishPrevFrameIfPresent();
+    if (result != H265Accelerator::Status::kOk)
+      return result;
+
+    DCHECK(!curr_pic_);
+  }
+
+  return H265Accelerator::Status::kOk;
+}
+
+H265Decoder::H265Accelerator::Status H265Decoder::ProcessCurrentSlice() {
+  DCHECK(curr_pic_);
+
+  const H265SliceHeader* slice_hdr = curr_slice_hdr_.get();
+  DCHECK(slice_hdr);
+
+  const H265SPS* sps = parser_.GetSPS(curr_sps_id_);
+  DCHECK(sps);
+
+  const H265PPS* pps = parser_.GetPPS(curr_pps_id_);
+  DCHECK(pps);
+  return accelerator_->SubmitSlice(sps, pps, slice_hdr, ref_pic_list0_,
+                                   ref_pic_list1_, curr_pic_.get(),
+                                   slice_hdr->nalu_data, slice_hdr->nalu_size,
+                                   parser_.GetCurrentSubsamples());
+}
+
+H265Decoder::H265Accelerator::Status H265Decoder::StartNewFrame(
+    const H265SliceHeader* slice_hdr) {
+  CHECK(curr_pic_.get());
+  DCHECK(slice_hdr);
+
+  curr_pps_id_ = slice_hdr->slice_pic_parameter_set_id;
+  const H265PPS* pps = parser_.GetPPS(curr_pps_id_);
+  // Slice header parsing already verified this should exist.
+  DCHECK(pps);
+
+  curr_sps_id_ = pps->pps_seq_parameter_set_id;
+  const H265SPS* sps = parser_.GetSPS(curr_sps_id_);
+  // Slice header parsing already verified this should exist.
+  DCHECK(sps);
+
+  // Copy slice/pps variables we need to the picture.
+  curr_pic_->nal_unit_type_ = curr_nalu_->nal_unit_type;
+  curr_pic_->irap_pic_ = slice_hdr->irap_pic;
+
+  curr_pic_->set_visible_rect(visible_rect_);
+  curr_pic_->set_bitstream_id(stream_id_);
+  if (sps->GetColorSpace().IsSpecified())
+    curr_pic_->set_colorspace(sps->GetColorSpace());
+  else
+    curr_pic_->set_colorspace(container_color_space_);
+
+  // TODO(jkardatzke): Add calculation of picture output flags, POC,
+  // ref pic POCs, building ref pic lists and dpb operations.
+
+  return accelerator_->SubmitFrameMetadata(sps, pps, slice_hdr, ref_pic_list_,
+                                           curr_pic_);
+}
+
+H265Decoder::H265Accelerator::Status H265Decoder::FinishPrevFrameIfPresent() {
+  // If we already have a frame waiting to be decoded, decode it and finish.
+  if (curr_pic_) {
+    H265Accelerator::Status result = DecodePicture();
+    if (result != H265Accelerator::Status::kOk)
+      return result;
+
+    scoped_refptr<H265Picture> pic = curr_pic_;
+    curr_pic_ = nullptr;
+    FinishPicture(pic);
+  }
+
+  return H265Accelerator::Status::kOk;
+}
+
+void H265Decoder::FinishPicture(scoped_refptr<H265Picture> pic) {
+  // 8.3.1
+  if (pic->valid_for_prev_tid0_pic_)
+    prev_tid0_pic_ = pic;
+
+  ref_pic_list_.clear();
+  ref_pic_list0_.clear();
+  ref_pic_list1_.clear();
+
+  last_slice_hdr_.reset();
+}
+
+H265Decoder::H265Accelerator::Status H265Decoder::DecodePicture() {
+  DCHECK(curr_pic_.get());
+  return accelerator_->SubmitDecode(curr_pic_);
+}
+
 bool H265Decoder::Flush() {
   DVLOG(2) << "Decoder flush";
+
+  dpb_.Clear();
+  prev_tid0_pic_ = nullptr;
   return true;
 }
 

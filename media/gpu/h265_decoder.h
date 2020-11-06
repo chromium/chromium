@@ -12,7 +12,9 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/ref_counted.h"
 #include "media/base/decrypt_config.h"
+#include "media/base/subsample_entry.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/accelerated_video_decoder.h"
 #include "media/gpu/h265_dpb.h"
@@ -68,6 +70,59 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
     H265Accelerator& operator=(const H265Accelerator&) = delete;
 
     virtual ~H265Accelerator();
+
+    // Create a new H265Picture that the decoder client can use for decoding
+    // and pass back to this accelerator for decoding or reference.
+    // When the picture is no longer needed by decoder, it will just drop
+    // its reference to it, and it may do so at any time.
+    // Note that this may return nullptr if accelerator is not able to provide
+    // any new pictures at given time. The decoder is expected to handle
+    // this situation as normal and return from Decode() with kRanOutOfSurfaces.
+    virtual scoped_refptr<H265Picture> CreateH265Picture() = 0;
+
+    // Submit metadata for the current frame, providing the current |sps|, |pps|
+    // and |slice_hdr| for it. |ref_pic_list| contains the set of pictures as
+    // described in 8.3.2 from the lists RefPicSetLtCurr, RefPicSetLtFoll,
+    // RefPicSetStCurrBefore, RefPicSetStCurrAfter and RefPicSetStFoll.
+    // |pic| contains information about the picture for the current frame.
+    // Note that this does not run decode in the accelerator and the decoder
+    // is expected to follow this call with one or more SubmitSlice() calls
+    // before calling SubmitDecode().
+    // Returns kOk if successful, kFail if there are errors, or kTryAgain if
+    // the accelerator needs additional data before being able to proceed.
+    virtual Status SubmitFrameMetadata(const H265SPS* sps,
+                                       const H265PPS* pps,
+                                       const H265SliceHeader* slice_hdr,
+                                       const H265Picture::Vector& ref_pic_list,
+                                       scoped_refptr<H265Picture> pic) = 0;
+
+    // Submit one slice for the current frame, passing the current |pps| and
+    // |pic| (same as in SubmitFrameMetadata()), the parsed header for the
+    // current slice in |slice_hdr|, and the |ref_pic_listX|, as per H265 spec.
+    // |data| pointing to the full slice (including the unparsed header) of
+    // |size| in bytes.
+    // |subsamples| specifies which part of the slice data is encrypted.
+    // This must be called one or more times per frame, before SubmitDecode().
+    // Note that |data| does not have to remain valid after this call returns.
+    // Returns kOk if successful, kFail if there are errors, or kTryAgain if
+    // the accelerator needs additional data before being able to proceed.
+    virtual Status SubmitSlice(
+        const H265SPS* sps,
+        const H265PPS* pps,
+        const H265SliceHeader* slice_hdr,
+        const H265Picture::Vector& ref_pic_list0,
+        const H265Picture::Vector& ref_pic_list1,
+        scoped_refptr<H265Picture> pic,
+        const uint8_t* data,
+        size_t size,
+        const std::vector<SubsampleEntry>& subsamples) = 0;
+
+    // Execute the decode in hardware for |pic|, using all the slices and
+    // metadata submitted via SubmitFrameMetadata() and SubmitSlice() since
+    // the previous call to SubmitDecode().
+    // Returns kOk if successful, kFail if there are errors, or kTryAgain if
+    // the accelerator needs additional data before being able to proceed.
+    virtual Status SubmitDecode(scoped_refptr<H265Picture> pic) = 0;
 
     // Reset any current state that may be cached in the accelerator, dropping
     // any cached parameters/slices that have not been committed yet.
@@ -129,6 +184,27 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   // Process H265 stream structures.
   bool ProcessPPS(int pps_id, bool* need_new_buffers);
 
+  // Process current slice header to discover if we need to start a new picture,
+  // finishing up the current one.
+  H265Accelerator::Status PreprocessCurrentSlice();
+
+  // Process current slice as a slice of the current picture.
+  H265Accelerator::Status ProcessCurrentSlice();
+
+  // Start processing a new frame. This also generates all the POC and output
+  // variables for the frame, generates reference picture lists, performs
+  // reference picture marking, DPB management and picture output.
+  H265Accelerator::Status StartNewFrame(const H265SliceHeader* slice_hdr);
+
+  // All data for a frame received, process it and decode.
+  H265Accelerator::Status FinishPrevFrameIfPresent();
+
+  // Called after we are done processing |pic|.
+  void FinishPicture(scoped_refptr<H265Picture> pic);
+
+  // Commits all pending data for HW decoder and starts HW decoder.
+  H265Accelerator::Status DecodePicture();
+
   // Decoder state.
   State state_;
 
@@ -155,11 +231,31 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   // Current stream buffer id; to be assigned to pictures decoded from it.
   int32_t stream_id_ = -1;
 
-  // Global state values, needed in decoding. See spec.
-  int max_pic_order_cnt_lsb_;
+  // Picture currently being processed/decoded.
+  scoped_refptr<H265Picture> curr_pic_;
 
-  // Current NALU being processed.
+  // Used to identify first picture in decoding order or first picture that
+  // follows an EOS NALU.
+  bool first_picture_ = true;
+
+  // Global state values, needed in decoding. See spec.
+  scoped_refptr<H265Picture> prev_tid0_pic_;
+  int max_pic_order_cnt_lsb_;
+  H265Picture::Vector ref_pic_list0_;
+  H265Picture::Vector ref_pic_list1_;
+
+  // |ref_pic_list_| is the collection of all pictures from StCurrBefore,
+  // StCurrAfter, StFoll, LtCurr and LtFoll.
+  H265Picture::Vector ref_pic_list_;
+
+  // Currently active SPS and PPS.
+  int curr_sps_id_ = -1;
+  int curr_pps_id_ = -1;
+
+  // Current NALU and slice header being processed.
   std::unique_ptr<H265NALU> curr_nalu_;
+  std::unique_ptr<H265SliceHeader> curr_slice_hdr_;
+  std::unique_ptr<H265SliceHeader> last_slice_hdr_;
 
   // Output picture size.
   gfx::Size pic_size_;
