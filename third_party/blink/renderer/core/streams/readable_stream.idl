@@ -18,5 +18,5 @@ enum ReadableStreamReaderMode { "byob" };
         ReadableWritablePair transform, optional StreamPipeOptions options);
     [RaisesException, CallWith=ScriptState, MeasureAs=ReadableStreamPipeTo] Promise<any> pipeTo(
         WritableStream destination, optional StreamPipeOptions options);
-    [RaisesException, CallWith=ScriptState] any tee();
+    [RaisesException, CallWith=ScriptState] sequence<ReadableStream> tee();
 };

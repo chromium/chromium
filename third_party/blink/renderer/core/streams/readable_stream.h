@@ -138,7 +138,7 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
                        ExceptionState&);
 
   // https://streams.spec.whatwg.org/#rs-tee
-  ScriptValue tee(ScriptState*, ExceptionState&);
+  HeapVector<Member<ReadableStream>> tee(ScriptState*, ExceptionState&);
 
   // TODO(domenic): cloneForBranch2 argument from spec not supported yet
   void Tee(ScriptState*,
@@ -272,7 +272,7 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
 
   // Calls Tee() on |readable|, converts the two branches to a JavaScript array
   // and returns them.
-  static ScriptValue CallTeeAndReturnBranchArray(
+  static HeapVector<Member<ReadableStream>> CallTeeAndReturnBranchArray(
       ScriptState* script_state,
       ReadableStream* readable,
       ExceptionState& exception_state);

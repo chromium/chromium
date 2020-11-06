@@ -1316,8 +1316,9 @@ ScriptPromise ReadableStream::pipeTo(ScriptState* script_state,
   return PipeTo(script_state, this, destination, pipe_options);
 }
 
-ScriptValue ReadableStream::tee(ScriptState* script_state,
-                                ExceptionState& exception_state) {
+HeapVector<Member<ReadableStream>> ReadableStream::tee(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   return CallTeeAndReturnBranchArray(script_state, this, exception_state);
 }
 
@@ -1808,12 +1809,11 @@ int ReadableStream::GetNumReadRequests(const ReadableStream* stream) {
 // TODO(ricea): Functions for transferable streams.
 //
 
-ScriptValue ReadableStream::CallTeeAndReturnBranchArray(
+HeapVector<Member<ReadableStream>> ReadableStream::CallTeeAndReturnBranchArray(
     ScriptState* script_state,
     ReadableStream* readable,
     ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#rs-tee
-  v8::Isolate* isolate = script_state->GetIsolate();
   ReadableStream* branch1 = nullptr;
   ReadableStream* branch2 = nullptr;
 
@@ -1821,35 +1821,12 @@ ScriptValue ReadableStream::CallTeeAndReturnBranchArray(
   readable->Tee(script_state, &branch1, &branch2, exception_state);
 
   if (!branch1 || !branch2)
-    return ScriptValue();
+    return HeapVector<Member<ReadableStream>>();
 
   DCHECK(!exception_state.HadException());
 
   // 3. Return ! CreateArrayFromList(branches).
-  v8::TryCatch block(isolate);
-  v8::Local<v8::Context> context = script_state->GetContext();
-  v8::Local<v8::Array> array = v8::Array::New(isolate, 2);
-  v8::Local<v8::Object> global = context->Global();
-
-  v8::Local<v8::Value> v8_branch1 = ToV8(branch1, global, isolate);
-  if (v8_branch1.IsEmpty()) {
-    exception_state.RethrowV8Exception(block.Exception());
-    return ScriptValue();
-  }
-  v8::Local<v8::Value> v8_branch2 = ToV8(branch2, global, isolate);
-  if (v8_branch1.IsEmpty()) {
-    exception_state.RethrowV8Exception(block.Exception());
-    return ScriptValue();
-  }
-  if (array->Set(context, V8String(isolate, "0"), v8_branch1).IsNothing()) {
-    exception_state.RethrowV8Exception(block.Exception());
-    return ScriptValue();
-  }
-  if (array->Set(context, V8String(isolate, "1"), v8_branch2).IsNothing()) {
-    exception_state.RethrowV8Exception(block.Exception());
-    return ScriptValue();
-  }
-  return ScriptValue(script_state->GetIsolate(), array);
+  return HeapVector<Member<ReadableStream>>({branch1, branch2});
 }
 
 }  // namespace blink
