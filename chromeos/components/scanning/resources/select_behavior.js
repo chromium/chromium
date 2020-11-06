@@ -57,4 +57,14 @@ export const SelectBehavior = {
   computeDisabled_(numOptions, settingsDisabled) {
     return numOptions < REQUIRED_NUM_OPTIONS || settingsDisabled;
   },
+
+  /**
+   * @param {!Array} arr
+   * @param {!function(string, string): number} compareFn
+   * @param {!function(T): string} conversionFn
+   * @template T
+   */
+  customSort(arr, compareFn, conversionFn = (val) => val) {
+    return arr.sort((a, b) => compareFn(conversionFn(a), conversionFn(b)));
+  },
 };

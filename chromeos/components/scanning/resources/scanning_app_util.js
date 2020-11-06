@@ -139,3 +139,14 @@ export function pageSizeFromString(pageSizeString) {
 export function tokenToString(token) {
   return `${token.high.toString()}#${token.low.toString()}`;
 }
+
+/**
+ * A comparison function used for determining sort order based on the current
+ * locale's collation order.
+ * @param {string} first
+ * @param {string} second
+ * @return {number} The result of the comparison.
+ */
+export function alphabeticalCompare(first, second) {
+  return first.toLocaleLowerCase().localeCompare(second.toLocaleLowerCase());
+}
