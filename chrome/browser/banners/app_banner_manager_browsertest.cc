@@ -383,7 +383,13 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, NoManifest) {
       NO_MANIFEST);
 }
 
-IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, MissingManifest) {
+// TODO(crbug.com/1146526): Test is flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_MissingManifest DISABLED_MissingManifest
+#else
+#define MAYBE_MissingManifest MissingManifest
+#endif
+IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, MAYBE_MissingManifest) {
   std::unique_ptr<AppBannerManagerTest> manager(
       CreateAppBannerManager(browser()));
   RunBannerTest(browser(), manager.get(),
