@@ -103,6 +103,7 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState(
       direction_(other.direction_),
       letter_spacing_(other.letter_spacing_),
       word_spacing_(other.word_spacing_),
+      text_rendering_mode_(other.text_rendering_mode_),
       font_kerning_(other.font_kerning_),
       font_variant_caps_(other.font_variant_caps_),
       realized_font_(other.realized_font_),
@@ -694,6 +695,16 @@ void CanvasRenderingContext2DState::SetTextWordSpacing(float word_spacing,
   FontDescription font_description(GetFontDescription());
   font_description.SetWordSpacing(word_spacing);
   word_spacing_ = word_spacing;
+  SetFont(font_description, selector);
+}
+
+void CanvasRenderingContext2DState::SetTextRendering(
+    TextRenderingMode text_rendering,
+    FontSelector* selector) {
+  DCHECK(realized_font_);
+  FontDescription font_description(GetFontDescription());
+  font_description.SetTextRendering(text_rendering);
+  text_rendering_mode_ = text_rendering;
   SetFont(font_description, selector);
 }
 

@@ -136,6 +136,10 @@ class CanvasRenderingContext2DState final
   void SetTextWordSpacing(float word_space, FontSelector* selector);
   float GetTextWordSpacing() const { return word_spacing_; }
 
+  void SetTextRendering(TextRenderingMode text_rendering,
+                        FontSelector* selector);
+  TextRenderingMode GetTextRendering() const { return text_rendering_mode_; }
+
   void SetFontKerning(FontDescription::Kerning font_kerning,
                       FontSelector* selector);
   FontDescription::Kerning GetFontKerning() const { return font_kerning_; }
@@ -261,6 +265,7 @@ class CanvasRenderingContext2DState final
   Direction direction_{kDirectionInherit};
   float letter_spacing_{0};
   float word_spacing_{0};
+  TextRenderingMode text_rendering_mode_{TextRenderingMode::kAutoTextRendering};
   FontDescription::Kerning font_kerning_{FontDescription::kAutoKerning};
   FontDescription::FontVariantCaps font_variant_caps_{
       FontDescription::kCapsNormal};

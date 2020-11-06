@@ -163,6 +163,7 @@ interface CanvasRenderingContext2D {
     [RuntimeEnabled=NewCanvas2DAPI] attribute unrestricted double textWordSpacing; // length in pixel (default: 0)
     [RuntimeEnabled=NewCanvas2DAPI] attribute DOMString fontKerning; // "auto", "normal", "none" (default: "auto")
     [RuntimeEnabled=NewCanvas2DAPI] attribute DOMString fontVariantCaps; // "normal", "small-caps", "all-small-caps", "petite-caps", "all-petite-caps", "unicase", "titling-caps" (default: "normal")
+    [RuntimeEnabled=NewCanvas2DAPI] attribute DOMString textRendering; // "auto", "optimizeSpeed", "optimizeLegibility", "geometricPrecision" (default: auto)
 };
 
 CanvasRenderingContext2D includes CanvasPath;

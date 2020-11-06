@@ -472,6 +472,32 @@ void OffscreenCanvasRenderingContext2D::setTextWordSpacing(
                                        Host()->GetFontSelector());
 }
 
+void OffscreenCanvasRenderingContext2D::setTextRendering(
+    const String& text_rendering_string) {
+  if (!GetState().HasRealizedFont())
+    setFont(font());
+
+  TextRenderingMode text_rendering_mode;
+  String text_rendering = text_rendering_string.LowerASCII();
+
+  if (text_rendering == kAutoRendering)
+    text_rendering_mode = TextRenderingMode::kAutoTextRendering;
+  else if (text_rendering == kOptimizeSpeedRendering)
+    text_rendering_mode = TextRenderingMode::kOptimizeSpeed;
+  else if (text_rendering == kOptimizeLegibilityRendering)
+    text_rendering_mode = TextRenderingMode::kOptimizeLegibility;
+  else if (text_rendering == kGeometricPrecisionRendering)
+    text_rendering_mode = TextRenderingMode::kGeometricPrecision;
+  else
+    return;
+
+  if (GetState().GetTextRendering() == text_rendering_mode)
+    return;
+
+  ModifiableState().SetTextRendering(text_rendering_mode,
+                                     Host()->GetFontSelector());
+}
+
 void OffscreenCanvasRenderingContext2D::setDirection(
     const String& direction_string) {
   CanvasRenderingContext2DState::Direction direction;

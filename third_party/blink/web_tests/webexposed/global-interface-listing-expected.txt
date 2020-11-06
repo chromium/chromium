@@ -961,6 +961,7 @@ interface CanvasRenderingContext2D
     getter textAlign
     getter textBaseline
     getter textLetterSpacing
+    getter textRendering
     getter textWordSpacing
     method addHitRegion
     method arc
@@ -1035,6 +1036,7 @@ interface CanvasRenderingContext2D
     setter textAlign
     setter textBaseline
     setter textLetterSpacing
+    setter textRendering
     setter textWordSpacing
 interface ChannelMergerNode : AudioNode
     attribute @@toStringTag
@@ -5666,6 +5668,7 @@ interface OffscreenCanvasRenderingContext2D
     getter textAlign
     getter textBaseline
     getter textLetterSpacing
+    getter textRendering
     getter textWordSpacing
     method arc
     method arcTo
@@ -5734,6 +5737,7 @@ interface OffscreenCanvasRenderingContext2D
     setter textAlign
     setter textBaseline
     setter textLetterSpacing
+    setter textRendering
     setter textWordSpacing
 interface Option
     attribute @@toStringTag

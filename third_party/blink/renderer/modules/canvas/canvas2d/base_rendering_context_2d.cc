@@ -46,6 +46,12 @@ const char BaseRenderingContext2D::kAllPetiteVariantString[] =
 const char BaseRenderingContext2D::kUnicaseVariantString[] = "unicase";
 const char BaseRenderingContext2D::kTitlingCapsVariantString[] = "titling-caps";
 const double BaseRenderingContext2D::kCDeviceScaleFactor = 1.0;
+const char BaseRenderingContext2D::kAutoRendering[] = "auto";
+const char BaseRenderingContext2D::kOptimizeSpeedRendering[] = "optimizespeed";
+const char BaseRenderingContext2D::kOptimizeLegibilityRendering[] =
+    "optimizelegibility";
+const char BaseRenderingContext2D::kGeometricPrecisionRendering[] =
+    "geometricprecision";
 
 BaseRenderingContext2D::BaseRenderingContext2D()
     : clip_antialiasing_(kNotAntiAliased), origin_tainted_by_content_(false) {
@@ -2043,6 +2049,10 @@ double BaseRenderingContext2D::textLetterSpacing() const {
 
 double BaseRenderingContext2D::textWordSpacing() const {
   return GetState().GetTextWordSpacing();
+}
+
+String BaseRenderingContext2D::textRendering() const {
+  return ToString(GetState().GetTextRendering());
 }
 
 float BaseRenderingContext2D::GetFontBaseline(

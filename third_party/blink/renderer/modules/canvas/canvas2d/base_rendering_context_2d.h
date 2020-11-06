@@ -265,6 +265,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
 
   double textLetterSpacing() const;
   double textWordSpacing() const;
+  String textRendering() const;
 
   String fontKerning() const;
   String fontVariantCaps() const;
@@ -394,6 +395,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   static const char kAllPetiteVariantString[];
   static const char kUnicaseVariantString[];
   static const char kTitlingCapsVariantString[];
+  static const char kAutoRendering[];
+  static const char kOptimizeSpeedRendering[];
+  static const char kOptimizeLegibilityRendering[];
+  static const char kGeometricPrecisionRendering[];
   // Canvas is device independent
   static const double kCDeviceScaleFactor;
   virtual void DisableAcceleration() {}
