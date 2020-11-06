@@ -8,6 +8,7 @@
 #include <functional>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
@@ -19,6 +20,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/titled_url_match_utils.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/query_parser/snippet.h"
 #include "components/search_engines/omnibox_focus_type.h"
@@ -81,7 +83,8 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
       input.text(), kMaxBookmarkMatches,
       OmniboxFieldTrial::IsShortBookmarkSuggestionsEnabled()
           ? query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH
-          : query_parser::MatchingAlgorithm::DEFAULT);
+          : query_parser::MatchingAlgorithm::DEFAULT,
+      base::FeatureList::IsEnabled(omnibox::kBookmarkPaths));
   if (matches.empty())
     return;  // There were no matches.
   const base::string16 fixed_up_input(FixupUserInput(input).second);

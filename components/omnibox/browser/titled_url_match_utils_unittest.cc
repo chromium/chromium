@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/browser/titled_url_node.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -16,6 +17,7 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
@@ -37,8 +39,10 @@ class FakeAutocompleteProvider : public AutocompleteProvider {
 
 class MockTitledUrlNode : public bookmarks::TitledUrlNode {
  public:
-  MockTitledUrlNode(const base::string16& title, const GURL& url)
-      : title_(title), url_(url) {}
+  MockTitledUrlNode(const base::string16& title,
+                    const GURL& url,
+                    std::vector<base::string16> ancestors = {})
+      : title_(title), url_(url), ancestors_(ancestors) {}
 
   // TitledUrlNode
   const base::string16& GetTitledUrlNodeTitle() const override {
@@ -47,18 +51,23 @@ class MockTitledUrlNode : public bookmarks::TitledUrlNode {
   const GURL& GetTitledUrlNodeUrl() const override { return url_; }
   std::vector<base::StringPiece16> GetTitledUrlNodeAncestorTitles()
       const override {
-    return {};
+    std::vector<base::StringPiece16> ancestors;
+    std::transform(
+        ancestors_.begin(), ancestors_.end(), std::back_inserter(ancestors),
+        [](auto& ancestor) { return base::StringPiece16(ancestor); });
+    return ancestors;
   }
 
  private:
   base::string16 title_;
   GURL url_;
+  std::vector<base::string16> ancestors_;
 };
 
 std::string ACMatchClassificationsAsString(
-    const ACMatchClassifications& clasifications) {
+    const ACMatchClassifications& classifications) {
   std::string position_string("{");
-  for (auto classification : clasifications) {
+  for (auto classification : classifications) {
     position_string +=
         "{offset " + base::NumberToString(classification.offset) + ", style " +
         base::NumberToString(classification.style) + "}, ";
@@ -294,4 +303,105 @@ TEST(TitledUrlMatchUtilsTest, EmptyInlineAutocompletion) {
             autocomplete_match.fill_into_edit);
   EXPECT_FALSE(autocomplete_match.allowed_to_be_default_match);
   EXPECT_TRUE(autocomplete_match.inline_autocompletion.empty());
+}
+
+TEST(TitledUrlMatchUtilsTest, PathsInContentsAndDescription) {
+  scoped_refptr<FakeAutocompleteProvider> provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_BOOKMARK);
+  TestSchemeClassifier classifier;
+  std::vector<base::string16> ancestors = {base::UTF8ToUTF16("parent"),
+                                           base::UTF8ToUTF16("grandparent")};
+
+  // Verifies contents and description of the AutocompleteMatch returned from
+  // |bookmarks::TitledUrlMatchToAutocompleteMatch()|.
+  auto test = [&](std::string title, std::string url, bool has_url_match,
+                  bool has_ancestor_match, std::string expected_contents,
+                  std::string expected_description) {
+    SCOPED_TRACE("title [" + title + "], url [" + url + "], has_url_match [" +
+                 std::string(has_url_match ? "true" : "false") +
+                 "], has_ancestor_match [" +
+                 std::string(has_ancestor_match ? "true" : "false") + "].");
+    MockTitledUrlNode node(base::UTF8ToUTF16(title), GURL(url), ancestors);
+    bookmarks::TitledUrlMatch titled_url_match;
+    titled_url_match.node = &node;
+    if (has_url_match)
+      titled_url_match.url_match_positions.push_back(
+          {8, 8});  // 8 in order to be after 'https://'
+    titled_url_match.has_ancestor_match = has_ancestor_match;
+    AutocompleteInput input(base::string16(), metrics::OmniboxEventProto::NTP,
+                            classifier);
+    AutocompleteMatch autocomplete_match = TitledUrlMatchToAutocompleteMatch(
+        titled_url_match, AutocompleteMatchType::BOOKMARK_TITLE, 1,
+        provider.get(), classifier, input, base::string16());
+    EXPECT_EQ(base::UTF16ToUTF8(autocomplete_match.contents),
+              expected_contents);
+    EXPECT_EQ(base::UTF16ToUTF8(autocomplete_match.description),
+              expected_description);
+  };
+
+  // Invokes |test()| with the 4 combinations of |has_url_match| true|false x
+  // |has_ancestor_match| true|false.
+  auto test_with_and_without_url_and_ancestor_matches =
+      [&](std::string title, std::string url, std::string expected_contents,
+          std::string expected_description) {
+        for (bool has_url_match : {false, true}) {
+          for (bool has_ancestor_match : {false, true}) {
+            test(title, url, has_url_match, has_ancestor_match,
+                 expected_contents, expected_description);
+          }
+        }
+      };
+
+  {
+    SCOPED_TRACE("Feature disabled");
+    test_with_and_without_url_and_ancestor_matches("title", "https://url.com",
+                                                   "url.com", "title");
+  }
+  {
+    SCOPED_TRACE("Feature enabled");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(omnibox::kBookmarkPaths);
+    test_with_and_without_url_and_ancestor_matches("title", "https://url.com",
+                                                   "url.com", "title");
+  }
+  {
+    SCOPED_TRACE("Feature enabled, kBookmarkPathsUiReplaceTitle");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kBookmarkPaths,
+        {{OmniboxFieldTrial::kBookmarkPathsUiReplaceTitle, "true"}});
+    test_with_and_without_url_and_ancestor_matches(
+        "title", "https://url.com", "url.com", "grandparent/parent/title");
+  }
+  {
+    SCOPED_TRACE("Feature enabled, kBookmarkPathsUiReplaceUrl");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kBookmarkPaths,
+        {{OmniboxFieldTrial::kBookmarkPathsUiReplaceUrl, "true"}});
+    test_with_and_without_url_and_ancestor_matches(
+        "title", "https://url.com", "grandparent/parent", "title");
+  }
+  {
+    SCOPED_TRACE("Feature enabled, kBookmarkPathsUiAppendAfterTitle");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kBookmarkPaths,
+        {{OmniboxFieldTrial::kBookmarkPathsUiAppendAfterTitle, "true"}});
+    test_with_and_without_url_and_ancestor_matches(
+        "title", "https://url.com", "url.com", "title : grandparent/parent");
+  }
+  {
+    SCOPED_TRACE("Feature enabled, kBookmarkPathsUiDynamicReplaceUrl");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kBookmarkPaths,
+        {{OmniboxFieldTrial::kBookmarkPathsUiDynamicReplaceUrl, "true"}});
+    test("title", "https://url.com", false, false, "grandparent/parent",
+         "title");
+    test("title", "https://url.com", true, false, "url.com", "title");
+    test("title", "https://url.com", false, true, "grandparent/parent",
+         "title");
+    test("title", "https://url.com", true, true, "grandparent/parent", "title");
+  }
 }
