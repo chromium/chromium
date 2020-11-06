@@ -2625,7 +2625,7 @@ enum WebFeature {
   kForceEncodedAudioInsertableStreams = 3294,
   kForceEncodedVideoInsertableStreams = 3295,
   kTransformStyleContainingBlockComputedUsedMismatch = 3296,
-  kAdditionalGroupingPropertiesForCompat = 3297,
+  kOBSOLETE_AdditionalGroupingPropertiesForCompat = 3297,
   kPopupDoesNotExceedOwnerWindowBounds = 3298,
   kPopupExceedsOwnerWindowBounds = 3299,
   kPopupExceedsOwnerWindowBoundsForIframe = 3300,
