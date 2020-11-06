@@ -24,12 +24,11 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/value_builder.h"
-#include "ipc/ipc_message_utils.h"
+#include "skia/public/mojom/bitmap.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/ipc/skia/gfx_skia_param_traits.h"
 
 namespace extensions {
 namespace {
@@ -220,12 +219,8 @@ TEST(DeclarativeContentActionTest, SetIcon) {
   EXPECT_TRUE(bitmap.tryAllocN32Pixels(19, 19));
   // Fill the bitmap with red pixels.
   bitmap.eraseARGB(255, 255, 0, 0);
-  IPC::Message bitmap_pickle;
-  IPC::WriteParam(&bitmap_pickle, bitmap);
-  std::string binary_data = std::string(
-      static_cast<const char*>(bitmap_pickle.data()), bitmap_pickle.size());
-  std::string data64;
-  base::Base64Encode(binary_data, &data64);
+  std::string data64 =
+      base::Base64Encode(skia::mojom::Bitmap::Serialize(&bitmap));
 
   std::unique_ptr<base::DictionaryValue> dict =
       DictionaryBuilder()
@@ -283,12 +278,8 @@ TEST(DeclarativeContentActionTest, SetInvisibleIcon) {
   uint32_t* pixels = bitmap.getAddr32(0, 0);
   // Set a single pixel, which isn't enough to consider the icon visible.
   pixels[0] = SkColorSetARGB(255, 255, 0, 0);
-  IPC::Message bitmap_pickle;
-  IPC::WriteParam(&bitmap_pickle, bitmap);
-  std::string binary_data = std::string(
-      static_cast<const char*>(bitmap_pickle.data()), bitmap_pickle.size());
-  std::string data64;
-  base::Base64Encode(binary_data, &data64);
+  std::string data64 =
+      base::Base64Encode(skia::mojom::Bitmap::Serialize(&bitmap));
 
   std::unique_ptr<base::DictionaryValue> dict =
       DictionaryBuilder()
