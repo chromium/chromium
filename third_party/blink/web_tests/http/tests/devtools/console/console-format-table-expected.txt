@@ -36,7 +36,9 @@ HEADER (index) | 0 |
 ROW 1 | 
 ROW 4 | 
 console-format-table.js:34 Random string as columns
-HEADER (index) | 
+HEADER (index) | Value | 
+ROW Array(3) | 
+ROW Array(3) | 
 console-format-table.js:37 Array of strings as columns
 HEADER (index) | a | b | 
 ROW 1 | 2 | 
@@ -46,7 +48,9 @@ HEADER (index) | a | b |
 ROW 1 | 2 | 
 ROW "foo" | 
 console-format-table.js:43 Missing column name
-HEADER (index) | 
+HEADER (index) | Value | 
+ROW {…} | 
+ROW {…} | 
 console-format-table.js:46 Shallow array
 HEADER (index) | Value | 
 ROW 1 | 
