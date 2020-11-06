@@ -105,7 +105,8 @@ class AssociatedUserValidator {
     INVALID_TOKEN_HANDLE,
     ONLINE_LOGIN_STALE,
     UPLOAD_DEVICE_DETAILS_FAILED,
-    ONLINE_LOGIN_ENFORCED
+    ONLINE_LOGIN_ENFORCED,
+    MISSING_OR_STALE_USER_POLICIES
   };
 
   // Returns the reason for enforcing authentication for the provided |sid|.

@@ -572,6 +572,13 @@ AssociatedUserValidator::GetAuthEnforceReason(const base::string16& sid) {
         UPLOAD_DEVICE_DETAILS_FAILED;
   }
 
+  // Force user to login when policies are missing or stale.
+  if (UserPoliciesManager::Get()->CloudPoliciesEnabled() &&
+      UserPoliciesManager::Get()->IsUserPolicyStaleOrMissing(sid)) {
+    return AssociatedUserValidator::EnforceAuthReason::
+        MISSING_OR_STALE_USER_POLICIES;
+  }
+
   return AssociatedUserValidator::EnforceAuthReason::NOT_ENFORCED;
 }
 
