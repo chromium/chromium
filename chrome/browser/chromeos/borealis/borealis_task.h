@@ -24,12 +24,21 @@ class BorealisTask {
   // different status should be used, and an error string provided.
   using CompletionStatusCallback =
       base::OnceCallback<void(BorealisContextManager::Status, std::string)>;
-  BorealisTask() = default;
+
+  BorealisTask();
   BorealisTask(const BorealisTask&) = delete;
   BorealisTask& operator=(const BorealisTask&) = delete;
-  virtual void Run(BorealisContext* context,
-                   CompletionStatusCallback callback) = 0;
-  virtual ~BorealisTask() = default;
+  virtual ~BorealisTask();
+
+  void Run(BorealisContext* context, CompletionStatusCallback callback);
+
+ protected:
+  virtual void RunInternal(BorealisContext* context) = 0;
+
+  void Complete(BorealisContextManager::Status status, std::string message);
+
+ private:
+  CompletionStatusCallback callback_;
 };
 
 // Mounts the Borealis DLC.
@@ -37,13 +46,11 @@ class MountDlc : public BorealisTask {
  public:
   MountDlc();
   ~MountDlc() override;
-  void Run(BorealisContext* context,
-           CompletionStatusCallback callback) override;
+  void RunInternal(BorealisContext* context) override;
 
  private:
   void OnMountDlc(
       BorealisContext* context,
-      CompletionStatusCallback callback,
       const chromeos::DlcserviceClient::InstallResult& install_result);
   base::WeakPtrFactory<MountDlc> weak_factory_{this};
 };
@@ -53,13 +60,11 @@ class CreateDiskImage : public BorealisTask {
  public:
   CreateDiskImage();
   ~CreateDiskImage() override;
-  void Run(BorealisContext* context,
-           CompletionStatusCallback callback) override;
+  void RunInternal(BorealisContext* context) override;
 
  private:
   void OnCreateDiskImage(
       BorealisContext* context,
-      CompletionStatusCallback callback,
       base::Optional<vm_tools::concierge::CreateDiskImageResponse> response);
   base::WeakPtrFactory<CreateDiskImage> weak_factory_{this};
 };
@@ -69,13 +74,11 @@ class StartBorealisVm : public BorealisTask {
  public:
   StartBorealisVm();
   ~StartBorealisVm() override;
-  void Run(BorealisContext* context,
-           CompletionStatusCallback callback) override;
+  void RunInternal(BorealisContext* context) override;
 
  private:
   void OnStartBorealisVm(
       BorealisContext* context,
-      CompletionStatusCallback callback,
       base::Optional<vm_tools::concierge::StartVmResponse> response);
   base::WeakPtrFactory<StartBorealisVm> weak_factory_{this};
 };
@@ -85,13 +88,11 @@ class AwaitBorealisStartup : public BorealisTask {
  public:
   AwaitBorealisStartup(Profile* profile, std::string vm_name);
   ~AwaitBorealisStartup() override;
-  void Run(BorealisContext* context,
-           CompletionStatusCallback callback) override;
+  void RunInternal(BorealisContext* context) override;
   BorealisLaunchWatcher& GetWatcherForTesting();
 
  private:
   void OnAwaitBorealisStartup(BorealisContext* context,
-                              CompletionStatusCallback callback,
                               base::Optional<std::string> container);
   BorealisLaunchWatcher watcher_;
   base::WeakPtrFactory<AwaitBorealisStartup> weak_factory_{this};

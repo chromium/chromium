@@ -36,15 +36,14 @@ MATCHER(IsFailureResult, "") {
 class MockTask : public BorealisTask {
  public:
   explicit MockTask(bool success) : success_(success) {}
-  void Run(BorealisContext* context,
-           BorealisTask::CompletionStatusCallback callback) override {
+  void RunInternal(BorealisContext* context) override {
     if (success_) {
       context->set_vm_name("test_vm_name");
-      std::move(callback).Run(BorealisContextManager::Status::kSuccess, "");
+      Complete(BorealisContextManager::Status::kSuccess, "");
     } else {
       // Just use a random error.
-      std::move(callback).Run(BorealisContextManager::Status::kStartVmFailed,
-                              "Something went wrong!");
+      Complete(BorealisContextManager::Status::kStartVmFailed,
+               "Something went wrong!");
     }
   }
   bool success_ = true;
@@ -211,8 +210,7 @@ class NeverCompletingContextManager : public BorealisContextManagerImpl {
  private:
   class NeverCompletingTask : public BorealisTask {
    public:
-    void Run(BorealisContext* context,
-             CompletionStatusCallback callback) override {}
+    void RunInternal(BorealisContext* context) override {}
   };
 
   base::queue<std::unique_ptr<BorealisTask>> GetTasks() override {

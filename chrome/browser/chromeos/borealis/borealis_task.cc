@@ -5,8 +5,10 @@
 #include "chrome/browser/chromeos/borealis/borealis_task.h"
 #include <string>
 
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/chromeos/borealis/borealis_context.h"
 #include "chrome/browser/chromeos/borealis/borealis_util.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -17,39 +19,54 @@
 
 namespace borealis {
 
+BorealisTask::BorealisTask() = default;
+
+BorealisTask::~BorealisTask() = default;
+
+void BorealisTask::Run(BorealisContext* context,
+                       CompletionStatusCallback callback) {
+  callback_ = std::move(callback);
+  RunInternal(context);
+}
+
+void BorealisTask::Complete(BorealisContextManager::Status status,
+                            std::string message) {
+  // Task completion is self-mutually-exclusive, because tasks are deleted once
+  // complete.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback_), status, std::move(message)));
+}
+
 MountDlc::MountDlc() = default;
 MountDlc::~MountDlc() = default;
 
-void MountDlc::Run(BorealisContext* context,
-                   CompletionStatusCallback callback) {
+void MountDlc::RunInternal(BorealisContext* context) {
   // TODO(b/172279567): Ensure the DLC is present before trying to install,
   // otherwise we will silently download borealis here.
   chromeos::DlcserviceClient::Get()->Install(
       kBorealisDlcName,
-      base::BindOnce(&MountDlc::OnMountDlc, weak_factory_.GetWeakPtr(), context,
-                     std::move(callback)),
+      base::BindOnce(&MountDlc::OnMountDlc, weak_factory_.GetWeakPtr(),
+                     context),
       base::DoNothing());
 }
 
 void MountDlc::OnMountDlc(
     BorealisContext* context,
-    CompletionStatusCallback callback,
     const chromeos::DlcserviceClient::InstallResult& install_result) {
   if (install_result.error != dlcservice::kErrorNone) {
-    std::move(callback).Run(
-        BorealisContextManager::Status::kMountFailed,
-        "Mounting the DLC for Borealis failed: " + install_result.error);
+    Complete(BorealisContextManager::Status::kMountFailed,
+             "Mounting the DLC for Borealis failed: " + install_result.error);
   } else {
     context->set_root_path(install_result.root_path);
-    std::move(callback).Run(BorealisContextManager::Status::kSuccess, "");
+    Complete(BorealisContextManager::Status::kSuccess, "");
   }
 }
 
 CreateDiskImage::CreateDiskImage() = default;
 CreateDiskImage::~CreateDiskImage() = default;
 
-void CreateDiskImage::Run(BorealisContext* context,
-                          CompletionStatusCallback callback) {
+void CreateDiskImage::RunInternal(BorealisContext* context) {
   vm_tools::concierge::CreateDiskImageRequest request;
   request.set_disk_path(context->vm_name());
   request.set_cryptohome_id(
@@ -59,40 +76,36 @@ void CreateDiskImage::Run(BorealisContext* context,
   request.set_disk_size(0);
 
   chromeos::DBusThreadManager::Get()->GetConciergeClient()->CreateDiskImage(
-      std::move(request),
-      base::BindOnce(&CreateDiskImage::OnCreateDiskImage,
-                     weak_factory_.GetWeakPtr(), context, std::move(callback)));
+      std::move(request), base::BindOnce(&CreateDiskImage::OnCreateDiskImage,
+                                         weak_factory_.GetWeakPtr(), context));
 }
 
 void CreateDiskImage::OnCreateDiskImage(
     BorealisContext* context,
-    CompletionStatusCallback callback,
     base::Optional<vm_tools::concierge::CreateDiskImageResponse> response) {
   if (!response) {
     context->set_disk_path(base::FilePath());
-    std::move(callback).Run(
-        BorealisContextManager::Status::kDiskImageFailed,
-        "Failed to create disk image for Borealis: Empty response.");
+    Complete(BorealisContextManager::Status::kDiskImageFailed,
+             "Failed to create disk image for Borealis: Empty response.");
     return;
   }
 
   if (response->status() != vm_tools::concierge::DISK_STATUS_EXISTS &&
       response->status() != vm_tools::concierge::DISK_STATUS_CREATED) {
     context->set_disk_path(base::FilePath());
-    std::move(callback).Run(BorealisContextManager::Status::kDiskImageFailed,
-                            "Failed to create disk image for Borealis: " +
-                                response->failure_reason());
+    Complete(BorealisContextManager::Status::kDiskImageFailed,
+             "Failed to create disk image for Borealis: " +
+                 response->failure_reason());
     return;
   }
   context->set_disk_path(base::FilePath(response->disk_path()));
-  std::move(callback).Run(BorealisContextManager::Status::kSuccess, "");
+  Complete(BorealisContextManager::Status::kSuccess, "");
 }
 
 StartBorealisVm::StartBorealisVm() = default;
 StartBorealisVm::~StartBorealisVm() = default;
 
-void StartBorealisVm::Run(BorealisContext* context,
-                          CompletionStatusCallback callback) {
+void StartBorealisVm::RunInternal(BorealisContext* context) {
   vm_tools::concierge::StartVmRequest request;
   vm_tools::concierge::VirtualMachineSpec* vm = request.mutable_vm();
   vm->set_kernel(context->root_path() + "/vm_kernel");
@@ -119,31 +132,28 @@ void StartBorealisVm::Run(BorealisContext* context,
                        ? "enabled"
                        : "disabled");
   chromeos::DBusThreadManager::Get()->GetConciergeClient()->StartTerminaVm(
-      std::move(request),
-      base::BindOnce(&StartBorealisVm::OnStartBorealisVm,
-                     weak_factory_.GetWeakPtr(), context, std::move(callback)));
+      std::move(request), base::BindOnce(&StartBorealisVm::OnStartBorealisVm,
+                                         weak_factory_.GetWeakPtr(), context));
 }
 
 void StartBorealisVm::OnStartBorealisVm(
     BorealisContext* context,
-    CompletionStatusCallback callback,
     base::Optional<vm_tools::concierge::StartVmResponse> response) {
   if (!response) {
-    std::move(callback).Run(BorealisContextManager::Status::kStartVmFailed,
-                            "Failed to start Borealis VM: Empty response.");
+    Complete(BorealisContextManager::Status::kStartVmFailed,
+             "Failed to start Borealis VM: Empty response.");
     return;
   }
 
   if (response->status() == vm_tools::concierge::VM_STATUS_RUNNING ||
       response->status() == vm_tools::concierge::VM_STATUS_STARTING) {
-    std::move(callback).Run(BorealisContextManager::Status::kSuccess, "");
+    Complete(BorealisContextManager::Status::kSuccess, "");
     return;
   }
 
-  std::move(callback).Run(
-      BorealisContextManager::Status::kStartVmFailed,
-      "Failed to start Borealis VM: " + response->failure_reason() + " (code " +
-          base::NumberToString(response->status()) + ")");
+  Complete(BorealisContextManager::Status::kStartVmFailed,
+           "Failed to start Borealis VM: " + response->failure_reason() +
+               " (code " + base::NumberToString(response->status()) + ")");
 }
 
 AwaitBorealisStartup::AwaitBorealisStartup(Profile* profile,
@@ -151,11 +161,10 @@ AwaitBorealisStartup::AwaitBorealisStartup(Profile* profile,
     : watcher_(profile, vm_name) {}
 AwaitBorealisStartup::~AwaitBorealisStartup() = default;
 
-void AwaitBorealisStartup::Run(BorealisContext* context,
-                               CompletionStatusCallback callback) {
+void AwaitBorealisStartup::RunInternal(BorealisContext* context) {
   watcher_.AwaitLaunch(
       base::BindOnce(&AwaitBorealisStartup::OnAwaitBorealisStartup,
-                     weak_factory_.GetWeakPtr(), context, std::move(callback)));
+                     weak_factory_.GetWeakPtr(), context));
 }
 
 BorealisLaunchWatcher& AwaitBorealisStartup::GetWatcherForTesting() {
@@ -164,15 +173,13 @@ BorealisLaunchWatcher& AwaitBorealisStartup::GetWatcherForTesting() {
 
 void AwaitBorealisStartup::OnAwaitBorealisStartup(
     BorealisContext* context,
-    CompletionStatusCallback callback,
     base::Optional<std::string> container) {
   if (!container) {
-    std::move(callback).Run(
-        BorealisContextManager::Status::kAwaitBorealisStartupFailed,
-        "Awaiting for Borealis launch failed: timed out");
+    Complete(BorealisContextManager::Status::kAwaitBorealisStartupFailed,
+             "Awaiting for Borealis launch failed: timed out");
     return;
   }
   context->set_container_name(container.value());
-  std::move(callback).Run(BorealisContextManager::Status::kSuccess, "");
+  Complete(BorealisContextManager::Status::kSuccess, "");
 }
 }  // namespace borealis
