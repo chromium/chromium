@@ -28,6 +28,10 @@ const char kAccessibilityHighContrastEnabled[] =
 // See http://crbug.com/170850 for history.
 const char kAccessibilityScreenMagnifierEnabled[] =
     "settings.a11y.screen_magnifier";
+// A boolean pref which determines whether focus following for screen magnifier
+// is enabled.
+const char kAccessibilityScreenMagnifierFocusFollowingEnabled[] =
+    "settings.a11y.screen_magnifier_focus_following";
 // A boolean pref which determines whether screen magnifier should center
 // the text input focus.
 const char kAccessibilityScreenMagnifierCenterFocus[] =

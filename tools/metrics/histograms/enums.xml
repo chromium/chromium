@@ -54752,6 +54752,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1526" label="Get Image Descriptions From Google"/>
   <int value="1527" label="Live Captions"/>
   <int value="1528" label="Cursor Colors: On/Off"/>
+  <int value="1529" label="Fullscreen Magnifier Focus Following"/>
   <int value="1600" label="Powerwash"/>
   <int value="1700" label="Change Chrome Channel"/>
   <int value="1701" label="Copy Detailed Build Info"/>

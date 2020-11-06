@@ -1021,6 +1021,9 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_FULLSCREEN_MAGNIFIER" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable full-screen magnification.">
     Fullscreen magnifier
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_FULLSCREEN_MAGNIFIER_FOCUS_FOLLOWING" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable full-screen magnification keyboard focus-following.">
+    Magnifier follows keyboard focus
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_A11Y_DOCKED_MAGNIFIER" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable docked screen magnification.">
     Docked magnifier
   </message>

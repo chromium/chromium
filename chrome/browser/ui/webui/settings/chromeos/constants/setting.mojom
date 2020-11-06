@@ -216,6 +216,7 @@ enum Setting {
   kGetImageDescriptionsFromGoogle = 1526,
   kLiveCaptions = 1527,
   kEnableCursorColor = 1528,
+  kFullscreenMagnifierFocusFollowing = 1529,
 
   // Reset section.
   kPowerwash = 1600,

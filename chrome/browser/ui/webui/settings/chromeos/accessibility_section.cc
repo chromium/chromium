@@ -9,6 +9,7 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -190,6 +191,12 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kFullscreenMagnifier}},
+      {IDS_OS_SETTINGS_TAG_A11Y_FULLSCREEN_MAGNIFIER_FOCUS_FOLLOWING,
+       mojom::kManageAccessibilitySubpagePath,
+       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kFullscreenMagnifierFocusFollowing}},
       {IDS_OS_SETTINGS_TAG_A11Y_ENABLE_SWITCH_ACCESS,
        mojom::kManageAccessibilitySubpagePath,
        mojom::SearchResultIcon::kA11y,
@@ -413,6 +420,8 @@ void AccessibilitySection::AddLoadTimeData(
       {"chromeVoxLabel", IDS_SETTINGS_CHROMEVOX_LABEL},
       {"chromeVoxOptionsLabel", IDS_SETTINGS_CHROMEVOX_OPTIONS_LABEL},
       {"screenMagnifierLabel", IDS_SETTINGS_SCREEN_MAGNIFIER_LABEL},
+      {"screenMagnifierFocusFollowingLabel",
+       IDS_SETTINGS_SCREEN_MAGNIFIER_FOCUS_FOLLOWING_LABEL},
       {"screenMagnifierZoomLabel", IDS_SETTINGS_SCREEN_MAGNIFIER_ZOOM_LABEL},
       {"dockedMagnifierLabel", IDS_SETTINGS_DOCKED_MAGNIFIER_LABEL},
       {"dockedMagnifierZoomLabel", IDS_SETTINGS_DOCKED_MAGNIFIER_ZOOM_LABEL},
@@ -626,10 +635,18 @@ std::string AccessibilitySection::GetSectionPath() const {
 }
 bool AccessibilitySection::LogMetric(mojom::Setting setting,
                                      base::Value& value) const {
-  // Unimplemented.
   // TODO(accessibility): Ensure to capture metrics for Switch Access's action
   // idalog on detach.
-  return false;
+  switch (setting) {
+    case mojom::Setting::kFullscreenMagnifierFocusFollowing:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.FullscreenMagnifierFocusFollowing",
+          value.GetBool());
+      return true;
+
+    default:
+      return false;
+  }
 }
 
 void AccessibilitySection::RegisterHierarchy(
@@ -649,6 +666,7 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kSelectToSpeak,
       mojom::Setting::kHighContrastMode,
       mojom::Setting::kFullscreenMagnifier,
+      mojom::Setting::kFullscreenMagnifierFocusFollowing,
       mojom::Setting::kDockedMagnifier,
       mojom::Setting::kStickyKeys,
       mojom::Setting::kOnScreenKeyboard,

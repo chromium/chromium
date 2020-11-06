@@ -793,6 +793,9 @@
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_LABEL" desc="Label for checkbox which enables the fullscreen magnifier">
       Enable fullscreen magnifier
   </message>
+  <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_FOCUS_FOLLOWING_LABEL" desc="Label for toggle which enables keyboard focus following in the fullscreen magnifier">
+      Zoomed in screen follows keyboard focus
+  </message>
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_ZOOM_LABEL" desc="Label for dropdown menu which contains zoom levels for the fullscreen magnifier">
     Fullscreen zoom level:
   </message>

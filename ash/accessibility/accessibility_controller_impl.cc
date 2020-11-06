@@ -163,6 +163,7 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityLargeCursorEnabled,
     prefs::kAccessibilityMonoAudioEnabled,
     prefs::kAccessibilityScreenMagnifierEnabled,
+    prefs::kAccessibilityScreenMagnifierFocusFollowingEnabled,
     prefs::kAccessibilityScreenMagnifierScale,
     prefs::kAccessibilitySelectToSpeakEnabled,
     prefs::kAccessibilitySpokenFeedbackEnabled,
@@ -641,6 +642,9 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(
       prefs::kAccessibilityScreenMagnifierEnabled, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityScreenMagnifierFocusFollowingEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterDoublePref(prefs::kAccessibilityScreenMagnifierScale,
                                std::numeric_limits<double>::min());
