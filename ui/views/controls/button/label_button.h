@@ -159,8 +159,8 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   virtual void UpdateBackgroundColor() {}
 
   // Returns the current visual appearance of the button. This takes into
-  // account both the button's underlying state and the state of the containing
-  // widget.
+  // account both the button's underlying state, the state of the containing
+  // widget, and the parent of the containing widget.
   ButtonState GetVisualState() const;
 
   // Fills |params| with information about the button.

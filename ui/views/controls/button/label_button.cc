@@ -563,9 +563,16 @@ gfx::Size LabelButton::GetUnclampedSizeWithoutLabel() const {
 
 Button::ButtonState LabelButton::GetVisualState() const {
   const auto* widget = GetWidget();
-  if (PlatformStyle::kInactiveWidgetControlsAppearDisabled && widget &&
-      widget->CanActivate() && !widget->ShouldPaintAsActive())
+  if (!widget || !widget->CanActivate() ||
+      !PlatformStyle::kInactiveWidgetControlsAppearDisabled)
+    return GetState();
+
+  // Paint as inactive if neither this widget nor its parent should paint as
+  // active.
+  if (!widget->ShouldPaintAsActive() &&
+      !(widget->parent() && widget->parent()->ShouldPaintAsActive()))
     return STATE_DISABLED;
+
   return GetState();
 }
 

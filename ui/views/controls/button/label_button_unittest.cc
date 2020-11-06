@@ -74,6 +74,7 @@ class TestLabelButton : public LabelButton {
                            int button_context = style::CONTEXT_BUTTON)
       : LabelButton(nullptr, text, button_context) {}
 
+  using LabelButton::GetVisualState;
   using LabelButton::image;
   using LabelButton::label;
   using LabelButton::OnThemeChanged;
@@ -788,6 +789,92 @@ TEST_F(InkDropLabelButtonTest, TargetEventHandler) {
   View* target_view = widget_->GetRootView()->GetEventHandlerForPoint(
       button_->bounds().CenterPoint());
   EXPECT_EQ(button_, target_view);
+}
+
+class LabelButtonVisualStateTest : public test::WidgetTest {
+ public:
+  LabelButtonVisualStateTest() = default;
+  LabelButtonVisualStateTest(const LabelButtonVisualStateTest&) = delete;
+  LabelButtonVisualStateTest& operator=(const LabelButtonVisualStateTest&) =
+      delete;
+
+  // testing::Test:
+  void SetUp() override {
+    WidgetTest::SetUp();
+    test_widget_ = CreateTopLevelPlatformWidget();
+    dummy_widget_ = CreateTopLevelPlatformWidget();
+
+    button_ = MakeButtonAsContent(test_widget_);
+
+    style_of_inactive_widget_ =
+        PlatformStyle::kInactiveWidgetControlsAppearDisabled
+            ? Button::STATE_DISABLED
+            : Button::STATE_NORMAL;
+  }
+
+  void TearDown() override {
+    test_widget_->CloseNow();
+    dummy_widget_->CloseNow();
+    WidgetTest::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<Widget> CreateActivatableChildWidget(Widget* parent) {
+    auto child = std::make_unique<Widget>();
+    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+    params.parent = parent->GetNativeView();
+    params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    params.activatable = Widget::InitParams::ACTIVATABLE_YES;
+    child->Init(std::move(params));
+    child->SetContentsView(std::make_unique<View>());
+    return child;
+  }
+
+  TestLabelButton* MakeButtonAsContent(Widget* widget) {
+    return widget->GetContentsView()->AddChildView(
+        std::make_unique<TestLabelButton>());
+  }
+
+  TestLabelButton* button_ = nullptr;
+  Widget* test_widget_ = nullptr;
+  Widget* dummy_widget_ = nullptr;
+  Button::ButtonState style_of_inactive_widget_;
+};
+
+TEST_F(LabelButtonVisualStateTest, IndependentWidget) {
+  test_widget_->ShowInactive();
+  EXPECT_EQ(button_->GetVisualState(), style_of_inactive_widget_);
+
+  test_widget_->Activate();
+  EXPECT_EQ(button_->GetVisualState(), Button::STATE_NORMAL);
+
+  auto paint_as_active_lock = test_widget_->LockPaintAsActive();
+  dummy_widget_->Show();
+  EXPECT_EQ(button_->GetVisualState(), Button::STATE_NORMAL);
+}
+
+TEST_F(LabelButtonVisualStateTest, ChildWidget) {
+  std::unique_ptr<Widget> child_widget =
+      CreateActivatableChildWidget(test_widget_);
+  TestLabelButton* child_button = MakeButtonAsContent(child_widget.get());
+
+  test_widget_->Show();
+  EXPECT_EQ(button_->GetVisualState(), Button::STATE_NORMAL);
+  EXPECT_EQ(child_button->GetVisualState(), Button::STATE_NORMAL);
+
+  dummy_widget_->Show();
+  EXPECT_EQ(button_->GetVisualState(), style_of_inactive_widget_);
+  EXPECT_EQ(child_button->GetVisualState(), style_of_inactive_widget_);
+
+  child_widget->Show();
+#if defined(OS_MAC)
+  // Child widget is in a key window and it will lock its parent.
+  // See crrev.com/c/2048144.
+  EXPECT_EQ(button_->GetVisualState(), Button::STATE_NORMAL);
+#else
+  EXPECT_EQ(button_->GetVisualState(), style_of_inactive_widget_);
+#endif
+  EXPECT_EQ(child_button->GetVisualState(), Button::STATE_NORMAL);
 }
 
 }  // namespace views
