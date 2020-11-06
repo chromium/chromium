@@ -38,6 +38,7 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
 
   // TODO(atotic) Replace all H/VBorderSpacing with BorderSpacing?
   LogicalSize BorderSpacing() const {
+    NOT_DESTROYED();
     if (ShouldCollapseBorders())
       return LogicalSize();
     return LogicalSize(LayoutUnit(HBorderSpacing()),
@@ -47,6 +48,7 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
   wtf_size_t ColumnCount() const;
 
   const NGTableBorders* GetCachedTableBorders() const {
+    NOT_DESTROYED();
     return cached_table_borders_.get();
   }
 
@@ -66,7 +68,10 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
 
   // LayoutBlock methods start.
 
-  const char* GetName() const override { return "LayoutNGTable"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutNGTable";
+  }
 
   void UpdateBlockLayout(bool relayout_children) override;
 
@@ -108,15 +113,23 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
   // LayoutNGTableInterface methods start.
 
   const LayoutNGTableInterface* ToLayoutNGTableInterface() const final {
+    NOT_DESTROYED();
     return this;
   }
 
-  const LayoutObject* ToLayoutObject() const final { return this; }
+  const LayoutObject* ToLayoutObject() const final {
+    NOT_DESTROYED();
+    return this;
+  }
 
   // Non-const version required by TextAutosizer, AXLayoutObject.
-  LayoutObject* ToMutableLayoutObject() final { return this; }
+  LayoutObject* ToMutableLayoutObject() final {
+    NOT_DESTROYED();
+    return this;
+  }
 
   bool ShouldCollapseBorders() const final {
+    NOT_DESTROYED();
     return StyleRef().BorderCollapse() == EBorderCollapse::kCollapse;
   }
 
@@ -132,13 +145,16 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
   }
 
   bool IsFixedTableLayout() const final {
+    NOT_DESTROYED();
     return StyleRef().TableLayout() == ETableLayout::kFixed &&
            !StyleRef().LogicalWidth().IsAuto();
   }
   int16_t HBorderSpacing() const final {
+    NOT_DESTROYED();
     return ShouldCollapseBorders() ? 0 : StyleRef().HorizontalBorderSpacing();
   }
   int16_t VBorderSpacing() const final {
+    NOT_DESTROYED();
     return ShouldCollapseBorders() ? 0 : StyleRef().VerticalBorderSpacing();
   }
 
@@ -147,14 +163,15 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
   // Because NG does not compress columns, absolute and effective are the same.
   unsigned AbsoluteColumnToEffectiveColumn(
       unsigned absolute_column_index) const final {
+    NOT_DESTROYED();
     return absolute_column_index;
   }
 
   // Legacy caches sections. Might not be needed by NG.
-  void RecalcSectionsIfNeeded() const final {}
+  void RecalcSectionsIfNeeded() const final { NOTIMPLEMENTED(); }
 
   // Legacy caches sections. Might not be needed by NG.
-  void ForceSectionsRecalc() final {}
+  void ForceSectionsRecalc() final { NOTIMPLEMENTED(); }
 
   // Used in paint for printing. Should not be needed by NG.
   LayoutUnit RowOffsetFromRepeatingFooter() const final {
@@ -197,6 +214,7 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
 
  protected:
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectTable ||
            LayoutNGMixin<LayoutBlock>::IsOfType(type);
   }

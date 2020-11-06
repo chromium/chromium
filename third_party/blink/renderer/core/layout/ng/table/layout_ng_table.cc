@@ -39,6 +39,7 @@ LayoutNGTable::LayoutNGTable(Element* element)
     : LayoutNGMixin<LayoutBlock>(element) {}
 
 wtf_size_t LayoutNGTable::ColumnCount() const {
+  NOT_DESTROYED();
   const NGLayoutResult* cached_layout_result = GetCachedLayoutResult();
   if (!cached_layout_result)
     return 0;
@@ -47,10 +48,12 @@ wtf_size_t LayoutNGTable::ColumnCount() const {
 
 void LayoutNGTable::SetCachedTableBorders(
     scoped_refptr<const NGTableBorders> table_borders) {
+  NOT_DESTROYED();
   cached_table_borders_ = std::move(table_borders);
 }
 
 void LayoutNGTable::InvalidateCachedTableBorders() {
+  NOT_DESTROYED();
   // TODO(layout-dev) When cached borders are invalidated, we could do a
   // special kind of relayout where fragments can replace only TableBorders,
   // keep the geometry, and repaint.
@@ -58,6 +61,7 @@ void LayoutNGTable::InvalidateCachedTableBorders() {
 }
 
 const NGTableTypes::Columns* LayoutNGTable::GetCachedTableColumnConstraints() {
+  NOT_DESTROYED();
   if (IsTableColumnsConstraintsDirty())
     cached_table_columns_.reset();
   return cached_table_columns_.get();
@@ -65,6 +69,7 @@ const NGTableTypes::Columns* LayoutNGTable::GetCachedTableColumnConstraints() {
 
 void LayoutNGTable::SetCachedTableColumnConstraints(
     scoped_refptr<const NGTableTypes::Columns> columns) {
+  NOT_DESTROYED();
   cached_table_columns_ = std::move(columns);
   SetTableColumnConstraintDirty(false);
 }
@@ -78,10 +83,12 @@ void LayoutNGTable::GridBordersChanged() {
 }
 
 void LayoutNGTable::TableGridStructureChanged() {
+  NOT_DESTROYED();
   InvalidateCachedTableBorders();
 }
 
 void LayoutNGTable::UpdateBlockLayout(bool relayout_children) {
+  NOT_DESTROYED();
   LayoutAnalyzer::BlockScope analyzer(*this);
 
   if (IsOutOfFlowPositioned()) {
@@ -92,6 +99,7 @@ void LayoutNGTable::UpdateBlockLayout(bool relayout_children) {
 }
 
 void LayoutNGTable::AddChild(LayoutObject* child, LayoutObject* before_child) {
+  NOT_DESTROYED();
   TableGridStructureChanged();
   bool wrap_in_anonymous_section = !child->IsTableCaption() &&
                                    !child->IsLayoutTableCol() &&
@@ -143,6 +151,7 @@ void LayoutNGTable::AddChild(LayoutObject* child, LayoutObject* before_child) {
 }
 
 void LayoutNGTable::RemoveChild(LayoutObject* child) {
+  NOT_DESTROYED();
   TableGridStructureChanged();
   LayoutNGMixin<LayoutBlock>::RemoveChild(child);
 }
@@ -165,6 +174,7 @@ void LayoutNGTable::StyleDidChange(StyleDifference diff,
 
 LayoutBox* LayoutNGTable::CreateAnonymousBoxWithSameTypeAs(
     const LayoutObject* parent) const {
+  NOT_DESTROYED();
   return LayoutObjectFactory::CreateAnonymousTableWithParent(*parent);
 }
 
@@ -290,6 +300,7 @@ LayoutUnit LayoutNGTable::BorderBottom() const {
 }
 
 LayoutRectOutsets LayoutNGTable::BorderBoxOutsets() const {
+  NOT_DESTROYED();
   // DCHECK(cached_table_borders_.get())
   // ScrollAnchoring fails this DCHECK.
   if (PhysicalFragmentCount() > 0) {
@@ -300,6 +311,7 @@ LayoutRectOutsets LayoutNGTable::BorderBoxOutsets() const {
 }
 
 bool LayoutNGTable::IsFirstCell(const LayoutNGTableCellInterface& cell) const {
+  NOT_DESTROYED();
   const LayoutNGTableRowInterface* row = cell.RowInterface();
   if (row->FirstCellInterface() != &cell)
     return false;
@@ -316,6 +328,7 @@ bool LayoutNGTable::IsFirstCell(const LayoutNGTableCellInterface& cell) const {
 
 // Only called from AXLayoutObject::IsDataTable()
 LayoutNGTableSectionInterface* LayoutNGTable::FirstBodyInterface() const {
+  NOT_DESTROYED();
   for (LayoutObject* child = FirstChild(); child;
        child = child->NextSibling()) {
     if (child->StyleRef().Display() == EDisplay::kTableRowGroup)
@@ -326,6 +339,7 @@ LayoutNGTableSectionInterface* LayoutNGTable::FirstBodyInterface() const {
 
 // Called from many AXLayoutObject methods.
 LayoutNGTableSectionInterface* LayoutNGTable::TopSectionInterface() const {
+  NOT_DESTROYED();
   NGTableGroupedChildren grouped_children(
       NGBlockNode(const_cast<LayoutNGTable*>(this)));
   auto first_section = grouped_children.begin();
@@ -340,6 +354,7 @@ LayoutNGTableSectionInterface* LayoutNGTable::TopSectionInterface() const {
 LayoutNGTableSectionInterface* LayoutNGTable::SectionBelowInterface(
     const LayoutNGTableSectionInterface* target,
     SkipEmptySectionsValue skip) const {
+  NOT_DESTROYED();
   NGTableGroupedChildren grouped_children(
       NGBlockNode(const_cast<LayoutNGTable*>(this)));
   bool found = false;

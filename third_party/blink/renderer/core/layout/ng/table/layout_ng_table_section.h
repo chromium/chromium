@@ -29,7 +29,10 @@ class CORE_EXPORT LayoutNGTableSection : public LayoutNGMixin<LayoutBlock>,
 
   void UpdateBlockLayout(bool relayout_children) override { NOTREACHED(); }
 
-  const char* GetName() const override { return "LayoutNGTableSection"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutNGTableSection";
+  }
 
   void AddChild(LayoutObject* child,
                 LayoutObject* before_child = nullptr) override;
@@ -42,7 +45,10 @@ class CORE_EXPORT LayoutNGTableSection : public LayoutNGMixin<LayoutBlock>,
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(
       const LayoutObject* parent) const override;
 
-  bool AllowsNonVisibleOverflow() const override { return false; }
+  bool AllowsNonVisibleOverflow() const override {
+    NOT_DESTROYED();
+    return false;
+  }
 
   bool BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const override {
     NOT_DESTROYED();

@@ -24,6 +24,7 @@ LayoutNGTableCaption::LayoutNGTableCaption(Element* element)
 void LayoutNGTableCaption::CalculateAndSetMargins(
     const NGConstraintSpace& constraint_space,
     const NGPhysicalFragment& physical_fragment) {
+  NOT_DESTROYED();
   const ComputedStyle& containing_block_style = ContainingBlock()->StyleRef();
 
   NGBoxFragment box_fragment(containing_block_style.GetWritingDirection(),
@@ -52,6 +53,7 @@ void LayoutNGTableCaption::CalculateAndSetMargins(
 }
 
 void LayoutNGTableCaption::InsertedIntoTree() {
+  NOT_DESTROYED();
   LayoutBlockFlow::InsertedIntoTree();
 
   LayoutNGTableInterface* table_interface = TableInterface();
@@ -60,6 +62,7 @@ void LayoutNGTableCaption::InsertedIntoTree() {
 }
 
 void LayoutNGTableCaption::WillBeRemovedFromTree() {
+  NOT_DESTROYED();
   LayoutBlockFlow::WillBeRemovedFromTree();
 
   LayoutNGTableInterface* table_interface = TableInterface();
@@ -70,6 +73,7 @@ void LayoutNGTableCaption::WillBeRemovedFromTree() {
 }
 
 void LayoutNGTableCaption::UpdateBlockLayout(bool relayout_children) {
+  NOT_DESTROYED();
   LayoutAnalyzer::BlockScope analyzer(*this);
 
   DCHECK(!IsOutOfFlowPositioned()) << "Out of flow captions are blockified.";
@@ -90,6 +94,7 @@ void LayoutNGTableCaption::UpdateBlockLayout(bool relayout_children) {
 }
 
 LayoutNGTableInterface* LayoutNGTableCaption::TableInterface() const {
+  NOT_DESTROYED();
   return ToInterface<LayoutNGTableInterface>(Parent());
 }
 

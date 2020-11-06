@@ -24,6 +24,7 @@ LayoutNGTableCell::LayoutNGTableCell(Element* element)
 }
 
 void LayoutNGTableCell::InvalidateLayoutResultCacheAfterMeasure() const {
+  NOT_DESTROYED();
   if (LayoutBox* row = ParentBox()) {
     DCHECK(row->IsTableRow());
     row->ClearLayoutResults();
@@ -81,6 +82,7 @@ LayoutUnit LayoutNGTableCell::BorderRight() const {
 }
 
 LayoutNGTable* LayoutNGTableCell::Table() const {
+  NOT_DESTROYED();
   if (LayoutObject* parent = Parent()) {
     if (LayoutObject* grandparent = parent->Parent()) {
       return To<LayoutNGTable>(grandparent->Parent());
@@ -90,6 +92,7 @@ LayoutNGTable* LayoutNGTableCell::Table() const {
 }
 
 void LayoutNGTableCell::UpdateBlockLayout(bool relayout_children) {
+  NOT_DESTROYED();
   LayoutAnalyzer::BlockScope analyzer(*this);
 
   if (IsOutOfFlowPositioned()) {
@@ -113,6 +116,7 @@ void LayoutNGTableCell::StyleDidChange(StyleDifference diff,
 }
 
 void LayoutNGTableCell::ColSpanOrRowSpanChanged() {
+  NOT_DESTROYED();
   // TODO(atotic) Invalidate layout?
   UpdateColAndRowSpanFlags();
   if (LayoutNGTable* table = Table())
@@ -121,6 +125,7 @@ void LayoutNGTableCell::ColSpanOrRowSpanChanged() {
 
 LayoutBox* LayoutNGTableCell::CreateAnonymousBoxWithSameTypeAs(
     const LayoutObject* parent) const {
+  NOT_DESTROYED();
   return LayoutObjectFactory::CreateAnonymousTableCellWithParent(*parent);
 }
 
@@ -137,6 +142,7 @@ bool LayoutNGTableCell::BackgroundIsKnownToBeOpaqueInRect(
 }
 
 Length LayoutNGTableCell::StyleOrColLogicalWidth() const {
+  NOT_DESTROYED();
   // TODO(atotic) TablesNG cannot easily get col width before layout.
   return StyleRef().LogicalWidth();
 }
@@ -144,16 +150,19 @@ Length LayoutNGTableCell::StyleOrColLogicalWidth() const {
 // TODO(crbug.com/1079133): Used by AXLayoutObject::RowIndex,
 // verify behaviour is correct.
 unsigned LayoutNGTableCell::RowIndex() const {
+  NOT_DESTROYED();
   return To<LayoutNGTableRow>(Parent())->RowIndex();
 }
 
 // TODO(crbug.com/1079133): Used by AXLayoutObject::CellForColumnAndRow,
 // verify behaviour is correct.
 unsigned LayoutNGTableCell::ResolvedRowSpan() const {
+  NOT_DESTROYED();
   return ParsedRowSpan();
 }
 
 unsigned LayoutNGTableCell::AbsoluteColumnIndex() const {
+  NOT_DESTROYED();
   if (PhysicalFragmentCount() > 0) {
     return GetPhysicalFragment(0)->TableCellColumnIndex();
   }
@@ -162,12 +171,14 @@ unsigned LayoutNGTableCell::AbsoluteColumnIndex() const {
 }
 
 unsigned LayoutNGTableCell::ColSpan() const {
+  NOT_DESTROYED();
   if (!has_col_span_)
     return 1;
   return ParseColSpanFromDOM();
 }
 
 unsigned LayoutNGTableCell::ParseColSpanFromDOM() const {
+  NOT_DESTROYED();
   if (const auto* cell_element = DynamicTo<HTMLTableCellElement>(GetNode())) {
     unsigned span = cell_element->colSpan();
     DCHECK_GE(span, kMinColSpan);
@@ -178,6 +189,7 @@ unsigned LayoutNGTableCell::ParseColSpanFromDOM() const {
 }
 
 unsigned LayoutNGTableCell::ParseRowSpanFromDOM() const {
+  NOT_DESTROYED();
   if (const auto* cell_element = DynamicTo<HTMLTableCellElement>(GetNode())) {
     unsigned span = cell_element->rowSpan();
     DCHECK_GE(span, kMinRowSpan);
@@ -188,29 +200,35 @@ unsigned LayoutNGTableCell::ParseRowSpanFromDOM() const {
 }
 
 void LayoutNGTableCell::UpdateColAndRowSpanFlags() {
+  NOT_DESTROYED();
   // Colspan or rowspan are rare, so we keep the values in DOM.
   has_col_span_ = ParseColSpanFromDOM() != kDefaultColSpan;
   has_rowspan_ = ParseRowSpanFromDOM() != kDefaultRowSpan;
 }
 
 LayoutNGTableInterface* LayoutNGTableCell::TableInterface() const {
+  NOT_DESTROYED();
   return ToInterface<LayoutNGTableInterface>(Parent()->Parent()->Parent());
 }
 
 LayoutNGTableCellInterface* LayoutNGTableCell::NextCellInterface() const {
+  NOT_DESTROYED();
   return ToInterface<LayoutNGTableCellInterface>(LayoutObject::NextSibling());
 }
 
 LayoutNGTableCellInterface* LayoutNGTableCell::PreviousCellInterface() const {
+  NOT_DESTROYED();
   return ToInterface<LayoutNGTableCellInterface>(
       LayoutObject::PreviousSibling());
 }
 
 LayoutNGTableRowInterface* LayoutNGTableCell::RowInterface() const {
+  NOT_DESTROYED();
   return ToInterface<LayoutNGTableRowInterface>(Parent());
 }
 
 LayoutNGTableSectionInterface* LayoutNGTableCell::SectionInterface() const {
+  NOT_DESTROYED();
   return ToInterface<LayoutNGTableSectionInterface>(Parent()->Parent());
 }
 

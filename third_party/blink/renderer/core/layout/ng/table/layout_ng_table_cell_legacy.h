@@ -29,6 +29,7 @@ class CORE_EXPORT LayoutNGTableCellLegacy final
 
  protected:
   bool IsOfType(LayoutObjectType type) const final {
+    NOT_DESTROYED();
     return type == kLayoutObjectTableCellLegacy ||
            LayoutNGBlockFlowMixin<LayoutTableCell>::IsOfType(type);
   }

@@ -23,6 +23,7 @@ class CORE_EXPORT LayoutNGTableCell
 
   // NOTE: Rowspan might overflow section boundaries.
   unsigned ComputedRowSpan() const {
+    NOT_DESTROYED();
     if (!has_rowspan_)
       return 1;
     unsigned rowspan = ParseRowSpanFromDOM();
@@ -32,10 +33,12 @@ class CORE_EXPORT LayoutNGTableCell
   }
 
   const NGBoxStrut& IntrinsicLogicalWidthsBorderSizes() const {
+    NOT_DESTROYED();
     return intrinsical_logical_widths_border_sizes_;
   }
 
   void SetIntrinsicLogicalWidthsBorderSizes(const NGBoxStrut& border_sizes) {
+    NOT_DESTROYED();
     intrinsical_logical_widths_border_sizes_ = border_sizes;
   }
 
@@ -69,9 +72,15 @@ class CORE_EXPORT LayoutNGTableCell
   // TODO(atotic) Remove "New" from name.
   // Currently,  LayoutNGTableCellLegacy is named LayoutNGTableCell for test
   // compat.
-  const char* GetName() const final { return "LayoutNGTableCellNew"; }
+  const char* GetName() const final {
+    NOT_DESTROYED();
+    return "LayoutNGTableCellNew";
+  }
 
-  bool CreatesNewFormattingContext() const final { return true; }
+  bool CreatesNewFormattingContext() const final {
+    NOT_DESTROYED();
+    return true;
+  }
 
   bool BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const override;
 
@@ -88,11 +97,18 @@ class CORE_EXPORT LayoutNGTableCell
   }
 
   const LayoutNGTableCellInterface* ToLayoutNGTableCellInterface() const final {
+    NOT_DESTROYED();
     return this;
   }
-  const LayoutObject* ToLayoutObject() const final { return this; }
+  const LayoutObject* ToLayoutObject() const final {
+    NOT_DESTROYED();
+    return this;
+  }
 
-  LayoutObject* ToMutableLayoutObject() final { return this; }
+  LayoutObject* ToMutableLayoutObject() final {
+    NOT_DESTROYED();
+    return this;
+  }
 
   LayoutNGTableInterface* TableInterface() const final;
 
@@ -101,9 +117,15 @@ class CORE_EXPORT LayoutNGTableCell
   Length StyleOrColLogicalWidth() const final;
 
   // Not used in LayoutNG.
-  int IntrinsicPaddingBefore() const final { return 0; }
+  int IntrinsicPaddingBefore() const final {
+    NOT_DESTROYED();
+    return 0;
+  }
   // Not used in LayoutNG.
-  int IntrinsicPaddingAfter() const final { return 0; }
+  int IntrinsicPaddingAfter() const final {
+    NOT_DESTROYED();
+    return 0;
+  }
 
   unsigned RowIndex() const final;
 
@@ -126,6 +148,7 @@ class CORE_EXPORT LayoutNGTableCell
 
  protected:
   bool IsOfType(LayoutObjectType type) const final {
+    NOT_DESTROYED();
     return type == kLayoutObjectTableCell ||
            LayoutNGBlockFlowMixin<LayoutBlockFlow>::IsOfType(type);
   }
@@ -138,6 +161,7 @@ class CORE_EXPORT LayoutNGTableCell
   unsigned ParseColSpanFromDOM() const;
   // Use ComputedRowSpan instead
   unsigned ParsedRowSpan() const {
+    NOT_DESTROYED();
     if (!has_rowspan_)
       return 1;
     return ParseRowSpanFromDOM();
