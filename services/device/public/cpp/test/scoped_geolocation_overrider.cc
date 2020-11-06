@@ -23,11 +23,11 @@ namespace device {
 class ScopedGeolocationOverrider::FakeGeolocationContext
     : public mojom::GeolocationContext {
  public:
-  explicit FakeGeolocationContext(const mojom::Geoposition& position);
+  explicit FakeGeolocationContext(mojom::GeopositionPtr position);
   ~FakeGeolocationContext() override;
 
-  void UpdateLocation(const mojom::Geoposition& position);
-  const mojom::Geoposition& GetGeoposition() const;
+  void UpdateLocation(mojom::GeopositionPtr position);
+  const mojom::Geoposition* GetGeoposition() const;
 
   void Pause();
   void Resume();
@@ -50,7 +50,9 @@ class ScopedGeolocationOverrider::FakeGeolocationContext
   }
 
  private:
-  mojom::Geoposition position_;
+  mojom::GeopositionPtr position_;
+  // |override_position_| enables overriding the override set by this class, as
+  // required by the mojom::GeolocationContext interface.
   mojom::GeopositionPtr override_position_;
   std::set<std::unique_ptr<FakeGeolocation>, base::UniquePtrComparator> impls_;
   mojo::ReceiverSet<mojom::GeolocationContext> context_receivers_;
@@ -83,20 +85,20 @@ class ScopedGeolocationOverrider::FakeGeolocation : public mojom::Geolocation {
 };
 
 ScopedGeolocationOverrider::ScopedGeolocationOverrider(
-    const mojom::Geoposition& position) {
-  OverrideGeolocation(position);
+    mojom::GeopositionPtr position) {
+  OverrideGeolocation(std::move(position));
 }
 
 ScopedGeolocationOverrider::ScopedGeolocationOverrider(double latitude,
                                                        double longitude) {
-  mojom::Geoposition position;
-  position.latitude = latitude;
-  position.longitude = longitude;
-  position.altitude = 0.;
-  position.accuracy = 0.;
-  position.timestamp = base::Time::Now();
+  auto position = mojom::Geoposition::New();
+  position->latitude = latitude;
+  position->longitude = longitude;
+  position->altitude = 0.;
+  position->accuracy = 0.;
+  position->timestamp = base::Time::Now();
 
-  OverrideGeolocation(position);
+  OverrideGeolocation(std::move(position));
 }
 
 ScopedGeolocationOverrider::~ScopedGeolocationOverrider() {
@@ -105,28 +107,29 @@ ScopedGeolocationOverrider::~ScopedGeolocationOverrider() {
 }
 
 void ScopedGeolocationOverrider::OverrideGeolocation(
-    const mojom::Geoposition& position) {
-  geolocation_context_ = std::make_unique<FakeGeolocationContext>(position);
+    mojom::GeopositionPtr position) {
+  geolocation_context_ =
+      std::make_unique<FakeGeolocationContext>(std::move(position));
   DeviceService::OverrideGeolocationContextBinderForTesting(
       base::BindRepeating(&FakeGeolocationContext::BindForOverrideService,
                           base::Unretained(geolocation_context_.get())));
 }
 
 void ScopedGeolocationOverrider::UpdateLocation(
-    const mojom::Geoposition& position) {
-  geolocation_context_->UpdateLocation(position);
+    mojom::GeopositionPtr position) {
+  geolocation_context_->UpdateLocation(std::move(position));
 }
 
 void ScopedGeolocationOverrider::UpdateLocation(double latitude,
                                                 double longitude) {
-  mojom::Geoposition position;
-  position.latitude = latitude;
-  position.longitude = longitude;
-  position.altitude = 0.;
-  position.accuracy = 0.;
-  position.timestamp = base::Time::Now();
+  auto position = mojom::Geoposition::New();
+  position->latitude = latitude;
+  position->longitude = longitude;
+  position->altitude = 0.;
+  position->accuracy = 0.;
+  position->timestamp = base::Time::Now();
 
-  UpdateLocation(position);
+  UpdateLocation(std::move(position));
 }
 
 void ScopedGeolocationOverrider::Pause() {
@@ -147,22 +150,27 @@ void ScopedGeolocationOverrider::SetGeolocationCloseCallback(
 }
 
 ScopedGeolocationOverrider::FakeGeolocationContext::FakeGeolocationContext(
-    const mojom::Geoposition& position)
-    : position_(position) {
-  position_.valid = false;
-  if (ValidateGeoposition(position_))
-    position_.valid = true;
+    mojom::GeopositionPtr position)
+    : position_(std::move(position)) {
+  if (position_) {
+    position_->valid = false;
+    if (ValidateGeoposition(*position_))
+      position_->valid = true;
+  }
 }
 
 ScopedGeolocationOverrider::FakeGeolocationContext::~FakeGeolocationContext() {}
 
 void ScopedGeolocationOverrider::FakeGeolocationContext::UpdateLocation(
-    const mojom::Geoposition& position) {
-  position_ = position;
+    mojom::GeopositionPtr position) {
+  position_ = std::move(position);
 
-  position_.valid = false;
-  if (ValidateGeoposition(position_))
-    position_.valid = true;
+  if (!position_)
+    return;
+
+  position_->valid = false;
+  if (ValidateGeoposition(*position_))
+    position_->valid = true;
 
   for (auto& impl : impls_) {
     impl->UpdateLocation();
@@ -180,12 +188,12 @@ void ScopedGeolocationOverrider::FakeGeolocationContext::OnDisconnect(
     close_callback_.Run();
 }
 
-const mojom::Geoposition&
+const mojom::Geoposition*
 ScopedGeolocationOverrider::FakeGeolocationContext::GetGeoposition() const {
-  if (!override_position_.is_null())
-    return *override_position_;
+  if (override_position_)
+    return override_position_.get();
 
-  return position_;
+  return position_.get();
 }
 
 void ScopedGeolocationOverrider::FakeGeolocationContext::BindForOverrideService(
@@ -264,7 +272,11 @@ void ScopedGeolocationOverrider::FakeGeolocation::
   if (position_callback_.is_null())
     return;
 
-  std::move(position_callback_).Run(context_->GetGeoposition().Clone());
+  const mojom::Geoposition* position = context_->GetGeoposition();
+  if (!position)
+    return;
+
+  std::move(position_callback_).Run(position->Clone());
   needs_update_ = false;
 }
 

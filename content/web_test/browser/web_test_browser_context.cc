@@ -38,9 +38,9 @@ namespace content {
 
 WebTestBrowserContext::WebTestBrowserContext(bool off_the_record)
     : ShellBrowserContext(off_the_record) {
-  // Overrides geolocation coordinates for testing.
-  geolocation_overrider_ =
-      std::make_unique<device::ScopedGeolocationOverrider>(0, 0);
+  // Configure the Geolocation API to provide no location by default.
+  geolocation_overrider_ = std::make_unique<device::ScopedGeolocationOverrider>(
+      /*position=*/nullptr);
 }
 
 WebTestBrowserContext::~WebTestBrowserContext() {

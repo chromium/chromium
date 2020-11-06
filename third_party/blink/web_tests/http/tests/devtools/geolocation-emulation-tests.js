@@ -14,7 +14,7 @@
   await TestRunner.evaluateInPagePromise(`
     async function getPositionPromise() {
       try {
-        const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject));
+        const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 1000 }));
         if ((new Date(position.timestamp)).toDateString() != (new Date()).toDateString())
             return 'Unexpected error occured: timestamps mismatch.';
         if (position && position.coords)

@@ -75,16 +75,17 @@ class AutofillRiskFingerprintTest : public content::ContentBrowserTest {
         unavailable_screen_bounds_(0, 0, 101, 11) {}
 
   void SetUpOnMainThread() override {
-    device::mojom::Geoposition position;
-    position.latitude = kLatitude;
-    position.longitude = kLongitude;
-    position.altitude = kAltitude;
-    position.accuracy = kAccuracy;
-    position.timestamp = base::Time::UnixEpoch() +
-                         base::TimeDelta::FromMilliseconds(kGeolocationTime);
+    auto position = device::mojom::Geoposition::New();
+    position->latitude = kLatitude;
+    position->longitude = kLongitude;
+    position->altitude = kAltitude;
+    position->accuracy = kAccuracy;
+    position->timestamp = base::Time::UnixEpoch() +
+                          base::TimeDelta::FromMilliseconds(kGeolocationTime);
 
     geolocation_overrider_ =
-        std::make_unique<device::ScopedGeolocationOverrider>(position);
+        std::make_unique<device::ScopedGeolocationOverrider>(
+            std::move(position));
   }
 
   void GetFingerprintTestCallback(base::OnceClosure continuation_callback,

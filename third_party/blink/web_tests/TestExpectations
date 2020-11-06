@@ -4320,9 +4320,6 @@ crbug.com/796034 external/wpt/html/semantics/scripting-1/the-script-element/modu
 crbug.com/796034 external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/string-compilation-base-url-inline-classic.html [ Failure ]
 crbug.com/796034 external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/string-compilation-base-url-inline-module.html [ Failure ]
 
-# Geolocation tests
-crbug.com/745079 external/wpt/geolocation-API/PositionOptions.https.html [ Failure ]
-
 # Service worker updates need to handle redirect appropriately.
 crbug.com/889798 external/wpt/service-workers/service-worker/import-scripts-redirect.https.html [ Skip ]
 
