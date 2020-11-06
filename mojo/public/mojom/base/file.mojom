@@ -5,6 +5,7 @@
 module mojo_base.mojom;
 
 // Corresponds to |base::File| in base/files/file.h
+[Stable]
 struct File {
   handle<platform> fd;
   bool async;
