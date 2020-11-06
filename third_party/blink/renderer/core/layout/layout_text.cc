@@ -1054,7 +1054,7 @@ ALWAYS_INLINE float LayoutText::WidthFromFont(
     float expansion) const {
   NOT_DESTROYED();
   if (StyleRef().HasTextCombine() && IsCombineText()) {
-    const LayoutTextCombine* combine_text = ToLayoutTextCombine(this);
+    const auto* combine_text = To<LayoutTextCombine>(this);
     if (combine_text->IsCombined())
       return combine_text->CombinedTextWidth(f);
   }
@@ -1973,7 +1973,7 @@ static inline bool IsInlineFlowOrEmptyText(const LayoutObject* o) {
     return true;
   if (!o->IsText())
     return false;
-  return ToLayoutText(o)->GetText().IsEmpty();
+  return To<LayoutText>(o)->GetText().IsEmpty();
 }
 
 OnlyWhitespaceOrNbsp LayoutText::ContainsOnlyWhitespaceOrNbsp() const {
@@ -1994,7 +1994,7 @@ UChar LayoutText::PreviousCharacter() const {
   UChar prev = kSpaceCharacter;
   if (previous_text && previous_text->IsText()) {
     if (StringImpl* previous_string =
-            ToLayoutText(previous_text)->GetText().Impl())
+            To<LayoutText>(previous_text)->GetText().Impl())
       prev = (*previous_string)[previous_string->length() - 1];
   }
   return prev;

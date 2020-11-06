@@ -19,7 +19,7 @@ namespace {
 // text. When ::first-letter is applied to generated content, e.g. ::before,
 // remaining part contains text for remaining part only instead of all text.
 unsigned GetAssociatedStartOffset(const LayoutObject* layout_object) {
-  const auto* text_fragment = ToLayoutTextFragmentOrNull(layout_object);
+  const auto* text_fragment = DynamicTo<LayoutTextFragment>(layout_object);
   if (!text_fragment || !text_fragment->AssociatedTextNode())
     return 0;
   return text_fragment->Start();

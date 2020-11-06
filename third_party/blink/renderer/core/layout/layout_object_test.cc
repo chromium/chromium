@@ -651,22 +651,22 @@ TEST_F(LayoutObjectTest, AssociatedLayoutObjectOfFirstLetterPunctuations) {
   Node* sample = GetDocument().getElementById("sample");
   Node* text = sample->firstChild();
 
-  const LayoutTextFragment* layout_object0 =
-      ToLayoutTextFragment(AssociatedLayoutObjectOf(*text, 0));
+  const auto* layout_object0 =
+      To<LayoutTextFragment>(AssociatedLayoutObjectOf(*text, 0));
   EXPECT_FALSE(layout_object0->IsRemainingTextLayoutObject());
 
-  const LayoutTextFragment* layout_object1 =
-      ToLayoutTextFragment(AssociatedLayoutObjectOf(*text, 1));
+  const auto* layout_object1 =
+      To<LayoutTextFragment>(AssociatedLayoutObjectOf(*text, 1));
   EXPECT_EQ(layout_object0, layout_object1)
       << "A character 'a' should be part of first letter.";
 
-  const LayoutTextFragment* layout_object2 =
-      ToLayoutTextFragment(AssociatedLayoutObjectOf(*text, 2));
+  const auto* layout_object2 =
+      To<LayoutTextFragment>(AssociatedLayoutObjectOf(*text, 2));
   EXPECT_EQ(layout_object0, layout_object2)
       << "close parenthesis should be part of first letter.";
 
-  const LayoutTextFragment* layout_object3 =
-      ToLayoutTextFragment(AssociatedLayoutObjectOf(*text, 3));
+  const auto* layout_object3 =
+      To<LayoutTextFragment>(AssociatedLayoutObjectOf(*text, 3));
   EXPECT_TRUE(layout_object3->IsRemainingTextLayoutObject());
 }
 
@@ -683,12 +683,12 @@ TEST_F(LayoutObjectTest, AssociatedLayoutObjectOfFirstLetterSplit) {
   To<Text>(first_letter)->splitText(1, ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
 
-  const LayoutTextFragment* layout_object0 =
-      ToLayoutTextFragment(AssociatedLayoutObjectOf(*first_letter, 0));
+  const auto* layout_object0 =
+      To<LayoutTextFragment>(AssociatedLayoutObjectOf(*first_letter, 0));
   EXPECT_FALSE(layout_object0->IsRemainingTextLayoutObject());
 
-  const LayoutTextFragment* layout_object1 =
-      ToLayoutTextFragment(AssociatedLayoutObjectOf(*first_letter, 1));
+  const auto* layout_object1 =
+      To<LayoutTextFragment>(AssociatedLayoutObjectOf(*first_letter, 1));
   EXPECT_EQ(layout_object0, layout_object1);
 }
 
@@ -709,16 +709,16 @@ TEST_F(LayoutObjectTest,
   Node* sample = GetDocument().getElementById("sample");
   Node* text = sample->firstChild();
 
-  const LayoutTextFragment* layout_object0 =
-      ToLayoutTextFragment(AssociatedLayoutObjectOf(*text, 0));
+  const auto* layout_object0 =
+      To<LayoutTextFragment>(AssociatedLayoutObjectOf(*text, 0));
   EXPECT_FALSE(layout_object0->IsRemainingTextLayoutObject());
 
-  const LayoutTextFragment* layout_object1 =
-      ToLayoutTextFragment(AssociatedLayoutObjectOf(*text, 1));
+  const auto* layout_object1 =
+      To<LayoutTextFragment>(AssociatedLayoutObjectOf(*text, 1));
   EXPECT_TRUE(layout_object1->IsRemainingTextLayoutObject());
 
-  const LayoutTextFragment* layout_object2 =
-      ToLayoutTextFragment(AssociatedLayoutObjectOf(*text, 2));
+  const auto* layout_object2 =
+      To<LayoutTextFragment>(AssociatedLayoutObjectOf(*text, 2));
   EXPECT_EQ(layout_object1, layout_object2);
 }
 

@@ -287,7 +287,7 @@ TEST_P(VisualRectMappingTest, LayoutView) {
   auto* frame_container =
       To<LayoutBlock>(GetLayoutObjectByElementId("frameContainer"));
   auto* frame_body = To<LayoutBlock>(ChildDocument().body()->GetLayoutObject());
-  LayoutText* frame_text = ToLayoutText(frame_body->LastChild());
+  auto* frame_text = To<LayoutText>(frame_body->LastChild());
 
   // This case involves clipping: frame height is 50, y-coordinate of result
   // rect is 13, so height should be clipped to (50 - 13) == 37.

@@ -354,7 +354,7 @@ bool LayoutObject::IsHR() const {
 
 bool LayoutObject::IsStyleGenerated() const {
   NOT_DESTROYED();
-  if (const auto* layout_text_fragment = ToLayoutTextFragmentOrNull(this))
+  if (const auto* layout_text_fragment = DynamicTo<LayoutTextFragment>(this))
     return !layout_text_fragment->AssociatedTextNode();
 
   const Node* node = GetNode();
@@ -451,7 +451,7 @@ void LayoutObject::AddChild(LayoutObject* new_child,
 
   if (new_child->IsText() &&
       new_child->StyleRef().TextTransform() == ETextTransform::kCapitalize)
-    ToLayoutText(new_child)->TransformText();
+    To<LayoutText>(new_child)->TransformText();
 }
 
 void LayoutObject::RemoveChild(LayoutObject* old_child) {
@@ -1991,9 +1991,9 @@ void LayoutObject::DumpLayoutObject(StringBuilder& string_builder,
   if (dump_address)
     string_builder.AppendFormat(" %p", this);
 
-  if (IsText() && ToLayoutText(this)->IsTextFragment()) {
-    string_builder.AppendFormat(" \"%s\" ",
-                                ToLayoutText(this)->GetText().Ascii().c_str());
+  if (IsText() && To<LayoutText>(this)->IsTextFragment()) {
+    string_builder.AppendFormat(
+        " \"%s\" ", To<LayoutText>(this)->GetText().Ascii().c_str());
   }
 
   if (VirtualContinuation())
@@ -2049,8 +2049,7 @@ bool LayoutObject::IsSelected() const {
   return GetSelectionState() != SelectionState::kNone ||
          // TODO(kojii): Can't we set SelectionState() properly to
          // LayoutTextFragment too?
-         (IsText() && ToLayoutText(*this).IsTextFragment() &&
-          LayoutSelection::IsSelected(*this));
+         (IsA<LayoutTextFragment>(*this) && LayoutSelection::IsSelected(*this));
 }
 
 bool LayoutObject::IsSelectable() const {
@@ -2123,7 +2122,7 @@ StyleDifference LayoutObject::AdjustStyleDifference(
         // be skipped or we will miss invalidating decorations (e.g.,
         // underlines). MathML elements are not skipped either as some of them
         // do special painting (e.g. fraction bar).
-        (IsText() && !IsBR() && ToLayoutText(this)->HasInlineFragments()) ||
+        (IsText() && !IsBR() && To<LayoutText>(this)->HasInlineFragments()) ||
         (IsSVG() && StyleRef().SvgStyle().IsFillColorCurrentColor()) ||
         (IsSVG() && StyleRef().SvgStyle().IsStrokeColorCurrentColor()) ||
         IsListMarkerForNormalContent() || IsDetailsMarker() || IsMathML())
@@ -2329,7 +2328,7 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
     } else {
       if (IsInLayoutNGInlineFormattingContext() && !NeedsLayout() &&
           RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
-        if (auto* text = ToLayoutTextOrNull(this))
+        if (auto* text = DynamicTo<LayoutText>(this))
           text->InvalidateVisualOverflow();
       }
       PaintingLayer()->SetNeedsVisualOverflowRecalc();
@@ -4574,10 +4573,9 @@ const LayoutObject* AssociatedLayoutObjectOf(const Node& node,
   DCHECK_GE(offset_in_node, 0);
   LayoutObject* layout_object = node.GetLayoutObject();
   if (!node.IsTextNode() || !layout_object ||
-      !ToLayoutText(layout_object)->IsTextFragment())
+      !To<LayoutText>(layout_object)->IsTextFragment())
     return layout_object;
-  LayoutTextFragment* layout_text_fragment =
-      ToLayoutTextFragment(layout_object);
+  auto* layout_text_fragment = To<LayoutTextFragment>(layout_object);
   if (!layout_text_fragment->IsRemainingTextLayoutObject()) {
     DCHECK_LE(
         static_cast<unsigned>(offset_in_node),

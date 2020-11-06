@@ -179,7 +179,7 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
       *tree_builder_context.current.clip, *tree_builder_context.current_effect);
 
   if (object.IsText()) {
-    const auto& text = ToLayoutText(object);
+    const auto& text = To<LayoutText>(object);
     LogicalOffset new_starting_point;
     LayoutUnit logical_height;
     text.LogicalStartingPointAndHeight(new_starting_point, logical_height);

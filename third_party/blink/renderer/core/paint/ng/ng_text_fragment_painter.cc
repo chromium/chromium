@@ -655,7 +655,7 @@ void NGTextFragmentPainter<Cursor>::Paint(const PaintInfo& paint_info,
 
   DOMNodeId node_id = kInvalidDOMNodeId;
   if (node) {
-    if (auto* layout_text = ToLayoutTextOrNull(node->GetLayoutObject()))
+    if (auto* layout_text = DynamicTo<LayoutText>(node->GetLayoutObject()))
       node_id = layout_text->EnsureNodeId();
   }
 

@@ -647,15 +647,13 @@ inline void LayoutText::DetachAbstractInlineTextBoxesIfNeeded() {
     DetachAbstractInlineTextBoxes();
 }
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutText, IsText());
-
 template <>
 struct DowncastTraits<LayoutText> {
   static bool AllowFrom(const LayoutObject& object) { return object.IsText(); }
 };
 
 inline LayoutText* Text::GetLayoutObject() const {
-  return ToLayoutText(CharacterData::GetLayoutObject());
+  return To<LayoutText>(CharacterData::GetLayoutObject());
 }
 
 }  // namespace blink

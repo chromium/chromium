@@ -268,8 +268,8 @@ static LayoutTextFragment* FirstLetterPartFor(
     const LayoutObject* layout_object) {
   // TODO(yoichio): LayoutText::GetFirstLetterPart() should be typed
   // LayoutTextFragment.
-  if (const LayoutText* layout_text = ToLayoutTextOrNull(layout_object))
-    return ToLayoutTextFragment(layout_text->GetFirstLetterPart());
+  if (const auto* layout_text = DynamicTo<LayoutText>(layout_object))
+    return To<LayoutTextFragment>(layout_text->GetFirstLetterPart());
   return nullptr;
 }
 
@@ -565,7 +565,7 @@ static unsigned ClampOffset(unsigned offset,
 }
 
 static Text* AssociatedTextNode(const LayoutText& text) {
-  if (const LayoutTextFragment* fragment = ToLayoutTextFragmentOrNull(text))
+  if (const auto* fragment = DynamicTo<LayoutTextFragment>(text))
     return fragment->AssociatedTextNode();
   if (Node* node = text.GetNode())
     return DynamicTo<Text>(node);
@@ -573,8 +573,7 @@ static Text* AssociatedTextNode(const LayoutText& text) {
 }
 
 static SelectionState GetSelectionStateFor(const LayoutText& layout_text) {
-  if (const LayoutTextFragment* text_fragment =
-          ToLayoutTextFragmentOrNull(layout_text)) {
+  if (const auto* text_fragment = DynamicTo<LayoutTextFragment>(layout_text)) {
     Node* node = text_fragment->AssociatedTextNode();
     if (!node)
       return SelectionState::kNone;
@@ -584,14 +583,13 @@ static SelectionState GetSelectionStateFor(const LayoutText& layout_text) {
 }
 
 static SelectionState GetSelectionStateFor(const NGInlineCursor& cursor) {
-  DCHECK(cursor.Current().GetLayoutObject() &&
-         cursor.Current().GetLayoutObject()->IsText());
+  DCHECK(cursor.Current().GetLayoutObject());
   return GetSelectionStateFor(
-      ToLayoutText(*cursor.Current().GetLayoutObject()));
+      To<LayoutText>(*cursor.Current().GetLayoutObject()));
 }
 
 bool LayoutSelection::IsSelected(const LayoutObject& layout_object) {
-  if (const LayoutText* layout_text = ToLayoutTextOrNull(layout_object))
+  if (const auto* layout_text = DynamicTo<LayoutText>(layout_object))
     return GetSelectionStateFor(*layout_text) != SelectionState::kNone;
   return layout_object.GetSelectionState() != SelectionState::kNone;
 }
@@ -635,8 +633,8 @@ LayoutTextSelectionStatus LayoutSelection::ComputeSelectionStatus(
     const LayoutTextSelectionStatus text_status = ComputeSelectionStatusForNode(
         *text, selection_state, paint_range_->start_offset,
         paint_range_->end_offset);
-    if (const LayoutTextFragment* text_fragment =
-            ToLayoutTextFragmentOrNull(layout_text)) {
+    if (const auto* text_fragment =
+            DynamicTo<LayoutTextFragment>(layout_text)) {
       return {ClampOffset(text_status.start, *text_fragment),
               ClampOffset(text_status.end, *text_fragment),
               text_status.include_end};

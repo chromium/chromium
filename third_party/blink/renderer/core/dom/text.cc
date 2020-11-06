@@ -268,7 +268,7 @@ static inline bool CanHaveWhitespaceChildren(
 
     return style.PreserveNewline() ||
            !EndsWithWhitespace(
-               ToLayoutText(context.previous_in_flow)->GetText());
+               To<LayoutText>(context.previous_in_flow)->GetText());
   }
   return true;
 }
@@ -312,7 +312,7 @@ bool Text::TextLayoutObjectIsNeeded(const AttachContext& context,
 
   if (context.previous_in_flow->IsText()) {
     return !EndsWithWhitespace(
-        ToLayoutText(context.previous_in_flow)->GetText());
+        To<LayoutText>(context.previous_in_flow)->GetText());
   }
 
   return context.previous_in_flow->IsInline() &&
@@ -445,7 +445,7 @@ static bool ShouldUpdateLayoutByReattaching(const Text& text_node,
     // |text_fragment_layout_object| represents first-letter part but it isn't
     // inside first-letter-pseudo element. See http://crbug.com/978947
     const auto& text_fragment_layout_object =
-        *ToLayoutTextFragment(text_layout_object);
+        *To<LayoutTextFragment>(text_layout_object);
     return text_fragment_layout_object.GetFirstLetterPseudoElement() ||
            !text_fragment_layout_object.IsRemainingTextLayoutObject();
   }

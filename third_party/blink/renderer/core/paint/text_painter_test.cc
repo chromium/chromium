@@ -46,7 +46,7 @@ class TextPainterTest : public RenderingTest {
   }
   void UpdateLayoutText() {
     layout_text_ =
-        ToLayoutText(GetDocument().body()->firstChild()->GetLayoutObject());
+        To<LayoutText>(GetDocument().body()->firstChild()->GetLayoutObject());
     ASSERT_TRUE(layout_text_);
     ASSERT_EQ("Hello world", layout_text_->GetText());
   }

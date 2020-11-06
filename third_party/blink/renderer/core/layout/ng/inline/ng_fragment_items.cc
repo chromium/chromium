@@ -64,7 +64,7 @@ NGFragmentItems::NGFragmentItems(const NGFragmentItems& other)
     // any |AbstractInlineTextBox|, as they store a pointer to an individual
     // |NGFragmentItem|.
     if (auto* layout_text =
-            ToLayoutTextOrNull(other_item.GetMutableLayoutObject()))
+            DynamicTo<LayoutText>(other_item.GetMutableLayoutObject()))
       layout_text->DetachAbstractInlineTextBoxesIfNeeded();
   }
 }

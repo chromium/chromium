@@ -162,8 +162,7 @@ static inline InlineTextBox* CreateInlineBoxForText(BidiRun& run,
 
 static inline void DirtyLineBoxesForObject(LayoutObject* o, bool full_layout) {
   if (o->IsText()) {
-    LayoutText* layout_text = ToLayoutText(o);
-    layout_text->DirtyOrDeleteLineBoxesIfNeeded(full_layout);
+    To<LayoutText>(o)->DirtyOrDeleteLineBoxesIfNeeded(full_layout);
   } else {
     ToLayoutInline(o)->DirtyLineBoxes(full_layout);
   }
@@ -907,7 +906,7 @@ void LayoutBlockFlow::ComputeBlockDirectionPositionsForLine(
     // Position is used to properly position both replaced elements and
     // to update the static normal flow x/y of positioned elements.
     if (r->line_layout_item_.IsText())
-      ToLayoutText(r->line_layout_item_.GetLayoutObject())
+      To<LayoutText>(r->line_layout_item_.GetLayoutObject())
           ->PositionLineBox(r->box_);
     else if (r->line_layout_item_.IsBox())
       ToLayoutBox(r->line_layout_item_.GetLayoutObject())
@@ -1567,7 +1566,7 @@ static inline void StripTrailingSpace(LayoutUnit& inline_max,
     // the first white-space character and subtracting its width. Subsequent
     // white-space characters have been collapsed into the first one (which
     // can be either a space or a tab character).
-    LayoutText* text = ToLayoutText(trailing_space_child);
+    auto* text = To<LayoutText>(trailing_space_child);
     UChar trailing_whitespace_char = ' ';
     for (unsigned i = text->TextLength(); i > 0; i--) {
       UChar c = text->CharacterAt(i - 1);
@@ -1827,7 +1826,7 @@ void LayoutBlockFlow::ComputeInlinePreferredLogicalWidths(
         }
       } else if (child->IsText()) {
         // Case (3). Text.
-        LayoutText* t = ToLayoutText(child);
+        auto* t = To<LayoutText>(child);
 
         if (t->IsWordBreak()) {
           min_logical_width = std::max(min_logical_width, inline_min);
@@ -2182,7 +2181,7 @@ RootInlineBox* LayoutBlockFlow::DetermineStartPosition(
         if (!prev_root_box->EndsWithBreak() || !prev_root_box->LineBreakObj() ||
             (prev_root_box->LineBreakObj().IsText() &&
              prev_root_box->LineBreakPos() >=
-                 ToLayoutText(prev_root_box->LineBreakObj().GetLayoutObject())
+                 To<LayoutText>(prev_root_box->LineBreakObj().GetLayoutObject())
                      ->TextLength())) {
           // The previous line didn't break cleanly or broke at a newline
           // that has been deleted, so treat it as dirty too.

@@ -83,7 +83,10 @@ class LayoutBR final : public LayoutText {
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutBR, IsBR());
+template <>
+struct DowncastTraits<LayoutBR> {
+  static bool AllowFrom(const LayoutObject& object) { return object.IsBR(); }
+};
 
 }  // namespace blink
 

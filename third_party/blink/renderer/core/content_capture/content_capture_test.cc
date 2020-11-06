@@ -960,7 +960,7 @@ class ContentCaptureSimTest : public SimTest {
     for (auto id : ids) {
       auto* layout_object =
           document.getElementById(id.c_str())->firstChild()->GetLayoutObject();
-      LayoutText* layout_text = ToLayoutText(layout_object);
+      auto* layout_text = To<LayoutText>(layout_object);
       EXPECT_TRUE(layout_text->HasNodeId());
       buffer.push_back(
           cc::NodeInfo(layout_text->EnsureNodeId(), GetRect(layout_object)));
@@ -974,7 +974,7 @@ class ContentCaptureSimTest : public SimTest {
     Element* div_element = doc.getElementById("d1");
     div_element->appendChild(element);
     Compositor().BeginFrame();
-    LayoutText* layout_text = ToLayoutText(node->GetLayoutObject());
+    auto* layout_text = To<LayoutText>(node->GetLayoutObject());
     EXPECT_TRUE(layout_text->HasNodeId());
     buffer.push_back(cc::NodeInfo(layout_text->EnsureNodeId(),
                                   GetRect(node->GetLayoutObject())));

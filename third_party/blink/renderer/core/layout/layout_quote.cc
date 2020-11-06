@@ -304,8 +304,8 @@ LayoutTextFragment* LayoutQuote::FindFragmentChild() const {
   // We walk from the end of the child list because, if we've had a first-letter
   // LayoutObject inserted then the remaining text will be at the end.
   while (LayoutObject* child = LastChild()) {
-    if (child->IsText() && ToLayoutText(child)->IsTextFragment())
-      return ToLayoutTextFragment(child);
+    if (auto* fragment = DynamicTo<LayoutTextFragment>(child))
+      return fragment;
   }
 
   return nullptr;

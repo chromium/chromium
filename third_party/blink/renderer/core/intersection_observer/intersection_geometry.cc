@@ -112,7 +112,7 @@ PhysicalRect InitializeTargetRect(const LayoutObject* target,
     result = target->AbsoluteToLocalRect(
         PhysicalRect::EnclosingRect(target->AbsoluteBoundingBoxFloatRect()));
   } else {
-    result = ToLayoutText(target)->PhysicalLinesBoundingBox();
+    result = To<LayoutText>(target)->PhysicalLinesBoundingBox();
   }
   ApplyMargin(result, margin, root->StyleRef().EffectiveZoom(),
               InitializeRootRect(root, {} /* margin */));

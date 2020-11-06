@@ -56,11 +56,9 @@ LayoutText* AbstractInlineTextBox::GetFirstLetterPseudoLayoutText() const {
   Node* node = GetLineLayoutItem().GetNode();
   if (!node)
     return nullptr;
-
-  LayoutObject* layout_object = node->GetLayoutObject();
-  if (!layout_object || !layout_object->IsText())
-    return nullptr;
-  return ToLayoutText(layout_object)->GetFirstLetterPart();
+  if (auto* layout_text = DynamicTo<LayoutText>(node->GetLayoutObject()))
+    return layout_text->GetFirstLetterPart();
+  return nullptr;
 }
 
 // ----

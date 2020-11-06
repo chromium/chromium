@@ -1247,7 +1247,7 @@ void InspectorCSSAgent::CollectPlatformFontsForLayoutObject(
     return;
 
   FontCachePurgePreventer preventer;
-  LayoutText* layout_text = ToLayoutText(layout_object);
+  auto* layout_text = To<LayoutText>(layout_object);
 
   if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     if (layout_object->IsInLayoutNGInlineFormattingContext()) {

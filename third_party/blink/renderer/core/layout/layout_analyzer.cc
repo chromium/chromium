@@ -74,11 +74,10 @@ void LayoutAnalyzer::Push(const LayoutObject& o) {
   if (o.IsLayoutInline() && o.AlwaysCreateLineBoxesForLayoutInline())
     Increment(kLayoutInlineObjectsThatAlwaysCreateLineBoxes);
   if (o.IsText()) {
-    const LayoutText& t = *ToLayoutText(&o);
     Increment(kLayoutObjectsThatAreTextAndCanNotUseTheSimpleFontCodePath);
     Increment(
         kCharactersInLayoutObjectsThatAreTextAndCanNotUseTheSimpleFontCodePath,
-        t.TextLength());
+        To<LayoutText>(o).TextLength());
   }
 
   ++depth_;

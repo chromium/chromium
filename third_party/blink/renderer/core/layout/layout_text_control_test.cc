@@ -26,7 +26,7 @@ class LayoutTextControlTest : public testing::WithParamInterface<bool>,
   }
   // Return the LayoutText from inside a text control's user agent shadow tree.
   LayoutText* GetInnerLayoutText(TextControlElement* control) {
-    return ToLayoutText(
+    return To<LayoutText>(
         control->InnerEditorElement()->GetLayoutObject()->SlowFirstChild());
   }
 

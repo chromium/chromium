@@ -964,10 +964,8 @@ void LayoutView::UpdateCounters() {
 
   for (LayoutObject* layout_object = this; layout_object;
        layout_object = layout_object->NextInPreOrder()) {
-    if (!layout_object->IsCounter())
-      continue;
-
-    ToLayoutCounter(layout_object)->UpdateCounter();
+    if (auto* counter = DynamicTo<LayoutCounter>(layout_object))
+      counter->UpdateCounter();
   }
 }
 

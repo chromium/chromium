@@ -39,7 +39,7 @@ TEST_F(InlineBoxPositionTest, ComputeInlineBoxPositionBidiIsolate) {
 
   const InlineBoxPosition& actual =
       ComputeInlineBoxPosition(PositionWithAffinity(Position(text, 0)));
-  EXPECT_EQ(ToLayoutText(text->GetLayoutObject())->FirstTextBox(),
+  EXPECT_EQ(To<LayoutText>(text->GetLayoutObject())->FirstTextBox(),
             actual.inline_box);
 }
 
@@ -105,7 +105,7 @@ TEST_F(InlineBoxPositionTest, DownstreamBeforeLineBreakLTR) {
 
   const Element* const br = GetDocument().QuerySelector("br");
   const InlineBox* const box =
-      ToLayoutText(br->GetLayoutObject())->FirstTextBox();
+      To<LayoutText>(br->GetLayoutObject())->FirstTextBox();
 
   const InlineBoxPosition box_position = ComputeInlineBoxPosition(before_br);
   EXPECT_EQ(box, box_position.inline_box);
@@ -129,7 +129,7 @@ TEST_F(InlineBoxPositionTest, DownstreamBeforeLineBreakRTL) {
 
   const Element* const br = GetDocument().QuerySelector("br");
   const InlineBox* const box =
-      ToLayoutText(br->GetLayoutObject())->FirstTextBox();
+      To<LayoutText>(br->GetLayoutObject())->FirstTextBox();
 
   const InlineBoxPosition box_position = ComputeInlineBoxPosition(before_br);
   EXPECT_EQ(box, box_position.inline_box);

@@ -71,7 +71,7 @@ bool EditCommand::IsRenderedCharacter(const Position& position) {
   }
 
   // TODO(editing-dev): This doesn't handle first-letter correctly. Fix it.
-  const LayoutText* layout_text = ToLayoutText(layout_object);
+  const auto* layout_text = To<LayoutText>(layout_object);
   const int offset_in_node = position.OffsetInContainerNode();
   for (InlineTextBox* box : layout_text->TextBoxes()) {
     if (offset_in_node < static_cast<int>(box->Start()) &&

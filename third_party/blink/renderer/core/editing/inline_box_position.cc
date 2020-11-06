@@ -68,7 +68,7 @@ InlineTextBox* SearchAheadForBetterMatch(const LayoutText* layout_object) {
     if (next->IsText()) {
       InlineTextBox* match = nullptr;
       int min_offset = INT_MAX;
-      for (InlineTextBox* box : ToLayoutText(next)->TextBoxes()) {
+      for (InlineTextBox* box : To<LayoutText>(next)->TextBoxes()) {
         int caret_min_offset = box->CaretMinOffset();
         if (caret_min_offset < min_offset) {
           match = box;
@@ -264,7 +264,7 @@ bool NeedsLineEndAdjustment(
   const LayoutObject& layout_object = *position.AnchorNode()->GetLayoutObject();
   if (!layout_object.IsText())
     return false;
-  const LayoutText& layout_text = ToLayoutText(layout_object);
+  const auto& layout_text = To<LayoutText>(layout_object);
   if (layout_text.IsBR())
     return position.IsAfterAnchor();
   // For normal text nodes.
@@ -303,8 +303,8 @@ InlineBoxPosition NextLinePositionOf(const LayoutText& layout_text) {
 template <typename Strategy>
 InlineBoxPosition ComputeInlineBoxPositionForLineEnd(
     const PositionWithAffinityTemplate<Strategy>& adjusted) {
-  const LayoutText& layout_text = ToLayoutText(
-      *adjusted.GetPosition().AnchorNode()->GetLayoutObject());
+  const auto& layout_text =
+      To<LayoutText>(*adjusted.GetPosition().AnchorNode()->GetLayoutObject());
   const InlineBoxPosition next_line_position = NextLinePositionOf(layout_text);
   if (next_line_position.inline_box)
     return next_line_position;
@@ -333,7 +333,7 @@ InlineBoxPosition ComputeInlineBoxPositionForInlineAdjustedPositionAlgorithm(
     // TODO(yoichio): Consider |ToLayoutText(layout_object)->TextStartOffset()|
     // for first-letter tested with LocalCaretRectTest::FloatFirstLetter.
     return ComputeInlineBoxPositionForTextNode(
-        &ToLayoutText(layout_object), round_offset, adjusted.Affinity());
+        &To<LayoutText>(layout_object), round_offset, adjusted.Affinity());
   }
 
   DCHECK(layout_object.IsAtomicInlineLevel());

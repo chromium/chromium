@@ -97,7 +97,12 @@ class LayoutCounter final : public LayoutText {
   friend class CounterNode;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutCounter, IsCounter());
+template <>
+struct DowncastTraits<LayoutCounter> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsCounter();
+  }
+};
 
 }  // namespace blink
 

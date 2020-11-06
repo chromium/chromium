@@ -41,7 +41,12 @@ class CORE_EXPORT LayoutNGText : public LayoutText {
   base::span<NGInlineItem> inline_items_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutNGText, IsLayoutNGText());
+template <>
+struct DowncastTraits<LayoutNGText> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsLayoutNGText();
+  }
+};
 
 }  // namespace blink
 

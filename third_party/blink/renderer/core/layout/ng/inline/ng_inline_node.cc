@@ -280,7 +280,7 @@ void CollectInlinesInternal(ItemsBuilder* builder,
   const LayoutObject* symbol =
       LayoutNGListItem::FindSymbolMarkerLayoutText(block);
   while (node) {
-    if (LayoutText* layout_text = ToLayoutTextOrNull(node)) {
+    if (auto* layout_text = DynamicTo<LayoutText>(node)) {
       builder->AppendText(layout_text, previous_data);
 
       if (symbol == layout_text)
@@ -1373,7 +1373,7 @@ void NGInlineNode::AssociateItemsWithInlines(NGInlineNodeData* data) const {
   Vector<NGInlineItem>& items = data->items;
   for (NGInlineItem* item = items.begin(); item != items.end();) {
     LayoutObject* object = item->GetLayoutObject();
-    if (LayoutNGText* layout_text = ToLayoutNGTextOrNull(object)) {
+    if (auto* layout_text = DynamicTo<LayoutNGText>(object)) {
 #if DCHECK_IS_ON()
       // Items split from a LayoutObject should be consecutive.
       DCHECK(associated_objects.insert(object).is_new_entry);

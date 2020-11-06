@@ -154,7 +154,8 @@ static bool BlockIsRowOfLinks(const LayoutBlock* block) {
   while (layout_object) {
     if (!IsPotentialClusterRoot(layout_object)) {
       if (layout_object->IsText() &&
-          ToLayoutText(layout_object)->GetText().StripWhiteSpace().length() > 3)
+          To<LayoutText>(layout_object)->GetText().StripWhiteSpace().length() >
+              3)
         return false;
       if (!layout_object->IsInline() || layout_object->IsBR())
         return false;
@@ -813,8 +814,9 @@ bool TextAutosizer::ClusterHasEnoughTextToAutosize(
       // resolvedTextLength() because the lineboxes will not be built until
       // layout. These values can be different.
       // Note: This is an approximation assuming each character is 1em wide.
-      length += ToLayoutText(descendant)->GetText().StripWhiteSpace().length() *
-                descendant->StyleRef().SpecifiedFontSize();
+      length +=
+          To<LayoutText>(descendant)->GetText().StripWhiteSpace().length() *
+          descendant->StyleRef().SpecifiedFontSize();
 
       if (length >= minimum_text_length_to_autosize) {
         cluster->has_enough_text_to_autosize_ = kHasEnoughText;
@@ -1248,7 +1250,7 @@ void TextAutosizer::ApplyMultiplier(LayoutObject* layout_object,
       layout_object->SetModifiedStyleOutsideStyleRecalc(
           std::move(style), LayoutObject::ApplyStyleChanges::kNo);
       if (layout_object->IsText())
-        ToLayoutText(layout_object)->AutosizingMultiplerChanged();
+        To<LayoutText>(layout_object)->AutosizingMultiplerChanged();
       DCHECK(!layouter || layout_object->IsDescendantOf(&layouter->Root()));
       layout_object->SetNeedsLayoutAndFullPaintInvalidation(
           layout_invalidation_reason::kTextAutosizing, kMarkContainerChain,

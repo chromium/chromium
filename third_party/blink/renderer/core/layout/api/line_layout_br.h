@@ -27,9 +27,9 @@ class LineLayoutBR : public LineLayoutText {
   }
 
  private:
-  LayoutBR* ToBR() { return ToLayoutBR(GetLayoutObject()); }
+  LayoutBR* ToBR() { return To<LayoutBR>(GetLayoutObject()); }
 
-  const LayoutBR* ToBR() const { return ToLayoutBR(GetLayoutObject()); }
+  const LayoutBR* ToBR() const { return To<LayoutBR>(GetLayoutObject()); }
 };
 
 }  // namespace blink

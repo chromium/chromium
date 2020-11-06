@@ -547,7 +547,7 @@ void Write(WTF::TextStream& ts,
   }
 
   if (o.IsText() && !o.IsBR()) {
-    const LayoutText& text = ToLayoutText(o);
+    const auto& text = To<LayoutText>(o);
     if (const LayoutBlockFlow* block_flow = text.ContainingNGBlockFlow()) {
       NGInlineCursor cursor(*block_flow);
       cursor.MoveTo(text);
@@ -930,7 +930,7 @@ static void WriteCounterValuesFromChildren(WTF::TextStream& stream,
       if (!is_first_counter)
         stream << " ";
       is_first_counter = false;
-      String str(ToLayoutText(child)->GetText());
+      String str(To<LayoutText>(child)->GetText());
       stream << str;
     }
   }

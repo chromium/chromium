@@ -129,8 +129,8 @@ class LineLayoutText : public LineLayoutItem {
   }
 
  private:
-  LayoutText* ToText() { return ToLayoutText(GetLayoutObject()); }
-  const LayoutText* ToText() const { return ToLayoutText(GetLayoutObject()); }
+  LayoutText* ToText() { return To<LayoutText>(GetLayoutObject()); }
+  const LayoutText* ToText() const { return To<LayoutText>(GetLayoutObject()); }
 };
 
 }  // namespace blink

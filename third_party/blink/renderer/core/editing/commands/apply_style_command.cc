@@ -1338,18 +1338,19 @@ void ApplyStyleCommand::ApplyInlineStyleToPushDown(
                                                 EditingStyle::kOverrideValues);
   }
 
+  const auto* layout_object = node->GetLayoutObject();
   // Since addInlineStyleIfNeeded can't add styles to block-flow layout objects,
   // add style attribute instead.
   // FIXME: applyInlineStyleToRange should be used here instead.
-  if ((node->GetLayoutObject()->IsLayoutBlockFlow() || node->hasChildren()) &&
+  if ((layout_object->IsLayoutBlockFlow() || node->hasChildren()) &&
       html_element) {
     SetNodeAttribute(html_element, html_names::kStyleAttr,
                      AtomicString(new_inline_style->Style()->AsText()));
     return;
   }
 
-  if (node->GetLayoutObject()->IsText() &&
-      ToLayoutText(node->GetLayoutObject())->IsAllCollapsibleWhitespace())
+  if (layout_object->IsText() &&
+      To<LayoutText>(layout_object)->IsAllCollapsibleWhitespace())
     return;
 
   // We can't wrap node with the styled element here because new styled element

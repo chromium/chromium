@@ -323,7 +323,7 @@ NGCaretPosition ComputeNGCaretPosition(
 
   const LayoutText* const layout_text =
       position.IsOffsetInAnchor() && IsA<Text>(position.AnchorNode())
-          ? ToLayoutText(AssociatedLayoutObjectOf(
+          ? To<LayoutText>(AssociatedLayoutObjectOf(
                 *position.AnchorNode(), position.OffsetInContainerNode()))
           : nullptr;
 

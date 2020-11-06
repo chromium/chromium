@@ -774,7 +774,7 @@ bool AXLayoutObject::CanIgnoreSpaceNextTo(LayoutObject* layout,
 
   // If adjacent to a whitespace character, the current space can be ignored.
   if (layout->IsText()) {
-    LayoutText* layout_text = ToLayoutText(layout);
+    auto* layout_text = To<LayoutText>(layout);
     if (layout_text->HasEmptyText())
       return false;
     if (layout_text->GetText().Impl()->ContainsOnlyWhitespaceOrEmpty())
@@ -819,7 +819,7 @@ bool AXLayoutObject::CanIgnoreTextAsEmpty() const {
   if (!layout_object_ || !layout_object_->IsText() || !layout_object_->Parent())
     return false;
 
-  LayoutText* layout_text = ToLayoutText(layout_object_);
+  auto* layout_text = To<LayoutText>(layout_object_);
 
   // Ignore empty text
   if (layout_text->HasEmptyText()) {
@@ -1129,7 +1129,7 @@ AXObject* AXLayoutObject::NextOnLine() const {
       inline_box =
           ToLayoutInline(GetLayoutObject())->LastLineBoxIncludingCulling();
     } else if (GetLayoutObject()->IsText()) {
-      inline_box = ToLayoutText(GetLayoutObject())->LastTextBox();
+      inline_box = To<LayoutText>(GetLayoutObject())->LastTextBox();
     }
 
     if (!inline_box)
@@ -1246,7 +1246,7 @@ AXObject* AXLayoutObject::PreviousOnLine() const {
       inline_box =
           ToLayoutInline(GetLayoutObject())->FirstLineBoxIncludingCulling();
     } else if (GetLayoutObject()->IsText()) {
-      inline_box = ToLayoutText(GetLayoutObject())->FirstTextBox();
+      inline_box = To<LayoutText>(GetLayoutObject())->FirstTextBox();
     }
 
     if (!inline_box)
@@ -1396,7 +1396,7 @@ String AXLayoutObject::TextAlternative(bool recursive,
       found_text_alternative = true;
     } else if (layout_object_->IsText() &&
                (!recursive || !layout_object_->IsCounter())) {
-      LayoutText* layout_text = ToLayoutText(layout_object_);
+      auto* layout_text = To<LayoutText>(layout_object_);
       String visible_text = layout_text->PlainText();  // Actual rendered text.
       // If no text boxes we assume this is unrendered end-of-line whitespace.
       // TODO find robust way to deterministically detect end-of-line space.
@@ -1692,9 +1692,8 @@ AXObject* AXLayoutObject::RawFirstChild() const {
 
   // CSS first-letter pseudo element is handled as continuation. Returning it
   // will result in duplicated elements.
-  if (first_child && first_child->IsText() &&
-      ToLayoutText(first_child)->IsTextFragment() &&
-      ToLayoutTextFragment(first_child)->GetFirstLetterPseudoElement())
+  auto* fragment = DynamicTo<LayoutTextFragment>(first_child);
+  if (fragment && fragment->GetFirstLetterPseudoElement())
     return nullptr;
 
   // Skip over continuations.

@@ -1015,7 +1015,7 @@ void NGInlineItemsBuilderTemplate<
   DCHECK(item->EndCollapseType() == NGInlineItem::kCollapsed);
 
   mapping_builder_.RestoreTrailingCollapsibleSpace(
-      ToLayoutText(*item->GetLayoutObject()), item->EndOffset());
+      To<LayoutText>(*item->GetLayoutObject()), item->EndOffset());
 
   // TODO(kojii): Implement StringBuilder::insert().
   if (text_.length() == item->EndOffset()) {
@@ -1281,7 +1281,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::ClearNeedsLayout(
   // for subsequent layouts. Items that can be reused have already been
   // added to the builder.
   if (object->IsText())
-    ToLayoutText(object)->ClearInlineItems();
+    To<LayoutText>(object)->ClearInlineItems();
 }
 
 template <typename OffsetMappingBuilder>

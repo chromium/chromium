@@ -132,7 +132,8 @@ TEST_F(SetCharacterDataCommandTest, CombinedText) {
 
   ASSERT_TRUE(text_node->GetLayoutObject());
   ASSERT_TRUE(text_node->GetLayoutObject()->IsCombineText());
-  EXPECT_FALSE(ToLayoutTextCombine(text_node->GetLayoutObject())->IsCombined());
+  EXPECT_FALSE(
+      To<LayoutTextCombine>(text_node->GetLayoutObject())->IsCombined());
 
   SimpleEditCommand* command =
       MakeGarbageCollected<SetCharacterDataCommand>(text_node, 0, 0, "text");
@@ -141,14 +142,16 @@ TEST_F(SetCharacterDataCommandTest, CombinedText) {
 
   ASSERT_TRUE(text_node->GetLayoutObject());
   ASSERT_TRUE(text_node->GetLayoutObject()->IsCombineText());
-  EXPECT_TRUE(ToLayoutTextCombine(text_node->GetLayoutObject())->IsCombined());
+  EXPECT_TRUE(
+      To<LayoutTextCombine>(text_node->GetLayoutObject())->IsCombined());
 
   command->DoUnapply();
   UpdateAllLifecyclePhasesForTest();
 
   ASSERT_TRUE(text_node->GetLayoutObject());
   ASSERT_TRUE(text_node->GetLayoutObject()->IsCombineText());
-  EXPECT_FALSE(ToLayoutTextCombine(text_node->GetLayoutObject())->IsCombined());
+  EXPECT_FALSE(
+      To<LayoutTextCombine>(text_node->GetLayoutObject())->IsCombined());
 }
 
 }  // namespace blink

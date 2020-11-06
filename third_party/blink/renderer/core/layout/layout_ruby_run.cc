@@ -338,12 +338,12 @@ void LayoutRubyRun::GetOverhang(bool first_line,
   if (start_overhang)
     start_overhang = std::min<int>(
         start_overhang,
-        std::min<int>(ToLayoutText(start_layout_object)->MinLogicalWidth(),
+        std::min<int>(To<LayoutText>(start_layout_object)->MinLogicalWidth(),
                       half_width_of_font_size));
   if (end_overhang)
     end_overhang = std::min<int>(
         end_overhang,
-        std::min<int>(ToLayoutText(end_layout_object)->MinLogicalWidth(),
+        std::min<int>(To<LayoutText>(end_layout_object)->MinLogicalWidth(),
                       half_width_of_font_size));
 }
 

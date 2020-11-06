@@ -357,7 +357,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildTextNodeInfo(Text* text_node) {
   if (!layout_object || !layout_object->IsText())
     return text_info;
   PhysicalRect bounding_box =
-      ToLayoutText(layout_object)->PhysicalVisualOverflowRect();
+      To<LayoutText>(layout_object)->PhysicalVisualOverflowRect();
   text_info->setString("nodeWidth", bounding_box.Width().ToString());
   text_info->setString("nodeHeight", bounding_box.Height().ToString());
   text_info->setString("tagName", "#text");
@@ -1172,7 +1172,7 @@ bool InspectorHighlightBase::BuildNodeQuads(Node* node,
   PhysicalRect margin_box;
 
   if (layout_object->IsText()) {
-    LayoutText* layout_text = ToLayoutText(layout_object);
+    auto* layout_text = To<LayoutText>(layout_object);
     PhysicalRect text_rect = layout_text->PhysicalVisualOverflowRect();
     content_box = text_rect;
     padding_box = text_rect;
@@ -1403,7 +1403,7 @@ void InspectorHighlight::VisitAndCollectDistanceInfo(
 void InspectorHighlight::AddLayoutBoxToDistanceInfo(
     LayoutObject* layout_object) {
   if (layout_object->IsText()) {
-    LayoutText* layout_text = ToLayoutText(layout_object);
+    auto* layout_text = To<LayoutText>(layout_object);
     for (const auto& text_box : layout_text->GetTextBoxInfo()) {
       PhysicalRect text_rect(
           TextFragmentRectInRootFrame(layout_object, text_box));

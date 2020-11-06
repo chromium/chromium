@@ -633,8 +633,9 @@ int InspectorDOMSnapshotAgent::BuildLayoutTreeNode(LayoutObject* layout_object,
     layout_tree_snapshot->getPaintOrders(nullptr)->emplace_back(paint_order);
   }
 
-  String text = layout_object->IsText() ? ToLayoutText(layout_object)->GetText()
-                                        : String();
+  String text = layout_object->IsText()
+                    ? To<LayoutText>(layout_object)->GetText()
+                    : String();
   layout_tree_snapshot->getText()->emplace_back(AddString(text));
 
   if (node->GetPseudoId()) {
@@ -651,7 +652,7 @@ int InspectorDOMSnapshotAgent::BuildLayoutTreeNode(LayoutObject* layout_object,
   if (!layout_object->IsText())
     return layout_index;
 
-  LayoutText* layout_text = ToLayoutText(layout_object);
+  auto* layout_text = To<LayoutText>(layout_object);
   Vector<LayoutText::TextBoxInfo> text_boxes = layout_text->GetTextBoxInfo();
   if (text_boxes.IsEmpty())
     return layout_index;

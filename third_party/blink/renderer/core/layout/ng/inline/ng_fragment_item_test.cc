@@ -159,9 +159,9 @@ TEST_F(NGFragmentItemTest, BasicText) {
     </div>
   )HTML");
 
-  LayoutBlockFlow* container =
+  auto* container =
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
-  LayoutText* layout_text = ToLayoutText(container->FirstChild());
+  auto* layout_text = To<LayoutText>(container->FirstChild());
   const NGPhysicalBoxFragment* box = container->GetPhysicalFragment(0);
   EXPECT_NE(box, nullptr);
   const NGFragmentItems* items = box->Items();
@@ -205,10 +205,10 @@ TEST_F(NGFragmentItemTest, RtlText) {
     </div>
   )HTML");
 
-  LayoutBlockFlow* container =
+  auto* container =
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
   LayoutObject* span = GetLayoutObjectByElementId("span");
-  LayoutText* layout_text = ToLayoutText(span->SlowFirstChild());
+  auto* layout_text = To<LayoutText>(span->SlowFirstChild());
   const NGPhysicalBoxFragment* box = container->GetPhysicalFragment(0);
   EXPECT_NE(box, nullptr);
   const NGFragmentItems* items = box->Items();
@@ -358,7 +358,7 @@ TEST_F(NGFragmentItemTest, SelfPaintingInlineBox) {
   auto* self_painting_inline_box =
       ToLayoutInline(GetLayoutObjectByElementId("self_painting_inline_box"));
   ASSERT_TRUE(self_painting_inline_box->HasSelfPaintingLayer());
-  auto* text = ToLayoutText(self_painting_inline_box->FirstChild());
+  auto* text = To<LayoutText>(self_painting_inline_box->FirstChild());
   text->InvalidateVisualOverflow();
 
   // Mark the |PaintLayer| to need to recalc visual overflow.

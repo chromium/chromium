@@ -33,7 +33,7 @@ class LayoutTextTest : public RenderingTest {
   }
 
   LayoutText* GetLayoutTextById(const char* id) {
-    return ToLayoutText(GetLayoutObjectByElementId(id)->SlowFirstChild());
+    return To<LayoutText>(GetLayoutObjectByElementId(id)->SlowFirstChild());
   }
 
   LayoutText* GetBasicText() { return GetLayoutTextById("target"); }
@@ -50,7 +50,7 @@ class LayoutTextTest : public RenderingTest {
     for (const Node& node :
          NodeTraversal::DescendantsOf(*GetDocument().body())) {
       if (node.GetLayoutObject() && node.GetLayoutObject()->IsText())
-        return ToLayoutTextOrDie(node.GetLayoutObject());
+        return To<LayoutText>(node.GetLayoutObject());
     }
     NOTREACHED();
     return nullptr;
@@ -302,7 +302,7 @@ TEST_P(ParameterizedLayoutTextTest, CharacterAfterWhitespaceCollapsing) {
   EXPECT_EQ('H', layout_text->FirstCharacterAfterWhitespaceCollapsing());
   EXPECT_EQ(' ', layout_text->LastCharacterAfterWhitespaceCollapsing());
   layout_text =
-      ToLayoutText(GetLayoutObjectByElementId("target")->NextSibling());
+      To<LayoutText>(GetLayoutObjectByElementId("target")->NextSibling());
   DCHECK(!layout_text->HasInlineFragments());
   EXPECT_EQ(0, layout_text->FirstCharacterAfterWhitespaceCollapsing());
   EXPECT_EQ(0, layout_text->LastCharacterAfterWhitespaceCollapsing());
@@ -515,9 +515,9 @@ TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetInPreLine) {
 
 TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetWithTrailingSpace) {
   SetBodyInnerHTML("<div id=target>ab<br>cd</div>");
-  const LayoutText& text_ab = *GetLayoutTextById("target");
-  const LayoutText& layout_br = *ToLayoutText(text_ab.NextSibling());
-  const LayoutText& text_cd = *ToLayoutText(layout_br.NextSibling());
+  const auto& text_ab = *GetLayoutTextById("target");
+  const auto& layout_br = *To<LayoutText>(text_ab.NextSibling());
+  const auto& text_cd = *To<LayoutText>(layout_br.NextSibling());
 
   EXPECT_EQ("BC-", GetSnapCode(text_ab, "|ab<br>"));
   EXPECT_EQ("BCA", GetSnapCode(text_ab, "a|b<br>"));
@@ -531,9 +531,9 @@ TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetWithTrailingSpace) {
 
 TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetWithTrailingSpace1) {
   SetBodyInnerHTML("<div id=target>ab <br> cd</div>");
-  const LayoutText& text_ab = *GetLayoutTextById("target");
-  const LayoutText& layout_br = *ToLayoutText(text_ab.NextSibling());
-  const LayoutText& text_cd = *ToLayoutText(layout_br.NextSibling());
+  const auto& text_ab = *GetLayoutTextById("target");
+  const auto& layout_br = *To<LayoutText>(text_ab.NextSibling());
+  const auto& text_cd = *To<LayoutText>(layout_br.NextSibling());
 
   // text_content = "ab\ncd"
   // offset mapping unit:
@@ -558,9 +558,9 @@ TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetWithTrailingSpace1) {
 
 TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetWithTrailingSpace2) {
   SetBodyInnerHTML("<div id=target>ab  <br>  cd</div>");
-  const LayoutText& text_ab = *GetLayoutTextById("target");
-  const LayoutText& layout_br = *ToLayoutText(text_ab.NextSibling());
-  const LayoutText& text_cd = *ToLayoutText(layout_br.NextSibling());
+  const auto& text_ab = *GetLayoutTextById("target");
+  const auto& layout_br = *To<LayoutText>(text_ab.NextSibling());
+  const auto& text_cd = *To<LayoutText>(layout_br.NextSibling());
 
   // text_content = "ab\ncd"
   // offset mapping unit:
@@ -589,12 +589,12 @@ TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetWithTrailingSpace2) {
 
 TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetWithTrailingSpace3) {
   SetBodyInnerHTML("<div id=target>a<br>   <br>b<br></div>");
-  const LayoutText& text_a = *GetLayoutTextById("target");
-  const LayoutText& layout_br1 = *ToLayoutText(text_a.NextSibling());
-  const LayoutText& text_space = *ToLayoutText(layout_br1.NextSibling());
+  const auto& text_a = *GetLayoutTextById("target");
+  const auto& layout_br1 = *To<LayoutText>(text_a.NextSibling());
+  const auto& text_space = *To<LayoutText>(layout_br1.NextSibling());
   EXPECT_EQ(1u, text_space.TextLength());
-  const LayoutText& layout_br2 = *ToLayoutText(text_space.NextSibling());
-  const LayoutText& text_b = *ToLayoutText(layout_br2.NextSibling());
+  const auto& layout_br2 = *To<LayoutText>(text_space.NextSibling());
+  const auto& text_b = *To<LayoutText>(layout_br2.NextSibling());
   // Note: the last <br> doesn't have layout object.
 
   // text_content = "a\n \nb"
@@ -654,10 +654,10 @@ TEST_P(ParameterizedLayoutTextTest, GetTextBoxInfoWithGeneratedContent) {
   const Element& target = *GetElementById("target");
   const Element& before =
       *GetElementById("target")->GetPseudoElement(kPseudoIdBefore);
-  const LayoutText& layout_text_xyz =
-      *ToLayoutText(target.firstChild()->GetLayoutObject());
-  const LayoutText& layout_text_remaining =
-      ToLayoutText(*before.GetLayoutObject()->SlowLastChild());
+  const auto& layout_text_xyz =
+      *To<LayoutText>(target.firstChild()->GetLayoutObject());
+  const auto& layout_text_remaining =
+      To<LayoutText>(*before.GetLayoutObject()->SlowLastChild());
   const LayoutText& layout_text_first_letter =
       *layout_text_remaining.GetFirstLetterPart();
 
@@ -764,8 +764,8 @@ TEST_P(ParameterizedLayoutTextTest, GetTextBoxInfoWithEllipsisForPseudoAfter) {
   const Element& target = *GetElementById("target");
   const Element& after = *target.GetPseudoElement(kPseudoIdAfter);
   // Set |layout_text| to "," in <pseudo::after>,</pseudo::after>
-  const LayoutText& layout_text =
-      *ToLayoutText(after.GetLayoutObject()->SlowFirstChild());
+  const auto& layout_text =
+      *To<LayoutText>(after.GetLayoutObject()->SlowFirstChild());
 
   auto boxes = layout_text.GetTextBoxInfo();
   EXPECT_EQ(1u, boxes.size());
@@ -802,7 +802,7 @@ TEST_P(ParameterizedLayoutTextTest, PlainTextInPseudo) {
   const auto GetPlainText = [](const LayoutObject* parent) {
     const LayoutObject* before = parent->SlowFirstChild();
     EXPECT_TRUE(before->IsBeforeContent());
-    const LayoutText* before_text = ToLayoutText(before->SlowFirstChild());
+    const auto* before_text = To<LayoutText>(before->SlowFirstChild());
     EXPECT_FALSE(before_text->GetNode());
     return before_text->PlainText();
   };
@@ -1041,13 +1041,13 @@ TEST_P(ParameterizedLayoutTextTest, PhysicalLinesBoundingBox) {
   const Element& one = *GetDocument().getElementById("one");
   const Element& two = *GetDocument().getElementById("two");
   EXPECT_EQ(PhysicalRect(3, 6, 52, 13),
-            ToLayoutText(div.firstChild()->GetLayoutObject())
+            To<LayoutText>(div.firstChild()->GetLayoutObject())
                 ->PhysicalLinesBoundingBox());
   EXPECT_EQ(PhysicalRect(55, 6, 39, 13),
-            ToLayoutText(one.firstChild()->GetLayoutObject())
+            To<LayoutText>(one.firstChild()->GetLayoutObject())
                 ->PhysicalLinesBoundingBox());
   EXPECT_EQ(PhysicalRect(28, 25, 39, 13),
-            ToLayoutText(two.firstChild()->GetLayoutObject())
+            To<LayoutText>(two.firstChild()->GetLayoutObject())
                 ->PhysicalLinesBoundingBox());
 }
 
@@ -1078,13 +1078,13 @@ TEST_P(ParameterizedLayoutTextTest, PhysicalLinesBoundingBoxVerticalRL) {
   const Element& one = *GetDocument().getElementById("one");
   const Element& two = *GetDocument().getElementById("two");
   EXPECT_EQ(PhysicalRect(25, 3, 13, 52),
-            ToLayoutText(div.firstChild()->GetLayoutObject())
+            To<LayoutText>(div.firstChild()->GetLayoutObject())
                 ->PhysicalLinesBoundingBox());
   EXPECT_EQ(PhysicalRect(25, 55, 13, 39),
-            ToLayoutText(one.firstChild()->GetLayoutObject())
+            To<LayoutText>(one.firstChild()->GetLayoutObject())
                 ->PhysicalLinesBoundingBox());
   EXPECT_EQ(PhysicalRect(6, 28, 13, 39),
-            ToLayoutText(two.firstChild()->GetLayoutObject())
+            To<LayoutText>(two.firstChild()->GetLayoutObject())
                 ->PhysicalLinesBoundingBox());
 }
 
@@ -1093,7 +1093,7 @@ TEST_P(ParameterizedLayoutTextTest, WordBreakElement) {
 
   const Element* wbr = GetDocument().QuerySelector("wbr");
   DCHECK(wbr->GetLayoutObject()->IsText());
-  const LayoutText* layout_wbr = ToLayoutText(wbr->GetLayoutObject());
+  const auto* layout_wbr = To<LayoutText>(wbr->GetLayoutObject());
 
   EXPECT_EQ(0u, layout_wbr->ResolvedTextLength());
   EXPECT_EQ(0, layout_wbr->CaretMinOffset());
@@ -1251,8 +1251,8 @@ TEST_P(ParameterizedLayoutTextTest, VisualRectInDocumentSVGTspan) {
     </svg>
   )HTML");
 
-  LayoutText* target =
-      ToLayoutText(GetLayoutObjectByElementId("target")->SlowFirstChild());
+  auto* target =
+      To<LayoutText>(GetLayoutObjectByElementId("target")->SlowFirstChild());
   const int ascent = 16;
   PhysicalRect expected(10 + 15, 50 + 25 - ascent, 20 * 5, 20);
   EXPECT_EQ(expected, target->VisualRectInDocument());
@@ -1275,8 +1275,8 @@ TEST_P(ParameterizedLayoutTextTest, VisualRectInDocumentSVGTspanTB) {
     </svg>
   )HTML");
 
-  LayoutText* target =
-      ToLayoutText(GetLayoutObjectByElementId("target")->SlowFirstChild());
+  auto* target =
+      To<LayoutText>(GetLayoutObjectByElementId("target")->SlowFirstChild());
   PhysicalRect expected(50 + 15 - 20 / 2, 10 + 25, 20, 20 * 5);
   EXPECT_EQ(expected, target->VisualRectInDocument());
   EXPECT_EQ(expected, target->VisualRectInDocument(kUseGeometryMapper));
@@ -1299,7 +1299,7 @@ TEST_P(ParameterizedLayoutTextTest, PositionForPointAtLeading) {
     <div id="container">line1 line2</div>
   )HTML");
   LayoutObject* container = GetLayoutObjectByElementId("container");
-  LayoutText* text = ToLayoutText(container->SlowFirstChild());
+  auto* text = To<LayoutText>(container->SlowFirstChild());
   // The 1st line is at {0, 0}x{50,30} and 2nd line is {0,30}x{50,30}, with
   // 10px half-leading, 10px text, and  10px half-leading. {10, 30} is the
   // middle of the two lines, at the half-leading.

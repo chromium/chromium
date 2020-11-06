@@ -113,7 +113,7 @@ void ListMarker::UpdateMarkerText(LayoutObject& marker, LayoutText* text) {
 
 void ListMarker::UpdateMarkerText(LayoutObject& marker) {
   DCHECK_EQ(Get(&marker), this);
-  UpdateMarkerText(marker, ToLayoutText(marker.SlowFirstChild()));
+  UpdateMarkerText(marker, To<LayoutText>(marker.SlowFirstChild()));
 }
 
 ListMarker::MarkerTextType ListMarker::MarkerText(
@@ -184,10 +184,9 @@ String ListMarker::TextAlternative(const LayoutObject& marker) const {
 
   // There should be a single text child
   DCHECK(child);
-  DCHECK(child->IsText());
   DCHECK(!child->NextSibling());
 
-  return ToLayoutText(child)->PlainText();
+  return To<LayoutText>(child)->PlainText();
 }
 
 void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
@@ -247,7 +246,7 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
           marker.StyleRef(), marker.StyleRef().Display());
   if (child) {
     if (child->IsText()) {
-      text = ToLayoutText(child);
+      text = To<LayoutText>(child);
       text->SetStyle(text_style);
     } else {
       child->Destroy();

@@ -201,7 +201,7 @@ LayoutText* LayoutTextFragment::GetFirstLetterPart() const {
   LayoutObject* const child = first_letter_container->SlowFirstChild();
   CHECK(child->IsText());
   DCHECK_EQ(child, first_letter_container->SlowLastChild());
-  return ToLayoutTextFragment(child);
+  return To<LayoutTextFragment>(child);
 }
 
 void LayoutTextFragment::UpdateHitTestResult(

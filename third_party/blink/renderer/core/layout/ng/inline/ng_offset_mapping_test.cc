@@ -198,7 +198,7 @@ class NGOffsetMappingTest : public NGLayoutTest {
 
   const LayoutText* GetLayoutTextUnder(const char* parent_id) {
     Element* parent = GetDocument().getElementById(parent_id);
-    return ToLayoutText(parent->firstChild()->GetLayoutObject());
+    return To<LayoutText>(parent->firstChild()->GetLayoutObject());
   }
 
   const NGOffsetMappingUnit* GetUnitForPosition(
@@ -522,8 +522,8 @@ TEST_F(NGOffsetMappingTest, OneTextNode) {
 
 TEST_F(NGOffsetMappingTest, TwoTextNodes) {
   SetupHtml("t", "<div id=t>foo<span id=s>bar</span></div>");
-  const LayoutText* foo = ToLayoutText(layout_object_);
-  const LayoutText* bar = GetLayoutTextUnder("s");
+  const auto* foo = To<LayoutText>(layout_object_);
+  const auto* bar = GetLayoutTextUnder("s");
   const Node* foo_node = foo->GetNode();
   const Node* bar_node = bar->GetNode();
   const NGOffsetMapping& result = GetOffsetMapping();
@@ -588,9 +588,9 @@ TEST_F(NGOffsetMappingTest, TwoTextNodes) {
 
 TEST_F(NGOffsetMappingTest, BRBetweenTextNodes) {
   SetupHtml("t", u"<div id=t>foo<br>bar</div>");
-  const LayoutText* foo = ToLayoutText(layout_object_);
-  const LayoutText* br = ToLayoutText(foo->NextSibling());
-  const LayoutText* bar = ToLayoutText(br->NextSibling());
+  const auto* foo = To<LayoutText>(layout_object_);
+  const auto* br = To<LayoutText>(foo->NextSibling());
+  const auto* bar = To<LayoutText>(br->NextSibling());
   const Node* foo_node = foo->GetNode();
   const Node* br_node = br->GetNode();
   const Node* bar_node = bar->GetNode();
@@ -721,9 +721,9 @@ TEST_F(NGOffsetMappingTest, FullyCollapsedWhiteSpaceNode) {
             " "
             "<span id=s2>bar</span>"
             "</div>");
-  const LayoutText* foo = GetLayoutTextUnder("s1");
-  const LayoutText* bar = GetLayoutTextUnder("s2");
-  const LayoutText* space = ToLayoutText(layout_object_->NextSibling());
+  const auto* foo = GetLayoutTextUnder("s1");
+  const auto* bar = GetLayoutTextUnder("s2");
+  const auto* space = To<LayoutText>(layout_object_->NextSibling());
   const Node* foo_node = foo->GetNode();
   const Node* bar_node = bar->GetNode();
   const Node* space_node = space->GetNode();
@@ -778,9 +778,9 @@ TEST_F(NGOffsetMappingTest, FullyCollapsedWhiteSpaceNode) {
 
 TEST_F(NGOffsetMappingTest, ReplacedElement) {
   SetupHtml("t", "<div id=t>foo <img> bar</div>");
-  const LayoutText* foo = ToLayoutText(layout_object_);
+  const auto* foo = To<LayoutText>(layout_object_);
   const LayoutObject* img = foo->NextSibling();
-  const LayoutText* bar = ToLayoutText(img->NextSibling());
+  const auto* bar = To<LayoutText>(img->NextSibling());
   const Node* foo_node = foo->GetNode();
   const Node* img_node = img->GetNode();
   const Node* bar_node = bar->GetNode();
@@ -1041,14 +1041,14 @@ TEST_F(NGOffsetMappingTest,
             "#t::first-letter { font-weight: bold; }"
             "</style><div id=t>def</div>");
   const Element& target = *GetElementById("t");
-  const LayoutText& remaining_part =
-      *ToLayoutText(target.GetPseudoElement(kPseudoIdBefore)
-                        ->GetLayoutObject()
-                        ->SlowLastChild());
+  const auto& remaining_part =
+      *To<LayoutText>(target.GetPseudoElement(kPseudoIdBefore)
+                          ->GetLayoutObject()
+                          ->SlowLastChild());
   const LayoutObject& first_letter_part = *remaining_part.GetFirstLetterPart();
   const NGOffsetMapping& result = GetOffsetMapping();
-  const LayoutText& target_text =
-      ToLayoutText(*target.firstChild()->GetLayoutObject());
+  const auto& target_text =
+      To<LayoutText>(*target.firstChild()->GetLayoutObject());
 
   EXPECT_EQ(
       (Vector<NGOffsetMappingUnit>{

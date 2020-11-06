@@ -21,10 +21,8 @@ namespace blink {
 
 static LayoutTextFragment* FirstLetterPartFor(
     const LayoutObject* layout_object) {
-  if (!layout_object->IsText())
-    return nullptr;
-  if (const LayoutText* layout_text = ToLayoutTextOrNull(layout_object))
-    return ToLayoutTextFragmentOrNull(layout_text->GetFirstLetterPart());
+  if (const auto* layout_text = DynamicTo<LayoutText>(layout_object))
+    return DynamicTo<LayoutTextFragment>(layout_text->GetFirstLetterPart());
   return nullptr;
 }
 
@@ -68,7 +66,7 @@ class LayoutSelectionTestBase : public EditingTestBase {
     const SelectionState& state = layout_object->GetSelectionState();
     ostream << ", " << state;
     if (layout_object->IsText()) {
-      PrintLayoutTextInfo(selection, ostream, ToLayoutText(*layout_object),
+      PrintLayoutTextInfo(selection, ostream, To<LayoutText>(*layout_object),
                           state);
     }
 

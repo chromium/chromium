@@ -80,7 +80,12 @@ class LayoutTextCombine final : public LayoutText {
   bool is_combined_ : 1;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutTextCombine, IsCombineText());
+template <>
+struct DowncastTraits<LayoutTextCombine> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsCombineText();
+  }
+};
 
 inline LayoutUnit LayoutTextCombine::InlineWidthForLayout() const {
   return LayoutUnit::FromFloatCeil(combined_text_width_);

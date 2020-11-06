@@ -60,10 +60,8 @@ std::pair<unsigned, unsigned> GetTextMatchMarkerPaintOffsets(
 }
 
 DOMNodeId GetNodeHolder(Node* node) {
-  if (node && node->GetLayoutObject()) {
-    DCHECK(node->GetLayoutObject()->IsText());
-    return (ToLayoutText(node->GetLayoutObject()))->EnsureNodeId();
-  }
+  if (node && node->GetLayoutObject())
+    return To<LayoutText>(node->GetLayoutObject())->EnsureNodeId();
   return kInvalidDOMNodeId;
 }
 
@@ -228,7 +226,7 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
   if (!inline_text_box_.IsHorizontal()) {
     if (style_to_use.HasTextCombine() &&
         inline_text_box_.GetLineLayoutItem().IsCombineText()) {
-      combined_text = &ToLayoutTextCombine(InlineLayoutObject());
+      combined_text = &To<LayoutTextCombine>(InlineLayoutObject());
       if (!combined_text->IsCombined())
         combined_text = nullptr;
     }

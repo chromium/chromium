@@ -416,7 +416,7 @@ UBiDiLevel NGInlineCursorPosition::BidiLevel() const {
       NOTREACHED() << this;
       return 0;
     }
-    const LayoutText& layout_text = *ToLayoutText(GetLayoutObject());
+    const auto& layout_text = *To<LayoutText>(GetLayoutObject());
     DCHECK(!layout_text.NeedsLayout()) << this;
     const auto* const items = layout_text.GetNGInlineItems();
     if (!items || items->size() == 0) {

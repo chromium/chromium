@@ -33,12 +33,12 @@ class LayoutTextFragmentTest : public RenderingTest {
   }
 
   const LayoutTextFragment* GetRemainingText() const {
-    return ToLayoutTextFragment(
+    return To<LayoutTextFragment>(
         GetElementById("target")->firstChild()->GetLayoutObject());
   }
 
   const LayoutTextFragment* GetFirstLetter() const {
-    return ToLayoutTextFragment(
+    return To<LayoutTextFragment>(
         AssociatedLayoutObjectOf(*GetElementById("target")->firstChild(), 0));
   }
 };
@@ -408,7 +408,7 @@ TEST_P(ParameterizedLayoutTextFragmentTest, SetTextWithFirstLetter) {
   Text& letter_x = *To<Text>(sample.firstChild());
   ASSERT_TRUE(letter_x.GetLayoutObject()->IsTextFragment());
   EXPECT_TRUE(letter_x.GetLayoutObject()->GetFirstLetterPart());
-  EXPECT_TRUE(ToLayoutTextFragment(letter_x.GetLayoutObject())
+  EXPECT_TRUE(To<LayoutTextFragment>(letter_x.GetLayoutObject())
                   ->IsRemainingTextLayoutObject());
   ASSERT_TRUE(letter_x.GetLayoutObject()->GetFirstLetterPart());
   EXPECT_EQ("a", letter_x.GetLayoutObject()->GetFirstLetterPart()->GetText());
@@ -420,7 +420,7 @@ TEST_P(ParameterizedLayoutTextFragmentTest, SetTextWithFirstLetter) {
   EXPECT_TRUE(letter_a.GetLayoutObject()->IsTextFragment())
       << "'a' is still first-letter";
   EXPECT_TRUE(letter_a.GetLayoutObject()->GetFirstLetterPart());
-  EXPECT_TRUE(ToLayoutTextFragment(letter_a.GetLayoutObject())
+  EXPECT_TRUE(To<LayoutTextFragment>(letter_a.GetLayoutObject())
                   ->IsRemainingTextLayoutObject());
   ASSERT_TRUE(letter_a.GetLayoutObject()->GetFirstLetterPart());
   EXPECT_EQ("a", letter_a.GetLayoutObject()->GetFirstLetterPart()->GetText());
@@ -436,13 +436,13 @@ TEST_P(ParameterizedLayoutTextFragmentTest, SetTextWithFirstLetter) {
   EXPECT_TRUE(letter_a.GetLayoutObject()->IsTextFragment())
       << "We still use LayoutTextFragment for 'a'";
   EXPECT_FALSE(letter_a.GetLayoutObject()->GetFirstLetterPart());
-  EXPECT_FALSE(ToLayoutTextFragment(letter_a.GetLayoutObject())
+  EXPECT_FALSE(To<LayoutTextFragment>(letter_a.GetLayoutObject())
                    ->IsRemainingTextLayoutObject());
-  EXPECT_FALSE(ToLayoutTextFragment(letter_a.GetLayoutObject())
+  EXPECT_FALSE(To<LayoutTextFragment>(letter_a.GetLayoutObject())
                    ->GetFirstLetterPseudoElement());
   ASSERT_TRUE(letter_x.GetLayoutObject()->IsTextFragment())
       << "'x' is first letter-part";
-  EXPECT_TRUE(ToLayoutTextFragment(letter_x.GetLayoutObject())
+  EXPECT_TRUE(To<LayoutTextFragment>(letter_x.GetLayoutObject())
                   ->IsRemainingTextLayoutObject());
   ASSERT_TRUE(letter_x.GetLayoutObject()->GetFirstLetterPart());
   EXPECT_EQ("x", letter_x.GetLayoutObject()->GetFirstLetterPart()->GetText());
@@ -467,7 +467,7 @@ TEST_P(ParameterizedLayoutTextFragmentTest, SplitTextWithZero) {
 
   Text& xy = To<Text>(*sample.lastChild());
   FirstLetterPseudoElement& first_letter_element =
-      *ToLayoutTextFragment(xy.GetLayoutObject())
+      *To<LayoutTextFragment>(xy.GetLayoutObject())
            ->GetFirstLetterPseudoElement();
   EXPECT_EQ(first_letter_element.GetLayoutObject(),
             xy.GetLayoutObject()->PreviousSibling())

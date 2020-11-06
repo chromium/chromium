@@ -399,7 +399,7 @@ int LegacyDOMSnapshotAgent::VisitLayoutTreeNode(LayoutObject* layout_object,
   }
 
   if (layout_object->IsText()) {
-    LayoutText* layout_text = ToLayoutText(layout_object);
+    auto* layout_text = To<LayoutText>(layout_object);
     layout_tree_node->setLayoutText(layout_text->GetText());
     Vector<LayoutText::TextBoxInfo> text_boxes = layout_text->GetTextBoxInfo();
     if (!text_boxes.IsEmpty()) {

@@ -972,7 +972,7 @@ void LayoutInline::CollectCulledLineBoxRectsInFlippedBlocksDirection(
         }
       }
     } else if (curr->IsText()) {
-      LayoutText* curr_text = ToLayoutText(curr);
+      auto* curr_text = To<LayoutText>(curr);
       for (InlineTextBox* child_text : curr_text->TextBoxes()) {
         RootInlineBox& root_box = child_text->Root();
         ComputeItemTopHeight(container, root_box, &logical_top,
@@ -1035,7 +1035,7 @@ PhysicalOffset LayoutInline::AnchorPhysicalLocation() const {
     if (sibling->IsLayoutInline())
       return ToLayoutInline(sibling)->AnchorPhysicalLocation();
     if (sibling->IsText())
-      return ToLayoutText(sibling)->FirstLineBoxTopLeft();
+      return To<LayoutText>(sibling)->FirstLineBoxTopLeft();
     if (sibling->IsBox())
       return ToLayoutBox(sibling)->PhysicalLocation();
   }
@@ -1322,7 +1322,7 @@ InlineBox* LayoutInline::CulledInlineFirstLineBox() const {
       if (result)
         return result;
     } else if (curr->IsText()) {
-      LayoutText* curr_text = ToLayoutText(curr);
+      auto* curr_text = To<LayoutText>(curr);
       if (curr_text->FirstTextBox())
         return curr_text->FirstTextBox();
     }
@@ -1347,7 +1347,7 @@ InlineBox* LayoutInline::CulledInlineLastLineBox() const {
       if (result)
         return result;
     } else if (curr->IsText()) {
-      LayoutText* curr_text = ToLayoutText(curr);
+      auto* curr_text = To<LayoutText>(curr);
       if (curr_text->LastTextBox())
         return curr_text->LastTextBox();
     }
@@ -1395,7 +1395,7 @@ PhysicalRect LayoutInline::CulledInlineVisualOverflowBoundingBox() const {
         result.UniteIfNonZero(curr_inline->PhysicalVisualOverflowRect());
       }
     } else if (curr->IsText()) {
-      LayoutText* curr_text = ToLayoutText(curr);
+      auto* curr_text = To<LayoutText>(curr);
       result.UniteIfNonZero(curr_text->PhysicalVisualOverflowRect());
     }
   }
@@ -1656,7 +1656,7 @@ void LayoutInline::DirtyLineBoxes(bool full_layout) {
           for (InlineFlowBox* child_line : *curr_inline->LineBoxes())
             child_line->Root().MarkDirty();
         } else if (curr->IsText()) {
-          LayoutText* curr_text = ToLayoutText(curr);
+          auto* curr_text = To<LayoutText>(curr);
           for (InlineTextBox* child_text : curr_text->TextBoxes())
             child_text->Root().MarkDirty();
         }

@@ -93,7 +93,7 @@ unsigned FirstLetterPseudoElement::FirstLetterLength(const String& text) {
 // Once we see any of these layoutObjects we can stop looking for first-letter
 // as they signal the end of the first line of text.
 static bool IsInvalidFirstLetterLayoutObject(const LayoutObject* obj) {
-  return (obj->IsBR() || (obj->IsText() && ToLayoutText(obj)->IsWordBreak()));
+  return (obj->IsBR() || (obj->IsText() && To<LayoutText>(obj)->IsWordBreak()));
 }
 
 LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
@@ -133,10 +133,10 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
       // FIXME: If there is leading punctuation in a different LayoutText than
       // the first letter, we'll not apply the correct style to it.
       scoped_refptr<StringImpl> str =
-          ToLayoutText(first_letter_text_layout_object)->IsTextFragment()
-              ? ToLayoutTextFragment(first_letter_text_layout_object)
+          To<LayoutText>(first_letter_text_layout_object)->IsTextFragment()
+              ? To<LayoutTextFragment>(first_letter_text_layout_object)
                     ->CompleteText()
-              : ToLayoutText(first_letter_text_layout_object)->OriginalText();
+              : To<LayoutText>(first_letter_text_layout_object)->OriginalText();
       if (FirstLetterLength(str.get()) ||
           IsInvalidFirstLetterLayoutObject(first_letter_text_layout_object))
         break;
@@ -195,7 +195,7 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
       IsInvalidFirstLetterLayoutObject(first_letter_text_layout_object))
     return nullptr;
 
-  return ToLayoutText(first_letter_text_layout_object);
+  return To<LayoutText>(first_letter_text_layout_object);
 }
 
 FirstLetterPseudoElement::FirstLetterPseudoElement(Element* parent)
@@ -218,9 +218,9 @@ void FirstLetterPseudoElement::UpdateTextFragments() {
 
   for (auto* child = GetLayoutObject()->SlowFirstChild(); child;
        child = child->NextSibling()) {
-    if (!child->IsText() || !ToLayoutText(child)->IsTextFragment())
+    if (!child->IsText() || !To<LayoutText>(child)->IsTextFragment())
       continue;
-    LayoutTextFragment* child_fragment = ToLayoutTextFragment(child);
+    auto* child_fragment = To<LayoutTextFragment>(child);
     if (child_fragment->GetFirstLetterPseudoElement() != this)
       continue;
 
@@ -316,7 +316,10 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(LayoutText* fi
   // DOM node's string. We want the original string before it got transformed in
   // case first-letter has no text-transform or a different text-transform
   // applied to it.
-  String old_text = first_letter_text->IsTextFragment() ? ToLayoutTextFragment(first_letter_text)->CompleteText() : first_letter_text->OriginalText();
+  String old_text =
+      first_letter_text->IsTextFragment()
+          ? To<LayoutTextFragment>(first_letter_text)->CompleteText()
+          : first_letter_text->OriginalText();
   DCHECK(old_text.Impl());
 
   // FIXME: This would already have been calculated in firstLetterLayoutObject.

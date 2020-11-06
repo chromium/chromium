@@ -46,7 +46,7 @@ namespace {
 void InvalidateInlineItems(LayoutObject* object) {
   DCHECK(object->IsInLayoutNGInlineFormattingContext());
 
-  if (auto* layout_text = ToLayoutTextOrNull(object)) {
+  if (auto* layout_text = DynamicTo<LayoutText>(object)) {
     layout_text->InvalidateInlineItems();
   } else if (auto* layout_inline = ToLayoutInlineOrNull(object)) {
     // In some cases, only top-level objects are moved, when |SplitFlow()| moves
@@ -63,7 +63,7 @@ void InvalidateInlineItems(LayoutObject* object) {
     // This LayoutObject is not technically destroyed, but further access should
     // be prohibited when moved to different parent as if it were destroyed.
     if (object->FirstInlineFragmentItemIndex()) {
-      if (auto* text = ToLayoutTextOrNull(object))
+      if (auto* text = DynamicTo<LayoutText>(object))
         text->DetachAbstractInlineTextBoxesIfNeeded();
       NGFragmentItems::LayoutObjectWillBeMoved(*object);
     }

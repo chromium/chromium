@@ -51,13 +51,8 @@ static int CollapsedSpaceLength(LayoutText* layout_text, int text_end) {
 
 static int MaxOffsetIncludingCollapsedSpaces(const Node* node) {
   int offset = CaretMaxOffset(node);
-
-  if (node->GetLayoutObject() && node->GetLayoutObject()->IsText()) {
-    offset +=
-        CollapsedSpaceLength(ToLayoutText(node->GetLayoutObject()), offset) +
-        ToLayoutText(node->GetLayoutObject())->TextStartOffset();
-  }
-
+  if (auto* text = DynamicTo<LayoutText>(node->GetLayoutObject()))
+    offset += CollapsedSpaceLength(text, offset) + text->TextStartOffset();
   return offset;
 }
 
@@ -250,7 +245,7 @@ bool SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::HandleTextNode() {
 template <typename Strategy>
 LayoutText* SimplifiedBackwardsTextIteratorAlgorithm<
     Strategy>::HandleFirstLetter(int& start_offset, int& offset_in_node) {
-  LayoutText* layout_object = ToLayoutText(node_->GetLayoutObject());
+  auto* layout_object = To<LayoutText>(node_->GetLayoutObject());
   start_offset = (node_ == start_node_) ? start_offset_ : 0;
 
   if (!layout_object->IsTextFragment()) {
@@ -258,7 +253,7 @@ LayoutText* SimplifiedBackwardsTextIteratorAlgorithm<
     return layout_object;
   }
 
-  LayoutTextFragment* fragment = ToLayoutTextFragment(layout_object);
+  auto* fragment = To<LayoutTextFragment>(layout_object);
   int offset_after_first_letter = fragment->Start();
   if (start_offset >= offset_after_first_letter) {
     // We'll stop in remaining part.
@@ -286,8 +281,8 @@ LayoutText* SimplifiedBackwardsTextIteratorAlgorithm<
       fragment->GetFirstLetterPseudoElement()->GetLayoutObject();
   DCHECK(pseudo_element_layout_object);
   DCHECK(pseudo_element_layout_object->SlowFirstChild());
-  LayoutText* first_letter_layout_object =
-      ToLayoutText(pseudo_element_layout_object->SlowFirstChild());
+  auto* first_letter_layout_object =
+      To<LayoutText>(pseudo_element_layout_object->SlowFirstChild());
 
   const int end_offset =
       end_node_ == node_ && end_offset_ < offset_after_first_letter

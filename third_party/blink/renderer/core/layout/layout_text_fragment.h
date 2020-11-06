@@ -140,11 +140,15 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
   UntracedMember<FirstLetterPseudoElement> first_letter_pseudo_element_;
 };
 
-DEFINE_TYPE_CASTS(LayoutTextFragment,
-                  LayoutObject,
-                  object,
-                  (object->IsText() && ToLayoutText(object)->IsTextFragment()),
-                  (object.IsText() && ToLayoutText(object).IsTextFragment()));
+template <>
+struct DowncastTraits<LayoutTextFragment> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsText() && To<LayoutText>(object).IsTextFragment();
+  }
+  static bool AllowFrom(const LayoutText& text) {
+    return text.IsTextFragment();
+  }
+};
 
 }  // namespace blink
 

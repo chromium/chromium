@@ -546,7 +546,7 @@ TEST_F(NGInlineNodeTest, MinMaxSizesNeedsLayout) {
 TEST_F(NGInlineNodeTest, AssociatedItemsWithControlItem) {
   SetBodyInnerHTML(
       "<pre id=t style='-webkit-rtl-ordering:visual'>ab\nde</pre>");
-  LayoutText* const layout_text = ToLayoutText(
+  auto* const layout_text = To<LayoutText>(
       GetDocument().getElementById("t")->firstChild()->GetLayoutObject());
   ASSERT_TRUE(layout_text->HasValidInlineItems());
   Vector<const NGInlineItem*> items;
@@ -973,7 +973,7 @@ TEST_F(NGInlineNodeTest, InvalidateSetText) {
   SetupHtml("t", "<div id=t>before</div>");
   EXPECT_FALSE(layout_block_flow_->NeedsCollectInlines());
 
-  LayoutText* text = ToLayoutText(layout_block_flow_->FirstChild());
+  auto* text = To<LayoutText>(layout_block_flow_->FirstChild());
   text->SetTextIfNeeded(String("after").Impl());
   EXPECT_TRUE(layout_block_flow_->NeedsCollectInlines());
 }

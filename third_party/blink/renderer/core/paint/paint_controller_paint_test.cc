@@ -33,7 +33,7 @@ TEST_P(PaintControllerPaintTest, InlineRelayout) {
   auto& div = *To<Element>(GetDocument().body()->firstChild());
   auto& div_block =
       *To<LayoutBlock>(GetDocument().body()->firstChild()->GetLayoutObject());
-  LayoutText& text = *ToLayoutText(div_block.FirstChild());
+  auto& text = *To<LayoutText>(div_block.FirstChild());
   const DisplayItemClient* first_text_box = text.FirstTextBox();
   wtf_size_t first_text_box_fragment_id = 0;
   if (text.IsInLayoutNGInlineFormattingContext()) {
@@ -51,7 +51,7 @@ TEST_P(PaintControllerPaintTest, InlineRelayout) {
   div.setAttribute(html_names::kStyleAttr, "width: 10px; height: 200px");
   UpdateAllLifecyclePhasesForTest();
 
-  LayoutText& new_text = *ToLayoutText(div_block.FirstChild());
+  auto& new_text = *To<LayoutText>(div_block.FirstChild());
   const DisplayItemClient* new_first_text_box = text.FirstTextBox();
   const DisplayItemClient* second_text_box = nullptr;
   wtf_size_t second_text_box_fragment_id = 0;

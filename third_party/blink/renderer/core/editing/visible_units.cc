@@ -528,7 +528,7 @@ bool HasRenderedNonAnonymousDescendantsWithHeight(
   for (LayoutObject* o = layout_object->SlowFirstChild(); o && o != stop;
        o = o->NextInPreOrder()) {
     if (o->NonPseudoNode()) {
-      if ((o->IsText() && ToLayoutText(o)->HasNonCollapsedText()) ||
+      if ((o->IsText() && To<LayoutText>(o)->HasNonCollapsedText()) ||
           (o->IsBox() && ToLayoutBox(o)->PixelSnappedLogicalHeight()) ||
           (o->IsLayoutInline() && IsEmptyInline(LineLayoutItem(o)) &&
            // TODO(crbug.com/771398): Find alternative ways to check whether an
@@ -585,7 +585,7 @@ static bool InRenderedText(const PositionTemplate<Strategy>& position) {
   if (!layout_object)
     return false;
 
-  const LayoutText* text_layout_object = ToLayoutText(layout_object);
+  const auto* text_layout_object = To<LayoutText>(layout_object);
   const int text_offset =
       offset_in_node - text_layout_object->TextStartOffset();
   if (!text_layout_object->ContainsCaretOffset(text_offset))
@@ -759,7 +759,7 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
     // return current position if it is in laid out text
     if (!layout_object->IsText())
       continue;
-    const LayoutText* const text_layout_object = ToLayoutText(layout_object);
+    const auto* const text_layout_object = To<LayoutText>(layout_object);
     if (!text_layout_object->HasNonCollapsedText())
       continue;
     const unsigned text_start_offset = text_layout_object->TextStartOffset();
@@ -798,12 +798,12 @@ namespace {
 bool HasInvisibleFirstLetter(const Node* node) {
   if (!node || !node->IsTextNode())
     return false;
-  const LayoutTextFragment* remaining_text =
-      ToLayoutTextFragmentOrNull(node->GetLayoutObject());
+  const auto* remaining_text =
+      DynamicTo<LayoutTextFragment>(node->GetLayoutObject());
   if (!remaining_text || !remaining_text->IsRemainingTextLayoutObject())
     return false;
-  const LayoutTextFragment* first_letter =
-      ToLayoutTextFragmentOrNull(AssociatedLayoutObjectOf(*node, 0));
+  const auto* first_letter =
+      DynamicTo<LayoutTextFragment>(AssociatedLayoutObjectOf(*node, 0));
   if (!first_letter || first_letter == remaining_text)
     return false;
   return first_letter->StyleRef().Visibility() != EVisibility::kVisible ||
@@ -901,7 +901,7 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
     // return current position if it is in laid out text
     if (!layout_object->IsText())
       continue;
-    const LayoutText* const text_layout_object = ToLayoutText(layout_object);
+    const auto* const text_layout_object = To<LayoutText>(layout_object);
     if (!text_layout_object->HasNonCollapsedText())
       continue;
     const unsigned text_start_offset = text_layout_object->TextStartOffset();
@@ -1300,7 +1300,7 @@ static Vector<FloatQuad> ComputeTextBounds(
     LayoutObject* const layout_object = node.GetLayoutObject();
     if (!layout_object || !layout_object->IsText())
       continue;
-    const LayoutText* layout_text = ToLayoutText(layout_object);
+    const auto* layout_text = To<LayoutText>(layout_object);
     unsigned start_offset =
         node == start_container ? start_position.OffsetInContainerNode() : 0;
     unsigned end_offset = node == end_container

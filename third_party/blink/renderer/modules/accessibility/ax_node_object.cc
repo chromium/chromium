@@ -3208,7 +3208,7 @@ void AXNodeObject::AddInlineTextBoxChildren(bool force) {
     return;
   }
 
-  LayoutText* layout_text = ToLayoutText(GetLayoutObject());
+  auto* layout_text = To<LayoutText>(GetLayoutObject());
   for (scoped_refptr<AbstractInlineTextBox> box =
            layout_text->FirstAbstractInlineTextBox();
        box.get(); box = box->NextInlineTextBox()) {
