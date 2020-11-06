@@ -111,7 +111,6 @@ crbug.com/891861 [ android no-passthrough ] WebglExtension_WEBGL_multi_draw_inst
 
 # Failing new updated tests
 crbug.com/1131224 conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
-crbug.com/1108044 conformance2/renderbuffers/readbuffer.html [ Failure ]
 crbug.com/1108086 [ no-passthrough ] conformance2/renderbuffers/framebuffer-object-attachment.html [ Failure ]
 crbug.com/angleproject/4807 [ win angle-d3d11 passthrough ] conformance2/glsl3/switch-case.html [ Failure ]
 crbug.com/1081973 conformance/buffers/buffer-data-and-buffer-sub-data.html [ Failure ]

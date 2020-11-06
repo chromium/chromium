@@ -699,12 +699,16 @@ void WebGL2RenderingContextBase::readBuffer(GLenum mode) {
     case GL_COLOR_ATTACHMENT0:
       break;
     default:
-      if (mode > GL_COLOR_ATTACHMENT0 &&
-          mode <
-              static_cast<GLenum>(GL_COLOR_ATTACHMENT0 + MaxColorAttachments()))
-        break;
-      SynthesizeGLError(GL_INVALID_ENUM, "readBuffer", "invalid read buffer");
-      return;
+      if (mode < GL_COLOR_ATTACHMENT0 && mode > GL_COLOR_ATTACHMENT0 + 31) {
+        SynthesizeGLError(GL_INVALID_ENUM, "readBuffer", "invalid read buffer");
+        return;
+      } else if (mode >= static_cast<GLenum>(GL_COLOR_ATTACHMENT0 +
+                                             MaxColorAttachments())) {
+        SynthesizeGLError(GL_INVALID_OPERATION, "readBuffer",
+                          "value exceeds MAX_COLOR_ATTACHMENTS");
+        return;
+      }
+      break;
   }
 
   WebGLFramebuffer* read_framebuffer_binding =
