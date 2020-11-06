@@ -549,9 +549,9 @@ bool LocalDiscoveryUIHandler::IsUserProfileRestricted() {
 void LocalDiscoveryUIHandler::StartCloudPrintConnector() {
   Profile* profile = Profile::FromWebUI(web_ui());
 
-  base::Closure cloud_print_callback = base::Bind(
-      &LocalDiscoveryUIHandler::OnCloudPrintPrefsChanged,
-          base::Unretained(this));
+  base::Closure cloud_print_callback =
+      base::BindRepeating(&LocalDiscoveryUIHandler::OnCloudPrintPrefsChanged,
+                          base::Unretained(this));
 
   if (cloud_print_connector_email_.GetPrefName().empty()) {
     cloud_print_connector_email_.Init(

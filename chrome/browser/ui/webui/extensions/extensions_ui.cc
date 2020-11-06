@@ -355,9 +355,9 @@ ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = nullptr;
 
-  in_dev_mode_.Init(
-      prefs::kExtensionsUIDeveloperMode, profile->GetPrefs(),
-      base::Bind(&ExtensionsUI::OnDevModeChanged, base::Unretained(this)));
+  in_dev_mode_.Init(prefs::kExtensionsUIDeveloperMode, profile->GetPrefs(),
+                    base::BindRepeating(&ExtensionsUI::OnDevModeChanged,
+                                        base::Unretained(this)));
 
   source = CreateMdExtensionsSource(profile, *in_dev_mode_);
   ManagedUIHandler::Initialize(web_ui, source);

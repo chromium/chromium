@@ -26,8 +26,10 @@ ProfileInfoWatcher::ProfileInfoWatcher(
   if (profile_manager)
     profile_manager->GetProfileAttributesStorage().AddObserver(this);
 
-  signin_allowed_pref_.Init(prefs::kSigninAllowed, profile_->GetPrefs(),
-      base::Bind(&ProfileInfoWatcher::RunCallback, base::Unretained(this)));
+  signin_allowed_pref_.Init(
+      prefs::kSigninAllowed, profile_->GetPrefs(),
+      base::BindRepeating(&ProfileInfoWatcher::RunCallback,
+                          base::Unretained(this)));
 }
 
 ProfileInfoWatcher::~ProfileInfoWatcher() {

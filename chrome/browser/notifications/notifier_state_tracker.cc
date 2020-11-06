@@ -48,9 +48,8 @@ NotifierStateTracker::NotifierStateTracker(Profile* profile)
       prefs::kMessageCenterDisabledExtensionIds, &disabled_extension_ids_);
 
   disabled_extension_id_pref_.Init(
-      prefs::kMessageCenterDisabledExtensionIds,
-      profile_->GetPrefs(),
-      base::Bind(
+      prefs::kMessageCenterDisabledExtensionIds, profile_->GetPrefs(),
+      base::BindRepeating(
           &NotifierStateTracker::OnStringListPrefChanged,
           base::Unretained(this),
           base::Unretained(prefs::kMessageCenterDisabledExtensionIds),

@@ -178,8 +178,8 @@ BrowserCommandController::BrowserCommandController(Browser* browser)
 #endif
   pref_signin_allowed_.Init(
       prefs::kSigninAllowed, profile()->GetOriginalProfile()->GetPrefs(),
-      base::Bind(&BrowserCommandController::OnSigninAllowedPrefChange,
-                 base::Unretained(this)));
+      base::BindRepeating(&BrowserCommandController::OnSigninAllowedPrefChange,
+                          base::Unretained(this)));
 
   InitCommandState();
 

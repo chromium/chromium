@@ -21,8 +21,9 @@ DesktopBrowserFrameAuraLinux::DesktopBrowserFrameAuraLinux(
   use_custom_frame_pref_.Init(
       prefs::kUseCustomChromeFrame,
       browser_view->browser()->profile()->GetPrefs(),
-      base::Bind(&DesktopBrowserFrameAuraLinux::OnUseCustomChromeFrameChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &DesktopBrowserFrameAuraLinux::OnUseCustomChromeFrameChanged,
+          base::Unretained(this)));
 }
 
 DesktopBrowserFrameAuraLinux::~DesktopBrowserFrameAuraLinux() {}
