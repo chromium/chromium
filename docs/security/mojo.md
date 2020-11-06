@@ -64,8 +64,9 @@ interface Teleporter {
   TeleportGoat(Goat) = ();
   TeleportPlant(Plant) => ();
 
-  // TeleportStats is only non-null if success is true.
-  GetStats() => (bool success, TeleporterStats?);
+  // TeleporterStats will be have a value if and only if the call was
+  // successful.
+  GetStats() => (TeleporterStats?);
 };
 ```
 
@@ -78,7 +79,7 @@ interface Teleporter {
   // supposed to only pass one non-null argument per call?
   Teleport(Animal?, Fungi?, Goat?, Plant?) => ();
 
-  // Does this return all stats if sucess is true? Or just the categories that
+  // Does this return all stats if success is true? Or just the categories that
   // the teleporter already has stats for? The intent is uncertain, so wrapping
   // the disparate values into a result struct would be cleaner.
   GetStats() =>
@@ -114,11 +115,9 @@ interface Teleporter {
   TeleportGoat(Goat) => ();
   TeleportPlant(Plant) => ();
 
-  // Returns current teleportation stats. On failure (e.g. a teleportation
-  // operation is currently in progress) success will be false and a null stats
-  // object will be returned.
-  GetStats() =>
-      (bool success, TeleportationStats?);
+  // Returns current teleporter stats. On failure (e.g. a teleportation
+  // operation is currently in progress) a null stats object will be returned.
+  GetStats() => (TeleporterStats?);
 };
 ```
 
