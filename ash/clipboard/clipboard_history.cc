@@ -84,7 +84,14 @@ void ClipboardHistory::OnClipboardDataChanged() {
 
   ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
   const auto* clipboard_data = clipboard->GetClipboardData(&data_dst);
-  CHECK(clipboard_data);
+  if (!clipboard_data) {
+    // |clipboard_data| is only empty when the Clipboard is cleared. This is
+    // done to prevent data leakage into or from locked forms(Locked Fullscreen
+    // state). Clear ClipboardHistory.
+    commit_data_weak_factory_.InvalidateWeakPtrs();
+    Clear();
+    return;
+  }
 
   // We post commit |clipboard_data| at the end of the current task sequence to
   // debounce the case where multiple copies are programmatically performed.

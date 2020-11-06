@@ -262,4 +262,38 @@ TEST_F(ClipboardHistoryControllerTest, VThenSearchDoesNotShowLauncher) {
       /*display_id=*/base::nullopt));
 }
 
+// Tests that clearing the clipboard clears ClipboardHistory
+TEST_F(ClipboardHistoryControllerTest, ClearClipboardClearsHistory) {
+  // Write a single item to ClipboardHistory.
+  WriteToClipboard("test");
+
+  // Clear the clipboard.
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+  FlushMessageLoop();
+
+  // History should also be cleared.
+  const std::list<ClipboardHistoryItem>& items =
+      Shell::Get()->clipboard_history_controller()->history()->GetItems();
+  EXPECT_EQ(0u, items.size());
+
+  ShowMenu();
+
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+}
+
+// Tests that clearing the clipboard closes the ClipboardHistory menu.
+TEST_F(ClipboardHistoryControllerTest,
+       ClearingClipboardClosesClipboardHistory) {
+  // Write a single item to ClipboardHistory.
+  WriteToClipboard("test");
+
+  ShowMenu();
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+  FlushMessageLoop();
+
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+}
+
 }  // namespace ash

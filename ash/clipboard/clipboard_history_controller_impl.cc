@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
-#include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 #include "ash/clipboard/clipboard_history_resource_manager.h"
 #include "ash/clipboard/clipboard_history_util.h"
@@ -194,9 +193,13 @@ ClipboardHistoryControllerImpl::ClipboardHistoryControllerImpl()
       menu_delegate_(std::make_unique<MenuDelegate>(this)),
       nudge_controller_(
           std::make_unique<ClipboardNudgeController>(clipboard_history_.get(),
-                                                     this)) {}
+                                                     this)) {
+  clipboard_history_->AddObserver(this);
+}
 
-ClipboardHistoryControllerImpl::~ClipboardHistoryControllerImpl() = default;
+ClipboardHistoryControllerImpl::~ClipboardHistoryControllerImpl() {
+  clipboard_history_->RemoveObserver(this);
+}
 
 void ClipboardHistoryControllerImpl::AddObserver(Observer* observer) const {
   observers_.AddObserver(observer);
@@ -257,6 +260,16 @@ void ClipboardHistoryControllerImpl::ShowMenu(
 bool ClipboardHistoryControllerImpl::CanShowMenu() const {
   return !clipboard_history_->IsEmpty() &&
          clipboard_history_->IsEnabledInCurrentMode();
+}
+
+void ClipboardHistoryControllerImpl::OnClipboardHistoryCleared() {
+  // Prevent clipboard contents getting restored if the Clipboard is cleared
+  // soon after a `PasteMenuItemData()`.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  if (!IsMenuShowing())
+    return;
+  context_menu_->Cancel();
+  context_menu_.reset();
 }
 
 void ClipboardHistoryControllerImpl::ExecuteSelectedMenuItem(int event_flags) {

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/memory/weak_ptr.h"
@@ -24,7 +25,6 @@ class Rect;
 
 namespace ash {
 
-class ClipboardHistory;
 class ClipboardHistoryMenuModelAdapter;
 class ClipboardHistoryResourceManager;
 class ClipboardNudgeController;
@@ -32,7 +32,8 @@ class ClipboardNudgeController;
 // Shows a menu with the last few things saved in the clipboard when the
 // keyboard shortcut is pressed.
 class ASH_EXPORT ClipboardHistoryControllerImpl
-    : public ClipboardHistoryController {
+    : public ClipboardHistoryController,
+      public ClipboardHistory::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -87,6 +88,9 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
                 views::MenuAnchorPosition menu_anchor_position,
                 ui::MenuSourceType source_type) override;
   bool CanShowMenu() const override;
+
+  // ClipboardHistory::Observer:
+  void OnClipboardHistoryCleared() override;
 
   void ExecuteSelectedMenuItem(int event_flags);
 

@@ -17,6 +17,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -220,6 +221,36 @@ TEST_F(ClipboardHistoryTest, ClearHistoryBasic) {
 
   clipboard_history()->Clear();
   EnsureTextHistory(expected_strings);
+}
+
+// Tests that there is no crash when an empty clipboard is cleared with empty
+// clipboard history.
+TEST_F(ClipboardHistoryTest, ClearHistoryFromClipboardNoHistory) {
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+}
+
+// Tests that clipboard history is cleared when the clipboard is cleared.
+TEST_F(ClipboardHistoryTest, ClearHistoryFromClipboardWithHistory) {
+  std::vector<base::string16> input_strings{base::UTF8ToUTF16("test1"),
+                                            base::UTF8ToUTF16("test2")};
+
+  std::vector<base::string16> expected_strings_before_clear{
+      base::UTF8ToUTF16("test2"), base::UTF8ToUTF16("test1")};
+  std::vector<base::string16> expected_strings_after_clear{};
+
+  for (const auto& input_string : input_strings) {
+    {
+      ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+      scw.WriteText(input_string);
+    }
+    base::RunLoop().RunUntilIdle();
+  }
+
+  EnsureTextHistory(expected_strings_before_clear);
+
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+
+  EnsureTextHistory(expected_strings_after_clear);
 }
 
 // Tests that the limit of clipboard history is respected.
