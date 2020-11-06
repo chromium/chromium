@@ -122,8 +122,11 @@ class VPNListProviderEntry : public views::View {
 
     // Add the VPN label.
     views::Label* label = TrayPopupUtils::CreateDefaultLabel();
-    TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::SUB_HEADER);
-    style.SetupLabel(label);
+    auto* color_provider = AshColorProvider::Get();
+    label->SetEnabledColor(color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    TrayPopupUtils::SetLabelFontList(label,
+                                     TrayPopupUtils::FontStyle::kSubHeader);
     label->SetText(base::ASCIIToUTF16(name));
     tri_view->AddView(TriView::Container::CENTER, label);
 
@@ -134,7 +137,7 @@ class VPNListProviderEntry : public views::View {
     }
 
     // Add the VPN add button.
-    const SkColor image_color = AshColorProvider::Get()->GetContentLayerColor(
+    const SkColor image_color = color_provider->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kIconColorProminent);
 
     const gfx::ImageSkia enabled_icon =

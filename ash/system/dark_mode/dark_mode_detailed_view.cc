@@ -9,7 +9,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_detailed_view.h"
-#include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -41,11 +40,20 @@ class TrayRadioButton : public views::RadioButton {
   // views::RadioButton:
   void OnThemeChanged() override {
     views::RadioButton::OnThemeChanged();
-    TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::SMALL_TITLE);
-    SetEnabledTextColors(style.GetTextColor());
-    style.SetupLabel(label());
+    SetEnabledTextColors(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    TrayPopupUtils::SetLabelFontList(label(),
+                                     TrayPopupUtils::FontStyle::kSmallTitle);
   }
 };
+
+void SetupLabel(views::Label* label) {
+  label->SetBorder(views::CreateEmptyBorder(kTraySubLabelPadding));
+  label->SetMultiLine(true);
+  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary));
+}
 
 }  // namespace
 
@@ -81,7 +89,7 @@ void DarkModeDetailedView::CreateItems() {
                               base::Unretained(AshColorProvider::Get()), true),
           l10n_util::GetStringUTF16(
               IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_THEMED_TITLE)));
-  TrayPopupUtils::SetupTraySubLabel(scroll_content()->AddChildView(
+  SetupLabel(scroll_content()->AddChildView(
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_THEMED_DESCRIPTION))));
 
@@ -91,7 +99,7 @@ void DarkModeDetailedView::CreateItems() {
                               base::Unretained(AshColorProvider::Get()), false),
           l10n_util::GetStringUTF16(
               IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_NEUTRAL_TITLE)));
-  TrayPopupUtils::SetupTraySubLabel(scroll_content()->AddChildView(
+  SetupLabel(scroll_content()->AddChildView(
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_NEUTRAL_DESCRIPTION))));
 

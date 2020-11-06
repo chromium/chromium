@@ -13,7 +13,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/scoped_light_mode_as_default.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
-#include "ash/system/tray/tray_popup_item_style.h"
+#include "ash/system/tray/tray_popup_utils.h"
 #include "base/containers/adapters.h"
 #include "base/i18n/rtl.h"
 #include "ui/compositor/canvas_painter.h"
@@ -212,9 +212,8 @@ class DragImageItemChipView : public DragImageItemView {
     label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
     layout->SetFlexForView(label, 1);
 
-    TrayPopupItemStyle(TrayPopupItemStyle::FontStyle::DETAILED_VIEW_LABEL)
-        .SetupLabel(label);
-
+    TrayPopupUtils::SetLabelFontList(
+        label, TrayPopupUtils::FontStyle::kDetailedViewLabel);
     ScopedLightModeAsDefault scoped_light_mode;
     label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
@@ -293,13 +292,9 @@ class DragImageOverflowBadge : public views::View {
     // Label.
     auto* label = AddChildView(std::make_unique<views::Label>());
     label->SetText(base::UTF8ToUTF16(base::NumberToString(count)));
-
-    TrayPopupItemStyle(TrayPopupItemStyle::FontStyle::DETAILED_VIEW_LABEL)
-        .SetupLabel(label);
-
     label->SetEnabledColor(gfx::kGoogleGrey200);
-    label->SetFontList(
-        label->font_list().DeriveWithWeight(gfx::Font::Weight::MEDIUM));
+    TrayPopupUtils::SetLabelFontList(label,
+                                     TrayPopupUtils::FontStyle::kSmallTitle);
   }
 };
 

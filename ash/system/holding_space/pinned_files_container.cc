@@ -14,10 +14,11 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 #include "ash/system/holding_space/holding_space_item_chips_container.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/tray/tray_popup_item_style.h"
+#include "ash/system/tray/tray_popup_utils.h"
 #include "base/containers/adapters.h"
 #include "base/optional.h"
 #include "components/prefs/pref_service.h"
@@ -94,8 +95,11 @@ PinnedFilesContainer::PinnedFilesContainer(
   title_label->SetPaintToLayer();
   title_label->layer()->SetFillsBoundsOpaquely(false);
 
-  TrayPopupItemStyle(TrayPopupItemStyle::FontStyle::SUB_HEADER)
-      .SetupLabel(title_label);
+  auto label_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary);
+  title_label->SetEnabledColor(label_color);
+  TrayPopupUtils::SetLabelFontList(title_label,
+                                   TrayPopupUtils::FontStyle::kSubHeader);
 
   if (!HasEverPinnedHoldingSpaceItem()) {
     empty_prompt_label_ = AddChildView(std::make_unique<views::Label>(
@@ -105,9 +109,9 @@ PinnedFilesContainer::PinnedFilesContainer(
     empty_prompt_label_->SetMultiLine(true);
     empty_prompt_label_->SetPaintToLayer();
     empty_prompt_label_->layer()->SetFillsBoundsOpaquely(false);
-
-    TrayPopupItemStyle(TrayPopupItemStyle::FontStyle::DETAILED_VIEW_LABEL)
-        .SetupLabel(empty_prompt_label_);
+    empty_prompt_label_->SetEnabledColor(label_color);
+    TrayPopupUtils::SetLabelFontList(
+        empty_prompt_label_, TrayPopupUtils::FontStyle::kDetailedViewLabel);
   }
 
   auto* scroll_view = AddChildView(std::make_unique<HoldingSpaceScrollView>());

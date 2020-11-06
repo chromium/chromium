@@ -1327,8 +1327,6 @@ component("ash") {
     "system/tray/tray_item_view.cc",
     "system/tray/tray_item_view.h",
     "system/tray/tray_popup_ink_drop_style.h",
-    "system/tray/tray_popup_item_style.cc",
-    "system/tray/tray_popup_item_style.h",
     "system/tray/tray_popup_utils.cc",
     "system/tray/tray_popup_utils.h",
     "system/tray/tray_utils.cc",

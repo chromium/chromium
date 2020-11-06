@@ -13,7 +13,6 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/system_menu_button.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/containers/adapters.h"
@@ -364,9 +363,10 @@ void TrayDetailedView::SetupConnectedScrollListItem(
         IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CONNECTED));
   }
 
-  TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::CAPTION);
-  style.set_color_style(TrayPopupItemStyle::ColorStyle::CONNECTED);
-  style.SetupLabel(view->sub_text_label());
+  view->sub_text_label()->SetAutoColorReadabilityEnabled(false);
+  view->sub_text_label()->SetEnabledColor(
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPositive));
 }
 
 void TrayDetailedView::SetupConnectingScrollListItem(HoverHighlightView* view) {
@@ -381,15 +381,18 @@ TriView* TrayDetailedView::AddScrollListSubHeader(const gfx::VectorIcon& icon,
   TriView* header = TrayPopupUtils::CreateSubHeaderRowView(true);
   TrayPopupUtils::ConfigureAsStickyHeader(header);
 
+  auto* color_provider = AshColorProvider::Get();
   views::Label* label = TrayPopupUtils::CreateDefaultLabel();
   label->SetText(l10n_util::GetStringUTF16(text_id));
-  TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::SUB_HEADER);
-  style.SetupLabel(label);
+  label->SetEnabledColor(color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  TrayPopupUtils::SetLabelFontList(label,
+                                   TrayPopupUtils::FontStyle::kSubHeader);
   header->AddView(TriView::Container::CENTER, label);
 
   views::ImageView* image_view = TrayPopupUtils::CreateMainImageView();
   image_view->SetImage(gfx::CreateVectorIcon(
-      icon, AshColorProvider::Get()->GetContentLayerColor(
+      icon, color_provider->GetContentLayerColor(
                 AshColorProvider::ContentLayerType::kIconColorPrimary)));
   header->AddView(TriView::Container::START, image_view);
 

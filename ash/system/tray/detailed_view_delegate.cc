@@ -9,7 +9,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/collapse_button.h"
 #include "ash/system/unified/top_shortcut_button.h"
@@ -131,10 +130,10 @@ TriView* DetailedViewDelegate::CreateTitleRow(int string_id) {
 
   auto* label = TrayPopupUtils::CreateDefaultLabel();
   label->SetText(l10n_util::GetStringUTF16(string_id));
-  TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::TITLE);
-  style.SetupLabel(label);
+  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  TrayPopupUtils::SetLabelFontList(label, TrayPopupUtils::FontStyle::kTitle);
   tri_view->AddView(TriView::Container::CENTER, label);
-
   tri_view->SetContainerVisible(TriView::Container::END, false);
   tri_view->SetBorder(
       views::CreateEmptyBorder(kUnifiedDetailedViewTitlePadding));

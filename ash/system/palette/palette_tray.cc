@@ -23,7 +23,6 @@
 #include "ash/system/palette/palette_welcome_bubble.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_container.h"
-#include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/top_shortcut_button.h"
@@ -99,32 +98,30 @@ class TitleView : public views::View {
         views::BoxLayout::CrossAxisAlignment::kCenter);
     views::BoxLayout* layout_ptr = SetLayoutManager(std::move(box_layout));
 
-    auto* title_label =
-        new views::Label(l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE));
+    auto* title_label = AddChildView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE)));
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    AddChildView(title_label);
-    TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::SMALL_TITLE);
-    style.SetupLabel(title_label);
+    title_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    TrayPopupUtils::SetLabelFontList(title_label,
+                                     TrayPopupUtils::FontStyle::kSmallTitle);
     layout_ptr->SetFlexForView(title_label, 1);
-    help_button_ = new TopShortcutButton(
+    help_button_ = AddChildView(std::make_unique<TopShortcutButton>(
         base::BindRepeating(
             &TitleView::ButtonPressed, base::Unretained(this),
             PaletteTrayOptions::PALETTE_HELP_BUTTON,
             base::BindRepeating(
                 &SystemTrayClient::ShowPaletteHelp,
                 base::Unretained(Shell::Get()->system_tray_model()->client()))),
-        kSystemMenuHelpIcon, IDS_ASH_STATUS_TRAY_HELP);
-    settings_button_ = new TopShortcutButton(
+        kSystemMenuHelpIcon, IDS_ASH_STATUS_TRAY_HELP));
+    settings_button_ = AddChildView(std::make_unique<TopShortcutButton>(
         base::BindRepeating(
             &TitleView::ButtonPressed, base::Unretained(this),
             PaletteTrayOptions::PALETTE_SETTINGS_BUTTON,
             base::BindRepeating(
                 &SystemTrayClient::ShowPaletteSettings,
                 base::Unretained(Shell::Get()->system_tray_model()->client()))),
-        kSystemMenuSettingsIcon, IDS_ASH_PALETTE_SETTINGS);
-
-    AddChildView(help_button_);
-    AddChildView(settings_button_);
+        kSystemMenuSettingsIcon, IDS_ASH_PALETTE_SETTINGS));
   }
 
   ~TitleView() override = default;

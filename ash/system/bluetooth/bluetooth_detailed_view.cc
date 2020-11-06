@@ -17,7 +17,6 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_info_label.h"
-#include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
@@ -82,21 +81,24 @@ views::View* CreateDisabledPanel() {
       views::BoxLayout::MainAxisAlignment::kCenter);
   container->SetLayoutManager(std::move(box_layout));
 
-  TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::DETAILED_VIEW_LABEL);
-  style.set_color_style(TrayPopupItemStyle::ColorStyle::DISABLED);
-
-  views::ImageView* image_view = new views::ImageView;
-  image_view->SetImage(gfx::CreateVectorIcon(kSystemMenuBluetoothDisabledIcon,
-                                             style.GetIconColor()));
+  auto* color_provider = AshColorProvider::Get();
+  auto* image_view =
+      container->AddChildView(std::make_unique<views::ImageView>());
+  image_view->SetImage(gfx::CreateVectorIcon(
+      kSystemMenuBluetoothDisabledIcon,
+      AshColorProvider::GetDisabledColor(color_provider->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary))));
   image_view->SetVerticalAlignment(views::ImageView::Alignment::kTrailing);
-  container->AddChildView(image_view);
 
-  views::Label* label = new views::Label(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED));
-  style.SetupLabel(label);
+  auto* label = container->AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED)));
+  label->SetEnabledColor(
+      AshColorProvider::GetDisabledColor(color_provider->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPrimary)));
+  TrayPopupUtils::SetLabelFontList(
+      label, TrayPopupUtils::FontStyle::kDetailedViewLabel);
   label->SetBorder(views::CreateEmptyBorder(
       kDisabledPanelLabelBaselineY - label->GetBaseline(), 0, 0, 0));
-  container->AddChildView(label);
 
   // Make top padding of the icon equal to the height of the label so that the
   // icon is vertically aligned to center of the container.

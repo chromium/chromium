@@ -17,7 +17,6 @@
 #include "ash/system/tray/actionable_view.h"
 #include "ash/system/tray/system_menu_button.h"
 #include "ash/system/tray/tray_detailed_view.h"
-#include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/metrics/histogram_macros.h"
@@ -87,10 +86,10 @@ class ImeListItemView : public ActionableView {
     // The label shows the IME full name.
     auto* label_view = TrayPopupUtils::CreateDefaultLabel();
     label_view->SetText(label);
-    TrayPopupItemStyle style(
-        TrayPopupItemStyle::FontStyle::DETAILED_VIEW_LABEL);
-    style.SetupLabel(label_view);
-
+    label_view->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    TrayPopupUtils::SetLabelFontList(
+        label_view, TrayPopupUtils::FontStyle::kDetailedViewLabel);
     label_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     tri_view->AddView(TriView::Container::CENTER, label_view);
 
@@ -155,11 +154,12 @@ class KeyboardStatusRow : public views::View {
     TriView* tri_view = TrayPopupUtils::CreateDefaultRowView();
     AddChildView(tri_view);
 
+    auto* color_provider = AshColorProvider::Get();
     // The on-screen keyboard image button.
     views::ImageView* keyboard_image = TrayPopupUtils::CreateMainImageView();
     keyboard_image->SetImage(gfx::CreateVectorIcon(
         kImeMenuOnScreenKeyboardIcon, kMenuIconSize,
-        AshColorProvider::Get()->GetContentLayerColor(
+        color_provider->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kIconColorPrimary)));
     tri_view->AddView(TriView::Container::START, keyboard_image);
 
@@ -167,9 +167,10 @@ class KeyboardStatusRow : public views::View {
     auto* label = TrayPopupUtils::CreateDefaultLabel();
     label->SetText(ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
         IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD));
-    TrayPopupItemStyle style(
-        TrayPopupItemStyle::FontStyle::DETAILED_VIEW_LABEL);
-    style.SetupLabel(label);
+    label->SetEnabledColor(color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    TrayPopupUtils::SetLabelFontList(
+        label, TrayPopupUtils::FontStyle::kDetailedViewLabel);
     tri_view->AddView(TriView::Container::CENTER, label);
 
     // The on-screen keyboard toggle button.

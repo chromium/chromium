@@ -9,11 +9,13 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/palette/palette_ids.h"
 #include "ash/system/palette/palette_utils.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/system/tray/tray_popup_utils.h"
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
@@ -218,15 +220,23 @@ void MetalayerMode::UpdateView() {
   highlight_view_->SetAccessibleName(text);
 
   highlight_view_->SetEnabled(selectable());
-  TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::DETAILED_VIEW_LABEL);
-  style.set_color_style(highlight_view_->GetEnabled()
-                            ? TrayPopupItemStyle::ColorStyle::ACTIVE
-                            : TrayPopupItemStyle::ColorStyle::DISABLED);
+  const bool enabled = highlight_view_->GetEnabled();
+  auto* color_provider = AshColorProvider::Get();
+  auto label_color = color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary);
+  if (!enabled)
+    label_color = AshColorProvider::GetDisabledColor(label_color);
+  highlight_view_->text_label()->SetEnabledColor(label_color);
+  TrayPopupUtils::SetLabelFontList(
+      highlight_view_->text_label(),
+      TrayPopupUtils::FontStyle::kDetailedViewLabel);
 
-  style.SetupLabel(highlight_view_->text_label());
-
+  auto icon_color = color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
+  if (!enabled)
+    icon_color = AshColorProvider::GetDisabledColor(icon_color);
   highlight_view_->left_icon()->SetImage(
-      CreateVectorIcon(GetPaletteIcon(), kMenuIconSize, style.GetIconColor()));
+      CreateVectorIcon(GetPaletteIcon(), kMenuIconSize, icon_color));
 }
 
 void MetalayerMode::OnMetalayerSessionComplete() {

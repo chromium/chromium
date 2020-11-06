@@ -25,7 +25,6 @@
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
-#include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/top_shortcut_button.h"
@@ -116,26 +115,27 @@ class ImeMenuImageView : public views::ImageView {
 // The view that contains IME menu title.
 class ImeTitleView : public views::View {
  public:
-  explicit ImeTitleView() {
+  ImeTitleView() {
+    auto* color_provider = AshColorProvider::Get();
     SetBorder(views::CreatePaddedBorder(
         views::CreateSolidSidedBorder(
             0, 0, kMenuSeparatorWidth, 0,
-            AshColorProvider::Get()->GetContentLayerColor(
+            color_provider->GetContentLayerColor(
                 AshColorProvider::ContentLayerType::kSeparatorColor)),
         gfx::Insets(kMenuSeparatorVerticalPadding - kMenuSeparatorWidth, 0)));
     auto box_layout = std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal, kTitleViewPadding);
     box_layout->set_minimum_cross_axis_size(kTrayPopupItemMinHeight);
     views::BoxLayout* layout_ptr = SetLayoutManager(std::move(box_layout));
-    auto* title_label =
-        new views::Label(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME));
+    auto* title_label = AddChildView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME)));
     title_label->SetBorder(
         views::CreateEmptyBorder(0, kMenuEdgeEffectivePadding, 1, 0));
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::SUB_HEADER);
-    style.SetupLabel(title_label);
-
-    AddChildView(title_label);
+    title_label->SetEnabledColor(color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    TrayPopupUtils::SetLabelFontList(title_label,
+                                     TrayPopupUtils::FontStyle::kSubHeader);
     layout_ptr->SetFlexForView(title_label, 1);
 
     settings_button_ = AddChildView(std::make_unique<TopShortcutButton>(

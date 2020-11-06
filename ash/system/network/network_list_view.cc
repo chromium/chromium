@@ -23,7 +23,6 @@
 #include "ash/system/power/power_status.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_info_label.h"
-#include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/i18n/number_formatting.h"
@@ -656,8 +655,11 @@ TriView* NetworkListView::CreateConnectionWarning() {
   label->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MONITORED_WARNING));
   label->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
-  TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::DETAILED_VIEW_LABEL);
-  style.SetupLabel(label);
+  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  TrayPopupUtils::SetLabelFontList(
+      label, TrayPopupUtils::FontStyle::kDetailedViewLabel);
+
   connection_warning->AddView(TriView::Container::CENTER, label);
   connection_warning->SetContainerBorder(
       TriView::Container::CENTER, views::CreateEmptyBorder(gfx::Insets(

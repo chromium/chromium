@@ -19,7 +19,7 @@
 #include "ash/system/holding_space/holding_space_item_chips_container.h"
 #include "ash/system/holding_space/holding_space_item_screen_capture_view.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/tray/tray_popup_item_style.h"
+#include "ash/system/tray/tray_popup_utils.h"
 #include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -41,8 +41,10 @@ namespace {
 
 // Sets up the specified `label`.
 void SetupLabel(views::Label* label) {
-  TrayPopupItemStyle(TrayPopupItemStyle::FontStyle::SUB_HEADER)
-      .SetupLabel(label);
+  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  TrayPopupUtils::SetLabelFontList(label,
+                                   TrayPopupUtils::FontStyle::kSubHeader);
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 }
 

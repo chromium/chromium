@@ -12,7 +12,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/tray/tray_popup_item_style.h"
+#include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/rounded_label_button.h"
 #include "base/strings/string16.h"
 #include "skia/ext/image_operations.h"
@@ -108,14 +108,14 @@ void PhoneHubInterstitialView::InitLayout(bool show_progress) {
   AddColumnWithSidePadding(layout, kBubbleHorizontalSidePaddingDip,
                            kSecondColumnSetId);
 
+  auto* color_provider = AshColorProvider::Get();
   if (show_progress) {
     // Set up layout row for the progress bar if |show_progess| is true.
     layout->StartRow(views::GridLayout::kFixedSize, kFirstColumnSetId);
     progress_bar_ = layout->AddView(
         std::make_unique<views::ProgressBar>(kProgressBarHeightDip));
-    progress_bar_->SetForegroundColor(
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorProminent));
+    progress_bar_->SetForegroundColor(color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kIconColorProminent));
     progress_bar_->SetValue(kInfiniteLoadingProgressValue);
   }
 
@@ -130,15 +130,18 @@ void PhoneHubInterstitialView::InitLayout(bool show_progress) {
                       views::GridLayout::LEADING, views::GridLayout::CENTER);
   title_->SetLineHeight(kTitleLabelLineHeightDip);
   title_->SetBorder(views::CreateEmptyBorder(kTextLabelInsetsDip));
-  TrayPopupItemStyle title_style(TrayPopupItemStyle::FontStyle::SUB_HEADER);
-  title_style.SetupLabel(title_);
+  auto label_color = color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary);
+  title_->SetEnabledColor(label_color);
+  TrayPopupUtils::SetLabelFontList(title_,
+                                   TrayPopupUtils::FontStyle::kSubHeader);
 
   // Set up layout row for the multi-line description view.
   layout->StartRow(views::GridLayout::kFixedSize, kSecondColumnSetId);
   description_ = layout->AddView(std::make_unique<views::Label>());
-  TrayPopupItemStyle body_style(
-      TrayPopupItemStyle::FontStyle::DETAILED_VIEW_LABEL);
-  body_style.SetupLabel(description_);
+  description_->SetEnabledColor(label_color);
+  TrayPopupUtils::SetLabelFontList(
+      description_, TrayPopupUtils::FontStyle::kDetailedViewLabel);
   description_->SetBorder(views::CreateEmptyBorder(kTextLabelInsetsDip));
   description_->SetMultiLine(true);
   description_->SetLineHeight(kDescriptionLabelLineHeightDip);
