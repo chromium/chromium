@@ -4,6 +4,8 @@
 
 import argparse
 import logging
+import os
+import shutil
 import sys
 
 from test.integration_tests.common import path_finder
@@ -15,11 +17,14 @@ class Context(object):
   def __init__(self, build_dir):
     self.build_dir = build_dir
 
+def copy_file(source, destination):
+  shutil.copyfile(source, destination)
 
 def main():
   parser = typ.ArgumentParser()
   parser.add_argument('--build-dir',
                       help='Specifies chromium build directory.')
+  parser.add_argument('--target-gen-dir')
 
   runner = typ.Runner()
 
@@ -36,6 +41,21 @@ def main():
   else:
     level = logging.INFO
   logging.basicConfig(level=level)
+
+  # copy dynamically generated updater version_info.py from
+  # target gen directory to
+  # //chrome/updater/test/integration_tests/updater so that
+  # it can be imported as a module during test runs.
+  target_gen_dir_abs_path = os.path.abspath(runner.args.target_gen_dir)
+  version_file_path = os.path.join(target_gen_dir_abs_path, 'gen',
+                                   'chrome', 'updater', 'version_info.py')
+  if os.path.exists(version_file_path):
+    dest = os.path.join(path_finder.get_integration_tests_dir(),
+                        'updater', 'version_info.py')
+    copy_file(version_file_path, dest)
+  else:
+    logging.info('File not found: %s' % version_file_path)
+    return -1
 
   runner.context = Context(runner.args.build_dir)
   return runner.run()[0]
