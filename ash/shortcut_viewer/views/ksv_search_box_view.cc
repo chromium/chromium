@@ -4,6 +4,7 @@
 
 #include "ash/shortcut_viewer/views/ksv_search_box_view.h"
 
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/search_box/search_box_view_delegate.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
 #include "ash/shortcut_viewer/vector_icons/vector_icons.h"
@@ -20,9 +21,6 @@ namespace keyboard_shortcut_viewer {
 
 namespace {
 
-constexpr SkColor kDefaultSearchBoxBackgroundColor =
-    SkColorSetARGB(0x28, 0x5F, 0x63, 0x68);
-
 constexpr int kIconSize = 20;
 
 // Border corner radius of the search box.
@@ -33,16 +31,21 @@ constexpr int kBorderCornerRadius = 32;
 KSVSearchBoxView::KSVSearchBoxView(ash::SearchBoxViewDelegate* delegate)
     : ash::SearchBoxViewBase(delegate) {
   SetSearchBoxBackgroundCornerRadius(kBorderCornerRadius);
-  UpdateBackgroundColor(kDefaultSearchBoxBackgroundColor);
+  UpdateBackgroundColor(
+      ash::AppListColorProvider::Get()->GetSearchBoxBackgroundColor());
   search_box()->SetBackgroundColor(SK_ColorTRANSPARENT);
-  search_box()->SetColor(gfx::kGoogleGrey900);
+  search_box()->SetColor(
+      ash::AppListColorProvider::Get()->GetSearchBoxTextColor(
+          gfx::kGoogleGrey900));
   SetPlaceholderTextAttributes();
   const base::string16 search_box_name(
       l10n_util::GetStringUTF16(IDS_KSV_SEARCH_BOX_ACCESSIBILITY_NAME));
   search_box()->SetPlaceholderText(search_box_name);
   search_box()->SetAccessibleName(search_box_name);
-  SetSearchIconImage(
-      gfx::CreateVectorIcon(kKsvSearchBarIcon, gfx::kGoogleGrey900));
+  SetSearchIconImage(gfx::CreateVectorIcon(
+      kKsvSearchBarIcon,
+      ash::AppListColorProvider::Get()->GetSearchBoxIconColor(
+          gfx::kGoogleGrey900)));
 }
 
 gfx::Size KSVSearchBoxView::CalculatePreferredSize() const {
@@ -95,7 +98,8 @@ void KSVSearchBoxView::UpdateSearchBoxBorder() {
   }
   SetBorder(views::CreateRoundedRectBorder(
       kBorderThichness, kBorderCornerRadius, SK_ColorTRANSPARENT));
-  UpdateBackgroundColor(kDefaultSearchBoxBackgroundColor);
+  UpdateBackgroundColor(
+      ash::AppListColorProvider::Get()->GetSearchBoxBackgroundColor());
 }
 
 void KSVSearchBoxView::SetupCloseButton() {
@@ -144,7 +148,9 @@ void KSVSearchBoxView::OnSearchBoxActiveChanged(bool active) {
 }
 
 void KSVSearchBoxView::SetPlaceholderTextAttributes() {
-  search_box()->set_placeholder_text_color(ash::kZeroQuerySearchboxColor);
+  search_box()->set_placeholder_text_color(
+      ash::AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
+          ash::kZeroQuerySearchboxColor));
   search_box()->set_placeholder_text_draw_flags(
       base::i18n::IsRTL() ? gfx::Canvas::TEXT_ALIGN_RIGHT
                           : gfx::Canvas::TEXT_ALIGN_LEFT);

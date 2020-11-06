@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/search_box/search_box_view_delegate.h"
 #include "base/macros.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -233,7 +234,8 @@ SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
   AddChildView(content_container_);
 
   content_container_->SetBackground(std::make_unique<SearchBoxBackground>(
-      kSearchBoxBorderCornerRadius, kSearchBoxBackgroundDefault));
+      kSearchBoxBorderCornerRadius,
+      ash::AppListColorProvider::Get()->GetSearchBoxBackgroundColor()));
 
   box_layout_ =
       content_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -260,7 +262,8 @@ SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
   search_icon_ = new views::ImageView();
   content_container_->AddChildView(search_icon_);
   search_box_->set_placeholder_text_color(
-      kDefaultSearchboxPlaceholderTextColor);
+      ash::AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
+          kDefaultSearchboxPlaceholderTextColor));
   search_box_->set_placeholder_text_draw_flags(gfx::Canvas::TEXT_ALIGN_CENTER);
   search_box_->SetFontList(search_box_->GetFontList().DeriveWithSizeDelta(2));
   search_box_->SetCursorEnabled(is_search_box_active_);
@@ -335,14 +338,16 @@ void SearchBoxViewBase::SetSearchBoxActive(bool active,
 
   is_search_box_active_ = active;
   UpdateSearchIcon();
-  UpdateBackgroundColor(kSearchBoxBackgroundDefault);
+  UpdateBackgroundColor(
+      ash::AppListColorProvider::Get()->GetSearchBoxBackgroundColor());
   search_box_->set_placeholder_text_draw_flags(
       active ? (base::i18n::IsRTL() ? gfx::Canvas::TEXT_ALIGN_RIGHT
                                     : gfx::Canvas::TEXT_ALIGN_LEFT)
              : gfx::Canvas::TEXT_ALIGN_CENTER);
   search_box_->set_placeholder_text_color(
-      active ? kZeroQuerySearchboxColor
-             : kDefaultSearchboxPlaceholderTextColor);
+      ash::AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
+          active ? kZeroQuerySearchboxColor
+                 : kDefaultSearchboxPlaceholderTextColor));
   search_box_->SetCursorEnabled(active);
 
   if (active) {
