@@ -110,6 +110,8 @@ PhoneStatusView::PhoneStatusView(chromeos::phonehub::PhoneModel* phone_model,
       battery_label_(new views::Label) {
   DCHECK(delegate);
 
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
   SetID(PhoneHubViewID::kPhoneStatusView);
 
   SetBorder(views::CreateEmptyBorder(kBorderInsets));

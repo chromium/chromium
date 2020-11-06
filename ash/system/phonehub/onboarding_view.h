@@ -31,11 +31,16 @@ class ASH_EXPORT OnboardingView : public PhoneHubContentView {
  public:
   METADATA_HEADER(OnboardingView);
 
+  class Delegate {
+   public:
+    virtual void HideStatusHeaderView() = 0;
+  };
+
   // The different onboarding flows that are supported.
   enum OnboardingFlow { kExistingMultideviceUser = 0, kNewMultideviceUser };
 
   OnboardingView(chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker,
-                 TrayBubbleView* bubble_view,
+                 Delegate* delegate,
                  OnboardingFlow onboarding_flow);
   OnboardingView(const OnboardingView&) = delete;
   OnboardingView& operator=(const OnboardingView&) = delete;
@@ -55,7 +60,7 @@ class ASH_EXPORT OnboardingView : public PhoneHubContentView {
   PhoneHubInterstitialView* main_view_ = nullptr;
 
   chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker_ = nullptr;
-  TrayBubbleView* bubble_view_ = nullptr;
+  Delegate* delegate_ = nullptr;
 };
 
 }  // namespace ash

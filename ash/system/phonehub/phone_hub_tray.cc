@@ -111,7 +111,7 @@ void PhoneHubTray::OnPhoneHubUiStateChanged() {
 
   DCHECK(ui_controller_.get());
   std::unique_ptr<PhoneHubContentView> content_view =
-      ui_controller_->CreateContentView(bubble_view);
+      ui_controller_->CreateContentView(this);
   if (!content_view.get()) {
     CloseBubble();
     return;
@@ -168,20 +168,16 @@ void PhoneHubTray::ShowBubble(bool show_by_click) {
   bubble_view->set_margins(GetSecondaryBubbleInsets());
   bubble_view->SetBorder(views::CreateEmptyBorder(kBubblePadding));
 
-  // We will always have this phone status view on top of the bubble view
-  // to display any available phone status and the settings icon.
-  std::unique_ptr<views::View> phone_status =
-      ui_controller_->CreateStatusHeaderView(this);
-  if (phone_status) {
-    phone_status->SetPaintToLayer();
-    phone_status->layer()->SetFillsBoundsOpaquely(false);
-    bubble_view->AddChildView(std::move(phone_status));
-  }
+  // Creates header view on top for displaying phone status and settings icon.
+  auto phone_status = ui_controller_->CreateStatusHeaderView(this);
+  phone_status_view_ = phone_status.get();
+  DCHECK(phone_status_view_);
+  bubble_view->AddChildView(std::move(phone_status));
 
   // Other contents, i.e. the connected view and the interstitial views,
   // will be positioned underneath the phone status view and updated based
   // on the current mode.
-  auto content_view = ui_controller_->CreateContentView(bubble_view);
+  auto content_view = ui_controller_->CreateContentView(this);
   content_view_ = content_view.get();
   DCHECK(content_view_);
   bubble_view->AddChildView(std::move(content_view));
@@ -222,6 +218,14 @@ void PhoneHubTray::OpenConnectedDevicesSettings() {
 
   DCHECK(CanOpenConnectedDeviceSettings());
   Shell::Get()->system_tray_model()->client()->ShowConnectedDevicesSettings();
+}
+
+void PhoneHubTray::HideStatusHeaderView() {
+  if (!phone_status_view_)
+    return;
+
+  phone_status_view_->SetVisible(false);
+  bubble_->bubble_view()->UpdateBubble();
 }
 
 void PhoneHubTray::CloseBubble() {

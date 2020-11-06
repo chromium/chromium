@@ -176,9 +176,9 @@ class OnboardingDismissPromptView : public PhoneHubInterstitialView {
 // OnboardingView -------------------------------------------------------------
 OnboardingView::OnboardingView(
     chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker,
-    TrayBubbleView* bubble_view,
+    Delegate* delegate,
     OnboardingFlow onboarding_flow)
-    : onboarding_ui_tracker_(onboarding_ui_tracker), bubble_view_(bubble_view) {
+    : onboarding_ui_tracker_(onboarding_ui_tracker), delegate_(delegate) {
   SetID(PhoneHubViewID::kOnboardingView);
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -207,8 +207,9 @@ void OnboardingView::ShowDismissPrompt() {
   main_view_ = AddChildView(
       std::make_unique<OnboardingDismissPromptView>(onboarding_ui_tracker_));
 
-  // Updates bubble to handle size change with a different child view.
-  bubble_view_->UpdateBubble();
+  // We don't show status header view on top for the dismiss prompt.
+  DCHECK(delegate_);
+  delegate_->HideStatusHeaderView();
 }
 
 BEGIN_METADATA(OnboardingView, views::View)

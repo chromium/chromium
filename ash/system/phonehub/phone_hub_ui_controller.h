@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_UI_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/system/phonehub/onboarding_view.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "ash/system/phonehub/phone_status_view.h"
 #include "base/observer_list.h"
@@ -24,8 +25,6 @@ class View;
 }  // namespace views
 
 namespace ash {
-
-class TrayBubbleView;
 
 // This controller translates the state received from PhoneHubManager into the
 // corresponding main content view to be displayed in the tray bubble.
@@ -65,7 +64,7 @@ class ASH_EXPORT PhoneHubUiController
   // Creates the corresponding content view for the current UI state.
   // |bubble_view| will be the parent the created content view.
   std::unique_ptr<PhoneHubContentView> CreateContentView(
-      TrayBubbleView* bubble_view);
+      OnboardingView::Delegate* delegate);
 
   // Creates the header view displaying the phone status.
   std::unique_ptr<views::View> CreateStatusHeaderView(

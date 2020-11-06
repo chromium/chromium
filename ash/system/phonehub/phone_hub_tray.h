@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_TRAY_H_
 
 #include "ash/ash_export.h"
+#include "ash/system/phonehub/onboarding_view.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
 #include "ash/system/phonehub/phone_status_view.h"
@@ -30,6 +31,7 @@ class TrayBubbleWrapper;
 // This class represents the Phone Hub tray button in the status area and
 // controls the bubble that is shown when the tray button is clicked.
 class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
+                                public OnboardingView::Delegate,
                                 public PhoneStatusView::Delegate,
                                 public PhoneHubUiController::Observer {
  public:
@@ -59,6 +61,9 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   bool CanOpenConnectedDeviceSettings() override;
   void OpenConnectedDevicesSettings() override;
 
+  // OnboardingView::Delegate:
+  void HideStatusHeaderView() override;
+
   views::View* content_view_for_testing() { return content_view_; }
 
   PhoneHubUiController* ui_controller_for_testing() {
@@ -87,6 +92,9 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   // The bubble that appears after clicking the tray button.
   std::unique_ptr<TrayBubbleWrapper> bubble_;
+
+  // The header status view on top of the bubble.
+  views::View* phone_status_view_ = nullptr;
 
   // The main content view of the bubble, which changes depending on the state.
   // Unowned.

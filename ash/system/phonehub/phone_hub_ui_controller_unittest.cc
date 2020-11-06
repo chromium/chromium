@@ -59,13 +59,13 @@ TEST_F(PhoneHubUiControllerTest, NotEligibleForFeature) {
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kNotEligibleForFeature);
   EXPECT_EQ(PhoneHubUiController::UiState::kHidden, controller_.ui_state());
   EXPECT_TRUE(ui_state_changed_);
-  EXPECT_FALSE(controller_.CreateContentView(/*bubble_view=*/nullptr).get());
+  EXPECT_FALSE(controller_.CreateContentView(/*delegate=*/nullptr).get());
 }
 
 TEST_F(PhoneHubUiControllerTest, OnboardingNotEligible) {
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kDisabled);
   EXPECT_EQ(PhoneHubUiController::UiState::kHidden, controller_.ui_state());
-  EXPECT_FALSE(controller_.CreateContentView(/*bubble_view=*/nullptr).get());
+  EXPECT_FALSE(controller_.CreateContentView(/*delegate=*/nullptr).get());
 }
 
 TEST_F(PhoneHubUiControllerTest, ShowOnboardingUi_WithoutPhone) {
@@ -78,7 +78,7 @@ TEST_F(PhoneHubUiControllerTest, ShowOnboardingUi_WithoutPhone) {
   EXPECT_EQ(PhoneHubUiController::UiState::kOnboardingWithoutPhone,
             controller_.ui_state());
 
-  auto content_view = controller_.CreateContentView(/*bubble_view=*/nullptr);
+  auto content_view = controller_.CreateContentView(/*delegate=*/nullptr);
   EXPECT_EQ(PhoneHubViewID::kOnboardingView, content_view->GetID());
 }
 
@@ -93,7 +93,7 @@ TEST_F(PhoneHubUiControllerTest, ShowOnboardingUi_WithPhone) {
   EXPECT_EQ(PhoneHubUiController::UiState::kOnboardingWithPhone,
             controller_.ui_state());
 
-  auto content_view = controller_.CreateContentView(/*bubble_view=*/nullptr);
+  auto content_view = controller_.CreateContentView(/*delegate=*/nullptr);
   EXPECT_EQ(PhoneHubViewID::kOnboardingView, content_view->GetID());
 }
 
@@ -103,7 +103,7 @@ TEST_F(PhoneHubUiControllerTest, PhoneConnectingForOnboarding) {
   EXPECT_EQ(PhoneHubUiController::UiState::kInitialConnecting,
             controller_.ui_state());
 
-  auto content_view = controller_.CreateContentView(/*bubble_view=*/nullptr);
+  auto content_view = controller_.CreateContentView(/*delegate=*/nullptr);
   EXPECT_EQ(PhoneHubViewID::kInitialConnectingView, content_view->GetID());
 }
 
@@ -113,7 +113,7 @@ TEST_F(PhoneHubUiControllerTest, BluetoothOff) {
   EXPECT_EQ(PhoneHubUiController::UiState::kBluetoothDisabled,
             controller_.ui_state());
 
-  auto content_view = controller_.CreateContentView(/*bubble_view=*/nullptr);
+  auto content_view = controller_.CreateContentView(/*delegate=*/nullptr);
   EXPECT_EQ(PhoneHubViewID::kBluetoothDisabledView, content_view->GetID());
 }
 
@@ -122,7 +122,7 @@ TEST_F(PhoneHubUiControllerTest, PhoneDisconnected) {
   EXPECT_EQ(PhoneHubUiController::UiState::kConnectionError,
             controller_.ui_state());
 
-  auto content_view = controller_.CreateContentView(/*bubble_view=*/nullptr);
+  auto content_view = controller_.CreateContentView(/*delegate=*/nullptr);
   EXPECT_EQ(PhoneHubViewID::kDisconnectedView, content_view->GetID());
 }
 
@@ -131,7 +131,7 @@ TEST_F(PhoneHubUiControllerTest, PhoneConnecting) {
   EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnecting,
             controller_.ui_state());
 
-  auto content_view = controller_.CreateContentView(/*bubble_view=*/nullptr);
+  auto content_view = controller_.CreateContentView(/*delegate=*/nullptr);
   EXPECT_EQ(PhoneHubViewID::kReconnectingView, content_view->GetID());
 }
 
@@ -140,7 +140,7 @@ TEST_F(PhoneHubUiControllerTest, PhoneConnected) {
   EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnected,
             controller_.ui_state());
 
-  auto content_view = controller_.CreateContentView(/*bubble_view=*/nullptr);
+  auto content_view = controller_.CreateContentView(/*delegate=*/nullptr);
   EXPECT_EQ(kPhoneConnectedView, content_view->GetID());
 }
 
