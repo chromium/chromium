@@ -1174,7 +1174,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.CodecImage.CodecBufferWaitCoordinator.FrameTimedOut"
-    enum="BooleanTimedOut" expires_after="M86">
+    enum="BooleanTimedOut" expires_after="M95">
   <owner>vikassoni@chromium.org</owner>
   <owner>liberato@chromium.org</owner>
   <summary>
@@ -1184,7 +1184,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.CodecImage.CodecBufferWaitCoordinator.WaitTimeForFrame"
-    units="ms" expires_after="M86">
+    units="ms" expires_after="M95">
   <owner>vikassoni@chromium.org</owner>
   <owner>liberato@chromium.org</owner>
   <summary>
