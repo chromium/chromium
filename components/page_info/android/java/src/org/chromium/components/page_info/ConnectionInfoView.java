@@ -92,7 +92,7 @@ public class ConnectionInfoView implements OnClickListener {
                     R.dimen.page_info_popup_padding_sides);
             mPaddingThin = (int) context.getResources().getDimension(
                     R.dimen.page_info_popup_padding_vertical);
-            mContainer.setPadding(mPaddingWide, mPaddingThin, mPaddingThin, mPaddingWide);
+            mContainer.setPadding(mPaddingWide, mPaddingThin, mPaddingThin, 0);
 
         } else {
             mPaddingWide =

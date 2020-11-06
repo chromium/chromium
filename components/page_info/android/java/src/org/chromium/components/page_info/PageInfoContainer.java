@@ -9,6 +9,8 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -121,18 +123,23 @@ public class PageInfoContainer extends FrameLayout {
         }
         // Create "fade-through" animation.
         // TODO(crbug.com/1077766): Animate height change and set correct interpolator.
-        mWrapper.animate().setDuration(sOutDuration).alpha(0).withEndAction(() -> {
-            replaceContentView(view, subPageTitle);
-            mWrapper.setScaleX(sScale);
-            mWrapper.setScaleY(sScale);
-            mWrapper.setAlpha(0);
-            mWrapper.animate()
-                    .setDuration(sInDuration)
-                    .scaleX(1)
-                    .scaleY(1)
-                    .alpha(1)
-                    .withEndAction(onPreviousPageRemoved);
-        });
+        mWrapper.animate()
+                .setDuration(sOutDuration)
+                .alpha(0)
+                .setInterpolator(new AccelerateInterpolator())
+                .withEndAction(() -> {
+                    replaceContentView(view, subPageTitle);
+                    mWrapper.setScaleX(sScale);
+                    mWrapper.setScaleY(sScale);
+                    mWrapper.setAlpha(0);
+                    mWrapper.animate()
+                            .setDuration(sInDuration)
+                            .scaleX(1)
+                            .scaleY(1)
+                            .alpha(1)
+                            .setInterpolator(new DecelerateInterpolator())
+                            .withEndAction(onPreviousPageRemoved);
+                });
     }
 
     /**

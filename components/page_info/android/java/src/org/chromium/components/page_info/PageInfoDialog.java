@@ -10,18 +10,18 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
@@ -39,8 +39,12 @@ public class PageInfoDialog {
     private static final int CLOSE_CLEANUP_DELAY_MS = 10;
 
     @NonNull
-    private final PageInfoView mView;
-    private final PageInfoContainer mContainerView;
+    private final PageInfoView mPageInfoView;
+    @Nullable
+    private final PageInfoContainer mPageInfoContainer;
+    @NonNull
+    private final ViewGroup mScrollView;
+
     private final boolean mIsSheet;
     // The dialog implementation.
     // mSheetDialog is set if the dialog appears as a sheet. Otherwise, mModalDialog is set.
@@ -61,52 +65,51 @@ public class PageInfoDialog {
      * standard dialog (using modal dialogs).
      *
      * @param context The context used for creating the dialog.
-     * @param view The view shown inside the dialog.
-     * @param containerView The view the dialog is shown in.
+     * @param pageInfoView The pageInfoView shown inside the dialog.
+     * @param containerView The pageInfoContainer the dialog is shown in (only in the new UI).
      * @param isSheet Whether the dialog should appear as a sheet.
      * @param manager The dialog's manager used for modal dialogs.
      * @param controller The dialog's controller.
      *
      */
-    public PageInfoDialog(Context context, @NonNull PageInfoView view,
-            @Nullable PageInfoContainer subpageView, View containerView, boolean isSheet,
+    public PageInfoDialog(Context context, @NonNull PageInfoView pageInfoView,
+            @Nullable PageInfoContainer pageInfoContainer, View containerView, boolean isSheet,
             @NonNull ModalDialogManager manager,
             @NonNull ModalDialogProperties.Controller controller) {
-        mView = view;
-        mContainerView = subpageView;
+        mPageInfoView = pageInfoView;
+        mPageInfoContainer = pageInfoContainer;
         mIsSheet = isSheet;
         mManager = manager;
         mController = controller;
 
-        mView.setVisibility(View.INVISIBLE);
-        mView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+        if (isSheet) {
+            // On smaller screens, make the dialog fill the width of the screen.
+            mScrollView = createSheetContainer(context, containerView);
+        } else {
+            // On larger screens, modal dialog already has an maximum width set.
+            mScrollView = new FadingEdgeScrollView(context, null);
+        }
+
+        mScrollView.setVisibility(View.INVISIBLE);
+        mScrollView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(
                     View v, int l, int t, int r, int b, int ol, int ot, int or, int ob) {
                 // Trigger the entrance animations once the main container has been laid out and has
                 // a height.
-                mView.removeOnLayoutChangeListener(this);
-                mView.setVisibility(View.VISIBLE);
+                mScrollView.removeOnLayoutChangeListener(this);
+                mScrollView.setVisibility(View.VISIBLE);
                 createAllAnimations(true, null).start();
             }
         });
 
-        ViewGroup container;
-        if (isSheet) {
-            // On smaller screens, make the dialog fill the width of the screen.
-            container = createSheetContainer(context, containerView);
-        } else {
-            // On larger screens, modal dialog already has an maximum width set.
-            container = new ScrollView(context);
-        }
-
-        container.addView(mContainerView != null ? mContainerView : mView);
+        mScrollView.addView(pageInfoContainer != null ? pageInfoContainer : pageInfoView);
 
         if (isSheet) {
-            mSheetDialog = createSheetDialog(context, container);
+            mSheetDialog = createSheetDialog(context, mScrollView);
             mModalDialogModel = null;
         } else {
-            mModalDialogModel = createModalDialog(container);
+            mModalDialogModel = createModalDialog(mScrollView);
             mSheetDialog = null;
         }
     }
@@ -149,7 +152,7 @@ public class PageInfoDialog {
                 if (mCurrentAnimation != null && mCurrentAnimation.isRunning()) {
                     mCurrentAnimation.cancel();
                 }
-                mView.removeCallbacks(null);
+                mScrollView.removeCallbacks(null);
             }
 
             @Override
@@ -163,10 +166,7 @@ public class PageInfoDialog {
                         // onAnimationEnd is called during the final frame of the animation.
                         // Delay the cleanup by a tiny amount to give this frame a chance to
                         // be displayed before we destroy the dialog.
-                        mView.postDelayed(this::superDismiss, CLOSE_CLEANUP_DELAY_MS);
-                        if (mContainerView != null) {
-                            mContainerView.postDelayed(this::superDismiss, CLOSE_CLEANUP_DELAY_MS);
-                        }
+                        mScrollView.postDelayed(this::superDismiss, CLOSE_CLEANUP_DELAY_MS);
                     }).start();
                 }
             }
@@ -178,12 +178,8 @@ public class PageInfoDialog {
         window.setGravity(Gravity.TOP);
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        sheetDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                mController.onDismiss(null, DialogDismissalCause.UNKNOWN);
-            }
-        });
+        sheetDialog.setOnDismissListener(
+                dialog -> mController.onDismiss(null, DialogDismissalCause.UNKNOWN));
 
         sheetDialog.addContentView(container,
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
@@ -203,8 +199,21 @@ public class PageInfoDialog {
                 .build();
     }
 
+    /**
+     * Create a container for PageInfo when it is shown as a top-sheet.
+     */
     private ViewGroup createSheetContainer(Context context, View containerView) {
         return new FadingEdgeScrollView(context, null) {
+            {
+                if (mPageInfoContainer != null) {
+                    int padding = (int) context.getResources().getDimension(
+                            R.dimen.page_info_popup_corners_radius);
+                    Drawable background =
+                            AppCompatResources.getDrawable(getContext(), R.drawable.page_info_bg);
+                    setBackground(background);
+                    setPadding(0, 0, 0, padding);
+                }
+            }
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                 heightMeasureSpec = MeasureSpec.makeMeasureSpec(
@@ -238,15 +247,12 @@ public class PageInfoDialog {
      * sheet. Otherwise, the default fade-in is used.
      */
     private Animator createAllAnimations(boolean isEnter, Runnable onAnimationEnd) {
-        Animator dialogAnimation =
-                mIsSheet ? createDialogSlideAnimaton(isEnter, mView) : new AnimatorSet();
-        Animator subpageDialogAnimation = mIsSheet && mContainerView != null
-                ? createDialogSlideAnimaton(isEnter, mContainerView)
-                : new AnimatorSet();
-        Animator viewAnimation = mView.createEnterExitAnimation(isEnter);
+        Animator dialogAnimation = mIsSheet ? createDialogSlideAnimaton(isEnter, (View) mScrollView)
+                                            : new AnimatorSet();
+        Animator viewAnimation = mPageInfoView.createEnterExitAnimation(isEnter);
         AnimatorSet allAnimations = new AnimatorSet();
         if (isEnter) allAnimations.setStartDelay(ENTER_START_DELAY_MS);
-        allAnimations.playTogether(dialogAnimation, subpageDialogAnimation, viewAnimation);
+        allAnimations.playTogether(dialogAnimation, viewAnimation);
         allAnimations.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
