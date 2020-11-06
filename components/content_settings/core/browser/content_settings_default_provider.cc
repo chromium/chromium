@@ -40,6 +40,8 @@ const char kObsoleteFullscreenDefaultPref[] =
 #if !defined(OS_ANDROID)
 const char kObsoleteMouseLockDefaultPref[] =
     "profile.default_content_setting_values.mouselock";
+const char kObsoletePluginsDefaultPref[] =
+    "profile.default_content_setting_values.plugins";
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
 
@@ -404,14 +406,7 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoleteFullscreenDefaultPref);
 #if !defined(OS_ANDROID)
   prefs_->ClearPref(kObsoleteMouseLockDefaultPref);
-
-  // ALLOW-by-default is an obsolete pref value for plugins (Flash). Erase that
-  // pref and fall back to the default behavior - but preserve other values.
-  const std::string& plugins_pref = GetPrefName(ContentSettingsType::PLUGINS);
-  if (IntToContentSetting(prefs_->GetInteger(plugins_pref)) ==
-      ContentSetting::CONTENT_SETTING_ALLOW) {
-    prefs_->ClearPref(plugins_pref);
-  }
+  prefs_->ClearPref(kObsoletePluginsDefaultPref);
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
 

@@ -95,10 +95,6 @@ class PrefProvider : public UserModifiableProvider {
   std::map<ContentSettingsType, std::unique_ptr<ContentSettingsPref>>
       content_settings_prefs_;
 
-  // TODO(https://crbug.com/850062): Remove after M71, two milestones after
-  // migration of the Flash permissions to ephemeral provider.
-  std::unique_ptr<ContentSettingsPref> flash_content_settings_pref_;
-
   base::ThreadChecker thread_checker_;
 
   base::Clock* clock_;

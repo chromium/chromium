@@ -48,6 +48,8 @@ const char kObsoleteFullscreenExceptionsPref[] =
 #if !defined(OS_ANDROID)
 const char kObsoleteMouseLockExceptionsPref[] =
     "profile.content_settings.exceptions.mouselock";
+const char kObsoletePluginsExceptionsPref[] =
+    "profile.content_settings.exceptions.plugins";
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
 
@@ -144,13 +146,6 @@ PrefProvider::PrefProvider(PrefService* prefs,
                             info->pref_name(), off_the_record_, restore_session,
                             base::BindRepeating(&PrefProvider::Notify,
                                                 base::Unretained(this)))));
-    } else if (info->type() == ContentSettingsType::PLUGINS) {
-      // TODO(https://crbug.com/850062): Remove after M71, two milestones after
-      // migration of the Flash permissions to ephemeral provider.
-      flash_content_settings_pref_ = std::make_unique<ContentSettingsPref>(
-          info->type(), prefs_, &pref_change_registrar_, info->pref_name(),
-          off_the_record_, restore_session,
-          base::BindRepeating(&PrefProvider::Notify, base::Unretained(this)));
     }
   }
 
@@ -239,14 +234,6 @@ void PrefProvider::ClearAllContentSettingsRules(
   if (supports_type(content_type))
     GetPref(content_type)->ClearAllContentSettingsRules();
 
-  // TODO(https://crbug.com/850062): Remove after M71, two milestones after
-  // migration of the Flash permissions to ephemeral provider.
-  // |flash_content_settings_pref_| is not null only if Flash permissions are
-  // ephemeral and handled in EphemeralProvider.
-  if (content_type == ContentSettingsType::PLUGINS &&
-      flash_content_settings_pref_) {
-    flash_content_settings_pref_->ClearAllContentSettingsRules();
-  }
 }
 
 void PrefProvider::ShutdownOnUIThread() {
@@ -294,6 +281,7 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoleteFullscreenExceptionsPref);
 #if !defined(OS_ANDROID)
   prefs_->ClearPref(kObsoleteMouseLockExceptionsPref);
+  prefs_->ClearPref(kObsoletePluginsExceptionsPref);
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
 

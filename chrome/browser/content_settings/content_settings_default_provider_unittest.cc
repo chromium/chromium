@@ -144,6 +144,8 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
 #if !defined(OS_ANDROID)
   static const char kMouselockPrefPath[] =
       "profile.default_content_setting_values.mouselock";
+  const char kObsoletePluginsDefaultPref[] =
+      "profile.default_content_setting_values.plugins";
 #endif
   static const char kGeolocationPrefPath[] =
       "profile.default_content_setting_values.geolocation";
@@ -153,6 +155,7 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
   prefs->SetInteger(kFullscreenPrefPath, CONTENT_SETTING_BLOCK);
 #if !defined(OS_ANDROID)
   prefs->SetInteger(kMouselockPrefPath, CONTENT_SETTING_ALLOW);
+  prefs->SetInteger(kObsoletePluginsDefaultPref, CONTENT_SETTING_ALLOW);
 #endif
   prefs->SetInteger(kGeolocationPrefPath, CONTENT_SETTING_BLOCK);
 
@@ -164,6 +167,7 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
   EXPECT_FALSE(prefs->HasPrefPath(kFullscreenPrefPath));
 #if !defined(OS_ANDROID)
   EXPECT_FALSE(prefs->HasPrefPath(kMouselockPrefPath));
+  EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsDefaultPref));
 #endif
   EXPECT_TRUE(prefs->HasPrefPath(kGeolocationPrefPath));
   EXPECT_EQ(CONTENT_SETTING_BLOCK, prefs->GetInteger(kGeolocationPrefPath));

@@ -167,6 +167,8 @@ TEST_F(PrefProviderTest, DiscardObsoleteFullscreenAndMouselockPreferences) {
 #if !defined(OS_ANDROID)
   static const char kMouselockPrefPath[] =
       "profile.content_settings.exceptions.mouselock";
+  const char kObsoletePluginsExceptionsPref[] =
+      "profile.content_settings.exceptions.plugins";
 #endif
   static const char kGeolocationPrefPath[] =
       "profile.content_settings.exceptions.geolocation";
@@ -184,6 +186,7 @@ TEST_F(PrefProviderTest, DiscardObsoleteFullscreenAndMouselockPreferences) {
   prefs->Set(kFullscreenPrefPath, pref_data);
 #if !defined(OS_ANDROID)
   prefs->Set(kMouselockPrefPath, pref_data);
+  prefs->Set(kObsoletePluginsExceptionsPref, pref_data);
 #endif
   prefs->Set(kGeolocationPrefPath, pref_data);
 
@@ -198,6 +201,7 @@ TEST_F(PrefProviderTest, DiscardObsoleteFullscreenAndMouselockPreferences) {
   EXPECT_FALSE(prefs->HasPrefPath(kFullscreenPrefPath));
 #if !defined(OS_ANDROID)
   EXPECT_FALSE(prefs->HasPrefPath(kMouselockPrefPath));
+  EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsExceptionsPref));
 #endif
   EXPECT_TRUE(prefs->HasPrefPath(kGeolocationPrefPath));
   GURL primary_url("http://example.com/");
@@ -421,46 +425,6 @@ TEST_F(PrefProviderTest, Patterns) {
   pref_content_settings_provider.ShutdownOnUIThread();
 }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-TEST_F(PrefProviderTest, ResourceIdentifier) {
-  TestingProfile testing_profile;
-  PrefProvider pref_content_settings_provider(testing_profile.GetPrefs(),
-                                              /*incognito=*/false,
-                                              /*store_last_modified=*/true,
-                                              /*restore_session=*/false);
-
-  GURL host("http://example.com/");
-  ContentSettingsPattern pattern =
-      ContentSettingsPattern::FromString("[*.]example.com");
-  std::string resource1("someplugin");
-  std::string resource2("otherplugin");
-
-  EXPECT_EQ(CONTENT_SETTING_DEFAULT,
-            TestUtils::GetContentSetting(&pref_content_settings_provider, host,
-                                         host, ContentSettingsType::PLUGINS,
-                                         resource1, false));
-  std::unique_ptr<base::Value> value(new base::Value(CONTENT_SETTING_BLOCK));
-  pref_content_settings_provider.SetWebsiteSetting(
-      pattern, pattern, ContentSettingsType::PLUGINS, resource1,
-      std::move(value), {});
-
-  ASSERT_EQ(ContentSettingsInfo::EPHEMERAL,
-            ContentSettingsRegistry::GetInstance()
-                ->Get(ContentSettingsType::PLUGINS)
-                ->storage_behavior());
-  EXPECT_EQ(CONTENT_SETTING_DEFAULT,
-            TestUtils::GetContentSetting(&pref_content_settings_provider, host,
-                                         host, ContentSettingsType::PLUGINS,
-                                         resource1, false));
-  EXPECT_EQ(CONTENT_SETTING_DEFAULT,
-            TestUtils::GetContentSetting(&pref_content_settings_provider, host,
-                                         host, ContentSettingsType::PLUGINS,
-                                         resource2, false));
-
-  pref_content_settings_provider.ShutdownOnUIThread();
-}
-#endif
-
 // http://crosbug.com/17760
 TEST_F(PrefProviderTest, Deadlock) {
   sync_preferences::TestingPrefServiceSyncable prefs;
@@ -612,27 +576,6 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
       pattern, wildcard, ContentSettingsType::GEOLOCATION, ResourceIdentifier(),
       std::make_unique<base::Value>(value->Clone()), {});
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // Plugin settings became emphemeral as of Chrome M71 and are no longer
-  // persisted into preferences. Here we simulate the scenario where we inherit
-  // legacy, persisted values coming from Chrome versions M70-, to verify the
-  // ability of PrefProvider to delete the legacy plugin settings although those
-  // are no longer handled by it (as opposed to the first section of the test,
-  // which verifies the deletion of regular settings which are still handled by
-  // PrefProvider).
-
-  // Legacy, persisted exception for ContentSettingsType::PLUGINS with a
-  // non-empty pattern, and non-empty resource identifier.
-  ASSERT_TRUE(SetLegacyPersistedPluginSetting(
-      &prefs, pattern, wildcard, ResourceIdentifier(),
-      std::make_unique<base::Value>(value->Clone())));
-
-  // Non-empty pattern, plugins, empty resource identifier.
-  provider.SetWebsiteSetting(pattern, wildcard, ContentSettingsType::PLUGINS,
-                             ResourceIdentifier(),
-                             std::make_unique<base::Value>(value->Clone()), {});
-#endif
-
   // Non-empty pattern, syncable, empty resource identifier.
   provider.SetWebsiteSetting(pattern, wildcard, ContentSettingsType::COOKIES,
                              ResourceIdentifier(),
@@ -648,9 +591,6 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
   const char* cleared_prefs[] = {
     registry->Get(ContentSettingsType::JAVASCRIPT)->pref_name().c_str(),
     registry->Get(ContentSettingsType::GEOLOCATION)->pref_name().c_str(),
-#if BUILDFLAG(ENABLE_PLUGINS)
-    registry->Get(ContentSettingsType::PLUGINS)->pref_name().c_str(),
-#endif
   };
 
   // Expect the prefs are not empty before we trigger clearing them.
@@ -662,9 +602,6 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
 
   provider.ClearAllContentSettingsRules(ContentSettingsType::JAVASCRIPT);
   provider.ClearAllContentSettingsRules(ContentSettingsType::GEOLOCATION);
-#if BUILDFLAG(ENABLE_PLUGINS)
-  provider.ClearAllContentSettingsRules(ContentSettingsType::PLUGINS);
-#endif
 
   // Ensure they become empty afterwards.
   for (const char* pref : cleared_prefs) {

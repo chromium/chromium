@@ -1090,18 +1090,6 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
   }
 }
 
-void SiteSettingsHandler::HandleClearFlashPref(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
-  std::string origin_string;
-  CHECK(args->GetString(0, &origin_string));
-
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
-  const GURL origin(origin_string);
-  map->SetWebsiteSettingDefaultScope(
-      origin, origin, ContentSettingsType::PLUGINS_DATA, nullptr);
-}
-
 void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
     const base::ListValue* args) {
   CHECK_EQ(4U, args->GetSize());
