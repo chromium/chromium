@@ -8,8 +8,6 @@
 
 #include <shellapi.h>
 
-#include "base/win/windows_version.h"
-
 namespace ui {
 
 namespace {
@@ -53,16 +51,7 @@ bool IsFullScreenWindowMode() {
   // style should not have WS_EX_WINDOWEDGE and WS_EX_TOOLWINDOW.
   LONG style = ::GetWindowLong(wnd, GWL_STYLE);
   LONG ext_style = ::GetWindowLong(wnd, GWL_EXSTYLE);
-  LONG styles_not_to_have = WS_DLGFRAME;
-
-  // Chrome removes WS_THICKFRAME in older versions of Windows. See
-  // crbug.com/1141059 and crbug.com/1014720. The version here must match the
-  // version checked in ui/views/win/fullscreen_handler.cc's
-  // FullscreenHandler::SetFullscreenImpl.
-  if (base::win::GetVersion() < base::win::Version::WIN10_19H1)
-    styles_not_to_have |= WS_THICKFRAME;
-
-  return !((style & styles_not_to_have) ||
+  return !((style & WS_DLGFRAME) ||
            (ext_style & (WS_EX_WINDOWEDGE | WS_EX_TOOLWINDOW)));
 }
 
