@@ -159,6 +159,12 @@ ASH_PUBLIC_EXPORT extern const base::Feature kHideShelfControlsInTabletMode;
 // TODO(https://crbug.com/1107183): Remove this after the feature is launched.
 ASH_PUBLIC_EXPORT extern const base::Feature kReverseScrollGestures;
 
+// When enabled, there will be an alert bubble showing up when the device
+// returns from low brightness (e.g., sleep, closed cover) without a lock screen
+// and the active window is in fullscreen.
+// TODO(https://crbug.com/1107185): Remove this after the feature is launched.
+ASH_PUBLIC_EXPORT extern const base::Feature kFullscreenAlertBubble;
+
 // Enables sliders for setting mic gain levels in the more audio settings
 // section in the system tray.
 ASH_PUBLIC_EXPORT extern const base::Feature kSystemTrayMicGainSetting;
@@ -233,6 +239,8 @@ ASH_PUBLIC_EXPORT bool IsReduceDisplayNotificationsEnabled();
 ASH_PUBLIC_EXPORT bool IsHideShelfControlsInTabletModeEnabled();
 
 ASH_PUBLIC_EXPORT bool IsReverseScrollGesturesEnabled();
+
+ASH_PUBLIC_EXPORT bool IsFullscreenAlertBubbleEnabled();
 
 ASH_PUBLIC_EXPORT bool AreContextualNudgesEnabled();
 

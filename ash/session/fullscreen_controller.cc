@@ -7,6 +7,7 @@
 #include <limits>
 
 #include "ash/login/ui/lock_screen.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/session/fullscreen_alert_bubble.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
@@ -56,6 +57,9 @@ void FullscreenController::MaybeExitFullscreen() {
 }
 
 void FullscreenController::MaybeShowAlert() {
+  if (!features::IsFullscreenAlertBubbleEnabled())
+    return;
+
   // 1. Check if there is a lock/login screen showing up.
   if (LockScreen::HasInstance())
     return;

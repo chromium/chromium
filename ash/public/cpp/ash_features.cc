@@ -120,6 +120,9 @@ const base::Feature kHideShelfControlsInTabletMode{
 const base::Feature kReverseScrollGestures{"EnableReverseScrollGestures",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kFullscreenAlertBubble{"EnableFullscreenBubble",
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::Feature kSystemTrayMicGainSetting{"SystemTrayMicGainSetting",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -253,6 +256,10 @@ bool IsHideShelfControlsInTabletModeEnabled() {
 
 bool IsReverseScrollGesturesEnabled() {
   return base::FeatureList::IsEnabled(kReverseScrollGestures);
+}
+
+bool IsFullscreenAlertBubbleEnabled() {
+  return base::FeatureList::IsEnabled(kFullscreenAlertBubble);
 }
 
 bool AreContextualNudgesEnabled() {
