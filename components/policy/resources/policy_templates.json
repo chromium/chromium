@@ -7126,7 +7126,7 @@
       'name': 'MaxInvalidationFetchDelay',
       'owners': ['stepco@chromium.org', 'poromov@chromium.org'],
       'type': 'int',
-      'schema': { 'type': 'integer', 'minimum': 1000, 'maximum': 30000 },
+      'schema': { 'type': 'integer', 'minimum': 1000, 'maximum': 300000 },
       'supported_on': ['chrome.*:30-', 'chrome_os:30-'],
       'features': {
         'dynamic_refresh': True,
