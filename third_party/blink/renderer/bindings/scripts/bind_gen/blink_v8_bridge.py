@@ -81,6 +81,20 @@ def blink_type_info(idl_type):
             # Whether Blink impl type can represent IDL null or not.
             self.has_null_value = has_null_value
 
+    def is_gc_type(idl_type):
+        idl_type = idl_type.unwrap()
+        return bool(idl_type.type_definition_object
+                    and not idl_type.is_enumeration)
+
+    def vector_element_type(idl_type):
+        # Add |Member<T>| explicitly so that the complete type definition of
+        # |T| will not be required.
+        typename = blink_type_info(idl_type).typename
+        if is_gc_type(idl_type):
+            return "Member<{}>".format(typename)
+        else:
+            return typename
+
     real_type = idl_type.unwrap(typedef=True)
 
     if real_type.is_boolean or real_type.is_numeric:
@@ -151,7 +165,7 @@ def blink_type_info(idl_type):
     if real_type.is_void:
         assert False, "Blink does not support/accept IDL void type."
 
-    if real_type.type_definition_object is not None:
+    if real_type.type_definition_object:
         blink_impl_type = blink_class_name(real_type.type_definition_object)
         if real_type.is_enumeration:
             return TypeInfo(blink_impl_type)
@@ -165,31 +179,15 @@ def blink_type_info(idl_type):
 
     if (real_type.is_sequence or real_type.is_frozen_array
             or real_type.is_variadic):
-        element_type = real_type.element_type
-        element_type_info = blink_type_info(real_type.element_type)
-        if (element_type.type_definition_object is not None
-                and not element_type.is_enumeration):
-            # In order to support recursive IDL data structures, we have to
-            # avoid recursive C++ header inclusions and utilize C++ forward
-            # declarations.  Since |VectorOf| requires complete type
-            # definition, |HeapVector<Member<T>>| is preferred as it
-            # requires only forward declaration.
-            vector_fmt = "HeapVector<Member<{}>>"
-        else:
-            vector_fmt = "VectorOf<{}>"
-        return TypeInfo(
-            vector_fmt.format(element_type_info.typename),
-            ref_fmt="{}&",
-            const_ref_fmt="const {}&")
+        typename = "VectorOf<{}>".format(
+            vector_element_type(real_type.element_type))
+        return TypeInfo(typename, ref_fmt="{}&", const_ref_fmt="const {}&")
 
     if real_type.is_record:
-        key_type = blink_type_info(real_type.key_type)
-        value_type = blink_type_info(real_type.value_type)
-        return TypeInfo(
-            "VectorOfPairs<{}, {}>".format(key_type.typename,
-                                           value_type.typename),
-            ref_fmt="{}&",
-            const_ref_fmt="const {}&")
+        typename = "VectorOfPairs<{}, {}>".format(
+            vector_element_type(real_type.key_type),
+            vector_element_type(real_type.value_type))
+        return TypeInfo(typename, ref_fmt="{}&", const_ref_fmt="const {}&")
 
     if real_type.is_promise:
         return TypeInfo(
