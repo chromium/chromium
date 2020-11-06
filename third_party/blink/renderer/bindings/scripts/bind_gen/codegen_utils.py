@@ -6,6 +6,7 @@ import web_idl
 
 from . import name_style
 from . import style_format
+from .blink_v8_bridge import blink_class_name
 from .blink_v8_bridge import blink_type_info
 from .code_node import CodeNode
 from .code_node import EmptyNode
@@ -60,6 +61,70 @@ def make_header_include_directives(accumulator):
             ])
 
     return LiteralNode(HeaderIncludeDirectives(accumulator))
+
+
+def collect_forward_decls_and_include_headers(idl_types):
+    assert isinstance(idl_types, (list, tuple))
+    assert all(isinstance(idl_type, web_idl.IdlType) for idl_type in idl_types)
+
+    header_forward_decls = set()
+    header_include_headers = set()
+    source_forward_decls = set()
+    source_include_headers = set()
+
+    def collect(idl_type):
+        if idl_type.is_any or idl_type.is_object:
+            header_include_headers.add(
+                "third_party/blink/renderer/bindings/core/v8/script_value.h")
+        elif idl_type.is_boolean or idl_type.is_numeric:
+            pass
+        elif idl_type.is_buffer_source_type:
+            header_include_headers.update([
+                "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h",
+                "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h",
+            ])
+        elif idl_type.is_nullable:
+            if not blink_type_info(idl_type.inner_type).has_null_value:
+                header_include_headers.add("base/optional.h")
+        elif idl_type.is_promise:
+            header_include_headers.add(
+                "third_party/blink/renderer/bindings/core/v8/script_promise.h")
+        elif (idl_type.is_sequence or idl_type.is_record
+              or idl_type.is_frozen_array or idl_type.is_variadic):
+            header_include_headers.add(
+                "third_party/blink/renderer/platform/heap/heap_allocator.h")
+        elif idl_type.is_string:
+            header_include_headers.add(
+                "third_party/blink/renderer/platform/wtf/text/wtf_string.h")
+        elif idl_type.is_typedef:
+            pass
+        elif idl_type.is_void:
+            pass
+        elif idl_type.type_definition_object:
+            type_def_obj = idl_type.type_definition_object
+            if type_def_obj.is_enumeration:
+                header_include_headers.add(
+                    PathManager(type_def_obj).api_path(ext="h"))
+            elif type_def_obj.is_interface:
+                header_forward_decls.add(blink_class_name(type_def_obj))
+                source_include_headers.add(
+                    PathManager(type_def_obj).blink_path(ext="h"))
+            else:
+                header_forward_decls.add(blink_class_name(type_def_obj))
+                source_include_headers.add(
+                    PathManager(type_def_obj).api_path(ext="h"))
+        elif idl_type.union_definition_object:
+            union_def_obj = idl_type.union_definition_object
+            header_include_headers.add(
+                PathManager(union_def_obj).api_path(ext="h"))
+        else:
+            assert False, "Unknown type: {}".format(idl_type.syntactic_form)
+
+    for idl_type in idl_types:
+        idl_type.apply_to_all_composing_elements(collect)
+
+    return (header_forward_decls, header_include_headers, source_forward_decls,
+            source_include_headers)
 
 
 def component_export(component, for_testing):

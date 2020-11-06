@@ -25,6 +25,7 @@ from .code_node_cxx import CxxUnlikelyIfNode
 from .codegen_accumulator import CodeGenAccumulator
 from .codegen_context import CodeGenContext
 from .codegen_format import format_template as _format
+from .codegen_utils import collect_forward_decls_and_include_headers
 from .codegen_utils import component_export
 from .codegen_utils import component_export_header
 from .codegen_utils import enclose_with_header_guard
@@ -473,52 +474,6 @@ return false;\
     return decls, defs
 
 
-def collect_forward_decls_and_include_headers(func_like):
-    assert isinstance(func_like, web_idl.FunctionLike)
-
-    header_forward_decls = set()
-    header_include_headers = set()
-    source_forward_decls = set()
-    source_include_headers = set()
-
-    def collect(idl_type):
-        if idl_type.is_any or idl_type.is_object:
-            header_include_headers.add(
-                "third_party/blink/renderer/bindings/core/v8/script_value.h")
-        elif idl_type.is_buffer_source_type:
-            header_include_headers.update([
-                "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h",
-                "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h",
-            ])
-        elif idl_type.is_promise:
-            header_include_headers.add(
-                "third_party/blink/renderer/bindings/core/v8/script_promise.h")
-        elif idl_type.is_string:
-            header_include_headers.add(
-                "third_party/blink/renderer/platform/wtf/text/wtf_string.h")
-        elif idl_type.type_definition_object:
-            type_def_obj = idl_type.type_definition_object
-            header_forward_decls.add(blink_class_name(type_def_obj))
-            if isinstance(type_def_obj, web_idl.Interface):
-                source_include_headers.add(
-                    PathManager(type_def_obj).blink_path(ext="h"))
-            else:
-                source_include_headers.add(
-                    PathManager(type_def_obj).api_path(ext="h"))
-        elif idl_type.union_definition_object:
-            union_def_obj = idl_type.union_definition_object
-            header_include_headers.add(
-                PathManager(union_def_obj).api_path(ext="h"))
-
-    if func_like.return_type:
-        func_like.return_type.apply_to_all_composing_elements(collect)
-    for argument in func_like.arguments:
-        argument.idl_type.apply_to_all_composing_elements(collect)
-
-    return (header_forward_decls, header_include_headers, source_forward_decls,
-            source_include_headers)
-
-
 def generate_callback_function(callback_function_identifier):
     assert isinstance(callback_function_identifier, web_idl.Identifier)
 
@@ -636,8 +591,9 @@ def generate_callback_function(callback_function_identifier):
         "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h",
     ])
     (header_forward_decls, header_include_headers, source_forward_decls,
-     source_include_headers
-     ) = collect_forward_decls_and_include_headers(callback_function)
+     source_include_headers) = collect_forward_decls_and_include_headers(
+         [callback_function.return_type] +
+         map(lambda argument: argument.idl_type, callback_function.arguments))
     header_node.accumulator.add_class_decls(header_forward_decls)
     header_node.accumulator.add_include_headers(header_include_headers)
     source_node.accumulator.add_class_decls(source_forward_decls)
