@@ -177,10 +177,16 @@ public class WebApkValidator {
      */
     @SuppressLint("PackageManagerGetSignatures")
     public static boolean isValidWebApk(Context context, String webappPackageName) {
+        if (sOverrideValidationForTesting) {
+            if (DEBUG) {
+                Log.d(TAG, "WebApk validation is disabled for testing.");
+            }
+            return true;
+        }
         if (sExpectedSignature == null || sCommentSignedPublicKeyBytes == null) {
             Log.wtf(TAG,
-                    "WebApk validation failure - expected signature not set."
-                            + "missing call to WebApkValidator.initWithBrowserHostSignature");
+                    "WebApk validation failure - expected signature not set - "
+                            + "missing call to WebApkValidator.init");
             return false;
         }
         PackageInfo packageInfo;
@@ -196,12 +202,6 @@ public class WebApkValidator {
         }
         if (isNotWebApkQuick(packageInfo)) {
             return false;
-        }
-        if (sOverrideValidationForTesting) {
-            if (DEBUG) {
-                Log.d(TAG, "Ok! Looks like a WebApk (has start url) and validation is disabled.");
-            }
-            return true;
         }
         if (verifyV1WebApk(packageInfo, webappPackageName)) {
             return true;

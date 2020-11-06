@@ -34,8 +34,6 @@ public class HostBrowserLauncher {
      * Otherwise, launches the host browser in tabbed mode.
      */
     public static void launch(Activity activity, HostBrowserLauncherParams params) {
-        Log.v(TAG, "WebAPK Launch URL: " + params.getStartUrl());
-
         if (HostBrowserUtils.shouldLaunchInTab(params)) {
             launchInTab(activity.getApplicationContext(), params);
             return;
@@ -48,6 +46,8 @@ public class HostBrowserLauncher {
     /** Launches host browser in WebAPK mode. */
     public static void launchBrowserInWebApkMode(Activity activity,
             HostBrowserLauncherParams params, Bundle extraExtras, int flags, boolean expectResult) {
+        ManageDataLauncherActivity.updateSiteSettingsShortcut(
+                activity.getApplicationContext(), params);
         Intent intent = new Intent();
         intent.setAction(ACTION_START_WEBAPK);
         intent.setPackage(params.getHostBrowserPackageName());
@@ -102,6 +102,7 @@ public class HostBrowserLauncher {
 
     /** Launches a WebAPK in its runtime host browser as a tab. */
     private static void launchInTab(Context context, HostBrowserLauncherParams params) {
+        ManageDataLauncherActivity.updateSiteSettingsShortcut(context, params);
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(params.getStartUrl()));
         intent.setPackage(params.getHostBrowserPackageName());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

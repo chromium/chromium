@@ -33,6 +33,7 @@ public final class WebApkConstants {
             "org.chromium.chrome.browser.webapk.splash_provided_by_webapk";
     // Tells the host browser to relaunch the WebAPK.
     public static final String EXTRA_RELAUNCH = "org.chromium.webapk.relaunch";
+    public static final String EXTRA_IS_WEBAPK = "org.chromium.webapk.is_webapk";
 
     // Must be kept in sync with chrome/browser/android/shortcut_info.h.
     public static final int SHORTCUT_SOURCE_UNKNOWN = 0;

@@ -32,6 +32,10 @@
             <category android:name="android.intent.category.BROWSABLE" />
             <data android:scheme="https" />
         </intent>
+        <intent>
+            <action android:name="android.support.customtabs.action.ACTION_MANAGE_TRUSTED_WEB_ACTIVITY_DATA" />
+            <data android:scheme="https" />
+        </intent>
     </queries>
 
     <application
@@ -58,6 +62,10 @@
             {{/intent_filters}}
             {{{raw_intent_filters}}}
          </activity>
+
+        <activity android:name="org.chromium.webapk.shell_apk.ManageDataLauncherActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+        </activity>
 
         <activity android:name="org.chromium.webapk.shell_apk.h2o.H2OOpaqueMainActivity"
                   android:theme="@style/SplashTheme"

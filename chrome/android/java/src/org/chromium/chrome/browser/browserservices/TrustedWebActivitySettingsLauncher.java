@@ -13,10 +13,12 @@ import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.SettingsNavigationSource;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
+import org.chromium.components.webapk.lib.client.WebApkValidator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,13 +35,8 @@ public class TrustedWebActivitySettingsLauncher {
      * able to work with each of them.
      */
     public static void launchForPackageName(Context context, String packageName) {
-        int applicationUid;
-        try {
-            applicationUid = context.getPackageManager().getApplicationInfo(packageName, 0).uid;
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.d(TAG, "Package " + packageName + " not found");
-            return;
-        }
+        Integer applicationUid = getApplicationUid(context, packageName);
+        if (applicationUid == null) return;
 
         ClientAppDataRegister register = new ClientAppDataRegister();
         Collection<String> domains = register.getDomainsForRegisteredUid(applicationUid);
@@ -49,6 +46,33 @@ public class TrustedWebActivitySettingsLauncher {
             return;
         }
         launch(context, origins, domains);
+    }
+
+    /**
+     * Launches site-settings for a WebApk with a given package name and associated url.
+     */
+    public static void launchForWebApkPackageName(
+            Context context, String packageName, String webApkUrl) {
+        if (!WebApkValidator.canWebApkHandleUrl(context, packageName, webApkUrl)) {
+            Log.d(TAG, "WebApk " + packageName + " can't handle url " + webApkUrl);
+            return;
+        }
+        if (getApplicationUid(context, packageName) == null) return;
+
+        // Handle the case when settings are selected but Chrome was not running.
+        ChromeWebApkHost.init();
+        openSingleWebsitePrefs(context, webApkUrl);
+    }
+
+    private static Integer getApplicationUid(Context context, String packageName) {
+        int applicationUid;
+        try {
+            applicationUid = context.getPackageManager().getApplicationInfo(packageName, 0).uid;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.d(TAG, "Package " + packageName + " not found");
+            return null;
+        }
+        return applicationUid;
     }
 
     /**
