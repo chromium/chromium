@@ -2548,9 +2548,15 @@ IN_PROC_BROWSER_TEST_F(
         ShouldSwapBrowsingInstance::kNo_AlreadyHasMatchingBrowsingInstance,
         FROM_HERE);
   } else {
-    ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
-                           kRenderFrameHostReused_CrossSite},
-                      FROM_HERE);
+    ExpectNotRestored(
+        {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures,
+         BackForwardCacheMetrics::NotRestoredReason::
+             kRenderFrameHostReused_CrossSite},
+        FROM_HERE);
+    // Non-sticky reasons are not recorded here.
+    ExpectBlocklistedFeatures(
+        {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock},
+        FROM_HERE);
   }
 }
 
@@ -2594,9 +2600,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
-  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
-                         kRenderFrameHostReused_SameSite},
-                    FROM_HERE);
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::
+           kRenderFrameHostReused_SameSite,
+       BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
+      FROM_HERE);
+  // Non-sticky reasons are not recorded here.
+  ExpectBlocklistedFeatures(
+      {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock}, FROM_HERE);
 }
 
 // Tests which blocklisted features are tracked in the metrics when we used a

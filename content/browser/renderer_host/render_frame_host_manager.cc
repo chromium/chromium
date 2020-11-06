@@ -1476,14 +1476,24 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
   DCHECK(IsBackForwardCacheEnabled());
   NavigationControllerImpl* controller = static_cast<NavigationControllerImpl*>(
       render_frame_host_->frame_tree_node()->navigator().GetController());
-  if (controller->GetBackForwardCache().CanPotentiallyStorePageLater(
-          render_frame_host_.get())) {
+
+  auto can_store =
+      controller->GetBackForwardCache().CanPotentiallyStorePageLater(
+          render_frame_host_.get());
+  if (can_store) {
     if (is_same_site) {
       return ShouldSwapBrowsingInstance::kYes_SameSiteProactiveSwap;
     } else {
       return ShouldSwapBrowsingInstance::kYes_CrossSiteProactiveSwap;
     }
   } else {
+    // As CanPotentiallyStorePageLater is used instead of CanStorePageNow, non-
+    // sticky reasons are not recorded here. This is intentional because it is
+    // impossible to get correct non-sticky reasons at this timing.
+    BackForwardCacheMetrics* back_forward_cache_metrics =
+        render_frame_host_->GetBackForwardCacheMetrics();
+    if (back_forward_cache_metrics)
+      back_forward_cache_metrics->MarkNotRestoredWithReason(can_store);
     return ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache;
   }
 }
