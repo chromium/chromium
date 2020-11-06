@@ -405,14 +405,16 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   static bool toggle_spanners_if_needed_;
 };
 
-// Cannot use DEFINE_LAYOUT_OBJECT_TYPE_CASTS here, because
-// isMultiColumnFlowThread() is defined in LayoutFlowThread, not in
-// LayoutObject.
-DEFINE_TYPE_CASTS(LayoutMultiColumnFlowThread,
-                  LayoutFlowThread,
-                  object,
-                  object->IsLayoutMultiColumnFlowThread(),
-                  object.IsLayoutMultiColumnFlowThread());
+template <>
+struct DowncastTraits<LayoutMultiColumnFlowThread> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsLayoutFlowThread() &&
+           To<LayoutFlowThread>(object).IsLayoutMultiColumnFlowThread();
+  }
+  static bool AllowFrom(const LayoutFlowThread& flow_thread) {
+    return flow_thread.IsLayoutMultiColumnFlowThread();
+  }
+};
 
 }  // namespace blink
 

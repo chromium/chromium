@@ -1073,7 +1073,7 @@ void LayoutBlockFlow::LayoutBlockChild(LayoutBox& child,
   if (child.IsLayoutMultiColumnSpannerPlaceholder()) {
     // The actual column-span:all element is positioned by this placeholder
     // child.
-    PositionSpannerDescendant(ToLayoutMultiColumnSpannerPlaceholder(child));
+    PositionSpannerDescendant(To<LayoutMultiColumnSpannerPlaceholder>(child));
   }
 }
 
@@ -2962,9 +2962,8 @@ void LayoutBlockFlow::UpdateBlockChildDirtyBitsBeforeLayout(
     bool relayout_children,
     LayoutBox& child) {
   NOT_DESTROYED();
-  if (child.IsLayoutMultiColumnSpannerPlaceholder())
-    ToLayoutMultiColumnSpannerPlaceholder(child)
-        .MarkForLayoutIfObjectInFlowThreadNeedsLayout();
+  if (auto* placeholder = DynamicTo<LayoutMultiColumnSpannerPlaceholder>(child))
+    placeholder->MarkForLayoutIfObjectInFlowThreadNeedsLayout();
   LayoutBlock::UpdateBlockChildDirtyBitsBeforeLayout(relayout_children, child);
 }
 

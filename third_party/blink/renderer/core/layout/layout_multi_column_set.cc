@@ -227,7 +227,7 @@ LayoutMultiColumnSet* LayoutMultiColumnSet::NextSiblingMultiColumnSet() const {
   for (LayoutObject* sibling = NextSibling(); sibling;
        sibling = sibling->NextSibling()) {
     if (sibling->IsLayoutMultiColumnSet())
-      return ToLayoutMultiColumnSet(sibling);
+      return To<LayoutMultiColumnSet>(sibling);
   }
   return nullptr;
 }
@@ -238,7 +238,7 @@ LayoutMultiColumnSet* LayoutMultiColumnSet::PreviousSiblingMultiColumnSet()
   for (LayoutObject* sibling = PreviousSibling(); sibling;
        sibling = sibling->PreviousSibling()) {
     if (sibling->IsLayoutMultiColumnSet())
-      return ToLayoutMultiColumnSet(sibling);
+      return To<LayoutMultiColumnSet>(sibling);
   }
   return nullptr;
 }

@@ -3082,7 +3082,7 @@ void LayoutObject::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
     transform_state.Move(
         visual_point -
         PhysicalOffsetToBeNoop(
-            ToLayoutFlowThread(this)->VisualPointToFlowThreadPoint(
+            To<LayoutFlowThread>(this)->VisualPointToFlowThreadPoint(
                 visual_point.ToLayoutPoint())));
   }
 
@@ -3665,9 +3665,9 @@ void LayoutObject::RemoveFromLayoutFlowThreadRecursive(
          child = child->NextSibling()) {
       if (child->IsLayoutFlowThread())
         continue;  // Don't descend into inner fragmentation contexts.
-      child->RemoveFromLayoutFlowThreadRecursive(child->IsLayoutFlowThread()
-                                                     ? ToLayoutFlowThread(child)
-                                                     : layout_flow_thread);
+      child->RemoveFromLayoutFlowThreadRecursive(
+          child->IsLayoutFlowThread() ? To<LayoutFlowThread>(child)
+                                      : layout_flow_thread);
     }
   }
 

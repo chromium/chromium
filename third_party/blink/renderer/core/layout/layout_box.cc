@@ -5546,7 +5546,7 @@ static LayoutUnit AccumulateStaticOffsetForFlowThread(
   // We're walking out of a flowthread here. This flow thread is not in the
   // containing block chain, so we need to convert the position from the
   // coordinate space of this flowthread to the containing coordinate space.
-  ToLayoutFlowThread(layout_box)
+  To<LayoutFlowThread>(layout_box)
       .FlowThreadToContainingCoordinateSpace(block_position, inline_position);
   return inline_position - previous_inline_position;
 }
@@ -6106,7 +6106,7 @@ void LayoutBox::ComputeBlockStaticDistance(
     // The inline position cannot affect the block position, so we don't bother
     // calculating it.
     LayoutUnit dummy_inline_position;
-    ToLayoutFlowThread(box).FlowThreadToContainingCoordinateSpace(
+    To<LayoutFlowThread>(box).FlowThreadToContainingCoordinateSpace(
         static_logical_top, dummy_inline_position);
   }
 

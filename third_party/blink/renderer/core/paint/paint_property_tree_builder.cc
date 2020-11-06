@@ -2941,7 +2941,7 @@ void PaintPropertyTreeBuilder::UpdateCompositedLayerPaginationOffset() {
     // |object_| establishes the top level composited layer under the
     // pagination layer.
     FragmentainerIterator iterator(
-        ToLayoutFlowThread(enclosing_pagination_layer->GetLayoutObject()),
+        To<LayoutFlowThread>(enclosing_pagination_layer->GetLayoutObject()),
         BoundingBoxInPaginationContainer(object_, *enclosing_pagination_layer)
             .ToLayoutRect());
     if (!iterator.AtEnd()) {
@@ -2999,7 +2999,7 @@ void PaintPropertyTreeBuilder::
   const LayoutFlowThread* flow_thread = nullptr;
   if (const auto* pagination_layer =
           context_.painting_layer->EnclosingPaginationLayer()) {
-    flow_thread = &ToLayoutFlowThread(pagination_layer->GetLayoutObject());
+    flow_thread = &To<LayoutFlowThread>(pagination_layer->GetLayoutObject());
     // TODO(crbug.com/757947): This shouldn't be possible but happens to
     // column-spanners in nested multi-col contexts.
     if (!flow_thread->IsPageLogicalHeightKnown())
@@ -3085,7 +3085,7 @@ void PaintPropertyTreeBuilder::
   const LayoutFlowThread* flow_thread = nullptr;
   if (const auto* pagination_layer =
           context_.painting_layer->EnclosingPaginationLayer()) {
-    flow_thread = &ToLayoutFlowThread(pagination_layer->GetLayoutObject());
+    flow_thread = &To<LayoutFlowThread>(pagination_layer->GetLayoutObject());
     // TODO(crbug.com/757947): This shouldn't be possible but happens to
     // column-spanners in nested multi-col contexts.
     if (!flow_thread->IsPageLogicalHeightKnown())
@@ -3155,7 +3155,7 @@ static LayoutUnit FragmentLogicalTopInParentFlowThread(
     return LayoutUnit();
 
   const auto* parent_flow_thread =
-      &ToLayoutFlowThread(parent_pagination_layer->GetLayoutObject());
+      &To<LayoutFlowThread>(parent_pagination_layer->GetLayoutObject());
 
   LayoutPoint location(LayoutUnit(), logical_top_in_current_flow_thread);
   // TODO(crbug.com/467477): Should we flip for writing-mode? For now regardless
@@ -3203,7 +3203,7 @@ PaintPropertyTreeBuilder::ContextForFragment(
   bool crossed_flow_thread = false;
 
   if (object_.IsLayoutFlowThread()) {
-    const auto& flow_thread = ToLayoutFlowThread(object_);
+    const auto& flow_thread = To<LayoutFlowThread>(object_);
     // If this flow thread is under another flow thread, find the fragment in
     // the parent flow thread containing this fragment. Otherwise, the following
     // code will just match parent_contexts[0].
@@ -3313,7 +3313,7 @@ PaintPropertyTreeBuilder::ContextForFragment(
     if (container->IsLayoutFlowThread()) {
       logical_top_in_containing_flow_thread =
           FragmentLogicalTopInParentFlowThread(
-              ToLayoutFlowThread(*container),
+              To<LayoutFlowThread>(*container),
               logical_top_in_containing_flow_thread);
       crossed_flow_thread = true;
     }
@@ -3346,7 +3346,7 @@ void PaintPropertyTreeBuilder::CreateFragmentContextsInFlowThread(
       paint_layer->EnclosingPaginationLayer();
 
   const auto& flow_thread =
-      ToLayoutFlowThread(enclosing_pagination_layer->GetLayoutObject());
+      To<LayoutFlowThread>(enclosing_pagination_layer->GetLayoutObject());
   PhysicalRect object_bounding_box_in_flow_thread;
   if (context_.repeating_table_section) {
     // The object is a descendant of a repeating object. It should use the

@@ -1271,7 +1271,7 @@ void NGBlockNode::PlaceChildrenInFlowThread(
         ResolveUsedColumnCount(space.AvailableSize().inline_size, Style());
     flow_thread->StartLayoutFromNG(column_count);
     pending_column_set =
-        ToLayoutMultiColumnSetOrNull(flow_thread->FirstMultiColumnBox());
+        DynamicTo<LayoutMultiColumnSet>(flow_thread->FirstMultiColumnBox());
   }
 
   for (const auto& child : physical_fragment.Children()) {
@@ -1290,12 +1290,11 @@ void NGBlockNode::PlaceChildrenInFlowThread(
 
       flow_thread->SkipColumnSpanner(child_box, flow_thread_offset);
 
-      if (LayoutMultiColumnSet* previous_column_set =
-              ToLayoutMultiColumnSetOrNull(
-                  placeholder->PreviousSiblingMultiColumnBox()))
+      if (auto* previous_column_set = DynamicTo<LayoutMultiColumnSet>(
+              placeholder->PreviousSiblingMultiColumnBox()))
         previous_column_set->FinishLayoutFromNG();
 
-      pending_column_set = ToLayoutMultiColumnSetOrNull(
+      pending_column_set = DynamicTo<LayoutMultiColumnSet>(
           placeholder->NextSiblingMultiColumnBox());
 
       // If this multicol container was nested inside another fragmentation

@@ -59,9 +59,9 @@ LayoutFlowThread* LayoutFlowThread::LocateFlowThreadContainingBlockOf(
     // a fieldset isn't allowed to be a multicol container anyway.
     if (curr->IsHTMLLegendElement() && !curr->IsOutOfFlowPositioned() &&
         !curr->IsColumnSpanAll() && curr->Parent()->IsLayoutFlowThread())
-      return ToLayoutFlowThread(curr->Parent());
+      return To<LayoutFlowThread>(curr->Parent());
     if (curr->IsLayoutFlowThread())
-      return ToLayoutFlowThread(curr);
+      return To<LayoutFlowThread>(curr);
     LayoutObject* container = curr->Container();
     // If we're inside something strictly unbreakable (due to having scrollbars
     // or being writing mode roots, for instance), it's also strictly

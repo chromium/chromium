@@ -118,7 +118,7 @@ TEST_F(MultiColumnFragmentainerGroupTest, LotsOfContent) {
   ASSERT_TRUE(column_set);
   ASSERT_TRUE(column_set->IsLayoutMultiColumnSet());
   const auto& fragmentainer_group =
-      ToLayoutMultiColumnSet(column_set)->FirstFragmentainerGroup();
+      To<LayoutMultiColumnSet>(column_set)->FirstFragmentainerGroup();
   EXPECT_EQ(fragmentainer_group.ActualColumnCount(), 100U);
   EXPECT_EQ(fragmentainer_group.GroupLogicalHeight(), LayoutUnit(60));
   auto overflow = ToLayoutBox(multicol)->LayoutOverflowRect();
@@ -149,7 +149,7 @@ TEST_F(MultiColumnFragmentainerGroupTest, LotsOfNestedBlocksWithText) {
   ASSERT_TRUE(column_set);
   ASSERT_TRUE(column_set->IsLayoutMultiColumnSet());
   const auto& fragmentainer_group =
-      ToLayoutMultiColumnSet(column_set)->FirstFragmentainerGroup();
+      To<LayoutMultiColumnSet>(column_set)->FirstFragmentainerGroup();
   EXPECT_EQ(fragmentainer_group.ActualColumnCount(), 250U);
   EXPECT_EQ(fragmentainer_group.GroupLogicalHeight(), LayoutUnit(200));
   auto overflow = ToLayoutBox(multicol)->LayoutOverflowRect();
@@ -180,7 +180,7 @@ TEST_F(MultiColumnFragmentainerGroupTest, NestedBlocksWithLotsOfContent) {
   ASSERT_TRUE(column_set);
   ASSERT_TRUE(column_set->IsLayoutMultiColumnSet());
   const auto& fragmentainer_group =
-      ToLayoutMultiColumnSet(column_set)->FirstFragmentainerGroup();
+      To<LayoutMultiColumnSet>(column_set)->FirstFragmentainerGroup();
   EXPECT_EQ(fragmentainer_group.ActualColumnCount(), 100U);
   EXPECT_EQ(fragmentainer_group.GroupLogicalHeight(), LayoutUnit(60));
   auto overflow = ToLayoutBox(multicol)->LayoutOverflowRect();

@@ -271,7 +271,7 @@ TEST_F(MultiColumnRenderingTest, SpannerWithSpanner) {
   EXPECT_EQ(flow_thread->ContainingColumnSpannerPlaceholder(
                 GetLayoutObjectByElementId("invalidSpanner")),
             column_box);
-  EXPECT_EQ(ToLayoutMultiColumnSpannerPlaceholder(column_box)
+  EXPECT_EQ(To<LayoutMultiColumnSpannerPlaceholder>(column_box)
                 ->LayoutObjectInFlowThread(),
             GetLayoutObjectByElementId("spanner"));
   EXPECT_EQ(GetLayoutObjectByElementId("spanner")->SpannerPlaceholder(),
@@ -299,7 +299,7 @@ TEST_F(MultiColumnRenderingTest, SubtreeWithSpanner) {
             column_box);
   EXPECT_EQ(GetLayoutObjectByElementId("spanner")->SpannerPlaceholder(),
             column_box);
-  EXPECT_EQ(ToLayoutMultiColumnSpannerPlaceholder(column_box)
+  EXPECT_EQ(To<LayoutMultiColumnSpannerPlaceholder>(column_box)
                 ->LayoutObjectInFlowThread(),
             GetLayoutObjectByElementId("spanner"));
   EXPECT_EQ(flow_thread->ContainingColumnSpannerPlaceholder(
@@ -327,7 +327,7 @@ TEST_F(MultiColumnRenderingTest, SubtreeWithSpannerAfterSpanner) {
   EXPECT_EQ(flow_thread->ContainingColumnSpannerPlaceholder(
                 GetLayoutObjectByElementId("spanner1")),
             column_box);
-  EXPECT_EQ(ToLayoutMultiColumnSpannerPlaceholder(column_box)
+  EXPECT_EQ(To<LayoutMultiColumnSpannerPlaceholder>(column_box)
                 ->LayoutObjectInFlowThread(),
             GetLayoutObjectByElementId("spanner1"));
   EXPECT_EQ(GetLayoutObjectByElementId("spanner1")->SpannerPlaceholder(),
@@ -340,7 +340,7 @@ TEST_F(MultiColumnRenderingTest, SubtreeWithSpannerAfterSpanner) {
   EXPECT_EQ(flow_thread->ContainingColumnSpannerPlaceholder(
                 GetLayoutObjectByElementId("spanner2")),
             column_box);
-  EXPECT_EQ(ToLayoutMultiColumnSpannerPlaceholder(column_box)
+  EXPECT_EQ(To<LayoutMultiColumnSpannerPlaceholder>(column_box)
                 ->LayoutObjectInFlowThread(),
             GetLayoutObjectByElementId("spanner2"));
   EXPECT_EQ(GetLayoutObjectByElementId("spanner2")->SpannerPlaceholder(),
@@ -373,7 +373,7 @@ TEST_F(MultiColumnRenderingTest, SubtreeWithSpannerBeforeSpanner) {
             column_box);
   EXPECT_EQ(GetLayoutObjectByElementId("spanner1")->SpannerPlaceholder(),
             column_box);
-  EXPECT_EQ(ToLayoutMultiColumnSpannerPlaceholder(column_box)
+  EXPECT_EQ(To<LayoutMultiColumnSpannerPlaceholder>(column_box)
                 ->LayoutObjectInFlowThread(),
             GetLayoutObjectByElementId("spanner1"));
   column_box =
@@ -383,7 +383,7 @@ TEST_F(MultiColumnRenderingTest, SubtreeWithSpannerBeforeSpanner) {
             column_box);
   EXPECT_EQ(GetLayoutObjectByElementId("spanner2")->SpannerPlaceholder(),
             column_box);
-  EXPECT_EQ(ToLayoutMultiColumnSpannerPlaceholder(column_box)
+  EXPECT_EQ(To<LayoutMultiColumnSpannerPlaceholder>(column_box)
                 ->LayoutObjectInFlowThread(),
             GetLayoutObjectByElementId("spanner2"));
   EXPECT_EQ(flow_thread->ContainingColumnSpannerPlaceholder(

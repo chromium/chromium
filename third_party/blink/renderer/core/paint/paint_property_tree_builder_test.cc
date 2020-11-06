@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/layout/layout_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
+#include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/layout_table_section.h"
 #include "third_party/blink/renderer/core/layout/layout_tree_as_text.h"
@@ -6227,8 +6228,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SkipEmptyClipFragments) {
                                 .getElementById("container")
                                 ->GetLayoutObject()
                                 ->SlowFirstChild();
-  EXPECT_TRUE(flow_thread->IsLayoutFlowThread());
-  EXPECT_TRUE(ToLayoutFlowThread(flow_thread)->IsLayoutMultiColumnFlowThread());
+  EXPECT_TRUE(IsA<LayoutMultiColumnFlowThread>(flow_thread));
 
   // FragmentainerIterator would return 3 things:
   // 1. A fragment that contains "lorem" and is interrupted by the first h4,

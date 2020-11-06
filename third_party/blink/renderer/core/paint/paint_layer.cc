@@ -491,8 +491,7 @@ void PaintLayer::ConvertFromFlowThreadToVisualBoundingBoxInAncestor(
     PhysicalRect& rect) const {
   PaintLayer* pagination_layer = EnclosingPaginationLayer();
   DCHECK(pagination_layer);
-  LayoutFlowThread& flow_thread =
-      ToLayoutFlowThread(pagination_layer->GetLayoutObject());
+  auto& flow_thread = To<LayoutFlowThread>(pagination_layer->GetLayoutObject());
 
   // First make the flow thread rectangle relative to the flow thread, not to
   // |layer|.
@@ -1514,8 +1513,7 @@ PhysicalOffset PaintLayer::VisualOffsetFromAncestor(
     return offset;
   }
 
-  LayoutFlowThread& flow_thread =
-      ToLayoutFlowThread(pagination_layer->GetLayoutObject());
+  auto& flow_thread = To<LayoutFlowThread>(pagination_layer->GetLayoutObject());
   ConvertToLayerCoords(pagination_layer, offset);
   offset = PhysicalOffsetToBeNoop(
       flow_thread.FlowThreadPointToVisualPoint(offset.ToLayoutPoint()));

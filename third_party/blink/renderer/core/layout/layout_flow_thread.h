@@ -261,7 +261,12 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
   bool needs_paint_layer_ : 1;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutFlowThread, IsLayoutFlowThread());
+template <>
+struct DowncastTraits<LayoutFlowThread> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsLayoutFlowThread();
+  }
+};
 
 }  // namespace blink
 

@@ -153,7 +153,7 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
   }
   LayoutMultiColumnFlowThread* MultiColumnFlowThread() const {
     NOT_DESTROYED();
-    return ToLayoutMultiColumnFlowThread(FlowThread());
+    return To<LayoutMultiColumnFlowThread>(FlowThread());
   }
 
   LayoutMultiColumnSet* NextSiblingMultiColumnSet() const;
@@ -317,7 +317,12 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
   unsigned last_actual_column_count_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutMultiColumnSet, IsLayoutMultiColumnSet());
+template <>
+struct DowncastTraits<LayoutMultiColumnSet> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsLayoutMultiColumnSet();
+  }
+};
 
 }  // namespace blink
 

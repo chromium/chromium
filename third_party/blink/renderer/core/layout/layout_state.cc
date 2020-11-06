@@ -49,7 +49,7 @@ LayoutState::LayoutState(LayoutBox& layout_object,
       next_(layout_object.View()->GetLayoutState()),
       layout_object_(&layout_object) {
   if (layout_object.IsLayoutFlowThread())
-    flow_thread_ = ToLayoutFlowThread(&layout_object);
+    flow_thread_ = To<LayoutFlowThread>(&layout_object);
   else
     flow_thread_ = next_->FlowThread();
   pagination_state_changed_ = next_->pagination_state_changed_;

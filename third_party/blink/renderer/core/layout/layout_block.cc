@@ -667,7 +667,7 @@ void LayoutBlock::SimplifiedNormalFlowLayout() {
     for (LayoutBox* box = FirstChildBox(); box; box = box->NextSiblingBox()) {
       if (!box->IsOutOfFlowPositioned()) {
         if (box->IsLayoutMultiColumnSpannerPlaceholder())
-          ToLayoutMultiColumnSpannerPlaceholder(box)
+          To<LayoutMultiColumnSpannerPlaceholder>(box)
               ->MarkForLayoutIfObjectInFlowThreadNeedsLayout();
         box->LayoutIfNeeded();
       }
