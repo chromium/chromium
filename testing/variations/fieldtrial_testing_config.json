@@ -3375,21 +3375,6 @@
             ]
         }
     ],
-    "IOSLookalikeInterstitials": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSLookalikeUrlNavigationSuggestionsUI"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSMessagesOverlay": [
         {
             "platforms": [

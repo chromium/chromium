@@ -42,8 +42,7 @@ const base::Feature kPreserveScrollViewProperties{
     "PreserveScrollViewProperties", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kIOSLookalikeUrlNavigationSuggestionsUI{
-    "IOSLookalikeUrlNavigationSuggestionsUI",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    "IOSLookalikeUrlNavigationSuggestionsUI", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kAddWebContentDropInteraction{
     "AddWebContentDropInteraction", base::FEATURE_DISABLED_BY_DEFAULT};
