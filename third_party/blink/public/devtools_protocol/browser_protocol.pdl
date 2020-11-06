@@ -859,6 +859,7 @@ domain Browser
   experimental type BrowserCommandId extends string
     enum
       openTabSearch
+      closeTabSearch
 
   # Set permission settings for given origin.
   experimental command setPermission

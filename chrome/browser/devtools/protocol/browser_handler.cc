@@ -200,7 +200,9 @@ protocol::Response BrowserHandler::ExecuteBrowserCommand(
   static auto& command_id_map =
       *new std::map<protocol::Browser::BrowserCommandId, int>{
           {protocol::Browser::BrowserCommandIdEnum::OpenTabSearch,
-           IDC_TAB_SEARCH}};
+           IDC_TAB_SEARCH},
+          {protocol::Browser::BrowserCommandIdEnum::CloseTabSearch,
+           IDC_TAB_SEARCH_CLOSE}};
   if (command_id_map.count(command_id) == 0) {
     return Response::InvalidParams("Invalid BrowserCommandId: " + command_id);
   }
