@@ -1460,6 +1460,13 @@ java_prebuilt("com_google_errorprone_error_prone_annotation_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+java_prebuilt("com_google_errorprone_error_prone_annotations_java") {
+  jar_path = "libs/com_google_errorprone_error_prone_annotations/error_prone_annotations-2.4.0.jar"
+  output_name = "com_google_errorprone_error_prone_annotations"
+  enable_bytecode_checks = false
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_errorprone_error_prone_check_api_java") {
   jar_path = "libs/com_google_errorprone_error_prone_check_api/error_prone_check_api-2.4.0.jar"
   output_name = "com_google_errorprone_error_prone_check_api"
@@ -2438,17 +2445,6 @@ java_prebuilt("com_google_dagger_dagger_spi_java") {
     ":com_squareup_javapoet_java",
     ":javax_inject_javax_inject_java",
   ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("com_google_errorprone_error_prone_annotations_java") {
-  jar_path = "libs/com_google_errorprone_error_prone_annotations/error_prone_annotations-2.4.0.jar"
-  output_name = "com_google_errorprone_error_prone_annotations"
-  enable_bytecode_checks = false
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

@@ -185,6 +185,7 @@ dependencies {
     buildCompile "com.google.errorprone:error_prone_core:${errorproneVersion}"
     buildCompile "com.google.errorprone:error_prone_check_api:${errorproneVersion}"
     buildCompile "com.google.errorprone:error_prone_annotation:${errorproneVersion}"
+    buildCompile "com.google.errorprone:error_prone_annotations:${errorproneVersion}"
     buildCompile "com.google.errorprone:javac:9+181-r4173-1"
 
     buildCompile "com.google.auto.service:auto-service:1.0-rc6"
