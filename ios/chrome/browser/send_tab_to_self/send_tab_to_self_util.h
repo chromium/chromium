@@ -12,13 +12,6 @@ class GURL;
 
 namespace send_tab_to_self {
 
-// Returns true if the 'send tab to self' flag is enabled.
-bool IsReceivingEnabled();
-
-// Returns true if the 'send-tab-to-self' and 'send-tab-to-self-show-sending-ui'
-// flags are enabled.
-bool IsSendingEnabled();
-
 // Returns true if the SendTabToSelf sync datatype is active.
 bool IsUserSyncTypeActive(ChromeBrowserState* browser_state);
 
