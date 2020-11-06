@@ -77,6 +77,14 @@
   }
 
   if ((self = [super init])) {
+    // TODO(https://crbug.com/1144992): If crash fixed, investigate why browser
+    // cannot be created here.
+    if (Browser::GetBrowserCreationStatusForProfile(aProfile) !=
+        Browser::BrowserCreationStatus::kOk) {
+      NOTREACHED();
+      [self release];
+      return nil;
+    }
     _browser = Browser::Create(Browser::CreateParams(aProfile, false));
     chrome::NewTab(_browser);
     _browser->window()->Show();
