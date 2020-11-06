@@ -770,6 +770,7 @@ bool QueryCancellationTraitsImpl(BindStateBase::CancellationQueryMode mode,
           functor, std::get<indices>(bound_args)...);
   }
   NOTREACHED();
+  return false;
 }
 
 // Relays |base| to corresponding CallbackCancellationTraits<>::Run(). Returns
