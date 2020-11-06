@@ -32,6 +32,7 @@ source_set("renderer") {
     "//android_webview:generate_aw_resources",
     "//android_webview:generate_aw_strings",
     "//android_webview/common",
+    "//android_webview/common:mojom",
     "//base",
     "//components/android_system_error_page",
     "//components/autofill/content/renderer",

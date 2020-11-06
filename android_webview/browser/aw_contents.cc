@@ -752,7 +752,11 @@ void AwContents::ClearCache(JNIEnv* env,
                             const JavaParamRef<jobject>& obj,
                             jboolean include_disk_files) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  render_view_host_ext_->ClearCache();
+  AwRenderProcess* aw_render_process =
+      AwRenderProcess::GetInstanceForRenderProcessHost(
+          web_contents_->GetMainFrame()->GetProcess());
+
+  aw_render_process->ClearCache();
 
   if (include_disk_files) {
     content::BrowsingDataRemover* remover =

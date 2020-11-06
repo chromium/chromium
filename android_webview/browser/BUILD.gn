@@ -182,6 +182,7 @@ source_set("browser") {
     "//android_webview/browser/metrics",
     "//android_webview/browser/variations",
     "//android_webview/common",
+    "//android_webview/common:mojom",
     "//android_webview/proto:aw_variations_seed_proto",
     "//base",
     "//components/autofill/android/provider",

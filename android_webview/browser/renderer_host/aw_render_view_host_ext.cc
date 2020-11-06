@@ -53,11 +53,6 @@ void AwRenderViewHostExt::DocumentHasImages(DocumentHasImagesResult result) {
   }
 }
 
-void AwRenderViewHostExt::ClearCache() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  web_contents()->GetRenderViewHost()->Send(new AwViewMsg_ClearCache);
-}
-
 void AwRenderViewHostExt::KillRenderProcess() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   web_contents()->GetRenderViewHost()->Send(new AwViewMsg_KillProcess);

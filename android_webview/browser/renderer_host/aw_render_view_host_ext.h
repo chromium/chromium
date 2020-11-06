@@ -44,9 +44,6 @@ class AwRenderViewHostExt : public content::WebContentsObserver {
   using DocumentHasImagesResult = base::OnceCallback<void(bool)>;
   void DocumentHasImages(DocumentHasImagesResult result);
 
-  // Clear all WebCore memory cache (not only for this view).
-  void ClearCache();
-
   // Tells render process to kill itself (only for testing).
   void KillRenderProcess();
 

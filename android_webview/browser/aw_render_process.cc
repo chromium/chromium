@@ -56,11 +56,24 @@ AwRenderProcess::~AwRenderProcess() {
   java_obj_.Reset();
 }
 
+void AwRenderProcess::ClearCache() {
+  // If the renderer is in between the Init and the Ready phase (ie. hasn't
+  // started child process yet), clearing the cache will not do anything so it
+  // is fine to drop it here if there isn't a |renderer_remote_|.
+  if (renderer_remote_) {
+    renderer_remote_->ClearCache();
+  }
+}
+
 void AwRenderProcess::Ready() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   Java_AwRenderProcess_setNative(AttachCurrentThread(), java_obj_,
                                  reinterpret_cast<jlong>(this));
+
+  renderer_remote_.reset();
+  render_process_host_->GetChannel()->GetRemoteAssociatedInterface(
+      &renderer_remote_);
 }
 
 void AwRenderProcess::Cleanup() {

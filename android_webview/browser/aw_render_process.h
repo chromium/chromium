@@ -5,11 +5,12 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_RENDER_PROCESS_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_RENDER_PROCESS_H_
 
+#include "android_webview/common/mojom/renderer.mojom.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
-
 #include "content/public/browser/render_process_host_observer.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace android_webview {
 
@@ -31,6 +32,8 @@ class AwRenderProcess : public content::RenderProcessHostObserver,
   explicit AwRenderProcess(content::RenderProcessHost* render_process_host);
   ~AwRenderProcess() override;
 
+  void ClearCache();
+
  private:
   void Ready();
   void Cleanup();
@@ -45,6 +48,8 @@ class AwRenderProcess : public content::RenderProcessHostObserver,
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 
   content::RenderProcessHost* render_process_host_;
+
+  mojo::AssociatedRemote<mojom::Renderer> renderer_remote_;
 
   base::WeakPtrFactory<AwRenderProcess> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(AwRenderProcess);

@@ -1,0 +1,13 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module android_webview.mojom;
+
+// Similar to content.mojom.Renderer. This interface adds additional
+// things that webview needs from the renderer process.
+interface Renderer {
+  // Clear the memory cache. The cache is process wide so this will influence
+  // other webview instances as well.
+  ClearCache();
+};

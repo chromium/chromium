@@ -40,9 +40,6 @@ IPC_STRUCT_TRAITS_END()
 // RenderView messages
 // These are messages sent from the browser to the renderer process.
 
-// Tells the renderer to drop all WebCore memory cache.
-IPC_MESSAGE_CONTROL0(AwViewMsg_ClearCache)
-
 // Tells render process to kill itself (only for testing).
 IPC_MESSAGE_CONTROL0(AwViewMsg_KillProcess)
 

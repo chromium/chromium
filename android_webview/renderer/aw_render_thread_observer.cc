@@ -6,6 +6,7 @@
 
 #include "android_webview/common/render_view_messages.h"
 #include "ipc/ipc_message_macros.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/platform/web_cache.h"
 #include "third_party/blink/public/platform/web_network_state_notifier.h"
 
@@ -21,7 +22,6 @@ bool AwRenderThreadObserver::OnControlMessageReceived(
     const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(AwRenderThreadObserver, message)
-    IPC_MESSAGE_HANDLER(AwViewMsg_ClearCache, OnClearCache)
     IPC_MESSAGE_HANDLER(AwViewMsg_KillProcess, OnKillProcess)
     IPC_MESSAGE_HANDLER(AwViewMsg_SetJsOnlineProperty, OnSetJsOnlineProperty)
     IPC_MESSAGE_UNHANDLED(handled = false)
@@ -29,7 +29,27 @@ bool AwRenderThreadObserver::OnControlMessageReceived(
   return handled;
 }
 
-void AwRenderThreadObserver::OnClearCache() {
+void AwRenderThreadObserver::RegisterMojoInterfaces(
+    blink::AssociatedInterfaceRegistry* associated_interfaces) {
+  // base::Unretained can be used here because the associated_interfaces
+  // is owned by the RenderThread and will live for the duration of the
+  // RenderThread.
+  associated_interfaces->AddInterface(
+      base::BindRepeating(&AwRenderThreadObserver::OnRendererAssociatedRequest,
+                          base::Unretained(this)));
+}
+
+void AwRenderThreadObserver::UnregisterMojoInterfaces(
+    blink::AssociatedInterfaceRegistry* associated_interfaces) {
+  associated_interfaces->RemoveInterface(mojom::Renderer::Name_);
+}
+
+void AwRenderThreadObserver::OnRendererAssociatedRequest(
+    mojo::PendingAssociatedReceiver<mojom::Renderer> receiver) {
+  receiver_.Bind(std::move(receiver));
+}
+
+void AwRenderThreadObserver::ClearCache() {
   blink::WebCache::Clear();
 }
 
