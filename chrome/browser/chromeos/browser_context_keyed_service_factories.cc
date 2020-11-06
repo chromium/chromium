@@ -36,6 +36,7 @@
 #include "chrome/browser/chromeos/printing/history/print_job_history_service_factory.h"
 #include "chrome/browser/chromeos/printing/print_management/printing_manager_factory.h"
 #include "chrome/browser/chromeos/printing/synced_printers_manager_factory.h"
+#include "chrome/browser/chromeos/secure_channel/nearby_connector_factory.h"
 #include "chrome/browser/chromeos/smb_client/smb_service_factory.h"
 #include "chrome/browser/chromeos/tether/tether_service_factory.h"
 #include "chrome/browser/chromeos/web_applications/crosh_loader_factory.h"
@@ -89,6 +90,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   policy::UserNetworkConfigurationUpdaterFactory::GetInstance();
   printing::print_management::PrintingManagerFactory::GetInstance();
   PrintJobHistoryServiceFactory::GetInstance();
+  secure_channel::NearbyConnectorFactory::GetInstance();
   smb_client::SmbServiceFactory::GetInstance();
   SyncedPrintersManagerFactory::GetInstance();
   TetherServiceFactory::GetInstance();

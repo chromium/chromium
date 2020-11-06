@@ -12,6 +12,8 @@ source_set("client") {
     "connection_attempt.h",
     "connection_attempt_impl.cc",
     "connection_attempt_impl.h",
+    "nearby_connector.cc",
+    "nearby_connector.h",
     "secure_channel_client.h",
     "secure_channel_client_impl.cc",
     "secure_channel_client_impl.h",
@@ -36,6 +38,8 @@ static_library("test_support") {
     "fake_client_channel_observer.h",
     "fake_connection_attempt.cc",
     "fake_connection_attempt.h",
+    "fake_nearby_connector.cc",
+    "fake_nearby_connector.h",
     "fake_secure_channel_client.cc",
     "fake_secure_channel_client.h",
   ]

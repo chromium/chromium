@@ -20,3 +20,20 @@ interface NearbyMessageReceiver {
   OnMessageReceived(string message);
 };
 
+// Provides an interface to make a SecureChannel connection over the Nearby
+// Connections library.
+interface NearbyConnector {
+  // Starts a connection attempt to the device with the provided address, using
+  // |kServiceId| as the service ID for the connection. If the attempt succeeds,
+  // a NearbyMessageSender is returned to the caller, enabling the caller to
+  // send messages over the connection. If the attempt fails, null is returned.
+  //
+  // To disconnect an active connection, disconnect either |message_receiver| or
+  // |message_sender|. If the remote device disconnects an active connection,
+  // these are both disconnected; clients should set disconnection handlers to
+  // be notified if a disconnection should occur.
+  Connect(array<uint8, 6> bluetooth_public_address,
+          pending_remote<NearbyMessageReceiver> message_receiver) =>
+      (pending_remote<NearbyMessageSender>? message_sender);
+};
+
