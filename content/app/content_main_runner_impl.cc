@@ -726,8 +726,10 @@ int ContentMainRunnerImpl::Initialize(const ContentMainParams& params) {
     if (process_type.empty()) {
       TRACE_EVENT0("startup", "InitializeICU");
       // In browser process load ICU data files from disk.
-      if (GetContentClient()->browser()->ShouldLoadExtraIcuDataFile()) {
-        if (!base::i18n::InitializeExtraICU()) {
+      std::string split_name;
+      if (GetContentClient()->browser()->ShouldLoadExtraIcuDataFile(
+              &split_name)) {
+        if (!base::i18n::InitializeExtraICU(split_name)) {
           return TerminateForFatalInitializationError();
         }
       }

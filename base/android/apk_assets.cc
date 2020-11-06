@@ -16,12 +16,14 @@ namespace base {
 namespace android {
 
 int OpenApkAsset(const std::string& file_path,
+                 const std::string& split_name,
                  base::MemoryMappedFile::Region* region) {
   // The AssetManager API of the NDK does not expose a method for accessing raw
   // resources :(
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jlongArray> jarr = Java_ApkAssets_open(
-      env, base::android::ConvertUTF8ToJavaString(env, file_path));
+  ScopedJavaLocalRef<jlongArray> jarr =
+      Java_ApkAssets_open(env, ConvertUTF8ToJavaString(env, file_path),
+                          ConvertUTF8ToJavaString(env, split_name));
   std::vector<jlong> results;
   base::android::JavaLongArrayToLongVector(env, jarr, &results);
   CHECK_EQ(3U, results.size());
@@ -29,6 +31,11 @@ int OpenApkAsset(const std::string& file_path,
   region->offset = results[1];
   region->size = results[2];
   return fd;
+}
+
+int OpenApkAsset(const std::string& file_path,
+                 base::MemoryMappedFile::Region* region) {
+  return OpenApkAsset(file_path, std::string(), region);
 }
 
 bool RegisterApkAssetWithFileDescriptorStore(const std::string& key,

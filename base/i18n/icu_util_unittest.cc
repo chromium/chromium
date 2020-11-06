@@ -34,20 +34,20 @@ TEST_F(IcuUtilTest, ExtraFileNotInitializedAtStart) {
 }
 
 TEST_F(IcuUtilTest, InitializeExtraIcuSucceeds) {
-  bool success = InitializeExtraICU();
+  bool success = InitializeExtraICU(std::string());
 
   ASSERT_TRUE(success);
 }
 
 TEST_F(IcuUtilTest, CannotInitializeExtraIcuAfterIcu) {
   InitializeICU();
-  bool success = InitializeExtraICU();
+  bool success = InitializeExtraICU(std::string());
 
   ASSERT_FALSE(success);
 }
 
 TEST_F(IcuUtilTest, ExtraFileInitializedAfterInit) {
-  InitializeExtraICU();
+  InitializeExtraICU(std::string());
   MemoryMappedFile::Region region;
   PlatformFile file = GetIcuExtraDataFileHandle(&region);
 
@@ -55,7 +55,7 @@ TEST_F(IcuUtilTest, ExtraFileInitializedAfterInit) {
 }
 
 TEST_F(IcuUtilTest, InitializeExtraIcuFromFdSucceeds) {
-  InitializeExtraICU();
+  InitializeExtraICU(std::string());
   MemoryMappedFile::Region region;
   PlatformFile pf = GetIcuExtraDataFileHandle(&region);
   bool success = InitializeExtraICUWithFileDescriptor(pf, region);
@@ -64,7 +64,7 @@ TEST_F(IcuUtilTest, InitializeExtraIcuFromFdSucceeds) {
 }
 
 TEST_F(IcuUtilTest, CannotInitializeExtraIcuFromFdAfterIcu) {
-  InitializeExtraICU();
+  InitializeExtraICU(std::string());
   InitializeICU();
   MemoryMappedFile::Region region;
   PlatformFile pf = GetIcuExtraDataFileHandle(&region);

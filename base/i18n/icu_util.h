@@ -24,8 +24,9 @@ BASE_I18N_EXPORT bool InitializeICU();
 
 #if ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE
 // Loads ICU's extra data tables from disk for the current process. If used must
-// be called before InitializeICU().
-BASE_I18N_EXPORT bool InitializeExtraICU();
+// be called before InitializeICU(). |split_name| is used on Android to find the
+// asset file.
+BASE_I18N_EXPORT bool InitializeExtraICU(const std::string& split_name);
 
 // Returns the PlatformFile and Region that was initialized by InitializeICU()
 // or InitializeExtraICU(). Use with InitializeICUWithFileDescriptor() or

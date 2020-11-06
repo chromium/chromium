@@ -1070,7 +1070,7 @@ void ContentBrowserClient::BlockBluetoothScanning(
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin) {}
 
-bool ContentBrowserClient::ShouldLoadExtraIcuDataFile() {
+bool ContentBrowserClient::ShouldLoadExtraIcuDataFile(std::string* split_name) {
   return false;
 }
 

@@ -19,4 +19,5 @@ dev_ui_module_desc = {
   # DevUI DFM does not need to call Module.getImpl(), and manages loading on
   # install and on use. Therefore disable auto-load on Module.getImpl().
   load_native_on_get_impl = false
+  supports_isolated_split = true
 }

@@ -114,7 +114,12 @@ template("chrome_bundle") {
     # access. For now, move all resources to the base module.
     android_resources("${_base_target_name}__all_chrome_resources") {
       recursive_resource_deps = true
-      deps = chrome_module_desc.java_deps
+      deps = []
+      foreach(_module_desc, _module_descs) {
+        if (defined(_module_desc.java_deps)) {
+          deps += _module_desc.java_deps
+        }
+      }
     }
   } else {
     _module_descs = invoker.module_descs
@@ -217,9 +222,7 @@ template("chrome_bundle") {
     # List of DFMs that are installed by default by wrapper scripts, to make
     # testing easier. This removes the need to manually specify, e.g.,
     # "-m dev_ui" on every install or run.
-    if (!_enable_chrome_module) {
-      default_modules_for_testing = [ "dev_ui" ]
-    }
+    default_modules_for_testing = [ "dev_ui" ]
 
     # NOTE: Only sign bundle for official builds since this is very slow.
     if (enable_chrome_android_internal && use_signing_keys &&

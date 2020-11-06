@@ -5676,8 +5676,10 @@ void ChromeContentBrowserClient::BlockBluetoothScanning(
       ContentSettingsType::BLUETOOTH_SCANNING, CONTENT_SETTING_BLOCK);
 }
 
-bool ChromeContentBrowserClient::ShouldLoadExtraIcuDataFile() {
+bool ChromeContentBrowserClient::ShouldLoadExtraIcuDataFile(
+    std::string* split_name) {
 #if defined(OS_ANDROID)
+  *split_name = "extra_icu";
   return extra_icu::ModuleProvider::IsModuleInstalled();
 #endif
   return false;

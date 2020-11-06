@@ -238,9 +238,10 @@ void LoadMainAndroidPackFile(const char* path_within_apk,
   }
 }
 
-void LoadPackFileFromApk(const std::string& path) {
+void LoadPackFileFromApk(const std::string& path,
+                         const std::string& split_name) {
   base::MemoryMappedFile::Region region;
-  int fd = base::android::OpenApkAsset(path, &region);
+  int fd = base::android::OpenApkAsset(path, split_name, &region);
   CHECK_GE(fd, 0) << "Could not find " << path << " in APK.";
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromFileRegion(
       base::File(fd), region, ui::SCALE_FACTOR_NONE);

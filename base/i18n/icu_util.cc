@@ -132,11 +132,12 @@ struct PfRegion {
   MemoryMappedFile::Region region;
 };
 
-std::unique_ptr<PfRegion> OpenIcuDataFile(const std::string& filename) {
+std::unique_ptr<PfRegion> OpenIcuDataFile(const std::string& filename,
+                                          const std::string& split_name) {
   auto result = std::make_unique<PfRegion>();
 #if defined(OS_ANDROID)
-  result->pf =
-      android::OpenApkAsset(kAssetsPathPrefix + filename, &result->region);
+  result->pf = android::OpenApkAsset(kAssetsPathPrefix + filename, split_name,
+                                     &result->region);
   if (result->pf != -1) {
     return result;
   }
@@ -206,7 +207,7 @@ void LazyOpenIcuDataFile() {
   if (g_icudtl_pf != kInvalidPlatformFile) {
     return;
   }
-  auto pf_region = OpenIcuDataFile(kIcuDataFileName);
+  auto pf_region = OpenIcuDataFile(kIcuDataFileName, std::string());
   if (!pf_region) {
     return;
   }
@@ -543,12 +544,12 @@ PlatformFile GetIcuExtraDataFileHandle(MemoryMappedFile::Region* out_region) {
   return g_icudtl_extra_pf;
 }
 
-bool InitializeExtraICU() {
+bool InitializeExtraICU(const std::string& split_name) {
   if (g_icudtl_pf != kInvalidPlatformFile) {
     // Must call InitializeExtraICU() before InitializeICU().
     return false;
   }
-  auto pf_region = OpenIcuDataFile(kIcuExtraDataFileName);
+  auto pf_region = OpenIcuDataFile(kIcuExtraDataFileName, split_name);
   if (!pf_region) {
     return false;
   }

@@ -636,7 +636,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                               const url::Origin& requesting_origin,
                               const url::Origin& embedding_origin) override;
 
-  bool ShouldLoadExtraIcuDataFile() override;
+  bool ShouldLoadExtraIcuDataFile(std::string* split_name) override;
 
   bool ArePersistentMediaDeviceIDsAllowed(
       content::BrowserContext* browser_context,
