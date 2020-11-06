@@ -134,5 +134,9 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:tricium_simple",
+)
+
+build_recipe(
     name = "recipe:webrtc/chromium_ios",
 )

@@ -1198,6 +1198,11 @@ try_.chromium_linux_builder(
     executable = "recipe:tricium_metrics",
 )
 
+try_.chromium_linux_builder(
+    name = "tricium-simple",
+    executable = "recipe:tricium_simple",
+)
+
 try_.chromium_mac_builder(
     name = "mac-osxbeta-rel",
     os = os.MAC_DEFAULT,
