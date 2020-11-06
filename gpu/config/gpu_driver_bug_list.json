@@ -1860,7 +1860,7 @@
       "comment": [
         "Corresponds to software rendering list #140",
         "Mysteriously, the first workaround won't work without the second. crbug.com/698197#c10",
-        "MSAA workaround shouldn't be needed beyond Adreno 3xx and Android 10. crbug.com/682075#c17, crbug.com/1042214"
+        "MSAA workaround shouldn't be needed beyond Adreno 3xx and Android 9. crbug.com/682075#c17, crbug.com/1042214"
       ],
       "description": "Some Adreno 3xx don't setup scissor state correctly when FBO0 is bound, nor support MSAA properly.",
       "cr_bugs": [670607, 682075, 696627, 698197, 707839, 1042214],
@@ -1869,7 +1869,7 @@
         "type": "android",
         "version": {
           "op": "<",
-          "value": "10.0"
+          "value": "9.0"
         }
       },
       "features": [
@@ -3630,14 +3630,14 @@
     {
       "id": 359,
       "comment": "Corresponds to software rendering list #140",
-      "description": "Disable depth textures on Adreno 3xx Qualcomm GPUs pre-Android 10 (legacy blocklist entry, original problem unclear)",
+      "description": "Disable depth textures on Adreno 3xx Qualcomm GPUs pre-Android 9 (legacy blocklist entry, original problem unclear)",
       "cr_bugs": [682075, 1042214],
       "gl_renderer": "Adreno \\(TM\\) 3.*",
       "os": {
         "type": "android",
         "version": {
           "op": "<",
-          "value": "10.0"
+          "value": "9.0"
         }
       },
       "features": [
