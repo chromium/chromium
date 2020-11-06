@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/platform_apps/install_chrome_app.h"
@@ -83,6 +84,12 @@
 #if BUILDFLAG(ENABLE_RLZ)
 #include "components/google/core/common/google_util.h"
 #include "components/rlz/rlz_tracker.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(IS_LACROS)
+#include "chrome/grit/generated_resources.h"
+#include "components/infobars/core/simple_alert_infobar_delegate.h"
+#include "ui/base/l10n/l10n_util.h"
 #endif
 
 namespace {
@@ -680,6 +687,19 @@ void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(
 
     InfoBarService* infobar_service =
         InfoBarService::FromWebContents(web_contents);
+
+#if BUILDFLAG(IS_LACROS)
+    // Show the experimental lacros info bar. auto_expire must be set to false,
+    // since otherwise an automated navigation [which can happen at launch] will
+    // cause the info bar to disappear.
+    SimpleAlertInfoBarDelegate::Create(
+        infobar_service,
+        infobars::InfoBarDelegate::EXPERIMENTAL_INFOBAR_DELEGATE_LACROS,
+        /*vector_icon=*/nullptr,
+        l10n_util::GetStringUTF16(IDS_EXPERIMENTAL_LACROS_WARNING_MESSAGE),
+        /*auto_expire=*/false, /*should_animate=*/false);
+#endif
+
     if (!google_apis::HasAPIKeyConfigured())
       GoogleApiKeysInfoBarDelegate::Create(infobar_service);
 

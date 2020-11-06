@@ -5139,6 +5139,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Choose sites to clear
       </message>
 
+      <!-- Experimental Lacros Infobar-->
+      <message name="IDS_EXPERIMENTAL_LACROS_WARNING_MESSAGE" desc="Message shown when user uses Lacros, an experimental feature.">
+        Lacros is an experimental browser. Please report any issues with Help > "Report an issue..."
+      </message>
+
       <!-- Bad Flags Infobar-->
       <message name="IDS_BAD_FLAGS_WARNING_MESSAGE" desc="Message shown when an unsupported command-line flag is used. [Keep it short so it fits in the infobar.]">
         You are using an unsupported command-line flag: <ph name="BAD_FLAG">$1<ex>--no-sandbox</ex></ph>. Stability and security will suffer.
