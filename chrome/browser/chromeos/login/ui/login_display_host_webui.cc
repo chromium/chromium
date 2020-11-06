@@ -833,6 +833,12 @@ void LoginDisplayHostWebUI::OnWidgetDestroying(views::Widget* widget) {
   login_view_ = nullptr;
 }
 
+void LoginDisplayHostWebUI::OnWidgetBoundsChanged(views::Widget* widget,
+                                                  const gfx::Rect& new_bounds) {
+  for (auto& observer : observers_)
+    observer.WebDialogViewBoundsChanged(new_bounds);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // LoginDisplayHostWebUI, ash::MultiUserWindowManagerObserver:
 void LoginDisplayHostWebUI::OnUserSwitchAnimationFinished() {
@@ -1028,10 +1034,14 @@ bool LoginDisplayHostWebUI::HasUserPods() {
   return false;
 }
 
-void LoginDisplayHostWebUI::AddObserver(LoginDisplayHost::Observer* observer) {}
+void LoginDisplayHostWebUI::AddObserver(LoginDisplayHost::Observer* observer) {
+  observers_.AddObserver(observer);
+}
 
 void LoginDisplayHostWebUI::RemoveObserver(
-    LoginDisplayHost::Observer* observer) {}
+    LoginDisplayHost::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 void LoginDisplayHostWebUI::PlayStartupSoundIfPossible() {
   if (!need_to_play_startup_sound_ || oobe_startup_sound_played_)

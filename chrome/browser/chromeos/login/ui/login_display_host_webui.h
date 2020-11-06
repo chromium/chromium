@@ -14,6 +14,7 @@
 #include "ash/public/cpp/multi_user_window_manager_observer.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/chromeos/login/existing_user_controller.h"
 #include "chrome/browser/chromeos/login/oobe_configuration.h"
@@ -133,6 +134,8 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
 
   // ash::MultiUserWindowManagerObserver:
   void OnUserSwitchAnimationFinished() override;
@@ -252,6 +255,8 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
 
   // True if we need to play startup sound when audio device becomes available.
   bool need_to_play_startup_sound_ = false;
+
+  base::ObserverList<LoginDisplayHost::Observer> observers_;
 
   base::WeakPtrFactory<LoginDisplayHostWebUI> weak_factory_{this};
 
