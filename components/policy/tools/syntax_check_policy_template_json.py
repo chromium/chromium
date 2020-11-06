@@ -522,112 +522,6 @@ class PolicyTemplateChecker(object):
           ('Default for policy %s of type %s should be one of %s, got %s') %
           (policy.get('name'), policy_type, acceptable_values, default))
 
-  def _NeedsItems(self, policy):
-    return policy.get('type') in ('main', 'int-enum', 'string-enum',
-                                  'string-enum-list')
-
-  def _CheckItems(self, policy, item_type):
-    if not self._NeedsItems(policy):
-      return
-
-    # TODO(crbug.com/1139306): Remove this check once all main policies
-    # have specified their items field.
-    policy_type = policy.get('type')
-    if policy_type == 'main' and 'items' not in policy:
-      return
-
-    items = self._CheckContains(policy, 'items', list)
-    if items is None:
-      return
-
-    if len(items) < 1:
-      self._Error('"items" must not be empty.', 'policy', policy, items)
-      return
-
-    # Ensure all items have valid captions.
-    for item in items:
-      self._CheckContains(item,
-                          'caption',
-                          str,
-                          container_name='item',
-                          identifier=policy.get('name'))
-
-    if policy_type == 'main':
-      # Main (bool) policies must contain a list of items to clearly
-      # indicate what the states mean.
-      required_values = [True, False]
-
-      # The unset item can only appear if the default is None, since
-      # there is no other way for it to be set.
-      if 'default' in policy and policy['default'] == None:
-        required_values.append(None)
-
-      # Since the item captions don't appear everywhere the description does,
-      # try and ensure the items are still described in the descriptions.
-      value_to_names = {
-          None: {'None', 'Unset', 'unset'},
-          True: {'True', 'Enabled'},
-          False: {'False', 'Disabled'},
-      }
-      for value in required_values:
-        names = value_to_names[value]
-        if not any(name in policy['desc'] for name in names):
-          self._Warning(
-              ('Policy %s doesn\'t seem to describe what happens when it is '
-               'set to %s. If possible update the description to describe this '
-               'while using at least one of %s') %
-              (policy.get('name'), value, names))
-
-      values_seen = set()
-      for item in items:
-        # Bool items shouldn't have names, since it's the same information
-        # as the value field.
-        if 'name' in item:
-          self._Error(
-              ('Policy %s has item %s with an unexpected name field, '
-               'please delete the name field.') % (policy.get('name'), item))
-
-        # Each item must have a value.
-        if 'value' not in item:
-          self._Error(
-              ('Policy %s has item %s which is missing the value field') %
-              (policy.get('name'), item))
-        else:
-          value = item['value']
-          if value in values_seen:
-            self._Error(
-                ('Policy %s has multiple items with the same value (%s), each '
-                 'value should only appear once') % (policy.get('name'), value))
-          else:
-            values_seen.add(value)
-            if value not in required_values:
-              self._Error(
-                  ('Policy %s of type main has an item with a value %s, value '
-                   'must be one of %s') %
-                  (policy.get('name'), name, required_names))
-
-      if not values_seen.issuperset(required_values):
-        self._Error(
-            ('Policy %s is missing some required values, found "%s", requires '
-             '"%s"') % (policy.get('name'), list(values_seen), required_values))
-
-    if policy_type in ('int-enum', 'string-enum', 'string-enum-list'):
-      for item in items:
-        # Each item must have a name.
-        self._CheckContains(item,
-                            'name',
-                            str,
-                            container_name='item',
-                            identifier=policy.get('name'),
-                            regexp_check=NO_WHITESPACE)
-
-        # Each item must have a value of the correct type.
-        self._CheckContains(item,
-                            'value',
-                            item_type,
-                            container_name='item',
-                            identifier=policy.get('name'))
-
   def _CheckPolicy(self, policy, is_in_group, policy_ids, deleted_policy_ids,
                    current_version):
     if not isinstance(policy, dict):
@@ -996,12 +890,44 @@ class PolicyTemplateChecker(object):
       if is_in_group:
         self.num_policies_in_groups += 1
 
-      self._CheckItems(policy, item_type)
+    if policy_type in ('int-enum', 'string-enum', 'string-enum-list'):
+      # Enums must contain a list of items.
+      items = self._CheckContains(policy, 'items', list)
+      if items is not None:
+        if len(items) < 1:
+          self._Error('"items" must not be empty.', 'policy', policy, items)
+        for item in items:
+          # Each item must have a name.
+          # Note: |policy.get('name')| is used instead of |policy['name']|
+          # because it returns None rather than failing when no key called
+          # 'name' exists.
+          self._CheckContains(
+              item,
+              'name',
+              str,
+              container_name='item',
+              identifier=policy.get('name'),
+              regexp_check=NO_WHITESPACE)
 
-      if policy_type == 'external':
-        # Each policy referencing external data must specify a maximum data
-        # size.
-        self._CheckContains(policy, 'max_size', int)
+          # Each item must have a value of the correct type.
+          self._CheckContains(
+              item,
+              'value',
+              item_type,
+              container_name='item',
+              identifier=policy.get('name'))
+
+          # Each item must have a caption.
+          self._CheckContains(
+              item,
+              'caption',
+              str,
+              container_name='item',
+              identifier=policy.get('name'))
+
+    if policy_type == 'external':
+      # Each policy referencing external data must specify a maximum data size.
+      self._CheckContains(policy, 'max_size', int)
 
   def _CheckPlatform(self, platforms, field_name, policy_name):
     ''' Verifies the |platforms| list. Records any error with |field_name| and
@@ -1555,11 +1481,6 @@ class PolicyTemplateChecker(object):
       if self._NeedsDefault(new_policy) and new_policy.get('default',
                                                            None) == None:
         self._Error(('Missing default field for policy %s') % (new_policy_name))
-
-      # TODO(crbug.com/1139306): This item check should apply to all policies
-      # instead of just new ones.
-      if self._NeedsItems(policy) and new_policy.get('items', None) == None:
-        self._Error(('Missing items field for policy %') % (new_policy_name))
 
   def _LeadingWhitespace(self, line):
     match = LEADING_WHITESPACE.match(line)

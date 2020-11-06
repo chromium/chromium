@@ -20,7 +20,7 @@ def _EscapeResource(resource):
   '''Escape the resource for usage in an Android resource XML file.
   This includes standard XML escaping as well as those specific to Android.
   '''
-  if resource == None or type(resource) in (int, bool):
+  if type(resource) == int:
     return str(resource)
   return xml_escape.escape(resource, {"'": "\\'", '"': '\\"', '\\': '\\\\'})
 

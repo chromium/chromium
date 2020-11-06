@@ -4989,26 +4989,11 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
-      'items': [
-        {
-          'value': True,
-          'caption': 'Block 3rd party cookies',
-        },
-        {
-          'value': False,
-          'caption': 'Allow 3rd party cookies',
-        },
-        {
-          'value': None,
-          'caption': 'Allow 3rd party cookes, but allow the user to change this setting',
-        },
-      ],
       'example_value': False,
-      'default': None,
       'id': 39,
       'caption': '''Block third party cookies''',
       'tags': [],
-      'desc': '''Setting the policy to Enabled prevents webpage elements that aren't from the domain that's in the browser's address bar from setting cookies. Setting the policy to Disabled lets those elements set cookies and prevents users from changing this setting.
+      'desc': '''Setting the policy to True prevents webpage elements that aren't from the domain that's in the browser's address bar from setting cookies. Setting the policy to False lets those elements set cookies and prevents users from changing this setting.
 
       Leaving it unset turns third-party cookies on, but users can change this setting.''',
     },
@@ -23212,16 +23197,6 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       },
       'example_value': True,
       'default': True,
-      'items': [
-        {
-          'value': True,
-          'caption': 'Show media recommendations to the user',
-        },
-        {
-          'value': False,
-          'caption': 'Hide media recommendations from the user',
-        },
-      ],
       'id': 788,
       'caption': 'Enable Media Recommendations',
       'tags': [],
