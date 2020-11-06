@@ -4360,7 +4360,6 @@
 <translation id="6112294629795967147">Допрете за да ја промените големината</translation>
 <translation id="6112727384379533756">Додајте билет</translation>
 <translation id="6112931163620622315">Проверете го телефонот</translation>
-<translation id="6112952769866305444">Измени го лицето, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Поставете го стандардниот пребарувач за прелистувачот Chrome и стартерот на <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">За да користите Smart Lock, префрлете се на примарниот кориснички профил на телефонот</translation>
 <translation id="6116921718742659598">Промени поставки за јазик и внесување...</translation>
@@ -5643,7 +5642,6 @@
 <translation id="7649070708921625228">Помош</translation>
 <translation id="7650511557061837441">„<ph name="TRIGGERING_EXTENSION_NAME" />“ сака да ја отстрани наставката „<ph name="EXTENSION_NAME" />“.</translation>
 <translation id="7650677314924139716">Моменталната поставка за интернет е „Само Wi-Fi“</translation>
-<translation id="7652808307838961528">Измени го лицето, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Апликациите, екстензии и кориснички скрипти не може да се додадат од овој веб-сајт</translation>
 <translation id="7652954539215530680">Создајте PIN</translation>
 <translation id="7654941827281939388">Сметкава веќе се користи на компјутеров.</translation>
@@ -5885,6 +5883,7 @@
 <translation id="7898627924844766532">Чувај во алатник</translation>
 <translation id="7898725031477653577">Секогаш преведувај</translation>
 <translation id="790040513076446191">Манипулирај со поставки поврзани со приватноста</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903345046358933331">Страницата не реагира. Може да почекате да реагира или да ја затворите.</translation>
 <translation id="7903742244674067440">Имате сертификати што ги идентификуваат овие органи за сертификати</translation>
 <translation id="7903859912536385558">стабилен (доверлив испитувач)</translation>

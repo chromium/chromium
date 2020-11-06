@@ -51,7 +51,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1346748346194534595">Höger</translation>
 <translation id="1351937230027495976">Komprimera menyn</translation>
 <translation id="1383876407941801731">Sök</translation>
-<translation id="1390105199421505038">Ta bort kontodialogrutan för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1391102559483454063">På</translation>
 <translation id="1407069428457324124">Mörkt tema</translation>
 <translation id="1419738280318246476">Lås upp enheten så att aviseringen kan göras</translation>
@@ -76,7 +75,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1589090746204042747">Få tillgång till all aktivitet i sessionen</translation>
 <translation id="1611993646327628135">På</translation>
 <translation id="1632985212731562677">Brytarstyrning kan inaktiveras under Inställningar &gt; Tillgänglighet</translation>
-<translation id="1651447046299738444">Det verkar som om Bluetooth eller Wi-Fi har inaktiverats på din Chromebook. Kontrollera anslutningen om du vill använda Phone Hub.</translation>
 <translation id="1654477262762802994">Säg en sökfråga</translation>
 <translation id="1667964833127753507">I det neutrala färgläget ersätts färger från bakgrunden med en uppsättning ljusa eller mörka nyanser i neutrala toner.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> kvar</translation>
@@ -147,7 +145,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2341729377289034582">Låst i stående läge</translation>
 <translation id="2352467521400612932">Inställningar för e-penna</translation>
 <translation id="2354174487190027830">Aktiverar <ph name="NAME" /></translation>
-<translation id="2356210126990741501">Telefonen verkar inte vara online så vi kan inte hämta något från den just nu.</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2365393535144473978">Om du aktiverar mobildata aktiveras Bluetooth.</translation>
 <translation id="2369165858548251131">”Hej” på kinesiska</translation>
@@ -194,7 +191,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2825619548187458965">Hylla</translation>
 <translation id="2841907151129139818">Bytte till surfplatteläge</translation>
 <translation id="2844169650293029770">USB-C-enhet (främre porten på vänster sida)</translation>
-<translation id="2846247265041961677">Hoppsan! Det går inte att hitta telefonen</translation>
 <translation id="2865888419503095837">Nätverksinformation</translation>
 <translation id="2872961005593481000">Stäng av</translation>
 <translation id="2878884018241093801">Listan med de senaste åtgärderna är tom</translation>
@@ -336,7 +332,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4195877955194704651">Knapp för Automatiska klick</translation>
 <translation id="4197790712631116042">Av</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> är inte tillgängligt.</translation>
-<translation id="4212246570487010370">Fortsätt surfa</translation>
 <translation id="4212472694152630271">Byt till pinkod</translation>
 <translation id="4215497585250573029">VPN-inställningar</translation>
 <translation id="4217571870635786043">Diktering</translation>
@@ -365,7 +360,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> är av.</translation>
 <translation id="4421231901400348175">Dela kontroll över skärmen med <ph name="HELPER_NAME" /> via Fjärrhjälp.</translation>
 <translation id="4430019312045809116">Volym</translation>
-<translation id="4444978951615977024">Hoppsan! Kontrollera anslutningen</translation>
 <translation id="4450893287417543264">Visa inte igen</translation>
 <translation id="445864333228800152">Hej!</translation>
 <translation id="4458688154122353284">Stoppa skärminspelningen</translation>
@@ -408,7 +402,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4804818685124855865">Koppla från</translation>
 <translation id="4814539958450445987">Inloggningsskärm</translation>
 <translation id="4831034276697007977">Vill du inaktivera automatiska klick?</translation>
-<translation id="4836108105469522644">Aktivera aviseringar på Android-telefonen</translation>
 <translation id="4849058404725798627">Markera objekt med tangentbordsfokus</translation>
 <translation id="485592688953820832">Ingen åtgärd (pausa)</translation>
 <translation id="4868492592575313542">aktiverad</translation>
@@ -481,6 +474,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="558849140439112033">Välj område att ta en bild av genom att dra</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Inaktivera talad feedback genom att trycka på Ctrl + Alt + Z.</translation>
+<translation id="5601503069213153581">Pinkod</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofonuttag</translation>
 <translation id="5669267381087807207">Aktiverar</translation>
@@ -500,7 +494,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5769373120130404283">Sekretesskärm</translation>
 <translation id="5777841717266010279">Vill du avbryta skärmdelningen?</translation>
 <translation id="5790085346892983794">Klart</translation>
-<translation id="579415080077680903">Ljudlös</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Sluta casta <ph name="ROUTE_TITLE" /> till <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Av</translation>
@@ -513,7 +506,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5920710855273935292">Mikrofonen är av.</translation>
-<translation id="594179686076170922">Ansluter till telefonen …</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> är på.</translation>
 <translation id="5947494881799873997">Återgå</translation>
 <translation id="595202126637698455">Resultatspårning aktiverat</translation>
@@ -541,7 +533,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="615957422585914272">Visa skärmtangentbordet</translation>
 <translation id="6164005077879661055">Alla filer och lokala data som är kopplade till den hanterade användaren tas bort permanent när den hanterade användaren tas bort. Besökta webbplatser och inställningar för den hanterade användaren kan fortfarande vara synliga för den som hanterar användaren på <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Läs mer</translation>
-<translation id="6192859646269780503">Hitta telefonen</translation>
 <translation id="622484624075952240">Ner</translation>
 <translation id="6236290670123303279">Hantera inställningar</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -616,11 +607,11 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6910714959251846841">Den här uppdateringen kräver att en Powerwash görs av enheten. Läs mer om den senaste uppdateringen av <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Det smarta kortet kändes inte igen. Försök igen.</translation>
 <translation id="6945221475159498467">Välj</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Komma igång</translation>
 <translation id="6981982820502123353">Tillgänglighet</translation>
 <translation id="698231206551913481">Alla filer inklusive lokal data som tillhör den här användaren tas bort permanent när användaren tas bort.</translation>
 <translation id="7007983414944123363">Det gick inte att verifiera pinkoden eller lösenordet. Försök igen.</translation>
-<translation id="7013005189539051442">Aktivera surfzon</translation>
 <translation id="7015766095477679451">Prova igen klockan <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Anslut <ph name="DEVICE_NAME" /> med mobilen</translation>
 <translation id="7026338066939101231">Minska</translation>
@@ -689,7 +680,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7662283695561029522">Tryck om du vill konfigurera</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7705822912736783206">Autentisera med fingeravtryck</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 avisering}other{# aviseringar}}</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
 <translation id="7749443890790263709">Det högsta tillåtna antalet skrivbord har uppnåtts.</translation>

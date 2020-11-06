@@ -4353,7 +4353,6 @@
 <translation id="6112294629795967147">সাইজ পরিবর্তন করতে টাচ করুন</translation>
 <translation id="6112727384379533756">একটি টিকিট যোগ করুন</translation>
 <translation id="6112931163620622315">আপনার ফোনে দেখুন</translation>
-<translation id="6112952769866305444">ব্যক্তি <ph name="PROFILE_NAME" />, <ph name="USERNAME" /> এর সম্পাদনা করুন</translation>
 <translation id="6113434369102685411">Chrome ব্রাউজার এবং <ph name="DEVICE_TYPE" /> লঞ্চারের জন্য আপনার ডিফল্ট সার্চ ইঞ্জিন সেট করুন</translation>
 <translation id="6113942107547980621">Smart Lock ব্যবহার করতে, আপনার ফোনের প্রাথমিক ব্যবহারকারীর প্রোফাইলে পাল্টান</translation>
 <translation id="6116921718742659598">ভাষা এবং ইনপুট সেটিংস পরিবর্তন করুন</translation>
@@ -5633,7 +5632,6 @@
 <translation id="7649070708921625228">সহায়তা</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" "<ph name="EXTENSION_NAME" />" সরাতে চাইছে।</translation>
 <translation id="7650677314924139716">বর্তমান ডেটা ব্যবহারের সেটিংয়ে, ওয়াই-ফাই ব্যবহার করেই শুধুমাত্র ডেটা ট্রান্সফার করা যাবে</translation>
-<translation id="7652808307838961528">ব্যক্তি <ph name="PROFILE_NAME" /> এর সম্পাদনা করুন</translation>
 <translation id="765293928828334535">এই ওয়েবসাইট থেকে অ্যাপ, এক্সটেনশান ও ব্যবহারকারী স্ক্রিপ্ট যোগ করা যাবে না</translation>
 <translation id="7652954539215530680">পিন তৈরি করুন</translation>
 <translation id="7654941827281939388">এই অ্যাকাউন্টটি ইতিমধ্যেই এই কম্পিউটারে ব্যবহৃত হচ্ছে৷</translation>
@@ -5873,6 +5871,7 @@
 <translation id="7898627924844766532">টুলবারের মধ্যে রাখুন</translation>
 <translation id="7898725031477653577">সর্বদা অনুবাদ করুন</translation>
 <translation id="790040513076446191">গোপনীয়তা-সংক্রান্ত সেটিংস নিপূণভাবে ব্যবহার করুন</translation>
+<translation id="7901405293566323524">ফোন হাব</translation>
 <translation id="7903345046358933331">পৃষ্ঠাটি প্রতিক্রিয়াবিহীন হয়েছে। আপনি এটি প্রতিক্রিয়াযুক্ত হওয়ার জন্য অপেক্ষা করতে পারেন বা এটি বন্ধ করতে পারেন।</translation>
 <translation id="7903742244674067440">এই সার্টিফিকেটের কর্তৃপক্ষদের শনাক্ত করে এমন ফাইলের সার্টিফিকেটগুলি আপনার কাছে রয়েছে</translation>
 <translation id="7903859912536385558">স্থিতিশীল (বিশ্বস্ত পরীক্ষক)</translation>

@@ -4360,7 +4360,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6112294629795967147">Snerta til að breyta stærð</translation>
 <translation id="6112727384379533756">Bæta við miða</translation>
 <translation id="6112931163620622315">Athugaðu símann</translation>
-<translation id="6112952769866305444">Breyta einstaklingi, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Stilltu sjálfgefna leitarvél fyrir Chrome vafrann og ræsiforrit <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Til að nota Smart Lock skaltu skipta yfir í prófíl aðalnotanda símans</translation>
 <translation id="6116921718742659598">Breyta tungumála- og innsláttarstillingum</translation>
@@ -5643,7 +5642,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7649070708921625228">Hjálp</translation>
 <translation id="7650511557061837441">„<ph name="TRIGGERING_EXTENSION_NAME" />“ óskar eftir að fjarlægja „<ph name="EXTENSION_NAME" />“.</translation>
 <translation id="7650677314924139716">Núverandi stilling gagnanotkunar er einungis Wi-Fi</translation>
-<translation id="7652808307838961528">Breyta einstaklingi, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Ekki er hægt að bæta við forritum, viðbótum eða notendaskriftum af þessu vefsvæði</translation>
 <translation id="7652954539215530680">Búa til PIN-númer</translation>
 <translation id="7654941827281939388">Þegar er verið að nota þennan reikning í þessari tölvu.</translation>
@@ -5885,6 +5883,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7898627924844766532">Halda á stikunni</translation>
 <translation id="7898725031477653577">Þýða alltaf</translation>
 <translation id="790040513076446191">Vinna með persónuverndartengdar stillingar</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903345046358933331">Síðan er hætt að svara. Þú getur beðið eftir að hún lagist eða lokað henni.</translation>
 <translation id="7903742244674067440">Þú ert með skráð vottorð sem bera kennsl á þessar vottunarstöðvar</translation>
 <translation id="7903859912536385558">stöðug (traustur prófandi)</translation>

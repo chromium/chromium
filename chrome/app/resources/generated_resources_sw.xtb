@@ -4355,7 +4355,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6112294629795967147">Gusa ili ubadilishe ukubwa</translation>
 <translation id="6112727384379533756">Weka tiketi</translation>
 <translation id="6112931163620622315">Angalia simu yako</translation>
-<translation id="6112952769866305444">Badilisha wasifu, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Weka mtambo wako chaguomsingi wa kutafuta kwenye kivinjari cha Chrome na Kifungua Programu cha <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Ili utumie Smart Lock, badilisha wasifu wa mtumiaji wa msingi kwenye simu yako</translation>
 <translation id="6116921718742659598">Badilisha mipangilio ya lugha na uingizaji</translation>
@@ -5638,7 +5637,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7649070708921625228">Usaidizi</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" kingependa kuondoa"<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650677314924139716">Mipangilio ya sasa ya matumizi ya data ni Wi-Fi pekee</translation>
-<translation id="7652808307838961528">Badilisha wasifu, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Haiwezi kuongeza programu, viendelezi na hati za mtumiaji kutoka tovuti hii</translation>
 <translation id="7652954539215530680">Unda PIN</translation>
 <translation id="7654941827281939388">Akaunti hii tayari inatumika kwenye kompyuta hii.</translation>
@@ -5882,6 +5880,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7898627924844766532">Weka katika upau wa vidhibiti</translation>
 <translation id="7898725031477653577">Tafsiri kila wakati</translation>
 <translation id="790040513076446191">Weka utakavyo mipangilio husika ya faragha</translation>
+<translation id="7901405293566323524">Kitovu cha Simu</translation>
 <translation id="7903345046358933331">Ukurasa haufanyi kazi. Unaweza kusubiri uanze kufanya kazi au uufunge.</translation>
 <translation id="7903742244674067440">Una vyeti kwenye faili vinavyotambua mamlaka ya vyeti hivi</translation>
 <translation id="7903859912536385558">thabiti (mchunguzaji mwaminiwa)</translation>

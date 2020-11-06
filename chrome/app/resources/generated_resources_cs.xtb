@@ -4358,7 +4358,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6112294629795967147">Klepnutím změníte velikost</translation>
 <translation id="6112727384379533756">Přidat lístek</translation>
 <translation id="6112931163620622315">Zkontrolujte telefon</translation>
-<translation id="6112952769866305444">Upravit osobu, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Nastavte výchozí vyhledávač pro prohlížeč Chrome a pro Spouštěč zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Chcete-li použít funkci Smart Lock, přejděte na primární uživatelský profil na telefonu</translation>
 <translation id="6116921718742659598">Změnit nastavení jazyka a vstupu</translation>
@@ -5641,7 +5640,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7649070708921625228">Nápověda</translation>
 <translation id="7650511557061837441">Rozšíření <ph name="TRIGGERING_EXTENSION_NAME" /> by chtělo odebrat rozšíření <ph name="EXTENSION_NAME" />.</translation>
 <translation id="7650677314924139716">Využívání dat je aktuálně nastaveno na možnost Pouze Wi-Fi</translation>
-<translation id="7652808307838961528">Upravit osobu: <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Nelze přidávat aplikace, rozšíření a uživatelské skripty z tohoto webu</translation>
 <translation id="7652954539215530680">Vytvoření kódu PIN</translation>
 <translation id="7654941827281939388">Tento účet je v tomto počítači již používán.</translation>
@@ -5883,6 +5881,7 @@ V zařízení se systémem Chrome OS můžete aktivovat funkce ladění, abyste
 <translation id="7898627924844766532">Ponechat na liště</translation>
 <translation id="7898725031477653577">Vždy překládat</translation>
 <translation id="790040513076446191">Manipulovat s nastavením týkajícím se ochrany soukromí</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903345046358933331">Stránka přestala reagovat. Můžete počkat, až začne reagovat, nebo ji ukončit.</translation>
 <translation id="7903742244674067440">Máte založené certifikáty, které identifikují tyto certifikační autority</translation>
 <translation id="7903859912536385558">stabilní (důvěryhodný tester)</translation>

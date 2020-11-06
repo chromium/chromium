@@ -4360,7 +4360,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6112294629795967147">Touch to resize</translation>
 <translation id="6112727384379533756">Add a ticket</translation>
 <translation id="6112931163620622315">Check your phone</translation>
-<translation id="6112952769866305444">Edit person, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Set your default search engine for Chrome browser and <ph name="DEVICE_TYPE" /> Launcher</translation>
 <translation id="6113942107547980621">To use Smart Lock, switch to the primary user profile on your phone</translation>
 <translation id="6116921718742659598">Change language and input settings</translation>
@@ -5643,7 +5642,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7649070708921625228">Help</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" would like to remove "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650677314924139716">Current data usage setting is Wi-Fi only</translation>
-<translation id="7652808307838961528">Edit person, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Apps, extensions and user scripts cannot be added from this website</translation>
 <translation id="7652954539215530680">Create a PIN</translation>
 <translation id="7654941827281939388">This account is already being used on this computer.</translation>
@@ -5885,6 +5883,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7898627924844766532">Keep in toolbar</translation>
 <translation id="7898725031477653577">Always translate</translation>
 <translation id="790040513076446191">Manipulate privacy-related settings</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903345046358933331">The page has become unresponsive. You can wait for it to become responsive or close it.</translation>
 <translation id="7903742244674067440">You have certificates on file that identify these certificate authorities</translation>
 <translation id="7903859912536385558">stable (trusted tester)</translation>

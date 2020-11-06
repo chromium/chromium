@@ -4360,7 +4360,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6112294629795967147">Ändra storlek genom att trycka</translation>
 <translation id="6112727384379533756">Lägg till en biljett</translation>
 <translation id="6112931163620622315">Kontrollera mobilen</translation>
-<translation id="6112952769866305444">Redigera personen <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Ställ in standardsökmotor för webbläsaren Chrome och översikten på <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Du måste byta till den primära användarprofilen på telefonen om du vill använda Smart Lock</translation>
 <translation id="6116921718742659598">Ändra språk- och inmatningsinställningar</translation>
@@ -5643,7 +5642,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7649070708921625228">Hjälp</translation>
 <translation id="7650511557061837441"><ph name="TRIGGERING_EXTENSION_NAME" /> vill ta bort <ph name="EXTENSION_NAME" />.</translation>
 <translation id="7650677314924139716">Den aktuella inställningen för dataanvändning är Endast Wi-Fi</translation>
-<translation id="7652808307838961528">Redigera personen <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Appar, tillägg och användarskript kan inte läggas till från webbplatsen</translation>
 <translation id="7652954539215530680">Skapa en pinkod</translation>
 <translation id="7654941827281939388">Kontot används redan på den här datorn.</translation>
@@ -5885,6 +5883,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7898627924844766532">Spara i verktygsfältet</translation>
 <translation id="7898725031477653577">Översätt alltid</translation>
 <translation id="790040513076446191">Ändra sekretessrelaterade inställningar</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903345046358933331">Sidan har slutat svara. Du kan vänta tills den svarar eller stänga den.</translation>
 <translation id="7903742244674067440">Du har sparade certifikat som identifierar dessa certifikatutfärdare</translation>
 <translation id="7903859912536385558">stabil (godkänd testare)</translation>

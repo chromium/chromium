@@ -67,6 +67,7 @@
 <translation id="4297501883039923494">Har stoppats – okänt fel</translation>
 <translation id="4378373042927530923">Har inte körts</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4425149324548788773">Min enhet</translation>
 <translation id="4429881212383817840">Kerberos-biljetten upphör snart att gälla</translation>
 <translation id="445059817448385655">Gammalt lösenord</translation>
 <translation id="4454245904991689773">Skanningar sparas i</translation>
@@ -102,6 +103,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="54609108002486618">Hanterade</translation>
 <translation id="5832805196449965646">Lägg till person</translation>
 <translation id="5895138241574237353">Starta om</translation>
+<translation id="6040143037577758943">Stäng</translation>
 <translation id="6048107060512778456">Misslyckades – papperstrassel</translation>
 <translation id="6058625436358447366">Slutför genom att ange det gamla och det nya lösenordet</translation>
 <translation id="6106186594183574873">Slutför genom att ange det gamla lösenordet</translation>
@@ -115,6 +117,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6517239166834772319">Utforska</translation>
 <translation id="6527081081771465939">Okänt säkerhetsprotokoll för Wi-Fi</translation>
 <translation id="6564646048574748301">Misslyckades – skrivaren kan inte nås</translation>
+<translation id="6618744767048954150">Körs</translation>
 <translation id="6620487321149975369">Utskriftsjobb visas i historiken såvida de inte tas bort manuellt</translation>
 <translation id="6643016212128521049">Rensa</translation>
 <translation id="6704062477274546131">DNS-matchning</translation>

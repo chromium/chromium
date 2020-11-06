@@ -5,7 +5,6 @@
 <translation id="1023220960495960452">Transliterasi (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">Tampilan slide</translation>
 <translation id="1045157690796831147">Transliterasi (namaskar → നമസ്കാരം)</translation>
-<translation id="1046068652463704410">Masukan bahasa Jepang (untuk keyboard AS)</translation>
 <translation id="1047956942837015229">Menghapus <ph name="COUNT" /> item...</translation>
 <translation id="1049926623896334335">Dokumen Word</translation>
 <translation id="1060368002126861100">Untuk membuka file dengan <ph name="APP_NAME" />, pindahkan ke folder file Windows terlebih dulu.</translation>
@@ -26,11 +25,9 @@
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1190144681599273207">Mengambil file ini akan menggunakan sekitar <ph name="FILE_SIZE" /> data seluler.</translation>
 <translation id="1201402288615127009">Berikutnya</translation>
-<translation id="1208421848177517699">Transliterasi (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">Upload</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1276362640455948667">Portugis dengan keyboard Internasional AS</translation>
-<translation id="1278813325885878377">Keyboard QWERTY Magyar</translation>
 <translation id="1293556467332435079">File</translation>
 <translation id="1297922636971898492">Saat ini Google Drive tidak tersedia. Upload akan dimulai ulang secara otomatis setelah Google Drive aktif kembali.</translation>
 <translation id="1307931752636661898">Tidak dapat melihat file Linux</translation>
@@ -63,7 +60,6 @@
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1646019627374511909">Membuat <ph name="NUMBER_OF_ITEMS" /> file tersedia secara offline</translation>
-<translation id="1646136617204068573">Keyboard untuk bahasa Magyar</translation>
 <translation id="164729547906544836">Keyboard Tamil (itrans)</translation>
 <translation id="164969095109328410">Perangkat Chrome</translation>
 <translation id="1665611772925418501">File tidak dapat diubah.</translation>
@@ -93,7 +89,6 @@
 <translation id="1936717151811561466">Finlandia</translation>
 <translation id="1942765061641586207">Resolusi gambar</translation>
 <translation id="1943097386230153518">Instal layanan baru</translation>
-<translation id="1947424002851288782">Keyboard untuk bahasa Jerman</translation>
 <translation id="1972984168337863910">Luaskan panel masukan file</translation>
 <translation id="1984603991036629094">Keyboard fonetik Armenia</translation>
 <translation id="1995337122023280937">Buka lokasi file</translation>
@@ -116,14 +111,12 @@
 <translation id="2225536596944493418">Yakin ingin menghapus <ph name="NUMBER_OF_ITEMS" /> item?</translation>
 <translation id="2230062665678605299">Tidak dapat membuat folder "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">Dipindahkan.</translation>
-<translation id="2278988676849463018">Keyboard Kannada (Fonetik)</translation>
 <translation id="2287742181953707290">Portugis dengan keyboard PC Internasional AS</translation>
 <translation id="2288278176040912387">Pemutar piringan hitam</translation>
 <translation id="2291538123825441971">Membuka <ph name="NUMBER_OF_FILES" /> file.</translation>
 <translation id="2303301624314357662">Membuka file <ph name="FILE_NAME" />.</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> telah dikeluarkan.</translation>
 <translation id="2325650632570794183">Jenis file ini tidak didukung. Kunjungi Chrome Webstore untuk menemukan aplikasi yang dapat membuka jenis file ini.</translation>
-<translation id="23434688402327542">Keyboard Kazakh</translation>
 <translation id="2352947182261340447">Tidak cukup ruang di penyimpanan lokal</translation>
 <translation id="2377319039870049694">Beralih ke tampilan daftar</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> folder dibagikan dengan Linux</translation>
@@ -136,7 +129,6 @@
 <translation id="2453576648990281505">File sudah ada</translation>
 <translation id="2464079411014186876">Es krim</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
-<translation id="2494837236724268445">Keyboard Gujarati (Fonetik)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Keyboard AS</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> item dihapus</translation>
@@ -172,10 +164,8 @@
 <translation id="2902312830803030883">Tindakan lainnya</translation>
 <translation id="2902734494705624966">Extended AS</translation>
 <translation id="2923240520113693977">Estonia</translation>
-<translation id="2924296707677495905">Transliterasi (namaskaram → ನಮಸ್ಕಾರ)</translation>
 <translation id="2925966894897775835">Spreadsheet</translation>
 <translation id="2938685643439809023">Mongolia</translation>
-<translation id="2942290791863759244">Keyboard NEO 2 Jerman</translation>
 <translation id="2943400156390503548">Slide</translation>
 <translation id="2943503720238418293">Gunakan nama yang lebih pendek</translation>
 <translation id="2949781154072577687">Memformat <ph name="DRIVE_NAME" />...</translation>
@@ -196,7 +186,6 @@
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">SELESAI</translation>
 <translation id="3157729859914172001">Keyboard Internasional AS (PC)</translation>
-<translation id="3187212781151025377">Keyboard untuk bahasa Ibrani</translation>
 <translation id="3188257591659621405">File saya</translation>
 <translation id="3197563288998582412">Dvorak Inggris</translation>
 <translation id="3202131003361292969">Jalur</translation>
@@ -227,14 +216,12 @@
 <translation id="3475447146579922140">Spreadsheet Google</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> kesalahan.</translation>
 <translation id="349603508045926994">Transliterasi Farsi</translation>
-<translation id="3519867315646775981">Transliterasi (shalom ← שלום)</translation>
 <translation id="3522708245912499433">Portugis</translation>
 <translation id="3524311639100184459">Perhatian: File ini bersifat sementara dan dapat dihapus secara otomatis untuk mengosongkan ruang disk.  <ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3549797760399244642">Buka drive.google.com...</translation>
 <translation id="3553048479571901246">Untuk membuka file dengan <ph name="APP_NAME" />, salin ke folder file Windows terlebih dulu.</translation>
 <translation id="357479282490346887">Lithuania</translation>
-<translation id="3583509704582854624">Masukan alfanumerik (untuk keyboard bahasa Jepang)</translation>
 <translation id="3603385196401704894">Prancis Kanada</translation>
 <translation id="3606220979431771195">Turki-F</translation>
 <translation id="3609785682760573515">Menyinkronkan...</translation>
@@ -268,10 +255,8 @@
 <translation id="383652340667548381">Serb</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3855472144336161447">Neo 2 Jerman</translation>
-<translation id="3858678421048828670">Keyboard untuk bahasa Italia</translation>
 <translation id="386548886866354912">Paketkan dengan <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Deskripsi</translation>
-<translation id="3910699493603749297">Keyboard Khmer</translation>
 <translation id="391445228316373457">Keyboard Nepali (Fonetik)</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">Putar di</translation>
@@ -335,7 +320,6 @@
 <translation id="4734518477988699048">Nilai masukan tidak valid.</translation>
 <translation id="4737050008115666127">Mendarat</translation>
 <translation id="4747271164117300400">Makedonia</translation>
-<translation id="4749157430980974800">Keyboard Georgia</translation>
 <translation id="4759238208242260848">Download</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Presentasi PowerPoint</translation>
@@ -413,7 +397,6 @@
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5318819489018851358">Bagikan dengan Linux</translation>
-<translation id="5319782540886810524">Keyboard untuk bahasa Latvia</translation>
 <translation id="5323213332664049067">Amerika Latin</translation>
 <translation id="5327248766486351172">Nama</translation>
 <translation id="5330145655348521461">File ini dibuka pada desktop yang berbeda. Pindahkan ke <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) untuk melihatnya.</translation>
@@ -440,7 +423,6 @@
 <translation id="5534520101572674276">Menghitung ukuran</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">Dvorak AS</translation>
-<translation id="5640179856859982418">Keyboard untuk bahasa Swensk</translation>
 <translation id="5649768706273821470">Dengar</translation>
 <translation id="5678784840044122290">Aplikasi Linux akan tersedia dalam Terminal Anda dan juga mungkin menampilkan ikon di Peluncur.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Tidak dapat memutuskan hubungan dari arsip atau disk virtual<ph name="END_BOLD" />
@@ -451,7 +433,6 @@
 <translation id="5731409020711461763">1 foto baru</translation>
 <translation id="5752453871435543420">Cadangan Awan Chrome OS</translation>
 <translation id="5756666464756035725">QWERTY Magyar</translation>
-<translation id="5771585441665576801">Transliterasi (geia → γεια)</translation>
 <translation id="5776325638577448643">Hapus dan Format</translation>
 <translation id="57838592816432529">Bisukan</translation>
 <translation id="5788127256798019331">File Play</translation>
@@ -468,7 +449,6 @@
 <translation id="5911887972742538906">Terjadi error saat menginstal aplikasi Linux.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Operasi penyalinan gagal, terjadi error: <ph name="ERROR_MESSAGE" /></translation>
-<translation id="5923484009666796948">Masukan bahasa Jepang (untuk keyboard bahasa Jepang)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> item</translation>
 <translation id="5957366693331451795">Chromebox</translation>
@@ -498,7 +478,6 @@
 <translation id="6248400709929739064">Aktifkan subtitel</translation>
 <translation id="6264347891387618177">Transliterasi (selam → ሰላም)</translation>
 <translation id="6287852322318138013">Pilih aplikasi untuk membuka file ini</translation>
-<translation id="6305012486838822927">Keyboard Lao</translation>
 <translation id="6339034549827494595">Keyboard Fonetik Rusia (AATSEEL)</translation>
 <translation id="6339145975392024142">Internasional AS (PC)</translation>
 <translation id="6346310558342052870">Akses dibatasi</translation>
@@ -509,8 +488,6 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> item</translation>
 <translation id="6398765197997659313">Keluar dari tampilan layar penuh</translation>
 <translation id="642282551015776456">Nama ini tidak dapat digunakan sebagai nama file atau folder</translation>
-<translation id="6462109140674788769">Keyboard untuk bahasa Yunani</translation>
-<translation id="6466492211071551451">Keyboard Irlandia</translation>
 <translation id="6485131920355264772">Gagal mengambil info ruang</translation>
 <translation id="6505918941256367791">Keyboard Tamil (InScript)</translation>
 <translation id="6509122719576673235">Norsk</translation>
@@ -650,7 +627,6 @@
 <translation id="7896906914454843592">Keyboard Perluasan AS</translation>
 <translation id="7898607018410277265">Keyboard Gujarati (Fonetik Baru)</translation>
 <translation id="7908793776359722643">Memformat partisi akan menghapus semua data yang tersimpan di dalamnya. Tindakan ini tidak dapat diurungkan.</translation>
-<translation id="7917972308273378936">Keyboard untuk bahasa Lituania</translation>
 <translation id="7925686952655276919">Jangan gunakan data seluler untuk sinkronisasi</translation>
 <translation id="7928710562641958568">Keluarkan perangkat</translation>
 <translation id="7943385054491506837">Colemak AS</translation>
@@ -697,7 +673,6 @@
 <translation id="8335587457941836791">Lepaskan pin dari rak</translation>
 <translation id="8336153091935557858"><ph name="YESTERDAY_DAYTIME" /> kemarin</translation>
 <translation id="8336524887811696057">Transliterasi Nepal</translation>
-<translation id="8336579025507394412">Keyboard Islandia</translation>
 <translation id="8342318071240498787">Sudah ada file atau direktori dengan nama yang sama.</translation>
 <translation id="8382450452152102026">Ke <ph name="FOLDER_NAME" /></translation>
 <translation id="8391950649760071442">Transliterasi (emandi → ఏమండీ)</translation>
@@ -708,7 +683,6 @@
 <translation id="8437209419043462667">AS</translation>
 <translation id="8456681095658380701">Nama tidak valid</translation>
 <translation id="8466234950814670489">Arsip Tar</translation>
-<translation id="8467473010914675605">Metode masukan Korea</translation>
 <translation id="8475647382427415476">Saat ini Google Drive tidak dapat menyinkronkan "<ph name="FILENAME" />". Google Drive akan mencoba lagi nanti.</translation>
 <translation id="8477649328507734757">Putaran</translation>
 <translation id="8487700953926739672">Tersedia secara offline</translation>

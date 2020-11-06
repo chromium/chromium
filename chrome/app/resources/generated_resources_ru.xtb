@@ -4352,7 +4352,6 @@
 <translation id="6112294629795967147">Коснитесь для изменения размера</translation>
 <translation id="6112727384379533756">Добавить билет</translation>
 <translation id="6112931163620622315">Проверьте телефон</translation>
-<translation id="6112952769866305444">Изменить профиль пользователя <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Выберите поисковую систему по умолчанию для браузера Chrome и панели запуска на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6113942107547980621">Чтобы использовать Smart Lock, включите основной профиль</translation>
 <translation id="6116921718742659598">Изменение настроек языка и метода ввода</translation>
@@ -5631,7 +5630,6 @@
 <translation id="7649070708921625228">Справка</translation>
 <translation id="7650511557061837441">Расширение "<ph name="TRIGGERING_EXTENSION_NAME" />" пытается удалить расширение "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650677314924139716">Выбран режим передачи данных "Только Wi-Fi"</translation>
-<translation id="7652808307838961528">Изменить профиль пользователя <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Невозможно добавить приложение, расширение или пользовательский скрипт с этого сайта</translation>
 <translation id="7652954539215530680">Создайте PIN-код</translation>
 <translation id="7654941827281939388">Этот аккаунт уже используется на данном компьютере.</translation>
@@ -5872,6 +5870,7 @@
 <translation id="7898627924844766532">Сохранить на панели инструментов</translation>
 <translation id="7898725031477653577">Всегда переводить</translation>
 <translation id="790040513076446191">Управление настройками конфиденциальности</translation>
+<translation id="7901405293566323524">Интерфейс Phone Hub</translation>
 <translation id="7903345046358933331">Страница перестала отвечать на запросы. Вы можете подождать от нее ответа или закрыть.</translation>
 <translation id="7903742244674067440">У вас есть сертификаты, которые идентифицируют эти центры сертификации</translation>
 <translation id="7903859912536385558">стабильной версии (доверенный тестировщик)</translation>

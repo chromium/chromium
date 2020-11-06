@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">應用程式</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="3008341117444806826">更新</translation>
+<translation id="3009958530611748826">選取儲存的資料夾</translation>
 <translation id="3083667275341675831">連接性診斷</translation>
 <translation id="3091839911843451378">失敗 - 已停止</translation>
 <translation id="3188257591659621405">我的檔案</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">列印工作</translation>
 <translation id="3527036260304016759">失敗 - 不明錯誤</translation>
 <translation id="360565022852130722">已使用防護力較弱的通訊協定 WEP 802.1x 保護 Wi-Fi 網絡</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> 個評論)</translation>
 <translation id="3749289110408117711">檔案名稱</translation>
 <translation id="38114475217616659">清除所有記錄</translation>
 <translation id="3820172043799983114">PIN 無效。</translation>
@@ -65,6 +67,7 @@
 <translation id="4297501883039923494">已停止 - 不明錯誤</translation>
 <translation id="4378373042927530923">未執行</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4425149324548788773">我的雲端硬碟</translation>
 <translation id="4429881212383817840">Kerberos 票證即將到期</translation>
 <translation id="445059817448385655">舊密碼</translation>
 <translation id="4454245904991689773">掃瞄儲存位置</translation>
@@ -79,10 +82,12 @@
 <translation id="4731797938093519117">家長存取</translation>
 <translation id="4773299976671772492">已停止</translation>
 <translation id="4808449224298348341">取消咗列印工作 <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4832079907277790330">在「檔案」應用程式中選取資料夾...</translation>
 <translation id="4890353053343094602">立即選擇新密碼</translation>
 <translation id="4917889632206600977">已停止 - 紙張已用完</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="4985509611418653372">執行</translation>
+<translation id="4991056862642197104">放入您的檔案，並按一下「掃瞄」以開始</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> 管理此使用者，並可能會遠端管理設定並監察使用者活動。</translation>
 <translation id="520299634122159966">沒有可用的掃瞄器</translation>
 <translation id="5212543919916444558">系統在您的畫面上找不到任何可提供協助的內容。
@@ -98,6 +103,7 @@
 <translation id="54609108002486618">受管理</translation>
 <translation id="5832805196449965646">新增使用者</translation>
 <translation id="5895138241574237353">重新啟動</translation>
+<translation id="6040143037577758943">關閉</translation>
 <translation id="6048107060512778456">失敗 - 卡紙</translation>
 <translation id="6058625436358447366">如要完成變更，請輸入您的舊密碼和新密碼</translation>
 <translation id="6106186594183574873">如要完成變更，請輸入您的舊密碼</translation>
@@ -111,6 +117,7 @@
 <translation id="6517239166834772319">探索</translation>
 <translation id="6527081081771465939">未知的 Wi-Fi 安全通訊協定</translation>
 <translation id="6564646048574748301">失敗 - 無法連接打印機</translation>
+<translation id="6618744767048954150">正在執行</translation>
 <translation id="6620487321149975369">除非您手動移除列印工作，否則列印工作會顯示在記錄中</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6704062477274546131">DNS 解析</translation>
@@ -120,6 +127,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">檔案類型</translation>
 <translation id="7561454561030345039">此操作由管理員管理</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7690294790491645610">確認新密碼</translation>
 <translation id="7805768142964895445">狀態</translation>

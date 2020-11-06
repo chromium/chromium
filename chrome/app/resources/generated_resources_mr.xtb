@@ -4352,7 +4352,6 @@
 <translation id="6112294629795967147">आकार बदलण्यासाठी स्पर्श करा</translation>
 <translation id="6112727384379533756">तिकीट जोडा</translation>
 <translation id="6112931163620622315">तुमचा फोन तपासा</translation>
-<translation id="6112952769866305444">व्यक्ती संपादित करा, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Chrome ब्राउझर आणि <ph name="DEVICE_TYPE" /> लाँचरसाठी तुमचे डीफॉल्ट शोध इंजीन सेट करा</translation>
 <translation id="6113942107547980621">स्मार्ट लॉक वापरण्यासाठी, तुमच्या फोनवर प्राथमिक वापरकर्ता प्रोफाइलवर स्विच करा</translation>
 <translation id="6116921718742659598">भाषा आणि इनपुट सेटिंग्ज बदला</translation>
@@ -5631,7 +5630,6 @@
 <translation id="7649070708921625228">मदत</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" "<ph name="EXTENSION_NAME" />" काढू इच्छित आहे.</translation>
 <translation id="7650677314924139716">सध्याचे डेटा वापर सेटिंग हे फक्त वाय-फाय असे आहे</translation>
-<translation id="7652808307838961528">व्यक्ती संपादित करा, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">या वेबसाइटवरून अ‍ॅप्स, एक्स्टेंशन आणि वापरकर्ता स्क्रिप्ट जोडली जाऊ शकत नाहीत</translation>
 <translation id="7652954539215530680">पिन तयार करा</translation>
 <translation id="7654941827281939388">हे खाते या कॉंप्युटरवर याआधीच वापरण्‍यात येत आहे.</translation>
@@ -5870,6 +5868,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7898627924844766532">टूलबारमध्ये ठेवा</translation>
 <translation id="7898725031477653577">नेहमी भाषांतर करा</translation>
 <translation id="790040513076446191">गोपनीयतेशी-संबद्ध सेटिंग्ज कुशलतेने हाताळा</translation>
+<translation id="7901405293566323524">फोन हब</translation>
 <translation id="7903345046358933331">पृष्ठ असंवादी झाले आहे. तुम्ही ते संवादी होईपर्यंत प्रतीक्षा करू शकता किंवा ते बंद करू शकता.</translation>
 <translation id="7903742244674067440">तुमच्याकडे फाइलवर अशी सर्टिफिकेट आहेत जी या सर्टिफिकेट अधिकार्‍यांची ओळख पटवतात</translation>
 <translation id="7903859912536385558">स्टेबल (विश्वसनीय परीक्षक)</translation>

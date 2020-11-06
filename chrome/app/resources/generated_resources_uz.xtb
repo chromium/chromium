@@ -4358,7 +4358,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6112294629795967147">Hajmini moslash uchun tegining</translation>
 <translation id="6112727384379533756">Chipta kiritish</translation>
 <translation id="6112931163620622315">Telefoningizni tekshiring</translation>
-<translation id="6112952769866305444">Foydalanuvchini tahrirlash, <ph name="PROFILE_NAME" /> , <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Chrome brauzeri va <ph name="DEVICE_TYPE" /> launcherida asosiy qidiruv tizimi sifatida belgilash</translation>
 <translation id="6113942107547980621">Smart Lock himoyasini yoqish uchun telefondagi asosiy profilga oʻting</translation>
 <translation id="6116921718742659598">Til va kiritish usuli sozlamalarini o‘zgartirish</translation>
@@ -5641,7 +5640,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7649070708921625228">Yordam</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" "<ph name="EXTENSION_NAME" />" kengaytmasini olib tashlamoqchi.</translation>
 <translation id="7650677314924139716">Hozir faqat Wi-Fi orqali trafik sarflanishi sozlangan</translation>
-<translation id="7652808307838961528">Foydalanuvchini tahrirlash, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Bu saytdan ilova, kengaytma va foydalanuvchi skripti qo‘shib bo‘lmaydi</translation>
 <translation id="7652954539215530680">PIN kod yarating</translation>
 <translation id="7654941827281939388">Bu hisob allaqachon kompyuterda qo‘llanilmoqda.</translation>
@@ -5882,6 +5880,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7898627924844766532">Asboblar paneliga saqlash</translation>
 <translation id="7898725031477653577">Har doim tarjima qilinsin</translation>
 <translation id="790040513076446191">Maxfiylik sozlamalari boshqaruvi</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903345046358933331">Quyidagi sahifa javob bermayapti. Uning javob berishini kutishingiz yoki uni majburan yopishingiz mumkin.</translation>
 <translation id="7903742244674067440">Sizda quyidagi sertifikatlash markazlari haqiqiyligini tasdiqlovchi sertifikatlar bor</translation>
 <translation id="7903859912536385558">barqaror (trusted tester)</translation>

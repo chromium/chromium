@@ -4359,7 +4359,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6112294629795967147">ප්‍රතිප්‍රමාණ කිරීමට ස්පර්ශ කරන්න</translation>
 <translation id="6112727384379533756">ප්‍රවේශපත්‍රයක් එක් කරන්න</translation>
 <translation id="6112931163620622315">ඔබේ දුරකථනය පරික්ෂා කරන්න</translation>
-<translation id="6112952769866305444">පුද්ගලයා සංස්කරණය කරන්න, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Chrome බ්‍රව්සරය සහ <ph name="DEVICE_TYPE" /> දියත්කරණය සඳහා ඔබගේ පෙරනිමි සෙවුම් යන්ත්‍රය සකසන්න</translation>
 <translation id="6113942107547980621">ස්මාර්ට් අගුල භාවිත කිරීමට, ඔබේ දුරකථනයේ ප්‍රාථමික පරිශීලක පැතිකඩට මාරු කරන්න</translation>
 <translation id="6116921718742659598">භාශාව හා ආදාන සැකසුම් වෙනස් කරන්න</translation>
@@ -5640,7 +5639,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7649070708921625228">උදවු</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />"හට "<ph name="EXTENSION_NAME" />" ඉවත්කිරීමට අවශ්‍යයි.</translation>
 <translation id="7650677314924139716">වත්මන් දත්ත භාවිත සැකසීම Wi-Fi පමණි වේ</translation>
-<translation id="7652808307838961528">පුද්ගලයා සංස්කරණය කරන්න, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">යෙදුම්, දිගු හා පරිශීලක ස්ක්‍රිප්ට මෙම අඩවියෙන් එක් කළ නොහැක</translation>
 <translation id="7652954539215530680">රහස් අංකයක් සාදන්න</translation>
 <translation id="7654941827281939388">මෙම ගිණුම මෙම පරිගණකයේ දැනටමත් භාවිතා වෙමින් පවතී.</translation>
@@ -5881,6 +5879,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7898627924844766532">මෙවලම් තීරුවෙහි තබන්න</translation>
 <translation id="7898725031477653577">සැමවිටම පරිවර්තනය කරන්න</translation>
 <translation id="790040513076446191">පුද්ගලිකත්ව-දායක සැකසුම් පාලනය කරන්න</translation>
+<translation id="7901405293566323524">දුරකථන මධ්‍යස්ථානය</translation>
 <translation id="7903345046358933331">පිටුව ප්‍රතිචාර නොදක්වයි. ඔබට එය ප්‍රතිචාර දක්වන තෙක් රැඳී සිටීමට හෝ වසා දැමීමට හැකිය.</translation>
 <translation id="7903742244674067440">මෙම සහතික බලධාරීන් හඳුනා ගන්නා සහතික ගොනුව තුළ ඔබට තිබේ</translation>
 <translation id="7903859912536385558">ස්ථාවර (විශ්වාසදායී පරීක්ෂක)</translation>

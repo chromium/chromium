@@ -51,7 +51,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1346748346194534595">Høyre</translation>
 <translation id="1351937230027495976">Skjul menyen</translation>
 <translation id="1383876407941801731">Søk</translation>
-<translation id="1390105199421505038">Fjern kontodialogboks for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1391102559483454063">På</translation>
 <translation id="1407069428457324124">Mørkt tema</translation>
 <translation id="1419738280318246476">Lås opp enheten for å utføre varselhandlingen</translation>
@@ -76,7 +75,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1589090746204042747">se all aktiviteten din i denne økten</translation>
 <translation id="1611993646327628135">På</translation>
 <translation id="1632985212731562677">Brytertilgang kan slås av i Innstillinger &gt; Tilgjengelighet.</translation>
-<translation id="1651447046299738444">Det ser ut som om Bluetooth eller Wi-Fi er slått av på Chromebooken din. Kontrollér tilkoblingen din for å bruke Phone Hub.</translation>
 <translation id="1654477262762802994">Start et talesøk</translation>
 <translation id="1667964833127753507">Den nøytrale fargemodusen bruker ikke farger som er hentet fra bakgrunnen. I stedet brukes et nøytralt utvalg av lyse eller mørke fargetoner.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> igjen</translation>
@@ -147,7 +145,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2341729377289034582">Låst til vertikal</translation>
 <translation id="2352467521400612932">Innstillinger for pekepenn</translation>
 <translation id="2354174487190027830">Aktiverer <ph name="NAME" /></translation>
-<translation id="2356210126990741501">Ser ut som om telefonen din ikke er på nett, så vi kan ikke hente alle godbitene dine fra den nå.</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2365393535144473978">Hvis du slår på mobildata, blir Bluetooth også slått på.</translation>
 <translation id="2369165858548251131">«Hei» på kinesisk</translation>
@@ -194,7 +191,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2825619548187458965">Hylle</translation>
 <translation id="2841907151129139818">Byttet til nettbrettmodus</translation>
 <translation id="2844169650293029770">USB-C-enhet (porten foran på venstre side)</translation>
-<translation id="2846247265041961677">Uff da. Finner ikke telefonen</translation>
 <translation id="2865888419503095837">Nettverksinformasjon</translation>
 <translation id="2872961005593481000">Slå av</translation>
 <translation id="2878884018241093801">Ingen nylige elementer</translation>
@@ -336,7 +332,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4195877955194704651">Automatisk klikk-knapp</translation>
 <translation id="4197790712631116042">Av</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> er ikke tilgjengelig.</translation>
-<translation id="4212246570487010370">Fortsett å surfe</translation>
 <translation id="4212472694152630271">Bytt til PIN-kode</translation>
 <translation id="4215497585250573029">VPN-innstillinger</translation>
 <translation id="4217571870635786043">Diktering</translation>
@@ -365,7 +360,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> er av.</translation>
 <translation id="4421231901400348175">Deler kontroll av skjermen med <ph name="HELPER_NAME" /> via fjernhjelp.</translation>
 <translation id="4430019312045809116">Volum</translation>
-<translation id="4444978951615977024">Uff da. Kontrollér tilkoblingen din</translation>
 <translation id="4450893287417543264">Ikke vis igjen</translation>
 <translation id="445864333228800152">God kveld</translation>
 <translation id="4458688154122353284">Avslutt skjermopptak</translation>
@@ -408,7 +402,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4804818685124855865">Koble fra</translation>
 <translation id="4814539958450445987">Påloggingsskjerm</translation>
 <translation id="4831034276697007977">Er du sikker på at du vil slå av automatiske klikk?</translation>
-<translation id="4836108105469522644">Slå på varsler fra Android-telefonen din</translation>
 <translation id="4849058404725798627">Fremhev objektet med tastaturfokus</translation>
 <translation id="485592688953820832">Ingen handling (pause)</translation>
 <translation id="4868492592575313542">aktivert</translation>
@@ -481,6 +474,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="558849140439112033">Dra for å velge området du vil ta bilde av</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" /> <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Trykk på Ctrl + Alt + Z for å slå av taletilbakemelding.</translation>
+<translation id="5601503069213153581">PIN</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofonkontakt</translation>
 <translation id="5669267381087807207">Aktiverer</translation>
@@ -500,7 +494,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5769373120130404283">Personvernskjerm</translation>
 <translation id="5777841717266010279">Vil du stoppe skjermdelingen?</translation>
 <translation id="5790085346892983794">Fullført</translation>
-<translation id="579415080077680903">Demp</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Stopp <ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Av</translation>
@@ -513,7 +506,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5920710855273935292">Lyden for mikrofonen er kuttet.</translation>
-<translation id="594179686076170922">Kobler til telefonen din …</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> er på.</translation>
 <translation id="5947494881799873997">Tilbakestill</translation>
 <translation id="595202126637698455">Ytelsessporing er aktivert</translation>
@@ -541,7 +533,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="615957422585914272">Vis skjermtastaturet</translation>
 <translation id="6164005077879661055">Alle filer og lokale data tilknyttet den administrerte brukeren slettes permanent når den administrerte brukeren fjernes. Besøkte nettsteder og innstillinger for denne administrerte brukeren kan fortsatt ses av administratoren på <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
-<translation id="6192859646269780503">Finn telefonen</translation>
 <translation id="622484624075952240">Ned</translation>
 <translation id="6236290670123303279">Administrer innstillinger</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -616,11 +607,11 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6910714959251846841">Denne oppdateringen krever en powerwash av enheten din. Finn ut mer om den nyeste <ph name="SYSTEM_APP_NAME" />-oppdateringen.</translation>
 <translation id="6919251195245069855">Smartkortet ditt ble ikke gjenkjent. Prøv på nytt.</translation>
 <translation id="6945221475159498467">Velg</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Kom i gang</translation>
 <translation id="6981982820502123353">Tilgjengelighet</translation>
 <translation id="698231206551913481">Alle filer og lokale data som er tilknyttet denne brukeren, slettes permanent når brukeren fjernes.</translation>
 <translation id="7007983414944123363">PIN-koden eller passordet kunne ikke verifiseres. Prøv på nytt.</translation>
-<translation id="7013005189539051442">Slå på Wi-Fi-sone</translation>
 <translation id="7015766095477679451">Kom tilbake <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Koble <ph name="DEVICE_NAME" /> til telefonen</translation>
 <translation id="7026338066939101231">Reduser</translation>
@@ -689,7 +680,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7662283695561029522">Trykk for å konfigurere</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7705822912736783206">Autentiser deg med fingeravtrykk</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 varsel}other{# varsler}}</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
 <translation id="7749443890790263709">Maksimalt antall skrivebord er nådd.</translation>

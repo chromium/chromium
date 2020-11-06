@@ -4357,7 +4357,6 @@
 <translation id="6112294629795967147">لمس کردن برای تغییر اندازه</translation>
 <translation id="6112727384379533756">افزودن بلیت</translation>
 <translation id="6112931163620622315">تلفن را بررسی کنید</translation>
-<translation id="6112952769866305444">ویرایش شخص، <ph name="PROFILE_NAME" />، <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">‏تنظیم موتور جستجوی پیش‌فرض برای مرورگر Chrome و «راه‌انداز <ph name="DEVICE_TYPE" />»</translation>
 <translation id="6113942107547980621">‏برای استفاده از Smart Lock، به نمایه کاربر اصلی در تلفن جابه‌جا شوید</translation>
 <translation id="6116921718742659598">تغییر تنظیمات زبان و ورودی</translation>
@@ -5640,7 +5639,6 @@
 <translation id="7649070708921625228">راهنما</translation>
 <translation id="7650511557061837441">«<ph name="TRIGGERING_EXTENSION_NAME" />» می‌خواهد «<ph name="EXTENSION_NAME" />» را حذف کند.</translation>
 <translation id="7650677314924139716">‏تنظیم کنونی مصرف داده روی «فقط هنگام استفاده از Wi-Fi» است</translation>
-<translation id="7652808307838961528">ویرایش شخص، <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">برنامه‌ها، افزونه‌ها و اسکریپت‌های کاربر را نمی‌توان از این وب‌سایت اضافه کرد</translation>
 <translation id="7652954539215530680">ایجاد پین</translation>
 <translation id="7654941827281939388">این حساب در حال حاضر در این رایانه در حال استفاده است.</translation>
@@ -5882,6 +5880,7 @@
 <translation id="7898627924844766532">نگه داشتن در نوار ابزار</translation>
 <translation id="7898725031477653577">همیشه ترجمه شود</translation>
 <translation id="790040513076446191">دستکاری تنظیمات مربوط به حریم‌خصوصی</translation>
+<translation id="7901405293566323524">مرکز تلفن</translation>
 <translation id="7903345046358933331">صفحه پاسخ نمی‌دهد. می‌توانید صبر کنید تا پاسخ بدهد یا آن را ببندید.</translation>
 <translation id="7903742244674067440">گواهی‌هایی برای فایل دارید که اعتبارهای این گواهی را شناسایی می‌کنند</translation>
 <translation id="7903859912536385558">پایدار (آزمایش‌گر معتمد)</translation>

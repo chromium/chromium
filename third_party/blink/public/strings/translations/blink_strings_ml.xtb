@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">ഈ മാസം</translation>
 <translation id="1637811476055996098">ഫയലുകൾ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1650423536718072820">പുൾക്വോട്ട്</translation>
+<translation id="1681022320378710418">നിലവിലെ സമയം</translation>
 <translation id="1727886345390570319">സബ്‌ടൈറ്റിൽ മെനു മറയ്ക്കുക</translation>
 <translation id="1729654308190250600">ശൂന്യമായിടാതെ, ഇമെയിൽ വിലാസം നൽകുക.</translation>
 <translation id="1758486001363313524">മറ്റുള്ളവ...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">ദയവായി ഒരു URL നല്‍കുക.</translation>
 <translation id="3175736971608411871">ടൈമർ</translation>
 <translation id="3199563858620722075">കോമ്പോ ബോക്‌സ്</translation>
+<translation id="3220661731597678625">നിലവിലെ ഘട്ടം</translation>
 <translation id="3329013043687509092">സാച്ചുറേഷൻ</translation>
 <translation id="3450233048674729344">മൂല്യം <ph name="MAXIMUM" /> എന്നതില്‍ കുറവോ സമമോ ആയിരിക്കണം.</translation>
 <translation id="3486220673238053218">നിർവചനം</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">വീഡിയോ</translation>
 <translation id="479989351350248267">തിരയുക</translation>
 <translation id="4812940957355064477">ഒരു നമ്പർ നൽകുക.</translation>
+<translation id="4912200001568447310">നിലവിലെ ഇനം</translation>
 <translation id="4912536737030637138">ഗ്രന്ഥസൂചി എൻട്രി</translation>
 <translation id="4915360478455618802">സമയ പിക്കർ കാണിക്കുക</translation>
 <translation id="492244087561876220">കമന്റ്</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">മീഡിയ പ്ലേ ചെയ്യാനായില്ല.</translation>
 <translation id="537648784377940524">കുറഞ്ഞ തീയതി (<ph name="MIN_DATE_OR_TIME" />) പരമാവധി തീയതിയേക്കാൾ (<ph name="MAX_DATE_OR_TIME" />) മുമ്പുള്ളതായിരിക്കണം.</translation>
 <translation id="5406322316791861025">ആകാരം</translation>
+<translation id="5425179576310518467">നിലവിലെ തീയതി</translation>
 <translation id="5453733299334684579">ട്രീ ഇനം</translation>
 <translation id="5466621249238537318">ഒന്നോ അതില്‍ക്കൂടുതലോ ഫയലുകള്‍ ദയവായി തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="5468998798572797635">പൂർണ്ണ സ്‌ക്രീനിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">മീറ്റർ</translation>
 <translation id="6166809985690652833">പിൻ കുറിപ്പ്</translation>
 <translation id="6209276755895393898">ഇങ്ങനെ ദൃശ്യമാകും: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">നിലവിലെ പേജ്</translation>
 <translation id="6213469881011901533">പദസഞ്ചയം</translation>
 <translation id="6281588256137006900">ഇളം വർണത്തിലുള്ളത്</translation>
 <translation id="6281763101136022427">URL</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">ഈ ടെക്‌സ്റ്റിന്‍റെ ദൈർഘ്യം <ph name="MIN_CHARACTERS" /> പ്രതീകങ്ങളോ അതിൽ കൂടുതലോ ആയി വർദ്ധിപ്പിക്കുക (നിങ്ങൾ നിലവിൽ ഒരു പ്രതീകം മാത്രമേ ഉപയോഗിക്കുന്നുള്ളൂ).</translation>
 <translation id="7034405885550056553">നിർദ്ദേശം</translation>
 <translation id="709897737746224366">അഭ്യര്‍ത്ഥി ച്ചഫോര്‍മാറ്റ് ദയവായി പൊരുത്തപ്പെടുത്തുക.</translation>
+<translation id="7102274145889307184">നിലവിലെ ലൊക്കേഷൻ</translation>
 <translation id="7118469954320184356">വിവരണം ലഭ്യമല്ല.</translation>
 <translation id="7139483182332611405">പീഠിക</translation>
 <translation id="7214187073215825913">ഉള്ളടക്ക വിവരങ്ങൾ</translation>

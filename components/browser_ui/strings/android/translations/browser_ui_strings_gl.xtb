@@ -17,6 +17,7 @@
 <translation id="1369915414381695676">Engadiuse o sitio <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384959399684842514">Pausouse a descarga</translation>
+<translation id="1415402041810619267">URL truncado</translation>
 <translation id="1431402976894535801">Impedir que os sitios saiban cando estás activo</translation>
 <translation id="1446450296470737166">Permitir control disposit. MIDI</translation>
 <translation id="1509960214886564027">As funcións de moitos sitios poden deixar de funcionar</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">Permitir que os sitios reproduzan contido protexido</translation>
 <translation id="4468959413250150279">Silencia o son dun sitio específico.</translation>
 <translation id="4479647676395637221">Pregunta antes de permitir que os sitios utilicen a túa cámara (recomendado)</translation>
+<translation id="4505788138578415521">URL despregado</translation>
 <translation id="4534723447064627427">Para permitir que <ph name="APP_NAME" /> acceda ao micrófono, actívao tamén en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="4570913071927164677">Detalles</translation>
 <translation id="4645575059429386691">Xestionado por teus pais</translation>

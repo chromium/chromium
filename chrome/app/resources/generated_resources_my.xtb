@@ -4359,7 +4359,6 @@
 <translation id="6112294629795967147">အရွယ်အစားပြင်ရန် ထိပါ</translation>
 <translation id="6112727384379533756">လက်မှတ်တစ်ခု ထည့်ရန်</translation>
 <translation id="6112931163620622315">သင့်ဖုန်းကို စစ်ဆေးပါ</translation>
-<translation id="6112952769866305444">လူ၊ <ph name="PROFILE_NAME" />၊ <ph name="USERNAME" /> ကို ပြင်ဆင်ရန်</translation>
 <translation id="6113434369102685411">Chrome ဘရောင်ဇာနှင့် <ph name="DEVICE_TYPE" /> Launcher အတွက် မူရင်းရှာဖွေရေး အင်ဂျင် သတ်မှတ်နိုင်သည်</translation>
 <translation id="6113942107547980621">Smart Lock ကို အသုံးပြုရန် သင့်ဖုန်းပေါ်တွင် ပင်မအသုံးပြုသူပရိုဖိုင်သို့ ပြောင်းပါ</translation>
 <translation id="6116921718742659598">ဘာသာစကား နှင့် ရိုက်သွင်းရေး ဆက်တင်များကို ပြောင်းလဲရန်</translation>
@@ -5641,7 +5640,6 @@
 <translation id="7649070708921625228">အကူအညီ</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" သည် "<ph name="EXTENSION_NAME" />" အားဖယ်ရှားလိုသည်။</translation>
 <translation id="7650677314924139716">လက်ရှိဒေတာအသုံးပြုမှု ဆက်တင်သည် Wi-Fi သီးသန့်ဖြစ်သည်</translation>
-<translation id="7652808307838961528">လူ၊ <ph name="PROFILE_NAME" /> ကို တည်းဖြတ်ပါ</translation>
 <translation id="765293928828334535">ဤဝဘ်ဆိုက်မှ အက်ပ်များ၊ နောက်ဆက်တွဲများနှင့် အသုံးပြုသူ script များကို ပေါင်းထည့်၍ မရပါ</translation>
 <translation id="7652954539215530680">ပင်နံပါတ်တစ်ခု ပြုလုပ်ပါ</translation>
 <translation id="7654941827281939388">ဒီအကောင့်ကို ဒီကွန်ပျူတာမှာ သုံးနှင့်နေပြီ။</translation>
@@ -5883,6 +5881,7 @@
 <translation id="7898627924844766532">ကိရိယာဘားတွင် ထားရန်</translation>
 <translation id="7898725031477653577">အမြဲတမ်း ဘာသာပြန်ရန်</translation>
 <translation id="790040513076446191">ကိုယ်ရေး−ဆိုင်ရာ ဆက်တင်များကို ကိုင်တွယ်ရန်</translation>
+<translation id="7901405293566323524">ဖုန်းပင်မ</translation>
 <translation id="7903345046358933331">စာမျက်နှာသည် မတုံ့ပြန်တော့ပါ။ တုံ့ပြန်လာမှာကို စောင့်ပါ သို့မဟုတ် ၎င်းကို ပိတ်လိုက်ပါ။</translation>
 <translation id="7903742244674067440">ဤအသိအမှတ်ပြုလက်မှတ် အာဏာပိုင်များ၏ အထောက်အထားအဖြစ် အသိအမှတ်ပြုလက်မှတ်များ သင့်ထံတွင် ရှိပါသည်</translation>
 <translation id="7903859912536385558">အခြေကျပြီး (ပြင်ပမှ စမ်းသပ်ပေးသူ)</translation>

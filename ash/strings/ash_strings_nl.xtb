@@ -49,7 +49,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1346748346194534595">Rechts</translation>
 <translation id="1351937230027495976">Menu samenvouwen</translation>
 <translation id="1383876407941801731">Zoeken</translation>
-<translation id="1390105199421505038">Dialoogvenster 'Account verwijderen' voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1391102559483454063">Aan</translation>
 <translation id="1407069428457324124">Donker thema</translation>
 <translation id="1419738280318246476">Ontgrendel het apparaat om de meldingsactie uit te voeren</translation>
@@ -74,7 +73,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1589090746204042747">Al je activiteit in deze sessie bekijken</translation>
 <translation id="1611993646327628135">Aan</translation>
 <translation id="1632985212731562677">Je kunt 'Toegang via schakelaar' uitschakelen via Instellingen &gt; Toegankelijkheid.</translation>
-<translation id="1651447046299738444">Zo te zien is bluetooth of wifi uitgeschakeld op je Chromebook. Check je verbinding om Phone Hub te gebruiken.</translation>
 <translation id="1654477262762802994">Een gesproken zoekopdracht starten</translation>
 <translation id="1667964833127753507">De neutrale kleurenmodus vervangt de kleuren van de achtergrond door neutrale lichte of donkere tinten.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> resterend</translation>
@@ -143,7 +141,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2341729377289034582">Vergrendeld in verticale stand</translation>
 <translation id="2352467521400612932">Stylusinstellingen</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> activeren</translation>
-<translation id="2356210126990741501">Zo te zien is je telefoon niet online en hebben we op dit moment geen toegang tot de content erop.</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2365393535144473978">Als je mobiele data inschakelt, wordt Bluetooth ingeschakeld.</translation>
 <translation id="2369165858548251131">Chinees voor 'hallo'</translation>
@@ -188,7 +185,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2825619548187458965">Plank</translation>
 <translation id="2841907151129139818">Overgeschakeld naar tabletmodus</translation>
 <translation id="2844169650293029770">USB-C-apparaat (poort links aan de voorkant)</translation>
-<translation id="2846247265041961677">Kan de telefoon niet vinden</translation>
 <translation id="2865888419503095837">Netwerkinfo</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
 <translation id="2878884018241093801">Geen recente items</translation>
@@ -329,7 +325,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4195877955194704651">Knop 'Automatische klikken'</translation>
 <translation id="4197790712631116042">Uit</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> is niet beschikbaar.</translation>
-<translation id="4212246570487010370">Verder browsen</translation>
 <translation id="4212472694152630271">Overschakelen naar pincode</translation>
 <translation id="4215497585250573029">VPN-instellingen</translation>
 <translation id="4217571870635786043">Dicteren</translation>
@@ -358,7 +353,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is uitgeschakeld.</translation>
 <translation id="4421231901400348175">De controle over je scherm wordt gedeeld met <ph name="HELPER_NAME" /> via externe ondersteuning.</translation>
 <translation id="4430019312045809116">Volume</translation>
-<translation id="4444978951615977024">Check je verbinding</translation>
 <translation id="4450893287417543264">Niet meer tonen</translation>
 <translation id="445864333228800152">Goedenavond,</translation>
 <translation id="4458688154122353284">Schermopname stoppen</translation>
@@ -400,7 +394,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4804818685124855865">Verbinding verbreken</translation>
 <translation id="4814539958450445987">Inlogscherm</translation>
 <translation id="4831034276697007977">Weet je zeker dat je automatische klikken wilt uitschakelen?</translation>
-<translation id="4836108105469522644">Schakel meldingen in op je Android-telefoon</translation>
 <translation id="4849058404725798627">Object met toetsenbordfocus markeren</translation>
 <translation id="485592688953820832">Geen actie (onderbreken)</translation>
 <translation id="4868492592575313542">geactiveerd</translation>
@@ -473,6 +466,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="558849140439112033">Sleep om het gedeelte te selecteren dat je wilt opnemen</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Druk op Ctrl + Alt + Z om gesproken feedback uit te schakelen.</translation>
+<translation id="5601503069213153581">Pincode</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Microfoonaansluiting</translation>
 <translation id="5669267381087807207">Activeren</translation>
@@ -492,7 +486,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5769373120130404283">Privacyscherm</translation>
 <translation id="5777841717266010279">Stoppen met scherm delen?</translation>
 <translation id="5790085346892983794">Geslaagd</translation>
-<translation id="579415080077680903">Stil</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> in <ph name="RECEIVER_NAME" /> stopzetten</translation>
 <translation id="5860033963881614850">Uit</translation>
@@ -505,7 +498,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5920710855273935292">Microfoon is gedempt.</translation>
-<translation id="594179686076170922">Verbinding maken met je telefoon…</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> is ingeschakeld.</translation>
 <translation id="5947494881799873997">Terugzetten</translation>
 <translation id="595202126637698455">Bijhouden van prestaties ingeschakeld</translation>
@@ -532,7 +524,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="615957422585914272">Schermtoetsenbord weergeven</translation>
 <translation id="6164005077879661055">Alle bestanden en lokale gegevens gekoppeld aan de gebruiker met beperkte rechten worden permanent verwijderd zodra de gebruiker met beperkte rechten is verwijderd. Bezochte websites en instellingen voor deze gebruiker met beperkte rechten kunnen nog steeds zichtbaar zijn voor de beheerder op <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
-<translation id="6192859646269780503">Telefoon vinden</translation>
 <translation id="622484624075952240">Omlaag</translation>
 <translation id="6236290670123303279">Instellingen beheren</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -606,11 +597,11 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6910714959251846841">Deze update vereist een powerwash van je apparaat. Meer informatie over de laatste update van <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Je smartkaart wordt niet herkend. Probeer het opnieuw.</translation>
 <translation id="6945221475159498467">Selecteren</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Aan de slag</translation>
 <translation id="6981982820502123353">Toegankelijkheid</translation>
 <translation id="698231206551913481">Alle bestanden en lokale gegevens die zijn gekoppeld aan deze gebruiker, worden definitief verwijderd zodra deze gebruiker is verwijderd.</translation>
 <translation id="7007983414944123363">Je pincode of wachtwoord kan niet worden geverifieerd. Probeer het opnieuw.</translation>
-<translation id="7013005189539051442">Hotspot inschakelen</translation>
 <translation id="7015766095477679451">Kom terug om <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Koppel je <ph name="DEVICE_NAME" /> aan je telefoon</translation>
 <translation id="7026338066939101231">Lager</translation>
@@ -678,7 +669,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7662283695561029522">Tik om te configureren</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7705822912736783206">Verifiëren met vingerafdruk</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{Eén melding}other{# meldingen}}</translation>
 <translation id="7724603315864178912">Knip</translation>
 <translation id="7749443890790263709">Maximum aantal bureaus bereikt.</translation>

@@ -4352,7 +4352,6 @@
 <translation id="6112294629795967147">שינוי גודל באמצעות נגיעה</translation>
 <translation id="6112727384379533756">הוספת כרטיס</translation>
 <translation id="6112931163620622315">בדיקת הטלפון</translation>
-<translation id="6112952769866305444">עריכת המשתמש, <ph name="PROFILE_NAME" />, ‏<ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">‏עליך להגדיר את מנוע החיפוש שיוגדר כברירת המחדל לדפדפן Chrome ולמרכז האפליקציות של <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">‏כדי להשתמש ב-Smart Lock יש לעבור אל פרופיל המשתמש הראשי בטלפון</translation>
 <translation id="6116921718742659598">שינוי הגדרות הקלט והשפה</translation>
@@ -5631,7 +5630,6 @@
 <translation id="7649070708921625228">עזרה</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" רוצה להסיר את "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650677314924139716">‏ההגדרה הנוכחית של שימוש בחבילת הגלישה היא 'Wi-Fi בלבד'</translation>
-<translation id="7652808307838961528">עריכת המשתמש, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">לא ניתן להוסיף אפליקציות, תוספים וסקריפטים של משתמש מהאתר הזה</translation>
 <translation id="7652954539215530680">יצירת קוד אימות</translation>
 <translation id="7654941827281939388">החשבון כבר נמצא בשימוש במחשב הזה.</translation>
@@ -5871,6 +5869,7 @@
 <translation id="7898627924844766532">השאר בסרגל הכלים</translation>
 <translation id="7898725031477653577">ברצוני לקבל תרגום תמיד</translation>
 <translation id="790040513076446191">לשנות הגדרות הקשורות לפרטיות</translation>
+<translation id="7901405293566323524">מרכז טלפוני</translation>
 <translation id="7903345046358933331">הדף אינו מגיב. תוכל להמתין עד שיגיב או לסגור אותו.</translation>
 <translation id="7903742244674067440">יש לך אישורים בקובץ המזהים רשויות אישורים אלה</translation>
 <translation id="7903859912536385558">יציב (בודק נאמן)</translation>

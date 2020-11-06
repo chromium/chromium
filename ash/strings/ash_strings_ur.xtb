@@ -49,7 +49,6 @@
 <translation id="1346748346194534595">دائیں</translation>
 <translation id="1351937230027495976">مینو کو سکیڑیں</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
-<translation id="1390105199421505038"><ph name="USER_EMAIL_ADDRESS" /> کے لئے اکاؤنٹ ڈائیلاگ کو ہٹائیں</translation>
 <translation id="1391102559483454063">آن</translation>
 <translation id="1407069428457324124">گہری تھیم</translation>
 <translation id="1419738280318246476">اطلاع کی کارروائی کرنے کیلئے آلے کو غیر مقفل کریں</translation>
@@ -74,7 +73,6 @@
 <translation id="1589090746204042747">اس سیشن کی اپنی ہر سرگرمی تک رسائی حاصل کریں</translation>
 <translation id="1611993646327628135">آن</translation>
 <translation id="1632985212731562677">سوئچ رسائی کو ترتیبات &gt; ایکسیسبیلٹی میں غیر فعال کیا جا سکتا ہے۔</translation>
-<translation id="1651447046299738444">‏ایسا لگتا ہے کہ آپ کے Chromebook پر آپ کا بلوٹوتھ یا Wi-Fi آف ہے۔ Phone Hub استعمال کرنے کیلئے، براہ کرم اپنا کنکشن چیک کریں۔</translation>
 <translation id="1654477262762802994">صوتی استفسار شروع کریں</translation>
 <translation id="1667964833127753507">نیوٹرل رنگ موڈ وال پیپر ایکسٹریکٹیڈ رنگوں کا استعمال نہیں کرتا ہے، ان کی جگہ نیوٹرل طور پر ٹون کی گئی لائٹ یا گہری ہیوز والے سیٹ کا استعمال کیا جا رہا ہے۔</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> باقی</translation>
@@ -143,7 +141,6 @@
 <translation id="2341729377289034582">عمودی پر مقفل ہے</translation>
 <translation id="2352467521400612932">اسٹائلس کی ترتیبات</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> کو فعال کیا جا رہا ہے</translation>
-<translation id="2356210126990741501">ایسا لگتا ہے کہ آپ کا فون آن لائن نہیں ہے اور ہم آپ کے ليے ابھی اس سے سبھی پرکشش اشیاء حاصل نہیں کر سکتے ہیں۔</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2365393535144473978">موبائل ڈیٹا فعال کرنے سے بلوٹوتھ فعال ہو جائے گا۔</translation>
 <translation id="2369165858548251131">چینی میں "ہیلو"</translation>
@@ -188,7 +185,6 @@
 <translation id="2825619548187458965">شیلف</translation>
 <translation id="2841907151129139818">ٹیبلیٹ وضع میں سوئچ کیا</translation>
 <translation id="2844169650293029770">‏USB-C آلہ (بائیں طرف کا اگلا پورٹ)</translation>
-<translation id="2846247265041961677">افوہ! فون تلاش نہیں کیا جا سکتا</translation>
 <translation id="2865888419503095837">نیٹ ورک کی معلومات</translation>
 <translation id="2872961005593481000">بند کریں</translation>
 <translation id="2878884018241093801">کوئی حالیہ آئٹم نہیں</translation>
@@ -329,7 +325,6 @@
 <translation id="4195877955194704651">خودکار کلکس بٹن</translation>
 <translation id="4197790712631116042">آف</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> دستیاب نہیں ہے۔</translation>
-<translation id="4212246570487010370">براؤز کرنا جاری رکھیں</translation>
 <translation id="4212472694152630271">‏PIN پر سوئچ کریں</translation>
 <translation id="4215497585250573029">‏VPN کی ترتیبات</translation>
 <translation id="4217571870635786043">املاء</translation>
@@ -358,7 +353,6 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> آف ہے۔</translation>
 <translation id="4421231901400348175">ریموٹ اسسٹنس کے ذریعے <ph name="HELPER_NAME" /> کے ساتھ آپ کی اسکرین کے کنٹرول کا اشتراک کیا جا رہا ہے۔</translation>
 <translation id="4430019312045809116">والیوم</translation>
-<translation id="4444978951615977024">افوہ! اپنا کنکشن چیک کریں</translation>
 <translation id="4450893287417543264">دوبارہ نہ دکھائیں</translation>
 <translation id="445864333228800152">شام بخیر،</translation>
 <translation id="4458688154122353284">اسکرین ریکارڈنگ روکیں</translation>
@@ -400,7 +394,6 @@
 <translation id="4804818685124855865">منقطع کریں</translation>
 <translation id="4814539958450445987">لاگ ان اسکرین</translation>
 <translation id="4831034276697007977">کیا آپ واقعی خودکار کلکس کو آف کرنا چاہتے ہیں؟</translation>
-<translation id="4836108105469522644">‏اپنے Android فون سے اطلاعات کو آن کریں</translation>
 <translation id="4849058404725798627">کی بورڈ فوکس کی مدد سے آبجیکٹ کو نمایاں کریں</translation>
 <translation id="485592688953820832">کوئی کارروائی نہیں (موقوف کریں)</translation>
 <translation id="4868492592575313542">فعال</translation>
@@ -473,6 +466,7 @@
 <translation id="558849140439112033">کیپچر کرنے کے لئے کسی علاقے کو منتخب کرنے کیلئے گھسیٹیں</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">‏صوتی تاثرات کو غیر فعال کرنے کے لیے Ctrl + Alt + Z دبائیں۔</translation>
+<translation id="5601503069213153581">PIN</translation>
 <translation id="5625955975703555628">LTE+‎</translation>
 <translation id="5648021990716966815">مائیک جیک</translation>
 <translation id="5669267381087807207">فعال ہو رہا ہے</translation>
@@ -492,7 +486,6 @@
 <translation id="5769373120130404283">رازداری کی اسکرین</translation>
 <translation id="5777841717266010279">اسکرین کا اشتراک روکیں؟</translation>
 <translation id="5790085346892983794">کامیاب</translation>
-<translation id="579415080077680903">خاموش کریں</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> پر <ph name="ROUTE_TITLE" /> کو روکیں</translation>
 <translation id="5860033963881614850">آف</translation>
@@ -505,7 +498,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">آن</translation>
 <translation id="5920710855273935292">مائیک خاموش کیا ہوا ہے۔</translation>
-<translation id="594179686076170922">آپ کے فون سے رابطہ ہو رہا ہے...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> آن ہے۔</translation>
 <translation id="5947494881799873997">واپس لوٹیں</translation>
 <translation id="595202126637698455">کارکردگی کی ٹریسنگ فعال کر دی گئی</translation>
@@ -532,7 +524,6 @@
 <translation id="615957422585914272">آن اسکرین کی بورڈ دکھائیں</translation>
 <translation id="6164005077879661055">یہ تحفظ یافتہ صارف ہٹائے جانے پر تحفظ یافتہ صارف کے ساتھ وابستہ سبھی فائلیں اور مقامی ڈیٹا مستقل طور پر حذف کر دیے جائیں گے۔ اس تحفظ یافتہ صارف کیلئے ملاحظہ کردہ ویب سائٹس اور ترتیبات مینیجر کے ذریعے ابھی بھی <ph name="MANAGEMENT_URL" /> پر مرئی ہونگی۔</translation>
 <translation id="6165508094623778733">مزید جانیں</translation>
-<translation id="6192859646269780503">فون کا پتہ لگائیں</translation>
 <translation id="622484624075952240">نیچے</translation>
 <translation id="6236290670123303279">ترتیبات کا نظم کریں</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -606,11 +597,11 @@
 <translation id="6910714959251846841">اس اپ ڈیٹ کیلئے آپ کے آلے کی پاور واشنگ درکار ہے۔ تازہ ترین <ph name="SYSTEM_APP_NAME" /> اپ ڈیٹ کے بارے میں مزید جانیں۔</translation>
 <translation id="6919251195245069855">آپ کے اسمارٹ کارڈ کی شناخت نہیں کی جا سکی۔ پھر آزمائيں۔</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
+<translation id="6965382102122355670">ٹھیک ہے</translation>
 <translation id="6972754398087986839">شروع کریں</translation>
 <translation id="6981982820502123353">ایکسیسبیلٹی</translation>
 <translation id="698231206551913481">اس صارف کو ہٹانے کے بعد اس صارف کے ساتھ وابستہ سبھی فائلیں اور مقامی ڈیٹا کو مستقل طور پر حذف کر دیا جائے گا۔</translation>
 <translation id="7007983414944123363">‏آپ کے PIN یا پاس ورڈ کی توثیق نہیں کی جا سکی۔ دوبارہ کوشش کریں۔</translation>
-<translation id="7013005189539051442">ہاٹ اسپاٹ فعال کریں</translation>
 <translation id="7015766095477679451">بوقت <ph name="COME_BACK_TIME" /> پھر استعمال کریں۔</translation>
 <translation id="7025533177575372252">اپنے <ph name="DEVICE_NAME" /> کو اپنے فون سے منسلک کریں</translation>
 <translation id="7026338066939101231">تخفیف</translation>
@@ -678,7 +669,6 @@
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7662283695561029522">کنفیگر کرنے کیلئے تھپتھپائیں</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7705822912736783206">فنگر پرنٹ کے ساتھ تصدیق کریں</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 اطلاع}other{# اطلاعات}}</translation>
 <translation id="7724603315864178912">کٹ کریں</translation>
 <translation id="7749443890790263709">ڈیسکس کی زیادہ سے زیادہ تعداد تک پہنچ گئی۔</translation>

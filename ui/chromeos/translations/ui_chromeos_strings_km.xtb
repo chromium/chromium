@@ -5,7 +5,6 @@
 <translation id="1023220960495960452">ការសរសេរតាមសូរស័ព្ទ (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">មើលជាស្លាយ៍</translation>
 <translation id="1045157690796831147">ការសរសេរតាមសូរស័ព្ទ (namaskar → നമസ്കാരം)</translation>
-<translation id="1046068652463704410">វិធីសាស្ត្រ​បញ្ចូលជា​ភាសាជប៉ុន (សម្រាប់​ក្ដារចុច​អាមេរិក)</translation>
 <translation id="1047956942837015229">កំពុងលុប <ph name="COUNT" /> ធាតុ...</translation>
 <translation id="1049926623896334335">ឯកសារ Word</translation>
 <translation id="1060368002126861100">ដើម្បីបើកឯកសារដោយប្រើ <ph name="APP_NAME" /> សូមផ្លាស់ទីឯកសារទាំងនោះទៅក្នុងថតឯកសារ Windows ជាមុនសិន។</translation>
@@ -26,11 +25,9 @@
 <translation id="1178581264944972037">ផ្អាក</translation>
 <translation id="1190144681599273207">ការនាំយកឯកសារនេះនឹងត្រូវប្រើប្រហែល <ph name="FILE_SIZE" /> នៃទិន្នន័យទូរស័ព្ទរបស់អ្នក។</translation>
 <translation id="1201402288615127009">បន្ទាប់</translation>
-<translation id="1208421848177517699">ការសរសេរតាមសូរស័ព្ទ (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">ទាញឡើង</translation>
 <translation id="1249250836236328755">ប្រភេទ</translation>
 <translation id="1276362640455948667">ភាសាព័រទុយហ្កាល់ជាមួយក្ដារចុចកុំព្យូទ័រអាមេរិកអន្តរជាតិ</translation>
-<translation id="1278813325885878377">ក្តារចុចហុងគ្រី</translation>
 <translation id="1293556467332435079">ឯកសារ</translation>
 <translation id="1297922636971898492">Google Drive មិនមានទេឥឡូវនេះ។ ការទាញឡើងនឹងចាប់ផ្តើមឡើងវិញដោយស្វ័យប្រវត្តិនៅពេល Google Drive ត្រលប់មកវិញ។</translation>
 <translation id="1307931752636661898">មិនអាច​មើល​ឯកសារ Linux បានទេ</translation>
@@ -63,7 +60,6 @@
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">កាមេរ៉ា</translation>
 <translation id="1646019627374511909">កំពុង​កំណត់​ឱ្យ​ឯកសារ <ph name="NUMBER_OF_ITEMS" /> អាច​ប្រើ​បាន​ពេល​គ្មាន​អ៊ីនធឺណិត</translation>
-<translation id="1646136617204068573">ក្តារចុចហុងគ្រី</translation>
 <translation id="164729547906544836">ក្តារចុចតាមិល (itrans)</translation>
 <translation id="164969095109328410">ឧបករណ៍ Chrome</translation>
 <translation id="1665611772925418501">ឯកសារនេះមិនអាចកែសម្រួលទេ។</translation>
@@ -93,7 +89,6 @@
 <translation id="1936717151811561466">ភាសាហ្វាំងឡង់</translation>
 <translation id="1942765061641586207">កម្រិតភាពច្បាស់នៃរូបភាព</translation>
 <translation id="1943097386230153518">ដំឡើង​សេវាកម្ម​ថ្មី</translation>
-<translation id="1947424002851288782">ក្តារចុចអាល្លឺម៉ង់</translation>
 <translation id="1972984168337863910">ពង្រីកផ្ទាំង​មតិកែលម្អ​ឯកសារ</translation>
 <translation id="1984603991036629094">ក្តារចុចសូរស័ព្ទអាម៉ានី</translation>
 <translation id="1995337122023280937">ទៅកាន់​ទីតាំង​ឯកសារ</translation>
@@ -116,14 +111,12 @@
 <translation id="2225536596944493418">តើអ្នកប្រាកដថា​ចង់លុបធាតុ <ph name="NUMBER_OF_ITEMS" /> ដែរទេ?</translation>
 <translation id="2230062665678605299">មិនអាចបង្កើតថតឯកសារ "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">បានផ្លាស់ទី។</translation>
-<translation id="2278988676849463018">ក្តារចុចកាណាដា (Phonetic)</translation>
 <translation id="2287742181953707290">ភាសាព័រទុយហ្កាល់ជាមួយក្ដារចុចកុំព្យូទ័រអាមេរិកអន្តរជាតិ</translation>
 <translation id="2288278176040912387">ឧបករណ៍ចាក់ថាស</translation>
 <translation id="2291538123825441971">កំពុងបើក​ឯកសារ <ph name="NUMBER_OF_FILES" />។</translation>
 <translation id="2303301624314357662">កំពុងបើក​ឯកសារ <ph name="FILE_NAME" /> ។</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ត្រូវបាន​ដកចេញ។</translation>
 <translation id="2325650632570794183">ប្រភេទឯកសារនេះមិនត្រូវបានគាំទ្រទេ។ សូមទៅកាន់ Chrome Web Store ដើម្បិស្វែងរកកម្មវិធីដែលអាចបើកប្រភេទឯកសារនេះបាន។</translation>
-<translation id="23434688402327542">ក្តារចុចកាហ្សាក់ស្តង់</translation>
 <translation id="2352947182261340447">មិនមាន​ទំហំផ្ទុក​ទំនេរ​គ្រប់គ្រាន់​នៅក្នុង​ទំហំផ្ទុក​មូលដ្ឋានទេ។</translation>
 <translation id="2377319039870049694">ប្ដូរ​ទៅ​ទិដ្ឋភាពជាបញ្ជី</translation>
 <translation id="2377590462528165447">ថត <ph name="NUMBER_OF_ITEMS" /> ដែលបាន​ចែករំលែកជាមួយ Linux</translation>
@@ -136,7 +129,6 @@
 <translation id="2453576648990281505">ឯកសារមានរួចហើយ</translation>
 <translation id="2464079411014186876">ការ៉េម​</translation>
 <translation id="2468402215065996499">ថាម៉ាហ្គោឈី</translation>
-<translation id="2494837236724268445">ក្តារចុចគូចារ៉ាទី (Phonetic)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">ក្តារចុចអាមេរិក</translation>
 <translation id="2534155362429831547">បានលុបធាតុ <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -172,10 +164,8 @@
 <translation id="2902312830803030883">សកម្មភាព​ច្រើនទៀត</translation>
 <translation id="2902734494705624966">US extended</translation>
 <translation id="2923240520113693977">ភាសាអេស្តូនី</translation>
-<translation id="2924296707677495905">ការសរសេរតាមសូរស័ព្ទ (namaskaram → ನಮಸ್ಕಾರ)</translation>
 <translation id="2925966894897775835">បញ្ជីតារាង</translation>
 <translation id="2938685643439809023">ភាសាមុងហ្គោលី</translation>
-<translation id="2942290791863759244">ក្តារចុច NEO 2 អាល្លឺម៉ង់</translation>
 <translation id="2943400156390503548">ស្លាយ៍</translation>
 <translation id="2943503720238418293">ប្រើ​ឈ្មោះ​ខ្លី​ជាងនេះ</translation>
 <translation id="2949781154072577687">កំពុងសម្អាត <ph name="DRIVE_NAME" />...</translation>
@@ -196,7 +186,6 @@
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ធ្វើរួច</translation>
 <translation id="3157729859914172001">ក្តារចុចអាមេរិកអន្តរជាតិ (PC)</translation>
-<translation id="3187212781151025377">ក្តារចុចហេប្រឺ</translation>
 <translation id="3188257591659621405">ឯកសារ​របស់ខ្ញុំ​</translation>
 <translation id="3197563288998582412">UK Dvorak</translation>
 <translation id="3202131003361292969">ផ្លូវ</translation>
@@ -227,14 +216,12 @@
 <translation id="3475447146579922140">Google សៀវភៅបញ្ជី</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> កំហុសឆ្គង។</translation>
 <translation id="349603508045926994">ការ​សរសេរ​តាម​សូរសព្ទជាភាសាពែក្ស</translation>
-<translation id="3519867315646775981">ការសរសេរតាមសូរស័ព្ទ (shalom ← שלום)</translation>
 <translation id="3522708245912499433">ភាសាប៉ទុយកាល់</translation>
 <translation id="3524311639100184459">ប្រុងប្រយ័ត្ន៖ ឯកសារទាំងនេះ​គឺជាឯកសារ​បណ្ដោះអាសន្ន និងអាចត្រូវបានលុប​ដោយស្វ័យប្រវត្តិ ដើម្បីបង្កើន​ទំហំផ្ទុកថាស។  <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ថតឯកសារ</translation>
 <translation id="3549797760399244642">ទៅកាន់ drive.google.com...</translation>
 <translation id="3553048479571901246">ដើម្បីបើកឯកសារដោយប្រើ <ph name="APP_NAME" /> សូមចម្លងឯកសារទាំងនោះទៅក្នុងថតឯកសារ Windows ជាមុនសិន។</translation>
 <translation id="357479282490346887">ភាសាលីទុយអានី</translation>
-<translation id="3583509704582854624">វិធីសាស្រ្ត​បញ្ចូល​អក្សរក្រមលេខ (សម្រាប់​ក្ដារចុច​ភាសាជប៉ុន)</translation>
 <translation id="3603385196401704894">ភាសាបារាំងកាណាដា</translation>
 <translation id="3606220979431771195">តួកគី-F</translation>
 <translation id="3609785682760573515">កំពុងធ្វើសមកម្ម...</translation>
@@ -268,10 +255,8 @@
 <translation id="383652340667548381">ភាសាស៊ែប</translation>
 <translation id="385051799172605136">ថយក្រោយ</translation>
 <translation id="3855472144336161447">German Neo 2</translation>
-<translation id="3858678421048828670">ក្តារចុចអ៊ីតាលី</translation>
 <translation id="386548886866354912">ដាក់ក្នុងកញ្ចប់ជាមួយ <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">ការពិពណ៌នា</translation>
-<translation id="3910699493603749297">ក្តារចុចខ្មែរ</translation>
 <translation id="391445228316373457">ក្តារចុចនេប៉ាល់ (Phonetic)</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">លេងនៅលើ</translation>
@@ -335,7 +320,6 @@
 <translation id="4734518477988699048">តម្លៃបញ្ចូលមិនត្រឹមត្រូវទេ</translation>
 <translation id="4737050008115666127">ផ្លូវចុះចត</translation>
 <translation id="4747271164117300400">ម៉ាសេដូនី</translation>
-<translation id="4749157430980974800">ក្តារចុចហ្សកហ្ស៊ី</translation>
 <translation id="4759238208242260848">ទាញយក</translation>
 <translation id="4779136857077979611">អូនីហ្គីរិ</translation>
 <translation id="4784330909746505604">បទបង្ហាញ PowerPoint</translation>
@@ -412,7 +396,6 @@
 <translation id="5283140566205748520">បារាំង (បែលហ្ស៊ិក)</translation>
 <translation id="5317780077021120954">រក្សាទុក</translation>
 <translation id="5318819489018851358">ចែករំលែកជាមួយ Linux</translation>
-<translation id="5319782540886810524">ក្តារចុចឡាត់វី</translation>
 <translation id="5323213332664049067">ភាសាអាមេរិកឡាទីន</translation>
 <translation id="5327248766486351172">ឈ្មោះ</translation>
 <translation id="5330145655348521461">ឯកសារទាំងនេះត្រូវបានបើកនៅលើដេស៍ថបដ៏ទៃ។ ផ្លាស់ទីទៅ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ដើម្បីមើលវា។</translation>
@@ -439,7 +422,6 @@
 <translation id="5534520101572674276">កំពុងគណនាទំហំ</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
-<translation id="5640179856859982418">ក្តារចុចស្វីស</translation>
 <translation id="5649768706273821470">ស្តាប់</translation>
 <translation id="5678784840044122290">កម្មវិធី Linux នឹង​មាននៅក្នុង​ស្ថានីយ​​របស់អ្នក​ ហើយវា​ក៏​អាច​បង្ហាញរូបតំណាង​នៅក្នុង​កម្មវិធី​ចាប់ផ្ដើម​របស់អ្នក​ផងដែរ។</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />មិនអាច​ផ្ដាច់ចេញ​ពីបណ្ណសារ ឬ​ថាស​និម្មិត​បានទេ<ph name="END_BOLD" />
@@ -450,7 +432,6 @@
 <translation id="5731409020711461763">រូបថតថ្មី 1</translation>
 <translation id="5752453871435543420">បម្រុងទុកក្លោដប្រព័ន្ធប្រតិបត្តិ Chrome OS</translation>
 <translation id="5756666464756035725">ក្តារចុចហុងគ្រី</translation>
-<translation id="5771585441665576801">ការសរសេរតាមសូរស័ព្ទ (geia → γεια)</translation>
 <translation id="5776325638577448643">លុប និងសម្អាត</translation>
 <translation id="57838592816432529">បិទសម្លេង</translation>
 <translation id="5788127256798019331">ឯកសារ Play</translation>
@@ -467,7 +448,6 @@
 <translation id="5911887972742538906">មានបញ្ហា​កើតឡើង អំឡុង​ពេលដំឡើង​កម្មវិធី Linux របស់អ្នក។</translation>
 <translation id="5912396950572065471">ទម្រង់</translation>
 <translation id="5913638992615760742">មិនអាចចម្លង​ប្រតិបត្តិការ​បានទេ បញ្ហាមិនបានរំពឹងទុក៖ <ph name="ERROR_MESSAGE" /></translation>
-<translation id="5923484009666796948">វិធីសាស្ត្រ​បញ្ចូលជា​ភាសាជប៉ុន (សម្រាប់​ក្ដារចុច​ភាសាជប៉ុន)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5955954492236143329">ធាតុ <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
@@ -497,7 +477,6 @@
 <translation id="6248400709929739064">បើកដំណើរការចំណងជើងរង</translation>
 <translation id="6264347891387618177">ការសរសេរតាមសូរស័ព្ទ (selam → ሰላም)</translation>
 <translation id="6287852322318138013">ជ្រើសរើសកម្មវិធីដើម្បីបើកឯកសារនេះ</translation>
-<translation id="6305012486838822927">ក្តារចុចឡាវ</translation>
 <translation id="6339034549827494595">ក្តារចុចសូរស័ព្ទភាសារុស្សី (AATSEEL)</translation>
 <translation id="6339145975392024142">អាមេរិក​អន្តរជាតិ (PC)</translation>
 <translation id="6346310558342052870">បាន​រឹតបន្តឹង​ការ​ចូលប្រើ​</translation>
@@ -508,8 +487,6 @@
 <translation id="6395575651121294044">ធាតុ <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6398765197997659313">ចាកចេញពីអេក្រង់ពេញ</translation>
 <translation id="642282551015776456">ឈ្មោះនេះមិនគួរប្រើជាឯកសារនៃឈ្មោះថតឯកសារទេ</translation>
-<translation id="6462109140674788769">ក្តារចុចក្រិច</translation>
-<translation id="6466492211071551451">ក្តារចុចអៀរឡង់</translation>
 <translation id="6485131920355264772">បានបរាជ័យក្នុងការទាញត្រលប់ព័ត៌មានចន្លោះផ្ទុក</translation>
 <translation id="6505918941256367791">ក្តារចុចតាមិល (InScript)</translation>
 <translation id="6509122719576673235">ន័រវេស</translation>
@@ -649,7 +626,6 @@
 <translation id="7896906914454843592">ក្តារចុច US Extended</translation>
 <translation id="7898607018410277265">ក្ដារចុចគូចារ៉ាទី (សូរសព្ទថ្មី)</translation>
 <translation id="7908793776359722643">ការសម្អាតផ្នែកណាមួយនឹងលុបទិន្នន័យទាំងអស់ ដែលបានរក្សាទុកនៅក្នុងនោះ។ សកម្មភាព​នេះ​មិន​អាច​​ត្រឡប់វិញ​បានទេ។</translation>
-<translation id="7917972308273378936">ក្តារចុចលីទុយអានី</translation>
 <translation id="7925686952655276919">កុំប្រើទិន្នន័យទូរស័ព្ទសម្រាប់ធ្វើសមកម្ម</translation>
 <translation id="7928710562641958568">បញ្ចេញឧបករណ៍</translation>
 <translation id="7943385054491506837">US Colemak</translation>
@@ -696,7 +672,6 @@
 <translation id="8335587457941836791">ដកការដៅចេញពីធ្នើ</translation>
 <translation id="8336153091935557858">ម្សិលមិញ <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336524887811696057">ការ​សរសេរ​តាម​សូរសព្ទជាភាសានេប៉ាល់</translation>
-<translation id="8336579025507394412">ក្តារចុចអាយឡេន៍</translation>
 <translation id="8342318071240498787">មានឯកសារ ឬថតឯកសារដែលមានឈ្មោះដូចនេះមានរួចទៅហើយ។</translation>
 <translation id="8382450452152102026">ទៅ <ph name="FOLDER_NAME" /></translation>
 <translation id="8391950649760071442">ការសរសេរតាមសូរស័ព្ទ (emandi → ఏమండీ)</translation>
@@ -707,7 +682,6 @@
 <translation id="8437209419043462667">អាមេរិក</translation>
 <translation id="8456681095658380701">ឈ្មោះគ្មានសុពលភាព</translation>
 <translation id="8466234950814670489">បណ្ណាសារ tar</translation>
-<translation id="8467473010914675605">វិធីសាស្ត្របញ្ចូលភាសាកូរ៉េ</translation>
 <translation id="8475647382427415476">Google ថាសមិនអាចធ្វើសមកាលកម្ម "<ph name="FILENAME" />" បានទេឥឡូវនេះ។ Google ថាសនឹងព្យាយាមម្តងទៀតពេលក្រោយ។</translation>
 <translation id="8477649328507734757">Spin</translation>
 <translation id="8487700953926739672">មាននៅក្រៅបណ្តាញ</translation>

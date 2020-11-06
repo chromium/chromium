@@ -49,7 +49,6 @@
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1351937230027495976">Свернуть меню</translation>
 <translation id="1383876407941801731">Поиск</translation>
-<translation id="1390105199421505038">Диалоговое окно удаления аккаунта <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1391102559483454063">Включено</translation>
 <translation id="1407069428457324124">Тёмная тема</translation>
 <translation id="1419738280318246476">Чтобы выполнить действие, предложенное в уведомлении, разблокируйте устройство.</translation>
@@ -74,7 +73,6 @@
 <translation id="1589090746204042747">Получать доступ к данным о ваших действиях во время этого сеанса.</translation>
 <translation id="1611993646327628135">Включено</translation>
 <translation id="1632985212731562677">Функцию Switch Access можно отключить в разделе "Настройки &gt; Специальные возможности".</translation>
-<translation id="1651447046299738444">Включите Bluetooth и Wi-Fi на устройстве Chromebook. Это нужно для работы Phone Hub.</translation>
 <translation id="1654477262762802994">Произнесите запрос</translation>
 <translation id="1667964833127753507">В режиме нейтральных цветов не используются оттенки ваших обоев. Вместо них интерфейс будет окрашен в нейтральные светлые или темные цвета.</translation>
 <translation id="1677472565718498478">Ещё <ph name="TIME" /></translation>
@@ -143,7 +141,6 @@
 <translation id="2341729377289034582">Заблокировано в вертикальном положении</translation>
 <translation id="2352467521400612932">Настройки стилуса</translation>
 <translation id="2354174487190027830">Активация <ph name="NAME" /></translation>
-<translation id="2356210126990741501">Подключите смартфон к Сети, чтобы функция стала доступна.</translation>
 <translation id="2359808026110333948">Продолжить</translation>
 <translation id="2365393535144473978">Вместе с мобильным Интернетом включится Bluetooth.</translation>
 <translation id="2369165858548251131">"Привет" по-китайски</translation>
@@ -188,7 +185,6 @@
 <translation id="2825619548187458965">Полка</translation>
 <translation id="2841907151129139818">Вы перешли в режим планшета.</translation>
 <translation id="2844169650293029770">Устройство USB-C (ближний порт слева)</translation>
-<translation id="2846247265041961677">Ошибка. Нет соединения со смартфоном</translation>
 <translation id="2865888419503095837">Информация о сети</translation>
 <translation id="2872961005593481000">Завершить работу</translation>
 <translation id="2878884018241093801">Недавних окон нет.</translation>
@@ -329,7 +325,6 @@
 <translation id="4195877955194704651">Меню "Автоматическое нажатие"</translation>
 <translation id="4197790712631116042">Отключено</translation>
 <translation id="4201033867194214117">Функция "<ph name="FEATURE_NAME" />" недоступна</translation>
-<translation id="4212246570487010370">Продолжить просмотр</translation>
 <translation id="4212472694152630271">Войти с помощью PIN-кода</translation>
 <translation id="4215497585250573029">Настройки VPN</translation>
 <translation id="4217571870635786043">Голосовой ввод</translation>
@@ -358,7 +353,6 @@
 <translation id="4412944820643904175">Функция "<ph name="FEATURE_NAME" />" отключена</translation>
 <translation id="4421231901400348175">Доступ к экрану для <ph name="HELPER_NAME" /> с помощью удаленного помощника</translation>
 <translation id="4430019312045809116">Объем</translation>
-<translation id="4444978951615977024">Ошибка. Проверьте подключение.</translation>
 <translation id="4450893287417543264">Больше не показывать</translation>
 <translation id="445864333228800152">Добрый вечер!</translation>
 <translation id="4458688154122353284">Остановить запись с экрана</translation>
@@ -400,7 +394,6 @@
 <translation id="4804818685124855865">Отключиться</translation>
 <translation id="4814539958450445987">Экран входа</translation>
 <translation id="4831034276697007977">Вы уверены, что хотите отключить функцию автоматического нажатия?</translation>
-<translation id="4836108105469522644">Включить уведомления с телефона Android</translation>
 <translation id="4849058404725798627">Выделять элементы, выбранные с помощью клавиатуры</translation>
 <translation id="485592688953820832">Отсутствие действий (пауза)</translation>
 <translation id="4868492592575313542">включила</translation>
@@ -473,6 +466,7 @@
 <translation id="558849140439112033">Перетащите, чтобы выделить область для снимка</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Чтобы отключить озвучивание текста на экране, нажмите CTRL + ALT + Z.</translation>
+<translation id="5601503069213153581">PIN-код</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Микрофонный разъем</translation>
 <translation id="5669267381087807207">Активация</translation>
@@ -492,7 +486,6 @@
 <translation id="5769373120130404283">Экран конфиденциальности</translation>
 <translation id="5777841717266010279">Закрыть доступ к экрану?</translation>
 <translation id="5790085346892983794">Выполнено</translation>
-<translation id="579415080077680903">Тихий режим</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Остановить трансляцию <ph name="ROUTE_TITLE" /> на устройство "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="5860033963881614850">ВЫКЛ</translation>
@@ -505,7 +498,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ВКЛ</translation>
 <translation id="5920710855273935292">Микрофон отключен.</translation>
-<translation id="594179686076170922">Соединение со смартфоном…</translation>
 <translation id="5946788582095584774">Функция "<ph name="FEATURE_NAME" />" включена</translation>
 <translation id="5947494881799873997">Отменить</translation>
 <translation id="595202126637698455">Включено отслеживание эффективности</translation>
@@ -532,7 +524,6 @@
 <translation id="615957422585914272">Показывать экранную клавиатуру</translation>
 <translation id="6164005077879661055">После удаления контролируемого профиля все файлы и локальные данные, связанные с ним, будут удалены. Посещенные страницы и настройки этого профиля будут видны его менеджеру на странице: <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Подробнее</translation>
-<translation id="6192859646269780503">Найти телефон</translation>
 <translation id="622484624075952240">Вниз</translation>
 <translation id="6236290670123303279">Настройки</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -606,11 +597,11 @@
 <translation id="6910714959251846841">Чтобы установить это обновление, необходимо сбросить настройки устройства до заводских. Подробнее о последнем обновлении <ph name="SYSTEM_APP_NAME" />…</translation>
 <translation id="6919251195245069855">Не удалось распознать смарт-карту. Повторите попытку.</translation>
 <translation id="6945221475159498467">Выбрать</translation>
+<translation id="6965382102122355670">ОК</translation>
 <translation id="6972754398087986839">Начать</translation>
 <translation id="6981982820502123353">Спец. возможности</translation>
 <translation id="698231206551913481">После удаления пользователя все связанные с ним файлы и локальные данные также будут удалены.</translation>
 <translation id="7007983414944123363">Введенный PIN-код или пароль недействителен. Повторите попытку.</translation>
-<translation id="7013005189539051442">Точка доступа</translation>
 <translation id="7015766095477679451">Увидимся снова в <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Подключите <ph name="DEVICE_NAME" /> к своему телефону</translation>
 <translation id="7026338066939101231">Уменьшить</translation>
@@ -678,7 +669,6 @@
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7662283695561029522">Нажмите, чтобы настроить.</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7705822912736783206">Выполните аутентификацию с помощью отпечатка пальца.</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 уведомление}one{# уведомление}few{# уведомления}many{# уведомлений}other{# уведомления}}</translation>
 <translation id="7724603315864178912">Вырезать</translation>
 <translation id="7749443890790263709">Достигнуто максимально допустимое количество рабочих столов.</translation>

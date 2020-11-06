@@ -5,7 +5,6 @@
 <translation id="1023220960495960452">লিপ্যন্তরকরণ (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">স্লাইড দৃশ্য</translation>
 <translation id="1045157690796831147">লিপ্যন্তরকরণ (namaskar → നമസ്കാരം)</translation>
-<translation id="1046068652463704410">জাপানি ইনপুট (মার্কিন যুক্তরাষ্ট্রের কীবোর্ডের ক্ষেত্রে)</translation>
 <translation id="1047956942837015229"><ph name="COUNT" />টি আইটেম মুছে ফেলা হচ্ছে...</translation>
 <translation id="1049926623896334335">Word document</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> ব্যবহার করে ফাইল খুলতে, সেগুলি প্রথমে Windows ফাইল ফোল্ডারে সরিয়ে রাখুন।</translation>
@@ -26,11 +25,9 @@
 <translation id="1178581264944972037">বিরতি</translation>
 <translation id="1190144681599273207">এই ফাইল আনয়ন করতে আনুমানিক মোবাইল ডেটার <ph name="FILE_SIZE" /> ব্যবহার করবে৷</translation>
 <translation id="1201402288615127009">পরের</translation>
-<translation id="1208421848177517699">লিপ্যন্তরকরণ (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">আপলোড</translation>
 <translation id="1249250836236328755">প্রকার</translation>
 <translation id="1276362640455948667">US আন্তর্জাতিক কীবোর্ডের সাথে পর্তুগিজ ভাষা</translation>
-<translation id="1278813325885878377">হাঙ্গেরিয়ান কোয়ার্টি কীবোর্ড</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">এই মুহূর্তে Google ড্রাইভ উপলব্ধ নেই৷ একবার Google ড্রাইভ উপলব্ধ হলেই আপলোড করার কাজটি স্বয়ংক্রিয়ভাবে পুনরায় চালু হবে৷</translation>
 <translation id="1307931752636661898">Linux ফাইল দেখা যায়নি</translation>
@@ -63,7 +60,6 @@
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> পিবি</translation>
 <translation id="1620510694547887537">ক্যামেরা</translation>
 <translation id="1646019627374511909">অফলাইনে দেখার জন্য <ph name="NUMBER_OF_ITEMS" />টি ফাইল ডাউনলোড করা হচ্ছে</translation>
-<translation id="1646136617204068573">হাঙ্গেরিয় কীবোর্ড</translation>
 <translation id="164729547906544836">তামিল কীবোর্ড (আইট্রান্স)</translation>
 <translation id="164969095109328410">Chrome ডিভাইস</translation>
 <translation id="1665611772925418501">ফাইল সংশোধন করা যায়নি৷</translation>
@@ -93,7 +89,6 @@
 <translation id="1936717151811561466">ফিনিশ</translation>
 <translation id="1942765061641586207">ছবির রেজোলিউশন</translation>
 <translation id="1943097386230153518">নতুন পরিষেবা ইনস্টল করুন</translation>
-<translation id="1947424002851288782">জার্মান কীবোর্ড</translation>
 <translation id="1972984168337863910">ফাইল ফিডব্যাক প্যানেল বড় করুন</translation>
 <translation id="1984603991036629094">আর্মেনিয় ফোনেটিক কীবোর্ড</translation>
 <translation id="1995337122023280937">ফাইল লোকেশনে যান</translation>
@@ -116,14 +111,12 @@
 <translation id="2225536596944493418">আপনি কি <ph name="NUMBER_OF_ITEMS" />টি আইটেম মুছে ফেলার ব্যাপারে নিশ্চিত?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" /> " ফোল্ডার তৈরী করতে ব্যর্থ৷<ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">সরানো হয়েছে</translation>
-<translation id="2278988676849463018">কন্নড় কীবোর্ড (ফোনেটিক)</translation>
 <translation id="2287742181953707290">US আন্তর্জাতিক কীবোর্ডের সাথে পর্তুগিজ ভাষা</translation>
 <translation id="2288278176040912387">রেকর্ড প্লেয়ার</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" />টি ফাইল খোলা হচ্ছে।</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> খোলা হচ্ছে।</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> সরিয়ে দেওয়া হয়েছে।</translation>
 <translation id="2325650632570794183">এই ফাইল প্রকারটি সমর্থিত নয়৷ এই ধরণের ফাইল খুলতে পারে এমন অ্যাপ খুঁজতে অনুগ্রহ করে Chrome ওয়েব স্টোর দেখুন৷</translation>
-<translation id="23434688402327542">কাজাখ কীবোর্ড</translation>
 <translation id="2352947182261340447">স্থানীয় স্টোরেজে পর্যাপ্ত জায়গা নেই।</translation>
 <translation id="2377319039870049694">তালিকা দৃশ্যে যান</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" />টি ফোল্ডার Linux-এর সাথে শেয়ার করা হয়েছে</translation>
@@ -136,7 +129,6 @@
 <translation id="2453576648990281505">ফাইলটি ইতিমধ্যেই বিদ্যমান</translation>
 <translation id="2464079411014186876">আইস ক্রিম</translation>
 <translation id="2468402215065996499">তামাগচি</translation>
-<translation id="2494837236724268445">গুজরাটি কীবোর্ড (ফোনেটিক)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">ইউএস কীবোর্ড</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />টি আইটেম মোছা হয়েছে</translation>
@@ -172,10 +164,8 @@
 <translation id="2902312830803030883">আরও অ্যাকশন</translation>
 <translation id="2902734494705624966">মার্কিন যুক্তরাষ্ট্রীয় বর্ধিত</translation>
 <translation id="2923240520113693977">এস্তোনীয়</translation>
-<translation id="2924296707677495905">লিপ্যন্তরকরণ (namaskaram → ನಮಸ್ಕಾರ)</translation>
 <translation id="2925966894897775835">Sheets</translation>
 <translation id="2938685643439809023">মঙ্গোলীয়</translation>
-<translation id="2942290791863759244">জার্মান NEO 2 কীবোর্ড</translation>
 <translation id="2943400156390503548">Slides</translation>
 <translation id="2943503720238418293">অন্য একটি ছোট নাম ব্যবহার করুন</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> ফরম্যাট করা হচ্ছে...</translation>
@@ -196,7 +186,6 @@
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">সম্পন্ন হয়েছে</translation>
 <translation id="3157729859914172001">US ইন্টারন্যাশনাল (PC) কীবোর্ড</translation>
-<translation id="3187212781151025377">হিব্রু কীবোর্ড</translation>
 <translation id="3188257591659621405">আমার ফাইল</translation>
 <translation id="3197563288998582412">যুক্তরাজ্যের দভোরাক</translation>
 <translation id="3202131003361292969">পাথ</translation>
@@ -227,14 +216,12 @@
 <translation id="3475447146579922140">Google স্প্রেডশীট</translation>
 <translation id="3495304270784461826"><ph name="COUNT" />টি ত্রুটি৷</translation>
 <translation id="349603508045926994">ফার্সি লিপ্যন্তর</translation>
-<translation id="3519867315646775981">লিপ্যন্তরকরণ (shalom ← שלום)</translation>
 <translation id="3522708245912499433">পর্তুগিজ</translation>
 <translation id="3524311639100184459">সতর্কতা: এই ফাইলগুলি অস্থায়ী এবং ডিস্কের জায়গা খালি করতে হয়ত অটোমেটিক মুছে ফেলা হবে।  <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ফোল্ডার</translation>
 <translation id="3549797760399244642">drive.google.com এ যান...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ব্যবহার করে ফাইল খুলতে, সেগুলি প্রথমে Windows ফাইল ফোল্ডারে কপি করে রাখুন।</translation>
 <translation id="357479282490346887">লিথুয়ানিয়ান</translation>
-<translation id="3583509704582854624">বর্ণসাংখ্যিক ইনপুট (জাপানি কীবোর্ডের ক্ষেত্রে)</translation>
 <translation id="3603385196401704894">কানাডীয় ফরাসি</translation>
 <translation id="3606220979431771195">তুর্কি-এফ</translation>
 <translation id="3609785682760573515">সিঙ্ক হচ্ছে...</translation>
@@ -268,10 +255,8 @@
 <translation id="383652340667548381">সার্বিয়</translation>
 <translation id="385051799172605136">ফিরুন</translation>
 <translation id="3855472144336161447">জার্মান নিও ২</translation>
-<translation id="3858678421048828670">ইতালিয় কীবোর্ড</translation>
 <translation id="386548886866354912"><ph name="EXTENSION_NAME" /> দিয়ে প্যাক করুন</translation>
 <translation id="3866249974567520381">বর্ণনা</translation>
-<translation id="3910699493603749297">খেমের কীবোর্ড</translation>
 <translation id="391445228316373457">নেপালি কীবোর্ড (ফোনেটিক)</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">এতে প্লে করুন</translation>
@@ -335,7 +320,6 @@
 <translation id="4734518477988699048">ইনপুট মান ভুল।</translation>
 <translation id="4737050008115666127">ল্যান্ডিং</translation>
 <translation id="4747271164117300400">ম্যাসিডোনীয়</translation>
-<translation id="4749157430980974800">জর্জিয়ান কীবোর্ড</translation>
 <translation id="4759238208242260848">ডাউনলোড</translation>
 <translation id="4779136857077979611">ওনিগিরি</translation>
 <translation id="4784330909746505604">PowerPoint presentation</translation>
@@ -412,7 +396,6 @@
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">সেভ করুন</translation>
 <translation id="5318819489018851358">Linux-এর সাথে শেয়ার করুন</translation>
-<translation id="5319782540886810524">লাটভিও কীবোর্ড</translation>
 <translation id="5323213332664049067">লাতিন আমেরিকান</translation>
 <translation id="5327248766486351172">নাম</translation>
 <translation id="5330145655348521461">এই ফাইলগুলি একটি আলাদা ডেস্কটপে খোলা রয়েছে৷ এটিকে দেখতে <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)-এ সরান৷</translation>
@@ -439,7 +422,6 @@
 <translation id="5534520101572674276">আকার গণনা করা হচ্ছে</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">মার্কিন যুক্তরাষ্ট্রীয় দভোরাক</translation>
-<translation id="5640179856859982418">সুইশ কীবোর্ড</translation>
 <translation id="5649768706273821470">শুনুন</translation>
 <translation id="5678784840044122290">Linux অ্যাপ্লিকেশনটি আপনার  টার্মিনালের মধ্যে পাওয়া যাবে এবং আপনার লঞ্চারে একটি আইকনও দেখাতে পারে।</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />একটি আর্কাইভ বা ভার্চুয়াল ডিস্ক থেকে ডিসকানেক্ট করা যাবে না<ph name="END_BOLD" />
@@ -450,7 +432,6 @@
 <translation id="5731409020711461763">১টি নতুন ফটো</translation>
 <translation id="5752453871435543420">Chrome OS ক্লাউড ব্যাকআপ</translation>
 <translation id="5756666464756035725">হাঙ্গেরিয়ান কোয়ের্টি</translation>
-<translation id="5771585441665576801">লিপ্যন্তরকরণ (geia → γεια)</translation>
 <translation id="5776325638577448643">মুছে ফেলুন ও ফর্ম্যাট করুন</translation>
 <translation id="57838592816432529">মিউট করুন</translation>
 <translation id="5788127256798019331">Play ফাইল</translation>
@@ -467,7 +448,6 @@
 <translation id="5911887972742538906">Linux অ্যাপ্লিকেশন ইনস্টল করার সময়ে সমস্যা হয়েছে।</translation>
 <translation id="5912396950572065471">ফর্ম্যাট</translation>
 <translation id="5913638992615760742">কপি করা যায়নি, অপ্রত্যাশিত সমস্যা হয়েছে: <ph name="ERROR_MESSAGE" /></translation>
-<translation id="5923484009666796948">জাপানি ইনপুট (জাপানি কীবোর্ডের ক্ষেত্রে)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" />টি আইটেম</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
@@ -497,7 +477,6 @@
 <translation id="6248400709929739064">সাবটাইটেল সক্ষম করুন</translation>
 <translation id="6264347891387618177">লিপ্যন্তরকরণ (selam → ሰላም)</translation>
 <translation id="6287852322318138013">এই ফাইলটি খোলার জন্য একটি অ্যাপ্লিকেশান বেছে নিন</translation>
-<translation id="6305012486838822927">লাও কীবোর্ড</translation>
 <translation id="6339034549827494595">রাশিয়ান ফোনেটিক (AATSEEL) কীবোর্ড</translation>
 <translation id="6339145975392024142">US ইন্টারন্যাশনাল (PC)</translation>
 <translation id="6346310558342052870">সীমাবদ্ধ অ্যাক্সেস</translation>
@@ -508,8 +487,6 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" />টি আইটেম</translation>
 <translation id="6398765197997659313">পূর্ণ স্ক্রীণ বন্ধ করুন</translation>
 <translation id="642282551015776456">ফাইল বা ফোল্ডারের নাম হিসাবে নামটি ব্যবহৃত নাও হতে পারে</translation>
-<translation id="6462109140674788769">গ্রিক কীবোর্ড</translation>
-<translation id="6466492211071551451">আইরিশ কীবোর্ড</translation>
 <translation id="6485131920355264772">স্থান তথ্য পুনরুদ্ধার করতে ব্যর্থ হয়েছে</translation>
 <translation id="6505918941256367791">তামিল কীবোর্ড (ইনস্ক্রিপ্ট)</translation>
 <translation id="6509122719576673235">নরওয়েয়ীয়</translation>
@@ -649,7 +626,6 @@
 <translation id="7896906914454843592">মার্কিন প্রসারিত কীবোর্ড</translation>
 <translation id="7898607018410277265">গুজরাতি কীবোর্ড (নতুন ফোনেটিক)</translation>
 <translation id="7908793776359722643">পার্টিশন ফর্ম্যাট করলে তাতে সেভ থাকা সব ডেটা মুছে যাবে। সেটি আর আগের অবস্থায় ফেরানো যাবে না।</translation>
-<translation id="7917972308273378936">লিথুয়ানিয়ান কীবোর্ড</translation>
 <translation id="7925686952655276919">সিঙ্ক-এর জন্য মোবাইল ডেটা ব্যবহার করবেন না</translation>
 <translation id="7928710562641958568">বের করে দেওযার ডিভাইস</translation>
 <translation id="7943385054491506837">মার্কিন যুক্তরাষ্ট্রীয় কোলেম্যাক</translation>
@@ -696,7 +672,6 @@
 <translation id="8335587457941836791">তাক থেকে আনপিন করুন</translation>
 <translation id="8336153091935557858">গতলাক <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336524887811696057">নেপালি লিপ্যন্তর</translation>
-<translation id="8336579025507394412">আইসল্যান্ডিক কীবোর্ড</translation>
 <translation id="8342318071240498787">একই নাম সহ ফাইল অথবা একটি নির্দেশিকা ইতিমধ্যেই বিদ্যমান আছে৷</translation>
 <translation id="8382450452152102026"><ph name="FOLDER_NAME" />-এ</translation>
 <translation id="8391950649760071442">লিপ্যন্তরকরণ (emandi → ఏమండీ)</translation>
@@ -707,7 +682,6 @@
 <translation id="8437209419043462667">মার্কিন যুক্তরাষ্ট্রীয়</translation>
 <translation id="8456681095658380701">ভুল নাম</translation>
 <translation id="8466234950814670489">Tar আর্কাইভ</translation>
-<translation id="8467473010914675605">কোরিয় ইনপুট পদ্ধতি</translation>
 <translation id="8475647382427415476">Google ড্রাইভ এই মুহূর্তে "<ph name="FILENAME" />" সিঙ্ক করতে পারেনি। Google ড্রাইভ পরে আবার চেষ্টা করবে।</translation>
 <translation id="8477649328507734757">ঘোরানো</translation>
 <translation id="8487700953926739672">অফলাইনে উপলব্ধ</translation>

@@ -5,7 +5,6 @@
 <translation id="1023220960495960452">Transliteration (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">Slide view</translation>
 <translation id="1045157690796831147">Transliteration (namaskar → നമസ്കാരം)</translation>
-<translation id="1046068652463704410">Japanese input (for US keyboard)</translation>
 <translation id="1047956942837015229">Deleting <ph name="COUNT" /> items...</translation>
 <translation id="1049926623896334335">Word document</translation>
 <translation id="1060368002126861100">To open files with <ph name="APP_NAME" />, first move them to the Windows files folder.</translation>
@@ -26,11 +25,9 @@
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1190144681599273207">Fetching this file will use approximately <ph name="FILE_SIZE" /> of mobile data.</translation>
 <translation id="1201402288615127009">Next</translation>
-<translation id="1208421848177517699">Transliteration (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">Upload</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1276362640455948667">Portuguese with US international keyboard</translation>
-<translation id="1278813325885878377">Hungarian QWERTY keyboard</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">Google Drive is not available right now. Uploading will automatically restart once Google Drive is back.</translation>
 <translation id="1307931752636661898">Unable to view Linux files</translation>
@@ -63,7 +60,6 @@
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1646019627374511909">Making <ph name="NUMBER_OF_ITEMS" /> files available offline</translation>
-<translation id="1646136617204068573">Hungarian keyboard</translation>
 <translation id="164729547906544836">Tamil keyboard (itrans)</translation>
 <translation id="164969095109328410">Chrome device</translation>
 <translation id="1665611772925418501">The file could not be modified.</translation>
@@ -93,7 +89,6 @@
 <translation id="1936717151811561466">Finnish</translation>
 <translation id="1942765061641586207">Image resolution</translation>
 <translation id="1943097386230153518">Install new service</translation>
-<translation id="1947424002851288782">German keyboard</translation>
 <translation id="1972984168337863910">Expand files feedback panels</translation>
 <translation id="1984603991036629094">Armenian Phonetic keyboard</translation>
 <translation id="1995337122023280937">Go to file location</translation>
@@ -116,14 +111,12 @@
 <translation id="2225536596944493418">Are you sure that you want to delete <ph name="NUMBER_OF_ITEMS" /> items?</translation>
 <translation id="2230062665678605299">Unable to create folder "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">Moved.</translation>
-<translation id="2278988676849463018">Kannada keyboard (Phonetic)</translation>
 <translation id="2287742181953707290">Portuguese with US international PC keyboard</translation>
 <translation id="2288278176040912387">Record player</translation>
 <translation id="2291538123825441971">Opening <ph name="NUMBER_OF_FILES" /> files.</translation>
 <translation id="2303301624314357662">Opening file <ph name="FILE_NAME" />.</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> has been ejected.</translation>
 <translation id="2325650632570794183">This file type is not supported. Please visit the Chrome Web Store to find an app that can open this type of file.</translation>
-<translation id="23434688402327542">Kazakh keyboard</translation>
 <translation id="2352947182261340447">Not enough space available in local storage.</translation>
 <translation id="2377319039870049694">Switch to list view</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> folders shared with Linux</translation>
@@ -136,7 +129,6 @@
 <translation id="2453576648990281505">File already exists</translation>
 <translation id="2464079411014186876">Ice cream</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
-<translation id="2494837236724268445">Gujarati keyboard (Phonetic)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">US keyboard</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> items deleted</translation>
@@ -172,10 +164,8 @@
 <translation id="2902312830803030883">More actions</translation>
 <translation id="2902734494705624966">US extended</translation>
 <translation id="2923240520113693977">Estonian</translation>
-<translation id="2924296707677495905">Transliteration (namaskaram → ನಮಸ್ಕಾರ)</translation>
 <translation id="2925966894897775835">Sheets</translation>
 <translation id="2938685643439809023">Mongolian</translation>
-<translation id="2942290791863759244">German NEO 2 keyboard</translation>
 <translation id="2943400156390503548">Slides</translation>
 <translation id="2943503720238418293">Use a shorter name</translation>
 <translation id="2949781154072577687">Formatting <ph name="DRIVE_NAME" />…</translation>
@@ -196,7 +186,6 @@
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">DONE</translation>
 <translation id="3157729859914172001">US International (PC) keyboard</translation>
-<translation id="3187212781151025377">Hebrew keyboard</translation>
 <translation id="3188257591659621405">My files</translation>
 <translation id="3197563288998582412">UK Dvorak</translation>
 <translation id="3202131003361292969">Path</translation>
@@ -227,14 +216,12 @@
 <translation id="3475447146579922140">Google spreadsheet</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> errors.</translation>
 <translation id="349603508045926994">Persian transliteration</translation>
-<translation id="3519867315646775981">Transliteration (shalom ← שלום)</translation>
 <translation id="3522708245912499433">Portuguese</translation>
 <translation id="3524311639100184459">Caution: These files are temporary and may be automatically deleted to free up disk space.  <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3549797760399244642">Go to drive.google.com...</translation>
 <translation id="3553048479571901246">To open files with <ph name="APP_NAME" />, first copy them to the Windows files folder.</translation>
 <translation id="357479282490346887">Lithuanian</translation>
-<translation id="3583509704582854624">Alphanumeric input (for Japanese keyboard)</translation>
 <translation id="3603385196401704894">Canadian French</translation>
 <translation id="3606220979431771195">Turkish-F</translation>
 <translation id="3609785682760573515">Syncing...</translation>
@@ -268,10 +255,8 @@
 <translation id="383652340667548381">Serbian</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="3855472144336161447">German Neo 2</translation>
-<translation id="3858678421048828670">Italian keyboard</translation>
 <translation id="386548886866354912">Pack with <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Description</translation>
-<translation id="3910699493603749297">Khmer keyboard</translation>
 <translation id="391445228316373457">Nepali keyboard (Phonetic)</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">Play on</translation>
@@ -335,7 +320,6 @@
 <translation id="4734518477988699048">Input value is invalid.</translation>
 <translation id="4737050008115666127">Landing</translation>
 <translation id="4747271164117300400">Macedonian</translation>
-<translation id="4749157430980974800">Georgian keyboard</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint presentation</translation>
@@ -413,7 +397,6 @@
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Save</translation>
 <translation id="5318819489018851358">Share with Linux</translation>
-<translation id="5319782540886810524">Latvian keyboard</translation>
 <translation id="5323213332664049067">Latin American</translation>
 <translation id="5327248766486351172">Name</translation>
 <translation id="5330145655348521461">These files opened on a different desktop. Move to <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) to view it.</translation>
@@ -440,7 +423,6 @@
 <translation id="5534520101572674276">Calculating size</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
-<translation id="5640179856859982418">Swiss keyboard</translation>
 <translation id="5649768706273821470">Listen</translation>
 <translation id="5678784840044122290">The Linux application will be available within your Terminal and may also show an icon in your Launcher.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Can't disconnect from an archive or virtual disk<ph name="END_BOLD" />
@@ -451,7 +433,6 @@
 <translation id="5731409020711461763">One new photo</translation>
 <translation id="5752453871435543420">Chrome OS Cloud backup</translation>
 <translation id="5756666464756035725">Hungarian QWERTY</translation>
-<translation id="5771585441665576801">Transliteration (geia → γεια)</translation>
 <translation id="5776325638577448643">Erase and format</translation>
 <translation id="57838592816432529">Mute</translation>
 <translation id="5788127256798019331">Play files</translation>
@@ -468,7 +449,6 @@
 <translation id="5911887972742538906">An error occurred during installation of your Linux application.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Copy operation failed, unexpected error: <ph name="ERROR_MESSAGE" /></translation>
-<translation id="5923484009666796948">Japanese input (for Japanese keyboard)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> items</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
@@ -498,7 +478,6 @@
 <translation id="6248400709929739064">Enable subtitles</translation>
 <translation id="6264347891387618177">Transliteration (selam → ሰላም)</translation>
 <translation id="6287852322318138013">Select an app to open this file</translation>
-<translation id="6305012486838822927">Lao keyboard</translation>
 <translation id="6339034549827494595">Russian Phonetic (AATSEEL) keyboard</translation>
 <translation id="6339145975392024142">US international (PC)</translation>
 <translation id="6346310558342052870">Access restricted</translation>
@@ -509,8 +488,6 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> items</translation>
 <translation id="6398765197997659313">Exit full screen</translation>
 <translation id="642282551015776456">This name may not be used as a file or folder name</translation>
-<translation id="6462109140674788769">Greek keyboard</translation>
-<translation id="6466492211071551451">Irish keyboard</translation>
 <translation id="6485131920355264772">Failed to retrieve space info</translation>
 <translation id="6505918941256367791">Tamil keyboard (InScript)</translation>
 <translation id="6509122719576673235">Norwegian</translation>
@@ -650,7 +627,6 @@
 <translation id="7896906914454843592">US Extended keyboard</translation>
 <translation id="7898607018410277265">Gujarati keyboard (New Phonetic)</translation>
 <translation id="7908793776359722643">Formatting a partition will erase all data stored on it. This action cannot be undone.</translation>
-<translation id="7917972308273378936">Lithuanian keyboard</translation>
 <translation id="7925686952655276919">Do not use mobile data for sync</translation>
 <translation id="7928710562641958568">Eject device</translation>
 <translation id="7943385054491506837">US Colemak</translation>
@@ -697,7 +673,6 @@
 <translation id="8335587457941836791">Unpin from shelf</translation>
 <translation id="8336153091935557858">Yesterday <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336524887811696057">Nepali transliteration</translation>
-<translation id="8336579025507394412">Icelandic keyboard</translation>
 <translation id="8342318071240498787">A file or a directory with the same name already exists.</translation>
 <translation id="8382450452152102026">To <ph name="FOLDER_NAME" /></translation>
 <translation id="8391950649760071442">Transliteration (emandi → ఏమండీ)</translation>
@@ -708,7 +683,6 @@
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">Invalid name</translation>
 <translation id="8466234950814670489">Tar archive</translation>
-<translation id="8467473010914675605">Korean input method</translation>
 <translation id="8475647382427415476">Google Drive was unable to sync "<ph name="FILENAME" />" right now. Google Drive will try again later.</translation>
 <translation id="8477649328507734757">Spin</translation>
 <translation id="8487700953926739672">Available offline</translation>

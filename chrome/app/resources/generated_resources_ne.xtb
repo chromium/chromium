@@ -4349,7 +4349,6 @@
 <translation id="6112294629795967147">पुनः आकार मिलाउन छुनुहोस्</translation>
 <translation id="6112727384379533756">एउटा टिकट थप्नुहोस्</translation>
 <translation id="6112931163620622315">आफ्नो फोन जाँच गर्नुहोस्</translation>
-<translation id="6112952769866305444">व्यक्तिको विवरण सम्पादन गर्नुहोस्, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Chrome ब्राउजर र <ph name="DEVICE_TYPE" /> लन्चरका हकमा पूर्वनिर्धारित सर्च इन्जिन तोक्नुहोस्</translation>
 <translation id="6113942107547980621">Smart Lock प्रयोग गर्न, आफ्नो फोनको प्राथमिक प्रयोगकर्ता प्रोफाइल प्रयोग गर्नुहोस्</translation>
 <translation id="6116921718742659598">भाषा र इनपुट सेटिङहरू परिवर्तन गर्नुहोस्</translation>
@@ -5628,7 +5627,6 @@
 <translation id="7649070708921625228">मद्दत</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" ले "<ph name="EXTENSION_NAME" />" हटाउन चाहन्छ ।</translation>
 <translation id="7650677314924139716">हाल डेटा प्रयोगसम्बन्धी सेटिङअन्तर्गत 'Wi-Fi मात्र' नामक विकल्प चयन गरिएको छ</translation>
-<translation id="7652808307838961528">व्यक्तिको विवरण सम्पादन गर्नुहोस्, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">यो वेबसाइटबाट एप, विस्तार र प्रयोगकर्ताका स्क्रिप्टहरू थप गर्न मिल्दैन</translation>
 <translation id="7652954539215530680">कुनै PIN सिर्जना गर्नुहोस्</translation>
 <translation id="7654941827281939388">यो खाता यस कम्प्युटरमा पहिले नै प्रयोग भइरहेको छ।</translation>
@@ -5869,6 +5867,7 @@
 <translation id="7898627924844766532">उपकरणपट्टीमा राख्नुहोस्</translation>
 <translation id="7898725031477653577">सधैं अनुवाद गर्नुहोस्</translation>
 <translation id="790040513076446191">गोपनीयतासम्बन्धी सेटिङहरू मिलाउनुहोस्</translation>
+<translation id="7901405293566323524">फोन हब</translation>
 <translation id="7903345046358933331">पृष्ठ अनुत्तरदायी भएको छ । तपाईंले यो उत्तरदायी हुञ्जेल प्रतिक्षा गर्न सक्नुहुन्छ वा यसलाई बन्द गर्न सक्नुहुन्छ ।</translation>
 <translation id="7903742244674067440">तपाईँसँग फाइलमा यी प्रमाणपत्रका प्रधिकरणहरूको पहिचान गर्ने प्रमाणपत्रहरू छन्</translation>
 <translation id="7903859912536385558">स्थायी (विश्वसनीय परीक्षक)</translation>

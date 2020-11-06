@@ -314,6 +314,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3285080554353377245">Vídeos sobre como usar Chrome</translation>
 <translation id="3288003805934695103">Volver cargar a páxina</translation>
 <translation id="32895400574683172">Permítese mostrar notificacións</translation>
+<translation id="3290991969712132877">Para chegar aquí máis axiña, engádelle esta páxina á pantalla de inicio a través do botón Máis opcións</translation>
 <translation id="3295530008794733555">Navega máis rápido. Usa menos datos.</translation>
 <translation id="3298243779924642547">Básico</translation>
 <translation id="3303414029551471755">Queres continuar coa descarga do contido?</translation>
@@ -470,6 +471,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="4532845899244822526">Selecciona cartafol</translation>
 <translation id="4538018662093857852">Activar modo básico</translation>
 <translation id="4550003330909367850">Para ver ou copiar o teu contrasinal aquí, define o bloqueo de pantalla neste dispositivo.</translation>
+<translation id="4557685098773234337">Para chegar aquí máis axiña, engádelle esta páxina á pantalla de inicio</translation>
 <translation id="4558311620361989323">Atallos da páxina web</translation>
 <translation id="4561979708150884304">Sen conexión</translation>
 <translation id="4565377596337484307">Ocultar contrasinal</translation>
@@ -499,6 +501,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="4720982865791209136">Axuda a mellorar Chrome. <ph name="BEGIN_LINK" />Responder enquisa<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">Ver os teus sitios favoritos</translation>
 <translation id="4732120983431207637">Recuperador de pillas</translation>
+<translation id="4732693703583195378">Engádelle este sitio á pantalla de inicio da túa tableta para poder acceder dun xeito máis doado</translation>
 <translation id="4738836084190194332">Última sincronización: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Abrir unha nova pestana</translation>
 <translation id="4759238208242260848">Descargas</translation>
@@ -536,6 +539,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="4925120120285606924">Captura de pantalla (<ph name="CURRENT_DATE_ISO" />)</translation>
 <translation id="49268022542405662">Os teus contrasinais exportaranse e descargaranse como ficheiro de texto. Poderá velos calquera persoa e calquera aplicación con acceso ao cartafol de destino.</translation>
 <translation id="4932247056774066048">Dado que estás pechando sesión nunha conta xestionada por <ph name="DOMAIN_NAME" />, os teus datos de Chrome eliminaranse deste dispositivo. Permanecerá na túa Conta de Google.</translation>
+<translation id="4936039914467572121">Accede a este sitio máis rápido</translation>
 <translation id="4943703118917034429">Realidade virtual</translation>
 <translation id="4943872375798546930">Non hai resultados</translation>
 <translation id="4961107849584082341">Traduce esta páxina a calquera idioma</translation>
@@ -647,6 +651,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5763382633136178763">Pestanas do modo de incógnito</translation>
 <translation id="5763514718066511291">Tocar para copiar o URL para esta aplicación</translation>
 <translation id="5765780083710877561">Descrición:</translation>
+<translation id="5767013862801005129">Pestana <ph name="TAB_TITLE" />, restaurada</translation>
 <translation id="5776970333778123608">Datos non importantes</translation>
 <translation id="5793665092639000975">Espazo utilizado: <ph name="SPACE_USED" /> de <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Busca e navegación</translation>
@@ -952,6 +957,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> máis}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> máis}}</translation>
 <translation id="7778840695157240389">Volve máis tarde para comprobar se hai historias novas</translation>
 <translation id="7791543448312431591">Engadir</translation>
+<translation id="7798392620021911922"><ph name="TAB_COUNT" /> pestanas restauradas</translation>
 <translation id="780301667611848630">Non, grazas</translation>
 <translation id="7810647596859435254">Abrir con…</translation>
 <translation id="7821588508402923572">A cifra de aforro de datos aparecerá aquí</translation>
@@ -1137,6 +1143,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Mostrar orixinal</translation>
 <translation id="9148126808321036104">Iniciar sesión de novo</translation>
+<translation id="9149286894143103695">Engádelle este sitio á pantalla de inicio do teu teléfono para poder acceder dun xeito máis doado</translation>
 <translation id="9155898266292537608">Tamén podes realizar buscas con só tocar rapidamente unha palabra</translation>
 <translation id="9169507124922466868">O historial de navegación abriuse ata a metade</translation>
 <translation id="9191031968346938109">Engadir a…</translation>

@@ -4345,7 +4345,6 @@
 <translation id="6112294629795967147">ଆକାର ରିସାଇଜ୍ କରିବାକୁ ସ୍ପର୍ଶ କରନ୍ତୁ</translation>
 <translation id="6112727384379533756">ଏକ ଟିକେଟ୍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6112931163620622315">ଆପଣଙ୍କର ଫୋନ୍ ଦେଖନ୍ତୁ</translation>
-<translation id="6112952769866305444">ବ୍ୟକ୍ତିର, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /> ଏଡ଼ିଟ୍‍ କରନ୍ତୁ</translation>
 <translation id="6113434369102685411">Chrome ବ୍ରାଉଜର୍ ଏବଂ <ph name="DEVICE_TYPE" /> ଲଞ୍ଚର୍ ପାଇଁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସନ୍ଧାନ ଇଞ୍ଜିନ୍ ସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="6113942107547980621">ସ୍ମାର୍ଟ ଲକ୍ ବ୍ୟବହାର କରିବାକୁ, ଆପଣଙ୍କ ଫୋନ୍‍‍ରେ ପ୍ରାଥମିକ ଉପଯୋଗକର୍ତ୍ତା ପ୍ରୋଫାଇଲ୍‍କୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
 <translation id="6116921718742659598">ଭାଷା ଓ ଇନ୍‌ପୁଟ୍ ସେଟିଂସ୍ ବଦଳାନ୍ତୁ</translation>
@@ -5626,7 +5625,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7649070708921625228">ସହାୟତା</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />", "<ph name="EXTENSION_NAME" />"କୁ କାଢ଼ିବାକୁ ଚାହିଁବେ।</translation>
 <translation id="7650677314924139716">ଡାଟା ବ୍ୟବହାରର ବର୍ତ୍ତମାନ ସେଟିଂ "ୱାଇ-ଫାଇ"ରେ ସେଟ୍ ହୋଇଛି</translation>
-<translation id="7652808307838961528">ବ୍ୟକ୍ତିଙ୍କର, <ph name="PROFILE_NAME" /> ଏଡିଟ୍‍ କରନ୍ତୁ</translation>
 <translation id="765293928828334535">ଏହି ୱେବ୍‌ସାଇଟ୍‌ରୁ ଆପ୍ସ, ଏକ୍ସଟେ‌ନ୍‌ସନ୍, ଏବଂ ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ସ୍କ୍ରିପ୍ଟ ଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="7652954539215530680">ଗୋଟିଏ ପିନ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="7654941827281939388">ଏହି ଆକାଉଣ୍ଟ ପୂର୍ବରୁ ଏହି ଡିଭାଇସ୍‌ରେ ବ୍ୟବହୃତ ହୋଇଛି।</translation>
@@ -5867,6 +5865,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7898627924844766532">ଟୁଲ୍‍ବାର୍‌ରେ ରଖନ୍ତୁ</translation>
 <translation id="7898725031477653577">ସର୍ବଦା ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="790040513076446191">ଗୋପନୀୟତା-ସମ୍ବନ୍ଧିତ ସେଟିଂସ୍ କୁଶଳ ଭାବରେ ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="7901405293566323524">ଫୋନ୍ ହବ୍</translation>
 <translation id="7903345046358933331">ପୃଷ୍ଠାଟି ପ୍ରତିକ୍ରିୟାରହିତ ହୋ‍ଇଛି ଆପଣ ଏହାର ପ୍ରତିକ୍ରିୟା ଦେବା ପର୍ଯ୍ୟନ୍ତ ଅପେକ୍ଷା କରିପାରିବେ କିମ୍ବା ଏହାକୁ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="7903742244674067440">ଫାଇଲ୍‌ରେ ଆପଣଙ୍କର ସାର୍ଟିଫିକେଟ୍‌ ଅଛି ଯାହା ଏହି ସାର୍ଟିଫିକେଟ୍‌ଗୁଡ଼ିକର ପ୍ରାଧିକରଣ ଚିହ୍ନଟ କରିଥାଏ</translation>
 <translation id="7903859912536385558">ସ୍ଥିର (ବିଶ୍ୱସ୍ତ ପରୀକ୍ଷକ)</translation>

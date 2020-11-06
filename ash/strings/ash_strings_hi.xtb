@@ -51,7 +51,6 @@
 <translation id="1346748346194534595">दाएं</translation>
 <translation id="1351937230027495976">मेन्यू छोटा करें</translation>
 <translation id="1383876407941801731">Search</translation>
-<translation id="1390105199421505038"><ph name="USER_EMAIL_ADDRESS" /> के लिए खाते वाला डायलॉग हटाएं</translation>
 <translation id="1391102559483454063">चालू है</translation>
 <translation id="1407069428457324124">गहरे रंग वाली थीम</translation>
 <translation id="1419738280318246476">सूचना से जुड़ी कार्रवाई करने के लिए डिवाइस को अनलॉक करें</translation>
@@ -76,7 +75,6 @@
 <translation id="1589090746204042747">इस सत्र में अपनी सभी गतिविधि ऐक्सेस करें</translation>
 <translation id="1611993646327628135">चालू है</translation>
 <translation id="1632985212731562677">ऐक्सेस करने का तरीका बदलने की सुविधा को सेटिंग &gt; सुलभता में जाकर, बंद किया जा सकता है.</translation>
-<translation id="1651447046299738444">लगता है कि आपके Chromebook में, आपका ब्लूटूथ या वाई-फ़ाई कनेक्शन बंद है. Phone Hub का इस्तेमाल करने के लिए, अपने कनेक्शन की जांच करें.</translation>
 <translation id="1654477262762802994">बोलकर खोजना शुरू करें</translation>
 <translation id="1667964833127753507">न्यूट्रल कलर मोड, वॉलपेपर में काम में लिए गए रंगों का इस्तेमाल नहीं करता है. इनकी जगह न्यूट्रल टोन के हल्के या गहरे रंगों के सेट का इस्तेमाल करता है.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> बाकी</translation>
@@ -147,7 +145,6 @@
 <translation id="2341729377289034582">लंबवत पर लॉक किया गया</translation>
 <translation id="2352467521400612932">स्टाइलस की सेटिंग</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> सक्रिय हो रहा है</translation>
-<translation id="2356210126990741501">ऐसा लगता है कि आपका फ़ोन ऑनलाइन नहीं है. इसलिए, अभी हम आपको सभी गुडी नहीं दिखा सकते.</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2365393535144473978">मोबाइल डेटा चालू करने से ब्लूटूथ चालू हो जाएगा.</translation>
 <translation id="2369165858548251131">चाइनीज़ भाषा में "नमस्ते" कैसे बोलते हैं</translation>
@@ -194,7 +191,6 @@
 <translation id="2825619548187458965">अलमारी</translation>
 <translation id="2841907151129139818">टैबलेट मोड पर स्विच किया गया</translation>
 <translation id="2844169650293029770">USB-C डिवाइस (बायां सामने वाला पोर्ट)</translation>
-<translation id="2846247265041961677">ओह! फ़ोन से जुड़ी जानकरी नहीं मिली</translation>
 <translation id="2865888419503095837">नेटवर्क जानकारी</translation>
 <translation id="2872961005593481000">शट डाउन करें</translation>
 <translation id="2878884018241093801">हाल का कोई आइटम नहीं</translation>
@@ -337,7 +333,6 @@
 <translation id="4195877955194704651">अपने-आप क्लिक बटन</translation>
 <translation id="4197790712631116042">बंद है</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> उपलब्ध नहीं है.</translation>
-<translation id="4212246570487010370">लगातार ब्राउज़िंग</translation>
 <translation id="4212472694152630271">पिन पर स्विच करें</translation>
 <translation id="4215497585250573029">वीपीएन की सेटिंग</translation>
 <translation id="4217571870635786043">लिखवाना</translation>
@@ -366,7 +361,6 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> बंद है.</translation>
 <translation id="4421231901400348175">आपकी स्‍क्रीन का नियंत्रण दूरस्‍थ सहायक के द्वारा <ph name="HELPER_NAME" /> से शेयर किया जा रहा है.</translation>
 <translation id="4430019312045809116">मात्रा</translation>
-<translation id="4444978951615977024">उह ओह! अपने ब्लूटूथ कनेक्शन की जांच करें</translation>
 <translation id="4450893287417543264">फिर से न दिखाएं</translation>
 <translation id="445864333228800152">गुड ईवनिंग,</translation>
 <translation id="4458688154122353284">स्क्रीन को रिकॉर्ड करना बंद करें</translation>
@@ -409,7 +403,6 @@
 <translation id="4804818685124855865">डिसकनेक्ट करें</translation>
 <translation id="4814539958450445987">लॉगिन स्क्रीन</translation>
 <translation id="4831034276697007977">क्या आप वाकई अपने-आप क्लिक होने की सुविधा बंद करना चाहते हैं?</translation>
-<translation id="4836108105469522644">अपने Android फ़ोन पर सूचनाएं पाने की सुविधा चालू करें</translation>
 <translation id="4849058404725798627">कीबोर्ड फ़ोकस वाला ऑब्जेक्ट हाइलाइट करें</translation>
 <translation id="485592688953820832">कोई कार्रवाई नहीं (रोकें)</translation>
 <translation id="4868492592575313542">चालू किया गया</translation>
@@ -482,6 +475,7 @@
 <translation id="558849140439112033">कैप्चर की जाने वाली जगह चुनने के लिए खींचें और छोड़ें</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">बोला गया फ़ीडबैक अक्षम करने के लिए Ctrl + Alt + Z दबाएं.</translation>
+<translation id="5601503069213153581">पिन</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">माइक जैक</translation>
 <translation id="5669267381087807207">चालू हो रहा है</translation>
@@ -501,7 +495,6 @@
 <translation id="5769373120130404283">निजता स्क्रीन</translation>
 <translation id="5777841717266010279">स्‍क्रीन साझाकरण बंद करें?</translation>
 <translation id="5790085346892983794">सफलता</translation>
-<translation id="579415080077680903">आवाज़ बंद करें</translation>
 <translation id="5820394555380036790">क्रोमियम OS</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> पर <ph name="ROUTE_TITLE" /> बंद करें</translation>
 <translation id="5860033963881614850">बंद</translation>
@@ -514,7 +507,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">चालू है</translation>
 <translation id="5920710855273935292">माइक म्यूट है.</translation>
-<translation id="594179686076170922">आपके फ़ोन से कनेक्ट हो रहा है…</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> चालू है.</translation>
 <translation id="5947494881799873997">वापस लाएं</translation>
 <translation id="595202126637698455">निष्पादन ट्रेसिंग सक्षम है</translation>
@@ -542,7 +534,6 @@
 <translation id="615957422585914272">ऑन-स्क्रीन कीबोर्ड दिखाएं</translation>
 <translation id="6164005077879661055">'निगरानी में रखे गए इस उपयोगकर्ता' को हटाने के बाद, निगरानी में रखे गए उपयोगकर्ता से जुड़ीं सभी फ़ाइलें और 'स्थानीय डेटा' हमेशा के लिए मिट जाएंगे. 'निगरानी में रखे गए इस उपयोगकर्ता' की देखी गईं वेबसाइटें और सेटिंग <ph name="MANAGEMENT_URL" /> पर प्रबंधक को अब भी दिखेंगी.</translation>
 <translation id="6165508094623778733">ज़्यादा जानें</translation>
-<translation id="6192859646269780503">फ़ोन का पता लगाने की सुविधा</translation>
 <translation id="622484624075952240">नीचे</translation>
 <translation id="6236290670123303279">सेटिंग प्रबंधित करें</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -617,11 +608,11 @@
 <translation id="6910714959251846841">इस अपडेट के लिए आपके डिवाइस को पावरवॉश करना ज़रूरी है. <ph name="SYSTEM_APP_NAME" /> के नए अपडेट के बारे में ज़्यादा जानें.</translation>
 <translation id="6919251195245069855">आपका स्मार्ट कार्ड पहचाना नहीं जा सका. फिर से कोशिश करें.</translation>
 <translation id="6945221475159498467">चुनें</translation>
+<translation id="6965382102122355670">ठीक है</translation>
 <translation id="6972754398087986839">शुरू करें</translation>
 <translation id="6981982820502123353">सुलभता</translation>
 <translation id="698231206551913481">इस उपयोगकर्ता को हटाए जाने पर, इससे जुड़ीं सभी फ़ाइलों और स्थानीय डेटा को हमेशा के लिए मिटा दिया जाएगा.</translation>
 <translation id="7007983414944123363">आपके पिन या पासवर्ड की पुष्टि नहीं की जा सकी. फिर से कोशिश करें.</translation>
-<translation id="7013005189539051442">हॉटस्पॉट चालू करें</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> बजे फिर से देखें.</translation>
 <translation id="7025533177575372252">अपने <ph name="DEVICE_NAME" /> को अपने फ़ोन से कनेक्ट करें</translation>
 <translation id="7026338066939101231">कम</translation>
@@ -690,7 +681,6 @@
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7662283695561029522">कॉन्फ़िगर करने के लिए टैप करें</translation>
 <translation id="7705524343798198388">वीपीएन</translation>
-<translation id="7705822912736783206">फ़िंगरप्रिंट से पुष्टि करें</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 सूचना}one{# सूचना}other{# सूचनाएं}}</translation>
 <translation id="7724603315864178912">काटें</translation>
 <translation id="7749443890790263709">ज़्यादा से ज़्यादा इतने ही डेस्क जोड़े जा सकते हैं.</translation>

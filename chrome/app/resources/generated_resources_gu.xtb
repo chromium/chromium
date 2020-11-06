@@ -4352,7 +4352,6 @@ USB ડિવાઇસ</translation>
 <translation id="6112294629795967147">કદ બદલવા માટે સ્પર્શ કરો</translation>
 <translation id="6112727384379533756">ટિકિટ ઉમેરો</translation>
 <translation id="6112931163620622315">તમારો ફોન તપાસો</translation>
-<translation id="6112952769866305444">વ્યક્તિના <ph name="PROFILE_NAME" />, <ph name="USERNAME" />માં ફેરફાર કરો</translation>
 <translation id="6113434369102685411">Chrome બ્રાઉઝર અને <ph name="DEVICE_TYPE" /> લૉન્ચર માટે તમારું ડિફૉલ્ટ શોધ એન્જિન સેટ કરો</translation>
 <translation id="6113942107547980621">Smart Lockનો ઉપયોગ કરવા માટે, તમારા ફોન પર પ્રાથમિક વપરાશકર્તા પ્રોફાઇલ પર સ્વિચ કરો</translation>
 <translation id="6116921718742659598">ભાષા અને ઇનપુટ સેટિંગ્સ બદલો</translation>
@@ -5631,7 +5630,6 @@ USB ડિવાઇસ</translation>
 <translation id="7649070708921625228">સહાય</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />", "<ph name="EXTENSION_NAME" />"ને દૂર કરવા માગે છે.</translation>
 <translation id="7650677314924139716">ડેટા વપરાશના હાલના સેટિંગ માત્ર વાઇ-ફાઇ માટે જ સેટ છે</translation>
-<translation id="7652808307838961528">વ્યક્તિના <ph name="PROFILE_NAME" />માં ફેરફાર કરો</translation>
 <translation id="765293928828334535">આ વેબસાઇટ પરથી ઍપ, એક્સ્ટેંશન અને વપરાશકર્તા સ્ક્રિપ્ટ ઉમેરી શકાતી નથી</translation>
 <translation id="7652954539215530680">PIN બનાવો</translation>
 <translation id="7654941827281939388">આ એકાઉન્ટ પહેલાથીજ આ કમ્પ્યુટર પર ઉપયોગમાં લેવાઈ રહ્યું છે.</translation>
@@ -5871,6 +5869,7 @@ USB ડિવાઇસ</translation>
 <translation id="7898627924844766532">ટુલબારમાં રાખો</translation>
 <translation id="7898725031477653577">હંમેશાં અનુવાદ કરો</translation>
 <translation id="790040513076446191">ગોપનીયતા સંબંધિત સેટિંગ્સનો કૂશળતાપૂર્વક ઉપયોગ કરે છે.</translation>
+<translation id="7901405293566323524">ફોન હબ</translation>
 <translation id="7903345046358933331">પૃષ્ઠ પ્રતિસાદવિહીન બની ગયું છે. તમે તે પ્રતિસાદ આપવા યોગ્ય બને તેની રાહ જોઈ શકો છો અથવા તેને બંધ કરી શકો છો.</translation>
 <translation id="7903742244674067440">તમારી પાસે ફાઇલ પર પ્રમાણપત્રો છે જે આ પ્રમાણપત્ર અધિકારીઓને ઓળખે છે</translation>
 <translation id="7903859912536385558">સ્થિર (વિશ્વાસપાત્ર પરીક્ષક)</translation>

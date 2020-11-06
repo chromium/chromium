@@ -65,6 +65,7 @@
 <translation id="4297501883039923494">已停止 - 未知错误</translation>
 <translation id="4378373042927530923">未运行</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4425149324548788773">我的云端硬盘</translation>
 <translation id="4429881212383817840">Kerberos 票据即将过期</translation>
 <translation id="445059817448385655">旧密码</translation>
 <translation id="4454245904991689773">将扫描的文件保存至</translation>
@@ -98,6 +99,7 @@
 <translation id="54609108002486618">托管</translation>
 <translation id="5832805196449965646">添加用户</translation>
 <translation id="5895138241574237353">重新启动</translation>
+<translation id="6040143037577758943">关闭</translation>
 <translation id="6048107060512778456">失败 - 卡纸了</translation>
 <translation id="6058625436358447366">要完成更改，请输入您的旧密码和新密码</translation>
 <translation id="6106186594183574873">要完成更改，请输入您的旧密码</translation>
@@ -111,6 +113,7 @@
 <translation id="6517239166834772319">探索</translation>
 <translation id="6527081081771465939">未知的 Wi-Fi 安全协议</translation>
 <translation id="6564646048574748301">失败 - 无法连接到打印机</translation>
+<translation id="6618744767048954150">正在运行</translation>
 <translation id="6620487321149975369">打印任务如未被手动移除，将会显示在历史记录中，</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6704062477274546131">DNS 解析</translation>

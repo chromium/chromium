@@ -51,7 +51,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1346748346194534595">Højre</translation>
 <translation id="1351937230027495976">Skjul menu</translation>
 <translation id="1383876407941801731">Søg</translation>
-<translation id="1390105199421505038">Fjern kontodialogboks for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1391102559483454063">Til</translation>
 <translation id="1407069428457324124">Mørkt tema</translation>
 <translation id="1419738280318246476">Lås enheden op for at udføre notifikationshandlingen</translation>
@@ -76,7 +75,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1589090746204042747">Få adgang til al din aktivitet i denne session</translation>
 <translation id="1611993646327628135">Til</translation>
 <translation id="1632985212731562677">Kontaktadgang kan deaktiveres under Indstillinger &gt; Hjælpefunktioner.</translation>
-<translation id="1651447046299738444">Det ser ud til, at Bluetooth eller Wi-Fi er deaktiveret på din Chromebook. Tjek din internetforbindelse, hvis du vil bruge Phone Hub.</translation>
 <translation id="1654477262762802994">Start en stemmeforespørgsel</translation>
 <translation id="1667964833127753507">Tilstanden med neutrale farver anvender ikke farver fra baggrunden, men erstatter dem med et sæt lyse og mørke nuancer i neutrale farver.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> tilbage</translation>
@@ -147,7 +145,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2341729377289034582">Altid lodret</translation>
 <translation id="2352467521400612932">Indstillinger for styluspen</translation>
 <translation id="2354174487190027830">Aktiverer <ph name="NAME" /></translation>
-<translation id="2356210126990741501">Det ser ud til, at din telefon ikke er online, og vi kan derfor ikke hente alle goodies til dig fra telefonen lige nu.</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2365393535144473978">Bluetooth aktiveres, når du aktiverer mobildata.</translation>
 <translation id="2369165858548251131">"Hej" på kinesisk</translation>
@@ -194,7 +191,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2825619548187458965">Hylde</translation>
 <translation id="2841907151129139818">Skiftede til tablettilstand</translation>
 <translation id="2844169650293029770">USB-C-enhed (porten foran i venstre side)</translation>
-<translation id="2846247265041961677">Ups! Vi kan ikke finde telefonen</translation>
 <translation id="2865888419503095837">Netværksoplysninger</translation>
 <translation id="2872961005593481000">Sluk</translation>
 <translation id="2878884018241093801">Der er ingen nye elementer</translation>
@@ -336,7 +332,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4195877955194704651">Knap til automatisk klik</translation>
 <translation id="4197790712631116042">Fra</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> er ikke tilgængelig.</translation>
-<translation id="4212246570487010370">Fortsæt med at gennemse</translation>
 <translation id="4212472694152630271">Skift til pinkode</translation>
 <translation id="4215497585250573029">VPN-indstillinger</translation>
 <translation id="4217571870635786043">Diktering</translation>
@@ -365,7 +360,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> er deaktiveret.</translation>
 <translation id="4421231901400348175">Skærmdeling med <ph name="HELPER_NAME" /> via Fjernsupport.</translation>
 <translation id="4430019312045809116">Lydstyrke</translation>
-<translation id="4444978951615977024">Ups! Tjek din forbindelse</translation>
 <translation id="4450893287417543264">Vis ikke igen</translation>
 <translation id="445864333228800152">Godaften</translation>
 <translation id="4458688154122353284">Stop skærmoptagelse</translation>
@@ -408,7 +402,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4804818685124855865">Afbryd</translation>
 <translation id="4814539958450445987">Loginskærm</translation>
 <translation id="4831034276697007977">Er du sikker på, at du vil deaktivere automatiske klik?</translation>
-<translation id="4836108105469522644">Slå notifikationer til på din Android-telefon</translation>
 <translation id="4849058404725798627">Fremhæv element med tastaturfokus</translation>
 <translation id="485592688953820832">Ingen handling (pause)</translation>
 <translation id="4868492592575313542">aktiveret</translation>
@@ -481,6 +474,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="558849140439112033">Træk for at vælge et område, der skal tages billeder af</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" /> d. <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Tryk på Ctrl+Alt+Z for at deaktivere talefeedback.</translation>
+<translation id="5601503069213153581">Pinkode</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Stik til mikrofon</translation>
 <translation id="5669267381087807207">Aktiverer</translation>
@@ -500,7 +494,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="5769373120130404283">Privatlivsskærm</translation>
 <translation id="5777841717266010279">Vil du afslutte skærmdeling?</translation>
 <translation id="5790085346892983794">Fuldført</translation>
-<translation id="579415080077680903">Lydløs</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Fra</translation>
@@ -513,7 +506,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Til</translation>
 <translation id="5920710855273935292">Mikrofonen er slået fra.</translation>
-<translation id="594179686076170922">Opretter forbindelse til din telefon…</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> er aktiveret.</translation>
 <translation id="5947494881799873997">Fortryd</translation>
 <translation id="595202126637698455">Sporing af ydelsen er aktiveret</translation>
@@ -542,7 +534,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="6164005077879661055">Alle filer og lokale data, der er knyttet til den administrerede bruger, 
 slettes permanent, når den administrerede bruger fjernes. Besøgte websites og indstillinger for denne administrerede bruger er muligvis stadig synlige for administratoren på <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
-<translation id="6192859646269780503">Find telefon</translation>
 <translation id="622484624075952240">Ned</translation>
 <translation id="6236290670123303279">Administrer indstillinger</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -617,11 +608,11 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="6910714959251846841">Denne opdatering kræver, at der udføres en powerwash på din enhed. Få flere oplysninger om den nyeste <ph name="SYSTEM_APP_NAME" />-opdatering.</translation>
 <translation id="6919251195245069855">Dit chipkort blev ikke genkendt. Prøv igen.</translation>
 <translation id="6945221475159498467">Vælg</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Kom godt i gang</translation>
 <translation id="6981982820502123353">Hjælpefunktioner</translation>
 <translation id="698231206551913481">Alle filer og lokale data, der er knyttet til denne bruger, slettes permanent, når brugeren fjernes.</translation>
 <translation id="7007983414944123363">Din pin- eller adgangskode kunne ikke bekræftes. Prøv igen.</translation>
-<translation id="7013005189539051442">Aktivér hotspot</translation>
 <translation id="7015766095477679451">Vend tilbage kl. <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Slut <ph name="DEVICE_NAME" /> til din telefon</translation>
 <translation id="7026338066939101231">Reducer</translation>
@@ -690,7 +681,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7662283695561029522">Tryk for at konfigurere</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7705822912736783206">Godkend med fingeraftryk</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifikation}one{# notifikation}other{# notifikationer}}</translation>
 <translation id="7724603315864178912">Klip</translation>
 <translation id="7749443890790263709">Det maksimale antal skriveborde er nået.</translation>

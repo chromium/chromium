@@ -49,7 +49,6 @@
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351937230027495976">收合選單</translation>
 <translation id="1383876407941801731">搜尋</translation>
-<translation id="1390105199421505038">移除 <ph name="USER_EMAIL_ADDRESS" /> 的帳戶對話方塊</translation>
 <translation id="1391102559483454063">開啟</translation>
 <translation id="1407069428457324124">深色主題</translation>
 <translation id="1419738280318246476">解鎖裝置即可執行通知動作</translation>
@@ -74,7 +73,6 @@
 <translation id="1589090746204042747">存取你在這個工作階段內的所有活動</translation>
 <translation id="1611993646327628135">開啟</translation>
 <translation id="1632985212731562677">你可以依序點選 [設定] &gt; [無障礙設定] 來停用開關功能。</translation>
-<translation id="1651447046299738444">Chromebook 上的藍牙或 Wi-Fi 似乎已關閉。請檢查連線狀態以使用 Phone Hub。</translation>
 <translation id="1654477262762802994">啟動語音查詢</translation>
 <translation id="1667964833127753507">中間色模式不會使用從桌布擷取的色彩，而是改用一組中間色的亮色調或深色調。</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> 後用盡</translation>
@@ -143,7 +141,6 @@
 <translation id="2341729377289034582">已鎖定為垂直畫面</translation>
 <translation id="2352467521400612932">觸控筆設定</translation>
 <translation id="2354174487190027830">正在啟用 <ph name="NAME" /></translation>
-<translation id="2356210126990741501">手機似乎沒有連上網路，因此我們現在無法取得所有好康內容。</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2365393535144473978">如果啟用行動數據，藍牙功能也會一併開啟。</translation>
 <translation id="2369165858548251131">「你好」的英文</translation>
@@ -188,7 +185,6 @@
 <translation id="2825619548187458965">檔案櫃</translation>
 <translation id="2841907151129139818">已切換為平板電腦模式</translation>
 <translation id="2844169650293029770">USB-C 裝置 (左前方連接埠)</translation>
-<translation id="2846247265041961677">糟糕！找不到手機</translation>
 <translation id="2865888419503095837">網路資訊</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2878884018241093801">最近沒有任何項目</translation>
@@ -329,7 +325,6 @@
 <translation id="4195877955194704651">自動點擊按鈕</translation>
 <translation id="4197790712631116042">關閉</translation>
 <translation id="4201033867194214117">「<ph name="FEATURE_NAME" />」無法使用。</translation>
-<translation id="4212246570487010370">繼續瀏覽</translation>
 <translation id="4212472694152630271">切換為 PIN 碼</translation>
 <translation id="4215497585250573029">VPN 設定</translation>
 <translation id="4217571870635786043">語音輸入</translation>
@@ -358,7 +353,6 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />功能已關閉。</translation>
 <translation id="4421231901400348175">透過遠端協助與<ph name="HELPER_NAME" />分享螢幕控制功能。</translation>
 <translation id="4430019312045809116">音量</translation>
-<translation id="4444978951615977024">糟糕！請檢查連線狀態</translation>
 <translation id="4450893287417543264">不要再顯示</translation>
 <translation id="445864333228800152">晚安，</translation>
 <translation id="4458688154122353284">停止錄製螢幕畫面</translation>
@@ -400,7 +394,6 @@
 <translation id="4804818685124855865">中斷連線</translation>
 <translation id="4814539958450445987">登入畫面</translation>
 <translation id="4831034276697007977">確定要關閉自動點擊功能嗎？</translation>
-<translation id="4836108105469522644">在 Android 手機上開啟通知功能</translation>
 <translation id="4849058404725798627">醒目顯示鍵盤焦點所在物件</translation>
 <translation id="485592688953820832">不執行任何動作 (暫停)</translation>
 <translation id="4868492592575313542">已啟用</translation>
@@ -473,6 +466,7 @@
 <translation id="558849140439112033">拖曳選取要擷圖的區域</translation>
 <translation id="5597451508971090205"><ph name="DATE" /><ph name="SHORT_WEEKDAY" /></translation>
 <translation id="5600837773213129531">按下 Ctrl + Alt + Z 鍵即可停用互動朗讀功能。</translation>
+<translation id="5601503069213153581">PIN</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">麥克風插孔</translation>
 <translation id="5669267381087807207">啟用中</translation>
@@ -492,7 +486,6 @@
 <translation id="5769373120130404283">隱私保護畫面</translation>
 <translation id="5777841717266010279">停止共用螢幕？</translation>
 <translation id="5790085346892983794">成功</translation>
-<translation id="579415080077680903">靜音</translation>
 <translation id="5820394555380036790">Chromium 作業系統</translation>
 <translation id="5837036133683224804">停止透過<ph name="RECEIVER_NAME" />投放「<ph name="ROUTE_TITLE" />」</translation>
 <translation id="5860033963881614850">關閉</translation>
@@ -505,7 +498,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5920710855273935292">麥克風已設為靜音。</translation>
-<translation id="594179686076170922">正在連線到你的手機...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" />功能已開啟。</translation>
 <translation id="5947494881799873997">還原</translation>
 <translation id="595202126637698455">效能追蹤已啟用</translation>
@@ -532,7 +524,6 @@
 <translation id="615957422585914272">顯示螢幕小鍵盤</translation>
 <translation id="6164005077879661055">將這位受監管的使用者移除後，系統即會永久刪除所有與該使用者相關的檔案和本機資料。管理員仍可前往 <ph name="MANAGEMENT_URL" /> 查看這位受監管使用者的網頁瀏覽記錄和設定。</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
-<translation id="6192859646269780503">尋找手機</translation>
 <translation id="622484624075952240">向下鍵</translation>
 <translation id="6236290670123303279">管理設定</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -606,11 +597,11 @@
 <translation id="6910714959251846841">必須對你的裝置執行 Powerwash 才能安裝這項更新。進一步瞭解最新的 <ph name="SYSTEM_APP_NAME" />更新內容。</translation>
 <translation id="6919251195245069855">無法辨識你的智慧型卡片，請再試一次。</translation>
 <translation id="6945221475159498467">選取</translation>
+<translation id="6965382102122355670">確定</translation>
 <translation id="6972754398087986839">開始使用</translation>
 <translation id="6981982820502123353">無障礙設定</translation>
 <translation id="698231206551913481">將這位使用者移除後，與這位使用者相關聯的所有檔案和本機資料都會遭到永久刪除。</translation>
 <translation id="7007983414944123363">系統無法驗證你的 PIN 碼或密碼，請再試一次。</translation>
-<translation id="7013005189539051442">啟用無線基地台</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> 裝置就會解除鎖定。</translation>
 <translation id="7025533177575372252">將 <ph name="DEVICE_NAME" /> 連結到你的手機</translation>
 <translation id="7026338066939101231">減少</translation>
@@ -678,7 +669,6 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7662283695561029522">輕觸即可進行設定</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7705822912736783206">使用指紋驗證</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 則通知}other{# 則通知}}</translation>
 <translation id="7724603315864178912">剪下</translation>
 <translation id="7749443890790263709">桌面數量已達上限。</translation>

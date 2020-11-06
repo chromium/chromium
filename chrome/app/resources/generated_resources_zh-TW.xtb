@@ -4352,7 +4352,6 @@
 <translation id="6112294629795967147">輕觸即可調整大小</translation>
 <translation id="6112727384379533756">新增票證</translation>
 <translation id="6112931163620622315">請查看你的手機</translation>
-<translation id="6112952769866305444">編輯使用者，<ph name="PROFILE_NAME" />，<ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">設定 Chrome 瀏覽器和 <ph name="DEVICE_TYPE" /> 啟動器的預設搜尋引擎</translation>
 <translation id="6113942107547980621">如要使用 Smart Lock，請在手機上切換到主要使用者設定檔</translation>
 <translation id="6116921718742659598">變更語言和輸入設定</translation>
@@ -5631,7 +5630,6 @@
 <translation id="7649070708921625228">說明</translation>
 <translation id="7650511557061837441">「<ph name="TRIGGERING_EXTENSION_NAME" />」要求移除「<ph name="EXTENSION_NAME" />」。</translation>
 <translation id="7650677314924139716">目前的數據用量設定是僅限 Wi-Fi</translation>
-<translation id="7652808307838961528">編輯使用者，<ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">無法從這個網站新增應用程式、擴充功能和使用者指令碼</translation>
 <translation id="7652954539215530680">建立 PIN 碼</translation>
 <translation id="7654941827281939388">已有人在這台電腦上使用這個帳戶。</translation>
@@ -5872,6 +5870,7 @@
 <translation id="7898627924844766532">固定在工具列中</translation>
 <translation id="7898725031477653577">一律翻譯</translation>
 <translation id="790040513076446191">操控隱私權相關設定</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903345046358933331">網頁無回應。您可以等待網頁回應，或是直接關閉網頁。</translation>
 <translation id="7903742244674067440">您儲存了這些憑證授權單位的識別憑證</translation>
 <translation id="7903859912536385558">穩定版 (信任的測試人員)</translation>

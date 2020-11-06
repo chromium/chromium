@@ -67,6 +67,7 @@
 <translation id="4297501883039923494">Pysähtynyt – Tuntematon virhe</translation>
 <translation id="4378373042927530923">Ei suoritettu</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4425149324548788773">Oma Drive</translation>
 <translation id="4429881212383817840">Kerberos-tukipyyntö vanhenee pian</translation>
 <translation id="445059817448385655">Vanha salasana</translation>
 <translation id="4454245904991689773">Skannauskohde</translation>
@@ -102,6 +103,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="54609108002486618">Ylläpidetty</translation>
 <translation id="5832805196449965646">Lisää henkilö</translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
+<translation id="6040143037577758943">Sulje</translation>
 <translation id="6048107060512778456">Epäonnistui – Paperitukos</translation>
 <translation id="6058625436358447366">Lisää lopuksi vanha ja uusi salasana</translation>
 <translation id="6106186594183574873">Lisää lopuksi vanha salasana</translation>
@@ -115,6 +117,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Tuntematon Wi-Fi-suojausprotokolla</translation>
 <translation id="6564646048574748301">Epäonnistui – Ei yhteyttä tulostimeen</translation>
+<translation id="6618744767048954150">Käynnissä</translation>
 <translation id="6620487321149975369">Tulostustyöt näkyvät historiassa, ellei niitä poisteta manuaalisesti</translation>
 <translation id="6643016212128521049">Tyhjennä</translation>
 <translation id="6704062477274546131">DNS-ratkaisu</translation>

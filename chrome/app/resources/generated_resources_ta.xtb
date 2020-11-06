@@ -4355,7 +4355,6 @@
 <translation id="6112294629795967147">அளவை மாற்ற, தொடவும்</translation>
 <translation id="6112727384379533756">டிக்கெட்டைச் சேர்</translation>
 <translation id="6112931163620622315">மொபைலைப் பார்க்கவும்</translation>
-<translation id="6112952769866305444">பயனரைத் திருத்தவும், <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Chrome உலாவிக்கும் <ph name="DEVICE_TYPE" /> தொடக்கிக்கும் இயல்பான தேடல் இன்ஜினை அமைக்கலாம்</translation>
 <translation id="6113942107547980621">Smart Lockகைப் பயன்படுத்த உங்கள் மொபைலில் உள்ள முதன்மைப் பயனர் கணக்கிற்கு மாறவும்</translation>
 <translation id="6116921718742659598">மொழி மற்றும் உள்ளீட்டு அமைப்புகளை மாற்றவும்</translation>
@@ -5634,7 +5633,6 @@
 <translation id="7649070708921625228">உதவி</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />", "<ph name="EXTENSION_NAME" />" ஐ அகற்ற விரும்புகிறது.</translation>
 <translation id="7650677314924139716">தற்போது டேட்டா உபயோக அமைப்பு ‘வைஃபையில் மட்டும்’ என அமைக்கப்பட்டுள்ளது</translation>
-<translation id="7652808307838961528">பயனரைத் திருத்தவும், <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">ஆப்ஸ், நீட்டிப்புகள் மற்றும் பயனர் ஸ்கிரிப்ட்கள் போன்றவற்றை இந்த இணையதளத்திலிருந்து சேர்க்க முடியாது</translation>
 <translation id="7652954539215530680">பின்னை உருவாக்குக</translation>
 <translation id="7654941827281939388">இந்தக் கணக்கு ஏற்கனவே இந்தக் கம்ப்யூட்டரில் பயன்படுத்தப்படுகிறது.</translation>
@@ -5875,6 +5873,7 @@
 <translation id="7898627924844766532">கருவிப்பட்டியில் வை</translation>
 <translation id="7898725031477653577">எப்போதும் மொழிபெயர்</translation>
 <translation id="790040513076446191">தனியுரிமைத் தொடர்பான அமைப்புகளை கையாளலாம்</translation>
+<translation id="7901405293566323524">மொபைல் ஹப்</translation>
 <translation id="7903345046358933331">பக்கம் பதிலளிக்கவில்லை. பதிலளிக்கும் வரை நீங்கள் காத்திருக்கலாம் அல்லது அதை மூடி விடலாம்.</translation>
 <translation id="7903742244674067440">இந்தச் சான்றிதழ் அங்கீகரிப்பாளர்களை அடையாளங்காணும் சான்றிதழ்கள் கோப்பில் உள்ளன</translation>
 <translation id="7903859912536385558">நிலையானது (நம்பகமான சோதனையாளர்)</translation>

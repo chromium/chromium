@@ -4352,7 +4352,6 @@
 <translation id="6112294629795967147">터치하여 크기 조정</translation>
 <translation id="6112727384379533756">티켓 추가</translation>
 <translation id="6112931163620622315">휴대전화 확인</translation>
-<translation id="6112952769866305444">사용자 수정, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Chrome 브라우저 및 <ph name="DEVICE_TYPE" /> 런처에서 사용할 기본 검색엔진을 설정하세요.</translation>
 <translation id="6113942107547980621">Smart Lock을 사용하려면 휴대전화의 기본 사용자 프로필로 전환하세요.</translation>
 <translation id="6116921718742659598">언어 및 입력 설정 변경</translation>
@@ -5631,7 +5630,6 @@
 <translation id="7649070708921625228">도움말</translation>
 <translation id="7650511557061837441">'<ph name="TRIGGERING_EXTENSION_NAME" />'에서 '<ph name="EXTENSION_NAME" />'을(를) 삭제하려고 합니다.</translation>
 <translation id="7650677314924139716">현재 데이터 사용 설정은 Wi-Fi만 사용입니다</translation>
-<translation id="7652808307838961528">사용자 수정, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">이 웹사이트에서 앱, 확장 프로그램, 사용자 스크립트 등을 추가할 수 없습니다</translation>
 <translation id="7652954539215530680">PIN 만들기</translation>
 <translation id="7654941827281939388">이 계정은 이미 이 컴퓨터에서 사용되고 있습니다.</translation>
@@ -5872,6 +5870,7 @@
 <translation id="7898627924844766532">툴바에 보관</translation>
 <translation id="7898725031477653577">항상 번역</translation>
 <translation id="790040513076446191">개인정보 보호 관련 설정 조정</translation>
+<translation id="7901405293566323524">휴대전화 허브</translation>
 <translation id="7903345046358933331">페이지에서 응답이 없습니다. 페이지가 응답할 때까지 기다리거나 페이지를 닫으세요.</translation>
 <translation id="7903742244674067440">다음 인증기관을 식별하는 인증서가 등록되어 있습니다.</translation>
 <translation id="7903859912536385558">공개 버전(신뢰할 수 있는 테스터)</translation>

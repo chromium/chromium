@@ -314,6 +314,7 @@
 <translation id="3285080554353377245">Chromeను ఎలా ఉపయోగించాలనే దానికి సంబంధించిన వీడియోలు</translation>
 <translation id="3288003805934695103">పేజీని మళ్లీ లోడ్ చేయడం</translation>
 <translation id="32895400574683172">నోటిఫికేషన్‌లు అనుమతించబడతాయి</translation>
+<translation id="3290991969712132877">ఈ పేజీని త్వరగా యాక్సెస్ చేయడానికి, 'మరిన్ని ఎంపికలు' బటన్ నుండి మీ మొదటి స్క్రీన్‌కు దీనిని జోడించండి</translation>
 <translation id="3295530008794733555">మరింత వేగంగా బ్రౌజ్ చేయండి. తక్కువ డేటాని ఉపయోగించండి.</translation>
 <translation id="3298243779924642547">లైట్</translation>
 <translation id="3303414029551471755">కంటెంట్‌ను డౌన్‌లోడ్ చేయడం కొనసాగించాలా?</translation>
@@ -470,6 +471,7 @@
 <translation id="4532845899244822526">ఫోల్డర్‌ను ఎంచుకోండి</translation>
 <translation id="4538018662093857852">లైట్ మోడ్‌ని ఆన్ చేయండి</translation>
 <translation id="4550003330909367850">ఇక్కడ మీ పాస్‌వర్డ్‌ను వీక్షించడానికి లేదా కాపీ చేయడానికి, ఈ డివైజ్‌లో స్క్రీన్ లాక్‌ను సెట్ చేయండి.</translation>
+<translation id="4557685098773234337">ఇక్కడికి త్వరగా చేరుకోవడనికి, ఈ పేజీని మీ మొదటి స్క్రీన్‌కు జోడించండి</translation>
 <translation id="4558311620361989323">వెబ్‌పేజీ షార్ట్‌క‌ట్‌లు</translation>
 <translation id="4561979708150884304">కనెక్షన్ లేదు</translation>
 <translation id="4565377596337484307">పాస్‌వర్డ్‌ను దాచిపెట్టు</translation>
@@ -499,6 +501,7 @@
 <translation id="4720982865791209136">Chromeను మెరుగుపరచడంలో సహాయపడండి. <ph name="BEGIN_LINK" />సర్వేలో పాల్గొనండి<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">మీ టాప్ సైట్‍లను చూడండి</translation>
 <translation id="4732120983431207637">స్టాక్ అన్‌వైండర్</translation>
+<translation id="4732693703583195378">మీరు మరింత సులభంగా ఈ సైట్‌ను యాక్సెస్ చేయడానికి, దీనిని మీ టాబ్లెట్ మొదటి స్క్రీన్‌కు జోడించండి</translation>
 <translation id="4738836084190194332">చివరిగా సమకాలీకరించినది: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">కొత్త ట్యాబ్‌ను తెరవండి</translation>
 <translation id="4759238208242260848">డౌన్‌లోడ్‌లు</translation>
@@ -536,6 +539,7 @@
 <translation id="4925120120285606924">స్క్రీన్‌షాట్ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">మీ పాస్‌వర్డ్‌లు ఎగుమతి చేయబడతాయి, టెక్స్ట్ ఫైల్ లాగా డౌన్‌లోడ్ చేయబడతాయి. గమ్యస్థానం ఫోల్డర్‌కు యాక్సెస్ ఉన్న ఎవరికైనా, ఏ యాప్‌కైనా అవి కనిపిస్తాయి.</translation>
 <translation id="4932247056774066048">మీరు <ph name="DOMAIN_NAME" /> నిర్వహణలోని ఖాతా నుండి సైన్ అవుట్ చేస్తున్నందున, ఈ పరికరం నుండి మీ Chrome డేటా తొలగించబడుతుంది. అది మీ Google ఖాతాలో అలాగే భద్రపరచబడుతుంది.</translation>
+<translation id="4936039914467572121">ఈ సైట్‌ను త్వరగా చేరుకోండి</translation>
 <translation id="4943703118917034429">వర్చువల్ రియాలిటీ</translation>
 <translation id="4943872375798546930">ఫలితాలు ఏవీ లేవు</translation>
 <translation id="4961107849584082341">ఈ పేజీని ఏ భాషలోకైనా అనువదించుకోవచ్చు</translation>
@@ -647,6 +651,7 @@
 <translation id="5763382633136178763">అజ్ఞాత ట్యాబ్‌లు</translation>
 <translation id="5763514718066511291">ఈ యాప్ URLను కాపీ చేయడానికి నొక్కండి</translation>
 <translation id="5765780083710877561">వివరణ:</translation>
+<translation id="5767013862801005129"><ph name="TAB_TITLE" /> రీస్టోర్ చేయబడింది, ట్యాబ్</translation>
 <translation id="5776970333778123608">ముఖ్యంగా పరిగణించని డేటా</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" />లో <ph name="SPACE_USED" /> ఉపయోగించబడింది</translation>
 <translation id="5795872532621730126">శోధన, బ్రౌజ్</translation>
@@ -952,6 +957,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">కొత్త కథనాల కోసం తర్వాత మళ్లీ చెక్ చేయండి</translation>
 <translation id="7791543448312431591">జోడించు</translation>
+<translation id="7798392620021911922"><ph name="TAB_COUNT" /> ట్యాబ్‌లు రీస్టోర్ చేయబడ్డాయి</translation>
 <translation id="780301667611848630">వద్దు , ధన్యవాదాలు</translation>
 <translation id="7810647596859435254">దీనితో తెరువు…</translation>
 <translation id="7821588508402923572">మీ డేటా పొదుపులు ఇక్కడ కనిపిస్తాయి</translation>
@@ -1137,6 +1143,7 @@
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">అసలును చూపించు</translation>
 <translation id="9148126808321036104">మళ్ళీ సైన్ ఇన్ చేయండి</translation>
+<translation id="9149286894143103695">ఈ సైట్‌ను ఈ ఫోన్ మొదటి స్క్రీన్‌కు జోడించండి, తద్వారా మీరు దానిని త్వరగా యాక్సెస్ చేయవచ్చు</translation>
 <translation id="9155898266292537608">ఒక పదంపై నొక్కడం ద్వారా కూడా మీరు త్వరగా వెతకవచ్చు</translation>
 <translation id="9169507124922466868">నావిగేషన్ చరిత్ర సగం తెరిచి ఉంది</translation>
 <translation id="9191031968346938109">దీనికి జోడించు…</translation>

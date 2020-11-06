@@ -4360,7 +4360,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="6112294629795967147">Dodirnite da promijenite veličinu</translation>
 <translation id="6112727384379533756">Dodaj tiket</translation>
 <translation id="6112931163620622315">Provjerite telefon</translation>
-<translation id="6112952769866305444">Uređivanje osobe, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Postavite zadani pretraživač za preglednik Chrome i pokretač uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Za korištenje Pametnog zaključavanja, na telefonu prebacite na profil primarnog korisnika</translation>
 <translation id="6116921718742659598">Promijenite postavke jezika i unosa</translation>
@@ -5643,7 +5642,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" želi ukloniti ekstenziju "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650677314924139716">Trenutna postavka prijenosa podataka je Samo WiFi</translation>
-<translation id="7652808307838961528">Uređivanje osobe, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Aplikacije, ekstenzije i korisničke skripte se ne mogu dodati s ove web lokacije.</translation>
 <translation id="7652954539215530680">Kreirajte PIN</translation>
 <translation id="7654941827281939388">Ovaj račun se već koristi na ovom računaru.</translation>
@@ -5885,6 +5883,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="7898627924844766532">Zadrži na alatnoj traci</translation>
 <translation id="7898725031477653577">Uvijek prevodi</translation>
 <translation id="790040513076446191">Manipuliranje postavkama koje su povezane s privatnošću</translation>
+<translation id="7901405293566323524">Hub telefona</translation>
 <translation id="7903345046358933331">Stranica ne reagira. Možete sačekati da počne reagirati ili je zatvoriti.</translation>
 <translation id="7903742244674067440">Imate potvrde o fajlu kojim se utvrđuje identitet ovih tijela za izdavanje potvrda</translation>
 <translation id="7903859912536385558">stabilno (pouzdani tester)</translation>

@@ -5,7 +5,6 @@
 <translation id="1023220960495960452">Транслитерация (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">Просмотр в виде слайдов</translation>
 <translation id="1045157690796831147">Транслитерация (namaskar → നമസ്കാരം)</translation>
-<translation id="1046068652463704410">Ввод на японском языке (для американской раскладки)</translation>
 <translation id="1047956942837015229">Удаление элементов (<ph name="COUNT" />)…</translation>
 <translation id="1049926623896334335">Документ Word</translation>
 <translation id="1060368002126861100">Чтобы открыть файлы с помощью приложения "<ph name="APP_NAME" />", переместите их в папку "Файлы Windows".</translation>
@@ -26,11 +25,9 @@
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1190144681599273207">При загрузке этого файла по мобильному каналу передачи данных будет использовано около <ph name="FILE_SIZE" /> трафика.</translation>
 <translation id="1201402288615127009">Далее</translation>
-<translation id="1208421848177517699">Транслитерация (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">Загрузить</translation>
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1276362640455948667">Португальский в американской международной раскладке</translation>
-<translation id="1278813325885878377">Венгерская QWERTY-клавиатура</translation>
 <translation id="1293556467332435079">Файлы</translation>
 <translation id="1297922636971898492">Google Диск временно недоступен. Когда доступ будет восстановлен, загрузка автоматически возобновится.</translation>
 <translation id="1307931752636661898">Нет доступа к файлам Linux</translation>
@@ -63,7 +60,6 @@
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1646019627374511909">Скачивание файлов (<ph name="NUMBER_OF_ITEMS" />) для офлайн-доступа…</translation>
-<translation id="1646136617204068573">Венгерская раскладка</translation>
 <translation id="164729547906544836">Тамильская раскладка (itrans)</translation>
 <translation id="164969095109328410">Устройство Chrome</translation>
 <translation id="1665611772925418501">Не удалось изменить файл.</translation>
@@ -93,7 +89,6 @@
 <translation id="1936717151811561466">Финский</translation>
 <translation id="1942765061641586207">Разрешение изображения</translation>
 <translation id="1943097386230153518">Установить новый сервис</translation>
-<translation id="1947424002851288782">Немецкая раскладка</translation>
 <translation id="1972984168337863910">Развернуть панель с информацией о файлах</translation>
 <translation id="1984603991036629094">Армянская фонетическая раскладка клавиатуры</translation>
 <translation id="1995337122023280937">Перейти к местоположению файла</translation>
@@ -116,14 +111,12 @@
 <translation id="2225536596944493418">Вы действительно хотите удалить объекты (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Не удалось создать папку "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">Перемещено.</translation>
-<translation id="2278988676849463018">Раскладка каннада (фонетическая)</translation>
 <translation id="2287742181953707290">Португальский в американской международной раскладке (ПК)</translation>
 <translation id="2288278176040912387">Патефон</translation>
 <translation id="2291538123825441971">Открываются файлы (<ph name="NUMBER_OF_FILES" />).</translation>
 <translation id="2303301624314357662">Открывается файл <ph name="FILE_NAME" />.</translation>
 <translation id="2305020378527873881">Том <ph name="VOLUME_NAME" /> извлечен.</translation>
 <translation id="2325650632570794183">Этот тип файла не поддерживается. Зайдите в Интернет-магазин Chrome, чтобы найти приложение, с помощью которого его можно открыть.</translation>
-<translation id="23434688402327542">Казахская раскладка</translation>
 <translation id="2352947182261340447">Недостаточно места на устройстве</translation>
 <translation id="2377319039870049694">Показать в виде списка</translation>
 <translation id="2377590462528165447">Linux предоставлен доступ к нескольким папкам (<ph name="NUMBER_OF_ITEMS" />)</translation>
@@ -136,7 +129,6 @@
 <translation id="2453576648990281505">Файл уже существует</translation>
 <translation id="2464079411014186876">Мороженое</translation>
 <translation id="2468402215065996499">Тамагочи</translation>
-<translation id="2494837236724268445">Раскладка гуджарати (фонетическая)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Американская раскладка</translation>
 <translation id="2534155362429831547">Удалено записей: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -172,10 +164,8 @@
 <translation id="2902312830803030883">Другие действия</translation>
 <translation id="2902734494705624966">США (расширенная)</translation>
 <translation id="2923240520113693977">Эстонский</translation>
-<translation id="2924296707677495905">Транслитерация (namaskaram → ನಮಸ್ಕಾರ)</translation>
 <translation id="2925966894897775835">Таблицы</translation>
 <translation id="2938685643439809023">Монгольский</translation>
-<translation id="2942290791863759244">Немецкая раскладка (NEO 2)</translation>
 <translation id="2943400156390503548">Слайды</translation>
 <translation id="2943503720238418293">Слишком длинное название.</translation>
 <translation id="2949781154072577687">Форматирование внешнего хранилища "<ph name="DRIVE_NAME" />"…</translation>
@@ -196,7 +186,6 @@
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ГОТОВО</translation>
 <translation id="3157729859914172001">Американская международная раскладка (ПК)</translation>
-<translation id="3187212781151025377">Раскладка для иврита</translation>
 <translation id="3188257591659621405">Мои файлы</translation>
 <translation id="3197563288998582412">Британская (раскладка Дворака)</translation>
 <translation id="3202131003361292969">Путь</translation>
@@ -227,14 +216,12 @@
 <translation id="3475447146579922140">Электронная таблица Google</translation>
 <translation id="3495304270784461826">Ошибок: <ph name="COUNT" />.</translation>
 <translation id="349603508045926994">Персидский (транслитерация)</translation>
-<translation id="3519867315646775981">Транслитерация (shalom ← שלום)</translation>
 <translation id="3522708245912499433">Португальский</translation>
 <translation id="3524311639100184459">Внимание! Эти файлы – временные. Они могут быть автоматически удалены, чтобы освободить место на диске.  <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
 <translation id="3549797760399244642">Перейти на drive.google.com…</translation>
 <translation id="3553048479571901246">Чтобы открыть файлы с помощью приложения "<ph name="APP_NAME" />", скопируйте их в папку "Файлы Windows".</translation>
 <translation id="357479282490346887">Литовский</translation>
-<translation id="3583509704582854624">Ввод букв и цифр (для японской раскладки)</translation>
 <translation id="3603385196401704894">Канадская (французская)</translation>
 <translation id="3606220979431771195">Турецкая раскладка</translation>
 <translation id="3609785682760573515">Cинхронизация…</translation>
@@ -268,10 +255,8 @@
 <translation id="383652340667548381">Сербский</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3855472144336161447">Немецкая (Neo 2)</translation>
-<translation id="3858678421048828670">Итальянская раскладка</translation>
 <translation id="386548886866354912">Создать архив <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Описание</translation>
-<translation id="3910699493603749297">Кхмерская раскладка</translation>
 <translation id="391445228316373457">Непальская раскладка (фонетическая)</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">Воспроизвести</translation>
@@ -335,7 +320,6 @@
 <translation id="4734518477988699048">Введено недопустимое значение.</translation>
 <translation id="4737050008115666127">Взлет</translation>
 <translation id="4747271164117300400">Македонская</translation>
-<translation id="4749157430980974800">Грузинская раскладка клавиатуры</translation>
 <translation id="4759238208242260848">Скачанные файлы</translation>
 <translation id="4779136857077979611">Онигири</translation>
 <translation id="4784330909746505604">Презентация PowerPoint</translation>
@@ -413,7 +397,6 @@
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5318819489018851358">Предоставить доступ Linux</translation>
-<translation id="5319782540886810524">Латышская раскладка</translation>
 <translation id="5323213332664049067">Латинская Америка</translation>
 <translation id="5327248766486351172">Имя</translation>
 <translation id="5330145655348521461">Эти файлы открыты на другом рабочем столе. Чтобы увидеть их, переключитесь на профиль пользователя <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
@@ -440,7 +423,6 @@
 <translation id="5534520101572674276">Подсчет размера…</translation>
 <translation id="5583640892426849032">Клавиша возврата (Backspace)</translation>
 <translation id="5605830556594064952">США (раскладка Дворака)</translation>
-<translation id="5640179856859982418">Швейцарская раскладка</translation>
 <translation id="5649768706273821470">Прослушать</translation>
 <translation id="5678784840044122290">Приложение Linux будет доступно в терминале. Кроме того, на панель запуска мог быть добавлен значок.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Не удалось отключиться от архива или электронного диска<ph name="END_BOLD" />
@@ -451,7 +433,6 @@
 <translation id="5731409020711461763">новых фото: 1</translation>
 <translation id="5752453871435543420">Резервное копирование в облаке Chrome</translation>
 <translation id="5756666464756035725">Венгерская QWERTY-клавиатура</translation>
-<translation id="5771585441665576801">Транслитерация (geia → γεια)</translation>
 <translation id="5776325638577448643">Очистить и отформатировать</translation>
 <translation id="57838592816432529">Отключить звук</translation>
 <translation id="5788127256798019331">Файлы Google Play</translation>
@@ -468,7 +449,6 @@
 <translation id="5911887972742538906">При установке приложения для Linux произошла ошибка.</translation>
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5913638992615760742">Произошла непредвиденная ошибка. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="5923484009666796948">Ввод на японском языке (для японской раскладки)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5955954492236143329">Объектов: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Устройства Chromebox</translation>
@@ -498,7 +478,6 @@
 <translation id="6248400709929739064">Включить субтитры</translation>
 <translation id="6264347891387618177">Транслитерация (selam → ሰላም)</translation>
 <translation id="6287852322318138013">Выберите программу, в которой необходимо открыть этот файл</translation>
-<translation id="6305012486838822927">Лаосская раскладка</translation>
 <translation id="6339034549827494595">Русская раскладка (фонетическая – AATSEEL)</translation>
 <translation id="6339145975392024142">Американская международная (ПК)</translation>
 <translation id="6346310558342052870">Доступ ограничен</translation>
@@ -509,8 +488,6 @@
 <translation id="6395575651121294044">Объектов: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6398765197997659313">Обычный режим</translation>
 <translation id="642282551015776456">Недопустимое название для файла или папки</translation>
-<translation id="6462109140674788769">Греческая раскладка</translation>
-<translation id="6466492211071551451">Ирландская раскладка</translation>
 <translation id="6485131920355264772">Не удалось получить информацию о свободном месте.</translation>
 <translation id="6505918941256367791">Тамильская раскладка (InScript)</translation>
 <translation id="6509122719576673235">Норвежский</translation>
@@ -650,7 +627,6 @@
 <translation id="7896906914454843592">Раскладка США (расширенная)</translation>
 <translation id="7898607018410277265">Клавиатура гуджарати (фонетическая, новая версия)</translation>
 <translation id="7908793776359722643">При форматировании раздела все хранящиеся в нем данные будут удалены. Это действие нельзя отменить.</translation>
-<translation id="7917972308273378936">Литовская раскладка</translation>
 <translation id="7925686952655276919">Не используйте синхронизацию данных с мобильных устройств</translation>
 <translation id="7928710562641958568">Извлечь устройство</translation>
 <translation id="7943385054491506837">США (Colemak)</translation>
@@ -697,7 +673,6 @@
 <translation id="8335587457941836791">Открепить от панели запуска</translation>
 <translation id="8336153091935557858">Вчера, <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336524887811696057">Непальский (транслитерация)</translation>
-<translation id="8336579025507394412">Исландская раскладка клавиатуры</translation>
 <translation id="8342318071240498787">Такой файл или каталог уже существуют.</translation>
 <translation id="8382450452152102026">В папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="8391950649760071442">Транслитерация (emandi → ఏమండీ)</translation>
@@ -708,7 +683,6 @@
 <translation id="8437209419043462667">США</translation>
 <translation id="8456681095658380701">Недопустимое название</translation>
 <translation id="8466234950814670489">Архив TAR</translation>
-<translation id="8467473010914675605">корейская раскладка</translation>
 <translation id="8475647382427415476">Не удалось синхронизировать <ph name="FILENAME" /> с Google Диском. Система повторит попытку позже.</translation>
 <translation id="8477649328507734757">Вращение</translation>
 <translation id="8487700953926739672">Доступно в автономном режиме</translation>

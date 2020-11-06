@@ -4362,7 +4362,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6112294629795967147">Dotaknite se za spreminjanje velikosti</translation>
 <translation id="6112727384379533756">Dodaj kartonček</translation>
 <translation id="6112931163620622315">Preverite telefon</translation>
-<translation id="6112952769866305444">Urejanje osebe, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Nastavite privzeti iskalnik za brskalnik Chrome in zaganjalnik naprave <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Če želite uporabljati Smart Lock, v telefonu preklopite na primarni uporabniški profil</translation>
 <translation id="6116921718742659598">Spreminjanje nastavitev jezika in vnosa</translation>
@@ -5645,7 +5644,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="7649070708921625228">Pomoč</translation>
 <translation id="7650511557061837441">»<ph name="TRIGGERING_EXTENSION_NAME" />« želi odstraniti »<ph name="EXTENSION_NAME" />«.</translation>
 <translation id="7650677314924139716">Trenutna nastavitev za preneseno količino podatkov je »Samo Wi-Fi«</translation>
-<translation id="7652808307838961528">Urejanje osebe, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Aplikacij, razširitev in uporabniških skriptov ni mogoče dodati s tega spletnega mesta</translation>
 <translation id="7652954539215530680">Ustvarjanje kode PIN</translation>
 <translation id="7654941827281939388">Ta račun se že uporablja v tem računalniku.</translation>
@@ -5887,6 +5885,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="7898627924844766532">Ohrani v orodni vrstici</translation>
 <translation id="7898725031477653577">Vedno prevedi</translation>
 <translation id="790040513076446191">Upravljajte nastavitve zasebnosti</translation>
+<translation id="7901405293566323524">Središče za telefone</translation>
 <translation id="7903345046358933331">Stran se je nehala odzivati. Lahko počakate, da se začne odzivati, ali pa jo zaprete.</translation>
 <translation id="7903742244674067440">V datoteki so potrdila, ki identificirajo te overitelje potrdil</translation>
 <translation id="7903859912536385558">stabilno (zaupanja vreden preizkuševalec)</translation>

@@ -4357,7 +4357,6 @@
 <translation id="6112294629795967147">Өлшемін өзгерту үшін түртіңіз</translation>
 <translation id="6112727384379533756">Билет қосу</translation>
 <translation id="6112931163620622315">Телефонды тексеріңіз</translation>
-<translation id="6112952769866305444">Адамды, <ph name="PROFILE_NAME" /> және <ph name="USERNAME" /> атын өзгерту</translation>
 <translation id="6113434369102685411">Chrome браузеріне және <ph name="DEVICE_TYPE" /> Launcher-ге әдепкі іздеу жүйесін орнатыңыз.</translation>
 <translation id="6113942107547980621">Smart Lock функциясын пайдалану үшін телефоныңыздағы негізгі пайдаланушы профиліне ауысыңыз.</translation>
 <translation id="6116921718742659598">Тіл және енгізу параметрлерін өзгерту</translation>
@@ -5640,7 +5639,6 @@
 <translation id="7649070708921625228">Анықтама</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" "<ph name="EXTENSION_NAME" />" жойғысы келеді.</translation>
 <translation id="7650677314924139716">Қазіргі дерек трафигінің параметрі: "Тек Wi-Fi"</translation>
-<translation id="7652808307838961528">Адамды, <ph name="PROFILE_NAME" /> атын өңдеу</translation>
 <translation id="765293928828334535">Қолданбаларды, кеңейтімдерді және пайдаланушы сценарийлерін бұл вебсайттан енгізу мүмкін емес</translation>
 <translation id="7652954539215530680">PIN кодын жасау</translation>
 <translation id="7654941827281939388">Бұл есептік жазба әлдеқашан осы компьютерде пайдаланылып жатыр.</translation>
@@ -5882,6 +5880,7 @@
 <translation id="7898627924844766532">Құралдар тақтасында сақтау</translation>
 <translation id="7898725031477653577">Әрқашан аудару</translation>
 <translation id="790040513076446191">Құпиялылыққа қатысты параметрлерді басқару</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903345046358933331">Бет жауап бермеді. Оның жауап беруін күтуіңізге немесе жабуыңызға болады.</translation>
 <translation id="7903742244674067440">Файлда осы сертификат беруші орталықтарды анықтайтын сертификаттарыңыз бар</translation>
 <translation id="7903859912536385558">тұрақты (сенімді сынақшы)</translation>

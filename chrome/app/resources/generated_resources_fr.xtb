@@ -4355,7 +4355,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6112294629795967147">Appuyer pour redimensionner</translation>
 <translation id="6112727384379533756">Ajouter un ticket</translation>
 <translation id="6112931163620622315">Vérifier le téléphone</translation>
-<translation id="6112952769866305444">Modifier la personne, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Définissez un moteur de recherche par défaut pour le navigateur Chrome et le Lanceur d'applications <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Pour utiliser Smart Lock, passez au profil de l'utilisateur principal sur votre téléphone</translation>
 <translation id="6116921718742659598">Modifier les paramètres de langue et de saisie</translation>
@@ -5634,7 +5633,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" souhaite supprimer "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650677314924139716">Le paramètre de consommation des données est actuellement défini sur "Wi-Fi uniquement"</translation>
-<translation id="7652808307838961528">Modifier la personne, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Les applications, les extensions et les scripts d'utilisateur ne peuvent pas être ajoutés à partir de ce site Web</translation>
 <translation id="7652954539215530680">Créer un code</translation>
 <translation id="7654941827281939388">Ce compte est déjà utilisé sur cet ordinateur.</translation>
@@ -5875,6 +5873,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7898627924844766532">Garder dans la barre d'outils</translation>
 <translation id="7898725031477653577">Toujours traduire</translation>
 <translation id="790040513076446191">Modifier les paramètres de confidentialité</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903345046358933331">La page ne répond plus. Vous pouvez attendre qu'elle soit de nouveau accessible ou la fermer.</translation>
 <translation id="7903742244674067440">Certains de vos certificats enregistrés identifient ces autorités de certification.</translation>
 <translation id="7903859912536385558">stable (testeur de confiance)</translation>

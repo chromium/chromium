@@ -4360,7 +4360,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="6112294629795967147">Dodirnite za promjenu veličine</translation>
 <translation id="6112727384379533756">Dodajte tiket</translation>
 <translation id="6112931163620622315">Provjerite telefon</translation>
-<translation id="6112952769866305444">Uređivanje osobe, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Postavite zadanu tražilicu za preglednik Chrome i pokretač za <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Da biste upotrebljavali Smart Lock, prebacite se na primarni korisnički profil na telefonu.</translation>
 <translation id="6116921718742659598">Promijenite postavke jezika i unosa</translation>
@@ -5643,7 +5642,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" želi ukloniti proširenje "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650677314924139716">Za potrošnju podatkovnog prometa trenutačno je odabrana postavka Samo Wi-Fi</translation>
-<translation id="7652808307838961528">Uređivanje osobe, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Aplikacije, proširenja i korisničke skripte ne mogu se dodavati s ove web-lokacije</translation>
 <translation id="7652954539215530680">Izrada PIN-a</translation>
 <translation id="7654941827281939388">Ovaj se račun već upotrebljava na ovom računalu.</translation>
@@ -5885,6 +5883,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7898627924844766532">Zadrži na alatnoj traci</translation>
 <translation id="7898725031477653577">Uvijek prevedi</translation>
 <translation id="790040513076446191">rukovati postavkama koje se odnose na privatnost</translation>
+<translation id="7901405293566323524">Telefonsko središte</translation>
 <translation id="7903345046358933331">Stranica je prestala reagirati. Možete pričekati da počne reagirati ili je zatvoriti.</translation>
 <translation id="7903742244674067440">U arhivi imate certifikate koji identificiraju ova tijela za izdavanje certifikata</translation>
 <translation id="7903859912536385558">stabilno (pouzdani tester)</translation>

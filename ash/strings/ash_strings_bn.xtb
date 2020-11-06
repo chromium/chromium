@@ -49,7 +49,6 @@
 <translation id="1346748346194534595">ডানে</translation>
 <translation id="1351937230027495976">মেনুটি আড়াল করুন</translation>
 <translation id="1383876407941801731">Search</translation>
-<translation id="1390105199421505038"><ph name="USER_EMAIL_ADDRESS" />-এর অ্যাকাউন্ট ডায়ালগ সরিয়ে দিন</translation>
 <translation id="1391102559483454063">চালু করা আছে</translation>
 <translation id="1407069428457324124">ডার্ক থিম</translation>
 <translation id="1419738280318246476">বিজ্ঞপ্তি সম্পর্কিত অ্যাকশনের জন্য ডিভাইস আনলক করুন</translation>
@@ -74,7 +73,6 @@
 <translation id="1589090746204042747">এই সেশনে আপনার সব অ্যাক্টিভিটি অ্যাক্সেস করুন</translation>
 <translation id="1611993646327628135">চালু আছে</translation>
 <translation id="1632985212731562677">সেটিংস &gt; অ্যাক্সেসিবিলিটি বিকল্পে গিয়ে 'অ্যাক্সেস পাল্টান' ফিচারটি বন্ধ করা করতে পারেন।</translation>
-<translation id="1651447046299738444">মনে হচ্ছে, আপনার Chromebook-এ ব্লুটুথ বা ওয়াই-ফাই বন্ধ করা আছে। Phone Hub ব্যবহার করতে আপনার ইন্টারনেট কানেকশন চেক করুন।</translation>
 <translation id="1654477262762802994">ভয়েস কোয়েরি শুরু করুন</translation>
 <translation id="1667964833127753507">'নিউট্রাল কালার' মোড ওয়ালপেপার থেকে রং নিয়ে ব্যবহার করে না। এর পরিবর্তে নিউট্রাল টোনযুক্ত কিছু হালকা অথবা গাঢ় হিউ ব্যবহার করা হয়।</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> বাকি আছে</translation>
@@ -143,7 +141,6 @@
 <translation id="2341729377289034582">স্ক্রিনটি পোর্ট্রেট মোডে লক করা আছে</translation>
 <translation id="2352467521400612932">স্টাইলাস সেটিংস</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> সক্রিয় করা হচ্ছে</translation>
-<translation id="2356210126990741501">মনে হচ্ছে আপনার ফোন অনলাইন নেই, তাই আপনার জন্য এখন সবকটি গুডিস পাওয়া যায়নি।</translation>
 <translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2365393535144473978">মোবাইল ডেটা সক্ষম করলে ব্লুটুথও সক্ষম হয়ে যাবে।</translation>
 <translation id="2369165858548251131">চীনা ভাষায় "হ্যালো"</translation>
@@ -188,7 +185,6 @@
 <translation id="2825619548187458965">তাক</translation>
 <translation id="2841907151129139818">'ট্যাবলেট' মোডে পাল্টানো হয়েছে</translation>
 <translation id="2844169650293029770">USB-C ডিভাইস (বাঁ দিকের সামনের পোর্ট)</translation>
-<translation id="2846247265041961677">ওহো! ফোন খুঁজে পাওয়া যাচ্ছে না</translation>
 <translation id="2865888419503095837">নেটওয়ার্ক তথ্য</translation>
 <translation id="2872961005593481000">বন্ধ করুন</translation>
 <translation id="2878884018241093801">কোনও সাম্প্রতিক আইটেম নেই</translation>
@@ -329,7 +325,6 @@
 <translation id="4195877955194704651">অটোমেটিক ক্লিক বোতাম</translation>
 <translation id="4197790712631116042">বন্ধ করা আছে</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> উপলভ্য নেই।</translation>
-<translation id="4212246570487010370">ব্রাউজ করা চালিয়ে যান</translation>
 <translation id="4212472694152630271">যাচাইকরণের জন্য পিন ব্যবহার করুন</translation>
 <translation id="4215497585250573029">ভিপিএন সেটিংস</translation>
 <translation id="4217571870635786043">ডিক্টেশন</translation>
@@ -358,7 +353,6 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> বন্ধ আছে।</translation>
 <translation id="4421231901400348175">রিমোট সহায়কের মাধ্যমে <ph name="HELPER_NAME" />-এর সাথে আপনার স্ক্রিন নিয়ন্ত্রন ভাগ করুন৷</translation>
 <translation id="4430019312045809116">ভলিউম</translation>
-<translation id="4444978951615977024">ওহো! আপনার ইন্টারনেট কানেকশন চেক করুন</translation>
 <translation id="4450893287417543264">আর দেখতে চাই না</translation>
 <translation id="445864333228800152">শুভ সন্ধ্যা,</translation>
 <translation id="4458688154122353284">স্ক্রিন রেকর্ডিং বন্ধ করুন</translation>
@@ -400,7 +394,6 @@
 <translation id="4804818685124855865">সংযোগ বিচ্ছিন্ন</translation>
 <translation id="4814539958450445987">লগ-ইন স্ক্রিন</translation>
 <translation id="4831034276697007977">অটোমেটিক ক্লিক বন্ধ করতে চান কিনা সেই বিষয়টি ভাল করে দেখে নিন?</translation>
-<translation id="4836108105469522644">আপনার Android ফোনে বিজ্ঞপ্তি চালু করুন</translation>
 <translation id="4849058404725798627">কিবোর্ড ফোকাসের মাধ্যমে হাইলাইট করুন</translation>
 <translation id="485592688953820832">কোনও অ্যাকশন নেবেন না (পজ)</translation>
 <translation id="4868492592575313542">চালু আছে</translation>
@@ -473,6 +466,7 @@
 <translation id="558849140439112033">যে জায়গার স্ক্রিন ক্যাপচার করতে চান সেটি ড্র্যাগ করে বেছে নিন</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">কথ্য প্রতিবার্তা বন্ধ করতে Ctrl + Alt + Z টিপুন।</translation>
+<translation id="5601503069213153581">পিন</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">মাইক জ্যাক</translation>
 <translation id="5669267381087807207">সক্রিয় করা হচ্ছে</translation>
@@ -492,7 +486,6 @@
 <translation id="5769373120130404283">গোপনীয়তা স্ক্রিন</translation>
 <translation id="5777841717266010279">স্ক্রিন শেয়ার করা থামাবেন?</translation>
 <translation id="5790085346892983794">সফল</translation>
-<translation id="579415080077680903">সাইলেন্স</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-এ <ph name="ROUTE_TITLE" /> বন্ধ করুন</translation>
 <translation id="5860033963881614850">বন্ধ করুন</translation>
@@ -505,7 +498,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">চালু</translation>
 <translation id="5920710855273935292">মাইক্রোফোন মিউট করা আছে।</translation>
-<translation id="594179686076170922">আপনার ফোনের সাথে কানেক্ট করা হচ্ছে...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> চালু আছে।</translation>
 <translation id="5947494881799873997">ফেরান</translation>
 <translation id="595202126637698455">কার্য-সম্পাদনা ট্রেস করা সক্ষম রয়েছে</translation>
@@ -533,7 +525,6 @@
 <translation id="6164005077879661055">একবার এই তত্ত্বাবধানে থাকা ব্যবহারকারী সরানো হলে এর সঙ্গে সংশ্লিষ্ট সমস্ত ফাইল এবং
 স্থানীয় ডেটা স্থায়ীভাবে মুছে ফেলা হবে৷ এই তত্ত্বাবধানে থাকা ব্যবহারকারীর জন্য পরিদর্শিত এবং সেটিংস <ph name="MANAGEMENT_URL" />-এ পরিচালকের কাছে এখনো দৃশ্যমান হতে পারে৷</translation>
 <translation id="6165508094623778733">আরও জানুন</translation>
-<translation id="6192859646269780503">ফোন খুঁজে পাওয়ার সুবিধা</translation>
 <translation id="622484624075952240">নিচের</translation>
 <translation id="6236290670123303279">সেটিংস ম্যানেজ করুন</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -607,11 +598,11 @@
 <translation id="6910714959251846841">এই আপডেটটির জন্য আপনার ডিভাইস পাওয়ারওয়াশ করা প্রয়োজন। সাম্প্রতিক <ph name="SYSTEM_APP_NAME" /> আপডেট সম্পর্কে আরও জানুন।</translation>
 <translation id="6919251195245069855">আপনার স্মার্ট কার্ড শনাক্ত করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="6945221475159498467">নির্বাচন</translation>
+<translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6972754398087986839">শুরু করুন</translation>
 <translation id="6981982820502123353">ব্যবহারযোগ্যতা</translation>
 <translation id="698231206551913481">একবার এই ব্যবহারকারীকে সরানো হলে এর সঙ্গে সংশ্লিষ্ট সমস্ত ফাইল এবং স্থানীয় ডেটা স্থায়ীভাবে মুছে ফেলা হবে।</translation>
 <translation id="7007983414944123363">আপনার পিন বা পাসওয়ার্ড যাচাই করা যায়নি। আবার চেষ্টা করুন।</translation>
-<translation id="7013005189539051442">হটস্পট চালু করুন</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" />-এ আবার ব্যবহার করতে পারবেন।</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" />-কে আপনার ফোনের সাথে কানেক্ট করুন</translation>
 <translation id="7026338066939101231">হ্রাস</translation>
@@ -679,7 +670,6 @@
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7662283695561029522">কনফিগার করতে ট্যাপ করুন</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7705822912736783206">আঙুলের ছাপের সাহায্যে যাচাই করুন</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{১টি বিজ্ঞপ্তি}one{#টি বিজ্ঞপ্তি}other{#টি বিজ্ঞপ্তি}}</translation>
 <translation id="7724603315864178912">কাটুন</translation>
 <translation id="7749443890790263709">সর্বাধিক সংখ্যক ডেস্ক যোগ করা হয়ে গেছে।</translation>

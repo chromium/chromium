@@ -4356,7 +4356,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6112294629795967147">Toque para redimensionar</translation>
 <translation id="6112727384379533756">Adicionar um tíquete</translation>
 <translation id="6112931163620622315">Verifique seu smartphone</translation>
-<translation id="6112952769866305444">Editar pessoa, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Defina seu mecanismo de pesquisa padrão para o navegador Chrome e o acesso rápido do <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Para usar o Smart Lock, acesse o perfil de usuário principal no smartphone</translation>
 <translation id="6116921718742659598">Alterar configurações de idioma e de entrada</translation>
@@ -5636,7 +5635,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" deseja remover "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650677314924139716">A configuração atual de uso de dados é "Somente Wi-Fi"</translation>
-<translation id="7652808307838961528">Editar pessoa, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Apps, extensões e scripts de usuário não podem ser adicionados a partir deste site</translation>
 <translation id="7652954539215530680">Criar um PIN</translation>
 <translation id="7654941827281939388">Esta conta já está sendo utilizada neste computador.</translation>
@@ -5877,6 +5875,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7898627924844766532">Manter na barra de ferramentas</translation>
 <translation id="7898725031477653577">Sempre traduzir do</translation>
 <translation id="790040513076446191">Manipular as configurações relacionadas à privacidade</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903345046358933331">A página deixou de responder. Espere até ela voltar a responder ou feche-a.</translation>
 <translation id="7903742244674067440">Você tem certificados no arquivo que identificam estas autoridades de certificação</translation>
 <translation id="7903859912536385558">Stable (trusted tester)</translation>

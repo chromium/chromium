@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Este mes</translation>
 <translation id="1637811476055996098">Seleccionar ficheiros</translation>
 <translation id="1650423536718072820">cita</translation>
+<translation id="1681022320378710418">hora actual</translation>
 <translation id="1727886345390570319">oculta o menú de subtítulos</translation>
 <translation id="1729654308190250600">Introduce un enderezo de correo electrónico que non estea baleiro.</translation>
 <translation id="1758486001363313524">Outras...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Introduce un URL.</translation>
 <translation id="3175736971608411871">temporizador</translation>
 <translation id="3199563858620722075">caixa de combinación</translation>
+<translation id="3220661731597678625">paso actual</translation>
 <translation id="3329013043687509092">Saturación</translation>
 <translation id="3450233048674729344">O valor debe ser inferior ou igual a <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">definición</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">vídeo</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4812940957355064477">Introduce un número.</translation>
+<translation id="4912200001568447310">elemento actual</translation>
 <translation id="4912536737030637138">entrada bibliográfica</translation>
 <translation id="4915360478455618802">Mostrar o selector da hora</translation>
 <translation id="492244087561876220">comentario</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Non se puido reproducir o contido multimedia.</translation>
 <translation id="537648784377940524">O valor da data mínima (<ph name="MIN_DATE_OR_TIME" />) debe ser anterior á máxima (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">cifra</translation>
+<translation id="5425179576310518467">data actual</translation>
 <translation id="5453733299334684579">elemento da árbore</translation>
 <translation id="5466621249238537318">Selecciona un ou máis ficheiros.</translation>
 <translation id="5468998798572797635">sae da pantalla completa</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">medidor</translation>
 <translation id="6166809985690652833">epílogo</translation>
 <translation id="6209276755895393898">Parece "<ph name="DESCRIPTION" />"</translation>
+<translation id="6212595056017402527">páxina actual</translation>
 <translation id="6213469881011901533">glosario</translation>
 <translation id="6281588256137006900">Luminosidade</translation>
 <translation id="6281763101136022427">URL</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Amplía este texto a <ph name="MIN_CHARACTERS" /> caracteres ou máis. Actualmente estás utilizando 1 carácter.</translation>
 <translation id="7034405885550056553">suxestión</translation>
 <translation id="709897737746224366">Utiliza un formato que coincida co solicitado.</translation>
+<translation id="7102274145889307184">localización actual</translation>
 <translation id="7118469954320184356">Non hai ningunha descrición dispoñible.</translation>
 <translation id="7139483182332611405">prefacio</translation>
 <translation id="7214187073215825913">información sobre o contido</translation>

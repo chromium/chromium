@@ -5,7 +5,6 @@
 <translation id="1023220960495960452">Транслитерация (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">Изглед на слайд</translation>
 <translation id="1045157690796831147">Транслитерация (namaskar → നമസ്കാരം)</translation>
-<translation id="1046068652463704410">Въвеждане на японски (за американска клавиатура)</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> елемента се изтриват...</translation>
 <translation id="1049926623896334335">Документ в Word</translation>
 <translation id="1060368002126861100">За да отваряте файлове с(ъс) <ph name="APP_NAME" />, първо ги преместете в папката с файлове на Windows.</translation>
@@ -26,11 +25,9 @@
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1190144681599273207">При извличането на този файл ще се използват приблизително <ph name="FILE_SIZE" /> мобилни данни.</translation>
 <translation id="1201402288615127009">Напред</translation>
-<translation id="1208421848177517699">Транслитерация (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">Качване</translation>
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1276362640455948667">Португалски с американската международна клавиатура</translation>
-<translation id="1278813325885878377">Унгарска (QWERTY) клавиатура</translation>
 <translation id="1293556467332435079">Файлове</translation>
 <translation id="1297922636971898492">В момента няма достъп до Google Диск. Качването ще се рестартира автоматично, щом услугата отново е налице.</translation>
 <translation id="1307931752636661898">Файловете за Linux не могат да бъдат показани</translation>
@@ -63,7 +60,6 @@
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> файла се правят налични офлайн</translation>
-<translation id="1646136617204068573">Унгарска клавиатура</translation>
 <translation id="164729547906544836">Тамилска клавиатура (itrans)</translation>
 <translation id="164969095109328410">Устройство с Chrome</translation>
 <translation id="1665611772925418501">Файлът не можа да бъде променен.</translation>
@@ -93,7 +89,6 @@
 <translation id="1936717151811561466">финландски</translation>
 <translation id="1942765061641586207">Разделителна способност на изображението</translation>
 <translation id="1943097386230153518">Инсталиране на нова услуга</translation>
-<translation id="1947424002851288782">Немска клавиатура</translation>
 <translation id="1972984168337863910">Разгъване на панелите с информация за файловете</translation>
 <translation id="1984603991036629094">Арменска фонетична клавиатура</translation>
 <translation id="1995337122023280937">Към местоположението на файла</translation>
@@ -116,14 +111,12 @@
 <translation id="2225536596944493418">Наистина ли искате да изтриете <ph name="NUMBER_OF_ITEMS" /> елемента?</translation>
 <translation id="2230062665678605299">Не можем да създадем папката „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">Преместено.</translation>
-<translation id="2278988676849463018">Каннада клавиатура (фонетична)</translation>
 <translation id="2287742181953707290">Португалски с американската международна клавиатура (PC)</translation>
 <translation id="2288278176040912387">Грамофон</translation>
 <translation id="2291538123825441971">Отварят се <ph name="NUMBER_OF_FILES" /> файла.</translation>
 <translation id="2303301624314357662">Файлът „<ph name="FILE_NAME" />“ се отваря.</translation>
 <translation id="2305020378527873881">Изваждането на „<ph name="VOLUME_NAME" />“ завърши.</translation>
 <translation id="2325650632570794183">Този файлов тип не се поддържа. Моля, посетете уеб магазина на Chrome, за да намерите приложение, което може да отвори съответния тип.</translation>
-<translation id="23434688402327542">Клавиатура за казахски</translation>
 <translation id="2352947182261340447">Мястото в локалното хранилище не е достатъчно.</translation>
 <translation id="2377319039870049694">Превключване към списъчен изглед</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> папки са споделени с Linux</translation>
@@ -136,7 +129,6 @@
 <translation id="2453576648990281505">Файлът вече съществува</translation>
 <translation id="2464079411014186876">Сладолед</translation>
 <translation id="2468402215065996499">Тамагочи</translation>
-<translation id="2494837236724268445">Гуджарати клавиатура (фонетична)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Американска клавиатура</translation>
 <translation id="2534155362429831547">Изтрихте <ph name="NUMBER_OF_ITEMS" /> елемента</translation>
@@ -172,10 +164,8 @@
 <translation id="2902312830803030883">Още действия</translation>
 <translation id="2902734494705624966">Американска разширена клавиатура</translation>
 <translation id="2923240520113693977">естонски</translation>
-<translation id="2924296707677495905">Транслитерация (namaskaram → ನಮಸ್ಕಾರ)</translation>
 <translation id="2925966894897775835">Електронни таблици</translation>
 <translation id="2938685643439809023">монголски</translation>
-<translation id="2942290791863759244">Немска клавиатура (NEO 2)</translation>
 <translation id="2943400156390503548">Презентации</translation>
 <translation id="2943503720238418293">Използвайте по-кратко име</translation>
 <translation id="2949781154072577687">Устройството „<ph name="DRIVE_NAME" />“ се форматира...</translation>
@@ -196,7 +186,6 @@
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ГОТОВО</translation>
 <translation id="3157729859914172001">Американска международна клавиатура (PC)</translation>
-<translation id="3187212781151025377">Клавиатура на иврит</translation>
 <translation id="3188257591659621405">Моите файлове</translation>
 <translation id="3197563288998582412">Британска (Дворак) клавиатура</translation>
 <translation id="3202131003361292969">Път</translation>
@@ -227,14 +216,12 @@
 <translation id="3475447146579922140">Електронна таблица в Google</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> грешки.</translation>
 <translation id="349603508045926994">Персийски (транслитерация)</translation>
-<translation id="3519867315646775981">Транслитерация (shalom ← שלום)</translation>
 <translation id="3522708245912499433">португалски</translation>
 <translation id="3524311639100184459">Внимание: Тези файлове са временни и може да бъдат изтрити автоматично, за да се освободи място на диска.  <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
 <translation id="3549797760399244642">Към drive.google.com...</translation>
 <translation id="3553048479571901246">За да отваряте файлове с(ъс) <ph name="APP_NAME" />, първо ги копирайте в папката с файлове на Windows.</translation>
 <translation id="357479282490346887">литовски</translation>
-<translation id="3583509704582854624">Въвеждане на буквено-цифрени знаци (за японска клавиатура)</translation>
 <translation id="3603385196401704894">Канадска (френски) клавиатура</translation>
 <translation id="3606220979431771195">Турски (тип „F“)</translation>
 <translation id="3609785682760573515">Синхронизира се...</translation>
@@ -268,10 +255,8 @@
 <translation id="383652340667548381">сръбски</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3855472144336161447">Немска (Neo 2) клавиатура</translation>
-<translation id="3858678421048828670">Италианска клавиатура</translation>
 <translation id="386548886866354912">Пакетиране с/ъс <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Описание</translation>
-<translation id="3910699493603749297">Кхмерска клавиатура</translation>
 <translation id="391445228316373457">Непалска клавиатура (фонетична)</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">Възпроизвеждане на</translation>
@@ -335,7 +320,6 @@
 <translation id="4734518477988699048">Въведената стойност е невалидна.</translation>
 <translation id="4737050008115666127">Приземяване</translation>
 <translation id="4747271164117300400">македонски</translation>
-<translation id="4749157430980974800">Грузинска клавиатура</translation>
 <translation id="4759238208242260848">Изтегляния</translation>
 <translation id="4779136857077979611">Онигири</translation>
 <translation id="4784330909746505604">Презентация в PowerPoint</translation>
@@ -413,7 +397,6 @@
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5318819489018851358">Споделяне с Linux</translation>
-<translation id="5319782540886810524">Латвийска клавиатура</translation>
 <translation id="5323213332664049067">латиноамерикански</translation>
 <translation id="5327248766486351172">Име</translation>
 <translation id="5330145655348521461">Тези файлове се отвориха на друг работен плот. Преминете към <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), за да ги прегледате.</translation>
@@ -440,7 +423,6 @@
 <translation id="5534520101572674276">Размерът се изчислява</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">Американска (Дворак) клавиатура</translation>
-<translation id="5640179856859982418">Швейцарска клавиатура</translation>
 <translation id="5649768706273821470">Слушане</translation>
 <translation id="5678784840044122290">Приложението за Linux ще бъде налично в терминала и може също да има икона в стартовия панел.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Не може да се прекрати връзката с архив или виртуален диск<ph name="END_BOLD" />
@@ -451,7 +433,6 @@
 <translation id="5731409020711461763">1 нова снимка</translation>
 <translation id="5752453871435543420">Резервни копия в облака на Chrome OS</translation>
 <translation id="5756666464756035725">унгарски (QWERTY)</translation>
-<translation id="5771585441665576801">Транслитерация (geia → γεια)</translation>
 <translation id="5776325638577448643">Изтриване на данните и форматиране</translation>
 <translation id="57838592816432529">Заглушаване</translation>
 <translation id="5788127256798019331">Файлове от Google Play</translation>
@@ -468,7 +449,6 @@
 <translation id="5911887972742538906">Възникна грешка при инсталирането на приложението за Linux.</translation>
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5913638992615760742">Копирането не бе успешно. Възникна неочаквана грешка: <ph name="ERROR_MESSAGE" /></translation>
-<translation id="5923484009666796948">Въвеждане на японски (за японска клавиатура)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> елемента</translation>
 <translation id="5957366693331451795">Устройствата Chromebox</translation>
@@ -498,7 +478,6 @@
 <translation id="6248400709929739064">Активиране на субтитрите</translation>
 <translation id="6264347891387618177">Транслитерация (selam → ሰላም)</translation>
 <translation id="6287852322318138013">Изберете приложение за отваряне на този файл</translation>
-<translation id="6305012486838822927">Лаоска клавиатура</translation>
 <translation id="6339034549827494595">Руска фонетична клавиатура (AATSEEL)</translation>
 <translation id="6339145975392024142">Американска международна (PC)</translation>
 <translation id="6346310558342052870">Достъпът е ограничен</translation>
@@ -509,8 +488,6 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> елемента</translation>
 <translation id="6398765197997659313">Изход от цял екран</translation>
 <translation id="642282551015776456">Това име не може да се използва като име на файл или на папка</translation>
-<translation id="6462109140674788769">Гръцка клавиатура</translation>
-<translation id="6466492211071551451">Ирландска клавиатура</translation>
 <translation id="6485131920355264772">Извличането на информацията за мястото не бе успешно</translation>
 <translation id="6505918941256367791">Тамилска клавиатура (InScript)</translation>
 <translation id="6509122719576673235">норвежки</translation>
@@ -650,7 +627,6 @@
 <translation id="7896906914454843592">Американска разширена клавиатура</translation>
 <translation id="7898607018410277265">Клавиатура на гуджарати (нова, фонетична)</translation>
 <translation id="7908793776359722643">При форматирането на даден дял ще бъдат изтрити всички съхранявани в него данни. Това действие не може да бъде отменено.</translation>
-<translation id="7917972308273378936">Литовска клавиатура</translation>
 <translation id="7925686952655276919">Без използване на мобилни данни за синхронизиране</translation>
 <translation id="7928710562641958568">Изваждане на устройството</translation>
 <translation id="7943385054491506837">Американска (Коулмак) клавиатура</translation>
@@ -697,7 +673,6 @@
 <translation id="8335587457941836791">Освобождаване от лавицата</translation>
 <translation id="8336153091935557858">Вчера, <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336524887811696057">Непалски (транслитерация)</translation>
-<translation id="8336579025507394412">Исландска клавиатура</translation>
 <translation id="8342318071240498787">Вече съществува файл или директория със същото име.</translation>
 <translation id="8382450452152102026">До <ph name="FOLDER_NAME" /></translation>
 <translation id="8391950649760071442">Транслитерация (emandi → ఏమండీ)</translation>
@@ -708,7 +683,6 @@
 <translation id="8437209419043462667">Американска клавиатура</translation>
 <translation id="8456681095658380701">Невалидно име</translation>
 <translation id="8466234950814670489">Tar архив</translation>
-<translation id="8467473010914675605">Метод за въвеждане на корейски</translation>
 <translation id="8475647382427415476">Google Диск не можа да синхронизира „<ph name="FILENAME" />“. По-късно ще се извърши повторен опит.</translation>
 <translation id="8477649328507734757">Кръгове</translation>
 <translation id="8487700953926739672">Налице офлайн</translation>

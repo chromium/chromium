@@ -4360,7 +4360,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6112294629795967147">Tryk for at vælge en anden størrelse</translation>
 <translation id="6112727384379533756">Tilføj en billet</translation>
 <translation id="6112931163620622315">Tjek din telefon</translation>
-<translation id="6112952769866305444">Rediger person, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Angiv din standardsøgemaskine for Chrome-browseren og applisten på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Skift til den primære brugerprofil på din telefon for at bruge Smart Lock</translation>
 <translation id="6116921718742659598">Rediger indstillingerne for sprog og indtastning</translation>
@@ -5644,7 +5643,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7649070708921625228">Hjælp</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" vil gerne fjerne "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650677314924139716">Den aktuelle indstilling for dataforbrug er Kun Wi-Fi</translation>
-<translation id="7652808307838961528">Rediger person, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Apps, udvidelser og brugerscripts kan ikke tilføjes fra dette website</translation>
 <translation id="7652954539215530680">Opret en pinkode</translation>
 <translation id="7654941827281939388">Denne konto er allerede i brug på denne computer.</translation>
@@ -5885,6 +5883,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7898627924844766532">Behold på værktøjslinjen</translation>
 <translation id="7898725031477653577">Oversæt altid</translation>
 <translation id="790040513076446191">Manipulere indstillinger til beskyttelse af personlige oplysninger</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903345046358933331">Siden svarer ikke. Du kan vente på, at den svarer, eller lukke den.</translation>
 <translation id="7903742244674067440">Du har lagrede certifikater, som identificerer disse certifikatautoriteter</translation>
 <translation id="7903859912536385558">stabil (betroet tester)</translation>

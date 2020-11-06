@@ -4359,7 +4359,6 @@
 <translation id="6112294629795967147">اللمس لتغيير الحجم</translation>
 <translation id="6112727384379533756">إضافة تذكرة</translation>
 <translation id="6112931163620622315">يُرجى التحقّق من هاتفك</translation>
-<translation id="6112952769866305444">تعديل شخص، <ph name="PROFILE_NAME" />، <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">‏اضبط محرك البحث التلقائي لمتصفّح Chrome ومشغِّل التطبيقات في <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6113942107547980621">‏لاستخدام Smart Lock، يمكنك التبديل إلى الملف الشخصي للمستخدِم الأساسي على هاتفك.</translation>
 <translation id="6116921718742659598">تغيير إعدادات اللغة والإدخال</translation>
@@ -5643,7 +5642,6 @@
 <translation id="7649070708921625228">مساعدة</translation>
 <translation id="7650511557061837441">تريد الإضافة "<ph name="TRIGGERING_EXTENSION_NAME" />" إزالة "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650677314924139716">‏إعداد استخدام البيانات الحالي هو "Wi-Fi فقط"</translation>
-<translation id="7652808307838961528">تعديل شخص، <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">لا يمكن إضافة التطبيقات والإضافات والنصوص البرمجية للمستخدم من الموقع الإلكتروني هذا.</translation>
 <translation id="7652954539215530680">إنشاء رقم التعريف الشخصي</translation>
 <translation id="7654941827281939388">يتم الآن استخدام هذا الحساب فعلاً على هذا الكمبيوتر.</translation>
@@ -5885,6 +5883,7 @@
 <translation id="7898627924844766532">البقاء مثبتًا في شريط الأدوات</translation>
 <translation id="7898725031477653577">ترجمة اللغة دومًا</translation>
 <translation id="790040513076446191">معالجة الإعدادات المتعلقة بالخصوصية</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903345046358933331">أصبحت الصفحة غير مستجيبة. يمكنك الانتظار حتى تصبح مستجيبة أو إغلاقها.</translation>
 <translation id="7903742244674067440">لديك شهادات في الملف تحدد صلاحيات الشهادة هذه</translation>
 <translation id="7903859912536385558">ثابتة (مختبِر موثوق به)</translation>

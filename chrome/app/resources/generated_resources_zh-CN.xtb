@@ -4349,7 +4349,6 @@
 <translation id="6112294629795967147">触摸即可调整大小</translation>
 <translation id="6112727384379533756">添加票据</translation>
 <translation id="6112931163620622315">请查看您的手机</translation>
-<translation id="6112952769866305444">修改用户，<ph name="PROFILE_NAME" />，<ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">为 Chrome 浏览器和 <ph name="DEVICE_TYPE" /> 启动器设置默认搜索引擎</translation>
 <translation id="6113942107547980621">要使用 Smart Lock，请切换到您手机上的主要用户个人资料</translation>
 <translation id="6116921718742659598">更改语言和输入设置</translation>
@@ -5628,7 +5627,6 @@
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7650511557061837441">“<ph name="TRIGGERING_EXTENSION_NAME" />”想要移除“<ph name="EXTENSION_NAME" />”。</translation>
 <translation id="7650677314924139716">当前的流量使用设置是“仅限 WLAN”</translation>
-<translation id="7652808307838961528">修改用户，<ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">无法从该网站添加应用、扩展程序和用户脚本</translation>
 <translation id="7652954539215530680">创建 PIN 码</translation>
 <translation id="7654941827281939388">已有人在此计算机上使用此帐号。</translation>
@@ -5869,6 +5867,7 @@
 <translation id="7898627924844766532">固定在工具栏中</translation>
 <translation id="7898725031477653577">一律翻译</translation>
 <translation id="790040513076446191">管理隐私相关设置</translation>
+<translation id="7901405293566323524">手机中心</translation>
 <translation id="7903345046358933331">该页面已停止响应。您可以等待该页面恢复响应，也可以将其关闭。</translation>
 <translation id="7903742244674067440">您有证书可标识以下证书授权中心</translation>
 <translation id="7903859912536385558">稳定版（受信任的测试人员）</translation>

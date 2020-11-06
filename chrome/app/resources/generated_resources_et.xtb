@@ -4360,7 +4360,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6112294629795967147">Puudutage suuruse muutmiseks</translation>
 <translation id="6112727384379533756">Lisa pilet</translation>
 <translation id="6112931163620622315">Kontrollige oma telefoni</translation>
-<translation id="6112952769866305444">Muuda isikut <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Määrake Chrome’i brauseri ja seadme <ph name="DEVICE_TYPE" /> rakenduse Käivitaja jaoks vaikeotsingumootor</translation>
 <translation id="6113942107547980621">Funktsiooni Smart Lock kasutamiseks lülitage telefonis peamisele kasutajaprofiilile</translation>
 <translation id="6116921718742659598">Keele ja sisestusseadete muutmine</translation>
@@ -5643,7 +5642,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="7649070708921625228">Abi</translation>
 <translation id="7650511557061837441">„<ph name="TRIGGERING_EXTENSION_NAME" />” soovib eemaldada laienduse „<ph name="EXTENSION_NAME" />”.</translation>
 <translation id="7650677314924139716">Praegune andmekasutuse seade on Ainult WiFi</translation>
-<translation id="7652808307838961528">Muuda isikut <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Rakendusi, laiendusi ja kasutaja skripte ei saa sellelt veebisaidilt lisada</translation>
 <translation id="7652954539215530680">PIN-koodi loomine</translation>
 <translation id="7654941827281939388">Konto on selles arvutis juba kasutusel.</translation>
@@ -5885,6 +5883,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="7898627924844766532">Tööriistaribale jätmine</translation>
 <translation id="7898725031477653577">Tõlgi alati</translation>
 <translation id="790040513076446191">Privaatsusega seotud seadete muutmine</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903345046358933331">Leht ei reageeri. Võite oodata lehe reageerimist või selle sulgeda.</translation>
 <translation id="7903742244674067440">Teil on neid sertimisorganeid tuvastavad sertifikaadid</translation>
 <translation id="7903859912536385558">stabiilne (usaldusväärne testija)</translation>

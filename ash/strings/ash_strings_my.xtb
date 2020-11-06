@@ -51,7 +51,6 @@
 <translation id="1346748346194534595">ညာ</translation>
 <translation id="1351937230027495976">မီနူးကို လျှော့ပြရန်</translation>
 <translation id="1383876407941801731">ရှာဖွေမှု</translation>
-<translation id="1390105199421505038"><ph name="USER_EMAIL_ADDRESS" /> အတွက် အကောင့်ဒိုင်ယာလော့ခ် ဖယ်ရှားပါ</translation>
 <translation id="1391102559483454063">ဖွင့်ရန်</translation>
 <translation id="1407069428457324124">မှောင်သည့်အပြင်အဆင်</translation>
 <translation id="1419738280318246476">အကြောင်းကြားခြင်း လုပ်ဆောင်ရန်အတွက် စက်ပစ္စည်းကို လော့ခ်ဖွင့်ပါ</translation>
@@ -76,7 +75,6 @@
 <translation id="1589090746204042747">ဤစက်ရှင်ရှိ သင့်လုပ်ဆောင်ချက်အားလုံးကို ဝင်ကြည့်နိုင်သည်</translation>
 <translation id="1611993646327628135">ဖွင့်ထားသည်</translation>
 <translation id="1632985212731562677">'ဆက်တင်များ' &gt; 'အများသုံးစွဲနိုင်မှု' တွင် 'ခလုတ်သုံးခြင်း' ကို ပိတ်နိုင်သည်။</translation>
-<translation id="1651447046299738444">သင်၏ Chromebook တွင် ဘလူးတုသ်နှင့် Wi-Fi ပိတ်ထားပုံရသည်။ 'ဖုန်းပင်မ' အသုံးပြုရန် သင့်ချိတ်ဆက်မှုကို စစ်ဆေးပါ။</translation>
 <translation id="1654477262762802994">အသံဖြင့် စတင် စုံစမ်းမေးမြန်းရန်</translation>
 <translation id="1667964833127753507">သဘာဝအရောင်မုဒ်သည် နောက်ခံမှ ထုတ်ထားသည့်အရောင်ကို မသုံးပါ၊ ၎င်းတို့ကို သဘာဝအရောင်စပ် အလင်း သို့မဟုတ် အမှောင် အရောင်ဖြင့် အစားထိုးသည်။</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ကျန်ပါသည်</translation>
@@ -147,7 +145,6 @@
 <translation id="2341729377289034582">ထောင်လိုက်မုဒ်အဖြစ် လော့ခ်ချထားသည်</translation>
 <translation id="2352467521400612932">စတိုက်လက်စ်ခဲတံ ဆက်တင်များ</translation>
 <translation id="2354174487190027830"><ph name="NAME" />ကို ဖွင့်သုံးနေ</translation>
-<translation id="2356210126990741501">သင့်ဖုန်းသည် အွန်လိုင်းချိတ်ဆက်ထားပုံမရသဖြင့် လက်ရှိတွင် သင့်အတွက် အကောင်းဆုံးဝန်ဆောင်မှုများ မပေးနိုင်ပါ။</translation>
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="2365393535144473978">မိုဘိုင်းဒေတာကို ဖွင့်ပါက ဘလူးတုသ်ပွင့်ပါမည်။</translation>
 <translation id="2369165858548251131">"Hello" ကို တရုတ်လို ဘယ်လိုပြောလဲ</translation>
@@ -194,7 +191,6 @@
 <translation id="2825619548187458965">စင်</translation>
 <translation id="2841907151129139818">တက်ဘလက်မုဒ်သို့ ပြောင်းထားသည်</translation>
 <translation id="2844169650293029770">USB-C ကိရိယာ (အရှေ့ပိုင်း ဘယ် ပို့တ်)</translation>
-<translation id="2846247265041961677">သည်းခံပါ။ ဖုန်းကို ရှာမတွေ့ပါ</translation>
 <translation id="2865888419503095837">ကွန်ရက် အချက်အလက်</translation>
 <translation id="2872961005593481000">ပိတ်ရန်</translation>
 <translation id="2878884018241093801">မကြာမီကဖွင့်ထားသည်များ မရှိပါ</translation>
@@ -336,7 +332,6 @@
 <translation id="4195877955194704651">အလိုအလျောက် နှိပ်ခလုတ်</translation>
 <translation id="4197790712631116042">ပိတ်ရန်</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> မရနိုင်ပါ။</translation>
-<translation id="4212246570487010370">ဆက်တိုက် ရှာကြည့်ခြင်း</translation>
 <translation id="4212472694152630271">ပင်နံပါတ်သို့ပြောင်းရန်</translation>
 <translation id="4215497585250573029">VPN ဆက်တင်များ</translation>
 <translation id="4217571870635786043">အသံထွက်၍ ဖတ်ပေးခြင်း</translation>
@@ -365,7 +360,6 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ပိတ်ထားသည်။</translation>
 <translation id="4421231901400348175">အဝေးမှ ထောက်ကူခြင်း ဆိုသည်မှ တဆင့် သင့်ဖန်သားပြင်အား <ph name="HELPER_NAME" /> နှင့် မျှဝေသုံးစွဲခြင်း။</translation>
 <translation id="4430019312045809116">ပမာဏ</translation>
-<translation id="4444978951615977024">သည်းခံပါ။ သင့်ချိတ်ဆက်မှုကို စစ်ဆေးပါ</translation>
 <translation id="4450893287417543264">ထပ်မပြပါနှင့်</translation>
 <translation id="445864333228800152">မင်္ဂလာ ညနေခင်းပါ၊</translation>
 <translation id="4458688154122353284">ဖန်သားပြင်ရိုက်ကူးမှု ရပ်ရန်</translation>
@@ -408,7 +402,6 @@
 <translation id="4804818685124855865">အဆက်ဖြတ်ရန်</translation>
 <translation id="4814539958450445987">အကောင့်ဝင်ရန် ဖန်သားပြင်</translation>
 <translation id="4831034276697007977">အလိုအလျောက်နှိပ်ခြင်းကို ပိတ်လိုသည်မှာ သေချာပါသလား။</translation>
-<translation id="4836108105469522644">သင်၏ Android ဖုန်းမှ အကြောင်းကြားချက်များ ဖွင့်ပေးသည်</translation>
 <translation id="4849058404725798627">အရာဝတ္ထုကို ကီးဘုတ်ခလုတ်ဖြင့် မြင်သာထင်သာဖြစ်အောင်ပြုလုပ်ရန်</translation>
 <translation id="485592688953820832">မည်သည့်အရာမျှ လုပ်ဆောင်ရန်မလို (ခေတ္တရပ်ရန်)</translation>
 <translation id="4868492592575313542">ဖွင့်ထားသည်</translation>
@@ -481,6 +474,7 @@
 <translation id="558849140439112033">ရိုက်ယူမည့်နေရာ ရွေးရန် ဖိဆွဲပါ</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />၊ <ph name="DATE" /></translation>
 <translation id="5600837773213129531">စကားပြောတုံ့ပြန်မှုကို ပိတ်ရန် Ctrl + Alt + Z ကို နှိပ်ပါ။</translation>
+<translation id="5601503069213153581">ပင်နံပါတ်</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">မိုက်ခရိုဖုန်း ဂျက်ပင်</translation>
 <translation id="5669267381087807207">အစပြုနေသည်</translation>
@@ -500,7 +494,6 @@
 <translation id="5769373120130404283">ပုဂ္ဂိုလ်ရေးလုံခြုံမှု ဖန်သားပြင်</translation>
 <translation id="5777841717266010279">မျက်နှာပြင် ဝေမျှနေခြင်း ရပ်လိုပါသလား?</translation>
 <translation id="5790085346892983794">အောင်မြင်ခြင်း</translation>
-<translation id="579415080077680903">အသံတိတ်</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> တွင် <ph name="ROUTE_TITLE" /> ကို ရပ်ရန်</translation>
 <translation id="5860033963881614850">ပိတ်ထား</translation>
@@ -513,7 +506,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ဖွင့်ရန်</translation>
 <translation id="5920710855273935292">မိုက်ပိတ်ထားသည်။</translation>
-<translation id="594179686076170922">သင်၏ဖုန်းသို့ ချိတ်ဆက်နေသည်...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ဖွင့်ထားသည်။</translation>
 <translation id="5947494881799873997">မူလအခြေအနေ ပြန်သွားရန်</translation>
 <translation id="595202126637698455">ဆောင်ရွက်ချက်များကို ခြေရာခံနေသည်။</translation>
@@ -541,7 +533,6 @@
 <translation id="615957422585914272">မျက်နှာပြင် ပေါ်က ကီးဘုတ်ကို ပြရန်</translation>
 <translation id="6164005077879661055">ဒီကြီးကြပ်မှုခံ အသုံးပြုသူကို ဖယ်ရှားလိုက်သည့်နှင့် ထိုကြီးကြပ်မှုခံ အသုံးပြုသူနှင့် ဆက်စပ်နေကြသည့် ဖိုင်များ နှင့် ဒေသန္တရ ဒေတာ အားလုံးကို ထာဝရ ဖျက်သိမ်းလိုက်မည်။ ထိုကြီးကြပ်မှုခံ အသုံးပြုသူ ဝင်ကြည့်ခဲ့သည့် ဝက်ဘ်ဆိုက်များ နှင့် ၎င်း၏ ဆက်တင်များကို မန်နေဂျာသည် <ph name="MANAGEMENT_URL" />မှာ ဆက်လက် မြင်နိုင်ပါသည်။</translation>
 <translation id="6165508094623778733">ပိုမိုလေ့လာရန်</translation>
-<translation id="6192859646269780503">ဖုန်းရှာခြင်း</translation>
 <translation id="622484624075952240">အောက်သို့</translation>
 <translation id="6236290670123303279">ဆက်တင်များ စီမံခန့်ခွဲရန်</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -616,11 +607,11 @@
 <translation id="6910714959251846841">ဤအပ်ဒိတ်ကို ထည့်သွင်းရန်အတွက် သင့်စက်ပစ္စည်းကို ရှင်းလင်းရပါမည်။ နောက်ဆုံးထွက် <ph name="SYSTEM_APP_NAME" /> အပ်ဒိတ်အကြောင်း ပိုမိုလေ့လာပါ။</translation>
 <translation id="6919251195245069855">သင့်အဆင့်မြင့်ကတ်ကို ဖတ်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="6945221475159498467">ရွေးရန်</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">စကြရအောင်</translation>
 <translation id="6981982820502123353">ရယူအသုံးချနိုင်မှု</translation>
 <translation id="698231206551913481">ဤအသုံးပြုသူကို ဖယ်ရှားလိုက်သည်နှင့် ၎င်းနှင့်ဆက်စပ်နေသော ဖိုင်များနှင့် စက်တွင်းဒေတာများအားလုံး အပြီးတိုင် ပျက်သွားလိမ့်မည်။</translation>
 <translation id="7007983414944123363">သင့်ပင်နံပါတ် သို့မဟုတ် စကားဝှက်ကို စစ်ဆေး၍မရနိုင်သေးပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
-<translation id="7013005189539051442">ဟော့စပေါ့ဖွင့်ခြင်း</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> ၌ ပြန်လာပါ။</translation>
 <translation id="7025533177575372252">သင်၏ <ph name="DEVICE_NAME" /> ကို သင့်ဖုန်းဖြင့် ချိတ်ဆက်ပါ</translation>
 <translation id="7026338066939101231">လျှော့ခြင်း</translation>
@@ -689,7 +680,6 @@
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7662283695561029522">စီစဉ်သတ်မှတ်ရန် တို့ပါ</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7705822912736783206">လက်ဗွေဖြင့် အထောက်အထားစိစစ်ပါ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{အကြောင်းကြားချက် ၁ ခု}other{အကြောင်းကြားချက် # ခု}}</translation>
 <translation id="7724603315864178912">ဖြတ်တောက်</translation>
 <translation id="7749443890790263709">အများဆုံးသတ်မှတ်ထားသည့် စားပွဲအရေအတွက် ပြည့်သွားပါပြီ။</translation>

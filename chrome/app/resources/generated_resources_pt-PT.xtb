@@ -4361,7 +4361,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6112294629795967147">Tocar para redimensionar</translation>
 <translation id="6112727384379533756">Adicionar uma permissão</translation>
 <translation id="6112931163620622315">Verificar o seu telemóvel</translation>
-<translation id="6112952769866305444">Editar pessoa: <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Selecione o motor de pesquisa predefinido para o navegador Chrome e o Launcher <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6113942107547980621">Para utilizar o Smart Lock, mude para o perfil de utilizador principal no seu telemóvel</translation>
 <translation id="6116921718742659598">Alterar idioma e definições de introdução</translation>
@@ -5644,7 +5643,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" pretende remover "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650677314924139716">A definição de utilização de dados atual é Apenas Wi-Fi.</translation>
-<translation id="7652808307838961528">Editar pessoa: <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Não é possível adicionar aplicações, extensões e scripts de utilizador a partir deste Website.</translation>
 <translation id="7652954539215530680">Crie um PIN</translation>
 <translation id="7654941827281939388">Esta conta já está a ser utilizada neste computador.</translation>
@@ -5886,6 +5884,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7898627924844766532">Manter na barra de ferramentas</translation>
 <translation id="7898725031477653577">Traduzir sempre</translation>
 <translation id="790040513076446191">Manipular as definições relacionadas com privacidade</translation>
+<translation id="7901405293566323524">Centro do telemóvel</translation>
 <translation id="7903345046358933331">A página deixou de responder. Pode esperar pela respetiva resposta ou fechá-la.</translation>
 <translation id="7903742244674067440">Tem certificados em arquivo que identificam estas autoridades de certificação</translation>
 <translation id="7903859912536385558">estável (Testador fidedigno)</translation>

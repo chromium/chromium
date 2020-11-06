@@ -17,6 +17,7 @@
 <translation id="1369915414381695676">ເພີ່ມ <ph name="SITE_NAME" /> ເວັບ​ໄຊ​ທ໌​ແລ້ວ</translation>
 <translation id="1383876407941801731">ຊອກຫາ</translation>
 <translation id="1384959399684842514">ຢຸດການດາວໂຫລດໄວ້ຊົ່ວຄາວແລ້ວ</translation>
+<translation id="1415402041810619267">ຕັດ URL ໃຫ້ສັ້ນລົງແລ້ວ</translation>
 <translation id="1431402976894535801">ບລັອກບໍ່ໃຫ້ເວັບໄຊຮູ້ເມື່ອທ່ານມີການເຄື່ອນໄຫວນຳໃຊ້</translation>
 <translation id="1446450296470737166">ອະ​ນຸ​ຍາດ​ການ​ຄວບ​ຄຸມ​ອຸ​ປະ​ກອນ MIDI ເຕັມ</translation>
 <translation id="1509960214886564027">ຄຸນສົມບັດໃນຫຼາຍໆເວັບໄຊອາດຈະໃຊ້ບໍ່ໄດ້</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">ອະນຸຍາດໃຫ້ເວັບໄຊຫຼິ້ນເນື້ອຫາທີ່ໄດ້ຮັບການປົກປ້ອງ</translation>
 <translation id="4468959413250150279">ປິດສຽງສຳລັບເວັບໄຊສະເພາະໃດໜຶ່ງ.</translation>
 <translation id="4479647676395637221">ຖາມກ່ອນທີ່ຈະອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານ (ແນະນຳ)</translation>
+<translation id="4505788138578415521">ຂະຫຍາຍ URL ແລ້ວ</translation>
 <translation id="4534723447064627427">ເພື່ອອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ເຂົ້າເຖິງໄມໂຄຣໂຟນ, ກະລຸນາເປີດໄມໂຄຣໂຟນໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" /> ນຳ.</translation>
 <translation id="4570913071927164677">ລາຍລະອຽດ</translation>
 <translation id="4645575059429386691">ຈັດ​ການ​ໂດຍ​ຜູ້​ປົກ​ຄອງ​ຂອງ​ທ່ານ</translation>

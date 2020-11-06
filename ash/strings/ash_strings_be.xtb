@@ -51,7 +51,6 @@
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1351937230027495976">Згарнуць меню</translation>
 <translation id="1383876407941801731">Пошук</translation>
-<translation id="1390105199421505038">Дыялогавае акно выдалення ўліковага запісу <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1391102559483454063">Уключана</translation>
 <translation id="1407069428457324124">Цёмная тэма</translation>
 <translation id="1419738280318246476">Каб выканаць дзеянне па апавяшчэнні, разблакіруйце прыладу</translation>
@@ -76,7 +75,6 @@
 <translation id="1589090746204042747">Атрымліваць доступ да ўсіх вашых дзеянняў у гэтым сеансе</translation>
 <translation id="1611993646327628135">Уключана</translation>
 <translation id="1632985212731562677">Доступ праз пераключальнікі можна выключыць у раздзеле "Налады &gt; Спецыяльныя магчымасці".</translation>
-<translation id="1651447046299738444">Магчыма, падключэнне па Bluetooth або Wi-Fi выключана на вашай прыладзе Chromebook. Каб выкарыстоўваць Phone Hub, праверце падключэнне.</translation>
 <translation id="1654477262762802994">Пачаць галасавы запыт</translation>
 <translation id="1667964833127753507">У рэжыме нейтральнага колеру атрыманыя са шпалер колеры не выкарыстоўваюцца – замест іх прымяняецца набор нейтральных светлых або цёмных адценняў.</translation>
 <translation id="1677472565718498478">Засталося <ph name="TIME" /></translation>
@@ -147,7 +145,6 @@
 <translation id="2341729377289034582">Зафіксаваны вертыкальны фармат</translation>
 <translation id="2352467521400612932">Налады стыла</translation>
 <translation id="2354174487190027830">Ідзе актывацыя сеткі <ph name="NAME" /></translation>
-<translation id="2356210126990741501">Здаецца, ваш тэлефон не падключаны да інтэрнэту. Мы не можам атрымаць доступ да змесціва на ім.</translation>
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2365393535144473978">Пры ўключэнні мабільнай перадачы даных таксама ўключыцца Bluetooth.</translation>
 <translation id="2369165858548251131">"Вітаю" па-кітайску</translation>
@@ -194,7 +191,6 @@
 <translation id="2825619548187458965">Паліца</translation>
 <translation id="2841907151129139818">Уключаны рэжым планшэта</translation>
 <translation id="2844169650293029770">Прылада USB-C (пярэдні порт злева)</translation>
-<translation id="2846247265041961677">На жаль, не ўдалося знайсці тэлефон</translation>
 <translation id="2865888419503095837">Інфармацыя аб сетцы</translation>
 <translation id="2872961005593481000">Завяршыць працу</translation>
 <translation id="2878884018241093801">Няма нядаўніх элементаў</translation>
@@ -336,7 +332,6 @@
 <translation id="4195877955194704651">Кнопка "Аўтаматычныя націсканні мышшу"</translation>
 <translation id="4197790712631116042">Выключана</translation>
 <translation id="4201033867194214117">Функцыя "<ph name="FEATURE_NAME" />" недаступная.</translation>
-<translation id="4212246570487010370">Бесперапынны прагляд</translation>
 <translation id="4212472694152630271">Пераключыцца на PIN-код</translation>
 <translation id="4215497585250573029">Налады VPN</translation>
 <translation id="4217571870635786043">Дыктаванне</translation>
@@ -365,7 +360,6 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />: выключана.</translation>
 <translation id="4421231901400348175">Абагульванне кантролю над экранам з карыстальнікам <ph name="HELPER_NAME" /> праз Аддаленую дапамогу.</translation>
 <translation id="4430019312045809116">Гучнасць</translation>
-<translation id="4444978951615977024">Нешта не ў парадку. Праверце падключэнне</translation>
 <translation id="4450893287417543264">Больш не паказваць</translation>
 <translation id="445864333228800152">Добры вечар,</translation>
 <translation id="4458688154122353284">Спыніць запіс экрана</translation>
@@ -408,7 +402,6 @@
 <translation id="4804818685124855865">Адключыцца</translation>
 <translation id="4814539958450445987">Экран уваходу</translation>
 <translation id="4831034276697007977">Сапраўды выключыць аўтаматычныя націсканні?</translation>
-<translation id="4836108105469522644">Уключыць апавяшчэнні з тэлефона Android</translation>
 <translation id="4849058404725798627">Вылучаць аб'ект з дапамогай клавіятурнага фокуса</translation>
 <translation id="485592688953820832">Нічога не рабіць (паўза)</translation>
 <translation id="4868492592575313542">уключыла</translation>
@@ -481,6 +474,7 @@
 <translation id="558849140439112033">Выберыце вобласць здымкі з дапамогай перацягвання</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Каб выключыць галасавую зваротную сувязь, націсніце Ctrl + Alt + Z.</translation>
+<translation id="5601503069213153581">PIN-код</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Раздым для мікрафона</translation>
 <translation id="5669267381087807207">Ідзе актывацыя</translation>
@@ -500,7 +494,6 @@
 <translation id="5769373120130404283">Экран прыватнасці</translation>
 <translation id="5777841717266010279">Спыніць абагульванне экрана?</translation>
 <translation id="5790085346892983794">Выканана</translation>
-<translation id="579415080077680903">Без гуку</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Спыніць трансляцыю <ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Выключана</translation>
@@ -513,7 +506,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Уключана</translation>
 <translation id="5920710855273935292">Мікрафон выключаны.</translation>
-<translation id="594179686076170922">Ідзе падключэнне да тэлефона...</translation>
 <translation id="5946788582095584774">Стан функцыі "<ph name="FEATURE_NAME" />": уключана.</translation>
 <translation id="5947494881799873997">Вярнуць</translation>
 <translation id="595202126637698455">Уключана трасіроўка прадукцыйнасці</translation>
@@ -541,7 +533,6 @@
 <translation id="615957422585914272">Паказаць экранную клавіятуру</translation>
 <translation id="6164005077879661055">Пры выдаленні падкантрольнага карыстальніка будуць выдалены ўсе звязаныя з ім файлы і лакальныя даныя. На старонцы <ph name="MANAGEMENT_URL" /> менеджар па-ранейшаму можа мець магчымасць бачыць гісторыю наведаных вэб-сайтаў і налады для гэтага карыстальніка.</translation>
 <translation id="6165508094623778733">Даведацца больш</translation>
-<translation id="6192859646269780503">Знайсці тэлефон</translation>
 <translation id="622484624075952240">Уніз</translation>
 <translation id="6236290670123303279">Кіраваць наладамі</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -616,11 +607,11 @@
 <translation id="6910714959251846841">Для ўсталявання абнаўлення патрабуецца скід прылад з дапамогай Powerwash. Даведайцеся больш пра апошняе абнаўленне <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Не ўдалося распазнаць вашу разумную картку. Паўтарыце спробу.</translation>
 <translation id="6945221475159498467">Выбраць</translation>
+<translation id="6965382102122355670">ОК</translation>
 <translation id="6972754398087986839">Пачатак працы</translation>
 <translation id="6981982820502123353">Спец. магчымасці</translation>
 <translation id="698231206551913481">Пры выдаленні карыстальніка будуць выдалены ўсе звязаныя з ім файлы і лакальныя даныя.</translation>
 <translation id="7007983414944123363">Пароль або PIN-код спраўдзіць не ўдалося. Паўтарыце спробу.</translation>
-<translation id="7013005189539051442">Уключыць хот-спот</translation>
 <translation id="7015766095477679451">Можна будзе прадоўжыць у <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Падключыце прыладу "<ph name="DEVICE_NAME" />" да тэлефона</translation>
 <translation id="7026338066939101231">Паменшыць</translation>
@@ -689,7 +680,6 @@
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7662283695561029522">Дакраніцеся, каб сканфігураваць</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7705822912736783206">Аўтэнтыфікацыя па адбітку пальца</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 апавяшчэнне}one{# апавяшчэнне}few{# апавяшчэнні}many{# апавяшчэнняў}other{# апавяшчэння}}</translation>
 <translation id="7724603315864178912">Выразаць</translation>
 <translation id="7749443890790263709">Дасягнута максімальная колькасць сталоў.</translation>

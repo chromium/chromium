@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">ເດືອນ​ນີ້</translation>
 <translation id="1637811476055996098">ເລືອກ​ໄຟລ​໌</translation>
 <translation id="1650423536718072820">ການອ້າງອີງ</translation>
+<translation id="1681022320378710418">ເວລາປັດຈຸບັນ</translation>
 <translation id="1727886345390570319">ເຊື່ອງເມນູຄໍາອະທິບາຍພາບ</translation>
 <translation id="1729654308190250600">ກະ​ລຸ​ນາ​ໃສ່​ທີ່​ຢູ່​ອີ​ເມວທີ່​ບໍ່​ວ່າງ​ເປົ່າ​.</translation>
 <translation id="1758486001363313524">ອື່ນ...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">ກະລຸນາປ້ອນ URL.</translation>
 <translation id="3175736971608411871">ໂມງນັບຖອຍຫຼັງ</translation>
 <translation id="3199563858620722075">ກ່ອງຄອມໂບ</translation>
+<translation id="3220661731597678625">ຂັ້ນຕອນປັດຈຸບັນ</translation>
 <translation id="3329013043687509092">ການອີ່ມຕົວ</translation>
 <translation id="3450233048674729344">ຄ່າຕ້ອງນ້ອຍກ່ວາ ຫຼືເທົ່າກັບ <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">ຄໍາ​ນິ​ຍາມ</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">ວິ​ດີ​ໂອ</translation>
 <translation id="479989351350248267">ຄົ້ນ​ຫາ</translation>
 <translation id="4812940957355064477">ກະ​ລຸ​ນາ​ປ້ອນຕົວເລກ​.</translation>
+<translation id="4912200001568447310">ລາຍການປັດຈຸບັນ</translation>
 <translation id="4912536737030637138">ລາຍການບັນນານຸກົມ</translation>
 <translation id="4915360478455618802">ສະແດງຕົວເລືອກເວລາ</translation>
 <translation id="492244087561876220">ຄຳເຫັນ</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">ບໍ່ສາມາດຫຼິ້ນສື່ໄດ້.</translation>
 <translation id="537648784377940524">ວັນທີໜ້ອຍສຸດ (<ph name="MIN_DATE_OR_TIME" />) ຕ້ອງມາກ່ອນວັນທີຫຼາຍສຸດ (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">ຮູບ</translation>
+<translation id="5425179576310518467">ວັນທີປະຈຸບັນ</translation>
 <translation id="5453733299334684579">ລາຍການຕົ້ນໄມ້</translation>
 <translation id="5466621249238537318">ກະລຸນາເລືອກໜຶ່ງ ຫຼືຫຼາຍໄຟລ໌.</translation>
 <translation id="5468998798572797635">ອອກຈາກເຕັມໜ້າຈໍ</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">ແມັດ</translation>
 <translation id="6166809985690652833">ຄຳກ່າວທ້າຍບົດ</translation>
 <translation id="6209276755895393898">ປາກົດວ່າເປັນ: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">ໜ້າປັດຈຸບັນ</translation>
 <translation id="6213469881011901533">ປະມວນຄຳສັບ</translation>
 <translation id="6281588256137006900">ຄວາມສະຫວ່າງ</translation>
 <translation id="6281763101136022427">url</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">ກະລຸນາຂະຫຍາຍຄວາມຍາວຂອງຂໍ້ຄວາມນີ້ເປັນ <ph name="MIN_CHARACTERS" /> ຕົວອັກສອນຂຶ້ນໄປ (ໃນປັດຈຸບັນທ່ານກຳລັງໃຊ້ 1 ຕົວອັກສອນ).</translation>
 <translation id="7034405885550056553">ການແນະນຳ</translation>
 <translation id="709897737746224366">ກະລຸນາຈັບຄູ່ຮູບແບບທີ່ໄດ້ສະເໜີ.</translation>
+<translation id="7102274145889307184">ສະຖານທີ່ປັດຈຸບັນ</translation>
 <translation id="7118469954320184356">ບໍ່ມີລາຍລະອຽດ.</translation>
 <translation id="7139483182332611405">ຄຳນຳ</translation>
 <translation id="7214187073215825913">ຂໍ້ມູນເນື້ອຫາ</translation>

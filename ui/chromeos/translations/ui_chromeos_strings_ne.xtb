@@ -5,7 +5,6 @@
 <translation id="1023220960495960452">ट्रान्सलिटेरेशन (भन्नाकम → வணக்கம்)</translation>
 <translation id="1035094536595558507">स्लाईड दृष्टि</translation>
 <translation id="1045157690796831147">ट्रान्सलिटेरेशन (नमस्कार → നമസ്കാരം)</translation>
-<translation id="1046068652463704410">जापानी इनपुट (सं. रा. अमेरिकाको किबोर्डका लागि)</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> वस्तुहरू मेटाउँदै...</translation>
 <translation id="1049926623896334335">शब्द कागजात</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> मार्फत फाइलहरू खोल्न सर्वप्रथम ती फाइलहरू सारेर 'Windows फाइलहरू' फोल्डरमा लैजानुहोस्।</translation>
@@ -26,11 +25,9 @@
 <translation id="1178581264944972037">पज गर्नुहोस्</translation>
 <translation id="1190144681599273207">यो फाइललाई ल्याउँदा मोबाइल डाटाको लगभग <ph name="FILE_SIZE" /> प्रयोग हुनेछ।</translation>
 <translation id="1201402288615127009">अर्को</translation>
-<translation id="1208421848177517699">ट्रान्सलिटेरेशन (नमस्ते → નમસ્તે)</translation>
 <translation id="1243314992276662751">अपलोड गर्नुहोस्</translation>
 <translation id="1249250836236328755">विधा</translation>
 <translation id="1276362640455948667">अमेरिकी अन्तर्राष्ट्रिय किबोर्डसहितको पोर्तुगाली इनपुट विधि</translation>
-<translation id="1278813325885878377">हंगेरी QWERTY किबोर्ड</translation>
 <translation id="1293556467332435079">फाइलहरू</translation>
 <translation id="1297922636971898492">Google ड्राइभ अहिले उपलब्ध छैन। Google ड्राइभ एकपटक फर्केपचि अपलोड स्वत: सुरुवात हुनेछ।</translation>
 <translation id="1307931752636661898">Linux का फाइलहरू हेर्न सकिएन</translation>
@@ -63,7 +60,6 @@
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> पि.बि.</translation>
 <translation id="1620510694547887537">क्यामेरा</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> वटा फाइल अफलाइन उपलब्ध गराइँदै छन्</translation>
-<translation id="1646136617204068573">हंगेरी किबोर्ड</translation>
 <translation id="164729547906544836">तामिल किबोर्ड (ITrans)</translation>
 <translation id="164969095109328410">Chrome यन्त्र</translation>
 <translation id="1665611772925418501">फाइल परिमार्जन गर्न सकिएन।</translation>
@@ -93,7 +89,6 @@
 <translation id="1936717151811561466">समाप्त गर्नुहोस्</translation>
 <translation id="1942765061641586207">छविको रिजोल्युसन</translation>
 <translation id="1943097386230153518">नयाँ सेवा स्थापना गर्नुहोस्</translation>
-<translation id="1947424002851288782">जर्मन किबोर्ड</translation>
 <translation id="1972984168337863910">फाइलका प्रतिक्रियाका प्यानलहरू विस्तृत गर्नुहोस्</translation>
 <translation id="1984603991036629094">आर्मेनियाली फोनेटिक किबोर्ड</translation>
 <translation id="1995337122023280937">फाइल रहेको स्थानमा जानुहोस्</translation>
@@ -116,14 +111,12 @@
 <translation id="2225536596944493418">तपाईंले <ph name="NUMBER_OF_ITEMS" /> वस्तुहरू मेटाउन खोज्नुभएकै हो?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /> फोल्डर सिर्जना गर्न सकिएन</translation>
 <translation id="2275059641601412272">सारिएको।</translation>
-<translation id="2278988676849463018">कन्नडा किबोर्ड (ध्वन्यात्मक)</translation>
 <translation id="2287742181953707290">अमेरिकी अन्तर्राष्ट्रिय पिसी किबोर्डसहितको पोर्तुगाली इनपुट विधि</translation>
 <translation id="2288278176040912387">रेकर्ड प्लेयर</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> फाइलहरू खोल्दै।</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> फाइल खोल्दै।</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> हटाइएको छ।</translation>
 <translation id="2325650632570794183">यो फाइल प्रकार समर्थन गरिएको छैन। यो फाइल खोल्न सक्ने एक अनु्प्रयोग फेला पार्नको लागि कृपया Chrome वेब भण्डार भ्रमण गर्नुहोस्।</translation>
-<translation id="23434688402327542">कजाख किबोर्ड</translation>
 <translation id="2352947182261340447">स्थानीय भण्डारणमा पर्याप्त खाली ठाउँ उपलब्ध छैन।</translation>
 <translation id="2377319039870049694">सूची दृश्यमा बदल्नुहोस्‌</translation>
 <translation id="2377590462528165447">Linux सँग <ph name="NUMBER_OF_ITEMS" /> फोल्डरहरू आदान प्रदान गरिए</translation>
@@ -136,7 +129,6 @@
 <translation id="2453576648990281505">फाइल पहिले नै अवस्थित छ</translation>
 <translation id="2464079411014186876">आइसक्रिम</translation>
 <translation id="2468402215065996499">तामागोची</translation>
-<translation id="2494837236724268445">गुजराती किबोर्ड (ध्वन्यात्मक)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">अमेरिकी किबोर्ड</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू मेटाइए</translation>
@@ -172,10 +164,8 @@
 <translation id="2902312830803030883">थप कारबाहीहरू</translation>
 <translation id="2902734494705624966">युएस विस्तारित</translation>
 <translation id="2923240520113693977">इस्टोनिया</translation>
-<translation id="2924296707677495905">ट्रान्सलिटेरेशन (नमस्कारम → ನಮಸ್ಕಾರ)</translation>
 <translation id="2925966894897775835">पानाहरू</translation>
 <translation id="2938685643439809023">मङ्गोलियन</translation>
-<translation id="2942290791863759244">जर्मन NEO 2 किबोर्ड</translation>
 <translation id="2943400156390503548">स्लाइड गर्छ</translation>
 <translation id="2943503720238418293">अझ छोटो नाम प्रयोग गर्नुहोस्</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> फर्म्याट गर्दै...</translation>
@@ -196,7 +186,6 @@
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">सम्पन्न  भयो</translation>
 <translation id="3157729859914172001">अमेरिकी अन्तर्राष्ट्रिय (PC) किबोर्ड</translation>
-<translation id="3187212781151025377">हिब्रू किबोर्ड</translation>
 <translation id="3188257591659621405">मेरा फाइलहरू</translation>
 <translation id="3197563288998582412">बेलायत ड्भोराक</translation>
 <translation id="3202131003361292969">पथ</translation>
@@ -227,14 +216,12 @@
 <translation id="3475447146579922140">Google स्प्रेडसिट</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> त्रुटिहरू।</translation>
 <translation id="349603508045926994">फारसी लिपि रूपान्तरण</translation>
-<translation id="3519867315646775981">ट्रान्सलिटेरेशन (shalom ← שלום)</translation>
 <translation id="3522708245912499433">पोर्टुगिज</translation>
 <translation id="3524311639100184459">चेतावनी: यी फाइलहरू अस्थायी हुन् र भण्डारण स्थान खाली गर्नका निम्ति यी फाइल स्वतः मेटाइन सक्छन्।  <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">फोल्डर</translation>
 <translation id="3549797760399244642">drive.google.com मा जानुहोस् ...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> मार्फत फाइलहरू खोल्न सर्वप्रथम ती फाइलहरू कपी गरेर 'Windows फाइलहरू' फोल्डरमा पेस्ट गर्नुहोस्।</translation>
 <translation id="357479282490346887">लिथुएनियन</translation>
-<translation id="3583509704582854624">अङ्क र अक्षरमिश्रित वर्णका इनपुट (जापानी किबोर्डका लागि)</translation>
 <translation id="3603385196401704894">क्यानाडाली फ्रान्सेली</translation>
 <translation id="3606220979431771195">टर्किस-एफ</translation>
 <translation id="3609785682760573515">समक्रमण हुँदै...</translation>
@@ -268,10 +255,8 @@
 <translation id="383652340667548381">सर्वियन</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
 <translation id="3855472144336161447">जर्मन नियो 2</translation>
-<translation id="3858678421048828670">इटालियन किबोर्ड</translation>
 <translation id="386548886866354912"><ph name="EXTENSION_NAME" /> मार्फत प्याक गर्नुहोस्</translation>
 <translation id="3866249974567520381">विवरण</translation>
-<translation id="3910699493603749297">खमेर किबोर्ड</translation>
 <translation id="391445228316373457">नेपाली किबोर्ड (ध्वन्यात्मक)</translation>
 <translation id="3924145049010392604">मेटा</translation>
 <translation id="3930521966936686665">यसमा प्ले गर्नुहोस्</translation>
@@ -335,7 +320,6 @@
 <translation id="4734518477988699048">इनपुटको मान अमान्य छ।</translation>
 <translation id="4737050008115666127">ल्यान्डिङ</translation>
 <translation id="4747271164117300400">म्यासेडोनेयाली</translation>
-<translation id="4749157430980974800">Georgian किबोर्ड</translation>
 <translation id="4759238208242260848">डाउनलोडहरू</translation>
 <translation id="4779136857077979611">ओनिगिरी</translation>
 <translation id="4784330909746505604">PowerPoint प्रस्तुति</translation>
@@ -412,7 +396,6 @@
 <translation id="5283140566205748520">फ्रान्सेली (बेल्जियम)</translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5318819489018851358">Linux मार्फत सेयर गर्नुहोस्</translation>
-<translation id="5319782540886810524">लातभियन किबोर्ड</translation>
 <translation id="5323213332664049067">ल्याटिन अमेरिकी</translation>
 <translation id="5327248766486351172">नाम</translation>
 <translation id="5330145655348521461">यी फाइलहरू एउटा फरक डेस्कटपमा खुलेका थिए। यसलाई हेर्नको लागि <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) मा लैजानुहोस्।</translation>
@@ -439,7 +422,6 @@
 <translation id="5534520101572674276">परिमाण हिसाब गर्दै</translation>
 <translation id="5583640892426849032">ब्याकस्पेस</translation>
 <translation id="5605830556594064952">युएस ड्भोराक</translation>
-<translation id="5640179856859982418">स्विस किबोर्ड</translation>
 <translation id="5649768706273821470">सुन्नुहोस्</translation>
 <translation id="5678784840044122290">Linux एप तपाईंको टर्मिनलअन्तर्गत उपलब्ध हुने छ तपाईंको लन्चरमा कुनै आइकन देखाउन पनि सक्छ।</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />अभिलेख वा भर्चुअल डिस्कबाट विच्छेदन गर्न सकिँदैन<ph name="END_BOLD" />
@@ -450,7 +432,6 @@
 <translation id="5731409020711461763">१ नयाँ तस्बिर</translation>
 <translation id="5752453871435543420">Chrome OS क्लाउड जगेडा</translation>
 <translation id="5756666464756035725">हंगेरी QWERTY</translation>
-<translation id="5771585441665576801">ट्रान्सलिटेरेशन (geia → γεια)</translation>
 <translation id="5776325638577448643">मेट्नुहोस् तथा फर्म्याट गर्नुहोस्</translation>
 <translation id="57838592816432529">म्यूट गर्नुहोस्</translation>
 <translation id="5788127256798019331">Play मा भएका फाइलहरू</translation>
@@ -467,7 +448,6 @@
 <translation id="5911887972742538906">तपाईंको Linux एप स्थापना गर्ने क्रममा त्रुटि भयो।</translation>
 <translation id="5912396950572065471">ढाँचा</translation>
 <translation id="5913638992615760742">प्रतिलिपि गर्न सकिएन, अनपेक्षित त्रुटि: <ph name="ERROR_MESSAGE" /></translation>
-<translation id="5923484009666796948">जापानी इनपुट (जापानी किबोर्डका लागि)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू</translation>
 <translation id="5957366693331451795">Chromebox</translation>
@@ -497,7 +477,6 @@
 <translation id="6248400709929739064">उपशीर्षकहरूलाई सक्रिय गर्नुहोस्</translation>
 <translation id="6264347891387618177">ट्रान्सलिटेरेशन (सेलम → ሰላም)</translation>
 <translation id="6287852322318138013">यो फाइल खोल्न एक एप चयन गर्नुहोस्</translation>
-<translation id="6305012486838822927">लाओ किबोर्ड</translation>
 <translation id="6339034549827494595">रूसी फोनेटिक (AATSEEL) किबोर्ड</translation>
 <translation id="6339145975392024142">अमेरिकी अन्तर्राष्ट्रिय (PC)</translation>
 <translation id="6346310558342052870">पहुँचलाई सीमित गरिको छ</translation>
@@ -508,8 +487,6 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> वस्तुहरू</translation>
 <translation id="6398765197997659313">पूर्ण स्क्रिनलाई हटाउनुहोस्</translation>
 <translation id="642282551015776456">नामलाई फाइल वा फोल्डर नामको रूपमा प्रयोग गर्न सकिँदैन</translation>
-<translation id="6462109140674788769">ग्रीक किबोर्ड</translation>
-<translation id="6466492211071551451">आइरिस किबोर्ड</translation>
 <translation id="6485131920355264772">स्पेज जानकारी पुनर्प्राप्त गर्न असफल भयो</translation>
 <translation id="6505918941256367791">तामिल किबोर्ड (Inscript)</translation>
 <translation id="6509122719576673235">नर्वेयन</translation>
@@ -649,7 +626,6 @@
 <translation id="7896906914454843592">अमेरिकी विस्तारित किबोर्ड</translation>
 <translation id="7898607018410277265">गुजराती किबोर्ड (नयाँ फोनेटिक)</translation>
 <translation id="7908793776359722643">तपाईंले कुनै पार्टिसन फर्म्याट गर्नुभयो भने उक्त पार्टिसनमा भण्डारण गरिएको सम्पूर्ण डेटा मेटिने छ। यो कार्य अन्डू गर्न सकिँदैन।</translation>
-<translation id="7917972308273378936">लिथुएनियन किबोर्ड</translation>
 <translation id="7925686952655276919">समक्रमणको लागि मोबाइल डाटा प्रयोग नगर्नुहोस्</translation>
 <translation id="7928710562641958568">यन्त्र निकाल्नुहोस्</translation>
 <translation id="7943385054491506837">युएस कोलमाक</translation>
@@ -696,7 +672,6 @@
 <translation id="8335587457941836791">शेल्फबाट अनपिन गर्नुहोस्</translation>
 <translation id="8336153091935557858">हिजो <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336524887811696057">नेपाली लिपि रूपान्तरण</translation>
-<translation id="8336579025507394412">आइसल्यान्डिक किबोर्ड</translation>
 <translation id="8342318071240498787">यही नामको फाइल वा एक निर्देशिका पहिले नै अस्तित्वमा छ ।</translation>
 <translation id="8382450452152102026"><ph name="FOLDER_NAME" /> मा</translation>
 <translation id="8391950649760071442">ट्रान्सलिटेरेशन (इमान्दी → ఏమండీ)</translation>
@@ -707,7 +682,6 @@
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">अवैध नाम</translation>
 <translation id="8466234950814670489">टार सङ्ग्रह</translation>
-<translation id="8467473010914675605">कोरियन आगत विधि</translation>
 <translation id="8475647382427415476">Google ड्राइभ अहिले "<ph name="FILENAME" />" सिंक गर्न असमर्थ थियो। Google ड्राइभले फेरि पछि प्रयास गर्ने छ।</translation>
 <translation id="8477649328507734757">स्पिन</translation>
 <translation id="8487700953926739672">अफलाईन उपलब्ध</translation>

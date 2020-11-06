@@ -4358,7 +4358,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6112294629795967147">Dodirnite da biste promenili veličinu</translation>
 <translation id="6112727384379533756">Dodaj tiket</translation>
 <translation id="6112931163620622315">Proverite telefon</translation>
-<translation id="6112952769866305444">Izmeni osobu, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Podesite podrazumevani pretraživač za Chrome pregledač i pokretač za <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Da biste koristili Smart Lock, pređite na primarni korisnički profil na telefonu</translation>
 <translation id="6116921718742659598">Promeni podešavanja jezika i unosa</translation>
@@ -5641,7 +5640,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7650511557061837441">„<ph name="TRIGGERING_EXTENSION_NAME" />“ želi da ukloni „<ph name="EXTENSION_NAME" />“.</translation>
 <translation id="7650677314924139716">Aktuelno podešavanje potrošnje podataka je „Samo WiFi“</translation>
-<translation id="7652808307838961528">Izmeni osobu, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Aplikacije, dodaci i skripte korisnika ne mogu da se dodaju sa ovog veb-sajta</translation>
 <translation id="7652954539215530680">Napravite PIN</translation>
 <translation id="7654941827281939388">Ovaj nalog se već koristi na ovom računaru.</translation>
@@ -5883,6 +5881,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7898627924844766532">Zadrži na traci s alatkama</translation>
 <translation id="7898725031477653577">Uvek prevodi</translation>
 <translation id="790040513076446191">Upravljanje podešavanjima u vezi sa privatnošću</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903345046358933331">Stranica je prestala da se odaziva. Možete da sačekate da počne da se odaziva ili da je zatvorite.</translation>
 <translation id="7903742244674067440">Imate sačuvane sertifikate koji identifikuju ove autoritete za izdavanje sertifikata</translation>
 <translation id="7903859912536385558">stabilno (pouzdani tester)</translation>

@@ -4353,7 +4353,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6112294629795967147">Tocar para cambiar el tamaño</translation>
 <translation id="6112727384379533756">Añadir un ticket</translation>
 <translation id="6112931163620622315">Comprueba tu teléfono</translation>
-<translation id="6112952769866305444">Editar persona (<ph name="PROFILE_NAME" />, <ph name="USERNAME" />)</translation>
 <translation id="6113434369102685411">Establece el buscador predeterminado para el navegador Chrome y el menú de aplicaciones de <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Si quieres usar Smart Lock, cambia al perfil del usuario principal en tu teléfono.</translation>
 <translation id="6116921718742659598">Cambiar configuración de idioma y de introducción de texto</translation>
@@ -5632,7 +5631,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" quiere eliminar "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650677314924139716">La configuración actual de uso de datos es Solo Wi‑Fi</translation>
-<translation id="7652808307838961528">Editar persona (<ph name="PROFILE_NAME" />)</translation>
 <translation id="765293928828334535">No es posible añadir aplicaciones, extensiones ni secuencias de comandos de usuario desde este sitio web</translation>
 <translation id="7652954539215530680">Crear un PIN</translation>
 <translation id="7654941827281939388">Esta cuenta ya se está utilizando en este ordenador.</translation>
@@ -5873,6 +5871,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7898627924844766532">Mantener en la barra de herramientas</translation>
 <translation id="7898725031477653577">Traducir siempre</translation>
 <translation id="790040513076446191">Modificar la configuración relacionada con la privacidad</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903345046358933331">La página no responde. Puedes esperar a que vuelva a responder o cerrarla.</translation>
 <translation id="7903742244674067440">Tienes certificados registrados que identifican a estas entidades</translation>
 <translation id="7903859912536385558">estable (tester de confianza)</translation>

@@ -4356,7 +4356,6 @@
 <translation id="6112294629795967147">ಮರುಗಾತ್ರಗೊಳಿಸಲು ಸ್ಪರ್ಶಿಸಿ</translation>
 <translation id="6112727384379533756">ಟಿಕೆಟ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="6112931163620622315">ನಿಮ್ಮ ಫೋನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
-<translation id="6112952769866305444"><ph name="PROFILE_NAME" />, <ph name="USERNAME" /> ವ್ಯಕ್ತಿಯನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="6113434369102685411">Chrome ಬ್ರೌಸರ್ ಅನ್ನು ಮತ್ತು <ph name="DEVICE_TYPE" /> ಲಾಂಚರ್ ಅನ್ನು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಹುಡುಕಾಟದ ಎಂಜಿನ್ ಆಗಿ ಹೊಂದಿಸಿ</translation>
 <translation id="6113942107547980621">Smart Lock ಅನ್ನು ಬಳಸಲು, ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿರುವ ಪ್ರಾಥಮಿಕ ಬಳಕೆದಾರ ಪ್ರೋಫೈಲ್‌ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="6116921718742659598">ಭಾಷೆ ಹಾಗೂ ಇನ್‌ಪುಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಿ</translation>
@@ -5636,7 +5635,6 @@
 <translation id="7649070708921625228">ಸಹಾಯ</translation>
 <translation id="7650511557061837441">"<ph name="EXTENSION_NAME" />" ಅನ್ನು ತೆಗೆದುಹಾಕಲು "<ph name="TRIGGERING_EXTENSION_NAME" />" ಬಯಸುತ್ತದೆ.</translation>
 <translation id="7650677314924139716">ಪ್ರಸ್ತುತ ಡೇಟಾ ಬಳಕೆಯ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ವೈ-ಫೈ ಮಾತ್ರ ಎಂಬುದಕ್ಕೆ ಹೊಂದಿಸಲಾಗಿದೆ</translation>
-<translation id="7652808307838961528"><ph name="PROFILE_NAME" /> ವ್ಯಕ್ತಿಯನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="765293928828334535">ಈ ವೆಬ್‌ಸೈಟ್‌ನಿಂದ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು, ವಿಸ್ತರಣೆಗಳು ಮತ್ತು ಬಳಕೆದಾರ ಸ್ಕ್ರಿಪ್ಟ್‌ಗಳನ್ನು ಸೇರಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="7652954539215530680">ಪಿನ್ ರಚಿಸಿ</translation>
 <translation id="7654941827281939388">ಈ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ ಈ ಖಾತೆಯನ್ನು ಈಗಾಗಲೇ ಬಳಸಲಾಗಿದೆ.</translation>
@@ -5876,6 +5874,7 @@
 <translation id="7898627924844766532">ಪರಿಕರಪಟ್ಟಿಯಲ್ಲಿ ಇರಿಸು</translation>
 <translation id="7898725031477653577">ಯಾವಾಗಲೂ ಅನುವಾದಿಸು</translation>
 <translation id="790040513076446191">ಗೌಪ್ಯತೆಗೆ- ಸಂಬಂಧಿಸಿದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಸ್ವಾಧೀನಪಡಿಸಿಕೊಳ್ಳಿ</translation>
+<translation id="7901405293566323524">ಫೋನ್ ಹಬ್</translation>
 <translation id="7903345046358933331">ಪುಟವು ಸ್ಪಂದಿಸುತ್ತಿಲ್ಲ. ಅದು ಸ್ಪಂದಿಸುವ ತನಕ ನೀವು ಕಾಯಬಹುದು ಅಥವಾ ಅದನ್ನು ಮುಚ್ಚಬಹುದು.</translation>
 <translation id="7903742244674067440">ಈ ಪ್ರಮಾಣಪತ್ರದ ಪ್ರಾಧಿಕಾರಗಳ ಗುರುತಿಸುವ ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ನೀವು ಫೈಲ್‌ನಲ್ಲಿ ಹೊಂದಿದ್ದೀರಿ</translation>
 <translation id="7903859912536385558">ಸ್ಥಿರ (ವಿಶ್ವಾಸಾರ್ಹ ಪರೀಕ್ಷಕ)</translation>

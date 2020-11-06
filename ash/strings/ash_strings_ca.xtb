@@ -51,7 +51,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1346748346194534595">Dreta</translation>
 <translation id="1351937230027495976">Replega el menú</translation>
 <translation id="1383876407941801731">Cerca</translation>
-<translation id="1390105199421505038">Quadre de diàleg per suprimir el compte per a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1391102559483454063">Activada</translation>
 <translation id="1407069428457324124">Tema fosc</translation>
 <translation id="1419738280318246476">Desbloqueja el dispositiu per dur a terme l'acció que indica la notificació</translation>
@@ -76,7 +75,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1589090746204042747">Accedir a tota la teva activitat d'aquesta sessió.</translation>
 <translation id="1611993646327628135">Activat</translation>
 <translation id="1632985212731562677">L'accés amb interruptors es pot desactivar a Configuració &gt; Accessibilitat.</translation>
-<translation id="1651447046299738444">Sembla que el Bluetooth o la Wi-Fi estan desactivats al teu Chromebook. Comprova la connexió per utilitzar Phone Hub.</translation>
 <translation id="1654477262762802994">Inicia una consulta per veu</translation>
 <translation id="1667964833127753507">El mode de color neutre no utilitza colors extrets del fons de pantalla, sinó que els substitueix per un conjunt de tons neutres clars o foscos.</translation>
 <translation id="1677472565718498478">Temps restant: <ph name="TIME" /></translation>
@@ -147,7 +145,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2341729377289034582">Bloquejada en vertical</translation>
 <translation id="2352467521400612932">Configuració del llapis òptic</translation>
 <translation id="2354174487190027830">S'està activant <ph name="NAME" /></translation>
-<translation id="2356210126990741501">Sembla que el telèfon no està en línia i ara mateix no en podem obtenir tots els productes.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2365393535144473978">En activar les dades mòbils s'activarà el Bluetooth.</translation>
 <translation id="2369165858548251131">"Hola" en xinès</translation>
@@ -194,7 +191,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2825619548187458965">Prestatge</translation>
 <translation id="2841907151129139818">S'ha canviat a mode de tauleta</translation>
 <translation id="2844169650293029770">Dispositiu USB-C (port frontal esquerre)</translation>
-<translation id="2846247265041961677">No es troba el telèfon</translation>
 <translation id="2865888419503095837">Informació de la xarxa</translation>
 <translation id="2872961005593481000">Apaga</translation>
 <translation id="2878884018241093801">No hi ha cap element recent</translation>
@@ -336,7 +332,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4195877955194704651">Botó Clics automàtics</translation>
 <translation id="4197790712631116042">Desactivat</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> no està disponible.</translation>
-<translation id="4212246570487010370">Continua navegant</translation>
 <translation id="4212472694152630271">Canvia a PIN</translation>
 <translation id="4215497585250573029">Configuració de VPN</translation>
 <translation id="4217571870635786043">Dictat</translation>
@@ -365,7 +360,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4412944820643904175">La funció <ph name="FEATURE_NAME" /> està desactivada.</translation>
 <translation id="4421231901400348175">Es comparteix el control de la pantalla amb <ph name="HELPER_NAME" /> mitjançant l'Assistència remota.</translation>
 <translation id="4430019312045809116">Volum</translation>
-<translation id="4444978951615977024">Vaja! Comprova la connexió.</translation>
 <translation id="4450893287417543264">No ho tornis a mostrar</translation>
 <translation id="445864333228800152">Bon vespre,</translation>
 <translation id="4458688154122353284">Atura la gravació de pantalla</translation>
@@ -408,7 +402,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4804818685124855865">Desconnecta</translation>
 <translation id="4814539958450445987">Pantalla d'inici de sessió</translation>
 <translation id="4831034276697007977">Confirmes que vols desactivar els clics automàtics?</translation>
-<translation id="4836108105469522644">Activa les notificacions del telèfon Android</translation>
 <translation id="4849058404725798627">Ressalta l'objecte amb el focus del teclat</translation>
 <translation id="485592688953820832">No facis res (pausa)</translation>
 <translation id="4868492592575313542">activada</translation>
@@ -481,6 +474,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="558849140439112033">Arrossega per seleccionar l'àrea que vols capturar</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Prem Ctrl+Alt+Z per desactivar els avisos de veu.</translation>
+<translation id="5601503069213153581">PIN</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Connector per al micròfon</translation>
 <translation id="5669267381087807207">Activant</translation>
@@ -500,7 +494,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5769373120130404283">Pantalla de privadesa</translation>
 <translation id="5777841717266010279">Vols aturar la compartició de pantalla?</translation>
 <translation id="5790085346892983794">Amb èxit</translation>
-<translation id="579415080077680903">Silenci</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Atura <ph name="ROUTE_TITLE" /> a <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Desactivat</translation>
@@ -513,7 +506,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5920710855273935292">El micròfon està silenciat.</translation>
-<translation id="594179686076170922">S'està connectant al telèfon...</translation>
 <translation id="5946788582095584774">La funció <ph name="FEATURE_NAME" /> està activada.</translation>
 <translation id="5947494881799873997">Reverteix</translation>
 <translation id="595202126637698455">Traça del rendiment activada</translation>
@@ -541,7 +533,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="615957422585914272">Mostra el teclat en pantalla</translation>
 <translation id="6164005077879661055">Tots els fitxers i les dades locals associats amb l'usuari supervisat se suprimiran permanentment quan aquest usuari supervisat se suprimeixi. És possible que el gestor encara pugui veure els llocs web visitats i la configuració d'aquest usuari supervisat a la pàgina <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Més informació</translation>
-<translation id="6192859646269780503">Localitza el telèfon</translation>
 <translation id="622484624075952240">Avall</translation>
 <translation id="6236290670123303279">Gestiona la configuració</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -616,11 +607,11 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6910714959251846841">Aquesta actualització requereix executar la funció Powerwash al dispositiu. Obtén més informació sobre l'última actualització de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">No s'ha reconegut la targeta intel·ligent. Torna-ho a provar.</translation>
 <translation id="6945221475159498467">Selecciona</translation>
+<translation id="6965382102122355670">D'acord</translation>
 <translation id="6972754398087986839">Comença</translation>
 <translation id="6981982820502123353">Accessibilitat</translation>
 <translation id="698231206551913481">Tots els fitxers i les dades locals associats amb aquest usuari se suprimiran definitivament quan aquest usuari se suprimeixi.</translation>
 <translation id="7007983414944123363">El PIN o la contrasenya no s'han pogut verificar. Torna-ho a provar.</translation>
-<translation id="7013005189539051442">Activa el punt d'accés Wi‑Fi</translation>
 <translation id="7015766095477679451">Pots tornar a aquesta hora: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Connecta <ph name="DEVICE_NAME" /> al telèfon</translation>
 <translation id="7026338066939101231">Disminueix</translation>
@@ -689,7 +680,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7662283695561029522">Toca per configurar</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7705822912736783206">Autentica't amb l'empremta digital</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificació}other{# notificacions}}</translation>
 <translation id="7724603315864178912">Retalla</translation>
 <translation id="7749443890790263709">S'ha assolit el nombre màxim d'escriptoris.</translation>

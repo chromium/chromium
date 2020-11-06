@@ -49,7 +49,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1346748346194534595">Derecha</translation>
 <translation id="1351937230027495976">Contraer menú</translation>
 <translation id="1383876407941801731">Buscar</translation>
-<translation id="1390105199421505038">Quitar el diálogo de la cuenta para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1391102559483454063">Sí</translation>
 <translation id="1407069428457324124">Tema oscuro</translation>
 <translation id="1419738280318246476">Desbloquea el dispositivo para llevar a cabo una acción con las notificaciones</translation>
@@ -74,7 +73,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1589090746204042747">Accede a toda tu actividad en esta sesión</translation>
 <translation id="1611993646327628135">Sí</translation>
 <translation id="1632985212731562677">Accesibilidad con interruptores se puede inhabilitar en Configuración &gt; Accesibilidad.</translation>
-<translation id="1651447046299738444">Parece que la conexión Bluetooth o Wi-Fi está desactivada en tu Chromebook. Revisa la conexión para usar Phone Hub.</translation>
 <translation id="1654477262762802994">Iniciar una búsqueda por voz</translation>
 <translation id="1667964833127753507">El modo de color neutral no usa los colores extraídos del fondo de pantalla; los reemplaza por un conjunto de tonos neutros oscuros o claros.</translation>
 <translation id="1677472565718498478">Tiempo restante <ph name="TIME" /></translation>
@@ -143,7 +141,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2341729377289034582">Se bloqueó en posición vertical</translation>
 <translation id="2352467521400612932">Configuración de la pluma stylus</translation>
 <translation id="2354174487190027830">Activación de <ph name="NAME" /></translation>
-<translation id="2356210126990741501">Al parecer, el teléfono no está en línea y, por el momento, no podemos aprovechar todas sus ventajas.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2365393535144473978">Si habilitas los datos móviles, se habilitará Bluetooth.</translation>
 <translation id="2369165858548251131">"Hola" en chino</translation>
@@ -188,7 +185,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2825619548187458965">Biblioteca</translation>
 <translation id="2841907151129139818">Se cambió al modo tablet</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (puerto lateral izquierdo delantero)</translation>
-<translation id="2846247265041961677">No se pudo encontrar el teléfono</translation>
 <translation id="2865888419503095837">Información de red</translation>
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="2878884018241093801">No hay elementos recientes</translation>
@@ -330,7 +326,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4195877955194704651">Botón de clic automáticos</translation>
 <translation id="4197790712631116042">No</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> no está disponible.</translation>
-<translation id="4212246570487010370">Seguir explorando</translation>
 <translation id="4212472694152630271">Cambiar a PIN</translation>
 <translation id="4215497585250573029">Configuración de la VPN</translation>
 <translation id="4217571870635786043">Dictado</translation>
@@ -359,7 +354,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4412944820643904175">La función <ph name="FEATURE_NAME" /> está desactivada.</translation>
 <translation id="4421231901400348175">Se está compartiendo el control de la pantalla con <ph name="HELPER_NAME" /> mediante la Asistencia remota.</translation>
 <translation id="4430019312045809116">Volumen</translation>
-<translation id="4444978951615977024">¡Vaya! Revisa tu conexión</translation>
 <translation id="4450893287417543264">No volver a mostrar</translation>
 <translation id="445864333228800152">Buenas noches:</translation>
 <translation id="4458688154122353284">Detener la grabación de pantalla</translation>
@@ -401,7 +395,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4804818685124855865">Desconectar</translation>
 <translation id="4814539958450445987">Pantalla de acceso</translation>
 <translation id="4831034276697007977">¿Confirmas que quieres desactivar los clics automáticos?</translation>
-<translation id="4836108105469522644">Activa las notificaciones de tu teléfono Android</translation>
 <translation id="4849058404725798627">Resaltar el objeto con el enfoque del teclado</translation>
 <translation id="485592688953820832">No es necesaria ninguna acción (pausa)</translation>
 <translation id="4868492592575313542">activada</translation>
@@ -474,6 +467,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="558849140439112033">Arrastra el cursor para seleccionar un área que quieras capturar</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Presiona Ctrl + Alt + Z para inhabilitar los comentarios por voz.</translation>
+<translation id="5601503069213153581">PIN</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Conector para micrófono</translation>
 <translation id="5669267381087807207">Activando</translation>
@@ -493,7 +487,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5769373120130404283">Pantalla de privacidad</translation>
 <translation id="5777841717266010279">¿Dejar de compartir la pantalla?</translation>
 <translation id="5790085346892983794">Completado correctamente</translation>
-<translation id="579415080077680903">Silencio</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Detener <ph name="ROUTE_TITLE" /> en <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Desactivado</translation>
@@ -506,7 +499,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5920710855273935292">El micrófono está silenciado.</translation>
-<translation id="594179686076170922">Conectando con tu teléfono…</translation>
 <translation id="5946788582095584774">La función <ph name="FEATURE_NAME" /> está activada.</translation>
 <translation id="5947494881799873997">Revertir</translation>
 <translation id="595202126637698455">Seguimiento de rendimiento habilitado</translation>
@@ -533,7 +525,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="615957422585914272">Mostrar el teclado en pantalla</translation>
 <translation id="6164005077879661055">Todos los archivos y los datos locales asociados al usuario supervisado se eliminarán de forma permanente una vez que se elimine este usuario supervisado. Es posible que el administrador pueda seguir viendo la configuración y los sitios web visitados de este usuario supervisado en <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Más información</translation>
-<translation id="6192859646269780503">Ubicar teléfono</translation>
 <translation id="622484624075952240">Abajo</translation>
 <translation id="6236290670123303279">Administrar Configuración</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -607,11 +598,11 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6910714959251846841">Esta actualización requiere que apliques la función Powerwash en tu dispositivo. Obtén más información sobre la actualización más reciente de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">No se reconoció tu tarjeta inteligente. Vuelve a intentarlo.</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
+<translation id="6965382102122355670">Aceptar</translation>
 <translation id="6972754398087986839">Comenzar</translation>
 <translation id="6981982820502123353">Accesibilidad</translation>
 <translation id="698231206551913481">Todos los archivos y datos locales asociados a este usuario se borrarán de forma permanente una vez que se quite este usuario.</translation>
 <translation id="7007983414944123363">No se pudo verificar tu PIN o contraseña. Vuelve a intentarlo.</translation>
-<translation id="7013005189539051442">Habilitar el hotspot</translation>
 <translation id="7015766095477679451">Regresa a las <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Conectar tu dispositivo <ph name="DEVICE_NAME" /> a tu teléfono</translation>
 <translation id="7026338066939101231">Disminuir</translation>
@@ -679,7 +670,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7662283695561029522">Presiona para configurar</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7705822912736783206">Autentica el acceso con la huella digital</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificación}other{# notificaciones}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7749443890790263709">Se alcanzó la cantidad máxima de escritorios.</translation>

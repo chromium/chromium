@@ -4360,7 +4360,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6112294629795967147">Toca la finestra per canviar-ne la mida</translation>
 <translation id="6112727384379533756">Afegeix un tiquet</translation>
 <translation id="6112931163620622315">Comprova el telèfon</translation>
-<translation id="6112952769866305444">Edita la persona (<ph name="PROFILE_NAME" />, <ph name="USERNAME" />)</translation>
 <translation id="6113434369102685411">Defineix el motor de cerca predeterminat per al navegador Chrome i el menú d'aplicacions de <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Per fer servir Smart Lock, ves al perfil d'usuari principal del telèfon</translation>
 <translation id="6116921718742659598">Canvia la configuració d'idioma i d'introducció de text</translation>
@@ -5643,7 +5642,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" vol eliminar "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650677314924139716">L'opció de configuració d'ús de dades actual és només Wi-Fi</translation>
-<translation id="7652808307838961528">Edita la persona (<ph name="PROFILE_NAME" />)</translation>
 <translation id="765293928828334535">No es poden afegir aplicacions, extensions ni scripts d'usuari des d'aquest lloc web</translation>
 <translation id="7652954539215530680">Crea un PIN</translation>
 <translation id="7654941827281939388">Aquest compte ja s'està utilitzant en aquest ordinador.</translation>
@@ -5885,6 +5883,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7898627924844766532">Conserva a la barra d'eines</translation>
 <translation id="7898725031477653577">Tradueix sempre</translation>
 <translation id="790040513076446191">Manipular la configuració relacionada amb la privadesa</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903345046358933331">La pàgina no respon. Podeu esperar que respongui o tancar-la.</translation>
 <translation id="7903742244674067440">Tens certificats arxivats que identifiquen aquestes entitats emissores de certificats</translation>
 <translation id="7903859912536385558">estable (verificador de confiança)</translation>

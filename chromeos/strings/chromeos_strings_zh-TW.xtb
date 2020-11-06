@@ -65,6 +65,7 @@
 <translation id="4297501883039923494">已停止 - 不明的錯誤</translation>
 <translation id="4378373042927530923">未執行</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4425149324548788773">我的雲端硬碟</translation>
 <translation id="4429881212383817840">Kerberos 票證即將到期</translation>
 <translation id="445059817448385655">舊密碼</translation>
 <translation id="4454245904991689773">掃描檔案儲存位置</translation>
@@ -98,6 +99,7 @@
 <translation id="54609108002486618">受管理</translation>
 <translation id="5832805196449965646">新增使用者</translation>
 <translation id="5895138241574237353">重新啟動</translation>
+<translation id="6040143037577758943">關閉</translation>
 <translation id="6048107060512778456">失敗 - 卡紙</translation>
 <translation id="6058625436358447366">如要完成變更，請輸入你的舊密碼和新密碼</translation>
 <translation id="6106186594183574873">如要完成變更，請輸入你的舊密碼</translation>
@@ -111,6 +113,7 @@
 <translation id="6517239166834772319">探索</translation>
 <translation id="6527081081771465939">Wi-Fi 安全通訊協定不明</translation>
 <translation id="6564646048574748301">失敗 - 無法連上印表機</translation>
+<translation id="6618744767048954150">檢查中</translation>
 <translation id="6620487321149975369">除非手動移除列印工作，否則這項資料會顯示在歷史記錄中</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6704062477274546131">DNS 解析</translation>

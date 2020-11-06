@@ -264,6 +264,7 @@
 <translation id="1300415640239881824"><ph name="DOMAIN" /> quere que Google verifique a identidade do teu dispositivo para determinar se se pode utilizar a reprodución mellorada con contido protexido.</translation>
 <translation id="1300806585489372370">Para cambiar esta opción de configuración, en primeiro lugar <ph name="BEGIN_LINK" />activa os identificadores<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> pode editar os seguintes ficheiros</translation>
+<translation id="1302139669997477151">As capturas de pantalla están bloqueadas</translation>
 <translation id="1302227299132585524">Permitir JavaScript desde Apple Events</translation>
 <translation id="1303101771013849280">Ficheiro HTML de marcadores</translation>
 <translation id="1303671224831497365">Non se atopou ningún dispositivo Bluetooth</translation>
@@ -311,6 +312,7 @@
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1353980523955420967">Non se puido atopar o PPD. Asegúrate de que o dispositivo Chromebook estea en liña e téntao de novo.</translation>
 <translation id="1354045473509304750">Seguir permitindo que <ph name="HOST" /> use e mova a túa cámara</translation>
+<translation id="1355088139103479645">Queres eliminar todos os datos?</translation>
 <translation id="1355466263109342573">O complemento (<ph name="PLUGIN_NAME" />) está bloqueado</translation>
 <translation id="1358741672408003399">Ortografía e gramática</translation>
 <translation id="1359923111303110318">O dispositivo pode desbloquearse con Smart Lock. Preme Intro para desbloquealo.</translation>
@@ -493,6 +495,7 @@
 <translation id="1553538517812678578">ilimitado</translation>
 <translation id="1554390798506296774">Permitir sempre plugins non incluídos en illamento de procesos en <ph name="HOST" /></translation>
 <translation id="1555130319947370107">Azul</translation>
+<translation id="1556302226221634923">As persoas que escollesen permanecer visibles para ti cando a súa pantalla estea desbloqueada e os dispositivos que estean preto túa cando estea aberta a función Compartir por Nearby</translation>
 <translation id="1556537182262721003">Non se puido mover o directorio de extensións ao perfil.</translation>
 <translation id="155865706765934889">Panel táctil</translation>
 <translation id="1562119309884184621">Se engades este contacto, lembrarase a próxima vez que comparta contido</translation>
@@ -1273,6 +1276,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2457246892030921239"><ph name="APP_NAME" /> quere copiar ficheiros de <ph name="VOLUME_NAME" />.</translation>
 <translation id="2458379781610688953">Actualizar conta, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">O token de xestión de dispositivo non é válido.</translation>
+<translation id="2459703812219683497">Detectouse un código de activación</translation>
 <translation id="2462724976360937186">ID de clave de autoridade de certificación</translation>
 <translation id="2462752602710430187">Engadiuse <ph name="PRINTER_NAME" /></translation>
 <translation id="2464089476039395325">Proxy HTTP</translation>
@@ -2070,6 +2074,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3413122095806433232">Emisores de CA: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Tamaño:</translation>
 <translation id="3416468988018290825">Mostrar sempre URL completos</translation>
+<translation id="3417835166382867856">Realizar buscas nas pestanas</translation>
 <translation id="3417836307470882032">Formato de 24 horas</translation>
 <translation id="3420501302812554910">É necesario restablecer a chave de seguranza interna</translation>
 <translation id="3421376478111338173">{COUNT,plural, =1{1 imaxe}other{# imaxes}}</translation>
@@ -2103,6 +2108,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3441653493275994384">Pantalla</translation>
 <translation id="3441663102605358937">Inicia sesión en <ph name="ACCOUNT" /> de novo para verificar esta conta</translation>
 <translation id="3445047461171030979">Respostas rápidas do Asistente de Google</translation>
+<translation id="3445770710327978113">Para volver aquí rapidamente, instala esta aplicación</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3446274660183028131">Inicia Parallels Desktop para instalar Windows.</translation>
 <translation id="344630545793878684">Lectura dos teus datos nun determinado número de sitios web</translation>
@@ -4353,7 +4359,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6112294629795967147">Tocar para cambiar o tamaño</translation>
 <translation id="6112727384379533756">Engadir tícket</translation>
 <translation id="6112931163620622315">Consulta o teléfono</translation>
-<translation id="6112952769866305444">Edita a persoa, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Establece o motor de busca predeterminado para o navegador Chrome e o menú de aplicacións de <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Para utilizar Smart Lock, cambia ao perfil do usuario principal do teléfono</translation>
 <translation id="6116921718742659598">Cambiar configuración de idioma e entrada</translation>
@@ -4779,6 +4784,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6624687053722465643">Dozura</translation>
 <translation id="6628328486509726751">Data da carga: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> solicita acceso permanente a un certificado para autenticarse no teu nome.</translation>
+<translation id="6630956688541588659">Todos os contactos que estean peto de ti cando a pantalla estea desbloqueada e os dispositivos que estean cerca túa cando estea aberta a función Compartir por Nearby</translation>
 <translation id="6635944431854494329">O propietario pode controlar esta función en Configuración &gt; Avanzada &gt; Enviar de forma automática datos de uso e diagnóstico a Google.</translation>
 <translation id="6635956300022133031">Selecciona e personaliza as voces da síntese de voz</translation>
 <translation id="6636588250634969791">Para continuar, introduce unha SIM</translation>
@@ -5054,6 +5060,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6955535239952325894">Esta opción de configuración está desactivada nos navegadores xestionados</translation>
 <translation id="6957044667612803194">Esta chave de seguranza non admite códigos PIN</translation>
 <translation id="6957231940976260713">Nome do servizo</translation>
+<translation id="696103774840402661">Elimináronse permanentemente todos os ficheiros e os datos locais de todos os usuarios deste dispositivo (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="6964390816189577014">Heroe</translation>
 <translation id="6964760285928603117">Quitar do grupo</translation>
 <translation id="6965382102122355670">Aceptar</translation>
@@ -5244,6 +5251,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7180865173735832675">Personalizar</translation>
 <translation id="7182791023900310535">Mover o teu contrasinal</translation>
+<translation id="7185907299184016376">Os contactos seleccionados que estean preto de ti cando a pantalla estea desbloqueada e os dispositivos que estean cerca túa cando estea aberta a función Compartir por Nearby</translation>
 <translation id="7186088072322679094">Manter na barra de ferramentas</translation>
 <translation id="7187428571767585875">Entradas do rexistro que se deben quitar ou cambiar:</translation>
 <translation id="7187855807420906517">Unha vez que saes ou te desconectas, os sitios adoitan seguir sincronizando datos para finalizar tarefas (por exemplo, cargar fotos ou enviar mensaxes de chat)</translation>
@@ -5410,6 +5418,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7380622428988553498">O nome do dispositivo contén caracteres non válidos</translation>
 <translation id="7380768571499464492">Actualizouse a impresora <ph name="PRINTER_NAME" /></translation>
 <translation id="7384687527486377545">Repetición automática do teclado</translation>
+<translation id="7385490373498027129">Eliminaranse permanentemente todos os ficheiros e os datos locais de todos os usuarios deste dispositivo (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="7385854874724088939">Produciuse un erro ao tentar imprimir. Comproba a túa impresora e téntao de novo.</translation>
 <translation id="7385896526023870365">Esta extensión non ten ningún acceso adicional ao sitio.</translation>
 <translation id="7388044238629873883">Xa case remataches.</translation>
@@ -5632,7 +5641,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7649070708921625228">Axuda</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" quere eliminar "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650677314924139716">A configuración de uso de datos actual é Só por wifi</translation>
-<translation id="7652808307838961528">Edita a persoa, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Non se poden engadir aplicacións, extensións nin scripts de usuarios desde este sitio web</translation>
 <translation id="7652954539215530680">Crear un PIN</translation>
 <translation id="7654941827281939388">Esta conta xa se está usando neste ordenador.</translation>
@@ -5677,6 +5685,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7691077781194517083">Non se puido restablecer esta chave de seguranza. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Actualización de Crostini</translation>
 <translation id="7696063401938172191">No teu teléfono <ph name="PHONE_NAME" />:</translation>
+<translation id="7697598343108519171">Utilizar cámara para escanear código QR</translation>
 <translation id="7699968112832915395">Non se puido engadir a conta</translation>
 <translation id="7701040980221191251">Ningunha</translation>
 <translation id="7701869757853594372">Controladores de USUARIO</translation>
@@ -5873,6 +5882,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7898627924844766532">Manter na barra de ferramentas</translation>
 <translation id="7898725031477653577">Traducir sempre</translation>
 <translation id="790040513076446191">Manipular configuración relacionada coa privacidade</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903345046358933331">A páxina deixou de responder. Podes esperar a que volva responder ou ben podes pechala.</translation>
 <translation id="7903742244674067440">Tes certificados arquivados que identifican estas entidades de certificación</translation>
 <translation id="7903859912536385558">estable (probador de confianza)</translation>
@@ -6022,6 +6032,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8059456211585183827">Non hai impresoras dispoñibles para gardar.</translation>
 <translation id="8061091456562007989">Desfacer cambio</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 folla}other{{COUNT} follas}}</translation>
+<translation id="8062879968880283306">Escanea o código QR coa cámara do dispositivo ou escribe o código de activación que che proporcionou o teu operador.</translation>
 <translation id="8063235345342641131">Avatar verde predeterminado</translation>
 <translation id="8063535366119089408">Ver ficheiro</translation>
 <translation id="8064279191081105977">Grupo <ph name="GROUP_NAME" />. <ph name="GROUP_CONTENTS" />. <ph name="COLLAPSED_STATE" /></translation>
@@ -6113,6 +6124,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mover pestana a unha ventá nova}other{Mover pestanas a unha ventá nova}}</translation>
 <translation id="8165997195302308593">Encamiñamento de porto de Crostini</translation>
 <translation id="8168435359814927499">Contido</translation>
+<translation id="8169165065843881617">{NUM_TABS,plural, =1{Engadir pestana á lista de lectura}other{Engadir pestanas á lista de lectura}}</translation>
 <translation id="8174047975335711832">Información do dispositivo</translation>
 <translation id="8174876712881364124">Crear copia de seguranza en Google Drive. Restaura facilmente os datos ou cambia de dispositivo en calquera momento. Esta copia de seguranza inclúe os datos das aplicacións. As copias de seguranza cárganse en Google e encríptanse co contrasinal da Conta de Google do teu fillo. <ph name="BEGIN_LINK1" />Máis información<ph name="END_LINK1" /></translation>
 <translation id="8176332201990304395">Rosa e branco</translation>
@@ -6122,6 +6134,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" pode ler e eliminar ficheiros de imaxes, vídeo e son nas localizacións seleccionadas.</translation>
 <translation id="8181215761849004992">O dispositivo non se puido vincular ao dominio. Comproba a túa conta para ver se tes privilexios suficientes para engadir dispositivos.</translation>
 <translation id="8182105986296479640">A aplicación non responde.</translation>
+<translation id="8182412589359523143">Se queres, podes <ph name="BEGIN_LINK" />eliminar todos os datos<ph name="END_LINK" /> deste dispositivo (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="8182664696082410784"><ph name="REASON" />
     Non creo que se deba bloquear este sitio.</translation>
 <translation id="8184288427634747179">Cambiar a <ph name="AVATAR_NAME" /></translation>
@@ -6381,6 +6394,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8498395510292172881">Seguir lendo en Chrome</translation>
 <translation id="8500234928660943538">O PUK é incorrecto. Intentos restantes: <ph name="RETRIES" />.</translation>
 <translation id="8502536196501630039">Para usar aplicacións de Google Play, primeiro debes restaurar as túas aplicacións. Pódense perder algúns datos.</translation>
+<translation id="850314194061055138">utilizar cámara de novo</translation>
 <translation id="8503813439785031346">Nome de usuario</translation>
 <translation id="8504640708321980506">Datos</translation>
 <translation id="8507227974644337342">Resolución da pantalla</translation>
@@ -6438,6 +6452,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8574990355410201600">Permitir sempre que se reproduza son en <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Mantén premido <ph name="KEY_EQUIVALENT" /> para saír</translation>
 <translation id="8576249514688522074">Non iniciada</translation>
+<translation id="8576885347118332789">{NUM_TABS,plural, =1{Engadir pestana á lista de lectura}other{Engadir pestanas á lista de lectura}}</translation>
 <translation id="8578639784464423491">Non pode ter máis de 99 letras</translation>
 <translation id="857943718398505171">Permitido (recomendado)</translation>
 <translation id="8581809080475256101">Preme para avanzar e acceder ao menú contextual para ver o historial</translation>
@@ -7033,6 +7048,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="939736085109172342">Cartafol novo</translation>
 <translation id="941070664607309480">Fai clic para que poida detectarte e compartir contido contigo</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> está compartindo audio e unha pestana de Chrome.</translation>
+<translation id="942603342650325556">O teu administrador bloqueou a opción de realizar capturas do contido da pantalla.</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="947329552760389097">&amp;Inspeccionar elementos</translation>
 <translation id="951991426597076286">Rexeitar</translation>

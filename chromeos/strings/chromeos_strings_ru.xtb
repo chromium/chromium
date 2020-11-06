@@ -65,6 +65,7 @@
 <translation id="4297501883039923494">Печать прервана: неизвестная ошибка</translation>
 <translation id="4378373042927530923">Не проверено</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4425149324548788773">Мой диск</translation>
 <translation id="4429881212383817840">Срок действия билета Kerberos истекает</translation>
 <translation id="445059817448385655">Старый пароль</translation>
 <translation id="4454245904991689773">Место сохранения</translation>
@@ -98,6 +99,7 @@
 <translation id="54609108002486618">Автоматическое управление</translation>
 <translation id="5832805196449965646">Добавить пользователя</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
+<translation id="6040143037577758943">Закрыть</translation>
 <translation id="6048107060512778456">Сбой: застряла бумага</translation>
 <translation id="6058625436358447366">Для завершения введите старый и новый пароли.</translation>
 <translation id="6106186594183574873">Для завершения введите старый пароль.</translation>
@@ -111,6 +113,7 @@
 <translation id="6517239166834772319">Возможности</translation>
 <translation id="6527081081771465939">Неизвестный протокол обеспечения безопасности сети Wi-Fi.</translation>
 <translation id="6564646048574748301">Сбой: принтер недоступен</translation>
+<translation id="6618744767048954150">Выполняется</translation>
 <translation id="6620487321149975369">Задания печати показываются в истории до тех пор, пока вы их не удалите</translation>
 <translation id="6643016212128521049">Удалить</translation>
 <translation id="6704062477274546131">Разрешение DNS</translation>

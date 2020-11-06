@@ -4360,7 +4360,6 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="6112294629795967147">Thinta ukuze ushintshe usayizi</translation>
 <translation id="6112727384379533756">Engeza ithikithi</translation>
 <translation id="6112931163620622315">Hlola ifoni yakho</translation>
-<translation id="6112952769866305444">Hlela umuntu, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Setha injini yakho yokusesha ezenzakalelayo yesiphequluli se-Chrome kanye Nesiqalisi se-<ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Ukuze usebenzise i-Smart Lock, shintshela kuphrofayela yomsebenzisi oyisisekelo efonini yakho</translation>
 <translation id="6116921718742659598">Guqula ulimi nezilungiselelo zokufaka</translation>
@@ -5643,7 +5642,6 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="7649070708921625228">Usizo</translation>
 <translation id="7650511557061837441">I-"<ph name="TRIGGERING_EXTENSION_NAME" />" ingathanda ukususa i-"<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650677314924139716">Isethingi lokusetshenziswa kwedatha yamanje yi-Wi-Fi kuphela</translation>
-<translation id="7652808307838961528">Hlela umuntu, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Izinhlelo zokusebenza, izandiso, namaskripthi omsebenzisi awakwazi ukungezwa kusukela kule webhusayithi</translation>
 <translation id="7652954539215530680">Dala iphinikhodi</translation>
 <translation id="7654941827281939388">Le akhawunti isivele iyasetshenziswa kwenye ikhompyutha.</translation>
@@ -5885,6 +5883,7 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7898627924844766532">Gcina kubha yamathuluzi</translation>
 <translation id="7898725031477653577">Humusha njalo</translation>
 <translation id="790040513076446191">Khohlisa izilungiselelo ezihlobene nobumfihlo</translation>
+<translation id="7901405293566323524">Ihabhu Yefoni</translation>
 <translation id="7903345046358933331">Ikhasi alisaphenduli. Ungalilinda ukuthi liphendule noma ulivale.</translation>
 <translation id="7903742244674067440">Unezitifiketi kufayela ezikhomba lokhu kugunyazwa kwesitifiketi</translation>
 <translation id="7903859912536385558">lisimeme (umhloli owethenjiwe)</translation>

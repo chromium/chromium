@@ -5,7 +5,6 @@
 <translation id="1023220960495960452">Транслитерација (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">Приказ слајда</translation>
 <translation id="1045157690796831147">Транслитерација (namaskar → നമസ്കാരം)</translation>
-<translation id="1046068652463704410">Унос за јапански (за америчку тастатуру)</translation>
 <translation id="1047956942837015229">Брисање ставки (<ph name="COUNT" />)...</translation>
 <translation id="1049926623896334335">Word документ</translation>
 <translation id="1060368002126861100">Да бисте отварали датотеке помоћу апликације <ph name="APP_NAME" />, прво их преместите у директоријум са Windows датотекама.</translation>
@@ -26,11 +25,9 @@
 <translation id="1178581264944972037">Паузирај</translation>
 <translation id="1190144681599273207">Преузимање ове датотеке ће искористити око <ph name="FILE_SIZE" /> података за мобилне уређаје.</translation>
 <translation id="1201402288615127009">Даље</translation>
-<translation id="1208421848177517699">Транслитерација (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">Отпреми</translation>
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1276362640455948667">португалски са америчком интернационалном тастатуром</translation>
-<translation id="1278813325885878377">Мађарска QWERTY тастатура</translation>
 <translation id="1293556467332435079">Датотеке</translation>
 <translation id="1297922636971898492">Google диск тренутно није доступан. Отпремање ће се аутоматски поново покренути када Google диск постане доступан.</translation>
 <translation id="1307931752636661898">Приказ Linux датотека није успео</translation>
@@ -63,7 +60,6 @@
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1646019627374511909">Омогућава се коришћење фајлова офлајн (<ph name="NUMBER_OF_ITEMS" />)</translation>
-<translation id="1646136617204068573">Језик тастатуре: мађарски</translation>
 <translation id="164729547906544836">Тамилска тастатура (itrans)</translation>
 <translation id="164969095109328410">Chrome уређај</translation>
 <translation id="1665611772925418501">Није могуће изменити датотеку.</translation>
@@ -93,7 +89,6 @@
 <translation id="1936717151811561466">фински</translation>
 <translation id="1942765061641586207">Резолуција слике</translation>
 <translation id="1943097386230153518">Инсталирајте нову услугу</translation>
-<translation id="1947424002851288782">Језик тастатуре: немачки</translation>
 <translation id="1972984168337863910">Прошири окна за повратне информације о датотекама</translation>
 <translation id="1984603991036629094">Јерменска фонетска тастатура</translation>
 <translation id="1995337122023280937">Иди на локацију датотеке</translation>
@@ -116,14 +111,12 @@
 <translation id="2225536596944493418">Желите ли стварно да избришете ставке (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Није могуће направити директоријум „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">Премештено је.</translation>
-<translation id="2278988676849463018">Канада тастатура (фонетска)</translation>
 <translation id="2287742181953707290">португалски са америчком интернационалном тастатуром за рачунар</translation>
 <translation id="2288278176040912387">Грамофон</translation>
 <translation id="2291538123825441971">Отварају се датотеке (<ph name="NUMBER_OF_FILES" />).</translation>
 <translation id="2303301624314357662">Отвара се датотека <ph name="FILE_NAME" />.</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> је избачен.</translation>
 <translation id="2325650632570794183">Овај тип датотеке није подржан. Посетите Chrome веб-продавницу и пронађите апликацију која може да отвара овај тип датотеке.</translation>
-<translation id="23434688402327542">Казашка тастатура</translation>
 <translation id="2352947182261340447">Немате довољно простора у локалној меморији.</translation>
 <translation id="2377319039870049694">Пређи на приказ листе</translation>
 <translation id="2377590462528165447">Директоријуми (<ph name="NUMBER_OF_ITEMS" />) се деле са Linux-ом</translation>
@@ -136,7 +129,6 @@
 <translation id="2453576648990281505">Датотека већ постоји</translation>
 <translation id="2464079411014186876">Сладолед</translation>
 <translation id="2468402215065996499">Тамагочи</translation>
-<translation id="2494837236724268445">Гуџарати тастатура (фонетска)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Језик тастатуре: енглески (САД)</translation>
 <translation id="2534155362429831547">Избрисаних ставки: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -172,10 +164,8 @@
 <translation id="2902312830803030883">Још радњи</translation>
 <translation id="2902734494705624966">проширена америчка</translation>
 <translation id="2923240520113693977">естонски</translation>
-<translation id="2924296707677495905">Транслитерација (namaskaram → ನಮಸ್ಕಾರ)</translation>
 <translation id="2925966894897775835">Табеле</translation>
 <translation id="2938685643439809023">монголски</translation>
-<translation id="2942290791863759244">Немачка NEO 2 тастатура</translation>
 <translation id="2943400156390503548">Презентације</translation>
 <translation id="2943503720238418293">Користите краћи назив</translation>
 <translation id="2949781154072577687">Форматира се <ph name="DRIVE_NAME" />...</translation>
@@ -196,7 +186,6 @@
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ГОТОВО</translation>
 <translation id="3157729859914172001">Америчка интернационална тастатура (PC)</translation>
-<translation id="3187212781151025377">Језик тастатуре: хебрејски</translation>
 <translation id="3188257591659621405">Моје датотеке</translation>
 <translation id="3197563288998582412">УК Дворак</translation>
 <translation id="3202131003361292969">Путања</translation>
@@ -227,14 +216,12 @@
 <translation id="3475447146579922140">Google табела</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> грешака.</translation>
 <translation id="349603508045926994">персијски, транслитерација</translation>
-<translation id="3519867315646775981">Транслитерација (shalom ← שלום)</translation>
 <translation id="3522708245912499433">португалски</translation>
 <translation id="3524311639100184459">Опрез: Ове датотеке су привремене и могу да се избришу аутоматски како би се ослободио простор на диску.  <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Директоријум</translation>
 <translation id="3549797760399244642">Иди на drive.google.com...</translation>
 <translation id="3553048479571901246">Да бисте отварали датотеке помоћу апликације <ph name="APP_NAME" />, прво их копирајте у директоријум са Windows датотекама.</translation>
 <translation id="357479282490346887">литвански</translation>
-<translation id="3583509704582854624">Алфанумерички унос (за јапанску тастатуру)</translation>
 <translation id="3603385196401704894">канадска француска</translation>
 <translation id="3606220979431771195">турска F</translation>
 <translation id="3609785682760573515">Синхронизовање...</translation>
@@ -268,10 +255,8 @@
 <translation id="383652340667548381">српски</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3855472144336161447">немачка Neo 2</translation>
-<translation id="3858678421048828670">Језик тастатуре: италијански</translation>
 <translation id="386548886866354912">Спакуј помоћу додатка <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Опис</translation>
-<translation id="3910699493603749297">Кмерска тастатура</translation>
 <translation id="391445228316373457">Непалска тастатура (фонетска)</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">Пусти на</translation>
@@ -335,7 +320,6 @@
 <translation id="4734518477988699048">Унета вредност је неважећа.</translation>
 <translation id="4737050008115666127">Слетање</translation>
 <translation id="4747271164117300400">македонски</translation>
-<translation id="4749157430980974800">Грузијска тастатура</translation>
 <translation id="4759238208242260848">Преузимања</translation>
 <translation id="4779136857077979611">Онигири</translation>
 <translation id="4784330909746505604">PowerPoint презентација</translation>
@@ -413,7 +397,6 @@
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Сачувај</translation>
 <translation id="5318819489018851358">Дели са Linux-ом</translation>
-<translation id="5319782540886810524">Језик тастатуре: летонски</translation>
 <translation id="5323213332664049067">Латинска Америка</translation>
 <translation id="5327248766486351172">Назив</translation>
 <translation id="5330145655348521461">Ове датотеке су отворене на другом профилу. Пређите на <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) да бисте их погледали.</translation>
@@ -440,7 +423,6 @@
 <translation id="5534520101572674276">Израчунавање величине</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">америчка Дворак</translation>
-<translation id="5640179856859982418">Језик тастатуре: швајцарски</translation>
 <translation id="5649768706273821470">Слушај</translation>
 <translation id="5678784840044122290">Linux апликација ће бити доступна на терминалу, а можда ће приказивати и икону у Покретачу.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Није успео прекид везе са архивским или виртуелним диском<ph name="END_BOLD" />
@@ -451,7 +433,6 @@
 <translation id="5731409020711461763">1 нова слика</translation>
 <translation id="5752453871435543420">Резервне копије у клауду за Chrome ОС</translation>
 <translation id="5756666464756035725">Мађарска QWERTY</translation>
-<translation id="5771585441665576801">Транслитерација (geia → γεια)</translation>
 <translation id="5776325638577448643">Избриши и форматирај</translation>
 <translation id="57838592816432529">Искључи звук</translation>
 <translation id="5788127256798019331">Play датотеке</translation>
@@ -468,7 +449,6 @@
 <translation id="5911887972742538906">Дошло је до грешке током инсталирања Linux апликације.</translation>
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5913638992615760742">Операција копирања није успела, неочекивана грешка: <ph name="ERROR_MESSAGE" /></translation>
-<translation id="5923484009666796948">Унос за јапански (за јапанску тастатуру)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5955954492236143329">Ставки: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox-ови</translation>
@@ -498,7 +478,6 @@
 <translation id="6248400709929739064">Омогући титлове</translation>
 <translation id="6264347891387618177">Транслитерација (selam → ሰላም)</translation>
 <translation id="6287852322318138013">Изаберите апликацију за отварање ове датотеке</translation>
-<translation id="6305012486838822927">Лаоска тастатура</translation>
 <translation id="6339034549827494595">Руска фонетска тастатура (AATSEEL)</translation>
 <translation id="6339145975392024142">Америчка интернационална тастатура (PC)</translation>
 <translation id="6346310558342052870">Приступ је ограничен</translation>
@@ -509,8 +488,6 @@
 <translation id="6395575651121294044">Ставки: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6398765197997659313">Изађи из режима целог екрана</translation>
 <translation id="642282551015776456">Овај назив не може да се користи као назив датотеке или директоријума</translation>
-<translation id="6462109140674788769">Језик тастатуре: грчки</translation>
-<translation id="6466492211071551451">Ирска тастатура</translation>
 <translation id="6485131920355264772">Преузимање информација о простору није успело</translation>
 <translation id="6505918941256367791">Тамилска тастатура (индијско писмо)</translation>
 <translation id="6509122719576673235">норвешки</translation>
@@ -650,7 +627,6 @@
 <translation id="7896906914454843592">Америчка проширена тастатура</translation>
 <translation id="7898607018410277265">Гуџарати тастатура (нова фонетска)</translation>
 <translation id="7908793776359722643">Ако форматирате партицију, бришете све податке на њој. Ова радња не може да се опозове.</translation>
-<translation id="7917972308273378936">Језик тастатуре: литвански</translation>
 <translation id="7925686952655276919">Не користи податке за мобилне уређаје за синхронизацију</translation>
 <translation id="7928710562641958568">Избаци уређај</translation>
 <translation id="7943385054491506837">америчка Colemak</translation>
@@ -697,7 +673,6 @@
 <translation id="8335587457941836791">Откачи са полице</translation>
 <translation id="8336153091935557858">Јуче у <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336524887811696057">непалски, транслитерација</translation>
-<translation id="8336579025507394412">Исландска тастатура</translation>
 <translation id="8342318071240498787">Већ постоји датотека или директоријум са истим називом.</translation>
 <translation id="8382450452152102026">У: <ph name="FOLDER_NAME" /></translation>
 <translation id="8391950649760071442">Транслитерација (emandi → ఏమండీ)</translation>
@@ -708,7 +683,6 @@
 <translation id="8437209419043462667">америчка</translation>
 <translation id="8456681095658380701">Неважеће име</translation>
 <translation id="8466234950814670489">Tar архива</translation>
-<translation id="8467473010914675605">Корејски метод уноса</translation>
 <translation id="8475647382427415476">Google диск тренутно није успео да синхронизује „<ph name="FILENAME" />“. Google диск ће покушати поново касније.</translation>
 <translation id="8477649328507734757">Окретање</translation>
 <translation id="8487700953926739672">Доступно ван мреже</translation>

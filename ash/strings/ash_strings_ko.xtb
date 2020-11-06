@@ -49,7 +49,6 @@
 <translation id="1346748346194534595">오른쪽</translation>
 <translation id="1351937230027495976">메뉴 접기</translation>
 <translation id="1383876407941801731">검색</translation>
-<translation id="1390105199421505038"><ph name="USER_EMAIL_ADDRESS" /> 계정 삭제 대화상자</translation>
 <translation id="1391102559483454063">사용</translation>
 <translation id="1407069428457324124">어두운 테마</translation>
 <translation id="1419738280318246476">알림 작업을 실행하려면 기기의 잠금을 해제하세요.</translation>
@@ -74,7 +73,6 @@
 <translation id="1589090746204042747">이 세션의 모든 활동에 액세스</translation>
 <translation id="1611993646327628135">켜짐</translation>
 <translation id="1632985212731562677">설정 &gt; 접근성에서 스위치 제어를 사용 중지할 수 있습니다.</translation>
-<translation id="1651447046299738444">Chromebook의 블루투스 또는 Wi-Fi가 꺼져 있는 것 같습니다. 휴대전화 허브를 사용하려면 연결 상태를 확인해 주세요.</translation>
 <translation id="1654477262762802994">음성 검색 시작</translation>
 <translation id="1667964833127753507">중성 색상 모드는 배경화면에서 추출한 색상을 사용하지 않고 밝거나 어두운 중성 색상으로 대체합니다.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> 남음</translation>
@@ -143,7 +141,6 @@
 <translation id="2341729377289034582">세로로 잠김</translation>
 <translation id="2352467521400612932">스타일러스 설정</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> 활성화 중</translation>
-<translation id="2356210126990741501">휴대전화가 온라인 상태가 아니므로 콘텐츠를 가져올 수 없습니다.</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2365393535144473978">모바일 데이터를 사용 설정하면 블루투스가 사용 설정됩니다.</translation>
 <translation id="2369165858548251131">중국어로 '안녕'</translation>
@@ -188,7 +185,6 @@
 <translation id="2825619548187458965">임시보관함</translation>
 <translation id="2841907151129139818">태블릿 모드로 전환됨</translation>
 <translation id="2844169650293029770">USB-C 기기(좌측 전면 포트)</translation>
-<translation id="2846247265041961677">죄송합니다. 휴대전화를 찾을 수 없습니다</translation>
 <translation id="2865888419503095837">네트워크 정보</translation>
 <translation id="2872961005593481000">종료</translation>
 <translation id="2878884018241093801">최근 항목이 없습니다.</translation>
@@ -329,7 +325,6 @@
 <translation id="4195877955194704651">자동 클릭 버튼</translation>
 <translation id="4197790712631116042">사용 안함</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" />를 사용할 수 없습니다.</translation>
-<translation id="4212246570487010370">계속 탐색</translation>
 <translation id="4212472694152630271">PIN으로 전환</translation>
 <translation id="4215497585250573029">VPN 설정</translation>
 <translation id="4217571870635786043">음성기록</translation>
@@ -358,7 +353,6 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> 기능이 꺼져 있습니다.</translation>
 <translation id="4421231901400348175">원격 지원을 통해 <ph name="HELPER_NAME" />와(과) 화면 제어 공유</translation>
 <translation id="4430019312045809116">볼륨</translation>
-<translation id="4444978951615977024">문제 발생. 연결 상태를 확인하세요</translation>
 <translation id="4450893287417543264">다시 표시하지 않음</translation>
 <translation id="445864333228800152">편안한 저녁 보내세요</translation>
 <translation id="4458688154122353284">화면 녹화 중지</translation>
@@ -400,7 +394,6 @@
 <translation id="4804818685124855865">연결 해제</translation>
 <translation id="4814539958450445987">로그인 화면</translation>
 <translation id="4831034276697007977">자동 클릭을 사용 중지하시겠습니까?</translation>
-<translation id="4836108105469522644">Android 휴대전화에서 알림 사용 설정</translation>
 <translation id="4849058404725798627">키보드 포커스로 개체 강조표시</translation>
 <translation id="485592688953820832">작업 없음(일시중지)</translation>
 <translation id="4868492592575313542">활성화됨</translation>
@@ -473,6 +466,7 @@
 <translation id="558849140439112033">드래그하여 캡처할 영역을 선택하세요.</translation>
 <translation id="5597451508971090205"><ph name="DATE" /> <ph name="SHORT_WEEKDAY" /></translation>
 <translation id="5600837773213129531">음성 피드백을 사용 중지하려면 Ctrl + Alt + Z를 누르세요.</translation>
+<translation id="5601503069213153581">PIN</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">마이크 잭</translation>
 <translation id="5669267381087807207">활성화 중</translation>
@@ -492,7 +486,6 @@
 <translation id="5769373120130404283">개인정보 보호 화면</translation>
 <translation id="5777841717266010279">화면 공유를 중단하시겠습니까?</translation>
 <translation id="5790085346892983794">완료</translation>
-<translation id="579415080077680903">음소거</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />에서 <ph name="ROUTE_TITLE" /> 중지</translation>
 <translation id="5860033963881614850">사용 안함</translation>
@@ -505,7 +498,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" />(<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5920710855273935292">마이크가 음소거되어 있습니다.</translation>
-<translation id="594179686076170922">스마트폰에 연결하는 중...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> 기능이 켜져 있습니다.</translation>
 <translation id="5947494881799873997">되돌리기</translation>
 <translation id="595202126637698455">성능 추적 사용 중</translation>
@@ -532,7 +524,6 @@
 <translation id="615957422585914272">터치 키보드 표시</translation>
 <translation id="6164005077879661055">관리 대상 사용자를 제거하면 해당 관리 대상 사용자와 연결되어 있는 모든 파일 및 로컬 데이터가 영구적으로 삭제됩니다. 하지만 관리자는 관리 대상 사용자의 방문한 웹사이트 및 설정을 <ph name="MANAGEMENT_URL" /> 페이지에서 계속 볼 수 있습니다.</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
-<translation id="6192859646269780503">휴대전화 찾기</translation>
 <translation id="622484624075952240">아래</translation>
 <translation id="6236290670123303279">설정 관리</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -606,11 +597,11 @@
 <translation id="6910714959251846841">업데이트하려면 기기에서 파워워시를 실행해야 합니다. 최신 <ph name="SYSTEM_APP_NAME" /> 업데이트에 관해 자세히 알아보세요.</translation>
 <translation id="6919251195245069855">스마트 카드를 인식할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="6945221475159498467">선택</translation>
+<translation id="6965382102122355670">확인</translation>
 <translation id="6972754398087986839">시작하기</translation>
 <translation id="6981982820502123353">접근성</translation>
 <translation id="698231206551913481">이 사용자를 제거하면 해당 사용자와 연결되어 있는 모든 파일 및 로컬 데이터가 영구적으로 삭제됩니다.</translation>
 <translation id="7007983414944123363">PIN 또는 비밀번호를 확인할 수 없습니다. 다시 시도하세요.</translation>
-<translation id="7013005189539051442">핫스팟 사용</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" />에 다시 사용해 주세요.</translation>
 <translation id="7025533177575372252">휴대전화와 <ph name="DEVICE_NAME" /> 연결</translation>
 <translation id="7026338066939101231">줄이기</translation>
@@ -678,7 +669,6 @@
 <translation id="7658239707568436148">취소</translation>
 <translation id="7662283695561029522">설정하려면 탭하세요.</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7705822912736783206">지문으로 인증</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{알림 1개}other{알림 #개}}</translation>
 <translation id="7724603315864178912">잘라내기</translation>
 <translation id="7749443890790263709">최대 데스크 개수에 도달했습니다.</translation>

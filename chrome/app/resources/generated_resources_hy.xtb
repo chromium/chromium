@@ -4364,7 +4364,6 @@
 <translation id="6112294629795967147">Հպեք՝ չափը փոխելու համար</translation>
 <translation id="6112727384379533756">Ավելացնել տոմս</translation>
 <translation id="6112931163620622315">Ստուգեք հեռախոսը</translation>
-<translation id="6112952769866305444">Փոփոխել պրոֆիլը <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Ընտրեք կանխադրված որոնողական համակարգ Chrome դիտարկիչի և <ph name="DEVICE_TYPE" />-ի գործարկիչի համար</translation>
 <translation id="6113942107547980621">Smart Lock-ն օգտագործելու համար ձեր հեռախոսում անցեք հիմնական օգտատիրոջ պրոֆիլ</translation>
 <translation id="6116921718742659598">Փոխել լեզուն և ներածման կարգավորումները</translation>
@@ -5647,7 +5646,6 @@
 <translation id="7649070708921625228">Օգնություն</translation>
 <translation id="7650511557061837441">«<ph name="TRIGGERING_EXTENSION_NAME" />»-ը ցանկանում է հեռացնել «<ph name="EXTENSION_NAME" />»-ը:</translation>
 <translation id="7650677314924139716">Տվյալների փոխանցման ընթացիկ կարգավորումը՝ «Միայն Wi-Fi»</translation>
-<translation id="7652808307838961528">Խմբագրել պրոֆիլը, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Այս կայքից հնարավոր չէ ավելացնել հավելվածներ, ընդլայնումներ և օգտատիրոջ հրահանգաշարեր</translation>
 <translation id="7652954539215530680">PIN կոդի ստեղծում</translation>
 <translation id="7654941827281939388">Հաշիվն արդեն օգտագործվում է այս համակարգչում:</translation>
@@ -5888,6 +5886,7 @@
 <translation id="7898627924844766532">Պահել գործիքագոտիում</translation>
 <translation id="7898725031477653577">Միշտ թարգմանել</translation>
 <translation id="790040513076446191">Կառավարել գաղտնիությանն առնչվող կարգավորումները</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903345046358933331">Էջը չի պատասխանում: Կարող եք սպասել պատասխանին կամ փակել էջը:</translation>
 <translation id="7903742244674067440">Ձեր պահված հավաստագրերում նշված են այս հավաստագրման կենտրոնները</translation>
 <translation id="7903859912536385558">կայուն տարբերակ (վստահված փորձարկող)</translation>

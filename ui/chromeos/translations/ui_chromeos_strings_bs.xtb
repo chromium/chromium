@@ -5,7 +5,6 @@
 <translation id="1023220960495960452">Transliterirani tekst (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">Prikaz slajda</translation>
 <translation id="1045157690796831147">Transliteracija (namaskar → നമസ്കാരം)</translation>
-<translation id="1046068652463704410">Unos za japanski (za američku tipkovnicu)</translation>
 <translation id="1047956942837015229">Brisanje stavki (<ph name="COUNT" />)…</translation>
 <translation id="1049926623896334335">Word dokument</translation>
 <translation id="1060368002126861100">Da otvorite fajlove pomoću aplikacije <ph name="APP_NAME" />, najprije ih premjestite u folder Windows fajlova.</translation>
@@ -26,11 +25,9 @@
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1190144681599273207">Dohvatanje ovog fajla potrošit će otprilike <ph name="FILE_SIZE" /> podataka na mobilnoj mreži.</translation>
 <translation id="1201402288615127009">Naprijed</translation>
-<translation id="1208421848177517699">Transliteracija (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">Otpremi</translation>
 <translation id="1249250836236328755">Žanr</translation>
 <translation id="1276362640455948667">portugalski sa međunarodnom SAD tastaturom</translation>
-<translation id="1278813325885878377">Mađarska QWERTY tastatura</translation>
 <translation id="1293556467332435079">Fajlovi</translation>
 <translation id="1297922636971898492">Google Disk trenutno nije dostupan. Otpremanje će se automatski ponovo pokrenuti čim Google Disk bude opet na raspolaganju.</translation>
 <translation id="1307931752636661898">Nije moguće prikazati Linux fajlove</translation>
@@ -63,7 +60,6 @@
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1646019627374511909">Postavljanje dostupnosti van mreže za fajlove (njih <ph name="NUMBER_OF_ITEMS" />)</translation>
-<translation id="1646136617204068573">Mađarska tastatura</translation>
 <translation id="164729547906544836">Tamilska tastatura (itrans)</translation>
 <translation id="164969095109328410">Chrome uređaj</translation>
 <translation id="1665611772925418501">Izmjena ovog fajla nije uspjela.</translation>
@@ -93,7 +89,6 @@
 <translation id="1936717151811561466">Finska</translation>
 <translation id="1942765061641586207">Rezolucija slike</translation>
 <translation id="1943097386230153518">Instaliraj novu uslugu</translation>
-<translation id="1947424002851288782">Njemačka tastatura</translation>
 <translation id="1972984168337863910">Proširivanje ploča za povratne informacije o fajlovima</translation>
 <translation id="1984603991036629094">Armenska fonetička tastatura</translation>
 <translation id="1995337122023280937">Posjeti lokaciju fajla</translation>
@@ -116,14 +111,12 @@
 <translation id="2225536596944493418">Jeste li sigurni da želite izbrisati sljedeći broj stavki: <ph name="NUMBER_OF_ITEMS" />?</translation>
 <translation id="2230062665678605299">Kreiranje foldera "<ph name="FOLDER_NAME" />" nije uspjelo. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">Premješteno.</translation>
-<translation id="2278988676849463018">Kannada tastatura (fonetska)</translation>
 <translation id="2287742181953707290">portugalski s međunarodnom SAD tastaturom za PC</translation>
 <translation id="2288278176040912387">Gramofon</translation>
 <translation id="2291538123825441971">Broj fajlova koji se trenutno otvara: <ph name="NUMBER_OF_FILES" />.</translation>
 <translation id="2303301624314357662">Otvaranje datoteke <ph name="FILE_NAME" />.</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> je izbačen.</translation>
 <translation id="2325650632570794183">Ova vrsta fajla nije podržana. Posjetite Chrome Web trgovinu da pronađete aplikaciju koja može otvoriti ovu vrstu fajla.</translation>
-<translation id="23434688402327542">Kazaška tastatura</translation>
 <translation id="2352947182261340447">U lokalnoj pohrani nema dovoljno slobodnog prostora.</translation>
 <translation id="2377319039870049694">Prebaci na prikaz liste</translation>
 <translation id="2377590462528165447">Broj foldera koji se dijele s Linuxom <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -136,7 +129,6 @@
 <translation id="2453576648990281505">Fajl već postoji</translation>
 <translation id="2464079411014186876">Sladoled</translation>
 <translation id="2468402215065996499">Tamagoči</translation>
-<translation id="2494837236724268445">Gudžaratska tastatura (fonetska)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">SAD tastatura</translation>
 <translation id="2534155362429831547">Broj izbrisanih stavki: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -172,10 +164,8 @@
 <translation id="2902312830803030883">Više radnji</translation>
 <translation id="2902734494705624966">SAD prošireni</translation>
 <translation id="2923240520113693977">Estonska</translation>
-<translation id="2924296707677495905">transliteracija (namaskaram → ನಮಸ್ಕಾರ)</translation>
 <translation id="2925966894897775835">Tabele</translation>
 <translation id="2938685643439809023">Mongolska</translation>
-<translation id="2942290791863759244">Njemačka NEO 2 tastatura</translation>
 <translation id="2943400156390503548">Slides</translation>
 <translation id="2943503720238418293">Koristite kraći naziv</translation>
 <translation id="2949781154072577687">Formatiranje diska <ph name="DRIVE_NAME" />...</translation>
@@ -196,7 +186,6 @@
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">GOTOVO</translation>
 <translation id="3157729859914172001">SAD međunarodna (PC) tastatura</translation>
-<translation id="3187212781151025377">Hebrejska tastatura</translation>
 <translation id="3188257591659621405">Moji fajlovi</translation>
 <translation id="3197563288998582412">UK Dvorak</translation>
 <translation id="3202131003361292969">Putanja</translation>
@@ -227,14 +216,12 @@
 <translation id="3475447146579922140">Google tabela</translation>
 <translation id="3495304270784461826">Broj grešaka: <ph name="COUNT" /></translation>
 <translation id="349603508045926994">Transliteracija za perzijski</translation>
-<translation id="3519867315646775981">transliteracija (shalom ← שלום)</translation>
 <translation id="3522708245912499433">portugalski</translation>
 <translation id="3524311639100184459">Oprez: Ovi fajlovi su privremeni i moguće je da će se automatski izbrisati radi oslobađanja prostora na disku.  <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3549797760399244642">Idite na drive.google.com...</translation>
 <translation id="3553048479571901246">Da otvorite fajlove pomoću aplikacije <ph name="APP_NAME" />, najprije ih kopirajte u folder Windows fajlova.</translation>
 <translation id="357479282490346887">Litvanska</translation>
-<translation id="3583509704582854624">Alfanumerički unos (za japansku tipkovnicu)</translation>
 <translation id="3603385196401704894">Kanadska francuska</translation>
 <translation id="3606220979431771195">Turska-f</translation>
 <translation id="3609785682760573515">Sinhroniziranje…</translation>
@@ -268,10 +255,8 @@
 <translation id="383652340667548381">Srpska</translation>
 <translation id="385051799172605136">Nazad</translation>
 <translation id="3855472144336161447">Njemačka Neo 2</translation>
-<translation id="3858678421048828670">Italijanska tastatura</translation>
 <translation id="386548886866354912">Zapakiraj ekstenzijom <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Opis</translation>
-<translation id="3910699493603749297">Kmerska tastatura</translation>
 <translation id="391445228316373457">Nepalska tastatura (fonetska)</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">Reproduciraj na</translation>
@@ -335,7 +320,6 @@
 <translation id="4734518477988699048">Unesena vrijednost je nevažeća.</translation>
 <translation id="4737050008115666127">Slijetanje</translation>
 <translation id="4747271164117300400">Makedonska</translation>
-<translation id="4749157430980974800">Gruzijska tastatura</translation>
 <translation id="4759238208242260848">Preuzimanja</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint prezentacija</translation>
@@ -413,7 +397,6 @@
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5318819489018851358">Dijeli s Linuxom</translation>
-<translation id="5319782540886810524">latvijska tastatura</translation>
 <translation id="5323213332664049067">Latinoamerička</translation>
 <translation id="5327248766486351172">Ime</translation>
 <translation id="5330145655348521461">Ovi fajlovi su otvoreni na drugoj radnoj površini. Prebacite se na korisnika <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) da ih vidite.</translation>
@@ -440,7 +423,6 @@
 <translation id="5534520101572674276">Izračunavanje veličine</translation>
 <translation id="5583640892426849032">Tipka za brisanje</translation>
 <translation id="5605830556594064952">SAD Dvorak</translation>
-<translation id="5640179856859982418">Švicarska tastatura</translation>
 <translation id="5649768706273821470">Poslušajte</translation>
 <translation id="5678784840044122290">Linux aplikacija će biti dostupna unutar vašeg Terminala, a može i prikazivati ikonu na vašem Pokretaču.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nije moguće prekinuti vezu s arhivom ili virtuelnim diskom<ph name="END_BOLD" />
@@ -451,7 +433,6 @@
 <translation id="5731409020711461763">1 nova fotografija</translation>
 <translation id="5752453871435543420">Sigurnosna kopija Chrome OS-a u oblaku</translation>
 <translation id="5756666464756035725">Mađarska QWERTY</translation>
-<translation id="5771585441665576801">Transliterirani tekst (geia → γεια)</translation>
 <translation id="5776325638577448643">Izbriši i formatiraj</translation>
 <translation id="57838592816432529">Isključi zvuk</translation>
 <translation id="5788127256798019331">Play fajlovi</translation>
@@ -468,7 +449,6 @@
 <translation id="5911887972742538906">Došlo je do greške prilikom instalacije Linux aplikacije.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Kopiranje nije uspjelo zbog neočekivane greške: <ph name="ERROR_MESSAGE" /></translation>
-<translation id="5923484009666796948">Unos za japanski (za japansku tipkovnicu)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5955954492236143329">Broj stavki: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Uređaji Chromebox</translation>
@@ -498,7 +478,6 @@
 <translation id="6248400709929739064">Omogući titlove</translation>
 <translation id="6264347891387618177">Transliteracija (selam → ሰላም)</translation>
 <translation id="6287852322318138013">Odaberite aplikaciju da otvorite ovaj fajl</translation>
-<translation id="6305012486838822927">Laoska tastatura</translation>
 <translation id="6339034549827494595">Ruska fonetska (AATSEEL) tastatura</translation>
 <translation id="6339145975392024142">SAD međunarodna (PC)</translation>
 <translation id="6346310558342052870">Pristup je ograničen</translation>
@@ -509,8 +488,6 @@
 <translation id="6395575651121294044">Broj stavki: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6398765197997659313">Napusti prikaz preko cijelog ekrana</translation>
 <translation id="642282551015776456">Ovo ime se ne može koristiti za naziv fajla ili foldera.</translation>
-<translation id="6462109140674788769">Grčka tastatura</translation>
-<translation id="6466492211071551451">Irska tastatura</translation>
 <translation id="6485131920355264772">Preuzimanje informacije o prostoru nije uspjelo</translation>
 <translation id="6505918941256367791">Tamilska tastatura (indijsko pismo)</translation>
 <translation id="6509122719576673235">Norveška</translation>
@@ -650,7 +627,6 @@
 <translation id="7896906914454843592">Američka proširena tastatura</translation>
 <translation id="7898607018410277265">Gujarati tastatura (nova fonetska)</translation>
 <translation id="7908793776359722643">Formatiranjem particije ćete izbrisati sve podatke koji su pohranjeni na nju. Ovu radnju nije moguće opozvati.</translation>
-<translation id="7917972308273378936">Litvanska tastatura</translation>
 <translation id="7925686952655276919">Nemoj koristiti prijenos podataka na mobilnoj mreži za sinhronizaciju</translation>
 <translation id="7928710562641958568">Izbaci uređaj</translation>
 <translation id="7943385054491506837">SAD Colemak</translation>
@@ -697,7 +673,6 @@
 <translation id="8335587457941836791">Otkači s police</translation>
 <translation id="8336153091935557858">Jučer, u <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336524887811696057">Transliteracija za nepalski</translation>
-<translation id="8336579025507394412">Islandska tastatura</translation>
 <translation id="8342318071240498787">Fajl ili direktorij s istim nazivom već postoji.</translation>
 <translation id="8382450452152102026">U folder <ph name="FOLDER_NAME" /></translation>
 <translation id="8391950649760071442">Transliterirani tekst (emandi → ఏమండీ)</translation>
@@ -708,7 +683,6 @@
 <translation id="8437209419043462667">SAD</translation>
 <translation id="8456681095658380701">Nevažeće ime</translation>
 <translation id="8466234950814670489">Tar arhiva</translation>
-<translation id="8467473010914675605">Način unosa za korejski</translation>
 <translation id="8475647382427415476">Google Disk trenutno ne može sinhronizirati fajl "<ph name="FILENAME" />". Google Disk će pokušati ponovo kasnije.</translation>
 <translation id="8477649328507734757">Okret</translation>
 <translation id="8487700953926739672">Dostupno van mreže</translation>

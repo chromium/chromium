@@ -4360,7 +4360,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6112294629795967147">Өлчөмүн өзгөртүү үчүн басуу</translation>
 <translation id="6112727384379533756">Билет кошуу</translation>
 <translation id="6112931163620622315">Телефонуңузду текшериңиз</translation>
-<translation id="6112952769866305444">Колдонуучуну алмаштыруу, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Chrome серепчиси менен <ph name="DEVICE_TYPE" /> Жүргүзгүчү үчүн демейки издөө каражатын жөндөңүз</translation>
 <translation id="6113942107547980621">Smart Lock'ту колдонуу үчүн телефонуңуздагы негизги колдонуучунун профилин которуштуруңуз</translation>
 <translation id="6116921718742659598">Тил жана текст киргизүү жөндөөлөрүн өзгөртүү</translation>
@@ -5643,7 +5642,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7649070708921625228">Жардам</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" төмөнкүнү чыгарып салганы жатат: "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650677314924139716">Учурда дайын-даректердин өткөрүлүшү "Wi-Fi аркылуу гана" деп коюлган</translation>
-<translation id="7652808307838961528">Колдонуучуну алмаштыруу, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Бул вебсайттан колдонмолорду, кеңейтүүлөрдү жана колдонуучунун скрипттерин кошууга болбойт</translation>
 <translation id="7652954539215530680">PIN кодду түзүү</translation>
 <translation id="7654941827281939388">Бул аккаунт бул компьютерде колдонулууда.</translation>
@@ -5885,6 +5883,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7898627924844766532">Куралдар тилкесинде калтыруу</translation>
 <translation id="7898725031477653577">Ар дайым которуу</translation>
 <translation id="790040513076446191">Купуялуулукка байланышкан жөндөөлөрдү башкаруу</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903345046358933331">Бул барак жооп бербей калды. Ал жооп бергиче күтө турсаңыз же жаап салсаңыз болот.</translation>
 <translation id="7903742244674067440">Тастыктоо бийлигин аныктаган файлда бир нече тастыктамаларыңыз бар</translation>
 <translation id="7903859912536385558">туруктуу (ишенимдүү сынагыч)</translation>

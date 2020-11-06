@@ -5,7 +5,6 @@
 <translation id="1023220960495960452">文字変換（vanakkam → வணக்கம்）</translation>
 <translation id="1035094536595558507">スライド モード</translation>
 <translation id="1045157690796831147">文字変換（namaskar → നമസ്കാരം）</translation>
-<translation id="1046068652463704410">日本語入力（US キーボード用）</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> 件の項目を削除しています...</translation>
 <translation id="1049926623896334335">Word ドキュメント</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> でファイルを開くには、まず [Windows ファイル] フォルダにファイルを移動してください。</translation>
@@ -26,11 +25,9 @@
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="1190144681599273207">このファイルを取得すると、約 <ph name="FILE_SIZE" /> のモバイル データを使用します。</translation>
 <translation id="1201402288615127009">次へ</translation>
-<translation id="1208421848177517699">文字変換（namaste → નમસ્તે）</translation>
 <translation id="1243314992276662751">アップロード</translation>
 <translation id="1249250836236328755">ジャンル</translation>
 <translation id="1276362640455948667">ポルトガル語と US インターナショナル キーボード</translation>
-<translation id="1278813325885878377">ハンガリー語 QWERTY キーボード</translation>
 <translation id="1293556467332435079">ファイル</translation>
 <translation id="1297922636971898492">Google ドライブは現在ご利用いただけません。Google ドライブが利用可能になったときに、自動的にアップロードを再開します。</translation>
 <translation id="1307931752636661898">[Linux ファイル] を表示できません</translation>
@@ -63,7 +60,6 @@
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> 個のファイルをオフラインで使用できるようにしています</translation>
-<translation id="1646136617204068573">ハンガリー語のキーボード</translation>
 <translation id="164729547906544836">タミル語キーボード（itrans）</translation>
 <translation id="164969095109328410">Chrome デバイス</translation>
 <translation id="1665611772925418501">ファイルを修正することができませんでした。</translation>
@@ -93,7 +89,6 @@
 <translation id="1936717151811561466">フィンランド語</translation>
 <translation id="1942765061641586207">画像解像度</translation>
 <translation id="1943097386230153518">新しいサービスをインストール</translation>
-<translation id="1947424002851288782">ドイツ語のキーボード</translation>
 <translation id="1972984168337863910">ファイルのフィードバック パネルを展開します</translation>
 <translation id="1984603991036629094">アルメニア語表音キーボード</translation>
 <translation id="1995337122023280937">ファイルの場所へ移動</translation>
@@ -116,14 +111,12 @@
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムを削除してもよろしいですか？</translation>
 <translation id="2230062665678605299">フォルダ「<ph name="FOLDER_NAME" />」を作成することができません。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">移動しました。</translation>
-<translation id="2278988676849463018">カンナダ語キーボード（表音）</translation>
 <translation id="2287742181953707290">ポルトガル語と US インターナショナル（PC）キーボード</translation>
 <translation id="2288278176040912387">レコード プレーヤー</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> 個のファイルを開いています。</translation>
 <translation id="2303301624314357662">ファイル <ph name="FILE_NAME" /> を開いています。</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> が取り外されました。</translation>
 <translation id="2325650632570794183">このファイル形式はサポートされていません。Chrome ウェブストアにアクセスして、この形式のファイルを開くことができるアプリをお探しください。</translation>
-<translation id="23434688402327542">カザフ語キーボード</translation>
 <translation id="2352947182261340447">ローカル ストレージに十分な空き容量がありません。</translation>
 <translation id="2377319039870049694">リスト表示に切り替え</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> 個のフォルダが Linux と共有されています</translation>
@@ -136,7 +129,6 @@
 <translation id="2453576648990281505">このファイルは既に存在します</translation>
 <translation id="2464079411014186876">アイスクリーム</translation>
 <translation id="2468402215065996499">たまごっち</translation>
-<translation id="2494837236724268445">グジャラト語キーボード（表音）</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">英語（米国）のキーボード</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />件の項目を削除しました</translation>
@@ -172,10 +164,8 @@
 <translation id="2902312830803030883">その他の操作</translation>
 <translation id="2902734494705624966">US 拡張</translation>
 <translation id="2923240520113693977">エストニア語</translation>
-<translation id="2924296707677495905">文字変換（namaskaram → ನಮಸ್ಕಾರ）</translation>
 <translation id="2925966894897775835">スプレッドシート</translation>
 <translation id="2938685643439809023">モンゴル語</translation>
-<translation id="2942290791863759244">ドイツ語（NEO 2）キーボード</translation>
 <translation id="2943400156390503548">スライド</translation>
 <translation id="2943503720238418293">もう少し短い名前にしてください</translation>
 <translation id="2949781154072577687">「<ph name="DRIVE_NAME" />」をフォーマットしています...</translation>
@@ -196,7 +186,6 @@
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">完了</translation>
 <translation id="3157729859914172001">US インターナショナル（PC）キーボード</translation>
-<translation id="3187212781151025377">ヘブライ語のキーボード</translation>
 <translation id="3188257591659621405">マイファイル</translation>
 <translation id="3197563288998582412">UK Dvorak 配列</translation>
 <translation id="3202131003361292969">パス</translation>
@@ -227,14 +216,12 @@
 <translation id="3475447146579922140">Google スプレッドシート</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> 件のエラーがあります。</translation>
 <translation id="349603508045926994">ペルシャ語文字変換</translation>
-<translation id="3519867315646775981">文字変換（shalom ← שלום）</translation>
 <translation id="3522708245912499433">ポルトガル語</translation>
 <translation id="3524311639100184459">注: これらのファイルは一時的なもので、ディスクの空き容量を増やすために自動的に削除されることがあります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">フォルダ</translation>
 <translation id="3549797760399244642">drive.google.com にアクセスします...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> でファイルを開くには、まず [Windows ファイル] フォルダにファイルをコピーしてください。</translation>
 <translation id="357479282490346887">リトアニア語</translation>
-<translation id="3583509704582854624">英数入力（日本語キーボード用）</translation>
 <translation id="3603385196401704894">フランス語（カナダ）</translation>
 <translation id="3606220979431771195">トルコ語-F</translation>
 <translation id="3609785682760573515">同期しています...</translation>
@@ -268,10 +255,8 @@
 <translation id="383652340667548381">セルビア語</translation>
 <translation id="385051799172605136">戻る</translation>
 <translation id="3855472144336161447">ドイツ語（Neo 2）</translation>
-<translation id="3858678421048828670">イタリア語のキーボード</translation>
 <translation id="386548886866354912"><ph name="EXTENSION_NAME" /> を同梱</translation>
 <translation id="3866249974567520381">説明</translation>
-<translation id="3910699493603749297">クメール語キーボード</translation>
 <translation id="391445228316373457">ネパール語キーボード（表音）</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">再生するデバイス</translation>
@@ -335,7 +320,6 @@
 <translation id="4734518477988699048">入力値が無効です。</translation>
 <translation id="4737050008115666127">滑走路</translation>
 <translation id="4747271164117300400">マケドニア語</translation>
-<translation id="4749157430980974800">グルジア語キーボード</translation>
 <translation id="4759238208242260848">ダウンロード</translation>
 <translation id="4779136857077979611">おにぎり</translation>
 <translation id="4784330909746505604">PowerPoint プレゼンテーション</translation>
@@ -413,7 +397,6 @@
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318819489018851358">Linux と共有</translation>
-<translation id="5319782540886810524">ラトビア語のキーボード</translation>
 <translation id="5323213332664049067">ラテン アメリカ</translation>
 <translation id="5327248766486351172">名前</translation>
 <translation id="5330145655348521461">これらのファイルは別のデスクトップで開かれます。表示するには <ph name="USER_NAME" />（<ph name="MAIL_ADDRESS" />）に移動してください。</translation>
@@ -440,7 +423,6 @@
 <translation id="5534520101572674276">サイズを計算しています</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">US Dvorak 配列</translation>
-<translation id="5640179856859982418">スイスのキーボード</translation>
 <translation id="5649768706273821470">聴く</translation>
 <translation id="5678784840044122290">Linux アプリケーションはお使いのデバイスでご利用いただけるようになります。ランチャーにアイコンが追加されている可能性もあります。</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />アーカイブまたは仮想ディスクから切断できません<ph name="END_BOLD" />
@@ -451,7 +433,6 @@
 <translation id="5731409020711461763">1 件の新しい写真</translation>
 <translation id="5752453871435543420">Chrome OS のクラウド バックアップ</translation>
 <translation id="5756666464756035725">ハンガリー語 QWERTY</translation>
-<translation id="5771585441665576801">文字変換（geia → γεια）</translation>
 <translation id="5776325638577448643">消去してフォーマット</translation>
 <translation id="57838592816432529">ミュート</translation>
 <translation id="5788127256798019331">Play ファイル</translation>
@@ -468,7 +449,6 @@
 <translation id="5911887972742538906">Linux アプリケーションのインストール中にエラーが発生しました。</translation>
 <translation id="5912396950572065471">形式</translation>
 <translation id="5913638992615760742">コピーできませんでした。予期しないエラー: <ph name="ERROR_MESSAGE" /></translation>
-<translation id="5923484009666796948">日本語入力（日本語キーボード用）</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> 個のアイテム</translation>
 <translation id="5957366693331451795">Chromebox</translation>
@@ -498,7 +478,6 @@
 <translation id="6248400709929739064">字幕を有効にする</translation>
 <translation id="6264347891387618177">文字変換（selam → ሰላም）</translation>
 <translation id="6287852322318138013">このファイルを開くアプリを選択してください</translation>
-<translation id="6305012486838822927">ラオス語キーボード</translation>
 <translation id="6339034549827494595">ロシア語表音（AATSEEL）キーボード</translation>
 <translation id="6339145975392024142">US インターナショナル（PC）</translation>
 <translation id="6346310558342052870">アクセスが制限されています</translation>
@@ -509,8 +488,6 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> 個のアイテム</translation>
 <translation id="6398765197997659313">全画面表示を終了</translation>
 <translation id="642282551015776456">この名前はフォルダのファイル名として使用できません</translation>
-<translation id="6462109140674788769">ギリシャ語のキーボード</translation>
-<translation id="6466492211071551451">アイルランド語キーボード</translation>
 <translation id="6485131920355264772">空き容量情報を取得できませんでした</translation>
 <translation id="6505918941256367791">タミル語キーボード（字母）</translation>
 <translation id="6509122719576673235">ノルウェー語</translation>
@@ -650,7 +627,6 @@
 <translation id="7896906914454843592">US（拡張）キーボード</translation>
 <translation id="7898607018410277265">グジャラート語キーボード（新表音）</translation>
 <translation id="7908793776359722643">パーティションをフォーマットすると、そのパーティションに保存されているすべてのデータが消去されます。この操作は元に戻せません。</translation>
-<translation id="7917972308273378936">リトアニア語のキーボード</translation>
 <translation id="7925686952655276919">モバイル データを使用して同期しない</translation>
 <translation id="7928710562641958568">デバイスの取り出し</translation>
 <translation id="7943385054491506837">US Colemak 配列</translation>
@@ -697,7 +673,6 @@
 <translation id="8335587457941836791">シェルフの固定解除</translation>
 <translation id="8336153091935557858">昨日 <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336524887811696057">ネパール語文字変換</translation>
-<translation id="8336579025507394412">アイスランド語キーボード</translation>
 <translation id="8342318071240498787">同じ名前のファイルまたはディレクトリが既に存在しています。</translation>
 <translation id="8382450452152102026">保存先: <ph name="FOLDER_NAME" /></translation>
 <translation id="8391950649760071442">文字変換（emandi → ఏమండీ）</translation>
@@ -708,7 +683,6 @@
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">名前が無効です</translation>
 <translation id="8466234950814670489">tar アーカイブ</translation>
-<translation id="8467473010914675605">韓国語 IME</translation>
 <translation id="8475647382427415476">Google ドライブでは「<ph name="FILENAME" />」を直ちに同期できませんでした。時間を置いて再試行します。</translation>
 <translation id="8477649328507734757">スピン</translation>
 <translation id="8487700953926739672">オフラインでの利用</translation>

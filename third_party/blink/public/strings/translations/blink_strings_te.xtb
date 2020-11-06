@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">ఈ నెల</translation>
 <translation id="1637811476055996098">ఫైల్‌లను ఎంచుకోండి</translation>
 <translation id="1650423536718072820">పుల్‌కోట్</translation>
+<translation id="1681022320378710418">ప్రస్తుత సమయం</translation>
 <translation id="1727886345390570319">ఉపశీర్షికల మెనూని దాచు</translation>
 <translation id="1729654308190250600">దయచేసి ఖాళీ-కాని ఇమెయిల్ చిరునామాను నమోదు చేయండి.</translation>
 <translation id="1758486001363313524">ఇతర...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">దయచేసి ఒక URLని ఎంటర్ చేయండి.</translation>
 <translation id="3175736971608411871">టైమర్</translation>
 <translation id="3199563858620722075">కాంబో పెట్టె</translation>
+<translation id="3220661731597678625">ప్రస్తుత దశ</translation>
 <translation id="3329013043687509092">సంతృప్తత</translation>
 <translation id="3450233048674729344">విలువ ఖచ్చితంగా <ph name="MAXIMUM" /> కంటే తగ్గువగా లేదా సమానంగా ఉండాలి.</translation>
 <translation id="3486220673238053218">నిర్వచనం</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">వీడియో</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4812940957355064477">దయచేసి సంఖ్యను నమోదు చేయండి.</translation>
+<translation id="4912200001568447310">ప్రస్తుత ఐటెమ్</translation>
 <translation id="4912536737030637138">వివరణపట్టి నమోదు</translation>
 <translation id="4915360478455618802">టైమ్ పికర్‌ను చూపుతుంది</translation>
 <translation id="492244087561876220">కామెంట్‌</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">మీడియాను ప్లే చేయడం సాధ్యపడలేదు.</translation>
 <translation id="537648784377940524">కనిష్ఠ తేదీ (<ph name="MIN_DATE_OR_TIME" />) తప్పనిసరిగా గరిష్ఠ తేదీ (<ph name="MAX_DATE_OR_TIME" />) కంటే ముందు ఉండాలి.</translation>
 <translation id="5406322316791861025">రూపం</translation>
+<translation id="5425179576310518467">ప్రస్తుత తేదీ</translation>
 <translation id="5453733299334684579">వృక్షాంశం</translation>
 <translation id="5466621249238537318">దయచేసి ఒకటి లేదా మరిన్ని ఫైళ్ళను ఎంచుకోండి.</translation>
 <translation id="5468998798572797635">పూర్తి స్క్రీన్ నుండి నిష్క్రమించు</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">మీటర్</translation>
 <translation id="6166809985690652833">చివరిమాట</translation>
 <translation id="6209276755895393898">వీరిలా కనిపిస్తున్నారు: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">ప్రస్తుత పేజీ</translation>
 <translation id="6213469881011901533">పదకోశం</translation>
 <translation id="6281588256137006900">కాంట్రాస్ట్</translation>
 <translation id="6281763101136022427">url</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">దయచేసి ఈ వచనాన్ని <ph name="MIN_CHARACTERS" /> లేదా అంతకంటే ఎక్కువ అక్షరాలకు పొడిగించండి (ప్రస్తుతం మీరు 1 అక్షరాన్ని ఉపయోగిస్తున్నారు).</translation>
 <translation id="7034405885550056553">సూచన</translation>
 <translation id="709897737746224366">దయచేసి అభ్యర్థించిన ఆకృతీకరణను సరిపోల్చండి.</translation>
+<translation id="7102274145889307184">ప్రస్తుత లొకేషన్</translation>
 <translation id="7118469954320184356">వివరణ అందుబాటులో లేదు.</translation>
 <translation id="7139483182332611405">ముందుమాట</translation>
 <translation id="7214187073215825913">కంటెంట్ సమాచారం</translation>

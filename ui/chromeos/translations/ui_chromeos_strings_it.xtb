@@ -5,7 +5,6 @@
 <translation id="1023220960495960452">Traslitterazione (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">Visualizzazione diapositiva</translation>
 <translation id="1045157690796831147">Traslitterazione (namaskar → നമസ്കാരം)</translation>
-<translation id="1046068652463704410">Japanese Input (per tastiera USA)</translation>
 <translation id="1047956942837015229">Eliminazione di <ph name="COUNT" /> elementi...</translation>
 <translation id="1049926623896334335">Documento di Word</translation>
 <translation id="1060368002126861100">Per aprire file con l'app <ph name="APP_NAME" />, devi prima spostarli nella cartella File di Windows.</translation>
@@ -26,11 +25,9 @@
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1190144681599273207">Per il recupero di questo file verranno utilizzati circa <ph name="FILE_SIZE" /> di dati mobili.</translation>
 <translation id="1201402288615127009">Avanti</translation>
-<translation id="1208421848177517699">Traslitterazione (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">Carica</translation>
 <translation id="1249250836236328755">Genere</translation>
 <translation id="1276362640455948667">Portoghese con tastiera internazionale USA</translation>
-<translation id="1278813325885878377">Tastiera ungherese QWERTY</translation>
 <translation id="1293556467332435079">File</translation>
 <translation id="1297922636971898492">Google Drive non è al momento disponibile. Il caricamento riprenderà automaticamente una volta che Google Drive sarà tornato operativo.</translation>
 <translation id="1307931752636661898">Impossibile visualizzare i file di Linux</translation>
@@ -63,7 +60,6 @@
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Videocamera</translation>
 <translation id="1646019627374511909">Preparazione per la visualizzazione offline di <ph name="NUMBER_OF_ITEMS" /> file…</translation>
-<translation id="1646136617204068573">Tastiera ungherese</translation>
 <translation id="164729547906544836">Tastiera Tamil (itrans)</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
 <translation id="1665611772925418501">Impossibile modificare il file.</translation>
@@ -93,7 +89,6 @@
 <translation id="1936717151811561466">Finlandese</translation>
 <translation id="1942765061641586207">Risoluzione dell'immagine</translation>
 <translation id="1943097386230153518">Installa nuovo servizio</translation>
-<translation id="1947424002851288782">Tastiera tedesca</translation>
 <translation id="1972984168337863910">Espandi i riquadri di feedback dei file</translation>
 <translation id="1984603991036629094">Tastiera fonetica Armeno</translation>
 <translation id="1995337122023280937">Vai a posizione file</translation>
@@ -116,14 +111,12 @@
 <translation id="2225536596944493418">Vuoi eliminare <ph name="NUMBER_OF_ITEMS" /> elementi?</translation>
 <translation id="2230062665678605299">Impossibile creare la cartella "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">Spostato.</translation>
-<translation id="2278988676849463018">Tastiera Kannada (fonetica)</translation>
 <translation id="2287742181953707290">Portoghese con tastiera internazionale USA (PC)</translation>
 <translation id="2288278176040912387">Giradischi</translation>
 <translation id="2291538123825441971">Apertura di file <ph name="NUMBER_OF_FILES" />.</translation>
 <translation id="2303301624314357662">Apertura del file <ph name="FILE_NAME" />.</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> è stato espulso.</translation>
 <translation id="2325650632570794183">Questo tipo di file non è supportato. Visita il Chrome Web Store per trovare un'applicazione in grado di aprire questo tipo di file.</translation>
-<translation id="23434688402327542">Tastiera Kazako</translation>
 <translation id="2352947182261340447">Spazio nella memoria locale insufficiente.</translation>
 <translation id="2377319039870049694">Passa alla visualizzazione elenco</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> cartelle condivise con Linux</translation>
@@ -136,7 +129,6 @@
 <translation id="2453576648990281505">File già esistente</translation>
 <translation id="2464079411014186876">Coppa gelato</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
-<translation id="2494837236724268445">Tastiera Gujarati (fonetica)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Tastiera USA</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> elementi eliminati</translation>
@@ -172,10 +164,8 @@
 <translation id="2902312830803030883">Altre azioni</translation>
 <translation id="2902734494705624966">Tastiera estesa USA</translation>
 <translation id="2923240520113693977">Estone</translation>
-<translation id="2924296707677495905">Traslitterazione (namaskaram → ನಮಸ್ಕಾರ)</translation>
 <translation id="2925966894897775835">Fogli</translation>
 <translation id="2938685643439809023">Mongolo</translation>
-<translation id="2942290791863759244">Tastiera Tedesco NEO 2</translation>
 <translation id="2943400156390503548">Presentazioni</translation>
 <translation id="2943503720238418293">Utilizza un nome più corto</translation>
 <translation id="2949781154072577687">Formattazione di <ph name="DRIVE_NAME" />…</translation>
@@ -196,7 +186,6 @@
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">FINE</translation>
 <translation id="3157729859914172001">Tastiera internazionale USA (PC)</translation>
-<translation id="3187212781151025377">Tastiera ebraica</translation>
 <translation id="3188257591659621405">I miei file</translation>
 <translation id="3197563288998582412">Dvorak Regno Unito</translation>
 <translation id="3202131003361292969">Percorso</translation>
@@ -227,14 +216,12 @@
 <translation id="3475447146579922140">Foglio di calcolo Google</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> errori.</translation>
 <translation id="349603508045926994">Traslitterazione persiano</translation>
-<translation id="3519867315646775981">Traslitterazione (shalom ← שלום)</translation>
 <translation id="3522708245912499433">Portoghese</translation>
 <translation id="3524311639100184459">Attenzione: questi file sono temporanei e potrebbero essere eliminati automaticamente per liberare spazio su disco.  <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Cartella</translation>
 <translation id="3549797760399244642">Vai all'indirizzo drive.google.com...</translation>
 <translation id="3553048479571901246">Per aprire file con l'app <ph name="APP_NAME" />, devi prima copiarli nella cartella File di Windows.</translation>
 <translation id="357479282490346887">Lituano</translation>
-<translation id="3583509704582854624">Input alfanumerico (per tastiera giapponese)</translation>
 <translation id="3603385196401704894">Francese canadese</translation>
 <translation id="3606220979431771195">Turco F</translation>
 <translation id="3609785682760573515">Sincronizzazione in corso...</translation>
@@ -268,10 +255,8 @@
 <translation id="383652340667548381">Serbo</translation>
 <translation id="385051799172605136">Indietro</translation>
 <translation id="3855472144336161447">Tastiera Neo 2 tedesca</translation>
-<translation id="3858678421048828670">Tastiera italiana</translation>
 <translation id="386548886866354912">Comprimi tramite l'estensione <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Descrizione</translation>
-<translation id="3910699493603749297">Tastiera Khmer</translation>
 <translation id="391445228316373457">Tastiera Nepalese (fonetica)</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">Riproduci su</translation>
@@ -335,7 +320,6 @@
 <translation id="4734518477988699048">Il valore di input non è valido.</translation>
 <translation id="4737050008115666127">Atterraggio</translation>
 <translation id="4747271164117300400">Macedone</translation>
-<translation id="4749157430980974800">Tastiera Georgiano</translation>
 <translation id="4759238208242260848">Download</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Presentazione PowerPoint</translation>
@@ -412,7 +396,6 @@
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5318819489018851358">Condividi con Linux</translation>
-<translation id="5319782540886810524">Tastiera lettone</translation>
 <translation id="5323213332664049067">Spagnolo latino americano</translation>
 <translation id="5327248766486351172">Nome</translation>
 <translation id="5330145655348521461">Questi file sono aperti su un desktop differente. Passa a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) per visualizzarli.</translation>
@@ -439,7 +422,6 @@
 <translation id="5534520101572674276">Calcolo dimensioni</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">Dvorak USA</translation>
-<translation id="5640179856859982418">Tastiera svizzera</translation>
 <translation id="5649768706273821470">Ascolta</translation>
 <translation id="5678784840044122290">L'applicazione Linux sarà disponibile nel terminale e potrebbe anche essere visualizzata un'icona nell'Avvio app.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Impossibile disconnettere un archivio o un disco virtuale<ph name="END_BOLD" />
@@ -450,7 +432,6 @@
 <translation id="5731409020711461763">1 nuova foto</translation>
 <translation id="5752453871435543420">Backup nella cloud Chrome OS</translation>
 <translation id="5756666464756035725">Ungherese QWERTY</translation>
-<translation id="5771585441665576801">Traslitterazione (geia → γεια)</translation>
 <translation id="5776325638577448643">Resetta e formatta</translation>
 <translation id="57838592816432529">Disattiva audio</translation>
 <translation id="5788127256798019331">File Google Play</translation>
@@ -467,7 +448,6 @@
 <translation id="5911887972742538906">Si è verificato un errore durante l'installazione dell'applicazione Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>
 <translation id="5913638992615760742">Operazione di copia non riuscita, errore imprevisto: <ph name="ERROR_MESSAGE" /></translation>
-<translation id="5923484009666796948">Japanese Input (per tastiera giapponese)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementi</translation>
 <translation id="5957366693331451795">I Chromebox</translation>
@@ -497,7 +477,6 @@
 <translation id="6248400709929739064">Attiva i sottotitoli</translation>
 <translation id="6264347891387618177">Traslitterazione (selam → ሰላም)</translation>
 <translation id="6287852322318138013">Seleziona un'app per aprire questo file</translation>
-<translation id="6305012486838822927">Tastiera Lao</translation>
 <translation id="6339034549827494595">Tastiera fonetica russa (AATSEEL)</translation>
 <translation id="6339145975392024142">Inglese internazionale (PC)</translation>
 <translation id="6346310558342052870">Accesso limitato</translation>
@@ -508,8 +487,6 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elementi</translation>
 <translation id="6398765197997659313">Esci da schermo intero</translation>
 <translation id="642282551015776456">Questo nome non può essere utilizzato per un file o una cartella</translation>
-<translation id="6462109140674788769">Tastiera greca</translation>
-<translation id="6466492211071551451">Tastiera Irlandese</translation>
 <translation id="6485131920355264772">Impossibile recuperare le informazioni sullo spazio</translation>
 <translation id="6505918941256367791">Tastiera Tamil (InScript)</translation>
 <translation id="6509122719576673235">Norvegese</translation>
@@ -649,7 +626,6 @@
 <translation id="7896906914454843592">Tastiera estesa americana</translation>
 <translation id="7898607018410277265">Tastiera Gujarati (nuova fonetica)</translation>
 <translation id="7908793776359722643">La formattazione di una partizione eliminerà tutti i dati archiviati al suo interno. L'operazione non potrà essere annullata.</translation>
-<translation id="7917972308273378936">Tastiera lituana</translation>
 <translation id="7925686952655276919">Non utilizzare dati mobili per la sincronizzazione</translation>
 <translation id="7928710562641958568">Espelli dispositivo</translation>
 <translation id="7943385054491506837">Colemak USA</translation>
@@ -696,7 +672,6 @@
 <translation id="8335587457941836791">Stacca dallo shelf</translation>
 <translation id="8336153091935557858">Ieri alle <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336524887811696057">Traslitterazione nepalese</translation>
-<translation id="8336579025507394412">Tastiera islandese</translation>
 <translation id="8342318071240498787">Esiste già un file o una directory con lo stesso nome.</translation>
 <translation id="8382450452152102026">A <ph name="FOLDER_NAME" /></translation>
 <translation id="8391950649760071442">Traslitterazione (emandi → ఏమండీ)</translation>
@@ -707,7 +682,6 @@
 <translation id="8437209419043462667">USA</translation>
 <translation id="8456681095658380701">Nome non valido</translation>
 <translation id="8466234950814670489">Archivio Tar</translation>
-<translation id="8467473010914675605">Metodo di immissione coreano</translation>
 <translation id="8475647382427415476">Al momento non è possibile sincronizzare il file "<ph name="FILENAME" />" con Google Drive. Google Drive riproverà più tardi.</translation>
 <translation id="8477649328507734757">Rotazione</translation>
 <translation id="8487700953926739672">Disponibile offline</translation>

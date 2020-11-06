@@ -8,6 +8,7 @@
 <translation id="1036672894875463507">ഞാൻ നിങ്ങളുടെ Google Assistant ആണ്, നിങ്ങളെ സഹായിക്കാൻ ദിവസം മുഴുവൻ നിങ്ങളോടൊപ്പം ഉണ്ടാകും!
 ആരംഭിക്കുന്നതിന് നിങ്ങൾക്ക് ശ്രമിക്കാവുന്ന ചില കാര്യങ്ങൾ ഇതാ.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ചേർത്തു</translation>
+<translation id="1047773237499189053">പുതിയ ഫീച്ചർ ലഭ്യമാണ്, കൂടുതലറിയാൻ മുകളിലേയ്ക്കുള്ള അമ്പടയാളം കീ ഉപയോഗിക്കുക.</translation>
 <translation id="1056775291175587022">നെറ്റ്‌വർക്കില്ല</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">സെല്ലുലാര്‍‌: <ph name="ADDRESS" /></translation>
@@ -20,6 +21,7 @@
 <translation id="1153356358378277386">ജോടിയാക്കിയ ഉപകരണങ്ങൾ</translation>
 <translation id="1175572348579024023">സ്‌ക്രോൾ ചെയ്യുക</translation>
 <translation id="1178581264944972037">അല്പംനിര്‍ത്തൂ</translation>
+<translation id="118532027333893379">പൂർണ്ണ സ്ക്രീൻ ചിത്രമെടുക്കാൻ എവിടെയെങ്കിലും ടാപ്പ് ചെയ്യുക</translation>
 <translation id="1190609913194133056">അറിയിപ്പ് കേന്ദ്രം</translation>
 <translation id="1195412055398077112">ഓവർസ്‌കാൻ</translation>
 <translation id="119944043368869598">എല്ലാം നീക്കുക</translation>
@@ -49,7 +51,6 @@
 <translation id="1346748346194534595">ശരി</translation>
 <translation id="1351937230027495976">മെനു ചുരുക്കുക</translation>
 <translation id="1383876407941801731">Search</translation>
-<translation id="1390105199421505038"><ph name="USER_EMAIL_ADDRESS" /> -നുള്ള അക്കൗണ്ട് ഡയലോഗ് നീക്കം ചെയ്യുക</translation>
 <translation id="1391102559483454063">ഓണാണ്</translation>
 <translation id="1407069428457324124">ഡാർക്ക് തീം</translation>
 <translation id="1419738280318246476">അറിയിപ്പ് പ്രവർത്തനം നിർവഹിക്കുന്നതിന് ഉപകരണം അൺലോക്ക് ചെയ്യുക</translation>
@@ -74,7 +75,6 @@
 <translation id="1589090746204042747">ഈ സെഷനിൽ നിങ്ങളുടെ എല്ലാ ആക്‌റ്റിവിറ്റികളും ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="1611993646327628135">ഓണാണ്</translation>
 <translation id="1632985212731562677">ക്രമീകരണം &gt; ഉപയോഗസഹായി എന്നതിൽ 'ആക്‌സസ് മാറുക' പ്രവർത്തനരഹിതമാക്കാം.</translation>
-<translation id="1651447046299738444">നിങ്ങളുടെ Chromebook-ൽ Bluetooth അല്ലെങ്കിൽ വൈഫൈ ഓഫാക്കിയതായി തോന്നുന്നു. ഫോൺ ഹബ് ഉപയോഗിക്കുന്നതിന്, നിങ്ങളുടെ കണക്ഷൻ പരിശോധിക്കുക.</translation>
 <translation id="1654477262762802994">ഒരു ശബ്‌ദ ചോദ്യം ആരംഭിക്കുക</translation>
 <translation id="1667964833127753507">ന്യൂട്രൽ വർണ്ണ മോഡ് വാൾപേപ്പർ എക്‌സ്‌ട്രാക്റ്റ് ചെയ്‌ത വർണ്ണങ്ങൾ ഉപയോഗിക്കുന്നില്ല, അവയ്ക്ക് പകരം ന്യൂട്രലായി ടോൺ ചെയ്‌‌ത ഇളം നിറത്തിന്റെയോ ഇരുണ്ട നിറത്തിന്റെയോ ഒരു സെറ്റ് ഉപയോഗിക്കുന്നു.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ശേഷിക്കുന്നു</translation>
@@ -125,6 +125,7 @@
 <translation id="2127372758936585790">കുറഞ്ഞ തോതിൽ വൈദ്യുതി പ്രവഹിക്കുന്ന ചാർജർ</translation>
 <translation id="2132302418721800944">പൂർണ്ണ സ്ക്രീൻ റെക്കോർഡ് ചെയ്യുക</translation>
 <translation id="2135456203358955318">ഡോക്ക് ചെയ്‌ത മാഗ്‌നിഫയർ</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="2208323208084708176">ഏകീകൃത ഡെസ്‌ക്‌ടോപ്പ് മോഡ്</translation>
 <translation id="2220572644011485463">പിൻ അല്ലെങ്കിൽ പാസ്‌വേഡ്</translation>
 <translation id="2222338659135520253">സൈൻ ഇൻ ചെയ്യേണ്ടത് ആവശ്യമാണ്</translation>
@@ -136,6 +137,7 @@
 <translation id="229397294990920565">മൊബൈൽ ഡാറ്റ ഓഫാക്കുന്നു...</translation>
 <translation id="2295777434187870477">മൈക്ക് ഓണാണ്, മാറ്റുന്നത് ഇൻപുട്ടിനെ മ്യൂട്ട് ചെയ്യും.</translation>
 <translation id="2298170939937364391">പൂർണ്ണ സ്ക്രീൻ മാഗ്നിഫയർ പ്രവർത്തനക്ഷമമാക്കി. ഇത് ഓഫാക്കാൻ Ctrl+തിരയൽ+M വീണ്ടും അമർത്തുക.</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Assistant-ൽ ഫലം കാണാൻ ഡയലോഗ് ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="2302092602801625023">ഈ അക്കൗണ്ട് Family Link ഉപയോഗിച്ച് മാനേജ് ചെയ്യുന്നു</translation>
 <translation id="2303600792989757991">വിൻഡോ ചുരുക്കവിവരണം ടോഗിൾ ചെയ്യുക</translation>
 <translation id="2322173485024759474">ഒരക്ഷരം പിന്നിലേക്ക് പോവുക</translation>
@@ -143,7 +145,6 @@
 <translation id="2341729377289034582">ലംബമായി ലോക്ക് ചെയ്‌തു</translation>
 <translation id="2352467521400612932">സ്റ്റൈലസ് ക്രമീകരണം</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> സജീവമാക്കുന്നു</translation>
-<translation id="2356210126990741501">നിങ്ങളുടെ ഫോൺ ഓൺലൈനല്ലെന്ന് തോന്നുന്നു, നിങ്ങൾക്കായി ഇപ്പോൾ ഇതിൽ നിന്ന് എല്ലാ ഗുഡികളും നേടാൻ ഞങ്ങൾക്ക് കഴിയുന്നില്ല.</translation>
 <translation id="2359808026110333948">തുടരുക</translation>
 <translation id="2365393535144473978">മൊബൈൽ ഡാറ്റ പ്രവർത്തനക്ഷമമാക്കുമ്പോൾ Bluetooth-ഉം പ്രവർത്തനക്ഷമമാകും.</translation>
 <translation id="2369165858548251131">"ഹലോ" എന്നത് ചൈനീസിൽ</translation>
@@ -163,6 +164,7 @@
 <translation id="2484513351006226581">കീബോര്‍‌ഡ് ലേഔട്ട് മാറാൻ <ph name="KEYBOARD_SHORTCUT" /> അമർത്തുക.</translation>
 <translation id="2501920221385095727">സ്‌റ്റിക്കി കീകൾ</translation>
 <translation id="2509468283778169019">CAPS LOCK ഓൺ ആണ്</translation>
+<translation id="2536159006530886390">ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ല.</translation>
 <translation id="2542089167727451762">നിങ്ങളുടെ പ്രൊഫൈൽ ചിത്രത്തിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="255671100581129685">പൊതു സെഷനില്‍ Google അസി‌സ്‌റ്റന്റ് ലഭ്യമല്ല.</translation>
 <translation id="256712445991462162">ഡോക്ക് ചെയ്‌ത മാഗ്നിഫയർ</translation>
@@ -184,11 +186,11 @@
 <translation id="2727977024730340865">കുറഞ്ഞ തോതിൽ വൈദ്യുതി പ്രവഹിക്കുന്ന ചാർജ്ജറിലേക്ക് പ്ലഗ് ചെയ്‌തിരിക്കുന്നു. ബാറ്ററി ചാർജുചെയ്യൽ വിശ്വസനീയമാകണമെന്നില്ല.</translation>
 <translation id="2792498699870441125">Alt+തിരയൽ</translation>
 <translation id="2819276065543622893">നിങ്ങൾ ഇപ്പോൾ സൈൻ ഔട്ട് ചെയ്യും.</translation>
+<translation id="28232023175184696">ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ല. വീണ്ടും ശ്രമിക്കാൻ ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> എന്നതിനെ പിന്തുണയ്‌ക്കുന്നില്ല. റെസല്യൂഷൻ <ph name="FALLBACK_RESOLUTION" /> എന്നതിലേക്ക് മാറ്റി.</translation>
 <translation id="2825619548187458965">ഷെൽഫ്</translation>
 <translation id="2841907151129139818">ടാബ്‌ലെറ്റ് മോഡിലേക്ക് മാറി</translation>
 <translation id="2844169650293029770">USB-C ഉപകരണം (ഇടത് വശത്ത് മുൻഭാഗത്തെ പോർട്ട്)</translation>
-<translation id="2846247265041961677">ക്ഷമിക്കണം! ഫോൺ കണ്ടെത്താനാകുന്നില്ല</translation>
 <translation id="2865888419503095837">നെറ്റ്‌വർക്ക് വിവരം</translation>
 <translation id="2872961005593481000">അടയ്ക്കുക</translation>
 <translation id="2878884018241093801">സമീപകാല ഇനങ്ങൾ ഒന്നുമില്ല</translation>
@@ -324,12 +326,12 @@
 <translation id="4129129681837227511">നിങ്ങളുടെ ലോക്ക് സ്‌ക്രീനിൽ അറിയിപ്പുകൾ കാണാൻ, ക്രമീകരണം മാറ്റാനായി അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="4146833061457621061">സംഗീതം പ്ലേ ചെയ്യുക</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത് <ph name="DOMAIN" /> ആണ്</translation>
+<translation id="415719264485676252">സ്ക്രീൻ ചിത്രമെടുക്കൽ ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="4157822100366708405">ഡാർക്ക് തീം ക്രമീകരണം</translation>
 <translation id="4181841719683918333">ഭാഷകൾ‌</translation>
 <translation id="4195877955194704651">സ്വയമേവയുള്ള ക്ലിക്ക് ബട്ടൺ</translation>
 <translation id="4197790712631116042">ഓഫാണ്</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> ലഭ്യമല്ല.</translation>
-<translation id="4212246570487010370">ബ്രൗസിംഗ് തുടരുക</translation>
 <translation id="4212472694152630271">പിൻ നമ്പറിലേക്ക് മാറുക</translation>
 <translation id="4215497585250573029">VPN ക്രമീകരണം</translation>
 <translation id="4217571870635786043">പറഞ്ഞ് കൊടുക്കൽ</translation>
@@ -358,7 +360,6 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ഓഫാണ്.</translation>
 <translation id="4421231901400348175"><ph name="HELPER_NAME" /> ഉപയോഗിച്ച് നിങ്ങളുടെ വിദൂര സഹായി മുഖേന സ്‌ക്രീനിന്റെ നിയന്ത്രണം പങ്കിടുക.</translation>
 <translation id="4430019312045809116">അളവ്</translation>
-<translation id="4444978951615977024">ക്ഷമിക്കണം! നിങ്ങളുടെ കണക്ഷൻ പരിശോധിക്കുക</translation>
 <translation id="4450893287417543264">വീണ്ടും കാണിക്കരുത്</translation>
 <translation id="445864333228800152">ഗുഡ് ഈവനിംഗ്,</translation>
 <translation id="4458688154122353284">സ്ക്രീൻ റെക്കോർഡിംഗ് നിർത്തുക</translation>
@@ -392,6 +393,7 @@
 <translation id="4710243778082831592">IME ക്രമീകരണം</translation>
 <translation id="4731797938093519117">രക്ഷാകർതൃ ആക്‌സസ്</translation>
 <translation id="4734965478015604180">സമാന്തരം</translation>
+<translation id="4744944742468440486">നിങ്ങളുടെ തിരഞ്ഞെടുപ്പുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ</translation>
 <translation id="4759238208242260848">ഡൌണ്‍ലോഡുകള്‍</translation>
 <translation id="4774338217796918551">നാളെ <ph name="COME_BACK_TIME" />-ന് തിരികെ വരിക.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> എന്നതിനായുള്ള പാസ്‌വേഡ്</translation>
@@ -400,7 +402,6 @@
 <translation id="4804818685124855865">വിച്ഛേദിക്കുക</translation>
 <translation id="4814539958450445987">ലോഗിൻ സ്‌ക്രീൻ</translation>
 <translation id="4831034276697007977">സ്വയമേവയുള്ള ക്ലിക്കുകൾ ഓഫാക്കണമെന്ന് നിങ്ങൾക്ക് തീർച്ചയാണോ?</translation>
-<translation id="4836108105469522644">നിങ്ങളുടെ Android ഫോണിൽ നിന്നുള്ള അറിയിപ്പുകൾ ഓണാക്കുക</translation>
 <translation id="4849058404725798627">കീബോർഡ് ഫോക്കസ് ഉപയോഗിച്ച് ഒബ്‌ജക്‌റ്റിനെ ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="485592688953820832">പ്രവർത്തനമൊന്നും വേണ്ട (താൽക്കാലികമായി നിർത്തുക)</translation>
 <translation id="4868492592575313542">സജീവമാക്കി</translation>
@@ -473,6 +474,7 @@
 <translation id="558849140439112033">ക്യാപ്‌ചർ ചെയ്യുന്നതിന് ഒരു ഏരിയ തിരഞ്ഞെടുക്കാൻ വലിച്ചിടുക</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">സംഭാഷണ ഫീഡ്‌ബാക്ക് പ്രവർത്തനരഹിതമാക്കാൻ Ctrl + Alt + Z അമർത്തുക.</translation>
+<translation id="5601503069213153581">PIN</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mic jack</translation>
 <translation id="5669267381087807207">സജീവമാക്കുന്നു</translation>
@@ -492,7 +494,6 @@
 <translation id="5769373120130404283">സ്വകാര്യതാ സ്‌ക്രീൻ</translation>
 <translation id="5777841717266010279">സ്‌ക്രീൻ പങ്കിടൽ നിർത്തണോ?</translation>
 <translation id="5790085346892983794">വിജയകരം</translation>
-<translation id="579415080077680903">നിശബ്‌ദമാക്കൽ</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-ൽ <ph name="ROUTE_TITLE" /> നിർത്തുക</translation>
 <translation id="5860033963881614850">ഓഫാക്കുക</translation>
@@ -505,12 +506,12 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ഓൺ ചെയ്യുക</translation>
 <translation id="5920710855273935292">മൈക്ക് മ്യൂട്ട് ചെയ്തിരിക്കുന്നു.</translation>
-<translation id="594179686076170922">നിങ്ങളുടെ ഫോണിലേക്ക് കണക്റ്റ് ചെയ്യുന്നു...</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ഓണാണ്.</translation>
 <translation id="5947494881799873997">പഴയപടിയാക്കുക</translation>
 <translation id="595202126637698455">പ്രകടനം പിന്തുടരൽ പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="5957083217255311415">മൊബൈൽ ഡാറ്റ ഓഫാക്കി.</translation>
 <translation id="5958529069007801266">മേൽനോട്ടത്തിലുള്ള ഉപയോക്താവ്</translation>
+<translation id="5960825221082587934">നിർവചനമോ വിവർത്തനമോ യൂണിറ്റ് പരിവർത്തനമോ പോലുള്ള വിവരങ്ങൾ കാണിക്കാൻ Assistant-നെ അനുവദിക്കുക.</translation>
 <translation id="5977415296283489383">ഹെഡ്‌ഫോൺ</translation>
 <translation id="5978382165065462689">നിങ്ങളുടെ വിദൂര സഹായി മുഖേന സ്‌ക്രീനിന്റെ നിയന്ത്രണം പങ്കിടുക.</translation>
 <translation id="5980301590375426705">ഗസ്റ്റ് എക്സിറ്റ്</translation>
@@ -532,7 +533,6 @@
 <translation id="615957422585914272">ഓൺ-സ്‌ക്രീൻ കീബോർഡ് ദൃശ്യമാക്കുക</translation>
 <translation id="6164005077879661055">മേൽനോട്ടത്തിലുള്ള ഉപയോക്താവിനെ നീക്കംചെയ്‌താൽ, മേൽനോട്ടത്തിലുള്ള ഉപയോക്താവുമായി ബന്ധപ്പെടുത്തിയിട്ടുള്ള എല്ലാ ഫയലുകളും പ്രാദേശിക ഡാറ്റയും ശാശ്വതമായി ഇല്ലാതാക്കപ്പെടും. മേൽനോട്ടത്തിലുള്ള ഈ ഉപയോക്താവിനായി സന്ദർശിച്ച വെബ്‌സൈറ്റുകളും ക്രമീകരണങ്ങളും <ph name="MANAGEMENT_URL" />-ൽ മാനേജർക്ക് തുടർന്നും കാണാനായേക്കും.</translation>
 <translation id="6165508094623778733">കൂടുതലറിയുക</translation>
-<translation id="6192859646269780503">ഫോൺ കണ്ടെത്തൽ</translation>
 <translation id="622484624075952240">താഴേക്കുള്ള കീ</translation>
 <translation id="6236290670123303279">ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -594,6 +594,7 @@
 <translation id="6777216307882431711">കണക്റ്റ് ചെയ്‍ത USB-C ഉപകരണങ്ങൾ ചാർജ് ചെയ്യുന്നു</translation>
 <translation id="6790428901817661496">പ്ലേചെയ്യുക</translation>
 <translation id="6803622936009808957">പിന്തുണയ്‌ക്കുന്ന മിഴിവുകൾ കണ്ടെത്താത്തതിനാൽ പ്രദർശനങ്ങൾ പ്രതിഫലിപ്പിക്കാനായില്ല. പകരം വിപുലീകൃത ഡെസ്‌ക്‌ടോപ്പ് നൽകി.</translation>
+<translation id="6816797338148849397">നിങ്ങളുടെ തിരഞ്ഞെടുപ്പുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ ലഭ്യമാണ്. ആക്‌സസ് ചെയ്യാൻ മുകളിലേയ്ക്കുള്ള അമ്പടയാളം കീ ഉപയോഗിക്കുക.</translation>
 <translation id="6818242057446442178">ഒരു വാക്ക് പിന്നിലേക്ക് പോവുക</translation>
 <translation id="6820676911989879663">ഒരു ഇടവേള എടുക്കൂ!</translation>
 <translation id="6850010208275816200">നിങ്ങളുടെ നിലവിലെ ആപ്പ് പൂർണ്ണ സ്ക്രീനിൽ ആണ്. ആപ്പ് നിങ്ങളുടെ പാസ്‌വേഡ് ആവശ്യപ്പെടുകയാണെങ്കിൽ ആദ്യം പൂർണ്ണ സ്ക്രീനിൽ നിന്ന് പുറത്ത് കടക്കുക.</translation>
@@ -606,11 +607,11 @@
 <translation id="6910714959251846841">ഈ അപ്ഡേറ്റിനായി നിങ്ങളുടെ ഉപകരണം powerwash ചെയ്യേണ്ടതുണ്ട്. ഏറ്റവും പുതിയ <ph name="SYSTEM_APP_NAME" /> അപ്‌ഡേറ്റിനെ കുറിച്ച് കൂടുതലറിയുക.</translation>
 <translation id="6919251195245069855">നിങ്ങളുടെ സ്‌മാർട്ട് കാർഡ് തിരിച്ചറിയാൻ കഴിഞ്ഞില്ല. വീണ്ടും ശ്രമിക്കൂ.</translation>
 <translation id="6945221475159498467">തിരഞ്ഞെടുക്കുക</translation>
+<translation id="6965382102122355670">ശരി</translation>
 <translation id="6972754398087986839">ആരംഭിക്കാം</translation>
 <translation id="6981982820502123353">ഉപയോഗസഹായി</translation>
 <translation id="698231206551913481">ഈ ഉപയോക്താവിനെ നീക്കംചെയ്യുമ്പോൾ അതോടൊപ്പം അയാളുമായി ബന്ധപ്പെട്ട എല്ലാ ഫയലുകളും പ്രാദേശിക വിവരങ്ങളും ശാശ്വതമായി ഇല്ലാതാക്കപ്പെടും.</translation>
 <translation id="7007983414944123363">നിങ്ങളുടെ പിൻ അല്ലെങ്കിൽ പാസ്‌വേഡ് പരിശോധിച്ചുറപ്പിക്കാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
-<translation id="7013005189539051442">ഹോട്ട്‌സ്പോട്ട് പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" />-ന് തിരികെ വരിക.</translation>
 <translation id="7025533177575372252">നിങ്ങളുടെ ഫോണുമായി <ph name="DEVICE_NAME" /> കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="7026338066939101231">കുറവ്</translation>
@@ -657,6 +658,7 @@
 <translation id="7497767806359279797">ഭാഷയും കീബോഡും തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7526573455193969409">നെറ്റ്‌വർക്ക് നിരീക്ഷിക്കപ്പെടാം</translation>
 <translation id="7536035074519304529">IP വിലാസം: <ph name="ADDRESS" /></translation>
+<translation id="7542906349682405018">സ്ക്രീനിലെ ഉള്ളടക്കത്തിന്റെ സ്ക്രീൻ ചിത്രമെടുക്കാനുള്ള ശേഷി നിങ്ങളുടെ അഡ്‌മിൻ പ്രവർത്തനരഹിതമാക്കി.</translation>
 <translation id="7548434653388805669">ഉറങ്ങാൻ സമയമായി</translation>
 <translation id="7551643184018910560">ഷെൽഫിലേക്ക് പിൻ ചെയ്യുക</translation>
 <translation id="7561982940498449837">മെനു അടയ്ക്കുക</translation>
@@ -678,7 +680,6 @@
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
 <translation id="7662283695561029522">കോൺഫിഗർ ചെയ്യുന്നതിന് ടാപ്പ് ചെയ്യുക</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7705822912736783206">ഫിംഗർപ്രിന്റ് ഉപയോഗിച്ച് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{ഒരു അറിയിപ്പ്}other{# അറിയിപ്പുകൾ}}</translation>
 <translation id="7724603315864178912">മുറിക്കുക</translation>
 <translation id="7749443890790263709">ഡെസ്‌ക്കുകളുടെ പരമാവധി എണ്ണത്തിൽ എത്തിയിരിക്കുന്നു.</translation>
@@ -784,6 +785,7 @@
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">കുറഞ്ഞ തോതിൽ വൈദ്യുതി പ്രവഹിക്കുന്ന ചാർജർ കണക്റ്റുചെയ്‌തു</translation>
 <translation id="8683506306463609433">പ്രകടനം പിന്തുടരൽ സജീവം</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> ഈ ഫീച്ചർ മാനേജ് ചെയ്യാൻ ഇടത്തേയ്‌ക്കോ വലത്തേയ്‌ക്കോ ഉള്ള അമ്പടയാളം ഉപയോഗിക്കുക.</translation>
 <translation id="8712637175834984815">മനസ്സിലായി</translation>
 <translation id="8721053961083920564">വോളിയം മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">ഇത് നിങ്ങളുടെ കീസ്ട്രോക്കുകൾ മോഷ്‌ടിക്കാൻ ശ്രമിച്ചേക്കാം.</translation>
@@ -804,6 +806,7 @@
 <translation id="8874184842967597500">കണക്റ്റല്ല</translation>
 <translation id="8877788021141246043">ഒരു റിമൈൻഡർ സജ്ജീകരിക്കുക</translation>
 <translation id="8878886163241303700">സ്‌ക്രീൻ വിപുലീകരിക്കുന്നു</translation>
+<translation id="8883473964424809116">Google Assistant ക്രമീകരണം തുറക്കാൻ ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="890616557918890486">ഉറവിടം മാറ്റുക</translation>
 <translation id="8909138438987180327">ബാറ്ററി <ph name="PERCENTAGE" /> ശതമാനം ഉണ്ട്..</translation>
 <translation id="8913384980486163186">തീമുള്ള (ഡിഫോൾട്ട്)</translation>

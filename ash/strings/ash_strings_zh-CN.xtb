@@ -49,7 +49,6 @@
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351937230027495976">收起菜单</translation>
 <translation id="1383876407941801731">搜索</translation>
-<translation id="1390105199421505038">移除 <ph name="USER_EMAIL_ADDRESS" /> 的帐号对话框</translation>
 <translation id="1391102559483454063">已开启</translation>
 <translation id="1407069428457324124">深色主题</translation>
 <translation id="1419738280318246476">解锁设备即可执行通知操作</translation>
@@ -74,7 +73,6 @@
 <translation id="1589090746204042747">访问您在此次会话中的所有活动</translation>
 <translation id="1611993646327628135">开启</translation>
 <translation id="1632985212731562677">您可在“设置”&gt;“无障碍”中停用“开关控制”功能。</translation>
-<translation id="1651447046299738444">您的 Chromebook 好像关闭了蓝牙或 Wi-Fi。请检查您的网络连接状况，以便能够使用手机中心。</translation>
 <translation id="1654477262762802994">启动语音查询</translation>
 <translation id="1667964833127753507">中性颜色模式不会使用从壁纸中提取的颜色，而是会将其替换为一组中性的浅色调或深色调。</translation>
 <translation id="1677472565718498478">电量尚余 <ph name="TIME" /></translation>
@@ -143,7 +141,6 @@
 <translation id="2341729377289034582">已锁定为纵向</translation>
 <translation id="2352467521400612932">触控笔设置</translation>
 <translation id="2354174487190027830">正在激活“<ph name="NAME" />”</translation>
-<translation id="2356210126990741501">您的手机好像未联网，因此我们现在无法为您获取所有个性小应用。</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2365393535144473978">如果您启用移动数据网络，蓝牙亦会随之开启。</translation>
 <translation id="2369165858548251131">“你好”用英文怎么说</translation>
@@ -188,7 +185,6 @@
 <translation id="2825619548187458965">任务栏</translation>
 <translation id="2841907151129139818">已切换到平板电脑模式</translation>
 <translation id="2844169650293029770">USB-C 设备（左侧前端端口）</translation>
-<translation id="2846247265041961677">糟糕！找不到手机</translation>
 <translation id="2865888419503095837">网络信息</translation>
 <translation id="2872961005593481000">关机</translation>
 <translation id="2878884018241093801">近期没有任何内容</translation>
@@ -329,7 +325,6 @@
 <translation id="4195877955194704651">“自动点击”按钮</translation>
 <translation id="4197790712631116042">已关闭</translation>
 <translation id="4201033867194214117">“<ph name="FEATURE_NAME" />”不可用。</translation>
-<translation id="4212246570487010370">继续浏览</translation>
 <translation id="4212472694152630271">切换到 PIN 码</translation>
 <translation id="4215497585250573029">VPN 设置</translation>
 <translation id="4217571870635786043">语音输入</translation>
@@ -358,7 +353,6 @@
 <translation id="4412944820643904175">“<ph name="FEATURE_NAME" />”功能已关闭。</translation>
 <translation id="4421231901400348175">正在通过远程协助与<ph name="HELPER_NAME" />共享您屏幕的控制权限。</translation>
 <translation id="4430019312045809116">音量</translation>
-<translation id="4444978951615977024">糟糕！请检查您的网络连接状况</translation>
 <translation id="4450893287417543264">不再显示</translation>
 <translation id="445864333228800152">晚上好！</translation>
 <translation id="4458688154122353284">停止屏幕录制</translation>
@@ -400,7 +394,6 @@
 <translation id="4804818685124855865">断开连接</translation>
 <translation id="4814539958450445987">登录屏幕</translation>
 <translation id="4831034276697007977">确定要关闭自动点击吗？</translation>
-<translation id="4836108105469522644">在您的 Android 手机中开启通知功能</translation>
 <translation id="4849058404725798627">突出显示键盘焦点所在对象</translation>
 <translation id="485592688953820832">不执行任何操作（暂停）</translation>
 <translation id="4868492592575313542">已启用</translation>
@@ -473,6 +466,7 @@
 <translation id="558849140439112033">拖动鼠标指针即可选择要截取的区域</translation>
 <translation id="5597451508971090205"><ph name="DATE" /><ph name="SHORT_WEEKDAY" /></translation>
 <translation id="5600837773213129531">按 Ctrl + Alt + Z 即可停用语音反馈。</translation>
+<translation id="5601503069213153581">PIN</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">麦克风耳机插孔</translation>
 <translation id="5669267381087807207">正在激活</translation>
@@ -492,7 +486,6 @@
 <translation id="5769373120130404283">隐私保护屏</translation>
 <translation id="5777841717266010279">要停止屏幕共享吗？</translation>
 <translation id="5790085346892983794">成功</translation>
-<translation id="579415080077680903">静音</translation>
 <translation id="5820394555380036790">Chromium 操作系统</translation>
 <translation id="5837036133683224804">停止将“<ph name="ROUTE_TITLE" />”投射至“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="5860033963881614850">关闭</translation>
@@ -505,7 +498,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">启用</translation>
 <translation id="5920710855273935292">麦克风已静音。</translation>
-<translation id="594179686076170922">正在连接到您的手机…</translation>
 <translation id="5946788582095584774">“<ph name="FEATURE_NAME" />”功能已开启。</translation>
 <translation id="5947494881799873997">还原</translation>
 <translation id="595202126637698455">已启用性能跟踪</translation>
@@ -532,7 +524,6 @@
 <translation id="615957422585914272">显示屏幕键盘</translation>
 <translation id="6164005077879661055">删除该受监管用户后，与其相关联的所有文件和本地数据都会被永久删除，但管理员仍可以在 <ph name="MANAGEMENT_URL" /> 上查看该用户的设置和访问过的网站。</translation>
 <translation id="6165508094623778733">了解详情</translation>
-<translation id="6192859646269780503">定位手机</translation>
 <translation id="622484624075952240">向下箭头键</translation>
 <translation id="6236290670123303279">管理设置</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -606,11 +597,11 @@
 <translation id="6910714959251846841">必须对您的设备执行 Powerwash 才能安装这项更新。详细了解最新的 <ph name="SYSTEM_APP_NAME" />更新。</translation>
 <translation id="6919251195245069855">无法识别您的智能卡，请重试。</translation>
 <translation id="6945221475159498467">选择</translation>
+<translation id="6965382102122355670">确定</translation>
 <translation id="6972754398087986839">开始使用</translation>
 <translation id="6981982820502123353">无障碍</translation>
 <translation id="698231206551913481">移除该用户后，与其关联的所有文件和本地数据都会被永久删除。</translation>
 <translation id="7007983414944123363">无法验证您的 PIN 码或密码。请重试。</translation>
-<translation id="7013005189539051442">启用热点</translation>
 <translation id="7015766095477679451">您需要等到<ph name="COME_BACK_TIME" /> 才能再次使用此设备。</translation>
 <translation id="7025533177575372252">将您的<ph name="DEVICE_NAME" />连接到手机</translation>
 <translation id="7026338066939101231">减少</translation>
@@ -678,7 +669,6 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7662283695561029522">点按即可配置</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7705822912736783206">使用指纹验证身份</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 条通知}other{# 条通知}}</translation>
 <translation id="7724603315864178912">剪切</translation>
 <translation id="7749443890790263709">已达到桌面数量上限。</translation>

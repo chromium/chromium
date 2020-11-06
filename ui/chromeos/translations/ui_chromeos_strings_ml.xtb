@@ -5,7 +5,6 @@
 <translation id="1023220960495960452">ലിപ്യന്തരണം (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">സ്ലൈഡ് കാഴ്‌ച</translation>
 <translation id="1045157690796831147">ലിപ്യന്തരണം (namaskar → നമസ്കാരം)</translation>
-<translation id="1046068652463704410">ജാപ്പനീസ് ഇൻപുട്ട് (യുഎസ് കീബോർഡിന്)</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> ഇനങ്ങൾ ഇല്ലാതാക്കുന്നു...</translation>
 <translation id="1049926623896334335">Word പ്രമാണം</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> ഉപയോഗിച്ച് ഫയലുകൾ തുറക്കാൻ, ആദ്യം അവയെ Windows ഫയലുകൾ എന്ന ഫോൾഡറിലേക്ക് മാറ്റുക.</translation>
@@ -26,11 +25,9 @@
 <translation id="1178581264944972037">അല്പംനിര്‍ത്തൂ</translation>
 <translation id="1190144681599273207">ഈ ഫയൽ ലഭ്യമാക്കുന്നതിന് ഏകദേശം <ph name="FILE_SIZE" /> മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കും.</translation>
 <translation id="1201402288615127009">അടുത്തത്</translation>
-<translation id="1208421848177517699">ലിപ്യന്തരണം (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">അപ്‌ലോഡുചെയ്യുക</translation>
 <translation id="1249250836236328755">വിഭാഗം</translation>
 <translation id="1276362640455948667">യു.എസ് അന്താരാഷ്ട്ര കീബോർഡ് ഉപയോഗിക്കുന്ന പോർച്ചുഗീസ്</translation>
-<translation id="1278813325885878377">ഹംഗേറിയൻ ക്വെർട്ടി കീബോർഡ്</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">Google ഡ്രൈവ് ഇപ്പോൾ ലഭ്യമല്ല. ലഭ്യമായിക്കഴിഞ്ഞാൽ, അപ്‌ലോഡ് ചെയ്യുന്നത് സ്വമേധയാ പുനരാരംഭിക്കും.</translation>
 <translation id="1307931752636661898">Linux ഫയലുകൾ കാണാനാവുന്നില്ല</translation>
@@ -63,7 +60,6 @@
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">ക്യാമറ</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ഫയലുകൾ ഓഫ്‌ലൈനിൽ ലഭ്യമാക്കുന്നു</translation>
-<translation id="1646136617204068573">ഹംഗേറിയന്‍ കീബോര്‍ഡ്</translation>
 <translation id="164729547906544836">തമിഴ് കീബോർഡ് (ഐട്രാൻസ്)</translation>
 <translation id="164969095109328410">Chrome ഉപകരണം</translation>
 <translation id="1665611772925418501">ഫയൽ പരിഷ്‌ക്കരിക്കാൻ കഴിഞ്ഞില്ല.</translation>
@@ -93,7 +89,6 @@
 <translation id="1936717151811561466">ഫിന്നിഷ്</translation>
 <translation id="1942765061641586207">ചിത്രത്തിന്റെ റെസല്യൂഷൻ</translation>
 <translation id="1943097386230153518">പുതിയ സേവനം ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
-<translation id="1947424002851288782">ജര്‍മന്‍ കീബോര്‍ഡ്</translation>
 <translation id="1972984168337863910">ഫയലുകളുടെ ഫീഡ്ബാക്ക് പാനലുകൾ വികസിപ്പിക്കുക</translation>
 <translation id="1984603991036629094">അർമേനിയൻ സ്വരസൂചക കീബോർഡ്</translation>
 <translation id="1995337122023280937">ഫയൽ ലൊക്കേഷനിലേക്ക് പോവുക</translation>
@@ -116,14 +111,12 @@
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ ഇല്ലാതാക്കണമെന്ന് ഉറപ്പാണോ?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ഫോൾഡർ സൃഷ്‌ടിക്കാനാവില്ല. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">നീക്കി.</translation>
-<translation id="2278988676849463018">കന്നഡ കീബോർഡ് (സ്വരസൂചകം)</translation>
 <translation id="2287742181953707290">യു.എസ് അന്താരാഷ്ട്ര PC കീബോർഡ് ഉപയോഗിക്കുന്ന പോർച്ചുഗീസ്</translation>
 <translation id="2288278176040912387">റെക്കോർഡ് പ്ലേയർ</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ഫയലുകൾ തുറക്കുന്നു.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> ഫയൽ തുറക്കുന്നു.</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ഒഴിവാക്കി.</translation>
 <translation id="2325650632570794183">ഈ ഫയൽ തരം പിന്തുണയ്‌ക്കുന്നില്ല. ഈ ഫയൽ തരം തുറക്കാൻ കഴിയുന്ന ഒരു ആപ്പ് കണ്ടെത്തുന്നതിന് ഒരു Chrome വെബ് സ്റ്റോർ കണ്ടെത്തുക.</translation>
-<translation id="23434688402327542">കസാഖ് കീബോർഡ്</translation>
 <translation id="2352947182261340447">ലോക്കൽ സ്‌‌റ്റോറേജിൽ മതിയായ ഇടം ലഭ്യമല്ല</translation>
 <translation id="2377319039870049694">ലിസ്റ്റ് കാഴ്‌ചയിലേക്ക് മാറുക</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ഫോൾഡറുകൾ Linux ഉപയോഗിച്ച് പങ്കിട്ടു</translation>
@@ -136,7 +129,6 @@
 <translation id="2453576648990281505">ഫയൽ ഇതിനകം നിലനിൽക്കുന്നു</translation>
 <translation id="2464079411014186876">ഐസ്‌ക്രീം</translation>
 <translation id="2468402215065996499">താമഗോച്ചി</translation>
-<translation id="2494837236724268445">ഗുജറാത്തി കീബോർഡ് (സ്വരസൂചകം)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">യുഎസ് കീബോര്‍ഡ്</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ ഇല്ലാതാക്കി</translation>
@@ -172,10 +164,8 @@
 <translation id="2902312830803030883">കൂടുതൽ‍ പ്രവര്‍ത്തനങ്ങള്‍</translation>
 <translation id="2902734494705624966">യുഎസ് വിപുലീകൃതം</translation>
 <translation id="2923240520113693977">എസ്റ്റോണിയന്‍</translation>
-<translation id="2924296707677495905">ലിപ്യന്തരണം (namaskaram → ನಮಸ್ಕಾರ)</translation>
 <translation id="2925966894897775835">Sheets</translation>
 <translation id="2938685643439809023">മംഗോളിയന്‍</translation>
-<translation id="2942290791863759244">ജര്‍മ്മന്‍ നിയോ 2 കീബോർഡ്</translation>
 <translation id="2943400156390503548">Slides</translation>
 <translation id="2943503720238418293">ഇതിലും ചെറിയൊരു പേര് നൽകുക</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> ഫോർമാറ്റ് ചെയ്യുന്നു...</translation>
@@ -196,7 +186,6 @@
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">പൂർത്തിയായി</translation>
 <translation id="3157729859914172001">യുഎസ് അന്തര്‍ദേശീയ (PC) കീബോര്‍ഡ്</translation>
-<translation id="3187212781151025377">ഹിബ്രു കീബോര്‍ഡ്</translation>
 <translation id="3188257591659621405">എൻ്റെ ഫയലുകൾ</translation>
 <translation id="3197563288998582412">യുകെ ദ്വരോക്ക്</translation>
 <translation id="3202131003361292969">പാത</translation>
@@ -227,14 +216,12 @@
 <translation id="3475447146579922140">Google സ്‌പ്രെഡ്‌ഷീറ്റ്</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> പിശകുകൾ.</translation>
 <translation id="349603508045926994">പേർഷ്യൻ ലിപ്യന്തരണം</translation>
-<translation id="3519867315646775981">ലിപ്യന്തരണം (shalom ← שלום)</translation>
 <translation id="3522708245912499433">പോര്‍ച്ചുഗീസ്</translation>
 <translation id="3524311639100184459">മുന്നറിയിപ്പ്: ഇവ താൽക്കാലിക ഫയലുകളാണ് ഡിസ്ക്കിൽ ഇടമുണ്ടാക്കാൻ സ്വയമേവ ഇല്ലാതാക്കിയേക്കാം.  <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ഫോൾഡർ</translation>
 <translation id="3549797760399244642">drive.google.com-ലേക്ക് പോകുക...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ഉപയോഗിച്ച് ഫയലുകൾ തുറക്കാൻ, ആദ്യം അവയെ Windows ഫയലുകൾ എന്ന ഫോൾഡറിലേക്ക് പകർത്തുക.</translation>
 <translation id="357479282490346887">ലിത്വാനിയന്‍</translation>
-<translation id="3583509704582854624">അക്ക - അക്ഷര പ്രതീകങ്ങളുടെ ഇൻപുട്ട് (ജാപ്പനീസ് കീബോർഡിന്)</translation>
 <translation id="3603385196401704894">കനേഡിയന്‍ ഫ്രഞ്ച്</translation>
 <translation id="3606220979431771195">ടർക്കിഷ്-എഫ്</translation>
 <translation id="3609785682760573515">സമന്വയിപ്പിക്കുന്നു...</translation>
@@ -268,10 +255,8 @@
 <translation id="383652340667548381">സെര്‍ബിയന്‍</translation>
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
 <translation id="3855472144336161447">ജർമ്മൻ നിയോ 2</translation>
-<translation id="3858678421048828670">ഇറ്റാലിയന്‍ കീബോര്‍ഡ്</translation>
 <translation id="386548886866354912"><ph name="EXTENSION_NAME" /> ഉപയോഗിച്ച് പായ്‌ക്കുചെയ്യുക</translation>
 <translation id="3866249974567520381">വിവരണം</translation>
-<translation id="3910699493603749297">ഖമെർ കീബോർഡ്</translation>
 <translation id="391445228316373457">നേപ്പാളി കീബോർഡ് (സ്വരസൂചകം)</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">ഇതിൽ പ്ലേ ചെയ്യുക</translation>
@@ -335,7 +320,6 @@
 <translation id="4734518477988699048">ഇൻപുട്ട് മൂല്യം അസാധുവാണ്.</translation>
 <translation id="4737050008115666127">ലാൻഡിംഗ്</translation>
 <translation id="4747271164117300400">മാസിഡോണിയൻ</translation>
-<translation id="4749157430980974800">ജോർജ്ജിയൻ കീബോർഡ്</translation>
 <translation id="4759238208242260848">ഡൌണ്‍ലോഡുകള്‍</translation>
 <translation id="4779136857077979611">ഒണിഗിരി</translation>
 <translation id="4784330909746505604">PowerPoint അവതരണം</translation>
@@ -413,7 +397,6 @@
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
 <translation id="5318819489018851358">Linux-മായി പങ്കിടുക</translation>
-<translation id="5319782540886810524">ലാറ്റ്‌വിയന്‍ കീബോര്‍ഡ്</translation>
 <translation id="5323213332664049067">ലാറ്റിന്‍ അമേരിക്കന്‍</translation>
 <translation id="5327248766486351172">പേര്</translation>
 <translation id="5330145655348521461">ഈ ഫയലുകൾ മറ്റൊരു ഡെസ്‌ക്‌ടോപ്പിലാണ് തുറന്നിരിക്കുന്നത്. അത് കാണാൻ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) എന്നതിലേക്ക് നീക്കുക.</translation>
@@ -440,7 +423,6 @@
 <translation id="5534520101572674276">കണക്കാക്കിയ വലുപ്പം</translation>
 <translation id="5583640892426849032">ബാക്ക്‌സ്പെയ്‌സ്</translation>
 <translation id="5605830556594064952">യുകെ ദ്വരോക്ക്</translation>
-<translation id="5640179856859982418">സ്വിസ്സ് കീബോര്‍ഡ്</translation>
 <translation id="5649768706273821470">കേൾക്കുക</translation>
 <translation id="5678784840044122290">നിങ്ങളുടെ ടെർമിനലിനുള്ളിൽ Linux അപ്ലിക്കേഷൻ ലഭ്യമാകും, നിങ്ങളുടെ ലോഞ്ചറിൽ അതിന്റെ ഐക്കൺ കാണിച്ചേക്കാം.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ഒരു ആർക്കൈവിൽ നിന്നോ വെർച്വൽ ഡിസ്‌ക്കിൽ നിന്നോ വിച്ഛേദിക്കാനാവുന്നില്ല<ph name="END_BOLD" />
@@ -451,7 +433,6 @@
 <translation id="5731409020711461763">ഒരു പുതിയ ഫോട്ടോ</translation>
 <translation id="5752453871435543420">Chrome OS ക്ലൗഡ് ബാക്കപ്പ്</translation>
 <translation id="5756666464756035725">ഹംഗേറിയൻ ക്വെർട്ടി</translation>
-<translation id="5771585441665576801">ലിപ്യന്തരണം (geia → γεια)</translation>
 <translation id="5776325638577448643">മായ്‌ച്ചശേഷം ഫോർമാറ്റ് ചെയ്യുക</translation>
 <translation id="57838592816432529">മ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="5788127256798019331">Play ഫയലുകൾ</translation>
@@ -468,7 +449,6 @@
 <translation id="5911887972742538906">നിങ്ങളുടെ Linux അപ്ലിക്കേഷൻ ഇൻസ്‌റ്റാൾ ചെയ്യുന്ന സമയത്ത് ഒരു പിശക് സംഭവിച്ചു.</translation>
 <translation id="5912396950572065471">ഫോർമാറ്റ്</translation>
 <translation id="5913638992615760742">അപ്രതീക്ഷിത പിശക് കാരണം പകർത്താനായില്ല: <ph name="ERROR_MESSAGE" /></translation>
-<translation id="5923484009666796948">ജാപ്പനീസ് ഇൻപുട്ട് (ജാപ്പനീസ് കീബോർഡിന്)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ</translation>
 <translation id="5957366693331451795">Chromebox-കൾ</translation>
@@ -498,7 +478,6 @@
 <translation id="6248400709929739064">സബ്‌ടൈറ്റിലുകൾ പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="6264347891387618177">ലിപ്യന്തരണം (selam → ሰላም)</translation>
 <translation id="6287852322318138013">ഈ ഫയൽ തുറക്കാനായി ഒരു ആപ്പ് തിരഞ്ഞെടുക്കുക</translation>
-<translation id="6305012486838822927">ലാവോ കീബോർഡ്</translation>
 <translation id="6339034549827494595">റഷ്യൻ ഫൊണറ്റിക് (AATSEEL) കീബോർഡ്</translation>
 <translation id="6339145975392024142">യുഎസ് അന്തര്‍ദേശീയ (PC)</translation>
 <translation id="6346310558342052870">ആക്‌സസ് നിയന്ത്രിതമാണ്</translation>
@@ -509,8 +488,6 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ഇനങ്ങൾ</translation>
 <translation id="6398765197997659313">പൂര്‍ണ്ണ സ്ക്രീനില്‍ നിന്ന് പുറത്തുകടക്കുക</translation>
 <translation id="642282551015776456">ഈ നാമം ഒരു ഫോൾഡർ നാമത്തിന്റെ ഫയൽ ആയി ഉപയോഗിക്കരുത്</translation>
-<translation id="6462109140674788769">ഗ്രീക്ക് കീബോര്‍ഡ്</translation>
-<translation id="6466492211071551451">ഐറിഷ് കീബോർഡ്</translation>
 <translation id="6485131920355264772">സ്‌പെയ്‌സ് വിവരം വീണ്ടെടുക്കുന്നതിന് പരാജയപ്പെട്ടു</translation>
 <translation id="6505918941256367791">തമിഴ് കീബോർഡ് (ഇൻസ്‌ക്രിപ്റ്റ്)</translation>
 <translation id="6509122719576673235">നോര്‍വീജിയന്‍</translation>
@@ -650,7 +627,6 @@
 <translation id="7896906914454843592">യുഎസ് വിപുലീകൃത കീബോർഡ്</translation>
 <translation id="7898607018410277265">ഗുജറാത്തി കീബോർഡ് (പുതിയ സ്വരസൂചകം)</translation>
 <translation id="7908793776359722643">ഒരു ഭാഗം ഫോർമാറ്റ് ചെയ്യുന്നത് അതിൽ സംഭരിച്ചിരിക്കുന്ന എല്ലാ ഡാറ്റയും മായ്‌ക്കും. ഈ പ്രവർത്തനം പഴയപടിയാക്കാനാകില്ല.</translation>
-<translation id="7917972308273378936">ലിത്വാനിയന്‍ കീബോര്‍ഡ്</translation>
 <translation id="7925686952655276919">സമന്വയത്തിനായി മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കരുത്</translation>
 <translation id="7928710562641958568">ഉപകരണം നീക്കംചെയ്യുക</translation>
 <translation id="7943385054491506837">യുഎസ് കോൾമാക്ക്</translation>
@@ -697,7 +673,6 @@
 <translation id="8335587457941836791">ഷെൽഫിൽ നിന്ന് അൺപിൻ ചെയ്യുക</translation>
 <translation id="8336153091935557858">ഇന്നലെ <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336524887811696057">നേപ്പാളി ലിപ്യന്തരണം</translation>
-<translation id="8336579025507394412">ഐസ്‌ലാൻഡിക് കീബോർഡ്</translation>
 <translation id="8342318071240498787">സമാന പേരിലുള്ള ഫയൽ അല്ലെങ്കിൽ ഡയറക്‌റ്ററി ഇതിനകം നിലവിലുണ്ട്.</translation>
 <translation id="8382450452152102026"><ph name="FOLDER_NAME" /> എന്ന ഫോൾഡറിലേക്ക്</translation>
 <translation id="8391950649760071442">ലിപ്യന്തരണം (emandi → ఏమండీ)</translation>
@@ -708,7 +683,6 @@
 <translation id="8437209419043462667">യുഎസ്</translation>
 <translation id="8456681095658380701">അസാധുവായ പേര്</translation>
 <translation id="8466234950814670489">Tar ആർക്കൈവ്</translation>
-<translation id="8467473010914675605">Korean ഇന്‍‌പുട്ട് രീതി</translation>
 <translation id="8475647382427415476">Google ഡ്രൈവിന് ഇപ്പോൾ "<ph name="FILENAME" />" സമന്വയിപ്പിക്കായില്ല. Google ഡ്രൈവ് പിന്നീട് വീണ്ടും ശ്രമിക്കുന്നതാണ്.</translation>
 <translation id="8477649328507734757">സ്പിൻ</translation>
 <translation id="8487700953926739672">ഓഫ്‌ലൈനില്‍ ലഭ്യമാണ്</translation>

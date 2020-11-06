@@ -4361,7 +4361,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6112294629795967147">Érintse meg az átméretezéshez</translation>
 <translation id="6112727384379533756">Jegy felvétele</translation>
 <translation id="6112931163620622315">Folytassa a telefonján</translation>
-<translation id="6112952769866305444">Személy szerkesztése, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Állítsa be az alapértelmezett keresőmotort a Chrome böngészőhöz és a(z) <ph name="DEVICE_TYPE" /> indítójához</translation>
 <translation id="6113942107547980621">Ha használni szeretné a Smart Lock funkciót, váltson a telefon elsődleges felhasználói profiljára</translation>
 <translation id="6116921718742659598">Nyelvi és beviteli beállítások módosítása</translation>
@@ -5644,7 +5643,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7649070708921625228">Súgó</translation>
 <translation id="7650511557061837441">A(z) „<ph name="TRIGGERING_EXTENSION_NAME" />” el szeretné távolítani a következőt: „<ph name="EXTENSION_NAME" />”.</translation>
 <translation id="7650677314924139716">A jelenlegi adathasználati beállítás: Csak Wi-Fi</translation>
-<translation id="7652808307838961528">Személy szerkesztése, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Erről a webhelyről nem lehet alkalmazásokat, bővítményeket és felhasználói szkripteket hozzáadni</translation>
 <translation id="7652954539215530680">PIN-kód beállítása</translation>
 <translation id="7654941827281939388">Ezt a fiókot már használják ezen a számítógépen.</translation>
@@ -5886,6 +5884,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7898627924844766532">Gomb megtartása az eszköztáron</translation>
 <translation id="7898725031477653577">Mindig legyen lefordítva</translation>
 <translation id="790040513076446191">Adatvédelemmel kapcsolatos beállítások módosítása</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903345046358933331">Az oldal nem válaszol. Megvárhatja, hogy reagáljon, vagy bezárhatja.</translation>
 <translation id="7903742244674067440">Vannak olyan tanúsítványok, amelyek azonosítják ezeket a tanúsítványkibocsátókat</translation>
 <translation id="7903859912536385558">stabil (megbízható tesztelő)</translation>

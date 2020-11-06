@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">এইটো মাহ</translation>
 <translation id="1637811476055996098">ফাইল বাছনি কৰক</translation>
 <translation id="1650423536718072820">pullquote</translation>
+<translation id="1681022320378710418">বৰ্তমানৰ সময়</translation>
 <translation id="1727886345390570319">ছাব-টাইটেলৰ মেনু লুকুৱাওক</translation>
 <translation id="1729654308190250600">অনুগ্ৰহ কৰি খালী নোহোৱা ইমেইল ঠিকনা দিয়ক৷</translation>
 <translation id="1758486001363313524">অন্য...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">অনুগ্ৰহ কৰি এটা URL দিয়ক।</translation>
 <translation id="3175736971608411871">টাইমাৰ</translation>
 <translation id="3199563858620722075">কম্ব' বক্স</translation>
+<translation id="3220661731597678625">বৰ্তমানৰ পদক্ষেপ</translation>
 <translation id="3329013043687509092">সংপৃক্তি</translation>
 <translation id="3450233048674729344">মান <ph name="MAXIMUM" />ৰ সমান বা ইয়াতকৈ ডাঙৰ হ’বই লাগিব।</translation>
 <translation id="3486220673238053218">সংজ্ঞা</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">ভিডিঅ’</translation>
 <translation id="479989351350248267">সন্ধান কৰক</translation>
 <translation id="4812940957355064477">অনুগ্রহ কৰি ফ’ন কোনো নম্বৰ দিয়ক।</translation>
+<translation id="4912200001568447310">বৰ্তমানৰ বস্তু</translation>
 <translation id="4912536737030637138">গ্ৰন্থপঞ্জীৰ অন্তৰ্ভুক্তি</translation>
 <translation id="4915360478455618802">সময় বাছনিকৰ্তাক দেখুৱাওক</translation>
 <translation id="492244087561876220">মন্তব্য</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">মিডিয়া প্লে' কৰিব পৰা নগ'ল।</translation>
 <translation id="537648784377940524">সৰ্বনিম্ন তাৰিখ (<ph name="MIN_DATE_OR_TIME" />) সৰ্বোচ্চ তাৰিখ (<ph name="MAX_DATE_OR_TIME" />)তকৈ আগতে হ’বই লাগিব।</translation>
 <translation id="5406322316791861025">আকাৰ</translation>
+<translation id="5425179576310518467">বৰ্তমানৰ তাৰিখ</translation>
 <translation id="5453733299334684579">ট্ৰীত থকা বস্তু</translation>
 <translation id="5466621249238537318">অনুগ্ৰহ কৰি এটা বা ততোধিক ফাইল বাছনি কৰক।</translation>
 <translation id="5468998798572797635">পূৰ্ণ স্ক্ৰীণৰ পৰা বাহিৰ হওক</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">মিটাৰ</translation>
 <translation id="6166809985690652833">উত্তৰকথন</translation>
 <translation id="6209276755895393898">এনেকুৱা যেন লাগিছে: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">বৰ্তমানৰ পৃষ্ঠা</translation>
 <translation id="6213469881011901533">পৰিভাষা</translation>
 <translation id="6281588256137006900">দৃশ্যমানতা</translation>
 <translation id="6281763101136022427">url</translation>
@@ -210,6 +215,7 @@
 <translation id="6989848892321993519">অনুগ্ৰহ কৰি এই পাঠটো <ph name="MIN_CHARACTERS" /> বৰ্ণলৈ বৃদ্ধি কৰক (আপুনি বৰ্তমান ১টা বৰ্ণ ব্যৱহাৰ কৰিছে)।</translation>
 <translation id="7034405885550056553">পৰামৰ্শ</translation>
 <translation id="709897737746224366">অনুগ্ৰহ কৰি অনুৰোধ কৰা ফর্মেটটো মিলাওক।</translation>
+<translation id="7102274145889307184">বৰ্তমানৰ অৱস্থান</translation>
 <translation id="7118469954320184356">কোনো বিৱৰণ উপলব্ধ নহয়।</translation>
 <translation id="7139483182332611405">পাতনি</translation>
 <translation id="7214187073215825913">সমলৰ তথ্য</translation>

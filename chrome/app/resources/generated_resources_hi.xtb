@@ -4359,7 +4359,6 @@
 <translation id="6112294629795967147">आकार बदलने के लिए छुएं</translation>
 <translation id="6112727384379533756">टिकट जोड़ें</translation>
 <translation id="6112931163620622315">अपने फ़ोन में देखें</translation>
-<translation id="6112952769866305444">व्यक्ति की जानकारी, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /> में बदलाव करें</translation>
 <translation id="6113434369102685411">Chrome ब्राउज़र और <ph name="DEVICE_TYPE" /> लॉन्चर के लिए अपना डिफ़ॉल्ट सर्च इंजन सेट करें</translation>
 <translation id="6113942107547980621">Smart Lock इस्तेमाल करने के लिए, अपने डिवाइस के प्राथमिक उपयोगकर्ता की प्रोफ़ाइल पर स्विच करें</translation>
 <translation id="6116921718742659598">भाषा और अक्षर सेटिंग बदलें</translation>
@@ -5642,7 +5641,6 @@
 <translation id="7649070708921625228">सहायता</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" "<ph name="EXTENSION_NAME" />" को निकालना चाहता है.</translation>
 <translation id="7650677314924139716">मौजूदा डेटा खर्च सेटिंग के लिए, सिर्फ़ वाई-फ़ाई का इस्तेमाल किया जा सकता है</translation>
-<translation id="7652808307838961528">व्यक्ति की जानकारी, <ph name="PROFILE_NAME" />, में बदलाव करें</translation>
 <translation id="765293928828334535">इस वेबसाइट से ऐप्लिकेशन, एक्सटेंशन और उपयोगकर्ता स्क्रिप्ट नहीं जोड़े जा सकते हैं</translation>
 <translation id="7652954539215530680">एक पिन बनाएं</translation>
 <translation id="7654941827281939388">यह खाता पहले से ही इस कंप्‍यूटर पर उपयोग किया जा रहा है.</translation>
@@ -5883,6 +5881,7 @@
 <translation id="7898627924844766532">टूलबार में रखें</translation>
 <translation id="7898725031477653577">हमेशा अनुवाद करें</translation>
 <translation id="790040513076446191">निजता-संबंधी सेटिंग में हेरफेर करें</translation>
+<translation id="7901405293566323524">फ़ोन हब</translation>
 <translation id="7903345046358933331">पेज कोई प्रतिसाद नहीं दे रहा है. आप उसके प्रतिसाद देने तक प्रतीक्षा कर सकते हैं या उसे बंद कर सकते हैं.</translation>
 <translation id="7903742244674067440">इन प्रमाणपत्र प्राधिकारियों की पहचान करने वाले प्रमाणपत्र आपके रिकॉर्ड में हैं</translation>
 <translation id="7903859912536385558">स्थायी (भरोसेमंद जांचकर्ता)</translation>

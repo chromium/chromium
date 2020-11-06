@@ -65,6 +65,7 @@
 <translation id="4297501883039923494">중지됨 - 알 수 없는 오류</translation>
 <translation id="4378373042927530923">실행되지 않음</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4425149324548788773">내 드라이브</translation>
 <translation id="4429881212383817840">Kerberos 티켓이 곧 만료됨</translation>
 <translation id="445059817448385655">이전 비밀번호</translation>
 <translation id="4454245904991689773">스캔 파일 저장 위치</translation>
@@ -98,6 +99,7 @@
 <translation id="54609108002486618">관리</translation>
 <translation id="5832805196449965646">사용자 추가</translation>
 <translation id="5895138241574237353">다시 시작</translation>
+<translation id="6040143037577758943">닫기</translation>
 <translation id="6048107060512778456">실패 - 용지 걸림</translation>
 <translation id="6058625436358447366">완료하려면 이전 및 새 비밀번호를 입력하세요.</translation>
 <translation id="6106186594183574873">완료하려면 이전 비밀번호를 입력하세요.</translation>
@@ -111,6 +113,7 @@
 <translation id="6517239166834772319">살펴보기</translation>
 <translation id="6527081081771465939">알려지지 않은 Wi-Fi 보안 프로토콜입니다.</translation>
 <translation id="6564646048574748301">실패 - 프린터에 연결할 수 없음</translation>
+<translation id="6618744767048954150">실행 중</translation>
 <translation id="6620487321149975369">수동으로 삭제하지 않으면 인쇄 작업이 방문 기록에 나타납니다.</translation>
 <translation id="6643016212128521049">삭제</translation>
 <translation id="6704062477274546131">DNS 변환</translation>

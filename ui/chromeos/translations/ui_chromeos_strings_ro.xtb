@@ -5,7 +5,6 @@
 <translation id="1023220960495960452">Transliterație (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">Vizualizare slide-uri</translation>
 <translation id="1045157690796831147">Transliterație (namaskar → നമസ്കാരം)</translation>
-<translation id="1046068652463704410">Tastare în japoneză (pentru tastatură SUA)</translation>
 <translation id="1047956942837015229">Se șterg <ph name="COUNT" /> elemente...</translation>
 <translation id="1049926623896334335">Document Word</translation>
 <translation id="1060368002126861100">Pentru a deschide fișiere cu <ph name="APP_NAME" />, mai întâi mută-le în dosarul cu fișiere Windows.</translation>
@@ -26,11 +25,9 @@
 <translation id="1178581264944972037">Întrerupe</translation>
 <translation id="1190144681599273207">Preluarea acestui fișier va utiliza aproximativ <ph name="FILE_SIZE" /> din datele mobile.</translation>
 <translation id="1201402288615127009">Înainte</translation>
-<translation id="1208421848177517699">Transliterație (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">Încărcați</translation>
 <translation id="1249250836236328755">Gen</translation>
 <translation id="1276362640455948667">Portugheză cu tastatură S.U.A. internațională</translation>
-<translation id="1278813325885878377">Tastatură maghiară QWERTY</translation>
 <translation id="1293556467332435079">Fișiere</translation>
 <translation id="1297922636971898492">Google Drive nu este disponibil momentan. Încărcarea va reporni automat când Google Drive va putea fi accesat.</translation>
 <translation id="1307931752636661898">Fișierele Linux nu pot fi afișate</translation>
@@ -63,7 +60,6 @@
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Cameră</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> fișiere devin disponibile offline</translation>
-<translation id="1646136617204068573">Tastatură maghiară</translation>
 <translation id="164729547906544836">Tastatură tamilă (itrans)</translation>
 <translation id="164969095109328410">Dispozitiv Chrome</translation>
 <translation id="1665611772925418501">Fișierul nu a putut fi modificat.</translation>
@@ -93,7 +89,6 @@
 <translation id="1936717151811561466">Finlandeză</translation>
 <translation id="1942765061641586207">Rezoluția imaginii</translation>
 <translation id="1943097386230153518">Instalează un serviciu nou</translation>
-<translation id="1947424002851288782">Tastatură germană</translation>
 <translation id="1972984168337863910">Extinde panourile cu feedback privind fișierele</translation>
 <translation id="1984603991036629094">Tastatură fonetică armeană</translation>
 <translation id="1995337122023280937">Accesează locația fișierului</translation>
@@ -116,14 +111,12 @@
 <translation id="2225536596944493418">Sigur dorești să ștergi <ph name="NUMBER_OF_ITEMS" /> elemente?</translation>
 <translation id="2230062665678605299">Nu s-a putut crea dosarul „<ph name="FOLDER_NAME" />”. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">Mutat.</translation>
-<translation id="2278988676849463018">Tastatură kannada (Fonetică)</translation>
 <translation id="2287742181953707290">Portugheză cu tastatură S.U.A. internațională pentru PC</translation>
 <translation id="2288278176040912387">Picup</translation>
 <translation id="2291538123825441971">Se deschid <ph name="NUMBER_OF_FILES" /> fișiere.</translation>
 <translation id="2303301624314357662">Se deschide <ph name="FILE_NAME" />.</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> a fost scos.</translation>
 <translation id="2325650632570794183">Acest tip de fișier nu este acceptat. Vă rugăm să accesați Magazinul web Chrome pentru a găsi o aplicație care poate deschide acest tip de fișier.</translation>
-<translation id="23434688402327542">Tastatură kazahă</translation>
 <translation id="2352947182261340447">Spațiu insuficient în stocarea locală.</translation>
 <translation id="2377319039870049694">Comută la afișarea listă</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> dosare cu acces permis pentru Linux</translation>
@@ -136,7 +129,6 @@
 <translation id="2453576648990281505">Fișierul există deja</translation>
 <translation id="2464079411014186876">Înghețată</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
-<translation id="2494837236724268445">Tastatură gujarati (Fonetică)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Tastatură S.U.A.</translation>
 <translation id="2534155362429831547">Elemente șterse: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -172,10 +164,8 @@
 <translation id="2902312830803030883">Mai multe acțiuni</translation>
 <translation id="2902734494705624966">S.U.A. extinsă</translation>
 <translation id="2923240520113693977">Estonă</translation>
-<translation id="2924296707677495905">Transliterație (namaskaram → ನಮಸ್ಕಾರ)</translation>
 <translation id="2925966894897775835">Foi de calcul</translation>
 <translation id="2938685643439809023">Mongolă</translation>
-<translation id="2942290791863759244">Tastatură germană NEO 2</translation>
 <translation id="2943400156390503548">Prezentări</translation>
 <translation id="2943503720238418293">Folosește un nume mai scurt</translation>
 <translation id="2949781154072577687">Se formatează <ph name="DRIVE_NAME" />...</translation>
@@ -196,7 +186,6 @@
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">TERMINAT</translation>
 <translation id="3157729859914172001">Tastatură S.U.A. internațională (PC)</translation>
-<translation id="3187212781151025377">Tastatură ebraică</translation>
 <translation id="3188257591659621405">Fișierele mele</translation>
 <translation id="3197563288998582412">UK Dvorak</translation>
 <translation id="3202131003361292969">Cale</translation>
@@ -227,14 +216,12 @@
 <translation id="3475447146579922140">Foaie de calcul Google</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> erori.</translation>
 <translation id="349603508045926994">Persană, transliterație</translation>
-<translation id="3519867315646775981">Transliterație (shalom ← שלום)</translation>
 <translation id="3522708245912499433">Portugheză</translation>
 <translation id="3524311639100184459">Atenție: aceste fișiere sunt temporare și pot fi șterse automat pentru a elibera spațiu pe disc.  <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Dosar</translation>
 <translation id="3549797760399244642">Accesați drive.google.com...</translation>
 <translation id="3553048479571901246">Pentru a deschide fișiere cu <ph name="APP_NAME" />, mai întâi copiază-le în dosarul cu fișiere Windows.</translation>
 <translation id="357479282490346887">Lituaniană</translation>
-<translation id="3583509704582854624">Tastare alfanumerică (pentru tastatură japoneză)</translation>
 <translation id="3603385196401704894">Franceză canadiană</translation>
 <translation id="3606220979431771195">Turcă-F</translation>
 <translation id="3609785682760573515">Se sincronizează...</translation>
@@ -268,10 +255,8 @@
 <translation id="383652340667548381">Sârbă</translation>
 <translation id="385051799172605136">Înapoi</translation>
 <translation id="3855472144336161447">Germană Neo 2</translation>
-<translation id="3858678421048828670">Tastatură italiană</translation>
 <translation id="386548886866354912">Arhivează cu <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Descriere</translation>
-<translation id="3910699493603749297">Tastatură khmeră</translation>
 <translation id="391445228316373457">Tastatură nepaleză (Fonetică)</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">Redă pe</translation>
@@ -335,7 +320,6 @@
 <translation id="4734518477988699048">Valoarea introdusă nu este validă.</translation>
 <translation id="4737050008115666127">Aterizare</translation>
 <translation id="4747271164117300400">Macedoneană</translation>
-<translation id="4749157430980974800">Tastatură georgiană</translation>
 <translation id="4759238208242260848">Descărcări</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Prezentare PowerPoint</translation>
@@ -413,7 +397,6 @@
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Salvează</translation>
 <translation id="5318819489018851358">Trimite cu Linux</translation>
-<translation id="5319782540886810524">Tastatură letonă</translation>
 <translation id="5323213332664049067">America Latină</translation>
 <translation id="5327248766486351172">Nume</translation>
 <translation id="5330145655348521461">Aceste fișiere au fost deschise pe alt desktop. Pentru a le vedea, treceți la <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
@@ -440,7 +423,6 @@
 <translation id="5534520101572674276">Se calculează dimensiunea</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">S.U.A. Dvorak</translation>
-<translation id="5640179856859982418">Tastatură elvețiană</translation>
 <translation id="5649768706273821470">Ascultă</translation>
 <translation id="5678784840044122290">Aplicația Linux va fi disponibilă pe terminal și este posibil ca Lansatorul să afișeze și o pictogramă.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nu se poate deconecta de la o arhivă sau un disc virtual<ph name="END_BOLD" />
@@ -451,7 +433,6 @@
 <translation id="5731409020711461763">1 fotografie nouă</translation>
 <translation id="5752453871435543420">Backup în cloud pentru sistemul de operare Chrome</translation>
 <translation id="5756666464756035725">Maghiară QWERTY</translation>
-<translation id="5771585441665576801">Transliterație (geia → γεια)</translation>
 <translation id="5776325638577448643">Șterge și formatează</translation>
 <translation id="57838592816432529">Dezactivează sunetul</translation>
 <translation id="5788127256798019331">Fișiere Play</translation>
@@ -468,7 +449,6 @@
 <translation id="5911887972742538906">A apărut o eroare în timpul instalării aplicației Linux.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Nu s-a putut copia, eroare neprevăzută: <ph name="ERROR_MESSAGE" /></translation>
-<translation id="5923484009666796948">Tastare în japoneză (pentru tastatură japoneză)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elemente</translation>
 <translation id="5957366693331451795">Chromeboxurile</translation>
@@ -498,7 +478,6 @@
 <translation id="6248400709929739064">Activează subtitrările</translation>
 <translation id="6264347891387618177">Transliterație (selam → ሰላም)</translation>
 <translation id="6287852322318138013">Selectați o aplicație pentru deschiderea acestui fișier</translation>
-<translation id="6305012486838822927">Tastatură laoțiană</translation>
 <translation id="6339034549827494595">Tastatură rusă fonetică (AATSEEL)</translation>
 <translation id="6339145975392024142">S.U.A. internațională (PC)</translation>
 <translation id="6346310558342052870">Acces restricționat</translation>
@@ -509,8 +488,6 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elemente</translation>
 <translation id="6398765197997659313">Ieși din ecranul complet</translation>
 <translation id="642282551015776456">Acest nume nu poate fi folosit ca nume de fișier sau de dosar</translation>
-<translation id="6462109140674788769">Tastatură greacă</translation>
-<translation id="6466492211071551451">Tastatură irlandeză</translation>
 <translation id="6485131920355264772">Nu s-au putut prelua informațiile despre spațiu</translation>
 <translation id="6505918941256367791">Tastatură tamilă (InScript)</translation>
 <translation id="6509122719576673235">Norvegiană</translation>
@@ -650,7 +627,6 @@
 <translation id="7896906914454843592">Tastatură S.U.A. extinsă</translation>
 <translation id="7898607018410277265">Tastatură gujarati (Fonetică nouă)</translation>
 <translation id="7908793776359722643">Formatarea partiției va șterge toate datele stocate pe partiție. Această acțiune nu poate fi anulată.</translation>
-<translation id="7917972308273378936">Tastatură lituaniană</translation>
 <translation id="7925686952655276919">Nu utilizați date mobile pentru sincronizare</translation>
 <translation id="7928710562641958568">Scoateți dispozitivul</translation>
 <translation id="7943385054491506837">S.U.A. Colemak</translation>
@@ -697,7 +673,6 @@
 <translation id="8335587457941836791">Anulați fixarea din raft</translation>
 <translation id="8336153091935557858">Ieri, la <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336524887811696057">Nepaleză, transliterație</translation>
-<translation id="8336579025507394412">Tastatură islandeză</translation>
 <translation id="8342318071240498787">Un fișier sau un director cu același nume există deja.</translation>
 <translation id="8382450452152102026">În <ph name="FOLDER_NAME" /></translation>
 <translation id="8391950649760071442">Transliterație (emandi → ఏమండీ)</translation>
@@ -708,7 +683,6 @@
 <translation id="8437209419043462667">S.U.A.</translation>
 <translation id="8456681095658380701">Nume nevalid</translation>
 <translation id="8466234950814670489">Arhivă .tar</translation>
-<translation id="8467473010914675605">Metoda de introducere a textului în coreeană</translation>
 <translation id="8475647382427415476">Momentan, Google Drive nu a putut sincroniza „<ph name="FILENAME" />”. Google Drive va încerca din nou mai târziu.</translation>
 <translation id="8477649328507734757">Cercuri</translation>
 <translation id="8487700953926739672">Disponibil offline</translation>

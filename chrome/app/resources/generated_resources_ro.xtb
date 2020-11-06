@@ -4360,7 +4360,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6112294629795967147">Atinge pentru a redimensiona</translation>
 <translation id="6112727384379533756">Adaugă un tichet</translation>
 <translation id="6112931163620622315">Verifică pe telefon</translation>
-<translation id="6112952769866305444">Editează persoana, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113434369102685411">Setează motorul de căutare prestabilit pentru browserul Chrome și lansatorul pentru <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Pentru a folosi Smart Lock, comută la profilul de utilizator principal de pe telefon</translation>
 <translation id="6116921718742659598">Schimbați setările pentru limbă și introducere de text</translation>
@@ -5643,7 +5642,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7649070708921625228">Ajutor</translation>
 <translation id="7650511557061837441">„<ph name="TRIGGERING_EXTENSION_NAME" />” dorește să elimine „<ph name="EXTENSION_NAME" />”.</translation>
 <translation id="7650677314924139716">Setarea actuală pentru utilizarea datelor este „Numai Wi-Fi”</translation>
-<translation id="7652808307838961528">Editează persoana, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Nu poți adăuga aplicații, extensii și scripturi de utilizator de pe acest site</translation>
 <translation id="7652954539215530680">Creează un cod PIN</translation>
 <translation id="7654941827281939388">Acest cont este deja utilizat pe acest computer.</translation>
@@ -5885,6 +5883,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7898627924844766532">Păstrează în bara de instrumente</translation>
 <translation id="7898725031477653577">Tradu întotdeauna</translation>
 <translation id="790040513076446191">Manipulează setările privind confidențialitatea</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903345046358933331">Pagina a devenit inactivă. Poți aștepta să devină activă sau o poți închide.</translation>
 <translation id="7903742244674067440">Ai certificate stocate care identifică aceste autorități de certificare</translation>
 <translation id="7903859912536385558">stabil (tester de încredere)</translation>

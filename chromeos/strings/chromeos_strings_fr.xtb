@@ -65,6 +65,7 @@
 <translation id="4297501883039923494">Tâche suspendue - Erreur inconnue</translation>
 <translation id="4378373042927530923">Routine non exécutée</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4425149324548788773">Mon Drive</translation>
 <translation id="4429881212383817840">Le ticket Kerberos arrive bientôt à expiration</translation>
 <translation id="445059817448385655">Ancien mot de passe</translation>
 <translation id="4454245904991689773">Enregistrer dans</translation>
@@ -98,6 +99,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="54609108002486618">Géré</translation>
 <translation id="5832805196449965646">Ajouter une personne</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
+<translation id="6040143037577758943">Fermer</translation>
 <translation id="6048107060512778456">Échec – Bourrage papier</translation>
 <translation id="6058625436358447366">Pour terminer, saisissez votre ancien mot de passe et le nouveau</translation>
 <translation id="6106186594183574873">Pour terminer, saisissez votre ancien mot de passe</translation>
@@ -111,6 +113,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6517239166834772319">Explorer</translation>
 <translation id="6527081081771465939">Protocole de sécurité du réseau Wi-Fi inconnu</translation>
 <translation id="6564646048574748301">Échec – Imprimante inaccessible</translation>
+<translation id="6618744767048954150">En cours</translation>
 <translation id="6620487321149975369">Les tâches d'impression seront incluses dans l'historique, sauf si vous les supprimez manuellement</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6704062477274546131">Résolution DNS</translation>

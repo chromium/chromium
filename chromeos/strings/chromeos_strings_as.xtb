@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">এপ্</translation>
 <translation id="2872961005593481000">শ্বাট ডাউন কৰক</translation>
 <translation id="3008341117444806826">ৰিফ্ৰেশ্ব কৰক</translation>
+<translation id="3009958530611748826">ছেভ কৰিবলৈ এটা ফ’ল্ডাৰ বাছনি কৰক</translation>
 <translation id="3083667275341675831">সংযোগ সম্পৰ্কীয় ডায়গন’ষ্টিক্স</translation>
 <translation id="3091839911843451378">বিফল হৈছে - বন্ধ হৈছে</translation>
 <translation id="3188257591659621405">মোৰ ফাইলসমূহ</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">প্ৰিণ্ট কাৰ্যসমূহ</translation>
 <translation id="3527036260304016759">বিফল হৈছে - অজ্ঞাত আসোঁৱাহ</translation>
 <translation id="360565022852130722">ৱাই-ফাই নেটৱৰ্কটো দুৰ্বল প্ৰট’কল WEP 802.1xৰ দ্বাৰা সুৰক্ষিত</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> টা পৰ্যালোচনা)</translation>
 <translation id="3749289110408117711">ফাইলৰ নাম</translation>
 <translation id="38114475217616659">সকলো ইতিহাস মচক</translation>
 <translation id="3820172043799983114">অমান্য পিন।</translation>
@@ -65,6 +67,7 @@
 <translation id="4297501883039923494">বন্ধ হৈছে - অজ্ঞাত আসোঁৱাহ</translation>
 <translation id="4378373042927530923">নাই চলা</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4425149324548788773">মোৰ ড্ৰাইভ</translation>
 <translation id="4429881212383817840">Kerberos টিকেটৰ ম্যাদ শীঘ্ৰেই উকলি যাব</translation>
 <translation id="445059817448385655">পুৰণি পাছৱৰ্ড</translation>
 <translation id="4454245904991689773">স্কেন কৰি ইয়াত ছেভ কৰক</translation>
@@ -79,10 +82,12 @@
 <translation id="4731797938093519117">অভিভাৱকৰ এক্সেছ</translation>
 <translation id="4773299976671772492">বন্ধ হৈছে</translation>
 <translation id="4808449224298348341">বাতিল কৰা প্ৰিণ্টিঙৰ কাৰ্য <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4832079907277790330">Files এপ্‌টোত ফ’ল্ডাৰ বাছনি কৰক...</translation>
 <translation id="4890353053343094602">তৎক্ষণাত নতুন এটা বাছনি কৰক</translation>
 <translation id="4917889632206600977">বন্ধ হৈছে - কাগজ শেষ হৈছে</translation>
 <translation id="4932733599132424254">তাৰিখ</translation>
 <translation id="4985509611418653372">চলাওক</translation>
+<translation id="4991056862642197104">আপোনাৰ নথিখন ৰাখক আৰু আৰম্ভ কৰিবলৈ স্কেন কৰকত ক্লিক কৰক</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" />এ এই ব্যৱহাৰকাৰীগৰাকীক পৰিচালনা কৰে আৰু হয়তো দূৰৰ পৰা ছেটিং পৰিচালনা কৰে আৰু ব্যৱহাৰকাৰীৰ কার্যকলাপ নিৰীক্ষণ কৰে।</translation>
 <translation id="520299634122159966">কোনো স্কেনাৰ নাই</translation>
 <translation id="5212543919916444558">আপোনাক সহায় কৰিব পৰাকৈ মই আপোনাৰ স্ক্ৰীণত একো বিচাৰি পোৱা নাই।
@@ -98,6 +103,7 @@
 <translation id="54609108002486618">পৰিচালিত</translation>
 <translation id="5832805196449965646">অন্য লোক যোগ কৰক</translation>
 <translation id="5895138241574237353">ৰিষ্টাৰ্ট কৰক</translation>
+<translation id="6040143037577758943">বন্ধ কৰক</translation>
 <translation id="6048107060512778456">বিফল হৈছে - কাগজ ঠাহ খাই গৈছে</translation>
 <translation id="6058625436358447366">সম্পূর্ণ কৰিবলৈ আপোনাৰ পুৰণি আৰু নতুন পাছৱর্ডসমূহ দিয়ক</translation>
 <translation id="6106186594183574873">সম্পূর্ণ কৰিবলৈ আপোনাৰ পুৰণি পাছৱর্ড দিয়ক</translation>
@@ -111,6 +117,7 @@
 <translation id="6517239166834772319">অন্বেষণ</translation>
 <translation id="6527081081771465939">ৱাই-ফাইৰ অজ্ঞাত সুৰক্ষাৰ প্ৰ'টকল</translation>
 <translation id="6564646048574748301">বিফল হৈছে - প্ৰিণ্টাৰৰ সৈতে সংযোগ কৰিব পৰা নাই</translation>
+<translation id="6618744767048954150">চলি আছে</translation>
 <translation id="6620487321149975369">প্ৰিণ্টিঙৰ কামসমূহ মেনুৱেলভাৱে আঁতৰাই নিদিয়ালৈকে সেইসমূহ ইতিহাসত দেখা পোৱা যাব</translation>
 <translation id="6643016212128521049">মচক</translation>
 <translation id="6704062477274546131">DNS ৰিজ’লিউশ্বন</translation>
@@ -120,6 +127,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">ফাইলৰ প্রকাৰ</translation>
 <translation id="7561454561030345039">এই কাৰ্যটো আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
 <translation id="7690294790491645610">নতুন পাছৱর্ড নিশ্চিত কৰক</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
