@@ -205,6 +205,13 @@ Tab::Tab(TabController* controller)
   title_->SetAutoColorReadabilityEnabled(false);
   title_->SetText(CoreTabHelper::GetDefaultTitle());
   title_->SetFontList(tab_style_->GetFontList());
+  // |title_| paints on top of an opaque region (the tab background) of a
+  // non-opaque layer (the tabstrip's layer), which cannot currently be detected
+  // by the subpixel-rendering opacity check.
+  // TODO(https://crbug.com/1139395): Improve the check so that this case doen't
+  // need a manual suppression by detecting cases where the text is painted onto
+  // onto opaque parts of a not-entirely-opaque layer.
+  title_->SetSkipSubpixelRenderingOpacityCheck(true);
   AddChildView(title_);
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));

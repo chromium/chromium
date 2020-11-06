@@ -225,6 +225,21 @@ void Label::SetSubpixelRenderingEnabled(bool subpixel_rendering_enabled) {
   OnPropertyChanged(&subpixel_rendering_enabled_, kPropertyEffectsPaint);
 }
 
+bool Label::GetSkipSubpixelRenderingOpacityCheck() const {
+  return skip_subpixel_rendering_opacity_check_;
+}
+
+void Label::SetSkipSubpixelRenderingOpacityCheck(
+    bool skip_subpixel_rendering_opacity_check) {
+  if (skip_subpixel_rendering_opacity_check_ ==
+      skip_subpixel_rendering_opacity_check)
+    return;
+  skip_subpixel_rendering_opacity_check_ =
+      skip_subpixel_rendering_opacity_check;
+  OnPropertyChanged(&skip_subpixel_rendering_opacity_check_,
+                    kPropertyEffectsNone);
+}
+
 gfx::HorizontalAlignment Label::GetHorizontalAlignment() const {
   return full_text_->horizontal_alignment();
 }
@@ -674,15 +689,16 @@ void Label::PaintText(gfx::Canvas* canvas) {
   // fixing either this check (to correctly idenfify more paints-on-opaque
   // cases), refactoring parents to use background() or by fixing
   // subpixel-rendering issues that the DCHECK detects.
-  if (!display_text_ || display_text_->subpixel_rendering_suppressed())
+  if (!display_text_ || display_text_->subpixel_rendering_suppressed() ||
+      skip_subpixel_rendering_opacity_check_)
     return;
 
   // Ensure that, if we're using subpixel rendering, we're painted to an opaque
   // region. Subpixel rendering will sample from the r,g,b color channels of the
   // canvas. These values are incorrect when sampling from transparent pixels.
   // Note that these checks may need to be amended for other methods of painting
-  // opaquely underneath the Label or we might need to allow individual cases to
-  // skip this DCHECK.
+  // opaquely underneath the Label. For now, individual cases can skip this
+  // DCHECK by calling Label::SetSkipSubpixelRenderingOpacityCheck().
   for (View* view = this; view; view = view->parent()) {
     // This is our approximation of being painted on an opaque region. If any
     // parent has an opaque background we assume that that background covers the
@@ -1176,6 +1192,7 @@ ADD_PROPERTY_METADATA(SkColor, BackgroundColor)
 ADD_PROPERTY_METADATA(SkColor, SelectionTextColor)
 ADD_PROPERTY_METADATA(SkColor, SelectionBackgroundColor)
 ADD_PROPERTY_METADATA(bool, SubpixelRenderingEnabled)
+ADD_PROPERTY_METADATA(bool, SkipSubpixelRenderingOpacityCheck)
 ADD_PROPERTY_METADATA(gfx::ShadowValues, Shadows)
 ADD_PROPERTY_METADATA(gfx::HorizontalAlignment, HorizontalAlignment)
 ADD_PROPERTY_METADATA(gfx::VerticalAlignment, VerticalAlignment)

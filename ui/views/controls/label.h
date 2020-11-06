@@ -140,6 +140,16 @@ class VIEWS_EXPORT Label : public View,
   bool GetSubpixelRenderingEnabled() const;
   void SetSubpixelRenderingEnabled(bool subpixel_rendering_enabled);
 
+  // Gets/Sets whether the DCHECK() checking that subpixel-rendered text is
+  // only drawn onto opaque layers is skipped. Use this to suppress false
+  // positives - for example, if the label is drawn onto an opaque region of a
+  // non-opaque layer. If possible, prefer making the layer opaque or painting
+  // onto an opaque views::Background, as those cases are detected and
+  // excluded by this DCHECK automatically.
+  bool GetSkipSubpixelRenderingOpacityCheck() const;
+  void SetSkipSubpixelRenderingOpacityCheck(
+      bool skip_subpixel_rendering_opacity_check);
+
   // Gets/Sets the horizontal alignment; the argument value is mirrored in RTL
   // UI.
   gfx::HorizontalAlignment GetHorizontalAlignment() const;
@@ -430,6 +440,7 @@ class VIEWS_EXPORT Label : public View,
   gfx::ElideBehavior elide_behavior_ = gfx::ELIDE_TAIL;
 
   bool subpixel_rendering_enabled_ = true;
+  bool skip_subpixel_rendering_opacity_check_ = false;
   bool auto_color_readability_enabled_ = true;
   // TODO(mukai): remove |multi_line_| when all RenderText can render multiline.
   bool multi_line_ = false;
@@ -462,6 +473,7 @@ VIEW_BUILDER_PROPERTY(SkColor, SelectionTextColor)
 VIEW_BUILDER_PROPERTY(SkColor, SelectionBackgroundColor)
 VIEW_BUILDER_PROPERTY(const gfx::ShadowValues&, Shadows)
 VIEW_BUILDER_PROPERTY(bool, SubpixelRenderingEnabled)
+VIEW_BUILDER_PROPERTY(bool, SkipSubpixelRenderingOpacityCheck)
 VIEW_BUILDER_PROPERTY(gfx::HorizontalAlignment, HorizontalAlignment)
 VIEW_BUILDER_PROPERTY(gfx::VerticalAlignment, VerticalAlignment)
 VIEW_BUILDER_PROPERTY(int, LineHeight)

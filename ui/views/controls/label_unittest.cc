@@ -1105,6 +1105,11 @@ TEST_F(LabelTest, ChecksSubpixelRenderingOntoOpaqueSurface) {
   // Painting on a transparent layer should DCHECK.
   EXPECT_DCHECK_DEATH(label->OnPaint(&canvas));
 
+  // We should not DCHECK if the check is skipped.
+  label->SetSkipSubpixelRenderingOpacityCheck(true);
+  label->OnPaint(&canvas);
+  label->SetSkipSubpixelRenderingOpacityCheck(false);
+
   // Painting onto a transparent layer should not DCHECK if there's an opaque
   // background in a parent of the Label.
   view.SetBackground(CreateSolidBackground(SK_ColorWHITE));
