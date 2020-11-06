@@ -163,6 +163,9 @@ class CONTENT_EXPORT BackForwardCacheImpl : public BackForwardCache {
   // via experiment.
   static base::TimeDelta GetTimeToLiveInBackForwardCache();
 
+  // Gets the maximum number of entries the BackForwardCache can hold per tab.
+  static size_t GetCacheSize();
+
   // The back-forward cache is experimented on a limited set of URLs. This
   // method returns true if the |url| matches one of those. URL not matching
   // this won't enter the back-forward cache.
@@ -185,14 +188,6 @@ class CONTENT_EXPORT BackForwardCacheImpl : public BackForwardCache {
   void SetTaskRunnerForTesting(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     task_runner_for_testing_ = task_runner;
-  }
-
-  // Sets the number of documents that can be stored in the cache. This is meant
-  // for use from within tests only.
-  // If |cache_size_limit_for_testing| is 0 (the default), the normal cache
-  // size limit will be used.
-  void set_cache_size_limit_for_testing(size_t cache_size_limit_for_testing) {
-    cache_size_limit_for_testing_ = cache_size_limit_for_testing;
   }
 
   const std::list<std::unique_ptr<Entry>>& GetEntries();
@@ -221,10 +216,6 @@ class CONTENT_EXPORT BackForwardCacheImpl : public BackForwardCache {
   // Only used in tests. Whether the BackforwardCached has been disabled for
   // testing.
   bool is_disabled_for_testing_ = false;
-
-  // Only used in tests. If non-zero, this value will be used as the cache size
-  // limit.
-  size_t cache_size_limit_for_testing_ = 0;
 
   // Only used for tests. This task runner is used for precise injection in
   // browser tests and for timing control.

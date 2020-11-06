@@ -1082,17 +1082,23 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                     FROM_HERE);
 }
 
-// Test documents are evicted from the BackForwardCache at some point.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       CacheEvictionWithIncreasedCacheSize) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+class HighCacheSizeBackForwardCacheBrowserTest
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(features::kBackForwardCache, "cache_size",
+                              base::NumberToString(kBackForwardCacheSize));
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
 
   // The number of document the BackForwardCache can hold per tab.
-  size_t kBackForwardCacheLimit = 5;
-  web_contents()
-      ->GetController()
-      .GetBackForwardCache()
-      .set_cache_size_limit_for_testing(kBackForwardCacheLimit);
+  const size_t kBackForwardCacheSize = 10;
+};
+
+// Test documents are evicted from the BackForwardCache at some point.
+IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
+                       CacheEvictionWithIncreasedCacheSize) {
+  ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -1105,13 +1111,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   RenderFrameHostImpl* rfh_b = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
 
-  for (size_t i = 2; i < kBackForwardCacheLimit; ++i) {
+  for (size_t i = 2; i < kBackForwardCacheSize; ++i) {
     EXPECT_TRUE(NavigateToURL(shell(), i % 2 ? url_b : url_a));
     // After |i+1| navigations, |i| documents went into the BackForwardCache.
     // When |i| is greater than the BackForwardCache size limit, they are
     // evicted:
-    EXPECT_EQ(i >= kBackForwardCacheLimit + 1, delete_observer_rfh_a.deleted());
-    EXPECT_EQ(i >= kBackForwardCacheLimit + 2, delete_observer_rfh_b.deleted());
+    EXPECT_EQ(i >= kBackForwardCacheSize + 1, delete_observer_rfh_a.deleted());
+    EXPECT_EQ(i >= kBackForwardCacheSize + 2, delete_observer_rfh_b.deleted());
   }
 }
 
@@ -1263,14 +1269,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, SubframeSurviveCache3) {
 
 // Similar to BackForwardCacheBrowserTest.SubframeSurviveCache*
 // Test case: a1(b2) -> b3 -> a4 -> b5 -> a1(b2).
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, SubframeSurviveCache4) {
-  // Increase the cache size so that a1(b2) is still in the cache when we
-  // reach b5.
-  web_contents()
-      ->GetController()
-      .GetBackForwardCache()
-      .set_cache_size_limit_for_testing(3);
-
+IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
+                       SubframeSurviveCache4) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_ab(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
@@ -4615,20 +4615,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, SameSiteNavigationCaching) {
   EXPECT_NE(rfh_a1, rfh_a2);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
                        CanCacheMultiplesPagesOnSameDomain) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b2(embedded_test_server()->GetURL("b.com", "/title1.html"));
   GURL url_a3(embedded_test_server()->GetURL("a.com", "/title2.html"));
   GURL url_b4(embedded_test_server()->GetURL("b.com", "/title2.html"));
-
-  // Increase the cache size so we're able to store multiple pages for the same
-  // site in the cache at once.
-  web_contents()
-      ->GetController()
-      .GetBackForwardCache()
-      .set_cache_size_limit_for_testing(3);
 
   // 1) Navigate to A1.
   EXPECT_TRUE(NavigateToURL(shell(), url_a1));
@@ -7506,13 +7499,9 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTest,
+    HighCacheSizeBackForwardCacheBrowserTest,
     MessageReceivedOnAssociatedInterfaceForProcessWithMultipleCachedPages) {
   DoNotFailForUnexpectedMessagesWhileCached();
-  web_contents()
-      ->GetController()
-      .GetBackForwardCache()
-      .set_cache_size_limit_for_testing(10);
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a_1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_a_2(embedded_test_server()->GetURL("a.com", "/title2.html"));

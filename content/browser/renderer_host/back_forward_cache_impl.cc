@@ -37,8 +37,8 @@ using blink::scheduler::WebSchedulerTrackedFeature;
 const base::Feature kBackForwardCacheNoTimeEviction{
     "BackForwardCacheNoTimeEviction", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// The number of entries the BackForwardCache can hold per tab.
-static constexpr size_t kBackForwardCacheLimit = 1;
+// The default number of entries the BackForwardCache can hold per tab.
+static constexpr size_t kDefaultBackForwardCacheSize = 1;
 
 // The default time to live in seconds for documents in BackForwardCache.
 static constexpr int kDefaultTimeToLiveInBackForwardCacheInSeconds = 15;
@@ -317,6 +317,11 @@ base::TimeDelta BackForwardCacheImpl::GetTimeToLiveInBackForwardCache() {
       kDefaultTimeToLiveInBackForwardCacheInSeconds));
 }
 
+size_t BackForwardCacheImpl::GetCacheSize() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      features::kBackForwardCache, "cache_size", kDefaultBackForwardCacheSize);
+}
+
 BackForwardCacheCanStoreDocumentResult BackForwardCacheImpl::CanStorePageNow(
     RenderFrameHostImpl* rfh) {
   BackForwardCacheCanStoreDocumentResult result =
@@ -515,9 +520,7 @@ void BackForwardCacheImpl::StoreEntry(
   entry->render_frame_host->DidEnterBackForwardCache();
   entries_.push_front(std::move(entry));
 
-  size_t size_limit = cache_size_limit_for_testing_
-                          ? cache_size_limit_for_testing_
-                          : kBackForwardCacheLimit;
+  size_t size_limit = GetCacheSize();
   // Evict the least recently used documents if the BackForwardCache list is
   // full.
   size_t available_count = 0;
