@@ -770,7 +770,8 @@ crbug.com/1043953 [ chromeos ] conformance/textures/misc/texture-size-limit.html
 
 crbug.com/1081973 [ chromeos ] conformance/textures/misc/compressed-tex-image.html [ Failure ]
 
-crbug.com/1136106 [ chromeos-board-amd64-generic ] conformance/glsl/constructors/glsl-construct-bvec3.html [ Failure ]
+crbug.com/1136106 [ chromeos chromeos-board-amd64-generic ] conformance/glsl/constructors/glsl-construct-bvec3.html [ Failure ]
+crbug.com/1145830 [ chromeos chromeos-board-amd64-generic ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ RetryOnFailure ]
 
 # ChromeOS: AMD
 crbug.com/995652 [ chromeos amd ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Skip ]
