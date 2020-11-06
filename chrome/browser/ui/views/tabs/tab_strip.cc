@@ -3431,6 +3431,12 @@ bool TabStrip::NeedsTouchLayout() const {
   if (!group_views_.empty())
     return false;
 
+  // If tab scrolling is on, the layout will not be swapped; tab scrolling is
+  // a replacement to stacked tabs providing similar functionality across both
+  // touch and non-touch platforms.
+  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip))
+    return false;
+
   const int pinned_tab_count = GetPinnedTabCount();
   const int normal_count = tab_count() - pinned_tab_count;
   if (normal_count <= 1)
