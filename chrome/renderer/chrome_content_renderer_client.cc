@@ -1589,7 +1589,7 @@ void ChromeContentRendererClient::DidSetUserAgent(
 #endif
 }
 
-bool ChromeContentRendererClient::RequiresWebComponentsV0(const GURL& url) {
+bool ChromeContentRendererClient::RequiresHtmlImports(const GURL& url) {
   if (url.SchemeIs(content::kChromeUIScheme)) {
     base::StringPiece host_piece = url.host_piece();
     // TODO(crbug.com/1014322): Remove when migrated to Polymer3.

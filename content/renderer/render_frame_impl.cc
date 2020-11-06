@@ -3224,13 +3224,9 @@ void RenderFrameImpl::CommitNavigationWithParams(
         prefetch_loader_factory,
     std::unique_ptr<DocumentState> document_state,
     std::unique_ptr<WebNavigationParams> navigation_params) {
-
-  // TODO(738611): This is temporary switch to have chrome WebUI use the old web
-  // APIs. After completion of the migration, we should remove this.
-  if (GetContentClient()->renderer()->RequiresWebComponentsV0(
-          common_params->url)) {
-    blink::WebRuntimeFeatures::EnableShadowDOMV0(true);
-    blink::WebRuntimeFeatures::EnableCustomElementsV0(true);
+  // TODO(738611): This is temporary switch to have chrome WebUI use the old
+  // HTML Imports API. After completion of the migration, we should remove this.
+  if (GetContentClient()->renderer()->RequiresHtmlImports(common_params->url)) {
     blink::WebRuntimeFeatures::EnableHTMLImports(true);
   }
 

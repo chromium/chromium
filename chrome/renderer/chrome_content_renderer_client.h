@@ -193,7 +193,7 @@ class ChromeContentRendererClient
                              const std::string& name) override;
   bool IsSafeRedirectTarget(const GURL& url) override;
   void DidSetUserAgent(const std::string& user_agent) override;
-  bool RequiresWebComponentsV0(const GURL& url) override;
+  bool RequiresHtmlImports(const GURL& url) override;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   void MaybeProxyURLLoaderFactory(
       content::RenderFrame* render_frame,
