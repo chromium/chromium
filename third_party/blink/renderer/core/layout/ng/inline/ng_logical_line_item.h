@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -49,6 +50,20 @@ struct NGLogicalLineItem {
         children_count(children_count),
         bidi_level(bidi_level) {}
   // Create an in-flow text fragment.
+  NGLogicalLineItem(const NGInlineItem& inline_item,
+                    NGInlineItemResult& item_result,
+                    const NGTextOffset& text_offset,
+                    LayoutUnit block_offset,
+                    LayoutUnit inline_size,
+                    LayoutUnit text_height,
+                    UBiDiLevel bidi_level)
+      : inline_item(&inline_item),
+        shape_result(std::move(item_result.shape_result)),
+        text_offset(text_offset),
+        rect(LayoutUnit(), block_offset, LayoutUnit(), text_height),
+        inline_size(inline_size),
+        bidi_level(bidi_level),
+        has_only_trailing_spaces(item_result.has_only_trailing_spaces) {}
   NGLogicalLineItem(const NGInlineItem& inline_item,
                     scoped_refptr<const ShapeResultView> shape_result,
                     const NGTextOffset& text_offset,
@@ -215,6 +230,9 @@ struct NGLogicalLineItem {
   UBiDiLevel bidi_level = 0xff;
   // The current text direction for OOF positioned items.
   TextDirection container_direction = TextDirection::kLtr;
+  // When an item contains only trailing spaces, the original bidi level needs
+  // to be ignored, and just use paragraph direction (UAX#9 L1)
+  bool has_only_trailing_spaces = false;
 
   bool is_hidden_for_paint = false;
 };

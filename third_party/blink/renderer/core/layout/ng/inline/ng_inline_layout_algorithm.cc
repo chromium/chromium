@@ -243,16 +243,15 @@ void NGInlineLayoutAlgorithm::CreateLine(
         DCHECK(item_result.hyphen_string);
         DCHECK(item_result.hyphen_shape_result);
         LayoutUnit hyphen_inline_size = item_result.HyphenInlineSize();
-        line_box->AddChild(item, std::move(item_result.shape_result),
-                           item_result.TextOffset(), box->text_top,
+        line_box->AddChild(item, item_result, item_result.TextOffset(),
+                           box->text_top,
                            item_result.inline_size - hyphen_inline_size,
                            box->text_height, item.BidiLevel());
         PlaceHyphen(item_result, hyphen_inline_size, line_box, box);
       } else {
-        line_box->AddChild(item, std::move(item_result.shape_result),
-                           item_result.TextOffset(), box->text_top,
-                           item_result.inline_size, box->text_height,
-                           item.BidiLevel());
+        line_box->AddChild(item, item_result, item_result.TextOffset(),
+                           box->text_top, item_result.inline_size,
+                           box->text_height, item.BidiLevel());
       }
       has_logical_text_items = true;
 
@@ -1248,6 +1247,11 @@ void NGInlineLayoutAlgorithm::BidiReorder(TextDirection base_direction,
   constexpr UBiDiLevel kOpaqueBidiLevel = 0xff;
   DCHECK_GT(kOpaqueBidiLevel, UBIDI_MAX_EXPLICIT_LEVEL + 1);
 
+  // The base direction level is used for the items that should ignore its
+  // original level and just use the paragraph level, as trailing opaque
+  // items and items with only trailing whitespaces.
+  UBiDiLevel base_direction_level = IsLtr(base_direction) ? 0 : 1;
+
   // Create a list of chunk indices in the visual order.
   // ICU |ubidi_getVisualMap()| works for a run of characters. Since we can
   // handle the direction of each run, we use |ubidi_reorderVisual()| to reorder
@@ -1262,13 +1266,18 @@ void NGInlineLayoutAlgorithm::BidiReorder(TextDirection base_direction,
       continue;
     }
     DCHECK_NE(item.bidi_level, kOpaqueBidiLevel);
+    // UAX#9 L1: trailing whitespaces should use paragraph direction.
+    if (item.has_only_trailing_spaces) {
+      levels.push_back(base_direction_level);
+      continue;
+    }
     levels.push_back(item.bidi_level);
   }
 
   // For opaque items, copy bidi levels from adjacent items.
   if (has_opaque_items) {
     // Use the paragraph level for trailing opaque items.
-    UBiDiLevel last_level = IsLtr(base_direction) ? 0 : 1;
+    UBiDiLevel last_level = base_direction_level;
     for (UBiDiLevel& level : base::Reversed(levels)) {
       if (level == kOpaqueBidiLevel)
         level = last_level;
