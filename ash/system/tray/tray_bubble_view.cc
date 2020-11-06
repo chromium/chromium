@@ -31,6 +31,7 @@
 #include "ui/gfx/skia_util.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"
@@ -463,10 +464,6 @@ void TrayBubbleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 }
 
-const char* TrayBubbleView::GetClassName() const {
-  return "TrayBubbleView";
-}
-
 void TrayBubbleView::OnThemeChanged() {
   views::BubbleDialogDelegateView::OnThemeChanged();
   DCHECK(layer());
@@ -498,5 +495,8 @@ void TrayBubbleView::CloseBubbleView() {
 
   delegate_->HideBubble(this);
 }
+
+BEGIN_METADATA(TrayBubbleView, views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace ash
