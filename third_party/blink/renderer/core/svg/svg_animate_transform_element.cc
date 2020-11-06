@@ -31,7 +31,7 @@ namespace blink {
 
 SVGAnimateTransformElement::SVGAnimateTransformElement(Document& document)
     : SVGAnimateElement(svg_names::kAnimateTransformTag, document),
-      transform_type_(SVGTransformType::kUnknown) {}
+      transform_type_(SVGTransformType::kTranslate) {}
 
 bool SVGAnimateTransformElement::HasValidAnimation() const {
   if (GetAttributeType() == kAttributeTypeCSS)
@@ -61,12 +61,24 @@ SVGPropertyBase* SVGAnimateTransformElement::CreatePropertyForAnimation(
   return MakeGarbageCollected<SVGTransformList>(transform_type_, value);
 }
 
+static SVGTransformType ParseTypeAttribute(const String& value) {
+  if (value.IsNull())
+    return SVGTransformType::kTranslate;
+  SVGTransformType transform_type = ParseTransformType(value);
+  // Since ParseTransformType() is also used when parsing transform lists, it accepts the value
+  // "matrix". That value is however not recognized by the 'type' attribute, so treat it as invalid.
+  if (transform_type == SVGTransformType::kMatrix)
+    transform_type = SVGTransformType::kUnknown;
+  return transform_type;
+}
+
 void SVGAnimateTransformElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == svg_names::kTypeAttr) {
-    transform_type_ = ParseTransformType(params.new_value);
-    if (transform_type_ == SVGTransformType::kMatrix)
-      transform_type_ = SVGTransformType::kUnknown;
+    SVGTransformType old_transform_type = transform_type_;
+    transform_type_ = ParseTypeAttribute(params.new_value);
+    if (transform_type_ != old_transform_type)
+      AnimationAttributeChanged();
     return;
   }
 
