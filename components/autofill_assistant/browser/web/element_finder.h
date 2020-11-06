@@ -220,17 +220,11 @@ class ElementFinder : public WebControllerWorker {
   // required data is available.
   bool ConsumeOneMatchOrFail(std::string& object_id_out);
 
-  // Make sure there's at least one match, take one and put it in
-  // |object_id_out|, then return true.
+  // Make sure there's at least |index + 1| matches, take the one at that index
+  // and put it in |object_id_out|, then return true.
   //
-  // If there are no matches, send an error response and return false.
-  // If there are not enough matches yet, fetch them in the background and
-  // return false. This calls ExecuteNextTask() once matches have been fetched.
-  //
-  // If this returns true, continue processing. If this returns false, return
-  // from ExecuteNextTask(). ExecuteNextTask() will be called again once the
-  // required data is available.
-  bool ConsumeAnyMatchOrFail(std::string& object_id_out);
+  // If there are not enough matches, send an error response and return false.
+  bool ConsumeMatchAtOrFail(size_t index, std::string& object_id_out);
 
   // Make sure there's at least one match and move them all into
   // |matches_out|.

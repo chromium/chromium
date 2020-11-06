@@ -222,7 +222,7 @@ bool ElementFinder::JsFilterBuilder::AddFilter(
 
     case SelectorProto::Filter::kEnterFrame:
     case SelectorProto::Filter::kPseudoType:
-    case SelectorProto::Filter::kPickOne:
+    case SelectorProto::Filter::kNthMatch:
     case SelectorProto::Filter::kClosest:
     case SelectorProto::Filter::FILTER_NOT_SET:
       return false;
@@ -368,7 +368,7 @@ void ElementFinder::ExecuteNextTask() {
         break;
 
       case ResultType::kAnyMatch:
-        if (!ConsumeAnyMatchOrFail(object_id)) {
+        if (!ConsumeMatchAtOrFail(0, object_id)) {
           return;
         }
         break;
@@ -410,9 +410,9 @@ void ElementFinder::ExecuteNextTask() {
       return;
     }
 
-    case SelectorProto::Filter::kPickOne: {
+    case SelectorProto::Filter::kNthMatch: {
       std::string object_id;
-      if (!ConsumeAnyMatchOrFail(object_id))
+      if (!ConsumeMatchAtOrFail(filter.nth_match().index(), object_id))
         return;
 
       next_filter_index_++;
@@ -479,9 +479,10 @@ bool ElementFinder::ConsumeOneMatchOrFail(std::string& object_id_out) {
   return true;
 }
 
-bool ElementFinder::ConsumeAnyMatchOrFail(std::string& object_id_out) {
-  if (current_matches_.size() > 0) {
-    object_id_out = current_matches_[0];
+bool ElementFinder::ConsumeMatchAtOrFail(size_t index,
+                                         std::string& object_id_out) {
+  if (index < current_matches_.size()) {
+    object_id_out = current_matches_[index];
     current_matches_.clear();
     return true;
   }

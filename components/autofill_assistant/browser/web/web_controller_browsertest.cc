@@ -1147,7 +1147,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, PseudoTypeThenBoundingBox) {
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, PseudoTypeThenPickOne) {
   Selector selector({"span"});
   selector.SetPseudoType(PseudoType::BEFORE);
-  selector.proto.add_filters()->mutable_pick_one();
+  selector.proto.add_filters()->mutable_nth_match()->set_index(0);
 
   RunStrictElementCheck(selector, true);
 }
@@ -2291,7 +2291,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   Selector selector({"input"});
   auto* closest = selector.proto.add_filters()->mutable_closest();
   closest->add_target()->set_css_selector("#iframe");
-  closest->add_target()->mutable_pick_one();
+  closest->add_target()->mutable_nth_match()->set_index(0);
   closest->add_target()->mutable_enter_frame();
   closest->add_target()->set_css_selector("div");
 
@@ -2433,6 +2433,36 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, OnTopFindsElementInShadow) {
 
   ShowOverlayInFrame();
   RunLaxElementCheck(button, false);
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, NthMatch) {
+  Selector selector;
+  selector.proto.add_filters()->set_css_selector(".nth_match_parent");
+  selector.proto.add_filters()->mutable_nth_match()->set_index(1);
+  selector.proto.add_filters()->set_css_selector(".nth_match_child");
+
+  auto* pick_at_filter = selector.proto.add_filters();
+  std::string element_tag;
+
+  pick_at_filter->mutable_nth_match()->set_index(0);
+  ASSERT_EQ(ACTION_APPLIED,
+            GetElementTag(selector, &element_tag).proto_status());
+  EXPECT_EQ("P", element_tag);
+
+  pick_at_filter->mutable_nth_match()->set_index(1);
+  ASSERT_EQ(ACTION_APPLIED,
+            GetElementTag(selector, &element_tag).proto_status());
+  EXPECT_EQ("UL", element_tag);
+
+  pick_at_filter->mutable_nth_match()->set_index(2);
+  ASSERT_EQ(ACTION_APPLIED,
+            GetElementTag(selector, &element_tag).proto_status());
+  EXPECT_EQ("LI", element_tag);
+
+  pick_at_filter->mutable_nth_match()->set_index(3);
+  ASSERT_EQ(ACTION_APPLIED,
+            GetElementTag(selector, &element_tag).proto_status());
+  EXPECT_EQ("STRONG", element_tag);
 }
 
 }  // namespace autofill_assistant

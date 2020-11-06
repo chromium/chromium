@@ -71,7 +71,6 @@ bool operator<(const SelectorProto::Filter& a, const SelectorProto::Filter& b) {
 
     case SelectorProto::Filter::kBoundingBox:
     case SelectorProto::Filter::kEnterFrame:
-    case SelectorProto::Filter::kPickOne:
     case SelectorProto::Filter::kLabelled:
       return false;
 
@@ -84,6 +83,9 @@ bool operator<(const SelectorProto::Filter& a, const SelectorProto::Filter& b) {
 
     case SelectorProto::Filter::kMatchCssSelector:
       return a.match_css_selector() < b.match_css_selector();
+
+    case SelectorProto::Filter::kNthMatch:
+      return a.nth_match().index() < b.nth_match().index();
 
     case SelectorProto::Filter::FILTER_NOT_SET:
       return false;
@@ -100,7 +102,7 @@ SelectorProto ToSelectorProto(const std::vector<std::string>& s) {
   if (!s.empty()) {
     for (size_t i = 0; i < s.size(); i++) {
       if (i > 0) {
-        proto.add_filters()->mutable_pick_one();
+        proto.add_filters()->mutable_nth_match()->set_index(0);
         proto.add_filters()->mutable_enter_frame();
       }
       proto.add_filters()->set_css_selector(s[i]);
@@ -226,10 +228,11 @@ base::Optional<std::string> Selector::ExtractSingleCssSelectorForAutofill()
         break;
 
       case SelectorProto::Filter::kBoundingBox:
-      case SelectorProto::Filter::kPickOne:
-        // Ignore these; they're not relevant for the autofill use-case
-        break;
+      case SelectorProto::Filter::kNthMatch:
+        if (filter.nth_match().index() == 0)
+          break;
 
+        FALLTHROUGH;
       case SelectorProto::Filter::kInnerText:
       case SelectorProto::Filter::kValue:
       case SelectorProto::Filter::kPseudoType:
@@ -351,8 +354,8 @@ std::ostream& operator<<(std::ostream& out, const SelectorProto::Filter& f) {
       out << "bounding_box";
       return out;
 
-    case SelectorProto::Filter::kPickOne:
-      out << "pick_one";
+    case SelectorProto::Filter::kNthMatch:
+      out << "nth_match[" << f.nth_match().index() << "]";
       return out;
 
     case SelectorProto::Filter::kLabelled:

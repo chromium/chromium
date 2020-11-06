@@ -255,8 +255,8 @@ public class AutofillAssistantOverlayIntegrationTest {
         SelectorProto element =
                 (SelectorProto) SelectorProto.newBuilder()
                         .addFilters(SelectorProto.Filter.newBuilder().setCssSelector("#iframe"))
-                        .addFilters(SelectorProto.Filter.newBuilder().setPickOne(
-                                SelectorProto.EmptyFilter.getDefaultInstance()))
+                        .addFilters(SelectorProto.Filter.newBuilder().setNthMatch(
+                                SelectorProto.NthMatchFilter.newBuilder().setIndex(0)))
                         .addFilters(SelectorProto.Filter.newBuilder().setEnterFrame(
                                 SelectorProto.EmptyFilter.getDefaultInstance()))
 
@@ -310,8 +310,8 @@ public class AutofillAssistantOverlayIntegrationTest {
         SelectorProto element =
                 (SelectorProto) SelectorProto.newBuilder()
                         .addFilters(SelectorProto.Filter.newBuilder().setCssSelector("#iframe"))
-                        .addFilters(SelectorProto.Filter.newBuilder().setPickOne(
-                                SelectorProto.EmptyFilter.getDefaultInstance()))
+                        .addFilters(SelectorProto.Filter.newBuilder().setNthMatch(
+                                SelectorProto.NthMatchFilter.newBuilder().setIndex(0)))
                         .addFilters(SelectorProto.Filter.newBuilder().setEnterFrame(
                                 SelectorProto.EmptyFilter.getDefaultInstance()))
 

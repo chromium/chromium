@@ -992,11 +992,9 @@ message SelectorProto {
       // renamed as having a bounding box is not enough to imply visibility.
       EmptyFilter bounding_box = 6;
 
-      // Pick just one match and continue. Ignore all other matches.
-      //
-      // For backward-compatibility with older element references, pick_one can
-      // be put before enter_frame.
-      EmptyFilter pick_one = 7;
+      // Take the nth match. Fails with ELEMENT_RESOLUTION_FAILED if there are
+      // not enough matches.
+      NthMatchFilter nth_match = 7;
 
       // Only keep elements that have a pseudo-element with the given content.
       //
@@ -1207,6 +1205,11 @@ message SelectorProto {
   }
 
   message EmptyFilter {}
+
+  message NthMatchFilter {
+    // Take the match at the given |index|.
+    optional int32 index = 1;
+  }
 
   reserved 1 to 8;
 }

@@ -23,10 +23,11 @@ TEST(SelectorTest, Constructor_WithIframe) {
   Selector selector({"#frame", "#test"});
   ASSERT_EQ(4, selector.proto.filters().size());
   EXPECT_EQ("#frame", selector.proto.filters(0).css_selector());
-  EXPECT_EQ(selector.proto.filters(1).filter_case(),
-            SelectorProto::Filter::kPickOne);
-  EXPECT_EQ(selector.proto.filters(2).filter_case(),
-            SelectorProto::Filter::kEnterFrame);
+  EXPECT_EQ(SelectorProto::Filter::kNthMatch,
+            selector.proto.filters(1).filter_case());
+  EXPECT_EQ(0, selector.proto.filters(1).nth_match().index());
+  EXPECT_EQ(SelectorProto::Filter::kEnterFrame,
+            selector.proto.filters(2).filter_case());
   EXPECT_EQ("#test", selector.proto.filters(3).css_selector());
 }
 
