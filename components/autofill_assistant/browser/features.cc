@@ -19,5 +19,10 @@ const base::Feature kAutofillAssistantChromeEntry{
 const base::Feature kAutofillAssistantDirectActions{
     "AutofillAssistantDirectActions", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Use Chrome's TabHelper system to deal with the life cycle of WebContent's
+// depending Autofill Assistant objects.
+const base::Feature kAutofillAssistantWithTabHelper{
+    "AutofillAssistantWithTabHelper", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace autofill_assistant
