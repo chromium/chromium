@@ -435,3 +435,4 @@ crbug.com/1097735 [ skia-renderer-dawn ] Pixel_PaintWorkletTransform [ Failure ]
 # or ChromeOS.
 crbug.com/1129879 [ android ] Pixel_Video_Media_Stream_Incompatible_Stride [ Skip ]
 crbug.com/1129879 [ chromeos ] Pixel_Video_Media_Stream_Incompatible_Stride [ Skip ]
+crbug.com/1129879 [ fuchsia ] Pixel_Video_Media_Stream_Incompatible_Stride [ Skip ]

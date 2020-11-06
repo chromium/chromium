@@ -5,6 +5,7 @@
 import logging
 import re
 import sys
+import time
 
 from telemetry.testing import serially_executed_browser_test_case
 from telemetry.util import screenshot
@@ -284,15 +285,43 @@ class GpuIntegrationTest(
         self._RestartBrowser('unexpected test failure')
       raise
     else:
+      # Fuchsia does not have minidump support, use system info to check
+      # for crash count.
+      if os_name == 'fuchsia':
+        total_expected_crashes = sum(expected_crashes.values())
+        actual_and_expected_crashes_match = self._CheckCrashCountMatch(
+            total_expected_crashes)
       # We always want to clear any expected crashes, but we don't bother
       # failing the test if it's expected to fail.
-      actual_and_expected_crashes_match = self._ClearExpectedCrashes(
-          expected_crashes)
+      else:
+        actual_and_expected_crashes_match = self._ClearExpectedCrashes(
+            expected_crashes)
       if ResultType.Failure in expected_results:
         logging.warning('%s was expected to fail, but passed.\n', test_name)
       else:
         if not actual_and_expected_crashes_match:
           raise RuntimeError('Actual and expected crashes did not match')
+
+  def _CheckCrashCountMatch(self, total_expected_crashes):
+    # We can't get crashes if we don't have a browser.
+    if self.browser is None:
+      return True
+
+    number_of_crashes = -1
+    system_info = self.browser.GetSystemInfo()
+    number_of_crashes = \
+        system_info.gpu.aux_attributes[u'process_crash_count']
+
+    retval = True
+    if number_of_crashes != total_expected_crashes:
+      retval = False
+      logging.warning('Expected %d gpu process crashes; got: %d' %
+                      (total_expected_crashes, number_of_crashes))
+    if number_of_crashes > 0:
+      # Restarting is necessary because the crash count includes all
+      # crashes since the browser started.
+      self._RestartBrowser('Restarting browser to clear process crash count.')
+    return retval
 
   @staticmethod
   def _IsIntel(vendor_id):
