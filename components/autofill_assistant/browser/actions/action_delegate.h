@@ -118,6 +118,18 @@ class ActionDelegate {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
+  // Wait for the |element| to stop moving on the page. Fails with
+  // ELEMENT_UNSTABLE.
+  virtual void WaitUntilElementIsStable(
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
+
+  // Make sure that |element| is the topmost element at its center. Fails with
+  // ELEMENT_NOT_ON_TOP.
+  virtual void CheckOnTop(
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
+
   // Have the UI enter the prompt mode and make the given actions available.
   //
   // While a prompt is in progress, the UI looks the same as it does between

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
+#include "base/test/bind_test_util.h"
 #include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
@@ -427,6 +428,19 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
             &WebControllerBrowserTest::ElementRetainingStringCallback,
             base::Unretained(this), std::move(element_result),
             std::move(done_callback), result_output, element_tag_output));
+  }
+
+  ClientStatus CheckOnTop(const ElementFinder::Result& element) {
+    ClientStatus captured_status;
+    base::RunLoop run_loop;
+    web_controller_->CheckOnTop(
+        element, base::BindLambdaForTesting(
+                     [&captured_status, &run_loop](const ClientStatus& status) {
+                       captured_status = status;
+                       run_loop.Quit();
+                     }));
+    run_loop.Run();
+    return captured_status;
   }
 
   void FindElement(const Selector& selector,
@@ -2435,6 +2449,29 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, OnTopFindsElementInShadow) {
   RunLaxElementCheck(button, false);
 }
 
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, CheckOnTop) {
+  ClientStatus status;
+  ElementFinder::Result element;
+  FindElement(Selector({"#button"}), &status, &element);
+  ASSERT_TRUE(status.ok());
+
+  // Make sure the button is visible.
+  EXPECT_TRUE(ExecJs(
+      shell(), "document.getElementById('button').scrollIntoViewIfNeeded();"));
+
+  // The button is the topmost element.
+  status = CheckOnTop(element);
+  EXPECT_EQ(ACTION_APPLIED, status.proto_status());
+  EXPECT_EQ(WebControllerErrorInfoProto::UNSPECIFIED_WEB_ACTION,
+            status.details().web_controller_error_info().failed_web_action());
+
+  // The button is not the topmost element.
+  ShowOverlay();
+  status = CheckOnTop(element);
+  EXPECT_EQ(ELEMENT_NOT_ON_TOP, status.proto_status());
+  EXPECT_EQ(WebControllerErrorInfoProto::ON_TOP,
+            status.details().web_controller_error_info().failed_web_action());
+}
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, NthMatch) {
   Selector selector;
   selector.proto.add_filters()->set_css_selector(".nth_match_parent");

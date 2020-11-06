@@ -132,6 +132,12 @@ class ScriptExecutor : public ActionDelegate,
   void ScrollIntoView(
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
+  void WaitUntilElementIsStable(
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback) override;
+  void CheckOnTop(
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback) override;
   void ClickOrTapElement(
       ClickType click_type,
       const ElementFinder::Result& element,

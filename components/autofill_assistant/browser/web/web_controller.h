@@ -12,7 +12,6 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "components/autofill_assistant/browser/actions/click_action.h"
 #include "components/autofill_assistant/browser/batch_element_checker.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_dom.h"
@@ -98,6 +97,18 @@ class WebController {
   virtual void ClickOrTapElement(
       const ElementFinder::Result& element,
       ClickType click_type,
+      base::OnceCallback<void(const ClientStatus&)> callback);
+
+  // Get a stable position of the given element. Fail with ELEMENT_UNSTABLE if
+  // the element position doesn't stabilize quickly enough.
+  virtual void WaitUntilElementIsStable(
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback);
+
+  // Check whether the center given element is on top. Fail with
+  // ELEMENT_NOT_ON_TOP if the center of the element is covered.
+  virtual void CheckOnTop(
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
   // Fill the address form given by |selector| with the given address
@@ -299,14 +310,19 @@ class WebController {
   void OnWaitForDocumentToBecomeInteractive(
       base::OnceCallback<void(const ClientStatus&)> callback,
       bool result);
+  void OnCheckOnTop(base::OnceCallback<void(const ClientStatus&)> callback,
+                    const DevtoolsClient::ReplyStatus& reply_status,
+                    std::unique_ptr<runtime::CallFunctionOnResult> result);
+  void OnWaitUntilElementIsStable(
+      ElementPositionGetter* getter_to_release,
+      base::OnceCallback<void(const ClientStatus&)> callback,
+      const ClientStatus& status);
   void TapOrClickOnCoordinates(
       ElementPositionGetter* getter_to_release,
       const std::string& node_frame_id,
       ClickType click_type,
       base::OnceCallback<void(const ClientStatus&)> callback,
-      bool has_coordinates,
-      int x,
-      int y);
+      const ClientStatus& status);
   void OnDispatchPressMouseEvent(
       const std::string& node_frame_id,
       base::OnceCallback<void(const ClientStatus&)> callback,

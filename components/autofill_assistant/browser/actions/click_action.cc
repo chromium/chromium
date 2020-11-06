@@ -23,6 +23,10 @@ ClickAction::ClickAction(ActionDelegate* delegate, const ActionProto& proto)
     // default: TAP
     click_type_ = ClickType::TAP;
   }
+  on_top_ = proto.click().on_top();
+  if (on_top_ == STEP_UNSPECIFIED) {
+    on_top_ = SKIP_STEP;
+  }
 }
 
 ClickAction::~ClickAction() {}
@@ -54,7 +58,7 @@ void ClickAction::OnWaitForElement(ProcessActionCallback callback,
   }
 
   action_delegate_util::ClickOrTapElement(
-      delegate_, selector, click_type_,
+      delegate_, selector, click_type_, on_top_,
       base::BindOnce(&::autofill_assistant::ClickAction::OnClick,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

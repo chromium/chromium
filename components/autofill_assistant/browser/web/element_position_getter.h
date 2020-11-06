@@ -37,14 +37,23 @@ class ElementPositionGetter : public WebControllerWorker {
   // Callback that receives the position that corresponds to the center
   // of an element.
   //
-  // If the first element is false, the call failed. Otherwise, the second
-  // element contains the x position and the third the y position of the center
-  // of the element in viewport coordinates.
-  using ElementPositionCallback = base::OnceCallback<void(bool, int, int)>;
+  // If the operation failed, the status is ELEMENT_UNSTABLE.
+  // If the operation succeeded, check the coordinate in the getter.
+  using Callback = base::OnceCallback<void(const ClientStatus&)>;
+
+  void DisableWaitForElementStable() { max_rounds_ = 1; }
+
+  // The X coordinate of the center of the element, only valid after getting a
+  // successful callback.
+  int x() { return point_x_; }
+
+  // The Y coordinate of the center of the element, only valid after getting a
+  // successful callback.
+  int y() { return point_y_; }
 
   void Start(content::RenderFrameHost* frame_host,
              std::string element_object_id,
-             ElementPositionCallback callback);
+             Callback callback);
 
  private:
   void OnVisualStateUpdatedCallback(bool success);
@@ -60,12 +69,12 @@ class ElementPositionGetter : public WebControllerWorker {
   // Time to wait between two box model checks.
   const base::TimeDelta check_interval_;
   // Maximum number of checks to run.
-  const int max_rounds_;
+  int max_rounds_;
 
   DevtoolsClient* devtools_client_ = nullptr;
   std::string object_id_;
   int remaining_rounds_ = 0;
-  ElementPositionCallback callback_;
+  Callback callback_;
   bool visual_state_updated_ = false;
 
   // If |has_point_| is true, |point_x_| and |point_y_| contain the last

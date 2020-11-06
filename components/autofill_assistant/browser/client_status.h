@@ -18,6 +18,12 @@ class ClientStatus {
   explicit ClientStatus(ProcessedActionStatusProto status);
   ~ClientStatus();
 
+  ClientStatus(ProcessedActionStatusProto status,
+               const ProcessedActionStatusDetailsProto& details)
+      : ClientStatus(status) {
+    mutable_details()->MergeFrom(details);
+  }
+
   // Returns true if this is an OK status.
   bool ok() const { return status_ == ACTION_APPLIED; }
 
@@ -29,6 +35,10 @@ class ClientStatus {
 
   // Modifies the corresponding proto status.
   void set_proto_status(ProcessedActionStatusProto status) { status_ = status; }
+
+  // Returns a copy of the current ClientStatus instance with the status set to
+  // |new_status| and the original status saved in original_status.
+  ClientStatus WithStatusOverride(ProcessedActionStatusProto new_status) const;
 
   // Returns a mutable version of status details, creates one if necessary.
   ProcessedActionStatusDetailsProto* mutable_details() {

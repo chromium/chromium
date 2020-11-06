@@ -458,6 +458,90 @@ void WebController::OnWaitForDocumentToBecomeInteractive(
   std::move(callback).Run(OkClientStatus());
 }
 
+void WebController::CheckOnTop(
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  JsSnippet js_snippet;
+  js_snippet.AddLine("function(element) {");
+  AddReturnIfOnTop(&js_snippet, "element",
+                   /* on_top= */ "true",
+                   /* not_on_top= */ "false",
+                   /* not_in_view= */ "false");
+  js_snippet.AddLine("}");
+
+  std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
+  AddRuntimeCallArgumentObjectId(element.object_id, &arguments);
+  devtools_client_->GetRuntime()->CallFunctionOn(
+      runtime::CallFunctionOnParams::Builder()
+          .SetObjectId(element.object_id)
+          .SetArguments(std::move(arguments))
+          .SetFunctionDeclaration(js_snippet.ToString())
+          .SetReturnByValue(true)
+          .Build(),
+      element.node_frame_id,
+      base::BindOnce(&WebController::OnCheckOnTop,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::BindOnce(&DecorateWebControllerStatus,
+                                    WebControllerErrorInfoProto::ON_TOP,
+                                    std::move(callback))));
+}
+
+void WebController::OnCheckOnTop(
+    base::OnceCallback<void(const ClientStatus&)> callback,
+    const DevtoolsClient::ReplyStatus& reply_status,
+    std::unique_ptr<runtime::CallFunctionOnResult> result) {
+  ClientStatus status =
+      CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
+  if (!status.ok()) {
+    VLOG(1) << __func__ << " Failed JavaScript with status: " << status;
+    std::move(callback).Run(status);
+    return;
+  }
+
+  bool onTop = false;
+  if (!SafeGetBool(result->GetResult(), &onTop)) {
+    VLOG(1) << __func__ << " JavaScript function failed to return a boolean.";
+    std::move(callback).Run(UnexpectedErrorStatus(__FILE__, __LINE__));
+    return;
+  }
+  std::move(callback).Run(
+      ClientStatus(onTop ? ACTION_APPLIED : ELEMENT_NOT_ON_TOP));
+}
+
+void WebController::WaitUntilElementIsStable(
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  auto wrapped_callback = GetAssistantActionRunningStateRetainingCallback(
+      element, std::move(callback));
+
+  std::unique_ptr<ElementPositionGetter> getter =
+      std::make_unique<ElementPositionGetter>(
+          devtools_client_.get(), *settings_, element.node_frame_id);
+  auto* ptr = getter.get();
+  pending_workers_.emplace_back(std::move(getter));
+  ptr->Start(element.container_frame_host, element.object_id,
+             base::BindOnce(
+                 &WebController::OnWaitUntilElementIsStable,
+                 weak_ptr_factory_.GetWeakPtr(), ptr,
+                 base::BindOnce(
+                     &DecorateWebControllerStatus,
+                     WebControllerErrorInfoProto::WAIT_UNTIL_ELEMENT_IS_STABLE,
+                     std::move(wrapped_callback))));
+}
+
+void WebController::OnWaitUntilElementIsStable(
+    ElementPositionGetter* getter_to_release,
+    base::OnceCallback<void(const ClientStatus&)> callback,
+    const ClientStatus& status) {
+  base::EraseIf(pending_workers_, [getter_to_release](const auto& worker) {
+    return worker.get() == getter_to_release;
+  });
+  if (!status.ok()) {
+    VLOG(1) << __func__ << " Element unstable.";
+  }
+  std::move(callback).Run(status);
+}
+
 void WebController::ClickOrTapElement(
     const ElementFinder::Result& element,
     ClickType click_type,
@@ -486,6 +570,7 @@ void WebController::ClickOrTapElement(
   std::unique_ptr<ElementPositionGetter> getter =
       std::make_unique<ElementPositionGetter>(
           devtools_client_.get(), *settings_, element.node_frame_id);
+  getter->DisableWaitForElementStable();
   auto* ptr = getter.get();
   pending_workers_.emplace_back(std::move(getter));
   ptr->Start(
@@ -504,16 +589,16 @@ void WebController::TapOrClickOnCoordinates(
     const std::string& node_frame_id,
     ClickType click_type,
     base::OnceCallback<void(const ClientStatus&)> callback,
-    bool has_coordinates,
-    int x,
-    int y) {
+    const ClientStatus& status) {
+  int x = getter_to_release->x();
+  int y = getter_to_release->y();
   base::EraseIf(pending_workers_, [getter_to_release](const auto& worker) {
     return worker.get() == getter_to_release;
   });
 
-  if (!has_coordinates) {
+  if (!status.ok()) {
     VLOG(1) << __func__ << " Failed to get element position.";
-    std::move(callback).Run(ClientStatus(ELEMENT_UNSTABLE));
+    std::move(callback).Run(status);
     return;
   }
 

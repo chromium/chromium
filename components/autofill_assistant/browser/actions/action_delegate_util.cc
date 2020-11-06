@@ -25,25 +25,29 @@ void RetainElementAndExecuteCallback(
 
 void PerformActionsSequentially(
     std::unique_ptr<ElementActionVector> perform_actions,
+    std::unique_ptr<ProcessedActionStatusDetailsProto> status_details,
     size_t action_index,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> done,
     const ClientStatus& status) {
+  status_details->MergeFrom(status.details());
+
   if (!status.ok()) {
     VLOG(1) << __func__ << "Web-Action failed with status " << status;
-    std::move(done).Run(status);
+    std::move(done).Run(ClientStatus(status.proto_status(), *status_details));
     return;
   }
 
   if (action_index >= perform_actions->size()) {
-    std::move(done).Run(status);
+    std::move(done).Run(ClientStatus(status.proto_status(), *status_details));
     return;
   }
 
   std::move((*perform_actions)[action_index])
-      .Run(element, base::BindOnce(&PerformActionsSequentially,
-                                   std::move(perform_actions), action_index + 1,
-                                   element, std::move(done)));
+      .Run(element,
+           base::BindOnce(&PerformActionsSequentially,
+                          std::move(perform_actions), std::move(status_details),
+                          action_index + 1, element, std::move(done)));
 }
 
 void OnFindElement(ElementActionCallback perform,
@@ -72,13 +76,76 @@ void FindElementAndPerformImpl(
       base::BindOnce(&OnFindElement, std::move(perform), std::move(done)));
 }
 
+// Call |done| with a successful status, no matter what |status|.
+//
+// Note that the status details, if any, filled in |status| are conserved.
+void IgnoreErrorStatus(base::OnceCallback<void(const ClientStatus&)> done,
+                       const ClientStatus& status) {
+  if (status.ok()) {
+    std::move(done).Run(status);
+    return;
+  }
+  std::move(done).Run(status.WithStatusOverride(ACTION_APPLIED));
+}
+
+// Execute [action] but skip any failures by transforming failed ClientStatus
+// into successes.
+//
+// Note that the status details filled by the failed action are conserved.
+void SkipIfFail(ElementActionCallback action,
+                const ElementFinder::Result& element,
+                base::OnceCallback<void(const ClientStatus&)> done) {
+  std::move(action).Run(element,
+                        base::BindOnce(&IgnoreErrorStatus, std::move(done)));
+}
+
+// Adds a sequence of actions that execute a click.
+void AddClickOrTapSequence(const ActionDelegate* delegate,
+                           ClickType click_type,
+                           OptionalStep on_top,
+                           ElementActionVector* actions) {
+  actions->emplace_back(
+      base::BindOnce(&ActionDelegate::WaitForDocumentToBecomeInteractive,
+                     delegate->GetWeakPtr()));
+  actions->emplace_back(
+      base::BindOnce(&ActionDelegate::ScrollIntoView, delegate->GetWeakPtr()));
+  if (click_type != ClickType::JAVASCRIPT) {
+    actions->emplace_back(base::BindOnce(
+        &ActionDelegate::WaitUntilElementIsStable, delegate->GetWeakPtr()));
+
+    switch (on_top) {
+      case STEP_UNSPECIFIED:
+        NOTREACHED() << __func__ << " unspecified on_top step";
+        FALLTHROUGH;
+
+      case SKIP_STEP:
+        break;
+
+      case REPORT_STEP_RESULT:
+        actions->emplace_back(base::BindOnce(
+            &SkipIfFail, base::BindOnce(&ActionDelegate::CheckOnTop,
+                                        delegate->GetWeakPtr())));
+        break;
+
+      case REQUIRE_STEP_SUCCESS:
+        actions->emplace_back(base::BindOnce(&ActionDelegate::CheckOnTop,
+                                             delegate->GetWeakPtr()));
+        break;
+    }
+  }
+  actions->emplace_back(base::BindOnce(&ActionDelegate::ClickOrTapElement,
+                                       delegate->GetWeakPtr(), click_type));
+}
+
 }  // namespace
 
 void PerformAll(std::unique_ptr<ElementActionVector> perform_actions,
                 const ElementFinder::Result& element,
                 base::OnceCallback<void(const ClientStatus&)> done) {
-  PerformActionsSequentially(std::move(perform_actions), 0, element,
-                             std::move(done), OkClientStatus());
+  PerformActionsSequentially(
+      std::move(perform_actions),
+      std::make_unique<ProcessedActionStatusDetailsProto>(), 0, element,
+      std::move(done), OkClientStatus());
 }
 
 void FindElementAndPerform(const ActionDelegate* delegate,
@@ -100,32 +167,24 @@ void TakeElementAndPerform(ElementActionCallback perform,
 void ClickOrTapElement(const ActionDelegate* delegate,
                        const Selector& selector,
                        ClickType click_type,
+                       OptionalStep on_top,
                        base::OnceCallback<void(const ClientStatus&)> done) {
   FindElementAndPerformImpl(
       delegate, selector,
-      base::BindOnce(&PerformClickOrTapElement, delegate, click_type),
+      base::BindOnce(&PerformClickOrTapElement, delegate, click_type, on_top),
       std::move(done));
 }
+
 void PerformClickOrTapElement(
     const ActionDelegate* delegate,
     ClickType click_type,
+    OptionalStep on_top,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> done) {
-#ifdef NDEBUG
-  VLOG(3) << __func__ << " click_type=" << click_type;
-#else
-  DVLOG(3) << __func__ << " click_type=" << click_type;
-#endif
+  VLOG(3) << __func__ << " click_type=" << click_type << " on_top=" << on_top;
 
   auto actions = std::make_unique<ElementActionVector>();
-  actions->emplace_back(
-      base::BindOnce(&ActionDelegate::WaitForDocumentToBecomeInteractive,
-                     delegate->GetWeakPtr()));
-  actions->emplace_back(
-      base::BindOnce(&ActionDelegate::ScrollIntoView, delegate->GetWeakPtr()));
-  actions->emplace_back(base::BindOnce(&ActionDelegate::ClickOrTapElement,
-                                       delegate->GetWeakPtr(), click_type));
-
+  AddClickOrTapSequence(delegate, click_type, on_top, actions.get());
   PerformAll(std::move(actions), element, std::move(done));
 }
 
@@ -141,6 +200,7 @@ void SendKeyboardInput(const ActionDelegate* delegate,
                      delay_in_millis, use_focus),
       std::move(done));
 }
+
 void PerformSendKeyboardInput(
     const ActionDelegate* delegate,
     const std::vector<UChar32> codepoints,
@@ -148,25 +208,15 @@ void PerformSendKeyboardInput(
     bool use_focus,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> done) {
-#ifdef NDEBUG
   VLOG(3) << __func__ << " focus: " << use_focus;
-#else
-  DVLOG(3) << __func__ << " focus: " << use_focus;
-#endif
 
   auto actions = std::make_unique<ElementActionVector>();
   if (use_focus) {
     actions->emplace_back(
         base::BindOnce(&ActionDelegate::FocusField, delegate->GetWeakPtr()));
   } else {
-    actions->emplace_back(
-        base::BindOnce(&ActionDelegate::WaitForDocumentToBecomeInteractive,
-                       delegate->GetWeakPtr()));
-    actions->emplace_back(base::BindOnce(&ActionDelegate::ScrollIntoView,
-                                         delegate->GetWeakPtr()));
-    actions->emplace_back(base::BindOnce(&ActionDelegate::ClickOrTapElement,
-                                         delegate->GetWeakPtr(),
-                                         ClickType::CLICK));
+    AddClickOrTapSequence(delegate, ClickType::CLICK, /* on_top=*/SKIP_STEP,
+                          actions.get());
   }
   actions->emplace_back(base::BindOnce(&ActionDelegate::SendKeyboardInput,
                                        delegate->GetWeakPtr(), codepoints,
@@ -216,14 +266,8 @@ void PerformSetFieldValue(const ActionDelegate* delegate,
         actions->emplace_back(base::BindOnce(&ActionDelegate::SetValueAttribute,
                                              delegate->GetWeakPtr(),
                                              std::string()));
-        actions->emplace_back(
-            base::BindOnce(&ActionDelegate::WaitForDocumentToBecomeInteractive,
-                           delegate->GetWeakPtr()));
-        actions->emplace_back(base::BindOnce(&ActionDelegate::ScrollIntoView,
-                                             delegate->GetWeakPtr()));
-        actions->emplace_back(base::BindOnce(&ActionDelegate::ClickOrTapElement,
-                                             delegate->GetWeakPtr(),
-                                             ClickType::CLICK));
+        AddClickOrTapSequence(delegate, ClickType::CLICK,
+                              /* on_top= */ SKIP_STEP, actions.get());
         actions->emplace_back(base::BindOnce(
             &ActionDelegate::SendKeyboardInput, delegate->GetWeakPtr(),
             UTF8ToUnicode(value), key_press_delay_in_millisecond));

@@ -25,7 +25,21 @@ class ClickActionTest : public testing::Test {
  public:
   ClickActionTest() {}
 
-  void SetUp() override {}
+  void SetUp() override {
+    ON_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
+        .WillByDefault(RunOnceCallback<1>(OkClientStatus(),
+                                          base::TimeDelta::FromSeconds(0)));
+    ON_CALL(mock_action_delegate_, WaitForDocumentToBecomeInteractive(_, _))
+        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+    ON_CALL(mock_action_delegate_, ScrollIntoView(_, _))
+        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+    ON_CALL(mock_action_delegate_, WaitUntilElementIsStable(_, _))
+        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+    ON_CALL(mock_action_delegate_, CheckOnTop(_, _))
+        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+    ON_CALL(mock_action_delegate_, ClickOrTapElement(_, _, _))
+        .WillByDefault(RunOnceCallback<2>(OkClientStatus()));
+  }
 
  protected:
   void Run() {
@@ -33,6 +47,16 @@ class ClickActionTest : public testing::Test {
     *action_proto.mutable_click() = proto_;
     ClickAction action(&mock_action_delegate_, action_proto);
     action.ProcessAction(callback_.Get());
+  }
+
+  // Return an error status with details as created by
+  // WebController::CheckOnTop.
+  ClientStatus NotOnTopStatus() {
+    ClientStatus not_on_top(ELEMENT_NOT_ON_TOP);
+    not_on_top.mutable_details()
+        ->mutable_web_controller_error_info()
+        ->set_failed_web_action(WebControllerErrorInfoProto::ON_TOP);
+    return not_on_top;
   }
 
   MockActionDelegate mock_action_delegate_;
@@ -48,34 +72,182 @@ TEST_F(ClickActionTest, EmptySelectorFails) {
 }
 
 TEST_F(ClickActionTest, CheckExpectedCallChain) {
-  InSequence sequence;
-
-  Selector selector({"#click"});
-  *proto_.mutable_element_to_click() = selector.proto;
+  Selector expected_selector({"#click"});
+  *proto_.mutable_element_to_click() = expected_selector.proto;
   proto_.set_click_type(ClickType::CLICK);
 
-  Selector expected_selector = selector;
+  ElementFinder::Result expected_element =
+      test_util::MockFindElement(mock_action_delegate_, expected_selector);
+
+  InSequence seq;
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(0)));
-  auto expected_element =
-      test_util::MockFindElement(mock_action_delegate_, expected_selector);
   EXPECT_CALL(mock_action_delegate_, WaitForDocumentToBecomeInteractive(
                                          EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_,
               ScrollIntoView(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_action_delegate_,
+              WaitUntilElementIsStable(EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
   EXPECT_CALL(
       mock_action_delegate_,
       ClickOrTapElement(ClickType::CLICK, EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+
+  Run();
+}
+
+TEST_F(ClickActionTest, JavaScriptClickSkipsWaitForElementStable) {
+  Selector expected_selector({"#click"});
+  *proto_.mutable_element_to_click() = expected_selector.proto;
+  proto_.set_click_type(ClickType::JAVASCRIPT);
+
+  ElementFinder::Result expected_element =
+      test_util::MockFindElement(mock_action_delegate_, expected_selector);
+
+  EXPECT_CALL(mock_action_delegate_, WaitUntilElementIsStable(_, _)).Times(0);
+  EXPECT_CALL(mock_action_delegate_, CheckOnTop(_, _)).Times(0);
+  EXPECT_CALL(mock_action_delegate_,
+              ClickOrTapElement(ClickType::JAVASCRIPT,
+                                EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
 
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
   Run();
+}
+
+TEST_F(ClickActionTest, SkipCheckOnTop) {
+  Selector expected_selector({"#click"});
+  *proto_.mutable_element_to_click() = expected_selector.proto;
+  proto_.set_click_type(ClickType::TAP);
+  proto_.set_on_top(SKIP_STEP);
+
+  ElementFinder::Result expected_element =
+      test_util::MockFindElement(mock_action_delegate_, expected_selector);
+
+  EXPECT_CALL(mock_action_delegate_, CheckOnTop(_, _)).Times(0);
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  Run();
+}
+
+TEST_F(ClickActionTest, RequireCheckOnTop) {
+  Selector expected_selector({"#click"});
+  *proto_.mutable_element_to_click() = expected_selector.proto;
+  proto_.set_click_type(ClickType::TAP);
+  proto_.set_on_top(REQUIRE_STEP_SUCCESS);
+
+  ElementFinder::Result expected_element =
+      test_util::MockFindElement(mock_action_delegate_, expected_selector);
+
+  InSequence seq;
+  EXPECT_CALL(mock_action_delegate_,
+              WaitUntilElementIsStable(EqualsElement(expected_element), _));
+  EXPECT_CALL(mock_action_delegate_,
+              CheckOnTop(EqualsElement(expected_element), _));
+  EXPECT_CALL(
+      mock_action_delegate_,
+      ClickOrTapElement(ClickType::TAP, EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  Run();
+}
+
+TEST_F(ClickActionTest, OptionalCheckOnTop) {
+  Selector expected_selector({"#click"});
+  *proto_.mutable_element_to_click() = expected_selector.proto;
+  proto_.set_click_type(ClickType::TAP);
+  proto_.set_on_top(REPORT_STEP_RESULT);
+
+  ElementFinder::Result expected_element =
+      test_util::MockFindElement(mock_action_delegate_, expected_selector);
+
+  InSequence seq;
+  EXPECT_CALL(mock_action_delegate_,
+              WaitUntilElementIsStable(EqualsElement(expected_element), _));
+  EXPECT_CALL(mock_action_delegate_,
+              CheckOnTop(EqualsElement(expected_element), _));
+  EXPECT_CALL(
+      mock_action_delegate_,
+      ClickOrTapElement(ClickType::TAP, EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  Run();
+}
+
+TEST_F(ClickActionTest, RequiredCheckOnTopFails) {
+  Selector expected_selector({"#click"});
+  *proto_.mutable_element_to_click() = expected_selector.proto;
+  proto_.set_click_type(ClickType::TAP);
+  proto_.set_on_top(REQUIRE_STEP_SUCCESS);
+
+  ElementFinder::Result expected_element =
+      test_util::MockFindElement(mock_action_delegate_, expected_selector);
+
+  // CheckOnTop fails.
+  EXPECT_CALL(mock_action_delegate_,
+              CheckOnTop(EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<1>(NotOnTopStatus()));
+
+  // The action must not tap.
+  EXPECT_CALL(mock_action_delegate_, ClickOrTapElement(_, _, _)).Times(0);
+
+  ProcessedActionProto result;
+  EXPECT_CALL(callback_, Run(_)).WillOnce(testing::SaveArgPointee<0>(&result));
+  Run();
+
+  EXPECT_EQ(ELEMENT_NOT_ON_TOP, result.status());
+  EXPECT_EQ(
+      WebControllerErrorInfoProto::ON_TOP,
+      result.status_details().web_controller_error_info().failed_web_action());
+}
+
+TEST_F(ClickActionTest, OptionalCheckOnTopFails) {
+  Selector expected_selector({"#click"});
+  *proto_.mutable_element_to_click() = expected_selector.proto;
+  proto_.set_click_type(ClickType::TAP);
+  proto_.set_on_top(REPORT_STEP_RESULT);
+
+  ElementFinder::Result expected_element =
+      test_util::MockFindElement(mock_action_delegate_, expected_selector);
+
+  // CheckOnTop fails.
+  EXPECT_CALL(mock_action_delegate_,
+              CheckOnTop(EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<1>(NotOnTopStatus()));
+
+  // The action must tap anyway.
+  EXPECT_CALL(
+      mock_action_delegate_,
+      ClickOrTapElement(ClickType::TAP, EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+
+  ProcessedActionProto result;
+  EXPECT_CALL(callback_, Run(_)).WillOnce(testing::SaveArgPointee<0>(&result));
+  Run();
+
+  EXPECT_EQ(ACTION_APPLIED, result.status());
+  EXPECT_EQ(
+      WebControllerErrorInfoProto::ON_TOP,
+      result.status_details().web_controller_error_info().failed_web_action());
+  EXPECT_EQ(ELEMENT_NOT_ON_TOP, result.status_details().original_status());
 }
 
 }  // namespace

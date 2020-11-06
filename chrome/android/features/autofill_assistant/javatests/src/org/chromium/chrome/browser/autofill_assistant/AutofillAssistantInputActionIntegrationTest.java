@@ -10,6 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.checkElementExists;
@@ -35,6 +36,9 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ClickProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClickType;
 import org.chromium.chrome.browser.autofill_assistant.proto.DropdownSelectStrategy;
 import org.chromium.chrome.browser.autofill_assistant.proto.KeyboardValueFillStrategy;
+import org.chromium.chrome.browser.autofill_assistant.proto.OptionalStep;
+import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionStatusProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto.Choice;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectOptionProto;
@@ -48,9 +52,11 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Tests autofill assistant's input actions such as keyboard and clicking.
@@ -63,6 +69,13 @@ public class AutofillAssistantInputActionIntegrationTest {
 
     private static final String TEST_PAGE = "/components/test/data/autofill_assistant/html/"
             + "autofill_assistant_target_website.html";
+
+    private static final SupportedScriptProto TEST_SCRIPT =
+            SupportedScriptProto.newBuilder()
+                    .setPath(TEST_PAGE)
+                    .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
+                            ChipProto.newBuilder().setText("Done")))
+                    .build();
 
     @Before
     public void setUp() throws Exception {
@@ -158,13 +171,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                             .addChoices(Choice.newBuilder()))
                          .build());
 
-        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
-                        .setPath(TEST_PAGE)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
-                        .build(),
-                list);
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
 
         assertThat(getElementValue(mTestRule.getWebContents(), "input1"), is("helloworld1"));
         assertThat(getElementValue(mTestRule.getWebContents(), "input2"), is("helloworld2"));
@@ -255,13 +262,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                             .addChoices(Choice.newBuilder()))
                          .build());
 
-        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
-                        .setPath(TEST_PAGE)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
-                        .build(),
-                list);
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
 
         assertThat(getElementValue(mTestRule.getWebContents(), "input1"), is("helloworld1"));
         assertThat(getElementValue(mTestRule.getWebContents(), "input2"), is("helloworld2"));
@@ -335,13 +336,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                             .addChoices(Choice.newBuilder()))
                          .build());
 
-        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
-                        .setPath(TEST_PAGE)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
-                        .build(),
-                list);
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
 
         runScript(script);
 
@@ -410,13 +405,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                  Choice.newBuilder()))
                          .build());
 
-        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
-                        .setPath(TEST_PAGE)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
-                        .build(),
-                list);
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
 
         checkElementExists(mTestRule.getWebContents(), "touch_area_one");
         checkElementExists(mTestRule.getWebContents(), "touch_area_five");
@@ -438,9 +427,55 @@ public class AutofillAssistantInputActionIntegrationTest {
         waitUntil(() -> !checkElementExists(mTestRule.getWebContents(), "touch_area_six"));
     }
 
+    @Test
+    @MediumTest
+    public void clickOnButtonCoveredByOverlay() throws Exception {
+        checkElementExists(mTestRule.getWebContents(), "button");
+        checkElementExists(mTestRule.getWebContents(), "overlay");
+        showOverlay();
+
+        // This script attempts to click 3 times on #button:
+        // 1. the first click action clicks without checking for overlays
+        // 2. the second click action checks, finds an overlay, but clicks anyway
+        // 3. the third click action finds an overlay and fails
+        SelectorProto.Builder button = SelectorProto.newBuilder().addFilters(
+                Filter.newBuilder().setCssSelector("#button"));
+        ClickProto.Builder click = ClickProto.newBuilder().setElementToClick(button);
+        ArrayList<ActionProto> actions = new ArrayList<>();
+        actions.add(
+                ActionProto.newBuilder().setClick(click.setOnTop(OptionalStep.SKIP_STEP)).build());
+        actions.add(ActionProto.newBuilder()
+                            .setClick(click.setOnTop(OptionalStep.REPORT_STEP_RESULT))
+                            .build());
+        actions.add(ActionProto.newBuilder()
+                            .setClick(click.setOnTop(OptionalStep.REQUIRE_STEP_SUCCESS))
+                            .build());
+
+        AutofillAssistantTestService testService = new AutofillAssistantTestService(
+                Collections.singletonList(new AutofillAssistantTestScript(TEST_SCRIPT, actions)));
+        startAutofillAssistant(mTestRule.getActivity(), testService);
+        testService.waitUntilGetNextActions(1);
+
+        List<ProcessedActionProto> processed = testService.getProcessedActions();
+        assertThat(processed, hasSize(3));
+        assertThat(processed.get(0).getStatus(), is(ProcessedActionStatusProto.ACTION_APPLIED));
+        assertThat(processed.get(1).getStatus(), is(ProcessedActionStatusProto.ACTION_APPLIED));
+        assertThat(processed.get(1).getStatusDetails().getOriginalStatus(),
+                is(ProcessedActionStatusProto.ELEMENT_NOT_ON_TOP));
+        assertThat(processed.get(2).getStatus(), is(ProcessedActionStatusProto.ELEMENT_NOT_ON_TOP));
+    }
+
     private void runScript(AutofillAssistantTestScript script) {
         AutofillAssistantTestService testService =
                 new AutofillAssistantTestService(Collections.singletonList(script));
         startAutofillAssistant(mTestRule.getActivity(), testService);
+    }
+
+    private void showOverlay() throws Exception {
+        TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper javascriptHelper =
+                new TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper();
+        javascriptHelper.evaluateJavaScriptForTests(mTestRule.getWebContents(),
+                "document.getElementById('overlay').style.visibility = 'visible'");
+        javascriptHelper.waitUntilHasValue();
     }
 }

@@ -334,6 +334,19 @@ void ScriptExecutor::ScrollIntoView(
   delegate_->GetWebController()->ScrollIntoView(element, std::move(callback));
 }
 
+void ScriptExecutor::WaitUntilElementIsStable(
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  delegate_->GetWebController()->WaitUntilElementIsStable(element,
+                                                          std::move(callback));
+}
+
+void ScriptExecutor::CheckOnTop(
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  delegate_->GetWebController()->CheckOnTop(element, std::move(callback));
+}
+
 void ScriptExecutor::ClickOrTapElement(
     ClickType click_type,
     const ElementFinder::Result& element,

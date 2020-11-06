@@ -202,6 +202,9 @@ enum ProcessedActionStatusProto {
   // or text.
   ELEMENT_MISMATCH = 26;
 
+  // Another element covered the targeted element, when trying to click.
+  ELEMENT_NOT_ON_TOP = 27;
+
   reserved 15, 23;
 }
 

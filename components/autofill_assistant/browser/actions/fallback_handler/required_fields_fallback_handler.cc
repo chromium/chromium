@@ -251,6 +251,7 @@ void RequiredFieldsFallbackHandler::SetFallbackFieldValuesSequentially(
     }
     action_delegate_util::ClickOrTapElement(
         action_delegate_, required_field.selector, click_type,
+        /* on_top= */ SKIP_STEP,
         base::BindOnce(
             &RequiredFieldsFallbackHandler::OnClickOrTapFallbackElement,
             weak_ptr_factory_.GetWeakPtr(), fallback_value.value(),
@@ -376,7 +377,7 @@ void RequiredFieldsFallbackHandler::OnShortWaitForElement(
     click_type = ClickType::TAP;
   }
   action_delegate_util::ClickOrTapElement(
-      action_delegate_, selector_to_click, click_type,
+      action_delegate_, selector_to_click, click_type, /* on_top= */ SKIP_STEP,
       base::BindOnce(&RequiredFieldsFallbackHandler::OnSetFallbackFieldValue,
                      weak_ptr_factory_.GetWeakPtr(), required_fields_index,
                      /* element= */ nullptr));

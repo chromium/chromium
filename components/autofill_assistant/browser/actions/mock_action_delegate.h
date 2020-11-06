@@ -86,6 +86,14 @@ class MockActionDelegate : public ActionDelegate {
                void(const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
 
+  MOCK_METHOD2(WaitUntilElementIsStable,
+               void(const ElementFinder::Result& element,
+                    base::OnceCallback<void(const ClientStatus&)> callback));
+
+  MOCK_METHOD2(CheckOnTop,
+               void(const ElementFinder::Result& element,
+                    base::OnceCallback<void(const ClientStatus&)> callback));
+
   MOCK_METHOD5(Prompt,
                void(std::unique_ptr<std::vector<UserAction>> user_actions,
                     bool disable_force_expand_sheet,

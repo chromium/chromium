@@ -97,7 +97,7 @@ std::string ElementFinder::JsFilterBuilder::BuildFunction() const {
     function(args) {
       let elements = [this];
     )",
-    base::JoinString(lines_, "\n"),
+    snippet_.ToString(),
     R"(
       if (elements.length == 0) return null;
       if (elements.length == 1) { return elements[0] }
@@ -180,44 +180,17 @@ bool ElementFinder::JsFilterBuilder::AddFilter(
       return true;
 
     case SelectorProto::Filter::kOnTop:
-      AddLine(R"(elements = elements.filter((e) => {
-  if (e.getClientRects().length == 0) {
-    return false;
-  })");
+      AddLine("elements = elements.filter((e) => {");
+      AddLine("if (e.getClientRects().length == 0) return false;");
       if (filter.on_top().scroll_into_view_if_needed()) {
         AddLine("e.scrollIntoViewIfNeeded(false);");
       }
-      AddLine(R"(
-  const bounds = e.getBoundingClientRect();
-  const x = bounds.x + bounds.width / 2;
-  const y = bounds.y + bounds.height / 2;
-  const targets = [e];
-  if (e.labels) {
-    for (let i = 0; i < e.labels.length; i++) {
-       targets.push(e.labels[i]);
-    }
-  }
-  let root = document;
-  while (root) {
-    const atPoint = root.elementFromPoint(x, y);
-    if (!atPoint) {
-  )");
-      if (filter.on_top().accept_element_if_not_in_view()) {
-        AddLine("return true;");
-      } else {
-        AddLine("return false;");
-      }
-      AddLine(R"(
-    }
-    for (const target of targets) {
-      if (target === atPoint || target.contains(atPoint)) {
-        return true;
-      }
-    }
-    root = atPoint.shadowRoot;
-  }
-  return false;
-});)");
+      AddReturnIfOnTop(
+          &snippet_, "e", /* on_top= */ "true", /* not_on_top= */ "false",
+          /* not_in_view= */ filter.on_top().accept_element_if_not_in_view()
+              ? "true"
+              : "false");
+      AddLine("});");
       return true;
 
     case SelectorProto::Filter::kEnterFrame:

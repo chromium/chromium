@@ -73,6 +73,8 @@ class SetFormFieldValueActionTest : public testing::Test {
         .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
     ON_CALL(mock_action_delegate_, ScrollIntoView(_, _))
         .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+    ON_CALL(mock_action_delegate_, WaitUntilElementIsStable(_, _))
+        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
     ON_CALL(mock_action_delegate_, ClickOrTapElement(_, _, _))
         .WillByDefault(RunOnceCallback<2>(OkClientStatus()));
     ON_CALL(mock_action_delegate_, OnSendKeyboardInput(_, _, _, _))

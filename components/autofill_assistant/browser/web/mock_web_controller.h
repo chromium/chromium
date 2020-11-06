@@ -50,6 +50,11 @@ class MockWebController : public WebController {
   MOCK_METHOD2(OnScrollIntoView,
                void(const ElementFinder::Result&,
                     base::OnceCallback<void(const ClientStatus&)>&));
+
+  MOCK_METHOD2(WaitUntilElementIsStable,
+               void(const ElementFinder::Result& element,
+                    base::OnceCallback<void(const ClientStatus&)> callback));
+
   void ClickOrTapElement(
       const ElementFinder::Result& element,
       ClickType click_type,

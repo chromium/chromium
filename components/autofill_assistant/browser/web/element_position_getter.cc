@@ -37,7 +37,7 @@ ElementPositionGetter::~ElementPositionGetter() = default;
 
 void ElementPositionGetter::Start(content::RenderFrameHost* frame_host,
                                   std::string element_object_id,
-                                  ElementPositionCallback callback) {
+                                  Callback callback) {
   object_id_ = element_object_id;
   callback_ = std::move(callback);
   remaining_rounds_ = max_rounds_;
@@ -86,20 +86,28 @@ void ElementPositionGetter::OnGetBoxModelForStableCheck(
   int new_point_x = round(((*content_box)[0] + (*content_box)[2]) * 0.5);
   int new_point_y = round(((*content_box)[3] + (*content_box)[5]) * 0.5);
 
-  // Wait for at least three rounds (~600ms = 3*check_interval_) for visual
-  // state update callback since it might take longer time to return or never
-  // return if no updates.
-  DCHECK(max_rounds_ > 2 && max_rounds_ >= remaining_rounds_);
-  if (has_point_ && new_point_x == point_x_ && new_point_y == point_y_ &&
-      (visual_state_updated_ || remaining_rounds_ + 2 < max_rounds_)) {
-    // Note that there is still a chance that the element's position has been
-    // changed after the last call of GetBoxModel, however, it might be safe to
-    // assume the element's position will not be changed before issuing click or
-    // tap event after stable for check_interval_. In addition, checking again
-    // after issuing click or tap event doesn't help since the change may be
-    // expected.
-    OnResult(new_point_x, new_point_y);
-    return;
+  DCHECK(max_rounds_ >= remaining_rounds_);
+
+  if (has_point_) {
+    if (max_rounds_ <= 2) {
+      OnResult(new_point_x, new_point_y);
+      return;
+    }
+
+    // If there are enough rounds, wait for at least three rounds (~600ms =
+    // 3*check_interval_) for visual state update callback since it might take
+    // longer time to return or never return if no updates.
+    if (new_point_x == point_x_ && new_point_y == point_y_ &&
+        (visual_state_updated_ || remaining_rounds_ + 2 < max_rounds_)) {
+      // Note that there is still a chance that the element's position has been
+      // changed after the last call of GetBoxModel, however, it might be safe
+      // to assume the element's position will not be changed before issuing
+      // click or tap event after stable for check_interval_. In addition,
+      // checking again after issuing click or tap event doesn't help since the
+      // change may be expected.
+      OnResult(new_point_x, new_point_y);
+      return;
+    }
   }
 
   if (remaining_rounds_ <= 0) {
@@ -159,13 +167,15 @@ void ElementPositionGetter::OnScrollIntoView(
 
 void ElementPositionGetter::OnResult(int x, int y) {
   if (callback_) {
-    std::move(callback_).Run(/* success= */ true, x, y);
+    point_x_ = x;
+    point_y_ = y;
+    std::move(callback_).Run(OkClientStatus());
   }
 }
 
 void ElementPositionGetter::OnError() {
   if (callback_) {
-    std::move(callback_).Run(/* success= */ false, /* x= */ 0, /* y= */ 0);
+    std::move(callback_).Run(ClientStatus(ELEMENT_UNSTABLE));
   }
 }
 

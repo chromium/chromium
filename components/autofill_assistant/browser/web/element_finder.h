@@ -17,6 +17,7 @@
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_runtime.h"
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
 #include "components/autofill_assistant/browser/selector.h"
+#include "components/autofill_assistant/browser/web/js_snippets.h"
 #include "components/autofill_assistant/browser/web/web_controller_worker.h"
 
 namespace content {
@@ -102,7 +103,7 @@ class ElementFinder : public WebControllerWorker {
 
    private:
     std::vector<std::string> arguments_;
-    std::vector<std::string> lines_;
+    JsSnippet snippet_;
     bool defined_query_all_deduplicated_ = false;
 
     // A number that's increased by each call to DeclareVariable() to make sure
@@ -131,10 +132,18 @@ class ElementFinder : public WebControllerWorker {
     // footer. At that point, the variable "elements" contains the current set
     // of matches, as an array of nodes. It should be updated to contain the new
     // set of matches.
-    void AddLine(const std::string& line) { lines_.emplace_back(line); }
+    //
+    // IMPORTANT: Only pass strings that originate from hardcoded strings to
+    // this method.
+    void AddLine(const std::string& line) { snippet_.AddLine(line); }
 
+    // Adds a line of JavaScript code to the function that's made up of multiple
+    // parts to be concatenated together.
+    //
+    // IMPORTANT: Only pass strings that originate from hardcoded strings to
+    // this method.
     void AddLine(const std::vector<std::string>& line) {
-      lines_.emplace_back(base::StrCat(line));
+      snippet_.AddLine(line);
     }
 
     // Define a |queryAllDeduplicated(roots, selector)| JS function that calls

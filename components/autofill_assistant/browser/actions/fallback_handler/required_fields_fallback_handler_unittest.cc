@@ -55,6 +55,8 @@ class RequiredFieldsFallbackHandlerTest : public testing::Test {
         .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
     ON_CALL(mock_action_delegate_, ScrollIntoView(_, _))
         .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+    ON_CALL(mock_action_delegate_, WaitUntilElementIsStable(_, _))
+        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
   }
 
  protected:

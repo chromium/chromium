@@ -919,6 +919,14 @@ message WebControllerErrorInfoProto {
 
     // Set active focus on a field.
     FOCUS_FIELD = 15;
+
+    // Wait for an element position to stabilize before clicking or a tapping.
+    // Fails with ELEMENT_UNSTABLE.
+    WAIT_UNTIL_ELEMENT_IS_STABLE = 16;
+
+    // Check that the element is on top, usually as part of clicking.
+    // Fails with ELEMENT_NOT_ON_TOP.
+    ON_TOP = 17;
   }
 
   // The web-action that failed. This is usually a step in an execution chain
@@ -1218,6 +1226,19 @@ message SelectorProto {
 message ClickProto {
   optional SelectorProto element_to_click = 1;
   optional ClickType click_type = 2;
+
+  // Configure whether click should check whether the element is the topmost
+  // element before clicking on it.
+  //
+  // If set to REQUIRE_STEP_SUCCESS, click might fail with ELEMENT_NOT_ON_TOP.
+  optional OptionalStep on_top = 3;
+}
+
+enum OptionalStep {
+  STEP_UNSPECIFIED = 0;
+  SKIP_STEP = 1;
+  REPORT_STEP_RESULT = 2;
+  REQUIRE_STEP_SUCCESS = 3;
 }
 
 // Contain all arguments to perform a select option action.

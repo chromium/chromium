@@ -83,10 +83,12 @@ void PerformAll(std::unique_ptr<ElementActionVector> perform_actions,
 void ClickOrTapElement(const ActionDelegate* delegate,
                        const Selector& selector,
                        ClickType click_type,
+                       OptionalStep on_top,
                        base::OnceCallback<void(const ClientStatus&)> callback);
 void PerformClickOrTapElement(
     const ActionDelegate* delegate,
     ClickType click_type,
+    OptionalStep on_top,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback);
 

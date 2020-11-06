@@ -31,6 +31,7 @@ class ClickAction : public Action {
   void OnClick(ProcessActionCallback callback, const ClientStatus& status);
 
   ClickType click_type_;
+  OptionalStep on_top_;
   base::WeakPtrFactory<ClickAction> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ClickAction);
