@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

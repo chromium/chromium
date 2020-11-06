@@ -168,6 +168,7 @@ bool MaybeAddCommandLineArgsFromConfig(const base::Value& config,
       switches::kForceMaxTextureSize,
       switches::kMaxDecodedImageSizeMb,
       switches::kRendererProcessLimit,
+      switches::kUseLegacyAndroidUserAgent,
       switches::kWebglAntialiasingMode,
       switches::kWebglMSAASampleCount,
   };

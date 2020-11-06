@@ -53,6 +53,9 @@ extern const char kEnableCastStreamingReceiver[];
 // Data directory to be used for CDM user data.
 extern const char kCdmDataDirectory[];
 
+// Enables reporting of an Android-like User Agent string.
+extern const char kUseLegacyAndroidUserAgent[];
+
 }  // namespace switches
 
 #endif  // FUCHSIA_ENGINE_SWITCHES_H_
