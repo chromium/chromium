@@ -199,7 +199,8 @@ class ConcurrentBucket {
  private:
   // Alignment is needed for atomic accesses to |buf_| and to assure |buf_|
   // can be accessed the same as objects of type T
-  alignas(std::max(alignof(T), sizeof(size_t))) char buf_[sizeof(T)];
+  static constexpr size_t boundary = std::max(alignof(T), sizeof(size_t));
+  alignas(boundary) char buf_[sizeof(T)];
 };
 
 template <typename Key, typename Value>
@@ -223,7 +224,8 @@ class ConcurrentBucket<KeyValuePair<Key, Value>> {
  private:
   // Alignment is needed for atomic accesses to |buf_| and to assure |buf_|
   // can be accessed the same as objects of type Key
-  alignas(std::max(alignof(Key), sizeof(size_t))) char buf_[sizeof(Key)];
+  static constexpr size_t boundary = std::max(alignof(Key), sizeof(size_t));
+  alignas(boundary) char buf_[sizeof(Key)];
   const Value* value_;
 };
 

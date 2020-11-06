@@ -265,7 +265,8 @@ struct VectorMover<true, T, Allocator> {
 
   static void SwapImpl(T* src, T* src_end, T* dst) {
     if (Allocator::kIsGarbageCollected) {
-      alignas(std::max(alignof(T), sizeof(size_t))) char buf[sizeof(T)];
+      constexpr size_t boundary = std::max(alignof(T), sizeof(size_t));
+      alignas(boundary) char buf[sizeof(T)];
       for (; src < src_end; ++src, ++dst) {
         memcpy(buf, dst, sizeof(T));
         AtomicWriteMemcpy<sizeof(T)>(dst, src);
