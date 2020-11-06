@@ -52,11 +52,10 @@ void FakeLocalFrameHost::VisibilityChanged(
     mojom::blink::FrameVisibility visibility) {}
 
 void FakeLocalFrameHost::DidChangeThemeColor(
-    const base::Optional<::SkColor>& theme_color) {}
+    base::Optional<::SkColor> theme_color) {}
 
-void FakeLocalFrameHost::DidChangeBackgroundColor(
-    const SkColor& background_color,
-    bool color_adjust) {}
+void FakeLocalFrameHost::DidChangeBackgroundColor(SkColor background_color,
+                                                  bool color_adjust) {}
 
 void FakeLocalFrameHost::DidFailLoadWithError(const ::blink::KURL& url,
                                               int32_t error_code) {}

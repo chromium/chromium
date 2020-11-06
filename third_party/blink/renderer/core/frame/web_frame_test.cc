@@ -8777,8 +8777,7 @@ class ThemeColorTestLocalFrameHost : public FakeLocalFrameHost {
 
  private:
   // FakeLocalFrameHost:
-  void DidChangeThemeColor(
-      const base::Optional<::SkColor>& theme_color) override {
+  void DidChangeThemeColor(base::Optional<::SkColor> theme_color) override {
     did_notify_ = true;
   }
 

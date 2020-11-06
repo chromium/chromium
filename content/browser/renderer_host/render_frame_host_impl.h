@@ -1621,8 +1621,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetVirtualKeyboardOverlayPolicy(bool vk_overlays_content) override;
   void EvictFromBackForwardCache() override;
   void VisibilityChanged(blink::mojom::FrameVisibility) override;
-  void DidChangeThemeColor(const base::Optional<SkColor>& theme_color) override;
-  void DidChangeBackgroundColor(const SkColor& background_color,
+  void DidChangeThemeColor(base::Optional<SkColor> theme_color) override;
+  void DidChangeBackgroundColor(SkColor background_color,
                                 bool color_adjust) override;
   void DidFailLoadWithError(const GURL& url, int32_t error_code) override;
   void DidFocusFrame() override;

@@ -79,6 +79,7 @@ mojom("mojom") {
         {
           mojom = "skia.mojom.SkColor"
           cpp = "::SkColor"
+          copyable_pass_by_value = true
         },
       ]
       traits_headers = [ "skcolor_mojom_traits.h" ]

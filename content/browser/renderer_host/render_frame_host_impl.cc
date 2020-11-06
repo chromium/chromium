@@ -4274,13 +4274,12 @@ void RenderFrameHostImpl::VisibilityChanged(
 }
 
 void RenderFrameHostImpl::DidChangeThemeColor(
-    const base::Optional<SkColor>& theme_color) {
+    base::Optional<SkColor> theme_color) {
   render_view_host_->OnThemeColorChanged(this, theme_color);
 }
 
-void RenderFrameHostImpl::DidChangeBackgroundColor(
-    const SkColor& background_color,
-    bool color_adjust) {
+void RenderFrameHostImpl::DidChangeBackgroundColor(SkColor background_color,
+                                                   bool color_adjust) {
   render_view_host_->DidChangeBackgroundColor(this, background_color,
                                               color_adjust);
 }
