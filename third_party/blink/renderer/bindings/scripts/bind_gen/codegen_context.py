@@ -84,6 +84,9 @@ class CodeGenContext(object):
             "named_property_deleter": None,
             "stringifier": None,
 
+            # Contents of union.
+            "union_members": (),
+
             # The names of the class being generated and its base class.
             "base_class_name": None,
             "class_name": None,
