@@ -9,7 +9,7 @@
 // pan handler class.
 enum class LayoutSwitcherState {
   Horizontal,  // The view layout when the view is a horizontal strip.
-  Full,        // The view layout when the view is at its full size.
+  Grid,        // The view layout when the view is a grid of elements.
 };
 
 // Interface to manage interactive animated transitions of layout.

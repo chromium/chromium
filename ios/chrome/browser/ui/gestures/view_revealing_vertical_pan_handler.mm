@@ -184,7 +184,7 @@ const CGFloat kAnimationDuration = 0.25f;
   }
 
   if (self.nextState == ViewRevealState::Revealed) {
-    [self willTransitionToLayout:LayoutSwitcherState::Full];
+    [self willTransitionToLayout:LayoutSwitcherState::Grid];
   } else if (self.currentState == ViewRevealState::Revealed &&
              (self.nextState == ViewRevealState::Peeked ||
               self.nextState == ViewRevealState::Hidden)) {

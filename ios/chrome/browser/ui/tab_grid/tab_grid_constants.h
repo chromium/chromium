@@ -56,4 +56,8 @@ extern const int64_t kTabGridScrollAnimationDelayInMilliseconds;
 // animation of the thumb strip reveal transition.
 extern const CGFloat kThumbStripSlideInHeight;
 
+// The distance travelled by the thumb strip's plus sign button during the
+// slide-out animation of the transition from Peeked to Revealed state.
+extern const CGFloat kThumbStripPlusSignButtonSlideOutDistance;
+
 #endif  // IOS_CHROME_BROWSER_UI_TAB_GRID_TAB_GRID_CONSTANTS_H_

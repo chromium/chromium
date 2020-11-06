@@ -89,4 +89,15 @@ extern const CGFloat kGridCellIconDiameter;
 extern const CGFloat kGridCellSelectionRingGapWidth;
 extern const CGFloat kGridCellSelectionRingTintWidth;
 
+// Horizontal distance from the center of the plus sign image to the trailing of
+// the tab grid.
+extern const CGFloat kPlusSignImageTrailingCenterDistance;
+// Threshold after which the thumb strip's plus sign button should be hidden.
+extern const CGFloat kScrollThresholdForPlusSignButtonHide;
+// Vertical distance from the center of the plus sign image and the top of the
+// tab grid.
+extern const CGFloat kPlusSignImageYCenterConstant;
+// With of the plus sign button.
+extern const CGFloat kPlusSignButtonWidth;
+
 #endif  // IOS_CHROME_BROWSER_UI_TAB_GRID_GRID_GRID_CONSTANTS_H_

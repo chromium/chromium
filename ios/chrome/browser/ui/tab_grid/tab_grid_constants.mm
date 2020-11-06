@@ -58,3 +58,6 @@ const int64_t kTabGridScrollAnimationDelayInMilliseconds = 300;
 // The distance travelled by the thumb strip thumbnails during the slide-in
 // animation of the thumb strip reveal transition.
 const CGFloat kThumbStripSlideInHeight = 40.0f;
+// The distance travelled by the thumb strip's plus sign button during the
+// slide-out animation of the transition from Peeked to Revealed state.
+const CGFloat kThumbStripPlusSignButtonSlideOutDistance = 400.0f;

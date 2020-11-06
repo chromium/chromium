@@ -186,7 +186,7 @@ TEST_F(ViewRevealingVerticalPanHandlerTest, DetectPan) {
   // should transition to full state.
   SimulatePanGesture(pan_handler, remaining_height * kRevealThreshold);
   EXPECT_EQ(ViewRevealState::Revealed, fake_animatee.state);
-  EXPECT_EQ(LayoutSwitcherState::Full, fake_layout_switcher.state);
+  EXPECT_EQ(LayoutSwitcherState::Grid, fake_layout_switcher.state);
 
   // Simulate a pan gesture from Revealed state to Peeked state. The layout
   // should transition back to horizontal state.
@@ -224,7 +224,7 @@ TEST_F(ViewRevealingVerticalPanHandlerTest, ManualStateChange) {
 
   [pan_handler setState:ViewRevealState::Revealed animated:NO];
   EXPECT_EQ(ViewRevealState::Revealed, fake_animatee.state);
-  EXPECT_EQ(LayoutSwitcherState::Full, fake_layout_switcher.state);
+  EXPECT_EQ(LayoutSwitcherState::Grid, fake_layout_switcher.state);
 
   [pan_handler setState:ViewRevealState::Hidden animated:NO];
   EXPECT_EQ(ViewRevealState::Hidden, fake_animatee.state);

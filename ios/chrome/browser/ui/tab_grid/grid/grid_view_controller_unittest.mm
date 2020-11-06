@@ -56,6 +56,10 @@
   // No-op for unittests. This is only called when a user taps on a
   // plus sign cell, not generically when items are added to the data source.
 }
+- (void)didChangeLastItemVisibilityInGridViewController:
+    (GridViewController*)gridViewController {
+  // No-op for unittests.
+}
 @end
 
 class GridViewControllerTest : public RootViewControllerTest {

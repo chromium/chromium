@@ -11,6 +11,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
+#include "base/numerics/ranges.h"
 #import "base/numerics/safe_conversions.h"
 #include "ios/chrome/browser/drag_and_drop/drag_and_drop_flag.h"
 #include "ios/chrome/browser/procedural_block_types.h"
@@ -87,6 +88,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 @property(nonatomic, strong) UICollectionViewLayout* horizontalReorderingLayout;
 // YES if, when reordering is enabled, the order of the cells has changed.
 @property(nonatomic, assign) BOOL hasChangedOrder;
+// By how much the user scrolled past the view's content size. A negative value
+// means the user hasn't scrolled past the end of the scroll view.
+@property(nonatomic, assign, readonly) CGFloat offsetPastEndOfScrollView;
 #if defined(__IPHONE_13_4)
 // Cells for which pointer interactions have been added. Pointer interactions
 // should only be added to displayed cells (not transition cells). This is only
@@ -577,6 +581,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   self.emptyStateView.scrollViewContentInsets = scrollView.contentInset;
 }
 
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  if (!IsThumbStripEnabled())
+    return;
+  CGFloat offset = self.offsetPastEndOfScrollView;
+  self.fractionVisibleOfLastItem = base::ClampToRange<CGFloat>(
+      1 - offset / kScrollThresholdForPlusSignButtonHide, 0, 1);
+}
+
 #pragma mark - GridCellDelegate
 
 - (void)closeButtonTappedForCell:(GridCell*)cell {
@@ -761,7 +773,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     case LayoutSwitcherState::Horizontal:
       nextLayout = self.horizontalLayout;
       break;
-    case LayoutSwitcherState::Full:
+    case LayoutSwitcherState::Grid:
       nextLayout = self.gridLayout;
       break;
   }
@@ -795,6 +807,35 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (NSUInteger)selectedIndex {
   return [self indexOfItemWithID:self.selectedItemID];
+}
+
+- (CGFloat)offsetPastEndOfScrollView {
+  CGFloat offset;
+  if (self.currentLayout == self.horizontalLayout) {
+    offset = self.collectionView.contentOffset.x +
+             self.collectionView.frame.size.width -
+             self.collectionView.contentSize.width;
+  } else {
+    DCHECK_EQ(self.gridLayout, self.currentLayout);
+    offset = self.collectionView.contentOffset.y +
+             self.collectionView.frame.size.height -
+             self.collectionView.contentSize.height;
+  }
+  return offset;
+}
+
+- (void)setFractionVisibleOfLastItem:(CGFloat)fractionVisibleOfLastItem {
+  if (fractionVisibleOfLastItem == _fractionVisibleOfLastItem)
+    return;
+  _fractionVisibleOfLastItem = fractionVisibleOfLastItem;
+
+  if (self.currentLayout == self.horizontalLayout) {
+    [self.delegate didChangeLastItemVisibilityInGridViewController:self];
+  } else {
+    DCHECK_EQ(self.gridLayout, self.currentLayout);
+    // No-op because behaviour of the tab grid's bottom toolbar when the plus
+    // sign cell is visible hasn't been decided yet. TODO(crbug.com/1146130)
+  }
 }
 
 #pragma mark - Private

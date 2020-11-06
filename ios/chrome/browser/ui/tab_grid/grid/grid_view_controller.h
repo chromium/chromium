@@ -40,6 +40,11 @@
 // changed to |count|.
 - (void)gridViewController:(GridViewController*)gridViewController
         didChangeItemCount:(NSUInteger)count;
+
+// Tells the delegate that the visibility of the last item of the grid changed.
+- (void)didChangeLastItemVisibilityInGridViewController:
+    (GridViewController*)gridViewController;
+
 @end
 
 // A view controller that contains a grid of items.
@@ -64,6 +69,8 @@
 // YES if the gid should show cell selection updates. This would be set to NO,
 // for example, if the grid was about to be transitioned out of.
 @property(nonatomic, assign) BOOL showsSelectionUpdates;
+// The fraction of the last item of the grid that is visible.
+@property(nonatomic, assign, readonly) CGFloat fractionVisibleOfLastItem;
 
 // Returns the layout of the grid for use in an animated transition.
 - (GridTransitionLayout*)transitionLayout;

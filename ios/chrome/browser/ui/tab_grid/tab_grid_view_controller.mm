@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_new_tab_button.h"
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_page_control.h"
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_top_toolbar.h"
+#import "ios/chrome/browser/ui/tab_grid/thumb_strip_plus_sign_button.h"
 #import "ios/chrome/browser/ui/tab_grid/transitions/grid_transition_layout.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
@@ -143,6 +144,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // UIView whose background color changes to create a fade-in / fade-out effect
 // when revealing / hiding the Thumb Strip.
 @property(nonatomic, weak) UIView* foregroundView;
+// Button with a plus sign that opens a new tab, located on the right side of
+// the thumb strip, shown when the plus sign cell isn't visible.
+@property(nonatomic, weak) ThumbStripPlusSignButton* plusSignButton;
 @end
 
 @implementation TabGridViewController
@@ -174,6 +178,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self setupTopToolbar];
   [self setupBottomToolbar];
   if (IsThumbStripEnabled()) {
+    [self setupThumbStripPlusSignButton];
     [self setupForegroundView];
   }
 
@@ -442,12 +447,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark - LayoutSwitcherProvider
 
 - (id<LayoutSwitcher>)layoutSwitcher {
+  DCHECK_NE(TabGridPageRemoteTabs, self.activePage);
   return [self gridViewControllerForPage:self.activePage];
 }
 
 #pragma mark - ViewRevealingAnimatee
 
 - (void)willAnimateViewReveal:(ViewRevealState)currentViewRevealState {
+  DCHECK_NE(TabGridPageRemoteTabs, self.currentPage);
   self.scrollView.scrollEnabled = NO;
   switch (currentViewRevealState) {
     case ViewRevealState::Hidden:
@@ -459,36 +466,45 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     case ViewRevealState::Peeked:
       break;
     case ViewRevealState::Revealed:
+      self.plusSignButton.alpha = 0;
       break;
   }
 }
 
 - (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
+  GridViewController* gridViewController =
+      [self gridViewControllerForPage:self.currentPage];
+  DCHECK(gridViewController);
   switch (nextViewRevealState) {
     case ViewRevealState::Hidden:
       self.foregroundView.alpha = 1;
       self.topToolbar.transform = CGAffineTransformMakeTranslation(
           0, [self hiddenTopToolbarYTranslation]);
-      [self gridViewControllerForPage:self.currentPage].gridView.transform =
+      gridViewController.gridView.transform =
           CGAffineTransformMakeTranslation(0, kThumbStripSlideInHeight);
       self.topToolbar.alpha = 0;
+      [self showPlusSignButtonWithAlpha:1 - gridViewController
+                                                .fractionVisibleOfLastItem];
+      self.plusSignButton.transform =
+          CGAffineTransformMakeTranslation(0, kThumbStripSlideInHeight);
       break;
     case ViewRevealState::Peeked:
       self.foregroundView.alpha = 0;
       self.topToolbar.transform = CGAffineTransformMakeTranslation(
           0, [self hiddenTopToolbarYTranslation]);
-      [self gridViewControllerForPage:self.currentPage].gridView.transform =
-          CGAffineTransformIdentity;
+      gridViewController.gridView.transform = CGAffineTransformIdentity;
       self.topToolbar.alpha = 0;
+      [self showPlusSignButtonWithAlpha:1 - gridViewController
+                                                .fractionVisibleOfLastItem];
       break;
     case ViewRevealState::Revealed:
       self.foregroundView.alpha = 0;
       self.topToolbar.transform = CGAffineTransformIdentity;
-      [self gridViewControllerForPage:self.currentPage].gridView.transform =
-          CGAffineTransformMakeTranslation(
-              0, self.topToolbar.intrinsicContentSize.height);
+      gridViewController.gridView.transform = CGAffineTransformMakeTranslation(
+          0, self.topToolbar.intrinsicContentSize.height);
       [self contentWillAppearAnimated:YES];
       self.topToolbar.alpha = 1;
+      [self hidePlusSignButton];
       break;
   }
 }
@@ -500,6 +516,21 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 #pragma mark - Private
+
+// Hides the thumb strip's plus sign button by translating it away and making it
+// transparent.
+- (void)hidePlusSignButton {
+  self.plusSignButton.transform = CGAffineTransformMakeTranslation(
+      kThumbStripPlusSignButtonSlideOutDistance, 0);
+  self.plusSignButton.alpha = 0;
+}
+
+// Show the thumb strip's plus sign button by translating it back into position
+// and setting its alpha to |opacity|.
+- (void)showPlusSignButtonWithAlpha:(CGFloat)opacity {
+  self.plusSignButton.transform = CGAffineTransformIdentity;
+  self.plusSignButton.alpha = opacity;
+}
 
 // Returns the ammount by which the top toolbar should be translated in the y
 // direction when hidden. Used for the slide-in animation.
@@ -910,6 +941,29 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   AddSameConstraints(foregroundView, self.view);
 }
 
+// Adds the thumb strip's plus sign button, which is visible when the plus sign
+// cell isn't.
+- (void)setupThumbStripPlusSignButton {
+  ThumbStripPlusSignButton* plusSignButton =
+      [[ThumbStripPlusSignButton alloc] init];
+  self.plusSignButton = plusSignButton;
+  plusSignButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [plusSignButton addTarget:self
+                     action:@selector(newTabButtonTapped:)
+           forControlEvents:UIControlEventTouchUpInside];
+  [self.view addSubview:plusSignButton];
+
+  NSArray* constraints = @[
+    [plusSignButton.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+    [plusSignButton.bottomAnchor
+        constraintEqualToAnchor:self.view.bottomAnchor],
+    [plusSignButton.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+    [plusSignButton.widthAnchor constraintEqualToConstant:kPlusSignButtonWidth],
+  ];
+  [NSLayoutConstraint activateConstraints:constraints];
+}
+
 - (void)configureViewControllerForCurrentSizeClassesAndPage {
   self.configuration = TabGridConfigurationFloatingButton;
   if (self.traitCollection.verticalSizeClass ==
@@ -987,6 +1041,18 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // animations.
 - (void)showToolbars {
   [self.topToolbar show];
+  if (IsThumbStripEnabled()) {
+    GridViewController* gridViewController =
+        [self gridViewControllerForPage:self.currentPage];
+    DCHECK(gridViewController);
+    if (gridViewController.fractionVisibleOfLastItem >= 0.999) {
+      // Don't show the bottom new tab button because the plus sign cell is
+      // visible.
+      return;
+    }
+    self.plusSignButton.alpha =
+        1 - gridViewController.fractionVisibleOfLastItem;
+  }
   [self.bottomToolbar show];
 }
 
@@ -1311,6 +1377,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 
   [self broadcastIncognitoContentVisibility];
+}
+
+- (void)didChangeLastItemVisibilityInGridViewController:
+    (GridViewController*)gridViewController {
+  CGFloat lastItemVisiblity = gridViewController.fractionVisibleOfLastItem;
+  self.plusSignButton.alpha = 1 - lastItemVisiblity;
+  self.plusSignButton.plusSignImage.transform =
+      lastItemVisiblity < 1
+          ? CGAffineTransformMakeTranslation(
+                lastItemVisiblity * kScrollThresholdForPlusSignButtonHide, 0)
+          : CGAffineTransformIdentity;
 }
 
 #pragma mark - Control actions

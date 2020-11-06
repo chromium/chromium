@@ -92,6 +92,8 @@ source_set("tab_grid_ui") {
     "tab_grid_top_toolbar.mm",
     "tab_grid_view_controller.h",
     "tab_grid_view_controller.mm",
+    "thumb_strip_plus_sign_button.h",
+    "thumb_strip_plus_sign_button.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
