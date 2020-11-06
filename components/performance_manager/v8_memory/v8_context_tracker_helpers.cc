@@ -21,14 +21,21 @@ bool IsSynchronousIframeAttributionDataExpected(
     const execution_context::ExecutionContext* ec) {
   DCHECK(ec);
   auto* frame = ec->GetFrameNode();
+  // We only expect iframe data for frames...
   if (!frame)
     return false;
+  // ... that aren't main frames (have a parent) ...
   if (frame->IsMainFrame())
     return false;
-  // Iframe data is expected if this node is in the same process as its
-  // parent.
-  return frame->GetProcessNode() ==
-         frame->GetParentFrameNode()->GetProcessNode();
+  auto* parent = frame->GetParentFrameNode();
+  DCHECK(parent);
+  // ... where the parent is hosted in the same process ...
+  if (frame->GetProcessNode() != parent->GetProcessNode())
+    return false;
+  // ... and where they are both in the same site instance (implying they are
+  // both in the same frame-tree and know directly of each other's LocalFrame
+  // rather then communicating via a RemoteFrame and a RenderFrameProxy).
+  return frame->GetSiteInstanceId() == parent->GetSiteInstanceId();
 }
 
 }  // namespace
