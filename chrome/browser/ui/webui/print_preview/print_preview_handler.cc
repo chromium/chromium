@@ -647,6 +647,9 @@ void PrintPreviewHandler::HandleGetPreview(const base::ListValue* args) {
   CHECK(settings.is_dict());
   int request_id = settings.FindIntKey(kPreviewRequestID).value();
   CHECK_GT(request_id, -1);
+  PrinterType printer_type = static_cast<PrinterType>(
+      settings.FindIntKey(kSettingPrinterType).value());
+  CHECK(printer_type != PrinterType::kCloud || IsCloudPrintEnabled());
 
   CHECK(!base::Contains(preview_callbacks_, request_id));
   preview_callbacks_[request_id] = callback_id;
@@ -1110,6 +1113,9 @@ void PrintPreviewHandler::SendPrinterSetup(const std::string& callback_id,
 void PrintPreviewHandler::SendCloudPrintJob(
     const std::string& callback_id,
     const base::RefCountedMemory* data) {
+  // Crash if a cloud print job is requested and cloud print is not enabled.
+  CHECK(IsCloudPrintEnabled());
+
   // BASE64 encode the job data.
   const base::StringPiece raw_data(data->front_as<char>(), data->size());
   std::string base64_data;
@@ -1348,7 +1354,8 @@ void PrintPreviewHandler::RegisterForGaiaCookieChanges() {
   DCHECK(!identity_manager_);
   cloud_print_enabled_ =
       !base::Contains(printer_type_deny_list_, PrinterType::kCloud) &&
-      GetPrefs()->GetBoolean(prefs::kCloudPrintSubmitEnabled);
+      GetPrefs()->GetBoolean(prefs::kCloudPrintSubmitEnabled) &&
+      GetPrefs()->GetBoolean(prefs::kCloudPrintDeprecationWarningsSuppressed);
 
   if (!cloud_print_enabled_)
     return;

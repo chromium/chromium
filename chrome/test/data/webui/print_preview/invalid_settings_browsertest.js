@@ -107,6 +107,8 @@ suite(invalid_settings_browsertest.suiteName, function() {
    * @param {!Array<!Destination>} printers
    */
   function setupInvalidCertificateTest(printers) {
+    loadTimeData.overrideValues(
+        {cloudPrintDeprecationWarningsSuppressed: true});
     initialSettings.printerName = '';
     initialSettings.serializedAppStateStr = JSON.stringify({
       version: 2,

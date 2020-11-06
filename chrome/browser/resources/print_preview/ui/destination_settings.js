@@ -27,7 +27,7 @@ import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behav
 import {beforeNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CloudPrintInterfaceImpl} from '../cloud_print_interface_impl.js';
-import {createDestinationKey, createRecentDestinationKey, Destination, DestinationOrigin, makeRecentDestination, RecentDestination} from '../data/destination.js';
+import {CloudOrigins, createDestinationKey, createRecentDestinationKey, Destination, DestinationOrigin, makeRecentDestination, RecentDestination} from '../data/destination.js';
 // <if expr="chromeos">
 import {SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
 // </if>
@@ -138,10 +138,7 @@ Polymer({
     // </if>
 
     /** @private {?InvitationStore} */
-    invitationStore_: {
-      type: Object,
-      value: null,
-    },
+    invitationStore_: Object,
 
     /** @private {boolean} */
     isDialogOpen_: {
@@ -198,7 +195,6 @@ Polymer({
   attached() {
     this.destinationStore_ =
         new DestinationStore(this.addWebUIListener.bind(this));
-    this.invitationStore_ = new InvitationStore();
     this.tracker_.add(
         this.destinationStore_, DestinationStore.EventType.DESTINATION_SELECT,
         this.onDestinationSelect_.bind(this));
@@ -229,7 +225,9 @@ Polymer({
 
   /** @override */
   detached() {
-    this.invitationStore_.resetTracker();
+    if (!this.cloudPrintDisabled_) {
+      this.invitationStore_.resetTracker();
+    }
     this.destinationStore_.resetTracker();
     this.tracker_.removeAll();
   },
@@ -332,16 +330,39 @@ Polymer({
       defaultPrinter, pdfPrinterDisabled, isDriveMounted,
       serializedDefaultDestinationRulesStr, userAccounts, syncAvailable) {
     const cloudPrintInterface = CloudPrintInterfaceImpl.getInstance();
-    if (cloudPrintInterface.isConfigured()) {
-      this.cloudPrintDisabled_ = false;
-      this.destinationStore_.setCloudPrintInterface(cloudPrintInterface);
-      this.invitationStore_.setCloudPrintInterface(cloudPrintInterface);
-    }
     this.pdfPrinterDisabled_ = pdfPrinterDisabled;
-    this.$.userManager.initUserAccounts(userAccounts, syncAvailable);
     let recentDestinations =
         /** @type {!Array<!RecentDestination>} */ (
             this.getSettingValue('recentDestinations'));
+
+    if (cloudPrintInterface.isConfigured()) {
+      this.cloudPrintDisabled_ = false;
+      this.destinationStore_.setCloudPrintInterface(cloudPrintInterface);
+      this.invitationStore_ = new InvitationStore();
+      this.invitationStore_.setCloudPrintInterface(cloudPrintInterface);
+      beforeNextRender(this, () => {
+        this.shadowRoot.querySelector('#userManager')
+            .initUserAccounts(userAccounts, syncAvailable);
+        recentDestinations = recentDestinations.slice(
+            0, this.getRecentDestinationsDisplayCount_(recentDestinations));
+        this.destinationStore_.init(
+            this.pdfPrinterDisabled_, isDriveMounted, defaultPrinter,
+            serializedDefaultDestinationRulesStr, recentDestinations);
+      });
+      return;
+    }
+
+    // Remove unsupported cloud printers from the sticky settings, to free up
+    // these spots for supported printers.
+    if (!loadTimeData.getBoolean('cloudPrintDeprecationWarningsSuppressed')) {
+      const filteredRecentDestinations =
+          recentDestinations.filter(d => !CloudOrigins.includes(d.origin));
+      if (filteredRecentDestinations.length !== recentDestinations.length) {
+        this.setSetting('recentDestinations', filteredRecentDestinations);
+        recentDestinations = filteredRecentDestinations;
+      }
+    }
+
     recentDestinations = recentDestinations.slice(
         0, this.getRecentDestinationsDisplayCount_(recentDestinations));
     this.destinationStore_.init(
@@ -602,7 +623,9 @@ Polymer({
    * @private
    */
   onAccountChange_(e) {
-    this.$.userManager.updateActiveUser(e.detail, true);
+    assert(!this.cloudPrintDisabled_);
+    this.shadowRoot.querySelector('#userManager')
+        .updateActiveUser(e.detail, true);
     this.updateDriveDestination_();
   },
 

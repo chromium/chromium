@@ -994,9 +994,14 @@ suite(destination_settings_test.suiteName, function() {
     // 'getPrinters' will be called because there are no printers known to
     // the destination store and the 'Save as PDF' fallback is
     // unavailable.
-    return nativeLayer.whenCalled('getPrinters').then(() => {
-      assertDropdownItems(['noDestinations']);
-    });
+    return Promise
+        .all([
+          nativeLayer.whenCalled('getPrinters'),
+          // TODO (rbpotter): remove this wait once user manager is fully
+          // removed.
+          waitBeforeNextRender(destinationSettings),
+        ])
+        .then(() => assertDropdownItems(['noDestinations']));
   });
 
     /**
