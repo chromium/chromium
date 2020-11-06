@@ -1348,4 +1348,55 @@ TEST_P(TabStripTest, DISABLED_NewTabButtonFlushWithTopOfTabStrip) {
   // EXPECT_EQ(0, tab_strip_->new_tab_button()->bounds().y());
 }
 
+// Regression test for a crash when closing a tab under certain
+// conditions. If the first tab in a group was animating closed,
+// attempting to close the next tab could result in a crash. This was
+// due to TabStripLayoutHelper mistakenly mapping the next tab's model
+// index to the closing tab's slot. See https://crbug.com/1138748 for a
+// related crash.
+TEST_P(TabStripTest, CloseTabInGroupWhilePreviousTabAnimatingClosed) {
+  controller_->AddTab(0, true);
+  controller_->AddTab(1, false);
+  controller_->AddTab(2, false);
+
+  auto group_id = tab_groups::TabGroupId::GenerateNew();
+  controller_->MoveTabIntoGroup(1, group_id);
+  controller_->MoveTabIntoGroup(2, group_id);
+
+  CompleteAnimationAndLayout();
+  ASSERT_EQ(3, tab_strip_->tab_count());
+  ASSERT_EQ(3, tab_strip_->GetModelCount());
+  EXPECT_EQ(base::nullopt, tab_strip_->tab_at(0)->group());
+  EXPECT_EQ(group_id, tab_strip_->tab_at(1)->group());
+  EXPECT_EQ(group_id, tab_strip_->tab_at(2)->group());
+
+  // We have the following tabs:
+  // 1. An ungrouped tab with model index 0
+  // 2. A tab in |group_id| with model index 1
+  // 3. A tab in |group_id| with model index 2
+  controller_->RemoveTab(1);
+
+  // After closing the first tab, we now have:
+  // 1. An ungrouped tab with model index 0
+  // 2. A closing tab in |group_id| with no model index
+  // 3. A tab in |group_id| with model index 1.
+  //
+  // Closing the tab at model index 1 should result in (3) above being
+  // closed.
+  controller_->RemoveTab(1);
+
+  // We should now have:
+  // 1. An ungrouped tab with model index 0
+  // 2. A closing tab in |group_id| with no model index
+  // 3. A closing tab in |group_id| with no model index.
+
+  CompleteAnimationAndLayout();
+
+  // After finishing animations, there should be exactly 1 tab in no
+  // group.
+  EXPECT_EQ(1, tab_strip_->tab_count());
+  EXPECT_EQ(base::nullopt, tab_strip_->tab_at(0)->group());
+  EXPECT_EQ(1, tab_strip_->GetModelCount());
+}
+
 INSTANTIATE_TEST_SUITE_P(All, TabStripTest, ::testing::Values(false, true));

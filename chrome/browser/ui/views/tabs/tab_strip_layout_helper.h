@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_LAYOUT_HELPER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_LAYOUT_HELPER_H_
 
-#include <map>
 #include <vector>
 
 #include "base/callback.h"
@@ -33,12 +32,9 @@ class TabGroupId;
 class TabStripLayoutHelper {
  public:
   using GetTabsCallback = base::RepeatingCallback<views::ViewModelT<Tab>*()>;
-  using GetGroupHeadersCallback = base::RepeatingCallback<
-      std::map<tab_groups::TabGroupId, TabGroupHeader*>()>;
 
   TabStripLayoutHelper(const TabStripController* controller,
-                       GetTabsCallback get_tabs_callback,
-                       GetGroupHeadersCallback get_group_headers_callback);
+                       GetTabsCallback get_tabs_callback);
   TabStripLayoutHelper(const TabStripLayoutHelper&) = delete;
   TabStripLayoutHelper& operator=(const TabStripLayoutHelper&) = delete;
   ~TabStripLayoutHelper();
@@ -132,11 +128,25 @@ class TabStripLayoutHelper {
   std::vector<gfx::Rect> CalculateIdealBounds(
       base::Optional<int> available_width);
 
-  // Given a tab's |model_index| and |group|, returns the index of its
-  // corresponding TabSlot in |slots_|.
-  int GetSlotIndexForTabModelIndex(
-      int model_index,
+  // Given |model_index| for a tab already present in |slots_|, return
+  // the corresponding index in |slots_|.
+  int GetSlotIndexForExistingTab(int model_index) const;
+
+  // For a new tab at |new_model_index|, get the insertion index in
+  // |slots_|. |group| is the new tab's group.
+  int GetSlotInsertionIndexForNewTab(
+      int new_model_index,
       base::Optional<tab_groups::TabGroupId> group) const;
+
+  // Used internally in the above two functions. For a tabstrip with N
+  // tabs, this takes 0 <= |model_index| <= N and returns the first
+  // possible slot corresponding to this model index.
+  //
+  // This means that if |model_index| is the first tab in a group, the
+  // returned slot index will point to the group header. For other tabs,
+  // the slot index corresponding to that tab will be returned. Finally,
+  // if |model_index| = N, slots_.size() will be returned.
+  int GetFirstSlotIndexForTabModelIndex(int model_index) const;
 
   // Given a group ID, returns the index of its header's corresponding TabSlot
   // in |slots_|.
@@ -164,9 +174,8 @@ class TabStripLayoutHelper {
   // The owning tabstrip's controller.
   const TabStripController* const controller_;
 
-  // Callbacks to get the necessary View objects from the owning tabstrip.
+  // Callback to get the necessary View objects from the owning tabstrip.
   GetTabsCallback get_tabs_callback_;
-  GetGroupHeadersCallback get_group_headers_callback_;
 
   // Current collation of tabs and group headers, along with necessary data to
   // run layout and animations for those Views.

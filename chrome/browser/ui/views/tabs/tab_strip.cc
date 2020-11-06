@@ -949,7 +949,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     if (dragging_group == other_group) {
       // |dragging_tabs| can only be empty if dragging in from another window,
       // in which case |dragging_group| can't be the same as |other_group|.
-      DCHECK(dragging_tabs.size() > 0);
+      DCHECK_GT(dragging_tabs.size(), 0u);
       if (candidate_index <= dragging_tabs.front() ||
           dragging_tabs.back() >= GetTabCount() - 1)
         return dragging_tabs.front();
@@ -1010,8 +1010,6 @@ TabStrip::TabStrip(std::unique_ptr<TabStripController> controller)
       layout_helper_(std::make_unique<TabStripLayoutHelper>(
           controller_.get(),
           base::BindRepeating(&TabStrip::tabs_view_model,
-                              base::Unretained(this)),
-          base::BindRepeating(&TabStrip::GetGroupHeaders,
                               base::Unretained(this)))),
       drag_context_(std::make_unique<TabDragContextImpl>(this)) {
   Init();
