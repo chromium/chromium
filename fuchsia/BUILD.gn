@@ -15,6 +15,7 @@ fidl_library("cast_fidl") {
     "fidl/cast/application_context.fidl",
     "fidl/cast/application_controller.fidl",
     "fidl/cast/cors_exempt_headers.fidl",
+    "fidl/cast/data_reset.fidl",
     "fidl/cast/url_request_rewriter.fidl",
   ]
 
