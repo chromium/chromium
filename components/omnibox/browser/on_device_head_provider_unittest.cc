@@ -121,12 +121,17 @@ TEST_F(OnDeviceHeadProviderTest, TestIfIncognitoIsAllowed) {
   EXPECT_CALL(*client_.get(), SearchSuggestEnabled())
       .WillRepeatedly(Return(true));
 
-  // By default incognito request will be rejected.
+  // By default incognito request will be accepted on mobile, rejected on
+  // desktop.
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeature(
         omnibox::kOnDeviceHeadProviderNonIncognito);
+#if defined(OS_ANDROID) || defined(OS_IOS)
+    ASSERT_TRUE(IsOnDeviceHeadProviderAllowed(input));
+#else
     ASSERT_FALSE(IsOnDeviceHeadProviderAllowed(input));
+#endif
   }
 
   // Now enable for incognito.
