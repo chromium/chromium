@@ -1,5 +1,14 @@
 include_rules = [
+  "+components/bookmarks/browser",
+  "+components/bookmarks/test",
   "+components/google/core",
+  "+components/history/core",
+  "+components/keyed_service/core",
+  "+components/omnibox/browser",
   "+components/search_engines",
+  "+components/signin/public",
   "+components/variations",
+  "+net",
+  "+services/data_decoder/public",
+  "+services/network/public",
 ]

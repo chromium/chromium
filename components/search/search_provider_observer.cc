@@ -10,21 +10,25 @@ SearchProviderObserver::SearchProviderObserver(TemplateURLService* service,
     : service_(service),
       is_google_(search::DefaultSearchProviderIsGoogle(service_)),
       callback_(std::move(callback)) {
-  DCHECK(service_);
-  service_->AddObserver(this);
+  if (service_) {
+    service_observer_.Add(service_);
+  }
 }
 
-SearchProviderObserver::~SearchProviderObserver() {
-  if (service_)
-    service_->RemoveObserver(this);
+SearchProviderObserver::~SearchProviderObserver() = default;
+
+bool SearchProviderObserver::is_google() {
+  return is_google_;
 }
 
 void SearchProviderObserver::OnTemplateURLServiceChanged() {
+  DCHECK(service_);
   is_google_ = search::DefaultSearchProviderIsGoogle(service_);
   callback_.Run();
 }
 
 void SearchProviderObserver::OnTemplateURLServiceShuttingDown() {
-  service_->RemoveObserver(this);
+  DCHECK(service_);
+  service_observer_.Remove(service_);
   service_ = nullptr;
 }

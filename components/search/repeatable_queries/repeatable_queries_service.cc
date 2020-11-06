@@ -1,0 +1,319 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/search/repeatable_queries/repeatable_queries_service.h"
+
+#include <algorithm>
+#include <utility>
+
+#include "base/bind.h"
+#include "base/json/json_writer.h"
+#include "base/scoped_observer.h"
+#include "base/values.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/keyword_search_term.h"
+#include "components/history/core/browser/url_database.h"
+#include "components/search/ntp_features.h"
+#include "components/search/search_provider_observer.h"
+#include "components/search_engines/template_url_service.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/variations/net/variations_http_headers.h"
+#include "net/http/http_status_code.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+
+namespace {
+const char kXSSIResponsePreamble[] = ")]}'";
+const size_t kMaxQueries = 2;
+
+bool JsonToRepeatableQueriesData(const base::Value& root_value,
+                                 std::vector<RepeatableQuery>* data) {
+  // 1st element is the query. 2nd element is the list of results.
+  base::string16 query;
+  const base::ListValue* root_list = nullptr;
+  const base::ListValue* results_list = nullptr;
+  if (!root_value.GetAsList(&root_list) || !root_list->GetString(0, &query) ||
+      !query.empty() || !root_list->GetList(1, &results_list))
+    return false;
+
+  // Ignore the 3rd and 4th elements. 5th element is the key-value pairs from
+  // the Suggest server containing the deletion URLs.
+  const base::DictionaryValue* extras = nullptr;
+  const base::ListValue* suggestion_details = nullptr;
+  if (root_list->GetDictionary(4, &extras) &&
+      extras->GetList("google:suggestdetail", &suggestion_details) &&
+      suggestion_details->GetSize() != results_list->GetSize()) {
+    return false;
+  }
+
+  base::string16 suggestion;
+  for (size_t index = 0; results_list->GetString(index, &suggestion); ++index) {
+    RepeatableQuery result;
+    result.query = base::CollapseWhitespace(suggestion, false);
+    if (result.query.empty())
+      continue;
+
+    const base::DictionaryValue* suggestion_detail = nullptr;
+    if (suggestion_details->GetDictionary(index, &suggestion_detail)) {
+      suggestion_detail->GetString("du", &result.deletion_url);
+    }
+    data->push_back(result);
+  }
+
+  return !data->empty();
+}
+}  // namespace
+
+class RepeatableQueriesService::SigninObserver
+    : public signin::IdentityManager::Observer {
+ public:
+  SigninObserver(signin::IdentityManager* identity_manager,
+                 base::RepeatingClosure callback)
+      : identity_manager_(identity_manager), callback_(std::move(callback)) {
+    if (identity_manager_) {
+      identity_manager_observer_.Add(identity_manager_);
+    }
+  }
+  ~SigninObserver() override = default;
+
+  bool IsSignedIn() {
+    return identity_manager_ ? !identity_manager_->GetAccountsInCookieJar()
+                                    .signed_in_accounts.empty()
+                             : false;
+  }
+
+ private:
+  // IdentityManager::Observer implementation.
+  void OnAccountsInCookieUpdated(
+      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+      const GoogleServiceAuthError& error) override {
+    callback_.Run();
+  }
+
+  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
+      identity_manager_observer_{this};
+  // May be nullptr in tests.
+  signin::IdentityManager* const identity_manager_;
+  base::RepeatingClosure callback_;
+};
+
+RepeatableQueriesService::RepeatableQueriesService(
+    signin::IdentityManager* identity_manager,
+    history::HistoryService* history_service,
+    TemplateURLService* template_url_service,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const GURL& request_initiator_url)
+    : history_service_(history_service),
+      template_url_service_(template_url_service),
+      url_loader_factory_(url_loader_factory),
+      request_initiator_url_(request_initiator_url),
+      signin_observer_(std::make_unique<SigninObserver>(
+          identity_manager,
+          base::BindRepeating(&RepeatableQueriesService::SigninStatusChanged,
+                              base::Unretained(this)))),
+      search_provider_observer_(std::make_unique<SearchProviderObserver>(
+          template_url_service,
+          base::BindRepeating(&RepeatableQueriesService::SearchProviderChanged,
+                              base::Unretained(this)))) {
+  DCHECK(history_service_);
+  DCHECK(template_url_service_);
+  DCHECK(url_loader_factory_);
+}
+
+RepeatableQueriesService::~RepeatableQueriesService() = default;
+
+void RepeatableQueriesService::Shutdown() {
+  for (auto& observer : observers_) {
+    observer.OnRepeatableQueriesServiceShuttingDown();
+  }
+}
+
+const std::vector<RepeatableQuery>&
+RepeatableQueriesService::repeatable_queries() const {
+  return repeatable_queries_;
+}
+
+void RepeatableQueriesService::Refresh() {
+  if (!search_provider_observer()->is_google()) {
+    NotifyObservers();
+    return;
+  }
+
+  if (signin_observer()->IsSignedIn()) {
+    GetRepeatableQueriesFromServer();
+  } else {
+    GetRepeatableQueriesFromURLDatabase();
+  }
+}
+
+void RepeatableQueriesService::AddObserver(
+    RepeatableQueriesServiceObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void RepeatableQueriesService::RemoveObserver(
+    RepeatableQueriesServiceObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+RepeatableQueriesService::SigninObserver*
+RepeatableQueriesService::signin_observer() {
+  return signin_observer_.get();
+}
+
+SearchProviderObserver* RepeatableQueriesService::search_provider_observer() {
+  return search_provider_observer_.get();
+}
+
+void RepeatableQueriesService::SearchProviderChanged() {
+  // If we have cached data, clear it.
+  repeatable_queries_.clear();
+  Refresh();
+}
+
+void RepeatableQueriesService::SigninStatusChanged() {
+  // If we have cached data, clear it.
+  repeatable_queries_.clear();
+  Refresh();
+}
+
+GURL RepeatableQueriesService::GetRequestURL() {
+  TemplateURLRef::SearchTermsArgs search_terms_args;
+  search_terms_args.request_source = TemplateURLRef::NON_SEARCHBOX_NTP;
+  const TemplateURLRef& suggestion_url_ref =
+      template_url_service_->GetDefaultSearchProvider()->suggestions_url_ref();
+  const SearchTermsData& search_terms_data =
+      template_url_service_->search_terms_data();
+  return GURL(suggestion_url_ref.ReplaceSearchTerms(search_terms_args,
+                                                    search_terms_data));
+}
+
+void RepeatableQueriesService::GetRepeatableQueriesFromServer() {
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("repeatable_queries_service", R"(
+        semantics {
+          sender: "Repeatable Queries Service"
+          description:
+            "Downloads search queries to be shown on the Most Visited "
+            "section of New Tab Page to signed-in users based on their "
+            "previous search history."
+          trigger:
+            "Displaying the new tab page, if Google is the "
+            "configured search provider, and the user is signed in."
+          data: "Google credentials if user is signed in."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: YES
+          cookies_store: "user"
+          setting:
+            "Users can control this feature by selecting a non-Google default "
+            "search engine in Chrome settings under 'Search Engine', or by "
+            "signing out of the browser on the New Tab Page. Users can opt "
+            "out of this feature by switching to custom shortcuts."
+          chrome_policy {
+            DefaultSearchProviderEnabled {
+              policy_options {mode: MANDATORY}
+              DefaultSearchProviderEnabled: false
+            }
+            BrowserSignin {
+              policy_options {mode: MANDATORY}
+              BrowserSignin: 0
+            }
+          }
+        })");
+
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  const GURL& request_url = GetRequestURL();
+  variations::AppendVariationsHeaderUnknownSignedIn(
+      request_url, variations::InIncognito::kNo, resource_request.get());
+  resource_request->url = request_url;
+  resource_request->request_initiator =
+      url::Origin::Create(request_initiator_url_);
+
+  simple_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
+                                                    traffic_annotation);
+  simple_loader_->DownloadToString(
+      url_loader_factory_.get(),
+      base::BindOnce(&RepeatableQueriesService::RepeatableQueriesResponseLoaded,
+                     weak_ptr_factory_.GetWeakPtr()),
+      network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
+}
+
+void RepeatableQueriesService::RepeatableQueriesResponseLoaded(
+    std::unique_ptr<std::string> response) {
+  auto net_error = simple_loader_->NetError();
+  if (net_error != net::OK || !response) {
+    // In the case of network errors, keep the cached data, if any, but still
+    // notify observers of the finished load attempt.
+    NotifyObservers();
+    return;
+  }
+
+  if (base::StartsWith(*response, kXSSIResponsePreamble,
+                       base::CompareCase::SENSITIVE)) {
+    *response = response->substr(strlen(kXSSIResponsePreamble));
+  }
+
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      *response,
+      base::BindOnce(&RepeatableQueriesService::RepeatableQueriesParsed,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void RepeatableQueriesService::RepeatableQueriesParsed(
+    data_decoder::DataDecoder::ValueOrError result) {
+  std::vector<RepeatableQuery> data;
+  if (result.value && JsonToRepeatableQueriesData(*result.value, &data)) {
+    repeatable_queries_ = std::vector<RepeatableQuery>(
+        data.begin(), data.begin() + std::min(data.size(), kMaxQueries));
+  } else {
+    repeatable_queries_ = data;
+  }
+
+  NotifyObservers();
+}
+
+void RepeatableQueriesService::GetRepeatableQueriesFromURLDatabase() {
+  repeatable_queries_.clear();
+
+  // Fail if the in-memory URL database is not available.
+  history::URLDatabase* url_db = history_service_->InMemoryDatabase();
+  if (!url_db)
+    return;
+
+  auto results = url_db->GetMostRecentNormalizedKeywordSearchTerms(
+      template_url_service_->GetDefaultSearchProvider()->id(),
+      ntp_features::GetLocalHistoryRepeatableQueriesAgeThreshold());
+
+  const base::Time now = base::Time::Now();
+  const int kRecencyDecayUnitSec =
+      ntp_features::GetLocalHistoryRepeatableQueriesRecencyHalfLifeSeconds();
+  const double kFrequencyExponent =
+      ntp_features::GetLocalHistoryRepeatableQueriesFrequencyExponent();
+  auto CompareByFrecency = [&](const auto& a, const auto& b) {
+    return a.GetFrecency(now, kRecencyDecayUnitSec, kFrequencyExponent) >
+           b.GetFrecency(now, kRecencyDecayUnitSec, kFrequencyExponent);
+  };
+  std::sort(results.begin(), results.end(), CompareByFrecency);
+
+  for (const auto& result : results) {
+    RepeatableQuery repeatable_query;
+    repeatable_query.query = result.normalized_term;
+    repeatable_queries_.push_back(repeatable_query);
+    if (repeatable_queries_.size() >= kMaxQueries)
+      break;
+  }
+
+  NotifyObservers();
+}
+
+void RepeatableQueriesService::NotifyObservers() {
+  for (auto& observer : observers_) {
+    observer.OnRepeatableQueriesUpdated();
+  }
+}

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SEARCH_SEARCH_PROVIDER_OBSERVER_H_
 #define COMPONENTS_SEARCH_SEARCH_PROVIDER_OBSERVER_H_
 
+#include "base/scoped_observer.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 
@@ -15,17 +16,18 @@ class SearchProviderObserver : public TemplateURLServiceObserver {
  public:
   explicit SearchProviderObserver(TemplateURLService* service,
                                   base::RepeatingClosure callback);
-
   ~SearchProviderObserver() override;
 
-  bool is_google() { return is_google_; }
-  TemplateURLService* template_url_service() { return service_; }
+  virtual bool is_google();
 
  private:
   // TemplateURLServiceObserver:
   void OnTemplateURLServiceChanged() override;
   void OnTemplateURLServiceShuttingDown() override;
 
+  ScopedObserver<TemplateURLService, TemplateURLServiceObserver>
+      service_observer_{this};
+  // May be nullptr in tests.
   TemplateURLService* service_;
   bool is_google_;
   base::RepeatingClosure callback_;

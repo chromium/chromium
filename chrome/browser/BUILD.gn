@@ -3762,6 +3762,8 @@ static_library("browser") {
       "search/promos/promo_service_factory.cc",
       "search/promos/promo_service_factory.h",
       "search/promos/promo_service_observer.h",
+      "search/repeatable_queries/repeatable_queries_service_factory.cc",
+      "search/repeatable_queries/repeatable_queries_service_factory.h",
       "search/search_engine_base_url_tracker.cc",
       "search/search_engine_base_url_tracker.h",
       "search/search_suggest/search_suggest_data.cc",
