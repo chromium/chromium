@@ -40,7 +40,7 @@ void UserManagerProfileDialog::BaseDialogDelegate::LoadingStateChanged(
       guest_view::GuestViewManager::FromBrowserContext(
           source->GetBrowserContext());
   if (manager)
-    manager->ForEachGuest(source, base::Bind(&AddToSet, &content_set));
+    manager->ForEachGuest(source, base::BindRepeating(&AddToSet, &content_set));
   DCHECK_LE(content_set.size(), 1U);
   if (!content_set.empty()) {
     guest_web_contents_ = *content_set.begin();
