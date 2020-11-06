@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://scanning/scan_preview.js';
-import 'chrome://scanning/scanning_app.js';
+import 'chrome://scanning/file_type_select.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

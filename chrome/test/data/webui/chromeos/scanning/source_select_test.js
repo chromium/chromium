@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://scanning/scan_preview.js';
-import 'chrome://scanning/scanning_app.js';
+import 'chrome://scanning/source_select.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getSourceTypeString} from 'chrome://scanning/scanning_app_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
-import * as utils from './scanning_app_test_utils.js';
+import {createScannerSource} from './scanning_app_test_utils.js';
 
 const FileType = {
   JPG: chromeos.scanning.mojom.FileType.kJpg,
@@ -56,9 +55,9 @@ export function sourceSelectTest() {
     assertEquals(0, select.length);
 
     const firstSource =
-        utils.createScannerSource(SourceType.FLATBED, 'platen', pageSizes);
-    const secondSource = utils.createScannerSource(
-        SourceType.ADF_SIMPLEX, 'adf simplex', pageSizes);
+        createScannerSource(SourceType.FLATBED, 'platen', pageSizes);
+    const secondSource =
+        createScannerSource(SourceType.ADF_SIMPLEX, 'adf simplex', pageSizes);
     const sourceArr = [firstSource, secondSource];
     sourceSelect.sources = sourceArr;
     flush();
@@ -81,7 +80,7 @@ export function sourceSelectTest() {
     assertTrue(!!select);
 
     let sourceArr =
-        [utils.createScannerSource(SourceType.FLATBED, 'flatbed', pageSizes)];
+        [createScannerSource(SourceType.FLATBED, 'flatbed', pageSizes)];
     sourceSelect.sources = sourceArr;
     flush();
 
@@ -89,8 +88,8 @@ export function sourceSelectTest() {
     assertEquals(1, select.length);
     assertTrue(select.disabled);
 
-    sourceArr = sourceArr.concat([utils.createScannerSource(
-        SourceType.ADF_DUPLEX, 'adf duplex', pageSizes)]);
+    sourceArr = sourceArr.concat(
+        [createScannerSource(SourceType.ADF_DUPLEX, 'adf duplex', pageSizes)]);
     sourceSelect.sources = sourceArr;
     flush();
 

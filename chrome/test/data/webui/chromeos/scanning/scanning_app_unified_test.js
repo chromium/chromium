@@ -4,6 +4,11 @@
 
 // TODO(jschettler): Use es6 module for mojo binding (crbug/1004256).
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
+import 'chrome://scanning/file_path.mojom-lite.js';
+import 'chrome://scanning/scanning.mojom-lite.js';
 
 import {colorModeSelectTest} from './color_mode_select_test.js';
 import {fileTypeSelectTest} from './file_type_select_test.js';

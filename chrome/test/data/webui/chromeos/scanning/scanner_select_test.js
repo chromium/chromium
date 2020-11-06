@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://scanning/scan_preview.js';
-import 'chrome://scanning/scanning_app.js';
+import 'chrome://scanning/scanner_select.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ScannerArr} from 'chrome://scanning/scanning_app_types.js';
@@ -11,7 +10,7 @@ import {tokenToString} from 'chrome://scanning/scanning_app_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
-import * as utils from './scanning_app_test_utils.js';
+import {createScanner} from './scanning_app_test_utils.js';
 
 const firstScannerId =
     /** @type {!mojoBase.mojom.UnguessableToken} */ ({high: 0, low: 1});
@@ -49,8 +48,8 @@ export function scannerSelectTest() {
     assertFalse(throbber.hidden);
 
     const scannerArr = [
-      utils.createScanner(firstScannerId, firstScannerName),
-      utils.createScanner(secondScannerId, secondScannerName)
+      createScanner(firstScannerId, firstScannerName),
+      createScanner(secondScannerId, secondScannerName)
     ];
     scannerSelect.scanners = scannerArr;
     scannerSelect.loaded = true;
@@ -71,7 +70,7 @@ export function scannerSelectTest() {
     const select = scannerSelect.$$('select');
     assertTrue(!!select);
 
-    let scannerArr = [utils.createScanner(firstScannerId, firstScannerName)];
+    let scannerArr = [createScanner(firstScannerId, firstScannerName)];
     scannerSelect.scanners = scannerArr;
     scannerSelect.loaded = true;
     flush();
@@ -80,8 +79,8 @@ export function scannerSelectTest() {
     assertEquals(1, select.length);
     assertTrue(select.disabled);
 
-    scannerArr = scannerArr.concat(
-        [utils.createScanner(secondScannerId, secondScannerName)]);
+    scannerArr =
+        scannerArr.concat([createScanner(secondScannerId, secondScannerName)]);
     scannerSelect.scanners = scannerArr;
     flush();
 

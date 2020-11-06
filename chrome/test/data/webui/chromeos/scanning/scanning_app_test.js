@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://scanning/scan_preview.js';
 import 'chrome://scanning/scanning_app.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -13,7 +12,7 @@ import {tokenToString} from 'chrome://scanning/scanning_app_util.js';
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
-import * as utils from './scanning_app_test_utils.js';
+import {createScanner, createScannerSource} from './scanning_app_test_utils.js';
 
 const ColorMode = {
   BLACK_AND_WHITE: chromeos.scanning.mojom.ColorMode.kBlackAndWhite,
@@ -226,21 +225,20 @@ export function scanningAppTest() {
     const secondScannerName = 'Scanner 2';
 
     const expectedScanners = [
-      utils.createScanner(firstScannerId, firstScannerName),
-      utils.createScanner(secondScannerId, secondScannerName)
+      createScanner(firstScannerId, firstScannerName),
+      createScanner(secondScannerId, secondScannerName)
     ];
 
     const firstCapabilities = {
       sources: [
-        utils.createScannerSource(SourceType.FLATBED, 'platen', pageSizes),
-        utils.createScannerSource(
-            SourceType.ADF_DUPLEX, 'adf duplex', pageSizes),
+        createScannerSource(SourceType.FLATBED, 'platen', pageSizes),
+        createScannerSource(SourceType.ADF_DUPLEX, 'adf duplex', pageSizes),
       ],
       colorModes: [ColorMode.BLACK_AND_WHITE, ColorMode.COLOR],
       resolutions: [75, 100, 300]
     };
     const secondCapabilities = {
-      sources: [utils.createScannerSource(
+      sources: [createScannerSource(
           SourceType.ADF_SIMPLEX, 'adf simplex', pageSizes)],
       colorModes: [ColorMode.GRAYSCALE],
       resolutions: [150, 600]

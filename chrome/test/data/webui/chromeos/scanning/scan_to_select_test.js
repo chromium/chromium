@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://scanning/scan_preview.js';
-import 'chrome://scanning/scanning_app.js';
+import 'chrome://scanning/scan_to_select.js';
 
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 
