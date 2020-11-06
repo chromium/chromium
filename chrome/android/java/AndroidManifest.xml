@@ -93,7 +93,6 @@ by a child template that "extends" this file.
         android:protectionLevel="signature" />
     <permission android:name="{{ manifest_package }}.permission.DEBUG"
                 android:label="Debug web pages"
-                android:permissionGroup="android.permission-group.DEVELOPMENT_TOOLS"
                 android:protectionLevel="signature" />
     <permission android:name="{{ manifest_package }}.permission.TRANSLATE"
         android:protectionLevel="signature" />

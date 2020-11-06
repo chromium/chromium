@@ -9,7 +9,7 @@
   <permission android:name="$PACKAGE.TOS_ACKED" android:protectionLevel="signatureOrSystem"/>
   <permission android:name="$PACKAGE.permission.C2D_MESSAGE" android:protectionLevel="signature"/>
   <permission android:name="$PACKAGE.permission.CHILD_SERVICE" android:protectionLevel="signature"/>
-  <permission android:label="Debug web pages" android:name="$PACKAGE.permission.DEBUG" android:permissionGroup="android.permission-group.DEVELOPMENT_TOOLS" android:protectionLevel="signature"/>
+  <permission android:label="Debug web pages" android:name="$PACKAGE.permission.DEBUG" android:protectionLevel="signature"/>
   <permission android:name="$PACKAGE.permission.READ_WRITE_BOOKMARK_FOLDERS" android:protectionLevel="signatureOrSystem"/>
   <permission android:name="$PACKAGE.permission.TRANSLATE" android:protectionLevel="signature"/>
   <uses-feature android:name="android.hardware.camera" android:required="false"/>
