@@ -870,6 +870,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("saveFileDialogDriveOfflinePinned").WithBrowser().Offline(),
         TestCase("openFileDialogDefaultFilter").WithBrowser(),
         TestCase("saveFileDialogDefaultFilter").WithBrowser(),
+        TestCase("saveFileDialogDefaultFilterKeyNavigation").WithBrowser(),
         TestCase("saveFileDialogSingleFilterNoAcceptAll").WithBrowser(),
         TestCase("saveFileDialogExtensionNotAddedWithNoFilter").WithBrowser(),
         TestCase("saveFileDialogExtensionAddedWithJpegFilter").WithBrowser(),

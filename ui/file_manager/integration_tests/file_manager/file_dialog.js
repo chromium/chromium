@@ -515,6 +515,167 @@ testcase.saveFileDialogDefaultFilter = async () => {
   chrome.test.assertEq('All files', selectedFilter.text);
 };
 
+
+/**
+ * Tests that the save file dialog's filetype filter can
+ * be navigated using the keyboard.
+ */
+testcase.saveFileDialogDefaultFilterKeyNavigation = async () => {
+  const params = {
+    type: 'saveFile',
+    accepts: [{extensions: ['jpg']}],
+    acceptsAllTypes: true,
+  };
+  chrome.fileSystem.chooseEntry(params, (entry) => {});
+  const dialog = await remoteCall.waitForWindow('dialog#');
+
+  // Check: 'All files' should be selected.
+  let selectedFilter =
+      await remoteCall.waitForElement(dialog, '.file-type option.selected');
+  chrome.test.assertEq('0', selectedFilter.value);
+  chrome.test.assertEq('All files', selectedFilter.text);
+
+  // Check: up key causes 'JPEG image' to  be selected.
+  const selectControl = 'div.file-type';
+  const arrowUpKey = ['ArrowUp', false, false, false];
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...arrowUpKey);
+  selectedFilter =
+      await remoteCall.waitForElement(dialog, '.file-type option.selected');
+  chrome.test.assertEq('1', selectedFilter.value);
+  chrome.test.assertEq('JPEG image', selectedFilter.text);
+
+  // Check: down key causes 'All files' to be selected.
+  const arrowDownKey = ['ArrowDown', false, false, false];
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...arrowDownKey);
+  selectedFilter =
+      await remoteCall.waitForElement(dialog, '.file-type option.selected');
+  chrome.test.assertEq('0', selectedFilter.value);
+  chrome.test.assertEq('All files', selectedFilter.text);
+
+  // Check: another down key doesn't wrap to the top selection.
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...arrowDownKey);
+  selectedFilter =
+      await remoteCall.waitForElement(dialog, '.file-type option.selected');
+  chrome.test.assertEq('0', selectedFilter.value);
+  chrome.test.assertEq('All files', selectedFilter.text);
+
+  // Check: left key acts like up when control is closed.
+  const arrowLeftKey = ['ArrowLeft', false, false, false];
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...arrowLeftKey);
+  selectedFilter =
+      await remoteCall.waitForElement(dialog, '.file-type option.selected');
+  chrome.test.assertEq('1', selectedFilter.value);
+  chrome.test.assertEq('JPEG image', selectedFilter.text);
+
+  // Check: right key acts like down when control is closed.
+  const arrowRightKey = ['ArrowRight', false, false, false];
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...arrowRightKey);
+  selectedFilter =
+      await remoteCall.waitForElement(dialog, '.file-type option.selected');
+  chrome.test.assertEq('0', selectedFilter.value);
+  chrome.test.assertEq('All files', selectedFilter.text);
+
+  // Check: Enter key expands the select control.
+  const enterKey = ['Enter', false, false, false];
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...enterKey);
+  await remoteCall.waitForElement(
+      dialog, '.file-type div.options[expanded=expanded]');
+
+  // Check: second Enter key collapses the select control.
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...enterKey);
+  await remoteCall.waitForElementLost(
+      dialog, '.file-type div.options[expanded=expanded]');
+
+  // Check: space key expands the select control.
+  const spaceKey = [' ', false, false, false];
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...spaceKey);
+  await remoteCall.waitForElement(
+      dialog, '.file-type div.options[expanded=expanded]');
+
+  // Check: second space key collapses the select control.
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...spaceKey);
+  await remoteCall.waitForElementLost(
+      dialog, '.file-type div.options[expanded=expanded]');
+
+  // Check: Escape key collapses the select control.
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...spaceKey);
+  await remoteCall.waitForElement(
+      dialog, '.file-type div.options[expanded=expanded]');
+  const escapeKey = ['Escape', false, false, false];
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...escapeKey);
+  await remoteCall.waitForElementLost(
+      dialog, '.file-type div.options[expanded=expanded]');
+
+  // Check: tab key collapses the select control.
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...spaceKey);
+  await remoteCall.waitForElement(
+      dialog, '.file-type div.options[expanded=expanded]');
+  const tabKey = ['Tab', false, false, false];
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...tabKey);
+  await remoteCall.waitForElementLost(
+      dialog, '.file-type div.options[expanded=expanded]');
+
+  // Check: tab key collapsing remembers changed selection.
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...spaceKey);
+  await remoteCall.waitForElement(
+      dialog, '.file-type div.options[expanded=expanded]');
+  selectedFilter =
+      await remoteCall.waitForElement(dialog, '.file-type option.selected');
+  chrome.test.assertEq('0', selectedFilter.value);
+  chrome.test.assertEq('All files', selectedFilter.text);
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...arrowUpKey);
+  selectedFilter =
+      await remoteCall.waitForElement(dialog, '.file-type option.selected');
+  chrome.test.assertEq('1', selectedFilter.value);
+  chrome.test.assertEq('JPEG image', selectedFilter.text);
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...tabKey);
+  await remoteCall.waitForElementLost(
+      dialog, '.file-type div.options[expanded=expanded]');
+  chrome.test.assertEq('1', selectedFilter.value);
+  chrome.test.assertEq('JPEG image', selectedFilter.text);
+
+  // Check: Escape key collapsing remembers changed selection.
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...spaceKey);
+  await remoteCall.waitForElement(
+      dialog, '.file-type div.options[expanded=expanded]');
+  selectedFilter =
+      await remoteCall.waitForElement(dialog, '.file-type option.selected');
+  chrome.test.assertEq('1', selectedFilter.value);
+  chrome.test.assertEq('JPEG image', selectedFilter.text);
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...arrowDownKey);
+  selectedFilter =
+      await remoteCall.waitForElement(dialog, '.file-type option.selected');
+  chrome.test.assertEq('0', selectedFilter.value);
+  chrome.test.assertEq('All files', selectedFilter.text);
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...escapeKey);
+  await remoteCall.waitForElementLost(
+      dialog, '.file-type div.options[expanded=expanded]');
+  chrome.test.assertEq('0', selectedFilter.value);
+  chrome.test.assertEq('All files', selectedFilter.text);
+
+  // Check: left arrow does nothing with control expanded.
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...spaceKey);
+  await remoteCall.waitForElement(
+      dialog, '.file-type div.options[expanded=expanded]');
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...arrowLeftKey);
+  selectedFilter =
+      await remoteCall.waitForElement(dialog, '.file-type option.selected');
+  chrome.test.assertEq('0', selectedFilter.value);
+  chrome.test.assertEq('All files', selectedFilter.text);
+
+  // Check: right arrow does nothing with control expanded.
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...arrowUpKey);
+  selectedFilter =
+      await remoteCall.waitForElement(dialog, '.file-type option.selected');
+  chrome.test.assertEq('1', selectedFilter.value);
+  chrome.test.assertEq('JPEG image', selectedFilter.text);
+  await remoteCall.fakeKeyDown(dialog, selectControl, ...arrowRightKey);
+  selectedFilter =
+      await remoteCall.waitForElement(dialog, '.file-type option.selected');
+  chrome.test.assertEq('1', selectedFilter.value);
+  chrome.test.assertEq('JPEG image', selectedFilter.text);
+};
+
 /**
  * Tests that filtering works with { acceptsAllTypes: false } and a single
  * filter. Regression test for https://crbug.com/1097448.
