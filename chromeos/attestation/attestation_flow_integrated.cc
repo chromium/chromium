@@ -16,7 +16,6 @@
 #include "base/timer/timer.h"
 #include "chromeos/attestation/attestation_flow_utils.h"
 #include "chromeos/constants/chromeos_switches.h"
-#include "chromeos/cryptohome/async_method_caller.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
@@ -94,7 +93,7 @@ AttestationFlowIntegrated::AttestationFlowIntegrated()
 // |AttestationFlow|.
 AttestationFlowIntegrated::AttestationFlowIntegrated(
     ::attestation::ACAType aca_type)
-    : AttestationFlow(nullptr, nullptr, nullptr),
+    : AttestationFlow(/*server_proxy=*/nullptr),
       aca_type_(aca_type),
       attestation_client_(AttestationClient::Get()),
       ready_timeout_(kReadyTimeout),

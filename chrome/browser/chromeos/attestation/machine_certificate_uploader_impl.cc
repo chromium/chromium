@@ -17,11 +17,9 @@
 #include "chrome/browser/chromeos/attestation/attestation_key_payload.pb.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chromeos/attestation/attestation_flow.h"
-#include "chromeos/cryptohome/async_method_caller.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/account_id/account_id.h"
@@ -69,7 +67,6 @@ namespace attestation {
 MachineCertificateUploaderImpl::MachineCertificateUploaderImpl(
     policy::CloudPolicyClient* policy_client)
     : policy_client_(policy_client),
-      cryptohome_client_(nullptr),
       attestation_flow_(nullptr),
       num_retries_(0),
       retry_limit_(kRetryLimit),
@@ -79,10 +76,8 @@ MachineCertificateUploaderImpl::MachineCertificateUploaderImpl(
 
 MachineCertificateUploaderImpl::MachineCertificateUploaderImpl(
     policy::CloudPolicyClient* policy_client,
-    CryptohomeClient* cryptohome_client,
     AttestationFlow* attestation_flow)
     : policy_client_(policy_client),
-      cryptohome_client_(cryptohome_client),
       attestation_flow_(attestation_flow),
       num_retries_(0),
       retry_delay_(kRetryDelay) {
@@ -118,15 +113,11 @@ void MachineCertificateUploaderImpl::Start() {
     return;
   }
 
-  if (!cryptohome_client_)
-    cryptohome_client_ = CryptohomeClient::Get();
-
   if (!attestation_flow_) {
     std::unique_ptr<ServerProxy> attestation_ca_client(
         new AttestationCAClient());
-    default_attestation_flow_.reset(new AttestationFlow(
-        cryptohome::AsyncMethodCaller::GetInstance(), cryptohome_client_,
-        std::move(attestation_ca_client)));
+    default_attestation_flow_.reset(
+        new AttestationFlow(std::move(attestation_ca_client)));
     attestation_flow_ = default_attestation_flow_.get();
   }
 

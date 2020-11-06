@@ -21,9 +21,6 @@ class CloudPolicyClient;
 }
 
 namespace chromeos {
-
-class CryptohomeClient;
-
 namespace attestation {
 
 class AttestationFlow;
@@ -34,10 +31,9 @@ class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
   explicit EnrollmentCertificateUploaderImpl(
       policy::CloudPolicyClient* policy_client);
 
-  // A constructor which allows custom CryptohomeClient and AttestationFlow
-  // implementations. Useful for testing.
+  // A constructor which allows custom AttestationFlow implementations. Useful
+  // for testing.
   EnrollmentCertificateUploaderImpl(policy::CloudPolicyClient* policy_client,
-                                    CryptohomeClient* cryptohome_client,
                                     AttestationFlow* attestation_flow);
 
   ~EnrollmentCertificateUploaderImpl() override;
@@ -78,7 +74,6 @@ class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
   void Reschedule();
 
   policy::CloudPolicyClient* policy_client_;
-  CryptohomeClient* cryptohome_client_;
   AttestationFlow* attestation_flow_;
   std::unique_ptr<AttestationFlow> default_attestation_flow_;
   // Callbacks to run when a certificate is uploaded (or we fail to).

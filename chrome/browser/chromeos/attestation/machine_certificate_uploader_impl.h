@@ -20,8 +20,6 @@ class CloudPolicyClient;
 
 namespace chromeos {
 
-class CryptohomeClient;
-
 namespace attestation {
 
 class AttestationFlow;
@@ -32,10 +30,9 @@ class MachineCertificateUploaderImpl : public MachineCertificateUploader {
   explicit MachineCertificateUploaderImpl(
       policy::CloudPolicyClient* policy_client);
 
-  // A constructor which allows custom CryptohomeClient and AttestationFlow
-  // implementations.  Useful for testing.
+  // A constructor which allows custom AttestationFlow implementations. Useful
+  // for testing.
   MachineCertificateUploaderImpl(policy::CloudPolicyClient* policy_client,
-                                 CryptohomeClient* cryptohome_client,
                                  AttestationFlow* attestation_flow);
 
   ~MachineCertificateUploaderImpl() override;
@@ -103,7 +100,6 @@ class MachineCertificateUploaderImpl : public MachineCertificateUploader {
   void RunCallbacks(bool status);
 
   policy::CloudPolicyClient* policy_client_ = nullptr;
-  CryptohomeClient* cryptohome_client_ = nullptr;
   AttestationFlow* attestation_flow_ = nullptr;
   std::unique_ptr<AttestationFlow> default_attestation_flow_;
   bool refresh_certificate_ = false;

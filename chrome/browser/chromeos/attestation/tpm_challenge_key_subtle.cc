@@ -24,11 +24,11 @@
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/cryptohome/async_method_caller.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -125,8 +125,6 @@ std::string GetKeyNameWithDefault(AttestationKeyType key_type,
 
 TpmChallengeKeySubtleImpl::TpmChallengeKeySubtleImpl()
     : default_attestation_flow_(std::make_unique<AttestationFlow>(
-          cryptohome::AsyncMethodCaller::GetInstance(),
-          CryptohomeClient::Get(),
           std::make_unique<AttestationCAClient>())),
       attestation_flow_(default_attestation_flow_.get()) {
   policy::DeviceCloudPolicyManagerChromeOS* manager =

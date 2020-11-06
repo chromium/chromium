@@ -521,8 +521,7 @@ void BrowserPolicyConnectorChromeOS::RestartDeviceCloudPolicyInitializer() {
           local_state_, device_management_service(), GetBackgroundTaskRunner(),
           chromeos::InstallAttributes::Get(), state_keys_broker_.get(),
           device_cloud_policy_manager_->device_store(),
-          device_cloud_policy_manager_,
-          cryptohome::AsyncMethodCaller::GetInstance(), CreateAttestationFlow(),
+          device_cloud_policy_manager_, CreateAttestationFlow(),
           chromeos::system::StatisticsProvider::GetInstance());
   device_cloud_policy_initializer_->Init();
 }
@@ -530,8 +529,6 @@ void BrowserPolicyConnectorChromeOS::RestartDeviceCloudPolicyInitializer() {
 std::unique_ptr<chromeos::attestation::AttestationFlow>
 BrowserPolicyConnectorChromeOS::CreateAttestationFlow() {
   return std::make_unique<chromeos::attestation::AttestationFlow>(
-      cryptohome::AsyncMethodCaller::GetInstance(),
-      chromeos::CryptohomeClient::Get(),
       std::make_unique<chromeos::attestation::AttestationCAClient>());
 }
 

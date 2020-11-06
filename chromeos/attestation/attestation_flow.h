@@ -21,15 +21,8 @@
 
 class AccountId;
 
-namespace cryptohome {
-
-class AsyncMethodCaller;
-
-}  // namespace cryptohome
-
 namespace chromeos {
 
-class CryptohomeClient;
 class AttestationClient;
 
 namespace attestation {
@@ -51,9 +44,7 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) ServerProxy {
 // consists of coordinating messages between the Chrome OS attestation service
 // and the Chrome OS Privacy CA server.  Sample usage:
 //
-//    AttestationFlow flow(AsyncMethodCaller::GetInstance(),
-//                         CryptohomeClient::Get(),
-//                         std::move(my_server_proxy));
+//    AttestationFlow flow(std::move(my_server_proxy));
 //    AttestationFlow::CertificateCallback callback = base::Bind(&MyCallback);
 //    flow.GetCertificate(ENTERPRISE_USER_CERTIFICATE, false, callback);
 //
@@ -71,12 +62,8 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlow {
   static AttestationKeyType GetKeyTypeForProfile(
       AttestationCertificateProfile certificate_profile);
 
-  AttestationFlow(cryptohome::AsyncMethodCaller* async_caller,
-                  CryptohomeClient* cryptohome_client,
-                  std::unique_ptr<ServerProxy> server_proxy);
-  AttestationFlow(cryptohome::AsyncMethodCaller* async_caller,
-                  CryptohomeClient* cryptohome_client,
-                  std::unique_ptr<ServerProxy> server_proxy,
+  explicit AttestationFlow(std::unique_ptr<ServerProxy> server_proxy);
+  AttestationFlow(std::unique_ptr<ServerProxy> server_proxy,
                   ::attestation::KeyType crypto_key_type);
 
   virtual ~AttestationFlow();
@@ -277,8 +264,6 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlow {
       CertificateCallback callback,
       const ::attestation::FinishCertificateRequestReply& reply);
 
-  cryptohome::AsyncMethodCaller* async_caller_;
-  CryptohomeClient* cryptohome_client_;
   AttestationClient* attestation_client_;
   std::unique_ptr<ServerProxy> server_proxy_;
 

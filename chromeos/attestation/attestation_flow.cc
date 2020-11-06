@@ -15,11 +15,9 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "chromeos/attestation/attestation_flow_utils.h"
-#include "chromeos/cryptohome/async_method_caller.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "components/account_id/account_id.h"
 
 namespace chromeos {
@@ -78,33 +76,17 @@ AttestationKeyType AttestationFlow::GetKeyTypeForProfile(
   return KEY_USER;
 }
 
-AttestationFlow::AttestationFlow(cryptohome::AsyncMethodCaller* async_caller,
-                                 CryptohomeClient* cryptohome_client,
-                                 std::unique_ptr<ServerProxy> server_proxy,
+AttestationFlow::AttestationFlow(std::unique_ptr<ServerProxy> server_proxy,
                                  ::attestation::KeyType crypto_key_type)
-    : async_caller_(async_caller),
-      cryptohome_client_(cryptohome_client),
-      attestation_client_(AttestationClient::Get()),
+    : attestation_client_(AttestationClient::Get()),
       server_proxy_(std::move(server_proxy)),
       crypto_key_type_(crypto_key_type),
       ready_timeout_(base::TimeDelta::FromSeconds(kReadyTimeoutInSeconds)),
       retry_delay_(
-          base::TimeDelta::FromMilliseconds(kRetryDelayInMilliseconds)) {
-  // TODO(b/158955123): For now we only make the compiler happy because the
-  // removal of this involves changes to multiple consumers, but eventually we
-  // should get rid of them at one go once `AttestationFlow` doesn't use
-  // cryptohome client and its async method caller.
-  ALLOW_UNUSED_LOCAL(cryptohome_client_);
-  ALLOW_UNUSED_LOCAL(async_caller_);
-}
+          base::TimeDelta::FromMilliseconds(kRetryDelayInMilliseconds)) {}
 
-AttestationFlow::AttestationFlow(cryptohome::AsyncMethodCaller* async_caller,
-                                 CryptohomeClient* cryptohome_client,
-                                 std::unique_ptr<ServerProxy> server_proxy)
-    : AttestationFlow(async_caller,
-                      cryptohome_client,
-                      std::move(server_proxy),
-                      ::attestation::KEY_TYPE_RSA) {}
+AttestationFlow::AttestationFlow(std::unique_ptr<ServerProxy> server_proxy)
+    : AttestationFlow(std::move(server_proxy), ::attestation::KEY_TYPE_RSA) {}
 
 AttestationFlow::~AttestationFlow() = default;
 

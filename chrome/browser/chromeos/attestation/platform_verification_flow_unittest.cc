@@ -108,13 +108,8 @@ class PlatformVerificationFlowTest : public ::testing::Test {
 
   void SetUp() {
     // Create a verifier for tests to call.
-    // We don't need cryptohome_client and its async caller in unittests because
-    // it is only needed for real AttestationFlow and in unittests we use a
-    // mocked one.
     verifier_ = new PlatformVerificationFlow(
-        &mock_attestation_flow_, /*async_caller=*/nullptr,
-        /*cryptohome_client=*/nullptr, AttestationClient::Get(),
-        &fake_delegate_);
+        &mock_attestation_flow_, AttestationClient::Get(), &fake_delegate_);
 
     // Create callbacks for tests to use with verifier_.
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();

@@ -42,10 +42,6 @@ class StatisticsProvider;
 
 }  // namespace chromeos
 
-namespace cryptohome {
-class AsyncMethodCaller;
-}
-
 namespace policy {
 
 class DeviceCloudPolicyManagerChromeOS;
@@ -72,7 +68,6 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
       ServerBackedStateKeysBroker* state_keys_broker,
       DeviceCloudPolicyStoreChromeOS* policy_store,
       DeviceCloudPolicyManagerChromeOS* policy_manager,
-      cryptohome::AsyncMethodCaller* async_method_caller,
       std::unique_ptr<chromeos::attestation::AttestationFlow> attestation_flow,
       chromeos::system::StatisticsProvider* statistics_provider);
 

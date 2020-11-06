@@ -65,8 +65,7 @@ class AttestationDevicePolicyTest
   PlatformVerificationFlow::Result SyncContentProtectionAttestation() {
     scoped_refptr<PlatformVerificationFlow> verifier(
         new PlatformVerificationFlow(
-            nullptr, nullptr, chromeos::FakeCryptohomeClient::Get(),
-            chromeos::FakeAttestationClient::Get(), nullptr));
+            nullptr, chromeos::FakeAttestationClient::Get(), nullptr));
     verifier->ChallengePlatformKey(
         browser()->tab_strip_model()->GetActiveWebContents(), "fake_service_id",
         "fake_challenge",

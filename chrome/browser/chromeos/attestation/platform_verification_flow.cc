@@ -20,12 +20,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/attestation/attestation_flow.h"
 #include "chromeos/constants/chromeos_switches.h"
-#include "chromeos/cryptohome/async_method_caller.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/attestation.pb.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -137,15 +135,13 @@ PlatformVerificationFlow::ChallengeContext::~ChallengeContext() = default;
 
 PlatformVerificationFlow::PlatformVerificationFlow()
     : attestation_flow_(NULL),
-      async_caller_(cryptohome::AsyncMethodCaller::GetInstance()),
-      cryptohome_client_(CryptohomeClient::Get()),
       attestation_client_(AttestationClient::Get()),
       delegate_(NULL),
       timeout_delay_(base::TimeDelta::FromSeconds(kTimeoutInSeconds)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::unique_ptr<ServerProxy> attestation_ca_client(new AttestationCAClient());
-  default_attestation_flow_.reset(new AttestationFlow(
-      async_caller_, cryptohome_client_, std::move(attestation_ca_client)));
+  default_attestation_flow_.reset(
+      new AttestationFlow(std::move(attestation_ca_client)));
   attestation_flow_ = default_attestation_flow_.get();
   default_delegate_.reset(new DefaultDelegate());
   delegate_ = default_delegate_.get();
@@ -153,13 +149,9 @@ PlatformVerificationFlow::PlatformVerificationFlow()
 
 PlatformVerificationFlow::PlatformVerificationFlow(
     AttestationFlow* attestation_flow,
-    cryptohome::AsyncMethodCaller* async_caller,
-    CryptohomeClient* cryptohome_client,
     AttestationClient* attestation_client,
     Delegate* delegate)
     : attestation_flow_(attestation_flow),
-      async_caller_(async_caller),
-      cryptohome_client_(cryptohome_client),
       attestation_client_(attestation_client),
       delegate_(delegate),
       timeout_delay_(base::TimeDelta::FromSeconds(kTimeoutInSeconds)) {

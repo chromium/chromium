@@ -21,14 +21,13 @@ constexpr char kFakeCert[] = "cert";
 
 }  // namespace
 
-// This constructor passes |nullptr|s to the base class
-// |AttestationFlow| because we don't use cryptohome client and server
-// proxy in |AttestationFlowIntegrated|.
+// This constructor passes |nullptr|s to the base class because we don't use
+// server proxy in |AttestationFlowIntegrated|.
 //
 // TOOD(b/158955123): Remove this transitional state along with the removal of
 // |AttestationFlow|.
 FakeAttestationFlow::FakeAttestationFlow()
-    : AttestationFlow(nullptr, nullptr, nullptr) {}
+    : AttestationFlow(/*server_proxy=*/nullptr) {}
 
 FakeAttestationFlow::~FakeAttestationFlow() = default;
 

@@ -24,10 +24,6 @@ namespace content {
 class WebContents;
 }
 
-namespace cryptohome {
-class AsyncMethodCaller;
-}
-
 namespace user_manager {
 class User;
 }
@@ -35,7 +31,6 @@ class User;
 namespace chromeos {
 
 class AttestationClient;
-class CryptohomeClient;
 
 namespace attestation {
 
@@ -130,8 +125,6 @@ class PlatformVerificationFlow
   // An alternate constructor which specifies dependent objects explicitly.
   // This is useful in testing.  The caller retains ownership of all pointers.
   PlatformVerificationFlow(AttestationFlow* attestation_flow,
-                           cryptohome::AsyncMethodCaller* async_caller,
-                           CryptohomeClient* cryptohome_client,
                            AttestationClient* attestation_client,
                            Delegate* delegate);
 
@@ -243,8 +236,6 @@ class PlatformVerificationFlow
 
   AttestationFlow* attestation_flow_;
   std::unique_ptr<AttestationFlow> default_attestation_flow_;
-  cryptohome::AsyncMethodCaller* async_caller_;
-  CryptohomeClient* const cryptohome_client_;
   AttestationClient* const attestation_client_;
   Delegate* delegate_;
   std::unique_ptr<Delegate> default_delegate_;

@@ -19,7 +19,6 @@
 #include "chromeos/attestation/mock_attestation_flow.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/fake_attestation_client.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -179,8 +178,8 @@ class MachineCertificateUploaderTestBase : public ::testing::Test {
   }
 
   void RunUploader() {
-    MachineCertificateUploaderImpl uploader(
-        &policy_client_, &cryptohome_client_, &attestation_flow_);
+    MachineCertificateUploaderImpl uploader(&policy_client_,
+                                            &attestation_flow_);
     uploader.set_retry_limit(kRetryLimit);
     uploader.set_retry_delay(0);
     if (GetShouldRefreshCert())
@@ -201,7 +200,6 @@ class MachineCertificateUploaderTestBase : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   ScopedCrosSettingsTestHelper settings_helper_;
-  FakeCryptohomeClient cryptohome_client_;
   StrictMock<MockableFakeAttestationFlow> attestation_flow_;
   StrictMock<policy::MockCloudPolicyClient> policy_client_;
 };
@@ -244,8 +242,7 @@ TEST_P(MachineCertificateUploaderTest, WaitForUploadComplete) {
   SetupMocks(MOCK_NEW_KEY, "");
 
   StrictMock<CallbackObserver> waiting_callback_observer;
-  MachineCertificateUploaderImpl uploader(&policy_client_, &cryptohome_client_,
-                                          &attestation_flow_);
+  MachineCertificateUploaderImpl uploader(&policy_client_, &attestation_flow_);
 
   uploader.WaitForUploadComplete(waiting_callback_observer.GetCallback());
   EXPECT_CALL(waiting_callback_observer, Callback(true));
@@ -278,8 +275,7 @@ TEST_P(MachineCertificateUploaderTest, WaitForUploadFail) {
       .WillOnce(WithArgs<5>(Invoke(CertCallbackBadRequestFailure)));
 
   StrictMock<CallbackObserver> waiting_callback_observer;
-  MachineCertificateUploaderImpl uploader(&policy_client_, &cryptohome_client_,
-                                          &attestation_flow_);
+  MachineCertificateUploaderImpl uploader(&policy_client_, &attestation_flow_);
 
   uploader.WaitForUploadComplete(waiting_callback_observer.GetCallback());
   EXPECT_CALL(waiting_callback_observer, Callback(false));
