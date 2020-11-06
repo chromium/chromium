@@ -31,7 +31,6 @@ class KeyEvent;
 
 namespace exo {
 class DragDropOperation;
-class ExtendedDragSource;
 class ScopedDataSource;
 class SeatObserver;
 class Surface;
@@ -116,11 +115,6 @@ class Seat : public aura::client::FocusChangeObserver,
   void OnKeyboardLayoutNameChanged(const std::string& layout_name) override;
 #endif
 
-  void set_extended_drag_source(ExtendedDragSource* extended_drag_source) {
-    DCHECK(!extended_drag_source || !extended_drag_source_);
-    extended_drag_source_ = extended_drag_source;
-  }
-
   void set_physical_code_for_currently_processing_event_for_testing(
       ui::DomCode physical_code_for_currently_processing_event) {
     physical_code_for_currently_processing_event_ =
@@ -189,8 +183,6 @@ class Seat : public aura::client::FocusChangeObserver,
   std::unique_ptr<UILockController> ui_lock_controller_;
   std::unique_ptr<XkbTracker> xkb_tracker_;
 #endif  // defined(OS_CHROMEOS)
-
-  ExtendedDragSource* extended_drag_source_ = nullptr;
 
   base::WeakPtrFactory<Seat> weak_ptr_factory_{this};
 

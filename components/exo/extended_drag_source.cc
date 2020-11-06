@@ -9,12 +9,12 @@
 
 #include "ash/shell.h"
 #include "ash/wm/toplevel_window_event_handler.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/optional.h"
 #include "components/exo/data_source.h"
-#include "components/exo/seat.h"
 #include "components/exo/surface.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_observer.h"
@@ -32,6 +32,9 @@
 #include "ui/wm/public/window_move_client.h"
 
 namespace exo {
+
+// static
+ExtendedDragSource* ExtendedDragSource::instance_ = nullptr;
 
 // Internal representation of a toplevel window, backed by an Exo shell surface,
 // which is being dragged. It supports both already mapped/visible windows as
@@ -97,16 +100,20 @@ class ExtendedDragSource::DraggedWindowHolder : public aura::WindowObserver {
   aura::Window* toplevel_window_ = nullptr;
 };
 
-ExtendedDragSource::ExtendedDragSource(Seat* seat,
-                                       DataSource* source,
-                                       Delegate* delegate)
-    : seat_(seat), source_(source), delegate_(delegate) {
-  DCHECK(seat_);
+// static
+ExtendedDragSource* ExtendedDragSource::Get() {
+  return instance_;
+}
+
+ExtendedDragSource::ExtendedDragSource(DataSource* source, Delegate* delegate)
+    : source_(source), delegate_(delegate) {
   DCHECK(source_);
   DCHECK(delegate_);
 
-  seat_->set_extended_drag_source(this);
   source_->AddObserver(this);
+
+  DCHECK(!instance_);
+  instance_ = this;
 }
 
 ExtendedDragSource::~ExtendedDragSource() {
@@ -114,9 +121,11 @@ ExtendedDragSource::~ExtendedDragSource() {
   for (auto& observer : observers_)
     observer.OnExtendedDragSourceDestroying(this);
 
-  seat_->set_extended_drag_source(nullptr);
   if (source_)
     source_->RemoveObserver(this);
+
+  DCHECK_EQ(instance_, this);
+  instance_ = nullptr;
 }
 
 void ExtendedDragSource::AddObserver(Observer* observer) {

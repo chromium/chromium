@@ -10,7 +10,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/exo/data_offer.h"
 #include "components/exo/data_source.h"
-#include "components/exo/extended_drag_source.h"
 #include "components/exo/seat.h"
 #include "components/exo/surface.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -29,6 +28,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "ash/drag_drop/drag_drop_controller.h"
+#include "components/exo/extended_drag_source.h"
 #endif  // defined(OS_CHROMEOS)
 
 namespace exo {
@@ -88,10 +88,9 @@ base::WeakPtr<DragDropOperation> DragDropOperation::Create(
     Surface* origin,
     Surface* icon,
     const gfx::PointF& drag_start_point,
-    ui::mojom::DragEventSource event_source,
-    ExtendedDragSource* extended_drag_source) {
+    ui::mojom::DragEventSource event_source) {
   auto* dnd_op = new DragDropOperation(source, origin, icon, drag_start_point,
-                                       event_source, extended_drag_source);
+                                       event_source);
   return dnd_op->weak_ptr_factory_.GetWeakPtr();
 }
 
@@ -99,15 +98,13 @@ DragDropOperation::DragDropOperation(DataSource* source,
                                      Surface* origin,
                                      Surface* icon,
                                      const gfx::PointF& drag_start_point,
-                                     ui::mojom::DragEventSource event_source,
-                                     ExtendedDragSource* extended_drag_source)
+                                     ui::mojom::DragEventSource event_source)
     : SurfaceTreeHost("ExoDragDropOperation"),
       source_(std::make_unique<ScopedDataSource>(source, this)),
       origin_(std::make_unique<ScopedSurface>(origin, this)),
       drag_start_point_(drag_start_point),
       os_exchange_data_(std::make_unique<ui::OSExchangeData>()),
-      event_source_(event_source),
-      extended_drag_source_(extended_drag_source) {
+      event_source_(event_source) {
   aura::Window* root_window = origin_->get()->window()->GetRootWindow();
   DCHECK(root_window);
 #if defined(OS_CHROMEOS)
@@ -123,13 +120,14 @@ DragDropOperation::DragDropOperation(DataSource* source,
 
   drag_drop_controller_->AddObserver(this);
 
-  if (extended_drag_source_) {
 #if defined(OS_CHROMEOS)
+  extended_drag_source_ = ExtendedDragSource::Get();
+  if (extended_drag_source_) {
     drag_drop_controller_->set_toplevel_window_drag_delegate(
         extended_drag_source_);
-#endif
     extended_drag_source_->AddObserver(this);
   }
+#endif
 
   if (icon)
     icon_ = std::make_unique<ScopedSurface>(icon, this);
@@ -169,10 +167,10 @@ DragDropOperation::~DragDropOperation() {
   if (drag_drop_controller_->IsDragDropInProgress() && started_by_this_object_)
     drag_drop_controller_->DragCancel();
 
-  if (extended_drag_source_) {
-    extended_drag_source_->RemoveObserver(this);
-    extended_drag_source_ = nullptr;
-  }
+#if defined(OS_CHROMEOS)
+  if (extended_drag_source_)
+    ResetExtendedDragSource();
+#endif
 }
 
 void DragDropOperation::AbortIfPending() {
@@ -348,17 +346,19 @@ void DragDropOperation::OnDragActionsChanged(int actions) {
 
   source_->get()->Action(dnd_action);
 }
-#endif
 
 void DragDropOperation::OnExtendedDragSourceDestroying(
     ExtendedDragSource* source) {
+  ResetExtendedDragSource();
+}
+
+void DragDropOperation::ResetExtendedDragSource() {
   DCHECK(extended_drag_source_);
   extended_drag_source_->RemoveObserver(this);
-#if defined(OS_CHROMEOS)
   drag_drop_controller_->set_toplevel_window_drag_delegate(nullptr);
-#endif
   extended_drag_source_ = nullptr;
 }
+#endif
 
 void DragDropOperation::OnSurfaceDestroying(Surface* surface) {
   DCHECK(surface == origin_->get() || surface == icon_->get());

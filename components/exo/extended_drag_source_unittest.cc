@@ -114,11 +114,10 @@ class ExtendedDragSourceTest : public test::ExoTestBase {
 
     seat_ = std::make_unique<Seat>();
     data_source_ = std::make_unique<DataSource>(new TestDataSourceDelegate);
-    extended_drag_source_ =
-        std::make_unique<ExtendedDragSource>(seat_.get(), data_source_.get(),
-                                             new TestExtendedDragSourceDelegate(
-                                                 /*allow_drop_no_target=*/true,
-                                                 /*lock_cursor=*/true));
+    extended_drag_source_ = std::make_unique<ExtendedDragSource>(
+        data_source_.get(), new TestExtendedDragSourceDelegate(
+                                /*allow_drop_no_target=*/true,
+                                /*lock_cursor=*/true));
   }
 
   void TearDown() override {

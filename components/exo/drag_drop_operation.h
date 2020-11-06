@@ -8,13 +8,16 @@
 #include "components/exo/data_device.h"
 #include "components/exo/data_offer_observer.h"
 #include "components/exo/data_source_observer.h"
-#include "components/exo/extended_drag_source.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/surface_tree_host.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/gfx/geometry/point_f.h"
+
+#if defined(OS_CHROMEOS)
+#include "components/exo/extended_drag_source.h"
+#endif
 
 namespace ash {
 class DragDropController;
@@ -35,7 +38,6 @@ class CopyOutputResult;
 }
 
 namespace exo {
-class ExtendedDragSource;
 class ScopedDataSource;
 
 // This class represents an ongoing drag-drop operation started by an exo
@@ -46,8 +48,10 @@ class ScopedDataSource;
 class DragDropOperation : public DataSourceObserver,
                           public SurfaceTreeHost,
                           public SurfaceObserver,
-                          public aura::client::DragDropClientObserver,
-                          public ExtendedDragSource::Observer {
+#if defined(OS_CHROMEOS)
+                          public ExtendedDragSource::Observer,
+#endif
+                          public aura::client::DragDropClientObserver {
  public:
   // Create an operation for a drag-drop originating from a wayland app.
   static base::WeakPtr<DragDropOperation> Create(
@@ -55,8 +59,7 @@ class DragDropOperation : public DataSourceObserver,
       Surface* origin,
       Surface* icon,
       const gfx::PointF& drag_start_point,
-      ui::mojom::DragEventSource event_source,
-      ExtendedDragSource* extended_drag_source);
+      ui::mojom::DragEventSource event_source);
 
   // Abort the operation if it hasn't been started yet, otherwise do nothing.
   void AbortIfPending();
@@ -75,10 +78,10 @@ class DragDropOperation : public DataSourceObserver,
   void OnDragEnded() override;
 #if defined(OS_CHROMEOS)
   void OnDragActionsChanged(int actions) override;
-#endif
 
   // ExtendedDragSource::Observer:
   void OnExtendedDragSourceDestroying(ExtendedDragSource* source) override;
+#endif
 
  private:
   // A private constructor and destructor are used to prevent anyone else from
@@ -87,8 +90,7 @@ class DragDropOperation : public DataSourceObserver,
                     Surface* origin,
                     Surface* icon,
                     const gfx::PointF& drag_start_point,
-                    ui::mojom::DragEventSource event_source,
-                    ExtendedDragSource* extended_drag_source);
+                    ui::mojom::DragEventSource event_source);
   ~DragDropOperation() override;
 
   void CaptureDragIcon();
@@ -105,7 +107,9 @@ class DragDropOperation : public DataSourceObserver,
   // directly. Use ScheduleStartDragDropOperation instead.
   void StartDragDropOperation();
 
-  void ResetSource();
+#if defined(OS_CHROMEOS)
+  void ResetExtendedDragSource();
+#endif
 
   std::unique_ptr<ScopedDataSource> source_;
   std::unique_ptr<ScopedSurface> icon_;
@@ -134,7 +138,9 @@ class DragDropOperation : public DataSourceObserver,
 
   ui::mojom::DragEventSource event_source_;
 
+#if defined(OS_CHROMEOS)
   ExtendedDragSource* extended_drag_source_;
+#endif
 
   base::WeakPtrFactory<DragDropOperation> weak_ptr_factory_{this};
 
