@@ -80,6 +80,11 @@ class NGTableBorders : public RefCounted<NGTableBorders> {
   struct Edge {
     scoped_refptr<const ComputedStyle> style;
     EdgeSide edge_side;
+    // Box order is used to compute edge painting precedence.
+    // Lower box order has precedence.
+    // The order value is defined as "box visited index" while
+    // computing collapsed edges.
+    wtf_size_t box_order;
   };
 
   static LayoutUnit BorderWidth(const ComputedStyle* style,
@@ -172,6 +177,10 @@ class NGTableBorders : public RefCounted<NGTableBorders> {
                        edges_[edge_index].edge_side);
   }
 
+  wtf_size_t BoxOrder(wtf_size_t edge_index) const {
+    return edges_[edge_index].box_order;
+  }
+
   using Edges = Vector<Edge>;
 
   struct Section {
@@ -219,8 +228,9 @@ class NGTableBorders : public RefCounted<NGTableBorders> {
                     wtf_size_t start_column,
                     wtf_size_t rowspan,
                     wtf_size_t colspan,
-                    const ComputedStyle* source_style,
+                    const ComputedStyle& source_style,
                     EdgeSource source,
+                    wtf_size_t box_order,
                     WritingDirectionMode table_writing_direction,
                     wtf_size_t section_index = kNotFound);
 
@@ -297,13 +307,15 @@ class NGTableBorders : public RefCounted<NGTableBorders> {
   void MergeRowAxisBorder(wtf_size_t start_row,
                           wtf_size_t start_column,
                           wtf_size_t colspan,
-                          const ComputedStyle* source_style,
+                          const ComputedStyle& source_style,
+                          wtf_size_t box_order,
                           EdgeSide side);
 
   void MergeColumnAxisBorder(wtf_size_t start_row,
                              wtf_size_t start_column,
                              wtf_size_t rowspan,
-                             const ComputedStyle* source_style,
+                             const ComputedStyle& source_style,
+                             wtf_size_t box_order,
                              EdgeSide side);
 
   void MarkInnerBordersAsDoNotFill(wtf_size_t start_row,

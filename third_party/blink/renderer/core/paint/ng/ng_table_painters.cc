@@ -69,6 +69,16 @@ class NGTableCollapsedEdge {
 
   Color BorderColor() const { return borders_.BorderColor(edge_index_); }
 
+  int CompareBoxOrder(wtf_size_t other_edge_index) const {
+    wtf_size_t box_order = borders_.BoxOrder(edge_index_);
+    wtf_size_t other_box_order = borders_.BoxOrder(other_edge_index);
+    if (box_order < other_box_order)
+      return 1;
+    if (box_order > other_box_order)
+      return -1;
+    return 0;
+  }
+
   bool IsInlineAxis() const {
     DCHECK(Exists());
     DCHECK_NE(edge_index_, UINT_MAX);
@@ -103,7 +113,7 @@ class NGTableCollapsedEdge {
         // Paint border style comparison for paint has different
         // rules than for winning edge border (hidden does not win).
         if (lhs.border_style_ == rhs.border_style_)
-          return 0;
+          return lhs.CompareBoxOrder(rhs.edge_index_);
         if (rhs.border_style_ == EBorderStyle::kHidden)
           return 1;
         if (lhs.border_style_ == EBorderStyle::kHidden)
