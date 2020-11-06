@@ -15,6 +15,7 @@
 
 #include "base/bind.h"
 #include "base/environment.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
@@ -35,6 +36,8 @@
 #include "components/url_pattern_index/proto/rules.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/resource/mock_resource_bundle_delegate.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace subresource_filter {
 
@@ -167,8 +170,10 @@ bool MockFailingIndexRuleset(UnindexedRulesetStreamGenerator*,
 
 // Test fixtures --------------------------------------------------------------
 
-using testing::TestRulesetPair;
+using ::testing::_;
+using ::testing::Return;
 using testing::TestRulesetCreator;
+using testing::TestRulesetPair;
 
 class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
  public:
@@ -249,6 +254,50 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
     RunBackgroundUntilIdle();
     // Wait for file to be opened on blocking task runner.
     RunBlockingUntilIdle();
+  }
+
+  void WaitForIndexAndStoreAndPublishUpdatedRulesetFromResourceBundle(
+      const TestRulesetPair& test_ruleset_pair,
+      const std::string& new_content_version) {
+    int unindexed_ruleset_resource_id = 42;
+    auto unindexed_ruleset_contents = test_ruleset_pair.unindexed.contents;
+    std::string unindexed_ruleset(
+        reinterpret_cast<const char*>(unindexed_ruleset_contents.data()),
+        unindexed_ruleset_contents.size());
+
+    UnindexedRulesetInfo ruleset_info;
+    ruleset_info.resource_id = unindexed_ruleset_resource_id;
+    ruleset_info.content_version = new_content_version;
+
+    // Configure the resource bundle to return |unindexed_ruleset| as the
+    // contents for |unindexed_ruleset_resource_id|.
+    ui::MockResourceBundleDelegate resource_bundle_delegate;
+    EXPECT_CALL(resource_bundle_delegate,
+                LoadDataResourceString(unindexed_ruleset_resource_id))
+        .Times(1)
+        .WillOnce(Return(unindexed_ruleset));
+
+    // Suppress "uninteresting mock function call" warning output that would
+    // occur as part of resource bundle initialization.
+    EXPECT_CALL(resource_bundle_delegate, GetPathForLocalePack(_, _))
+        .WillRepeatedly(Return(base::FilePath()));
+
+    ui::ResourceBundle* orig_resource_bundle =
+        ui::ResourceBundle::SwapSharedInstanceForTesting(nullptr);
+    ui::ResourceBundle::InitSharedInstanceWithLocale(
+        "en-US", &resource_bundle_delegate,
+        ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
+
+    // Now that everything has been set up, do the actual indexing.
+    service()->IndexAndStoreAndPublishRulesetIfNeeded(ruleset_info);
+
+    // Wait for indexing on background task runner.
+    RunBackgroundUntilIdle();
+    // Wait for file to be opened on blocking task runner.
+    RunBlockingUntilIdle();
+
+    ui::ResourceBundle::CleanupSharedInstance();
+    ui::ResourceBundle::SwapSharedInstanceForTesting(orig_resource_bundle);
   }
 
   // Mark the initialization complete and run task queues until all are empty.
@@ -623,6 +672,19 @@ TEST_F(SubresourceFilteringRulesetServiceTest, NewRuleset_Published) {
 }
 
 TEST_F(SubresourceFilteringRulesetServiceTest,
+       RulesetFromResourceId_Published) {
+  SimulateStartupCompletedAndWaitForTasks();
+
+  WaitForIndexAndStoreAndPublishUpdatedRulesetFromResourceBundle(
+      test_ruleset_1(), kTestContentVersion1);
+
+  ASSERT_EQ(1u, mock_publisher()->published_rulesets().size());
+  ASSERT_NO_FATAL_FAILURE(AssertValidRulesetFileWithContents(
+      &mock_publisher()->published_rulesets()[0],
+      test_ruleset_1().indexed.contents));
+}
+
+TEST_F(SubresourceFilteringRulesetServiceTest,
        NewRulesetWithEmptyVersion_NotPublished) {
   SimulateStartupCompletedAndWaitForTasks();
   WaitForIndexAndStoreAndPublishUpdatedRuleset(test_ruleset_1(), std::string());
@@ -768,7 +830,8 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
   mock_publisher()->RunBestEffortUntilIdle();
 
   UnindexedRulesetInfo ruleset_info;
-  ruleset_info.ruleset_path = base::FilePath();  // Non-existent.
+  ruleset_info.ruleset_path =
+      base::FilePath(FILE_PATH_LITERAL("non/existent/path"));  // Non-existent.
   ruleset_info.content_version = kTestContentVersion1;
   service()->IndexAndStoreAndPublishRulesetIfNeeded(ruleset_info);
   RunBackgroundUntilIdle();

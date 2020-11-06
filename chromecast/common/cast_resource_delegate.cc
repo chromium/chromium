@@ -66,6 +66,11 @@ base::RefCountedStaticMemory* CastResourceDelegate::LoadDataResourceBytes(
   return NULL;
 }
 
+base::Optional<std::string> CastResourceDelegate::LoadDataResourceString(
+    int resource_id) {
+  return base::nullopt;
+}
+
 bool CastResourceDelegate::GetRawDataResource(int resource_id,
                                               ui::ScaleFactor scale_factor,
                                               base::StringPiece* value) const {

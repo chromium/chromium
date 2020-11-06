@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <sstream>
 
 namespace base {
 class FilePath;
@@ -34,6 +35,11 @@ class UnindexedRulesetStreamGenerator {
       const UnindexedRulesetInfo& ruleset_info);
   ~UnindexedRulesetStreamGenerator();
 
+  UnindexedRulesetStreamGenerator(const UnindexedRulesetStreamGenerator&) =
+      delete;
+  UnindexedRulesetStreamGenerator& operator=(
+      const UnindexedRulesetStreamGenerator&) = delete;
+
   // Returns a ZeroCopyInputStream* via which the unindexed ruleset data can be
   // streamed. If the returned pointer is null, the stream is not valid.
   // NOTE: The returned pointer will be valid only for the lifetime of this
@@ -50,10 +56,17 @@ class UnindexedRulesetStreamGenerator {
   // Generates |ruleset_stream_| from the file at |ruleset_path_|.
   void GenerateStreamFromFile(base::FilePath ruleset_path);
 
+  // Generates |ruleset_stream_| from the contents of the string stored in the
+  // resource bundle at |resource_id|.
+  void GenerateStreamFromResourceId(int resource_id);
+
   int64_t ruleset_size_ = -1;
 
   // Used when the stream is generated from a file on disk.
   std::unique_ptr<CopyingFileInputStream> copying_stream_;
+
+  // Used when the stream is generated from a resource ID.
+  std::istringstream string_stream_;
 
   // The stream via which a client of this class can read the data of the
   // unindexed ruleset.

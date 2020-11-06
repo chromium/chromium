@@ -18,6 +18,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
@@ -73,6 +74,8 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
 
   // Delegate class that allows interception of pack file loading and resource
   // requests. The methods of this class may be called on multiple threads.
+  // TODO(crbug.com/1146446): The interface and usage model of this class are
+  // clunky; it would be good to clean them up.
   class Delegate {
    public:
     // Called before a resource pack file is loaded. Return the full path for
@@ -104,6 +107,14 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
     virtual base::RefCountedMemory* LoadDataResourceBytes(
         int resource_id,
         ScaleFactor scale_factor) = 0;
+
+    // Supports intercepting of ResourceBundle::LoadDataResourceString(): Return
+    // a populated base::Optional instance to override the value that
+    // ResourceBundle::LoadDataResourceString() would return by default, or an
+    // empty base::Optional instance to pass through to the default behavior of
+    // ResourceBundle::LoadDataResourceString().
+    virtual base::Optional<std::string> LoadDataResourceString(
+        int resource_id) = 0;
 
     // Retrieve a raw data resource. Return true if a resource was provided or
     // false to attempt retrieval of the default resource.
