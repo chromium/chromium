@@ -581,7 +581,6 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
   SerializeChooserPopupAttributes(src, dst);
 
   if (accessibility_mode_.has_mode(ui::AXMode::kScreenReader)) {
-    SerializeStyleAttributes(src, dst);
     SerializeMarkerAttributes(src, dst);
     if (src.IsInLiveRegion())
       SerializeLiveRegionAttributes(src, dst);
@@ -696,75 +695,6 @@ void BlinkAXTreeSource::SerializeNameAndDescriptionAttributes(
       TruncateAndAddStringAttribute(dst,
                                     ax::mojom::StringAttribute::kPlaceholder,
                                     web_placeholder.Utf8());
-  }
-}
-
-void BlinkAXTreeSource::SerializeStyleAttributes(WebAXObject src,
-                                                 ui::AXNodeData* dst) const {
-  // Text attributes.
-  if (src.BackgroundColor())
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
-                         src.BackgroundColor());
-
-  if (src.GetColor())
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kColor, src.GetColor());
-
-  WebAXObject parent = ParentObjectUnignored(src);
-  if (src.FontFamily().length()) {
-    if (parent.IsNull() || parent.FontFamily() != src.FontFamily())
-      TruncateAndAddStringAttribute(dst,
-                                    ax::mojom::StringAttribute::kFontFamily,
-                                    src.FontFamily().Utf8());
-  }
-
-  // Font size is in pixels.
-  if (src.FontSize())
-    dst->AddFloatAttribute(ax::mojom::FloatAttribute::kFontSize,
-                           src.FontSize());
-
-  if (src.FontWeight()) {
-    dst->AddFloatAttribute(ax::mojom::FloatAttribute::kFontWeight,
-                           src.FontWeight());
-  }
-
-  if (dst->role == ax::mojom::Role::kListItem &&
-      src.GetListStyle() != ax::mojom::ListStyle::kNone) {
-    dst->SetListStyle(src.GetListStyle());
-  }
-
-  if (src.GetTextDirection() != ax::mojom::WritingDirection::kNone) {
-    dst->SetTextDirection(src.GetTextDirection());
-  }
-
-  if (src.GetTextPosition() != ax::mojom::TextPosition::kNone) {
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kTextPosition,
-                         static_cast<int32_t>(src.GetTextPosition()));
-  }
-
-  int32_t text_style = 0;
-  ax::mojom::TextDecorationStyle text_overline_style;
-  ax::mojom::TextDecorationStyle text_strikethrough_style;
-  ax::mojom::TextDecorationStyle text_underline_style;
-  src.GetTextStyleAndTextDecorationStyle(&text_style, &text_overline_style,
-                                         &text_strikethrough_style,
-                                         &text_underline_style);
-  if (text_style) {
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kTextStyle, text_style);
-  }
-
-  if (text_overline_style != ax::mojom::TextDecorationStyle::kNone) {
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kTextOverlineStyle,
-                         static_cast<int32_t>(text_overline_style));
-  }
-
-  if (text_strikethrough_style != ax::mojom::TextDecorationStyle::kNone) {
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kTextStrikethroughStyle,
-                         static_cast<int32_t>(text_strikethrough_style));
-  }
-
-  if (text_underline_style != ax::mojom::TextDecorationStyle::kNone) {
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kTextUnderlineStyle,
-                         static_cast<int32_t>(text_underline_style));
   }
 }
 

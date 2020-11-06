@@ -925,6 +925,10 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
                                   Url().GetString().Utf8());
   }
 
+  if (accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
+    SerializeStyleAttributes(node_data);
+  }
+
   SerializePartialSparseAttributes(node_data);
 
   if (Element* element = this->GetElement()) {
@@ -1029,6 +1033,84 @@ void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) {
       GetSortDirection() != ax::mojom::blink::SortDirection::kNone) {
     node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kSortDirection,
                                static_cast<int32_t>(GetSortDirection()));
+  }
+}
+
+void AXObject::SerializeStyleAttributes(ui::AXNodeData* node_data) {
+  // Text attributes.
+  if (BackgroundColor()) {
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kBackgroundColor,
+                               BackgroundColor());
+  }
+
+  if (GetColor()) {
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kColor,
+                               GetColor());
+  }
+
+  AXObject* parent = ParentObjectUnignored();
+  if (FontFamily().length()) {
+    if (!parent || parent->FontFamily() != FontFamily()) {
+      TruncateAndAddStringAttribute(
+          node_data, ax::mojom::blink::StringAttribute::kFontFamily,
+          FontFamily().Utf8());
+    }
+  }
+
+  // Font size is in pixels.
+  if (FontSize()) {
+    node_data->AddFloatAttribute(ax::mojom::blink::FloatAttribute::kFontSize,
+                                 FontSize());
+  }
+
+  if (FontWeight()) {
+    node_data->AddFloatAttribute(ax::mojom::blink::FloatAttribute::kFontWeight,
+                                 FontWeight());
+  }
+
+  if (RoleValue() == ax::mojom::blink::Role::kListItem &&
+      GetListStyle() != ax::mojom::blink::ListStyle::kNone) {
+    node_data->SetListStyle(GetListStyle());
+  }
+
+  if (GetTextDirection() != ax::mojom::blink::WritingDirection::kNone) {
+    node_data->SetTextDirection(GetTextDirection());
+  }
+
+  if (GetTextPosition() != ax::mojom::blink::TextPosition::kNone) {
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kTextPosition,
+                               static_cast<int32_t>(GetTextPosition()));
+  }
+
+  int32_t text_style = 0;
+  ax::mojom::blink::TextDecorationStyle text_overline_style;
+  ax::mojom::blink::TextDecorationStyle text_strikethrough_style;
+  ax::mojom::blink::TextDecorationStyle text_underline_style;
+  GetTextStyleAndTextDecorationStyle(&text_style, &text_overline_style,
+                                     &text_strikethrough_style,
+                                     &text_underline_style);
+  if (text_style) {
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kTextStyle,
+                               text_style);
+  }
+
+  if (text_overline_style != ax::mojom::blink::TextDecorationStyle::kNone) {
+    node_data->AddIntAttribute(
+        ax::mojom::blink::IntAttribute::kTextOverlineStyle,
+        static_cast<int32_t>(text_overline_style));
+  }
+
+  if (text_strikethrough_style !=
+      ax::mojom::blink::TextDecorationStyle::kNone) {
+    node_data->AddIntAttribute(
+        ax::mojom::blink::IntAttribute::kTextStrikethroughStyle,
+        static_cast<int32_t>(text_strikethrough_style));
+  }
+
+  if (text_underline_style != ax::mojom::blink::TextDecorationStyle::kNone) {
+    node_data->AddIntAttribute(
+        ax::mojom::blink::IntAttribute::kTextUnderlineStyle,
+        static_cast<int32_t>(text_underline_style));
   }
 }
 

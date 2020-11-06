@@ -164,10 +164,8 @@ class WebAXObject {
 
   BLINK_EXPORT bool HasAriaAttribute() const;
   BLINK_EXPORT WebString AccessKey() const;
-  BLINK_EXPORT unsigned BackgroundColor() const;
   BLINK_EXPORT bool CanPress() const;
   BLINK_EXPORT bool CanSetValueAttribute() const;
-  BLINK_EXPORT unsigned GetColor() const;
   // Deprecated.
   BLINK_EXPORT void ColorValue(int& r, int& g, int& b) const;
   BLINK_EXPORT unsigned ColorValue() const;
@@ -176,9 +174,6 @@ class WebAXObject {
   BLINK_EXPORT ax::mojom::AriaCurrentState AriaCurrentState() const;
   BLINK_EXPORT bool IsEditable() const;
   BLINK_EXPORT bool AriaOwns(WebVector<WebAXObject>& owns_elements) const;
-  BLINK_EXPORT WebString FontFamily() const;
-  BLINK_EXPORT float FontSize() const;
-  BLINK_EXPORT float FontWeight() const;
   BLINK_EXPORT bool CanvasHasFallbackContent() const;
   BLINK_EXPORT WebAXObject ErrorMessage() const;
   // If this is an image, returns the image (scaled to maxSize) as a data url.
@@ -197,14 +192,7 @@ class WebAXObject {
   BLINK_EXPORT WebVector<WebAXObject> RadioButtonsInGroup() const;
   BLINK_EXPORT ax::mojom::Role Role() const;
   BLINK_EXPORT WebString StringValue() const;
-  BLINK_EXPORT ax::mojom::ListStyle GetListStyle() const;
   BLINK_EXPORT ax::mojom::WritingDirection GetTextDirection() const;
-  BLINK_EXPORT ax::mojom::TextPosition GetTextPosition() const;
-  BLINK_EXPORT void GetTextStyleAndTextDecorationStyle(
-      int32_t* text_style,
-      ax::mojom::TextDecorationStyle* text_overline_style,
-      ax::mojom::TextDecorationStyle* text_strikethrough_style,
-      ax::mojom::TextDecorationStyle* text_underline_style) const;
   BLINK_EXPORT WebURL Url() const;
   BLINK_EXPORT WebAXObject ChooserPopup() const;
 

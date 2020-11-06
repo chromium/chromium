@@ -387,22 +387,6 @@ WebString WebAXObject::AccessKey() const {
   return WebString(private_->AccessKey());
 }
 
-unsigned WebAXObject::BackgroundColor() const {
-  if (IsDetached())
-    return 0;
-
-  // RGBA32 is an alias for unsigned int.
-  return private_->BackgroundColor();
-}
-
-unsigned WebAXObject::GetColor() const {
-  if (IsDetached())
-    return 0;
-
-  // RGBA32 is an alias for unsigned int.
-  return private_->GetColor();
-}
-
 // Deprecated.
 void WebAXObject::ColorValue(int& r, int& g, int& b) const {
   if (IsDetached())
@@ -531,27 +515,6 @@ bool WebAXObject::AriaOwns(WebVector<WebAXObject>& owns_elements) const {
   // from Chromium.  http://crbug.com/489590
 
   return false;
-}
-
-WebString WebAXObject::FontFamily() const {
-  if (IsDetached())
-    return WebString();
-
-  return private_->FontFamily();
-}
-
-float WebAXObject::FontSize() const {
-  if (IsDetached())
-    return 0.0f;
-
-  return private_->FontSize();
-}
-
-float WebAXObject::FontWeight() const {
-  if (IsDetached())
-    return 0.0f;
-
-  return private_->FontWeight();
 }
 
 bool WebAXObject::CanvasHasFallbackContent() const {
@@ -910,42 +873,11 @@ WebString WebAXObject::StringValue() const {
   return private_->StringValue();
 }
 
-ax::mojom::ListStyle WebAXObject::GetListStyle() const {
-  if (IsDetached())
-    return ax::mojom::ListStyle::kNone;
-
-  return private_->GetListStyle();
-}
-
 ax::mojom::blink::WritingDirection WebAXObject::GetTextDirection() const {
   if (IsDetached())
     return ax::mojom::blink::WritingDirection::kLtr;
 
   return private_->GetTextDirection();
-}
-
-ax::mojom::TextPosition WebAXObject::GetTextPosition() const {
-  if (IsDetached())
-    return ax::mojom::TextPosition::kNone;
-
-  return private_->GetTextPosition();
-}
-
-void WebAXObject::GetTextStyleAndTextDecorationStyle(
-    int32_t* text_style,
-    ax::mojom::TextDecorationStyle* text_overline_style,
-    ax::mojom::TextDecorationStyle* text_strikethrough_style,
-    ax::mojom::TextDecorationStyle* text_underline_style) const {
-  if (IsDetached()) {
-    *text_style = 0;
-    *text_overline_style = ax::mojom::TextDecorationStyle::kNone;
-    *text_strikethrough_style = ax::mojom::TextDecorationStyle::kNone;
-    *text_underline_style = ax::mojom::TextDecorationStyle::kNone;
-    return;
-  }
-  private_->GetTextStyleAndTextDecorationStyle(text_style, text_overline_style,
-                                               text_strikethrough_style,
-                                               text_underline_style);
 }
 
 WebURL WebAXObject::Url() const {

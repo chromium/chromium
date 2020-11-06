@@ -1340,6 +1340,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Helpers for serialization.
   // TODO(meredithl): Serialize all sparse/table attributes and rename.
   void SerializePartialSparseAttributes(ui::AXNodeData* node_data);
+  void SerializeStyleAttributes(ui::AXNodeData* node_data);
   void SerializeTableAttributes(ui::AXNodeData* node_data);
 
  private:
