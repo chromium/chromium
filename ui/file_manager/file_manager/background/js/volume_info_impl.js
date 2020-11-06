@@ -2,6 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import * as wrappedVolumeManagerCommon from '../../../base/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
+// #import {FakeEntryImpl} from '../../common/js/files_app_entry_types.m.js';
+// #import {str} from '../../common/js/util.m.js';
+// #import {FilesAppEntry, FakeEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+// #import {VolumeInfo} from '../../../externs/volume_info.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// clang-format on
+
 /**
  * Represents each volume, such as "drive", "download directory", each "USB
  * flush storage", or "mounted zip archive" etc.
@@ -9,7 +18,7 @@
  * @final
  * @implements {VolumeInfo}
  */
-class VolumeInfoImpl {
+/* #export */ class VolumeInfoImpl {
   /**
    * @param {VolumeManagerCommon.VolumeType} volumeType The type of the volume.
    * @param {string} volumeId ID of the volume.

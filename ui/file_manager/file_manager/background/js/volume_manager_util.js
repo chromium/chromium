@@ -3,6 +3,19 @@
 // found in the LICENSE file.
 
 /**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
+
+// clang-format off
+// #import {VolumeInfoImpl} from './volume_info_impl.m.js';
+// #import * as wrappedVolumeManagerCommon from '../../../base/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
+// #import * as wrappedUtil from '../../common/js/util.m.js'; const {util} = wrappedUtil;
+// #import {str} from '../../common/js/util.m.js';
+// #import {VolumeInfo} from '../../../externs/volume_info.m.js';
+// clang-format on
+
+/**
  * Utilities for volume manager implementation.
  */
 const volumeManagerUtil = {};
@@ -194,3 +207,6 @@ volumeManagerUtil.createVolumeInfo = volumeMetadata => {
                 volumeMetadata.driveLabel, volumeMetadata.remoteMountPath);
           });
 };
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {volumeManagerUtil};

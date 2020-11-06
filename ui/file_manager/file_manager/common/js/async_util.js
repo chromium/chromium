@@ -3,6 +3,11 @@
 // found in the LICENSE file.
 
 /**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
+
+/**
  * Namespace for async utility functions.
  */
 const AsyncUtil = {};
@@ -462,3 +467,6 @@ AsyncUtil.RateLimiter = class {
     }
   }
 };
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {AsyncUtil};

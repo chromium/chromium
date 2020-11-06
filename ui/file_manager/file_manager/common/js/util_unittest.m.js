@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EntryList, FakeEntryImpl, VolumeEntry} from './files_app_entry_types.m.js';
+import {MockFileSystem} from './mock_entry.m.js';
+import * as wrappedUtil from './util.m.js';
+const {util} = wrappedUtil;
+import * as wrappedVolumeManagerCommon from '../../../base/js/volume_manager_types.m.js';
+const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
+import {MockVolumeManager} from '../../background/js/mock_volume_manager.m.js';
+import {assertEquals, assertTrue, assertFalse} from 'chrome://test/chai_assert.js';
+
 let fileSystem;
 
-function setUp() {
-  // Override VolumeInfo.prototype.resolveDisplayRoot to be sync.
-  VolumeInfoImpl.prototype.resolveDisplayRoot = function(successCallback) {
-    this.displayRoot_ = this.fileSystem_.root;
-    successCallback(this.displayRoot_);
-    return Promise.resolve(this.displayRoot_);
-  };
 
+export function setUp() {
   fileSystem = new MockFileSystem('fake-volume');
   const filenames = [
     '/file_a.txt',
@@ -38,7 +41,7 @@ function setUp() {
   };
 }
 
-function testReadEntriesRecursively(callback) {
+export function testReadEntriesRecursively(callback) {
   let foundEntries = [];
   util.readEntriesRecursively(
       fileSystem.root,
@@ -54,7 +57,7 @@ function testReadEntriesRecursively(callback) {
       () => {}, () => false);
 }
 
-function testReadEntriesRecursivelyLevel0(callback) {
+export function testReadEntriesRecursivelyLevel0(callback) {
   let foundEntries = [];
   util.readEntriesRecursively(
       fileSystem.root,
@@ -70,7 +73,7 @@ function testReadEntriesRecursivelyLevel0(callback) {
       () => {}, () => false, 0 /* opt_maxDepth */);
 }
 
-function testReadEntriesRecursivelyLevel1(callback) {
+export function testReadEntriesRecursivelyLevel1(callback) {
   let foundEntries = [];
   util.readEntriesRecursively(
       fileSystem.root,
@@ -87,7 +90,7 @@ function testReadEntriesRecursivelyLevel1(callback) {
 }
 
 
-function testIsDescendantEntry() {
+export function testIsDescendantEntry() {
   const root = fileSystem.root;
   const folder = fileSystem.entries['/dir_a'];
   const subFolder = fileSystem.entries['/dir_a/dir_b'];
@@ -139,7 +142,7 @@ function testIsDescendantEntry() {
 /**
  * Tests that it doesn't fail with different types of entries and inputs.
  */
-function testEntryDebugString() {
+export function testEntryDebugString() {
   // Check static values.
   assertEquals('entry is null', util.entryDebugString(null));
   (/**
@@ -196,7 +199,7 @@ function testEntryDebugString() {
 /**
  * Tests the formatting of util.bytesToString.
  */
-function testBytesToString() {
+export function testBytesToString() {
   const KB = 2 ** 10;
   const MB = 2 ** 20;
   const GB = 2 ** 30;
@@ -254,7 +257,7 @@ function testBytesToString() {
  * bytesToString() internally uses Number.toLocaleString() which outputs at most
  * 3 precision digits in en-US.
  */
-function testBytesToStringWithAddedPrecision() {
+export function testBytesToStringWithAddedPrecision() {
   const KB = 2 ** 10;
   const MB = 2 ** 20;
   const GB = 2 ** 30;

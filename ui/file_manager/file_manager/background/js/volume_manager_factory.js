@@ -2,6 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
+
+// #import {VolumeManagerImpl} from './volume_manager_impl.m.js';
+// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+
+// eslint-disable-next-line no-var
 var volumeManagerFactory = (() => {
   /**
    * The singleton instance of VolumeManager. Initialized by the first
@@ -55,3 +64,6 @@ var volumeManagerFactory = (() => {
     revokeInstanceForTesting: revokeInstanceForTesting
   };
 })();
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {volumeManagerFactory};

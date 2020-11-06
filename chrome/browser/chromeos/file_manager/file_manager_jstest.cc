@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, Trash) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, UtilTest) {
-  RunTestURL("common/js/util_unittest_gen.html");
+  RunTestURL("common/js/util_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, VolumeManagerTest) {

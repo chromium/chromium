@@ -389,7 +389,7 @@ util.queryDecoratedElement = (query, type) => {
  * @param {string} id The id of the string to return.
  * @return {string} The translated string.
  */
-function str(id) {
+/* #export */ function str(id) {
   return loadTimeData.getString(id);
 }
 
@@ -403,7 +403,7 @@ function str(id) {
  * @param {...*} var_args The values to replace into the string.
  * @return {string} The translated string with replaced values.
  */
-function strf(id, var_args) {
+/* #export */ function strf(id, var_args) {
   return loadTimeData.getStringF.apply(loadTimeData, arguments);
 }
 
