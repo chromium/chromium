@@ -184,8 +184,8 @@ TEST_F(WebEngineIntegrationLoggingTest, SetJavaScriptLogLevel_DEBUG) {
   ASSERT_EQ(logged_message_.tags.size(), 1u);
   EXPECT_EQ(logged_message_.tags[0], kWebEngineLogTag);
   EXPECT_EQ(NormalizeConsoleLogMessage(logged_message_.msg),
-            "frame_impl.cc(" + std::string(kNormalizedLineNumber) +
-                ") debug:http://127.0.0.1:" + kNormalizedPortNumber +
+            "[frame_impl.cc(" + std::string(kNormalizedLineNumber) +
+                ")] debug:http://127.0.0.1:" + kNormalizedPortNumber +
                 "/console_logging.html:8 "
                 ": This is a debug() message.");
 }

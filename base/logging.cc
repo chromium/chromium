@@ -799,10 +799,8 @@ LogMessage::~LogMessage() {
       // Temporarily remove the trailing newline from |str_newline|'s C-string
       // representation, since fx_logger will add a newline of its own.
       str_newline.pop_back();
-      std::string message =
-          base::StringPrintf("%s(%d) %s", file_basename_, line_,
-                             str_newline.c_str() + message_start_);
-      fx_logger_log(logger, severity, nullptr, message.data());
+      fx_logger_log_with_source(logger, severity, nullptr, file_, line_,
+                                str_newline.c_str() + message_start_);
       str_newline.push_back('\n');
     }
 #endif  // OS_FUCHSIA
