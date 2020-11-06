@@ -57,11 +57,8 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_page_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_simplified_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
-#include "third_party/blink/renderer/core/layout/ng/table/ng_table_borders.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm.h"
-#include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_row_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_section_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
@@ -995,46 +992,6 @@ NGBlockNode NGBlockNode::GetFieldsetContent() const {
   if (!child)
     return nullptr;
   return NGBlockNode(ToLayoutBox(child));
-}
-
-const NGBoxStrut& NGBlockNode::GetTableBordersStrut() const {
-  return GetTableBorders()->TableBorder();
-}
-
-scoped_refptr<const NGTableBorders> NGBlockNode::GetTableBorders() const {
-  DCHECK(IsTable());
-  DCHECK(box_->IsLayoutNGMixin());
-  LayoutNGTable* layout_table = To<LayoutNGTable>(box_);
-  scoped_refptr<const NGTableBorders> table_borders =
-      layout_table->GetCachedTableBorders();
-  if (!table_borders) {
-    table_borders = NGTableBorders::ComputeTableBorders(*this);
-    layout_table->SetCachedTableBorders(table_borders.get());
-  }
-  return table_borders;
-}
-
-scoped_refptr<const NGTableTypes::Columns> NGBlockNode::GetColumnConstraints(
-    const NGTableGroupedChildren& grouped_children,
-    const NGBoxStrut& border_padding) const {
-  DCHECK(IsTable());
-  LayoutNGTable* layout_table = To<LayoutNGTable>(box_);
-  scoped_refptr<const NGTableTypes::Columns> column_constraints =
-      layout_table->GetCachedTableColumnConstraints();
-  if (!column_constraints) {
-    column_constraints = NGTableAlgorithmUtils::ComputeColumnConstraints(
-        *this, grouped_children, *GetTableBorders().get(), border_padding);
-    layout_table->SetCachedTableColumnConstraints(column_constraints.get());
-  }
-  return column_constraints;
-}
-
-LayoutUnit NGBlockNode::ComputeTableInlineSize(
-    const NGConstraintSpace& space,
-    const NGBoxStrut& border_padding) const {
-  DCHECK(IsNGTable());
-  return NGTableLayoutAlgorithm::ComputeTableInlineSize(*this, space,
-                                                        border_padding);
 }
 
 bool NGBlockNode::CanUseNewLayout(const LayoutBox& box) {

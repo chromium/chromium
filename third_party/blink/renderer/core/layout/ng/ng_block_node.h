@@ -8,8 +8,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
-#include "third_party/blink/renderer/core/layout/ng/table/ng_table_borders.h"
-#include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_types.h"
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -30,7 +28,7 @@ struct NGLayoutAlgorithmParams;
 enum class MathScriptType;
 
 // Represents a node to be laid out.
-class CORE_EXPORT NGBlockNode final : public NGLayoutInputNode {
+class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   friend NGLayoutInputNode;
  public:
   explicit NGBlockNode(LayoutBox* box) : NGLayoutInputNode(box, kBlock) {}
@@ -97,20 +95,9 @@ class CORE_EXPORT NGBlockNode final : public NGLayoutInputNode {
   NGBlockNode GetRenderedLegend() const;
   NGBlockNode GetFieldsetContent() const;
 
-  bool IsNGTable() const { return IsTable() && box_->IsLayoutNGMixin(); }
   bool IsNGTableCell() const {
     return box_->IsTableCell() && !box_->IsTableCellLegacy();
   }
-
-  // TODO(atotic) Move table-specific calls to NGTableNode
-  const NGBoxStrut& GetTableBordersStrut() const;
-  scoped_refptr<const NGTableBorders> GetTableBorders() const;
-  scoped_refptr<const NGTableTypes::Columns> GetColumnConstraints(
-      const NGTableGroupedChildren&,
-      const NGBoxStrut& border_padding) const;
-
-  LayoutUnit ComputeTableInlineSize(const NGConstraintSpace&,
-                                    const NGBoxStrut& border_padding) const;
 
   // Return true if this block node establishes an inline formatting context.
   // This will only be the case if there is actual inline content. Empty nodes

@@ -140,6 +140,7 @@ class CORE_EXPORT NGLayoutInputNode {
   // Return true if this node is for a slider thumb in <input type=range>.
   bool IsSliderThumb() const;
   bool IsTable() const { return IsBlock() && box_->IsTable(); }
+  bool IsNGTable() const { return IsTable() && box_->IsLayoutNGMixin(); }
 
   bool IsTableCaption() const { return IsBlock() && box_->IsTableCaption(); }
 

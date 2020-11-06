@@ -9,15 +9,15 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_types.h"
+#include "third_party/blink/renderer/core/layout/ng/table/ng_table_node.h"
 
 namespace blink {
 
-class NGBlockNode;
 class NGBlockBreakToken;
 class NGTableBorders;
 
 class CORE_EXPORT NGTableLayoutAlgorithm
-    : public NGLayoutAlgorithm<NGBlockNode,
+    : public NGLayoutAlgorithm<NGTableNode,
                                NGBoxFragmentBuilder,
                                NGBlockBreakToken> {
  public:
@@ -27,7 +27,7 @@ class CORE_EXPORT NGTableLayoutAlgorithm
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) const override;
 
-  static LayoutUnit ComputeTableInlineSize(const NGBlockNode& node,
+  static LayoutUnit ComputeTableInlineSize(const NGTableNode& node,
                                            const NGConstraintSpace& space,
                                            const NGBoxStrut& border_padding);
 

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
+#include "third_party/blink/renderer/core/layout/ng/table/ng_table_node.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
@@ -270,6 +271,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
       ComputeBorders(space, child) + ComputePadding(space, style);
 
   MinMaxSizesResult result;
+
   const Length& inline_size = parent_writing_mode == WritingMode::kHorizontalTb
                                   ? style.Width()
                                   : style.Height();
@@ -433,11 +435,8 @@ LayoutUnit ComputeInlineSizeForFragment(
     const MinMaxSizes* override_min_max_sizes_for_test) {
   if (space.IsFixedInlineSize() || space.IsAnonymous())
     return space.AvailableSize().inline_size;
-  if (node.IsBlock()) {
-    NGBlockNode block = To<NGBlockNode>(node);
-    if (block.IsNGTable())
-      return block.ComputeTableInlineSize(space, border_padding);
-  }
+  if (node.IsNGTable())
+    return To<NGTableNode>(node).ComputeTableInlineSize(space, border_padding);
 
   const ComputedStyle& style = node.Style();
   Length logical_width = style.LogicalWidth();
@@ -956,7 +955,7 @@ NGBoxStrut ComputeBorders(const NGConstraintSpace& constraint_space,
     return constraint_space.TableCellBorders();
 
   if (node.IsNGTable())
-    return node.GetTableBorders()->TableBorder();
+    return To<NGTableNode>(node).GetTableBorders()->TableBorder();
 
   return ComputeBordersInternal(node.Style());
 }

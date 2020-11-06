@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_fragment_data.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_helpers.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_utils.h"
+#include "third_party/blink/renderer/core/layout/ng/table/ng_table_node.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 
 namespace blink {
@@ -136,9 +137,9 @@ LayoutUnit ComputeEmptyTableInlineSize(
                     table_border_padding.InlineSum());
   }
   // Table is defined by its border/padding.
-  if (has_collapsed_borders) {
+  if (has_collapsed_borders)
     return LayoutUnit();
-  }
+
   return assignable_table_inline_size + table_border_padding.InlineSum();
 }
 
@@ -406,7 +407,7 @@ LayoutUnit ComputeTableSizeFromColumns(
 }  // namespace
 
 LayoutUnit NGTableLayoutAlgorithm::ComputeTableInlineSize(
-    const NGBlockNode& table,
+    const NGTableNode& table,
     const NGConstraintSpace& space,
     const NGBoxStrut& table_border_padding) {
   const bool is_fixed_layout = table.Style().IsFixedTableLayout();
