@@ -105,7 +105,6 @@ public class ChromePaymentRequestService
     private boolean mHasClosed;
 
     private PaymentRequestSpec mSpec;
-    private PaymentApp mInvokedPaymentApp;
     private boolean mHideServerAutofillCards;
     private boolean mWaitForUpdatedDetails;
     private PaymentHandlerHost mPaymentHandlerHost;
@@ -512,9 +511,10 @@ public class ChromePaymentRequestService
     /** Called by the payment app to get updated total based on the billing address, for example. */
     @Override
     public boolean changePaymentMethodFromInvokedApp(String methodName, String stringifiedDetails) {
-        if (TextUtils.isEmpty(methodName) || stringifiedDetails == null
-                || mPaymentRequestService == null || mInvokedPaymentApp == null
-                || mInvokedPaymentApp.isWaitingForPaymentDetailsUpdate()) {
+        if (mPaymentRequestService == null) return false;
+        PaymentApp invokedPaymentApp = mPaymentRequestService.getInvokedPaymentApp();
+        if (TextUtils.isEmpty(methodName) || stringifiedDetails == null || invokedPaymentApp == null
+                || invokedPaymentApp.isWaitingForPaymentDetailsUpdate()) {
             return false;
         }
 
@@ -527,9 +527,10 @@ public class ChromePaymentRequestService
      */
     @Override
     public boolean changeShippingOptionFromInvokedApp(String shippingOptionId) {
-        if (TextUtils.isEmpty(shippingOptionId) || mPaymentRequestService == null
-                || mInvokedPaymentApp == null
-                || mInvokedPaymentApp.isWaitingForPaymentDetailsUpdate() || !mRequestShipping
+        if (mPaymentRequestService == null) return false;
+        PaymentApp invokedPaymentApp = mPaymentRequestService.getInvokedPaymentApp();
+        if (TextUtils.isEmpty(shippingOptionId) || invokedPaymentApp == null
+                || invokedPaymentApp.isWaitingForPaymentDetailsUpdate() || !mRequestShipping
                 || mSpec.getRawShippingOptions() == null) {
             return false;
         }
@@ -553,8 +554,9 @@ public class ChromePaymentRequestService
      */
     @Override
     public boolean changeShippingAddressFromInvokedApp(PaymentAddress shippingAddress) {
-        if (shippingAddress == null || mPaymentRequestService == null || mInvokedPaymentApp == null
-                || mInvokedPaymentApp.isWaitingForPaymentDetailsUpdate() || !mRequestShipping) {
+        PaymentApp invokedPaymentApp = mPaymentRequestService.getInvokedPaymentApp();
+        if (shippingAddress == null || mPaymentRequestService == null || invokedPaymentApp == null
+                || invokedPaymentApp.isWaitingForPaymentDetailsUpdate() || !mRequestShipping) {
             return false;
         }
 
@@ -665,10 +667,10 @@ public class ChromePaymentRequestService
      */
     @Nullable
     private WebContents openPaymentHandlerWindowInternal(GURL url) {
-        assert mInvokedPaymentApp != null;
-        assert mInvokedPaymentApp.getPaymentAppType() == PaymentAppType.SERVICE_WORKER_APP;
-
         if (mPaymentRequestService == null) return null;
+        PaymentApp invokedPaymentApp = mPaymentRequestService.getInvokedPaymentApp();
+        assert invokedPaymentApp != null;
+        assert invokedPaymentApp.getPaymentAppType() == PaymentAppType.SERVICE_WORKER_APP;
 
         @Nullable
         WebContents paymentHandlerWebContents = mPaymentUiService.showPaymentHandlerUI(
@@ -680,15 +682,16 @@ public class ChromePaymentRequestService
 
             // UKM for payment app origin should get recorded only when the origin of the invoked
             // payment app is shown to the user.
-            mJourneyLogger.setPaymentAppUkmSourceId(mInvokedPaymentApp.getUkmSourceId());
+            mJourneyLogger.setPaymentAppUkmSourceId(invokedPaymentApp.getUkmSourceId());
         }
         return paymentHandlerWebContents;
     }
 
     @Override
-    public boolean isInvokedInstrumentValidForPaymentMethodIdentifier(String methodName) {
-        return mInvokedPaymentApp != null
-                && mInvokedPaymentApp.isValidForPaymentMethodData(methodName, null);
+    public boolean isInvokedInstrumentValidForPaymentMethodIdentifier(
+            String methodName, PaymentApp invokedPaymentApp) {
+        return invokedPaymentApp != null
+                && invokedPaymentApp.isValidForPaymentMethodData(methodName, null);
     }
 
     // Implement BrowserPaymentRequest:
@@ -713,9 +716,10 @@ public class ChromePaymentRequestService
             return;
         }
 
+        PaymentApp invokedPaymentApp = mPaymentRequestService.getInvokedPaymentApp();
         if (!PaymentOptionsUtils.requestAnyInformation(mPaymentOptions)
-                && (mInvokedPaymentApp == null
-                        || !mInvokedPaymentApp.isWaitingForPaymentDetailsUpdate())) {
+                && (invokedPaymentApp == null
+                        || !invokedPaymentApp.isWaitingForPaymentDetailsUpdate())) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_STATE);
             return;
@@ -731,14 +735,13 @@ public class ChromePaymentRequestService
         mPaymentUiService.updateDetailsOnPaymentRequestUI(
                 mSpec.getPaymentDetails(), mSpec.getRawTotal(), mSpec.getRawLineItems());
 
-        if (mInvokedPaymentApp != null && mInvokedPaymentApp.isWaitingForPaymentDetailsUpdate()) {
+        if (invokedPaymentApp != null && invokedPaymentApp.isWaitingForPaymentDetailsUpdate()) {
             // After a payment app has been invoked, all of the merchant's calls to update the price
             // via updateWith() should be forwarded to the invoked app, so it can reflect the
             // updated price in its UI.
-            mInvokedPaymentApp.updateWith(
+            invokedPaymentApp.updateWith(
                     PaymentDetailsConverter.convertToPaymentRequestDetailsUpdate(details,
-                            mInvokedPaymentApp.handlesShippingAddress() /* handlesShipping */,
-                            this /* methodChecker */));
+                            /*methodChecker=*/this, invokedPaymentApp));
             return;
         }
 
@@ -835,8 +838,9 @@ public class ChromePaymentRequestService
 
         mSpec.recomputeSpecForDetails();
 
-        if (mInvokedPaymentApp != null && mInvokedPaymentApp.isWaitingForPaymentDetailsUpdate()) {
-            mInvokedPaymentApp.onPaymentDetailsNotUpdated();
+        PaymentApp invokedPaymentApp = mPaymentRequestService.getInvokedPaymentApp();
+        if (invokedPaymentApp != null && invokedPaymentApp.isWaitingForPaymentDetailsUpdate()) {
+            invokedPaymentApp.onPaymentDetailsNotUpdated();
             return;
         }
 
@@ -905,24 +909,22 @@ public class ChromePaymentRequestService
     @Override
     public boolean invokePaymentApp(EditableOption selectedShippingAddress,
             EditableOption selectedShippingOption, PaymentApp selectedPaymentApp) {
-        mInvokedPaymentApp = selectedPaymentApp;
-
         EditableOption selectedContact = mPaymentUiService.getContactSection() != null
                 ? mPaymentUiService.getContactSection().getSelectedItem()
                 : null;
         mPaymentResponseHelper = new PaymentResponseHelper(selectedShippingAddress,
-                selectedShippingOption, selectedContact, mInvokedPaymentApp, mPaymentOptions,
+                selectedShippingOption, selectedContact, selectedPaymentApp, mPaymentOptions,
                 mSkipToGPayHelper != null, this);
 
-        mInvokedPaymentApp.setPaymentHandlerHost(getPaymentHandlerHost());
+        selectedPaymentApp.setPaymentHandlerHost(getPaymentHandlerHost());
         // Only native apps can use PaymentDetailsUpdateService.
-        if (mInvokedPaymentApp.getPaymentAppType() == PaymentAppType.NATIVE_MOBILE_APP) {
+        if (selectedPaymentApp.getPaymentAppType() == PaymentAppType.NATIVE_MOBILE_APP) {
             PaymentDetailsUpdateServiceHelper.getInstance().initialize(new PackageManagerDelegate(),
-                    ((AndroidPaymentApp) mInvokedPaymentApp).packageName(),
+                    ((AndroidPaymentApp) selectedPaymentApp).packageName(),
                     this /* PaymentApp.PaymentRequestUpdateEventListener */);
         }
-        mPaymentRequestService.invokePaymentApp(mInvokedPaymentApp, /*callback=*/this);
-        return !mInvokedPaymentApp.isAutofillInstrument();
+        mPaymentRequestService.invokePaymentApp(selectedPaymentApp, /*callback=*/this);
+        return !selectedPaymentApp.isAutofillInstrument();
     }
 
     private PaymentHandlerHost getPaymentHandlerHost() {
@@ -971,9 +973,9 @@ public class ChromePaymentRequestService
     @Override
     public void abort() {
         if (mPaymentRequestService == null) return;
-
-        if (mInvokedPaymentApp != null) {
-            mInvokedPaymentApp.abortPaymentApp(/*callback=*/this);
+        PaymentApp invokedPaymentApp = mPaymentRequestService.getInvokedPaymentApp();
+        if (invokedPaymentApp != null) {
+            invokedPaymentApp.abortPaymentApp(/*callback=*/this);
             return;
         }
         onInstrumentAbortResult(true);
@@ -1195,7 +1197,7 @@ public class ChromePaymentRequestService
     @Override
     public void onInstrumentDetailsError(String errorMessage) {
         if (mPaymentRequestService == null) return;
-        mInvokedPaymentApp = null;
+        mPaymentRequestService.resetInvokedPaymentApp();
         if (mPaymentUiService.getMinimalUI() != null) {
             mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
             mPaymentUiService.getMinimalUI().showErrorAndClose(

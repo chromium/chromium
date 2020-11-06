@@ -125,6 +125,8 @@ public class PaymentRequestService implements PaymentAppFactoryDelegate, Payment
 
     private boolean mIsCanMakePaymentResponsePending;
     private boolean mIsHasEnrolledInstrumentResponsePending;
+    @Nullable
+    private PaymentApp mInvokedPaymentApp;
 
     /**
      * An observer interface injected when running tests to allow them to observe events.
@@ -512,6 +514,7 @@ public class PaymentRequestService implements PaymentAppFactoryDelegate, Payment
                 mSpec.getRawTotal(), mSpec.getRawLineItems(),
                 Collections.unmodifiableMap(modifiers), paymentOptions, redactedShippingOptions,
                 callback);
+        mInvokedPaymentApp = paymentApp;
         mJourneyLogger.setEventOccurred(Event.PAY_CLICKED);
         boolean isAutofillCard = paymentApp.isAutofillInstrument();
         // Record what type of app was selected when "Pay" was clicked.
@@ -1186,5 +1189,16 @@ public class PaymentRequestService implements PaymentAppFactoryDelegate, Payment
     @Nullable
     public String getTwaPackageName() {
         return mDelegate.getTwaPackageName();
+    }
+
+    /** @return The invoked payment app, can be null. */
+    @Nullable
+    public PaymentApp getInvokedPaymentApp() {
+        return mInvokedPaymentApp;
+    }
+
+    /** Sets no payment app is invoked. */
+    public void resetInvokedPaymentApp() {
+        mInvokedPaymentApp = null;
     }
 }
