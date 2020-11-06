@@ -10,13 +10,9 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/sequenced_task_runner.h"
 #include "media/base/media_resource.h"
 #include "media/base/pipeline.h"
-
-namespace base {
-class SingleThreadTaskRunner;
-}  // namespace base
 
 namespace media {
 
@@ -36,11 +32,10 @@ class MEDIA_EXPORT DecryptingMediaResource : public MediaResource {
  public:
   using InitCB = base::OnceCallback<void(bool success)>;
 
-  DecryptingMediaResource(
-      MediaResource* media_resource,
-      CdmContext* cdm_context,
-      MediaLog* media_log,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  DecryptingMediaResource(MediaResource* media_resource,
+                          CdmContext* cdm_context,
+                          MediaLog* media_log,
+                          scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~DecryptingMediaResource() override;
 
   // MediaResource implementation:
@@ -58,7 +53,7 @@ class MEDIA_EXPORT DecryptingMediaResource : public MediaResource {
   MediaResource* const media_resource_;
   CdmContext* const cdm_context_;
   MediaLog* const media_log_;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Number of DecryptingDemuxerStreams that have yet to be initialized.
   int num_dds_pending_init_ = 0;

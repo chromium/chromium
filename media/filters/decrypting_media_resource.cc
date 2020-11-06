@@ -22,7 +22,7 @@ DecryptingMediaResource::DecryptingMediaResource(
     MediaResource* media_resource,
     CdmContext* cdm_context,
     MediaLog* media_log,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
     : media_resource_(media_resource),
       cdm_context_(cdm_context),
       media_log_(media_log),
@@ -33,7 +33,7 @@ DecryptingMediaResource::DecryptingMediaResource(
   DCHECK(cdm_context_->GetDecryptor());
   DCHECK(cdm_context_->GetDecryptor()->CanAlwaysDecrypt());
   DCHECK(media_log_);
-  DCHECK(task_runner->BelongsToCurrentThread());
+  DCHECK(task_runner->RunsTasksInCurrentSequence());
 }
 
 DecryptingMediaResource::~DecryptingMediaResource() = default;

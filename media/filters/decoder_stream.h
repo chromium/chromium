@@ -28,7 +28,7 @@
 #include "media/filters/decoder_stream_traits.h"
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace media {
@@ -64,7 +64,7 @@ class MEDIA_EXPORT DecoderStream {
   using ReadCB = base::OnceCallback<void(ReadStatus, scoped_refptr<Output>)>;
 
   DecoderStream(std::unique_ptr<DecoderStreamTraits<StreamType>> traits,
-                const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+                scoped_refptr<base::SequencedTaskRunner> task_runner,
                 CreateDecodersCB create_decoders_cb,
                 MediaLog* media_log);
   virtual ~DecoderStream();
@@ -229,7 +229,7 @@ class MEDIA_EXPORT DecoderStream {
 
   std::unique_ptr<DecoderStreamTraits<StreamType>> traits_;
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   MediaLog* media_log_;
 
   State state_;

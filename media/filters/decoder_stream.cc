@@ -11,7 +11,7 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_context.h"
@@ -99,17 +99,17 @@ const char* GetStatusString(
 template <DemuxerStream::Type StreamType>
 DecoderStream<StreamType>::DecoderStream(
     std::unique_ptr<DecoderStreamTraits<StreamType>> traits,
-    const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     CreateDecodersCB create_decoders_cb,
     MediaLog* media_log)
     : traits_(std::move(traits)),
-      task_runner_(task_runner),
+      task_runner_(std::move(task_runner)),
       media_log_(media_log),
       state_(STATE_UNINITIALIZED),
       stream_(nullptr),
       cdm_context_(nullptr),
       decoder_produced_a_frame_(false),
-      decoder_selector_(task_runner, std::move(create_decoders_cb), media_log),
+      decoder_selector_(task_runner_, std::move(create_decoders_cb), media_log),
       decoding_eos_(false),
       preparing_output_(false),
       pending_decode_requests_(0),
@@ -122,7 +122,7 @@ DecoderStream<StreamType>::DecoderStream(
 template <DemuxerStream::Type StreamType>
 DecoderStream<StreamType>::~DecoderStream() {
   FUNCTION_DVLOG(1);
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (init_cb_) {
     task_runner_->PostTask(FROM_HERE,
@@ -154,7 +154,7 @@ void DecoderStream<StreamType>::Initialize(DemuxerStream* stream,
                                            StatisticsCB statistics_cb,
                                            WaitingCB waiting_cb) {
   FUNCTION_DVLOG(1);
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(state_, STATE_UNINITIALIZED);
   DCHECK(!init_cb_);
   DCHECK(init_cb);
@@ -178,7 +178,7 @@ void DecoderStream<StreamType>::Initialize(DemuxerStream* stream,
 template <DemuxerStream::Type StreamType>
 void DecoderStream<StreamType>::Read(ReadCB read_cb) {
   FUNCTION_DVLOG(3);
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(state_ != STATE_UNINITIALIZED && state_ != STATE_INITIALIZING)
       << state_;
   // No two reads in the flight at any time.
@@ -216,7 +216,7 @@ void DecoderStream<StreamType>::Read(ReadCB read_cb) {
 template <DemuxerStream::Type StreamType>
 void DecoderStream<StreamType>::Reset(base::OnceClosure closure) {
   FUNCTION_DVLOG(2);
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_NE(state_, STATE_UNINITIALIZED);
   DCHECK(!reset_cb_);
 
@@ -265,14 +265,14 @@ void DecoderStream<StreamType>::Reset(base::OnceClosure closure) {
 
 template <DemuxerStream::Type StreamType>
 bool DecoderStream<StreamType>::CanReadWithoutStalling() const {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   return !ready_outputs_.empty() || !unprepared_outputs_.empty() ||
          (decoder_ && decoder_->CanReadWithoutStalling());
 }
 
 template <>
 bool DecoderStream<DemuxerStream::AUDIO>::CanReadWithoutStalling() const {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   return true;
 }
 
@@ -306,7 +306,7 @@ int DecoderStream<DemuxerStream::AUDIO>::GetMaxReadyOutputs() const {
 
 template <DemuxerStream::Type StreamType>
 bool DecoderStream<StreamType>::CanDecodeMore() const {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   bool buffers_left = !(fallback_buffers_.empty() && decoding_eos_);
 
@@ -319,21 +319,21 @@ bool DecoderStream<StreamType>::CanDecodeMore() const {
 
 template <DemuxerStream::Type StreamType>
 base::TimeDelta DecoderStream<StreamType>::AverageDuration() const {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   return duration_tracker_.count() ? duration_tracker_.Average()
                                    : base::TimeDelta();
 }
 
 template <DemuxerStream::Type StreamType>
 void DecoderStream<StreamType>::SetPrepareCB(PrepareCB prepare_cb) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   prepare_cb_ = std::move(prepare_cb);
 }
 
 template <DemuxerStream::Type StreamType>
 void DecoderStream<StreamType>::SkipPrepareUntil(
     base::TimeDelta start_timestamp) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   skip_prepare_until_timestamp_ = start_timestamp;
 }
 
@@ -353,7 +353,7 @@ void DecoderStream<StreamType>::OnDecoderSelected(
   FUNCTION_DVLOG(1) << ": "
                     << (selected_decoder ? selected_decoder->GetDisplayName()
                                          : "No decoder selected.");
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(state_ == STATE_INITIALIZING || state_ == STATE_REINITIALIZING_DECODER)
       << state_;
 
@@ -697,7 +697,7 @@ void DecoderStream<StreamType>::OnBufferReady(
   FUNCTION_DVLOG(3) << ": " << status << ", "
                     << (buffer ? buffer->AsHumanReadableString() : "nullptr");
 
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(pending_demuxer_read_);
   if (!decoder_produced_a_frame_) {
     DCHECK(state_ == STATE_ERROR || state_ == STATE_REINITIALIZING_DECODER ||
@@ -834,7 +834,7 @@ void DecoderStream<StreamType>::OnBufferReady(
 template <DemuxerStream::Type StreamType>
 void DecoderStream<StreamType>::ReinitializeDecoder() {
   FUNCTION_DVLOG(2);
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(state_, STATE_FLUSHING_DECODER);
   DCHECK_EQ(pending_decode_requests_, 0);
 
@@ -846,7 +846,7 @@ void DecoderStream<StreamType>::ReinitializeDecoder() {
 template <DemuxerStream::Type StreamType>
 void DecoderStream<StreamType>::CompleteDecoderReinitialization(bool success) {
   FUNCTION_DVLOG(2);
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(state_, STATE_REINITIALIZING_DECODER);
 
   state_ = success ? STATE_NORMAL : STATE_ERROR;
@@ -884,7 +884,7 @@ void DecoderStream<StreamType>::CompleteDecoderReinitialization(bool success) {
 template <DemuxerStream::Type StreamType>
 void DecoderStream<StreamType>::ResetDecoder() {
   FUNCTION_DVLOG(2);
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(state_ == STATE_NORMAL || state_ == STATE_FLUSHING_DECODER ||
          state_ == STATE_ERROR || state_ == STATE_END_OF_STREAM)
       << state_;
@@ -897,7 +897,7 @@ void DecoderStream<StreamType>::ResetDecoder() {
 template <DemuxerStream::Type StreamType>
 void DecoderStream<StreamType>::OnDecoderReset() {
   FUNCTION_DVLOG(2);
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(state_ == STATE_NORMAL || state_ == STATE_FLUSHING_DECODER ||
          state_ == STATE_ERROR || state_ == STATE_END_OF_STREAM)
       << state_;
@@ -934,7 +934,7 @@ void DecoderStream<StreamType>::ClearOutputs() {
 template <DemuxerStream::Type StreamType>
 void DecoderStream<StreamType>::MaybePrepareAnotherOutput() {
   FUNCTION_DVLOG(3);
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(state_ == STATE_NORMAL || state_ == STATE_FLUSHING_DECODER ||
          state_ == STATE_END_OF_STREAM ||
          state_ == STATE_REINITIALIZING_DECODER)
@@ -963,7 +963,7 @@ template <DemuxerStream::Type StreamType>
 void DecoderStream<StreamType>::OnPreparedOutputReady(
     scoped_refptr<Output> output) {
   FUNCTION_DVLOG(2);
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   // Errors and reset invalidate the WeakPtr factory for this function, so it
   // should only be called in normal and flush states.
