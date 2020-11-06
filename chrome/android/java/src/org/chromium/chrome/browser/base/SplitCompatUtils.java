@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.base;
 import android.content.Context;
 
 import org.chromium.base.BundleUtils;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.IdentifierNameString;
 
 /** Utils for compatibility with isolated splits. */
@@ -31,6 +32,11 @@ public class SplitCompatUtils {
      * Constructs a new instance of the given class name using the class loader from the context.
      */
     public static Object newInstance(Context context, String className) {
+        // TODO(crbug.com/1142589): If this crash fix works we can remove the context arg from here.
+        Context appContext = ContextUtils.getApplicationContext();
+        if (appContext != null) {
+            context = appContext;
+        }
         try {
             return context.getClassLoader().loadClass(className).newInstance();
         } catch (ReflectiveOperationException e) {

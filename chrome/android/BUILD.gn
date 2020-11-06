@@ -2104,6 +2104,7 @@ android_library("base_module_java") {
     "java/src/org/chromium/chrome/browser/ChromeBackupAgent.java",
     "java/src/org/chromium/chrome/browser/base/MainDexApplicationImpl.java",
     "java/src/org/chromium/chrome/browser/base/SplitChromeApplication.java",
+    "java/src/org/chromium/chrome/browser/base/SplitCompatAppComponentFactory.java",
     "java/src/org/chromium/chrome/browser/base/SplitCompatApplication.java",
     "java/src/org/chromium/chrome/browser/base/SplitCompatBackupAgent.java",
     "java/src/org/chromium/chrome/browser/base/SplitCompatCustomTabsService.java",
