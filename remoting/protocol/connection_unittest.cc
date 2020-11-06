@@ -578,7 +578,8 @@ TEST_P(ConnectionTest, DestroyOnIncomingMessage) {
   run_loop.Run();
 }
 
-TEST_P(ConnectionTest, VideoStats) {
+// TODO(crbug.com/1146302): Test is flaky.
+TEST_P(ConnectionTest, DISABLED_VideoStats) {
   // Currently this test only works for WebRTC because for ICE connections stats
   // are reported by SoftwareVideoRenderer which is not used in this test.
   // TODO(sergeyu): Fix this.
