@@ -20,11 +20,35 @@ currently stored in `//tools/android/avd/proto`.
 
 | File | Builder |
 |:----:|:-------:|
+| `tools/android/avd/proto/generic_android23.textpb` | [android-marshmallow-x86-rel][android-marshmallow-x86-rel] |
 | `tools/android/avd/proto/generic_android28.textpb` | [android-pie-x86-rel][android-pie-x86-rel] |
+| `tools/android/avd/proto/generic_playstore_android28.textpb` | [android-pie-x86-rel][android-pie-x86-rel] |
 
 You can use these configuration files to run the same emulator images locally.
 
+[android-marshmallow-x86-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-marshmallow-x86-rel
 [android-pie-x86-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-pie-x86-rel
+
+#### Prerequisite
+
+ * Make sure KVM (Kernel-based Virtual Machine) is enabled.
+   See this
+   [link](https://developer.android.com/studio/run/emulator-acceleration#vm-linux)
+   from android studio for more details and instructions.
+
+ * You need to have the permissions to use KVM.
+   Use the following command to see if you are in group `kvm`:
+
+   ```
+     $ grep kvm /etc/group
+   ```
+
+   If your username is not shown in the group, add yourself to the group:
+
+   ```
+     $ sudo adduser $USER kvm
+     $ newgrp kvm
+   ```
 
 #### Running via the test runner
 
@@ -70,33 +94,14 @@ down. This is how builders run the emulator.
 The test runner will set up and tear down the emulator on each invocation.
 To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
 
-##### Prerequisite
-
- * Make sure KVM (Kernel-based Virtual Machine) is enabled.
-   See this
-   [link](https://developer.android.com/studio/run/emulator-acceleration#vm-linux)
-   from android studio for more details and instructions.
-
- * You need to have the permissions to use KVM.
-   Use the following command to see if you are in group `kvm`:
-
-   ```
-     $ grep kvm /etc/group
-   ```
-
-   If your username is not shown in the group, add yourself to the group:
-
-   ```
-     $ sudo adduser $USER kvm
-     $ newgrp kvm
-   ```
-
- * Install the emulator configuration you intend to use.
-
-    ```
-      $ tools/android/avd/avd.py install \
-          --avd-config tools/android/avd/proto/generic_android28.textpb
-    ```
+> Note: Before calling `avd.py start`, use `avd.py install` to install the
+> emulator configuration you intend to use. Otherwise the emulator won't start
+> correctly.
+>
+> ```
+>   $ tools/android/avd/avd.py install \
+>       --avd-config tools/android/avd/proto/generic_android28.textpb
+> ```
 
 ##### Options
 
@@ -132,6 +137,18 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
       $ tools/android/avd/avd.py start \
           --avd-config tools/android/avd/proto/generic_android28.textpb \
           --no-read-only
+    ```
+
+ * `--debug-tags`
+
+    `avd.py` disables the emulator log by default. When this option is used,
+    emulator log will be enabled. It is useful when the emulator cannot be
+    launched correctly. See `emulator -help-debug-tags` for a full list of tags.
+
+    ```
+      $ tools/android/avd/avd.py start \
+          --avd-config tools/android/avd/proto/generic_android28.textpb \
+          --debug-tags init,snapshot
     ```
 
 ### Using Your Own Emulator Image
