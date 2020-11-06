@@ -118,14 +118,15 @@ var wellKnownSymbols = new Map([
 // platform-specific expectations files to a bare minimum to make updates in the
 // common (platform-neutral) case as simple as possible.
 var platformSpecificInterfaces = new Set([
-    'Bluetooth',
-    'BluetoothCharacteristicProperties',
-    'BluetoothDevice',
-    'BluetoothRemoteGATTCharacteristic',
-    'BluetoothRemoteGATTDescriptor',
-    'BluetoothRemoteGATTServer',
-    'BluetoothRemoteGATTService',
-    'BluetoothUUID',
+  'BarcodeDetector',
+  'Bluetooth',
+  'BluetoothCharacteristicProperties',
+  'BluetoothDevice',
+  'BluetoothRemoteGATTCharacteristic',
+  'BluetoothRemoteGATTDescriptor',
+  'BluetoothRemoteGATTServer',
+  'BluetoothRemoteGATTService',
+  'BluetoothUUID',
 ]);
 
 // List of all platform-specific properties on interfaces that appear on all

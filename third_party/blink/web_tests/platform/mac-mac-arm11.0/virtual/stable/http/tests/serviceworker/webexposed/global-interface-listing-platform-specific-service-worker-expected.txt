@@ -1,0 +1,10 @@
+[INTERFACES]
+interface Notification : EventTarget
+    getter image
+[NAMESPACES]
+[GLOBAL OBJECT]
+PASS Verify the interface of ServiceWorkerGlobalScope
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

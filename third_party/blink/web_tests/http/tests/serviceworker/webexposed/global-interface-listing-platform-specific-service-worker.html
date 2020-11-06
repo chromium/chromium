@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>ServiceWorkerGlobalScope expose test.</title>
+  <title>ServiceWorkerGlobalScope platform-specific expose test.</title>
   <script src="../../js-test-resources/js-test.js"></script>
   <script src="resources/global-interface-listing-service-worker.js"></script>
 </head>
@@ -13,7 +13,7 @@
 
 jsTestIsAsync = true;
 
-register_service_worker(/*platform_specific=*/false);
+register_service_worker(/*platform_specific=*/true);
 </script>
 </body>
 </html>

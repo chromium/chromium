@@ -3,5 +3,5 @@
 <script>
 description("This test documents all interface attributes and methods on DedicatedWorkerGlobalScope.");
 worker = startWorker("resources/global-interface-listing-worker.js");
-worker.postMessage({ platformSpecific: false });
+worker.postMessage({ platformSpecific: true });
 </script>

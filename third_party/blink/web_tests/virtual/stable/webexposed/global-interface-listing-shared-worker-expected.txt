@@ -42,11 +42,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method match
 [Worker]     method matchAll
 [Worker]     setter onprogress
-[Worker] interface BarcodeDetector
-[Worker]     static method getSupportedFormats
-[Worker]     attribute @@toStringTag
-[Worker]     method constructor
-[Worker]     method detect
 [Worker] interface Blob
 [Worker]     attribute @@toStringTag
 [Worker]     getter size

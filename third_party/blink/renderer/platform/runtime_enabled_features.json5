@@ -246,7 +246,14 @@
     },
     {
       name: "BarcodeDetector",
-      status: "stable",
+      status: {
+        // Built-in barcode detection APIs are only available from some
+        // platforms. See //services/shape_detection.
+        "Android": "stable",
+        "ChromeOS": "stable",
+        "Mac": "stable",
+        "default": "test",
+      },
     },
     {
       // https://github.com/chrishtr/battery-savings/blob/master/explainer.md
