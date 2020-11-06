@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/location.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
@@ -66,6 +67,12 @@ inline OnceClosure MakeCriticalClosure(StringPiece task_name,
       &internal::CriticalClosure::Run,
       Owned(new internal::CriticalClosure(task_name, std::move(closure))));
 }
+
+inline OnceClosure MakeCriticalClosure(const Location& posted_from,
+                                       OnceClosure closure) {
+  return MakeCriticalClosure(posted_from.ToString(), std::move(closure));
+}
+
 #else  // defined(OS_IOS)
 inline OnceClosure MakeCriticalClosure(StringPiece task_name,
                                        OnceClosure closure) {
@@ -73,6 +80,12 @@ inline OnceClosure MakeCriticalClosure(StringPiece task_name,
   // background time for closures to finish when it goes into the background.
   return closure;
 }
+
+inline OnceClosure MakeCriticalClosure(const Location& posted_from,
+                                       OnceClosure closure) {
+  return closure;
+}
+
 #endif  // defined(OS_IOS)
 
 }  // namespace base

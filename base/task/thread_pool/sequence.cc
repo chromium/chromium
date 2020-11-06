@@ -45,8 +45,7 @@ void Sequence::Transaction::PushTask(Task task) {
 
   task.task = sequence()->traits_.shutdown_behavior() ==
                       TaskShutdownBehavior::BLOCK_SHUTDOWN
-                  ? MakeCriticalClosure(task.posted_from.ToString(),
-                                        std::move(task.task))
+                  ? MakeCriticalClosure(task.posted_from, std::move(task.task))
                   : std::move(task.task);
 
   if (sequence()->queue_.empty())
