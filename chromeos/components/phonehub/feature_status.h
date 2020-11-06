@@ -51,8 +51,11 @@ enum class FeatureStatus {
   // The feature is enabled, and there is an active connection with the phone.
   kEnabledAndConnected = 7,
 
+  // The feature is unavailable during the lockscreen.
+  kUnavailableScreenLocked = 8,
+
   // Max value needed for metrics.
-  kMaxValue = kEnabledAndConnected
+  kMaxValue = kUnavailableScreenLocked,
 };
 
 std::ostream& operator<<(std::ostream& stream, FeatureStatus status);

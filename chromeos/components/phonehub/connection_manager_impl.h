@@ -48,6 +48,7 @@ class ConnectionManagerImpl
   // ConnectionManager:
   ConnectionManager::Status GetStatus() const override;
   void AttemptConnection() override;
+  void Disconnect() override;
   void SendMessage(const std::string& payload) override;
 
  private:
@@ -90,6 +91,8 @@ class ConnectionManagerImpl
   void OnMessageReceived(const std::string& payload) override;
 
   void OnConnectionTimeout();
+
+  void TearDownConnection();
 
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
 

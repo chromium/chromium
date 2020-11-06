@@ -147,6 +147,8 @@ PhoneHubUiController::GetUiStateFromPhoneHubManager() {
       return UiState::kPhoneConnecting;
     case FeatureStatus::kEnabledAndConnected:
       return UiState::kPhoneConnected;
+    case FeatureStatus::kUnavailableScreenLocked:
+      return UiState::kHidden;
   }
 }
 

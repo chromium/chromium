@@ -117,13 +117,17 @@ bool IsFeatureDisabledByUser(FeatureState feature_state) {
 FeatureStatusProviderImpl::FeatureStatusProviderImpl(
     device_sync::DeviceSyncClient* device_sync_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-    ConnectionManager* connection_manager)
+    ConnectionManager* connection_manager,
+    session_manager::SessionManager* session_manager)
     : device_sync_client_(device_sync_client),
       multidevice_setup_client_(multidevice_setup_client),
-      connection_manager_(connection_manager) {
+      connection_manager_(connection_manager),
+      session_manager_(session_manager) {
+  DCHECK(session_manager_);
   device_sync_client_->AddObserver(this);
   multidevice_setup_client_->AddObserver(this);
   connection_manager_->AddObserver(this);
+  session_manager_->AddObserver(this);
 
   device::BluetoothAdapterFactory::Get()->GetAdapter(
       base::BindOnce(&FeatureStatusProviderImpl::OnBluetoothAdapterReceived,
@@ -138,6 +142,7 @@ FeatureStatusProviderImpl::~FeatureStatusProviderImpl() {
   connection_manager_->RemoveObserver(this);
   if (bluetooth_adapter_)
     bluetooth_adapter_->RemoveObserver(this);
+  session_manager_->RemoveObserver(this);
 }
 
 FeatureStatus FeatureStatusProviderImpl::GetStatus() const {
@@ -204,6 +209,10 @@ void FeatureStatusProviderImpl::OnConnectionStatusChanged() {
   UpdateStatus();
 }
 
+void FeatureStatusProviderImpl::OnSessionStateChanged() {
+  UpdateStatus();
+}
+
 void FeatureStatusProviderImpl::UpdateStatus() {
   DCHECK(status_.has_value());
 
@@ -236,6 +245,9 @@ FeatureStatus FeatureStatusProviderImpl::ComputeStatus() {
                             feature_state)) {
     return FeatureStatus::kNotEligibleForFeature;
   }
+
+  if (session_manager_->IsScreenLocked())
+    return FeatureStatus::kUnavailableScreenLocked;
 
   HostStatus host_status = multidevice_setup_client_->GetHostStatus().first;
 

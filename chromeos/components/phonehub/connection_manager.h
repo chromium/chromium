@@ -49,6 +49,10 @@ class ConnectionManager {
   // the connection.
   virtual void AttemptConnection() = 0;
 
+  // Cancels an ongoing connection attempt. Is a no-op is there is currently no
+  // connection attempt.
+  virtual void Disconnect() = 0;
+
   // Sends a message with the specified |payload|.
   virtual void SendMessage(const std::string& payload) = 0;
 

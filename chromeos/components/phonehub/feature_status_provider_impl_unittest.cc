@@ -11,6 +11,7 @@
 #include "chromeos/components/phonehub/fake_connection_manager.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "components/session_manager/core/session_manager.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -102,9 +103,10 @@ class FeatureStatusProviderImplTest : public testing::Test {
     device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
     fake_device_sync_client_.NotifyReady();
 
+    session_manager_ = std::make_unique<session_manager::SessionManager>();
     provider_ = std::make_unique<FeatureStatusProviderImpl>(
         &fake_device_sync_client_, &fake_multidevice_setup_client_,
-        &fake_connection_manager_);
+        &fake_connection_manager_, session_manager_.get());
     provider_->AddObserver(&fake_observer_);
   }
 
@@ -170,6 +172,10 @@ class FeatureStatusProviderImplTest : public testing::Test {
 
   size_t GetNumObserverCalls() const { return fake_observer_.num_calls(); }
 
+  session_manager::SessionManager* session_manager() {
+    return session_manager_.get();
+  }
+
  private:
   bool is_adapter_present() { return is_adapter_present_; }
   bool is_adapter_powered() { return is_adapter_powered_; }
@@ -186,6 +192,7 @@ class FeatureStatusProviderImplTest : public testing::Test {
   bool is_adapter_powered_ = true;
 
   FakeObserver fake_observer_;
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<FeatureStatusProvider> provider_;
 };
 
@@ -370,6 +377,16 @@ TEST_F(FeatureStatusProviderImplTest, TransitionBetweenAllStatuses) {
   SetConnectionStatus(ConnectionManager::Status::kDisconnected);
   EXPECT_EQ(FeatureStatus::kEnabledButDisconnected, GetStatus());
   EXPECT_EQ(8u, GetNumObserverCalls());
+
+  // Simulate lock screen displayed.
+  session_manager()->SetSessionState(session_manager::SessionState::LOCKED);
+  EXPECT_EQ(FeatureStatus::kUnavailableScreenLocked, GetStatus());
+  EXPECT_EQ(9u, GetNumObserverCalls());
+
+  // Simulate user unlocks the device.
+  session_manager()->SetSessionState(session_manager::SessionState::ACTIVE);
+  EXPECT_EQ(FeatureStatus::kEnabledButDisconnected, GetStatus());
+  EXPECT_EQ(10u, GetNumObserverCalls());
 }
 
 TEST_F(FeatureStatusProviderImplTest, AttemptingConnection) {
@@ -409,6 +426,23 @@ TEST_F(FeatureStatusProviderImplTest, AttemptedConnectionFailed) {
   EXPECT_EQ(2u, GetNumObserverCalls());
 
   SetConnectionStatus(ConnectionManager::Status::kDisconnected);
+  EXPECT_EQ(FeatureStatus::kEnabledButDisconnected, GetStatus());
+  EXPECT_EQ(3u, GetNumObserverCalls());
+}
+
+TEST_F(FeatureStatusProviderImplTest, LockScreenStatusUpdate) {
+  SetEligibleSyncedDevices();
+  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser);
+  EXPECT_EQ(FeatureStatus::kEnabledButDisconnected, GetStatus());
+  EXPECT_EQ(1u, GetNumObserverCalls());
+
+  // Simulate lock screen displayed.
+  session_manager()->SetSessionState(session_manager::SessionState::LOCKED);
+  EXPECT_EQ(FeatureStatus::kUnavailableScreenLocked, GetStatus());
+  EXPECT_EQ(2u, GetNumObserverCalls());
+
+  // Simulate user unlocks the device.
+  session_manager()->SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_EQ(FeatureStatus::kEnabledButDisconnected, GetStatus());
   EXPECT_EQ(3u, GetNumObserverCalls());
 }

@@ -30,6 +30,11 @@ void FakeConnectionManager::AttemptConnection() {
     SetStatus(Status::kConnecting);
 }
 
+void FakeConnectionManager::Disconnect() {
+  ++num_disconnect_calls_;
+  SetStatus(Status::kDisconnected);
+}
+
 void FakeConnectionManager::SendMessage(const std::string& payload) {
   sent_messages_.push_back(payload);
 }

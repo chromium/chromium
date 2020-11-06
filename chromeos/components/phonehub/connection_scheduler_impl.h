@@ -34,7 +34,10 @@ class ConnectionSchedulerImpl : public ConnectionScheduler,
   // FeatureStatusProvider::Observer:
   void OnFeatureStatusChanged() override;
 
-  // Invalidate all pending backoff attempts.
+  // Invalidate all pending backoff attempts and disconnects the current
+  // connection attempt.
+  void DisconnectAndClearBackoffAttempts();
+
   void ClearBackoffAttempts();
 
   // Test only functions.

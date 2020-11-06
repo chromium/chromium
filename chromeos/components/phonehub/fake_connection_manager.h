@@ -26,15 +26,19 @@ class FakeConnectionManager : public ConnectionManager {
     return num_attempt_connection_calls_;
   }
 
+  size_t num_disconnect_calls() const { return num_disconnect_calls_; }
+
  private:
   // ConnectionManager:
   Status GetStatus() const override;
   void AttemptConnection() override;
+  void Disconnect() override;
   void SendMessage(const std::string& payload) override;
 
   Status status_;
   std::vector<std::string> sent_messages_;
   size_t num_attempt_connection_calls_ = 0;
+  size_t num_disconnect_calls_ = 0;
 };
 
 }  // namespace phonehub

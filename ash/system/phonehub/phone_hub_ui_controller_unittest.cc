@@ -144,4 +144,11 @@ TEST_F(PhoneHubUiControllerTest, PhoneConnected) {
   EXPECT_EQ(kPhoneConnectedView, content_view->GetID());
 }
 
+TEST_F(PhoneHubUiControllerTest, UnavailableScreenLocked) {
+  GetFeatureStatusProvider()->SetStatus(
+      FeatureStatus::kUnavailableScreenLocked);
+  EXPECT_EQ(PhoneHubUiController::UiState::kHidden, controller_.ui_state());
+  EXPECT_FALSE(controller_.CreateContentView(/*bubble_view=*/nullptr).get());
+}
+
 }  // namespace ash

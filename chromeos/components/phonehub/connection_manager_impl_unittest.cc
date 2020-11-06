@@ -346,5 +346,24 @@ TEST_F(ConnectionManagerImplTest, ConnectionTimeout) {
                                       1);
 }
 
+TEST_F(ConnectionManagerImplTest, DisconnectConnection) {
+  CreateFakeConnectionAttempt();
+  connection_manager_->AttemptConnection();
+
+  // Status has been updated to connecting, verify that the status observer
+  // has been called.
+  EXPECT_EQ(1u, GetNumStatusObserverCalls());
+  EXPECT_EQ(ConnectionManager::Status::kConnecting, GetStatus());
+  VerifyTimerSet();
+
+  // Disconnect the connection attempt.
+  connection_manager_->Disconnect();
+  EXPECT_EQ(2u, GetNumStatusObserverCalls());
+  EXPECT_EQ(ConnectionManager::Status::kDisconnected, GetStatus());
+  VerifyTimerStopped();
+  histogram_tester_.ExpectBucketCount("PhoneHub.Connectivity.Success", false,
+                                      1);
+}
+
 }  // namespace phonehub
 }  // namespace chromeos

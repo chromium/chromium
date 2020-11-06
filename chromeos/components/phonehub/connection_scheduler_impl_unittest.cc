@@ -143,6 +143,8 @@ TEST_F(ConnectionSchedulerImplTest, BackoffRetryWithUpdatedFeatures) {
   // connection.
   EXPECT_EQ(0, GetBackoffFailureCount());
   EXPECT_EQ(1u, fake_connection_manager_->num_attempt_connection_calls());
+  // Expect that connection has been disconnected.
+  EXPECT_EQ(1u, fake_connection_manager_->num_disconnect_calls());
 
   // Fast forward time and confirm no other retries have been made.
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(100));
@@ -167,5 +169,26 @@ TEST_F(ConnectionSchedulerImplTest, BackoffRetryWithUpdatedFeatures) {
   // failure count.
   EXPECT_EQ(1, GetBackoffFailureCount());
 }
+
+TEST_F(ConnectionSchedulerImplTest, ScheduleConnectionAfterUnlock) {
+  fake_feature_status_provider_->SetStatus(
+      FeatureStatus::kEnabledButDisconnected);
+  CreateConnectionScheduler();
+
+  // Simulate screen locked and expect no scheduled connections.
+  fake_feature_status_provider_->SetStatus(
+      FeatureStatus::kUnavailableScreenLocked);
+  // Expect no scheduled connections on screen lock.
+  EXPECT_EQ(0, GetBackoffFailureCount());
+  EXPECT_EQ(0u, fake_connection_manager_->num_attempt_connection_calls());
+  EXPECT_EQ(1u, fake_connection_manager_->num_disconnect_calls());
+
+  // Simulate screen unlocked and expect a scheduled connection.
+  fake_feature_status_provider_->SetStatus(
+      FeatureStatus::kEnabledButDisconnected);
+  EXPECT_EQ(0, GetBackoffFailureCount());
+  EXPECT_EQ(1u, fake_connection_manager_->num_attempt_connection_calls());
+}
+
 }  // namespace phonehub
 }  // namespace chromeos

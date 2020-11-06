@@ -149,12 +149,17 @@ void ConnectionManagerImpl::AttemptConnection() {
   }
   connection_attempt_->SetDelegate(this);
 
-  PA_LOG(INFO) << "ConnectiongManager status updated to: " << GetStatus();
+  PA_LOG(INFO) << "ConnectionManager status updated to: " << GetStatus();
   NotifyStatusChanged();
 
   timer_->Start(FROM_HERE, kConnectionTimeoutSeconds,
                 base::BindOnce(&ConnectionManagerImpl::OnConnectionTimeout,
                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ConnectionManagerImpl::Disconnect() {
+  PA_LOG(INFO) << "ConnectionManager disconnecting connection.";
+  TearDownConnection();
 }
 
 void ConnectionManagerImpl::SendMessage(const std::string& payload) {
@@ -186,12 +191,7 @@ void ConnectionManagerImpl::OnConnection(
 }
 
 void ConnectionManagerImpl::OnDisconnected() {
-  // Stop timer in case we are disconnected before the connection timed out.
-  timer_->Stop();
-  connection_attempt_.reset();
-  channel_->RemoveObserver(this);
-  channel_.reset();
-  NotifyStatusChanged();
+  TearDownConnection();
 }
 
 void ConnectionManagerImpl::OnMessageReceived(const std::string& payload) {
@@ -203,6 +203,16 @@ void ConnectionManagerImpl::OnConnectionTimeout() {
                   << "attempt.";
 
   connection_attempt_.reset();
+  NotifyStatusChanged();
+}
+
+void ConnectionManagerImpl::TearDownConnection() {
+  // Stop timer in case we are disconnected before the connection timed out.
+  timer_->Stop();
+  connection_attempt_.reset();
+  if (channel_)
+    channel_->RemoveObserver(this);
+  channel_.reset();
   NotifyStatusChanged();
 }
 

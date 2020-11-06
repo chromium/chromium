@@ -33,6 +33,9 @@ std::ostream& operator<<(std::ostream& stream, FeatureStatus status) {
     case FeatureStatus::kEnabledAndConnected:
       stream << "[Enabled; connected]";
       break;
+    case FeatureStatus::kUnavailableScreenLocked:
+      stream << "[Unavailable; screen locked]";
+      break;
   }
 
   return stream;

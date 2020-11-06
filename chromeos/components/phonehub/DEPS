@@ -7,6 +7,7 @@ include_rules = [
   "+chromeos/services/secure_channel/public/cpp/client",
   "+components/keyed_service/core/keyed_service.h",
   "+components/prefs",
+  "+components/session_manager/core",
   "+device/bluetooth",
   "+net",
   "+ui/gfx",

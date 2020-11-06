@@ -11,6 +11,8 @@
 #include "chromeos/components/phonehub/feature_status_provider.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace chromeos {
@@ -24,12 +26,14 @@ class FeatureStatusProviderImpl
       public device_sync::DeviceSyncClient::Observer,
       public multidevice_setup::MultiDeviceSetupClient::Observer,
       public device::BluetoothAdapter::Observer,
-      public ConnectionManager::Observer {
+      public ConnectionManager::Observer,
+      public session_manager::SessionManagerObserver {
  public:
   FeatureStatusProviderImpl(
       device_sync::DeviceSyncClient* device_sync_client,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-      ConnectionManager* connection_manager);
+      ConnectionManager* connection_manager,
+      session_manager::SessionManager* session_manager);
   ~FeatureStatusProviderImpl() override;
 
  private:
@@ -65,11 +69,15 @@ class FeatureStatusProviderImpl
   // ConnectionManager::Observer:
   void OnConnectionStatusChanged() override;
 
+  // SessionManagerObserver:
+  void OnSessionStateChanged() override;
+
   void RecordFeatureStatusOnLogin();
 
   device_sync::DeviceSyncClient* device_sync_client_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   ConnectionManager* connection_manager_;
+  session_manager::SessionManager* session_manager_;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   base::Optional<FeatureStatus> status_;
