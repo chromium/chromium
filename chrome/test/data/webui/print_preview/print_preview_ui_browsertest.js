@@ -1526,9 +1526,16 @@ TEST_F('PrintPreviewDestinationSettingsTest', 'DisabledSaveAsPdf', function() {
   this.runMochaTest(destination_settings_test.TestNames.DisabledSaveAsPdf);
 });
 
-TEST_F('PrintPreviewDestinationSettingsTest', 'NoDestinations', function() {
-  this.runMochaTest(destination_settings_test.TestNames.NoDestinations);
-});
+// Flaky on Mac, see https://crbug.com/1146513.
+GEN('#if defined(OS_MAC)');
+GEN('#define MAYBE_NoDestinations DISABLED_NoDestinations');
+GEN('#else');
+GEN('#define MAYBE_NoDestinations NoDestinations');
+GEN('#endif');
+TEST_F(
+    'PrintPreviewDestinationSettingsTest', 'MAYBE_NoDestinations', function() {
+      this.runMochaTest(destination_settings_test.TestNames.NoDestinations);
+    });
 
 GEN('#if defined(OS_CHROMEOS)');
 // eslint-disable-next-line no-var
