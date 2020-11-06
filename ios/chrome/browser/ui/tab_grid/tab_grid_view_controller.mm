@@ -869,7 +869,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   topToolbar.leadingButton.title =
       l10n_util::GetNSString(IDS_IOS_TAB_GRID_CLOSE_ALL_BUTTON);
   topToolbar.leadingButton.target = self;
-  if (base::FeatureList::IsEnabled(kEnableCloseAllTabsConfirmation)) {
+  if (IsCloseAllTabsConfirmationEnabled()) {
     topToolbar.leadingButton.action =
         @selector(closeAllButtonTappedShowConfirmation);
   } else {
@@ -913,7 +913,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   ]];
 
   bottomToolbar.leadingButton.target = self;
-  if (base::FeatureList::IsEnabled(kEnableCloseAllTabsConfirmation)) {
+  if (IsCloseAllTabsConfirmationEnabled()) {
     bottomToolbar.leadingButton.action =
         @selector(closeAllButtonTappedShowConfirmation);
   } else {

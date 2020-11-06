@@ -534,6 +534,9 @@ id ExecuteJavaScript(NSString* javascript, NSError* __autoreleasing* out_error);
 // can, open multiple windows.
 - (BOOL)areMultipleWindowsSupported;
 
+// Returns whether the Close All Tabs Confirmation feature is enabled.
+- (BOOL)isCloseAllTabsConfirmationEnabled;
+
 #pragma mark - Popup Blocking
 
 // Gets the current value of the popup content setting preference for the

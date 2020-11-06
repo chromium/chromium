@@ -10,4 +10,7 @@
 // Feature to enable Close All Tabs confirmation.
 extern const base::Feature kEnableCloseAllTabsConfirmation;
 
+// Whether the kCloseAllTabsConfirmation flag is enabled.
+bool IsCloseAllTabsConfirmationEnabled();
+
 #endif  // IOS_CHROME_BROWSER_UI_TAB_GRID_FEATURES_H_

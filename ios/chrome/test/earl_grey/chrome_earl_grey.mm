@@ -929,6 +929,10 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   return [ChromeEarlGreyAppInterface areMultipleWindowsSupported];
 }
 
+- (BOOL)isCloseAllTabsConfirmationEnabled {
+  return [ChromeEarlGreyAppInterface isCloseAllTabsConfirmationEnabled];
+}
+
 #pragma mark - ScopedBlockPopupsPref
 
 - (ContentSetting)popupPrefValue {

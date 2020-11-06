@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#import "ios/chrome/browser/ui/tab_grid/features.h"
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -37,6 +38,22 @@ char kResponse3[] = "Test Page 3 content";
 @end
 
 @implementation TabGridTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+
+  // Features are enabled or disabled based on the name of the test that is
+  // running. This is done because it is inefficient to use
+  // ensureAppLaunchedWithConfiguration for each test.
+  if ([self isRunningTest:@selector(testCloseAllAndUndoCloseAll)] ||
+      [self isRunningTest:@selector
+            (testUndoCloseAllNotAvailableAfterNewTabCreation)]) {
+    config.features_disabled.push_back(kEnableCloseAllTabsConfirmation);
+  } else {
+    config.features_enabled.push_back(kEnableCloseAllTabsConfirmation);
+  }
+  return config;
+}
 
 - (void)setUp {
   [super setUp];
@@ -119,7 +136,6 @@ char kResponse3[] = "Test Page 3 content";
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCloseAllButton()]
       performAction:grey_tap()];
-  // Undo is available after close all action.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridUndoCloseAllButton()]
       assertWithMatcher:grey_sufficientlyVisible()];

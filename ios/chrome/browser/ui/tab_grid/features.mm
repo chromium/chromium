@@ -10,3 +10,7 @@
 
 const base::Feature kEnableCloseAllTabsConfirmation{
     "EnableCloseAllTabsConfirmation", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsCloseAllTabsConfirmationEnabled() {
+  return base::FeatureList::IsEnabled(kEnableCloseAllTabsConfirmation);
+}
