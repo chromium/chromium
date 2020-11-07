@@ -64,6 +64,10 @@ extern const base::Feature kChromeCleanupDistributionFeature;
 // for, and cleanup, bad extensions.
 extern const base::Feature kChromeCleanupExtensionsFeature;
 
+// Reset shortcuts feature. When enabled, Chrome Cleaner will reset all Chrome
+// shortcuts for the current Windows users.
+extern const base::Feature kResetShortcutsFeature;
+
 // Returns true if this Chrome is in a field trial group which shows the SRT
 // prompt.
 bool IsSRTPromptFeatureEnabled();

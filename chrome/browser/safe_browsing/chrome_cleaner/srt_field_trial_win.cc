@@ -42,6 +42,9 @@ const base::Feature kChromeCleanupDistributionFeature{
 const base::Feature kChromeCleanupExtensionsFeature{
     "ChromeCleanupExtensions", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kResetShortcutsFeature{"ChromeCleanupResetShortcuts",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsSRTPromptFeatureEnabled() {
   return base::FeatureList::IsEnabled(kChromeCleanupInBrowserPromptFeature);
 }

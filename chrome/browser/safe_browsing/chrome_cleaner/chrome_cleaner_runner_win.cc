@@ -150,6 +150,10 @@ ChromeCleanerRunner::ChromeCleanerRunner(
     cleaner_command_line_.AppendSwitchASCII(
         chrome_cleaner::kSRTPromptFieldTrialGroupNameSwitch, group_name);
   }
+
+  if (base::FeatureList::IsEnabled(kResetShortcutsFeature)) {
+    cleaner_command_line_.AppendSwitch(chrome_cleaner::kResetShortcutsSwitch);
+  }
 }
 
 ChromeCleanerRunner::ProcessStatus
