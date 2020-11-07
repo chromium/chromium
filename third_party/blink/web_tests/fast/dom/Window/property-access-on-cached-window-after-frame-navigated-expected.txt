@@ -148,7 +148,6 @@ PASS oldChildWindow.onpointerover is newChildWindow.onpointerover
 PASS oldChildWindow.onpointerrawupdate is newChildWindow.onpointerrawupdate
 PASS oldChildWindow.onpointerup is newChildWindow.onpointerup
 PASS oldChildWindow.onpopstate is newChildWindow.onpopstate
-PASS oldChildWindow.onportalactivate is newChildWindow.onportalactivate
 PASS oldChildWindow.onprogress is newChildWindow.onprogress
 PASS oldChildWindow.onratechange is newChildWindow.onratechange
 PASS oldChildWindow.onrejectionhandled is newChildWindow.onrejectionhandled
@@ -220,7 +219,6 @@ PASS oldChildWindow.performance.timing.secureConnectionStart is newChildWindow.p
 PASS oldChildWindow.performance.timing.unloadEventEnd is newChildWindow.performance.timing.unloadEventEnd
 PASS oldChildWindow.performance.timing.unloadEventStart is newChildWindow.performance.timing.unloadEventStart
 PASS oldChildWindow.personalbar.visible is newChildWindow.personalbar.visible
-PASS oldChildWindow.portalHost is newChildWindow.portalHost
 PASS oldChildWindow.scheduler.currentTaskSignal.aborted is newChildWindow.scheduler.currentTaskSignal.aborted
 PASS oldChildWindow.scheduler.currentTaskSignal.onabort is newChildWindow.scheduler.currentTaskSignal.onabort
 PASS oldChildWindow.scheduler.currentTaskSignal.onprioritychange is newChildWindow.scheduler.currentTaskSignal.onprioritychange

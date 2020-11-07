@@ -113,7 +113,6 @@ PASS childWindow.onpointerover is null
 PASS childWindow.onpointerrawupdate is null
 PASS childWindow.onpointerup is null
 PASS childWindow.onpopstate is null
-PASS childWindow.onportalactivate is null
 PASS childWindow.onprogress is null
 PASS childWindow.onratechange is null
 PASS childWindow.onrejectionhandled is null
@@ -161,7 +160,6 @@ PASS childWindow.pageXOffset is 0
 PASS childWindow.pageYOffset is 0
 PASS childWindow.performance.onresourcetimingbufferfull is null
 PASS childWindow.personalbar.visible is false
-PASS childWindow.portalHost is null
 PASS childWindow.scheduler.currentTaskSignal.aborted is false
 PASS childWindow.scheduler.currentTaskSignal.onabort is null
 PASS childWindow.scheduler.currentTaskSignal.onprioritychange is null

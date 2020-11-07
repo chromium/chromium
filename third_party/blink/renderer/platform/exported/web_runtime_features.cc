@@ -365,6 +365,10 @@ void WebRuntimeFeatures::EnablePortals(bool enable) {
   RuntimeEnabledFeatures::SetPortalsEnabled(enable);
 }
 
+bool WebRuntimeFeatures::IsPortalsEnabled() {
+  return RuntimeEnabledFeatures::PortalsEnabledByRuntimeFlag();
+}
+
 void WebRuntimeFeatures::EnableScriptedSpeechRecognition(bool enable) {
   RuntimeEnabledFeatures::SetScriptedSpeechRecognitionEnabled(enable);
 }

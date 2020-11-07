@@ -5,6 +5,7 @@
 #include <memory>
 #include <tuple>
 
+#include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/callback.h"
@@ -2363,6 +2364,65 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, CallActivateTwice) {
 }
 #endif
 
+// Tests that various ways of enabling features via the command line produce a
+// valid configuration. That is, a configuration where we don't have the
+// renderer thinking that portals are enabled when the browser thinks portals
+// are disabled.
+class PortalsValidConfigurationBrowserTest
+    : public ContentBrowserTest,
+      public ::testing::WithParamInterface<
+          std::pair<const char*, const char*>> {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+
+    std::string switch_name;
+    std::string switch_value;
+    std::tie(switch_name, switch_value) = GetParam();
+    if (switch_name == switches::kEnableFeatures) {
+      scoped_feature_list_.InitFromCommandLine(switch_value, "");
+    } else {
+      command_line->AppendSwitchASCII(switch_name, switch_value);
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+namespace {
+const std::pair<const char*, const char*> kEnablingFlags[] = {
+    {switches::kEnableFeatures, blink::features::kPortals.name},
+    {switches::kEnableBlinkTestFeatures, ""},
+    {switches::kEnableExperimentalWebPlatformFeatures, ""},
+    {switches::kEnableBlinkFeatures, "Portals"}};
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PortalsValidConfigurationBrowserTest,
+                         ::testing::ValuesIn(kEnablingFlags));
+
+IN_PROC_BROWSER_TEST_P(PortalsValidConfigurationBrowserTest,
+                       ConfigurationIsValid) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* possible_portal_host = web_contents_impl->GetMainFrame();
+
+  bool html_portal_element_exposed =
+      EvalJs(possible_portal_host, "'HTMLPortalElement' in self").ExtractBool();
+
+  if (html_portal_element_exposed)
+    EXPECT_TRUE(Portal::IsEnabled());
+}
+
 namespace {
 
 static constexpr struct {
@@ -2463,8 +2523,11 @@ IN_PROC_BROWSER_TEST_F(PortalOriginTrialBrowserTest, WithTrialToken) {
       static_cast<WebContentsImpl*>(shell()->web_contents());
   ASSERT_TRUE(NavigateToURL(web_contents_impl,
                             GURL("https://portal.test/?origintrial=portals")));
-  EXPECT_EQ(PlatformSupportsPortalsOriginTrial(),
-            EvalJs(web_contents_impl, "'HTMLPortalElement' in self"));
+  bool html_portal_element_exposed =
+      EvalJs(web_contents_impl, "'HTMLPortalElement' in self").ExtractBool();
+  EXPECT_EQ(PlatformSupportsPortalsOriginTrial(), html_portal_element_exposed);
+  if (html_portal_element_exposed)
+    EXPECT_TRUE(Portal::IsEnabled());
 }
 
 class PortalPixelBrowserTest : public PortalBrowserTest {

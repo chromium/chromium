@@ -463,7 +463,6 @@ html element body
     property onpagehide
     property onpageshow
     property onpopstate
-    property onportalactivate
     property onrejectionhandled
     property onstorage
     property ontimezonechange
@@ -616,7 +615,6 @@ html element frameset
     property onpagehide
     property onpageshow
     property onpopstate
-    property onportalactivate
     property onrejectionhandled
     property onstorage
     property ontimezonechange
@@ -904,13 +902,6 @@ html element param
     property valueType
 html element picture
 html element plaintext
-html element portal
-    property activate
-    property onmessage
-    property onmessageerror
-    property postMessage
-    property referrerPolicy
-    property src
 html element pre
     property width
 html element progress

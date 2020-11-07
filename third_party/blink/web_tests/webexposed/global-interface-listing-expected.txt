@@ -2781,7 +2781,6 @@ interface HTMLBodyElement : HTMLElement
     getter onpagehide
     getter onpageshow
     getter onpopstate
-    getter onportalactivate
     getter onrejectionhandled
     getter onresize
     getter onscroll
@@ -2812,7 +2811,6 @@ interface HTMLBodyElement : HTMLElement
     setter onpagehide
     setter onpageshow
     setter onpopstate
-    setter onportalactivate
     setter onrejectionhandled
     setter onresize
     setter onscroll
@@ -3276,7 +3274,6 @@ interface HTMLFrameSetElement : HTMLElement
     getter onpagehide
     getter onpageshow
     getter onpopstate
-    getter onportalactivate
     getter onrejectionhandled
     getter onresize
     getter onscroll
@@ -3303,7 +3300,6 @@ interface HTMLFrameSetElement : HTMLElement
     setter onpagehide
     setter onpageshow
     setter onpopstate
-    setter onportalactivate
     setter onrejectionhandled
     setter onresize
     setter onscroll
@@ -3878,19 +3874,6 @@ interface HTMLParamElement : HTMLElement
 interface HTMLPictureElement : HTMLElement
     attribute @@toStringTag
     method constructor
-interface HTMLPortalElement : HTMLElement
-    attribute @@toStringTag
-    getter onmessage
-    getter onmessageerror
-    getter referrerPolicy
-    getter src
-    method activate
-    method constructor
-    method postMessage
-    setter onmessage
-    setter onmessageerror
-    setter referrerPolicy
-    setter src
 interface HTMLPreElement : HTMLElement
     attribute @@toStringTag
     getter width
@@ -6140,19 +6123,6 @@ interface PopStateEvent : Event
     attribute @@toStringTag
     getter state
     method constructor
-interface PortalActivateEvent : Event
-    attribute @@toStringTag
-    getter data
-    method adoptPredecessor
-    method constructor
-interface PortalHost : EventTarget
-    attribute @@toStringTag
-    getter onmessage
-    getter onmessageerror
-    method constructor
-    method postMessage
-    setter onmessage
-    setter onmessageerror
 interface Presentation
     attribute @@toStringTag
     getter defaultRequest
@@ -11012,7 +10982,6 @@ namespace CSS
     getter onpointerrawupdate
     getter onpointerup
     getter onpopstate
-    getter onportalactivate
     getter onprogress
     getter onratechange
     getter onrejectionhandled
@@ -11062,7 +11031,6 @@ namespace CSS
     getter parent
     getter performance
     getter personalbar
-    getter portalHost
     getter scheduler
     getter screen
     getter screenLeft
@@ -11227,7 +11195,6 @@ namespace CSS
     setter onpointerrawupdate
     setter onpointerup
     setter onpopstate
-    setter onportalactivate
     setter onprogress
     setter onratechange
     setter onrejectionhandled

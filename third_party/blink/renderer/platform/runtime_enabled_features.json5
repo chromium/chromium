@@ -1558,8 +1558,14 @@
     },
     {
       name: "Portals",
-      status: "test",
+      // Portals must be enabled by blink::features::kPortals as we require the
+      // support of the browser process to enable the feature. Enabling this
+      // feature specifically within blink has no effect. An experimental/test
+      // status can only be set here if the default of blink::features::kPortals
+      // allows for it.
+      status: {"Android": "test"},
       origin_trial_feature_name: "Portals",
+      origin_trial_os: ["android"],
     },
     {
       name: "PreciseMemoryInfo",
