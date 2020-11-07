@@ -129,6 +129,9 @@ void NearbyConnectorImpl::ProcessQueuedConnectionRequests() {
 }
 
 void NearbyConnectorImpl::OnNearbyProcessStopped() {
+  PA_LOG(WARNING) << "Nearby process stopped unexpectedly. Destroying active "
+                  << "connections.";
+
   ClearActiveAndPendingConnections();
   ProcessQueuedConnectionRequests();
 }

@@ -75,6 +75,8 @@ void NearbyEndpointFinderImpl::PerformFindEndpoint() {
 
 void NearbyEndpointFinderImpl::OnEndpointFound(const std::string& endpoint_id,
                                                DiscoveredEndpointInfoPtr info) {
+  PA_LOG(VERBOSE) << "Found endpoint with ID " << endpoint_id
+                  << ", stopping discovery";
   nearby_connections_->StopDiscovery(
       mojom::kServiceId,
       base::BindOnce(&NearbyEndpointFinderImpl::OnStopDiscoveryResult,
