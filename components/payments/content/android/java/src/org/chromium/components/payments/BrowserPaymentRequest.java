@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentDetails;
-import org.chromium.payments.mojom.PaymentErrorReason;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequest;
@@ -63,13 +62,6 @@ public interface BrowserPaymentRequest {
      *         end-user that something is wrong with the data of the payment response.
      */
     void retry(PaymentValidationErrors errors);
-
-    /**
-     * Delegate to the same method of ChromePaymentRequestService.
-     * @param debugMessage The debug message shown for web developers.
-     * @param reason The reason of the disconnection defined in {@link PaymentErrorReason}.
-     */
-    void disconnectFromClientWithDebugMessage(String debugMessage, int reason);
 
     /**
      * Close this instance. The callers of this method should stop referencing this instance upon

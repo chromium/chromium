@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArrayMap;
 
-import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -73,8 +72,6 @@ import java.util.Set;
 public class ChromePaymentRequestService implements BrowserPaymentRequest,
                                                     PaymentDetailsConverter.MethodChecker,
                                                     PaymentUiService.Delegate, PaymentUIsObserver {
-    private static final String TAG = "PaymentRequest";
-
     /**
      * Hold the currently showing PaymentRequest. Used to prevent showing more than one
      * PaymentRequest UI per browser process.
@@ -886,19 +883,12 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         disconnectFromClientWithDebugMessage(debugMessage, PaymentErrorReason.USER_CANCEL);
     }
 
-    // Implement BrowserPaymentRequest:
-    // This method is not supposed to be used outside this class and
-    // PaymentRequestService.
-    @Override
-    public void disconnectFromClientWithDebugMessage(String debugMessage, int reason) {
-        Log.d(TAG, debugMessage);
+    private void disconnectFromClientWithDebugMessage(String debugMessage, int reason) {
         if (mPaymentRequestService != null) {
-            mPaymentRequestService.onError(reason, debugMessage);
+            mPaymentRequestService.disconnectFromClientWithDebugMessage(debugMessage, reason);
         }
-        close();
-        if (PaymentRequestService.getNativeObserverForTest() != null) {
-            PaymentRequestService.getNativeObserverForTest().onConnectionTerminated();
-        }
+        // Either closed before this method or closed by mPaymentRequestService.
+        assert mHasClosed;
     }
 
     // Implement BrowserPaymentRequest:

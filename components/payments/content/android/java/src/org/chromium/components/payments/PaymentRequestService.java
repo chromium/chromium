@@ -349,6 +349,22 @@ public class PaymentRequestService
         service.create(/*delegate=*/this);
     }
 
+    /**
+     * Disconnects from the PaymentRequestClient with a debug message.
+     * @param debugMessage The debug message shown for web developers.
+     * @param reason The reason of the disconnection defined in {@link PaymentErrorReason}.
+     */
+    public void disconnectFromClientWithDebugMessage(String debugMessage, int reason) {
+        Log.d(TAG, debugMessage);
+        if (mClient != null) {
+            mClient.onError(reason, debugMessage);
+        }
+        close();
+        if (sNativeObserverForTest != null) {
+            sNativeObserverForTest.onConnectionTerminated();
+        }
+    }
+
     /** Abort the request, used before this class's instantiation. */
     private static void abortBeforeInstantiation(@Nullable PaymentRequestClient client,
             @Nullable JourneyLogger journeyLogger, String debugMessage, int reason) {
@@ -421,8 +437,7 @@ public class PaymentRequestService
             Log.d(TAG, ErrorStrings.PROHIBITED_ORIGIN);
             Log.d(TAG, ErrorStrings.PROHIBITED_ORIGIN_OR_INVALID_SSL_EXPLANATION);
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
-                    ErrorStrings.PROHIBITED_ORIGIN,
+            disconnectFromClientWithDebugMessage(ErrorStrings.PROHIBITED_ORIGIN,
                     PaymentErrorReason.NOT_SUPPORTED_FOR_INVALID_ORIGIN_OR_SSL);
             return false;
         }
@@ -435,7 +450,7 @@ public class PaymentRequestService
             Log.d(TAG, rejectShowErrorMessage);
             Log.d(TAG, ErrorStrings.PROHIBITED_ORIGIN_OR_INVALID_SSL_EXPLANATION);
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(rejectShowErrorMessage,
+            disconnectFromClientWithDebugMessage(rejectShowErrorMessage,
                     PaymentErrorReason.NOT_SUPPORTED_FOR_INVALID_ORIGIN_OR_SSL);
             return false;
         }
@@ -447,7 +462,7 @@ public class PaymentRequestService
         mBrowserPaymentRequest.modifyMethodData(methodData);
         if (methodData == null) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
+            disconnectFromClientWithDebugMessage(
                     ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA, PaymentErrorReason.USER_CANCEL);
             return false;
         }
@@ -458,7 +473,7 @@ public class PaymentRequestService
 
         if (!PaymentValidator.validatePaymentDetails(details)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
+            disconnectFromClientWithDebugMessage(
                     ErrorStrings.INVALID_PAYMENT_DETAILS, PaymentErrorReason.USER_CANCEL);
             return false;
         }
@@ -472,7 +487,7 @@ public class PaymentRequestService
                 methodData.values(), LocaleUtils.getDefaultLocaleString());
         if (spec.getRawTotal() == null) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
+            disconnectFromClientWithDebugMessage(
                     ErrorStrings.TOTAL_REQUIRED, PaymentErrorReason.USER_CANCEL);
             return false;
         }
@@ -485,7 +500,7 @@ public class PaymentRequestService
     @Override
     public void onPaymentResponseReady(PaymentResponse response) {
         if (!mBrowserPaymentRequest.patchPaymentResponseIfNeeded(response)) {
-            mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
+            disconnectFromClientWithDebugMessage(
                     ErrorStrings.PAYMENT_APP_INVALID_RESPONSE, PaymentErrorReason.NOT_SUPPORTED);
             // Intentionally do not early-return.
         }
@@ -609,7 +624,7 @@ public class PaymentRequestService
             if (mDelegate.isOffTheRecord()) {
                 // If the user is in the OffTheRecord mode, hide the absence of their payment
                 // methods from the merchant site.
-                mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
+                disconnectFromClientWithDebugMessage(
                         ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
             } else {
                 if (sNativeObserverForTest != null) {
@@ -620,7 +635,7 @@ public class PaymentRequestService
                         && mSpec.getMethodData().get(MethodStrings.GOOGLE_PLAY_BILLING) != null) {
                     mRejectShowErrorMessage = ErrorStrings.APP_STORE_METHOD_ONLY_SUPPORTED_IN_TWA;
                 }
-                mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
+                disconnectFromClientWithDebugMessage(
                         ErrorMessageUtil.getNotSupportedErrorMessage(mSpec.getMethodData().keySet())
                                 + (TextUtils.isEmpty(mRejectShowErrorMessage)
                                                 ? ""
@@ -652,7 +667,7 @@ public class PaymentRequestService
             sObserverForTest.onPaymentRequestServiceShowFailed();
         }
         mRejectShowErrorMessage = ErrorStrings.STRICT_BASIC_CARD_SHOW_REJECT;
-        mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
+        disconnectFromClientWithDebugMessage(
                 ErrorMessageUtil.getNotSupportedErrorMessage(mSpec.getMethodData().keySet()) + " "
                         + mRejectShowErrorMessage,
                 PaymentErrorReason.NOT_SUPPORTED);
@@ -972,8 +987,7 @@ public class PaymentRequestService
         assert mBrowserPaymentRequest != null;
 
         mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-        mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
-                debugMessage, PaymentErrorReason.USER_CANCEL);
+        disconnectFromClientWithDebugMessage(debugMessage, PaymentErrorReason.USER_CANCEL);
     }
 
     /**

@@ -49,11 +49,6 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     }
 
     @Override
-    public void disconnectFromClientWithDebugMessage(String debugMessage, int reason) {
-        assert false : "Not implemented yet";
-    }
-
-    @Override
     public void close() {
         assert false : "Not implemented yet";
     }
