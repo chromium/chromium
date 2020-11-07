@@ -56,7 +56,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TabListViewHolderTest extends DummyUiActivityTestCase {
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
-    private static final String EXPECTED_PRICE_STRING = "$2.87";
+    private static final String EXPECTED_PRICE_STRING = "$287";
+    private static final String EXPECTED_PREVIOUS_PRICE_STRING = "$314";
 
     private ViewGroup mTabGridView;
     private PropertyModel mGridModel;
@@ -558,21 +559,70 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
     @Test
     @MediumTest
     @UiThreadTest
-    public void testPriceString() {
-        TabUiFeatureUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
-        testGridSelected(mTabGridView, mGridModel);
-        ChipView pageInfoButton = mTabGridView.findViewById(R.id.page_info_button);
-
+    public void testPriceStringPriceDrop() {
         Tab tab = MockTab.createAndInitialize(1, false);
         MockShoppingPersistedTabDataFetcher fetcher = new MockShoppingPersistedTabDataFetcher(tab);
-        fetcher.setPriceString(EXPECTED_PRICE_STRING);
-        mGridModel.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, fetcher);
-        Assert.assertEquals(View.VISIBLE, pageInfoButton.getVisibility());
-        Assert.assertEquals(EXPECTED_PRICE_STRING, pageInfoButton.getPrimaryTextView().getText());
+        fetcher.setPriceStrings(EXPECTED_PRICE_STRING, EXPECTED_PREVIOUS_PRICE_STRING);
+        testPriceString(
+                tab, fetcher, View.VISIBLE, EXPECTED_PRICE_STRING, EXPECTED_PREVIOUS_PRICE_STRING);
+    }
 
-        fetcher.setPriceString("");
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testPriceStringNullPriceDrop() {
+        Tab tab = MockTab.createAndInitialize(1, false);
+        MockShoppingPersistedTabDataFetcher fetcher = new MockShoppingPersistedTabDataFetcher(tab);
+        fetcher.setNullPriceDrop();
+        testPriceString(
+                tab, fetcher, View.GONE, EXPECTED_PRICE_STRING, EXPECTED_PREVIOUS_PRICE_STRING);
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testPriceStringPriceDropThenNull() {
+        Tab tab = MockTab.createAndInitialize(1, false);
+        MockShoppingPersistedTabDataFetcher fetcher = new MockShoppingPersistedTabDataFetcher(tab);
+        fetcher.setPriceStrings(EXPECTED_PRICE_STRING, EXPECTED_PREVIOUS_PRICE_STRING);
+        testPriceString(
+                tab, fetcher, View.VISIBLE, EXPECTED_PRICE_STRING, EXPECTED_PREVIOUS_PRICE_STRING);
+        fetcher.setNullPriceDrop();
+        testPriceString(
+                tab, fetcher, View.GONE, EXPECTED_PRICE_STRING, EXPECTED_PREVIOUS_PRICE_STRING);
+    }
+
+    private void testPriceString(Tab tab, MockShoppingPersistedTabDataFetcher fetcher,
+            int expectedVisibility, String expectedCurrentPrice, String expectedPreviousPrice) {
+        TabUiFeatureUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
+        testGridSelected(mTabGridView, mGridModel);
+        PriceCardView priceCardView = mTabGridView.findViewById(R.id.price_info_box_outer);
+        TextView currentPrice = mTabGridView.findViewById(R.id.current_price);
+        TextView previousPrice = mTabGridView.findViewById(R.id.previous_price);
+
         mGridModel.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, fetcher);
-        Assert.assertEquals(View.GONE, pageInfoButton.getVisibility());
+        Assert.assertEquals(expectedVisibility, priceCardView.getVisibility());
+        if (expectedVisibility == View.VISIBLE) {
+            Assert.assertEquals(expectedCurrentPrice, currentPrice.getText());
+            Assert.assertEquals(expectedPreviousPrice, previousPrice.getText());
+        }
+    }
+
+    static class MockShoppingPersistedTabData extends ShoppingPersistedTabData {
+        private PriceDrop mPriceDrop;
+
+        MockShoppingPersistedTabData(Tab tab) {
+            super(tab);
+        }
+
+        public void setPriceStrings(String priceString, String previousPriceString) {
+            mPriceDrop = new PriceDrop(priceString, previousPriceString);
+        }
+
+        @Override
+        public PriceDrop getPriceDrop() {
+            return mPriceDrop;
+        }
     }
 
     /**
@@ -580,19 +630,24 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
      */
     static class MockShoppingPersistedTabDataFetcher
             extends TabListMediator.ShoppingPersistedTabDataFetcher {
+        private ShoppingPersistedTabData mShoppingPersistedTabData;
         MockShoppingPersistedTabDataFetcher(Tab tab) {
             super(tab);
         }
-        public void setPriceString(String priceString) {
-            ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(mTab);
-            shoppingPersistedTabData.setPriceString(priceString, null);
-            mTab.getUserDataHost().setUserData(
-                    ShoppingPersistedTabData.class, shoppingPersistedTabData);
+
+        public void setPriceStrings(String priceString, String previousPriceString) {
+            mShoppingPersistedTabData = new MockShoppingPersistedTabData(mTab);
+            ((MockShoppingPersistedTabData) mShoppingPersistedTabData)
+                    .setPriceStrings(priceString, previousPriceString);
+        }
+
+        public void setNullPriceDrop() {
+            mShoppingPersistedTabData = new MockShoppingPersistedTabData(mTab);
         }
 
         @Override
         public void fetch(Callback<ShoppingPersistedTabData> callback) {
-            callback.onResult(mTab.getUserDataHost().getUserData(ShoppingPersistedTabData.class));
+            callback.onResult(mShoppingPersistedTabData);
         }
     }
 

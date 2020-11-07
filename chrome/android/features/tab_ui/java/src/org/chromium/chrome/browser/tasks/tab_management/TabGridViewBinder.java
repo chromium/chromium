@@ -220,16 +220,15 @@ class TabGridViewBinder {
         } else if (TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER == propertyKey) {
             model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER)
                     .fetch((shoppingPersistedTabData) -> {
-                        ChipView pageInfoButton =
-                                (ChipView) view.fastFindViewById(R.id.page_info_button);
-                        if (TextUtils.isEmpty(shoppingPersistedTabData.getPriceString())) {
-                            pageInfoButton.setVisibility(View.GONE);
+                        PriceCardView priceCardView =
+                                (PriceCardView) view.fastFindViewById(R.id.price_info_box_outer);
+                        if (shoppingPersistedTabData.getPriceDrop() == null) {
+                            priceCardView.setVisibility(View.GONE);
                         } else {
-                            // Price string and search query are mutually exclusive
-                            assert TextUtils.isEmpty(model.get(TabProperties.SEARCH_QUERY));
-                            pageInfoButton.setVisibility(View.VISIBLE);
-                            pageInfoButton.getPrimaryTextView().setText(
-                                    shoppingPersistedTabData.getPriceString());
+                            priceCardView.setPriceStrings(
+                                    shoppingPersistedTabData.getPriceDrop().integerPrice,
+                                    shoppingPersistedTabData.getPriceDrop().previousIntegerPrice);
+                            priceCardView.setVisibility(View.VISIBLE);
                         }
                     });
         } else if (TabProperties.PAGE_INFO_LISTENER == propertyKey) {

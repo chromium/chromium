@@ -313,6 +313,13 @@
         <item name="android:textColor">@color/blue_when_enabled</item>
     </style>
 
+    <style name="TextAppearance.TextMediumThick.Green">
+        <item name="android:textColor">@color/default_green</item>
+    </style>
+    <style name="TextAppearance.TextMediumThick.Green.Dark">
+        <item name="android:textColor">@color/default_green_dark</item>
+    </style>
+
     <style name="TextAppearance.Button.Text.Blue" parent="TextAppearance.TextAccentMediumThick"
         tools:ignore="UnusedResources">
         <item name="android:textColor">@color/blue_when_enabled</item>

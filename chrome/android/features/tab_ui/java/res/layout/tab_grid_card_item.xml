@@ -63,6 +63,13 @@
                 android:src="@color/thumbnail_placeholder_on_primary_bg"
                 app:cornerRadiusBottomStart="@dimen/tab_list_card_radius"
                 app:cornerRadiusBottomEnd="@dimen/tab_list_card_radius"/>
+            <org.chromium.chrome.browser.tasks.tab_management.PriceCardView
+                android:id="@+id/price_info_box_outer"
+                android:layout_below="@id/tab_title"
+                android:background="@drawable/price_card_scrim"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:visibility="gone"/>
             <View
                 android:id="@+id/divider_view"
                 style="@style/HorizontalDivider"

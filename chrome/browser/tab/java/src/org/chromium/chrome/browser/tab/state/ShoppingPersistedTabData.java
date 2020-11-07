@@ -60,6 +60,24 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     private String mPreviousPriceString = "";
     public long mLastPriceChangeTimeMs = NO_TRANSITIONS_OCCURRED;
 
+    /**
+     * A price drop for the offer {@link ShoppingPersistedTabData}
+     * refers to
+     */
+    public static class PriceDrop {
+        public final String integerPrice;
+        public final String previousIntegerPrice;
+
+        /**
+         * @param integerPrice integer representation of the price
+         * @param previousIntegerPrice integer representation of the previous price
+         */
+        public PriceDrop(String integerPrice, String previousIntegerPrice) {
+            this.integerPrice = integerPrice;
+            this.previousIntegerPrice = previousIntegerPrice;
+        }
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public ShoppingPersistedTabData(Tab tab) {
         super(tab,
@@ -167,6 +185,18 @@ public class ShoppingPersistedTabData extends PersistedTabData {
      */
     public String getPreviousPriceString() {
         return mPreviousPriceString;
+    }
+
+    /**
+     * @return {@link PriceDrop} relating to the offer for the {@link ShoppingPersistedTabData}
+     * TODO(crbug.com/1145770) Implement getPriceDrop to only return a result if there is
+     * actually a price drop. Ensure priceString and previousPriceString are integers.
+     * Deprecate getPrice and getPriceString(). Change price and previousPriceString
+     * representations to be numeric to make drop comparison easier.
+     */
+    public PriceDrop getPriceDrop() {
+        // TODO(crbug.com/1146609) only show price drops above certain thresholds
+        return new PriceDrop(mPriceString, mPreviousPriceString);
     }
 
     @Override

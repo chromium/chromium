@@ -21,6 +21,8 @@
     <color name="black_alpha_20" tools:ignore="UnusedResources">#33000000</color>
     <color name="black_alpha_30" tools:ignore="UnusedResources">#4D000000</color>
 
+    <color name="green_50">#E6F4EA</color>
+
     <color name="white_alpha_65" tools:ignore="UnusedResources">#A6FFFFFF</color>
     <color name="white_alpha_75" tools:ignore="UnusedResources">#BFFFFFFF</color>
 
