@@ -8730,6 +8730,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="6" label="VR"/>
   <int value="7" label="PROMOTE_TAB"/>
   <int value="8" label="OMNIBOX_FOCUS"/>
+  <int value="9" label="INTERACTION_COMPLETE"/>
 </enum>
 
 <enum name="BrokenAlternateProtocolLocation">

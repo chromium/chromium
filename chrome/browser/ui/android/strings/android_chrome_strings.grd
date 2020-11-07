@@ -4289,6 +4289,29 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_IMAGE_DESCRIPTIONS_SETTINGS_USE_MOBILE_DATA_CONTENT" desc="Content of radio button to allow user to specify getting accessibility image descriptions while on mobile data.">
         Wi-Fi is used when available
       </message>
+
+      <!-- Assistant voice search consent ui. -->
+      <message name="IDS_AVS_CONSENT_UI_TITLE" desc="Title for a dialog asking the user's permission to use Assistant for voice search.">
+      Get a better voice experience on the web
+      </message>
+      <message name="IDS_AVS_CONSENT_UI_SUBTITLE" desc="Subtitle for a dialog asking the user's permission to use Assistant for voice search.">
+      Google Assistant can complete actions across websites for you
+      </message>
+      <message name="IDS_AVS_CONSENT_UI_BODY" desc="Body for a dialog asking the user's permission to use Assistant for voice search.">
+      To help you complete tasks, Google will receive the URLs and contents of sites on which you use Assistant, as well as information you submit though Assistant. This information may be stored in your Google account. You can turn off Assistant in Chrome settings.
+      </message>
+      <message name="IDS_AVS_CONSENT_UI_CONTENT_DESCRIPTION" desc="Enable button text for a dialog asking the user's permission to use Assistant for voice search.">
+      Assistant voice search consent ui
+      </message>
+      <message name="IDS_AVS_CONSENT_UI_HALF_HEIGHT_DESCRIPTION" desc="Enable button text for a dialog asking the user's permission to use Assistant for voice search.">
+      Assistant voice search consent ui opened at half height
+      </message>
+      <message name="IDS_AVS_CONSENT_UI_FULL_HEIGHT_DESCRIPTION" desc="Enable button text for a dialog asking the user's permission to use Assistant for voice search.">
+      Assistant voice search consent ui opened at full height
+      </message>
+      <message name="IDS_AVS_CONSENT_UI_CLOSED_DESCRIPTION" desc="Enable button text for a dialog asking the user's permission to use Assistant for voice search.">
+      Assistant voice search consent ui closed
+      </message>
     </messages>
   </release>
 </grit>

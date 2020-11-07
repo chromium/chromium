@@ -354,7 +354,6 @@ android_resources("java_resources") {
     "java/res/drawable/ic_fastfood_black_24dp.xml",
     "java/res/drawable/ic_grocery_black_24dp.xml",
     "java/res/drawable/ic_local_dining_black_24dp.xml",
-    "java/res/drawable/ic_logo_assistant_24dp.xml",
     "java/res/drawable/ic_overflow_black_24dp.xml",
     "java/res/drawable/ic_payment_black_24dp.xml",
     "java/res/drawable/ic_refresh_black_24dp.xml",

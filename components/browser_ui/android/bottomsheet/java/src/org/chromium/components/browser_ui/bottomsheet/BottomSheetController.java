@@ -50,7 +50,8 @@ public interface BottomSheetController {
     @IntDef({StateChangeReason.NONE, StateChangeReason.SWIPE, StateChangeReason.BACK_PRESS,
             StateChangeReason.TAP_SCRIM, StateChangeReason.NAVIGATION,
             StateChangeReason.COMPOSITED_UI, StateChangeReason.VR, StateChangeReason.PROMOTE_TAB,
-            StateChangeReason.OMNIBOX_FOCUS, StateChangeReason.MAX_VALUE})
+            StateChangeReason.OMNIBOX_FOCUS, StateChangeReason.INTERACTION_COMPLETE,
+            StateChangeReason.MAX_VALUE})
     @Retention(RetentionPolicy.SOURCE)
     @interface StateChangeReason {
         int NONE = 0;
@@ -62,7 +63,10 @@ public interface BottomSheetController {
         int VR = 6;
         int PROMOTE_TAB = 7;
         int OMNIBOX_FOCUS = 8;
-        int MAX_VALUE = OMNIBOX_FOCUS;
+        int INTERACTION_COMPLETE = 9;
+
+        // STOP: Updates here require an update in enums.xml.
+        int MAX_VALUE = INTERACTION_COMPLETE;
     }
 
     /**
