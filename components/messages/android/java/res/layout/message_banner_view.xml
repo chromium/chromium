@@ -81,6 +81,9 @@
         android:layout_weight="0"
         android:gravity="center_vertical"
         android:minWidth="@dimen/message_banner_button_min_width"
+        android:minHeight="@dimen/min_touch_target_size"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="?attr/selectableItemBackground" />
 </org.chromium.components.messages.MessageBannerView>

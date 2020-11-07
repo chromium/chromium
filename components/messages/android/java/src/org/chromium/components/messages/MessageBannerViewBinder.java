@@ -4,6 +4,7 @@
 
 package org.chromium.components.messages;
 
+import static org.chromium.components.messages.MessageBannerProperties.ALPHA;
 import static org.chromium.components.messages.MessageBannerProperties.DESCRIPTION;
 import static org.chromium.components.messages.MessageBannerProperties.ICON;
 import static org.chromium.components.messages.MessageBannerProperties.ICON_RESOURCE_ID;
@@ -13,6 +14,7 @@ import static org.chromium.components.messages.MessageBannerProperties.PRIMARY_B
 import static org.chromium.components.messages.MessageBannerProperties.SECONDARY_ICON;
 import static org.chromium.components.messages.MessageBannerProperties.SECONDARY_ICON_CONTENT_DESCRIPTION;
 import static org.chromium.components.messages.MessageBannerProperties.TITLE;
+import static org.chromium.components.messages.MessageBannerProperties.TRANSLATION_Y;
 
 import android.annotation.SuppressLint;
 
@@ -54,6 +56,10 @@ public class MessageBannerViewBinder {
                     return false;
                 });
             }
+        } else if (propertyKey == ALPHA) {
+            view.setAlpha(model.get(ALPHA));
+        } else if (propertyKey == TRANSLATION_Y) {
+            view.setTranslationY(model.get(TRANSLATION_Y));
         }
     }
 }

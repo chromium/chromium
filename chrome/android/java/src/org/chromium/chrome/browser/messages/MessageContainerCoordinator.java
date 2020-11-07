@@ -39,11 +39,8 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
     private void updateMargins() {
         CoordinatorLayout.LayoutParams params =
                 (CoordinatorLayout.LayoutParams) mContainer.getLayoutParams();
-        Resources res = mContainer.getResources();
         // TODO(crbug.com/1123947): Update dimens for PWAs.
-        params.topMargin = mControlsManager.getTopControlsHeight()
-                - res.getDimensionPixelOffset(R.dimen.message_bubble_inset)
-                - res.getDimensionPixelOffset(R.dimen.message_shadow_top_margin);
+        params.topMargin = getContainerTopOffset();
         mContainer.setLayoutParams(params);
     }
 
@@ -56,6 +53,17 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
         mContainer.setVisibility(View.GONE);
     }
 
+    /**
+     * @return The maximum translation Y value the message banner can have as a result of the
+     *         animations or the gestures. Positive values mean the message banner can be translated
+     *         upward from the top of the MessagesContainer.
+     */
+    public int getMessageMaxTranslation() {
+        // TODO(sinansahin): We need to account for other scenarios where there are no browser
+        // controls visible (e.g. PWAs).
+        return getContainerTopOffset();
+    }
+
     @Override
     public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
             int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
@@ -65,5 +73,13 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
     @Override
     public void onTopControlsHeightChanged(int topControlsHeight, int topControlsMinHeight) {
         updateMargins();
+    }
+
+    /** @return Offset of the message container from the top of the screen. */
+    private int getContainerTopOffset() {
+        final Resources res = mContainer.getResources();
+        return mControlsManager.getTopControlsHeight()
+                - res.getDimensionPixelOffset(R.dimen.message_bubble_inset)
+                - res.getDimensionPixelOffset(R.dimen.message_shadow_top_margin);
     }
 }

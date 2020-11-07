@@ -392,7 +392,8 @@ public class RootUiCoordinator
             MessageContainer container = mActivity.findViewById(R.id.message_container);
             mMessageContainerCoordinator =
                     new MessageContainerCoordinator(container, getBrowserControlsManager());
-            mMessageDispatcher = MessagesFactory.createMessageDispatcher(container);
+            mMessageDispatcher = MessagesFactory.createMessageDispatcher(
+                    container, mMessageContainerCoordinator::getMessageMaxTranslation);
             mMessageQueueMediator = new ChromeMessageQueueMediator(
                     mActivity.getBrowserControlsManager(), mMessageContainerCoordinator,
                     mActivity.getFullscreenManager(), mMessageDispatcher);

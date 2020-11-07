@@ -9,31 +9,47 @@ import static org.chromium.components.messages.MessageBannerProperties.TRANSLATI
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
-import android.content.Context;
+import android.animation.TimeInterpolator;
+import android.content.res.Resources;
+import android.view.MotionEvent;
 
+import org.chromium.base.MathUtils;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
-import org.chromium.ui.base.ViewUtils;
+import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
+import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelAnimatorFactory;
 
 /**
  * Mediator responsible for the business logic in a message banner.
  */
-class MessageBannerMediator {
-    private static final int ANIMATION_DURATION_MS = 100;
-    private static final float ANIMATION_OFFSET_DP = 50.f;
+class MessageBannerMediator implements SwipeHandler {
+    private static final int ANIMATION_DURATION_MS = 400;
+    private static final TimeInterpolator TRANSLATION_SHOW_INTERPOLATOR =
+            Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR;
+    private static final TimeInterpolator TRANSLATION_HIDE_INTERPOLATOR =
+            Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR;
+    private static final TimeInterpolator ALPHA_INTERPOLATOR = Interpolators.LINEAR_INTERPOLATOR;
 
     private PropertyModel mModel;
     private AnimatorSet mAnimatorSet;
-    private Context mContext;
+    private Supplier<Integer> mMaxTranslationSupplier;
+
+    private final float mHideThresholdPx;
+
+    private float mSwipeStartTranslationY;
 
     /**
      * Constructs the message banner mediator.
      */
-    MessageBannerMediator(PropertyModel model, Context context) {
+    MessageBannerMediator(
+            PropertyModel model, Supplier<Integer> maxTranslationSupplier, Resources resources) {
         mModel = model;
-        mContext = context;
+        mMaxTranslationSupplier = maxTranslationSupplier;
+        mModel.set(TRANSLATION_Y, -mMaxTranslationSupplier.get());
+        mHideThresholdPx = resources.getDimensionPixelSize(R.dimen.message_hide_threshold);
     }
 
     /**
@@ -41,9 +57,7 @@ class MessageBannerMediator {
      * @param messageShown The {@link Runnable} that will run once the message banner is shown.
      */
     void show(Runnable messageShown) {
-        if (mAnimatorSet != null && mAnimatorSet.isStarted()) {
-            mAnimatorSet.cancel();
-        }
+        cancelAnyAnimations();
         mAnimatorSet = createAnimatorSet(true);
         mAnimatorSet.addListener(new CancelAwareAnimatorListener() {
             @Override
@@ -60,9 +74,7 @@ class MessageBannerMediator {
      * @param messageHidden The {@link Runnable} that will run once the message banner is hidden.
      */
     void hide(Runnable messageHidden) {
-        if (mAnimatorSet != null && mAnimatorSet.isStarted()) {
-            mAnimatorSet.cancel();
-        }
+        cancelAnyAnimations();
         mAnimatorSet = createAnimatorSet(false);
         mAnimatorSet.addListener(new CancelAwareAnimatorListener() {
             @Override
@@ -78,21 +90,74 @@ class MessageBannerMediator {
         mModel.set(MessageBannerProperties.ON_TOUCH_RUNNABLE, runnable);
     }
 
+    // region SwipeHandler implementation
+    // ---------------------------------------------------------------------------------------------
+
+    @Override
+    public void onSwipeStarted(@ScrollDirection int direction, MotionEvent ev) {
+        mSwipeStartTranslationY = mModel.get(TRANSLATION_Y);
+    }
+
+    @Override
+    public void onSwipeUpdated(
+            MotionEvent current, float tx, float ty, float distanceX, float distanceY) {
+        final float currentGesturePositionY = mSwipeStartTranslationY + ty;
+        final float currentTranslationY =
+                MathUtils.clamp(currentGesturePositionY, -mMaxTranslationSupplier.get(), 0);
+        mModel.set(TRANSLATION_Y, currentTranslationY);
+    }
+    // TODO(sinansahin): See if we need special handling for #onFling.
+
+    @Override
+    public void onSwipeFinished(MotionEvent end) {
+        cancelAnyAnimations();
+
+        // No need to animate if the message banner is in resting position.
+        if (mModel.get(TRANSLATION_Y) == 0.f) return;
+
+        mAnimatorSet = createAnimatorSet(mModel.get(TRANSLATION_Y) > -mHideThresholdPx);
+        mAnimatorSet.addListener(new CancelAwareAnimatorListener() {
+            @Override
+            public void onEnd(Animator animator) {
+                // TODO(sinansahin): We need a way to notify someone to dismiss the message once
+                // it's hidden.
+                mAnimatorSet = null;
+            }
+        });
+        mAnimatorSet.start();
+    }
+
+    @Override
+    public boolean isSwipeEnabled(@ScrollDirection int direction) {
+        // TODO(sinansahin): We will implement swiping left/right to dismiss.
+        return (direction == ScrollDirection.UP || direction == ScrollDirection.DOWN)
+                && (mAnimatorSet == null || !mAnimatorSet.isRunning());
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // endregion
+
     private AnimatorSet createAnimatorSet(boolean isShow) {
         final float alphaTo = isShow ? 1.f : 0.f;
         final Animator alphaAnimation =
                 PropertyModelAnimatorFactory.ofFloat(mModel, ALPHA, alphaTo);
+        alphaAnimation.setInterpolator(ALPHA_INTERPOLATOR);
 
-        final float animationOffsetPx = ViewUtils.dpToPx(mContext, ANIMATION_OFFSET_DP);
-        final float translateTo = isShow ? 0.f : -animationOffsetPx;
+        final float translateTo = isShow ? 0.f : -mMaxTranslationSupplier.get();
         final Animator translationAnimation =
                 PropertyModelAnimatorFactory.ofFloat(mModel, TRANSLATION_Y, translateTo);
+        translationAnimation.setInterpolator(
+                isShow ? TRANSLATION_SHOW_INTERPOLATOR : TRANSLATION_HIDE_INTERPOLATOR);
 
         final AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.play(alphaAnimation).with(translationAnimation);
         animatorSet.setDuration(ANIMATION_DURATION_MS);
-        animatorSet.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
 
         return animatorSet;
+    }
+
+    private void cancelAnyAnimations() {
+        if (mAnimatorSet != null && mAnimatorSet.isStarted()) mAnimatorSet.cancel();
+        mAnimatorSet = null;
     }
 }

@@ -4,6 +4,7 @@
 
 package org.chromium.components.messages;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -13,19 +14,24 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class MessageDispatcherImpl implements ManagedMessageDispatcher {
     private final MessageQueueManager mMessageQueueManager = new MessageQueueManager();
     private final MessageContainer mMessageContainer;
+    private final Supplier<Integer> mMessageMaxTranslationSupplier;
 
     /**
      * Build a new message dispatcher
      * @param messageContainer A container view for displaying message banners.
+     * @param messageMaxTranslationSupplier A {@link Supplier} that supplies the maximum translation
+     *         Y value the message banner can have as a result of the animations or the gestures.
      */
-    public MessageDispatcherImpl(MessageContainer messageContainer) {
+    public MessageDispatcherImpl(
+            MessageContainer messageContainer, Supplier<Integer> messageMaxTranslation) {
         mMessageContainer = messageContainer;
+        mMessageMaxTranslationSupplier = messageMaxTranslation;
     }
 
     @Override
     public void enqueueMessage(PropertyModel messageProperties) {
-        MessageStateHandler messageStateHandler =
-                new SingleActionMessage(mMessageContainer, messageProperties, this::dismissMessage);
+        MessageStateHandler messageStateHandler = new SingleActionMessage(mMessageContainer,
+                messageProperties, this::dismissMessage, mMessageMaxTranslationSupplier);
         mMessageQueueManager.enqueueMessage(messageStateHandler, messageProperties);
     }
 

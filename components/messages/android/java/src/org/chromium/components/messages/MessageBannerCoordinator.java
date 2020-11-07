@@ -4,8 +4,9 @@
 
 package org.chromium.components.messages;
 
-import android.content.Context;
+import android.content.res.Resources;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -20,11 +21,15 @@ class MessageBannerCoordinator {
      *
      * @param view The inflated {@link MessageBannerView}.
      * @param model The model for the message banner.
-     * @param context The context used to get dimen resources.
+     * @param maxTranslationSupplier A {@link Supplier} that supplies the maximum translation Y
+     *         value the message banner can have as a result of the animations or the gestures.
+     * @param resources The {@link Resources}.
      */
-    MessageBannerCoordinator(MessageBannerView view, PropertyModel model, Context context) {
+    MessageBannerCoordinator(MessageBannerView view, PropertyModel model,
+            Supplier<Integer> maxTranslationSupplier, Resources resources) {
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
-        mMediator = new MessageBannerMediator(model, context);
+        mMediator = new MessageBannerMediator(model, maxTranslationSupplier, resources);
+        view.setSwipeHandler(mMediator);
     }
 
     /**

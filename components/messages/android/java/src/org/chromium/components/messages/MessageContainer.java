@@ -12,6 +12,8 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.ui.base.ViewUtils;
+
 /**
  * Container holding messages.
  */
@@ -31,6 +33,8 @@ public class MessageContainer extends FrameLayout {
                     "Should not contain any view when adding a new message.");
         }
         addView(view);
+        // TODO(sinansahin): clipChildren should be set to false only when the message is in motion.
+        ViewUtils.setAncestorsShouldClipChildren(this, false);
     }
 
     /**
@@ -41,6 +45,7 @@ public class MessageContainer extends FrameLayout {
         if (indexOfChild(view) < 0) {
             throw new IllegalStateException("The given view is not being shown.");
         }
+        ViewUtils.setAncestorsShouldClipChildren(this, true);
         removeAllViews();
     }
 }

@@ -50,7 +50,7 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
         MessageContainer container = new MessageContainer(getActivity(), null);
         PropertyModel model = createBasicSingleActionMessageModel();
         SingleActionMessage message =
-                new SingleActionMessage(container, model, mEmptyDismissCallback);
+                new SingleActionMessage(container, model, mEmptyDismissCallback, () -> 0);
         final MessageBannerCoordinator messageBanner = Mockito.mock(MessageBannerCoordinator.class);
         doNothing().when(messageBanner).show(any(Runnable.class));
         doNothing().when(messageBanner).setOnTouchRunnable(any(Runnable.class));
@@ -81,7 +81,7 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
         PropertyModel m1 = createBasicSingleActionMessageModel();
         PropertyModel m2 = createBasicSingleActionMessageModel();
         SingleActionMessage message1 =
-                new SingleActionMessage(container, m1, mEmptyDismissCallback);
+                new SingleActionMessage(container, m1, mEmptyDismissCallback, () -> 0);
         final MessageBannerCoordinator messageBanner1 =
                 Mockito.mock(MessageBannerCoordinator.class);
         doNothing().when(messageBanner1).show(any(Runnable.class));
@@ -89,7 +89,7 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
         message1.setMessageBannerForTesting(messageBanner1);
         message1.setViewForTesting(view1);
         SingleActionMessage message2 =
-                new SingleActionMessage(container, m2, mEmptyDismissCallback);
+                new SingleActionMessage(container, m2, mEmptyDismissCallback, () -> 0);
         final MessageBannerCoordinator messageBanner2 =
                 Mockito.mock(MessageBannerCoordinator.class);
         doNothing().when(messageBanner2).show(any(Runnable.class));

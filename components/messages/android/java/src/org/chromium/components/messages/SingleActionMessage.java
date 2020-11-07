@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -23,6 +24,7 @@ public class SingleActionMessage implements MessageStateHandler {
     private final PropertyModel mModel;
     private final Callback<PropertyModel> mDismissHandler;
     private MessageAutoDismissTimer mAutoDismissTimer;
+    private final Supplier<Integer> mMaxTranslationSupplier;
 
     /**
      * @param container The container holding messages.
@@ -30,13 +32,16 @@ public class SingleActionMessage implements MessageStateHandler {
      *         MessageBannerProperties#SINGLE_ACTION_MESSAGE_KEYS}.
      * @param dismissHandler The {@link Callback<PropertyModel>} able to dismiss a message by given
      *         property model.
+     * @param maxTranslationSupplier A {@link Supplier} that supplies the maximum translation Y
+     *         value the message banner can have as a result of the animations or the gestures.
      */
     public SingleActionMessage(MessageContainer container, PropertyModel model,
-            Callback<PropertyModel> dismissHandler) {
+            Callback<PropertyModel> dismissHandler, Supplier<Integer> maxTranslationSupplier) {
         mModel = model;
         mContainer = container;
         mDismissHandler = dismissHandler;
         mAutoDismissTimer = new MessageAutoDismissTimer(10 * DateUtils.SECOND_IN_MILLIS);
+        mMaxTranslationSupplier = maxTranslationSupplier;
     }
 
     /**
@@ -48,7 +53,8 @@ public class SingleActionMessage implements MessageStateHandler {
         if (mMessageBanner == null) {
             mView = (MessageBannerView) LayoutInflater.from(mContainer.getContext())
                             .inflate(R.layout.message_banner_view, mContainer, false);
-            mMessageBanner = new MessageBannerCoordinator(mView, mModel, mContainer.getContext());
+            mMessageBanner = new MessageBannerCoordinator(
+                    mView, mModel, mMaxTranslationSupplier, mContainer.getResources());
         }
         mContainer.addMessage(mView);
         mMessageBanner.show(() -> {
