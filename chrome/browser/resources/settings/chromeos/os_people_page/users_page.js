@@ -54,8 +54,8 @@ Polymer({
         chromeos.settings.mojom.Setting.kGuestBrowsing,
         chromeos.settings.mojom.Setting.kShowUsernamesAndPhotosAtSignIn,
         chromeos.settings.mojom.Setting.kRestrictSignIn,
-        chromeos.settings.mojom.Setting.kAddToUserWhitelist,
-        chromeos.settings.mojom.Setting.kRemoveFromUserWhitelist,
+        chromeos.settings.mojom.Setting.kAddToUserAllowlist,
+        chromeos.settings.mojom.Setting.kRemoveFromUserAllowlist,
       ]),
     },
   },
@@ -80,7 +80,7 @@ Polymer({
    */
   beforeDeepLinkAttempt(settingId) {
     if (settingId !==
-        chromeos.settings.mojom.Setting.kRemoveFromUserWhitelist) {
+        chromeos.settings.mojom.Setting.kRemoveFromUserAllowlist) {
       // Continue with deep linking attempt.
       return true;
     }

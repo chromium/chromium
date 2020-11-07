@@ -101,7 +101,7 @@ const std::vector<SearchConcept>& GetPeopleSearchConcepts() {
        mojom::SearchResultIcon::kAvatar,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kRemoveFromUserWhitelist}},
+       {.setting = mojom::Setting::kRemoveFromUserAllowlist}},
       {IDS_OS_SETTINGS_TAG_GUEST_BROWSING,
        mojom::kManageOtherPeopleSubpagePath,
        mojom::SearchResultIcon::kAvatar,
@@ -134,7 +134,7 @@ const std::vector<SearchConcept>& GetPeopleSearchConcepts() {
        mojom::SearchResultIcon::kAvatar,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kAddToUserWhitelist}},
+       {.setting = mojom::Setting::kAddToUserAllowlist}},
   });
   return *tags;
 }
@@ -1011,8 +1011,8 @@ void PeopleSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Setting::kGuestBrowsing,
       mojom::Setting::kShowUsernamesAndPhotosAtSignIn,
       mojom::Setting::kRestrictSignIn,
-      mojom::Setting::kAddToUserWhitelist,
-      mojom::Setting::kRemoveFromUserWhitelist,
+      mojom::Setting::kAddToUserAllowlist,
+      mojom::Setting::kRemoveFromUserAllowlist,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kManageOtherPeople,
                             kManageOtherPeopleSettings, generator);

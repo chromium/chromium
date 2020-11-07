@@ -54669,8 +54669,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="305" label="Guest Browsing"/>
   <int value="306" label="Show Usernames And Photos At Sign In"/>
   <int value="307" label="Restrict Sign In"/>
-  <int value="308" label="Add To User Whitelist"/>
-  <int value="309" label="Remove From User Whitelist"/>
+  <int value="308" label="Add To User Allowlist"/>
+  <int value="309" label="Remove From User Allowlist"/>
   <int value="310" label="Add Kerberos Ticket"/>
   <int value="311" label="Remove Kerberos Ticket"/>
   <int value="312" label="Set Active Kerberos Ticket"/>
