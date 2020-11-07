@@ -1,0 +1,104 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+selection_test(
+    [
+        '<div contenteditable>',
+            '<ul>',
+                '<li style="display:block">line 1</li>',
+                '<li style="display:block"><br/>|</li>',
+            '</ul>',
+        '</div>',
+    ],
+    'insertParagraph',
+    [
+        '<div contenteditable>',
+            '<ul>',
+                '<li style="display:block">line 1</li>',
+            '</ul>',
+            '<div>|<br></div>',
+        '</div>',
+    ],
+    'Outdent a list with empty list item and style as display block');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<ul>',
+                '<div>line 1</div>',
+                '<div><br/>|</div>',
+            '</ul>',
+        '</div>',
+    ],
+    'insertParagraph',
+    [
+        '<div contenteditable>',
+            '<ul>',
+                '<div>line 1</div>',
+            '</ul>',
+            '<div>|<br></div>',
+        '</div>',
+    ],
+    'Outdent a list with empty list item and div elements');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<ul>',
+                '<li>line 1',
+                    '<ul>',
+                        '<li><br/>|</li>',
+                        '<li style="display:block">line2</li>',
+                    '</ul>',
+                '</li>',
+            '</ul>',
+        '</div>',
+    ],
+    'insertParagraph',
+    [
+        '<div contenteditable>',
+            '<ul>',
+                '<li>line 1</li>',
+                '<li>|<br></li>',
+                '<ul>',
+                    '<li style="display:block">line2</li>',
+                '</ul>',
+            '</ul>',
+        '</div>',
+    ],
+    'Outdent a list with nested list having an empty list item and style as display block');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<ul>',
+                '<li>line 1',
+                    '<ul>',
+                        '<li><br/></li>',
+                        '<div><br/>|</div>',
+                        '<li style="display:block">line2</li>',
+                    '</ul>',
+                '</li>',
+            '</ul>',
+        '</div>',
+    ],
+    'insertParagraph',
+    [
+        '<div contenteditable>',
+            '<ul>',
+                '<li>line 1</li>',
+                '<ul>',
+                    '<li><br></li>',
+                '</ul>',
+                '<li>|<br></li>',
+                '<ul>',
+                    '<li style="display:block">line2</li>',
+                '</ul>',
+            '</ul>',
+        '</div>',
+    ],
+    'Outdent a list with nested list having an empty list item in between list item with style display block');
+
+</script>

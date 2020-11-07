@@ -764,7 +764,7 @@ PASS [["inserthtml","<td>abc</td>"]] "f[o]o" queryCommandState("inserthtml") aft
 PASS [["inserthtml","<td>abc</td>"]] "f[o]o" queryCommandValue("inserthtml") after
 PASS [["inserthtml","<dt>abc</dt>"]] "<dl><dt>f[o]o<dd>bar</dl>": execCommand("inserthtml", false, "<dt>abc</dt>") return value
 PASS [["inserthtml","<dt>abc</dt>"]] "<dl><dt>f[o]o<dd>bar</dl>" checks for modifications to non-editable content
-FAIL [["inserthtml","<dt>abc</dt>"]] "<dl><dt>f[o]o<dd>bar</dl>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<dl><dt>f</dt><dt>abc</dt><dt>o</dt><dd>bar</dd></dl>" but got "<dl><dt>fabco<br></dt><dd>bar</dd></dl>"
+FAIL [["inserthtml","<dt>abc</dt>"]] "<dl><dt>f[o]o<dd>bar</dl>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<dl><dt>f</dt><dt>abc</dt><dt>o</dt><dd>bar</dd></dl>" but got "<dl><dt>f<dt>abc</dt>o</dt><dd>bar</dd></dl>"
 PASS [["inserthtml","<dt>abc</dt>"]] "<dl><dt>f[o]o<dd>bar</dl>" queryCommandIndeterm("inserthtml") before
 PASS [["inserthtml","<dt>abc</dt>"]] "<dl><dt>f[o]o<dd>bar</dl>" queryCommandState("inserthtml") before
 PASS [["inserthtml","<dt>abc</dt>"]] "<dl><dt>f[o]o<dd>bar</dl>" queryCommandValue("inserthtml") before
@@ -773,7 +773,7 @@ PASS [["inserthtml","<dt>abc</dt>"]] "<dl><dt>f[o]o<dd>bar</dl>" queryCommandSta
 PASS [["inserthtml","<dt>abc</dt>"]] "<dl><dt>f[o]o<dd>bar</dl>" queryCommandValue("inserthtml") after
 PASS [["inserthtml","<dt>abc</dt>"]] "<dl><dt>foo<dd>b[a]r</dl>": execCommand("inserthtml", false, "<dt>abc</dt>") return value
 PASS [["inserthtml","<dt>abc</dt>"]] "<dl><dt>foo<dd>b[a]r</dl>" checks for modifications to non-editable content
-FAIL [["inserthtml","<dt>abc</dt>"]] "<dl><dt>foo<dd>b[a]r</dl>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<dl><dt>foo</dt><dd>b</dd><dt>abc</dt><dd>r</dd></dl>" but got "<dl><dt>foo</dt><dd>babcr<br></dd></dl>"
+FAIL [["inserthtml","<dt>abc</dt>"]] "<dl><dt>foo<dd>b[a]r</dl>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<dl><dt>foo</dt><dd>b</dd><dt>abc</dt><dd>r</dd></dl>" but got "<dl><dt>foo</dt><dd>b<dt>abc</dt>r</dd></dl>"
 PASS [["inserthtml","<dt>abc</dt>"]] "<dl><dt>foo<dd>b[a]r</dl>" queryCommandIndeterm("inserthtml") before
 PASS [["inserthtml","<dt>abc</dt>"]] "<dl><dt>foo<dd>b[a]r</dl>" queryCommandState("inserthtml") before
 PASS [["inserthtml","<dt>abc</dt>"]] "<dl><dt>foo<dd>b[a]r</dl>" queryCommandValue("inserthtml") before
@@ -782,7 +782,7 @@ PASS [["inserthtml","<dt>abc</dt>"]] "<dl><dt>foo<dd>b[a]r</dl>" queryCommandSta
 PASS [["inserthtml","<dt>abc</dt>"]] "<dl><dt>foo<dd>b[a]r</dl>" queryCommandValue("inserthtml") after
 PASS [["inserthtml","<dd>abc</dd>"]] "<dl><dt>f[o]o<dd>bar</dl>": execCommand("inserthtml", false, "<dd>abc</dd>") return value
 PASS [["inserthtml","<dd>abc</dd>"]] "<dl><dt>f[o]o<dd>bar</dl>" checks for modifications to non-editable content
-FAIL [["inserthtml","<dd>abc</dd>"]] "<dl><dt>f[o]o<dd>bar</dl>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<dl><dt>f</dt><dd>abc</dd><dt>o</dt><dd>bar</dd></dl>" but got "<dl><dt>fabco<br></dt><dd>bar</dd></dl>"
+FAIL [["inserthtml","<dd>abc</dd>"]] "<dl><dt>f[o]o<dd>bar</dl>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<dl><dt>f</dt><dd>abc</dd><dt>o</dt><dd>bar</dd></dl>" but got "<dl><dt>f<dd>abc</dd>o</dt><dd>bar</dd></dl>"
 PASS [["inserthtml","<dd>abc</dd>"]] "<dl><dt>f[o]o<dd>bar</dl>" queryCommandIndeterm("inserthtml") before
 PASS [["inserthtml","<dd>abc</dd>"]] "<dl><dt>f[o]o<dd>bar</dl>" queryCommandState("inserthtml") before
 PASS [["inserthtml","<dd>abc</dd>"]] "<dl><dt>f[o]o<dd>bar</dl>" queryCommandValue("inserthtml") before
@@ -791,7 +791,7 @@ PASS [["inserthtml","<dd>abc</dd>"]] "<dl><dt>f[o]o<dd>bar</dl>" queryCommandSta
 PASS [["inserthtml","<dd>abc</dd>"]] "<dl><dt>f[o]o<dd>bar</dl>" queryCommandValue("inserthtml") after
 PASS [["inserthtml","<dd>abc</dd>"]] "<dl><dt>foo<dd>b[a]r</dl>": execCommand("inserthtml", false, "<dd>abc</dd>") return value
 PASS [["inserthtml","<dd>abc</dd>"]] "<dl><dt>foo<dd>b[a]r</dl>" checks for modifications to non-editable content
-FAIL [["inserthtml","<dd>abc</dd>"]] "<dl><dt>foo<dd>b[a]r</dl>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<dl><dt>foo</dt><dd>b</dd><dd>abc</dd><dd>r</dd></dl>" but got "<dl><dt>foo</dt><dd>babcr<br></dd></dl>"
+FAIL [["inserthtml","<dd>abc</dd>"]] "<dl><dt>foo<dd>b[a]r</dl>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<dl><dt>foo</dt><dd>b</dd><dd>abc</dd><dd>r</dd></dl>" but got "<dl><dt>foo</dt><dd>b<dd>abc</dd>r</dd></dl>"
 PASS [["inserthtml","<dd>abc</dd>"]] "<dl><dt>foo<dd>b[a]r</dl>" queryCommandIndeterm("inserthtml") before
 PASS [["inserthtml","<dd>abc</dd>"]] "<dl><dt>foo<dd>b[a]r</dl>" queryCommandState("inserthtml") before
 PASS [["inserthtml","<dd>abc</dd>"]] "<dl><dt>foo<dd>b[a]r</dl>" queryCommandValue("inserthtml") before
@@ -800,7 +800,7 @@ PASS [["inserthtml","<dd>abc</dd>"]] "<dl><dt>foo<dd>b[a]r</dl>" queryCommandSta
 PASS [["inserthtml","<dd>abc</dd>"]] "<dl><dt>foo<dd>b[a]r</dl>" queryCommandValue("inserthtml") after
 PASS [["inserthtml","<dt>abc</dt>"]] "f[o]o": execCommand("inserthtml", false, "<dt>abc</dt>") return value
 PASS [["inserthtml","<dt>abc</dt>"]] "f[o]o" checks for modifications to non-editable content
-FAIL [["inserthtml","<dt>abc</dt>"]] "f[o]o" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "f<dl><dt>abc</dt></dl>o" but got "fabco<br>"
+FAIL [["inserthtml","<dt>abc</dt>"]] "f[o]o" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "f<dl><dt>abc</dt></dl>o" but got "f<dt>abc</dt>o"
 PASS [["inserthtml","<dt>abc</dt>"]] "f[o]o" queryCommandIndeterm("inserthtml") before
 PASS [["inserthtml","<dt>abc</dt>"]] "f[o]o" queryCommandState("inserthtml") before
 PASS [["inserthtml","<dt>abc</dt>"]] "f[o]o" queryCommandValue("inserthtml") before
@@ -809,7 +809,7 @@ PASS [["inserthtml","<dt>abc</dt>"]] "f[o]o" queryCommandState("inserthtml") aft
 PASS [["inserthtml","<dt>abc</dt>"]] "f[o]o" queryCommandValue("inserthtml") after
 PASS [["inserthtml","<dt>abc</dt>"]] "<ol><li>f[o]o</ol>": execCommand("inserthtml", false, "<dt>abc</dt>") return value
 PASS [["inserthtml","<dt>abc</dt>"]] "<ol><li>f[o]o</ol>" checks for modifications to non-editable content
-FAIL [["inserthtml","<dt>abc</dt>"]] "<ol><li>f[o]o</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>f<dl><dt>abc</dt></dl>o</li></ol>" but got "<ol><li>fabco<br></li></ol>"
+FAIL [["inserthtml","<dt>abc</dt>"]] "<ol><li>f[o]o</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>f<dl><dt>abc</dt></dl>o</li></ol>" but got "<ol><li>f<dt>abc</dt>o</li></ol>"
 PASS [["inserthtml","<dt>abc</dt>"]] "<ol><li>f[o]o</ol>" queryCommandIndeterm("inserthtml") before
 PASS [["inserthtml","<dt>abc</dt>"]] "<ol><li>f[o]o</ol>" queryCommandState("inserthtml") before
 PASS [["inserthtml","<dt>abc</dt>"]] "<ol><li>f[o]o</ol>" queryCommandValue("inserthtml") before
@@ -818,7 +818,7 @@ PASS [["inserthtml","<dt>abc</dt>"]] "<ol><li>f[o]o</ol>" queryCommandState("ins
 PASS [["inserthtml","<dt>abc</dt>"]] "<ol><li>f[o]o</ol>" queryCommandValue("inserthtml") after
 PASS [["inserthtml","<dd>abc</dd>"]] "f[o]o": execCommand("inserthtml", false, "<dd>abc</dd>") return value
 PASS [["inserthtml","<dd>abc</dd>"]] "f[o]o" checks for modifications to non-editable content
-FAIL [["inserthtml","<dd>abc</dd>"]] "f[o]o" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "f<dl><dd>abc</dd></dl>o" but got "fabco<br>"
+FAIL [["inserthtml","<dd>abc</dd>"]] "f[o]o" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "f<dl><dd>abc</dd></dl>o" but got "f<dd>abc</dd>o"
 PASS [["inserthtml","<dd>abc</dd>"]] "f[o]o" queryCommandIndeterm("inserthtml") before
 PASS [["inserthtml","<dd>abc</dd>"]] "f[o]o" queryCommandState("inserthtml") before
 PASS [["inserthtml","<dd>abc</dd>"]] "f[o]o" queryCommandValue("inserthtml") before
@@ -827,7 +827,7 @@ PASS [["inserthtml","<dd>abc</dd>"]] "f[o]o" queryCommandState("inserthtml") aft
 PASS [["inserthtml","<dd>abc</dd>"]] "f[o]o" queryCommandValue("inserthtml") after
 PASS [["inserthtml","<dd>abc</dd>"]] "<ol><li>f[o]o</ol>": execCommand("inserthtml", false, "<dd>abc</dd>") return value
 PASS [["inserthtml","<dd>abc</dd>"]] "<ol><li>f[o]o</ol>" checks for modifications to non-editable content
-FAIL [["inserthtml","<dd>abc</dd>"]] "<ol><li>f[o]o</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>f<dl><dd>abc</dd></dl>o</li></ol>" but got "<ol><li>fabco<br></li></ol>"
+FAIL [["inserthtml","<dd>abc</dd>"]] "<ol><li>f[o]o</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>f<dl><dd>abc</dd></dl>o</li></ol>" but got "<ol><li>f<dd>abc</dd>o</li></ol>"
 PASS [["inserthtml","<dd>abc</dd>"]] "<ol><li>f[o]o</ol>" queryCommandIndeterm("inserthtml") before
 PASS [["inserthtml","<dd>abc</dd>"]] "<ol><li>f[o]o</ol>" queryCommandState("inserthtml") before
 PASS [["inserthtml","<dd>abc</dd>"]] "<ol><li>f[o]o</ol>" queryCommandValue("inserthtml") before

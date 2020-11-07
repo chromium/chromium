@@ -383,9 +383,15 @@ Node* EnclosingListChild(const Node* node) {
   // instead of node->parentNode()
   for (Node* n = const_cast<Node*>(node); n && n->parentNode();
        n = n->parentNode()) {
-    if (IsA<HTMLLIElement>(*n) ||
-        (IsHTMLListElement(n->parentNode()) && n != root))
+    if (((n->HasTagName(html_names::kLiTag) ||
+          n->HasTagName(html_names::kDdTag) ||
+          n->HasTagName(html_names::kDtTag)) ||
+         (n->parentNode()->HasTagName(html_names::kUlTag) ||
+          n->parentNode()->HasTagName(html_names::kOlTag) ||
+          n->parentNode()->HasTagName(html_names::kDlTag))) &&
+        n != root) {
       return n;
+    }
     if (n == root || IsTableCell(n))
       return nullptr;
   }
