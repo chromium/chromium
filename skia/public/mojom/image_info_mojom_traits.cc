@@ -11,49 +11,53 @@
 
 namespace mojo {
 
-namespace {
-
-SkColorType MojoColorTypeToSk(skia::mojom::ColorType type) {
+// static
+skia::mojom::AlphaType EnumTraits<skia::mojom::AlphaType, SkAlphaType>::ToMojom(
+    SkAlphaType type) {
   switch (type) {
-    case skia::mojom::ColorType::UNKNOWN:
-      return kUnknown_SkColorType;
-    case skia::mojom::ColorType::ALPHA_8:
-      return kAlpha_8_SkColorType;
-    case skia::mojom::ColorType::RGB_565:
-      return kRGB_565_SkColorType;
-    case skia::mojom::ColorType::ARGB_4444:
-      return kARGB_4444_SkColorType;
-    case skia::mojom::ColorType::RGBA_8888:
-      return kRGBA_8888_SkColorType;
-    case skia::mojom::ColorType::BGRA_8888:
-      return kBGRA_8888_SkColorType;
-    case skia::mojom::ColorType::GRAY_8:
-      return kGray_8_SkColorType;
-    case skia::mojom::ColorType::DEPRECATED_INDEX_8:
-      // no longer supported
-      break;
+    // TODO(dcheng): Why do we support unknown types on the wire?
+    case kUnknown_SkAlphaType:
+      return skia::mojom::AlphaType::UNKNOWN;
+    case kOpaque_SkAlphaType:
+      return skia::mojom::AlphaType::ALPHA_TYPE_OPAQUE;
+    case kPremul_SkAlphaType:
+      return skia::mojom::AlphaType::PREMUL;
+    case kUnpremul_SkAlphaType:
+      return skia::mojom::AlphaType::UNPREMUL;
   }
+  // TODO(dcheng): This should become a CHECK(false), as this represents a bug
+  // in the sender.
   NOTREACHED();
-  return kUnknown_SkColorType;
+  return skia::mojom::AlphaType::UNKNOWN;
 }
 
-SkAlphaType MojoAlphaTypeToSk(skia::mojom::AlphaType type) {
-  switch (type) {
+// static
+bool EnumTraits<skia::mojom::AlphaType, SkAlphaType>::FromMojom(
+    skia::mojom::AlphaType in,
+    SkAlphaType* out) {
+  switch (in) {
+    // TODO(dcheng): Why do we support unknown types on the wire?
     case skia::mojom::AlphaType::UNKNOWN:
-      return kUnknown_SkAlphaType;
+      *out = kUnknown_SkAlphaType;
+      return true;
     case skia::mojom::AlphaType::ALPHA_TYPE_OPAQUE:
-      return kOpaque_SkAlphaType;
+      *out = kOpaque_SkAlphaType;
+      return true;
     case skia::mojom::AlphaType::PREMUL:
-      return kPremul_SkAlphaType;
+      *out = kPremul_SkAlphaType;
+      return true;
     case skia::mojom::AlphaType::UNPREMUL:
-      return kUnpremul_SkAlphaType;
+      *out = kUnpremul_SkAlphaType;
+      return true;
   }
-  NOTREACHED();
-  return kUnknown_SkAlphaType;
+  return false;
 }
 
-skia::mojom::ColorType SkColorTypeToMojo(SkColorType type) {
+// static
+skia::mojom::ColorType EnumTraits<skia::mojom::ColorType, SkColorType>::ToMojom(
+    SkColorType type) {
   switch (type) {
+    // TODO(dcheng): Why do we support unknown types on the wire?
     case kUnknown_SkColorType:
       return skia::mojom::ColorType::UNKNOWN;
     case kAlpha_8_SkColorType:
@@ -72,39 +76,56 @@ skia::mojom::ColorType SkColorTypeToMojo(SkColorType type) {
       // Skia has color types not used by Chrome.
       break;
   }
+  // TODO(dcheng): This should become a CHECK(false), as this represents a bug
+  // in the sender.
   NOTREACHED();
   return skia::mojom::ColorType::UNKNOWN;
 }
 
-skia::mojom::AlphaType SkAlphaTypeToMojo(SkAlphaType type) {
-  switch (type) {
-    case kUnknown_SkAlphaType:
-      return skia::mojom::AlphaType::UNKNOWN;
-    case kOpaque_SkAlphaType:
-      return skia::mojom::AlphaType::ALPHA_TYPE_OPAQUE;
-    case kPremul_SkAlphaType:
-      return skia::mojom::AlphaType::PREMUL;
-    case kUnpremul_SkAlphaType:
-      return skia::mojom::AlphaType::UNPREMUL;
+// static
+bool EnumTraits<skia::mojom::ColorType, SkColorType>::FromMojom(
+    skia::mojom::ColorType in,
+    SkColorType* out) {
+  switch (in) {
+    // TODO(dcheng): Why do we support unknown types on the wire?
+    case skia::mojom::ColorType::UNKNOWN:
+      *out = kUnknown_SkColorType;
+      return true;
+    case skia::mojom::ColorType::ALPHA_8:
+      *out = kAlpha_8_SkColorType;
+      return true;
+    case skia::mojom::ColorType::RGB_565:
+      *out = kRGB_565_SkColorType;
+      return true;
+    case skia::mojom::ColorType::ARGB_4444:
+      *out = kARGB_4444_SkColorType;
+      return true;
+    case skia::mojom::ColorType::RGBA_8888:
+      *out = kRGBA_8888_SkColorType;
+      return true;
+    case skia::mojom::ColorType::BGRA_8888:
+      *out = kBGRA_8888_SkColorType;
+      return true;
+    case skia::mojom::ColorType::GRAY_8:
+      *out = kGray_8_SkColorType;
+      return true;
+    case skia::mojom::ColorType::DEPRECATED_INDEX_8:
+      // no longer supported
+      break;
   }
-  NOTREACHED();
-  return skia::mojom::AlphaType::UNKNOWN;
-}
-
-}  // namespace
-
-// static
-skia::mojom::ColorType
-StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>::color_type(
-    const SkImageInfo& info) {
-  return SkColorTypeToMojo(info.colorType());
+  return false;
 }
 
 // static
-skia::mojom::AlphaType
-StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>::alpha_type(
-    const SkImageInfo& info) {
-  return SkAlphaTypeToMojo(info.alphaType());
+SkColorType StructTraits<skia::mojom::ImageInfoDataView,
+                         SkImageInfo>::color_type(const SkImageInfo& info) {
+  return info.colorType();
+}
+
+// static
+SkAlphaType StructTraits<skia::mojom::ImageInfoDataView,
+                         SkImageInfo>::alpha_type(const SkImageInfo& info) {
+  return info.alphaType();
 }
 
 // static
@@ -154,6 +175,12 @@ StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>::color_to_xyz_matrix(
 bool StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>::Read(
     skia::mojom::ImageInfoDataView data,
     SkImageInfo* info) {
+  SkColorType color_type;
+  SkAlphaType alpha_type;
+
+  if (!data.ReadColorType(&color_type) || !data.ReadAlphaType(&alpha_type))
+    return false;
+
   mojo::ArrayDataView<float> color_transfer_function;
   data.GetColorTransferFunctionDataView(&color_transfer_function);
   mojo::ArrayDataView<float> color_to_xyz_matrix;
@@ -162,7 +189,8 @@ bool StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>::Read(
   // Sender must supply both color space fields or neither. This approach is
   // simpler than having an optional ColorSpace mojo struct, due to BUILD.gn
   // complexity with blink variants.
-  CHECK_EQ(color_transfer_function.is_null(), color_to_xyz_matrix.is_null());
+  if (color_transfer_function.is_null() != color_to_xyz_matrix.is_null())
+    return false;
 
   sk_sp<SkColorSpace> sk_color_space;
   if (!color_transfer_function.is_null() && !color_to_xyz_matrix.is_null()) {
@@ -183,9 +211,8 @@ bool StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>::Read(
     sk_color_space = SkColorSpace::MakeRGB(transfer_function, to_xyz_matrix);
   }
 
-  *info = SkImageInfo::Make(
-      data.width(), data.height(), MojoColorTypeToSk(data.color_type()),
-      MojoAlphaTypeToSk(data.alpha_type()), std::move(sk_color_space));
+  *info = SkImageInfo::Make(data.width(), data.height(), color_type, alpha_type,
+                            std::move(sk_color_space));
   return true;
 }
 

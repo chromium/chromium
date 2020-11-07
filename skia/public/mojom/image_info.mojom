@@ -36,6 +36,10 @@ struct ImageInfo {
   uint32 width;
   uint32 height;
 
+  // Note that both `color_transfer_function` and `color_to_xyz_matrix` must
+  // either both be set or both be unset. Unfortunately, this struct is marked
+  // Stable so it's no longer possible to fix this...
+
   // Color transfer function mapping encoded values to linear values,
   // represented by this 7-parameter piecewise function:
   //   linear = sign(encoded) *  (c*|encoded| + f)       , 0 <= |encoded| < d

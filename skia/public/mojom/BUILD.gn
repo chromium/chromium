@@ -88,6 +88,14 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "skia.mojom.AlphaType"
+          cpp = "::SkAlphaType"
+        },
+        {
+          mojom = "skia.mojom.ColorType"
+          cpp = "::SkColorType"
+        },
+        {
           mojom = "skia.mojom.ImageInfo"
           cpp = "::SkImageInfo"
         },
