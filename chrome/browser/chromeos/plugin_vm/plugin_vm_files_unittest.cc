@@ -7,7 +7,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/chromeos/crostini/crostini_test_helper.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"

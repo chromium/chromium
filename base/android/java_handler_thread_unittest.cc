@@ -8,7 +8,7 @@
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/task_observer.h"
 #include "base/test/android/java_handler_thread_helpers.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {

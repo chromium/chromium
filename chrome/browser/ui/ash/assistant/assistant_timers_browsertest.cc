@@ -15,7 +15,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/scoped_observer.h"
 #include "base/strings/string_util.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/icu_test_util.h"
 #include "chrome/browser/ui/ash/assistant/assistant_test_mixin.h"
 #include "chrome/browser/ui/ash/assistant/test_support/test_util.h"

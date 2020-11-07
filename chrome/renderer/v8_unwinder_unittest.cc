@@ -16,7 +16,7 @@
 #include "base/profiler/stack_sampling_profiler_test_util.h"
 #include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "gin/public/isolate_holder.h"

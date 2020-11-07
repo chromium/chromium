@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"

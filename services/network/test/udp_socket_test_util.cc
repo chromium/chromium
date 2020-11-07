@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

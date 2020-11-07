@@ -25,7 +25,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/exo/buffer.h"
 #include "components/exo/keyboard.h"
 #include "components/exo/keyboard_delegate.h"

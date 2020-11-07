@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"

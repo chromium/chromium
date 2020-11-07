@@ -15,7 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

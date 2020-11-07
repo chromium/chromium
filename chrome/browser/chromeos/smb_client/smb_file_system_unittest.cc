@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/chromeos/file_system_provider/provided_file_system_info.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_smb_provider_client.h"

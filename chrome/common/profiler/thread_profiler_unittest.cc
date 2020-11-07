@@ -5,7 +5,7 @@
 #include "chrome/common/profiler/thread_profiler.h"
 
 #include "base/macros.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"

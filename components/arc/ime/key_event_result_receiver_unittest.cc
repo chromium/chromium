@@ -4,7 +4,7 @@
 
 #include "components/arc/ime/key_event_result_receiver.h"
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"

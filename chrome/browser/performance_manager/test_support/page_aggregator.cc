@@ -5,7 +5,7 @@
 #include "chrome/browser/performance_manager/test_support/page_aggregator.h"
 
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/performance_manager/decorators/page_aggregator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/performance_manager.h"

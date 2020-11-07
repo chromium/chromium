@@ -8,7 +8,7 @@
 #include "base/guid.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "net/base/io_buffer.h"

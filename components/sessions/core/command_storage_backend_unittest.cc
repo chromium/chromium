@@ -14,7 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/sessions/core/command_storage_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"

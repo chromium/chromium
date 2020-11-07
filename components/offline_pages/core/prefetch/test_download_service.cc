@@ -9,7 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/download/public/background_service/service_config.h"

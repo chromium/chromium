@@ -13,7 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/public/browser/render_view_host.h"

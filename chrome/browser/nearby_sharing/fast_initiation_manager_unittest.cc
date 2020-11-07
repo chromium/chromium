@@ -10,7 +10,7 @@
 
 #include "base/bind_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"

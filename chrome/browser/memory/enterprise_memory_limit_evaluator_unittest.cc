@@ -4,7 +4,7 @@
 
 #include "chrome/browser/memory/enterprise_memory_limit_evaluator.h"
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/util/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "testing/gtest/include/gtest/gtest.h"

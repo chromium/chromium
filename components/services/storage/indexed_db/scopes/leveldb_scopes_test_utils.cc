@@ -11,7 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/system/sys_info.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "third_party/leveldatabase/env_chromium.h"

@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/native_file_system/native_file_system_permission_view.h"
 
 #include "base/files/file_path.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "components/permissions/permission_util.h"

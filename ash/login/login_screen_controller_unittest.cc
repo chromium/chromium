@@ -18,7 +18,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 

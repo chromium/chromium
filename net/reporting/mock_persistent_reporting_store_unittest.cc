@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base/location.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "net/base/network_isolation_key.h"
 #include "net/reporting/reporting_endpoint.h"

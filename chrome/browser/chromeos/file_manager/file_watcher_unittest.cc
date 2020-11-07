@@ -11,7 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/test/base/testing_profile.h"

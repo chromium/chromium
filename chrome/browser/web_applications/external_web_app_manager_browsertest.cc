@@ -8,7 +8,7 @@
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"

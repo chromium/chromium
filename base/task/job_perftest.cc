@@ -14,7 +14,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/post_job.h"
 #include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"

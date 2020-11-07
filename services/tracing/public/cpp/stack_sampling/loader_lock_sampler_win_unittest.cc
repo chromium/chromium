@@ -10,7 +10,7 @@
 #include "base/scoped_native_library.h"
 #include "base/strings/string16.h"
 #include "base/task/thread_pool.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/test_waitable_event.h"

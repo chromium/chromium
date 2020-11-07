@@ -7,7 +7,7 @@
 #include <objbase.h>
 
 #include "base/numerics/math_constants.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_com_initializer.h"

@@ -10,7 +10,7 @@
 #include "base/bind_helpers.h"
 #include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/signin/gaia_auth_fetcher_ios_bridge.h"

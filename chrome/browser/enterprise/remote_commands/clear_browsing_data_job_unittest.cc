@@ -6,7 +6,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/values.h"
 #include "chrome/browser/nacl_host/nacl_browser_delegate_impl.h"
 #include "chrome/test/base/testing_browser_process.h"

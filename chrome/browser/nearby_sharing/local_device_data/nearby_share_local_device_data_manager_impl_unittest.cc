@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/optional.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/nearby_sharing/client/fake_nearby_share_client.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_device_data_updater.h"

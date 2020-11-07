@@ -9,7 +9,7 @@
 #include "base/callback.h"
 #include "base/guid.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/sharing/fake_device_info.h"

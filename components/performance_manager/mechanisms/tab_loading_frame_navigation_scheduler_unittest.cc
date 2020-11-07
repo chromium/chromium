@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"

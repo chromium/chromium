@@ -5,7 +5,7 @@
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
 
 #include "base/base64.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "services/network/public/cpp/network_switches.h"

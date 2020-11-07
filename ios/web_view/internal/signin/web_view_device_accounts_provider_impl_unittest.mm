@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 #import "ios/web_view/public/cwv_identity.h"
 #import "ios/web_view/public/cwv_sync_controller.h"

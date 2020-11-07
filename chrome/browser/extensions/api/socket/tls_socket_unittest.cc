@@ -6,7 +6,7 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_context.h"

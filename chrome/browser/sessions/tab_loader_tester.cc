@@ -5,7 +5,7 @@
 #include "chrome/browser/sessions/tab_loader_tester.h"
 
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 
 TabLoaderTester::TabLoaderTester() = default;
 

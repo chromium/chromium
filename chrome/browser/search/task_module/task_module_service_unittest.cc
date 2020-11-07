@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/search/task_module/task_module_service.h"
 #include "chrome/test/base/testing_profile.h"

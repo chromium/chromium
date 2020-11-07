@@ -11,7 +11,7 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/sys_byteorder.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "jingle/glue/fake_ssl_client_socket.h"

@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/common/autofill_prefs.h"

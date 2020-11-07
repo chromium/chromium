@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/util/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "build/build_config.h"

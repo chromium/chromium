@@ -5,7 +5,7 @@
 #include "services/device/geolocation/core_location_provider.h"
 
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "testing/gtest/include/gtest/gtest.h"

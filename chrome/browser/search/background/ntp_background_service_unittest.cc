@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/search/background/ntp_background_data.h"
 #include "content/public/test/browser_task_environment.h"

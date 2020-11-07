@@ -24,7 +24,7 @@
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"

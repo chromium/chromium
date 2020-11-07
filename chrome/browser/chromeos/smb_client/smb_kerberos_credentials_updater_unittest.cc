@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/chromeos/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
 #include "chrome/common/pref_names.h"

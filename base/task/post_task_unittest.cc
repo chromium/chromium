@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "base/task/task_executor.h"
 #include "base/task/test_task_traits_extension.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"

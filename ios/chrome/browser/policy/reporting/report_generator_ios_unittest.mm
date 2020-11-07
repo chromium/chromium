@@ -12,7 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/mock_policy_service.h"

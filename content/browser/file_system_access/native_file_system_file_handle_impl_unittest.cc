@@ -14,7 +14,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "content/browser/file_system_access/fixed_native_file_system_permission_grant.h"
 #include "content/public/test/browser_task_environment.h"

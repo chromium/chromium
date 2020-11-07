@@ -12,7 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_common.h"
 

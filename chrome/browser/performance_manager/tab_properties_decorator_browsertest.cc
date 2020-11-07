@@ -4,7 +4,7 @@
 
 #include "components/performance_manager/public/decorators/tab_properties_decorator.h"
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"

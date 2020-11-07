@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "base/strings/strcat.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
 #include "content/browser/conversions/storable_impression.h"

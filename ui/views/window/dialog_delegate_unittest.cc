@@ -6,7 +6,7 @@
 
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "ui/base/hit_test.h"
 #include "ui/events/event_processor.h"

@@ -7,7 +7,7 @@
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
 #include "content/public/browser/browser_context.h"

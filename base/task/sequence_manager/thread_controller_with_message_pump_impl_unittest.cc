@@ -16,7 +16,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/task/sequence_manager/thread_controller_power_monitor.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/threading/thread_task_runner_handle.h"

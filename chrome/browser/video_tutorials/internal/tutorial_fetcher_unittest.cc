@@ -4,7 +4,7 @@
 
 #include "chrome/browser/video_tutorials/internal/tutorial_fetcher.h"
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"

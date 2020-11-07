@@ -11,7 +11,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/task/sequence_manager/sequence_manager.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "content/public/browser/browser_thread.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -11,7 +11,7 @@
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/values.h"
 #include "extensions/common/event_filtering_info.h"

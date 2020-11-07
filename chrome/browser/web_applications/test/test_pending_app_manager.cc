@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/sequenced_task_runner.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/test/test_app_registrar.h"

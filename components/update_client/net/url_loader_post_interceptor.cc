@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/update_client/test_configurator.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"

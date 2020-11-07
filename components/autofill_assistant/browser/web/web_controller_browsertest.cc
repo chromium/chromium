@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"

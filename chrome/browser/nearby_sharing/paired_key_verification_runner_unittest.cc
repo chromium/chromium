@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/certificates/fake_nearby_share_certificate_manager.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"

@@ -9,7 +9,7 @@
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "jingle/glue/fake_ssl_client_socket.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/performance_manager/performance_manager_registry_impl.h"
 #include "components/performance_manager/test_support/performance_manager_browsertest_harness.h"
 #include "content/public/browser/browser_thread.h"

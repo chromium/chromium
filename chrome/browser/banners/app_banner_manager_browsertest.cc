@@ -11,7 +11,7 @@
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/banners/app_banner_manager.h"

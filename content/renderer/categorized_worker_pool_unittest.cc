@@ -4,7 +4,7 @@
 
 #include "content/renderer/categorized_worker_pool.h"
 #include "base/sequenced_task_runner.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/sequenced_task_runner_test_template.h"
 #include "base/test/task_runner_test_template.h"
 #include "base/threading/platform_thread.h"

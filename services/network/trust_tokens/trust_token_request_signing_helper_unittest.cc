@@ -16,7 +16,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time_to_iso8601.h"
 #include "components/cbor/reader.h"

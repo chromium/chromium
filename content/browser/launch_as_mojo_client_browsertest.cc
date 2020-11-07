@@ -10,7 +10,7 @@
 #include "base/process/launch.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"

@@ -22,7 +22,7 @@
 #include "base/task/post_task.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/task_executor.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/platform_thread.h"

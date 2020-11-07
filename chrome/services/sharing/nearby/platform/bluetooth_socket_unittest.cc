@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_device.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

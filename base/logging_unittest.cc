@@ -15,7 +15,7 @@
 #include "base/run_loop.h"
 #include "base/sanitizer_buildflags.h"
 #include "base/strings/string_piece.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"

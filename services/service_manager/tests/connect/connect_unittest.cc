@@ -17,7 +17,7 @@
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_suite.h"

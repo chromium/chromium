@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

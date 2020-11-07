@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 
 #include "base/callback.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
 #include "chrome/browser/chromeos/crostini/fake_crostini_features.h"

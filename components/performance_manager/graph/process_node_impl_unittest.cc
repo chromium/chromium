@@ -5,7 +5,7 @@
 #include "components/performance_manager/graph/process_node_impl.h"
 
 #include "base/process/process.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"

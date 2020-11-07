@@ -4,7 +4,7 @@
 
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy.h"
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/ui/browser.h"

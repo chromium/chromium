@@ -8,7 +8,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
 #include "chrome/browser/extensions/extension_browsertest.h"

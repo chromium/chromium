@@ -8,7 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/chromeos/file_manager/fake_disk_mount_manager.h"

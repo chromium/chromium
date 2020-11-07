@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/strcat.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"

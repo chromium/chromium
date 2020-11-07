@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_list.h"
 #include "chrome/browser/ui/browser.h"

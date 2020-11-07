@@ -12,7 +12,7 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/installable/fake_installable_manager.h"
 #include "chrome/browser/installable/installable_data.h"
 #include "chrome/browser/installable/installable_manager.h"

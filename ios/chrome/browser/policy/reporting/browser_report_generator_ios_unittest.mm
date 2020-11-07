@@ -12,7 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"

@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"

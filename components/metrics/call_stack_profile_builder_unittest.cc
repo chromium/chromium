@@ -8,7 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/profiler/module_cache.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

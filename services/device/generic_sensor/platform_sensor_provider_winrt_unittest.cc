@@ -5,7 +5,7 @@
 #include "services/device/generic_sensor/platform_sensor_provider_winrt.h"
 
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "services/device/generic_sensor/platform_sensor_reader_win_base.h"
 #include "testing/gmock/include/gmock/gmock.h"

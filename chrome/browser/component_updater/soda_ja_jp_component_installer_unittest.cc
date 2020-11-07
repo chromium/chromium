@@ -5,7 +5,7 @@
 #include "chrome/browser/component_updater/soda_ja_jp_component_installer.h"
 
 #include "base/files/file_path.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

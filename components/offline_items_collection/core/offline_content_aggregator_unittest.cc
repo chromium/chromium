@@ -7,7 +7,7 @@
 #include <map>
 
 #include "base/bind.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_items_collection/core/offline_item.h"

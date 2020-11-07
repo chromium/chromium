@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "content/public/browser/web_contents.h"

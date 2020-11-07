@@ -9,7 +9,7 @@
 
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"

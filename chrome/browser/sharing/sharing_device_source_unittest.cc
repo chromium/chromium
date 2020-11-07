@@ -5,7 +5,7 @@
 #include "chrome/browser/sharing/sharing_device_source.h"
 
 #include "base/callback.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/sharing/mock_sharing_device_source.h"
 #include "components/sync_device_info/device_info.h"
 #include "testing/gmock/include/gmock/gmock.h"

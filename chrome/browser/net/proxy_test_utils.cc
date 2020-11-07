@@ -4,7 +4,7 @@
 
 #include "chrome/browser/net/proxy_test_utils.h"
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/url_loader_interceptor.h"

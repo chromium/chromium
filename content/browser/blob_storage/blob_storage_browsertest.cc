@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"

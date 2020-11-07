@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "media/fuchsia/cdm/service/mock_provision_fetcher.h"
 #include "testing/gmock/include/gmock/gmock.h"

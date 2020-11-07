@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/favicon/core/favicon_client.h"
 #include "components/favicon/core/favicon_handler.h"

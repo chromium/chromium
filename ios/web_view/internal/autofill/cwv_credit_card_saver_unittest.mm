@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"

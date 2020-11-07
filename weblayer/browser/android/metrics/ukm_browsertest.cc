@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/ukm/ukm_test_helper.h"
 #include "weblayer/browser/android/metrics/metrics_test_helper.h"
 #include "weblayer/browser/android/metrics/weblayer_metrics_service_client.h"

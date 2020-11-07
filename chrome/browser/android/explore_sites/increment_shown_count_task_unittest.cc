@@ -5,7 +5,7 @@
 #include "chrome/browser/android/explore_sites/increment_shown_count_task.h"
 
 #include "base/bind.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/android/explore_sites/explore_sites_schema.h"
 #include "components/offline_pages/task/task.h"
 #include "components/offline_pages/task/task_test_base.h"

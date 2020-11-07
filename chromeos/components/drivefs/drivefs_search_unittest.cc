@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom-test-utils.h"

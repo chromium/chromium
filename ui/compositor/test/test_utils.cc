@@ -6,7 +6,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/timer/timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/compositor.h"

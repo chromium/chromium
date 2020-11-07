@@ -5,7 +5,7 @@
 #include "chrome/test/base/search_test_utils.h"
 
 #include "base/memory/ref_counted.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"

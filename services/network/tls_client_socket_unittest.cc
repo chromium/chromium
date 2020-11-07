@@ -12,7 +12,7 @@
 #include "base/check_op.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

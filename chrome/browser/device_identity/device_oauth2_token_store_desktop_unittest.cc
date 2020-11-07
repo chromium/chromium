@@ -5,7 +5,7 @@
 #include "chrome/browser/device_identity/device_oauth2_token_store_desktop.h"
 
 #include "base/base64.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"

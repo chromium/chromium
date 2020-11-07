@@ -12,7 +12,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"

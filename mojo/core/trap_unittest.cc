@@ -14,7 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
 #include "base/time/time.h"

@@ -11,7 +11,7 @@
 #include "base/run_loop.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/ui/browser.h"

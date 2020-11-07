@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/native_widget_factory.h"

@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/win/async_operation.h"
 #include "device/bluetooth/test/fake_device_pairing_requested_event_args_winrt.h"

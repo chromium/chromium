@@ -8,7 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade_factory.h"
 #include "components/performance_manager/persistence/site_data/leveldb_site_data_store.h"
 #include "components/performance_manager/persistence/site_data/site_data_impl.h"

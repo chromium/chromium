@@ -11,7 +11,7 @@
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/feedback/feedback_uploader_factory.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/variations_associated_data.h"

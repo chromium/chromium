@@ -6,7 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "content/public/browser/browser_task_traits.h"

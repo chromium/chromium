@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/printing/cloud_print/gcd_api_flow_impl.h"

@@ -11,7 +11,7 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/sharing/public/cpp/advertisement.h"
 #include "chrome/services/sharing/public/cpp/conversions.h"

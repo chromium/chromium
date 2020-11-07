@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"

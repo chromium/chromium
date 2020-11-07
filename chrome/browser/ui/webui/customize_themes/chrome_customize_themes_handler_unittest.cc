@@ -12,7 +12,7 @@
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/values.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/test_extension_environment.h"

@@ -18,7 +18,7 @@
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"

@@ -8,7 +8,7 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search_engines/chrome_template_url_service_client.h"

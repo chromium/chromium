@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/isolation_context.h"
 #include "content/public/test/browser_task_environment.h"

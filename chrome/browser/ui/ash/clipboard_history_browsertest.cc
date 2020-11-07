@@ -11,7 +11,7 @@
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 #include "ash/clipboard/views/clipboard_history_item_view.h"
 #include "ash/shell.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/login/login_manager_test.h"

@@ -4,7 +4,7 @@
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/shape_detection/barcode_detection_provider_barhopper.h"

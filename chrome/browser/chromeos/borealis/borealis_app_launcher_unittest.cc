@@ -7,7 +7,7 @@
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/chromeos/borealis/borealis_context.h"
 #include "chrome/browser/chromeos/borealis/borealis_util.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"

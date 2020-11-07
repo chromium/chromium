@@ -7,7 +7,7 @@
 #include "base/macros.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_builder.h"

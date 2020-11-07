@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"

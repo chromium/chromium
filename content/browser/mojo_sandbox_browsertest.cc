@@ -16,7 +16,7 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "content/browser/utility_process_host.h"
 #include "content/public/browser/browser_task_traits.h"

@@ -5,7 +5,7 @@
 #import <WebKit/WebKit.h>
 
 #include "base/strings/utf_string_conversions.h"
-#import "base/test/bind_test_util.h"
+#import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #include "ios/testing/embedded_test_server_handlers.h"
 #include "ios/web/public/browsing_data/cookie_blocking_mode.h"

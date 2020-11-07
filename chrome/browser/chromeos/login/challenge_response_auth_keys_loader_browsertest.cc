@@ -8,7 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/chromeos/certificate_provider/test_certificate_provider_extension.h"
 #include "chrome/browser/chromeos/login/test/device_state_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"

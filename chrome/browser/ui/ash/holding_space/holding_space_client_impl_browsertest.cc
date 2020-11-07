@@ -16,7 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/extensions/component_loader.h"

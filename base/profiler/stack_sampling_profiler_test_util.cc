@@ -16,7 +16,7 @@
 #include "base/profiler/stack_sampling_profiler.h"
 #include "base/profiler/unwinder.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

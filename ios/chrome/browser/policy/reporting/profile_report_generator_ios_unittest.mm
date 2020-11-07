@@ -13,7 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema_registry.h"

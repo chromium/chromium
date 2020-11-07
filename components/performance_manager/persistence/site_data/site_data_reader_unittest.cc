@@ -11,7 +11,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/performance_manager/persistence/site_data/site_data_impl.h"
 #include "components/performance_manager/persistence/site_data/unittest_utils.h"

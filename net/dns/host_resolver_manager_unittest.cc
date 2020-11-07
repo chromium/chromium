@@ -30,7 +30,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"

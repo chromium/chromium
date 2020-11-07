@@ -20,7 +20,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/sequenced_task_runner_handle.h"

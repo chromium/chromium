@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/safe_browsing/content/password_protection/mock_password_protection_service.h"
 #include "components/safe_browsing/content/password_protection/password_protection_request.h"
 #include "content/public/browser/navigation_handle.h"

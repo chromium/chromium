@@ -17,7 +17,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/safe_browsing/core/common/test_task_environment.h"
 #include "components/safe_browsing/core/db/test_database_manager.h"

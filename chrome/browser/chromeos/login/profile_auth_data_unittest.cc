@@ -14,7 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_context.h"

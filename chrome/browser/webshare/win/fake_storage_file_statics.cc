@@ -13,7 +13,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/macros.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/fake_iasync_operation_win.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/win/scoped_hstring.h"

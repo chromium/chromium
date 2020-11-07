@@ -10,7 +10,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/arc/arc_support_host.h"

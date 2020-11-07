@@ -5,7 +5,7 @@
 #include "base/win/post_async_results.h"
 
 #include "base/test/async_results_test_values_win.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/fake_iasync_operation_win.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

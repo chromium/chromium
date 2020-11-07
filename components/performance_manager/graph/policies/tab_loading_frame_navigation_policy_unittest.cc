@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/task/task_traits.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"

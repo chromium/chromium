@@ -4,7 +4,7 @@
 
 #include "chrome/browser/media/router/providers/cast/mirroring_activity.h"
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/values_test_util.h"

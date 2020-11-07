@@ -9,7 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/chromeos/secure_channel/fake_nearby_connection_broker.h"
 #include "chrome/browser/chromeos/secure_channel/fake_nearby_endpoint_finder.h"

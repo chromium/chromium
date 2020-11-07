@@ -15,7 +15,7 @@
 #include "base/i18n/unicodestring.h"
 #include "base/rand_util.h"
 #include "base/task/thread_pool.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "content/browser/file_system/file_system_url_loader_factory.h"
 #include "content/browser/web_contents/web_contents_impl.h"
