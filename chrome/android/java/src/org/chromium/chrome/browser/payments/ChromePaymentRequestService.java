@@ -43,7 +43,6 @@ import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestServiceUtil;
 import org.chromium.components.payments.PaymentRequestSpec;
 import org.chromium.components.payments.PaymentResponseHelperInterface;
-import org.chromium.components.payments.PaymentResponseHelperInterface.PaymentResponseResultCallback;
 import org.chromium.components.payments.PaymentUIsObserver;
 import org.chromium.components.payments.PaymentValidator;
 import org.chromium.components.payments.Section;
@@ -74,7 +73,6 @@ import java.util.Set;
  */
 public class ChromePaymentRequestService implements BrowserPaymentRequest, PaymentApp.AbortCallback,
                                                     PaymentApp.InstrumentDetailsCallback,
-                                                    PaymentResponseResultCallback,
                                                     PaymentDetailsConverter.MethodChecker,
                                                     PaymentUiService.Delegate, PaymentUIsObserver {
     private static final String TAG = "PaymentRequest";
@@ -118,9 +116,6 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest, Payme
      * be shown more than once. This boolean is used to make sure it is only logged once.
      */
     private boolean mDidRecordShowEvent;
-
-    /** The helper to create and fill the response to send to the merchant. */
-    private PaymentResponseHelperInterface mPaymentResponseHelper;
 
     /** A helper to manage the Skip-to-GPay experimental flow. */
     private SkipToGPayHelper mSkipToGPayHelper;
@@ -839,7 +834,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest, Payme
     @Override
     public void onInstrumentDetailsLoadingWithoutUI() {
         if (mPaymentRequestService == null || mPaymentUiService.getPaymentRequestUI() == null
-                || mPaymentResponseHelper == null) {
+                || mPaymentRequestService.getPaymentResponseHelper() == null) {
             return;
         }
 
@@ -855,10 +850,6 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest, Payme
         EditableOption selectedContact = mPaymentUiService.getContactSection() != null
                 ? mPaymentUiService.getContactSection().getSelectedItem()
                 : null;
-        mPaymentResponseHelper = new ChromePaymentResponseHelper(selectedShippingAddress,
-                selectedShippingOption, selectedContact, selectedPaymentApp, mPaymentOptions,
-                mSkipToGPayHelper != null);
-
         selectedPaymentApp.setPaymentHandlerHost(getPaymentHandlerHost());
         // Only native apps can use PaymentDetailsUpdateService.
         if (selectedPaymentApp.getPaymentAppType() == PaymentAppType.NATIVE_MOBILE_APP) {
@@ -866,7 +857,11 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest, Payme
                     ((AndroidPaymentApp) selectedPaymentApp).packageName(),
                     mPaymentRequestService /* PaymentApp.PaymentRequestUpdateEventListener */);
         }
-        mPaymentRequestService.invokePaymentApp(selectedPaymentApp, /*callback=*/this);
+        PaymentResponseHelperInterface paymentResponseHelper = new ChromePaymentResponseHelper(
+                selectedShippingAddress, selectedShippingOption, selectedContact,
+                selectedPaymentApp, mPaymentOptions, mSkipToGPayHelper != null);
+        mPaymentRequestService.invokePaymentApp(
+                selectedPaymentApp, paymentResponseHelper, /*callback=*/this);
         return !selectedPaymentApp.isAutofillInstrument();
     }
 
@@ -1091,7 +1086,8 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest, Payme
         assert methodName != null;
         assert stringifiedDetails != null;
 
-        if (mPaymentRequestService == null || mPaymentResponseHelper == null) {
+        if (mPaymentRequestService == null
+                || mPaymentRequestService.getPaymentResponseHelper() == null) {
             return;
         }
 
@@ -1114,22 +1110,14 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest, Payme
 
         mJourneyLogger.setEventOccurred(Event.RECEIVED_INSTRUMENT_DETAILS);
 
-        mPaymentResponseHelper.generatePaymentResponse(
-                methodName, stringifiedDetails, payerData, /*resultCallback=*/this);
+        mPaymentRequestService.getPaymentResponseHelper().generatePaymentResponse(methodName,
+                stringifiedDetails, payerData, /*resultCallback=*/mPaymentRequestService);
     }
 
+    // Implements BrowserPaymentRequest:
     @Override
-    public void onPaymentResponseReady(PaymentResponse response) {
-        if (mSkipToGPayHelper != null && !mSkipToGPayHelper.patchPaymentResponse(response)) {
-            disconnectFromClientWithDebugMessage(
-                    ErrorStrings.PAYMENT_APP_INVALID_RESPONSE, PaymentErrorReason.NOT_SUPPORTED);
-        }
-        if (mPaymentRequestService == null) return;
-        mPaymentRequestService.onPaymentResponse(response);
-        mPaymentResponseHelper = null;
-        if (PaymentRequestService.getObserverForTest() != null) {
-            PaymentRequestService.getObserverForTest().onPaymentResponseReady();
-        }
+    public boolean patchPaymentResponseIfNeeded(PaymentResponse response) {
+        return mSkipToGPayHelper == null || mSkipToGPayHelper.patchPaymentResponse(response);
     }
 
     /** Called if unable to retrieve payment details. */

@@ -12,6 +12,7 @@ import org.chromium.payments.mojom.PaymentErrorReason;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequest;
+import org.chromium.payments.mojom.PaymentResponse;
 import org.chromium.payments.mojom.PaymentValidationErrors;
 
 import java.util.List;
@@ -161,5 +162,14 @@ public interface BrowserPaymentRequest {
      */
     default boolean isPaymentSheetBasedPaymentAppSupported() {
         return false;
+    }
+
+    /**
+     * Patches the given payment response if needed.
+     * @param response The payment response to be patched in place.
+     * @return Whether the patching is successful.
+     */
+    default boolean patchPaymentResponseIfNeeded(PaymentResponse response) {
+        return true;
     }
 }

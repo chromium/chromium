@@ -57,8 +57,10 @@ import java.util.Map;
  * class need to close them with
  * {@link PaymentRequestService#close()}, after which no usage is allowed.
  */
-public class PaymentRequestService implements PaymentAppFactoryDelegate, PaymentAppFactoryParams,
-                                              PaymentRequestUpdateEventListener {
+public class PaymentRequestService
+        implements PaymentAppFactoryDelegate, PaymentAppFactoryParams,
+                   PaymentRequestUpdateEventListener,
+                   PaymentResponseHelperInterface.PaymentResponseResultCallback {
     private static final String TAG = "PaymentRequestServ";
     private static PaymentRequestServiceObserverForTest sObserverForTest;
     private static NativeObserverForTest sNativeObserverForTest;
@@ -100,6 +102,11 @@ public class PaymentRequestService implements PaymentAppFactoryDelegate, Payment
     // mBrowserPaymentRequest is null when it has closed or is uninitiated.
     @Nullable
     private BrowserPaymentRequest mBrowserPaymentRequest;
+
+    /** The helper to create and fill the response to send to the merchant. */
+    @Nullable
+    private PaymentResponseHelperInterface mPaymentResponseHelper;
+
     /**
      * A mapping of the payment method names to the corresponding payment method specific data. If
      * STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT is enabled, then the key "basic-card-payment-options"
@@ -475,11 +482,43 @@ public class PaymentRequestService implements PaymentAppFactoryDelegate, Payment
     }
 
     /**
+     * @return The {@link PaymentResponseHelperInterface} that's passed in through {@link
+     *         #invokePaymentApp}. Returns null before the payment app is invoked.
+     */
+    @Nullable
+    public PaymentResponseHelperInterface getPaymentResponseHelper() {
+        return mPaymentResponseHelper;
+    }
+
+    // Implements PaymentResponseHelper.PaymentResponseResultCallback:
+    @Override
+    public void onPaymentResponseReady(PaymentResponse response) {
+        if (!mBrowserPaymentRequest.patchPaymentResponseIfNeeded(response)) {
+            mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
+                    ErrorStrings.PAYMENT_APP_INVALID_RESPONSE, PaymentErrorReason.NOT_SUPPORTED);
+            // Intentionally do not early-return.
+        }
+        if (mClient != null) {
+            mClient.onPaymentResponse(response);
+        }
+        mPaymentResponseHelper = null;
+        if (sObserverForTest != null) {
+            sObserverForTest.onPaymentResponseReady();
+        }
+    }
+
+    /**
      * Invokes the given payment app.
      * @param paymentApp The payment app to be invoked.
+     * @param paymentResponseHelper The helper to create and fill the response to send to the
+     *         merchant. The helper should have this instance as the delegate {@link
+     *         PaymentResponseHelperInterface.PaymentResponseRequesterDelegate}.
      * @param callback The callback of the invocation.
      */
-    public void invokePaymentApp(PaymentApp paymentApp, InstrumentDetailsCallback callback) {
+    public void invokePaymentApp(PaymentApp paymentApp,
+            PaymentResponseHelperInterface paymentResponseHelper,
+            InstrumentDetailsCallback callback) {
+        mPaymentResponseHelper = paymentResponseHelper;
         mJourneyLogger.recordCheckoutStep(CheckoutFunnelStep.PAYMENT_HANDLER_INVOKED);
         // Create maps that are subsets of mMethodData and mModifiers, that contain the payment
         // methods supported by the selected payment app. If the intersection of method data
@@ -1005,14 +1044,6 @@ public class PaymentRequestService implements PaymentAppFactoryDelegate, Payment
         assert mClient != null;
 
         mClient.onPayerDetailChange(detail);
-    }
-
-    /** Invokes {@link PaymentRequestClient.onPaymentResponse}. */
-    public void onPaymentResponse(PaymentResponse response) {
-        // Every caller should stop referencing this class once close() is called.
-        assert mClient != null;
-
-        mClient.onPaymentResponse(response);
     }
 
     /** Invokes {@link PaymentRequestClient.onError}. */
