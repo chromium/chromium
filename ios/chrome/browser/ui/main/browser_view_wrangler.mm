@@ -180,7 +180,9 @@
   restorationAgent->SetSessionID(base::SysNSStringToUTF8(restoreSessionID));
   restorationAgent->RestoreSession();
   restorationAgent->SetSessionID(sessionID);
-
+  if (base::SysNSStringToUTF8(restoreSessionID) != sessionID) {
+    restorationAgent->SaveSession(true);
+  }
   breakpad::MonitorTabStateForWebStateList(_mainBrowser->GetWebStateList());
   // Follow loaded URLs in the main tab model to send those in case of
   // crashes.
