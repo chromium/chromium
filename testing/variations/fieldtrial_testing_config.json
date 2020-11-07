@@ -1543,7 +1543,7 @@
             ]
         }
     ],
-    "ChromeSharingHubClank": [
+    "ChromeSharingHubClankV2": [
         {
             "platforms": [
                 "android"
@@ -1553,8 +1553,10 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ChromeShareQRCode",
+                        "ChromeShareScreenshot",
                         "ChromeSharingHub"
-                    ]
+                    ],
+                    "min_os_version": "5.1"
                 }
             ]
         }
