@@ -12,8 +12,10 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -87,6 +89,8 @@ void ClipboardHistoryMenuModelAdapter::Run(
   ClipboardImageModelFactory::Get()->Activate();
 
   root_view_ = CreateMenu();
+  root_view_->SetTitle(
+      l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_MENU_TITLE));
   menu_runner_ = std::make_unique<views::MenuRunner>(
       root_view_, views::MenuRunner::CONTEXT_MENU |
                       views::MenuRunner::USE_TOUCHABLE_LAYOUT |

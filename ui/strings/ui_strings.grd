@@ -1066,6 +1066,9 @@ need to be translated for each locale.-->
       <message name="IDS_CLIPBOARD_HISTORY_MENU_HTML_IMAGE" desc="Accessibility text for the HTML-rendered image shown on the clipboard history menu">
         HTML content.
       </message>
+      <message name="IDS_CLIPBOARD_HISTORY_MENU_TITLE" desc="The title of the clipboard history menu which shows the history of the clipboard data">
+        Clipboard history
+      </message>
 
       <!-- Strings describing the touch calibration UX -->
       <message name="IDS_DISPLAY_TOUCH_CALIBRATION_EXIT_LABEL" desc="A message to notify the user about using the escape key to exit the calibration mode.">
