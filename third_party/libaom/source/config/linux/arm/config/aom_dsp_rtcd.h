@@ -12148,6 +12148,19 @@ int aom_satd_c(const tran_low_t* coeff, int length);
 int aom_satd_lp_c(const int16_t* coeff, int length);
 #define aom_satd_lp aom_satd_lp_c
 
+void aom_scaled_2d_c(const uint8_t* src,
+                     ptrdiff_t src_stride,
+                     uint8_t* dst,
+                     ptrdiff_t dst_stride,
+                     const InterpKernel* filter,
+                     int x0_q4,
+                     int x_step_q4,
+                     int y0_q4,
+                     int y_step_q4,
+                     int w,
+                     int h);
+#define aom_scaled_2d aom_scaled_2d_c
+
 void aom_smooth_h_predictor_16x16_c(uint8_t* dst,
                                     ptrdiff_t y_stride,
                                     const uint8_t* above,
@@ -12952,6 +12965,13 @@ uint64_t aom_sum_squares_2d_i16_c(const int16_t* src,
 
 uint64_t aom_sum_squares_i16_c(const int16_t* src, uint32_t N);
 #define aom_sum_squares_i16 aom_sum_squares_i16_c
+
+uint64_t aom_sum_sse_2d_i16_c(const int16_t* src,
+                              int src_stride,
+                              int width,
+                              int height,
+                              int* sum);
+#define aom_sum_sse_2d_i16 aom_sum_sse_2d_i16_c
 
 void aom_upsampled_pred_c(MACROBLOCKD* xd,
                           const struct AV1Common* const cm,

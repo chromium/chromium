@@ -380,6 +380,19 @@ void av1_calc_proj_params_c(const uint8_t* src8,
                             int64_t H[2][2],
                             int64_t C[2],
                             const sgr_params_type* params);
+void av1_calc_proj_params_sse4_1(const uint8_t* src8,
+                                 int width,
+                                 int height,
+                                 int src_stride,
+                                 const uint8_t* dat8,
+                                 int dat_stride,
+                                 int32_t* flt0,
+                                 int flt0_stride,
+                                 int32_t* flt1,
+                                 int flt1_stride,
+                                 int64_t H[2][2],
+                                 int64_t C[2],
+                                 const sgr_params_type* params);
 void av1_calc_proj_params_avx2(const uint8_t* src8,
                                int width,
                                int height,
@@ -406,6 +419,59 @@ RTCD_EXTERN void (*av1_calc_proj_params)(const uint8_t* src8,
                                          int64_t H[2][2],
                                          int64_t C[2],
                                          const sgr_params_type* params);
+
+void av1_calc_proj_params_high_bd_c(const uint8_t* src8,
+                                    int width,
+                                    int height,
+                                    int src_stride,
+                                    const uint8_t* dat8,
+                                    int dat_stride,
+                                    int32_t* flt0,
+                                    int flt0_stride,
+                                    int32_t* flt1,
+                                    int flt1_stride,
+                                    int64_t H[2][2],
+                                    int64_t C[2],
+                                    const sgr_params_type* params);
+void av1_calc_proj_params_high_bd_sse4_1(const uint8_t* src8,
+                                         int width,
+                                         int height,
+                                         int src_stride,
+                                         const uint8_t* dat8,
+                                         int dat_stride,
+                                         int32_t* flt0,
+                                         int flt0_stride,
+                                         int32_t* flt1,
+                                         int flt1_stride,
+                                         int64_t H[2][2],
+                                         int64_t C[2],
+                                         const sgr_params_type* params);
+void av1_calc_proj_params_high_bd_avx2(const uint8_t* src8,
+                                       int width,
+                                       int height,
+                                       int src_stride,
+                                       const uint8_t* dat8,
+                                       int dat_stride,
+                                       int32_t* flt0,
+                                       int flt0_stride,
+                                       int32_t* flt1,
+                                       int flt1_stride,
+                                       int64_t H[2][2],
+                                       int64_t C[2],
+                                       const sgr_params_type* params);
+RTCD_EXTERN void (*av1_calc_proj_params_high_bd)(const uint8_t* src8,
+                                                 int width,
+                                                 int height,
+                                                 int src_stride,
+                                                 const uint8_t* dat8,
+                                                 int dat_stride,
+                                                 int32_t* flt0,
+                                                 int flt0_stride,
+                                                 int32_t* flt1,
+                                                 int flt1_stride,
+                                                 int64_t H[2][2],
+                                                 int64_t C[2],
+                                                 const sgr_params_type* params);
 
 void av1_cnn_activate_c(float** input,
                         int channels,
@@ -1469,7 +1535,36 @@ void av1_highbd_apply_temporal_filter_sse2(
     const uint8_t* pred,
     uint32_t* accum,
     uint16_t* count);
-#define av1_highbd_apply_temporal_filter av1_highbd_apply_temporal_filter_sse2
+void av1_highbd_apply_temporal_filter_avx2(
+    const struct yv12_buffer_config* ref_frame,
+    const struct macroblockd* mbd,
+    const BLOCK_SIZE block_size,
+    const int mb_row,
+    const int mb_col,
+    const int num_planes,
+    const double* noise_levels,
+    const MV* subblock_mvs,
+    const int* subblock_mses,
+    const int q_factor,
+    const int filter_strength,
+    const uint8_t* pred,
+    uint32_t* accum,
+    uint16_t* count);
+RTCD_EXTERN void (*av1_highbd_apply_temporal_filter)(
+    const struct yv12_buffer_config* ref_frame,
+    const struct macroblockd* mbd,
+    const BLOCK_SIZE block_size,
+    const int mb_row,
+    const int mb_col,
+    const int num_planes,
+    const double* noise_levels,
+    const MV* subblock_mvs,
+    const int* subblock_mses,
+    const int q_factor,
+    const int filter_strength,
+    const uint8_t* pred,
+    uint32_t* accum,
+    uint16_t* count);
 
 int64_t av1_highbd_block_error_c(const tran_low_t* coeff,
                                  const tran_low_t* dqcoeff,
@@ -3387,8 +3482,15 @@ static void setup_rtcd_internal(void) {
   if (flags & HAS_AVX2)
     av1_calc_frame_error = av1_calc_frame_error_avx2;
   av1_calc_proj_params = av1_calc_proj_params_c;
+  if (flags & HAS_SSE4_1)
+    av1_calc_proj_params = av1_calc_proj_params_sse4_1;
   if (flags & HAS_AVX2)
     av1_calc_proj_params = av1_calc_proj_params_avx2;
+  av1_calc_proj_params_high_bd = av1_calc_proj_params_high_bd_c;
+  if (flags & HAS_SSE4_1)
+    av1_calc_proj_params_high_bd = av1_calc_proj_params_high_bd_sse4_1;
+  if (flags & HAS_AVX2)
+    av1_calc_proj_params_high_bd = av1_calc_proj_params_high_bd_avx2;
   av1_compute_cross_correlation = av1_compute_cross_correlation_c;
   if (flags & HAS_SSE4_1)
     av1_compute_cross_correlation = av1_compute_cross_correlation_sse4_1;
@@ -3528,6 +3630,9 @@ static void setup_rtcd_internal(void) {
     av1_get_horver_correlation_full = av1_get_horver_correlation_full_sse4_1;
   if (flags & HAS_AVX2)
     av1_get_horver_correlation_full = av1_get_horver_correlation_full_avx2;
+  av1_highbd_apply_temporal_filter = av1_highbd_apply_temporal_filter_sse2;
+  if (flags & HAS_AVX2)
+    av1_highbd_apply_temporal_filter = av1_highbd_apply_temporal_filter_avx2;
   av1_highbd_block_error = av1_highbd_block_error_sse2;
   if (flags & HAS_AVX2)
     av1_highbd_block_error = av1_highbd_block_error_avx2;

@@ -197,6 +197,7 @@ aom_av1_encoder_intrin_avx2 = [
   "//third_party/libaom/source/libaom/av1/encoder/x86/encodetxb_avx2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/rdopt_avx2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/temporal_filter_avx2.c",
+  "//third_party/libaom/source/libaom/av1/encoder/x86/highbd_temporal_filter_avx2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/pickrst_avx2.c",
 ]
 

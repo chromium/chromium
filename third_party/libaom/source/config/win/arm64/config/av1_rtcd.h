@@ -240,6 +240,21 @@ void av1_calc_proj_params_c(const uint8_t* src8,
                             const sgr_params_type* params);
 #define av1_calc_proj_params av1_calc_proj_params_c
 
+void av1_calc_proj_params_high_bd_c(const uint8_t* src8,
+                                    int width,
+                                    int height,
+                                    int src_stride,
+                                    const uint8_t* dat8,
+                                    int dat_stride,
+                                    int32_t* flt0,
+                                    int flt0_stride,
+                                    int32_t* flt1,
+                                    int flt1_stride,
+                                    int64_t H[2][2],
+                                    int64_t C[2],
+                                    const sgr_params_type* params);
+#define av1_calc_proj_params_high_bd av1_calc_proj_params_high_bd_c
+
 void av1_cnn_activate_c(float** input,
                         int channels,
                         int width,

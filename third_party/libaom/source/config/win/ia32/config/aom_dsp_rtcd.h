@@ -23848,6 +23848,40 @@ int aom_satd_lp_c(const int16_t* coeff, int length);
 int aom_satd_lp_avx2(const int16_t* coeff, int length);
 RTCD_EXTERN int (*aom_satd_lp)(const int16_t* coeff, int length);
 
+void aom_scaled_2d_c(const uint8_t* src,
+                     ptrdiff_t src_stride,
+                     uint8_t* dst,
+                     ptrdiff_t dst_stride,
+                     const InterpKernel* filter,
+                     int x0_q4,
+                     int x_step_q4,
+                     int y0_q4,
+                     int y_step_q4,
+                     int w,
+                     int h);
+void aom_scaled_2d_ssse3(const uint8_t* src,
+                         ptrdiff_t src_stride,
+                         uint8_t* dst,
+                         ptrdiff_t dst_stride,
+                         const InterpKernel* filter,
+                         int x0_q4,
+                         int x_step_q4,
+                         int y0_q4,
+                         int y_step_q4,
+                         int w,
+                         int h);
+RTCD_EXTERN void (*aom_scaled_2d)(const uint8_t* src,
+                                  ptrdiff_t src_stride,
+                                  uint8_t* dst,
+                                  ptrdiff_t dst_stride,
+                                  const InterpKernel* filter,
+                                  int x0_q4,
+                                  int x_step_q4,
+                                  int y0_q4,
+                                  int y_step_q4,
+                                  int w,
+                                  int h);
+
 void aom_smooth_h_predictor_16x16_c(uint8_t* dst,
                                     ptrdiff_t y_stride,
                                     const uint8_t* above,
@@ -26226,6 +26260,27 @@ RTCD_EXTERN uint64_t (*aom_sum_squares_2d_i16)(const int16_t* src,
 uint64_t aom_sum_squares_i16_c(const int16_t* src, uint32_t N);
 uint64_t aom_sum_squares_i16_sse2(const int16_t* src, uint32_t N);
 #define aom_sum_squares_i16 aom_sum_squares_i16_sse2
+
+uint64_t aom_sum_sse_2d_i16_c(const int16_t* src,
+                              int src_stride,
+                              int width,
+                              int height,
+                              int* sum);
+uint64_t aom_sum_sse_2d_i16_sse2(const int16_t* src,
+                                 int src_stride,
+                                 int width,
+                                 int height,
+                                 int* sum);
+uint64_t aom_sum_sse_2d_i16_avx2(const int16_t* src,
+                                 int src_stride,
+                                 int width,
+                                 int height,
+                                 int* sum);
+RTCD_EXTERN uint64_t (*aom_sum_sse_2d_i16)(const int16_t* src,
+                                           int src_stride,
+                                           int width,
+                                           int height,
+                                           int* sum);
 
 void aom_upsampled_pred_c(MACROBLOCKD* xd,
                           const struct AV1Common* const cm,
@@ -29236,6 +29291,9 @@ static void setup_rtcd_internal(void) {
   aom_satd_lp = aom_satd_lp_c;
   if (flags & HAS_AVX2)
     aom_satd_lp = aom_satd_lp_avx2;
+  aom_scaled_2d = aom_scaled_2d_c;
+  if (flags & HAS_SSSE3)
+    aom_scaled_2d = aom_scaled_2d_ssse3;
   aom_smooth_h_predictor_16x16 = aom_smooth_h_predictor_16x16_c;
   if (flags & HAS_SSSE3)
     aom_smooth_h_predictor_16x16 = aom_smooth_h_predictor_16x16_ssse3;
@@ -29592,6 +29650,9 @@ static void setup_rtcd_internal(void) {
   aom_sum_squares_2d_i16 = aom_sum_squares_2d_i16_sse2;
   if (flags & HAS_AVX2)
     aom_sum_squares_2d_i16 = aom_sum_squares_2d_i16_avx2;
+  aom_sum_sse_2d_i16 = aom_sum_sse_2d_i16_sse2;
+  if (flags & HAS_AVX2)
+    aom_sum_sse_2d_i16 = aom_sum_sse_2d_i16_avx2;
   aom_v_predictor_32x16 = aom_v_predictor_32x16_sse2;
   if (flags & HAS_AVX2)
     aom_v_predictor_32x16 = aom_v_predictor_32x16_avx2;
