@@ -806,15 +806,9 @@ public class PaymentRequestService
                 || sIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest;
     }
 
-    /** @return Whether the instrument has been enrolled. */
-    public boolean getHasEnrolledInstrument() {
-        return mHasEnrolledInstrument;
-    }
-
     // Implements PaymentAppFactoryDelegate:
     @Override
     public void onCanMakePaymentCalculated(boolean canMakePayment) {
-        if (mBrowserPaymentRequest == null) return;
         mCanMakePayment = canMakePayment;
         if (!mIsCanMakePaymentResponsePending) return;
         // canMakePayment doesn't need to wait for all apps to be queried because it only needs to
@@ -860,9 +854,7 @@ public class PaymentRequestService
      * PaymentRequest#show} for the parameters' specification.
      */
     /* package */ void show(boolean isUserGesture, boolean waitForUpdatedDetails) {
-        // Every caller should stop referencing this class once close() is called.
-        assert mBrowserPaymentRequest != null;
-
+        if (mBrowserPaymentRequest == null) return;
         mBrowserPaymentRequest.show(isUserGesture, waitForUpdatedDetails);
     }
 
@@ -871,9 +863,7 @@ public class PaymentRequestService
      * @param details The details that the merchant provides to update the payment request.
      */
     /* package */ void updateWith(PaymentDetails details) {
-        // Every caller should stop referencing this class once close() is called.
-        assert mBrowserPaymentRequest != null;
-
+        if (mBrowserPaymentRequest == null) return;
         mBrowserPaymentRequest.updateWith(details);
     }
 
@@ -881,9 +871,7 @@ public class PaymentRequestService
      * The component part of the {@link PaymentRequest#onPaymentDetailsNotUpdated} implementation.
      */
     /* package */ void onPaymentDetailsNotUpdated() {
-        // Every caller should stop referencing this class once close() is called.
-        assert mBrowserPaymentRequest != null;
-
+        if (mBrowserPaymentRequest == null) return;
         mBrowserPaymentRequest.onPaymentDetailsNotUpdated();
     }
 
@@ -898,9 +886,7 @@ public class PaymentRequestService
 
     /** The component part of the {@link PaymentRequest#complete} implementation. */
     /* package */ void complete(int result) {
-        // Every caller should stop referencing this class once close() is called.
-        assert mBrowserPaymentRequest != null;
-
+        if (mBrowserPaymentRequest == null) return;
         mBrowserPaymentRequest.complete(result);
     }
 
@@ -909,9 +895,7 @@ public class PaymentRequestService
      * PaymentRequest#retry} for the parameters' specification.
      */
     /* package */ void retry(PaymentValidationErrors errors) {
-        // Every caller should stop referencing this class once close() is called.
-        assert mBrowserPaymentRequest != null;
-
+        if (mBrowserPaymentRequest == null) return;
         mBrowserPaymentRequest.retry(errors);
     }
 
@@ -949,9 +933,6 @@ public class PaymentRequestService
      * stop referencing this class after calling this method.
      */
     /* package */ void closeByRenderer() {
-        // Every caller should stop referencing this class once close() is called.
-        assert mBrowserPaymentRequest != null;
-
         mJourneyLogger.setAborted(AbortReason.MOJO_RENDERER_CLOSING);
         close();
         if (sObserverForTest != null) {
@@ -968,9 +949,6 @@ public class PaymentRequestService
      * @param e The mojo exception.
      */
     /* package */ void onConnectionError(MojoException e) {
-        // Every caller should stop referencing this class once close() is called.
-        assert mBrowserPaymentRequest != null;
-
         mJourneyLogger.setAborted(AbortReason.MOJO_CONNECTION_ERROR);
         close();
         if (sNativeObserverForTest != null) {
@@ -983,9 +961,6 @@ public class PaymentRequestService
      * @param debugMessage The debug message to be sent to the renderer.
      */
     /* package */ void abortForInvalidDataFromRenderer(String debugMessage) {
-        // Every caller should stop referencing this class once close() is called.
-        assert mBrowserPaymentRequest != null;
-
         mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
         disconnectFromClientWithDebugMessage(debugMessage, PaymentErrorReason.USER_CANCEL);
     }
@@ -1001,14 +976,17 @@ public class PaymentRequestService
 
         mIsCurrentPaymentRequestShowing = false;
 
-        if (mBrowserPaymentRequest == null) return;
-        mBrowserPaymentRequest.close();
-        mBrowserPaymentRequest = null;
+        if (mBrowserPaymentRequest != null) {
+            mBrowserPaymentRequest.close();
+            mBrowserPaymentRequest = null;
+        }
 
         // mClient can be null only when this method is called from
         // PaymentRequestService#create().
-        if (mClient != null) mClient.close();
-        mClient = null;
+        if (mClient != null) {
+            mClient.close();
+            mClient = null;
+        }
 
         mOnClosedListener.run();
     }
@@ -1028,51 +1006,35 @@ public class PaymentRequestService
 
     /** Invokes {@link PaymentRequestClient.onShippingAddressChange}. */
     public void onShippingAddressChange(PaymentAddress address) {
-        // Every caller should stop referencing this class once close() is called.
-        assert mClient != null;
-
-        redactShippingAddress(address);
-        mClient.onShippingAddressChange(address);
+        if (mClient != null) {
+            redactShippingAddress(address);
+            mClient.onShippingAddressChange(address);
+        }
     }
 
     /** Invokes {@link PaymentRequestClient.onShippingOptionChange}. */
     public void onShippingOptionChange(String shippingOptionId) {
-        // Every caller should stop referencing this class once close() is called.
-        assert mClient != null;
-
-        mClient.onShippingOptionChange(shippingOptionId);
+        if (mClient != null) mClient.onShippingOptionChange(shippingOptionId);
     }
 
     /** Invokes {@link PaymentRequestClient.onPayerDetailChange}. */
     public void onPayerDetailChange(PayerDetail detail) {
-        // Every caller should stop referencing this class once close() is called.
-        assert mClient != null;
-
-        mClient.onPayerDetailChange(detail);
+        if (mClient != null) mClient.onPayerDetailChange(detail);
     }
 
     /** Invokes {@link PaymentRequestClient.onError}. */
     public void onError(int error, String errorMessage) {
-        // Every caller should stop referencing this class once close() is called.
-        assert mClient != null;
-
-        mClient.onError(error, errorMessage);
+        if (mClient != null) mClient.onError(error, errorMessage);
     }
 
     /** Invokes {@link PaymentRequestClient.onComplete}. */
     public void onComplete() {
-        // Every caller should stop referencing this class once close() is called.
-        assert mClient != null;
-
-        mClient.onComplete();
+        if (mClient != null) mClient.onComplete();
     }
 
     /** Invokes {@link PaymentRequestClient.warnNoFavicon}. */
     public void warnNoFavicon() {
-        // Every caller should stop referencing this class once close() is called.
-        assert mClient != null;
-
-        mClient.warnNoFavicon();
+        if (mClient != null) mClient.warnNoFavicon();
     }
 
     /**
