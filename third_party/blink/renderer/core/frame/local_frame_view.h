@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/frame/overlay_interstitial_ad_detector.h"
 #include "third_party/blink/renderer/core/frame/sticky_ad_detector.h"
 #include "third_party/blink/renderer/core/layout/depth_ordered_layout_object_list.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_update_type.h"
 #include "third_party/blink/renderer/core/paint/layout_object_counter.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
@@ -354,10 +355,9 @@ class CORE_EXPORT LocalFrameView final
 
   // Run all needed lifecycle stages. After calling this method, all frames will
   // be in the lifecycle state PaintClean.  If lifecycle throttling is allowed
-  // (see DocumentLifecycle::AllowThrottlingScope), some frames may skip the
-  // lifecycle update (e.g., based on visibility) and will not end up being
-  // PaintClean. Set |reason| to indicate the reason for this update,
-  // for metrics purposes.
+  // (see AllowThrottlingScope), some frames may skip the lifecycle update
+  // (e.g., based on visibility) and will not end up being PaintClean. Set
+  // |reason| to indicate the reason for this update, for metrics purposes.
   // Returns whether the lifecycle was successfully updated to PaintClean.
   bool UpdateAllLifecyclePhases(DocumentUpdateReason reason);
 
@@ -414,6 +414,14 @@ class CORE_EXPORT LocalFrameView final
 
   bool InvalidateViewportConstrainedObjects();
 
+  // Perform a hit test on the frame with throttling allowed. Normally, a hit
+  // test will do a synchronous lifecycle update to kPrePaintClean with
+  // throttling disabled. This will do the same lifecycle update, but with
+  // throttling enabled.
+  HitTestResult HitTestWithThrottlingAllowed(
+      const HitTestLocation&,
+      HitTestRequest::HitTestRequestType) const;
+
   void IncrementLayoutObjectCount() { layout_object_counter_.Increment(); }
   void IncrementVisuallyNonEmptyCharacterCount(unsigned);
   void IncrementVisuallyNonEmptyPixelCount(const IntSize&);
@@ -464,6 +472,8 @@ class CORE_EXPORT LocalFrameView final
   const ScrollableAreaSet* AnimatingScrollableAreas() const {
     return animating_scrollable_areas_.Get();
   }
+
+  void ServiceScriptedAnimations(base::TimeTicks);
 
   void ScheduleAnimation(base::TimeDelta = base::TimeDelta());
 
@@ -557,6 +567,10 @@ class CORE_EXPORT LocalFrameView final
                                        const GlobalPaintFlags,
                                        const CullRect&);
 
+  // For testing paint with an optional custom cull rect. In pre-CAP, this
+  // paints the contents of the main GraphicsLayer only.
+  void PaintContentsForTest(const CullRect&);
+
   // Get the PaintRecord based on the cached paint artifact generated during
   // the last paint in lifecycle update. For CompositeAfterPaint only.
   sk_sp<cc::PaintRecord> GetPaintRecord() const;
@@ -591,11 +605,12 @@ class CORE_EXPORT LocalFrameView final
 
   LayoutAnalyzer* GetLayoutAnalyzer() { return analyzer_.get(); }
 
+  bool LocalFrameTreeAllowsThrottling() const;
+
   // Returns true if this frame should not render or schedule visual updates.
   bool ShouldThrottleRendering() const;
 
-  // Same as ShouldThrottleRendering, but with a
-  // DocumentLifecycle::AllowThrottlingScope in scope.
+  // Same as ShouldThrottleRendering, but with an AllowThrottlingScope in scope.
   bool ShouldThrottleRenderingForTest() const;
 
   bool CanThrottleRendering() const override;
@@ -743,8 +758,7 @@ class CORE_EXPORT LocalFrameView final
   void RunPaintBenchmark(int repeat_count, cc::PaintBenchmarkResult& result);
 
   PaintController& GetPaintControllerForTesting() {
-    DCHECK(paint_controller_);
-    return *paint_controller_;
+    return EnsurePaintController();
   }
 
  protected:
@@ -777,6 +791,45 @@ class CORE_EXPORT LocalFrameView final
     LocalFrameView* local_frame_view_;
   };
 #endif
+
+  // Throttling is disabled by default. Instantiating this class allows
+  // throttling (e.g., during BeginMainFrame). If a script needs to run inside
+  // this scope, DisallowThrottlingScope should be used to let the script
+  // perform a synchronous layout if necessary.
+  class AllowThrottlingScope {
+    STACK_ALLOCATED();
+
+   public:
+    explicit AllowThrottlingScope(const LocalFrameView&);
+    AllowThrottlingScope(const AllowThrottlingScope&) = delete;
+    AllowThrottlingScope& operator=(const AllowThrottlingScope&) = delete;
+    ~AllowThrottlingScope() = default;
+
+   private:
+    base::AutoReset<bool> value_;
+  };
+
+  class DisallowThrottlingScope {
+    STACK_ALLOCATED();
+
+   public:
+    explicit DisallowThrottlingScope(const LocalFrameView& frame_view);
+    DisallowThrottlingScope(const DisallowThrottlingScope&) = delete;
+    DisallowThrottlingScope& operator=(const DisallowThrottlingScope&) = delete;
+    ~DisallowThrottlingScope() = default;
+
+   private:
+    base::AutoReset<bool> value_;
+  };
+
+  friend class AllowThrottlingScope;
+  friend class DisallowThrottlingScope;
+
+  PaintController& EnsurePaintController() {
+    if (!paint_controller_)
+      paint_controller_ = std::make_unique<PaintController>();
+    return *paint_controller_;
+  }
 
   // A paint preview is a copy of the visual contents of a webpage recorded as
   // a set of SkPictures. This sends an IPC to the browser to trigger a
@@ -1012,6 +1065,9 @@ class CORE_EXPORT LocalFrameView final
   // Non-top-level frames a throttled until they are ready to run lifecycle
   // updates (after render-blocking resources have loaded).
   bool lifecycle_updates_throttled_;
+
+  // Used by AllowThrottlingScope and DisallowThrottlingScope
+  bool allow_throttling_ = false;
 
   // This is set on the local root frame view only.
   DocumentLifecycle::LifecycleState

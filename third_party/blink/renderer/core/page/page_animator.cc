@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
@@ -58,42 +57,12 @@ void PageAnimator::ServiceScriptedAnimations(
   for (auto& document : documents) {
     ScopedFrameBlamer frame_blamer(document->GetFrame());
     TRACE_EVENT0("blink,rail", "PageAnimator::serviceScriptedAnimations");
-    if (document->View()) {
-      if (document->View()->ShouldThrottleRendering()) {
-        document->GetDocumentAnimations()
-            .UpdateAnimationTimingForAnimationFrame();
-        continue;
-      }
-      // Disallow throttling in case any script needs to do a synchronous
-      // lifecycle update in other frames which are throttled.
-      DocumentLifecycle::DisallowThrottlingScope no_throttling_scope;
-      if (ScrollableArea* scrollable_area =
-              document->View()->GetScrollableArea()) {
-        scrollable_area->ServiceScrollAnimations(
-            monotonic_animation_start_time.since_origin().InSecondsF());
-      }
-
-      if (const LocalFrameView::ScrollableAreaSet* animating_scrollable_areas =
-              document->View()->AnimatingScrollableAreas()) {
-        // Iterate over a copy, since ScrollableAreas may deregister
-        // themselves during the iteration.
-        HeapVector<Member<PaintLayerScrollableArea>>
-            animating_scrollable_areas_copy;
-        CopyToVector(*animating_scrollable_areas,
-                     animating_scrollable_areas_copy);
-        for (PaintLayerScrollableArea* scrollable_area :
-             animating_scrollable_areas_copy) {
-          scrollable_area->ServiceScrollAnimations(
-              monotonic_animation_start_time.since_origin().InSecondsF());
-        }
-      }
-      document->GetFrame()->AnimateSnapFling(monotonic_animation_start_time);
-      SVGDocumentExtensions::ServiceOnAnimationFrame(*document);
+    if (!document->View() || document->View()->CanThrottleRendering()) {
+      document->GetDocumentAnimations()
+          .UpdateAnimationTimingForAnimationFrame();
+      continue;
     }
-    document->GetDocumentAnimations().UpdateAnimationTimingForAnimationFrame();
-    // TODO(skyostil): This function should not run for documents without views.
-    DocumentLifecycle::DisallowThrottlingScope no_throttling_scope;
-    document->ServiceScriptedAnimations(monotonic_animation_start_time);
+    document->View()->ServiceScriptedAnimations(monotonic_animation_start_time);
   }
 
   page_->GetValidationMessageClient().LayoutOverlay();

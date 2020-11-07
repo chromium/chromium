@@ -1887,7 +1887,9 @@ void CompositedLayerMapping::PaintContents(
     page->SetIsPainting(true);
 #endif
 
-  DCHECK(DocumentLifecycle::ThrottlingAllowed());
+  DCHECK(owning_layer_.GetLayoutObject()
+             .GetFrameView()
+             ->LocalFrameTreeAllowsThrottling());
 
   TRACE_EVENT1(
       "devtools.timeline,rail", "Paint", "data",

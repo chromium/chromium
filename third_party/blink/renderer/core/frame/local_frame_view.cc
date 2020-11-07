@@ -136,6 +136,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -378,7 +379,7 @@ void LocalFrameView::ForAllThrottledLocalFrameViews(const Function& function) {
 
 void LocalFrameView::ForAllThrottledLocalFrameViewsForTesting(
     base::RepeatingCallback<void(LocalFrameView&)> callback) {
-  DocumentLifecycle::AllowThrottlingScope allow_throttling;
+  AllowThrottlingScope allow_throttling(*this);
   ForAllThrottledLocalFrameViews(
       [&callback](LocalFrameView& view) { callback.Run(view); });
 }
@@ -1095,6 +1096,7 @@ DocumentLifecycle& LocalFrameView::Lifecycle() const {
 }
 
 void LocalFrameView::RunPostLifecycleSteps() {
+  AllowThrottlingScope allow_throttling(*this);
   RunIntersectionObserverSteps();
 }
 
@@ -1138,7 +1140,7 @@ void LocalFrameView::ForceUpdateViewportIntersections() {
   // IntersectionObserver targets in this frame (and its frame tree) need to
   // update; but we can't wait for a lifecycle update to run them, because a
   // hidden frame won't run lifecycle updates. Force layout and run them now.
-  DocumentLifecycle::DisallowThrottlingScope disallow_throttling;
+  DisallowThrottlingScope disallow_throttling(*this);
   UpdateLifecycleToCompositingCleanPlusScrolling(
       DocumentUpdateReason::kIntersectionObservation);
   UpdateViewportIntersectionsForSubtree(
@@ -1469,6 +1471,14 @@ bool LocalFrameView::InvalidateViewportConstrainedObjects() {
       fast_path_allowed = false;
   }
   return fast_path_allowed;
+}
+
+HitTestResult LocalFrameView::HitTestWithThrottlingAllowed(
+    const HitTestLocation& location,
+    HitTestRequest::HitTestRequestType request_type) const {
+  AllowThrottlingScope allow_throttling(*this);
+  return GetFrame().GetEventHandler().HitTestResultAtLocation(location,
+                                                              request_type);
 }
 
 void LocalFrameView::ProcessUrlFragment(const KURL& url,
@@ -2198,7 +2208,7 @@ void LocalFrameView::UpdateGeometriesIfNeeded() {
 }
 
 bool LocalFrameView::UpdateAllLifecyclePhases(DocumentUpdateReason reason) {
-  DocumentLifecycle::AllowThrottlingScope allow_throttling;
+  AllowThrottlingScope allow_throttling(*this);
   bool updated = GetFrame().LocalFrameRoot().View()->UpdateLifecyclePhases(
       DocumentLifecycle::kPaintClean, reason);
 
@@ -2226,12 +2236,7 @@ bool LocalFrameView::UpdateAllLifecyclePhases(DocumentUpdateReason reason) {
 
 bool LocalFrameView::UpdateAllLifecyclePhasesForTest() {
   bool result = UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-  {
-    // TODO(szager): If we remove AllowThrottlingScope from
-    // WebViewFrameWidget::DidBeginMainFrame, we should remove it from here too.
-    DocumentLifecycle::AllowThrottlingScope allow_throttling;
-    RunPostLifecycleSteps();
-  }
+  RunPostLifecycleSteps();
   return result;
 }
 
@@ -2354,6 +2359,12 @@ bool LocalFrameView::NotifyResizeObservers(
   return true;
 }
 
+bool LocalFrameView::LocalFrameTreeAllowsThrottling() const {
+  if (LocalFrameView* root_view = GetFrame().LocalFrameRoot().View())
+    return root_view->allow_throttling_;
+  return false;
+}
+
 // TODO(leviw): We don't assert lifecycle information from documents in child
 // WebPluginContainerImpls.
 bool LocalFrameView::UpdateLifecyclePhases(
@@ -2379,8 +2390,8 @@ bool LocalFrameView::UpdateLifecyclePhases(
   // might be out of sync.
   DCHECK(frame_->IsLocalRoot() || !IsAttached());
 
-  DCHECK(DocumentLifecycle::ThrottlingAllowed() ||
-         target_state < DocumentLifecycle::kPaintClean);
+  DCHECK(LocalFrameTreeAllowsThrottling() ||
+         (target_state < DocumentLifecycle::kPaintClean));
 
   // Only the following target states are supported.
   DCHECK(target_state == DocumentLifecycle::kLayoutClean ||
@@ -2919,8 +2930,7 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
   bool needs_clear_repaint_flags = false;
 
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    if (!paint_controller_)
-      paint_controller_ = std::make_unique<PaintController>();
+    EnsurePaintController();
 
     PaintController::ScopedBenchmarkMode scoped_benchmark(*paint_controller_,
                                                           benchmark_mode);
@@ -3572,6 +3582,35 @@ void LocalFrameView::SetTracksRasterInvalidations(
                        track_raster_invalidations);
 }
 
+void LocalFrameView::ServiceScriptedAnimations(base::TimeTicks start_time) {
+  // Disallow throttling in case any script needs to do a synchronous
+  // lifecycle update in other frames which are throttled.
+  DisallowThrottlingScope disallow_throttling(*this);
+  if (ScrollableArea* scrollable_area = GetScrollableArea()) {
+    scrollable_area->ServiceScrollAnimations(
+        start_time.since_origin().InSecondsF());
+  }
+  if (const ScrollableAreaSet* animating_scrollable_areas =
+          AnimatingScrollableAreas()) {
+    // Iterate over a copy, since ScrollableAreas may deregister
+    // themselves during the iteration.
+    HeapVector<Member<PaintLayerScrollableArea>>
+        animating_scrollable_areas_copy;
+    CopyToVector(*animating_scrollable_areas, animating_scrollable_areas_copy);
+    for (PaintLayerScrollableArea* scrollable_area :
+         animating_scrollable_areas_copy) {
+      scrollable_area->ServiceScrollAnimations(
+          start_time.since_origin().InSecondsF());
+    }
+  }
+  GetFrame().AnimateSnapFling(start_time);
+  Document* document = GetFrame().GetDocument();
+  DCHECK(document);
+  SVGDocumentExtensions::ServiceOnAnimationFrame(*document);
+  document->GetDocumentAnimations().UpdateAnimationTimingForAnimationFrame();
+  document->ServiceScriptedAnimations(start_time);
+}
+
 void LocalFrameView::ScheduleAnimation(base::TimeDelta delay) {
   if (auto* client = GetChromeClient())
     client->ScheduleAnimation(this, delay);
@@ -3879,6 +3918,16 @@ IntPoint LocalFrameView::SoonToBeRemovedUnscaledViewportToContents(
   return ConvertFromRootFrame(point_in_root_frame);
 }
 
+LocalFrameView::AllowThrottlingScope::AllowThrottlingScope(
+    const LocalFrameView& frame_view)
+    : value_(&frame_view.GetFrame().LocalFrameRoot().View()->allow_throttling_,
+             true) {}
+
+LocalFrameView::DisallowThrottlingScope::DisallowThrottlingScope(
+    const LocalFrameView& frame_view)
+    : value_(&frame_view.GetFrame().LocalFrameRoot().View()->allow_throttling_,
+             false) {}
+
 bool LocalFrameView::CapturePaintPreview(GraphicsContext& context,
                                          const IntSize& paint_offset) const {
   base::Optional<base::UnguessableToken> maybe_embedding_token =
@@ -3962,7 +4011,7 @@ void LocalFrameView::PaintOutsideOfLifecycle(
     const CullRect& cull_rect) {
   DCHECK(PaintOutsideOfLifecycleIsAllowed(context, *this));
 
-  DocumentLifecycle::AllowThrottlingScope allow_throttling;
+  AllowThrottlingScope allow_throttling(*this);
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);
   });
@@ -3989,6 +4038,26 @@ void LocalFrameView::PaintContentsOutsideOfLifecycle(
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kPaintClean);
   });
+}
+
+void LocalFrameView::PaintContentsForTest(const CullRect& cull_rect) {
+  AllowThrottlingScope allow_throttling(*this);
+  Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    PaintController& paint_controller = EnsurePaintController();
+    if (GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint()) {
+      GraphicsContext graphics_context(paint_controller);
+      Paint(graphics_context, kGlobalPaintNormalPhase, cull_rect);
+      paint_controller.CommitNewDisplayItems();
+    }
+    paint_controller.FinishCycle();
+  } else {
+    GraphicsLayer* graphics_layer =
+        GetLayoutView()->Layer()->GraphicsLayerBacking();
+    graphics_layer->PaintForTesting(cull_rect.Rect());
+    graphics_layer->GetPaintController().FinishCycle();
+  }
+  Lifecycle().AdvanceTo(DocumentLifecycle::kPaintClean);
 }
 
 sk_sp<PaintRecord> LocalFrameView::GetPaintRecord() const {
@@ -4367,9 +4436,9 @@ unsigned LocalFrameView::GetIntersectionObservationFlags(
 }
 
 bool LocalFrameView::ShouldThrottleRendering() const {
-  bool throttled_for_global_reasons = CanThrottleRendering() &&
-                                      frame_->GetDocument() &&
-                                      Lifecycle().ThrottlingAllowed();
+  bool throttled_for_global_reasons = LocalFrameTreeAllowsThrottling() &&
+                                      CanThrottleRendering() &&
+                                      frame_->GetDocument();
   if (!throttled_for_global_reasons || needs_forced_compositing_update_ ||
       need_paint_phase_after_throttling_) {
     return false;
@@ -4389,7 +4458,7 @@ bool LocalFrameView::ShouldThrottleRendering() const {
 }
 
 bool LocalFrameView::ShouldThrottleRenderingForTest() const {
-  DocumentLifecycle::AllowThrottlingScope allow_throttling;
+  AllowThrottlingScope allow_throttling(*this);
   return ShouldThrottleRendering();
 }
 

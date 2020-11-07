@@ -51,26 +51,8 @@ class PaintControllerPaintTestBase : public RenderingTest {
         DocumentUpdateReason::kTest);
   }
 
-  // For testing paint with an optional custom interest rect.
-  // In pre-CompositeAfterPaint, this paints the contents of the main graphics
-  // layer only.
   void PaintContents(const IntRect& interest_rect) {
-    // TODO(szager): Move this method to LocalFrameView.
-    DocumentLifecycle::AllowThrottlingScope allow_throttling;
-    GetDocument().View()->Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      if (GetLayoutView().Layer()->SelfOrDescendantNeedsRepaint()) {
-        GraphicsContext graphics_context(RootPaintController());
-        GetDocument().View()->Paint(graphics_context, kGlobalPaintNormalPhase,
-                                    CullRect(interest_rect));
-        RootPaintController().CommitNewDisplayItems();
-      }
-    } else {
-      GetLayoutView().Layer()->GraphicsLayerBacking()->PaintForTesting(
-          interest_rect);
-    }
-    RootPaintController().FinishCycle();
-    GetDocument().View()->Lifecycle().AdvanceTo(DocumentLifecycle::kPaintClean);
+    GetDocument().View()->PaintContentsForTest(CullRect(interest_rect));
   }
 
   void InvalidateAll() {

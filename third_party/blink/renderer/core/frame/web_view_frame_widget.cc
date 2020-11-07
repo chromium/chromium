@@ -103,10 +103,6 @@ void WebViewFrameWidget::DidBeginMainFrame() {
   WebFrameWidgetBase::DidBeginMainFrame();
 
   auto* main_frame = web_view_->MainFrameImpl();
-  // TODO(szager): Can we remove AllowThrottlingScope and
-  // s/ShouldThrottleRendering/CanThrottleRendering/ in code that gets called
-  // from here?
-  DocumentLifecycle::AllowThrottlingScope throttling_scope;
   PageWidgetDelegate::DidBeginFrame(*main_frame->GetFrame());
 }
 

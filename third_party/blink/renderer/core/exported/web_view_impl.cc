@@ -3034,12 +3034,15 @@ HitTestResult WebViewImpl::CoreHitTestResultAt(
   if (!MainFrameImpl() || !MainFrameImpl()->GetFrameView())
     return HitTestResult();
 
-  // TODO(szager): Is AllowThrottlingScope necessary?
-  DocumentLifecycle::AllowThrottlingScope throttling_scope;
   LocalFrameView* view = MainFrameImpl()->GetFrameView();
   FloatPoint point_in_root_frame =
       view->ViewportToFrame(FloatPoint(point_in_viewport));
-  return HitTestResultForRootFramePos(point_in_root_frame);
+  HitTestResult result =
+      MainFrameImpl()->GetFrame()->View()->HitTestWithThrottlingAllowed(
+          HitTestLocation(point_in_root_frame),
+          HitTestRequest::kReadOnly | HitTestRequest::kActive);
+  result.SetToShadowHostIfInRestrictedShadowRoot();
+  return result;
 }
 
 void WebViewImpl::SendResizeEventForMainFrame() {

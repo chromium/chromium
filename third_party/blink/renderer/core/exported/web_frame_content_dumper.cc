@@ -34,10 +34,7 @@ void FrameContentAsPlainText(size_t max_chars,
   if (!document)
     return;
 
-  // TODO(szager): Can we get rid of AllowThrottlingScope and
-  // s/ShouldThrottlingRendering/CanThrottleRendering/ ?
-  DocumentLifecycle::AllowThrottlingScope allow_throttling;
-  if (!frame->View() || frame->View()->ShouldThrottleRendering())
+  if (!frame->View() || frame->View()->CanThrottleRendering())
     return;
 
   DCHECK(!frame->View()->NeedsLayout());

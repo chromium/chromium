@@ -1029,8 +1029,6 @@ void WebFrameWidgetImpl::SetRootLayer(scoped_refptr<cc::Layer> layer) {
 
 HitTestResult WebFrameWidgetImpl::CoreHitTestResultAt(
     const gfx::PointF& point_in_viewport) {
-  // TODO(szager): Is AllowThrottlingScope necessary?
-  DocumentLifecycle::AllowThrottlingScope throttling_scope;
   LocalFrameView* view = LocalRootImpl()->GetFrameView();
   FloatPoint point_in_root_frame(
       view->ViewportToFrame(FloatPoint(point_in_viewport)));

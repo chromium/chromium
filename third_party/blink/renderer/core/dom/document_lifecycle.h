@@ -163,33 +163,6 @@ class CORE_EXPORT DocumentLifecycle {
     DocumentLifecycle& document_lifecycle_;
   };
 
-  // Throttling is disabled by default. Instantiating this class allows
-  // throttling (e.g., during BeginMainFrame). If a script needs to run inside
-  // this scope, DisallowThrottlingScope should be used to let the script
-  // perform a synchronous layout if necessary.
-  class CORE_EXPORT AllowThrottlingScope {
-    STACK_ALLOCATED();
-
-   public:
-    AllowThrottlingScope();
-    AllowThrottlingScope(const AllowThrottlingScope&) = delete;
-    AllowThrottlingScope& operator=(const AllowThrottlingScope&) = delete;
-    ~AllowThrottlingScope();
-  };
-
-  class CORE_EXPORT DisallowThrottlingScope {
-    STACK_ALLOCATED();
-
-   public:
-    DisallowThrottlingScope();
-    DisallowThrottlingScope(const DisallowThrottlingScope&) = delete;
-    DisallowThrottlingScope& operator=(const DisallowThrottlingScope&) = delete;
-    ~DisallowThrottlingScope();
-
-   private:
-    int saved_count_;
-  };
-
   // If we hit a devtool break point in the middle of document lifecycle, for
   // example, https://crbug.com/788219, this scope is triggered and no more
   // layout or style computation is allowed.
@@ -250,7 +223,6 @@ class CORE_EXPORT DocumentLifecycle {
     detach_count_--;
   }
 
-  static bool ThrottlingAllowed();
   bool LifecyclePostponed() const { return life_cycle_postponed_; }
 
 #if DCHECK_IS_ON()
