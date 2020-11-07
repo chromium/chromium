@@ -52,6 +52,10 @@ class CONTENT_EXPORT XRRuntimeManagerImpl
   // The singleton will persist until all pointers have been dropped.
   static scoped_refptr<XRRuntimeManagerImpl> GetOrCreateInstance();
 
+  // Returns the WebContents currently being displayed in a WebXR Immersive
+  // Session, if any, null otherwise.
+  static content::WebContents* GetImmersiveSessionWebContents();
+
   // Adds a listener for runtime manager events. XRRuntimeManagerImpl does not
   // own this object.
   void AddService(VRServiceImpl* service);

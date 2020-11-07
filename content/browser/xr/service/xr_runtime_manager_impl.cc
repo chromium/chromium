@@ -127,6 +127,19 @@ XRRuntimeManagerImpl::GetOrCreateInstance() {
   return CreateInstance(std::move(providers));
 }
 
+// static
+content::WebContents* XRRuntimeManagerImpl::GetImmersiveSessionWebContents() {
+  if (!g_xr_runtime_manager)
+    return nullptr;
+  BrowserXRRuntimeImpl* browser_xr_runtime =
+      g_xr_runtime_manager->GetCurrentlyPresentingImmersiveRuntime();
+  if (!browser_xr_runtime)
+    return nullptr;
+  VRServiceImpl* vr_service =
+      browser_xr_runtime->GetServiceWithActiveImmersiveSession();
+  return vr_service ? vr_service->GetWebContents() : nullptr;
+}
+
 void XRRuntimeManagerImpl::AddService(VRServiceImpl* service) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(2) << __func__;
