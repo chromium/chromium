@@ -15,7 +15,7 @@
       <if expr="is_official_build == false">
         <!-- Privileged app host contents. -->
         <include name="IDR_FILE_MANAGER_SWA_BROWSER_PROXY_JS" file="browser_proxy.js" type="BINDATA" />
-        <include name="IDR_FILE_MANAGER_SWA_MAIN_HTML" file="main.html" type="BINDATA" />
+        <include name="IDR_FILE_MANAGER_SWA_MAIN_HTML" file="main.html" flattenhtml="true" type="BINDATA" />
         <include name="IDR_FILE_MANAGER_SWA_MAIN_CSS" file="main.css" type="BINDATA" />
         <include name="IDR_FILE_MANAGER_SWA_MAIN_JS" file="main.js" type="BINDATA" />
         <include name="IDR_FILE_MANAGER_SWA_ICON_192" file="images/icon192.png" type="BINDATA" />

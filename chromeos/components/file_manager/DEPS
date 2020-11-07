@@ -2,5 +2,6 @@ include_rules = [
   # Do not add chrome here (use a delegate instead).
   "+chromeos/grit/chromeos_file_manager_resources.h",
   "+content/public/browser",
+  "+ui/file_manager/grit",
   "+ui/webui",
 ]
