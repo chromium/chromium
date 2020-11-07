@@ -281,6 +281,8 @@ PasswordFormMetricsRecorder::~PasswordFormMetricsRecorder() {
 
   if (password_generation_popup_shown_ !=
       PasswordGenerationPopupShown::kNotShown) {
+    UMA_HISTOGRAM_ENUMERATION("PasswordGeneration.PopupShown",
+                              password_generation_popup_shown_);
     ukm_entry_builder_.SetGeneration_PopupShown(
         static_cast<int64_t>(password_generation_popup_shown_));
   }

@@ -170,6 +170,7 @@ class PasswordFormMetricsRecorder
     kNotShown = 0,
     kShownAutomatically = 1,
     kShownManually = 2,
+    kMaxValue = kShownManually,
   };
 
   // Metric: PasswordGeneration.UserDecision
