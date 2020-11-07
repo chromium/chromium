@@ -11,12 +11,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.os.IBinder;
-import android.support.v4.media.session.MediaSessionCompat;
 import android.util.SparseArray;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.mediarouter.media.MediaRouter;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
@@ -220,20 +218,6 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
     @Override
     public NotificationWrapperBuilder createNotificationWrapperBuilder() {
         return createNotificationWrapperBuilder(mNotificationId);
-    }
-
-    @Override
-    public void onMediaSessionUpdated(MediaSessionCompat session) {
-        try {
-            // Tell the MediaRouter about the session, so that Chrome can control the volume
-            // on the remote cast device (if any).
-            // Pre-MR1 versions of JB do not have the complete MediaRouter APIs,
-            // so getting the MediaRouter instance will throw an exception.
-            MediaRouter.getInstance(getContext()).setMediaSessionCompat(session);
-        } catch (NoSuchMethodError e) {
-            // Do nothing. Chrome can't be casting without a MediaRouter, so there is nothing
-            // to do here.
-        }
     }
 
     @Override

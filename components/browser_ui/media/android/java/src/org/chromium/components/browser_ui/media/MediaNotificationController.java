@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.mediarouter.media.MediaRouter;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
@@ -32,6 +33,7 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
+import org.chromium.components.media_router.MediaRouterUtils;
 import org.chromium.media_session.mojom.MediaSessionAction;
 import org.chromium.services.media_session.MediaMetadata;
 
@@ -295,9 +297,6 @@ public class MediaNotificationController {
 
         /** Returns a builder suitable as a starting point for creating the notification. */
         NotificationWrapperBuilder createNotificationWrapperBuilder();
-
-        /** Called when the Android MediaSession has been updated. */
-        void onMediaSessionUpdated(MediaSessionCompat session);
 
         /** Called when a notification has been shown and should be logged in UMA. */
         void logNotificationShown(NotificationWrapper notification);
@@ -626,7 +625,8 @@ public class MediaNotificationController {
 
         activateAndroidMediaSession(mMediaNotificationInfo.instanceId);
 
-        mDelegate.onMediaSessionUpdated(mMediaSession);
+        MediaRouter.getInstance(MediaRouterUtils.getContextForCasting())
+                .setMediaSessionCompat(mMediaSession);
 
         mMediaSession.setMetadata(createMetadata());
 

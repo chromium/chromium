@@ -11,6 +11,7 @@ android_library("java") {
   resources_package = "org.chromium.components.media_router"
   deps = [
     ":java_resources",
+    ":media_router_utils_java",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
     "$google_play_services_package:google_play_services_cast_framework_java",
@@ -70,6 +71,15 @@ android_library("java") {
     "java/src/org/chromium/components/media_router/caf/remoting/StreamPositionExtrapolator.java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+android_library("media_router_utils_java") {
+  sources =
+      [ "java/src/org/chromium/components/media_router/MediaRouterUtils.java" ]
+  deps = [
+    "$google_play_services_package:google_play_services_cast_framework_java",
+    "//base:base_java",
+  ]
 }
 
 generate_jni("jni_headers") {

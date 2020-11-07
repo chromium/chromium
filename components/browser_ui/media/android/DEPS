@@ -1,6 +1,7 @@
 include_rules = [
   "+components/embedder_support/android",
   "+components/favicon/android",
+  "+components/media_router/browser/android/java/src/org/chromium/components/media_router/MediaRouterUtils.java",
   "+components/url_formatter/android",
   "+content/public/android",
   "+services/media_session/public/cpp/android",
