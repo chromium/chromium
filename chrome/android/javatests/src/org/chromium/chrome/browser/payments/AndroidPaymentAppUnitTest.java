@@ -121,7 +121,7 @@ public class AndroidPaymentAppUnitTest {
                 /*displayItems=*/new ArrayList<PaymentItem>(), modifiers, new PaymentOptions(),
                 new ArrayList<PaymentShippingOption>(), new PaymentApp.InstrumentDetailsCallback() {
                     @Override
-                    public void onInstrumentDetailsLoadingWithoutUI() {}
+                    public void onInstrumentDetailsLoading() {}
 
                     @Override
                     public void onInstrumentDetailsReady(

@@ -54,9 +54,6 @@ public interface BrowserPaymentRequest {
     /** The browser part of the {@link PaymentRequest#onPaymentDetailsNotUpdated} implementation. */
     void onPaymentDetailsNotUpdated();
 
-    /** The browser part of the {@link PaymentRequest#abort} implementation. */
-    void abort();
-
     /** The browser part of the {@link PaymentRequest#complete} implementation. */
     void complete(int result);
 
@@ -172,4 +169,23 @@ public interface BrowserPaymentRequest {
     default boolean patchPaymentResponseIfNeeded(PaymentResponse response) {
         return true;
     }
+
+    /**
+     * Called by the payment app to let Chrome know that the payment app's UI is now hidden, but
+     * the payment details have not been returned yet. This is a good time to show a "loading"
+     * progress indicator UI.
+     */
+    default void onInstrumentDetailsLoading() {}
+
+    /**
+     * Called after retrieving payment details.
+     */
+    default void onInstrumentDetailsReady() {}
+
+    /**
+     * Called if unable to retrieve payment details.
+     * @param errorMessage Developer-facing error message to be used when rejecting the promise
+     *                     returned from PaymentRequest.show().
+     */
+    default void onInstrumentDetailsError(String errorMessage) {}
 }

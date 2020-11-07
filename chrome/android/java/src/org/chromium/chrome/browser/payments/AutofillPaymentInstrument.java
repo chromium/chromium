@@ -202,7 +202,7 @@ public class AutofillPaymentInstrument
         mIsWaitingForFullCardDetails = false;
 
         // Show the loading UI while the address gets normalized.
-        mCallback.onInstrumentDetailsLoadingWithoutUI();
+        mCallback.onInstrumentDetailsLoading();
 
         // Wait for the billing address normalization before sending the instrument details.
         if (!mIsWaitingForBillingNormalization) sendInstrumentDetails();

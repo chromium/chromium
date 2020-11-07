@@ -43,7 +43,7 @@ public abstract class PaymentApp extends EditableOption {
          * the payment details have not been returned yet. This is a good time to show a "loading"
          * progress indicator UI.
          */
-        void onInstrumentDetailsLoadingWithoutUI();
+        void onInstrumentDetailsLoading();
 
         /**
          * Called after retrieving payment details.
