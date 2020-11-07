@@ -122,17 +122,17 @@ TEST_F('ChromeVoxTutorialTest', 'BasicTest', function() {
             'ChromeVox tutorial', 'Heading 1',
             'Press Search + left/right arrow to browse topics')
         .call(doCmd('nextObject'))
-        .expectSpeech('Quick orientation', 'Button')
+        .expectSpeech('Quick orientation', 'Link')
         .call(doCmd('nextObject'))
-        .expectSpeech('Essential keys', 'Button')
+        .expectSpeech('Essential keys', 'Link')
         .call(doCmd('nextObject'))
-        .expectSpeech('Navigation', 'Button')
+        .expectSpeech('Navigation', 'Link')
         .call(doCmd('nextObject'))
-        .expectSpeech('Command references', 'Button')
+        .expectSpeech('Command references', 'Link')
         .call(doCmd('nextObject'))
-        .expectSpeech('Sounds and settings', 'Button')
+        .expectSpeech('Sounds and settings', 'Link')
         .call(doCmd('nextObject'))
-        .expectSpeech('Resources', 'Button')
+        .expectSpeech('Resources', 'Link')
         .call(doCmd('nextObject'))
         .expectSpeech('Exit tutorial', 'Button')
         .replay();
@@ -148,7 +148,7 @@ TEST_F('ChromeVoxTutorialTest', 'LessonSetTest', function() {
     const tutorial = this.getPanel().iTutorial;
     mockFeedback.expectSpeech('ChromeVox tutorial')
         .call(doCmd('nextObject'))
-        .expectSpeech('Quick orientation', 'Button')
+        .expectSpeech('Quick orientation')
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech(/Quick Orientation Tutorial, [0-9]+ Lessons/)
         .expectSpeech(
@@ -163,9 +163,9 @@ TEST_F('ChromeVoxTutorialTest', 'LessonSetTest', function() {
         })
         .expectSpeech('ChromeVox tutorial')
         .call(doCmd('nextObject'))
-        .expectSpeech('Quick orientation', 'Button')
+        .expectSpeech('Quick orientation')
         .call(doCmd('nextObject'))
-        .expectSpeech('Essential keys', 'Button')
+        .expectSpeech('Essential keys', 'Link')
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech(/Essential Keys Tutorial, [0-9]+ Lessons/)
         .call(doCmd('nextObject'))
@@ -182,9 +182,9 @@ TEST_F('ChromeVoxTutorialTest', 'NoPracticeAreaTest', function() {
     const tutorial = this.getPanel().iTutorial;
     mockFeedback.expectSpeech('ChromeVox tutorial')
         .call(doCmd('nextObject'))
-        .expectSpeech('Quick orientation', 'Button')
+        .expectSpeech('Quick orientation')
         .call(doCmd('nextObject'))
-        .expectSpeech('Essential keys', 'Button')
+        .expectSpeech('Essential keys')
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech(/Essential Keys Tutorial, [0-9]+ Lessons/)
         .call(() => {
@@ -207,17 +207,17 @@ TEST_F('ChromeVoxTutorialTest', 'HasPracticeAreaTest', function() {
     const tutorial = this.getPanel().iTutorial;
     mockFeedback.expectSpeech('ChromeVox tutorial')
         .call(doCmd('nextObject'))
-        .expectSpeech('Quick orientation', 'Button')
+        .expectSpeech('Quick orientation')
         .call(doCmd('nextObject'))
-        .expectSpeech('Essential keys', 'Button')
+        .expectSpeech('Essential keys')
         .call(doCmd('nextObject'))
-        .expectSpeech('Navigation', 'Button')
+        .expectSpeech('Navigation')
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech(/Navigation Tutorial, [0-9]+ Lessons/)
         .call(() => {
-          tutorial.showLesson(0);
+          tutorial.showLesson(1);
         })
-        .expectSpeech('Basic Navigation', 'Heading 1')
+        .expectSpeech('Jump Commands', 'Heading 1')
         .call(doCmd('nextButton'))
         .expectSpeech('Practice Area')
         .replay();
@@ -256,7 +256,7 @@ TEST_F('ChromeVoxTutorialTest', 'GeneralNudgesTest', function() {
 // Tests nudges given in the practice area context. Note, each practice area
 // can have different nudge messages; this test confirms that nudges given in
 // the practice area differ from those given in the general tutorial context.
-TEST_F('ChromeVoxTutorialTest', 'PracticeAreaNudgesTest', function() {
+TEST_F('ChromeVoxTutorialTest', 'DISABLED_PracticeAreaNudgesTest', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
@@ -266,11 +266,11 @@ TEST_F('ChromeVoxTutorialTest', 'PracticeAreaNudgesTest', function() {
     };
     mockFeedback.expectSpeech('ChromeVox tutorial')
         .call(doCmd('nextObject'))
-        .expectSpeech('Quick orientation', 'Button')
+        .expectSpeech('Quick orientation')
         .call(doCmd('nextObject'))
-        .expectSpeech('Essential keys', 'Button')
+        .expectSpeech('Essential keys')
         .call(doCmd('nextObject'))
-        .expectSpeech('Navigation', 'Button')
+        .expectSpeech('Navigation')
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech(/Navigation Tutorial, [0-9]+ Lessons/)
         .call(() => {
@@ -369,7 +369,7 @@ TEST_F('ChromeVoxTutorialTest', 'AllLessonsButton', function() {
         .expectSpeech(/Essential Keys Tutorial, [0-9]+ Lessons/)
         .call(this.assertActiveScreen.bind(this, 'lesson_menu'))
         .call(doCmd('nextObject'))
-        .expectSpeech('On, Off, and Stop', 'Button')
+        .expectSpeech('On, Off, and Stop')
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech('On, Off, and Stop', 'Heading 1')
         .call(this.assertActiveScreen.bind(this, 'lesson'))
@@ -420,11 +420,11 @@ TEST_F('ChromeVoxTutorialTest', 'AutoReadTitle', function() {
     const tutorial = this.getPanel().iTutorial;
     mockFeedback.expectSpeech('ChromeVox tutorial')
         .call(doCmd('nextObject'))
-        .expectSpeech('Quick orientation', 'Button')
+        .expectSpeech('Quick orientation')
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech(/Quick Orientation Tutorial, [0-9]+ Lessons/)
         .call(doCmd('nextObject'))
-        .expectSpeech('Welcome to ChromeVox!', 'Button')
+        .expectSpeech('Welcome to ChromeVox!')
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech('Welcome to ChromeVox!')
         .expectSpeech(
@@ -445,9 +445,9 @@ TEST_F('ChromeVoxTutorialTest', 'LessonHint', function() {
     const tutorial = this.getPanel().iTutorial;
     mockFeedback.expectSpeech('ChromeVox tutorial')
         .call(doCmd('nextObject'))
-        .expectSpeech('Quick orientation', 'Button')
+        .expectSpeech('Quick orientation')
         .call(doCmd('nextObject'))
-        .expectSpeech('Essential keys', 'Button')
+        .expectSpeech('Essential keys')
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech(/Essential Keys Tutorial, [0-9]+ Lessons/)
         .call(() => {

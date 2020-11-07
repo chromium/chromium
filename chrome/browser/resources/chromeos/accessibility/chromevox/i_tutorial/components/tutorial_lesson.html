@@ -1,93 +1,90 @@
 <!-- Copyright 2020 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
-<style>
+<style include="md-select cr-shared-style">
+:host {
+  --cr-dialog-width: 704px;
+}
 
-body,
-div,
-h1,
+/** Font styling */
 p,
 cr-button,
 a {
-  font-family: Google Sans;
+  font-family: 'Roboto';
 }
 
 #title {
+  font-family: 'Google Sans', 'Roboto';
+}
+
+#title,
+#practiceTitle {
   font-size: 32px;
+  font-weight: medium;
+  line-height: 40px;
+  margin-bottom: 16px;
 }
 
 #content {
   display: block;
-  font-size: 28px;
-  font-style: normal;
-  font-weight: normal;
-  line-height: 36px;
   margin: auto;
-  max-height: 500px;
+  max-height: 400px;
   overflow: scroll;
-  text-align: center;
+  text-align: start
 }
 
-#practice {
-  overflow: scroll;
+#content p,
+#practiceInstructions,
+#practiceBody {
+  color: black;
+  font-size: 22px;
+  font-weight: normal;
+  line-height: 28px;
+  margin-bottom: 16px;
+  margin-top: 0;
+  text-align: start
 }
+
+/* Practice area */
 
 #practiceTitle {
-  font-size: 28px;
-  font-weight: 500;
+  font-family: 'Google Sans', 'Roboto';
 }
 
 #practiceInstructions {
-  line-height: 32px;
-  margin: 5px;
-  padding: 5px;
+  color: black;
 }
 
 #practiceBody {
-  color: #000;
-  font-size: 22px;
-  font-style: normal;
-  font-weight: normal;
-  padding: 20px;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  max-height: 400px;
+  overflow: auto;
 }
 
-#practiceBody h1,
-#practiceBody h2,
-#practiceBody h3,
-#practiceBody h4,
-#practiceBody h5,
-#practiceBody h6 {
-  margin: 5px;
-}
-
-#practiceContent cr-button {
-  font-size: 18px;
-  margin: 20px;
+#practiceContent * {
+  display: block;
+  margin-bottom: 8px;
+  margin-top: 8px;
+  text-align: start;
 }
 
 #practiceContent a {
   color: rgb(26, 115, 232);
-  font-size: 18px;
-  margin: 20px;
 }
 
 #startPractice {
-  color: rgb(26, 115, 232);
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 20px;
-  margin-bottom: 10px;
-  margin-inline-end: 10px;
-  margin-inline-start: 10px;
-  margin-top: 10px;
+  margin-bottom: 32px;
+  margin-inline-start: 0;
+  margin-top: 16px;
 }
 
-#separator {
-  background: rgb(232, 234, 237);
-  height: 1px;
-  margin: 20px;
+#closePractice,
+#startPractice {
+  font-size: 16px;
+  font-style: normal;
+  font-weight: medium;
+  line-height: 24px;
 }
 
 </style>
@@ -105,15 +102,18 @@ a {
       <p tabindex="-1">[[ getMsg(text) ]]</p>
     </template>
   </div>
-  <cr-dialog id="practice" close-text="Exit practice area"
-      on-close="endPractice" show-close-button>
+  <cr-dialog id="practice">
     <div id="practiceTitle" class="title" slot="title" tabindex="-1">
       [[ practiceTitle ]]
     </div>
     <div id="practiceBody" class="body" slot="body" tabindex="-1">
       <p id="practiceInstructions" tabindex="-1">[[ practiceInstructions ]]</p>
-      <div id="separator"></div>
       <div id="practiceContent"></div>
+    </div>
+    <div class="button-container" slot="button-container">
+      <cr-button id="closePractice" on-click="endPractice">
+        Close
+      </cr-button>
     </div>
   </cr-dialog>
   <cr-button id="startPractice" on-click="startPractice"

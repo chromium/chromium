@@ -9,6 +9,9 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.m.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {TutorialCommon} from './tutorial_common.js';
@@ -346,56 +349,28 @@ Polymer({
           content: ['tutorial_basic_navigation'],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.NAVIGATION],
-          practiceTitle: 'Basic Navigation Practice',
-          practiceInstructions:
-              'Try using basic navigation to navigate through the items ' +
-              'below. Find the button titled "Click me" and use Search ' +
-              '+ Space to click it. Then move to the next lesson.',
-          practiceFile: 'basic_navigation',
-          practiceState: {
-            goal: {click: false},
-          },
-          events: ['click'],
-          hints: [
-            'Try pressing Search + left/right arrow. The search key is' +
-                ' directly above the shift key',
-            'Press Search + Space to activate the current item.'
-          ],
         },
 
         {
           title: 'tutorial_jump_heading',
           content: [
             'tutorial_jump',
-            'tutorial_jump_second_heading',
-            'tutorial_jump_wrap_heading',
+            `Jump commands can be used to efficiently navigate through a web
+                page.`,
+            `Additional jump commands include jumping by link, button, and
+                checkbox, to name a few. A full list of jump commands can be
+                found in the ChromeVox menus, which can be opened by pressing
+                Search + Period.`,
           ],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.NAVIGATION],
           practiceTitle: 'Jump Commands Practice',
           practiceInstructions:
-              'Try using what you have learned to navigate by element type. ' +
-              'Notice that navigation wraps if you are on the first or ' +
-              'last element and press previous element or next element, ' +
-              'respectively.',
+              'Try jumping by heading to navigate the text below',
           practiceFile: 'jump_commands',
-          practiceState: {
-            'first-heading': {focus: false},
-            'first-link': {focus: false},
-            'first-button': {focus: false},
-            'second-heading': {focus: false},
-            'second-link': {focus: false},
-            'second-button': {focus: false},
-            'last-heading': {focus: false},
-            'last-link': {focus: false},
-            'last-button': {focus: false},
-          },
-          events: ['focus'],
-          hints: [
-            'Try using search + h to move by header',
-            'Try using search + b to move by button',
-            'Try using search + l to move by link'
-          ],
+          practiceState: {},
+          events: [],
+          hints: []
         },
 
         {
@@ -624,10 +599,11 @@ Polymer({
     // Create shortcuts for each included lesson.
     let count = 1;
     for (const lesson of this.includedLessons) {
-      const button = document.createElement('cr-button');
-      button.addEventListener('click', this.showLesson.bind(this, count - 1));
-      button.textContent = this.getMsg(lesson.title);
-      this.$.lessonShortcuts.appendChild(button);
+      const shortcut = document.createElement('cr-link-row');
+      shortcut.addEventListener('click', this.showLesson.bind(this, count - 1));
+      shortcut.label = this.getMsg(lesson.title);
+      shortcut.classList.add('hr');
+      this.$.lessonShortcuts.appendChild(shortcut);
       count += 1;
     }
   },
@@ -714,6 +690,10 @@ Polymer({
    */
   shouldHideLessonMenu(activeScreen) {
     return activeScreen !== Screen.LESSON_MENU;
+  },
+
+  shouldHideNavSeparator(activeScreen) {
+    return activeScreen !== Screen.LESSON;
   },
 
   /**

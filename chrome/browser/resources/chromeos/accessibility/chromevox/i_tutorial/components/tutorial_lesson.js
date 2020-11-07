@@ -9,6 +9,9 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/md_select_css.m.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {TutorialCommon} from './tutorial_common.js';
@@ -167,6 +170,7 @@ export const TutorialLesson = Polymer({
 
   /** @private */
   endPractice() {
+    this.$.practice.close();
     this.notifyEndPractice();
     this.$.startPractice.focus();
   },

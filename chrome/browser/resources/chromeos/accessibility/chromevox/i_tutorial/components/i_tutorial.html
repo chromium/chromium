@@ -1,14 +1,14 @@
 <!-- Copyright 2020 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
-<style>
+<style include="cr-shared-style">
 
 #tutorial {
   background: #FFF;
   bottom: 0;
   left: 0;
-  margin-bottom: 30px;
-  margin-top: 30px;
+  margin-bottom: 80px;
+  margin-top: 80px;
   position: fixed;
   right: 0;
   top: 0;
@@ -17,71 +17,81 @@
 #mainMenu,
 #lessonMenu,
 #lessonContainer,
+#mainMenuButtons,
 #nav {
   margin: auto;
-  text-align: center;
-  width: 50%;
+  text-align: start;
+  width: 800px;
 }
 
+#mainMenuButtons,
 #lessonShortcuts {
   background: #FFF;
   border-radius: 4px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  margin: auto;
-  max-height: 500px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.15);
+  font-size: 22px;
+}
+
+#lessonShortcuts {
+  max-height: 400px;
   overflow: scroll;
 }
 
-#mainMenuButtons {
-  background: #FFF;
-  border-radius: 4px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
+cr-button,
+cr-link-row {
+  font-family: 'Roboto';
+  font-weight: medium;
+}
+
+h1 {
+  font-family: 'Google Sans', 'Roboto';
+  font-size: 32px;
+  font-weight: medium;
+  line-height: 40px;
+  margin-bottom: 32px;
+}
+
+cr-button {
+  font-size: 16px;
+  font-style: normal;
+  line-height: 24px;
+  margin-bottom: 40px;
+  margin-inline-end: 8px;
+  margin-inline-start: 8px;
+  margin-top: 40px;
 }
 
 #navSeparator {
   background: rgb(232, 234, 237);
   height: 1px;
-  margin: 30px;
+  width: 800px;
 }
 
-h1,
-cr-button {
-  font-family: Google Sans;
+/* Styling for bottom navigation buttons */
+#lessonNav {
+  display: inline-block;
+  float: right;
 }
 
-h1 {
-  display: flex;
-  flex-direction: column;
-  font-size: 32px;
-  line-height: 32px;
-  margin: 20px;
-  padding: 8px;
+#lessonNav cr-button {
+  float: right;
 }
 
-#mainMenu cr-button,
-#lessonMenu cr-button {
-  color: rgb(32, 33, 36);
-  font-size: 22px;
-  font-style: normal;
-  font-weight: normal;
-  line-height: 20px;
-  padding: 30px;
+#menuNav {
+  display: inline-block;
+  float: left;
 }
 
-#navButtons cr-button {
-  color: rgb(26, 115, 232);
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 20px;
-  margin-bottom: 10px;
-  margin-inline-end: 10px;
-  margin-inline-start: 10px;
-  margin-top: 10px;
+#menuNav cr-button {
+  float: right;
+}
+
+#exitTutorial {
+  margin-inline-start: 0;
+}
+
+#nextLesson {
+  margin-inline-end: 0;
 }
 
 </style>
@@ -95,24 +105,24 @@ h1 {
   </h1>
   <div id="mainMenuHeaderHint" hidden>[[ mainMenuHeaderHint ]]</div>
   <div id="mainMenuButtons">
-    <cr-button id="quickOrientationButton" on-click="chooseCurriculum">
-      [[ quickOrientation ]]
-    </cr-button>
-    <cr-button id="essentialKeysButton" on-click="chooseCurriculum">
-      [[ essentialKeys ]]
-    </cr-button>
-    <cr-button id="navigationButton" on-click="chooseCurriculum">
-      [[ navigation ]]
-    </cr-button>
-    <cr-button id="commandReferencesButton" on-click="chooseCurriculum">
-      [[ commandReferences ]]
-    </cr-button>
-    <cr-button id="soundsAndSettingsButton" on-click="chooseCurriculum">
-      [[ soundsAndSettings ]]
-    </cr-button>
-    <cr-button id="resourcesButton" on-click="chooseCurriculum">
-      [[ resources ]]
-    </cr-button>
+    <cr-link-row id="quickOrientationButton" class="hr"
+        on-click="chooseCurriculum" label="[[ quickOrientation ]]">
+    </cr-link-row>
+    <cr-link-row id="essentialKeysButton" class="hr" on-click="chooseCurriculum"
+        label="[[ essentialKeys ]]">
+    </cr-link-row>
+    <cr-link-row id="navigationButton" class="hr" on-click="chooseCurriculum"
+        label="[[ navigation ]]">
+    </cr-link-row>
+    <cr-link-row id="commandReferencesButton" class="hr"
+        on-click="chooseCurriculum" label="[[ commandReferences ]]">
+    </cr-link-row>
+    <cr-link-row id="soundsAndSettingsButton" class="hr"
+        on-click="chooseCurriculum" label="[[ soundsAndSettings ]]">
+    </cr-link-row>
+    <cr-link-row id="resourcesButton" class="hr" on-click="chooseCurriculum"
+        label="[[ resources ]]">
+    </cr-link-row>
   </div>
 </div>
 
@@ -151,33 +161,40 @@ h1 {
 </div>
 
 <div id="nav">
-  <div id="navSeparator"></div>
+  <div id="navSeparator" hidden$="[[
+      shouldHideNavSeparator(activeScreen) ]]"></div>
   <div id="navButtons">
-    <cr-button on-click="showPreviousLesson"
-        hidden$="[[
-      shouldHidePreviousLessonButton(activeLessonIndex, activeScreen) ]]">
-      [[ previousLesson ]]
-    </cr-button>
-    <cr-button on-click="showNextLesson"
-        hidden$="[[
-      shouldHideNextLessonButton(activeLessonIndex, activeScreen) ]]">
-      [[ nextLesson ]]
-    </cr-button>
-    <cr-button on-click="showLessonMenu"
-        hidden$="[[ shouldHideLessonMenuButton(activeScreen) ]]">
-      [[ lessonMenu ]]
-    </cr-button>
-    <cr-button on-click="showMainMenu"
-        hidden$="[[ shouldHideMainMenuButton(activeScreen) ]]">
-      [[ mainMenu ]]
-    </cr-button>
-    <cr-button on-click="showFirstLesson"
-        hidden$="[[
-      shouldHideRestartQuickOrientationButton(activeLessonIndex, activeScreen)
-        ]]">
-      [[ restartQuickOrientation ]]
-    </cr-button>
-    <cr-button on-click="exit">[[ exitTutorial ]]</cr-button>
+    <div id="lessonNav">
+      <cr-button id="nextLesson" class="action-button" on-click="showNextLesson"
+          hidden$="[[
+        shouldHideNextLessonButton(activeLessonIndex, activeScreen) ]]">
+        [[ nextLesson ]]
+      </cr-button>
+      <cr-button on-click="showPreviousLesson"
+          hidden$="[[
+        shouldHidePreviousLessonButton(activeLessonIndex, activeScreen) ]]">
+        [[ previousLesson ]]
+      </cr-button>
+    </div>
+    <div id="menuNav">
+      <cr-button on-click="showFirstLesson"
+          hidden$="[[
+        shouldHideRestartQuickOrientationButton(activeLessonIndex, activeScreen)
+          ]]">
+        [[ restartQuickOrientation ]]
+      </cr-button>
+      <cr-button on-click="showLessonMenu"
+          hidden$="[[ shouldHideLessonMenuButton(activeScreen) ]]">
+        [[ lessonMenu ]]
+      </cr-button>
+      <cr-button on-click="showMainMenu"
+          hidden$="[[ shouldHideMainMenuButton(activeScreen) ]]">
+        [[ mainMenu ]]
+      </cr-button>
+      <cr-button id="exitTutorial" on-click="exit">
+        [[ exitTutorial ]]
+      </cr-button>
+    </div>
   </div>
 </div>
 
