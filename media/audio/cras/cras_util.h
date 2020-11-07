@@ -28,6 +28,13 @@ struct CrasDevice {
 // Enumerates all devices of |type|.
 std::vector<CrasDevice> CrasGetAudioDevices(DeviceType type);
 
+// Returns if system AEC is supported in CRAS.
+int CrasGetAecSupported();
+
+// Returns the system AEC group ID. If no group ID is specified, -1 is
+// returned.
+int CrasGetAecGroupId();
+
 }  // namespace media
 
 #endif  // MEDIA_AUDIO_CRAS_CRAS_UTIL_H_

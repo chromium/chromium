@@ -108,4 +108,25 @@ std::vector<CrasDevice> CrasGetAudioDevices(DeviceType type) {
   return devices;
 }
 
+int CrasGetAecSupported() {
+  cras_client* client = CrasConnect();
+  if (!client)
+    return 0;
+
+  int rc = cras_client_get_aec_supported(client);
+  CrasDisconnect(&client);
+  return rc;
+}
+
+int CrasGetAecGroupId() {
+  cras_client* client = CrasConnect();
+  if (!client)
+    return -1;
+
+  int rc = cras_client_get_aec_group_id(client);
+  CrasDisconnect(&client);
+
+  return rc;
+}
+
 }  // namespace media

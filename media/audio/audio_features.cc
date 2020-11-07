@@ -32,7 +32,7 @@ const base::Feature kUseAAudioDriver{"UseAAudioDriver",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_ASH) || BUILDFLAG(IS_LACROS)
 const base::Feature kCrOSSystemAEC{"CrOSSystemAEC",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kCrOSSystemAECDeactivatedGroups{

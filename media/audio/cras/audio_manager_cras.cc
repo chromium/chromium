@@ -91,6 +91,28 @@ AudioParameters AudioManagerCras::GetInputStreamParameters(
       kDefaultSampleRate, buffer_size,
       AudioParameters::HardwareCapabilities(limits::kMinAudioBufferSize,
                                             limits::kMaxAudioBufferSize));
+
+  // Allow experimentation with system echo cancellation with all devices,
+  // but enable it by default on devices that actually support it.
+  params.set_effects(params.effects() |
+                     AudioParameters::EXPERIMENTAL_ECHO_CANCELLER);
+  if (base::FeatureList::IsEnabled(features::kCrOSSystemAEC)) {
+    if (CrasGetAecSupported()) {
+      const int32_t aec_group_id = CrasGetAecGroupId();
+
+      // Check if the system AEC has a group ID which is flagged to be
+      // deactivated by the field trial.
+      const bool system_aec_deactivated =
+          base::GetFieldTrialParamByFeatureAsBool(
+              features::kCrOSSystemAECDeactivatedGroups,
+              base::NumberToString(aec_group_id), false);
+
+      if (!system_aec_deactivated) {
+        params.set_effects(params.effects() | AudioParameters::ECHO_CANCELLER);
+      }
+    }
+  }
+
   return params;
 }
 

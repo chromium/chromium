@@ -19,7 +19,7 @@ MEDIA_EXPORT extern const base::Feature kDumpOnAudioServiceHang;
 MEDIA_EXPORT extern const base::Feature kUseAAudioDriver;
 #endif
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_ASH) || BUILDFLAG(IS_LACROS)
 MEDIA_EXPORT extern const base::Feature kCrOSSystemAEC;
 MEDIA_EXPORT extern const base::Feature kCrOSSystemAECDeactivatedGroups;
 #endif
