@@ -469,6 +469,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
             selected_result_view->GetViewAccessibility().GetUniqueId().Get());
 }
 
+// Flaky on Mac: https://crbug.com/1146627.
+#if defined(OS_MAC)
+#define MAYBE_EmitAccessibilityEventsOnButtonFocusHint DISABLED_EmitAccessibilityEventsOnButtonFocusHint
+#else
+#define MAYBE_EmitAccessibilityEventsOnButtonFocusHint EmitAccessibilityEventsOnButtonFocusHint
+#endif
 IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
                        EmitAccessibilityEventsOnButtonFocusHint) {
   TestAXEventObserver observer;
