@@ -3035,7 +3035,7 @@ Here are some things you can try to get started.
         Failed to capture screen
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_STOPPED_MESSAGE" desc="The text of the notification when video capture is stopped.">
-        Screen recording stopped due to confidential content on your screen.
+        Screen recording has been stopped by your administrator due to content on your screen.
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE" desc="The name that is the display source of the screen capture notification.">
         Screen capture
