@@ -73,9 +73,6 @@ public interface LocationBarDataProvider {
      */
     boolean isInOverviewAndShowingOmnibox();
 
-    /** Returns whether the location bar should show when in overview mode. */
-    boolean shouldShowLocationBarInOverviewMode();
-
     /** Returns the current {@link Profile}. */
     Profile getProfile();
 

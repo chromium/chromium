@@ -50,7 +50,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
@@ -1545,11 +1544,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     @Override
     public void setLayoutUpdater(Runnable layoutUpdater) {
         mLayoutUpdater = layoutUpdater;
-    }
-
-    @Override
-    public void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
-        mLocationBar.setLayoutStateProvider(layoutStateProvider);
     }
 
     @Override

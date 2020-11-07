@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -87,7 +86,6 @@ public class TopToolbarCoordinator implements Toolbar {
 
     private MenuButtonCoordinator mMenuButtonCoordinator;
     private ObservableSupplier<AppMenuButtonHelper> mAppMenuButtonHelperSupplier;
-    private CallbackController mCallbackController = new CallbackController();
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private TopToolbarOverlayCoordinator mOverlayCoordinator;
 
@@ -137,9 +135,6 @@ public class TopToolbarCoordinator implements Toolbar {
             if (controlContainer == null) return;
             controlContainer.getProgressBarDrawingInfo(info);
         };
-
-        layoutStateProviderSupplier.onAvailable(
-                mCallbackController.makeCancelable(this::setLayoutStateProvider));
 
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
 
@@ -230,11 +225,6 @@ public class TopToolbarCoordinator implements Toolbar {
         }
     }
 
-    private void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
-        assert layoutStateProvider != null;
-        mToolbarLayout.setLayoutStateProvider(layoutStateProvider);
-    }
-
     /**
      * @param urlExpansionObserver The observer that observes URL expansion progress change.
      */
@@ -270,11 +260,6 @@ public class TopToolbarCoordinator implements Toolbar {
             mTabSwitcherModeCoordinatorPhone.destroy();
         } else if (mStartSurfaceToolbarCoordinator != null) {
             mStartSurfaceToolbarCoordinator.destroy();
-        }
-
-        if (mCallbackController != null) {
-            mCallbackController.destroy();
-            mCallbackController = null;
         }
 
         if (mOptionalButtonController != null) {

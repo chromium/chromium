@@ -56,11 +56,6 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     }
 
     @Override
-    public boolean shouldShowLocationBarInOverviewMode() {
-        return false;
-    }
-
-    @Override
     public Profile getProfile() {
         return mTab != null ? Profile.fromWebContents(mTab.getWebContents()) : null;
     }

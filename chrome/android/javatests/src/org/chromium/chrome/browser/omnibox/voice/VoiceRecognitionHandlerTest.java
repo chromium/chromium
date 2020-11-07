@@ -232,11 +232,6 @@ public class VoiceRecognitionHandlerTest {
         }
 
         @Override
-        public boolean shouldShowLocationBarInOverviewMode() {
-            return false;
-        }
-
-        @Override
         public boolean isInOverviewAndShowingOmnibox() {
             return false;
         }

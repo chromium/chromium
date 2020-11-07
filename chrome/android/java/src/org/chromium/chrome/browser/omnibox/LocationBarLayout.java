@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gsa.GSAState;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
@@ -352,8 +351,15 @@ public class LocationBarLayout
         return mAutocompleteCoordinator;
     }
 
+    /**
+     * Runs logic that can't be invoked until after native is initialized but shouldn't be on the
+     * critical path, e.g. pre-fetching autocomplete suggestions. Contrast with
+     * onFinishNativeInitialization, which is for logic that should be on the critical path and need
+     * native to be initialized. This method must be called after onFinishNativeInitialization.
+     */
     public void onDeferredStartup() {
-        mAutocompleteCoordinator.prefetchZeroSuggestResults();
+        assert mNativeInitialized;
+        startPrefetch();
     }
 
     public void onFinishNativeInitialization() {
@@ -383,6 +389,13 @@ public class LocationBarLayout
         mVoiceRecognitionHandler.setAssistantVoiceSearchService(mAssistantVoiceSearchService);
         onAssistantVoiceSearchServiceChanged();
         setProfile(mProfileSupplier.get());
+    }
+
+    /** Initiates a prefetch of autocomplete suggestions. */
+    public void startPrefetch() {
+        if (!mNativeInitialized) return;
+
+        mAutocompleteCoordinator.prefetchZeroSuggestResults();
     }
 
     public void setProfileSupplier(ObservableSupplier<Profile> profileSupplier) {
@@ -877,10 +890,6 @@ public class LocationBarLayout
     public void setUrlBarFocusable(boolean focusable) {
         if (mUrlCoordinator == null) return;
         mUrlCoordinator.setAllowFocus(focusable);
-    }
-
-    public void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
-        mAutocompleteCoordinator.setLayoutStateProvider(layoutStateProvider);
     }
 
     @CallSuper

@@ -13,7 +13,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.WindowDelegate;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -285,9 +284,9 @@ public final class LocationBarCoordinator implements LocationBar, FakeboxDelegat
         return (LocationBarCoordinatorTablet) mSubCoordinator;
     }
 
-    /** Sets the {@link LayoutStateProvider}. */
-    public void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
-        mLocationBarLayout.setLayoutStateProvider(layoutStateProvider);
+    /** Initiates a pre-fetch of autocomplete suggestions. */
+    public void startAutocompletePrefetch() {
+        mLocationBarLayout.startPrefetch();
     }
 
     /**

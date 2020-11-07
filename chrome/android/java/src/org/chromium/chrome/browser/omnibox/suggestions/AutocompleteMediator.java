@@ -34,8 +34,6 @@ import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.document.ChromeIntentUtil;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -94,8 +92,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     private AutocompleteResult mAutocompleteResult;
 
     private LocationBarDataProvider mDataProvider;
-    private LayoutStateProvider mLayoutStateProvider;
-    private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
 
     private boolean mNativeInitialized;
     private AutocompleteController mAutocomplete;
@@ -161,17 +157,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         mAutocompleteResult = new AutocompleteResult(null, null);
         mDropdownViewInfoListBuilder = new DropdownItemViewInfoListBuilder(mAutocomplete);
         mDropdownViewInfoListManager = new DropdownItemViewInfoListManager(mSuggestionModels);
-
-        mLayoutStateObserver = new LayoutStateProvider.LayoutStateObserver() {
-            @Override
-            public void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {
-                if (!mNativeInitialized || layoutType != LayoutType.TAB_SWITCHER) return;
-
-                if (mDataProvider.shouldShowLocationBarInOverviewMode()) {
-                    AutocompleteControllerJni.get().prefetchZeroSuggestResults();
-                }
-            }
-        };
     }
 
     /**
@@ -195,10 +180,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         mDropdownViewInfoListBuilder.destroy();
         if (mTabObserver != null) {
             mTabObserver.destroy();
-        }
-        if (mLayoutStateProvider != null) {
-            mLayoutStateProvider.removeObserver(mLayoutStateObserver);
-            mLayoutStateProvider = null;
         }
     }
 
@@ -264,17 +245,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      */
     void setLocationBarDataProvider(LocationBarDataProvider provider) {
         mDataProvider = provider;
-    }
-
-    /**
-     * @param layoutStateProvider A means of accessing the current Layout state and a way to
-     *         listen to state changes.
-     */
-    public void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
-        assert mLayoutStateProvider == null;
-
-        mLayoutStateProvider = layoutStateProvider;
-        mLayoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
     /** Set the WindowAndroid instance associated with the containing Activity. */

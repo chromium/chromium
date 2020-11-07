@@ -20,7 +20,6 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -219,14 +218,6 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
      */
     public void setLocationBarDataProvider(LocationBarDataProvider locationBarDataProvider) {
         mMediator.setLocationBarDataProvider(locationBarDataProvider);
-    }
-
-    /**
-     * @param layoutStateProvider A means of accessing the current Layout state and a way to
-     *         listen to state changes.
-     */
-    public void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
-        mMediator.setLayoutStateProvider(layoutStateProvider);
     }
 
     /**

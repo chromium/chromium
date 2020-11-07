@@ -28,7 +28,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.overlays.toolbar.TopToolbarOverlayCoordinator;
 import org.chromium.chrome.browser.findinpage.FindToolbar;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
@@ -586,8 +585,6 @@ public abstract class ToolbarLayout
     }
 
     void setLayoutUpdater(Runnable layoutUpdater) {}
-
-    void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {}
 
     /**
      * @param attached Whether or not the web content is attached to the view heirarchy.
