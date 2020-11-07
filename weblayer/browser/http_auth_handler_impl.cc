@@ -4,9 +4,12 @@
 
 #include "weblayer/browser/http_auth_handler_impl.h"
 
+#include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/auth.h"
+#include "weblayer/browser/java/jni/HttpAuthHandlerImpl_jni.h"
 #include "weblayer/browser/tab_impl.h"
 
 namespace weblayer {
@@ -22,29 +25,51 @@ HttpAuthHandlerImpl::HttpAuthHandlerImpl(
   url_ = auth_info.challenger.GetURL().Resolve(auth_info.path);
 
   auto* tab = TabImpl::FromWebContents(web_contents);
-  tab->ShowHttpAuthPrompt(this);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  java_impl_ = Java_HttpAuthHandlerImpl_create(
+      env, reinterpret_cast<intptr_t>(this), tab->GetJavaTab(),
+      base::android::ConvertUTF8ToJavaString(env, url_.host()),
+      base::android::ConvertUTF8ToJavaString(env, url_.spec()));
 }
 
 HttpAuthHandlerImpl::~HttpAuthHandlerImpl() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto* tab = TabImpl::FromWebContents(web_contents());
-  if (tab)
-    tab->CloseHttpAuthPrompt();
-}
-
-void HttpAuthHandlerImpl::Proceed(const base::string16& user,
-                                  const base::string16& password) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (callback_) {
-    std::move(callback_).Run(net::AuthCredentials(user, password));
+  CloseDialog();
+  if (java_impl_) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_HttpAuthHandlerImpl_handlerDestroyed(env, java_impl_);
+    java_impl_ = nullptr;
   }
 }
 
-void HttpAuthHandlerImpl::Cancel() {
+void HttpAuthHandlerImpl::CloseDialog() {
+  if (!java_impl_)
+    return;
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_HttpAuthHandlerImpl_closeDialog(env, java_impl_);
+}
+
+void HttpAuthHandlerImpl::Proceed(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& username,
+    const base::android::JavaParamRef<jstring>& password) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (callback_) {
+    std::move(callback_).Run(net::AuthCredentials(
+        base::android::ConvertJavaStringToUTF16(env, username),
+        base::android::ConvertJavaStringToUTF16(env, password)));
+  }
+
+  CloseDialog();
+}
+
+void HttpAuthHandlerImpl::Cancel(JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (callback_)
     std::move(callback_).Run(base::nullopt);
-  }
+
+  CloseDialog();
 }
 
 }  // namespace weblayer

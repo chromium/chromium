@@ -62,7 +62,6 @@ class FullscreenDelegate;
 class NavigationControllerImpl;
 class NewTabDelegate;
 class ProfileImpl;
-class HttpAuthHandlerImpl;
 
 #if defined(OS_ANDROID)
 class BrowserControlsContainerView;
@@ -135,9 +134,6 @@ class TabImpl : public Tab,
 
   void ShowContextMenu(const content::ContextMenuParams& params);
 
-  void ShowHttpAuthPrompt(HttpAuthHandlerImpl* auth_handler);
-  void CloseHttpAuthPrompt();
-
 #if defined(OS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> GetJavaTab() {
     return java_impl_;
@@ -184,10 +180,6 @@ class TabImpl : public Tab,
                    const base::android::JavaParamRef<jobjectArray>& data);
   base::android::ScopedJavaLocalRef<jobjectArray> GetData(JNIEnv* env);
   jboolean IsRendererControllingBrowserControlsOffsets(JNIEnv* env);
-  void SetHttpAuth(JNIEnv* env,
-                   const base::android::JavaParamRef<jstring>& username,
-                   const base::android::JavaParamRef<jstring>& password);
-  void CancelHttpAuth(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jstring> RegisterWebMessageCallback(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& js_object_name,
@@ -409,8 +401,6 @@ class TabImpl : public Tab,
   base::ObserverList<DataObserver>::Unchecked data_observers_;
 
   base::string16 title_;
-
-  HttpAuthHandlerImpl* auth_handler_ = nullptr;
 
   std::unique_ptr<js_injection::JsCommunicationHost> js_communication_host_;
 

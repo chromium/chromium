@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/android/scoped_java_ref.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -25,14 +26,17 @@ class HttpAuthHandlerImpl : public content::LoginDelegate,
                       LoginAuthRequiredCallback callback);
   ~HttpAuthHandlerImpl() override;
 
-  void Proceed(const base::string16& user, const base::string16& password);
-  void Cancel();
-
-  GURL url() { return url_; }
+  void Proceed(JNIEnv* env,
+               const base::android::JavaParamRef<jstring>& username,
+               const base::android::JavaParamRef<jstring>& password);
+  void Cancel(JNIEnv* env);
 
  private:
+  void CloseDialog();
+
   GURL url_;
   LoginAuthRequiredCallback callback_;
+  base::android::ScopedJavaGlobalRef<jobject> java_impl_;
 };
 
 }  // namespace weblayer
