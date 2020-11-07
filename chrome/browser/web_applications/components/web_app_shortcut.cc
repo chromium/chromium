@@ -80,14 +80,6 @@ void DeletePlatformShortcutsAndPostCallback(
       FROM_HERE, base::BindOnce(std::move(callback), shortcut_deleted));
 }
 
-void DeleteMultiProfileShortcutsForAppAndPostCallback(
-    const std::string& app_id,
-    CreateShortcutsCallback callback) {
-  web_app::internals::DeleteMultiProfileShortcutsForApp(app_id);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
-}
-
 }  // namespace
 
 ShortcutInfo::ShortcutInfo() = default;
@@ -192,17 +184,6 @@ void ScheduleDeletePlatformShortcuts(
   PostShortcutIOTask(base::BindOnce(&DeletePlatformShortcutsAndPostCallback,
                                     shortcut_data_path, std::move(callback)),
                      std::move(shortcut_info));
-}
-
-void ScheduleDeleteMultiProfileShortcutsForApp(
-    const std::string& app_id,
-    DeleteShortcutsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  GetShortcutIOTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DeleteMultiProfileShortcutsForAppAndPostCallback, app_id,
-                     std::move(callback)));
 }
 
 void PostShortcutIOTaskAndReply(

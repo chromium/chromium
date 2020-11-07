@@ -199,8 +199,7 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
     if (os_hooks[OsHookType::kShortcuts]) {
       internals::ScheduleDeletePlatformShortcuts(
           shortcut_data_dir, std::move(shortcut_info),
-          base::BindOnce(&OsIntegrationManager::OnShortcutsDeleted,
-                         weak_ptr_factory_.GetWeakPtr(), app_id, barrier));
+          base::BindOnce(barrier, OsHookType::kShortcuts));
     } else {
       barrier.Run(OsHookType::kShortcuts, /*completed=*/true);
     }
@@ -214,6 +213,8 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
   if (os_hooks[OsHookType::kFileHandlers])
     file_handler_manager_->DisableAndUnregisterOsFileHandlers(app_id);
   barrier.Run(OsHookType::kFileHandlers, /*completed=*/true);
+
+  DeleteSharedAppShims(app_id);
 }
 
 void OsIntegrationManager::UpdateOsHooks(
@@ -366,21 +367,17 @@ void OsIntegrationManager::OnShortcutsCreated(
   }
 }
 
-void OsIntegrationManager::OnShortcutsDeleted(
-    const AppId& app_id,
-    base::RepeatingCallback<void(OsHookType::Type os_hook, bool deleted)>
-        barrier_callback,
-    bool shortcuts_deleted) {
+void OsIntegrationManager::DeleteSharedAppShims(const AppId& app_id) {
 #if defined(OS_MAC)
   bool delete_multi_profile_shortcuts =
       AppShimRegistry::Get()->OnAppUninstalledForProfile(app_id,
                                                          profile_->GetPath());
   if (delete_multi_profile_shortcuts) {
-    internals::ScheduleDeleteMultiProfileShortcutsForApp(
-        app_id, base::BindOnce(barrier_callback, OsHookType::kRunOnOsLogin));
+    web_app::internals::GetShortcutIOTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&web_app::internals::DeleteMultiProfileShortcutsForApp,
+                       app_id));
   }
-#else
-  barrier_callback.Run(OsHookType::kShortcuts, /*completed=*/shortcuts_deleted);
 #endif
 }
 

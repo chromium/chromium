@@ -150,18 +150,14 @@ class OsIntegrationManager {
                                                        bool created)> callback,
                           bool shortcuts_created);
 
-  void OnShortcutsDeleted(
-      const AppId& app_id,
-      base::RepeatingCallback<void(OsHookType::Type os_hook, bool deleted)>
-          barrier_callback,
-      bool shortcuts_deleted);
-
   void RegisterRunOnOsLogin(const AppId& app_id,
                             RegisterRunOnOsLoginCallback callback);
 
   void OnShortcutInfoRetrievedRegisterRunOnOsLogin(
       RegisterRunOnOsLoginCallback callback,
       std::unique_ptr<ShortcutInfo> info);
+
+  void DeleteSharedAppShims(const AppId& app_id);
 
   Profile* const profile_;
   AppRegistrar* registrar_ = nullptr;
