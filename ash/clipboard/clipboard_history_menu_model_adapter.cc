@@ -8,7 +8,9 @@
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_item_view.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
+#include "ash/wm/window_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
@@ -21,6 +23,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -351,6 +354,21 @@ void ClipboardHistoryMenuModelAdapter::OnMenuClosed(views::MenuItemView* menu) {
                       user_journey_time);
   views::MenuModelAdapter::OnMenuClosed(menu);
   item_views_by_command_id_.clear();
+
+  // This implementation of MenuModelAdapter does not have a widget so we need
+  // to manually notify the accessibility side of the closed menu.
+  aura::Window* active_window = window_util::GetActiveWindow();
+  if (!active_window)
+    return;
+  views::Widget* active_widget =
+      views::Widget::GetWidgetForNativeView(active_window);
+  DCHECK(active_widget);
+  views::View* focused_view =
+      active_widget->GetFocusManager()->GetFocusedView();
+  if (focused_view) {
+    focused_view->NotifyAccessibilityEvent(ax::mojom::Event::kMenuEnd,
+                                           /*send_native_event=*/true);
+  }
 }
 
 }  // namespace ash
