@@ -7876,14 +7876,6 @@ void RenderFrameHostImpl::BindHasTrustTokensAnswerer(
     return;
   }
 
-  // This is enforced in benign renderers by the [SecureContext] IDL
-  // attribute on Document::hasTrustToken.
-  if (!network::IsOriginPotentiallyTrustworthy(GetLastCommittedOrigin())) {
-    mojo::ReportBadMessage(
-        "Attempted to get a HasTrustTokensAnswerer from an insecure context.");
-    return;
-  }
-
   // This is enforced in benign renderers by the RuntimeEnabled=TrustTokens IDL
   // attribute (the base::Feature's value is tied to the
   // RuntimeEnabledFeature's).
@@ -7893,6 +7885,11 @@ void RenderFrameHostImpl::BindHasTrustTokensAnswerer(
         "disabled.");
     return;
   }
+
+  // TODO(crbug.com/1145346): Document.hasTrustToken is restricted to secure
+  // contexts, so we could additionally add a check verifying that the bind
+  // request "is coming from a secure context"---but there's currently no
+  // direct way to perform such a check in the browser.
 
   GetProcess()->GetStoragePartition()->CreateHasTrustTokensAnswerer(
       std::move(receiver), ComputeTopFrameOrigin(GetLastCommittedOrigin()));

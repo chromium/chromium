@@ -805,6 +805,23 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
                               .catch(error => error.name);)"));
 }
 
+// A hasTrustToken call initiated from a secure context should succeed even if
+// the initiating frame's origin is opaque (e.g. from a sandboxed iframe).
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
+                       HasTrustTokenFromSecureSubframeWithOpaqueOrigin) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), server_.GetURL("a.test", "/page_with_sandboxed_iframe.html")));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  EXPECT_EQ("Success",
+            EvalJs(root->child_at(0)->current_frame_host(),
+                   R"(document.hasTrustToken('https://davids.website')
+                              .then(()=>'Success');)"));
+}
+
 // An operation initiated from a secure context should succeed even if the
 // operation's associated request's initiator is opaque (e.g. from a sandboxed
 // iframe).
