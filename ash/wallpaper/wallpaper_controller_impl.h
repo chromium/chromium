@@ -172,8 +172,9 @@ class ASH_EXPORT WallpaperControllerImpl
   // Restores the wallpaper property from lock state.
   void RestoreWallpaperPropertyForLockState(const WallpaperProperty& property);
 
-  // Wallpaper should be dimmed for login, lock, OOBE and add user screens.
-  bool ShouldApplyDimming() const;
+  // A color filter should be applied on the wallpaper for overview, login,
+  // lock, OOBE and add user screens.
+  bool ShouldApplyColorFilter() const;
 
   // Returns whether the current wallpaper is allowed to be blurred on
   // lock/login screen. See https://crbug.com/775591.

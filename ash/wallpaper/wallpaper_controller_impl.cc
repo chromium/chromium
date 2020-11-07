@@ -746,11 +746,12 @@ void WallpaperControllerImpl::RestoreWallpaperPropertyForLockState(
     observer.OnWallpaperBlurChanged();
 }
 
-bool WallpaperControllerImpl::ShouldApplyDimming() const {
-  // Dim the wallpaper in a blocked user session or in tablet mode unless during
-  // wallpaper preview.
+bool WallpaperControllerImpl::ShouldApplyColorFilter() const {
+  // Apply a color filter on the wallpaper in a blocked user session or overview
+  // or in tablet mode unless during wallpaper preview.
   const bool should_dim =
       Shell::Get()->session_controller()->IsUserSessionBlocked() ||
+      Shell::Get()->overview_controller()->InOverviewSession() ||
       (Shell::Get()->tablet_mode_controller()->InTabletMode() &&
        !confirm_preview_wallpaper_callback_);
   return should_dim && !IsOneShotWallpaper();
@@ -1077,8 +1078,8 @@ void WallpaperControllerImpl::ConfirmPreviewWallpaper() {
   std::move(confirm_preview_wallpaper_callback_).Run();
   reload_preview_wallpaper_callback_.Reset();
 
-  // Ensure dimming is applied after confirming the preview wallpaper.
-  if (ShouldApplyDimming())
+  // Ensure color filter is applied after confirming the preview wallpaper.
+  if (ShouldApplyColorFilter())
     RepaintWallpaper();
 
   for (auto& observer : observers_)

@@ -159,8 +159,8 @@ void WallpaperView::DrawWallpaper(const gfx::ImageSkia& wallpaper,
   cc::FilterOperations operations;
   // In tablet mode, the wallpaper already has a color filter applied in
   // |OnPaint| so we don't need to darken here.
-  // TODO(crbug.com/944152): Merge this with the color filter in
-  // WallpaperBaseView.
+  // TODO(crbug.com/944152): Opacity is always 1.f now. Remove this and
+  // WallpaperProperty which now only contains blur.
   if (!Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     operations.Append(
         cc::FilterOperation::CreateBrightnessFilter(property_.opacity));

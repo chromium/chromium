@@ -31,7 +31,7 @@ constexpr float kExtremeWindowRatioThreshold = 2.f;
 namespace overview_constants {
 
 // The opacity of the wallpaper in overview mode.
-constexpr float kOpacity = 0.4f;
+constexpr float kOpacity = 1.0f;
 
 // Amount of blur to apply on the wallpaper when we enter or exit overview
 // mode.
