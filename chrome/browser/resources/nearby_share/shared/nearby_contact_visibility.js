@@ -346,5 +346,68 @@ Polymer({
       this.set('settings.visibility', visibility);
     }
   },
+
+  /**
+   * @param {string} selectedVisibility
+   * @return {boolean} true when zero state should be shown
+   * @private
+   */
+  showZeroState_(selectedVisibility, contactsState) {
+    return !selectedVisibility && contactsState !== ContactsState.PENDING &&
+        contactsState !== ContactsState.FAILED;
+  },
+
+  /**
+   * @param {string} selectedVisibility
+   * @param {string} contactsState
+   * @return {boolean} true when explanation state should be shown
+   * @private
+   */
+  showExplanationState_(selectedVisibility, contactsState) {
+    return !this.showZeroState_(selectedVisibility, contactsState) &&
+        !this.inContactsState_(contactsState, ContactsState.PENDING) &&
+        !this.inContactsState_(contactsState, ContactsState.FAILED);
+  },
+
+  /**
+   * @param {string} selectedVisibility
+   * @param {string} contactsState
+   * @return {boolean} true when empty state should be shown
+   * @private
+   */
+  showEmptyState_(selectedVisibility, contactsState) {
+    return (selectedVisibility === 'all' || selectedVisibility === 'some') &&
+        contactsState === ContactsState.ZERO_CONTACTS;
+  },
+
+  /**
+   * @param {string} selectedVisibility
+   * @param {string} contactsState
+   * @return {boolean} true when contact list should be shown
+   * @private
+   */
+  showContactList_(selectedVisibility, contactsState) {
+    return (selectedVisibility === 'all' || selectedVisibility === 'some') &&
+        contactsState === ContactsState.HAS_CONTACTS;
+  },
+
+  /**
+   * Because the "failed" state contains an i18n string with a link in it, we
+   * need to add an event listener. We do that here because the link doesn't
+   * exist when the dialog loads, only once the template is added to the DOM.
+   *
+   * @private
+   */
+  domChangeDownloadFailed_() {
+    const tryAgainLink = this.$$('#tryAgainLink');
+    if (!tryAgainLink) {
+      return;
+    }
+
+    tryAgainLink.addEventListener('click', event => {
+      event.preventDefault();
+      this.downloadContacts_();
+    });
+  },
 });
 })();

@@ -112,7 +112,7 @@ suite('nearby-contact-visibility', () => {
     assertFalse(isDownloadContactsPendingVisible());
 
     // If we click retry, we should go into pending state.
-    visibilityElement.$$('#contactRetryButton').click();
+    visibilityElement.$$('#tryAgainLink').click();
     await test_util.waitAfterNextRender(visibilityElement);
 
     assertFalse(isDownloadContactsFailedVisible());
@@ -172,7 +172,7 @@ suite('nearby-contact-visibility', () => {
         assertFalse(isNoContactsSectionVisible());
       });
 
-  test('Visibility component shows noContacts for kNoOne', async function() {
+  test('Visibility component shows no contacts for kNoOne', async function() {
     visibilityElement.set(
         'settings.visibility', nearbyShare.mojom.Visibility.kNoOne);
     succeedContactDownload();
@@ -181,7 +181,7 @@ suite('nearby-contact-visibility', () => {
 
     assertToggleState(/*all=*/ false, /*some=*/ false, /*no=*/ true);
     assertFalse(isZeroStateVisible());
-    assertTrue(areContactCheckBoxesVisible());
+    assertFalse(areContactCheckBoxesVisible());
     assertFalse(isNoContactsSectionVisible());
   });
 
