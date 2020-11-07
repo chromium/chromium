@@ -34,9 +34,11 @@ class COMPONENT_EXPORT(UI_BASE_X) X11CursorFactory
   // CursorFactoryOzone:
   base::Optional<PlatformCursor> GetDefaultCursor(
       mojom::CursorType type) override;
-  PlatformCursor CreateImageCursor(const SkBitmap& bitmap,
+  PlatformCursor CreateImageCursor(mojom::CursorType type,
+                                   const SkBitmap& bitmap,
                                    const gfx::Point& hotspot) override;
-  PlatformCursor CreateAnimatedCursor(const std::vector<SkBitmap>& bitmaps,
+  PlatformCursor CreateAnimatedCursor(mojom::CursorType type,
+                                      const std::vector<SkBitmap>& bitmaps,
                                       const gfx::Point& hotspot,
                                       int frame_delay_ms) override;
   void RefImageCursor(PlatformCursor cursor) override;

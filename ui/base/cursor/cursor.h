@@ -20,6 +20,8 @@ namespace ui {
 #if defined(OS_WIN)
 typedef ::HCURSOR PlatformCursor;
 #else
+// NOTE: On Ozone platforms, the type is chosen at runtime, and is either
+// X11Cursor* or BitmapCursorOzone*.
 typedef void* PlatformCursor;
 #endif
 

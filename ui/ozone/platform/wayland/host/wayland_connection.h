@@ -168,6 +168,8 @@ class WaylandConnection {
   wl::Object<wl_surface> CreateSurface();
 
  private:
+  friend class WaylandConnectionTestApi;
+
   void Flush();
   void UpdateInputDevices(wl_seat* seat, uint32_t capabilities);
 

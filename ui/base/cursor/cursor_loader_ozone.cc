@@ -57,13 +57,13 @@ void CursorLoaderOzone::LoadImageCursor(mojom::CursorType type,
   if (base::ranges::count(kAnimatedCursorTypes, type) == 0) {
     SkBitmap bitmap;
     GetImageCursorBitmap(resource_id, scale(), rotation(), &hotspot, &bitmap);
-    image_cursors_[type] = factory_->CreateImageCursor(bitmap, hotspot);
+    image_cursors_[type] = factory_->CreateImageCursor(type, bitmap, hotspot);
   } else {
     std::vector<SkBitmap> bitmaps;
     GetAnimatedCursorBitmaps(resource_id, scale(), rotation(), &hotspot,
                              &bitmaps);
     image_cursors_[type] = factory_->CreateAnimatedCursor(
-        bitmaps, hotspot, kAnimatedCursorFrameDelayMs);
+        type, bitmaps, hotspot, kAnimatedCursorFrameDelayMs);
   }
 }
 

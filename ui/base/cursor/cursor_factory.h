@@ -36,10 +36,12 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) CursorFactory {
   virtual base::Optional<PlatformCursor> GetDefaultCursor(
       mojom::CursorType type);
 
-  // Return a image cursor from the specified image & hotspot. Image cursors
-  // are referenced counted and have an initial refcount of 1. Therefore, each
-  // CreateImageCursor call must be matched with a call to UnrefImageCursor.
-  virtual PlatformCursor CreateImageCursor(const SkBitmap& bitmap,
+  // Return an image cursor for the specified |type| with a |bitmap| and
+  // |hotspot|. Image cursors are referenced counted and have an initial
+  // refcount of 1. Therefore, each CreateImageCursor call must be matched with
+  // a call to UnrefImageCursor.
+  virtual PlatformCursor CreateImageCursor(mojom::CursorType type,
+                                           const SkBitmap& bitmap,
                                            const gfx::Point& hotspot);
 
   // Return a animated cursor from the specified image & hotspot. Animated
@@ -48,6 +50,7 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) CursorFactory {
   // UnrefImageCursor.
   // |frame_delay_ms| is the delay between frames in millisecond.
   virtual PlatformCursor CreateAnimatedCursor(
+      mojom::CursorType type,
       const std::vector<SkBitmap>& bitmaps,
       const gfx::Point& hotspot,
       int frame_delay_ms);

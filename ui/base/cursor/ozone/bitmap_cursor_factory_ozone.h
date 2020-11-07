@@ -13,6 +13,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace ui {
@@ -21,11 +22,22 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorOzone
     : public base::RefCounted<BitmapCursorOzone> {
  public:
-  BitmapCursorOzone(const SkBitmap& bitmap, const gfx::Point& hotspot);
-  BitmapCursorOzone(const std::vector<SkBitmap>& bitmaps,
+  // Creates a cursor that doesn't need backing bitmaps (for example, a
+  // server-side cursor for Lacros).
+  explicit BitmapCursorOzone(mojom::CursorType type);
+
+  // Creates a cursor with a single backing bitmap.
+  BitmapCursorOzone(mojom::CursorType type,
+                    const SkBitmap& bitmap,
+                    const gfx::Point& hotspot);
+
+  // Creates a cursor with multiple bitmaps for animation.
+  BitmapCursorOzone(mojom::CursorType type,
+                    const std::vector<SkBitmap>& bitmaps,
                     const gfx::Point& hotspot,
                     int frame_delay_ms);
 
+  mojom::CursorType type() const { return type_; }
   const gfx::Point& hotspot();
   const SkBitmap& bitmap();
 
@@ -37,6 +49,7 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorOzone
   friend class base::RefCounted<BitmapCursorOzone>;
   ~BitmapCursorOzone();
 
+  const mojom::CursorType type_;
   std::vector<SkBitmap> bitmaps_;
   gfx::Point hotspot_;
   int frame_delay_ms_;
@@ -64,9 +77,11 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorFactoryOzone
   // CursorFactoryOzone:
   base::Optional<PlatformCursor> GetDefaultCursor(
       mojom::CursorType type) override;
-  PlatformCursor CreateImageCursor(const SkBitmap& bitmap,
+  PlatformCursor CreateImageCursor(mojom::CursorType type,
+                                   const SkBitmap& bitmap,
                                    const gfx::Point& hotspot) override;
-  PlatformCursor CreateAnimatedCursor(const std::vector<SkBitmap>& bitmaps,
+  PlatformCursor CreateAnimatedCursor(mojom::CursorType type,
+                                      const std::vector<SkBitmap>& bitmaps,
                                       const gfx::Point& hotspot,
                                       int frame_delay_ms) override;
   void RefImageCursor(PlatformCursor cursor) override;

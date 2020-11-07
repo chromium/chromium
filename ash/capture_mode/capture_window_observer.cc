@@ -153,7 +153,7 @@ void CaptureWindowObserver::UpdateMouseCursor() {
         device_scale_factor, display.panel_rotation(), &bitmap, &hotspot);
     auto* cursor_factory = ui::CursorFactory::GetInstance();
     ui::PlatformCursor platform_cursor =
-        cursor_factory->CreateImageCursor(bitmap, hotspot);
+        cursor_factory->CreateImageCursor(cursor.type(), bitmap, hotspot);
     cursor.SetPlatformCursor(platform_cursor);
     cursor.set_custom_bitmap(bitmap);
     cursor.set_custom_hotspot(hotspot);

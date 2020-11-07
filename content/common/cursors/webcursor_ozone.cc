@@ -19,7 +19,7 @@ ui::PlatformCursor WebCursor::GetPlatformCursor(const ui::Cursor& cursor) {
 
   if (!platform_cursor_) {
     platform_cursor_ = ui::CursorFactory::GetInstance()->CreateImageCursor(
-        cursor.custom_bitmap(), cursor.custom_hotspot());
+        cursor.type(), cursor.custom_bitmap(), cursor.custom_hotspot());
   }
 
   return platform_cursor_;

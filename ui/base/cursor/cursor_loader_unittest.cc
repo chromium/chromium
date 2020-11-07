@@ -46,7 +46,7 @@ TEST(CursorLoaderTest, InvisibleCursorOnX11) {
   // Building an image cursor with an invalid SkBitmap should return the
   // invisible cursor in X11.
   auto* invisible_cursor =
-      cursor_factory.CreateImageCursor(SkBitmap(), gfx::Point());
+      cursor_factory.CreateImageCursor({}, SkBitmap(), gfx::Point());
   EXPECT_EQ(LoadInvisibleCursor(), invisible_cursor);
 
   // Release our refcount on the cursor

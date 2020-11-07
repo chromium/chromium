@@ -90,6 +90,7 @@ if (use_aura) {
         "//skia",
         "//ui/gfx/geometry",
       ]
+      deps += [ "//build:chromeos_buildflags" ]
     }
 
     if (use_x11 || use_ozone) {
@@ -144,6 +145,7 @@ source_set("unittests") {
     deps += [
       ":cursor",
       "//base",
+      "//build:chromeos_buildflags",
     ]
   }
 }

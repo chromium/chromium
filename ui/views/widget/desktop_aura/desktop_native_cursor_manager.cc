@@ -14,14 +14,8 @@
 
 namespace views {
 
-DesktopNativeCursorManager::DesktopNativeCursorManager() {
-#if BUILDFLAG(IS_LACROS)
-  const bool use_platform_cursors = false;
-#else
-  const bool use_platform_cursors = true;
-#endif
-  cursor_loader_ = ui::CursorLoader::Create(use_platform_cursors);
-}
+DesktopNativeCursorManager::DesktopNativeCursorManager()
+    : cursor_loader_(ui::CursorLoader::Create()) {}
 
 DesktopNativeCursorManager::~DesktopNativeCursorManager() = default;
 

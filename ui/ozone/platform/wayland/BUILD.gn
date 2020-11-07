@@ -182,6 +182,7 @@ source_set("wayland") {
     "//ui/base:buildflags",
     "//ui/base/cursor",
     "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/ime/linux",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
@@ -270,6 +271,7 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "host/wayland_connection_test_api.h",
     "test/global_object.cc",
     "test/global_object.h",
     "test/mock_buffer.cc",
@@ -333,6 +335,7 @@ source_set("test_support") {
   ]
 
   deps = [
+    ":wayland",
     "//base:base",
     "//ui/ozone:platform",
   ]
@@ -377,6 +380,7 @@ source_set("wayland_unittests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/wayland:wayland_server",
+    "//third_party/wayland-protocols:cursor_shapes_protocol",
     "//third_party/wayland-protocols:keyboard_extension_protocol",
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
     "//third_party/wayland-protocols:text_input_protocol",
