@@ -133,6 +133,7 @@ android_library("all_java") {
     "java/src/org/chromium/components/payments/PaymentRequestService.java",
     "java/src/org/chromium/components/payments/PaymentRequestServiceUtil.java",
     "java/src/org/chromium/components/payments/PaymentRequestSpec.java",
+    "java/src/org/chromium/components/payments/PaymentResponseHelperInterface.java",
     "java/src/org/chromium/components/payments/PaymentUIsObserver.java",
     "java/src/org/chromium/components/payments/PaymentValidator.java",
     "java/src/org/chromium/components/payments/SkipToGPayHelper.java",

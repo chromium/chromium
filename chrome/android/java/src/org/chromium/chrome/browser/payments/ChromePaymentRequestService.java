@@ -42,6 +42,8 @@ import org.chromium.components.payments.PaymentOptionsUtils;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestServiceUtil;
 import org.chromium.components.payments.PaymentRequestSpec;
+import org.chromium.components.payments.PaymentResponseHelperInterface;
+import org.chromium.components.payments.PaymentResponseHelperInterface.PaymentResponseResultCallback;
 import org.chromium.components.payments.PaymentUIsObserver;
 import org.chromium.components.payments.PaymentValidator;
 import org.chromium.components.payments.Section;
@@ -70,12 +72,11 @@ import java.util.Set;
  * This is the Clank specific parts of {@link PaymentRequest}, with the parts shared with WebLayer
  * living in {@link PaymentRequestService}.
  */
-public class ChromePaymentRequestService
-        implements BrowserPaymentRequest, PaymentApp.AbortCallback,
-                   PaymentApp.InstrumentDetailsCallback,
-                   PaymentResponseHelper.PaymentResponseRequesterDelegate,
-                   PaymentDetailsConverter.MethodChecker, PaymentUiService.Delegate,
-                   PaymentUIsObserver {
+public class ChromePaymentRequestService implements BrowserPaymentRequest, PaymentApp.AbortCallback,
+                                                    PaymentApp.InstrumentDetailsCallback,
+                                                    PaymentResponseResultCallback,
+                                                    PaymentDetailsConverter.MethodChecker,
+                                                    PaymentUiService.Delegate, PaymentUIsObserver {
     private static final String TAG = "PaymentRequest";
 
     /**
@@ -119,7 +120,7 @@ public class ChromePaymentRequestService
     private boolean mDidRecordShowEvent;
 
     /** The helper to create and fill the response to send to the merchant. */
-    private PaymentResponseHelper mPaymentResponseHelper;
+    private PaymentResponseHelperInterface mPaymentResponseHelper;
 
     /** A helper to manage the Skip-to-GPay experimental flow. */
     private SkipToGPayHelper mSkipToGPayHelper;
@@ -854,9 +855,9 @@ public class ChromePaymentRequestService
         EditableOption selectedContact = mPaymentUiService.getContactSection() != null
                 ? mPaymentUiService.getContactSection().getSelectedItem()
                 : null;
-        mPaymentResponseHelper = new PaymentResponseHelper(selectedShippingAddress,
+        mPaymentResponseHelper = new ChromePaymentResponseHelper(selectedShippingAddress,
                 selectedShippingOption, selectedContact, selectedPaymentApp, mPaymentOptions,
-                mSkipToGPayHelper != null, this);
+                mSkipToGPayHelper != null);
 
         selectedPaymentApp.setPaymentHandlerHost(getPaymentHandlerHost());
         // Only native apps can use PaymentDetailsUpdateService.
@@ -1113,7 +1114,8 @@ public class ChromePaymentRequestService
 
         mJourneyLogger.setEventOccurred(Event.RECEIVED_INSTRUMENT_DETAILS);
 
-        mPaymentResponseHelper.onPaymentDetailsReceived(methodName, stringifiedDetails, payerData);
+        mPaymentResponseHelper.generatePaymentResponse(
+                methodName, stringifiedDetails, payerData, /*resultCallback=*/this);
     }
 
     @Override

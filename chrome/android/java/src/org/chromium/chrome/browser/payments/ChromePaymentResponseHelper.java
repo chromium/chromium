@@ -12,6 +12,7 @@ import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.payments.PayerData;
 import org.chromium.components.payments.PaymentAddressTypeConverter;
 import org.chromium.components.payments.PaymentApp;
+import org.chromium.components.payments.PaymentResponseHelperInterface;
 import org.chromium.payments.mojom.PayerDetail;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentResponse;
@@ -19,49 +20,34 @@ import org.chromium.payments.mojom.PaymentResponse;
 /**
  * The helper class to create and prepare a PaymentResponse.
  */
-public class PaymentResponseHelper implements NormalizedAddressRequestDelegate {
-    /**
-     * Observer to be notified when the payment response is completed.
-     */
-    public interface PaymentResponseRequesterDelegate {
-        /*
-         * Called when the payment response is ready to be sent to the merchant.
-         *
-         * @param response The payment response to send to the merchant.
-         */
-        void onPaymentResponseReady(PaymentResponse response);
-    }
-
-    private AutofillAddress mSelectedShippingAddress;
+public class ChromePaymentResponseHelper
+        implements NormalizedAddressRequestDelegate, PaymentResponseHelperInterface {
     private final AutofillContact mSelectedContact;
-    private PaymentResponse mPaymentResponse;
-    private PaymentResponseRequesterDelegate mDelegate;
-    private boolean mIsWaitingForShippingNormalization;
-    private boolean mIsWaitingForPaymentsDetails = true;
     private final PaymentApp mSelectedPaymentApp;
     private final PaymentOptions mPaymentOptions;
     private final boolean mSkipToGpay;
+    private AutofillAddress mSelectedShippingAddress;
+    private PaymentResponse mPaymentResponse;
+    private PaymentResponseResultCallback mResultCallback;
+    private boolean mIsWaitingForShippingNormalization;
+    private boolean mIsWaitingForPaymentsDetails = true;
     private PayerData mPayerDataFromPaymentApp;
 
     /**
      * Builds a helper to contruct and fill a PaymentResponse.
-     *
      * @param selectedShippingAddress The shipping address picked by the user.
      * @param selectedShippingOption  The shipping option picked by the user.
      * @param selectedContact         The contact info picked by the user.
      * @param selectedPaymentApp      The payment app picked by the user.
      * @param paymentOptions          The paymentOptions of the corresponding payment request.
      * @param skipToGpay              Whether or not Gpay bridge is activated for skip to Gpay.
-     * @param delegate                The object that will receive the completed PaymentResponse.
      */
-    public PaymentResponseHelper(EditableOption selectedShippingAddress,
+    public ChromePaymentResponseHelper(EditableOption selectedShippingAddress,
             EditableOption selectedShippingOption, EditableOption selectedContact,
-            PaymentApp selectedPaymentApp, PaymentOptions paymentOptions, boolean skipToGpay,
-            PaymentResponseRequesterDelegate delegate) {
+            PaymentApp selectedPaymentApp, PaymentOptions paymentOptions, boolean skipToGpay) {
         mPaymentResponse = new PaymentResponse();
         mPaymentResponse.payer = new PayerDetail();
 
-        mDelegate = delegate;
         mSelectedPaymentApp = selectedPaymentApp;
         mPaymentOptions = paymentOptions;
         mSkipToGpay = skipToGpay;
@@ -107,15 +93,10 @@ public class PaymentResponseHelper implements NormalizedAddressRequestDelegate {
         }
     }
 
-    /**
-     * Called after the payment details were received.
-     *
-     * @param methodName         The payment method name being used for payment.
-     * @param stringifiedDetails A string containing all the details of the payment.
-     * @param payerData          The payer data received from the payment app.
-     */
-    public void onPaymentDetailsReceived(
-            String methodName, String stringifiedDetails, PayerData payerData) {
+    @Override
+    public void generatePaymentResponse(String methodName, String stringifiedDetails,
+            PayerData payerData, PaymentResponseResultCallback resultCallback) {
+        mResultCallback = resultCallback;
         mPaymentResponse.methodName = methodName;
         mPaymentResponse.stringifiedDetails = stringifiedDetails;
         mPayerDataFromPaymentApp = payerData;
@@ -123,7 +104,7 @@ public class PaymentResponseHelper implements NormalizedAddressRequestDelegate {
         mIsWaitingForPaymentsDetails = false;
 
         // Wait for the shipping address normalization before sending the response.
-        if (!mIsWaitingForShippingNormalization) generatePaymentResponse();
+        if (!mIsWaitingForShippingNormalization) onAllDataReady();
     }
 
     @Override
@@ -139,7 +120,7 @@ public class PaymentResponseHelper implements NormalizedAddressRequestDelegate {
         }
 
         // Wait for the payment details before sending the response.
-        if (!mIsWaitingForPaymentsDetails) generatePaymentResponse();
+        if (!mIsWaitingForPaymentsDetails) onAllDataReady();
     }
 
     @Override
@@ -147,7 +128,7 @@ public class PaymentResponseHelper implements NormalizedAddressRequestDelegate {
         onAddressNormalized(profile);
     }
 
-    private void generatePaymentResponse() {
+    private void onAllDataReady() {
         assert !mIsWaitingForPaymentsDetails;
         assert !mIsWaitingForShippingNormalization;
 
@@ -197,6 +178,6 @@ public class PaymentResponseHelper implements NormalizedAddressRequestDelegate {
                     PhoneNumberUtil.formatForResponse(mPaymentResponse.payer.phone);
         }
 
-        mDelegate.onPaymentResponseReady(mPaymentResponse);
+        mResultCallback.onPaymentResponseReady(mPaymentResponse);
     }
 }
