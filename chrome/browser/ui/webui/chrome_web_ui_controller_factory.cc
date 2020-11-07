@@ -773,10 +773,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
           web_app::SystemAppType::CAMERA)) {
     return &NewWebUI<chromeos::CameraAppUI>;
   }
-  if (base::FeatureList::IsEnabled(features::kNearbySharing)) {
-    if (url.host_piece() == chrome::kChromeUINearbyInternalsHost)
-      return &NewWebUI<NearbyInternalsUI>;
-  }
+  if (url.host_piece() == chrome::kChromeUINearbyInternalsHost)
+    return &NewWebUI<NearbyInternalsUI>;
   if (arc::IsArcAllowedForProfile(profile)) {
     if (url.host_piece() == chrome::kChromeUIArcGraphicsTracingHost) {
       return &NewWebUI<chromeos::ArcGraphicsTracingUI<
