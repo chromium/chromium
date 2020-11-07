@@ -795,7 +795,8 @@ TEST(CleanerSandboxInterface, DeleteService_Success) {
   EXPECT_FALSE(chrome_cleaner::DoesServiceExist(service_handle.service_name()));
 }
 
-TEST_F(CleanerSandboxInterfaceRunningServiceTest, DeleteService_Running) {
+// TODO(crbug.com/1061171): Test is flaky.
+TEST_F(CleanerSandboxInterfaceRunningServiceTest, DISABLED_DeleteService_Running) {
   ASSERT_TRUE(chrome_cleaner::EnsureNoTestServicesRunning());
 
   chrome_cleaner::TestScopedServiceHandle service_handle;
@@ -808,7 +809,8 @@ TEST_F(CleanerSandboxInterfaceRunningServiceTest, DeleteService_Running) {
   EXPECT_FALSE(chrome_cleaner::DoesServiceExist(service_handle.service_name()));
 }
 
-TEST_F(CleanerSandboxInterfaceRunningServiceTest, DeleteService_HandleHeld) {
+// TODO(crbug.com/1061171): Test is flaky.
+TEST_F(CleanerSandboxInterfaceRunningServiceTest, DISABLED_DeleteService_HandleHeld) {
   ASSERT_TRUE(chrome_cleaner::EnsureNoTestServicesRunning());
 
   chrome_cleaner::TestScopedServiceHandle service_handle;

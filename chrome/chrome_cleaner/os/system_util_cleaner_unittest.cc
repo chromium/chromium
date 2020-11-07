@@ -89,7 +89,8 @@ TEST_F(ServiceUtilCleanerRunningServiceTest, DeleteService) {
   EXPECT_FALSE(DoesServiceExist(service_handle.service_name()));
 }
 
-TEST_F(ServiceUtilCleanerRunningServiceTest, StopAndDeleteRunningService) {
+// TODO(crbug.com/1061171): Test is flaky.
+TEST_F(ServiceUtilCleanerRunningServiceTest, DISABLED_StopAndDeleteRunningService) {
   // Install and launch the service.
   TestScopedServiceHandle service_handle;
   ASSERT_TRUE(service_handle.InstallService());
@@ -112,7 +113,8 @@ TEST_F(ServiceUtilCleanerRunningServiceTest, StopAndDeleteRunningService) {
   EXPECT_FALSE(IsProcessRunning(kTestServiceExecutableName));
 }
 
-TEST_F(ServiceUtilCleanerRunningServiceTest, DeleteRunningService) {
+// TODO(crbug.com/1061171): Test is flaky.
+TEST_F(ServiceUtilCleanerRunningServiceTest, DISABLED_DeleteRunningService) {
   // Install and launch the service.
   TestScopedServiceHandle service_handle;
   ASSERT_TRUE(service_handle.InstallService());
