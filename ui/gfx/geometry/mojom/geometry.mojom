@@ -22,7 +22,6 @@ struct Point3F {
   float z;
 };
 
-[Stable]
 struct Size {
   int32 width;
   int32 height;
