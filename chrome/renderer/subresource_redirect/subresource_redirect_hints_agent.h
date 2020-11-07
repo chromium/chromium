@@ -7,16 +7,24 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chrome/common/subresource_redirect_service.mojom.h"
+#include "content/public/renderer/render_frame_observer.h"
+#include "content/public/renderer/render_frame_observer_tracker.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/mojom/loader/previews_resource_loading_hints.mojom.h"
 #include "url/gurl.h"
 
 namespace subresource_redirect {
 
 // Holds the public image URL hints to be queried by URL loader throttles. Only
-// created for mainframes.
-class SubresourceRedirectHintsAgent {
+// redirects public images for mainframes.
+class SubresourceRedirectHintsAgent
+    : public content::RenderFrameObserver,
+      public content::RenderFrameObserverTracker<
+          SubresourceRedirectHintsAgent> {
  public:
   enum class RedirectResult {
     // The image was found in the image hints and is eligible to be redirected
@@ -47,20 +55,12 @@ class SubresourceRedirectHintsAgent {
     kIneligibleOtherImage
   };
 
-  SubresourceRedirectHintsAgent();
-  ~SubresourceRedirectHintsAgent();
+  explicit SubresourceRedirectHintsAgent(content::RenderFrame* render_frame);
+  ~SubresourceRedirectHintsAgent() override;
 
   SubresourceRedirectHintsAgent(const SubresourceRedirectHintsAgent&) = delete;
   SubresourceRedirectHintsAgent& operator=(
       const SubresourceRedirectHintsAgent&) = delete;
-
-  // Called when a navigation starts to clear the state from previous
-  // navigation.
-  void DidStartNavigation();
-  void ReadyToCommitNavigation(int render_frame_id);
-
-  void SetCompressPublicImagesHints(
-      blink::mojom::CompressPublicImagesHintsPtr images_hints);
 
   RedirectResult ShouldRedirectImage(const GURL& url) const;
 
@@ -69,11 +69,28 @@ class SubresourceRedirectHintsAgent {
                                    int64_t content_length,
                                    RedirectResult redirect_result);
 
+  void SetCompressPublicImagesHints(
+      blink::mojom::CompressPublicImagesHintsPtr images_hints);
+
+  // Notifies the browser process that https image compression fetch had failed.
+  void NotifyHttpsImageCompressionFetchFailed(base::TimeDelta retry_after);
+
   // Clears the image hint urls.
   void ClearImageHints();
 
  private:
+  // content::RenderFrameObserver:
+  void DidStartNavigation(
+      const GURL& url,
+      base::Optional<blink::WebNavigationType> navigation_type) override;
+  void ReadyToCommitNavigation(
+      blink::WebDocumentLoader* document_loader) override;
+  void OnDestruct() override;
+
+  bool IsMainFrame() const;
+
   void OnHintsReceiveTimeout();
+
   void RecordMetrics(int64_t content_length,
                      RedirectResult redirect_result) const;
 
@@ -94,9 +111,9 @@ class SubresourceRedirectHintsAgent {
   // until hints are received or it times out and used to record metrics.
   base::flat_set<std::pair<std::string, int64_t>> unavailable_image_hints_urls_;
 
-  // ID of the current render frame (will be main frame). Populated when the
-  // navigation commits. Used to record ukm against.
-  int render_frame_id_;
+  mojo::AssociatedRemote<
+      subresource_redirect::mojom::SubresourceRedirectService>
+      subresource_redirect_service_remote_;
 };
 
 }  // namespace subresource_redirect
