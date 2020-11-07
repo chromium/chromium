@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+PASS gbk encoder: very basic
+PASS gbk encoder: Euro
+PASS gbk encoder: character
+PASS gbk encoder: PUA
+PASS gbk encoder: PUA #2
+PASS gbk encoder: poo
+PASS gbk encoder: legacy ICU special case 1
+PASS gbk encoder: legacy ICU special case 2
+PASS gbk encoder: legacy ICU special case 3
+FAIL gbk encoder: legacy WebKit case 1 assert_equals: expected "%26%23165%3B" but got "%A3%A4"
+PASS gbk encoder: legacy WebKit case 2
+PASS gbk encoder: legacy WebKit case 3
+Harness: the test ran to completion.
+
