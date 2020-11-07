@@ -40,7 +40,8 @@ class ServiceController {
   // Each authentication token exists of a [gaia_id, access_token] tuple.
   using AuthTokens = std::vector<std::pair<std::string, std::string>>;
 
-  ServiceController();
+  explicit ServiceController(
+      scoped_refptr<base::SingleThreadTaskRunner> background_task_runner);
 
   ServiceController(ServiceController&) = delete;
   ServiceController& operator=(ServiceController&) = delete;
@@ -72,16 +73,12 @@ class ServiceController {
   //
   // If the |ServiceController| is destroyed before Start()
   // finishes, the created objects will safely be destructed.
-  // However, if any of the passed in objects (|delegate|,
-  // |platform_api| and so on) are destroyed, the caller *must* destroy
-  // |background_task_runner| first or invalid memory might be accessed.
-  // Also, if a new instance of |ServiceController| is immediately
+  // However, if a new instance of |ServiceController| is immediately
   // created and initialized before the background thread has had any chance to
   // run, it is theoretically possible for 2 instances of |AssistantManager|
   // to exist at the same time. However, this is prevented by the logic in
   // |service.cc|.
   void Start(
-      scoped_refptr<base::SingleThreadTaskRunner> background_task_runner,
       AssistantManagerServiceDelegate* delegate,
       assistant_client::PlatformApi* platform_api,
       assistant_client::ActionModule* action_module,
@@ -128,6 +125,8 @@ class ServiceController {
 
   // Used internally for consistency checks.
   State state_ = State::kStopped;
+
+  scoped_refptr<base::SingleThreadTaskRunner> background_task_runner_;
 
   // NOTE: |display_connection_| is used by |assistant_manager_| and must be
   // declared before so it will be destructed after.

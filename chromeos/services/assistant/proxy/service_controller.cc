@@ -175,12 +175,15 @@ void CreateAssistantOnBackgroundThread(
 
 }  // namespace
 
-ServiceController::ServiceController() : weak_factory_(this) {}
+ServiceController::ServiceController(
+    scoped_refptr<base::SingleThreadTaskRunner> background_task_runner)
+    : background_task_runner_(background_task_runner), weak_factory_(this) {
+  DCHECK(background_task_runner_);
+}
 
 ServiceController::~ServiceController() = default;
 
 void ServiceController::Start(
-    scoped_refptr<base::SingleThreadTaskRunner> background_task_runner,
     AssistantManagerServiceDelegate* delegate,
     assistant_client::PlatformApi* platform_api,
     assistant_client::ActionModule* action_module,
@@ -200,7 +203,7 @@ void ServiceController::Start(
   state_ = State::kStarting;
 
   CreateAssistantOnBackgroundThread(
-      background_task_runner, delegate, platform_api, action_module,
+      background_task_runner_, delegate, platform_api, action_module,
       fuchsia_api_delegate, assistant_manager_delegate,
       conversation_state_listener, device_state_listener, event_observer,
       libassistant_config, locale, locale_override, spoken_feedback_enabled,

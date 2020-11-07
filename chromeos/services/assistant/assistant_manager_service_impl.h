@@ -307,6 +307,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   CrosDisplayConnection* display_connection();
   ServiceController& service_controller();
   const ServiceController& service_controller() const;
+  base::Thread& background_thread();
 
   void SetStateAndInformObservers(State new_state);
 
@@ -333,8 +334,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   std::string last_trigger_source_;
   base::Lock last_trigger_source_lock_;
   base::TimeTicks started_time_;
-
-  base::Thread background_thread_;
 
   int next_interaction_id_ = 1;
   std::map<std::string, std::unique_ptr<AssistantInteractionMetadata>>
