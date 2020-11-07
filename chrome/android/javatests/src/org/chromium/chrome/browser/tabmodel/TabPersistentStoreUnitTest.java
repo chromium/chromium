@@ -33,6 +33,7 @@ import org.chromium.base.task.TaskRunner;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
@@ -44,7 +45,6 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabRestoreDetails
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;

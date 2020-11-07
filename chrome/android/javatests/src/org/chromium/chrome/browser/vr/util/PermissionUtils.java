@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.vr.util;
 
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.components.permissions.PermissionDialogController;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 
