@@ -87,6 +87,9 @@ void NotificationManager::SetNotificationsInternal(
 
 void NotificationManager::RemoveNotificationsInternal(
     const base::flat_set<int64_t>& notification_ids) {
+  if (notification_ids.empty())
+    return;
+
   for (int64_t id : notification_ids) {
     auto it = id_to_notification_map_.find(id);
     if (it == id_to_notification_map_.end())
@@ -104,8 +107,10 @@ void NotificationManager::ClearNotificationsInternal() {
     removed_ids.emplace(pair.first);
   }
 
-  id_to_notification_map_.clear();
-  NotifyNotificationsRemoved(removed_ids);
+  if (!removed_ids.empty()) {
+    id_to_notification_map_.clear();
+    NotifyNotificationsRemoved(removed_ids);
+  }
 }
 
 const Notification* NotificationManager::GetNotification(
