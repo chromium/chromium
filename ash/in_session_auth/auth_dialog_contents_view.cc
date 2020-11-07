@@ -26,6 +26,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -34,16 +35,20 @@
 namespace ash {
 namespace {
 
-const int kContainerPreferredWidth = 340;
-const int kSpacingAfterAvatar = 18;
-const int kSpacingAfterTitle = 16;
+constexpr int kContainerPreferredWidth = 340;
 
-const int kBorderTopDp = 24;
-const int kBorderLeftDp = 24;
-const int kBorderBottomDp = 20;
-const int kBorderRightDp = 24;
+constexpr int kBorderTopDp = 24;
+constexpr int kBorderLeftDp = 24;
+constexpr int kBorderBottomDp = 20;
+constexpr int kBorderRightDp = 24;
+constexpr int kCornerRadius = 12;
 
-const int kTitleFontSizeDeltaDp = 4;
+constexpr int kTitleFontSizeDeltaDp = 4;
+
+constexpr int kSpacingAfterAvatar = 18;
+constexpr int kSpacingAfterTitle = 8;
+constexpr int kSpacingAfterOriginName = 32;
+constexpr int kSpacingAfterInputField = 16;
 
 constexpr int kAvatarSizeDp = 36;
 constexpr int kFingerprintIconSizeDp = 28;
@@ -60,7 +65,10 @@ constexpr base::TimeDelta kFingerprintFailedAnimationDuration =
 
 // 38% opacity.
 constexpr SkColor kDisabledFingerprintIconColor =
-    SkColorSetA(SK_ColorDKGRAY, 97);
+    SkColorSetA(gfx::kGoogleGrey900, 97);
+constexpr SkColor kBackgroundColor = SK_ColorWHITE;
+constexpr SkColor kTextColorSecondary = gfx::kGoogleGrey700;
+constexpr SkColor kTextColorPrimary = gfx::kGoogleGrey900;
 
 constexpr int kSpacingBeforeButtons = 32;
 
@@ -107,7 +115,7 @@ class AuthDialogContentsView::FingerprintView : public views::View {
     label_ = AddChildView(std::make_unique<FingerprintLabel>());
     label_->SetSubpixelRenderingEnabled(false);
     label_->SetAutoColorReadabilityEnabled(false);
-    label_->SetEnabledColor(SK_ColorDKGRAY);
+    label_->SetEnabledColor(kTextColorPrimary);
     label_->SetMultiLine(true);
     label_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
@@ -209,7 +217,7 @@ class AuthDialogContentsView::FingerprintView : public views::View {
     const SkColor color =
         (state == FingerprintState::AVAILABLE_DEFAULT ||
                  state == FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING
-             ? SK_ColorDKGRAY
+             ? kTextColorPrimary
              : kDisabledFingerprintIconColor);
     switch (state) {
       case FingerprintState::UNAVAILABLE:
@@ -282,7 +290,7 @@ class AuthDialogContentsView::TitleLabel : public views::Label {
     base::string16 title =
         l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_TITLE);
     SetText(title);
-    SetEnabledColor(SK_ColorBLACK);
+    SetEnabledColor(kTextColorPrimary);
     is_showing_error_ = false;
     SetAccessibleName(title);
   }
@@ -324,8 +332,14 @@ AuthDialogContentsView::AuthDialogContentsView(
   DCHECK(auth_methods_ & kAuthPassword);
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
+  auto border = std::make_unique<views::BubbleBorder>(
+      views::BubbleBorder::FLOAT, views::BubbleBorder::BIG_SHADOW,
+      kBackgroundColor);
+  border->SetCornerRadius(kCornerRadius);
+  SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
+  SetBorder(std::move(border));
+
   container_ = AddChildView(std::make_unique<NonAccessibleView>());
-  container_->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
   container_->SetBorder(views::CreateEmptyBorder(
       kBorderTopDp, kBorderLeftDp, kBorderBottomDp, kBorderRightDp));
 
@@ -342,7 +356,7 @@ AuthDialogContentsView::AuthDialogContentsView(
   AddTitleView();
   AddVerticalSpacing(kSpacingAfterTitle);
   AddOriginNameView();
-  AddVerticalSpacing(kSpacingAfterTitle);
+  AddVerticalSpacing(kSpacingAfterOriginName);
   if (auth_methods_ & kAuthPin) {
     if (LoginPinInputView::IsAutosubmitSupported(
             auth_metadata_.autosubmit_pin_length)) {
@@ -352,6 +366,7 @@ AuthDialogContentsView::AuthDialogContentsView(
       pin_autosubmit_on_ = false;
       AddPinTextInputView();
     }
+    AddVerticalSpacing(kSpacingAfterInputField);
     // PIN pad is always visible regardless of PIN autosubmit status.
     AddPinPadView();
   }
@@ -394,7 +409,7 @@ void AuthDialogContentsView::AddTitleView() {
 void AuthDialogContentsView::AddOriginNameView() {
   origin_name_view_ =
       container_->AddChildView(std::make_unique<views::Label>());
-  origin_name_view_->SetEnabledColor(SK_ColorBLACK);
+  origin_name_view_->SetEnabledColor(kTextColorSecondary);
   origin_name_view_->SetSubpixelRenderingEnabled(false);
   origin_name_view_->SetAutoColorReadabilityEnabled(false);
   origin_name_view_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
@@ -531,7 +546,7 @@ void AuthDialogContentsView::AddActionButtonsView() {
                               base::Unretained(this)),
           l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_HELP),
           views::style::CONTEXT_BUTTON));
-  help_button_->SetEnabledTextColors(SK_ColorDKGRAY);
+  help_button_->SetEnabledTextColors(kTextColorPrimary);
   action_view_container_->SetPreferredSize(
       gfx::Size(kContainerPreferredWidth, help_button_->height()));
 }

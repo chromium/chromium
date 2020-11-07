@@ -37,14 +37,14 @@ LoginPalette CreateDefaultLoginPalette() {
 
 LoginPalette CreateInSessionAuthPalette() {
   return LoginPalette(
-      {.password_text_color = SK_ColorDKGRAY,
-       .password_placeholder_text_color = SK_ColorDKGRAY,
+      {.password_text_color = gfx::kGoogleGrey900,
+       .password_placeholder_text_color = gfx::kGoogleGrey900,
        .password_background_color = SK_ColorTRANSPARENT,
-       .button_enabled_color = SK_ColorDKGRAY,
-       .button_annotation_color = SK_ColorDKGRAY,
-       .pin_ink_drop_highlight_color = SkColorSetA(SK_ColorDKGRAY, 0x0A),
-       .pin_ink_drop_ripple_color = SkColorSetA(SK_ColorDKGRAY, 0x0F),
-       .pin_input_text_color = SK_ColorDKGRAY});
+       .button_enabled_color = gfx::kGoogleGrey900,
+       .button_annotation_color = gfx::kGoogleGrey700,
+       .pin_ink_drop_highlight_color = SkColorSetA(gfx::kGoogleGrey900, 0x0A),
+       .pin_ink_drop_ripple_color = SkColorSetA(gfx::kGoogleGrey900, 0x0F),
+       .pin_input_text_color = gfx::kGoogleGrey900});
 }
 
 }  // namespace ash

@@ -4,7 +4,6 @@
 
 #include "ash/in_session_auth/in_session_auth_dialog.h"
 
-#include "ash/public/cpp/rounded_corner_decorator.h"
 #include "base/command_line.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
@@ -18,7 +17,6 @@ namespace {
 // The top inset value is set such that the dialog overlaps with the browser
 // address bar, for anti-spoofing.
 constexpr int kTopInsetDp = 36;
-constexpr int kCornerRadius = 12;
 
 std::unique_ptr<views::Widget> CreateAuthDialogWidget(
     std::unique_ptr<views::View> contents_view,
@@ -26,12 +24,11 @@ std::unique_ptr<views::Widget> CreateAuthDialogWidget(
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.delegate = new views::WidgetDelegate();
   params.show_state = ui::SHOW_STATE_NORMAL;
   params.parent = parent;
   params.name = "AuthDialogWidget";
-  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
-  params.shadow_elevation = 3;
 
   params.delegate->SetInitiallyFocusedView(contents_view.get());
   params.delegate->SetModalType(ui::MODAL_TYPE_NONE);
@@ -64,10 +61,6 @@ InSessionAuthDialog::InSessionAuthDialog(
   bounds.Inset(horizontal_inset_dp, kTopInsetDp, horizontal_inset_dp,
                bottom_inset_dp);
   widget_->SetBounds(bounds);
-
-  aura::Window* window = widget_->GetNativeWindow();
-  rounded_corner_decorator_ = std::make_unique<RoundedCornerDecorator>(
-      window, window, window->layer(), kCornerRadius);
 
   widget_->Show();
 }

@@ -20,8 +20,6 @@ class Widget;
 
 namespace ash {
 
-class RoundedCornerDecorator;
-
 // InSessionAuthDialog gets instantiated on every request to show
 // an authentication dialog, and gets destroyed when the request is
 // completed.
@@ -51,7 +49,6 @@ class InSessionAuthDialog {
   // Pointer to the contents view. Used to query and update the set of available
   // auth methods.
   const uint32_t auth_methods_;
-  std::unique_ptr<RoundedCornerDecorator> rounded_corner_decorator_;
 };
 
 }  // namespace ash
