@@ -76,8 +76,8 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
       const char* name,
       base::trace_event::ProcessMemoryDump* pmd) const;
 
-  void StartScheduledPurging(
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
+  void StartScheduledPurging();
+  void StopScheduledPurging();
 
   struct Statistics {
     size_t total_size;
@@ -101,7 +101,7 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
       scoped_refptr<base::SingleThreadTaskRunner> periodic_purge_task_runner);
   std::unique_ptr<DiscardableSharedMemoryHeap> heap_ GUARDED_BY(lock_);
   mutable base::Lock lock_;
-  std::unique_ptr<base::RepeatingTimer> timer_;
+  std::unique_ptr<base::RepeatingTimer> timer_ GUARDED_BY(lock_);
   scoped_refptr<base::SingleThreadTaskRunner> periodic_purge_task_runner_;
 
  private:
@@ -186,6 +186,9 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   // we're in the foreground. This is parallel to what we do in
   // RenderThreadImpl.
   bool foregrounded_ = false;
+
+  base::WeakPtrFactory<ClientDiscardableSharedMemoryManager> weak_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(ClientDiscardableSharedMemoryManager);
 };

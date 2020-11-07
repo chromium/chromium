@@ -69,7 +69,10 @@ class TestClientDiscardableSharedMemoryManager
     return heap_->GetSizeOfFreeLists();
   }
 
-  base::RepeatingTimer* timer() const { return timer_.get(); }
+  bool TimerIsNull() const {
+    base::AutoLock lock(lock_);
+    return timer_ == nullptr;
+  }
 };
 
 class ClientDiscardableSharedMemoryManagerTest : public testing::Test {
@@ -395,27 +398,31 @@ TEST_F(ClientDiscardableSharedMemoryManagerPeriodicPurgingTest,
        SchedulingProactivePurging) {
   base::test::ScopedFeatureList fl;
   fl.InitAndEnableFeature(discardable_memory::kSchedulePeriodicPurge);
-  ASSERT_EQ(client_->timer(), nullptr);
+  ASSERT_TRUE(client_->TimerIsNull());
 
   // the amount of memory allocated here is arbitrary, we're only trying to get
   // the timer started.
   auto mem = client_->AllocateLockedDiscardableMemory(200);
 
-  EXPECT_NE(client_->timer(), nullptr);
+  task_env_.FastForwardBy(TimeDelta::FromSeconds(0));
+  EXPECT_FALSE(client_->TimerIsNull());
 
   // This does not destroy the timer because there is still memory allocated.
   client_->ReleaseFreeMemory();
 
-  EXPECT_NE(client_->timer(), nullptr);
+  task_env_.FastForwardBy(TimeDelta::FromSeconds(0));
+  EXPECT_FALSE(client_->TimerIsNull());
 
   mem = nullptr;
 
-  EXPECT_NE(client_->timer(), nullptr);
+  task_env_.FastForwardBy(TimeDelta::FromSeconds(0));
+  EXPECT_FALSE(client_->TimerIsNull());
 
   // Now that all memory is freed, destroy the timer.
   client_->ReleaseFreeMemory();
 
-  EXPECT_EQ(client_->timer(), nullptr);
+  task_env_.FastForwardBy(TimeDelta::FromSeconds(0));
+  EXPECT_TRUE(client_->TimerIsNull());
 }
 
 // This test is similar to the one above, but tests that creating and deleting
@@ -424,34 +431,40 @@ TEST_F(ClientDiscardableSharedMemoryManagerPeriodicPurgingTest,
        SchedulingProactivePurgingMultipleAllocations) {
   base::test::ScopedFeatureList fl;
   fl.InitAndEnableFeature(discardable_memory::kSchedulePeriodicPurge);
-  ASSERT_EQ(client_->timer(), nullptr);
+  ASSERT_TRUE(client_->TimerIsNull());
 
   // the amount of memory allocated here is arbitrary, we're only trying to get
   // the timer started.
   auto mem = client_->AllocateLockedDiscardableMemory(200);
   auto mem2 = client_->AllocateLockedDiscardableMemory(100);
 
-  EXPECT_NE(client_->timer(), nullptr);
+  task_env_.FastForwardBy(TimeDelta::FromSeconds(0));
+  EXPECT_FALSE(client_->TimerIsNull());
 
   client_->ReleaseFreeMemory();
 
-  EXPECT_NE(client_->timer(), nullptr);
+  task_env_.FastForwardBy(TimeDelta::FromSeconds(0));
+  EXPECT_FALSE(client_->TimerIsNull());
 
   mem = nullptr;
 
-  EXPECT_NE(client_->timer(), nullptr);
+  task_env_.FastForwardBy(TimeDelta::FromSeconds(0));
+  EXPECT_FALSE(client_->TimerIsNull());
 
   client_->ReleaseFreeMemory();
 
-  EXPECT_NE(client_->timer(), nullptr);
+  task_env_.FastForwardBy(TimeDelta::FromSeconds(0));
+  EXPECT_FALSE(client_->TimerIsNull());
 
   mem2 = nullptr;
 
-  EXPECT_NE(client_->timer(), nullptr);
+  task_env_.FastForwardBy(TimeDelta::FromSeconds(0));
+  EXPECT_FALSE(client_->TimerIsNull());
 
   client_->ReleaseFreeMemory();
 
-  EXPECT_EQ(client_->timer(), nullptr);
+  task_env_.FastForwardBy(TimeDelta::FromSeconds(0));
+  EXPECT_TRUE(client_->TimerIsNull());
 }
 
 }  // namespace
