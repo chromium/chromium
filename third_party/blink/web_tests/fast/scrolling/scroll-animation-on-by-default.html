@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<title>Tests mouse clicks and mousewheel ticks are animated.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<script src="../../resources/scrollbar-util.js"></script>
+<body style="height: 1000px; width: 1000px">
+<script>
+window.onload = () => {
+  const TRACK_WIDTH = calculateScrollbarThickness();
+  const BUTTON_WIDTH = TRACK_WIDTH;
+  const SCROLL_CORNER = TRACK_WIDTH;
+
+  var start_offset = 0;
+  var end_offset = 0;
+  var animated_scroll = false;
+
+  // Watches for scroll offset values between the bounds (start_offset, end_offset).
+  window.onscroll = function() {
+    if(!animated_scroll)
+      animated_scroll = window.scrollY > start_offset && window.scrollY < end_offset;
+  }
+
+  function initBounds(start, end) {
+    start_offset = start;
+    end_offset = end;
+    animated_scroll = false;
+  }
+
+  promise_test (async () => {
+    await waitForCompositorCommit();
+    resetScrollOffset(document.scrollingElement);
+
+    // Click on the track part just above the down arrow.
+    const x = window.innerWidth - BUTTON_WIDTH / 2;
+    const y = window.innerHeight - SCROLL_CORNER - BUTTON_WIDTH - 2;
+
+    // Start at 0, perform a click and check that scrollY animates at least once.
+    // Also, note that this test is relevant only when running in threaded mode
+    // (--enable-threaded-compositing).
+    assert_equals(window.scrollY, 0, "Scroller is expected to be at 0 offset.");
+    initBounds(0, 431);
+    await mouseClickOn(x, y);
+    await waitForAnimationEndTimeBased(() => {return window.scrollY;});
+    assert_equals(window.scrollY, 431, "Unexpected scroll offset for scrollbar track.");
+    assert_true(animated_scroll, "Scrollbar scroll did not animate.");
+  }, "Test mouse click on scrollbar is animated.");
+
+  promise_test (async () => {
+    // Mac doesn't support mousewheel animations yet crbug.com/574283.
+    if(navigator.userAgent.includes("Mac OS X"))
+      return;
+
+    await waitForCompositorCommit();
+    resetScrollOffset(document.scrollingElement);
+
+    // Start at 0, perform a mousewheel tick and check that scrollY animates at
+    // least once. This test is relevant only when running in threaded mode
+    // (--enable-threaded-compositing).
+    assert_equals(window.scrollY, 0, "Scroller is expected to be at 0 offset.");
+    initBounds(0, 72);
+    await smoothScrollWithXY(0, 72, window.innerWidth / 2, window.innerHeight / 2,
+                             GestureSourceType.MOUSE_INPUT,
+                             SPEED_INSTANT, false /* precise_scrolling_deltas */,
+                             false /* scroll_by_page */, true /* cursor_visible */,
+                             false /* scroll_by_percentage */);
+    await waitForAnimationEndTimeBased(() => {return window.scrollY;});
+    assert_equals(window.scrollY, 72, "Unexpected scroll offset for mousewheel tick.");
+    assert_true(animated_scroll, "Mousewheel tick did not animate.");
+  }, "Test mouse wheel tick is animated.");
+}
+</script>
+</body>
