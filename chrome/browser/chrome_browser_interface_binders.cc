@@ -149,6 +149,7 @@
 #endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 
 #if defined(OS_CHROMEOS)
+#include "chrome/browser/apps/digital_goods/digital_goods_factory_impl.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision.mojom.h"
@@ -194,6 +195,7 @@
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
+#include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom.h"
 #endif
 
 #if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
@@ -559,6 +561,11 @@ void PopulateChromeFrameBinders(
   }
   map->Add<payments::mojom::PaymentCredential>(
       base::BindRepeating(&payments::CreatePaymentCredential));
+#endif
+
+#if defined(OS_CHROMEOS)
+  map->Add<payments::mojom::DigitalGoodsFactory>(base::BindRepeating(
+      &apps::DigitalGoodsFactoryImpl::BindDigitalGoodsFactory));
 #endif
 
 #if defined(OS_WIN) || defined(OS_CHROMEOS)

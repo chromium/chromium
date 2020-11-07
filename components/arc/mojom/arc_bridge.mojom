@@ -18,6 +18,7 @@ import "components/arc/mojom/cast_receiver.mojom";
 import "components/arc/mojom/cert_store.mojom";
 import "components/arc/mojom/clipboard.mojom";
 import "components/arc/mojom/crash_collector.mojom";
+import "components/arc/mojom/digital_goods.mojom";
 import "components/arc/mojom/disk_quota.mojom";
 import "components/arc/mojom/enterprise_reporting.mojom";
 import "components/arc/mojom/file_system.mojom";
@@ -56,9 +57,9 @@ import "components/arc/mojom/volume_mounter.mojom";
 import "components/arc/mojom/wake_lock.mojom";
 import "components/arc/mojom/wallpaper.mojom";
 
-// Next MinVersion: 51
+// Next MinVersion: 52
 // Deprecated method IDs: 101, 105, 121
-// Next method ID: 156
+// Next method ID: 157
 interface ArcBridgeHost {
   // Keep the entries alphabetical. In order to do so without breaking
   // compatibility with the ARC instance, explicitly assign each interface a
@@ -118,6 +119,10 @@ interface ArcBridgeHost {
   // Notifies Chrome that the CrashCollectorInstance interface is ready.
   [MinVersion=7] OnCrashCollectorInstanceReady@112(
       pending_remote<CrashCollectorInstance> instance_remote);
+
+  // Notifies Chrome that the DigitalGoodsInstance interface is ready.
+  [MinVersion=51] OnDigitalGoodsInstanceReady@156(
+      pending_remote<DigitalGoodsInstance> instance_remote);
 
   // Notifies Chrome that the DiskQuotaInstance interface is ready.
   [MinVersion=39] OnDiskQuotaInstanceReady@144(

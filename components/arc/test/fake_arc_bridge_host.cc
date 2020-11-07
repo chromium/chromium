@@ -109,6 +109,9 @@ void FakeArcBridgeHost::OnCrashCollectorInstanceReady(
     mojo::PendingRemote<mojom::CrashCollectorInstance> crash_collector_remote) {
 }
 
+void FakeArcBridgeHost::OnDigitalGoodsInstanceReady(
+    mojo::PendingRemote<mojom::DigitalGoodsInstance> digital_goods_remote) {}
+
 void FakeArcBridgeHost::OnDiskQuotaInstanceReady(
     mojo::PendingRemote<mojom::DiskQuotaInstance> disk_quota_remote) {}
 

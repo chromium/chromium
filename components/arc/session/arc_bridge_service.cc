@@ -20,6 +20,7 @@
 #include "components/arc/mojom/cert_store.mojom.h"
 #include "components/arc/mojom/clipboard.mojom.h"
 #include "components/arc/mojom/crash_collector.mojom.h"
+#include "components/arc/mojom/digital_goods.mojom.h"
 #include "components/arc/mojom/disk_quota.mojom.h"
 #include "components/arc/mojom/enterprise_reporting.mojom.h"
 #include "components/arc/mojom/file_system.mojom.h"

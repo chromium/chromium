@@ -2297,6 +2297,12 @@ static_library("browser") {
     "//ui/webui/resources/cr_components/customize_themes:mojom",
   ]
   if (is_chromeos) {
+    sources += [
+      "apps/digital_goods/digital_goods_factory_impl.cc",
+      "apps/digital_goods/digital_goods_factory_impl.h",
+      "apps/digital_goods/digital_goods_impl.cc",
+      "apps/digital_goods/digital_goods_impl.h",
+    ]
     deps += [
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/nearby_sharing/common",
@@ -2335,6 +2341,7 @@ static_library("browser") {
       "//chromeos/system",
       "//chromeos/timezone",
       "//chromeos/tpm",
+      "//components/arc/mojom",
       "//components/drive",
       "//components/quirks",
       "//components/session_manager/core",
