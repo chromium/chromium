@@ -85,6 +85,9 @@ class RTxtGenerator(object):
       if child.tag == 'eat-comment':
         # eat-comment is just a dummy documentation element.
         continue
+      if child.tag == 'skip':
+        # skip is just a dummy element.
+        continue
       if child.tag == 'declare-styleable':
         ret.update(self._ParseDeclareStyleable(child))
       else:
