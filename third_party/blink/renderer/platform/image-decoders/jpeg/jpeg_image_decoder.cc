@@ -818,14 +818,32 @@ class JPEGImageReader final {
             status = jpeg_consume_input(&info_);
           } while ((status != JPEG_SUSPENDED) && (status != JPEG_REACHED_EOI));
 
+          bool all_components_seen = true;
+          if (info_.coef_bits) {
+            for (int c = 0; c < info_.num_components; ++c) {
+              bool current_component_seen = info_.coef_bits[c][0] != -1;
+              all_components_seen &= current_component_seen;
+            }
+          }
+
+          int first_scan_to_display = 0;
+          if (!first_scan_to_display && all_components_seen) {
+            first_scan_to_display = info_.input_scan_number;
+          }
+
+          if (!all_components_seen) {
+            return false;  // I/O suspension
+          }
+
           for (;;) {
             if (!info_.output_scanline) {
               int scan = info_.input_scan_number;
 
               // If we haven't displayed anything yet
               // (output_scan_number == 0) and we have enough data for
-              // a complete scan, force output of the last full scan.
-              if (!info_.output_scan_number && (scan > 1) &&
+              // a complete scan, force output of the last full scan, but only
+              // if this last scan has seen DC data from all components.
+              if (!info_.output_scan_number && (scan > first_scan_to_display) &&
                   (status != JPEG_REACHED_EOI))
                 --scan;
 
