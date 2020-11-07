@@ -5,13 +5,13 @@
 #ifndef BASE_TASK_THREAD_POOL_TRACKED_REF_H_
 #define BASE_TASK_THREAD_POOL_TRACKED_REF_H_
 
-#include <memory>
-
 #include "base/atomic_ref_count.h"
 #include "base/check.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/optional.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/template_util.h"
 
 namespace base {
 namespace internal {
@@ -126,8 +126,8 @@ class TrackedRef {
 template <class T>
 class TrackedRefFactory {
  public:
-  TrackedRefFactory(T* ptr)
-      : ptr_(ptr), self_ref_(WrapUnique(new TrackedRef<T>(ptr_, this))) {
+  explicit TrackedRefFactory(T* ptr)
+      : ptr_(ptr), self_ref_(TrackedRef<T>(ptr_, this)) {
     DCHECK(ptr_);
   }
 
@@ -136,10 +136,12 @@ class TrackedRefFactory {
 
   ~TrackedRefFactory() {
     // Enter the destruction phase.
-    ready_to_destroy_ = std::make_unique<WaitableEvent>();
+    ready_to_destroy_.emplace();
 
-    // Release self-ref (if this was the last one it will signal the event right
-    // away).
+    // Release self-ref. If this was the last one it will signal the event right
+    // away. Otherwise it establishes an happens-after relationship between
+    // |ready_to_destroy.emplace()| and the eventual
+    // |ready_to_destroy_->Signal()|.
     self_ref_.reset();
 
     ready_to_destroy_->Wait();
@@ -164,13 +166,13 @@ class TrackedRefFactory {
   AtomicRefCount live_tracked_refs_{0};
 
   // Non-null during the destruction phase. Signaled once |live_tracked_refs_|
-  // reaches 0. Note: while this could a direct member, only initializing it in
-  // the destruction phase avoids keeping a handle open for the entire session.
-  std::unique_ptr<WaitableEvent> ready_to_destroy_;
+  // reaches 0. Note: making this optional and only initializing it in the
+  // destruction phase avoids keeping a handle open for the entire session.
+  Optional<WaitableEvent> ready_to_destroy_;
 
   // TrackedRefFactory holds a TrackedRef as well to prevent
   // |live_tracked_refs_| from ever reaching zero before ~TrackedRefFactory().
-  std::unique_ptr<TrackedRef<T>> self_ref_;
+  Optional<TrackedRef<T>> self_ref_;
 };
 
 }  // namespace internal

@@ -339,7 +339,7 @@ void TaskTracker::StartShutdown() {
 void TaskTracker::CompleteShutdown() {
   // It is safe to access |shutdown_event_| without holding |lock_| because the
   // pointer never changes after being set by StartShutdown(), which must
-  // happen-before before this.
+  // happen-before this.
   DCHECK(TS_UNCHECKED_READ(shutdown_event_));
   {
     base::ScopedAllowBaseSyncPrimitives allow_wait;
