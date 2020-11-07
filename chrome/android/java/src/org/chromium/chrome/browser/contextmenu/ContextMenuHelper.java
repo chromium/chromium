@@ -134,8 +134,9 @@ public class ContextMenuHelper {
                 mCurrentPopulator.onMenuClosed();
                 mCurrentPopulator = null;
             }
-            if (LensUtils.enableImageChip(mIsIncognito)) {
-                // If the image was being classified terminate the classification
+            if (LensUtils.enableImageChip(mIsIncognito)
+                    && LensController.getInstance().isQueryEnabled()) {
+                // If the image was being classified terminate the classification.
                 // Has no effect if the classification already succeeded.
                 LensController.getInstance().terminateClassification();
             }
@@ -158,7 +159,8 @@ public class ContextMenuHelper {
                 new RevampedContextMenuCoordinator(topContentOffsetPx, mCurrentNativeDelegate);
         mCurrentContextMenu = menuCoordinator;
 
-        if (LensUtils.enableImageChip(mIsIncognito)) {
+        if (LensUtils.enableImageChip(mIsIncognito)
+                && LensController.getInstance().isQueryEnabled()) {
             LensAsyncManager lensAsyncManager = new LensAsyncManager(mCurrentContextMenuParams,
                     mCurrentNativeDelegate, mWindow, mIsIncognito, mPageTitle);
             menuCoordinator.displayMenuWithLensChip(mWindow, mWebContents,

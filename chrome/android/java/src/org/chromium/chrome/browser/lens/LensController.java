@@ -24,11 +24,22 @@ public class LensController {
     }
 
     /**
+     * TODO(benwgold): Deprecate this API Call.
      * Whether the Lens SDK is available.
      * @return Whether the Lens SDK is available.
      */
     public boolean isSdkAvailable() {
         return false;
+    }
+
+    /**
+     * Whether the Lens chip should be enabled based on user signals.
+     * @return Whether the Lens SDK is available.
+     */
+    public boolean isQueryEnabled() {
+        // Return true by default to support integration testing where
+        // internal code is not available.
+        return true;
     }
 
     /**
