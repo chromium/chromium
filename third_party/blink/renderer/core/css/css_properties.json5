@@ -5193,6 +5193,66 @@
       is_property: false,
       runtime_flag: "CSSFontMetricsOverride",
     },
+    {
+      name: "system",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "CSSAtRuleCounterStyle",
+    },
+    {
+      name: "negative",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "CSSAtRuleCounterStyle",
+    },
+    {
+      name: "prefix",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "CSSAtRuleCounterStyle",
+    },
+    {
+      name: "suffix",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "CSSAtRuleCounterStyle",
+    },
+    {
+      name: "range",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "CSSAtRuleCounterStyle",
+    },
+    {
+      name: "pad",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "CSSAtRuleCounterStyle",
+    },
+    {
+      name: "fallback",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "CSSAtRuleCounterStyle",
+    },
+    {
+      name: "symbols",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "CSSAtRuleCounterStyle",
+    },
+    {
+      name: "additive-symbols",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "CSSAtRuleCounterStyle",
+    },
+    {
+      name: "speak-as",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "CSSAtRuleCounterStyle",
+    },
 
     // Shorthands
     {

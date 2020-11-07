@@ -47499,6 +47499,16 @@ Called by update_use_counter_css.py.-->
   <int value="678" label="advance-proportional-override"/>
   <int value="679" label="overflow-clip-margin"/>
   <int value="680" label="scrollbar-width"/>
+  <int value="681" label="system"/>
+  <int value="682" label="negative"/>
+  <int value="683" label="prefix"/>
+  <int value="684" label="suffix"/>
+  <int value="685" label="range"/>
+  <int value="686" label="pad"/>
+  <int value="687" label="fallback"/>
+  <int value="688" label="symbols"/>
+  <int value="689" label="additive-symbols"/>
+  <int value="690" label="speak-as"/>
 </enum>
 
 <enum name="MappedEditingCommands">

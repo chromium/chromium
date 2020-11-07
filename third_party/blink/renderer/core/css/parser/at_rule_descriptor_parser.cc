@@ -345,23 +345,6 @@ CSSValue* AtRuleDescriptorParser::ParseAtPropertyDescriptor(
   return parsed_value;
 }
 
-CSSValue* AtRuleDescriptorParser::ParseAtCounterStyleDescriptor(
-    AtRuleDescriptorID id,
-    CSSParserTokenRange& range,
-    const CSSParserContext& context) {
-  CSSValue* parsed_value = nullptr;
-  switch (id) {
-    // TODO(crbug.com/687225): Parse the descriptors
-    default:
-      break;
-  }
-
-  if (!parsed_value || !range.AtEnd())
-    return nullptr;
-
-  return parsed_value;
-}
-
 CSSValue* AtRuleDescriptorParser::ParseAtScrollTimelineDescriptor(
     AtRuleDescriptorID id,
     CSSParserTokenRange& range,

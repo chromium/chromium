@@ -387,6 +387,7 @@ blink_core_sources_css = [
   "offscreen_font_selector.h",
   "page_rule_collector.cc",
   "page_rule_collector.h",
+  "parser/at_rule_counter_style_descriptor_parser.cc",
   "parser/at_rule_descriptor_parser.cc",
   "parser/at_rule_descriptor_parser.h",
   "parser/css_at_rule_id.cc",
