@@ -76517,6 +76517,35 @@
         }
        ]
       ],
+      "image-orientation-none-cross-origin-svg.html": [
+       "23e5cbfe9633677b07a0aa4e8dc18a3d0d0161a6",
+       [
+        null,
+        [
+         [
+          "/css/css-images/image-orientation/reference/image-orientation-none-cross-origin-svg-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             10,
+             10
+            ],
+            [
+             100,
+             100
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
       "image-orientation-none-cross-origin.html": [
        "6629f78e5b2923a41e49b4236a4c8b7d17abb2f1",
        [
@@ -192108,6 +192137,10 @@
         "3e6962184ec3dcb75cd08a440017ed84161fdb4a",
         []
        ],
+       "image-orientation-none-cross-origin-svg-ref.html": [
+        "e34a7087d4cc1d75ce723bb3c15b67f7cb5f58ff",
+        []
+       ],
        "image-orientation-none-image-document-ref.html": [
         "90eaeaa3da839b111098da9e6f9e4754fe05d2b2",
         []
@@ -192204,6 +192237,10 @@
        ],
        "exif-orientation-9-u.jpg": [
         "7d41aead39e38d1377ec9b1732ca53b0fbb1906c",
+        []
+       ],
+       "svg-with-image-rotated.svg": [
+        "e46581663cc74a68fc2d6500189ca86a1363a29f",
         []
        ]
       }
@@ -212959,7 +212996,7 @@
       []
      ],
      "inserthtml-expected.txt": [
-      "8b51ad907c9c1d25c05a846be2cb61f93dc17afc",
+      "4f3841ec61e7baaa517bf9df9192bd64f1c169d6",
       []
      ],
      "insertimage-expected.txt": [
@@ -219212,7 +219249,7 @@
          []
         ],
         "open-closer.html": [
-         "6f43a5188c790577c4a1a03da270317eedba0fb0",
+         "7575c7c95fcc18ccbb949f9144eb1154a3f64538",
          []
         ],
         "opener-setter.html": [
@@ -227745,7 +227782,7 @@
         []
        ],
        "iframe_sandbox_popups_helper-2.html": [
-        "9c393fc954af906322c26dbe128f1d0914fa5b6f",
+        "ea28cf53754ab4eed1dada0cf630da6deae450df",
         []
        ],
        "iframe_sandbox_popups_helper-3.html": [
@@ -228739,15 +228776,7 @@
          "bf6a1ae5bfe16e4fd50296636894859a0ee25ec1",
          []
         ]
-       },
-       "target_blank_implicit_noopener-expected.txt": [
-        "160569fe3a52dff95244f6968ada71d58eb3ed3c",
-        []
-       ],
-       "target_blank_implicit_noopener_base-expected.txt": [
-        "aab46c1ec6afd0709f9e87e761ad0f0fcc0ebeb5",
-        []
-       ]
+       }
       },
       "linktypes": {
        "alternate-css-ref.html": [
@@ -280533,7 +280562,7 @@
       ]
      ],
      "javascript_src_allowed-href_blank.html": [
-      "d1c2b38f247a0a11ecff8ead40eff2152545f461",
+      "007338bc45eb8eb019a71eb138a5465b482f06fa",
       [
        null,
        {}
@@ -337940,10 +337969,12 @@
    },
    "geolocation-API": {
     "PositionOptions.https.html": [
-     "6aaf56d633e4b5ce71b9a938fb87f2718ed4b823",
+     "828224d50de5ad2c21a3e0b343dbfa6affb9e602",
      [
       null,
-      {}
+      {
+       "testdriver": true
+      }
      ]
     ],
     "clearWatch_TypeError.html": [
@@ -340772,7 +340803,7 @@
         ]
        ],
        "choose-_blank-003.html": [
-        "6912300ab2d969a3a75fb1d475690ccbb010c0d6",
+        "5571344c85a5d4e4816bfcf1a15668bc7d530ffa",
         [
          null,
          {}
@@ -426794,7 +426825,7 @@
      ]
     ],
     "createcredential-large-blob-not-supported.https.html": [
-     "1a320d54d156baf0cd55f32c3154331f6ce958e3",
+     "167a65b92262759e652009e51c5f8ad6f2e4ac1e",
      [
       null,
       {
@@ -426804,7 +426835,7 @@
      ]
     ],
     "createcredential-large-blob-supported.https.html": [
-     "46623de77476141fb4adf72e3b63ddc62d34489b",
+     "5c07745a49dfeb1084b50bdeb6adf6463f74a348",
      [
       null,
       {
@@ -426874,7 +426905,7 @@
      ]
     ],
     "getcredential-large-blob-not-supported.https.html": [
-     "26e91d8f4f632fe9f396e9758421f3131b4e8633",
+     "97cea30f27f491bf0fd1aec6fe6e4734d48e591a",
      [
       null,
       {
@@ -426884,7 +426915,7 @@
      ]
     ],
     "getcredential-large-blob-supported.https.html": [
-     "02aea568173a317e76ce0516f06d2a5d675a7252",
+     "c7cc0dfc4ae7c6d20385f0ba71798f6209c8676d",
      [
       null,
       {
