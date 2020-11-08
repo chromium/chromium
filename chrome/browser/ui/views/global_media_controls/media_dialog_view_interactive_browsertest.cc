@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_notification_list_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/user_education/new_badge_label.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -31,6 +32,7 @@
 #include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/view_utils.h"
 
 using media_session::mojom::MediaSessionAction;
@@ -478,8 +480,8 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   void ClickEnableLiveCaptionOnDialog() {
     base::RunLoop().RunUntilIdle();
     ASSERT_TRUE(MediaDialogView::IsShowing());
-    auto* live_caption_button = MediaDialogView::GetDialogViewForTesting()
-                                    ->GetLiveCaptionButtonForTesting();
+    views::Button* live_caption_button = static_cast<views::Button*>(
+        MediaDialogView::GetDialogViewForTesting()->live_caption_button_);
     ClickButton(live_caption_button);
   }
 
@@ -527,6 +529,23 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
         return true;
     }
     return false;
+  }
+
+  views::Label* GetLiveCaptionTitleLabel() {
+    return MediaDialogView::GetDialogViewForTesting()->live_caption_title_;
+  }
+
+  views::Label* GetLiveCaptionTitleNewBadgeLabel() {
+    return MediaDialogView::GetDialogViewForTesting()
+        ->live_caption_title_new_badge_;
+  }
+
+  void OnSODAProgress(int progress) {
+    MediaDialogView::GetDialogViewForTesting()->OnSODAProgress(progress);
+  }
+
+  void OnSODAInstalled() {
+    MediaDialogView::GetDialogViewForTesting()->OnSODAInstalled();
   }
 
  protected:
@@ -873,13 +892,26 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, LiveCaption) {
   WaitForDialogOpened();
   EXPECT_TRUE(IsDialogVisible());
 
+  // When media dialog opens and Live Caption is disabled, the New badge is
+  // visible and the regular title is not visible.
+  EXPECT_NE(GetLiveCaptionTitleNewBadgeLabel(), nullptr);
+  EXPECT_TRUE(GetLiveCaptionTitleNewBadgeLabel()->GetVisible());
+  EXPECT_FALSE(GetLiveCaptionTitleLabel()->GetVisible());
+
   ClickEnableLiveCaptionOnDialog();
   EXPECT_TRUE(
       browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  // The New Badge disappears when Live Caption is enabled. The regular title
+  // appears.
+  EXPECT_FALSE(GetLiveCaptionTitleNewBadgeLabel()->GetVisible());
+  EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
 
   ClickEnableLiveCaptionOnDialog();
   EXPECT_FALSE(
       browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  // The New Badge doesn't reappear after Live Caption is disabled again.
+  EXPECT_FALSE(GetLiveCaptionTitleNewBadgeLabel()->GetVisible());
+  EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
 
   // Close dialog and enable live caption preference. Reopen dialog.
   ClickToolbarIcon();
@@ -889,8 +921,48 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, LiveCaption) {
   ClickToolbarIcon();
   WaitForDialogOpened();
   EXPECT_TRUE(IsDialogVisible());
+  // When media dialog opens and Live Caption is enabled, the New badge is not
+  // created. The regular title is visible.
+  EXPECT_EQ(GetLiveCaptionTitleNewBadgeLabel(), nullptr);
+  EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
 
   ClickEnableLiveCaptionOnDialog();
   EXPECT_FALSE(
       browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  // The New badge is still not created. The regular title is still visible.
+  EXPECT_EQ(GetLiveCaptionTitleNewBadgeLabel(), nullptr);
+  EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, LiveCaptionProgressUpdate) {
+  // Open a tab and play media.
+  OpenTestURL();
+  StartPlayback();
+  WaitForStart();
+
+  // Open the media dialog.
+  WaitForVisibleToolbarIcon();
+  ClickToolbarIcon();
+  WaitForDialogOpened();
+  EXPECT_TRUE(IsDialogVisible());
+
+  EXPECT_EQ("Live Caption (English only)",
+            base::UTF16ToUTF8(GetLiveCaptionTitleNewBadgeLabel()->GetText()));
+
+  ClickEnableLiveCaptionOnDialog();
+  OnSODAProgress(0);
+  EXPECT_EQ("Downloading… 0%",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+
+  OnSODAProgress(12);
+  EXPECT_EQ("Downloading… 12%",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+
+  OnSODAProgress(100);
+  EXPECT_EQ("Downloading… 100%",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+
+  OnSODAInstalled();
+  EXPECT_EQ("Live Caption (English only)",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 }

@@ -76,6 +76,7 @@ views::Widget* MediaDialogView::ShowDialog(views::View* anchor_view,
 void MediaDialogView::HideDialog() {
   if (IsShowing()) {
     instance_->service_->SetDialogDelegate(nullptr);
+    speech::SODAInstaller::GetInstance()->RemoveObserver(instance_);
     instance_->GetWidget()->Close();
   }
 
@@ -144,6 +145,7 @@ void MediaDialogView::AddedToWidget() {
       layer()->SetFillsBoundsOpaquely(false);
   }
   service_->SetDialogDelegate(this);
+  speech::SODAInstaller::GetInstance()->AddObserver(this);
 }
 
 gfx::Size MediaDialogView::CalculatePreferredSize() const {
@@ -207,10 +209,6 @@ const MediaNotificationListView* MediaDialogView::GetListViewForTesting()
   return active_sessions_view_;
 }
 
-views::Button* MediaDialogView::GetLiveCaptionButtonForTesting() {
-  return live_caption_button_;
-}
-
 MediaDialogView::MediaDialogView(views::View* anchor_view,
                                  MediaNotificationService* service,
                                  Profile* profile)
@@ -259,28 +257,43 @@ void MediaDialogView::Init() {
   live_caption_image->SetImage(
       gfx::CreateVectorIcon(kLiveCaptionIcon, kLiveCaptionImageWidthDip,
                             SkColor(gfx::kGoogleGrey700)));
-  // TODO(crbug.com/1055150): Replace NewBadgeLabel with Label by M93.
-  auto live_caption_title = std::make_unique<NewBadgeLabel>(
+  live_caption_container->AddChildView(std::move(live_caption_image));
+
+  auto live_caption_title = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION));
   live_caption_title->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
+  live_caption_title_ =
+      live_caption_container->AddChildView(std::move(live_caption_title));
+  live_caption_container_layout->SetFlexForView(live_caption_title_, 1);
+
+  // Only create and show the new badge if Live Caption is not enabled at the
+  // initialization of the MediaDialogView.
+  if (!profile_->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled)) {
+    auto live_caption_title_new_badge = std::make_unique<NewBadgeLabel>(
+        l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION));
+    live_caption_title_new_badge->SetHorizontalAlignment(
+        gfx::HorizontalAlignment::ALIGN_LEFT);
+    live_caption_title_new_badge_ = live_caption_container->AddChildView(
+        std::move(live_caption_title_new_badge));
+    live_caption_container_layout->SetFlexForView(live_caption_title_new_badge_,
+                                                  1);
+    live_caption_title_->SetVisible(false);
+  }
 
   auto live_caption_button =
       std::make_unique<views::ToggleButton>(base::BindRepeating(
-          &MediaDialogView::ToggleLiveCaption, base::Unretained(this)));
+          &MediaDialogView::LiveCaptionButtonPressed, base::Unretained(this)));
   live_caption_button->SetIsOn(
       profile_->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
-  live_caption_button->SetAccessibleName(live_caption_title->GetText());
+  live_caption_button->SetAccessibleName(live_caption_title_->GetText());
   live_caption_button->SetThumbOnColor(SkColor(gfx::kGoogleBlue600));
   live_caption_button->SetTrackOnColor(SkColorSetA(gfx::kGoogleBlue600, 128));
   live_caption_button->SetThumbOffColor(SK_ColorWHITE);
   live_caption_button->SetTrackOffColor(SkColor(gfx::kGoogleGrey400));
-
-  live_caption_container->AddChildView(std::move(live_caption_image));
-  live_caption_container_layout->SetFlexForView(
-      live_caption_container->AddChildView(std::move(live_caption_title)), 1);
   live_caption_button_ =
       live_caption_container->AddChildView(std::move(live_caption_button));
+
   live_caption_container_ = AddChildView(std::move(live_caption_container));
 }
 
@@ -288,11 +301,38 @@ void MediaDialogView::WindowClosing() {
   if (instance_ == this) {
     instance_ = nullptr;
     service_->SetDialogDelegate(nullptr);
+    speech::SODAInstaller::GetInstance()->RemoveObserver(this);
   }
 }
 
-void MediaDialogView::ToggleLiveCaption(const ui::Event& event) {
+void MediaDialogView::LiveCaptionButtonPressed(const ui::Event& event) {
   bool enabled = !profile_->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled);
+  ToggleLiveCaption(enabled);
+}
+
+void MediaDialogView::ToggleLiveCaption(bool enabled) {
   profile_->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, enabled);
   live_caption_button_->SetIsOn(enabled);
+  if (live_caption_title_new_badge_ &&
+      live_caption_title_new_badge_->GetVisible()) {
+    live_caption_title_->SetVisible(true);
+    live_caption_title_new_badge_->SetVisible(false);
+  }
+}
+
+void MediaDialogView::OnSODAInstalled() {
+  live_caption_title_->SetText(
+      l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION));
+}
+
+void MediaDialogView::OnSODAError() {
+  ToggleLiveCaption(false);
+  live_caption_title_->SetText(
+      l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION));
+  // TODO(crbug.com/1055150): Show an error message as a toast.
+}
+
+void MediaDialogView::OnSODAProgress(int progress) {
+  live_caption_title_->SetText(l10n_util::GetStringFUTF16Int(
+      IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_PROGRESS, progress));
 }

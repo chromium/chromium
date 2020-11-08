@@ -11,6 +11,7 @@
 
 #include "base/observer_list.h"
 #include "base/optional.h"
+#include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/browser/ui/global_media_controls/media_dialog_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -19,16 +20,19 @@ class MediaDialogViewObserver;
 class MediaNotificationContainerImplView;
 class MediaNotificationListView;
 class MediaNotificationService;
+class NewBadgeLabel;
 class Profile;
 
 namespace views {
+class Label;
 class ToggleButton;
 }
 
 // Dialog that shows media controls that control the active media session.
 class MediaDialogView : public views::BubbleDialogDelegateView,
                         public MediaDialogDelegate,
-                        public MediaNotificationContainerObserver {
+                        public MediaNotificationContainerObserver,
+                        public speech::SODAInstaller::Observer {
  public:
   static views::Widget* ShowDialog(views::View* anchor_view,
                                    MediaNotificationService* service,
@@ -71,9 +75,8 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
 
   const MediaNotificationListView* GetListViewForTesting() const;
 
-  views::Button* GetLiveCaptionButtonForTesting();
-
  private:
+  friend class MediaDialogViewBrowserTest;
   explicit MediaDialogView(views::View* anchor_view,
                            MediaNotificationService* service,
                            Profile* profile);
@@ -89,9 +92,15 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   void WindowClosing() override;
 
   // views::Button::PressedCallback
-  void ToggleLiveCaption(const ui::Event& event);
+  void LiveCaptionButtonPressed(const ui::Event& event);
 
+  void ToggleLiveCaption(bool enabled);
   void UpdateBubbleSize();
+
+  // SODAInstaller::Observer overrides:
+  void OnSODAInstalled() override;
+  void OnSODAError() override;
+  void OnSODAProgress(int progress) override;
 
   MediaNotificationService* const service_;
 
@@ -106,7 +115,9 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
       observed_containers_;
 
   views::View* live_caption_container_ = nullptr;
-
+  // TODO(crbug.com/1055150): Remove live_caption_title_new_badge_ by M93.
+  NewBadgeLabel* live_caption_title_new_badge_ = nullptr;
+  views::Label* live_caption_title_ = nullptr;
   views::ToggleButton* live_caption_button_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(MediaDialogView);
