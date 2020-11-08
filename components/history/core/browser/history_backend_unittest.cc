@@ -2999,6 +2999,22 @@ TEST_F(HistoryBackendTest, QueryMostVisitedURLs) {
                   MostVisitedURL(GURL("http://example5.com"), kSomeTitle)));
 }
 
+TEST_F(HistoryBackendTest, AddPageWithRedirectsAndFromApi3IsNotVisible) {
+  ASSERT_TRUE(backend_.get());
+  HistoryAddPageArgs args;
+  args.url = GURL("http://result.com");
+  args.time = base::Time::Now();
+  args.transition = ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                              ui::PAGE_TRANSITION_FROM_API_3);
+  args.redirects.push_back(GURL("http://result.com/redirect"));
+  args.redirects.push_back(args.url);
+  backend_->AddPage(args);
+
+  QueryResults results =
+      backend_->QueryHistory(base::string16(), QueryOptions());
+  EXPECT_TRUE(results.empty());
+}
+
 TEST(FormatUrlForRedirectComparisonTest, TestUrlFormatting) {
   // Tests that the formatter removes HTTPS scheme, port, username/password,
   // and trivial "www." subdomain. Domain and path are left unchanged.
