@@ -206,6 +206,10 @@ SK_API void SkDebugf_FileLine(const char* file,
 #define SK_DISABLE_LEGACY_CONTEXT_FACTORIES
 #endif
 
+#ifndef SK_SUPPORT_LEGACY_ONDRAWIMAGERECT
+#define SK_SUPPORT_LEGACY_ONDRAWIMAGERECT
+#endif
+
 // For now, Chrome should only attempt to reduce opList splitting when recording
 // DDLs
 #ifndef SK_DISABLE_REDUCE_OPLIST_SPLITTING
