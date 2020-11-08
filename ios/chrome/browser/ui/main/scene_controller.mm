@@ -1198,7 +1198,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       InfoBarManagerImpl::FromWebState(webState);
   DCHECK(infoBarManager);
   SigninNotificationInfoBarDelegate::Create(
-      infoBarManager, self.mainInterface.browser->GetBrowserState());
+      infoBarManager, self.mainInterface.browser->GetBrowserState(), self,
+      baseViewController);
 }
 
 - (void)setIncognitoContentVisible:(BOOL)incognitoContentVisible {

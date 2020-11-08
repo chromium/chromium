@@ -20803,6 +20803,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.GoogleServices.FromSigninNotificationInfobar">
+  <owner>fernandex@chromium.org</owner>
+  <description>
+    Reported when user navigates to Google Services Settings from the sign-in
+    notification infobar. iOS only.
+  </description>
+</action>
+
 <action name="Settings.Homepage.LocationChanged">
   <obsolete>
     Removed as original metrics is over counting. Replaced with

@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_NOTIFICATION_INFOBAR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_NOTIFICATION_INFOBAR_DELEGATE_H_
 
+#import <UIKit/UIKit.h>
 #include <memory>
 
 #include "base/macros.h"
@@ -14,6 +15,7 @@
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ui/gfx/image/image.h"
 
+@protocol ApplicationSettingsCommands;
 class ChromeBrowserState;
 
 namespace gfx {
@@ -27,12 +29,16 @@ class InfoBarManager;
 // Shows a sign-in notification in an infobar.
 class SigninNotificationInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
-  SigninNotificationInfoBarDelegate(ChromeBrowserState* browser_state);
+  SigninNotificationInfoBarDelegate(ChromeBrowserState* browser_state,
+                                    id<ApplicationSettingsCommands> dispatcher,
+                                    UIViewController* view_controller);
   ~SigninNotificationInfoBarDelegate() override;
 
   // Creates a sign-in notification infobar and adds it to |infobar_manager|.
   static bool Create(infobars::InfoBarManager* infobar_manager,
-                     ChromeBrowserState* browser_state);
+                     ChromeBrowserState* browser_state,
+                     id<ApplicationSettingsCommands> dispatcher,
+                     UIViewController* view_controller);
 
   // InfoBarDelegate implementation.
   InfoBarIdentifier GetIdentifier() const override;
@@ -48,6 +54,10 @@ class SigninNotificationInfoBarDelegate : public ConfirmInfoBarDelegate {
   gfx::Image icon_;
   base::string16 message_;
   base::string16 button_text_;
+
+  // Dispatcher.
+  __weak id<ApplicationSettingsCommands> dispatcher_ = nil;
+  __weak UIViewController* base_view_controller_ = nil;
 
   DISALLOW_COPY_AND_ASSIGN(SigninNotificationInfoBarDelegate);
 };

@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
@@ -19,6 +20,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -41,17 +43,23 @@ const CGFloat kAvatarImageDimension = 40.0f;
 // static
 bool SigninNotificationInfoBarDelegate::Create(
     infobars::InfoBarManager* infobar_manager,
-    ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state,
+    id<ApplicationSettingsCommands> dispatcher,
+    UIViewController* view_controller) {
   DCHECK(infobar_manager);
   std::unique_ptr<ConfirmInfoBarDelegate> delegate(
-      std::make_unique<SigninNotificationInfoBarDelegate>(browser_state));
+      std::make_unique<SigninNotificationInfoBarDelegate>(
+          browser_state, dispatcher, view_controller));
   std::unique_ptr<infobars::InfoBar> infobar =
       CreateHighPriorityConfirmInfoBar(std::move(delegate));
   return !!infobar_manager->AddInfoBar(std::move(infobar));
 }
 
 SigninNotificationInfoBarDelegate::SigninNotificationInfoBarDelegate(
-    ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state,
+    id<ApplicationSettingsCommands> dispatcher,
+    UIViewController* view_controller)
+    : dispatcher_(dispatcher), base_view_controller_(view_controller) {
   DCHECK(!browser_state->IsOffTheRecord());
 
   AuthenticationService* auth_service =
@@ -99,6 +107,8 @@ gfx::Image SigninNotificationInfoBarDelegate::GetIcon() const {
 }
 
 bool SigninNotificationInfoBarDelegate::Accept() {
-  // TODO(crbug.com/1145592): Add event to open Settings menu.
-  return false;
+  [dispatcher_ showAccountsSettingsFromViewController:base_view_controller_];
+  base::RecordAction(base::UserMetricsAction(
+      "Settings.GoogleServices.FromSigninNotificationInfobar"));
+  return true;
 }
