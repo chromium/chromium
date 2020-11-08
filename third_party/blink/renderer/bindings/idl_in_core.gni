@@ -39,6 +39,7 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/clipboard/data_transfer_item_list.idl",
           "//third_party/blink/renderer/core/css/css.idl",
           "//third_party/blink/renderer/core/css/css_condition_rule.idl",
+          "//third_party/blink/renderer/core/css/css_counter_style_rule.idl",
           "//third_party/blink/renderer/core/css/css_font_face_rule.idl",
           "//third_party/blink/renderer/core/css/css_grouping_rule.idl",
           "//third_party/blink/renderer/core/css/css_import_rule.idl",

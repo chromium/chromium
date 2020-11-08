@@ -56,6 +56,7 @@ core_interface_idl_files_core_only =
                     "clipboard/data_transfer.idl",
                     "clipboard/data_transfer_item_list.idl",
                     "css/css_condition_rule.idl",
+                    "css/css_counter_style_rule.idl",
                     "css/css_font_face_rule.idl",
                     "css/css_grouping_rule.idl",
                     "css/css_import_rule.idl",

@@ -53,6 +53,7 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
     kKeyframesRule = 7,
     kKeyframeRule = 8,
     kNamespaceRule = 10,
+    kCounterStyleRule = 11,
     kSupportsRule = 12,
     kViewportRule = 15,
     // CSSOM constants are deprecated [1], and there will be no new

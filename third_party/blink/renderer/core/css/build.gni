@@ -29,6 +29,8 @@ blink_core_sources_css = [
   "css_condition_rule.h",
   "css_content_distribution_value.cc",
   "css_content_distribution_value.h",
+  "css_counter_style_rule.cc",
+  "css_counter_style_rule.h",
   "css_counter_value.cc",
   "css_counter_value.h",
   "css_crossfade_value.cc",

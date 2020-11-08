@@ -1,0 +1,19 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://drafts.csswg.org/css-counter-styles-3/#the-csscounterstylerule-interface
+[Exposed=Window, RuntimeEnabled=CSSAtRuleCounterStyle]
+interface CSSCounterStyleRule : CSSRule {
+  attribute CSSOMString name;
+  attribute CSSOMString system;
+  attribute CSSOMString symbols;
+  attribute CSSOMString additiveSymbols;
+  attribute CSSOMString negative;
+  attribute CSSOMString prefix;
+  attribute CSSOMString suffix;
+  attribute CSSOMString range;
+  attribute CSSOMString pad;
+  attribute CSSOMString speakAs;
+  attribute CSSOMString fallback;
+};

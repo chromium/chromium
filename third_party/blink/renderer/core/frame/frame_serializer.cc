@@ -518,6 +518,10 @@ void FrameSerializer::SerializeCSSRule(CSSRule* rule) {
           &To<CSSFontFaceRule>(rule)->StyleRule()->Properties(), document);
       break;
 
+    case CSSRule::kCounterStyleRule:
+      // TODO(crbug.com/687225): Implement
+      break;
+
     // Rules in which no external resources can be referenced
     case CSSRule::kCharsetRule:
     case CSSRule::kPageRule:

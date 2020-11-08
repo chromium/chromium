@@ -42,6 +42,11 @@
     const unsigned short KEYFRAMES_RULE = 7;
     const unsigned short KEYFRAME_RULE = 8;
 
+    // CSS Counter Styles
+    // https://drafts.csswg.org/css-counter-styles-3/#extentions-to-cssrule-interface
+    [RuntimeEnabled=CSSAtRuleCounterStyle]
+    const unsigned short COUNTER_STYLE_RULE = 11;
+
     // CSS Conditional Rules
     // https://drafts.csswg.org/css-conditional/#extentions-to-cssrule-interface
     const unsigned short SUPPORTS_RULE = 12;

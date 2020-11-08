@@ -21,6 +21,7 @@
 
 #include "third_party/blink/renderer/core/css/style_rule.h"
 
+#include "third_party/blink/renderer/core/css/css_counter_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_face_rule.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
@@ -234,8 +235,9 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(CSSStyleSheet* parent_sheet,
           To<StyleRuleNamespace>(self), parent_sheet);
       break;
     case kCounterStyle:
-      // TODO(crbug.com/687225): Implement CSSOM wrapper
-      return nullptr;
+      rule = MakeGarbageCollected<CSSCounterStyleRule>(
+          To<StyleRuleCounterStyle>(self), parent_sheet);
+      break;
     case kKeyframe:
     case kCharset:
     case kViewport:
