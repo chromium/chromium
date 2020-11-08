@@ -47,11 +47,11 @@ bool IsFullScreenWindowMode() {
   if (!::EqualRect(&wnd_rect, &monitor_info.rcMonitor))
     return false;
 
-  // At last, the window style should not have WS_DLGFRAME and its extended
-  // style should not have WS_EX_WINDOWEDGE and WS_EX_TOOLWINDOW.
+  // At last, the window style should not have WS_DLGFRAME and WS_THICKFRAME and
+  // its extended style should not have WS_EX_WINDOWEDGE and WS_EX_TOOLWINDOW.
   LONG style = ::GetWindowLong(wnd, GWL_STYLE);
   LONG ext_style = ::GetWindowLong(wnd, GWL_EXSTYLE);
-  return !((style & WS_DLGFRAME) ||
+  return !((style & (WS_DLGFRAME | WS_THICKFRAME)) ||
            (ext_style & (WS_EX_WINDOWEDGE | WS_EX_TOOLWINDOW)));
 }
 
