@@ -2810,6 +2810,7 @@ static_library("ui") {
     sources += [
       "bookmarks/bookmark_bubble_sign_in_delegate.cc",
       "bookmarks/bookmark_bubble_sign_in_delegate.h",
+      "profile_picker.cc",
       "profile_picker.h",
       "signin_reauth_view_controller.cc",
       "signin_reauth_view_controller.h",

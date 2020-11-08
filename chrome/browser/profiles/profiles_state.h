@@ -19,9 +19,13 @@
 struct AccountInfo;
 class Browser;
 class PrefRegistrySimple;
+class PrefService;
 class Profile;
 
-namespace base { class FilePath; }
+namespace base {
+class CommandLine;
+class FilePath;
+}  // namespace base
 
 namespace profiles {
 
@@ -71,6 +75,13 @@ void UpdateProfileName(Profile* profile,
 // The distinction is needed because guest profiles and incognito profiles are
 // implemented as off-the-record profiles.
 bool IsRegularOrGuestSession(Browser* browser);
+
+// Returns true if starting in guest mode is requested at startup (e.g. through
+// command line argument). If |show_warning| is true, send a warning if guest
+// mode is requested but not allowed by policy.
+bool IsGuestModeRequested(const base::CommandLine& command_line,
+                          PrefService* local_state,
+                          bool show_warning);
 
 // Returns true if sign in is required to browse as this profile.  Call with
 // profile->GetPath() if you have a profile pointer.

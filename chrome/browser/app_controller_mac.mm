@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <vector>
 
 #include "base/allocator/allocator_shim.h"
 #include "base/allocator/buildflags.h"
@@ -78,6 +79,7 @@
 #import "chrome/browser/ui/cocoa/share_menu_controller.h"
 #import "chrome/browser/ui/cocoa/tab_menu_bridge.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -110,6 +112,7 @@
 #include "ui/base/cocoa/focus_window_set.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
+#include "url/gurl.h"
 
 using apps::AppShimManager;
 using base::UserMetricsAction;
@@ -1257,8 +1260,19 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   }
   if (lastProfile->IsGuestSession() || IsProfileSignedOut(lastProfile) ||
       lastProfile->IsSystemProfile()) {
+    // Note: If the profile picker feature is enabled, this opens the profile
+    // picker, unless forced signin is enabled (in which case the old user
+    // manager is still shown).
     UserManager::Show(base::FilePath(),
                       profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION);
+  } else if (ProfilePicker::ShouldShowAtLaunch(
+                 // Pass an empty command line, because this is not application
+                 // startup. The original arguments (e.g. --incognito) are no
+                 // longer relevant.
+                 base::CommandLine(base::CommandLine::NO_PROGRAM),
+                 /*urls_to_launch=*/std::vector<GURL>())) {
+    ProfilePicker::Show(
+        ProfilePicker::EntryPoint::kNewSessionOnExistingProcess);
   } else {
     CreateBrowser(lastProfile);
   }

@@ -5,8 +5,16 @@
 #ifndef CHROME_BROWSER_UI_PROFILE_PICKER_H_
 #define CHROME_BROWSER_UI_PROFILE_PICKER_H_
 
+#include <vector>
+
+#include "base/callback_forward.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "url/gurl.h"
+
+namespace base {
+class CommandLine;
+}
 
 namespace views {
 class View;
@@ -59,6 +67,15 @@ class ProfilePicker {
 
   // Overrides the timeout delay for waiting for extended account info.
   static void SetExtendedAccountInfoTimeoutForTesting(base::TimeDelta timeout);
+
+  // Returns whether the profile picker at launch. This can be called on
+  // startup or when Chrome is re-opened, e.g. when clicking on the dock icon on
+  // MacOS when there are no windows, or from Windows tray icon.
+  // This returns true if this is a new session. Returns false if a specific
+  // profile is passed in the command line, or if some parameters (such as the
+  // URLs to launch) cannot be handled by the picker.
+  static bool ShouldShowAtLaunch(const base::CommandLine& command_line,
+                                 const std::vector<GURL>& urls_to_launch);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ProfilePicker);

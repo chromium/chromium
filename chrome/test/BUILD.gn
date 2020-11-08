@@ -3645,6 +3645,7 @@ test("unit_tests") {
     "../browser/profiles/profile_info_cache_unittest.cc",
     "../browser/profiles/profile_info_cache_unittest.h",
     "../browser/profiles/profile_manager_unittest.cc",
+    "../browser/profiles/profiles_state_unittest.cc",
     "../browser/profiling_host/background_profiling_triggers_unittest.cc",
     "../browser/profiling_host/chrome_client_connection_manager_unittest.cc",
     "../browser/push_messaging/budget_database_unittest.cc",
