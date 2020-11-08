@@ -537,6 +537,7 @@ if (is_android) {
 
     sources = [
       "../browser/android/customtabs/custom_tabs_browsertest.cc",
+      "../browser/android/tab_android_browsertest.cc",
       "../browser/android/webapk/webapk_icon_hasher_browsertest.cc",
       "../browser/engagement/important_sites_util_browsertest.cc",
       "../browser/games/games_service_browsertest.cc",
@@ -581,6 +582,7 @@ if (is_android) {
       "//chrome/test/data/banners/",
       "//chrome/test/data/android/customtabs/",
       "//chrome/test/data/ssl/",
+      "//content/test/data",
     ]
   }
 

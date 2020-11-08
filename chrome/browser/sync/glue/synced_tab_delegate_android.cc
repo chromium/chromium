@@ -49,6 +49,12 @@ bool SyncedTabDelegateAndroid::IsPlaceholderTab() const {
   return web_contents() == nullptr;
 }
 
+bool SyncedTabDelegateAndroid::ShouldSync(
+    sync_sessions::SyncSessionsClient* sessions_client) {
+  return TabContentsSyncedTabDelegate::ShouldSync(sessions_client) &&
+         !tab_android_->hide_future_navigations();
+}
+
 void SyncedTabDelegateAndroid::SetWebContents(
     content::WebContents* web_contents,
     int source_tab_android_id) {
