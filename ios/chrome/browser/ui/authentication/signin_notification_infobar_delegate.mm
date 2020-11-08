@@ -15,6 +15,7 @@
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/infobars/infobar_utils.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -44,8 +45,9 @@ bool SigninNotificationInfoBarDelegate::Create(
   DCHECK(infobar_manager);
   std::unique_ptr<ConfirmInfoBarDelegate> delegate(
       std::make_unique<SigninNotificationInfoBarDelegate>(browser_state));
-  return !!infobar_manager->AddInfoBar(
-      infobar_manager->CreateConfirmInfoBar(std::move(delegate)));
+  std::unique_ptr<infobars::InfoBar> infobar =
+      CreateHighPriorityConfirmInfoBar(std::move(delegate));
+  return !!infobar_manager->AddInfoBar(std::move(infobar));
 }
 
 SigninNotificationInfoBarDelegate::SigninNotificationInfoBarDelegate(
