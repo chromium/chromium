@@ -269,20 +269,23 @@ chrome.test.runTests([
       chrome.test.assertEq('v', settings['k']);
 
       // 4. Get settings - {'k': 'v'}.
-      chrome.terminalPrivate.getSettings(
-          chrome.test.callbackPass((settings) => {
-            chrome.test.assertEq(1, Object.keys(settings).length);
-            chrome.test.assertEq('v', settings['k']);
-            chrome.test.succeed();
-          }));
+      chrome.terminalPrivate.getSettings((settings) => {
+        chrome.test.assertNoLastError();
+        chrome.test.assertEq(1, Object.keys(settings).length);
+        chrome.test.assertEq('v', settings['k']);
+        chrome.test.succeed();
+      });
     });
 
     // 1. Get settings - {}.
-    chrome.terminalPrivate.getSettings(chrome.test.callbackPass((settings) => {
+    chrome.terminalPrivate.getSettings((settings) => {
+      chrome.test.assertNoLastError();
       chrome.test.assertEq(0, Object.keys(settings).length);
 
       // 2. Set {'k': 'v'}.
-      chrome.terminalPrivate.setSettings({k: 'v'}, chrome.test.callbackPass());
-    }));
-  }
+      chrome.terminalPrivate.setSettings(
+          {k: 'v'}, () => chrome.test.assertNoLastError());
+    });
+  },
+
 ]);
