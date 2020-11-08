@@ -146,15 +146,6 @@ void GraphicsLayerUpdater::UpdateRecursive(
     }
   }
 
-  if (layer.GetLayoutObject().IsLayoutEmbeddedContent()) {
-    if (PaintLayerCompositor* inner_compositor =
-            PaintLayerCompositor::FrameContentsCompositor(
-                ToLayoutEmbeddedContent(layer.GetLayoutObject()))) {
-      if (inner_compositor->RootLayerAttachmentDirty())
-        needs_rebuild_tree_ = true;
-    }
-  }
-
   PaintLayer* first_child =
       layer.GetLayoutObject().ChildPrePaintBlockedByDisplayLock()
           ? nullptr
