@@ -18,15 +18,24 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
+#include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// Avatar profile picture size.
+const CGFloat kAvatarImageDimension = 40.0f;
+
+}  // namespace
 
 // static
 bool SigninNotificationInfoBarDelegate::Create(
@@ -48,6 +57,13 @@ SigninNotificationInfoBarDelegate::SigninNotificationInfoBarDelegate(
   DCHECK(auth_service);
   ChromeIdentity* identity = auth_service->GetAuthenticatedIdentity();
 
+  UIImage* image = ios::GetChromeBrowserProvider()
+                       ->GetChromeIdentityService()
+                       ->GetCachedAvatarForIdentity(identity);
+  if (!image) {
+    image = [UIImage imageNamed:@"ios_default_avatar"];
+  }
+  icon_ = gfx::Image(CircularImageFromImage(image, kAvatarImageDimension));
   message_ = base::SysNSStringToUTF16(l10n_util::GetNSStringF(
       IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE_WITH_USERNAME,
       base::SysNSStringToUTF16(identity.userFullName)));
