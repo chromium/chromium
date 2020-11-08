@@ -67,7 +67,7 @@
         VolumeManagerCommon.RootType.DRIVE, str('DRIVE_DIRECTORY_LABEL'));
     /** @type {MockFileSystem} */ (drive.fileSystem)
         .populate(Object.values(driveFs.entries));
-    window.webkitResolveLocalFileSystmeURL = orig;
+    window.webkitResolveLocalFileSystemURL = orig;
 
     // Create Downloads.
     this.createVolumeInfo(
