@@ -3279,6 +3279,8 @@ static_library("browser") {
       "accessibility/caption_host_impl.h",
       "accessibility/invert_bubble_prefs.cc",
       "accessibility/invert_bubble_prefs.h",
+      "accessibility/soda_installer.cc",
+      "accessibility/soda_installer.h",
       "apps/app_service/app_icon_factory.cc",
       "apps/app_service/app_icon_factory.h",
       "apps/app_service/app_icon_source.cc",
@@ -4059,6 +4061,11 @@ static_library("browser") {
         "//chromeos/login/session",
         "//chromeos/services/nearby/public/mojom",
         "//components/arc:arc_base_utils",
+      ]
+    } else {
+      sources += [
+        "accessibility/soda_installer_impl.cc",
+        "accessibility/soda_installer_impl.h",
       ]
     }
     if (enable_extensions) {

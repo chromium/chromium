@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ACCESSIBILITY_CAPTION_CONTROLLER_H_
 
 #include <memory>
-#include <string>
 #include <unordered_map>
 
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -89,8 +88,6 @@ class CaptionController : public BrowserListObserver, public KeyedService {
   void OnLiveCaptionEnabledChanged();
   void OnLiveCaptionLanguageChanged();
   bool IsLiveCaptionEnabled();
-  void UpdateSpeechRecognitionServiceEnabled();
-  void UpdateSpeechRecognitionLanguage();
   void UpdateUIEnabled();
   void UpdateCaptionStyle();
 

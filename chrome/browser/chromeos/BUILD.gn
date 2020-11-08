@@ -424,6 +424,8 @@ source_set("chromeos") {
     "accessibility/magnifier_type.h",
     "accessibility/select_to_speak_event_handler_delegate.cc",
     "accessibility/select_to_speak_event_handler_delegate.h",
+    "accessibility/soda_installer_impl_chromeos.cc",
+    "accessibility/soda_installer_impl_chromeos.h",
     "account_manager/account_manager_edu_coexistence_controller.cc",
     "account_manager/account_manager_edu_coexistence_controller.h",
     "account_manager/account_manager_facade_factory_ash.cc",

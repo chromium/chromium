@@ -26,8 +26,8 @@ namespace policy {
 class ComponentUpdaterPolicyTest;
 }
 
-namespace settings {
-class CaptionsHandler;
+namespace speech {
+class SODAInstallerImpl;
 }
 
 namespace update_client {
@@ -147,7 +147,7 @@ class ComponentUpdateService {
   virtual bool GetComponentDetails(const std::string& id,
                                    CrxUpdateItem* item) const = 0;
 
-  friend class settings::CaptionsHandler;
+  friend class speech::SODAInstallerImpl;
   friend class ::ComponentsHandler;
   FRIEND_TEST_ALL_PREFIXES(ComponentInstallerTest, RegisterComponent);
 };

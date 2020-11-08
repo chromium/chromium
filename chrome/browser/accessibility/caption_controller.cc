@@ -4,15 +4,15 @@
 
 #include "chrome/browser/accessibility/caption_controller.h"
 
-#include <string>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/accessibility/caption_util.h"
+#include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/component_updater/soda_component_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -99,30 +99,13 @@ void CaptionController::OnLiveCaptionEnabledChanged() {
   if (enabled == enabled_)
     return;
   enabled_ = enabled;
-  UpdateSpeechRecognitionServiceEnabled();
-  UpdateSpeechRecognitionLanguage();
-  UpdateUIEnabled();
-}
 
-void CaptionController::OnLiveCaptionLanguageChanged() {
-  UpdateSpeechRecognitionLanguage();
-}
-
-bool CaptionController::IsLiveCaptionEnabled() {
-  PrefService* profile_prefs = profile_->GetPrefs();
-  return profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled);
-}
-
-void CaptionController::UpdateSpeechRecognitionServiceEnabled() {
   if (enabled_) {
+    // Register SODA component and download speech model.
     g_browser_process->local_state()->SetTime(prefs::kSodaScheduledDeletionTime,
                                               base::Time());
-    // Register SODA component and download speech model.
-    component_updater::RegisterSodaComponent(
-        g_browser_process->component_updater(), profile_->GetPrefs(),
-        g_browser_process->local_state(),
-        base::BindOnce(&component_updater::SODAComponentInstallerPolicy::
-                           UpdateSODAComponentOnDemand));
+    speech::SODAInstaller::GetInstance()->InstallSODA(profile_->GetPrefs());
+    speech::SODAInstaller::GetInstance()->InstallLanguage(profile_->GetPrefs());
   } else {
     // Schedule SODA to be deleted in 30 days if the feature is not enabled
     // before then.
@@ -130,14 +113,18 @@ void CaptionController::UpdateSpeechRecognitionServiceEnabled() {
         prefs::kSodaScheduledDeletionTime,
         base::Time::Now() + base::TimeDelta::FromDays(kSodaCleanUpDelayInDays));
   }
+  UpdateUIEnabled();
 }
 
-void CaptionController::UpdateSpeechRecognitionLanguage() {
-  if (enabled_) {
-    component_updater::RegisterSodaLanguageComponent(
-        g_browser_process->component_updater(), profile_->GetPrefs());
-  }
-}  // namespace captions
+void CaptionController::OnLiveCaptionLanguageChanged() {
+  if (enabled_)
+    speech::SODAInstaller::GetInstance()->InstallLanguage(profile_->GetPrefs());
+}
+
+bool CaptionController::IsLiveCaptionEnabled() {
+  PrefService* profile_prefs = profile_->GetPrefs();
+  return profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled);
+}
 
 void CaptionController::UpdateUIEnabled() {
   if (enabled_) {

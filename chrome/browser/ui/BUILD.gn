@@ -1402,6 +1402,8 @@ static_library("ui") {
       "webui/settings/appearance_handler.h",
       "webui/settings/browser_lifetime_handler.cc",
       "webui/settings/browser_lifetime_handler.h",
+      "webui/settings/captions_handler.cc",
+      "webui/settings/captions_handler.h",
       "webui/settings/custom_home_pages_table_model.cc",
       "webui/settings/custom_home_pages_table_model.h",
       "webui/settings/downloads_handler.cc",
@@ -1560,13 +1562,6 @@ static_library("ui") {
 
     if (is_linux && !is_chromeos) {
       deps += [ "//ui/base/ime/linux" ]
-    }
-
-    if (!is_chromeos) {
-      sources += [
-        "webui/settings/captions_handler.cc",
-        "webui/settings/captions_handler.h",
-      ]
     }
 
     if (!toolkit_views) {
@@ -2441,8 +2436,6 @@ static_library("ui") {
       "webui/settings/chromeos/bluetooth_section.h",
       "webui/settings/chromeos/calculator/size_calculator.cc",
       "webui/settings/chromeos/calculator/size_calculator.h",
-      "webui/settings/chromeos/captions_handler.cc",
-      "webui/settings/chromeos/captions_handler.h",
       "webui/settings/chromeos/change_picture_handler.cc",
       "webui/settings/chromeos/change_picture_handler.h",
       "webui/settings/chromeos/constants/constants_util.cc",
