@@ -813,7 +813,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         @Override
         public void setSearchBoxScrollListener(Callback<Float> scrollCallback) {
             NewTabPage newVisibleNtp = getNewTabPageForCurrentTab();
-            if (mVisibleNtp == newVisibleNtp) return;
             if (mVisibleNtp != null) mVisibleNtp.setSearchBoxScrollListener(null);
             mVisibleNtp = newVisibleNtp;
             if (mVisibleNtp != null && shouldUpdateListener()) {
@@ -867,6 +866,12 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             };
         } else if (toolbarLayout instanceof ToolbarTablet) {
             return new ToolbarNtpDelegate() {
+                @Override
+                public void setSearchBoxScrollListener(Callback<Float> scrollCallback) {
+                    if (mVisibleNtp == getNewTabPageForCurrentTab()) return;
+                    super.setSearchBoxScrollListener(scrollCallback);
+                }
+
                 @Override
                 protected boolean shouldUpdateListener() {
                     return true;
