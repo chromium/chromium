@@ -23,7 +23,7 @@ constexpr SkColor kLoginButtonBackgroundBaseColor =
     SkColorSetA(SK_ColorWHITE, 26);
 
 // Colors for shelf.
-constexpr SkColor kDefaultShelfInkDropColor = SK_ColorBLACK;
+constexpr SkColor kDefaultShelfInkDropColor = SK_ColorWHITE;
 constexpr float kDefaultShelfInkDropOpacity = 0.2f;
 constexpr SkColor kShelfButtonColor = SK_ColorWHITE;
 constexpr SkColor kIndicatorColorActive = SK_ColorWHITE;
