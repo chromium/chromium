@@ -367,7 +367,9 @@ void WebRTCInternals::EnableAudioDebugRecordings(
 #else
   selection_type_ = SelectionType::kAudioDebugRecordings;
   DCHECK(!select_file_dialog_);
-  select_file_dialog_ = ui::SelectFileDialog::Create(this, nullptr);
+  select_file_dialog_ = ui::SelectFileDialog::Create(
+      this,
+      GetContentClient()->browser()->CreateSelectFilePolicy(web_contents));
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, base::string16(),
       audio_debug_recordings_file_path_, nullptr, 0,
@@ -417,7 +419,9 @@ void WebRTCInternals::EnableLocalEventLogRecordings(
   DCHECK(web_contents);
   DCHECK(!select_file_dialog_);
   selection_type_ = SelectionType::kRtcEventLogs;
-  select_file_dialog_ = ui::SelectFileDialog::Create(this, nullptr);
+  select_file_dialog_ = ui::SelectFileDialog::Create(
+      this,
+      GetContentClient()->browser()->CreateSelectFilePolicy(web_contents));
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, base::string16(),
       event_log_recordings_file_path_, nullptr, 0, FILE_PATH_LITERAL(""),
