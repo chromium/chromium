@@ -220655,22 +220655,6 @@
        ]
       },
       "text": {
-       "2d.text.draw.align.end.rtl-expected.txt": [
-        "4616e9cf336b72b0d1ad1b7659cac3d32a110bd4",
-        []
-       ],
-       "2d.text.draw.align.end.rtl.worker-expected.txt": [
-        "4616e9cf336b72b0d1ad1b7659cac3d32a110bd4",
-        []
-       ],
-       "2d.text.draw.align.start.rtl-expected.txt": [
-        "2862a119f6843b3c4f094c9c1cde99117d13d52a",
-        []
-       ],
-       "2d.text.draw.align.start.rtl.worker-expected.txt": [
-        "2862a119f6843b3c4f094c9c1cde99117d13d52a",
-        []
-       ],
        "2d.text.draw.baseline.hanging-expected.txt": [
         "3994e422ffde7a9137fa1c72fdb5f837c41de0bf",
         []
@@ -220955,7 +220939,7 @@
          []
         ],
         "text.yaml": [
-         "30a0ad1a6fe5ef721ea91820ed95354c66710582",
+         "b218d2d8b8b8bf253d9f471b1cb58aa8f21d3293",
          []
         ],
         "the-canvas-state.yaml": [
@@ -356414,28 +356398,28 @@
         ]
        ],
        "2d.text.draw.align.end.ltr.html": [
-        "8b01fbbc8c4066e271cbf4825c11176c12a8e35c",
+        "1f1a23eed935614bbbef47ae1dffdec2f5f4ddf8",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.align.end.ltr.worker.js": [
-        "c84308c7f0716d789273021942a594ddae431cd4",
+        "b3705520b1694b5b3a6184e25ea8502d4ddb433b",
         [
          "html/canvas/offscreen/text/2d.text.draw.align.end.ltr.worker.html",
          {}
         ]
        ],
        "2d.text.draw.align.end.rtl.html": [
-        "0cf7b5756ae0a4f094274600ad33776394d97cc1",
+        "f18e4974ba1543172a997ce3775b091dd984dd55",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.align.end.rtl.worker.js": [
-        "6845dd474d61786aa89f288a52d9c03ed1881fcb",
+        "a0561c1f8063300908e7a874f6f73b5f244c12d6",
         [
          "html/canvas/offscreen/text/2d.text.draw.align.end.rtl.worker.html",
          {}
@@ -356470,28 +356454,28 @@
         ]
        ],
        "2d.text.draw.align.start.ltr.html": [
-        "301b6dc4522d913746b98daaecae592e3f116c9b",
+        "08c222b9a59f559f3d3640903da6ed87903a491d",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.align.start.ltr.worker.js": [
-        "4e7db42542be076ff53bd42a6787542437c2cc42",
+        "1cefdd0cfa63025ce193426716b5f9ee65bfe105",
         [
          "html/canvas/offscreen/text/2d.text.draw.align.start.ltr.worker.html",
          {}
         ]
        ],
        "2d.text.draw.align.start.rtl.html": [
-        "27723f23efc1dff14c719aca0b81afc0acdf1eea",
+        "3d9670abc30ae3bfdfb043c82c8e75c9db5f330b",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.align.start.rtl.worker.js": [
-        "545c1d9c27d222a0824e5858d7f48d2158bbd67f",
+        "2cc818fc9282f54badc39ffbd506dff7993e0c3c",
         [
          "html/canvas/offscreen/text/2d.text.draw.align.start.rtl.worker.html",
          {}
@@ -406638,7 +406622,7 @@
       ]
      ],
      "declarative-shadow-dom-opt-in.tentative.html": [
-      "b314adb85c40097c17d838fe1645110df39059e7",
+      "e023477c9f5014d474b69d850084e834fcde649b",
       [
        null,
        {}
