@@ -156,5 +156,47 @@ TEST(HttpsRecordRdataTest, RejectCorruptRdata) {
   EXPECT_TRUE(rdata->IsMalformed());
 }
 
+TEST(HttpsRecordRdataTest, AliasIsEqualRejectsWrongType) {
+  AliasFormHttpsRecordRdata alias("alias.name.test");
+  ServiceFormHttpsRecordRdata service(
+      1u /* priority */, "service.name.test", {} /* mandatory_keys */,
+      {} /* alpn_ids */, true /* default_alpn */, base::nullopt /* port */,
+      {} /* ipv4_hint */, "" /* ech_config */, {} /* ipv6_hint */,
+      {} /* unparsed_params */);
+  MalformedHttpsRecordRdata malformed;
+
+  EXPECT_TRUE(alias.IsEqual(&alias));
+  EXPECT_FALSE(alias.IsEqual(&service));
+  EXPECT_FALSE(alias.IsEqual(&malformed));
+}
+
+TEST(HttpsRecordRdataTest, ServiceIsEqualRejectsWrongType) {
+  AliasFormHttpsRecordRdata alias("alias.name.test");
+  ServiceFormHttpsRecordRdata service(
+      1u /* priority */, "service.name.test", {} /* mandatory_keys */,
+      {} /* alpn_ids */, true /* default_alpn */, base::nullopt /* port */,
+      {} /* ipv4_hint */, "" /* ech_config */, {} /* ipv6_hint */,
+      {} /* unparsed_params */);
+  MalformedHttpsRecordRdata malformed;
+
+  EXPECT_FALSE(service.IsEqual(&alias));
+  EXPECT_TRUE(service.IsEqual(&service));
+  EXPECT_FALSE(service.IsEqual(&malformed));
+}
+
+TEST(HttpsRecordRdataTest, MalformedIsEqualRejectsWrongType) {
+  AliasFormHttpsRecordRdata alias("alias.name.test");
+  ServiceFormHttpsRecordRdata service(
+      1u /* priority */, "service.name.test", {} /* mandatory_keys */,
+      {} /* alpn_ids */, true /* default_alpn */, base::nullopt /* port */,
+      {} /* ipv4_hint */, "" /* ech_config */, {} /* ipv6_hint */,
+      {} /* unparsed_params */);
+  MalformedHttpsRecordRdata malformed;
+
+  EXPECT_FALSE(malformed.IsEqual(&alias));
+  EXPECT_FALSE(malformed.IsEqual(&service));
+  EXPECT_TRUE(malformed.IsEqual(&malformed));
+}
+
 }  // namespace
 }  // namespace net

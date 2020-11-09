@@ -240,8 +240,7 @@ bool AliasFormHttpsRecordRdata::IsEqual(const HttpsRecordRdata* other) const {
   if (!other->IsAlias())
     return false;
 
-  const AliasFormHttpsRecordRdata* alias =
-      static_cast<const AliasFormHttpsRecordRdata*>(other);
+  const AliasFormHttpsRecordRdata* alias = other->AsAliasForm();
   return alias_name_ == alias->alias_name_;
 }
 
@@ -295,11 +294,10 @@ ServiceFormHttpsRecordRdata::~ServiceFormHttpsRecordRdata() = default;
 bool ServiceFormHttpsRecordRdata::IsEqual(const HttpsRecordRdata* other) const {
   DCHECK(other);
 
-  if (other->IsAlias())
+  if (other->IsAlias() || other->IsMalformed())
     return false;
 
-  const ServiceFormHttpsRecordRdata* service =
-      static_cast<const ServiceFormHttpsRecordRdata*>(other);
+  const ServiceFormHttpsRecordRdata* service = other->AsServiceForm();
   return priority_ == service->priority_ &&
          service_name_ == service->service_name_ &&
          mandatory_keys_ == service->mandatory_keys_ &&
