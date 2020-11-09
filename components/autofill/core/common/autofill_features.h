@@ -41,6 +41,7 @@ extern const base::Feature kAutofillEnableSupportForMergingSubsetNames;
 extern const base::Feature kAutofillEnableUIForHonorificPrefixesInSettings;
 extern const base::Feature kAutofillExtractAllDatalists;
 extern const base::Feature kAutofillFixFillableFieldTypes;
+extern const base::Feature kAutofillRefillWithRendererIds;
 extern const base::Feature kAutofillRetrieveFromCacheWithRendererIds;
 extern const base::Feature kAutofillKeyboardAccessory;
 extern const base::Feature kAutofillLabelAffixRemoval;

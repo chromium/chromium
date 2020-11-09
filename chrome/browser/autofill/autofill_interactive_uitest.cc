@@ -2905,14 +2905,35 @@ class AutofillDynamicFormInteractiveTest : public AutofillInteractiveTestBase {
   }
 };
 
+class AutofillDynamicFormReplacementInteractiveTest
+    : public AutofillInteractiveTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  AutofillDynamicFormReplacementInteractiveTest()
+      : refill_with_renderer_ids_(GetParam()) {
+    scoped_feature_.InitWithFeatureState(
+        features::kAutofillRefillWithRendererIds, refill_with_renderer_ids_);
+  }
+
+ protected:
+  bool refill_with_renderer_ids_;
+  base::test::ScopedFeatureList scoped_feature_;
+};
+
 // Test that we can Autofill dynamically generated forms.
-IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
+IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
                        DynamicChangingFormFill) {
   CreateTestProfile();
 
   GURL url =
       embedded_test_server()->GetURL("a.com", "/autofill/dynamic_form.html");
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // TODO(crbug/896689): Cleanup feature, also in JS code.
+  if (refill_with_renderer_ids_) {
+    ASSERT_TRUE(content::ExecuteScript(
+        GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
+  }
 
   TriggerFormFill("firstname");
 
@@ -2932,7 +2953,7 @@ IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
   ExpectFieldValue("phone_form1", "15125551234");
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
+IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
                        TwoDynamicChangingFormsFill) {
   // Setup that the test expects a re-fill to happen.
   test_delegate()->SetIsExpectingDynamicRefill(true);
@@ -2942,6 +2963,12 @@ IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
   GURL url = embedded_test_server()->GetURL("a.com",
                                             "/autofill/two_dynamic_forms.html");
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // TODO(crbug/896689): Cleanup feature, also in JS code.
+  if (refill_with_renderer_ids_) {
+    ASSERT_TRUE(content::ExecuteScript(
+        GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
+  }
 
   TriggerFormFill("firstname_form1");
 
@@ -2979,13 +3006,19 @@ IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
 }
 
 // Test that forms that dynamically change a second time do not get filled.
-IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
+IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
                        DynamicChangingFormFill_SecondChange) {
   CreateTestProfile();
 
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/double_dynamic_form.html");
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // TODO(crbug/896689): Cleanup feature, also in JS code.
+  if (refill_with_renderer_ids_) {
+    ASSERT_TRUE(content::ExecuteScript(
+        GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
+  }
 
   TriggerFormFill("firstname");
 
@@ -3033,13 +3066,19 @@ IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
 }
 
 // Test that only field of a type group that was filled initially get refilled.
-IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
+IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
                        DynamicChangingFormFill_AddsNewFieldTypeGroups) {
   CreateTestProfile();
 
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_new_field_types.html");
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // TODO(crbug/896689): Cleanup feature, also in JS code.
+  if (refill_with_renderer_ids_) {
+    ASSERT_TRUE(content::ExecuteScript(
+        GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
+  }
 
   TriggerFormFill("firstname");
 
@@ -3294,7 +3333,7 @@ IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
 }
 
 // Test that credit card fields are re-filled.
-IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
+IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
                        DynamicChangingFormFill_AlsoForCreditCard) {
   CreateTestCreditCart();
 
@@ -3302,6 +3341,12 @@ IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
   GURL url = https_server()->GetURL("a.com",
                                     "/autofill/dynamic_form_credit_card.html");
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // TODO(crbug/896689): Cleanup feature, also in JS code.
+  if (refill_with_renderer_ids_) {
+    ASSERT_TRUE(content::ExecuteScript(
+        GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
+  }
 
   // Trigger the initial fill.
   FocusFieldByName("cc-name");
@@ -3383,13 +3428,19 @@ IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
 
 // Test that we can Autofill dynamically generated forms with no name if the
 // NameForAutofill of the first field matches.
-IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
+IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
                        DynamicChangingFormFill_FormWithoutName) {
   CreateTestProfile();
 
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_no_name.html");
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // TODO(crbug/896689): Cleanup feature, also in JS code.
+  if (refill_with_renderer_ids_) {
+    ASSERT_TRUE(content::ExecuteScript(
+        GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
+  }
 
   TriggerFormFill("firstname");
 
@@ -3494,6 +3545,10 @@ IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
   ExpectFieldValue("email", "red.swingline@initech.com");
   ExpectFieldValue("phone", "15125551234");
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AutofillDynamicFormReplacementInteractiveTest,
+                         testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AutofillRestrictUnownedFieldsTest,

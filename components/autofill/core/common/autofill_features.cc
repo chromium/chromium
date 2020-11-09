@@ -133,6 +133,12 @@ const base::Feature kAutofillExtractAllDatalists{
 const base::Feature kAutofillFixFillableFieldTypes{
     "AutofillFixFillableFieldTypes", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, Autofill will use FormRendererIds instead of
+// GetIdentifierForRefill() to identify forms during refills.
+// TODO(crbug/896689): Remove once experiment is finished.
+const base::Feature kAutofillRefillWithRendererIds{
+    "AutofillRefillWithRendererIds", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, Autofill will use FieldRendererIds instead of unique_names
 // to align forms in FormStructure::RetrieveFromCache().
 const base::Feature kAutofillRetrieveFromCacheWithRendererIds{

@@ -44,7 +44,9 @@ var notify_on_credit_card_name_input_appear = false;
 function ExpChanged() {
   RemoveForm("cc1");
 
-  var new_form = document.createElement("form");
+  var new_form =
+    (window.kAutofillRefillWithRendererIds && document.getElementById('cc1')) ||
+     document.createElement('form');
   new_form.setAttribute('method',"post");
   //new_form.setAttribute('action',"https://example.com/")
   new_form.setAttribute('name',"cc1.1");

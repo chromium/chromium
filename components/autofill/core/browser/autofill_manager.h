@@ -409,8 +409,12 @@ class AutofillManager : public AutofillHandler,
     // empty.
     const base::Optional<AutofillProfile> profile;
     const base::Optional<std::pair<CreditCard, base::string16>> credit_card;
-    // The name of the field that was initially filled.
-    const base::string16 filled_field_name;
+    // Possible identifiers of the field that was focused when the form was
+    // initially filled. A refill shall be triggered from the same field.
+    // TODO(crbug/896689): Remove |filled_field_unique_name|.
+    const FieldRendererId filled_field_renderer_id;
+    const FieldSignature filled_field_signature;
+    const base::string16 filled_field_unique_name;
     // The time at which the initial fill occurred.
     const base::TimeTicks original_fill_time;
     // The timer used to trigger a refill.
@@ -585,7 +589,14 @@ class AutofillManager : public AutofillHandler,
                           uint32_t profile_form_bitmask,
                           std::string* failure_to_fill);
 
-  // Whether there should be an attemps to refill the form. Returns true if all
+  // TODO(crbug/896689): Remove code duplication once experiment is finished.
+  void SetFillingContext(const FormStructure& form,
+                         std::unique_ptr<FillingContext> context);
+
+  // TODO(crbug/896689): Remove code duplication once experiment is finished.
+  FillingContext* GetFillingContext(const FormStructure& form);
+
+  // Whether there should be an attempts to refill the form. Returns true if all
   // the following are satisfied:
   //  There have been no refill on that page yet.
   //  A non empty form name was recorded in a previous fill
@@ -621,6 +632,7 @@ class AutofillManager : public AutofillHandler,
 
   void SetDataList(const std::vector<base::string16>& values,
                    const std::vector<base::string16>& labels);
+
   AutofillClient* const client_;
 
   LogManager* log_manager_;
@@ -717,8 +729,11 @@ class AutofillManager : public AutofillHandler,
 
   // A map of form names to FillingContext instances used to make refill
   // attempts for dynamic forms.
+  // TODO(crbug/896689): Remove code duplication once experiment is finished.
+  std::map<FormRendererId, std::unique_ptr<FillingContext>>
+      filling_context_by_renderer_id_;
   std::map<base::string16, std::unique_ptr<FillingContext>>
-      filling_contexts_map_;
+      filling_context_by_unique_name_;
 
   // Tracks whether or not rich query encoding is enabled for this client.
   const bool is_rich_query_enabled_ = false;
