@@ -153,7 +153,7 @@ void AutofillProviderAndroid::OnAutofillAvailable(JNIEnv* env,
                                                   jobject jcaller,
                                                   jobject formData) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (handler_) {
+  if (handler_ && form_) {
     const FormData& form = form_->GetAutofillValues();
     SendFormDataToRenderer(handler_.get(), id_, form);
   }
