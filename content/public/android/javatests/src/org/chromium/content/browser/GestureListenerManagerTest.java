@@ -10,6 +10,7 @@ import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +29,10 @@ import org.chromium.content_public.browser.test.RenderFrameHostTestExt;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
+
+import java.util.concurrent.TimeoutException;
 
 /**
  * Assertions for GestureListenerManager.
@@ -45,16 +49,18 @@ public class GestureListenerManagerTest {
 
     private static final class GestureStateListenerImpl implements GestureStateListenerWithScroll {
         private int mNumOnScrollOffsetOrExtentChangedCalls;
-        public CallbackHelper mCallbackHelper = new CallbackHelper();
+        public CallbackHelper mScrollEndCallbackHelper = new CallbackHelper();
         private boolean mGotStarted;
         private boolean mDidScrollOffsetChangeWhileScrolling;
         private Integer mLastScrollOffsetY;
+        int mScrollOffsetCallCount;
 
         @Override
         public void onScrollStarted(int scrollOffsetY, int scrollExtentY) {
             org.chromium.base.Log.e("chrome", "!!!onScrollStarted " + scrollOffsetY);
             mGotStarted = true;
             mLastScrollOffsetY = null;
+            mScrollOffsetCallCount = 0;
         }
         @Override
         public void onScrollOffsetOrExtentChanged(int scrollOffsetY, int scrollExtentY) {
@@ -65,6 +71,7 @@ public class GestureListenerManagerTest {
                     && (mLastScrollOffsetY == null || !mLastScrollOffsetY.equals(scrollOffsetY))) {
                 if (mLastScrollOffsetY != null) mDidScrollOffsetChangeWhileScrolling = true;
                 mLastScrollOffsetY = scrollOffsetY;
+                ++mScrollOffsetCallCount;
             }
         }
         @Override
@@ -75,13 +82,74 @@ public class GestureListenerManagerTest {
             // onScrollOffsetOrExtentChanged() should be called at least twice. Once with an initial
             // value, and then with a different value.
             Assert.assertTrue(mDidScrollOffsetChangeWhileScrolling);
-            mCallbackHelper.notifyCalled();
+            mScrollEndCallbackHelper.notifyCalled();
             mGotStarted = false;
         }
     }
 
+    private TestCallbackHelperContainer mCallbackHelperContainer;
+    private GestureStateListenerImpl mListener;
+    private WebContents mWebContents;
     private float mCurrentX;
     private float mCurrentY;
+
+    @Before
+    public void setUp() throws Throwable {
+        mActivityTestRule.launchContentShellWithUrl("about:blank");
+        mWebContents = mActivityTestRule.getWebContents();
+        // This needs to wait for first-paint, otherwise scrolling doesn't happen.
+        mCallbackHelperContainer = new TestCallbackHelperContainer(mWebContents);
+        mActivityTestRule.loadUrl(mWebContents.getNavigationController(), mCallbackHelperContainer,
+                new LoadUrlParams(TEST_URL));
+        // Wait for the first non-empty visual paint and the title to change. The title changes when
+        // the doc has finished loading, which is a good signal events can be processed.
+        mCallbackHelperContainer.getOnFirstVisuallyNonEmptyPaintHelper().waitForCallback(0);
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(mWebContents.getTitle(), Matchers.is("loaded")));
+        waitForReadinessToHandleEvents();
+    }
+
+    private void waitForReadinessToHandleEvents() throws TimeoutException {
+        // At this point the page has finished loading and a non-empty paint occurred. This does not
+        // mean the renderer is fully ready to process events (processing events requires layers,
+        // which may not have been created yet). Wait for a visual update, which should ensure the
+        // renderer is ready.
+        CallbackHelper callbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            new RenderFrameHostTestExt(mWebContents.getMainFrame())
+                    .updateVisualState((Boolean result) -> {
+                        Assert.assertTrue(result);
+                        callbackHelper.notifyCalled();
+                    });
+        });
+        callbackHelper.waitForFirst();
+    }
+
+    private void startListening() {
+        mListener = new GestureStateListenerImpl();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            GestureListenerManagerImpl manager =
+                    (GestureListenerManagerImpl) GestureListenerManager.fromWebContents(
+                            mWebContents);
+            // shouldReportAllRootScrolls() should initially be false (as there are no listeners).
+            Assert.assertFalse(manager.shouldReportAllRootScrolls());
+            manager.addListener(mListener);
+            // Adding a listener enables root-scrolls.
+            Assert.assertTrue(manager.shouldReportAllRootScrolls());
+            View mWebContentsView = mWebContents.getViewAndroidDelegate().getContainerView();
+            mCurrentX = mWebContentsView.getWidth() / 2;
+            mCurrentY = mWebContentsView.getHeight() / 2;
+            Assert.assertTrue(mCurrentY > 0);
+        });
+    }
+
+    private void performAndVerifyScroll() throws TimeoutException {
+        int scrollEndCallCount = mListener.mScrollEndCallbackHelper.getCallCount();
+        TouchCommon.performDrag(mActivityTestRule.getActivity(), mCurrentX, mCurrentX, mCurrentY,
+                mCurrentY - 50, /* stepCount*/ 3, /* duration in ms */ 250);
+        mListener.mScrollEndCallbackHelper.waitForCallback(scrollEndCallCount);
+    }
 
     /**
      * Assertions for GestureStateListener.onScrollOffsetOrExtentChanged.
@@ -90,61 +158,55 @@ public class GestureListenerManagerTest {
     @LargeTest
     @Feature({"Browser"})
     public void testOnScrollOffsetOrExtentChanged() throws Throwable {
-        mActivityTestRule.launchContentShellWithUrl("about:blank");
-        WebContents webContents = mActivityTestRule.getWebContents();
-        // This needs to wait for first-paint, otherwise scrolling doesn't happen.
-        TestCallbackHelperContainer callbackHelperContainer =
-                new TestCallbackHelperContainer(webContents);
-        mActivityTestRule.loadUrl(webContents.getNavigationController(), callbackHelperContainer,
-                new LoadUrlParams(TEST_URL));
-        // Wait for the first non-empty visual paint and the title to change. The title changes when
-        // the doc has finished loading, which is a good signal events can be processed.
-        callbackHelperContainer.getOnFirstVisuallyNonEmptyPaintHelper().waitForCallback(0);
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(webContents.getTitle(), Matchers.is("loaded")));
+        startListening();
+        performAndVerifyScroll();
 
-        // At this point the page has finished loading and a non-empty paint occurred. This does not
-        // mean the renderer is fully ready to process events (processing events requires layers,
-        // which may not have been created yet). Wait for a visual update, which should ensure the
-        // renderer is ready.
-        CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            new RenderFrameHostTestExt(webContents.getMainFrame())
-                    .updateVisualState((Boolean result) -> {
-                        Assert.assertTrue(result);
-                        callbackHelper.notifyCalled();
-                    });
-        });
-        callbackHelper.waitForFirst();
-
-        final GestureStateListenerImpl listener = new GestureStateListenerImpl();
+        // Verify removing the only listener disables root-scrolls.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             GestureListenerManagerImpl manager =
                     (GestureListenerManagerImpl) GestureListenerManager.fromWebContents(
-                            webContents);
-            // shouldReportAllRootScrolls() should initially be false (as there are no listeners).
+                            mWebContents);
+            manager.removeListener(mListener);
             Assert.assertFalse(manager.shouldReportAllRootScrolls());
-            manager.addListener(listener);
-            // Adding a listener enables root-scrolls.
+        });
+    }
+
+    /**
+     * In https://crbug.com/1144109, the report-all-root-scrolls bit was not propagated to a
+     * crashed and reloaded renderer, resulting in many fewer (but not 0) scroll callbacks. Test
+     * for this by verifying there's a similar number of scroll callbacks before and after the
+     * crash/reload.
+     */
+    @Test
+    @LargeTest
+    @Feature({"Browser"})
+    public void testOnScrollEventsAfterCrashAndReload() throws Throwable {
+        startListening();
+        performAndVerifyScroll();
+        int scrollOffsetCallCount = mListener.mScrollOffsetCallCount;
+
+        // Crash and reload the tab.
+        WebContentsUtils.crashTabAndWait(mWebContents);
+        int paintCount =
+                mCallbackHelperContainer.getOnFirstVisuallyNonEmptyPaintHelper().getCallCount();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mWebContents.getNavigationController().reload(true));
+        mCallbackHelperContainer.getOnFirstVisuallyNonEmptyPaintHelper().waitForCallback(
+                paintCount);
+        waitForReadinessToHandleEvents();
+
+        // Verify the manager is still reporting all root scrolls.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            GestureListenerManagerImpl manager =
+                    (GestureListenerManagerImpl) GestureListenerManager.fromWebContents(
+                            mWebContents);
             Assert.assertTrue(manager.shouldReportAllRootScrolls());
-            View webContentsView = webContents.getViewAndroidDelegate().getContainerView();
-            mCurrentX = webContentsView.getWidth() / 2;
-            mCurrentY = webContentsView.getHeight() / 2;
-            Assert.assertTrue(mCurrentY > 0);
         });
 
-        // Perform a scroll.
-        TouchCommon.performDrag(mActivityTestRule.getActivity(), mCurrentX, mCurrentX, mCurrentY,
-                mCurrentY - 50, /* stepCount*/ 3, /* duration in ms */ 250);
-        listener.mCallbackHelper.waitForCallback(0);
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            GestureListenerManagerImpl manager =
-                    (GestureListenerManagerImpl) GestureListenerManager.fromWebContents(
-                            webContents);
-            manager.removeListener(listener);
-            // Removing the only listener disbles root-scrolls.
-            Assert.assertFalse(manager.shouldReportAllRootScrolls());
-        });
+        // Verify a *similar* number of scroll callbacks still come through.
+        performAndVerifyScroll();
+        int scrollOffsetCallCountAfterCrash = mListener.mScrollOffsetCallCount;
+        Assert.assertThat(
+                scrollOffsetCallCountAfterCrash, Matchers.greaterThan(scrollOffsetCallCount / 2));
     }
 }
