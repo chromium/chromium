@@ -245,9 +245,6 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
   }
 
   bool has_files = HasFiles(*data);
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  client_ = MakeGarbageCollected<ShareClientImpl>(this, has_files, resolver);
-
   WTF::Vector<mojom::blink::SharedFilePtr> files;
   uint64_t total_bytes = 0;
   if (has_files) {
@@ -266,6 +263,8 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
     }
   }
 
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  client_ = MakeGarbageCollected<ShareClientImpl>(this, has_files, resolver);
   service_remote_->Share(
       data->hasTitle() ? data->title() : g_empty_string,
       data->hasText() ? data->text() : g_empty_string, url, std::move(files),
