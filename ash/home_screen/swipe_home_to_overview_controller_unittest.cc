@@ -143,7 +143,8 @@ class SwipeHomeToOverviewControllerTest : public AshTestBase {
 
 // Verify that the metrics of home launcher animation are recorded correctly
 // when entering/exiting overview mode.
-TEST_F(SwipeHomeToOverviewControllerTest, VerifyHomeLauncherMetrics) {
+// The test is flaky (see https://crbug.com/1126904).
+TEST_F(SwipeHomeToOverviewControllerTest, DISABLED_VerifyHomeLauncherMetrics) {
   // Set non-zero animation duration to report animation metrics.
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
