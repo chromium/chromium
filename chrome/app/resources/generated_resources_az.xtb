@@ -1777,7 +1777,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3029466929721441205">Rəfdə stilus alətlərini göstərin</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031557471081358569">İmport etmək üçün element seçin:</translation>
-<translation id="3036041939445522540">Əlçatan kontakt yoxdur</translation>
 <translation id="3036327949511794916">Bu <ph name="DEVICE_TYPE" /> cihazını qaytarmaq üçün son tarix keçib.</translation>
 <translation id="3036546437875325427">Fleşi aktiv edin</translation>
 <translation id="3037754279345160234">Domenə qoşulmaq üçün konfiqurasiyanı nəzərdən keçirmək alınmadı. Administrator ilə əlaqə saxlayın.</translation>
@@ -4631,7 +4630,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6445450263907939268">Bu dəyişiklikləri istəmirdinizsə, öncəki ayarlarınızı bərpa edə bilərsiniz.</translation>
 <translation id="6447842834002726250">Kukilər</translation>
 <translation id="6450876761651513209">Gizliliklə bağlı ayarlarınızı dəyişin</translation>
-<translation id="6451180435462401570">Cloud Print cihazlarını idarə edin</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> və daha 1 tab}other{<ph name="PAGE_TITLE" /> və daha # tab}}</translation>
 <translation id="6451689256222386810">Əgər parol sözü unutmusunuzsa və ya bu ayarı dəyişmək istəyirsinizsə,  <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlayın<ph name="END_LINK" /></translation>
 <translation id="6452181791372256707">Rədd edin</translation>
@@ -4938,8 +4936,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6824584962142919697">&amp;Elementləri yoxlayın</translation>
 <translation id="6825184156888454064">Ad üzrə sıralayın</translation>
 <translation id="6826872289184051766">USB ilə doğrulayın</translation>
-<translation id="6827487342470222762">Heç bir kontakt əlçatan deyil. Kontaktlarınızla Yaxınlıqda Paylaşımı istifadə etmək üçün onların Google Hesabı ilə əlaqəli e-poçt ünvanını kontaktlarınıza əlavə edin.</translation>
-<translation id="6827623133556594466">Google Bulud Printeri 31 dekabrdan sonra dəstəklənməyəcək. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Aşağıdakı istifadəçilərə girişi məhdudlaşdırın:</translation>
 <translation id="6828182567531805778">Datanızı sinxronizasiya etmək üçün parol ifadəsini daxil edin</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5870,7 +5866,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7893008570150657497">Kompüterinizdə foto, musiqi və digər medianı əldə edin</translation>
 <translation id="7893153962594818789"><ph name="DEVICE_TYPE" /> cihazında Bluetooth deaktivdir. Parolu daxil edərək Bluetooth'u aktiv edin.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Defolt)</translation>
-<translation id="7897865097438730075">Google Bulud Printeri 31 dekabrdan sonra dəstəklənməyəcək. Administratorunuz ilə əlaqə saxlayın.</translation>
 <translation id="7897900149154324287">Gələcəkdə, Fayllar tətbiqindəki çıxarıla bilən cihazınızı ayırmadan öncə əlaqəsini kəsin. Əks halda data itirə bilərsiniz.</translation>
 <translation id="7898627924844766532">Alətlər panelində saxlayın</translation>
 <translation id="7898725031477653577">Həmişə tərcümə edin</translation>
@@ -6020,7 +6015,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8054563304616131773">Lütfən, düzgün e-poçt ünvanı daxil edin.</translation>
 <translation id="8054921503121346576">USB klaviatura qoşuldu</translation>
 <translation id="8058655154417507695">Bitmə ili</translation>
-<translation id="8058811362315390556">Google Bulud Printeri 31 dekabrdan sonra dəstəklənməyəcək</translation>
 <translation id="8059417245945632445">&amp;Cihazları aşkarlayın</translation>
 <translation id="8059456211585183827">Yadda saxlanıla biləcək printer yoxdur.</translation>
 <translation id="8061091456562007989">Əvvəlki ayarları qaytarın</translation>
@@ -6132,7 +6126,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> keçid edin</translation>
 <translation id="8184318863960255706">Daha ətraflı</translation>
 <translation id="8184472985242519288">Uniforma</translation>
-<translation id="8185331656081929126">Yeni printerlər şəbəkədə aşkarlanan zaman bildirişləri göstərin</translation>
 <translation id="8186609076106987817">Server faylı tapa bilmədi.</translation>
 <translation id="8188389033983459049">Cihaz ayarlarını yoxlayın və aktiv edərək davam edin</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> provayderinə qoşulur</translation>

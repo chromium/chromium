@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
 <translation id="3008341117444806826">VERNIEUWEN</translation>
+<translation id="3009958530611748826">Selecteer een map voor opslaan</translation>
 <translation id="3083667275341675831">Verbindingsdiagnose</translation>
 <translation id="3091839911843451378">Mislukt - Gestopt</translation>
 <translation id="3188257591659621405">Mijn bestanden</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">Afdruktaken</translation>
 <translation id="3527036260304016759">Mislukt - Onbekende fout</translation>
 <translation id="360565022852130722">Wifi-netwerk is beveiligd met het zwakke protocol WEP 802.1x</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> reviews)</translation>
 <translation id="3749289110408117711">Bestandsnaam</translation>
 <translation id="38114475217616659">Alle geschiedenis wissen</translation>
 <translation id="3820172043799983114">Ongeldige pincode.</translation>
@@ -80,23 +82,28 @@
 <translation id="4731797938093519117">Toegang door ouders</translation>
 <translation id="4773299976671772492">Beëindigd</translation>
 <translation id="4808449224298348341">Afdruktaak <ph name="DOCUMENT_TITLE" /> geannuleerd</translation>
+<translation id="4832079907277790330">Map selecteren in de app Bestanden...</translation>
 <translation id="4890353053343094602">Kies onmiddellijk een nieuw wachtwoord</translation>
 <translation id="4917889632206600977">Gestopt: geen papier meer</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Uitvoeren</translation>
+<translation id="4991056862642197104">Plaats je document en klik op Scannen om aan de slag te gaan</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> beheert deze gebruiker en kan op afstand instellingen beheren en gebruikersactiviteit in de gaten houden.</translation>
 <translation id="520299634122159966">Geen beschikbare scanners</translation>
 <translation id="5212543919916444558">Ik heb niets gevonden op je scherm waarmee ik kan helpen.
 Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5222676887888702881">Uitloggen</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">Routines opnieuw uitvoeren</translation>
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Kies nu een nieuw wachtwoord</translation>
 <translation id="5372659122375744710">Wifi-netwerk is niet beveiligd</translation>
 <translation id="5401938042319910061">Alle routines uitvoeren</translation>
+<translation id="5431318178759467895">Kleur</translation>
 <translation id="5457599981699367932">Gebruiken als gast</translation>
 <translation id="54609108002486618">Beheerd</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">Persoon toevoegen</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
 <translation id="6040143037577758943">Sluiten</translation>
@@ -123,6 +130,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Bestandstype</translation>
 <translation id="7561454561030345039">Deze actie wordt beheerd door je beheerder</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7690294790491645610">Nieuw wachtwoord bevestigen</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -136,7 +144,6 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8364946094152050673">Lege naamservers</translation>
 <translation id="8475690821716466388">Wifi-netwerk is beveiligd met het zwakke protocol WEP PSK</translation>
 <translation id="8477551185774834963">DNS-wachttijd is iets langer dan de toelaatbare drempel</translation>
-<translation id="8668052347555487755">Kleurenmodus</translation>
 <translation id="871560550817059752">Mislukt - Geen inkt meer</translation>
 <translation id="8723108084122415655">Niet-standaard netwerk overschrijdt drempel voor wachttijd</translation>
 <translation id="8726019395068607495">Gestopt: klep geopend</translation>

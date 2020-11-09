@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">A nyomtatás sikertelen.</translation>
 <translation id="1125564390852150847">Új lap létrehozása.</translation>
 <translation id="1145536944570833626">Meglévő adatok törlése.</translation>
+<translation id="1147031633655575115">Bejelentkezve mint <ph name="USER" /></translation>
 <translation id="1154690515305205900">A kiemelt szöveghez nem lehet linket létrehozni.</translation>
 <translation id="1157749421655780457">Helyadatok engedélyezése</translation>
 <translation id="1165039591588034296">Hiba</translation>
@@ -83,7 +84,6 @@
 <translation id="1690731385917361335">Nincsenek elemek</translation>
 <translation id="1692118695553449118">Szinkronizálás bekapcsolva</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> kiválasztva</translation>
-<translation id="1715940067130687605">A helyadatok használata</translation>
 <translation id="1740468249224277719">A telepítéshez koppintson duplán.</translation>
 <translation id="1746815479209538200">Ha böngészni szeretne az interneten, adjon hozzá egy új lapot.</translation>
 <translation id="1752547299766512813">Jelszómentés</translation>
@@ -269,6 +269,7 @@ Hajtsa végre az alábbi lépéseket:</translation>
 <translation id="385051799172605136">Vissza</translation>
 <translation id="3892144330757387737">Itt láthatja majd az előzményeit</translation>
 <translation id="3897092660631435901">Menü</translation>
+<translation id="3913386780052199712">Bejelentkezve: Chrome</translation>
 <translation id="3915450441834151894">Webhelyadatok</translation>
 <translation id="3922310737605261887">Másolt szöveg keresése</translation>
 <translation id="3928666092801078803">Adataim egyesítése</translation>

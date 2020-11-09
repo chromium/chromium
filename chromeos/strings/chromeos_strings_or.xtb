@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">ଆପ୍ସ</translation>
 <translation id="2872961005593481000">ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="3008341117444806826">ରିଫ୍ରେଶ୍ କରନ୍ତୁ</translation>
+<translation id="3009958530611748826">ଏଥିରେ ସେଭ୍ କରିବାକୁ ଏକ ଫୋଲ୍ଡର୍ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="3083667275341675831">ସଂଯୋଗ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ</translation>
 <translation id="3091839911843451378">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟର୍ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="3188257591659621405">ମୋ ଫାଇଲ୍‌ଗୁଡ଼ିକ</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">ପ୍ରିଣ୍ଟ ଜବ୍</translation>
 <translation id="3527036260304016759">ବିଫଳ ହୋଇଛି - ଅଜଣା ତ୍ରୁଟି</translation>
 <translation id="360565022852130722">ଦୁର୍ବଳ ପ୍ରୋଟୋକଲ୍ WEP 802.1x ବ୍ୟବହାର କରି ୱାଇଫାଇ ନେଟୱାର୍କକୁ ସୁରକ୍ଷିତ କରାଯାଇଛି</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" />ଟି ସମୀକ୍ଷା)</translation>
 <translation id="3749289110408117711">ଫାଇଲ୍ ନାମ</translation>
 <translation id="38114475217616659">ସମସ୍ତ ଇତିହାସ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="3820172043799983114">ଅବୈଧ PIN।</translation>
@@ -80,10 +82,12 @@
 <translation id="4731797938093519117">ମାତା-ପିତାଙ୍କର ଆକ୍ସେସ୍</translation>
 <translation id="4773299976671772492">ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="4808449224298348341">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟ <ph name="DOCUMENT_TITLE" /> ବାତିଲ୍ କରାଯାଇଛି</translation>
+<translation id="4832079907277790330">Files ଆପରେ ଫୋଲ୍ଡର୍ ଚୟନ କରନ୍ତୁ...</translation>
 <translation id="4890353053343094602">ତୁରନ୍ତ ଏକ ନୂଆ ବାଛନ୍ତୁ</translation>
 <translation id="4917889632206600977">ବନ୍ଦ ହୋଇଯାଇଛି - କାଗଜ ସରିଯାଇଛି</translation>
 <translation id="4932733599132424254">ତାରିଖ</translation>
 <translation id="4985509611418653372">ଚଲାନ୍ତୁ</translation>
+<translation id="4991056862642197104">ଆପଣଙ୍କ ଡକ୍ୟୁମେଣ୍ଟ ରଖନ୍ତୁ ଏବଂ ଆରମ୍ଭ କରିବାକୁ 'ସ୍କାନ୍ କରନ୍ତୁ'ରେ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> ଏହି ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ ପରିଚାଳନା କରେ ଏବଂ ରିମୋଟ୍ ଭାବେ ସେଟିଂସ୍ ପରିଚାଳନା ଏବଂ ଉପଯୋଗକର୍ତ୍ତା କାର୍ଯ୍ୟକଳାପ ନିରୀକ୍ଷଣ କରିପାରେ।</translation>
 <translation id="520299634122159966">କୌଣସି ସ୍କାନର୍ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="5212543919916444558">ଆପଣଙ୍କର ସ୍କ୍ରିନ୍‌ରେ ମୁଁ କିଛି ଖୋଜିପାଇଲି ନାହିଁ ଯାହାଦ୍ୱାରା ମୁଁ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିପାରିବି।
@@ -95,6 +99,7 @@
 <translation id="5332948983412042822">ବର୍ତ୍ତମାନ ଏକ ନୂଆ ବାଛନ୍ତୁ</translation>
 <translation id="5372659122375744710">ୱାଇଫାଇ ନେଟୱାର୍କ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
 <translation id="5401938042319910061">ସମସ୍ତ ରୁଟିନ୍ ଚଲାନ୍ତୁ</translation>
+<translation id="5431318178759467895">ରଙ୍ଗ</translation>
 <translation id="5457599981699367932">ଅତିଥି ହିସାବରେ ବ୍ରାଉଜ୍ କରନ୍ତୁ</translation>
 <translation id="54609108002486618">ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="5832805196449965646">ଲୋକଙ୍କୁ ଯୋଗ କରନ୍ତୁ</translation>
@@ -123,6 +128,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">ଫାଇଲର ପ୍ରକାର</translation>
 <translation id="7561454561030345039">ଏହି କାର୍ଯ୍ୟ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">ବାତିଲ୍</translation>
 <translation id="7690294790491645610">ନୂଆ ପାସ୍‌ୱାର୍ଡ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="7805768142964895445">ସ୍ଥିତି</translation>
@@ -136,7 +142,6 @@
 <translation id="8364946094152050673">ନେମ୍ ସର୍ଭର୍ ଖାଲି ଅଛି</translation>
 <translation id="8475690821716466388">ଦୁର୍ବଳ ପ୍ରୋଟୋକଲ୍ WEP PSK ବ୍ୟବହାର କରି ୱାଇଫାଇ ନେଟୱାର୍କକୁ ସୁରକ୍ଷିତ କରାଯାଇଛି</translation>
 <translation id="8477551185774834963">DNS ଲାଟେନ୍ସି ଅନୁମୋଦିତ ସୀମା ଠାରୁ ଅଳ୍ପ ଉପରେ ଅଛି</translation>
-<translation id="8668052347555487755">କଲର୍ ମୋଡ୍</translation>
 <translation id="871560550817059752">ବିଫଳ ହୋଇଛି - ସ୍ୟାହି ଶେଷ ହୋଇଯାଇଛି</translation>
 <translation id="8723108084122415655">ଡିଫଲ୍ଟ-ନଥିବା ନେଟୱାର୍କ ଲାଟେନ୍ସି ସୀମାର ଉପରେ ଅଛି</translation>
 <translation id="8726019395068607495">ବନ୍ଦ ହୋଇଯାଇଛି - ପ୍ରିଣ୍ଟରର କଭର୍ ଖୋଲା ଅଛି</translation>

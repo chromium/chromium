@@ -314,6 +314,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3285080554353377245">Video relativi all'utilizzo di Chrome</translation>
 <translation id="3288003805934695103">Ricaricare la pagina</translation>
 <translation id="32895400574683172">Le notifiche sono consentite</translation>
+<translation id="3290991969712132877">Per potervi accedere più rapidamente, aggiungi questa pagina alla schermata Home dal pulsante Altre opzioni</translation>
 <translation id="3295530008794733555">Naviga più velocemente. Consuma meno dati.</translation>
 <translation id="3298243779924642547">Lite</translation>
 <translation id="3303414029551471755">Procedere al download dei contenuti?</translation>
@@ -470,6 +471,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4532845899244822526">Scegli cartella</translation>
 <translation id="4538018662093857852">Attiva la modalità Lite</translation>
 <translation id="4550003330909367850">Per visualizzare o copiare la password qui, imposta il blocco schermo sul dispositivo.</translation>
+<translation id="4557685098773234337">Per accedervi più rapidamente, aggiungi questa pagina alla schermata Home</translation>
 <translation id="4558311620361989323">Scorciatoie delle pagine web</translation>
 <translation id="4561979708150884304">Nessuna connessione</translation>
 <translation id="4565377596337484307">Nascondi password</translation>
@@ -499,6 +501,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4720982865791209136">Contribuisci a migliorare Chrome. <ph name="BEGIN_LINK" />Rispondi al sondaggio<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">Vedi i tuoi siti principali</translation>
 <translation id="4732120983431207637">Rimozione dello stack</translation>
+<translation id="4732693703583195378">Aggiungi questo sito alla schermata Home del tablet per potervi accedere più facilmente</translation>
 <translation id="4738836084190194332">Ultima sincronizzazione: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Apri una nuova scheda</translation>
 <translation id="4759238208242260848">Download</translation>
@@ -536,6 +539,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Le tue password verranno esportate e scaricate in un file di testo. Saranno visibili a qualsiasi persona e app con accesso alla cartella di destinazione.</translation>
 <translation id="4932247056774066048">Poiché stai uscendo da un account gestito da <ph name="DOMAIN_NAME" />, i tuoi dati di Chrome verranno eliminati da questo dispositivo. Rimarranno memorizzati nel tuo Account Google.</translation>
+<translation id="4936039914467572121">Accedi a questo sito più rapidamente</translation>
 <translation id="4943703118917034429">Realtà virtuale</translation>
 <translation id="4943872375798546930">Nessun risultato</translation>
 <translation id="4961107849584082341">Traduci questa pagina in qualsiasi lingua</translation>
@@ -647,6 +651,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5763382633136178763">Schede in incognito</translation>
 <translation id="5763514718066511291">Tocca per copiare l'URL di quest'app</translation>
 <translation id="5765780083710877561">Descrizione:</translation>
+<translation id="5767013862801005129">Scheda <ph name="TAB_TITLE" /> ripristinata</translation>
 <translation id="5776970333778123608">Dati non importanti</translation>
 <translation id="5793665092639000975">Spazio utilizzato: <ph name="SPACE_USED" /> di <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Cerca e sfoglia</translation>
@@ -952,6 +957,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Ricontrolla più tardi se ci sono nuove notizie</translation>
 <translation id="7791543448312431591">Aggiungi</translation>
+<translation id="7798392620021911922"><ph name="TAB_COUNT" /> schede ripristinate</translation>
 <translation id="780301667611848630">No grazie</translation>
 <translation id="7810647596859435254">Apri con…</translation>
 <translation id="7821588508402923572">La quantità di dati risparmiata sarà visualizzata qui</translation>
@@ -1137,6 +1143,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Mostra originale</translation>
 <translation id="9148126808321036104">Esegui di nuovo l'accesso</translation>
+<translation id="9149286894143103695">Aggiungi questo sito alla schermata Home del telefono per potervi accedere più facilmente</translation>
 <translation id="9155898266292537608">Per eseguire una ricerca, basta un rapido tocco su una parola</translation>
 <translation id="9169507124922466868">La cronologia di navigazione è aperta fino a metà</translation>
 <translation id="9191031968346938109">Aggiungi a…</translation>

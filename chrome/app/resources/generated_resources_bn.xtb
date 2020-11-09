@@ -1777,7 +1777,6 @@
 <translation id="3029466929721441205">শেল্ফে স্টাইলাস টুল দেখুন</translation>
 <translation id="3031417829280473749">এজেন্ট X</translation>
 <translation id="3031557471081358569">আমদানির জন্য আইটেম বেছে নিন:</translation>
-<translation id="3036041939445522540">কোনও পরিচিতি উপলভ্য নেই</translation>
 <translation id="3036327949511794916">এই <ph name="DEVICE_TYPE" /> ফেরত দেওয়ার সময়সীমা পেরিয়ে গেছে।</translation>
 <translation id="3036546437875325427">Flash সক্ষম করুন</translation>
 <translation id="3037754279345160234">ডোমেনে যোগ করার জন্য প্রয়োজনীয় কনফিগারেশন পার্স করা যাচ্ছে না। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
@@ -4633,7 +4632,6 @@
 <translation id="6445450263907939268">এই পরিবর্তনগুলি না চাইলে আপনি আপনার পূর্ববর্তী সেটিংস পুনরুদ্ধার করতে পারেন।</translation>
 <translation id="6447842834002726250">কুকিজ</translation>
 <translation id="6450876761651513209">আপনার গোপনীয়তা-সংক্রান্ত সেটিংস পরিবর্তন করুন</translation>
-<translation id="6451180435462401570">ক্লাউড প্রিন্ট ডিভাইস পরিচালনা করুন</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> এবং অন্য ১টি ট্যাব}one{<ph name="PAGE_TITLE" /> এবং অন্য #টি ট্যাব}other{<ph name="PAGE_TITLE" /> এবং অন্য #টি ট্যাব}}</translation>
 <translation id="6451689256222386810">আপনি যদি আপনার পাসফ্রেজ ভুলে যান বা এই সেটিং পরিবর্তন করতে চান, তাহলে <ph name="BEGIN_LINK" />সিঙ্ক রিসেট করুন<ph name="END_LINK" />।</translation>
 <translation id="6452181791372256707">প্রত্যাখ্যান</translation>
@@ -4939,8 +4937,6 @@
 <translation id="6824584962142919697">&amp;এলিমেন্ট ইন্সপেক্ট করুন</translation>
 <translation id="6825184156888454064">নাম অনুসারে সাজান</translation>
 <translation id="6826872289184051766">USB এর মাধ্যমে যাচাই করুন</translation>
-<translation id="6827487342470222762">কোনও পরিচিতি উপলভ্য নেই। আপনার পরিচিতির সাথে 'নিয়ারবাই শেয়ার' ফিচারের সুবিধা ব্যবহার করার জন্য, তাদের Google অ্যাকাউন্টের সাথে যুক্ত ইমেল আইডি আপনার পরিচিতিতে যোগ করুন।</translation>
-<translation id="6827623133556594466">Google Cloud Print, ৩১ ডিসেম্বরের পরে আর কাজ করবে না। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">সাইন-ইনকে নিম্নলিখিত ব্যবহারকারীদের মধ্যে সীমাবদ্ধ রাখুন:</translation>
 <translation id="6828182567531805778">আপনার ডেটা সিঙ্ক করতে পাসফ্রেজ লিখুন</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5866,7 +5862,6 @@
 <translation id="7893008570150657497">আপনার কম্পিউটার থেকে ফটো, সঙ্গীত ও অন্য মিডিয়াতে অ্যাক্সেস করুন</translation>
 <translation id="7893153962594818789"><ph name="DEVICE_TYPE" /> এ ব্লুটুথ বন্ধ করা আছে৷ আপনার পাসওয়ার্ড লিখুন এবং ব্লুটুথ চালু করুন৷</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (ডিফল্ট)</translation>
-<translation id="7897865097438730075">Google Cloud Print, ৩১ ডিসেম্বরের পরে আর কাজ করবে না। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="7897900149154324287">ভবিষ্যতে, আপনার সরানো যাবে এমন ডিভাইসটিকে আনপ্লাগ করার আগে ফাইল অ্যাপ থেকে এটি যে বের করে নেওয়া হয়েছে সেই বিষয়ে নিশ্চিত হয়ে নিন। অন্যথায় আপনি ডেটা হারাতে পারেন।</translation>
 <translation id="7898627924844766532">টুলবারের মধ্যে রাখুন</translation>
 <translation id="7898725031477653577">সর্বদা অনুবাদ করুন</translation>
@@ -6017,7 +6012,6 @@
 <translation id="8054563304616131773">অনুগ্রহ করে একটি সঠিক ইমেল আইডি লিখুন</translation>
 <translation id="8054921503121346576">USB কীবোর্ড সংযুক্ত হয়েছে</translation>
 <translation id="8058655154417507695">মেয়াদ শেষের বছর</translation>
-<translation id="8058811362315390556">Google Cloud Print ৩১ ডিসেম্বরের পরে আর কাজ করবে না</translation>
 <translation id="8059417245945632445">এবং ডিভাইসগুলি পরিদর্শন</translation>
 <translation id="8059456211585183827">সেভ করার জন্য কোনও প্রিন্টার উপলভ্য নেই।</translation>
 <translation id="8061091456562007989">এটিকে আগের অবস্থায় ফিরিয়ে নিয়ে যান</translation>
@@ -6126,7 +6120,6 @@
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> এ পাল্টান</translation>
 <translation id="8184318863960255706">আরও তথ্য</translation>
 <translation id="8184472985242519288">সব জায়গায় একরকম</translation>
-<translation id="8185331656081929126">নেটওয়ার্কে নতুন মুদ্রণগুলি শণাক্ত করা হলে বিজ্ঞপ্তিগুলি দেখান</translation>
 <translation id="8186609076106987817">সার্ভার ফাইলটি খুঁজে পায়নি৷</translation>
 <translation id="8188389033983459049">আপনার ডিভাইসের সেটিংস চেক করুন এবং চালিয়ে যেতে এটি চালু করুন</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" />-তে সংযুক্ত হচ্ছে</translation>

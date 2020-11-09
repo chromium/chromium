@@ -1781,7 +1781,6 @@
 <translation id="3029466929721441205">顯示檔案櫃中的觸控筆工具</translation>
 <translation id="3031417829280473749">特務 X</translation>
 <translation id="3031557471081358569">選取要匯入的項目：</translation>
-<translation id="3036041939445522540">沒有可選取的聯絡人</translation>
 <translation id="3036327949511794916">此 <ph name="DEVICE_TYPE" /> 的退貨期限已過。</translation>
 <translation id="3036546437875325427">啟用 Flash</translation>
 <translation id="3037754279345160234">無法剖析設定以加入網域，請與管理員聯絡。</translation>
@@ -4638,7 +4637,6 @@
 <translation id="6445450263907939268">如果您不想套用這些變更，可以還原為先前的設定。</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6450876761651513209">變更私隱權相關設定</translation>
-<translation id="6451180435462401570">管理雲端列印裝置</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 和另外 1 個分頁}other{<ph name="PAGE_TITLE" /> 和另外 # 個分頁}}</translation>
 <translation id="6451689256222386810">如果您忘記密碼短語，或要變更這項設定，請<ph name="BEGIN_LINK" />重設同步處理功能<ph name="END_LINK" />。</translation>
 <translation id="6452181791372256707">拒絕</translation>
@@ -4945,8 +4943,6 @@
 <translation id="6824584962142919697">檢查元素 (&amp;I)</translation>
 <translation id="6825184156888454064">按名稱排序</translation>
 <translation id="6826872289184051766">透過 USB 驗證</translation>
-<translation id="6827487342470222762">沒有可選取的聯絡人。如要與聯絡人使用「咫尺共享」，請將與他們 Google 帳戶連結的電郵地址加入您的通訊錄。</translation>
-<translation id="6827623133556594466">由 12 月 31 日起，系統將不再支援「Google 雲端打印」。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">只允許下列使用者登入：</translation>
 <translation id="6828182567531805778">如要同步處理資料，請輸入您的密碼短語</translation>
 <translation id="682871081149631693">快速修正</translation>
@@ -5877,7 +5873,6 @@
 <translation id="7893008570150657497">存取您電腦中的相片、音樂及其他媒體</translation>
 <translation id="7893153962594818789">這部 <ph name="DEVICE_TYPE" /> 已關閉藍牙功能。請輸入您的密碼並開啟藍牙功能。</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (預設)</translation>
-<translation id="7897865097438730075">由 12 月 31 日起，系統將不再支援「Google 雲端打印」。請聯絡您的管理員。</translation>
 <translation id="7897900149154324287">以後請務必先從「檔案」應用程式中退出卸除式裝置，然後再拔出，以免遺失數據。</translation>
 <translation id="7898627924844766532">保留在工具列上</translation>
 <translation id="7898725031477653577">永遠翻譯</translation>
@@ -6028,7 +6023,6 @@
 <translation id="8054563304616131773">請輸入有效的電郵地址</translation>
 <translation id="8054921503121346576">已連接 USB 鍵盤</translation>
 <translation id="8058655154417507695">到期年份</translation>
-<translation id="8058811362315390556">由 12 月 31 日起，系統將不再支援「Google 雲端打印」</translation>
 <translation id="8059417245945632445">檢查裝置 (&amp;I)</translation>
 <translation id="8059456211585183827">冇可以儲存嘅打印機。</translation>
 <translation id="8061091456562007989">還原設定</translation>
@@ -6140,7 +6134,6 @@
 <translation id="8184288427634747179">切換至<ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">更多資訊</translation>
 <translation id="8184472985242519288">平均</translation>
-<translation id="8185331656081929126">在網絡上偵測到新打印機時顯示通知</translation>
 <translation id="8186609076106987817">伺服器無法找到這個檔案。</translation>
 <translation id="8188389033983459049">檢查您的裝置設定並開啟藍牙以繼續</translation>
 <translation id="8190193592390505034">正在連線至 <ph name="PROVIDER_NAME" /></translation>

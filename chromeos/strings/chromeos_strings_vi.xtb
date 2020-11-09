@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">Ứng dụng</translation>
 <translation id="2872961005593481000">Tắt</translation>
 <translation id="3008341117444806826">LÀM MỚI</translation>
+<translation id="3009958530611748826">Chọn một thư mục để lưu</translation>
 <translation id="3083667275341675831">Chẩn đoán kết nối</translation>
 <translation id="3091839911843451378">Không thành công – Đã dừng</translation>
 <translation id="3188257591659621405">Tệp của tôi</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">Lệnh in</translation>
 <translation id="3527036260304016759">Không thành công – Lỗi không xác định</translation>
 <translation id="360565022852130722">Mạng Wi-Fi được bảo mật bằng giao thức yếu WEP 802.1x</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> bài đánh giá)</translation>
 <translation id="3749289110408117711">Tên tệp</translation>
 <translation id="38114475217616659">Xóa toàn bộ lịch sử</translation>
 <translation id="3820172043799983114">Mã PIN không hợp lệ.</translation>
@@ -80,10 +82,12 @@
 <translation id="4731797938093519117">Quyền truy cập của cha mẹ</translation>
 <translation id="4773299976671772492">Đã dừng</translation>
 <translation id="4808449224298348341">Đã hủy lệnh in <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4832079907277790330">Chọn thư mục trong ứng dụng Files...</translation>
 <translation id="4890353053343094602">Chọn ngay một mật khẩu mới</translation>
 <translation id="4917889632206600977">Đã dừng – Hết giấy</translation>
 <translation id="4932733599132424254">Ngày Tháng</translation>
 <translation id="4985509611418653372">Chạy</translation>
+<translation id="4991056862642197104">Đặt tài liệu của bạn vào vị trí rồi nhấp vào Quét để bắt đầu</translation>
 <translation id="5094480857972195099">Miền <ph name="ENROLLMENT_DOMAIN" /> quản lý người dùng này và có thể quản lý từ xa các tùy chọn cài đặt cũng như giám sát hoạt động của người dùng.</translation>
 <translation id="520299634122159966">Chưa có máy quét nào</translation>
 <translation id="5212543919916444558">Tôi không tìm thấy nội dung nào trên màn hình để có thể trợ giúp cho bạn.
@@ -95,6 +99,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5332948983412042822">Chọn ngay một mật khẩu mới</translation>
 <translation id="5372659122375744710">Mạng Wi-Fi không bảo mật</translation>
 <translation id="5401938042319910061">Chạy tất cả quy trình</translation>
+<translation id="5431318178759467895">Màu</translation>
 <translation id="5457599981699367932">Duyệt với tư cách Khách</translation>
 <translation id="54609108002486618">Được quản lý</translation>
 <translation id="5832805196449965646">Thêm người</translation>
@@ -123,6 +128,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Loại tệp</translation>
 <translation id="7561454561030345039">Quản trị viên của bạn quản lý thao tác này</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7690294790491645610">Xác nhận mật khẩu mới</translation>
 <translation id="7805768142964895445">Trạng thái</translation>
@@ -136,7 +142,6 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8364946094152050673">Máy chủ định danh trống</translation>
 <translation id="8475690821716466388">Mạng Wi-Fi được bảo mật bằng giao thức yếu WEP PSK</translation>
 <translation id="8477551185774834963">Độ trễ của Hệ thống tên miền (DNS) vượt ngưỡng cho phép đôi chút</translation>
-<translation id="8668052347555487755">Chế độ màu</translation>
 <translation id="871560550817059752">Không thành công – Hết mực</translation>
 <translation id="8723108084122415655">Mạng không phải mạng mặc định vượt ngưỡng độ trễ</translation>
 <translation id="8726019395068607495">Đã dừng – Cửa máy in đang mở</translation>

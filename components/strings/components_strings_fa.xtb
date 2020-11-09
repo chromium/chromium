@@ -38,7 +38,7 @@
 <translation id="1113869188872983271">&amp;واگرد ترتیب‌بندی مجدد</translation>
 <translation id="1125573121925420732">در مدتی که وب‌سایت‌ها امنیتشان را به‌روزرسانی می‌کنند، ممکن است به‌طور معمول اخطارهایی دریافت کنید. این مورد به‌زودی اصلاح می‌شود.</translation>
 <translation id="112840717907525620">حافظه پنهان خط‌مشی مورد تأیید است</translation>
-<translation id="1130564665089811311">‏دکمه «ترجمه صفحه»، برای ترجمه کردن این صفحه بااستفاده از «مترجم Google»، کلید Enter (ورود) را فشار دهید</translation>
+<translation id="1130564665089811311">‏دکمه «ترجمه صفحه»، برای ترجمه کردن این صفحه بااستفاده از «ترجمه Google»، کلید Enter (ورود) را فشار دهید</translation>
 <translation id="1131264053432022307">تصویری که کپی کرده‌اید</translation>
 <translation id="1150979032973867961">این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ گواهی امنیتی آن مورداعتماد سیستم‌عامل رایانه شما نیست. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجی اتصال شما را قطع کرده است.</translation>
 <translation id="1151972924205500581">گذرواژه ضروری است</translation>
@@ -896,7 +896,7 @@
 <translation id="4506599922270137252">تماس با سرپرست سیستم</translation>
 <translation id="450710068430902550">اشتراک‌گذاری با سرپرست سیستم</translation>
 <translation id="4508814173490746936">استفاده از «شناسه لمسی» ممکن نشد</translation>
-<translation id="4509074745930862522">‏<ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای ترجمه کردن این صفحه بااستفاده از «مترجم Google»، کلید Tab (جهش) و سپس Enter (ورود) را فشار دهید</translation>
+<translation id="4509074745930862522">‏<ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای ترجمه کردن این صفحه بااستفاده از «ترجمه Google»، کلید Tab (جهش) و سپس Enter (ورود) را فشار دهید</translation>
 <translation id="4510487217173779431">Chou4 (Envelope)</translation>
 <translation id="4515275063822566619">‏کارت‌ها و نشانی‌ها از Chrome و حساب Google شما (<ph name="ACCOUNT_EMAIL" />) هستند. می‌توانید آن‌ها را در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> مدیریت کنید.</translation>
 <translation id="4517607026994743406">Comm-10 (Envelope)</translation>
@@ -1020,7 +1020,7 @@
 <translation id="5029568752722684782">پاک کردن نسخه کپی</translation>
 <translation id="5030338702439866405">صدور توسط</translation>
 <translation id="503069730517007720">برای «<ph name="SOFTWARE_NAME" />» گواهینامه ریشه‌ لازم است اما نصب نشده است. برای رفع این مشکل، سرپرست فناوری اطلاعات شما باید دستورالعمل‌های پیکربندی مربوط به «<ph name="SOFTWARE_NAME" />» را بررسی کند. <ph name="FURTHER_EXPLANATION" /></translation>
-<translation id="5031870354684148875">‏درباره ‏‫مترجم Google‬</translation>
+<translation id="5031870354684148875">‏درباره ‏‫ترجمه Google‬</translation>
 <translation id="503498442187459473"><ph name="HOST" /> می‌خواهد از دوربین و میکروفن شما استفاده کند</translation>
 <translation id="5039762155821394373">اندازه قلم</translation>
 <translation id="5039804452771397117">اجازه دادن</translation>
@@ -1177,7 +1177,7 @@
 <translation id="5608165884683734521">‏این سایت می‌تواند جعلی یا کلاهبردارانه باشد. Chrome توصیه می‌کند همین‌الان خارج شوید.</translation>
 <translation id="5610142619324316209">بررسی اتصال</translation>
 <translation id="5610807607761827392">می‌توانید در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" />، کارت‌ها و نشانی‌ها را مدیریت کنید.</translation>
-<translation id="561165882404867731">‏این صفحه را با «مترجم Google» ترجمه کنید</translation>
+<translation id="561165882404867731">‏این صفحه را با «ترجمه Google» ترجمه کنید</translation>
 <translation id="5612720917913232150"><ph name="URL" /> می‌خواهد از موقعیت مکانی رایانه شما استفاده کند</translation>
 <translation id="5617949217645503996">تعداد دفعاتی که <ph name="HOST_NAME" /> شما را به نشانی‌های دیگر هدایت کرده بیش از حد است.</translation>
 <translation id="5624120631404540903">مدیریت گذرواژه‌ها</translation>

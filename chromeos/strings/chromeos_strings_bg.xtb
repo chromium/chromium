@@ -94,13 +94,16 @@
 Докоснете иконата на микрофон, за да ме попитате каквото и да е.</translation>
 <translation id="5222676887888702881">Изход</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">Повторна диагностика</translation>
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Изберете нова сега</translation>
 <translation id="5372659122375744710">Wi-Fi мрежата не е сигурна</translation>
 <translation id="5401938042319910061">Стартиране на всички процедури</translation>
+<translation id="5431318178759467895">Цветно</translation>
 <translation id="5457599981699367932">Сърфиране като гост</translation>
 <translation id="54609108002486618">Управляван</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">Добавяне на човек</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
 <translation id="6040143037577758943">Затваряне</translation>
@@ -141,7 +144,6 @@
 <translation id="8364946094152050673">Не са посочени сървъри за имена</translation>
 <translation id="8475690821716466388">Wi-Fi мрежата е защитена със слабия протокол WEP PSK</translation>
 <translation id="8477551185774834963">Забавянето на DNS е малко над допустимия праг</translation>
-<translation id="8668052347555487755">Цветови режим</translation>
 <translation id="871560550817059752">Неуспешно – няма мастило</translation>
 <translation id="8723108084122415655">Забавянето на допълнителната мрежа е над прага</translation>
 <translation id="8726019395068607495">Спряло – вратичката е отворена</translation>

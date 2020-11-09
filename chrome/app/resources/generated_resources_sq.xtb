@@ -1775,7 +1775,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3029466929721441205">Shfaq veglat e stilolapsit në raft</translation>
 <translation id="3031417829280473749">Agjenti X</translation>
 <translation id="3031557471081358569">Përzgjidh artikujt për të importuar:</translation>
-<translation id="3036041939445522540">Nuk ka kontakte</translation>
 <translation id="3036327949511794916">Afati për ta kthyer këtë pajisje <ph name="DEVICE_TYPE" /> ka kaluar.</translation>
 <translation id="3036546437875325427">Aktivizo Flash</translation>
 <translation id="3037754279345160234">Nuk mund të paraqitet konfigurimi i bashkimit me domenin. Kontakto administratorin.</translation>
@@ -4630,7 +4629,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6445450263907939268">Nëse nuk i dëshiron këto ndryshime, mund të restaurosh cilësimet e mëparshme.</translation>
 <translation id="6447842834002726250">Kukit</translation>
 <translation id="6450876761651513209">Ndrysho cilësimet që lidhen me privatësinë</translation>
-<translation id="6451180435462401570">Menaxho shërbimet e printimit në renë kompjuterike</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> dhe 1 skedë tjetër}other{<ph name="PAGE_TITLE" /> dhe # skeda të tjera}}</translation>
 <translation id="6451689256222386810">Nëse e ke harruar frazën e kalimit apo dëshiron të ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizimin<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Refuzo</translation>
@@ -4936,8 +4934,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6824584962142919697">&amp;Inspekto elementet</translation>
 <translation id="6825184156888454064">Rendit sipas emrit</translation>
 <translation id="6826872289184051766">Verifikohu nëpërmjet USB-së</translation>
-<translation id="6827487342470222762">Nuk ka asnjë kontakt. Për të përdorur "Ndarjen në afërsi" me kontaktet e tua, shto te kontaktet e tua adresën e email-it të lidhur me "Llogarinë e tyre të Google".</translation>
-<translation id="6827623133556594466">Google Cloud Print nuk do të mbështetet më pas datës 31 dhjetor. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Kufizo identifikimin e përdoruesve të mëposhtëm:</translation>
 <translation id="6828182567531805778">Fut frazën e kalimit për të sinkronizuar të dhënat</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5863,7 +5859,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7893008570150657497">Qasu në fotografi, muzikë dhe media të tjera nga kompjuteri yt</translation>
 <translation id="7893153962594818789">"Bluetooth-i" është i çaktivizuar në këtë pajisje <ph name="DEVICE_TYPE" />. Fut fjalëkalimin dhe aktivizo "Bluetooth-in".</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (e parazgjedhur)</translation>
-<translation id="7897865097438730075">Google Cloud Print nuk do të mbështetet më pas datës 31 dhjetor. Kontakto me administratorin tënd.</translation>
 <translation id="7897900149154324287">Në të ardhmen, sigurohu që ta nxjerrësh pajisjen e lëvizshme në aplikacionin "Skedarët" para se ta heqësh. Në rast të kundërt, mund të humbasësh të dhëna.</translation>
 <translation id="7898627924844766532">Mbaje në shiritin e veglave</translation>
 <translation id="7898725031477653577">Përkthe gjithmonë</translation>
@@ -6013,7 +6008,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8054563304616131773">Fut një adresë të vlefshme mail-i.</translation>
 <translation id="8054921503121346576">Tastiera USB është e lidhur</translation>
 <translation id="8058655154417507695">Viti i skadimit</translation>
-<translation id="8058811362315390556">Google Cloud Print nuk do të mbështetet më pas datës 31 dhjetor</translation>
 <translation id="8059417245945632445">&amp;Inspekto pajisjet</translation>
 <translation id="8059456211585183827">Nuk disponohen printerë për ruajtje.</translation>
 <translation id="8061091456562007989">Ndryshoje përsëri</translation>
@@ -6123,7 +6117,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8184288427634747179">Kalo te <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Më shumë informacione</translation>
 <translation id="8184472985242519288">Uniform</translation>
-<translation id="8185331656081929126">Shfaq njoftime kur zbulohen printerë të rinj në rrjet</translation>
 <translation id="8186609076106987817">Serveri nuk mund të gjejë skedarin.</translation>
 <translation id="8188389033983459049">Kontrollo cilësimet e pajisjes dhe aktivizoje për të vazhduar</translation>
 <translation id="8190193592390505034">Po lidhet me <ph name="PROVIDER_NAME" /></translation>

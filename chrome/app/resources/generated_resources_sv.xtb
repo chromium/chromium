@@ -1782,7 +1782,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3029466929721441205">Visa verktyg för e-penna i hyllan</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031557471081358569">Välj objekt att importera:</translation>
-<translation id="3036041939445522540">Inga tillgängliga kontakter</translation>
 <translation id="3036327949511794916">Sista dagen för att returnera denna <ph name="DEVICE_TYPE" /> har passerat.</translation>
 <translation id="3036546437875325427">Aktivera blixt</translation>
 <translation id="3037754279345160234">Det gick inte att analysera konfigurationen för domänanslutning. Kontakta administratören.</translation>
@@ -4639,7 +4638,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6445450263907939268">Om du inte vill ha dessa ändringar kan du återställa dina tidigare inställningar.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6450876761651513209">Ändra sekretessrelaterade inställningar</translation>
-<translation id="6451180435462401570">Hantera enheter för molnutskrift</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> och 1 flik till}other{<ph name="PAGE_TITLE" /> och # flikar till}}</translation>
 <translation id="6451689256222386810">Om du har glömt lösenfrasen eller vill ändra inställningen <ph name="BEGIN_LINK" />återställer du synkroniseringen<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Avvisa</translation>
@@ -4946,8 +4944,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6824584962142919697">&amp;Inspektera element</translation>
 <translation id="6825184156888454064">Sortera efter namn</translation>
 <translation id="6826872289184051766">Verifiera via USB</translation>
-<translation id="6827487342470222762">Inga kontakter är tillgängliga. Lägg till de e-postadresser som är kopplade till personernas Google-konton i dina kontakter om du vill använda Närdelning med dem.</translation>
-<translation id="6827623133556594466">Stödet för Google Cloud Print upphör den 31 december. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Begränsa inloggning till följande användare:</translation>
 <translation id="6828182567531805778">Ange lösenfrasen för att synkronisera data</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5878,7 +5874,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7893008570150657497">Få åtkomst till foton, musik och andra medier från datorn</translation>
 <translation id="7893153962594818789">Bluetooth är inaktiverat på <ph name="DEVICE_TYPE" />. Ange lösenordet och aktivera Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Standard)</translation>
-<translation id="7897865097438730075">Stödet för Google Cloud Print upphör den 31 december. Kontakta administratören.</translation>
 <translation id="7897900149154324287">Tänk på att mata ut löstagbara enheter i appen Filer innan du kopplar loss dem. Annars kan det hända att data förloras.</translation>
 <translation id="7898627924844766532">Spara i verktygsfältet</translation>
 <translation id="7898725031477653577">Översätt alltid</translation>
@@ -6029,7 +6024,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8054563304616131773">Ange en giltig e-postadress</translation>
 <translation id="8054921503121346576">USB-tangentbord har anslutits</translation>
 <translation id="8058655154417507695">Utgångsår</translation>
-<translation id="8058811362315390556">Stödet för Google Cloud Print upphör den 31 december</translation>
 <translation id="8059417245945632445">&amp;Inspektera enheter</translation>
 <translation id="8059456211585183827">Det finns inga skrivare att spara.</translation>
 <translation id="8061091456562007989">Ändra tillbaka</translation>
@@ -6142,7 +6136,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8184288427634747179">Växla till <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Mer info</translation>
 <translation id="8184472985242519288">Jämnhög</translation>
-<translation id="8185331656081929126">Visa aviseringar när nya skrivare hittas i nätverket</translation>
 <translation id="8186609076106987817">Servern kunde inte hitta filen.</translation>
 <translation id="8188389033983459049">Kontrollera enhetsinställningarna och aktivera Bluetooth om du vill fortsätta</translation>
 <translation id="8190193592390505034">Ansluter till <ph name="PROVIDER_NAME" /></translation>

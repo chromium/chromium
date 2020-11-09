@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">প্ৰিণ্টিং কৰিব পৰা নগ'ল।</translation>
 <translation id="1125564390852150847">নতুন টেব সৃষ্টি কৰক।</translation>
 <translation id="1145536944570833626">পূর্বে থকা ডেটা মচক।</translation>
+<translation id="1147031633655575115"><ph name="USER" /> হিচাপে ছাইন ইন কৰিছে</translation>
 <translation id="1154690515305205900">হাইলাইট কৰা পাঠলৈ এটা লিংক সৃষ্টি কৰিব নোৱাৰি।</translation>
 <translation id="1157749421655780457">অৱস্থান ব্যৱহাৰৰ অনুমতি দিয়ক...</translation>
 <translation id="1165039591588034296">আসোঁৱাহ</translation>
@@ -83,7 +84,6 @@
 <translation id="1690731385917361335">কোনো বস্তু নাই</translation>
 <translation id="1692118695553449118">ছিংক অন হৈ আছে</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> বাছনি কৰা হ’ল</translation>
-<translation id="1715940067130687605">আপোনাৰ বৰ্তমানৰ অৱস্থান ব্যৱহাৰ কৰক।</translation>
 <translation id="1740468249224277719">ইনষ্টল কৰিবলৈ দুবাৰ টিপক।</translation>
 <translation id="1746815479209538200">ৱেব ব্ৰাউজ কৰিবলৈ এটা নতুন টেব যোগ কৰক।</translation>
 <translation id="1752547299766512813">পাছৱর্ডসমূহ ছেভ কৰক</translation>
@@ -269,6 +269,7 @@
 <translation id="385051799172605136">উভতি যাওক</translation>
 <translation id="3892144330757387737">ইয়াত আপুনি নিজৰ ইতিহাস বিচাৰি পাব</translation>
 <translation id="3897092660631435901">মেনু</translation>
+<translation id="3913386780052199712">Chromeত ছাইন ইন কৰা হ’ল</translation>
 <translation id="3915450441834151894">ছাইটৰ তথ্য</translation>
 <translation id="3922310737605261887">প্ৰতিলিপি কৰা পাঠৰ সন্ধান কৰক</translation>
 <translation id="3928666092801078803">মোৰ ডেটা সংযুক্ত কৰক</translation>

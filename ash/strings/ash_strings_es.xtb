@@ -8,6 +8,7 @@
 <translation id="1036672894875463507">Soy tu Asistente de Google y te puedo ayudar con tus actividades diarias.
 Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1037492556044956303">Se ha añadido <ph name="DEVICE_NAME" /></translation>
+<translation id="1047773237499189053">Hay una nueva función disponible. Utiliza la flecha hacia arriba para obtener más información.</translation>
 <translation id="1056775291175587022">No hay redes</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Móvil: <ph name="ADDRESS" /></translation>
@@ -20,6 +21,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1153356358378277386">Dispositivos vinculados</translation>
 <translation id="1175572348579024023">Desplazarse</translation>
 <translation id="1178581264944972037">Pausar</translation>
+<translation id="118532027333893379">Toca cualquier parte de la pantalla para hacer una captura de la pantalla completa</translation>
 <translation id="1190609913194133056">Centro de notificaciones</translation>
 <translation id="1195412055398077112">reajustar</translation>
 <translation id="119944043368869598">Eliminar todo</translation>
@@ -56,7 +58,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1420527829902822813">Captura de pantalla realizada y guardada en el portapapeles</translation>
 <translation id="1426410128494586442">Sí</translation>
 <translation id="1455242230282523554">Mostrar los ajustes de idioma</translation>
-<translation id="1456407467406159627">Se ha dejado de grabar la pantalla al detectar que mostraba contenido confidencial.</translation>
 <translation id="1460620680449458626">El volumen está silenciado.</translation>
 <translation id="1467432559032391204">Izquierda</translation>
 <translation id="1479909375538722835">Menú de accesibilidad flotante</translation>
@@ -123,6 +124,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2127372758936585790">Carga lenta</translation>
 <translation id="2132302418721800944">Grabar pantalla completa</translation>
 <translation id="2135456203358955318">Lupa fijada</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: Reintentar</translation>
 <translation id="2208323208084708176">Modo de escritorio unificado</translation>
 <translation id="2220572644011485463">PIN o contraseña</translation>
 <translation id="2222338659135520253">Debes iniciar sesión</translation>
@@ -134,6 +136,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="229397294990920565">Los datos móviles se están desactivando...</translation>
 <translation id="2295777434187870477">El micrófono está activado. Utiliza el botón para silenciarlo.</translation>
 <translation id="2298170939937364391">Se ha habilitado la lupa de pantalla completa. Pulsa Ctrl + tecla de búsqueda + M de nuevo para desactivarla.</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Haz clic en el cuadro de diálogo para ver un resultado en el Asistente.</translation>
 <translation id="2302092602801625023">Esta cuenta se gestiona con Family Link</translation>
 <translation id="2303600792989757991">Activar vista general de ventanas</translation>
 <translation id="2322173485024759474">Retroceder por carácter</translation>
@@ -160,6 +163,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2484513351006226581">Pulsa <ph name="KEYBOARD_SHORTCUT" /> para cambiar el diseño del teclado.</translation>
 <translation id="2501920221385095727">Teclas persistentes</translation>
 <translation id="2509468283778169019">Bloqueo de mayúsculas activado</translation>
+<translation id="2536159006530886390">No es posible conectarse a Internet.</translation>
 <translation id="2542089167727451762">Toca tu imagen de perfil</translation>
 <translation id="255671100581129685">El Asistente de Google no está disponible en las sesiones públicas.</translation>
 <translation id="256712445991462162">la lupa fijada</translation>
@@ -181,6 +185,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2727977024730340865">Conectado a un cargador de baja potencia. Es posible que la carga de la batería no sea fiable.</translation>
 <translation id="2792498699870441125">Alt+tecla de búsqueda</translation>
 <translation id="2819276065543622893">Tu sesión se cerrará ahora.</translation>
+<translation id="28232023175184696">No es posible conectarse a Internet. Haz clic aquí para volver a intentarlo.</translation>
 <translation id="2825224105325558319">La pantalla <ph name="DISPLAY_NAME" /> no admite <ph name="SPECIFIED_RESOLUTION" />. Se ha cambiado la resolución a <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Estantería</translation>
 <translation id="2841907151129139818">Se ha cambiado al modo tablet</translation>
@@ -321,6 +326,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4129129681837227511">Para poder ver las notificaciones desde la pantalla de bloqueo, desbloquea el dispositivo para cambiar este ajuste</translation>
 <translation id="4146833061457621061">Pon música</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> gestionado por <ph name="DOMAIN" /></translation>
+<translation id="415719264485676252">Se ha bloqueado la función de captura de pantalla</translation>
 <translation id="4157822100366708405">Ajustes del tema oscuro</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4195877955194704651">Botón de clics automáticos</translation>
@@ -387,6 +393,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4710243778082831592">Ajustes de IME</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4744944742468440486">Información relacionada con tu selección</translation>
 <translation id="4759238208242260848">Descargas</translation>
 <translation id="4774338217796918551">Vuelve mañana a las <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Contraseña de <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -504,6 +511,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="595202126637698455">Se ha habilitado el control del rendimiento</translation>
 <translation id="5957083217255311415">Los datos móviles están desactivados.</translation>
 <translation id="5958529069007801266">Usuario supervis.</translation>
+<translation id="5960825221082587934">El Asistente te mostrará información sobre el texto que hayas seleccionado, como su definición, su traducción o la conversión de unidades.</translation>
 <translation id="5977415296283489383">Auriculares</translation>
 <translation id="5978382165065462689">Compartiendo control de la pantalla a través de Asistencia remota.</translation>
 <translation id="5980301590375426705">Cerrar como invitado</translation>
@@ -586,6 +594,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6777216307882431711">Alimentando dispositivos USB‑C conectados</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6803622936009808957">No se han podido proyectar las pantallas porque no se han encontrado resoluciones compatibles. Se ha utilizado el modo de escritorio ampliado en su lugar.</translation>
+<translation id="6816797338148849397">Hay información disponible relacionada con tu selección. Utiliza la flecha hacia arriba para consultarla.</translation>
 <translation id="6818242057446442178">Retroceder por palabra</translation>
 <translation id="6820676911989879663">Haz una pausa</translation>
 <translation id="6850010208275816200">La aplicación actual está en pantalla completa. Si la aplicación te pide la contraseña, primero sal del modo de pantalla completa.</translation>
@@ -649,6 +658,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="7497767806359279797">Seleccionar idioma y teclado</translation>
 <translation id="7526573455193969409">Es posible que la red esté supervisada</translation>
 <translation id="7536035074519304529">Dirección IP: <ph name="ADDRESS" /></translation>
+<translation id="7542906349682405018">Tu administrador ha bloqueado la opción de capturar y grabar imágenes del contenido de tu pantalla.</translation>
 <translation id="7548434653388805669">Es hora de acostarse</translation>
 <translation id="7551643184018910560">Fijar en la estantería</translation>
 <translation id="7561982940498449837">Cerrar menú</translation>
@@ -775,6 +785,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Cargador de baja potencia conectado</translation>
 <translation id="8683506306463609433">Control del rendimiento activo</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Para configurar esta función, utiliza las teclas de flecha hacia la izquierda y hacia la derecha.</translation>
 <translation id="8712637175834984815">Listo</translation>
 <translation id="8721053961083920564">Activa o desactiva el volumen. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">Es posible que esté intentando captar tus pulsaciones de teclas</translation>
@@ -795,6 +806,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8874184842967597500">No conectado</translation>
 <translation id="8877788021141246043">Añadir un recordatorio</translation>
 <translation id="8878886163241303700">Ampliando pantalla</translation>
+<translation id="8883473964424809116">Haz clic aquí para abrir los ajustes del Asistente de Google.</translation>
 <translation id="890616557918890486">Cambiar fuente</translation>
 <translation id="8909138438987180327">La batería tiene un <ph name="PERCENTAGE" /> % de carga.</translation>
 <translation id="8913384980486163186">Tema (predeterminado)</translation>

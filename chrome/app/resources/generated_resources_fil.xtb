@@ -891,6 +891,7 @@
 <translation id="2000419248597011803">Nagpapadala ng ilang cookies at paghahanap mula sa address bar at box para sa paghahanap sa iyong default na search engine</translation>
 <translation id="2002109485265116295">Real-time</translation>
 <translation id="2003130567827682533">Para i-activate ang data ng '<ph name="NAME" />,' kumonekta muna sa Wi-Fi network</translation>
+<translation id="2005199804247617997">Iba pang profile</translation>
 <translation id="2006638907958895361">Buksan ang Link sa <ph name="APP" /></translation>
 <translation id="2007404777272201486">Mag-ulat ng Isyu...</translation>
 <translation id="2010501376126504057">Mga tugmang device</translation>
@@ -1541,6 +1542,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2751131328353405138">Mina-mount ang sshfs ng Linux container</translation>
 <translation id="2751739896257479635">EAP Phase 2 na pag-authenticate</translation>
 <translation id="2753677631968972007">Manual na kontrolin ang mga pahintulot sa site.</translation>
+<translation id="2755349111255270002">I-reset ang <ph name="DEVICE_TYPE" /> na ito</translation>
 <translation id="2755367719610958252">Pamahalaan ang mga feature sa accessibility</translation>
 <translation id="275662540872599901">naka-off ang screen</translation>
 <translation id="2757338480560142065">Tiyaking ang password na sine-save mo ay tumutugma sa iyong password para sa <ph name="WEBSITE" /></translation>
@@ -1697,6 +1699,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2932883381142163287">I-ulat ang pang-aabuso</translation>
 <translation id="2933632078076743449">Huling Pag-update</translation>
 <translation id="2934999512438267372">Pinayagan ang ganap na kontrol sa mga MIDI device</translation>
+<translation id="2935225303485967257">Pamahalaan ang mga profile</translation>
 <translation id="2935654492420446828">Magdagdag ng pampaaralang account sa ibang pagkakataon</translation>
 <translation id="2936851848721175671">I-backup &amp; i-restore</translation>
 <translation id="2938225289965773019">Buksan ang mga link ng <ph name="PROTOCOL" /></translation>
@@ -1782,7 +1785,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3029466929721441205">Ipakita ang mga tool ng stylus sa shelf</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031557471081358569">Pumili ng mga item na ii-import:</translation>
-<translation id="3036041939445522540">Walang available na contact</translation>
 <translation id="3036327949511794916">Lumipas na ang deadline para ibalik ang <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="3036546437875325427">I-enable ang Flash</translation>
 <translation id="3037754279345160234">Hindi ma-parse ang configuration para magsama ng domain. Makipag-ugnayan sa iyong administrator.</translation>
@@ -2055,6 +2057,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3388788256054548012">Naka-encrypt ang file na ito. Hilingin sa may-ari nitong i-decrypt ito.</translation>
 <translation id="3390013585654699824">Mga detalye ng app</translation>
 <translation id="3390741581549395454">Na-back up na ang mga app at file ng Linux. Magsisimula na ang pag-upgrade sa loob ng ilang sandali.</translation>
+<translation id="339178315942519818">Tingnan ang mga notification mula sa iyong mga chat app sa <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="3396800784455899911">Sa pamamagitan ng pag-click sa button na "Tanggapin at magpatuloy," sumasang-ayon ka sa pagpoproseso na inilarawan sa itaas para sa mga serbisyong ito ng Google.</translation>
 <translation id="3399432415385675819">Madi-disable ang mga notification</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - naka-interlace</translation>
@@ -2211,6 +2214,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3559533181353831840">Humigit-kumulang <ph name="TIME_LEFT" /> pa ang natitira</translation>
 <translation id="3560034655160545939">&amp;Spell check</translation>
 <translation id="3562423906127931518">Maaaring abutin nang ilang minuto ang prosesong ito. Sine-set up ang Linux container.</translation>
+<translation id="3562655211539199254">Tingnan ang mga kamakailang tab ng Chrome mula sa iyong telepono</translation>
 <translation id="3563432852173030730">Hindi ma-download ang Kiosk application.</translation>
 <translation id="3564334271939054422">Maaaring humiling sa iyo ang ginagamit mong Wi-Fi network (<ph name="NETWORK_ID" />) na bisitahin mo ang page ng pag-log in nito.</translation>
 <translation id="3564848315152754834">USB security key</translation>
@@ -3841,6 +3845,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="5503982651688210506">Patuloy na payagan ang <ph name="HOST" /> na gamitin at galawin ang iyong camera, at gamitin ang mikropono mo</translation>
 <translation id="5505264765875738116">Hindi puwedeng humiling ang mga site na magpadala ng mga notification</translation>
 <translation id="5505307013568720083">Wala nang ink</translation>
+<translation id="5505794066310932198">I-toggle ang Commander</translation>
 <translation id="5507756662695126555">Hindi makokontra</translation>
 <translation id="5509693895992845810">I-save &amp;Bilang...</translation>
 <translation id="5509914365760201064">Nagbigay: <ph name="CERTIFICATE_AUTHORITY" /></translation>
@@ -4307,6 +4312,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="6056710589053485679">I-reload Nang Normal</translation>
 <translation id="6057312498756061228">Masyadong malaki ang file na ito para sa pagsusuri sa seguridad. Makakapagbukas ka ng mga file na hanggang 50 MB.</translation>
 <translation id="6057381398996433816">Na-block ang site na ito sa paggamit ng sensor ng paggalaw at liwanag.</translation>
+<translation id="6059276912018042191">Mga kamakailang tab ng Chrome</translation>
 <translation id="6059652578941944813">Pagkakasunud-sunod ng Certificate</translation>
 <translation id="6059925163896151826">Mga USB device</translation>
 <translation id="6061882183774845124">Ipadala ang link sa iyong mga device</translation>
@@ -4639,7 +4645,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="6445450263907939268">Kung hindi mo gusto ang mga pagbabagong ito, maaari mong ipanumbalik ang mga dati mong setting.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6450876761651513209">Baguhin ang iyong mga setting na nauugnay sa privacy</translation>
-<translation id="6451180435462401570">Pamahalaan ang mga Cloud Print device</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> at 1 pang tab}one{<ph name="PAGE_TITLE" /> at # pang tab}other{<ph name="PAGE_TITLE" /> at # pang tab}}</translation>
 <translation id="6451689256222386810">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Tanggihan</translation>
@@ -4814,6 +4819,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="6659213950629089752">Ang page na ito ay na-zoom sa pamamagitan ng extension ng "<ph name="NAME" />"</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="666099631117081440">Mga server sa pag-print</translation>
+<translation id="6663190258859265334">I-powerwash ang iyong <ph name="DEVICE_TYPE" /> at bumalik sa nakaraang bersyon.</translation>
 <translation id="6664237456442406323">Sa kasamaang-palad, na-configure ang iyong computer gamit ang isang hardware ID na mali ang pagkakabuo. Pinipigilan nitong mag-update ang Chrome OS upang magkaroon ng mga pinakabagong pag-aayos sa seguridad at <ph name="BEGIN_BOLD" />maaaring mawalan ng proteksyon laban sa mga nakakahamak na pag-atake<ph name="END_BOLD" /> ang iyong computer.</translation>
 <translation id="6664774537677393800">Nagkaproblema sa pagbukas ng iyong profile. Mangyaring mag-sign out at pagkatapos ay muling mag-sign in.</translation>
 <translation id="6670142487971298264">Available na ngayon ang <ph name="APP_NAME" /></translation>
@@ -4946,8 +4952,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="6824584962142919697">&amp;Siyasatin ang mga element</translation>
 <translation id="6825184156888454064">Uriin ayon sa pangalan</translation>
 <translation id="6826872289184051766">I-verify sa pamamagitan ng USB</translation>
-<translation id="6827487342470222762">Walang available na contact. Para magamit ang Nearby Share sa iyong mga contact, idagdag sa iyong mga contact ang email address na naka-link sa kanilang Google Account.</translation>
-<translation id="6827623133556594466">Hindi na susuportahan ang Google Cloud Print pagkalipas ng Disyembre 31. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Higpitan ang pag-sign-in sa mga sumusunod na user:</translation>
 <translation id="6828182567531805778">Ilagay ang iyong passphrase para i-sync ang data mo</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5401,6 +5405,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="7364796246159120393">Pumili ng File</translation>
 <translation id="7365076891350562061">Laki ng monitor</translation>
 <translation id="736522537010810033">I-block ang mga site sa paggamit ng iyong mikropono</translation>
+<translation id="7366316827772164604">Nagsa-scan ng mga kalapit na device...</translation>
 <translation id="7366415735885268578">Magdagdag ng site</translation>
 <translation id="7366909168761621528">Data sa pag-browse</translation>
 <translation id="7367714965999718019">Pambuo ng QR Code</translation>
@@ -5589,6 +5594,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="7586498138629385861">Patuloy na tatakbo ang Chrome habang nakabukas ang Chrome Apps.</translation>
 <translation id="7589461650300748890">Naku. Mag-ingat.</translation>
 <translation id="7593653750169415785">Awtomatikong naka-block dahil tinanggihan mo ang mga notification nang ilang beses</translation>
+<translation id="7594725637786616550">Mag-powerwash para i-reset ang iyong <ph name="DEVICE_TYPE" /> para maging mukhang bago.</translation>
 <translation id="7595453277607160340">Para gumamit ng mga Android app at panatilihing gumagana nang maayos ang iyong <ph name="DEVICE_TYPE" />, mag-sign in muli at mag-update.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (error code na <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">I-restart ang computer</translation>
@@ -5878,7 +5884,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="7893008570150657497">Ma-access ang mga larawan, musika, at iba pang media mula sa iyong computer</translation>
 <translation id="7893153962594818789">Naka-off ang Bluetooth sa <ph name="DEVICE_TYPE" /> na ito. Ilagay ang iyong password, at i-on ang Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Default)</translation>
-<translation id="7897865097438730075">Hindi na susuportahan ang Google Cloud Print pagkalipas ng Disyembre 31. Makipag-uganayan sa iyong administrator.</translation>
 <translation id="7897900149154324287">Sa hinaharap, tiyaking i-eject ang iyong naaalis na device sa Files app bago ito i-unplug. Kung hindi, maaari kang mawalan ng data.</translation>
 <translation id="7898627924844766532">Panatilihin sa toolbar</translation>
 <translation id="7898725031477653577">Palaging i-translate</translation>
@@ -5957,6 +5962,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="7973962044839454485">Nabigo ang pagpapatotoo sa PPP dahil sa hindi tamang username o password</translation>
 <translation id="7974566588408714340">Subukang muli gamit ang <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Overscan</translation>
+<translation id="7975504106303186033">Dapat mong i-enroll ang Chrome Education device na ito sa isang education account. Para mag-sign up para sa isang bagong account, pakibisita ang g.co/workspace/edusignup.</translation>
 <translation id="7977404132325989121">&amp;Pangalanan ang Window...</translation>
 <translation id="7978412674231730200">Private na key</translation>
 <translation id="7978450511781612192">Dahil dito, masa-sign out ka sa iyong mga Google Account. Hindi na masi-sync ang iyong mga bookmark, history, mga password, at higit pa.</translation>
@@ -6027,9 +6033,9 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8053390638574070785">Reload This Page</translation>
 <translation id="8054517699425078995">Maaaring mapinsala ng ganitong uri ng file ang iyong device. Gusto mo pa rin bang panatilihin ang <ph name="FILE_NAME" />?</translation>
 <translation id="8054563304616131773">Mangyaring maglagay ng isang wastong email address</translation>
+<translation id="8054883179223321715">Available para sa mga partikular na site ng video</translation>
 <translation id="8054921503121346576">Nakakonekta ang USB keyboard</translation>
 <translation id="8058655154417507695">Taon ng pag-expire</translation>
-<translation id="8058811362315390556">Hindi na susuportahan ang Google Cloud Print pagkalipas ng Disyembre 31.</translation>
 <translation id="8059417245945632445">&amp;Inspeksyunin ang mga device</translation>
 <translation id="8059456211585183827">Walang printer na available na i-save.</translation>
 <translation id="8061091456562007989">Ibalik ito sa dati</translation>
@@ -6112,6 +6118,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8146793085009540321">Hindi nakapag-sign in. Mangyaring makipag-ugnayan sa iyong administrator o subukang muli.</translation>
 <translation id="8147900440966275470">Nakakita ng <ph name="NUM" /> Tab</translation>
 <translation id="8148760431881541277">Limitahan ang pag-sign in</translation>
+<translation id="8150259863378108853">Isang pang-eksperimentong browser ang Lacros. Pakiulat ang anumang isyu sa Tulong &gt; "Mag-ulat ng isyu..."</translation>
 <translation id="8151579390896831136">I-customize ang iyong profile, kabilang ang pangalan nito</translation>
 <translation id="8151638057146502721">I-configure</translation>
 <translation id="8152091997436726702">Nag-time out ang pagpaparehistro sa printer. Upang irehistro ang isang printer, kailangan mong kumpirmahin ang pagpaparehistro sa printer.</translation>
@@ -6142,7 +6149,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8184288427634747179">Lumipat sa <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Higit pang impormasyon</translation>
 <translation id="8184472985242519288">Magkapareho</translation>
-<translation id="8185331656081929126">Magpakita ng mga notification kapag may nakitang mga bagong printer sa network</translation>
 <translation id="8186609076106987817">Hindi makita ng server ang file.</translation>
 <translation id="8188389033983459049">Suriin ang mga setting ng iyong device at i-on ito para magpatuloy</translation>
 <translation id="8190193592390505034">Kumukonekta sa <ph name="PROVIDER_NAME" /></translation>
@@ -6220,6 +6226,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8271379370373330993">Mga magulang, para sa inyo ang ilang susunod na hakbang. Puwede ninyong ibalik ang <ph name="DEVICE_TYPE" /> sa bata pagkatapos ng pag-setup ng account.</translation>
 <translation id="8272443605911821513">Pamahalaan ang iyong mga extension sa pamamagitan ng pag-click sa Mga Extension sa menu ng "Higit pang mga tool."</translation>
 <translation id="8274332263553132018">I-cast ang file</translation>
+<translation id="8274921654076766238">Sumusunod ang magnifier sa pag-focus ng keyboard</translation>
 <translation id="8274924778568117936">Huwag i-off o isara ang iyong <ph name="DEVICE_TYPE" /> hanggang sa matapos ang pag-update. Magre-restart ang <ph name="DEVICE_TYPE" /> mo pagkatapos ng pag-install.</translation>
 <translation id="8275038454117074363">I-import</translation>
 <translation id="8275080796245127762">Tumawag mula sa Iyong Device</translation>
@@ -6603,6 +6610,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8736288397686080465">Na-update ang site na ito sa background.</translation>
 <translation id="8737685506611670901">Buksan ang mga link ng <ph name="PROTOCOL" /> sa halip na ang <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8737914367566358838">Piliin ang wika kung saan ita-translate ang page</translation>
 <translation id="8740247629089392745">Puwede mong ibigay ang Chromebook na ito kay <ph name="SUPERVISED_USER_NAME" />. Malapit nang matapos ang pag-set up, puwede nang mag-explore pagkatapos nito.</translation>
 <translation id="8742998548129056176">Ito ay pangkalahatang impormasyon tungkol sa iyong device at kung paano mo ito ginagamit (gaya ng antas ng baterya, aktibidad ng system at app, at mga error). Gagamitin ang data para mapahusay ang Android, at makakatulong din ang ilang pinagsama-samang impormasyon sa mga app at partner ng Google, gaya ng mga developer ng Android, na mapahusay ang kanilang mga app at produkto.</translation>
 <translation id="8743390665131937741">Antas ng fullscreen na pag-zoom:</translation>
@@ -6639,6 +6647,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8774379074441005279">Kumpirmahin ang Pag-restore</translation>
 <translation id="8774934320277480003">Tuktok na margin</translation>
 <translation id="8775144690796719618">Di-wastong URL</translation>
+<translation id="8775163630211761057">I-extend ang pinakasulit sa iyong Android phone sa <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="8776977753660889796">{NUM_MINS,plural, =1{Walang nakitang kilalang mapaminsalang software ang Chrome sa iyong computer. Huling nagsuri: 1 minuto ang nakalipas.}one{Walang nakitang kilalang mapaminsalang software ang Chrome sa iyong computer. Huling nagsuri: {NUM_MINS} minuto ang nakalipas.}other{Walang nakitang kilalang mapaminsalang software ang Chrome sa iyong computer. Huling nagsuri: {NUM_MINS} na minuto ang nakalipas.}}</translation>
 <translation id="8777628254805677039">root password</translation>
 <translation id="8780123805589053431">Kumuha ng mga paglalarawan ng larawan mula sa Google</translation>
@@ -6805,10 +6814,12 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8952831374766033534">Hindi sinusuportahan ang opsyon sa configuration: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Habang nagcha-charge</translation>
 <translation id="895347679606913382">Nagsisimula...</translation>
+<translation id="8957757410289731985">I-customize ang profile</translation>
 <translation id="895944840846194039">Memory ng JavaScript</translation>
 <translation id="8962083179518285172">Itago ang Mga Detalye</translation>
 <translation id="8962918469425892674">Gumagamit ang site na ito ng sensor ng paggalaw o liwanag.</translation>
 <translation id="8965037249707889821">Ilagay ang lumang password</translation>
+<translation id="8966809848145604011">Iba pang Profile</translation>
 <translation id="8966870118594285808">Muling magbukas ng tab kung naisara mo ito nang hindi sinasadya</translation>
 <translation id="8967427617812342790">Idagdag sa listahan ng babasahin</translation>
 <translation id="8967866634928501045">Pindutin ang Alt Shift A upang ipakita</translation>
@@ -6934,6 +6945,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="9100765901046053179">Mga advanced na setting</translation>
 <translation id="9101691533782776290">Ilunsad ang app</translation>
 <translation id="9102610709270966160">I-enable ang Extension</translation>
+<translation id="9103479157856427471">Sumusunod ang naka-zoom in na screen sa pag-focus ng keyboard</translation>
 <translation id="9103868373786083162">Pindutin upang bumalik, gamitin ang menu ng konteksto upang makita ang history</translation>
 <translation id="9108072915170399168">Walang internet ang kasalukuyang setting ng paggamit ng data</translation>
 <translation id="9108692355621501797">Ang <ph name="LINK_BEGIN" />Notification ng Privacy ng G Suite for Education<ph name="LINK_END" /> ay naglalayong makatulong sa mga user ng at magulang sa G Suite for Education na maunawaan kung anong data ang kinokolekta ng produkto, bakit ito kinokolekta, at ano ang ginagawa rito.</translation>

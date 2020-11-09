@@ -1782,7 +1782,6 @@
 <translation id="3029466929721441205">실행기에 스타일러스 도구 표시</translation>
 <translation id="3031417829280473749">X 요원</translation>
 <translation id="3031557471081358569">가져올 항목 선택:</translation>
-<translation id="3036041939445522540">사용 가능한 연락처 없음</translation>
 <translation id="3036327949511794916"><ph name="DEVICE_TYPE" /> 반납 기한이 지났습니다.</translation>
 <translation id="3036546437875325427">Flash 사용</translation>
 <translation id="3037754279345160234">도메인 연결 구성을 파싱할 수 없습니다. 관리자에게 문의하세요.</translation>
@@ -4637,7 +4636,6 @@
 <translation id="6445450263907939268">변경하지 않으려는 경우 이전 설정을 복원할 수 있습니다.</translation>
 <translation id="6447842834002726250">쿠키</translation>
 <translation id="6450876761651513209">개인정보 보호 관련 설정 변경</translation>
-<translation id="6451180435462401570">클라우드 프린트 기기 관리</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 외 탭 1개}other{<ph name="PAGE_TITLE" /> 외 탭 #개}}</translation>
 <translation id="6451689256222386810">암호를 잊어버렸거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />합니다.</translation>
 <translation id="6452181791372256707">거부</translation>
@@ -4944,8 +4942,6 @@
 <translation id="6824584962142919697">요소 검사(&amp;I)</translation>
 <translation id="6825184156888454064">이름순 정렬</translation>
 <translation id="6826872289184051766">USB를 통해 인증</translation>
-<translation id="6827487342470222762">사용 가능한 연락처가 없습니다. 내 연락처에 있는 사용자와 Nearby Share를 사용하려면 사용자의 Google 계정에 연결된 이메일 주소를 내 연락처에 추가하세요.</translation>
-<translation id="6827623133556594466">Google 클라우드 프린트는 12월 31일 이후 지원이 중단됩니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">로그인할 수 있는 사용자 설정:</translation>
 <translation id="6828182567531805778">데이터를 동기화하려면 암호를 입력합니다.</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5876,7 +5872,6 @@
 <translation id="7893008570150657497">컴퓨터에서 사진, 음악, 기타 미디어에 액세스</translation>
 <translation id="7893153962594818789">이 <ph name="DEVICE_TYPE" />에서 블루투스가 사용 중지되어 있습니다. 비밀번호를 입력하고 블루투스를 사용 설정하세요.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" />(기본)</translation>
-<translation id="7897865097438730075">Google 클라우드 프린트는 12월 31일 이후 더 이상 지원되지 않습니다. 관리자에게 문의하세요.</translation>
 <translation id="7897900149154324287">이후에 이동식 기기를 분리하기 전에 파일 앱에서 이동식 기기를 꺼내야 합니다. 그렇지 않으면 데이터가 손실될 수 있습니다.</translation>
 <translation id="7898627924844766532">툴바에 보관</translation>
 <translation id="7898725031477653577">항상 번역</translation>
@@ -6027,7 +6022,6 @@
 <translation id="8054563304616131773">올바른 이메일 주소를 입력하세요.</translation>
 <translation id="8054921503121346576">USB 키보드 연결됨</translation>
 <translation id="8058655154417507695">유효기간 연도</translation>
-<translation id="8058811362315390556">Google 클라우드 프린트는 12월 31일 이후 더 이상 지원되지 않습니다.</translation>
 <translation id="8059417245945632445">기기 검사(&amp;I)</translation>
 <translation id="8059456211585183827">저장할 수 있는 프린터가 없습니다.</translation>
 <translation id="8061091456562007989">이전 설정으로 되돌리기</translation>
@@ -6140,7 +6134,6 @@
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" />(으)로 전환</translation>
 <translation id="8184318863960255706">추가 정보</translation>
 <translation id="8184472985242519288">균일</translation>
-<translation id="8185331656081929126">네트워크에 새 프린터가 감지되면 알림 표시</translation>
 <translation id="8186609076106987817">서버에서 파일을 찾을 수 없습니다.</translation>
 <translation id="8188389033983459049">계속하려면 기기 설정을 확인하고 사용 설정하세요.</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" />에 연결 중</translation>

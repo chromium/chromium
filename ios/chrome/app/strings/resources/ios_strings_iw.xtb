@@ -83,7 +83,6 @@
 <translation id="1690731385917361335">אין פריטים</translation>
 <translation id="1692118695553449118">סנכרון מופעל</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> נבחרו</translation>
-<translation id="1715940067130687605">אפשר להשתמש במיקומך הנוכחי.</translation>
 <translation id="1740468249224277719">יש להקיש פעמיים כדי להתקין.</translation>
 <translation id="1746815479209538200">כדי לגלוש באינטרנט צריך להוסיף כרטיסייה חדשה.</translation>
 <translation id="1752547299766512813">שמירת סיסמאות</translation>
@@ -576,7 +575,7 @@
 <translation id="7108338896283013870">הסתרה</translation>
 <translation id="7133798577887235672">שם מלא</translation>
 <translation id="7136892417564438900">המצלמה לא זמינה</translation>
-<translation id="7159472599653637159">בקש אתר שמותאם לנייד</translation>
+<translation id="7159472599653637159">בקשת אתר שמותאם לנייד</translation>
 <translation id="7172852049901402487">הגנה על הסיסמאות שלך מפני בעיות אבטחה</translation>
 <translation id="7173114856073700355">פתיחת ההגדרות</translation>
 <translation id="7189598951263744875">שיתוף...</translation>
@@ -628,7 +627,7 @@
 <translation id="7771470029643830783">‏יציאה תפסיק את הסנכרון של הסימניות, ההיסטוריה, הסיסמאות ונתונים אחרים ב-Chrome עם חשבון Google.
 
 החשבון שלך מנוהל על-ידי <ph name="HOSTED_DOMAIN" />, ולכן הנתונים מ-Chrome יימחקו מהמכשיר הזה בעת היציאה מהחשבון. הנתונים המסונכרנים יישארו בחשבון Google שלך.</translation>
-<translation id="7772032839648071052">אשר משפט-סיסמה</translation>
+<translation id="7772032839648071052">אישור משפט-סיסמה</translation>
 <translation id="7778472311864276518">הסרת החשבון מהמכשיר הזה</translation>
 <translation id="7781011649027948662">לתרגם את הדף?</translation>
 <translation id="7781829728241885113">אתמול</translation>

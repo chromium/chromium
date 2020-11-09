@@ -1782,7 +1782,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3029466929721441205">Rašiklio įrankių rodymas lentynoje</translation>
 <translation id="3031417829280473749">Slaptasis agentas</translation>
 <translation id="3031557471081358569">Pasirinkite elementus importuoti:</translation>
-<translation id="3036041939445522540">Nėra pasiekiamų kontaktų</translation>
 <translation id="3036327949511794916">Terminas, iki kurio buvo galima grąžinti šį „<ph name="DEVICE_TYPE" />“ įrenginį, jau praėjo.</translation>
 <translation id="3036546437875325427">Įgalinti „Flash“</translation>
 <translation id="3037754279345160234">Nepavyko išanalizuoti domeno prisijungimo konfigūracijos. Susisiekite su administratoriumi.</translation>
@@ -4640,7 +4639,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6445450263907939268">Jei nepageidaujate šių pakeitimų, galite atkurti ankstesnius nustatymus.</translation>
 <translation id="6447842834002726250">Slapukai</translation>
 <translation id="6450876761651513209">Pakeisti su privatumu susijusius nustatymus</translation>
-<translation id="6451180435462401570">Tvarkyti spausdinimo iš debesies įrenginius</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> ir dar 1 skirtukas}one{<ph name="PAGE_TITLE" /> ir dar # skirtukas}few{<ph name="PAGE_TITLE" /> ir dar # skirtukai}many{<ph name="PAGE_TITLE" /> ir dar # skirtuko}other{<ph name="PAGE_TITLE" /> ir dar # skirtukų}}</translation>
 <translation id="6451689256222386810">Jei pamiršote slaptafrazę arba norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatykite sinchronizavimą<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Atmesti</translation>
@@ -4947,8 +4945,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6824584962142919697">&amp;Tikrinti elementus</translation>
 <translation id="6825184156888454064">Rūšiuoti pagal pavadinimą</translation>
 <translation id="6826872289184051766">Patvirtinti per USB</translation>
-<translation id="6827487342470222762">Nėra pasiekiamų kontaktų. Norėdami su jais naudoti Bendrinimo netoliese funkciją, prie savo kontaktų pridėkite el. pašto adresus, susietus su jų „Google“ paskyromis.</translation>
-<translation id="6827623133556594466">„Google“ spausdinimo iš debesies paslauga nebebus palaikoma po gruodžio 31 d. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Apriboti prisijungimą šiems naudotojams:</translation>
 <translation id="6828182567531805778">Įveskite slaptafrazę, kad sinchronizuotumėte duomenis</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5879,7 +5875,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7893008570150657497">Pasiekti nuotraukas, muziką ir kitą mediją iš kompiuterio</translation>
 <translation id="7893153962594818789">Šiame „<ph name="DEVICE_TYPE" />“ išjungtas „Bluetooth“. Įveskite slaptažodį ir įjunkite „Bluetooth“.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Numatytasis)</translation>
-<translation id="7897865097438730075">„Google“ spausdinimo iš debesies paslauga nebebus palaikoma po gruodžio 31 d. Susisiekite su administratoriumi.</translation>
 <translation id="7897900149154324287">Ateityje būtinai prieš atjungdami keičiamąjį įrenginį išimkite jį naudodami Failų programą. Kitaip galite prarasti duomenis.</translation>
 <translation id="7898627924844766532">Laikyti įrankių juostoje</translation>
 <translation id="7898725031477653577">Visada versti</translation>
@@ -6030,7 +6025,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8054563304616131773">Įveskite tinkamą el. pašto adresą</translation>
 <translation id="8054921503121346576">USB klaviatūra prijungta</translation>
 <translation id="8058655154417507695">Galiojimo laiko pabaigos metai</translation>
-<translation id="8058811362315390556">„Google“ spausdinimo iš debesies paslauga nebebus palaikoma po gruodžio 31 d.</translation>
 <translation id="8059417245945632445">&amp;Tikrinti įrenginius</translation>
 <translation id="8059456211585183827">Nėra galimų išsaugoti spausdintuvų.</translation>
 <translation id="8061091456562007989">Grąžinti ankstesnį variantą</translation>
@@ -6143,7 +6137,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8184288427634747179">Perjungti į <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Daugiau informacijos</translation>
 <translation id="8184472985242519288">Vienodas</translation>
-<translation id="8185331656081929126">Rodyti pranešimus, kai nauji spausdintuvai aptinkami tinkle</translation>
 <translation id="8186609076106987817">Serveriui nepavyko rasti failo.</translation>
 <translation id="8188389033983459049">Patikrinkite įrenginio nustatymus ir įjunkite jį, kad galėtumėte tęsti</translation>
 <translation id="8190193592390505034">Jungiamasi prie „<ph name="PROVIDER_NAME" />“</translation>

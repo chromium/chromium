@@ -4,7 +4,6 @@
 <translation id="1000498691615767391">ເລືອກໂຟລເດີທີ່ຈະເປີດ</translation>
 <translation id="1023220960495960452">ການປ່ຽນ​ຖ່າຍ​ຕົວ​ອັກສອນ (vanakkam →​ວານັກກໍາ)</translation>
 <translation id="1035094536595558507">ມຸມມອງສະໄລດ໌</translation>
-<translation id="1045157690796831147">ການປ່ຽນ​ຖ່າຍ​ຕົວ​ອັກສອນ (namaska​​r →​ນາມັສກາ​)</translation>
 <translation id="1047956942837015229">ກໍາລັງລຶບ <ph name="COUNT" /> ​ລາຍ​ການ...</translation>
 <translation id="1049926623896334335">ເອ​ກະ​ສານ Word</translation>
 <translation id="1060368002126861100">ເພື່ອເປີດໄຟລ໌ດ້ວຍ <ph name="APP_NAME" />, ກະລຸນາຍ້າຍພວກມັນໄປໃສ່ໂຟນເດີໄຟລ໌ຂອງ Windows ກ່ອນ.</translation>
@@ -19,6 +18,7 @@
 <translation id="1150565364351027703">ແວ່ນກັນແດດ</translation>
 <translation id="115443833402798225">ຮາງກຸລ ອັນມາແຕ</translation>
 <translation id="1155759005174418845">ພາສາຄາ​ຕາ​ລັນ</translation>
+<translation id="1169885125071442573">ການແປທັບສັບພາສາກູຈາຣາຕິ</translation>
 <translation id="1172970565351728681">ເວລາຍັງເຫຼືອປະມານ <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">ໃສ່ຊື່ໃໝ່</translation>
 <translation id="117624967391683467">ກໍາລັງກັອບປີ້ <ph name="FILE_NAME" />...</translation>
@@ -31,8 +31,8 @@
 <translation id="1293556467332435079">ໄຟລ໌</translation>
 <translation id="1297922636971898492">ບໍ່ມີ Google Drive ຢູ່ໃນເວລານີ້. ການອັບໂຫຼດຈະເລີ່ມຕົ້ນໃໝ່ອັດຕະໂນມັດ ເມື່ອ Google Drive ກັບຄືນມາ.</translation>
 <translation id="1307931752636661898">ບໍ່ສາມາດເບິ່ງໄຟລ໌ Linux ໄດ້</translation>
-<translation id="1310751437842832374">ການປ່ຽນ​ຖ່າຍ​ຕົວ​ອັກສອນ (mausam → ມໍແຊມ)</translation>
 <translation id="1338950911836659113">ກໍາລັງລຶບ​...</translation>
+<translation id="1345094301418504404">ພາສາຝຣັ່ງ (ຄານາດາ)</translation>
 <translation id="1346748346194534595">ເບື້ອງຂວາ</translation>
 <translation id="1351692861129622852">ກຳ​ລັງ​ນຳ <ph name="FILE_COUNT" /> ໄຟ​ລ໌​ເຂົ້າ​ມາ...</translation>
 <translation id="1352103415082130575">ຄີບອດ​ພາ​ສາ​ໄທ (ພັດຕະໂຊດ​)</translation>
@@ -46,9 +46,9 @@
 <translation id="1435838927755162558">ແບ່ງປັນໂຟນເດີກັບ Parallels Desktop</translation>
 <translation id="1439494416798956626">ຍ້າຍໄປໃສ່ <ph name="FOLDER_NAME" /> ແລ້ວ.</translation>
 <translation id="1441841714100794440">ຄີບອດພາສາ​ຫວຽດ​ນາມ (Telex​)</translation>
-<translation id="1455548678241328678">ຄີບອດພາສານໍເວຈຽນ</translation>
 <translation id="1464724975715666883">1 ຄວາມ​ຜິດ​ພາດ​.</translation>
 <translation id="1467432559032391204">ເບື້ອງຊ້າຍ</translation>
+<translation id="1472351751615457820">ການແປທັບສັບພາສາກຣີກ</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" ບໍ່​ຖືກ​ອັບ​ໂຫຼດ. ພື້ນ​ທີ່​ຫວ່າງ​ບໍ່​ພຽງ​ພໍ​ຢູ່​ໃນ Google Drive ຂອງ​ທ່ານ.</translation>
 <translation id="148466539719134488">ພາສາ​ສະ​ວິດ</translation>
 <translation id="1497522201463361063">ບໍ່ສາມາດປ່ຽນຊື່ໄດ້ "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -59,6 +59,7 @@
 <translation id="1572585716423026576">ຕັ້ງເປັນພາບພື້ນຫຼັງ</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">ກ້ອງ​ຖ່າຍ​ຮູບ</translation>
+<translation id="1622022025445651011">ພາສາຝຣັ່ງ (ຝຣັ່ງ)</translation>
 <translation id="1646019627374511909">ກຳລັງເຮັດໃຫ້ <ph name="NUMBER_OF_ITEMS" /> ໄຟລ໌ເປັນໄຟລ໌ອອບລາຍ</translation>
 <translation id="164729547906544836">ຄີບອດພາສາຕາມິນ (itrans​)</translation>
 <translation id="164969095109328410">ອຸປະກອນ Chrome</translation>
@@ -96,13 +97,14 @@
 <translation id="2009067268969781306">ການຟໍແມັດໄດຣຈະລຶບຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໃນມັນ ຄຳສັ່ງນີ້ບໍ່ສາມາດຍົກເລີກໄດ້.</translation>
 <translation id="2028997212275086731">ເຄື່ອງເກັບມ້ຽນ RAR</translation>
 <translation id="2046702855113914483">ຣາເມັງ</translation>
+<translation id="2060251957438343874">ພາສາເຢຍລະມັນ (ເຢຍລະມັນ)</translation>
+<translation id="2066433303065022982">ການແປທັບສັບພາສາຮິບຣູ</translation>
 <translation id="2070909990982335904">ຊື່ເລີ່ມຕົ້ນດ້ວຍຈໍ້າຖືກສະຫງວນໄວ້ສໍາລັບລະບົບ. ກະລຸນາເລືອກຊື່ອື່ນ.</translation>
 <translation id="2079545284768500474">ບໍ່ເຮັດ</translation>
 <translation id="2080010875307505892">ຄີບອດພາສາເຊີເບຍ</translation>
 <translation id="2084108471225856927">ການຕັ້ງຄ່າອຸປະກອນ</translation>
 <translation id="2085470240340828803">ມີໄຟລ໌ຊື່ "<ph name="FILENAME" />" ຢູ່ຮຽບຮ້ອຍແລ້ວ. ທ່ານຕ້ອງການເຮັດອັນໃດ?</translation>
 <translation id="2121825465123208577">ປ່ຽນຂະໜາດ</translation>
-<translation id="2136953289241069843">ການປ່ຽນ​ຖ່າຍ​ຕົວ​ອັກສອນ (namaste →​ນາມາສເຕະ​)</translation>
 <translation id="2163152940313951844">ຕົວອັກສອນໃຊ້ບໍ່ໄດ້: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">ຄີບອດພາສາ​ຫວຽດ​ນາມ (TCVN​)</translation>
 <translation id="2168214441502403371">ຄີບອດພາສາເປີ​ເຊຍ</translation>
@@ -110,6 +112,7 @@
 <translation id="2208158072373999562">ຄັງເກັບໄຟລ໌ຊິບ</translation>
 <translation id="2225536596944493418">ທ່ານ​ແນ່​ໃຈບໍ່ວ່​າ ​ທ່ານ​ຕ້ອງ​ການ​ລຶບ <ph name="NUMBER_OF_ITEMS" /> ລາຍ​ການ​?</translation>
 <translation id="2230062665678605299">ບໍ່​ສາ​ມາດ​​ສ້າງ​ໂຟລເດີ "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /> ໄດ້</translation>
+<translation id="2258078827108167865">ພາສາຂະແມ</translation>
 <translation id="2275059641601412272">ຍ້າຍແລ້ວ.</translation>
 <translation id="2287742181953707290">ພາສາປັອກຕຸຍກິສທີ່ໃຊ້ແປ້ນພິມຄອມພິວເຕີສະຫະລັດແບບສາກົນ</translation>
 <translation id="2288278176040912387">ເຄື່ອງຫຼິ້ນ​ບັນ​ທຶກ</translation>
@@ -125,6 +128,7 @@
 <translation id="240770291734945588">ຍັງເຫຼືອ <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="2425665904502185219">ຂະຫນາດໄຟລ໌ທັງໝົດ</translation>
 <translation id="2428749644083375155">ກຳລັງສຳເນົາ <ph name="NUMBER_OF_ITEMS" /> ລາຍການໄວ້ໃນ <ph name="FOLDER_NAME" /></translation>
+<translation id="2445471348947930094">ການອອກສຽງພາສາກູຈາຣາຕິ</translation>
 <translation id="2448312741937722512">ປະ​ເພດ</translation>
 <translation id="2453576648990281505">ມີໄຟລ໌ຢູ່ແລ້ວ</translation>
 <translation id="2464079411014186876">ກະແລ໋ມ</translation>
@@ -161,6 +165,7 @@
 <translation id="2887525882758501333">ເອ​ກະ​ສານ PDF</translation>
 <translation id="2888807692577297075">ບໍ່ມີລາຍການຖືກຄູ່ກັນ &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">ຂໍ້ມູນ</translation>
+<translation id="2899393425226141282">ພາສາເຢຍລະມັນ (ເຢຍລະມັນ) ທີ່ມີແປ້ນພິມ Neo 2</translation>
 <translation id="2902312830803030883">ການດຳເນີນການເພີ່ມເຕີມ</translation>
 <translation id="2902734494705624966">US ຂະ​ຫຍາຍ</translation>
 <translation id="2923240520113693977">ພາສາເອສໂຕ​ເນຍ</translation>
@@ -206,7 +211,6 @@
 <translation id="3338239663705455570">ຄີບອດພາສາສະໂລເວເນຍ</translation>
 <translation id="3353984535370177728">ເລືອກໂຟລເດີທີ່ຈະອັບໂຫຼດ</translation>
 <translation id="3356580349448036450">ສຳ​ເລັດ</translation>
-<translation id="3399597614303179694">ແປ້ນ​ພິມພາ​ສາ​ມາ​ເຊ​ໂດ​ເນຍ</translation>
 <translation id="3414856743105198592">ການຟໍແມັດມີເດຍທີ່ສາມາດຖອດອອກໄ້ຈະລຶບທຸກຂໍ້ມູນ. ທ່ານ​ຕ້ອງ​ການ​​ຈະ​ສືບ​ຕໍ່ບໍ​?</translation>
 <translation id="3437801641691368414">ເວລາສ້າງ</translation>
 <translation id="3466147780910026086">ກຳ​ລັງ​ສະ​ແກນອຸ​ປະ​ກອນ​ມີ​ເດຍ​ຂອງ​ທ່ານ...</translation>
@@ -232,7 +236,6 @@
 <translation id="3644896802912593514">ຄວາມກວ້າງ</translation>
 <translation id="3645233063072417428">ຍ້າຍ <ph name="NUMBER_OF_ITEMS" /> ລາຍການແລ້ວ.</translation>
 <translation id="3645531960514756307">ຖອດປັກໝຸດໂຟນເດີ</translation>
-<translation id="3678559383040232393">ຄີ​ບອດ​ພາ​ສາມອ​ລ​ຕີ​ສ</translation>
 <translation id="3685122418104378273">ການ​ຊິງ​ຄ໌ Google Drive ປິດ​ໃຊ້​ງານ​ໂດຍ​ມາດ​ຕະ​ຖານ​ແລ້ວ, ເມື່ອ​ກຳ​ລັງ​ໃຊ້​ຂໍ້​ມູນ​ມື​ຖື.</translation>
 <translation id="3689865792480713551">ຍົກເລີກ <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3726463242007121105">ບໍ່ສາມາດເປີດອຸປະກອນນີ້ໄດ້ ເພາະວ່າລະບົບໄຟລ໌ຂອງມັນບໍ່ຮອງຮັບ.</translation>
@@ -248,7 +251,6 @@
 <translation id="3810973564298564668">ຈັດການ</translation>
 <translation id="3811494700605067549">ເລືອກ 1 ໄຟລ໌ແລ້ວ</translation>
 <translation id="3815016854028376614">ວິ​ທີ​ການ​ປ້ອນຂໍ້ມູນຊຸຍຢິນ</translation>
-<translation id="3825863595139017598">ຄີບອດພາສາມົງ​ໂກນ</translation>
 <translation id="38275787300541712">ກົດເອັນເຕີ ເມື່ອສໍາເລັດແລ້ວ</translation>
 <translation id="3830674330436234648">ບໍ່ມີການຫຼິ້ນຄືນ</translation>
 <translation id="3833761542219863804">ການປ່ຽນ​ຖ່າຍ​ຕົວ​ອັກສອນ (mausam → ມໍແຊມ)</translation>
@@ -257,7 +259,6 @@
 <translation id="3855472144336161447">ພາສາເຢຍລະັມນ Neo 2</translation>
 <translation id="386548886866354912">ເກັບຮວມກັນກັບ <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">ລາຍ​ລະ​ອຽດ</translation>
-<translation id="391445228316373457">ຄີບອດພາສາເນປານ (ການອອກສຽງ)</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">ຫຼິ້ນຢູ່ເທິງ</translation>
 <translation id="3943857333388298514">ແປະໃສ່</translation>
@@ -266,6 +267,7 @@
 <translation id="4002066346123236978">ຫົວຂໍ້</translation>
 <translation id="4070370845051020638">ວິທີການປ້ອນຂໍ້ມູນພາສາຈີນກວາງຕຸ້ງ</translation>
 <translation id="4072248638558688893">ຄີບອດພາສາຕາມິນ (ການອອກສຽງ​)</translation>
+<translation id="4097397818890482665">ການແປທັບສັບພາສາຄັນນາດາ</translation>
 <translation id="4124935795427217608">ຢູນິຄອນ</translation>
 <translation id="4158739975813877944">ເປີດລາຍການຫຼິ້ນ</translation>
 <translation id="4159731583141908892">ຍ້າຍ <ph name="FILE_NAME" /> ແລ້ວ.</translation>
@@ -294,6 +296,7 @@
 <translation id="4479812471636796472">ຄີບອດດີວໍຣັກສະ​ຫະ​ລັດ</translation>
 <translation id="4522570452068850558">ລາຍ​ລະ​ອຽດ</translation>
 <translation id="4527800702232535228">ມີການແບ່ງປັນໂຟນເດີນີ້ກັບ Parallels Desktop</translation>
+<translation id="4532112105534982530">ພາສາຝຣັ່ງ (ຝຣັ່ງ) ທີ່ມີແປ້ນພິມ Bépo</translation>
 <translation id="4552678318981539154">ຊື້​ບ່ອນເກັບຂໍ້ມູນເພີ່ມເຕີມ</translation>
 <translation id="4559318885353833501">ລຶບ <ph name="FILE_NAME" /> ແລ້ວ</translation>
 <translation id="4559767610552730302">ຮູບໜ້າແຈ້ງຫຼັງມົວ</translation>
@@ -302,6 +305,7 @@
 <translation id="4579744207439506346">ເພີ່ມ <ph name="ENTRY_NAME" /> ໃສ່ການເລືອກແລ້ວ.</translation>
 <translation id="4582497162516204941">ຕິດຕັ້ງດ້ວຍ Linux (ເບຕ້າ)</translation>
 <translation id="4594543368593301662">ກຳລັງສະແດງຜົນການຊອກຫາສຳລັບ <ph name="SEARCH_TERM" />.</translation>
+<translation id="4598673198033263991">ຕົວອັກສອນ ແລະ ຕົວເລກທີ່ມີແປ້ນພິມພາສາຍີ່ປຸ່ນ</translation>
 <translation id="4603392156942865207">ກຳລັງສຳເນົາ <ph name="FILE_NAME" /> ໄວ້ໃນ <ph name="FOLDER_NAME" /></translation>
 <translation id="4627439232948440198">ສັນສະກຣິດ</translation>
 <translation id="4631887759990505102">ສິລະປິນ</translation>
@@ -321,6 +325,7 @@
 <translation id="4737050008115666127">ກຳລັງລົງຈອດ</translation>
 <translation id="4747271164117300400">ມາເຊໂດນີ</translation>
 <translation id="4759238208242260848">ດາວ​ໂຫຼດ</translation>
+<translation id="4763055924467562718">ການອອກສຽງພາສາຄັນນາດາ</translation>
 <translation id="4779136857077979611">ໂອະນິງິຣິ</translation>
 <translation id="4784330909746505604">ການ​ນໍາ​ສະ​ເຫນີ PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
@@ -346,7 +351,6 @@
 <translation id="4943368462779413526">ບານເຕະ</translation>
 <translation id="4961158930123534723">ແບ່ງປັນ 1 ໂຟນເດີກັບ Parallels Desktop ແລ້ວ</translation>
 <translation id="4969785127455456148">ອະ​ລະ​ບໍ້າ</translation>
-<translation id="497244430928947428">ຄີບອດພາສາມາລາຢາລໍາ (ການອອກສຽງ)</translation>
 <translation id="4973523518332075481">ໃຊ້ຊື່ທີ່ມີຕົວອັກສອນ <ph name="MAX_LENGTH" /> ຕົວລົງມາ</translation>
 <translation id="4973970068702235170">ການຊິບບໍ່ສຳເລັດ, ເກີດຄວາມຜິດພາດທີ່ບໍ່ຄາດຄິດ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4988205478593450158">ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການລຶບ "<ph name="FILE_NAME" />"?</translation>
@@ -410,7 +414,6 @@
 <translation id="5438282218546237410">ບໍ່ມີຜົນການຊອກຫາສຳລັບ <ph name="SEARCH_TERM" />.</translation>
 <translation id="5449551289610225147">ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ</translation>
 <translation id="5464696796438641524">ຄີບອດພາສາໂປ​ໂລຍ</translation>
-<translation id="5465122519792752163">ຄີບອດພາສາເນປານ (InScript)</translation>
 <translation id="5469868506864199649">ພາສາອີຕາລີ</translation>
 <translation id="5484429245813572665">ອິນໂດເນຊຽນ</translation>
 <translation id="5494920125229734069">ເລືອກ​ທັງ​ຫມົດ</translation>
@@ -429,6 +432,7 @@
    ປິດທຸກໄຟລ໌ຢູ່ໃນແຟ້ມຈັດເກັບ ຫຼື ດິສສະເໝືອນຈິງ, ຈາກນັ້ນລອງອີກຄັ້ງ.</translation>
 <translation id="5691596662111998220">ອຸ້ຍ, ຈະບໍ່ມີ <ph name="FILE_NAME" /> ຢູ່ອີກ.</translation>
 <translation id="5700087501958648444">ຂໍ້ມູນສຽງ</translation>
+<translation id="570049376144986742">ພາສາຝຣັ່ງ (ສະວິດເຊີແລນ)</translation>
 <translation id="5731409020711461763">1 ຮູບໃໝ່</translation>
 <translation id="5752453871435543420">ການ​ສຳ​ຮອງ Chrome OS Cloud</translation>
 <translation id="5756666464756035725">QWERTY ພາ​ສາ​ຮົງ​ກາ​ລີ</translation>
@@ -463,6 +467,7 @@
 <translation id="6096979789310008754">ລຶບລ້າງຂໍ້ຄວາມຊອກຫາແລ້ວ, ເຊິ່ງສະແດງຊ່ອງໄຟລ໌ ແລະ ໂຟນເດີທັງໝົດ.</translation>
 <translation id="610101264611565198">ກຳລັງຍ້າຍ <ph name="FILE_NAME" /> ໄປຍັງ <ph name="FOLDER_NAME" /></translation>
 <translation id="6111770213269631447">ການປ່ຽນ​ຖ່າຍ​ຕົວ​ອັກສອນ (namaska​​r →​ນາມັສກາ​)</translation>
+<translation id="6113836390962820517">ພາສາຍີ່ປຸ່ນທີ່ມີແປ້ນພິມສະຫະລັດ</translation>
 <translation id="6129953537138746214">ຍະຫວ່າງ</translation>
 <translation id="6133173853026656527">ກໍາລັງຍ້າຍ <ph name="FILE_NAME" />...</translation>
 <translation id="6146563240635539929">ວິດີໂອ</translation>
@@ -486,6 +491,7 @@
 <translation id="6394388407447716302">ອ່ານເທົ່ານັ້ນ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ລາຍການ</translation>
 <translation id="6398765197997659313">ອອກຈາກເຕັມໜ້າຈໍ</translation>
+<translation id="6412376911804527326">ພາສາລາວ</translation>
 <translation id="642282551015776456">ຊື່ນີ້ອາດຈະບໍ່ໃຊ້ເປັນຊື່ໄຟລ໌ ຫຼືໂຟລເດີໄດ້</translation>
 <translation id="6485131920355264772">ດຶງເອົາຂໍ້ມູນຊ່ອງຫວ່າງບໍ່ສໍາເລັດ</translation>
 <translation id="6505918941256367791">ຄີບອດພາສາຕາ​ມິນ (InScript)</translation>
@@ -504,6 +510,7 @@
 <translation id="6643016212128521049">ລຶບ</translation>
 <translation id="6650726141019353908">ແມງກະເບື້ອສີບົວ</translation>
 <translation id="6657585470893396449">ລະຫັດຜ່ານ</translation>
+<translation id="6680841910911617814">ພາສາດັດຈ (ເນເທີແລນ)</translation>
 <translation id="6710213216561001401">ຜ່ານມາ</translation>
 <translation id="6718273304615422081">ກໍາລັງຊິບ...</translation>
 <translation id="6751256176799620176">ເລືອກ 1 ໂຟນເດີແລ້ວ</translation>
@@ -600,6 +607,7 @@
 <translation id="7724603315864178912">ຕັດ</translation>
 <translation id="7730494089396812859">ສະ​ແດງ​ລາຍ​ລະ​ອຽດການ​ສຳ​ຮອງ​ຄ​ລາວ</translation>
 <translation id="7748626145866214022">ມີຕົວເລືອກເພີ່ມເຕີມຢູ່ໃນແຖບດຳເນີນການ. ກະລຸນາກົດ Alt + A ເພື່ອເນັ້ນໜັກໃສ່ແຖບດຳເນີນການ.</translation>
+<translation id="7756956835689272676">ພາສາຝຣັ່ງ (ຄານາດາ) ທີ່ມີແປ້ນພິມຫຼາຍພາສາ</translation>
 <translation id="7765158879357617694">ຍ້າຍ</translation>
 <translation id="7774365994322694683">ນົກ</translation>
 <translation id="7788080748068240085">ເພື່ອບັນທຶກ "<ph name="FILE_NAME" />" ອອຟລາຍນ໌ ທ່ານຕ້ອງເຮັດໃຫ້ມີເນື້ອທີ່ <ph name="TOTAL_FILE_SIZE" /> ເພີ່ມເຕີມອີກ:<ph name="MARKUP_1" />
@@ -646,6 +654,7 @@
 <translation id="8106045200081704138">ແຊຣ໌ກັບຂ້ອຍ</translation>
 <translation id="8116072619078571545">ນໍ້າກ້ອນ</translation>
 <translation id="8117957376775388318">ວິ​ທີ​ການ​ປ້ອນຂໍ້ມູນດາຢີ</translation>
+<translation id="8130367958112291342">ພາສາເຊັກທີ່ມີແປ້ນພິມ Qwerty</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" ໄດ້ຖືກແຊຣ໌ກັບທ່ານ. ທ່ານບໍ່ສາມາດລຶບມັນໄດ້ ເພາະວ່າທ່ານບໍ່ເປັນເຈົ້າຂອງມັນ.</translation>
 <translation id="8145409227593688472">ວິ​ທີ​ການ​ປ້ອນຂໍ້ມູນວູບີ</translation>
 <translation id="8148264977957212129">ວິທີປ້ອນພາສາຈີນ Pinyin</translation>
@@ -694,6 +703,7 @@
 <translation id="8600173386174225982">ລາຍການໄຟລ໌ໄດ້ປ່ຽນເປັນມຸມມອງຮູບຫຍໍ້ແລ້ວ.</translation>
 <translation id="8601932370724196034">ໄຟລ໌ຮູບພາບ Crostini</translation>
 <translation id="8669949407341943408">ກໍາລັງຍ້າຍ...</translation>
+<translation id="8688649574682805922">ພາສາເຢຍລະມັນ (ສະວິດເຊີແລນ)</translation>
 <translation id="8694836330346852143">ອູຣະດູ</translation>
 <translation id="8698464937041809063">ການແຕ້ມຮູບ Google</translation>
 <translation id="8714406895390098252">ລົດ​ຖີບ</translation>
@@ -707,6 +717,7 @@
 <translation id="8808686172382650546">ແມວ</translation>
 <translation id="8810671769985673465">ການຊິບໄຟລ໌ບໍ່ສຳເລັດ,​ ມີລາຍການ: "<ph name="FILE_NAME" />"</translation>
 <translation id="8834164572807951958">ສະມາຊິກຂອງ '<ph name="DESTINATION_NAME" />' ຈະມີການເຂົ້າເຖິງສຳເນົາລາຍການເຫຼົ່ານີ້.</translation>
+<translation id="8846896937446866962">ພາສາຮັງກາຣີທີ່ມີແປ້ນພິມ Qwerty</translation>
 <translation id="885381502874625531">ຄີບອດພາສາ​ເບ​ລາ​ລຸດ​ຊີ</translation>
 <translation id="8860454412039442620">​ແຜ່ນ​ງານ Excel</translation>
 <translation id="8900820606136623064">ພາສາຮັງກາຣີ</translation>

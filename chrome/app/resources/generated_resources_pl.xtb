@@ -887,6 +887,7 @@
 <translation id="2000419248597011803">Niektóre pliki cookie oraz zapytania wpisane na pasku adresu i w polu wyszukiwania zostaną wysłane do domyślnej wyszukiwarki</translation>
 <translation id="2002109485265116295">W czasie rzeczywistym</translation>
 <translation id="2003130567827682533">Aby włączyć usługę transmisji danych „<ph name="NAME" />”, najpierw połącz się z siecią Wi-Fi</translation>
+<translation id="2005199804247617997">Inne profile</translation>
 <translation id="2006638907958895361">Otwórz link w aplikacji <ph name="APP" /></translation>
 <translation id="2007404777272201486">Zgłaszanie problemu...</translation>
 <translation id="2010501376126504057">Zgodne urządzenia</translation>
@@ -1537,6 +1538,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2751131328353405138">Podłączam system plików ssh kontenera Linuksa</translation>
 <translation id="2751739896257479635">Uwierzytelnianie EAP Phase 2</translation>
 <translation id="2753677631968972007">Ręcznie określ uprawnienia do witryn.</translation>
+<translation id="2755349111255270002">Zresetuj to urządzenie <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Zarządzaj ułatwieniami dostępu</translation>
 <translation id="275662540872599901">ekran wyłączony</translation>
 <translation id="2757338480560142065">Upewnij się, że zapisujesz hasło do witryny <ph name="WEBSITE" />.</translation>
@@ -1693,6 +1695,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2932883381142163287">Zgłoś nadużycie</translation>
 <translation id="2933632078076743449">Ostatnia aktualizacja</translation>
 <translation id="2934999512438267372">Zezwolono na pełną kontrolę nad urządzeniami MIDI</translation>
+<translation id="2935225303485967257">Zarządzaj profilami</translation>
 <translation id="2935654492420446828">Późniejsze dodawanie konta szkolnego</translation>
 <translation id="2936851848721175671">Kopia zapasowa i przywracanie</translation>
 <translation id="2938225289965773019">Otwieranie linków protokołu <ph name="PROTOCOL" /></translation>
@@ -1778,7 +1781,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3029466929721441205">Pokazywanie narzędzi rysika na półce</translation>
 <translation id="3031417829280473749">Agentka X</translation>
 <translation id="3031557471081358569">Wybierz elementy do zaimportowania:</translation>
-<translation id="3036041939445522540">Brak kontaktów</translation>
 <translation id="3036327949511794916">Minął termin zwrotu urządzenia <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3036546437875325427">Włącz Flasha</translation>
 <translation id="3037754279345160234">Nie można przeanalizować konfiguracji dołączania do domeny. Skontaktuj się z administratorem.</translation>
@@ -2051,6 +2053,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3388788256054548012">Ten plik jest zaszyfrowany. Poproś właściciela, by go odszyfrował.</translation>
 <translation id="3390013585654699824">Szczegóły aplikacji</translation>
 <translation id="3390741581549395454">Utworzono kopię zapasową aplikacji i plików Linuksa. Uaktualnianie wkrótce się rozpocznie.</translation>
+<translation id="339178315942519818">Wyświetlaj powiadomienia z aplikacji do czatowania na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="3396800784455899911">Klikając przycisk „Zaakceptuj i kontynuuj”, wyrażasz zgodę na opisane powyżej przetwarzanie danych w tych usługach Google.</translation>
 <translation id="3399432415385675819">Powiadomienia zostaną wyłączone</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hz) – z przeplotem</translation>
@@ -2207,6 +2210,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3559533181353831840">Jeszcze około <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">&amp;Sprawdzanie pisowni</translation>
 <translation id="3562423906127931518">Może to potrwać kilka minut. Konfiguruję kontener Linuxa.</translation>
+<translation id="3562655211539199254">Wyświetlaj ostatnio przeglądane karty Chrome z telefonu</translation>
 <translation id="3563432852173030730">Nie można pobrać aplikacji kiosku.</translation>
 <translation id="3564334271939054422">Sieć Wi-Fi (<ph name="NETWORK_ID" />), której używasz, może wymagać wejścia na stronę logowania.</translation>
 <translation id="3564848315152754834">Klucz bezpieczeństwa USB</translation>
@@ -3837,6 +3841,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5503982651688210506">Nadal zezwalaj witrynie <ph name="HOST" /> na używanie kamery i poruszanie nią oraz na używanie mikrofonu</translation>
 <translation id="5505264765875738116">Strony nie mogą prosić o zgodę na wysyłanie powiadomień</translation>
 <translation id="5505307013568720083">Brak tuszu</translation>
+<translation id="5505794066310932198">Zarządzanie przełączaniem</translation>
 <translation id="5507756662695126555">Niezaprzeczalność</translation>
 <translation id="5509693895992845810">Zapisz &amp;jako...</translation>
 <translation id="5509914365760201064">Wystawca: <ph name="CERTIFICATE_AUTHORITY" /></translation>
@@ -4303,6 +4308,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6056710589053485679">Załaduj ponownie (normalnie)</translation>
 <translation id="6057312498756061228">Plik jest za duży, by przeprowadzić kontrolę bezpieczeństwa. Możesz otwierać pliki, których rozmiar nie przekracza 50 MB.</translation>
 <translation id="6057381398996433816">Tej witrynie zablokowano dostęp do czujników ruchu lub oświetlenia.</translation>
+<translation id="6059276912018042191">Ostatnio przeglądane karty Chrome</translation>
 <translation id="6059652578941944813">Hierarchia certyfikatów</translation>
 <translation id="6059925163896151826">Urządzenia USB</translation>
 <translation id="6061882183774845124">Wyślij link na swoje urządzenia</translation>
@@ -4635,7 +4641,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6445450263907939268">Jeśli nie chcesz tych zmian, możesz przywrócić poprzednie ustawienia.</translation>
 <translation id="6447842834002726250">Pliki cookie</translation>
 <translation id="6450876761651513209">Zmiana Twoich ustawień prywatności</translation>
-<translation id="6451180435462401570">Zarządzaj urządzeniami Cloud Print</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> i 1 inna karta}few{<ph name="PAGE_TITLE" /> i # inne karty}many{<ph name="PAGE_TITLE" /> i # innych kart}other{<ph name="PAGE_TITLE" /> i # innej karty}}</translation>
 <translation id="6451689256222386810">Jeśli nie pamiętasz hasła lub chcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Odrzuć</translation>
@@ -4810,6 +4815,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6659213950629089752">Powiększenie strony zostało zmienione przez rozszerzenie „<ph name="NAME" />”</translation>
 <translation id="6659594942844771486">Karta</translation>
 <translation id="666099631117081440">Serwery druku</translation>
+<translation id="6663190258859265334">Wykonaj Powerwash na urządzeniu <ph name="DEVICE_TYPE" /> i przywróć poprzednią wersję.</translation>
 <translation id="6664237456442406323">Twój komputer jest skonfigurowany przy użyciu błędnie sformatowanego identyfikatora sprzętu. Ta sytuacja uniemożliwia zaktualizowanie systemu operacyjnego Chrome za pomocą najnowszych poprawek zabezpieczeń, a komputer <ph name="BEGIN_BOLD" />może być narażony na złośliwe ataki<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Podczas otwierania Twojego profilu coś poszło nie tak. Wyloguj się i ponownie zaloguj.</translation>
 <translation id="6670142487971298264">Aplikacja <ph name="APP_NAME" /> jest teraz dostępna</translation>
@@ -4942,8 +4948,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6824584962142919697">&amp;Sprawdź elementy</translation>
 <translation id="6825184156888454064">Sortuj według nazwy</translation>
 <translation id="6826872289184051766">Zweryfikuj przez USB</translation>
-<translation id="6827487342470222762">Brak dostępnych kontaktów. Aby używać kontaktów przy Udostępnianiu w pobliżu, dodaj do nich adresy e-mail połączone z ich kontami Google.</translation>
-<translation id="6827623133556594466">Po 31 grudnia usługa Google Cloud Print nie będzie już obsługiwana. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Ogranicz logowanie do następujących użytkowników:</translation>
 <translation id="6828182567531805778">Aby synchronizować dane, wpisz hasło</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5397,6 +5401,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7364796246159120393">Wybierz plik</translation>
 <translation id="7365076891350562061">Rozmiar interfejsu</translation>
 <translation id="736522537010810033">Nie zezwalaj stronom na używanie mikrofonu</translation>
+<translation id="7366316827772164604">Szukam urządzeń w pobliżu…</translation>
 <translation id="7366415735885268578">Dodawanie strony</translation>
 <translation id="7366909168761621528">Dane przeglądania</translation>
 <translation id="7367714965999718019">Generator kodów QR</translation>
@@ -5585,6 +5590,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7586498138629385861">Przeglądarka będzie działać, dopóki są uruchomione aplikacje Chrome.</translation>
 <translation id="7589461650300748890">Nie tak szybko. Zachowaj ostrożność.</translation>
 <translation id="7593653750169415785">Automatycznie zablokowane z powodu kilkukrotnego odrzucenia przez Ciebie powiadomień</translation>
+<translation id="7594725637786616550">Wykonaj Powerwash, by zresetować urządzenie <ph name="DEVICE_TYPE" /> do ustawień fabrycznych.</translation>
 <translation id="7595453277607160340">Aby używać aplikacji na Androida i mieć pewność, że <ph name="DEVICE_TYPE" /> działa prawidłowo, zaloguj się ponownie i zainstaluj aktualizację.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (kod błędu: <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">Uruchom ponownie komputer</translation>
@@ -5874,7 +5880,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7893008570150657497">Dostęp do zdjęć, muzyki i innych multimediów na komputerze</translation>
 <translation id="7893153962594818789">Bluetooth jest wyłączony na urządzeniu <ph name="DEVICE_TYPE" />. Wpisz hasło i włącz Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (domyślna)</translation>
-<translation id="7897865097438730075">Po 31 grudnia usługa Google Cloud Print nie będzie już obsługiwana. Skontaktuj się z administratorem.</translation>
 <translation id="7897900149154324287">W przyszłości pamiętaj, by przed odłączeniem urządzenia wymiennego wysunąć je w aplikacji Pliki. W przeciwnym razie możesz stracić dane.</translation>
 <translation id="7898627924844766532">Zachowaj na pasku narzędzi</translation>
 <translation id="7898725031477653577">Zawsze tłumacz</translation>
@@ -5953,6 +5958,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7973962044839454485">Uwierzytelnianie PPP nie powiodło się z powodu nieprawidłowej nazwy użytkownika lub hasła</translation>
 <translation id="7974566588408714340">Ponów za pomocą rozszerzenia <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Nadmiarowość obrazu</translation>
+<translation id="7975504106303186033">Musisz zarejestrować to urządzenie Chrome Education na koncie edukacyjnym. Aby założyć nowe konto, wejdź na g.co/workspace/edusignup</translation>
 <translation id="7977404132325989121">Dodaj &amp;nazwę okna…</translation>
 <translation id="7978412674231730200">Klucz prywatny</translation>
 <translation id="7978450511781612192">Spowoduje to wylogowanie Cię z Twoich kont Google. Twoje zakładki, historia, hasła i inne dane przestaną być synchronizowane.</translation>
@@ -6023,9 +6029,9 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8053390638574070785">Załaduj ponownie tę stronę</translation>
 <translation id="8054517699425078995">Pliki tego typu mogą wyrządzić szkody na urządzeniu. Czy mimo to chcesz zachować plik <ph name="FILE_NAME" />?</translation>
 <translation id="8054563304616131773">Wpisz prawidłowy adres e-mail</translation>
+<translation id="8054883179223321715">Dostępne w przypadku konkretnych stron z filmami</translation>
 <translation id="8054921503121346576">Podłączono klawiaturę USB</translation>
 <translation id="8058655154417507695">Rok utraty ważności</translation>
-<translation id="8058811362315390556">Po 31 grudnia usługa Google Cloud Print nie będzie już obsługiwana</translation>
 <translation id="8059417245945632445">&amp;Sprawdź urządzenia</translation>
 <translation id="8059456211585183827">Nie ma dostępnych drukarek do zapisania.</translation>
 <translation id="8061091456562007989">Cofnij zmiany</translation>
@@ -6108,6 +6114,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8146793085009540321">Nie udało się zalogować. Skontaktuj się z administratorem lub spróbuj ponownie.</translation>
 <translation id="8147900440966275470">Znaleziono <ph name="NUM" /> kartę</translation>
 <translation id="8148760431881541277">Ograniczanie logowania</translation>
+<translation id="8150259863378108853">Lacros to przeglądarka eksperymentalna. Jeśli pojawią się jakieś problemy, zgłoś je, klikając Pomoc &gt; „Zgłoś problem…”.</translation>
 <translation id="8151579390896831136">Dostosuj swój profil, w tym jego nazwę</translation>
 <translation id="8151638057146502721">Konfiguruj</translation>
 <translation id="8152091997436726702">Upłynął limit czasu rejestracji drukarki. Aby ją zarejestrować, musisz potwierdzić na niej rejestrację.</translation>
@@ -6138,7 +6145,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8184288427634747179">Przełącz na: <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Więcej informacji</translation>
 <translation id="8184472985242519288">Jednolity</translation>
-<translation id="8185331656081929126">Pokazuj powiadomienia po wykryciu w sieci nowych drukarek</translation>
 <translation id="8186609076106987817">Serwer nie znalazł pliku.</translation>
 <translation id="8188389033983459049">Sprawdź ustawienia urządzenia i włącz tę opcję, by kontynuować</translation>
 <translation id="8190193592390505034">Łączenie z siecią <ph name="PROVIDER_NAME" /></translation>
@@ -6216,6 +6222,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8271379370373330993">Rodzice, kilka kolejnych kroków jest przeznaczonych dla Was. Po skonfigurowaniu konta <ph name="DEVICE_TYPE" /> może wrócić w ręce dziecka.</translation>
 <translation id="8272443605911821513">Aby zarządzać zainstalowanymi rozszerzeniami, kliknij Rozszerzenia w menu Więcej narzędzi.</translation>
 <translation id="8274332263553132018">Prześlij plik</translation>
+<translation id="8274921654076766238">Lupa śledzi elementy wybrane za pomocą klawiatury</translation>
 <translation id="8274924778568117936">Nie wyłączaj ani nie zamykaj urządzenia <ph name="DEVICE_TYPE" /> do momentu ukończenia aktualizacji. Po zakończeniu instalacji <ph name="DEVICE_TYPE" /> uruchomi się ponownie.</translation>
 <translation id="8275038454117074363">Importuj</translation>
 <translation id="8275080796245127762">Zadzwoń ze swojego urządzenia</translation>
@@ -6598,6 +6605,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8736288397686080465">Ta witryna została zaktualizowana w tle.</translation>
 <translation id="8737685506611670901">Otwieranie linków protokołu <ph name="PROTOCOL" /> zamiast modułu <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Menedżer połączeń</translation>
+<translation id="8737914367566358838">Wybierz język, na który chcesz przetłumaczyć stronę</translation>
 <translation id="8740247629089392745">Możesz przekazać tego Chromebooka użytkownikowi <ph name="SUPERVISED_USER_NAME" />. Prawie wszystko zostało skonfigurowane i można korzystać z urządzenia.</translation>
 <translation id="8742998548129056176">Są to ogólne informacje o tym urządzeniu i o jego używaniu (takie jak poziom naładowania baterii, aktywność w systemie i aplikacjach oraz błędy). Wykorzystamy je do ulepszania Androida. Niektóre informacje zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida, do tworzenia lepszych aplikacji i produktów.</translation>
 <translation id="8743390665131937741">Poziom powiększenia lupy pełnego ekranu:</translation>
@@ -6634,6 +6642,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8774379074441005279">Potwierdzenie przywrócenia danych</translation>
 <translation id="8774934320277480003">Górny margines</translation>
 <translation id="8775144690796719618">Nieprawidłowy URL</translation>
+<translation id="8775163630211761057">Udostępnij to, co najlepsze z telefonu z Androidem na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8776977753660889796">{NUM_MINS,plural, =1{Chrome nie udało się znaleźć znanego szkodliwego oprogramowania na komputerze. Sprawdzano: minutę temu.}few{Chrome nie udało się znaleźć znanego szkodliwego oprogramowania na komputerze. Sprawdzano: {NUM_MINS} minuty temu.}many{Chrome nie udało się znaleźć znanego szkodliwego oprogramowania na komputerze. Sprawdzano: {NUM_MINS} minut temu.}other{Chrome nie udało się znaleźć znanego szkodliwego oprogramowania na komputerze. Sprawdzano: {NUM_MINS} minuty temu.}}</translation>
 <translation id="8777628254805677039">hasło główne</translation>
 <translation id="8780123805589053431">Pobieraj opisy obrazów z Google</translation>
@@ -6799,10 +6808,12 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8952831374766033534">Nieobsługiwana opcja konfiguracyjna: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Podczas ładowania</translation>
 <translation id="895347679606913382">Zaczynam...</translation>
+<translation id="8957757410289731985">Dostosuj profil</translation>
 <translation id="895944840846194039">Pamięć JavaScript</translation>
 <translation id="8962083179518285172">Ukryj szczegóły</translation>
 <translation id="8962918469425892674">Ta witryna używa czujników ruchu lub oświetlenia.</translation>
 <translation id="8965037249707889821">Wpisz stare hasło</translation>
+<translation id="8966809848145604011">Inne profile</translation>
 <translation id="8966870118594285808">Możesz ponownie otworzyć kartę zamkniętą przez przypadek</translation>
 <translation id="8967427617812342790">Dodaj do listy „Do przeczytania”</translation>
 <translation id="8967866634928501045">Naciśnij Alt+Shift+A, by wyświetlić</translation>
@@ -6928,6 +6939,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="9100765901046053179">Ustawienia zaawansowane</translation>
 <translation id="9101691533782776290">Uruchom aplikację</translation>
 <translation id="9102610709270966160">Włącz rozszerzenie</translation>
+<translation id="9103479157856427471">Powiększony ekran pokazuje elementy wybrane za pomocą klawiatury</translation>
 <translation id="9103868373786083162">Naciśnij, by wrócić, lub otwórz menu kontekstowe, by wyświetlić historię</translation>
 <translation id="9108072915170399168">Bieżące ustawienie transmisji danych: Bez internetu</translation>
 <translation id="9108692355621501797"><ph name="LINK_BEGIN" />Informacje na temat ochrony prywatności w G Suite dla Szkół i Uczelni<ph name="LINK_END" /> mają pomóc użytkownikom tej usługi oraz rodzicom zrozumieć, jakie dane zbieramy w G Suite dla Szkół i Uczelni, dlaczego to robimy oraz do czego je wykorzystujemy.</translation>

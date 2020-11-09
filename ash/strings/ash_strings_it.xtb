@@ -8,6 +8,7 @@
 <translation id="1036672894875463507">Sono il tuo Assistente Google e sono a tua disposizione per aiutarti durante la giornata.
 Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> aggiunto</translation>
+<translation id="1047773237499189053">Sono disponibili nuove funzionalità: utilizza il tasto Freccia su per saperne di più.</translation>
 <translation id="1056775291175587022">Nessuna rete</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Cellulare: <ph name="ADDRESS" /></translation>
@@ -20,6 +21,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1153356358378277386">Dispositivi accoppiati</translation>
 <translation id="1175572348579024023">Scorri</translation>
 <translation id="1178581264944972037">Pausa</translation>
+<translation id="118532027333893379">Tocca un punto qualsiasi per acquisire l'intera schermata</translation>
 <translation id="1190609913194133056">Centro notifiche</translation>
 <translation id="1195412055398077112">overscan</translation>
 <translation id="119944043368869598">Cancella tutto</translation>
@@ -56,7 +58,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1420527829902822813">Screenshot acquisito e salvato negli appunti</translation>
 <translation id="1426410128494586442">Sì</translation>
 <translation id="1455242230282523554">Mostra impostazioni lingua</translation>
-<translation id="1456407467406159627">La funzionalità Registrazione dello schermo si è interrotta a causa di contenuti riservati presenti sullo schermo.</translation>
 <translation id="1460620680449458626">Il volume è disattivato.</translation>
 <translation id="1467432559032391204">Sinistra</translation>
 <translation id="1479909375538722835">Menu Accessibilità mobile</translation>
@@ -123,6 +124,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2127372758936585790">Caricabatterie a basso consumo</translation>
 <translation id="2132302418721800944">Registra schermo intero</translation>
 <translation id="2135456203358955318">Lente d'ingrandimento ancorata</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />. Riprova</translation>
 <translation id="2208323208084708176">Modalità desktop unificato</translation>
 <translation id="2220572644011485463">PIN o password</translation>
 <translation id="2222338659135520253">Accesso richiesto</translation>
@@ -134,6 +136,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="229397294990920565">Disattivazione dei dati mobili…</translation>
 <translation id="2295777434187870477">L'audio del microfono è attivo: la disattivazione impedirà l'ingresso audio.</translation>
 <translation id="2298170939937364391">Ingrandimento a schermo intero attivato. Premi di nuovo CTRL + tasto per la ricerca + M per disattivarlo.</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Fai clic sulla finestra di dialogo per visualizzare i risultati nell'assistente.</translation>
 <translation id="2302092602801625023">Questo account è gestito da Family Link</translation>
 <translation id="2303600792989757991">Attiva/disattiva panoramica finestra</translation>
 <translation id="2322173485024759474">Indietro per lettera</translation>
@@ -160,6 +163,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2484513351006226581">Premi <ph name="KEYBOARD_SHORTCUT" /> per cambiare il layout della tastiera.</translation>
 <translation id="2501920221385095727">Tasti permanenti</translation>
 <translation id="2509468283778169019">BLOC MAIUSC è attivo</translation>
+<translation id="2536159006530886390">Impossibile connettersi a Internet.</translation>
 <translation id="2542089167727451762">Tocca la tua immagine del profilo</translation>
 <translation id="255671100581129685">L'Assistente Google non è disponibile in una sessione pubblica.</translation>
 <translation id="256712445991462162">la lente d'ingrandimento ancorata</translation>
@@ -181,6 +185,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2727977024730340865">Collegato a un caricabatterie a basso consumo. La carica della batteria potrebbe non essere affidabile.</translation>
 <translation id="2792498699870441125">Alt+tasto per la ricerca</translation>
 <translation id="2819276065543622893">Verrai disconnesso ora.</translation>
+<translation id="28232023175184696">Impossibile connettersi a Internet. Fai clic per riprovare.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> non supporta la risoluzione <ph name="SPECIFIED_RESOLUTION" />. È stata impostata la risoluzione <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Shelf</translation>
 <translation id="2841907151129139818">Passaggio alla modalità tablet effettuato</translation>
@@ -321,6 +326,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4129129681837227511">Se vuoi vedere le notifiche nella schermata di blocco, sblocca il dispositivo per cambiare l'impostazione</translation>
 <translation id="4146833061457621061">Fammi ascoltare musica</translation>
 <translation id="4149156641122542261">Dispositivo <ph name="DEVICE_TYPE" /> gestito da <ph name="DOMAIN" /></translation>
+<translation id="415719264485676252">L'acquisizione della schermata è bloccata</translation>
 <translation id="4157822100366708405">Impostazioni Tema scuro</translation>
 <translation id="4181841719683918333">Lingue</translation>
 <translation id="4195877955194704651">Pulsante Clic automatici</translation>
@@ -387,6 +393,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4710243778082831592">Impostazioni IME</translation>
 <translation id="4731797938093519117">Accesso genitore</translation>
 <translation id="4734965478015604180">Orizzontale</translation>
+<translation id="4744944742468440486">Informazioni relative al testo selezionato</translation>
 <translation id="4759238208242260848">Download</translation>
 <translation id="4774338217796918551">Puoi riprendere domani alle ore <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Password per <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -504,6 +511,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="595202126637698455">Rilevamento del rendimento attivo</translation>
 <translation id="5957083217255311415">I dati mobili non sono attivi.</translation>
 <translation id="5958529069007801266">Utente supervis.</translation>
+<translation id="5960825221082587934">Consenti all'assistente di mostrare informazioni come la definizione, la traduzione o la conversione di unità per gli elementi selezionati.</translation>
 <translation id="5977415296283489383">Cuffia</translation>
 <translation id="5978382165065462689">Condividi il controllo dello schermo tramite Assistenza remota.</translation>
 <translation id="5980301590375426705">Esci come Ospite</translation>
@@ -586,6 +594,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6777216307882431711">Alimentazione dei dispositivi USB-C collegati</translation>
 <translation id="6790428901817661496">Play</translation>
 <translation id="6803622936009808957">Impossibile duplicare i display perché non sono state trovate risoluzioni supportate. È stato attivato il desktop esteso.</translation>
+<translation id="6816797338148849397">Informazioni relative al testo selezionato disponibili. Per accedere, utilizza il tasto Freccia su.</translation>
 <translation id="6818242057446442178">Indietro per parola</translation>
 <translation id="6820676911989879663">Fai una pausa!</translation>
 <translation id="6850010208275816200">L'app aperta in questo momento è a schermo intero. Se l'app richiede la password, prima di tutto esci dallo schermo intero.</translation>
@@ -649,6 +658,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7497767806359279797">Scegli la lingua e la tastiera</translation>
 <translation id="7526573455193969409">La rete potrebbe essere monitorata</translation>
 <translation id="7536035074519304529">Indirizzo IP: <ph name="ADDRESS" /></translation>
+<translation id="7542906349682405018">La funzionalità di acquisizione dei contenuti sullo schermo è stata bloccata dall'amministratore.</translation>
 <translation id="7548434653388805669">È ora di andare a letto</translation>
 <translation id="7551643184018910560">Fissa sullo shelf</translation>
 <translation id="7561982940498449837">Chiudi menu</translation>
@@ -775,6 +785,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Caricabatterie a basso consumo collegato</translation>
 <translation id="8683506306463609433">Traccia delle prestazioni attiva</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilizza i tasti Freccia destra o Freccia sinistra per gestire la funzionalità.</translation>
 <translation id="8712637175834984815">Fatto</translation>
 <translation id="8721053961083920564">Attiva/disattiva volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">Potrebbe essere un tentativo di rubare i tasti premuti</translation>
@@ -795,6 +806,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8874184842967597500">Non connesso</translation>
 <translation id="8877788021141246043">Imposta un promemoria</translation>
 <translation id="8878886163241303700">Estensione schermo</translation>
+<translation id="8883473964424809116">Fai clic per aprire le impostazioni dell'Assistente Google.</translation>
 <translation id="890616557918890486">Cambia origine</translation>
 <translation id="8909138438987180327">Livello batteria: <ph name="PERCENTAGE" />%.</translation>
 <translation id="8913384980486163186">A tema (predefinita)</translation>

@@ -17,6 +17,7 @@
 <translation id="1369915414381695676">Добавлен сайт <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">Поиск</translation>
 <translation id="1384959399684842514">Скачивание приостановлено.</translation>
+<translation id="1415402041810619267">URL укорочен</translation>
 <translation id="1431402976894535801">Блокировать передачу на сайты информации о вашем присутствии</translation>
 <translation id="1446450296470737166">Полный доступ к управлению MIDI-устройствами</translation>
 <translation id="1509960214886564027">Многие функции на сайтах могут работать некорректно</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">Разрешить сайтам воспроизводить защищенный контент</translation>
 <translation id="4468959413250150279">Отключить звуки на определенном сайте.</translation>
 <translation id="4479647676395637221">Запрашивать разрешение на доступ к камере (рекомендуется)</translation>
+<translation id="4505788138578415521">URL развернут</translation>
 <translation id="4534723447064627427">Чтобы у приложения "<ph name="APP_NAME" />" был доступ к микрофону, предоставьте разрешение в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="4570913071927164677">Подробнее…</translation>
 <translation id="4645575059429386691">Управляется вашими родителями</translation>

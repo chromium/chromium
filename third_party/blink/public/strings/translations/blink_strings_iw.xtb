@@ -21,7 +21,7 @@
 <translation id="1480676835519562650">ניתן לבחור יותר מאפשרות אחת, נבחרו <ph name="SELECTED" /> מתוך <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">אזור</translation>
 <translation id="1591562245178063882">החודש</translation>
-<translation id="1637811476055996098">בחר קבצים</translation>
+<translation id="1637811476055996098">יש לבחור קבצים</translation>
 <translation id="1650423536718072820">ציטוט</translation>
 <translation id="1681022320378710418">השעה הנוכחית</translation>
 <translation id="1727886345390570319">הסתרה של תפריט הכתוביות</translation>
@@ -153,7 +153,7 @@
 <translation id="5406322316791861025">ספרה</translation>
 <translation id="5425179576310518467">התאריך הנוכחי</translation>
 <translation id="5453733299334684579">פריט בעץ</translation>
-<translation id="5466621249238537318">בחר קובץ אחד או יותר.</translation>
+<translation id="5466621249238537318">יש לבחור קובץ אחד או יותר.</translation>
 <translation id="5468998798572797635">יציאה ממסך מלא</translation>
 <translation id="5516424706154626233">בוחר תאריכים</translation>
 <translation id="5537725057119320332">העברה</translation>

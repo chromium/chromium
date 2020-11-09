@@ -1784,6 +1784,32 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 <translation id="3701121231485832347">Beheert instellingen die specifiek zijn voor <ph name="PRODUCT_OS_NAME" />-apparaten die via <ph name="MS_AD_NAME" /> worden beheerd.</translation>
 <translation id="3702518095257671450">Externe bevestiging</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Het veld met één regel is beëindigd en wordt in de toekomst verwijderd. Gebruik het tekstvak met meerdere regels hieronder.)</translation>
+<translation id="3704727923488731211">Hiermee stel je een lijst op met regels ter voorkoming van datalekken op <ph name="PRODUCT_OS_NAME" />.
+      Een datalek kan bijvoorbeeld optreden als je gegevens kopieert en plakt, gegevens overdraagt, afdrukt, je scherm deelt of screenshots maakt.
+
+      Elke regel bevat het volgende:
+      - Een lijst met bronnen die zijn gedefinieerd als URL's. Alle gegevens in de bronnen worden beschouwd als vertrouwelijk en hierop worden de beperkingen toegepast.
+      - Een lijst met bestemmingen die zijn gedefinieerd als URL's of componenten, waarmee de vertrouwelijke gegevens wel of niet mogen worden gedeeld.
+      - Een lijst met beperkingen die op de gegevens van de bronnen moeten worden toegepast.
+
+      Regels kunnen om deze redenen worden toegevoegd:
+      - Bepalen welke klembordgegevens mogen worden gedeeld tussen de bronnen en de bestemmingen.
+      - Bepalen of er screenshots van de bronnen mogen worden gemaakt.
+      - Bepalen of er bronnen mogen worden afgedrukt.
+      - Bepalen of het privacyscherm moet worden gebruikt als er bronnen zichtbaar zijn.
+      - Bepalen of de bronnen het scherm mogen delen.
+
+      Het beperkingsniveau kan worden ingesteld op BLOCK of ALLOW.
+      - Als de beperking is ingesteld op BLOCK, is de actie niet toegestaan.
+      - Als de beperking is ingesteld op ALLOW, is de actie toegestaan.
+
+      Opmerkingen:
+      - Met de beperking PRIVACY_SCREEN blokkeer je niet de mogelijkheid om het privacyscherm in te schakelen maar dwing je dit af als de beperkingsklasse is ingesteld op BLOCK.
+      - Bestemmingen mogen niet leeg zijn als een van de beperkingen CLIPBOARD is, maar ze maken geen verschil voor de overige beperkingen.
+      - De beperking CLIPBOARD maakt geen onderscheid tussen CROSTINI en PLUGIN_VM. Als een van de twee is geselecteerd om het delen van gegevens te blokkeren of toe te staan, wordt de regel op beide toegepast.
+      - Gebruik een notatie voor de URL-patronen volgens deze indeling (https://www.chromium.org/administrators/url-blacklist-filter-format).
+
+      Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</translation>
 <translation id="3709266154059827597">Zwarte lijst voor het installeren van extensies configureren</translation>
 <translation id="3711895659073496551">Onderbreken</translation>
 <translation id="3715569262675717862">Verificatie op basis van clientcertificaten</translation>

@@ -232,7 +232,7 @@
 <translation id="2766299274563946262">אין תא משמאל</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+1}two{+#}many{+#}other{+#}}</translation>
 <translation id="280499067616661124">‏חיפוש של ChromeVox בדף</translation>
-<translation id="2808001342598757276">בטל את החשכת המסך</translation>
+<translation id="2808001342598757276">ביטול החשכת המסך</translation>
 <translation id="2811019999044652585">‏כדי לעבור אל חלקים אחרים במסך, כמו סרגלי כלים או מגש המערכת, יש להקיש על Control ועל מקש 'הבא'. ב-Chromebook, מקש 'הבא' נמצא בדיוק מעל המקש של הספרה 2.</translation>
 <translation id="2811204574343810641">שורה</translation>
 <translation id="2841013758207633010">שעה</translation>
@@ -598,7 +598,7 @@
 <translation id="5585044216466955529">עריכת טקסט, רשומת אימייל</translation>
 <translation id="5597170376237141345">תיבת הסימון הבאה</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, לחצן הבחירה לא נבחר</translation>
-<translation id="5601172225407283979">בצע את פעולת ברירת המחדל</translation>
+<translation id="5601172225407283979">ביצוע פעולת ברירת המחדל</translation>
 <translation id="5608798115546226984">השלמה אוטומטית מוטבעת</translation>
 <translation id="561939826962581046">time</translation>
 <translation id="5623778242535476823">rbtn</translation>
@@ -1005,7 +1005,7 @@
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">שכח</translation>
 <translation id="9040132695316389094">כותרת 1</translation>
-<translation id="9061884144798498064">בחר טבלת ברייל 8 נקודות:</translation>
+<translation id="9061884144798498064">יש לבחור טבלת ברייל 8 נקודות:</translation>
 <translation id="9065283790526219006">‎+popup‎</translation>
 <translation id="9065912140022662363">אין עוד לחצני בחירה</translation>
 <translation id="9067522039955793016">מעבר דף</translation>
@@ -1032,7 +1032,7 @@
 <translation id="9223032053830369045">אדום כהה</translation>
 <translation id="923331726185079994">‏ChromeVox עודכן</translation>
 <translation id="93384979447910801">ירוק ים כהה</translation>
-<translation id="948171205378458592">האט את קצב הדיבור</translation>
+<translation id="948171205378458592">האטת קצב הדיבור</translation>
 <translation id="958854023026327378">החלקה מטה עם אצבע אחת</translation>
 <translation id="962913030769097253">הכותרת הבאה של רמה 1</translation>
 <translation id="966588271015727539">‏בחירת צג ברייל תואם Bluetooth</translation>

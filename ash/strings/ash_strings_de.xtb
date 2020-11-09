@@ -8,6 +8,7 @@
 <translation id="1036672894875463507">Ich bin dein Google Assistant und den ganzen Tag für dich da.
 Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> hinzugefügt</translation>
+<translation id="1047773237499189053">Neue Funktion verfügbar. Verwenden Sie den Aufwärtspfeil, um mehr zu erfahren.</translation>
 <translation id="1056775291175587022">Keine Netzw.</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mobil: <ph name="ADDRESS" /></translation>
@@ -20,6 +21,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1153356358378277386">Gekoppelte Geräte</translation>
 <translation id="1175572348579024023">Scrollen</translation>
 <translation id="1178581264944972037">Pause</translation>
+<translation id="118532027333893379">Auf eine beliebige Stelle tippen, um den ganzen Bildschirm aufzunehmen</translation>
 <translation id="1190609913194133056">Benachrichtigungscenter</translation>
 <translation id="1195412055398077112">Overscan</translation>
 <translation id="119944043368869598">Alle entfernen</translation>
@@ -56,7 +58,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1420527829902822813">Screenshot aufgenommen und in der Zwischenablage gespeichert</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1455242230282523554">Spracheinstellungen anzeigen</translation>
-<translation id="1456407467406159627">Die Bildschirmaufzeichnung wurde aufgrund von vertraulichen Inhalten auf Ihrem Bildschirm angehalten.</translation>
 <translation id="1460620680449458626">Ton ist aus.</translation>
 <translation id="1467432559032391204">Links</translation>
 <translation id="1479909375538722835">Unverankertes Menü "Bedienungshilfen"</translation>
@@ -123,6 +124,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2127372758936585790">Schwaches Ladegerät</translation>
 <translation id="2132302418721800944">Ganzen Bildschirm aufzeichnen</translation>
 <translation id="2135456203358955318">Angedockte Lupe</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: Wiederholen</translation>
 <translation id="2208323208084708176">Unified Desktop-Modus</translation>
 <translation id="2220572644011485463">PIN oder Passwort</translation>
 <translation id="2222338659135520253">Anmeldung erforderlich</translation>
@@ -134,6 +136,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="229397294990920565">Mobile Daten werden deaktiviert…</translation>
 <translation id="2295777434187870477">Mikrofon ist an. Sie können es hier stummschalten.</translation>
 <translation id="2298170939937364391">Vollbildlupe aktiviert. Wenn Sie sie deaktivieren möchten, drücken Sie noch einmal Strg + Suchtaste + M.</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" />; klicken Sie auf das Dialogfeld, um in Assistant Ergebnisse zu sehen.</translation>
 <translation id="2302092602801625023">Dieses Konto wird über Family Link verwaltet</translation>
 <translation id="2303600792989757991">Fensterübersicht umschalten</translation>
 <translation id="2322173485024759474">Zurück um einen Buchstaben</translation>
@@ -160,6 +163,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2484513351006226581">Drücken Sie <ph name="KEYBOARD_SHORTCUT" />, um das Tastaturlayout zu ändern.</translation>
 <translation id="2501920221385095727">Sticky Keys</translation>
 <translation id="2509468283778169019">Feststelltaste aktiviert</translation>
+<translation id="2536159006530886390">Keine Verbindung zum Internet.</translation>
 <translation id="2542089167727451762">Tippen Sie auf Ihr Profilbild</translation>
 <translation id="255671100581129685">In öffentlichen Sitzungen ist Google Assistant nicht verfügbar.</translation>
 <translation id="256712445991462162">die angedockte Lupe</translation>
@@ -181,6 +185,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2727977024730340865">Das Gerät ist an ein Schwachstrom-Ladegerät angeschlossen. Möglicherweise kann der Akku nicht zuverlässig aufgeladen werden.</translation>
 <translation id="2792498699870441125">Alt+Suchtaste</translation>
 <translation id="2819276065543622893">Sie werden jetzt abgemeldet.</translation>
+<translation id="28232023175184696">Keine Verbindung zum Internet. Zum Wiederholen klicken.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> unterstützt <ph name="SPECIFIED_RESOLUTION" /> nicht. Die Auflösung wurde zu <ph name="FALLBACK_RESOLUTION" /> geändert.</translation>
 <translation id="2825619548187458965">Ablage</translation>
 <translation id="2841907151129139818">Zum Tabletmodus gewechselt</translation>
@@ -320,6 +325,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4129129681837227511">Wenn Sie Benachrichtigungen auf dem Sperrbildschirm sehen möchten, entsperren Sie das Gerät, um die Einstellung zu ändern</translation>
 <translation id="4146833061457621061">Musik abspielen</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> verwaltet von <ph name="DOMAIN" /></translation>
+<translation id="415719264485676252">Bildschirmaufnahme ist blockiert</translation>
 <translation id="4157822100366708405">Einstellungen für dunkles Design</translation>
 <translation id="4181841719683918333">Sprachen</translation>
 <translation id="4195877955194704651">Schaltfläche für automatische Klicks</translation>
@@ -386,6 +392,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4710243778082831592">IME-Einstellungen</translation>
 <translation id="4731797938093519117">Elternfreigabe</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4744944742468440486">Informationen in Bezug auf Ihre Auswahl</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4774338217796918551">Du darfst das Gerät um <ph name="COME_BACK_TIME" /> wieder verwenden.</translation>
 <translation id="4776917500594043016">Passwort für <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -503,6 +510,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="595202126637698455">Leistungsnachverfolgung aktiviert</translation>
 <translation id="5957083217255311415">Mobile Daten sind deaktiviert.</translation>
 <translation id="5958529069007801266">Betreuter Nutzer</translation>
+<translation id="5960825221082587934">Sie können sich von Assistant Informationen wie die Definition, Übersetzung oder das Umrechnen von Einheiten für Ihre Auswahl zeigen lassen.</translation>
 <translation id="5977415296283489383">Kopfhörer</translation>
 <translation id="5978382165065462689">Sie teilen sich die Bildschirmsteuerung per Remote-Unterstützung.</translation>
 <translation id="5980301590375426705">Gastsitzung beenden</translation>
@@ -585,6 +593,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="6777216307882431711">Stromversorgung für verbundene USB-C-Geräte</translation>
 <translation id="6790428901817661496">Wiedergabe</translation>
 <translation id="6803622936009808957">Der Bildschirm konnte nicht gespiegelt werden, da die Auflösung nicht unterstützt wird. Stattdessen wurde der Modus für den erweiterten Desktop gestartet.</translation>
+<translation id="6816797338148849397">Informationen in Bezug auf Ihre Auswahl sind verfügbar. Verwenden Sie zum Zugreifen den Aufwärtspfeil.</translation>
 <translation id="6818242057446442178">Zurück um ein Wort</translation>
 <translation id="6820676911989879663">Zeit für eine Pause.</translation>
 <translation id="6850010208275816200">Ihre aktuelle App wird im Vollbildmodus angezeigt. Wenn Sie von der App nach Ihrem Passwort gefragt werden, beenden Sie zuerst den Vollbildmodus.</translation>
@@ -648,6 +657,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="7497767806359279797">Sprache und Tastatur auswählen</translation>
 <translation id="7526573455193969409">Das Netzwerk wird möglicherweise überwacht</translation>
 <translation id="7536035074519304529">IP-Adresse: <ph name="ADDRESS" /></translation>
+<translation id="7542906349682405018">Ihr Administrator hat das Erstellen einer Bildschirmaufnahme Ihres Bildschirminhalts blockiert.</translation>
 <translation id="7548434653388805669">Schlafenszeit</translation>
 <translation id="7551643184018910560">An Ablage anpinnen</translation>
 <translation id="7561982940498449837">Menü schließen</translation>
@@ -774,6 +784,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Leistungsschwaches Ladegerät angeschlossen</translation>
 <translation id="8683506306463609433">Leistungsverfolgung ist aktiv</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Verwenden Sie zum Verwalten dieser Funktion den Rechts- und Linkspfeil.</translation>
 <translation id="8712637175834984815">Alles klar</translation>
 <translation id="8721053961083920564">Ton ein- oder ausschalten. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">Möglicherweise versucht jemand, darüber Ihre Tastatureingaben zu erfassen</translation>
@@ -794,6 +805,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="8874184842967597500">Nicht verbunden</translation>
 <translation id="8877788021141246043">Erinnerungen einrichten</translation>
 <translation id="8878886163241303700">Bildschirmerweiterung</translation>
+<translation id="8883473964424809116">Klicken Sie, um die Google Assistant-Einstellungen zu öffnen.</translation>
 <translation id="890616557918890486">Quelle ändern</translation>
 <translation id="8909138438987180327">Akkustand: <ph name="PERCENTAGE" />.</translation>
 <translation id="8913384980486163186">Design (Standard)</translation>

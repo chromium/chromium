@@ -152,6 +152,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{ଆଜି ସକ୍ରିୟ ଅଛି}=1{1 ଦିନ ପୂର୍ବେ ସକ୍ରିୟ ଥିଲା}other{# ଦିନ ପୂର୍ବେ ସକ୍ରିୟ ଥିଲା}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 ଦିନ ଏବଂ }other{# ଦିନ ଏବଂ }}</translation>
 <translation id="5789643057113097023">।</translation>
+<translation id="5843690142429128814">ଛବି।</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{ବର୍ଷରେ}other{# ବର୍ଷରେ}}</translation>
 <translation id="588258955323874662">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 ସେକେଣ୍ଡ ବାକିଅଛି}other{# ସେକେଣ୍ଡ ବାକିଅଛି}}</translation>
@@ -192,6 +193,7 @@
 <translation id="6845533974506654842">ଦବାନ୍ତୁ</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 ଘଣ୍ଟା}other{# ଘଣ୍ଟା ବାକି ଅଛି}}</translation>
 <translation id="688711909580084195">ନାମହୀନ ୱେବ୍‌ପୃଷ୍ଠା</translation>
+<translation id="6902419395050653510">HTML ବିଷୟବସ୍ତୁ।</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{1 ବର୍ଷ ବାକି ଅଛି}other{# ବର୍ଷ ବାକି ଅଛି}}</translation>
 <translation id="6945221475159498467">ଚୟନ କରନ୍ତୁ</translation>

@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">ముద్రణ విఫలమైంది.</translation>
 <translation id="1125564390852150847">కొత్త ట్యాబ్‌ను సృష్టించండి.</translation>
 <translation id="1145536944570833626">ఇప్పటికే ఉన్న డేటాను తొలగించండి.</translation>
+<translation id="1147031633655575115"><ph name="USER" />గా సైన్ ఇన్ చేశారు</translation>
 <translation id="1154690515305205900">హైలైట్ చేయబడిన టెక్స్ట్‌కు లింక్‌ను క్రియేట్ చేయడం సాధ్యపడదు.</translation>
 <translation id="1157749421655780457">లొకేషన్‌ను అనుమతించు...</translation>
 <translation id="1165039591588034296">ఎర్రర్</translation>
@@ -83,7 +84,6 @@
 <translation id="1690731385917361335">అంశాలు లేవు</translation>
 <translation id="1692118695553449118">సమకాలీకరణ ఆన్‌లో ఉంది</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ఎంచుకోబడ్డాయి</translation>
-<translation id="1715940067130687605">మీ ప్రస్తుత లొకేషన్‌ను ఉపయోగించండి.</translation>
 <translation id="1740468249224277719">ఇన్‌స్టాల్ చేయడానికి రెండుసార్లు నొక్కండి.</translation>
 <translation id="1746815479209538200">వెబ్‌ను బ్రౌజ్ చేయడానికి, కొత్త ట్యాబ్‌ను జోడించండి.</translation>
 <translation id="1752547299766512813">పాస్‌వర్డ్‌లను సేవ్ చేయి</translation>
@@ -269,6 +269,7 @@
 <translation id="385051799172605136">వెనుకకు</translation>
 <translation id="3892144330757387737">మీ హిస్టరీని ఇక్కడ చూడగలరు</translation>
 <translation id="3897092660631435901">మెను</translation>
+<translation id="3913386780052199712">Chromeకు సైన్ ఇన్ చేశారు</translation>
 <translation id="3915450441834151894">సైట్ సమాచారం</translation>
 <translation id="3922310737605261887">కాపీ చేసిన వచనం కోసం వెతకండి</translation>
 <translation id="3928666092801078803">నా డేటాను కలపండి</translation>

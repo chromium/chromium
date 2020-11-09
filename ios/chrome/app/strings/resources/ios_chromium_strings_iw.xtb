@@ -13,7 +13,7 @@
 <translation id="1843424232666537147">‏Chromium כולל תכונות שעוזרות לך לנהל את נתוני האינטרנט ואת המהירות שבה אפשר לטעון דפים.
 <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">‏Chromium לא הצליח לחפש עדכונים. יש לבדוק את החיבור לאינטרנט.</translation>
-<translation id="2075400798887076382">‏גש מכאן אל הכרטיסיות שפתחת במחשב. פתח את Chromium במחשב, עבור אל התפריט ובחר באפשרות 'היכנס אל Chromium…'</translation>
+<translation id="2075400798887076382">‏מכאן ניתן לגשת אל הכרטיסיות שפתחת במחשב. יש לפתוח את Chromium במחשב, לעבור אל התפריט ולבחור באפשרות 'כניסה אל Chromium…'</translation>
 <translation id="2168108852149185974">‏תוספים מסוימים גורמים ל-Chromium לקרוס. יש להסיר אותם:</translation>
 <translation id="2178608107313874732">‏Chromium לא יכול להשתמש עכשיו במצלמה</translation>
 <translation id="2195025571279539885">‏רוצה ש-Chromium יציע בפעם הבאה לתרגם דפים ב<ph name="LANGUAGE_NAME" /> מאתר זה?</translation>
@@ -42,7 +42,7 @@
 <translation id="5700709190537129682">‏Chromium לא יכול לבדוק את הסיסמאות שלך</translation>
 <translation id="5777187867430702742">‏דף Chromium</translation>
 <translation id="5862307444128926510">‏ברוכים הבאים ל-Chromium‏</translation>
-<translation id="5945387852661427312">‏אתה נכנס עם חשבון המנוהל על-ידי <ph name="DOMAIN" /> ומעניק למנהל שלו שליטה על הנתונים שלך ב-Chromium. הנתונים שלך ישויכו לצמיתות אל החשבון הזה. יציאה מ-Chromium תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו בחשבון Google שלך.</translation>
+<translation id="5945387852661427312">‏הכניסה שלך נעשית באמצעות חשבון המנוהל על-ידי <ph name="DOMAIN" /> ומעניק למנהל שלו שליטה על הנתונים שלך ב-Chromium. הנתונים שלך ישויכו לצמיתות אל החשבון הזה. יציאה מ-Chromium תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו בחשבון Google שלך.</translation>
 <translation id="602807004951640891">‏השימוש ב-Chromium מהווה הסכמה ל<ph name="BEGIN_LINK_TOS" />תנאים ולהגבלות<ph name="END_LINK_TOS" />.</translation>
 <translation id="6268381023930128611">‏האם לצאת מ-Chromium?</translation>
 <translation id="6424492062988593837">‏‫Chromium ממשיך להשתפר! קיימת גרסה חדשה.</translation>

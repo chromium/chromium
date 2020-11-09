@@ -4,7 +4,6 @@
 <translation id="1000498691615767391">የሚከፍቱትን አቃፊ ይምረጡ</translation>
 <translation id="1023220960495960452">በቋንቋ ፊደል መጻፍ (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">የተንሸራታች እይታ</translation>
-<translation id="1045157690796831147">በቋንቋ ፊደል መጻፍ (namaskar → നമസ്കാരം)</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> ንጥሎችን በመሰረዝ ላይ...</translation>
 <translation id="1049926623896334335">የWord ሰነድ</translation>
 <translation id="1060368002126861100">ፋይሎችን በ<ph name="APP_NAME" /> ለመክፈት፣ መጀመሪያ ወደ የመስኮቶች ፋይሎች አቃፊዉ ይውሰዷቸው።</translation>
@@ -31,7 +30,6 @@
 <translation id="1293556467332435079">ፋይሎች</translation>
 <translation id="1297922636971898492">Google Drive አሁን አይገኝም። Google Drive ተመልሶ እንደመጣ መስቀል በራስ-ሰር ዳግም ይጀመራል።</translation>
 <translation id="1307931752636661898">የLinux ፋይሎችን መመልከት አልተቻለም</translation>
-<translation id="1310751437842832374">በቋንቋ ፊደል መጻፍ (mausam → ନମସ୍ତେ)</translation>
 <translation id="1338950911836659113">በመሰረዝ ላይ...</translation>
 <translation id="1346748346194534595">ቀኝ</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> ፋይሎችን በማስመጣት ላይ...</translation>
@@ -46,7 +44,6 @@
 <translation id="1435838927755162558">አቃፊን ለParallels ዴስክቶፕ አጋራ</translation>
 <translation id="1439494416798956626">ተወስዷል ወደ <ph name="FOLDER_NAME" /></translation>
 <translation id="1441841714100794440">የቪዬትናምኛ የቁልፍ ሰሌዳ (ቴለክስ)</translation>
-<translation id="1455548678241328678">የኖርዌይኛ ቁልፍ ሰሌዳ</translation>
 <translation id="1464724975715666883">1 ስህተት።</translation>
 <translation id="1467432559032391204">ግራ</translation>
 <translation id="1474339897586437869">«<ph name="FILENAME" />» አልተሰቀለም። በእርስዎ Google Drive ውስጥ በቂ የሆነ ነፃ ቦታ የለም።</translation>
@@ -102,7 +99,6 @@
 <translation id="2084108471225856927">የመሣሪያ ቅንብሮች</translation>
 <translation id="2085470240340828803">«<ph name="FILENAME" />» የሚባል ፋይል አስቀድሞ አለ። ምን ማድረግ ይፈልጋሉ?</translation>
 <translation id="2121825465123208577">መጠን ቀይር</translation>
-<translation id="2136953289241069843">በቋንቋ ፊደል መጻፍ (namaste → नमस्कार)</translation>
 <translation id="2163152940313951844">ልክ ያልሆነ ቁምፊ፦ <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">የቪዬትናምኛ ቁልፍ ሰሌዳ (ቲሲቪኤን)</translation>
 <translation id="2168214441502403371">የፋርስ ቁልፍ ሰሌዳ</translation>
@@ -206,7 +202,6 @@
 <translation id="3338239663705455570">የስሎቬኒያኛ ቁልፍ ሰሌዳ</translation>
 <translation id="3353984535370177728">የሚሰቅሉትን አቃፊ ይምረጡ</translation>
 <translation id="3356580349448036450">ተጠናቅቋል</translation>
-<translation id="3399597614303179694">የመቄዶኒያኛ ቁልፍ ሰሌዳ</translation>
 <translation id="3414856743105198592">ተነቃይ ማህደረ ትውስታው ላይ ቅርጸት መስራት ሁሉንም ውሂብ ያጠፋል። መቀጠል ይፈልጋሉ?</translation>
 <translation id="3437801641691368414">የተፈጠረበት ጊዜ</translation>
 <translation id="3466147780910026086">የእርስዎን ሚዲያ መሣሪያ በመቃኘት ላይ...</translation>
@@ -232,7 +227,6 @@
 <translation id="3644896802912593514">ስፋት</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ንጥሎች ተወስደዋል።</translation>
 <translation id="3645531960514756307">አቃፍን አታያይዝ</translation>
-<translation id="3678559383040232393">Maltese የቁልፍ ሰሌዳ</translation>
 <translation id="3685122418104378273">የሞባይል ውሂብ ጥቅም ላይ በሚውልበት ጊዜ Google Drive ማመሳሰል በነባሪ ይሰናከላል።</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" />ን ሰርዝ።</translation>
 <translation id="3726463242007121105">የዚህ መሣሪያ ስርዓተ ፋይል ስለማይደገፍ ስላልሆነ ሊከፈት አይችልም።</translation>
@@ -248,7 +242,6 @@
 <translation id="3810973564298564668">አቀናብር</translation>
 <translation id="3811494700605067549">1 ፋይል ተመርጧል</translation>
 <translation id="3815016854028376614">የዡዪን ግቤት ስልት</translation>
-<translation id="3825863595139017598">የሞንጎሊያ ቁልፍ ሰሌዳ</translation>
 <translation id="38275787300541712">ሲከናወን Enterን ይጫኑ</translation>
 <translation id="3830674330436234648">መልሶ ማጫወት አይገኝም</translation>
 <translation id="3833761542219863804">በቋንቋ ፊደል መጻፍ (mausam → ਮੌਸਮ)</translation>
@@ -257,7 +250,6 @@
 <translation id="3855472144336161447">ጀርመንኛ ኒዮ 2</translation>
 <translation id="386548886866354912">በ<ph name="EXTENSION_NAME" /> ጋር ጠቅልል</translation>
 <translation id="3866249974567520381">ማብራሪያ</translation>
-<translation id="391445228316373457">የኔፓሊ ቁልፍ ሰሌዳ (ፎነቲክ)</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">በሚከተለው ላይ ያጫውቱ፦</translation>
 <translation id="3943857333388298514">ለጥፍ</translation>
@@ -346,7 +338,6 @@
 <translation id="4943368462779413526">የአሜሪካ እግር ኳስ</translation>
 <translation id="4961158930123534723">1 አቃፊ ለParallels ዴስክቶፕ ተጋርቷል</translation>
 <translation id="4969785127455456148">አልበም</translation>
-<translation id="497244430928947428">የማላያላም ቁልፍ ሰሌዳ (ፎነቲክ)</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> ወይም ከዚያ ያነሰ ቁምፊዎች የሆነ ስም ይጠቀሙ</translation>
 <translation id="4973970068702235170">ማመቅ አልተሳካም፣ ያልተጠበቀ ስህተት፦ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4988205478593450158">እርግጠኛ ነዎት «<ph name="FILE_NAME" />»ን መሰረዝ ይፈልጋሉ?</translation>
@@ -411,7 +402,6 @@
 <translation id="5438282218546237410">ለ <ph name="SEARCH_TERM" /> ምንም ውጤቶች የሉም።</translation>
 <translation id="5449551289610225147">ልክ ያልኾነ የይለፍ ቃል</translation>
 <translation id="5464696796438641524">የፖላንድኛ ሰሌዳ ቁልፍ</translation>
-<translation id="5465122519792752163">የኔፓሊ ቁልፍ ሰሌዳ (InScript)</translation>
 <translation id="5469868506864199649">ጣሊያንኛ</translation>
 <translation id="5484429245813572665">የኢንዶኔዢያኛ</translation>
 <translation id="5494920125229734069">ሁሉንም ይመርጣል</translation>

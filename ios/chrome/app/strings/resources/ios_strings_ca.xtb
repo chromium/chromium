@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Error en imprimir</translation>
 <translation id="1125564390852150847">Crea una pestanya nova.</translation>
 <translation id="1145536944570833626">Suprimeix les dades existents.</translation>
+<translation id="1147031633655575115">Has iniciat la sessió com a <ph name="USER" /></translation>
 <translation id="1154690515305205900">No es pot crear un enllaç al text marcat.</translation>
 <translation id="1157749421655780457">Permet l'accés a la ubicació...</translation>
 <translation id="1165039591588034296">Error</translation>
@@ -83,7 +84,6 @@
 <translation id="1690731385917361335">Cap element</translation>
 <translation id="1692118695553449118">La sincronització està activada</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionades</translation>
-<translation id="1715940067130687605">Utilitza la teva ubicació actual</translation>
 <translation id="1740468249224277719">Feu doble toc per instal·lar l'aplicació.</translation>
 <translation id="1746815479209538200">Per navegar pel web, obre una pestanya nova.</translation>
 <translation id="1752547299766512813">Desa les contrasenyes</translation>
@@ -269,6 +269,7 @@ Segueix aquests passos:</translation>
 <translation id="385051799172605136">Enrere</translation>
 <translation id="3892144330757387737">Trobaràs l'historial aquí</translation>
 <translation id="3897092660631435901">Menú</translation>
+<translation id="3913386780052199712">Sessió iniciada a Chrome</translation>
 <translation id="3915450441834151894">Informació del lloc web</translation>
 <translation id="3922310737605261887">Cerca el text copiat</translation>
 <translation id="3928666092801078803">Combina les meves dades</translation>

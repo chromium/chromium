@@ -314,6 +314,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3285080554353377245">Video tentang cara menggunakan Chrome</translation>
 <translation id="3288003805934695103">Memuat ulang halaman</translation>
 <translation id="32895400574683172">Notifikasi diizinkan</translation>
+<translation id="3290991969712132877">Untuk membuka halaman ini lebih cepat, tambahkan halaman ke Layar utama dari tombol opsi Lainnya</translation>
 <translation id="3295530008794733555">Browsing lebih cepat. Gunakan lebih sedikit kuota.</translation>
 <translation id="3298243779924642547">Ringan</translation>
 <translation id="3303414029551471755">Lanjutkan untuk mendownload konten?</translation>
@@ -470,6 +471,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4532845899244822526">Pilih folder</translation>
 <translation id="4538018662093857852">Aktifkan Mode Ringan</translation>
 <translation id="4550003330909367850">Untuk melihat atau menyalin sandi di sini, setel kunci layar di perangkat ini.</translation>
+<translation id="4557685098773234337">Untuk membuka halaman ini lebih cepat, tambahkan halaman ke Layar utama</translation>
 <translation id="4558311620361989323">Pintasan halaman web</translation>
 <translation id="4561979708150884304">Tidak ada koneksi</translation>
 <translation id="4565377596337484307">Sembunyikan sandi</translation>
@@ -499,6 +501,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4720982865791209136">Bantu sempurnakan Chrome. <ph name="BEGIN_LINK" />Ikuti survei<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">Lihat situs teratas Anda</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
+<translation id="4732693703583195378">Tambahkan situs ini ke Layar utama tablet agar Anda dapat lebih mudah membukanya</translation>
 <translation id="4738836084190194332">Terakhir disinkronkan: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Membuka tab baru</translation>
 <translation id="4759238208242260848">Download</translation>
@@ -536,6 +539,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Sandi Anda akan diekspor dan didownload sebagai file teks. Sandi akan dapat dilihat oleh semua orang dan semua aplikasi yang memiliki akses ke folder tujuan.</translation>
 <translation id="4932247056774066048">Karena Anda logout dari akun yang dikelola oleh <ph name="DOMAIN_NAME" />, data Chrome Anda akan dihapus dari perangkat ini. Data akan tetap berada dalam Akun Google Anda.</translation>
+<translation id="4936039914467572121">Buka situs ini lebih cepat</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
 <translation id="4943872375798546930">Tidak ada hasil</translation>
 <translation id="4961107849584082341">Terjemahkan halaman ini ke bahasa apa pun</translation>
@@ -647,6 +651,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5763382633136178763">Tab samaran</translation>
 <translation id="5763514718066511291">Ketuk untuk menyalin URL aplikasi ini</translation>
 <translation id="5765780083710877561">Deskripsi:</translation>
+<translation id="5767013862801005129">Memulihkan tab <ph name="TAB_TITLE" /></translation>
 <translation id="5776970333778123608">Data yang tidak penting</translation>
 <translation id="5793665092639000975"><ph name="SPACE_USED" /> terpakai dari <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Penelusuran dan penjelajahan</translation>
@@ -952,6 +957,7 @@ Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="B
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> lainnya}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> lainnya}}</translation>
 <translation id="7778840695157240389">Periksa kembali nanti untuk membaca artikel baru</translation>
 <translation id="7791543448312431591">Tambahkan</translation>
+<translation id="7798392620021911922">Memulihkan <ph name="TAB_COUNT" /> tab</translation>
 <translation id="780301667611848630">Lain kali</translation>
 <translation id="7810647596859435254">Buka dengan...</translation>
 <translation id="7821588508402923572">Penghematan data Anda akan terlihat di sini</translation>
@@ -1137,6 +1143,7 @@ Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="B
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Perlihatkan halaman asli</translation>
 <translation id="9148126808321036104">Login sekali lagi</translation>
+<translation id="9149286894143103695">Tambahkan situs ini ke Layar utama ponsel agar Anda dapat lebih mudah membukanya</translation>
 <translation id="9155898266292537608">Anda juga dapat menelusuri dengan mengetuk kata secara cepat</translation>
 <translation id="9169507124922466868">Histori navigasi terbuka setengah</translation>
 <translation id="9191031968346938109">Tambahkan ke…</translation>

@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Aktueller Monat</translation>
 <translation id="1637811476055996098">Dateien auswählen</translation>
 <translation id="1650423536718072820">Textzitat</translation>
+<translation id="1681022320378710418">aktuelle Uhrzeit</translation>
 <translation id="1727886345390570319">Untertitelmenü ausblenden</translation>
 <translation id="1729654308190250600">Geben Sie eine E-Mail-Adresse ein.</translation>
 <translation id="1758486001363313524">Andere...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Geben Sie eine URL ein.</translation>
 <translation id="3175736971608411871">Timer</translation>
 <translation id="3199563858620722075">Kombinationsfeld</translation>
+<translation id="3220661731597678625">aktueller Schritt</translation>
 <translation id="3329013043687509092">Sättigung</translation>
 <translation id="3450233048674729344">Wert muss kleiner als oder gleich <ph name="MAXIMUM" /> sein.</translation>
 <translation id="3486220673238053218">Definition</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">Video</translation>
 <translation id="479989351350248267">Suchtaste</translation>
 <translation id="4812940957355064477">Geben Sie eine Nummer ein.</translation>
+<translation id="4912200001568447310">aktuelles Element</translation>
 <translation id="4912536737030637138">Bibliografieeintrag</translation>
 <translation id="4915360478455618802">Uhrzeitauswahl anzeigen</translation>
 <translation id="492244087561876220">Kommentar</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Medien können nicht abgespielt werden.</translation>
 <translation id="537648784377940524">Das Mindestdatum (<ph name="MIN_DATE_OR_TIME" />) muss vor dem Maximaldatum (<ph name="MAX_DATE_OR_TIME" />) liegen.</translation>
 <translation id="5406322316791861025">Zahl</translation>
+<translation id="5425179576310518467">aktuelles Datum</translation>
 <translation id="5453733299334684579">Baumelement</translation>
 <translation id="5466621249238537318">Wählen Sie eine oder mehrere Dateien aus.</translation>
 <translation id="5468998798572797635">Vollbildmodus beenden</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">Messinstrument</translation>
 <translation id="6166809985690652833">Nachwort</translation>
 <translation id="6209276755895393898">Anscheinend ist es: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">aktuelle Seite</translation>
 <translation id="6213469881011901533">Glossar</translation>
 <translation id="6281588256137006900">Helligkeit</translation>
 <translation id="6281763101136022427">URL</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Verlängern Sie diesen Text auf mindestens <ph name="MIN_CHARACTERS" /> Zeichen. Derzeit verwenden Sie 1 Zeichen.</translation>
 <translation id="7034405885550056553">Vorschlag</translation>
 <translation id="709897737746224366">Ihre Eingabe muss mit dem geforderten Format übereinstimmen.</translation>
+<translation id="7102274145889307184">aktueller Standort</translation>
 <translation id="7118469954320184356">Keine Beschreibung verfügbar.</translation>
 <translation id="7139483182332611405">Vorbemerkung</translation>
 <translation id="7214187073215825913">Informationen zum Inhalt</translation>

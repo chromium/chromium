@@ -1793,6 +1793,32 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 <translation id="3701121231485832347">Controla configurações específicas de dispositivos <ph name="PRODUCT_OS_NAME" /> gerenciados pelo <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Atestado remoto</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" />: o campo de linha única é obsoleto e será removido no futuro. Comece a usar a caixa de texto de várias linhas abaixo.</translation>
+<translation id="3704727923488731211">Configura uma lista de regras para evitar vazamentos de dados no <ph name="PRODUCT_OS_NAME" />.
+      Vazamentos de dados podem acontecer ao copiar e colar dados, transferir arquivos, imprimir, compartilhar ou capturar a tela etc.
+
+      Cada regra consiste no seguinte:
+      - Uma lista de origens definidas como URLs. Qualquer dado nas origens será considerado confidencial, e as restrições serão aplicadas a eles.
+      - Uma lista de destinos definidos como URLs ou componentes, aos quais os dados confidenciais terão ou não permissão para serem compartilhados.
+      - Uma lista de restrições a serem aplicadas aos dados das origens.
+
+      As regras podem ser aplicadas para:
+      - controlar os dados na área de transferência compartilhados entre as origens e os destinos;
+      - controlar as capturas de telas de qualquer uma das origens;
+      - controlar a impressão de qualquer uma das origens;
+      - controlar a Tela de privacidade quando qualquer uma das origens estiver visível.
+      - controlar o compartilhamento de tela de qualquer uma das origens.
+
+      O nível de restrição pode ser definido como BLOCK ou ALLOW (bloquear ou permitir).
+      - Se a restrição for definida como BLOCK, a ação não será permitida.
+      - Se a restrição for definida como ALLOW, a ação será permitida.
+
+      Observações:
+      - Restrições PRIVACY_SCREEN não bloqueiam a capacidade de ativar a Tela de privacidade, mas forçam o uso dela quando a classe de restrição é definida como BLOCK.
+      - Os destinos não podem ficar vazios caso uma das restrições seja CLIPBOARD, mas eles não afetarão as outras restrições.
+      - A restrição CLIPBOARD não diferencia entre CROSTINI e PLUGIN_VM. Se qualquer um deles tiver sido definido para bloquear/permitir o compartilhamento de dados, a regra será aplicada aos dois.
+      - Formate os padrões do URL de acordo com este formato (https://www.chromium.org/administrators/url-blacklist-filter-format, link em inglês).
+
+      Se a política não for definida, nenhuma restrição será aplicada.</translation>
 <translation id="3709266154059827597">Configurar a lista de proibições de instalação da extensão</translation>
 <translation id="3711895659073496551">Suspender</translation>
 <translation id="3715569262675717862">Autenticação baseada em certificados do cliente</translation>

@@ -1782,7 +1782,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3029466929721441205">Näytä näyttökynätyökalut hyllyssä</translation>
 <translation id="3031417829280473749">Agentti X</translation>
 <translation id="3031557471081358569">Valitse tuotavat kohteet:</translation>
-<translation id="3036041939445522540">Kontakteja ei saatavilla</translation>
 <translation id="3036327949511794916">Laitteen (<ph name="DEVICE_TYPE" />) palauttamisen määräaika on mennyt umpeen.</translation>
 <translation id="3036546437875325427">Ota Flash käyttöön</translation>
 <translation id="3037754279345160234">Verkkotunnuksen liittymiskonfiguraatiota ei voi jäsentää. Ota yhteyttä järjestelmänvalvojaan.</translation>
@@ -4638,7 +4637,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6445450263907939268">Jos et pidä muutoksista, voit palauttaa aiemmat asetuksesi.</translation>
 <translation id="6447842834002726250">Evästeet</translation>
 <translation id="6450876761651513209">Muuta tietosuoja-asetuksia</translation>
-<translation id="6451180435462401570">Hallitse Cloud Print ‑laitteita</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> ja 1 muu välilehti}other{<ph name="PAGE_TITLE" /> ja # muuta välilehteä}}</translation>
 <translation id="6451689256222386810">Jos unohdat tunnuslauseesi tai haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Hylkää</translation>
@@ -4945,8 +4943,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6824584962142919697">Tutk&amp;i elementtejä</translation>
 <translation id="6825184156888454064">Lajittele nimen mukaan</translation>
 <translation id="6826872289184051766">Vahvista USB:n kautta</translation>
-<translation id="6827487342470222762">Kontakteja ei ole saatavilla. Jos haluat käyttää Lähijakamista kontaktiesi kanssa, lisää heidän Google-tiliinsä linkitetty sähköpostiosoite yhteystietoihisi.</translation>
-<translation id="6827623133556594466">Google Cloud Printin tuki päättyy 31. joulukuuta. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Rajaa kirjautuminen vain seuraaville käyttäjille:</translation>
 <translation id="6828182567531805778">Synkronoi datasi lisäämällä tunnuslauseesi</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5876,7 +5872,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7893008570150657497">käyttää kuvia, musiikkia ja muuta tietokoneesi mediaa</translation>
 <translation id="7893153962594818789"><ph name="DEVICE_TYPE" /> ei käytä Bluetoothia tällä hetkellä. Lisää salasana ja laita Bluetooth päälle.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Oletus)</translation>
-<translation id="7897865097438730075">Google Cloud Printin tuki päättyy 31. joulukuuta. Ota yhteyttä järjestelmänvalvojaan.</translation>
 <translation id="7897900149154324287">Muista seuraavilla kerroilla poistaa ulkoinen laitteesi käytöstä Tiedostot-sovelluksessa ennen kuin irrotat sen laitteesta. Muutoin voit menettää tietoja.</translation>
 <translation id="7898627924844766532">Pidä yläpalkissa</translation>
 <translation id="7898725031477653577">Käännä aina</translation>
@@ -6027,7 +6022,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8054563304616131773">Anna voimassa oleva sähköpostiosoite.</translation>
 <translation id="8054921503121346576">USB-näppäimistö yhdistetty</translation>
 <translation id="8058655154417507695">Viimeinen voimassaolovuosi</translation>
-<translation id="8058811362315390556">Google Cloud Printin tuki päättyy 31. joulukuuta</translation>
 <translation id="8059417245945632445">Tark&amp;ista laitteet</translation>
 <translation id="8059456211585183827">Tallennettavia tulostimia ei ole.</translation>
 <translation id="8061091456562007989">Vaihda takaisin</translation>
@@ -6140,7 +6134,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8184288427634747179">Vaihda profiiliin <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Lisätietoja</translation>
 <translation id="8184472985242519288">Yhdenmukainen</translation>
-<translation id="8185331656081929126">Näytä ilmoitukset, kun verkossa havaitaan uusia tulostimia</translation>
 <translation id="8186609076106987817">Palvelin ei löydä tiedostoa.</translation>
 <translation id="8188389033983459049">Tarkista laitteesi asetukset ja ota se käyttöön jatkaaksesi</translation>
 <translation id="8190193592390505034">Muodostetaan yhteyttä sivustoon <ph name="PROVIDER_NAME" /></translation>

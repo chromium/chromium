@@ -264,6 +264,7 @@
 <translation id="1300415640239881824"><ph name="DOMAIN" /> muốn Google xác minh thông tin định danh thiết bị của bạn để xác định xem thiết bị có thể sử dụng chức năng phát nâng cao nội dung được bảo vệ hay không.</translation>
 <translation id="1300806585489372370">Để thay đổi cài đặt này, trước tiên hãy <ph name="BEGIN_LINK" />bật giá trị nhận dạng<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> có thể chỉnh sửa các tệp sau đây</translation>
+<translation id="1302139669997477151">Tính năng chụp ảnh màn hình đã bị chặn</translation>
 <translation id="1302227299132585524">Cho phép JavaScript từ Apple Events</translation>
 <translation id="1303101771013849280">Tệp HTML chứa dấu trang</translation>
 <translation id="1303671224831497365">Không tìm thấy thiết bị Bluetooth nào</translation>
@@ -311,6 +312,7 @@
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1353980523955420967">Không tìm thấy PPD. Hãy đảm bảo Chromebook của bạn đã kết nối mạng rồi thử lại.</translation>
 <translation id="1354045473509304750">Tiếp tục cho phép <ph name="HOST" /> sử dụng và di chuyển máy ảnh của bạn</translation>
+<translation id="1355088139103479645">Xóa tất cả dữ liệu?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> đã bị chặn</translation>
 <translation id="1358741672408003399">Chính tả và Ngữ pháp</translation>
 <translation id="1359923111303110318">Bạn có thể mở khóa thiết bị của mình bằng Smart Lock. Hãy nhấn phím Enter để mở khóa.</translation>
@@ -494,6 +496,7 @@
 <translation id="1553538517812678578">không giới hạn</translation>
 <translation id="1554390798506296774">Luôn cho phép các plugin không có hộp cát trên <ph name="HOST" /></translation>
 <translation id="1555130319947370107">Xanh lam</translation>
+<translation id="1556302226221634923">Những người đã chọn hiển thị thiết bị với bạn khi màn hình của họ đang mở khóa và các thiết bị ở gần bạn khi tính năng Chia sẻ lân cận đang bật</translation>
 <translation id="1556537182262721003">Không thể di chuyển thư mục tiện ích vào hồ sơ.</translation>
 <translation id="155865706765934889">Ô di chuột</translation>
 <translation id="1562119309884184621">Khi bạn thêm người liên hệ này, hệ thống sẽ ghi nhớ người đó để dễ dàng chia sẻ lần sau</translation>
@@ -1274,6 +1277,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2457246892030921239"><ph name="APP_NAME" /> muốn sao chép tệp từ <ph name="VOLUME_NAME" />.</translation>
 <translation id="2458379781610688953">Cập nhật tài khoản, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Mã quản lý thiết bị là không hợp lệ.</translation>
+<translation id="2459703812219683497">Đã phát hiện một mã kích hoạt</translation>
 <translation id="2462724976360937186">ID khóa của tổ chức phát hành chứng chỉ</translation>
 <translation id="2462752602710430187">Đã thêm <ph name="PRINTER_NAME" /></translation>
 <translation id="2464089476039395325">Proxy HTTP</translation>
@@ -1778,7 +1782,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3029466929721441205">Hiển thị các công cụ bút cảm ứng trong giá</translation>
 <translation id="3031417829280473749">Đặc vụ X</translation>
 <translation id="3031557471081358569">Chọn các mục cần nhập:</translation>
-<translation id="3036041939445522540">Chưa có người liên hệ nào</translation>
 <translation id="3036327949511794916">Đã quá thời hạn trả lại thiết bị <ph name="DEVICE_TYPE" /> này.</translation>
 <translation id="3036546437875325427">Bật Flash</translation>
 <translation id="3037754279345160234">Không thể phân tích cú pháp cấu hình để tham gia miền. Vui lòng liên hệ với quản trị viên của bạn.</translation>
@@ -2071,6 +2074,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3413122095806433232">Nhà cung cấp CA: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Kích thước:</translation>
 <translation id="3416468988018290825">Luôn hiển thị URL đầy đủ</translation>
+<translation id="3417835166382867856">Tìm kiếm thẻ</translation>
 <translation id="3417836307470882032">Giờ quân đội</translation>
 <translation id="3420501302812554910">Cần phải đặt lại khóa bảo mật nội bộ</translation>
 <translation id="3421376478111338173">{COUNT,plural, =1{1 hình ảnh}other{# hình ảnh}}</translation>
@@ -2104,6 +2108,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3441653493275994384">Màn hình</translation>
 <translation id="3441663102605358937">Đăng nhập lại vào <ph name="ACCOUNT" /> để xác minh tài khoản này</translation>
 <translation id="3445047461171030979">Các câu trả lời nhanh của Trợ lý Google</translation>
+<translation id="3445770710327978113">Để quay lại đây nhanh hơn, hãy cài đặt ứng dụng này</translation>
 <translation id="3445925074670675829">Thiết bị USB-C</translation>
 <translation id="3446274660183028131">Vui lòng chạy ứng dụng Parallels Desktop để cài đặt Windows.</translation>
 <translation id="344630545793878684">Đọc dữ liệu của bạn trên một số trang web</translation>
@@ -4633,7 +4638,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6445450263907939268">Nếu không thích những thay đổi này, bạn có thể khôi phục cài đặt trước của mình.</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6450876761651513209">Thay đổi các cài đặt liên quan đến bảo mật của bạn</translation>
-<translation id="6451180435462401570">Quản lý thiết bị Cloud Print</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> và 1 thẻ khác}other{<ph name="PAGE_TITLE" /> và # thẻ khác}}</translation>
 <translation id="6451689256222386810">Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi cài đặt này, hãy <ph name="BEGIN_LINK" />đặt lại đồng bộ hóa<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Từ chối</translation>
@@ -4779,6 +4783,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6624687053722465643">Ngọt ngào</translation>
 <translation id="6628328486509726751">Đã tải lên vào <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> muốn có quyền truy cập vĩnh viễn vào chứng chỉ để tự xác thực thay mặt bạn.</translation>
+<translation id="6630956688541588659">Tất cả những người liên hệ ở gần bạn khi màn hình của bạn đang mở khóa và các thiết bị ở gần bạn khi tính năng Chia sẻ lân cận đang bật</translation>
 <translation id="6635944431854494329">Chủ sở hữu có thể kiểm soát tính năng này trong phần Cài đặt &gt; Nâng cao &gt; Tự động gửi dữ liệu chẩn đoán và dữ liệu sử dụng cho Google.</translation>
 <translation id="6635956300022133031">Chọn và tùy chỉnh giọng nói của tính năng chuyển văn bản sang lời nói</translation>
 <translation id="6636588250634969791">Lắp SIM trước khi tiếp tục</translation>
@@ -4939,8 +4944,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6824584962142919697">&amp;Kiểm tra các yếu tố</translation>
 <translation id="6825184156888454064">Sắp xếp theo tên</translation>
 <translation id="6826872289184051766">Xác minh qua USB</translation>
-<translation id="6827487342470222762">Chưa có người liên hệ nào. Để chia sẻ với những người liên hệ bằng tính năng Chia sẻ lân cận, hãy thêm địa chỉ email liên kết với Tài khoản Google của họ vào danh bạ của bạn.</translation>
-<translation id="6827623133556594466">Sau ngày 31 tháng 12, Google Cloud Print sẽ không còn được hỗ trợ nữa. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Giới hạn đăng nhập cho những người dùng sau:</translation>
 <translation id="6828182567531805778">Nhập cụm mật khẩu để đồng bộ hóa dữ liệu</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5054,6 +5057,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6955535239952325894">Tùy chọn cài đặt này bị tắt trên các trình duyệt được quản lý</translation>
 <translation id="6957044667612803194">Khóa bảo mật này không hỗ trợ mã PIN</translation>
 <translation id="6957231940976260713">Tên dịch vụ</translation>
+<translation id="696103774840402661">Tất cả tệp và dữ liệu dành cho mọi người dùng trên <ph name="DEVICE_TYPE" /> này sẽ bị xóa vĩnh viễn.</translation>
 <translation id="6964390816189577014">Anh hùng</translation>
 <translation id="6964760285928603117">Xóa khỏi nhóm</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -5244,6 +5248,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7180611975245234373">Làm mới</translation>
 <translation id="7180865173735832675">Tùy chỉnh</translation>
 <translation id="7182791023900310535">Di chuyển mật khẩu của bạn</translation>
+<translation id="7185907299184016376">Những người liên hệ đã chọn ở gần bạn khi màn hình của bạn đang mở khóa và các thiết bị ở gần bạn khi tính năng Chia sẻ lân cận đang bật</translation>
 <translation id="7186088072322679094">Giữ trong thanh công cụ</translation>
 <translation id="7187428571767585875">Các mục sổ đăng ký sẽ bị xóa hoặc thay đổi:</translation>
 <translation id="7187855807420906517">Sau khi bạn thoát ra hoặc ngắt kết nối mạng, các trang web thường tiếp tục đồng bộ hóa để hoàn thành những tác vụ như tải ảnh lên hay gửi tin nhắn trò chuyện</translation>
@@ -5410,6 +5415,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7380622428988553498">Tên thiết bị chứa các ký tự không hợp lệ</translation>
 <translation id="7380768571499464492">Đã cập nhật <ph name="PRINTER_NAME" /></translation>
 <translation id="7384687527486377545">Tự động lặp lại trên bàn phím</translation>
+<translation id="7385490373498027129">Tất cả tệp và dữ liệu dành cho mọi người dùng trên <ph name="DEVICE_TYPE" /> này sẽ bị xóa vĩnh viễn.</translation>
 <translation id="7385854874724088939">Có trục trặc xảy ra khi in. Hãy kiểm tra máy in của bạn và thử lại.</translation>
 <translation id="7385896526023870365">Tiện ích này không có quyền truy cập vào trang web bổ sung.</translation>
 <translation id="7388044238629873883">Bạn sắp hoàn tất!</translation>
@@ -5676,6 +5682,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7691077781194517083">Không thể đặt lại khóa bảo mật này. Lỗi <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Nâng cấp Crostini</translation>
 <translation id="7696063401938172191">Trên '<ph name="PHONE_NAME" />' của bạn:</translation>
+<translation id="7697598343108519171">Dùng máy ảnh để quét mã QR</translation>
 <translation id="7699968112832915395">Không thể thêm tài khoản</translation>
 <translation id="7701040980221191251">Không có</translation>
 <translation id="7701869757853594372">Xử lý NGƯỜI DÙNG</translation>
@@ -5867,7 +5874,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7893008570150657497">Truy cập ảnh, nhạc và các phương tiện khác từ máy tính của bạn</translation>
 <translation id="7893153962594818789">Bluetooth đang tắt trên <ph name="DEVICE_TYPE" /> này. Hãy nhập mật khẩu của bạn và bật Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Mặc định)</translation>
-<translation id="7897865097438730075">Sau ngày 31 tháng 12, Google Cloud Print sẽ không còn được hỗ trợ nữa. Hãy liên hệ với quản trị viên của bạn.</translation>
 <translation id="7897900149154324287">Trong tương lai, đảm bảo rằng bạn đã ngắt kết nối thiết bị di động của mình trong ứng dụng Tệp trước khi tháo thiết bị. Nếu không, bạn có thể mất dữ liệu.</translation>
 <translation id="7898627924844766532">Giữ trong thanh công cụ</translation>
 <translation id="7898725031477653577">Luôn dịch</translation>
@@ -6018,11 +6024,11 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8054563304616131773">Vui lòng nhập địa chỉ email hợp lệ</translation>
 <translation id="8054921503121346576">Đã kết nối bàn phím USB</translation>
 <translation id="8058655154417507695">Năm hết hạn</translation>
-<translation id="8058811362315390556">Sau ngày 31 tháng 12, Google Cloud Print sẽ không còn được hỗ trợ nữa</translation>
 <translation id="8059417245945632445">&amp;Kiểm tra thiết bị</translation>
 <translation id="8059456211585183827">Hiện không có máy in nào để bạn lưu.</translation>
 <translation id="8061091456562007989">Chuyển lại</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 tờ giấy}other{{COUNT} tờ giấy}}</translation>
+<translation id="8062879968880283306">Quét mã QR bằng máy ảnh của thiết bị hoặc nhập mã kích hoạt do nhà mạng cung cấp.</translation>
 <translation id="8063235345342641131">Hình đại diện màu xanh lục mặc định</translation>
 <translation id="8063535366119089408">Xem tệp</translation>
 <translation id="8064279191081105977">Nhóm <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
@@ -6114,6 +6120,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Di chuyển thẻ sang cửa sổ mới}other{Di chuyển các thẻ sang cửa sổ mới}}</translation>
 <translation id="8165997195302308593">Chuyển tiếp cổng Crostini</translation>
 <translation id="8168435359814927499">Nội dung</translation>
+<translation id="8169165065843881617">{NUM_TABS,plural, =1{Thêm thẻ vào danh sách đọc}other{Thêm các thẻ vào danh sách đọc}}</translation>
 <translation id="8174047975335711832">Thông tin về thiết bị</translation>
 <translation id="8174876712881364124">Sao lưu vào Google Drive. Dễ dàng khôi phục dữ liệu hoặc chuyển đổi thiết bị bất kỳ lúc nào. Bản sao lưu này bao gồm cả dữ liệu ứng dụng. Các bản sao lưu được tải lên Google và mã hóa bằng mật khẩu Tài khoản Google của con bạn. <ph name="BEGIN_LINK1" />Tìm hiểu thêm<ph name="END_LINK1" /></translation>
 <translation id="8176332201990304395">Hồng và trắng</translation>
@@ -6123,12 +6130,12 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" có thể đọc và xóa các tệp hình ảnh, video và âm thanh trong vị trí đã chọn.</translation>
 <translation id="8181215761849004992">Không thể kết hợp miền. Hãy kiểm tra tài khoản của bạn để xem bạn có đủ đặc quyền thêm thiết bị hay không.</translation>
 <translation id="8182105986296479640">Ứng dụng không phản hồi.</translation>
+<translation id="8182412589359523143">Để xóa tất cả dữ liệu khỏi <ph name="DEVICE_TYPE" /> này, hãy <ph name="BEGIN_LINK" />nhấp vào đây<ph name="END_LINK" />.</translation>
 <translation id="8182664696082410784"><ph name="REASON" />
     Tôi không cho rằng nên chặn trang web này!</translation>
 <translation id="8184288427634747179">Chuyển sang <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Thông tin khác</translation>
 <translation id="8184472985242519288">Đồng nhất</translation>
-<translation id="8185331656081929126">Hiển thị thông báo khi phát hiện thấy máy in mới trên mạng</translation>
 <translation id="8186609076106987817">Máy chủ không thể tìm thấy tệp.</translation>
 <translation id="8188389033983459049">Kiểm tra mục cài đặt thiết bị và bật Bluetooth để tiếp tục</translation>
 <translation id="8190193592390505034">Đang kết nối đến <ph name="PROVIDER_NAME" /></translation>
@@ -6382,6 +6389,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8498395510292172881">Tiếp tục đọc trong Chrome</translation>
 <translation id="8500234928660943538">PUK không đúng. Bạn còn <ph name="RETRIES" /> lần thử lại.</translation>
 <translation id="8502536196501630039">Để dùng ứng dụng từ Google Play, trước tiên bạn phải khôi phục ứng dụng của mình. Một số dữ liệu có thể đã bị mất.</translation>
+<translation id="850314194061055138">sử dụng lại máy ảnh</translation>
 <translation id="8503813439785031346">Tên người dùng</translation>
 <translation id="8504640708321980506">Dữ liệu</translation>
 <translation id="8507227974644337342">Độ phân giải màn hình</translation>
@@ -6439,6 +6447,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8574990355410201600">Luôn cho phép phát âm thanh trên <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Giữ phím <ph name="KEY_EQUIVALENT" /> để thoát</translation>
 <translation id="8576249514688522074">Chưa khởi chạy</translation>
+<translation id="8576885347118332789">{NUM_TABS,plural, =1{Thêm thẻ vào danh sách đọc}other{Thêm các thẻ vào danh sách đọc}}</translation>
 <translation id="8578639784464423491">Không được vượt quá 99 chữ cái</translation>
 <translation id="857943718398505171">Được phép (được đề xuất)</translation>
 <translation id="8581809080475256101">Nhấn để tiếp tục, nhấn menu ngữ cảnh để xem lịch sử</translation>
@@ -7034,6 +7043,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="939736085109172342">Thư mục mới</translation>
 <translation id="941070664607309480">Hãy nhấp để hiển thị thiết bị lân cận. Khi đó, thiết bị này có thể chia sẻ dữ liệu với bạn</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> đang chia sẻ âm thanh và một thẻ trong Chrome.</translation>
+<translation id="942603342650325556">Quản trị viên của bạn đã chặn tính năng chụp nội dung trên màn hình.</translation>
 <translation id="945522503751344254">Gửi phản hồi</translation>
 <translation id="947329552760389097">&amp;Kiểm tra các yếu tố</translation>
 <translation id="951991426597076286">Từ chối</translation>

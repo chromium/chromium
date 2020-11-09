@@ -314,6 +314,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3285080554353377245">Vidéos sur l'utilisation de Chrome</translation>
 <translation id="3288003805934695103">Recharger la page</translation>
 <translation id="32895400574683172">Les notifications sont autorisées</translation>
+<translation id="3290991969712132877">Pour accéder à ce site plus rapidement, ajoutez-le à l'écran d'accueil en cliquant sur le bouton "Plus d'options"</translation>
 <translation id="3295530008794733555">Naviguez plus rapidement en consommant moins de données</translation>
 <translation id="3298243779924642547">Simplifié</translation>
 <translation id="3303414029551471755">Poursuivre et télécharger le contenu ?</translation>
@@ -470,6 +471,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4532845899244822526">Sélectionner un dossier</translation>
 <translation id="4538018662093857852">Activer le mode simplifié</translation>
 <translation id="4550003330909367850">Pour afficher ou copier votre mot de passe ici, définissez le verrouillage de l'écran sur cet appareil.</translation>
+<translation id="4557685098773234337">Pour accéder à ce site plus rapidement, ajoutez-le à l'écran d'accueil</translation>
 <translation id="4558311620361989323">Raccourcis de pages Web</translation>
 <translation id="4561979708150884304">Aucune connexion</translation>
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
@@ -499,6 +501,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4720982865791209136">Aidez-nous à améliorer Chrome. <ph name="BEGIN_LINK" />Répondez à notre enquête<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">Retrouvez les meilleurs sites pour vous</translation>
 <translation id="4732120983431207637">Dérouleur de pile</translation>
+<translation id="4732693703583195378">Ajoutez ce site à l'écran d'accueil de votre tablette pour y accéder plus facilement</translation>
 <translation id="4738836084190194332">Dernière synchronisation : <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Ouvrir un nouvel onglet</translation>
 <translation id="4759238208242260848">Téléchargements</translation>
@@ -536,6 +539,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4925120120285606924">Capture d'écran <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Vos mots de passe seront exportés et téléchargés sous forme de fichier texte. Toute personne ou application ayant accès au dossier de destination pourra les voir.</translation>
 <translation id="4932247056774066048">Vous vous déconnectez d'un compte géré par <ph name="DOMAIN_NAME" />. Vos données Chrome seront donc supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
+<translation id="4936039914467572121">Accéder à ce site plus rapidement</translation>
 <translation id="4943703118917034429">Réalité virtuelle</translation>
 <translation id="4943872375798546930">Aucun résultat</translation>
 <translation id="4961107849584082341">Traduire cette page dans n'importe quelle langue</translation>
@@ -647,6 +651,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5763382633136178763">Onglets de navigation privée</translation>
 <translation id="5763514718066511291">Appuyez pour copier l'URL pour cette application</translation>
 <translation id="5765780083710877561">Description :</translation>
+<translation id="5767013862801005129">L'onglet "<ph name="TAB_TITLE" />" est restauré</translation>
 <translation id="5776970333778123608">Données non importantes</translation>
 <translation id="5793665092639000975">Utilisation de <ph name="SPACE_USED" /> sur <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Rechercher et parcourir</translation>
@@ -952,6 +957,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> de plus}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> de plus}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> de plus}}</translation>
 <translation id="7778840695157240389">Revenez plus tard pour découvrir d'autres événements</translation>
 <translation id="7791543448312431591">Ajouter</translation>
+<translation id="7798392620021911922"><ph name="TAB_COUNT" /> onglets sont restaurés</translation>
 <translation id="780301667611848630">Non merci</translation>
 <translation id="7810647596859435254">Ouvrir avec…</translation>
 <translation id="7821588508402923572">Vos économies de données s'affichent ici</translation>
@@ -1137,6 +1143,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Afficher l'original</translation>
 <translation id="9148126808321036104">Nouvelle connexion</translation>
+<translation id="9149286894143103695">Ajoutez ce site à l'écran d'accueil de votre téléphone pour y accéder plus facilement</translation>
 <translation id="9155898266292537608">Vous pouvez également effectuer une recherche en appuyant brièvement sur un mot</translation>
 <translation id="9169507124922466868">L'historique de navigation est ouvert à moitié</translation>
 <translation id="9191031968346938109">Ajouter à…</translation>

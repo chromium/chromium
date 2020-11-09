@@ -1783,7 +1783,6 @@
 <translation id="3029466929721441205">Ցուցադրել ստիլուսի գործիքները դարակում</translation>
 <translation id="3031417829280473749">Գործակալ X</translation>
 <translation id="3031557471081358569">Ընտրեք տարրեր ներմուծման համար՝</translation>
-<translation id="3036041939445522540">Կոնտակտներ չկան</translation>
 <translation id="3036327949511794916">Այս <ph name="DEVICE_TYPE" /> սարքը վերադարձնելու վերջնաժամկետը լրացել է։</translation>
 <translation id="3036546437875325427">Միացնել Flash-ը</translation>
 <translation id="3037754279345160234">Չհաջողվեց վերլուծել տիրույթի կապակցման կարգավորումը: Կապվեք ձեր ադմինիստրատորի հետ:</translation>
@@ -4643,7 +4642,6 @@
 <translation id="6445450263907939268">Կարող եք վերականգնել ձեր նախկին կարգավորումները:</translation>
 <translation id="6447842834002726250">Cookie ֆայլեր</translation>
 <translation id="6450876761651513209">Փոխել գաղտնիության հետ առնչվող կարգավորումները</translation>
-<translation id="6451180435462401570">Կառավարել Cloud Print սարքերը</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> ու ևս 1 ներդիր}one{<ph name="PAGE_TITLE" /> ու ևս # ներդիր}other{<ph name="PAGE_TITLE" /> ու ևս # ներդիր}}</translation>
 <translation id="6451689256222386810">Եթե մոռացել եք ձեր անցաբառը կամ ուզում եք փոխել այս կարգավորումը, <ph name="BEGIN_LINK" />վերակայեք համաժամացումը<ph name="END_LINK" />:</translation>
 <translation id="6452181791372256707">Մերժել</translation>
@@ -4950,8 +4948,6 @@
 <translation id="6824584962142919697">&amp;Ստուգել տարրերը</translation>
 <translation id="6825184156888454064">Դասավորել ըստ անվան</translation>
 <translation id="6826872289184051766">Հաստատել USB-ի միջոցով</translation>
-<translation id="6827487342470222762">Կոնտակտներ չեն գտնվել։ Ձեր կոնտակտների հետ ֆայլերով փոխանակվելու համար ավելացրեք նրանց Google հաշիվների հետ կապված էլ․ հասցեները ձեր կոնտակտներում։</translation>
-<translation id="6827623133556594466">Google Cloud Print-ը դեկտեմբերի 31-ից հետո այլևս չի աջակցվի։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Թույլատրել մուտքը միայն հետևյալ օգտատերերին՝</translation>
 <translation id="6828182567531805778">Տվյալները համաժամացնելու համար մուտքագրեք ձեր անցաբառը</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5881,7 +5877,6 @@
 <translation id="7893008570150657497">Օգտագործել լուսանկարները, երաժշտությունը և այլ մեդիա նյութեր ձեր համակարգչից</translation>
 <translation id="7893153962594818789">Bluetooth-ն անջատված է <ph name="DEVICE_TYPE" /> սարքում։ Մուտքագրեք ձեր գաղտնաբառը և միացրեք Bluetooth-ը։</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (կանխադրված)</translation>
-<translation id="7897865097438730075">Google Cloud Print-ը դեկտեմբերի 31-ից հետո այլևս չի աջակցվի։ Դիմեք ձեր ադմինիստրատորին։</translation>
 <translation id="7897900149154324287">Հետագայում չմոռանաք՝ նախքան կրիչն անջատելը օգտագործել Ֆայլեր հավելվածի «Հանել» կոճակը: Հակառակ դեպքում տվյալները կարող են կորել:</translation>
 <translation id="7898627924844766532">Պահել գործիքագոտիում</translation>
 <translation id="7898725031477653577">Միշտ թարգմանել</translation>
@@ -6031,7 +6026,6 @@
 <translation id="8054563304616131773">Մուտքագրեք վավեր էլ․ հասցե</translation>
 <translation id="8054921503121346576">USB ստեղնաշարը միացված է</translation>
 <translation id="8058655154417507695">Ժամկետի սպառման տարեթիվը</translation>
-<translation id="8058811362315390556">Google Cloud Print-ը դեկտեմբերի 31-ից հետո այլևս չի աջակցվի</translation>
 <translation id="8059417245945632445">&amp;Հետազոտել սարքերը</translation>
 <translation id="8059456211585183827">Տպիչներ չկան, որոնք կարող եք պահել։</translation>
 <translation id="8061091456562007989">Հետ փոխել</translation>
@@ -6144,7 +6138,6 @@
 <translation id="8184288427634747179">Անցնել <ph name="AVATAR_NAME" />-ի պրոֆիլ</translation>
 <translation id="8184318863960255706">Լրացուցիչ տեղեկություններ</translation>
 <translation id="8184472985242519288">Միանման</translation>
-<translation id="8185331656081929126">Ցույց տալ ծանուցում, երբ ցանցում նոր տպիչներ են հայտնաբերվում</translation>
 <translation id="8186609076106987817">Սերվերը չկարողացավ գտնել ֆայլը:</translation>
 <translation id="8188389033983459049">Շարունակելու համար ստուգեք սարքի կարգավորումները և միացրեք Bluetooth-ը</translation>
 <translation id="8190193592390505034">Կապակցվում է <ph name="PROVIDER_NAME" />-ին</translation>

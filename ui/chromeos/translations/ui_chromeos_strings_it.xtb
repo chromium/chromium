@@ -4,7 +4,6 @@
 <translation id="1000498691615767391">Seleziona una cartella da aprire</translation>
 <translation id="1023220960495960452">Traslitterazione (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">Visualizzazione diapositiva</translation>
-<translation id="1045157690796831147">Traslitterazione (namaskar → നമസ്കാരം)</translation>
 <translation id="1047956942837015229">Eliminazione di <ph name="COUNT" /> elementi...</translation>
 <translation id="1049926623896334335">Documento di Word</translation>
 <translation id="1060368002126861100">Per aprire file con l'app <ph name="APP_NAME" />, devi prima spostarli nella cartella File di Windows.</translation>
@@ -31,7 +30,6 @@
 <translation id="1293556467332435079">File</translation>
 <translation id="1297922636971898492">Google Drive non è al momento disponibile. Il caricamento riprenderà automaticamente una volta che Google Drive sarà tornato operativo.</translation>
 <translation id="1307931752636661898">Impossibile visualizzare i file di Linux</translation>
-<translation id="1310751437842832374">Traslitterazione (mausam → ନମସ୍ତେ)</translation>
 <translation id="1338950911836659113">Eliminazione in corso...</translation>
 <translation id="1346748346194534595">Destra</translation>
 <translation id="1351692861129622852">Importazione di <ph name="FILE_COUNT" /> file...</translation>
@@ -46,7 +44,6 @@
 <translation id="1435838927755162558">Condividi cartella con Parallels Desktop</translation>
 <translation id="1439494416798956626">Spostamento in <ph name="FOLDER_NAME" /> eseguito.</translation>
 <translation id="1441841714100794440">Tastiera Vietnamita (Telex)</translation>
-<translation id="1455548678241328678">Tastiera norvegese</translation>
 <translation id="1464724975715666883">Un errore.</translation>
 <translation id="1467432559032391204">Sinistra</translation>
 <translation id="1474339897586437869">Impossibile caricare "<ph name="FILENAME" />". Lo spazio disponibile su Google Drive non è sufficiente.</translation>
@@ -102,7 +99,6 @@
 <translation id="2084108471225856927">Impostazioni dispositivo</translation>
 <translation id="2085470240340828803">Esiste già un file denominato "<ph name="FILENAME" />". Che cosa vuoi fare?</translation>
 <translation id="2121825465123208577">Ridimensiona</translation>
-<translation id="2136953289241069843">Traslitterazione (namaste → नमस्कार)</translation>
 <translation id="2163152940313951844">Carattere non valido: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Tastiera Vietnamita (TCVN)</translation>
 <translation id="2168214441502403371">Tastiera Persiano</translation>
@@ -206,7 +202,6 @@
 <translation id="3338239663705455570">Tastiera slovena</translation>
 <translation id="3353984535370177728">Seleziona una cartella da caricare</translation>
 <translation id="3356580349448036450">Fine</translation>
-<translation id="3399597614303179694">Tastiera macedone</translation>
 <translation id="3414856743105198592">La formattazione del supporto rimovibile comporterà la cancellazione di tutti i dati. Vuoi continuare?</translation>
 <translation id="3437801641691368414">Data/ora creazione</translation>
 <translation id="3466147780910026086">Scansione del dispositivo multimediale...</translation>
@@ -232,7 +227,6 @@
 <translation id="3644896802912593514">Larghezza</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementi spostati.</translation>
 <translation id="3645531960514756307">Sblocca cartella</translation>
-<translation id="3678559383040232393">Tastiera Maltese</translation>
 <translation id="3685122418104378273">La sincronizzazione con Google Drive è disattivata per impostazione predefinita quando vengono utilizzati i dati mobili.</translation>
 <translation id="3689865792480713551">Annulla <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3726463242007121105">Impossibile aprire il dispositivo perché il suo filesystem non è supportato.</translation>
@@ -248,7 +242,6 @@
 <translation id="3810973564298564668">Gestisci</translation>
 <translation id="3811494700605067549">Un file selezionato</translation>
 <translation id="3815016854028376614">Metodo di immissione Zhuyin</translation>
-<translation id="3825863595139017598">Tastiera Mongolo</translation>
 <translation id="38275787300541712">Al termine, premi Invio</translation>
 <translation id="3830674330436234648">Riproduzione non disponibile</translation>
 <translation id="3833761542219863804">Traslitterazione (mausam → ਮੌਸਮ)</translation>
@@ -257,7 +250,6 @@
 <translation id="3855472144336161447">Tastiera Neo 2 tedesca</translation>
 <translation id="386548886866354912">Comprimi tramite l'estensione <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Descrizione</translation>
-<translation id="391445228316373457">Tastiera Nepalese (fonetica)</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">Riproduci su</translation>
 <translation id="3943857333388298514">Incolla</translation>
@@ -346,7 +338,6 @@
 <translation id="4943368462779413526">Calcio</translation>
 <translation id="4961158930123534723">1 cartella condivisa con Parallels Desktop</translation>
 <translation id="4969785127455456148">Album</translation>
-<translation id="497244430928947428">Tastiera Malayalam (fonetica)</translation>
 <translation id="4973523518332075481">Il nome deve contenere un massimo di <ph name="MAX_LENGTH" /> caratteri</translation>
 <translation id="4973970068702235170">Compressione non riuscita. Errore imprevisto: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4988205478593450158">Vuoi eliminare "<ph name="FILE_NAME" />"?</translation>
@@ -410,7 +401,6 @@
 <translation id="5438282218546237410">Nessun risultato per <ph name="SEARCH_TERM" />.</translation>
 <translation id="5449551289610225147">Password non valida</translation>
 <translation id="5464696796438641524">Tastiera polacca</translation>
-<translation id="5465122519792752163">Tastiera Nepalese (InScript)</translation>
 <translation id="5469868506864199649">Italiano</translation>
 <translation id="5484429245813572665">Indonesiano</translation>
 <translation id="5494920125229734069">Seleziona tutto</translation>

@@ -8,6 +8,7 @@
 <translation id="1036672894875463507">ನಾನು ನಿಮ್ಮ Google Assistant, ಇಡೀ ದಿನ ಸಹಾಯ ಮಾಡಲು ನಿಮ್ಮೊಂದಿಗೆ ಇರುತ್ತೇನೆ!
 ಪ್ರಾರಂಭಿಸಲು ನೀವು ಇಲ್ಲಿರುವ ಕೆಲವು ಕಾರ್ಯಗಳನ್ನು ಪ್ರಯತ್ನಿಸಬಹುದು.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ಸೇರಿಸಲಾಗಿದೆ</translation>
+<translation id="1047773237499189053">ಹೊಸ ಫೀಚರ್ ಲಭ್ಯವಿದೆ, ಇನ್ನಷ್ಟು ತಿಳಿಯಲು ಅಪ್ ಆ್ಯರೋ ಕೀ ಬಳಸಿ.</translation>
 <translation id="1056775291175587022">ನೆಟ್ವರ್ಕ್ ಇಲ್ಲ</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">ಸೆಲ್ಯುಲಾರ್: <ph name="ADDRESS" /></translation>
@@ -20,6 +21,7 @@
 <translation id="1153356358378277386">ಜೋಡಿ ಮಾಡಲಾದ ಸಾಧನಗಳು</translation>
 <translation id="1175572348579024023">ಸ್ಕ್ರಾಲ್</translation>
 <translation id="1178581264944972037">ವಿರಾಮ</translation>
+<translation id="118532027333893379">ಪೂರ್ಣ-ಪರದೆಯನ್ನು ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ಎಲ್ಲಿಯಾದರೂ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="1190609913194133056">ಅಧಿಸೂಚನೆಯ ಕೇಂದ್ರ</translation>
 <translation id="1195412055398077112">ಓವರ್‌ಸ್ಕ್ಯಾನ್</translation>
 <translation id="119944043368869598">ಎಲ್ಲವನ್ನೂ ತೆಗೆದುಹಾಕಿ</translation>
@@ -58,7 +60,6 @@
 <translation id="1426410128494586442">ಹೌದು</translation>
 <translation id="144853431011121127">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ನಿಮ್ಮ ಫೋನ್‌ನಿಂದ ಅಧಿಸೂಚನೆಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="1455242230282523554">ಭಾಷೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
-<translation id="1456407467406159627">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿ ಗೌಪ್ಯ ವಿಷಯ ಇರುವುದರಿಂದ, ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ನಿಲ್ಲಿಸಲಾಗಿದೆ.</translation>
 <translation id="1460620680449458626">ವಾಲ್ಯೂಮ್ ಅನ್ನು ಮ್ಯೂಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="1467432559032391204">ಎಡಕ್ಕೆ</translation>
 <translation id="1479909375538722835">ಫ್ಲೋಟಿಂಗ್ ಪ್ರವೇಶಿಸುವಿಕೆ ಮೆನು</translation>
@@ -125,6 +126,7 @@
 <translation id="2127372758936585790">ಕಡಿಮೆ ವಿದ್ಯುತ್ ಚಾರ್ಜರ್</translation>
 <translation id="2132302418721800944">ಫುಲ್‌ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡ್ ಮಾಡಿ</translation>
 <translation id="2135456203358955318">ಡಾಕ್‌‌ ಮಾಡಿರುವ ವರ್ಧಕ</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="2208323208084708176">ಏಕೀಕೃತ ಡೆಸ್ಕ್‌ಟಾಪ್ ಮೋಡ್</translation>
 <translation id="2220572644011485463">ಪಿನ್ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="2222338659135520253">ಸೈನ್ ಇನ್ ಮಾಡುವ ಅಗತ್ಯವಿದೆ</translation>
@@ -137,6 +139,7 @@
 <translation id="229397294990920565">ಮೊಬೈಲ್ ಡೇಟಾವನ್ನು ಆಫ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="2295777434187870477">ಮೈಕ್ ಆನ್ ಆಗಿದೆ, ಟಾಗಲ್ ಮಾಡುವುದರಿಂದ ಇನ್‌ಪುಟ್ ಮ್ಯೂಟ್ ಆಗುತ್ತದೆ.</translation>
 <translation id="2298170939937364391">ಫುಲ್‌ಸ್ಕ್ರೀನ್ ವರ್ಧಕವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ. ಅದನ್ನು ಟಾಗಲ್‌ ಆಫ್‌ ಮಾಡಲು Ctrl+Search+M ಅನ್ನು ಒತ್ತಿರಿ.</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Assistant ನಲ್ಲಿ ಫಲಿತಾಂಶವನ್ನು ನೋಡಲು ಡೈಲಾಗ್ ಅನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="2302092602801625023">ಈ ಖಾತೆಯನ್ನು Family Link ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="2303600792989757991">ಟಾಗಲ್ ವಿಂಡೋ ಅವಲೋಕನ</translation>
 <translation id="2322173485024759474">ಅಕ್ಷರದ ಮೂಲಕ ಹಿಂತಿರುಗಿ</translation>
@@ -164,6 +167,7 @@
 <translation id="2484513351006226581">ಕೀಬೋರ್ಡ್ ಲೇಔಟ್ ಬದಲಾಯಿಸಲು <ph name="KEYBOARD_SHORTCUT" /> ಒತ್ತಿರಿ.</translation>
 <translation id="2501920221385095727">ಸ್ಟಿಕಿ ಕೀಗಳು</translation>
 <translation id="2509468283778169019">CAPS LOCK ಆನ್ ಆಗಿದೆ</translation>
+<translation id="2536159006530886390">ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ.</translation>
 <translation id="2542089167727451762">ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಚಿತ್ರದ ಮೇಲೆ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="255671100581129685">Google ಅಸಿಸ್ಟೆಂಟ್‌ ಸಾರ್ವಜನಿಕ ಸೆಶನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="256712445991462162">ಡಾಕ್ ಮಾಡಿರುವ ವರ್ಧಕ</translation>
@@ -185,6 +189,7 @@
 <translation id="2727977024730340865">ಕಡಿಮೆ ವಿದ್ಯುತ್ ಚಾರ್ಜರ್‌ಗೆ ಪ್ಲಗ್ ಮಾಡಲಾಗಿದೆ. ಬ್ಯಾಟರಿ ಚಾರ್ಜಿಂಗ್ ವಿಶ್ವಾಸಾರ್ಹವಾಗಿಲ್ಲದಿರಬಹುದು.</translation>
 <translation id="2792498699870441125">Alt+ಹುಡುಕಾಟ</translation>
 <translation id="2819276065543622893">ಈಗ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
+<translation id="28232023175184696">ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="2825224105325558319"><ph name="SPECIFIED_RESOLUTION" /> ಅನ್ನು <ph name="DISPLAY_NAME" /> ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ರೆಸಲ್ಯೂಷನ್‌ ಅನ್ನು <ph name="FALLBACK_RESOLUTION" /> ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ.</translation>
 <translation id="2825619548187458965">ಶೆಲ್ಫ್</translation>
 <translation id="2841907151129139818">ಟ್ಯಾಬ್ಲೆಟ್‌‌ ಮೋಡ್‌ಗೆ ಬದಲಿಸಲಾಗಿದೆ</translation>
@@ -325,6 +330,7 @@
 <translation id="4129129681837227511">ನಿಮ್ಮ ಲಾಕ್ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿ ಅಧಿಸೂಚನೆಗಳನ್ನು ನೋಡಲು, ಸೆಟ್ಟಿಂಗ್ ಬದಲಾಯಿಸಲು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="4146833061457621061">ಸಂಗೀತ ಪ್ಲೇ ಮಾಡಿ</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> ಸಾಧನವನ್ನು <ph name="DOMAIN" /> ನಿರ್ವಹಿಸುತ್ತಿದೆ</translation>
+<translation id="415719264485676252">ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್ ಮಾಡುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="4157822100366708405">ಡಾರ್ಕ್ ಥೀಮ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="4181841719683918333">ಭಾಷೆಗಳು</translation>
 <translation id="4195877955194704651">ಸ್ವಯಂಚಾಲಿತ ಕ್ಲಿಕ್‌ಗಳ ಬಟನ್</translation>
@@ -393,6 +399,7 @@
 <translation id="4710243778082831592">IME ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="4731797938093519117">ಪೋಷಕ ಪ್ರವೇಶ ಬಟನ್‌</translation>
 <translation id="4734965478015604180">ಅಡ್ಡ</translation>
+<translation id="4744944742468440486">ನಿಮ್ಮ ಆಯ್ಕೆಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ</translation>
 <translation id="4759238208242260848">ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
 <translation id="4774338217796918551">ನಾಳೆ <ph name="COME_BACK_TIME" /> ಸಮಯಕ್ಕೆ ಹಿಂತಿರುಗಿ.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್</translation>
@@ -511,6 +518,7 @@
 <translation id="595202126637698455">ಕಾರ್ಯಕ್ಷಮತೆ ಟ್ರೇಸಿಂಗ್ ಸಕ್ರಿಯಗೊಂಡಿದೆ</translation>
 <translation id="5957083217255311415">ಮೊಬೈಲ್ ಡೇಟಾ ಆಫ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="5958529069007801266">ಮೇಲ್ವಿಚಾರಣೆಗೊಳಪಟ್ಟ ಬಳಕೆದಾರರು</translation>
+<translation id="5960825221082587934">ನಿಮ್ಮ ಆಯ್ಕೆಗೆ ಸಂಬಂಧಿಸಿದ ವ್ಯಾಖ್ಯಾನ, ಅನುವಾದ ಅಥವಾ ಯೂನಿಟ್ ಪರಿವರ್ತನೆಯಂತಹ ಮಾಹಿತಿಯನ್ನು Assistant ತೋರಿಸಲಿ.</translation>
 <translation id="5977415296283489383">ಹೆಡ್‌ಫೋನ್</translation>
 <translation id="5978382165065462689">ರಿಮೋಟ್ ಸಹಾಯಕದ ಮೂಲಕ ನಿಮ್ಮ ಪರದೆಯ ಹಂಚಿಕೆಯ ನಿಯಂತ್ರಣ</translation>
 <translation id="5980301590375426705">ಅತಿಥಿ ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
@@ -598,6 +606,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="6777216307882431711">ಸಂಪರ್ಕಿತ USB-C ಸಾಧನಗಳನ್ನು ಚಾರ್ಜ್ ಮಾಡುತ್ತಿದೆ</translation>
 <translation id="6790428901817661496">ಪ್ಲೇ ಮಾಡು</translation>
 <translation id="6803622936009808957">ಯಾವುದೇ ಬೆಂಬಲಿತ ಪರಿಹಾರಗಳು ಕಂಡುಬರದ ಕಾರಣ ಪ್ರದರ್ಶನಗಳನ್ನು ಪ್ರತಿಬಿಂಬಿಸಲಾಗಲಿಲ್ಲ. ಬದಲಿಗೆ ವಿಸ್ತರಿತ ಡೆಸ್ಕ್‌ಟಾಪ್ ಅನ್ನು ನಮೂದಿಸಲಾಗಿದೆ.</translation>
+<translation id="6816797338148849397">ನಿಮ್ಮ ಆಯ್ಕೆಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ ಲಭ್ಯವಿದೆ. ಇದಕ್ಕೆ ಪ್ರವೇಶ ಪಡೆಯಲು, ಅಪ್ ಆ್ಯರೋ ಬಳಸಿ.</translation>
 <translation id="6818242057446442178">ಒಂದು ಪದದಷ್ಟು ಹಿಂದಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="6820676911989879663">ವಿರಾಮ ತೆಗೆದುಕೊಳ್ಳಿ!</translation>
 <translation id="6850010208275816200">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಆ್ಯಪ್ ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಮೋಡ್‌ನಲ್ಲಿದೆ. ಒಂದು ವೇಳೆ ಆ್ಯಪ್ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಕೇಳಿದರೆ ಮೊದಲು ಪೂರ್ಣ ಸ್ಕ್ರೀನ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ.</translation>
@@ -663,6 +672,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7509246181739783082">ನಿಮ್ಮ ಗುರುತನ್ನು ಖಚಿತಪಡಿಸಿ</translation>
 <translation id="7526573455193969409">ನೆಟ್‌ವರ್ಕ್‌ನ ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಬಹುದಾಗಿದೆ</translation>
 <translation id="7536035074519304529">ಐಪಿ ವಿಳಾಸ: <ph name="ADDRESS" /></translation>
+<translation id="7542906349682405018">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿರುವ ಕಂಟೆಂಟ್‌ನ ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್ ತೆಗೆದುಕೊಳ್ಳದ ಹಾಗೆ ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ.</translation>
 <translation id="7548434653388805669">ಮಲಗುವ ಸಮಯ</translation>
 <translation id="7551643184018910560">ಶೆಲ್ಫ್‌ಗೆ ಪಿನ್‌ ಮಾಡು</translation>
 <translation id="7561982940498449837">ಮೆನು ಮುಚ್ಚಿರಿ</translation>
@@ -791,6 +801,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">ಕಡಿಮೆ ವಿದ್ಯುತ್ ಚಾರ್ಜರ್ ಸಂಪರ್ಕಪಡಿಸಲಾಗಿದೆ</translation>
 <translation id="8683506306463609433">ಕಾರ್ಯಕ್ಷಮತೆಯ ಟ್ರೇಸಿಂಗ್ ಸಕ್ರಿಯವಾಗಿದೆ</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> ಈ ಫೀಚರ್ ಅನ್ನು ನಿರ್ವಹಿಸಲು ಎಡ ಅಥವಾ ಬಲ ಆ್ಯರೋ ಕೀಗಳನ್ನು ಬಳಸಿ.</translation>
 <translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="8721053961083920564">ವಾಲ್ಯೂಮ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">ನಿಮ್ಮ ಕೀಸ್ಟ್ರೋಕ್‌ಗಳನ್ನು ಕಳವು ಮಾಡಲು ಇದು ಪ್ರಯತ್ನಿಸುತ್ತಿರಬಹುದು</translation>
@@ -813,6 +824,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8876661425082386199">ನಿಮ್ಮ ಕನೆಕ್ಷನ್ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="8877788021141246043">ಜ್ಞಾಪನೆಯನ್ನು ಹೊಂದಿಸಿ</translation>
 <translation id="8878886163241303700">ಪರದೆಯನ್ನು ವಿಸ್ತರಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="8883473964424809116">Google Assistant ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಲು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="8894122120026866664">ನಿಮ್ಮ ಫೋನ್ ಅನ್ನು ಹುಡುಕಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="890616557918890486">ಮೂಲವನ್ನು ಬದಲಿಸಿ</translation>
 <translation id="8909138438987180327">ಬ್ಯಾಟರಿ <ph name="PERCENTAGE" /> ಪ್ರತಿಶತ ಇದೆ.</translation>

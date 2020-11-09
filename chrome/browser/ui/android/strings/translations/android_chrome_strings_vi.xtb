@@ -314,6 +314,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3285080554353377245">Video về cách sử dụng Chrome</translation>
 <translation id="3288003805934695103">Đang tải lại trang</translation>
 <translation id="32895400574683172">Cho phép thông báo</translation>
+<translation id="3290991969712132877">Để truy cập nhanh hơn, hãy thêm trang này vào Màn hình chính từ nút Tùy chọn khác</translation>
 <translation id="3295530008794733555">Duyệt web nhanh hơn. Sử dụng ít dữ liệu hơn.</translation>
 <translation id="3298243779924642547">Phiên bản rút gọn</translation>
 <translation id="3303414029551471755">Tiếp tục tải xuống nội dung?</translation>
@@ -470,6 +471,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="4532845899244822526">Chọn thư mục</translation>
 <translation id="4538018662093857852">Bật Chế độ thu gọn</translation>
 <translation id="4550003330909367850">Để xem hoặc sao chép mật khẩu của bạn tại đây, hãy đặt khóa màn hình trên thiết bị này.</translation>
+<translation id="4557685098773234337">Để truy cập nhanh hơn, hãy thêm trang này vào Màn hình chính</translation>
 <translation id="4558311620361989323">Phím tắt cho trang web</translation>
 <translation id="4561979708150884304">Không có kết nối</translation>
 <translation id="4565377596337484307">Ẩn mật khẩu</translation>
@@ -499,6 +501,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="4720982865791209136">Hãy giúp cải tiến Chrome. <ph name="BEGIN_LINK" />Tham gia khảo sát<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">Xem các trang web hàng đầu của bạn</translation>
 <translation id="4732120983431207637">Trình gỡ ngăn xếp</translation>
+<translation id="4732693703583195378">Thêm trang web này vào Màn hình chính của máy tính bảng để bạn có thể truy cập dễ dàng hơn</translation>
 <translation id="4738836084190194332">Đồng bộ hóa lần gần đây nhất: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Mở thẻ mới</translation>
 <translation id="4759238208242260848">Tệp đã tải xuống</translation>
@@ -536,6 +539,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="4925120120285606924">Ảnh chụp màn hình <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Mật khẩu của bạn sẽ được xuất và tải xuống dưới dạng tệp văn bản. Mật khẩu sẽ hiển thị với bất kỳ ai và bất kỳ ứng dụng nào có quyền truy cập vào thư mục đích.</translation>
 <translation id="4932247056774066048">Vì bạn đang đăng xuất khỏi một tài khoản thuộc quản lý của <ph name="DOMAIN_NAME" /> nên dữ liệu của bạn trên Chrome sẽ bị xóa khỏi thiết bị này. Tuy nhiên, dữ liệu đó sẽ vẫn còn trong Tài khoản Google của bạn.</translation>
+<translation id="4936039914467572121">Truy cập trang web này nhanh hơn</translation>
 <translation id="4943703118917034429">Thực tế ảo</translation>
 <translation id="4943872375798546930">Không tìm thấy kết quả nào</translation>
 <translation id="4961107849584082341">Dịch trang này sang ngôn ngữ bất kỳ</translation>
@@ -647,6 +651,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5763382633136178763">Thẻ ẩn danh</translation>
 <translation id="5763514718066511291">Nhấn để sao chép URL cho ứng dụng này</translation>
 <translation id="5765780083710877561">Mô tả:</translation>
+<translation id="5767013862801005129">Đã khôi phục thẻ <ph name="TAB_TITLE" /></translation>
 <translation id="5776970333778123608">Dữ liệu không quan trọng</translation>
 <translation id="5793665092639000975">Đang dùng: <ph name="SPACE_USED" />/<ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Tìm kiếm và duyệt xem</translation>
@@ -952,6 +957,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> tùy chọn khác}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> tùy chọn khác}}</translation>
 <translation id="7778840695157240389">Hãy kiểm tra lại sau để xem các tin bài mới</translation>
 <translation id="7791543448312431591">Thêm</translation>
+<translation id="7798392620021911922">Đã khôi phục <ph name="TAB_COUNT" /> thẻ</translation>
 <translation id="780301667611848630">Không, cảm ơn</translation>
 <translation id="7810647596859435254">Mở bằng…</translation>
 <translation id="7821588508402923572">Mức tiết kiệm dữ liệu sẽ hiển thị tại đây</translation>
@@ -1137,6 +1143,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Hiển thị văn bản gốc</translation>
 <translation id="9148126808321036104">Đăng nhập lại</translation>
+<translation id="9149286894143103695">Thêm trang web này vào Màn hình chính của điện thoại để bạn có thể truy cập dễ dàng hơn</translation>
 <translation id="9155898266292537608">Bạn cũng có thể tìm kiếm bằng cách nhấn nhanh vào một từ</translation>
 <translation id="9169507124922466868">Lịch sử di chuyển đang mở ở nửa dưới màn hình</translation>
 <translation id="9191031968346938109">Thêm vào…</translation>

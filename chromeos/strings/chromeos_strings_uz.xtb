@@ -94,13 +94,16 @@
 Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="5222676887888702881">Tizimdan chiqish</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">Dasturlarni qayta bajarish</translation>
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Hoziroq yangi parol tanlang</translation>
 <translation id="5372659122375744710">WiFi tarmoq xavfsiz emas</translation>
 <translation id="5401938042319910061">Barcha dasturlarni ishga tushirish</translation>
+<translation id="5431318178759467895">Rang</translation>
 <translation id="5457599981699367932">Mehmon sifatida kezish</translation>
 <translation id="54609108002486618">Boshqariladigan</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">Foydalanuvchi qo‘shish</translation>
 <translation id="5895138241574237353">Qayta ishga tushirish</translation>
 <translation id="6040143037577758943">Yopish</translation>
@@ -141,7 +144,6 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8364946094152050673">Nom serverlari kiritilmagan</translation>
 <translation id="8475690821716466388">WiFi tarmoq zaif WEP PSK protokoli bilan himoyalangan</translation>
 <translation id="8477551185774834963">DNS kutish vaqti ruxsat etilgan chegaradan biroz baland</translation>
-<translation id="8668052347555487755">Rangli rejim</translation>
 <translation id="871560550817059752">Bajarilmadi - Rang tugadi</translation>
 <translation id="8723108084122415655">Ikkilamchi tarmoq kutish vaqti baland</translation>
 <translation id="8726019395068607495">Toʻxtatildi – Eshikchasi ochiq</translation>

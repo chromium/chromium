@@ -93,13 +93,16 @@
 <translation id="5212543919916444558">నేను సహాయం అందించగలిగేలా మీ స్క్రీన్‌పై నాకు ఏదీ కనిపించలేదు. మైక్‌ను నొక్కి, నన్ను ఏదైనా అడగడానికి ప్రయత్నించండి.</translation>
 <translation id="5222676887888702881">సైన్ ఔట్</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">రొటీన్‌లను మళ్లీ అమలు చేయి</translation>
 <translation id="5317780077021120954">సేవ్ చేయి</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">ఇప్పుడే ఒక కొత్త దానిని ఎంచుకోండి</translation>
 <translation id="5372659122375744710">WiFi నెట్‌వర్క్ సురక్షితంగా లేదు</translation>
 <translation id="5401938042319910061">అన్ని కమాండ్ రొటీన్‌లను రన్ చేయండి</translation>
+<translation id="5431318178759467895">రంగు</translation>
 <translation id="5457599981699367932">అతిథి లాగా బ్రౌజ్ చేయండి</translation>
 <translation id="54609108002486618">నిర్వహించబడింది</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">వ్యక్తిని జోడించు</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించు</translation>
 <translation id="6040143037577758943">మూసివేయి</translation>
@@ -140,7 +143,6 @@
 <translation id="8364946094152050673">ఖాళీ పేరు సర్వర్‌లు</translation>
 <translation id="8475690821716466388">బలహీనమైన ప్రోటోకాల్ WEP PSKతో Wi-Fi నెట్‌వర్క్ సురక్షితం చేయబడింది</translation>
 <translation id="8477551185774834963">DNS ప్రతిస్పందన సమయం అనుమతించదగిన పరిమితికి కొద్దిగా మించి ఉంది</translation>
-<translation id="8668052347555487755">రంగు మోడ్</translation>
 <translation id="871560550817059752">విఫలమైంది - ఇంక్ అయిపోయింది</translation>
 <translation id="8723108084122415655">పరిమితిని మించి ప్రతిస్పందన సమయం ఉన్న డిఫాల్ట్-యేతర నెట్‌వర్క్</translation>
 <translation id="8726019395068607495">ఆగిపోయింది - డోర్ తెరిచి ఉంది</translation>

@@ -1782,7 +1782,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3029466929721441205">Afișează instrumentele pentru creion pe raft</translation>
 <translation id="3031417829280473749">Agenta X</translation>
 <translation id="3031557471081358569">Selectează elementele de importat:</translation>
-<translation id="3036041939445522540">Nu sunt disponibile persoane de contact</translation>
 <translation id="3036327949511794916">A trecut termenul limită pentru returnarea acestui <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3036546437875325427">Activează Flash</translation>
 <translation id="3037754279345160234">Nu se poate analiza configurația de conectare la domeniu. Contactează administratorul.</translation>
@@ -4639,7 +4638,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6445450263907939268">Dacă nu doriți aceste modificări, puteți restabili setările anterioare.</translation>
 <translation id="6447842834002726250">Cookie-uri</translation>
 <translation id="6450876761651513209">Modifică setările privind confidențialitatea</translation>
-<translation id="6451180435462401570">Gestionează dispozitivele Cloud Print</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> și încă o filă}few{<ph name="PAGE_TITLE" /> și încă # file}other{<ph name="PAGE_TITLE" /> și încă # de file}}</translation>
 <translation id="6451689256222386810">Dacă ai uitat expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />resetează sincronizarea<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Respingeți</translation>
@@ -4946,8 +4944,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6824584962142919697">&amp;Inspectează elementele</translation>
 <translation id="6825184156888454064">Sortează după nume</translation>
 <translation id="6826872289184051766">Confirmă prin USB</translation>
-<translation id="6827487342470222762">Nu este disponibilă nicio persoană de contact. Pentru a folosi Nearby Share cu persoanele de contact, adaugă în agendă adresa de e-mail asociată Contului Google respectiv.</translation>
-<translation id="6827623133556594466">Google Cloud Print nu va mai fi acceptat după data de 31 decembrie. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Restricționează conectarea la următorii utilizatori:</translation>
 <translation id="6828182567531805778">Introdu expresia de acces pentru a sincroniza datele</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5878,7 +5874,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7893008570150657497">să acceseze fotografii, muzică și alte tipuri de conținut media de pe computer;</translation>
 <translation id="7893153962594818789">Conexiunea Bluetooth este dezactivată pe acest dispozitiv <ph name="DEVICE_TYPE" />. Introdu parola și activează Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Prestabilit)</translation>
-<translation id="7897865097438730075">Google Cloud Print nu va mai fi acceptat după data de 31 decembrie. Contactează administratorul.</translation>
 <translation id="7897900149154324287">Pe viitor, asigurați-vă că eliminați dispozitivul amovibil din aplicația Fișiere înainte să îl deconectați. În caz contrar, este posibil să pierdeți date.</translation>
 <translation id="7898627924844766532">Păstrează în bara de instrumente</translation>
 <translation id="7898725031477653577">Tradu întotdeauna</translation>
@@ -6029,7 +6024,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8054563304616131773">Introdu o adresă de e-mail validă</translation>
 <translation id="8054921503121346576">Tastatură USB conectată</translation>
 <translation id="8058655154417507695">Anul expirării</translation>
-<translation id="8058811362315390556">Google Cloud Print nu va mai fi acceptat după data de 31 decembrie</translation>
 <translation id="8059417245945632445">&amp;Inspectați dispozitivele</translation>
 <translation id="8059456211585183827">Nu există imprimante de salvat.</translation>
 <translation id="8061091456562007989">Revino la setările inițiale</translation>
@@ -6142,7 +6136,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8184288427634747179">Comută la <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Mai multe informații</translation>
 <translation id="8184472985242519288">Uniform</translation>
-<translation id="8185331656081929126">Afișați notificări când în rețea sunt detectate imprimante noi</translation>
 <translation id="8186609076106987817">Serverul nu a putut găsi fișierul.</translation>
 <translation id="8188389033983459049">Verifică setările dispozitivului și activează-l pentru a continua</translation>
 <translation id="8190193592390505034">Se conectează la <ph name="PROVIDER_NAME" /></translation>

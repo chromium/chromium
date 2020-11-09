@@ -152,6 +152,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{Остання активність: сьогодні}=1{Остання активність: 1 день тому}one{Остання активність: # день тому}few{Остання активність: # дні тому}many{Остання активність: # днів тому}other{Остання активність: # дня тому}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 день і }one{# день і }few{# дні та }many{# днів і }other{# дня та }}</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5843690142429128814">Зображення.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{через 1 р.}one{через # р.}few{через # р.}many{через # р.}other{через # р.}}</translation>
 <translation id="588258955323874662">Повноекранний режим</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{Залишилась 1 секунда}one{Залишилася # секунда}few{Залишилося # секунди}many{Залишилося # секунд}other{Залишилося # секунди}}</translation>
@@ -192,6 +193,7 @@
 <translation id="6845533974506654842">натиснути</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{Залишилась 1 година}one{Залишилася # година}few{Залишилося # години}many{Залишилося # годин}other{Залишилося # години}}</translation>
 <translation id="688711909580084195">Веб-сторінка без назви</translation>
+<translation id="6902419395050653510">Вміст HTML.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> Пб/сек.</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{Залишився 1 рік}one{Залишився # рік}few{Залишилося # роки}many{Залишилося # років}other{Залишилося # року}}</translation>
 <translation id="6945221475159498467">Вибрати</translation>

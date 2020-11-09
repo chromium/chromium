@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Неуспешно отпечатване.</translation>
 <translation id="1125564390852150847">Създаване на нов раздел.</translation>
 <translation id="1145536944570833626">Изтриване на съществуващите данни.</translation>
+<translation id="1147031633655575115">Влезли сте като <ph name="USER" /></translation>
 <translation id="1154690515305205900">Не може да се създаде връзка към откроения текст.</translation>
 <translation id="1157749421655780457">Разрешаване на местоположението...</translation>
 <translation id="1165039591588034296">Грешка</translation>
@@ -83,7 +84,6 @@
 <translation id="1690731385917361335">Няма елементи</translation>
 <translation id="1692118695553449118">Синхронизирането е включено</translation>
 <translation id="1700629756560807968">Избрахте <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
-<translation id="1715940067130687605">Използване на текущото ви местоположение</translation>
 <translation id="1740468249224277719">Докоснете двукратно, за да инсталирате.</translation>
 <translation id="1746815479209538200">За да сърфирате в мрежата, добавете нов раздел.</translation>
 <translation id="1752547299766512813">Запазени пароли</translation>
@@ -269,6 +269,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3892144330757387737">Тук ще се показва историята ви</translation>
 <translation id="3897092660631435901">Меню</translation>
+<translation id="3913386780052199712">Влязохте в Chrome</translation>
 <translation id="3915450441834151894">Информация за сайта</translation>
 <translation id="3922310737605261887">Търсене на копирания текст</translation>
 <translation id="3928666092801078803">Комбиниране на данните ми</translation>

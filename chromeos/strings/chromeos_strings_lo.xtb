@@ -94,13 +94,16 @@
 ລອງແຕະໄມເພື່ອຖາມຂ້ອຍອັນໃດກໍໄດ້.</translation>
 <translation id="5222676887888702881">ອອກຈາກລະບົບ</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">ເປີດສິ່ງທີ່ເຮັດປະຈຳຄືນໃໝ່</translation>
 <translation id="5317780077021120954">ບັນທຶກ</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">ເລືອກລະຫັດຜ່ານໃໝ່ຕອນນີ້ເລີຍ</translation>
 <translation id="5372659122375744710">ເຄືອຂ່າຍ WiFi ບໍ່ປອດໄພ</translation>
 <translation id="5401938042319910061">ເອີ້ນໃຊ້ສິ່ງທີ່ເຮັດປະຈຳທັງໝົດ</translation>
+<translation id="5431318178759467895">ສີ</translation>
 <translation id="5457599981699367932">ທ່ອງເນັດເປັນແຂກ</translation>
 <translation id="54609108002486618">ຖືກຈັດການ</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">ເພີ່ມບຸກຄົນ</translation>
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
 <translation id="6040143037577758943">ປິດ</translation>
@@ -141,7 +144,6 @@
 <translation id="8364946094152050673">ເຊີບເວີຊື່ຫວ່າງເປົ່າ</translation>
 <translation id="8475690821716466388">ເຄືອຂ່າຍ WiFi ມີການຮັກສາຄວາມປອດໄພດ້ວຍໂປຣໂຕຄໍ WEP PSK ທີ່ບໍ່ຮັດກຸມ</translation>
 <translation id="8477551185774834963">ເວລາໃນການຕອບສະໜອງ DNS ສູງກວ່າເກນທີ່ຍອມຮັບໄດ້ເລັກນ້ອຍ</translation>
-<translation id="8668052347555487755">ຮູບແບບສີ</translation>
 <translation id="871560550817059752">ບໍ່ສຳເລັດ, ນໍ້າໝຶກໝົດ</translation>
 <translation id="8723108084122415655">ເຄືອຂ່າຍທີ່ບໍ່ແມ່ນຄ່າເລີ່ມຕົ້ນສູງກວ່າເກນເວລາໃນການຕອບສະໜອງ</translation>
 <translation id="8726019395068607495">ຢຸດພິມ, ຝາເປີດຢູ່</translation>

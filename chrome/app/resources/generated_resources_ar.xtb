@@ -1783,7 +1783,6 @@
 <translation id="3029466929721441205">عرض أدوات قلم الشاشة في الرفّ</translation>
 <translation id="3031417829280473749">‏الوكيل X</translation>
 <translation id="3031557471081358569">اختيار العناصر المراد استيرادها:</translation>
-<translation id="3036041939445522540">ما مِن جهات اتصال متوفّرة</translation>
 <translation id="3036327949511794916">لقد انتهت مهلة إرجاع جهاز <ph name="DEVICE_TYPE" /> هذا.</translation>
 <translation id="3036546437875325427">‏تفعيل Flash</translation>
 <translation id="3037754279345160234">يتعذَّر تحليل الإعداد لضمّ النطاق. يُرجى الاتصال بمشرفك.</translation>
@@ -3015,7 +3014,7 @@
 <translation id="4510479820467554003">قائمة حساب أحد الوالدَين</translation>
 <translation id="4510614391273086606">‏تتم الآن استعادة البيانات الاحتياطية الخاصّة بملفات نظام التشغيل Linux وتطبيقاته.</translation>
 <translation id="4511264077854731334">المدخل</translation>
-<translation id="4513946894732546136">تعليقات</translation>
+<translation id="4513946894732546136">ملاحظات</translation>
 <translation id="451407183922382411">تم التشغيل من قبل <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">تبديل الفيديو لتشغيله أو إيقافه مؤقتًا</translation>
 <translation id="451515744433878153">إزالة</translation>
@@ -4639,7 +4638,6 @@
 <translation id="6445450263907939268">إذا كنت لا تريد هذه التغييرات، فيمكنك استعادة الإعدادات السابقة.</translation>
 <translation id="6447842834002726250">ملفّات تعريف الارتباط</translation>
 <translation id="6450876761651513209">تغيير الإعدادات المتعلقة بالخصوصية</translation>
-<translation id="6451180435462401570">إدارة أجهزة الطباعة السحابية</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> وعلامة تبويب واحدة إضافية}two{<ph name="PAGE_TITLE" /> وعلامَتا تبويب إضافيتان}few{<ph name="PAGE_TITLE" /> و# علامات تبويب إضافية}many{<ph name="PAGE_TITLE" /> و# علامة تبويب إضافية}other{<ph name="PAGE_TITLE" /> و# علامة تبويب إضافية}}</translation>
 <translation id="6451689256222386810">إذا نسيت عبارة المرور أو رغبت في تغيير هذا الإعداد، يمكنك <ph name="BEGIN_LINK" />إعادة ضبط المزامنة<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">رفض</translation>
@@ -4946,8 +4944,6 @@
 <translation id="6824584962142919697">وعناصر الفحص</translation>
 <translation id="6825184156888454064">تصنيف بحسب الاسم</translation>
 <translation id="6826872289184051766">‏التحقُّق عبر USB</translation>
-<translation id="6827487342470222762">‏ما مِن جهات اتصال متوفّرة. لاستخدام ميزة "المشاركة عن قرب" مع جهات الاتصال، أضِف عناوين البريد الإلكتروني المرتبطة بحساب كل منها على Google إلى جهات اتصالك.</translation>
-<translation id="6827623133556594466">‏لن تتوفّر خدمة "الطباعة السحابية من Google" بعد 31 كانون الأول (ديسمبر) 2020. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">قصر تسجيل الدخول على المستخدمين التالين:</translation>
 <translation id="6828182567531805778">أدخِل عبارة المرور لمزامنة بياناتك.</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5878,7 +5874,6 @@
 <translation id="7893008570150657497">الوصول إلى الصور والموسيقى والوسائط الأخرى من جهاز الكمبيوتر</translation>
 <translation id="7893153962594818789">تم إيقاف البلوتوث في جهاز <ph name="DEVICE_TYPE" /> هذا. أدخل كلمة مرورك، وشغّل البلوتوث.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (التلقائي)</translation>
-<translation id="7897865097438730075">‏لن تتوفّر خدمة "الطباعة السحابية من Google" اعتبارًا من 31 كانون الأول (ديسمبر). يُرجى التواصل مع المشرف.</translation>
 <translation id="7897900149154324287">في المستقبل، تأكد من إخراج الجهاز القابل للإزالة في تطبيق الملفات قبل فصله؛ وإلا قد تفقد بيانات.</translation>
 <translation id="7898627924844766532">البقاء مثبتًا في شريط الأدوات</translation>
 <translation id="7898725031477653577">ترجمة اللغة دومًا</translation>
@@ -6029,7 +6024,6 @@
 <translation id="8054563304616131773">يُرجى إدخال عنوان بريد إلكتروني صالح</translation>
 <translation id="8054921503121346576">‏لوحة مفاتيح USB متصلة</translation>
 <translation id="8058655154417507695">سنة انتهاء الصلاحية</translation>
-<translation id="8058811362315390556">‏لن تتوفّر خدمة "الطباعة السحابية من Google" اعتبارًا من 31 كانون الأول (ديسمبر).</translation>
 <translation id="8059417245945632445">&amp;فحص الأجهزة</translation>
 <translation id="8059456211585183827">لا تتوفّر أي طابعات للحفظ.</translation>
 <translation id="8061091456562007989">العودة إلى الإعدادات السابقة</translation>
@@ -6142,7 +6136,6 @@
 <translation id="8184288427634747179">التبديل إلى <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">مزيد من المعلومات</translation>
 <translation id="8184472985242519288">مُوحَّدة</translation>
-<translation id="8185331656081929126">عرض إشعارات عند اكتشاف طابعات جديدة على الشبكة</translation>
 <translation id="8186609076106987817">تعذر على الخادم العثور على الملف.</translation>
 <translation id="8188389033983459049">التحقُّق من إعدادات جهازك وتفعيلها للاستمرار</translation>
 <translation id="8190193592390505034">جارٍ الاتصال بـ <ph name="PROVIDER_NAME" /></translation>

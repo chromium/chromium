@@ -94,13 +94,16 @@
 Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5222676887888702881">Wyloguj się</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">Uruchom ponownie testy</translation>
 <translation id="5317780077021120954">Zapisz</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Wybierz teraz nowe.</translation>
 <translation id="5372659122375744710">Sieć Wi-Fi nie jest bezpieczna</translation>
 <translation id="5401938042319910061">Uruchom wszystkie testy</translation>
+<translation id="5431318178759467895">Kolor</translation>
 <translation id="5457599981699367932">Przeglądaj jako gość</translation>
 <translation id="54609108002486618">Zarządzany</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">Dodaj osobę</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
 <translation id="6040143037577758943">Zamknij</translation>
@@ -141,7 +144,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8364946094152050673">Puste serwery nazw</translation>
 <translation id="8475690821716466388">Sieć Wi-Fi jest zabezpieczona słabym protokołem WEP PSK</translation>
 <translation id="8477551185774834963">Opóźnienie DNS nieco przekracza dopuszczalny próg</translation>
-<translation id="8668052347555487755">Tryb koloru</translation>
 <translation id="871560550817059752">Niepowodzenie – brak tuszu</translation>
 <translation id="8723108084122415655">Sieć inna niż domyślna przekroczyła próg opóźnienia</translation>
 <translation id="8726019395068607495">Zatrzymano – otwarte drzwiczki drukarki</translation>

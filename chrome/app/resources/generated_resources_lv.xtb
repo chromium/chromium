@@ -1782,7 +1782,6 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3029466929721441205">Skārienekrāna pildspalvas rīku rādīšana plauktā</translation>
 <translation id="3031417829280473749">Aģente X</translation>
 <translation id="3031557471081358569">Izvēlieties importējamos vienumus:</translation>
-<translation id="3036041939445522540">Nav pieejamu kontaktpersonu</translation>
 <translation id="3036327949511794916">Šīs <ph name="DEVICE_TYPE" /> ierīces atdošanas termiņš ir pagājis.</translation>
 <translation id="3036546437875325427">Iespējot Flash</translation>
 <translation id="3037754279345160234">Nevar parsēt domēna pievienošanas konfigurāciju. Lūdzu, sazinieties ar administratoru.</translation>
@@ -4639,7 +4638,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6445450263907939268">Ja nevēlējāties veikt šīs izmaiņas, varat atjaunot iepriekšējos iestatījumus.</translation>
 <translation id="6447842834002726250">Sīkfaili</translation>
 <translation id="6450876761651513209">Mainīt konfidencialitātes iestatījumus</translation>
-<translation id="6451180435462401570">Pārvaldīt mākoņdrukas ierīces</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> un vēl 1 cilne}zero{<ph name="PAGE_TITLE" /> un vēl # cilnes}one{<ph name="PAGE_TITLE" /> un vēl # cilne}other{<ph name="PAGE_TITLE" /> un vēl # cilnes}}</translation>
 <translation id="6451689256222386810">Ja esat aizmirsis ieejas frāzi vai vēlaties mainīt šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāciju<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Noraidīt</translation>
@@ -4946,8 +4944,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6824584962142919697">&amp;Pārbaudīt elementus</translation>
 <translation id="6825184156888454064">Kārtot pēc nosaukuma</translation>
 <translation id="6826872289184051766">Apstiprināt, izmantojot USB</translation>
-<translation id="6827487342470222762">Nav pieejamu kontaktpersonu. Lai izmantotu funkciju “Kopīgošana tuvumā” ar kontaktpersonām, pievienojiet kontaktpersonu sarakstam šo personu e-pasta adreses, kas saistītas ar viņu Google kontiem.</translation>
-<translation id="6827623133556594466">Pēc 31. decembra Google mākoņdruka vairs netiks atbalstīta. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="6828153365543658583">Ierobežot pierakstīšanos, izņemot šādiem lietotājiem:</translation>
 <translation id="6828182567531805778">Lai sinhronizētu datus, ievadiet ieejas frāzi</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5877,7 +5873,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="7893008570150657497">Piekļūt fotoattēliem, mūzikai un citam multivides saturam no sava datora</translation>
 <translation id="7893153962594818789">Šajā ierīcē (<ph name="DEVICE_TYPE" />) Bluetooth savienojums ir izslēgts. Ievadiet paroli un ieslēdziet Bluetooth savienojumu.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Noklusējums)</translation>
-<translation id="7897865097438730075">Pēc 31. decembra Google mākoņdruka vairs netiks atbalstīta. Sazinieties ar administratoru.</translation>
 <translation id="7897900149154324287">Turpmāk noteikti atvienojiet noņemamo ierīci lietotnē Faili, pirms to noņemat. Pretējā gadījumā varat zaudēt datus.</translation>
 <translation id="7898627924844766532">Saglabāt rīkjoslā</translation>
 <translation id="7898725031477653577">Vienmēr tulkot</translation>
@@ -6028,7 +6023,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8054563304616131773">Lūdzu, ievadiet derīgu e-pasta adresi.</translation>
 <translation id="8054921503121346576">USB tastatūra ir pievienota.</translation>
 <translation id="8058655154417507695">Derīguma termiņa gads</translation>
-<translation id="8058811362315390556">Pēc 31. decembra Google mākoņdruka vairs netiks atbalstīta.</translation>
 <translation id="8059417245945632445">&amp;Pārbaudīt ierīces</translation>
 <translation id="8059456211585183827">Nav pieejams neviens printeris, ko saglabāt.</translation>
 <translation id="8061091456562007989">Atjaunot iepriekšējos iestatījumus</translation>
@@ -6141,7 +6135,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8184288427634747179">Pārslēgties uz profilu <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Plašāka informācija</translation>
 <translation id="8184472985242519288">Vienota</translation>
-<translation id="8185331656081929126">Rādīt paziņojumus, kad tīklā tiek atrasti jauni printeri</translation>
 <translation id="8186609076106987817">Serveris nevarēja atrast failu.</translation>
 <translation id="8188389033983459049">Lai turpinātu, pārbaudiet ierīces iestatījumus un ieslēdziet to.</translation>
 <translation id="8190193592390505034">Savienojas ar <ph name="PROVIDER_NAME" /></translation>

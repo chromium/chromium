@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">ಆಪ್ಸ್‌‌</translation>
 <translation id="2872961005593481000">ಮುಚ್ಚಿಬಿಡಿ </translation>
 <translation id="3008341117444806826">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
+<translation id="3009958530611748826">ಉಳಿಸಲು ಫೋಲ್ಡರ್ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="3083667275341675831">ಕನೆಕ್ಟಿವಿಟಿ ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್</translation>
 <translation id="3091839911843451378">ವಿಫಲವಾಗಿದೆ - ನಿಲ್ಲಿಸಲಾಗಿದೆ</translation>
 <translation id="3188257591659621405">ನನ್ನ ಫೈಲ್‌ಗಳು</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">ಮುದ್ರಣ ಕಾರ್ಯಗಳು</translation>
 <translation id="3527036260304016759">ವಿಫಲವಾಗಿದೆ - ಅಪರಿಚಿತ ದೋಷ</translation>
 <translation id="360565022852130722">ದುರ್ಬಲ ಪ್ರೋಟೋಕಾಲ್ WEP 802.1x‌ ಮೂಲಕ ವೈಫೈ ನೆಟ್‌ವರ್ಕ್ ರಕ್ಷಿಸಲಾಗಿದೆ</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ಅಭಿಪ್ರಾಯಗಳು)</translation>
 <translation id="3749289110408117711">ಫೈಲ್ ಹೆಸರು</translation>
 <translation id="38114475217616659">ಎಲ್ಲಾ ಇತಿಹಾಸ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="3820172043799983114">ಅಮಾನ್ಯ ಪಿನ್.</translation>
@@ -80,10 +82,12 @@
 <translation id="4731797938093519117">ಪೋಷಕ ಪ್ರವೇಶ ಬಟನ್‌</translation>
 <translation id="4773299976671772492">ನಿಲ್ಲಿಸಲಾಗಿದೆ</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> ಮುದ್ರಣ ಕಾರ್ಯವನ್ನು ರದ್ದುಮಾಡಲಾಗಿದೆ</translation>
+<translation id="4832079907277790330">Files ಆ್ಯಪ್‌ನಲ್ಲಿ ಫೋಲ್ಡರ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಿ...</translation>
 <translation id="4890353053343094602">ಹೊಸದೊಂದನ್ನು ತತ್‌ಕ್ಷಣ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="4917889632206600977">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಪೇಪರ್ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="4932733599132424254">ದಿನಾಂಕ</translation>
 <translation id="4985509611418653372">ರನ್‌ ಮಾಡಿ</translation>
+<translation id="4991056862642197104">ಪ್ರಾರಂಭಿಸಲು, ನಿಮ್ಮ ಡಾಕ್ಯುಮೆಂಟ್ ಅನ್ನು ಇರಿಸಿ ಮತ್ತು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ ಎಂಬುದನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="5094480857972195099">ಈ ಬಳಕೆದಾರರನ್ನು <ph name="ENROLLMENT_DOMAIN" /> ನಿರ್ವಹಿಸುತ್ತದೆ ಮತ್ತು ರಿಮೋಟ್ ಆಗಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಬಹುದು ಹಾಗೂ ಬಳಕೆದಾರರ ಚಟುವಟಿಕೆಯನ್ನು ಮಾನಿಟರ್ ಮಾಡಬಹುದು.</translation>
 <translation id="520299634122159966">ಯಾವುದೇ ಲಭ್ಯವಿರುವ ಸ್ಕ್ಯಾನರ್‌ಗಳಿಲ್ಲ</translation>
 <translation id="5212543919916444558">ನಾನು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಬಹುದಾದ ಯಾವುದೇ ವಿಷಯ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಮೇಲೆ ನನಗೆ ಕಾಣಿಸಿಲ್ಲ. ನನ್ನ ಬಳಿ ಏನಾದರೂ ಕೇಳಬೇಕಿದ್ದರೆ, ಮೈಕ್ ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
@@ -95,6 +99,7 @@
 <translation id="5332948983412042822">ಈಗ ಹೊಸದೊಂದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="5372659122375744710">ವೈಫೈ ನೆಟ್‌ವರ್ಕ್ ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
 <translation id="5401938042319910061">ಎಲ್ಲಾ ದಿನಚರಿಗಳನ್ನು ರನ್ ಮಾಡಿ</translation>
+<translation id="5431318178759467895">ಬಣ್ಣ</translation>
 <translation id="5457599981699367932">ಅತಿಥಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="54609108002486618">ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
@@ -124,6 +129,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">ಫೈಲ್ ಪ್ರಕಾರ</translation>
 <translation id="7561454561030345039">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
 <translation id="7690294790491645610">ಹೊಸ ಪಾಸ್‌ವರ್ಡ್ ಖಚಿತಪಡಿಸಿ</translation>
 <translation id="7805768142964895445">ಸ್ಥಿತಿ</translation>
@@ -137,7 +143,6 @@
 <translation id="8364946094152050673">ಖಾಲಿಯಿರುವ ಹೆಸರಿನ ಸರ್ವರ್‌ಗಳು</translation>
 <translation id="8475690821716466388">ದುರ್ಬಲ ಪ್ರೋಟೋಕಾಲ್ WEP PSK‌ ಮೂಲಕ ವೈಫೈ ನೆಟ್‌ವರ್ಕ್ ರಕ್ಷಿಸಲಾಗಿದೆ</translation>
 <translation id="8477551185774834963">ಅನುಮತಿಸಬಹುದಾದ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ಗಿಂತ DNS ವಿಳಂಬವು ಸ್ವಲ್ಪ ಮೇಲಿದೆ</translation>
-<translation id="8668052347555487755">ಬಣ್ಣದ ಮೋಡ್</translation>
 <translation id="871560550817059752">ವಿಫಲವಾಗಿದೆ - ಇಂಕ್ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="8723108084122415655">ವಿಳಂಬ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ ಮೇಲಿನ ಡೀಫಾಲ್ಟ್ ಅಲ್ಲದ ನೆಟ್‌ವರ್ಕ್</translation>
 <translation id="8726019395068607495">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಡೋರ್ ಓಪನ್ ಆಗಿದೆ</translation>

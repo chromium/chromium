@@ -94,13 +94,16 @@
 Пробајте да додирнете микрофон да бисте ме питали нешто.</translation>
 <translation id="5222676887888702881">Одјави ме</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">Поново покрени рутине</translation>
 <translation id="5317780077021120954">Сачувај</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Одаберите нову</translation>
 <translation id="5372659122375744710">WiFi мрежа није безбедна</translation>
 <translation id="5401938042319910061">Покрени све рутине</translation>
+<translation id="5431318178759467895">У боји</translation>
 <translation id="5457599981699367932">Прегледајте као гост</translation>
 <translation id="54609108002486618">Управљани</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">Додај особу</translation>
 <translation id="5895138241574237353">Покрени поново</translation>
 <translation id="6040143037577758943">Затвори</translation>
@@ -141,7 +144,6 @@
 <translation id="8364946094152050673">Празни сервери за имена</translation>
 <translation id="8475690821716466388">WiFi мрежа је обезбеђена слабим протоколом WEP PSK</translation>
 <translation id="8477551185774834963">Кашњење DNS-а у мањој мери премашује дозвољену граничну вредност</translation>
-<translation id="8668052347555487755">Режим боја</translation>
 <translation id="871560550817059752">Није успело – нема више мастила</translation>
 <translation id="8723108084122415655">Мрежа која није подразумевана премашује граничну вредност за кашњење</translation>
 <translation id="8726019395068607495">Заустављено – врата су отворена</translation>

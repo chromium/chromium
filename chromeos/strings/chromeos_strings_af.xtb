@@ -94,13 +94,16 @@
 Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5222676887888702881">Meld af</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">Laat Roetines weer loop</translation>
 <translation id="5317780077021120954">Berg</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Kies nou 'n nuwe een</translation>
 <translation id="5372659122375744710">Wi-fi-netwerk is nie veilig nie</translation>
 <translation id="5401938042319910061">Laat loop alle roetines</translation>
+<translation id="5431318178759467895">Kleur</translation>
 <translation id="5457599981699367932">Blaai as Gas</translation>
 <translation id="54609108002486618">Bestuur</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">Voeg persoon by</translation>
 <translation id="5895138241574237353">Herbegin</translation>
 <translation id="6040143037577758943">Maak toe</translation>
@@ -141,7 +144,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8364946094152050673">Leë naambedieners</translation>
 <translation id="8475690821716466388">Wi-fi-netwerk is met swak protokol WEP PSK beveilig</translation>
 <translation id="8477551185774834963">DNS-traagheid is effens bo toelaatbare drempel</translation>
-<translation id="8668052347555487755">Kleurmodus</translation>
 <translation id="871560550817059752">Misluk – Ink is op</translation>
 <translation id="8723108084122415655">Nieversteknetwerk is bo traagheiddrempel</translation>
 <translation id="8726019395068607495">Gestop – deur is oop</translation>

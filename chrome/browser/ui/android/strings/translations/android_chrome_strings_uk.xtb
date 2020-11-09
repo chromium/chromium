@@ -314,6 +314,7 @@
 <translation id="3285080554353377245">Відеоінструкції щодо користування веб-переглядачем Chrome</translation>
 <translation id="3288003805934695103">перезавантажити сторінку</translation>
 <translation id="32895400574683172">Сповіщення дозволено</translation>
+<translation id="3290991969712132877">Щоб швидше переходити на цю сторінку, додайте її на головний екран через кнопку "Більше опцій"</translation>
 <translation id="3295530008794733555">Шукайте швидше. Заощаджуйте трафік.</translation>
 <translation id="3298243779924642547">Спрощена</translation>
 <translation id="3303414029551471755">Завантажити вміст?</translation>
@@ -470,6 +471,7 @@
 <translation id="4532845899244822526">Вибрати папку</translation>
 <translation id="4538018662093857852">Увімкнути спрощений режим</translation>
 <translation id="4550003330909367850">Щоб переглядати та копіювати пароль тут, налаштуйте на цьому пристрої блокування екрана.</translation>
+<translation id="4557685098773234337">Щоб швидше переходити на цю сторінку, додайте її на головний екран</translation>
 <translation id="4558311620361989323">Комбінації клавіш для роботи з веб-сторінками</translation>
 <translation id="4561979708150884304">Немає з’єднання</translation>
 <translation id="4565377596337484307">Сховати пароль</translation>
@@ -499,6 +501,7 @@
 <translation id="4720982865791209136">Допоможіть покращити Chrome. <ph name="BEGIN_LINK" />Візьміть участь в опитуванні<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">Переглянути улюблені сайти</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
+<translation id="4732693703583195378">Щоб швидко відкривати цей сайт, додайте його на головний екран планшета</translation>
 <translation id="4738836084190194332">Остання синхронізація: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Відкрити нову вкладку</translation>
 <translation id="4759238208242260848">Завантаження</translation>
@@ -536,6 +539,7 @@
 <translation id="4925120120285606924">Знімок екрана: <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Ваші паролі буде експортовано й завантажено як текстовий файл. Цей файл зможуть переглядати всі користувачі й додатки, які мають доступ до папки, де його збережено.</translation>
 <translation id="4932247056774066048">Оскільки ви виходите з облікового запису, зареєстрованого в домені <ph name="DOMAIN_NAME" />, ваші дані Chrome буде видалено з цього пристрою. Вони залишаться у вашому обліковому записі Google.</translation>
+<translation id="4936039914467572121">Переходьте на цей сайт швидше</translation>
 <translation id="4943703118917034429">Віртуальна реальність</translation>
 <translation id="4943872375798546930">Не знайдено жодного результату</translation>
 <translation id="4961107849584082341">Перекладіть цю сторінку будь-якою мовою</translation>
@@ -647,6 +651,7 @@
 <translation id="5763382633136178763">Анонімні вкладки</translation>
 <translation id="5763514718066511291">Торкніться, щоб скопіювати URL-адресу цього додатка</translation>
 <translation id="5765780083710877561">Опис:</translation>
+<translation id="5767013862801005129">Відновлено вкладку <ph name="TAB_TITLE" /></translation>
 <translation id="5776970333778123608">Неважливі дані</translation>
 <translation id="5793665092639000975">Використано <ph name="SPACE_USED" /> з <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Пошук і перегляд</translation>
@@ -952,6 +957,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Повертайтеся пізніше, щоб переглянути останні новини</translation>
 <translation id="7791543448312431591">Додати</translation>
+<translation id="7798392620021911922">Відновлено стільки вкладок: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Ні, дякую</translation>
 <translation id="7810647596859435254">Відкрити за допомогою…</translation>
 <translation id="7821588508402923572">Тут буде вказано обсяг заощадженого трафіку</translation>
@@ -1137,6 +1143,7 @@
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Показати оригінал</translation>
 <translation id="9148126808321036104">Увійти знову</translation>
+<translation id="9149286894143103695">Щоб швидко відкривати цей сайт, додайте його на головний екран телефона</translation>
 <translation id="9155898266292537608">Можете також шукати, швидко торкнувшись слова</translation>
 <translation id="9169507124922466868">Історію навігації відкрито на половину висоти</translation>
 <translation id="9191031968346938109">Додати в…</translation>

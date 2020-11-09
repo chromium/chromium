@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Bulan ini</translation>
 <translation id="1637811476055996098">Pilih File</translation>
 <translation id="1650423536718072820">pullquote</translation>
+<translation id="1681022320378710418">waktu saat ini</translation>
 <translation id="1727886345390570319">sembunyikan menu subtitel</translation>
 <translation id="1729654308190250600">Jangan mengosongkan bidang alamat email.</translation>
 <translation id="1758486001363313524">Lainnya...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Masukkan URL.</translation>
 <translation id="3175736971608411871">timer</translation>
 <translation id="3199563858620722075">kotak kombo</translation>
+<translation id="3220661731597678625">langkah saat ini</translation>
 <translation id="3329013043687509092">Saturasi</translation>
 <translation id="3450233048674729344">Nilai harus lebih kecil atau sama dengan <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">definisi</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4812940957355064477">Masukkan nomor.</translation>
+<translation id="4912200001568447310">item saat ini</translation>
 <translation id="4912536737030637138">entri bibliografi</translation>
 <translation id="4915360478455618802">Tampilkan pemilih waktu</translation>
 <translation id="492244087561876220">komentar</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Tidak dapat memutar media.</translation>
 <translation id="537648784377940524">Tanggal Minimal (<ph name="MIN_DATE_OR_TIME" />) harus sebelum tanggal Maksimal (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">sosok</translation>
+<translation id="5425179576310518467">tanggal saat ini</translation>
 <translation id="5453733299334684579">item pohon</translation>
 <translation id="5466621249238537318">Pilih salah satu atau beberapa file.</translation>
 <translation id="5468998798572797635">keluar dari tampilan layar penuh</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">pengukur</translation>
 <translation id="6166809985690652833">penutup</translation>
 <translation id="6209276755895393898">Muncul sebagai: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">halaman saat ini</translation>
 <translation id="6213469881011901533">glosarium</translation>
 <translation id="6281588256137006900">Cahaya</translation>
 <translation id="6281763101136022427">url</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Perpanjang teks ini menjadi <ph name="MIN_CHARACTERS" /> karakter atau lebih (saat ini Anda menggunakan 1 karakter).</translation>
 <translation id="7034405885550056553">saran</translation>
 <translation id="709897737746224366">Sesuaikan dengan format yang diminta.</translation>
+<translation id="7102274145889307184">lokasi saat ini</translation>
 <translation id="7118469954320184356">Deskripsi tidak tersedia.</translation>
 <translation id="7139483182332611405">kata pengantar</translation>
 <translation id="7214187073215825913">informasi konten</translation>

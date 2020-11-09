@@ -77,7 +77,7 @@
 <translation id="4635770493235256822">מכשירים מרוחקים</translation>
 <translation id="4660011489602794167">הצגת מקלדת</translation>
 <translation id="4703799847237267011">‏הפעילות של Chromoting הסתיימה.</translation>
-<translation id="4741792197137897469">‏האימות נכשל. היכנס שוב ל-Chrome.</translation>
+<translation id="4741792197137897469">‏האימות נכשל. יש להיכנס שוב ל-Chrome.</translation>
 <translation id="4784508858340177375">‏המארח X קרס או שלא הופעל.</translation>
 <translation id="4798680868612952294">אפשרויות עכבר</translation>
 <translation id="4804818685124855865">נתק</translation>
@@ -123,7 +123,7 @@
 <translation id="6939719207673461467">הצגה/הסתרה של המקלדת.</translation>
 <translation id="6963936880795878952">‏החיבורים למחשב המרוחק חסומים באופן זמני משום שמישהו ניסה להתחבר אליו עם PIN לא חוקי. נסה שוב מאוחר יותר.</translation>
 <translation id="6965382102122355670">אישור</translation>
-<translation id="6985691951107243942">האם אתה בטוח שברצונך להשבית את החיבורים המרוחקים אל <ph name="HOSTNAME" />? אם תשנה את דעתך, יהיה עליך להיכנס למחשב זה כדי להפעיל מחדש את החיבורים.</translation>
+<translation id="6985691951107243942">ברצונך באמת להשבית את החיבורים המרוחקים אל <ph name="HOSTNAME" />? אם דעתך תשתנה, יהיה עליך להיכנס למחשב זה כדי להפעיל מחדש את החיבורים.</translation>
 <translation id="7019153418965365059">שגיאת מארח לא מזוהה: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">סיוע מרחוק</translation>
 <translation id="7026930240735156896">יש להגדיר את המחשב לגישה מרחוק בהתאם להוראות</translation>
@@ -146,7 +146,7 @@
 <translation id="7868137160098754906">יש להזין את קוד האימות עבור המחשב המרוחק.</translation>
 <translation id="7895403300744144251">מדיניות האבטחה במחשב המרוחק אינה מתירה חיבורים מהחשבון שלך.</translation>
 <translation id="7936528439960309876">עגינה לימין</translation>
-<translation id="7970576581263377361">‏האימות נכשל. היכנס שוב ל-Chromium.</translation>
+<translation id="7970576581263377361">‏האימות נכשל. יש להיכנס שוב ל-Chromium.</translation>
 <translation id="7981525049612125370">פג התוקף של ההפעלה המרוחקת.</translation>
 <translation id="8038111231936746805">(ברירת מחדל)</translation>
 <translation id="8041089156583427627"> שליחת משוב</translation>
@@ -175,7 +175,7 @@
 <translation id="8747048596626351634">‏ההפעלה קרסה או שלא התחילה. אם ‎~/.chrome-remote-desktop-session קיים במחשב המרוחק, יש לוודא שהוא מפעיל תהליך ארוך טווח בחזית. לדוגמה: סביבת המחשב או מנהל החלונות.</translation>
 <translation id="8804164990146287819">מדיניות פרטיות</translation>
 <translation id="9111855907838866522">התחברת למכשיר המרוחק שלך. כדי לפתוח את התפריט יש להקיש במסך עם ארבע אצבעות.</translation>
-<translation id="9126115402994542723">‏אל תבקש שוב PIN בעת התחברות למארח הזה ממכשיר זה.</translation>
+<translation id="9126115402994542723">‏אין לבקש שוב PIN בעת התחברות למארח הזה ממכשיר זה.</translation>
 <translation id="916856682307586697">‏הפעלת ה-XSession שמוגדר כברירת מחדל</translation>
 <translation id="9187628920394877737">מתן הרשאת 'הקלטת מסך' ל-<ph name="PRODUCT_NAME" /></translation>
 <translation id="9213184081240281106">תצורה לא חוקית של המארח.</translation>

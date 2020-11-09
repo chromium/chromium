@@ -94,13 +94,16 @@
 Допрете го микрофонот за да ме прашате нешто.</translation>
 <translation id="5222676887888702881">Одјави се</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">Изврши ги рутините повторно</translation>
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Може да изберете нова сега</translation>
 <translation id="5372659122375744710">WiFi мрежата не е безбедна</translation>
 <translation id="5401938042319910061">Изврши ги сите рутини</translation>
+<translation id="5431318178759467895">Боја</translation>
 <translation id="5457599981699367932">Прелистувај како гостин</translation>
 <translation id="54609108002486618">Управуван</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">Додај лице</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
 <translation id="6040143037577758943">Затвори</translation>
@@ -141,7 +144,6 @@
 <translation id="8364946094152050673">Празни сервери за име</translation>
 <translation id="8475690821716466388">Wi-Fi мрежата е обезбедена со слаб протокол WEP PSK</translation>
 <translation id="8477551185774834963">Латенцијата на DNS е малку над дозволениот праг</translation>
-<translation id="8668052347555487755">Режим во боја</translation>
 <translation id="871560550817059752">Неуспешно - нема мастило</translation>
 <translation id="8723108084122415655">Нестандардната мрежа е над прагот за латенција</translation>
 <translation id="8726019395068607495">Запрено - вратата е отворена</translation>

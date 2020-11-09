@@ -17,6 +17,7 @@
 <translation id="1369915414381695676">Сайт <ph name="SITE_NAME" /> додано</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1384959399684842514">Завантаження призупинено</translation>
+<translation id="1415402041810619267">URL-адресу скорочено</translation>
 <translation id="1431402976894535801">Блокувати сайтам інформацію про те, чи ви присутні</translation>
 <translation id="1446450296470737166">Повний контроль пристроїв MIDI</translation>
 <translation id="1509960214886564027">Функції на багатьох сайтах можуть не працювати</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">Дозволити сайтам відтворювати захищений вміст</translation>
 <translation id="4468959413250150279">Вимкнути звук для певного сайту.</translation>
 <translation id="4479647676395637221">Запитувати, перш ніж дозволити сайтам використовувати камеру (рекомендується)</translation>
+<translation id="4505788138578415521">URL-адресу розгорнуто</translation>
 <translation id="4534723447064627427">Щоб надати додатку <ph name="APP_NAME" /> доступ до мікрофона, також увімкніть його в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
 <translation id="4570913071927164677">Деталі</translation>
 <translation id="4645575059429386691">Керується одним із батьків</translation>

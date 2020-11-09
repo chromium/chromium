@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Tháng này</translation>
 <translation id="1637811476055996098">Chọn tệp</translation>
 <translation id="1650423536718072820">đoạn trích dẫn</translation>
+<translation id="1681022320378710418">thời gian hiện tại</translation>
 <translation id="1727886345390570319">ẩn menu phụ đề chi tiết</translation>
 <translation id="1729654308190250600">Vui lòng nhập địa chỉ email không trống.</translation>
 <translation id="1758486001363313524">Khác...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Vui lòng nhập URL.</translation>
 <translation id="3175736971608411871">bộ tính giờ</translation>
 <translation id="3199563858620722075">hộp kết hợp</translation>
+<translation id="3220661731597678625">bước hiện tại</translation>
 <translation id="3329013043687509092">Độ bão hòa</translation>
 <translation id="3450233048674729344">Giá trị phải nhỏ hơn hoặc bằng <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">định nghĩa</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4812940957355064477">Vui lòng nhập một số.</translation>
+<translation id="4912200001568447310">mục hiện tại</translation>
 <translation id="4912536737030637138">mục nhập danh mục</translation>
 <translation id="4915360478455618802">Hiển thị bộ chọn giờ</translation>
 <translation id="492244087561876220">nhận xét</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Không thể phát nội dung đa phương tiện.</translation>
 <translation id="537648784377940524">Ngày tối thiểu (<ph name="MIN_DATE_OR_TIME" />) phải trước ngày tối đa (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">hình dáng</translation>
+<translation id="5425179576310518467">ngày hiện tại</translation>
 <translation id="5453733299334684579">mục dạng cây</translation>
 <translation id="5466621249238537318">Vui lòng chọn một hoặc nhiều tệp.</translation>
 <translation id="5468998798572797635">thoát khỏi chế độ toàn màn hình</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">thước đo</translation>
 <translation id="6166809985690652833">lời bạt</translation>
 <translation id="6209276755895393898">Có vẻ như là: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">trang hiện tại</translation>
 <translation id="6213469881011901533">bảng thuật ngữ</translation>
 <translation id="6281588256137006900">Độ sáng</translation>
 <translation id="6281763101136022427">url</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Vui lòng kéo dài văn bản này thành <ph name="MIN_CHARACTERS" /> ký tự trở lên (bạn hiện đang sử dụng 1 ký tự).</translation>
 <translation id="7034405885550056553">đề xuất</translation>
 <translation id="709897737746224366">Vui lòng khớp với định dạng được yêu cầu.</translation>
+<translation id="7102274145889307184">vị trí hiện tại</translation>
 <translation id="7118469954320184356">Không có nội dung mô tả.</translation>
 <translation id="7139483182332611405">lời nói đầu</translation>
 <translation id="7214187073215825913">thông tin về nội dung</translation>

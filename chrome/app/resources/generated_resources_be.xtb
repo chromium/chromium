@@ -1782,7 +1782,6 @@
 <translation id="3029466929721441205">Паказваць інструменты для пяра на паліцы</translation>
 <translation id="3031417829280473749">Агент X</translation>
 <translation id="3031557471081358569">Выберыце, што імпартаваць:</translation>
-<translation id="3036041939445522540">Няма даступных кантактаў</translation>
 <translation id="3036327949511794916">Тэрмін вяртання прылады <ph name="DEVICE_TYPE" /> мінуў.</translation>
 <translation id="3036546437875325427">Уключыць Flash</translation>
 <translation id="3037754279345160234">Не ўдалося прааналізаваць канфігурацыю, каб далучыцца да дамена. Звярніцеся да адміністратара.</translation>
@@ -4639,7 +4638,6 @@
 <translation id="6445450263907939268">Калі вам гэтыя змены непатрэбныя, можна аднавіць папярэднія налады.</translation>
 <translation id="6447842834002726250">Файлы cookie</translation>
 <translation id="6450876761651513209">Змяніць налады, звязаныя з прыватнасцю</translation>
-<translation id="6451180435462401570">Кіраваць прыладамі Cloud Print</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> і яшчэ адна ўкладка}one{<ph name="PAGE_TITLE" /> і яшчэ # укладка}few{<ph name="PAGE_TITLE" /> і яшчэ # укладкі}many{<ph name="PAGE_TITLE" /> і яшчэ # укладак}other{<ph name="PAGE_TITLE" /> і яшчэ # укладкі}}</translation>
 <translation id="6451689256222386810">Калі вы забылі фразу-пароль або хочаце змяніць гэту наладу, <ph name="BEGIN_LINK" />скіньце сінхранізацыю<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Адхіліць</translation>
@@ -4946,8 +4944,6 @@
 <translation id="6824584962142919697">&amp;Праверыць элементы</translation>
 <translation id="6825184156888454064">Сартаваць па назве</translation>
 <translation id="6826872289184051766">Спраўдзіць праз USB</translation>
-<translation id="6827487342470222762">Няма даступных кантактаў. Каб выкарыстоўваць функцыю "Абагульванне паблізу" са сваімі кантактамі, дадайце ў кантакты адрасы электроннай пошты, звязаныя з іх Уліковымі запісамі Google.</translation>
-<translation id="6827623133556594466">Пасля 31 снежня 2020 г. Google Cloud Print падтрымлівацца не будзе. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Дазволіць уваход толькі наступным карыстальнікам:</translation>
 <translation id="6828182567531805778">Для сінхранізацыі даных увядзіце фразу-пароль</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5878,7 +5874,6 @@
 <translation id="7893008570150657497">Доступ да фота, музыкі і іншых файлаў мультымедыя на камп'ютары</translation>
 <translation id="7893153962594818789">Bluetooth выключаны на гэтай прыладзе <ph name="DEVICE_TYPE" />. Увядзіце пароль і ўключыце Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (стандартна)</translation>
-<translation id="7897865097438730075">Пасля 31 снежня Google Cloud Print падтрымлівацца не будзе. Звярніцеся да адміністратара.</translation>
 <translation id="7897900149154324287">У далейшым не забывайце адключаць здымную прыладу праз праграму "Файлы", перад тым як вымаць яе, інакш вы можаце страціць даныя.</translation>
 <translation id="7898627924844766532">Пакінуць у панэлі інструментаў</translation>
 <translation id="7898725031477653577">Заўсёды перакладаць</translation>
@@ -6028,7 +6023,6 @@
 <translation id="8054563304616131773">Увядзіце сапраўдны адрас электроннай пошты</translation>
 <translation id="8054921503121346576">Падключана USB-клавіятура</translation>
 <translation id="8058655154417507695">Год заканчэння тэрміну дзеяння</translation>
-<translation id="8058811362315390556">Пасля 31 снежня Google Cloud Print падтрымлівацца не будзе</translation>
 <translation id="8059417245945632445">&amp;Праверыць прылады</translation>
 <translation id="8059456211585183827">Няма даступных прынтараў, якія можна захаваць.</translation>
 <translation id="8061091456562007989">Вярнуць ранейшыя налады</translation>
@@ -6141,7 +6135,6 @@
 <translation id="8184288427634747179">Пераключыцца на профіль <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Дадатковая інфармацыя</translation>
 <translation id="8184472985242519288">Аднастайны</translation>
-<translation id="8185331656081929126">Паказваць апавяшчэнне, калі ў сетцы выяўлены новы прынтар</translation>
 <translation id="8186609076106987817">Сервер не знайшоў файл.</translation>
 <translation id="8188389033983459049">Каб працягнуць, праверце налады прылады і ўключыце яе</translation>
 <translation id="8190193592390505034">Ідзе падключэнне да правайдара <ph name="PROVIDER_NAME" /></translation>

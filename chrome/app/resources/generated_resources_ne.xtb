@@ -1775,7 +1775,6 @@
 <translation id="3029466929721441205">सेल्फमा स्टाइलसका उपकरणहरू देखाइयोस्</translation>
 <translation id="3031417829280473749">एजेन्ट एक्स</translation>
 <translation id="3031557471081358569">आयात गर्नका लागि वस्तुहरू चयन गर्नुहोस्:</translation>
-<translation id="3036041939445522540">सम्पर्क सूचीमा कोही पनि हुनुहुन्न</translation>
 <translation id="3036327949511794916">यो <ph name="DEVICE_TYPE" /> फिर्ता गर्ने म्याद सकिएको छ।</translation>
 <translation id="3036546437875325427">फ्ल्यास सक्षम पार्नुहोस्</translation>
 <translation id="3037754279345160234">डोमेनमा सामेल हुन कन्फिगुरेसनलाई पार्स गर्न सकिँदैन। कृपया आफ्ना प्रशासकसँग सम्पर्क गर्नुहोस्।</translation>
@@ -4628,7 +4627,6 @@
 <translation id="6445450263907939268">यदि तप</translation>
 <translation id="6447842834002726250">कुकीहरू</translation>
 <translation id="6450876761651513209">आफ्नो गोपनीयता सम्बन्धित सेटिङहरू परिवर्तन गर्नुहोस्</translation>
-<translation id="6451180435462401570">क्लाउडका प्रिन्ट सम्बन्धी यन्त्रहरूको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> र अन्य १ ट्याब}other{<ph name="PAGE_TITLE" /> र अन्य # ट्याबहरू}}</translation>
 <translation id="6451689256222386810">तपाईँले आफ्नो पासफ्रेज बिर्सनुभयो वा यस सेटिङलाई परिवर्तन गर्न चाहनुहुन्छ भने <ph name="BEGIN_LINK" />सिंकलाई रिसेट गर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="6452181791372256707">अस्वीकार</translation>
@@ -4934,8 +4932,6 @@
 <translation id="6824584962142919697">तत्त्वहरूको निरीक्षण गर्नुहोस्</translation>
 <translation id="6825184156888454064">नामअनुसार क्रमबद्ध गर्नुहोस्</translation>
 <translation id="6826872289184051766">USB मार्फत पुष्टि गर्नुहोस्</translation>
-<translation id="6827487342470222762">सम्पर्क सूचीमा कोही पनि हुनुहुन्न। नजिकैका यन्त्रसँग सेयर गर्ने सुविधा प्रयोग गरी आफ्नो सम्पर्क सूचीमा भएका मान्छेहरूसँग सेयर गर्न आफ्नो सम्पर्क सूचीमा उनीहरूको Google खातामा लिंक गरिएको इमेल ठेगाना हाल्नुहोस्।</translation>
-<translation id="6827623133556594466">डिसेम्बर ३१ पछि Google Cloud Print सेवा प्रयोग गर्न पाइने छैन। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">निम्न प्रयोगकर्ता साइन इन प्रतिबन्धित गर्नुहोस्ः</translation>
 <translation id="6828182567531805778">आफ्नो डेटा सिंक गर्न आफ्नो पासफ्रेज प्रविष्टि गर्नुहोस्</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5862,7 +5858,6 @@
 <translation id="7893008570150657497">तपाइँको कम्प्युटरबाट तस्बिरहरू, सङ्गीत, र हन्य मिडिया पहुँच गर्नुहोस्</translation>
 <translation id="7893153962594818789">यस <ph name="DEVICE_TYPE" /> मा ब्लुटुथ निष्क्रिय छ। आफ्नो पासवर्ड प्रविष्टि गर्नुहोस् र ब्लुटुथ सक्रिय गर्नुहोस्।</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (पूर्वनिर्धारित)</translation>
-<translation id="7897865097438730075">डिसेम्बर ३१ पछि Google Cloud Print सेवा प्रयोग गर्न पाइने छैन। आफ्ना एड्मिनसँग सम्पर्क गर्नुहोस्।</translation>
 <translation id="7897900149154324287">भविष्यमा, तपाईंको हटाउन सकिने यन्त्रलाई अनप्लग गर्नुभन्दा अगाडि यसलाई फाइलहरू एपमा निश्चित रूपमा निकाल्नुहोस्।</translation>
 <translation id="7898627924844766532">उपकरणपट्टीमा राख्नुहोस्</translation>
 <translation id="7898725031477653577">सधैं अनुवाद गर्नुहोस्</translation>
@@ -6012,7 +6007,6 @@
 <translation id="8054563304616131773">एउटा मान्य इमेल ठेगाना प्रविष्टि गर्नुहोस्</translation>
 <translation id="8054921503121346576">युएसबी कुञ्जीपाट जडित</translation>
 <translation id="8058655154417507695">म्याद सकिने वर्ष</translation>
-<translation id="8058811362315390556">डिसेम्बर ३१ पछि Google Cloud Print सेवा प्रयोग गर्न पाइने छैन</translation>
 <translation id="8059417245945632445">यन्त्रहरू &amp;निरीक्षण गर्नुहोस्</translation>
 <translation id="8059456211585183827">सुरक्षित गर्नका लागि कुनै पनि प्रिन्टर उपलब्ध छैन।</translation>
 <translation id="8061091456562007989">यसलाई परिवर्तन गरी पहिलेको जस्तै बनाउनुहोस्</translation>
@@ -6122,7 +6116,6 @@
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> मा बदल्नुहोस्</translation>
 <translation id="8184318863960255706">थप जानकारी</translation>
 <translation id="8184472985242519288">एकरूपता</translation>
-<translation id="8185331656081929126">नेटवर्कमा नयाँ प्रिन्टरहरू पत्ता लाग्दा सूचनाहरू देखाउनुहोस्</translation>
 <translation id="8186609076106987817">सर्भरले फाइल फेला पार्न सकेन।</translation>
 <translation id="8188389033983459049">आफ्नो यन्त्रको सेटिङको जाँच गर्नुहोस् र जारी राख्न यसलाई सक्रिय गर्नुहोस्</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> मा जोडिदैं</translation>

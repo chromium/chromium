@@ -312,6 +312,7 @@
 <translation id="214556005048008348">取消付款</translation>
 <translation id="2147827593068025794">背景同步處理</translation>
 <translation id="2148613324460538318">新增卡片</translation>
+<translation id="2149968176347646218">連線不安全</translation>
 <translation id="2154054054215849342">你的網域無法使用同步功能</translation>
 <translation id="2154484045852737596">編輯卡片資訊</translation>
 <translation id="2161656808144014275">文字</translation>
@@ -1158,6 +1159,7 @@
 <translation id="5571083550517324815">無法在這個地址取件，請改用其他地址。</translation>
 <translation id="5580958916614886209">請檢查信用卡到期月份，然後再試一次</translation>
 <translation id="5586446728396275693">沒有已儲存的地址</translation>
+<translation id="5593349413089863479">連線可能有安全漏洞</translation>
 <translation id="5595485650161345191">編輯地址</translation>
 <translation id="5598944008576757369">選擇付款方式</translation>
 <translation id="560412284261940334">系統不支援管理</translation>

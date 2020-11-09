@@ -4,7 +4,6 @@
 <translation id="1000498691615767391">திறப்பதற்கு ஒரு கோப்புறையைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="1023220960495960452">ஒலிபெயர்ப்பு (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">ஸ்லைடு காட்சி</translation>
-<translation id="1045157690796831147">ஒலிபெயர்ப்பு (namaskar → നമസ്കാരം)</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> உருப்படிகளை நீக்குகிறது...</translation>
 <translation id="1049926623896334335">Word document</translation>
 <translation id="1060368002126861100">கோப்புகளை <ph name="APP_NAME" /> ஆப்ஸில் திறக்க, முதலில் அவற்றை Windows கோப்புகள் கோப்புறைக்கு நகர்த்தவும்.</translation>
@@ -31,7 +30,6 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">Google இயக்ககம் இப்போது கிடைக்கவில்லை. Google இயக்ககம் இணைப்பு கிடைத்தவுடன் பதிவேற்றம் தானாகவே மறுதொடக்கம் செய்யப்படும்.</translation>
 <translation id="1307931752636661898">Linux கோப்புகளைப் பார்க்க முடியவில்லை</translation>
-<translation id="1310751437842832374">ஒலிபெயர்ப்பு (mausam → ନମସ୍ତେ)</translation>
 <translation id="1338950911836659113">நீக்குகிறது...</translation>
 <translation id="1346748346194534595">வலது</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> கோப்புகளைப் பதிவிறக்குகிறது...</translation>
@@ -46,7 +44,6 @@
 <translation id="1435838927755162558">Parallels Desktop மூலம் கோப்புறையைப் பகிருங்கள்</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" />க்கு நகர்த்தப்பட்டது.</translation>
 <translation id="1441841714100794440">வியட்நாமிய விசைப்பலகை (டெலெக்ஸ்)</translation>
-<translation id="1455548678241328678">நார்வேஜியன் விசைப்பலகை</translation>
 <translation id="1464724975715666883">1 பிழை.</translation>
 <translation id="1467432559032391204">இடது</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" ஏற்றப்படவில்லை. உங்கள் Google இயக்ககத்தில் போதுமான காலியிடம் இல்லை.</translation>
@@ -102,7 +99,6 @@
 <translation id="2084108471225856927">சாதன அமைப்புகள்</translation>
 <translation id="2085470240340828803">"<ph name="FILENAME" />" எனப் பெயரிடப்பட்ட கோப்பானது ஏற்கனவே உள்ளது. என்ன செய்ய விரும்புகிறீர்கள்?</translation>
 <translation id="2121825465123208577">அளவு மாற்று</translation>
-<translation id="2136953289241069843">ஒலிபெயர்ப்பு (namaste → नमस्कार)</translation>
 <translation id="2163152940313951844">செல்லாத எழுத்து: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">வியட்நாமிய விசைப்பலகை (TCVN)</translation>
 <translation id="2168214441502403371">பெர்சியன் விசைப்பலகை</translation>
@@ -206,7 +202,6 @@
 <translation id="3338239663705455570">ஸ்லோவேனியன் விசைப்பலகை</translation>
 <translation id="3353984535370177728">பதிவேற்ற கோப்புறையைத் தேர்வுசெய்யவும்</translation>
 <translation id="3356580349448036450">முடிந்தது</translation>
-<translation id="3399597614303179694">மாஸிடோனியன் விசைப்பலகை</translation>
 <translation id="3414856743105198592">அகற்றத்தக்க மீடியாவை வடிவமைப்பதானது எல்லா தரவையும் அழிக்கும். தொடர விரும்புகிறீர்களா?</translation>
 <translation id="3437801641691368414">உருவாக்கிய நேரம்</translation>
 <translation id="3466147780910026086">உங்கள் மீடியா சாதனத்தை ஸ்கேன் செய்கிறது...</translation>
@@ -232,7 +227,6 @@
 <translation id="3644896802912593514">அகலம்</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> கோப்புகள்/கோப்பகங்கள் நகர்த்தப்பட்டன.</translation>
 <translation id="3645531960514756307">கோப்புறையைப் பிரித்தெடு</translation>
-<translation id="3678559383040232393">மால்டீஸ் விசைப்பலகை</translation>
 <translation id="3685122418104378273">மொபைல் டேட்டாவைப் பயன்படுத்தும்போது, இயல்புநிலையாகவே Google இயக்கக ஒத்திசைவு முடக்கப்பட்டுள்ளது.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ரத்துசெய்யப்படும்.</translation>
 <translation id="3726463242007121105">இந்த சாதனத்தின் கோப்புமுறைமை ஆதரிக்கப்படாததால், இந்த சாதனத்தை திறக்க முடியவில்லை.</translation>
@@ -248,7 +242,6 @@
 <translation id="3810973564298564668">நிர்வகி</translation>
 <translation id="3811494700605067549">1 கோப்பு தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="3815016854028376614">சூயின் உள்ளீட்டு முறை</translation>
-<translation id="3825863595139017598">மங்கோலியன் விசைப்பலகை</translation>
 <translation id="38275787300541712">முடிந்ததும், Enter அழுத்துக</translation>
 <translation id="3830674330436234648">பிளேபேக் இல்லை</translation>
 <translation id="3833761542219863804">ஒலிபெயர்ப்பு (mausam → ਮੌਸਮ)</translation>
@@ -257,7 +250,6 @@
 <translation id="3855472144336161447">ஜெர்மன் நியோ 2</translation>
 <translation id="386548886866354912"><ph name="EXTENSION_NAME" /> மூலம் தொகுப்பாக்கு</translation>
 <translation id="3866249974567520381">விவரம்</translation>
-<translation id="391445228316373457">லாவோ விசைப்பலகை (ஒலிப்புமுறை)</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">இதில் இயக்கு</translation>
 <translation id="3943857333388298514">ஒட்டு</translation>
@@ -346,7 +338,6 @@
 <translation id="4943368462779413526">கால்பந்து</translation>
 <translation id="4961158930123534723">1 கோப்புறை Parallels Desktop உடன் பகிரப்பட்டது</translation>
 <translation id="4969785127455456148">ஆல்பம்</translation>
-<translation id="497244430928947428">மலையாள விசைப்பலகை (ஒலிப்புமுறை)</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> அல்லது அதற்குக் குறைவான எழுத்துக்குறிகள் உள்ள பெயரைப் பயன்படுத்தவும்</translation>
 <translation id="4973970068702235170">ஜிப் செய்ய முடியவில்லை, எதிர்பாராத பிழை: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4988205478593450158">"<ph name="FILE_NAME" />"ஐ நிச்சயமாக நீக்க விரும்புகிறீர்களா?</translation>
@@ -411,7 +402,6 @@
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> என்பதற்கான தேடல் முடிவுகள் எதுவும் கிடைக்கவில்லை.</translation>
 <translation id="5449551289610225147">தவறான கடவுச்சொல்</translation>
 <translation id="5464696796438641524">போலிஷ் விசைப்பலகை</translation>
-<translation id="5465122519792752163">நேபாள விசைப்பலகை (இன்ஸ்கிரிப்ட்)</translation>
 <translation id="5469868506864199649">இத்தாலியன்</translation>
 <translation id="5484429245813572665">இந்தோனேஷியன்</translation>
 <translation id="5494920125229734069">எல்லாவற்றையும் தேர்ந்தெடு</translation>

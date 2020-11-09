@@ -264,6 +264,7 @@
 <translation id="1300415640239881824">La validation de l'identité de votre appareil est requise pour le site <ph name="DOMAIN" /> afin que Google puisse déterminer si vous pouvez bénéficier d'une lecture améliorée des contenus protégés.</translation>
 <translation id="1300806585489372370">Pour modifier ce paramètre, commencez par <ph name="BEGIN_LINK" />activer les identifiants<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080">Le site <ph name="ORIGIN" /> peut modifier les fichiers suivants</translation>
+<translation id="1302139669997477151">Capture d'écran bloquée</translation>
 <translation id="1302227299132585524">Autoriser JavaScript dans les événements AppleScript</translation>
 <translation id="1303101771013849280">Ajouter le fichier HTML aux favoris</translation>
 <translation id="1303671224831497365">Aucun appareil Bluetooth détecté</translation>
@@ -311,6 +312,7 @@
 <translation id="1353686479385938207">"<ph name="PROVIDER_NAME" />" : "<ph name="NETWORK_NAME" />"</translation>
 <translation id="1353980523955420967">Impossible de trouver le fichier PPD. Vérifiez que votre Chromebook est connecté, puis réessayez.</translation>
 <translation id="1354045473509304750">Continuer d'autoriser <ph name="HOST" /> à utiliser et bouger la caméra</translation>
+<translation id="1355088139103479645">Supprimer toutes les données ?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> est bloqué</translation>
 <translation id="1358741672408003399">Grammaire et orthographe</translation>
 <translation id="1359923111303110318">Votre appareil peut être déverrouillé avec Smart Lock. Appuyez sur Entrée pour le déverrouiller.</translation>
@@ -494,6 +496,7 @@
 <translation id="1553538517812678578">sans limite</translation>
 <translation id="1554390798506296774">Toujours autoriser l'exécution hors bac à sable des plug-ins sur <ph name="HOST" /></translation>
 <translation id="1555130319947370107">Bleu</translation>
+<translation id="1556302226221634923">Personnes qui acceptent que vous les voyiez lorsque leur écran est déverrouillé et appareils à proximité lorsque le Partage à proximité est activé</translation>
 <translation id="1556537182262721003">Impossible de déplacer le répertoire d'extensions dans le profil.</translation>
 <translation id="155865706765934889">Pavé tactile</translation>
 <translation id="1562119309884184621">L'ajout de ce contact sera mémorisé pour leur prochain partage</translation>
@@ -1274,6 +1277,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2457246892030921239">"<ph name="APP_NAME" />" souhaite copier des fichiers depuis "<ph name="VOLUME_NAME" />".</translation>
 <translation id="2458379781610688953">Mettre à jour le compte, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Le jeton de gestion des appareils n'est pas valide.</translation>
+<translation id="2459703812219683497">Code d'activation détecté</translation>
 <translation id="2462724976360937186">ID de clé de l'autorité de certification</translation>
 <translation id="2462752602710430187">L'imprimante <ph name="PRINTER_NAME" /> a bien été ajoutée.</translation>
 <translation id="2464089476039395325">Proxy HTTP</translation>
@@ -1778,7 +1782,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3029466929721441205">Afficher les outils de stylet sur l'étagère</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031557471081358569">Sélectionnez les éléments à importer :</translation>
-<translation id="3036041939445522540">Aucun contact disponible</translation>
 <translation id="3036327949511794916">Le délai de retour de ce <ph name="DEVICE_TYPE" /> a expiré.</translation>
 <translation id="3036546437875325427">Activer Flash</translation>
 <translation id="3037754279345160234">Impossible d'analyser la configuration d'association de l'appareil au domaine. Veuillez contacter votre administrateur.</translation>
@@ -2071,6 +2074,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3413122095806433232">Émetteurs de l'autorité de certification : <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Taille :</translation>
 <translation id="3416468988018290825">Toujours afficher les URL en entier</translation>
+<translation id="3417835166382867856">Rechercher un onglet</translation>
 <translation id="3417836307470882032">Système horaire sur 24 heures</translation>
 <translation id="3420501302812554910">Une réinitialisation est requise pour la clé de sécurité interne</translation>
 <translation id="3421376478111338173">{COUNT,plural, =1{1 image}one{# image}other{# images}}</translation>
@@ -2104,6 +2108,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3441653493275994384">Écran</translation>
 <translation id="3441663102605358937">Connectez-vous de nouveau à <ph name="ACCOUNT" /> pour valider ce compte</translation>
 <translation id="3445047461171030979">Réponses rapides sur l'Assistant Google</translation>
+<translation id="3445770710327978113">Pour revenir ici rapidement, installez cette application</translation>
 <translation id="3445925074670675829">Appareil USB de type C</translation>
 <translation id="3446274660183028131">Veuillez lancer Parallels Desktop pour installer Windows.</translation>
 <translation id="344630545793878684">Lire vos données sur plusieurs sites web</translation>
@@ -4634,7 +4639,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6445450263907939268">Si vous ne souhaitiez pas effectuer ces modifications, vous pouvez restaurer les paramètres précédents.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6450876761651513209">Modifier vos paramètres de confidentialité</translation>
-<translation id="6451180435462401570">Gérer les appareils Google Cloud Print</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> et 1 autre onglet}one{<ph name="PAGE_TITLE" /> et # autre onglet}other{<ph name="PAGE_TITLE" /> et # autres onglets}}</translation>
 <translation id="6451689256222386810">Si vous avez oublié votre phrase secrète, ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchronisation<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Refuser</translation>
@@ -4780,6 +4784,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6624687053722465643">Cupcake</translation>
 <translation id="6628328486509726751">Date et heure d'importation : <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630752851777525409">Une demande d'accès permanent à un certificat pour s'authentifier en votre nom a été initiée pour l'extension "<ph name="EXTENSION_NAME" />".</translation>
+<translation id="6630956688541588659">Tous les contacts à proximité lorsque votre écran est déverrouillé et les appareils à proximité lorsque le Partage à proximité est activé</translation>
 <translation id="6635944431854494329">Le propriétaire peut contrôler cette fonctionnalité dans Paramètres &gt; Paramètres avancés &gt; Envoyer automatiquement des données de diagnostic et d'utilisation à Google.</translation>
 <translation id="6635956300022133031">Sélectionner et personnaliser les voix de la synthèse vocale</translation>
 <translation id="6636588250634969791">Insérez une carte SIM avant de continuer</translation>
@@ -4940,8 +4945,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6824584962142919697">&amp;Examiner les éléments</translation>
 <translation id="6825184156888454064">Trier par nom</translation>
 <translation id="6826872289184051766">Valider via USB</translation>
-<translation id="6827487342470222762">Aucun contact n'est disponible. Pour utiliser le Partage à proximité avec vos contacts, ajoutez à ceux-ci l'adresse e-mail associée à leur compte Google.</translation>
-<translation id="6827623133556594466">Google Cloud Print ne sera plus disponible après le 31 décembre. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Autoriser uniquement les utilisateurs suivants à se connecter :</translation>
 <translation id="6828182567531805778">Saisissez votre phrase secrète pour synchroniser vos données.</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5055,6 +5058,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6955535239952325894">Ce paramètre est désactivé sur les navigateurs gérés</translation>
 <translation id="6957044667612803194">Cette clé de sécurité n'accepte pas les codes d'identification personnels</translation>
 <translation id="6957231940976260713">Nom du service</translation>
+<translation id="696103774840402661">L'ensemble des fichiers et des données locales de tous les utilisateurs sur cet appareil (<ph name="DEVICE_TYPE" />) ont été supprimés définitivement.</translation>
 <translation id="6964390816189577014">Héros</translation>
 <translation id="6964760285928603117">Retirer du groupe</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -5245,6 +5249,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7180865173735832675">Personnaliser</translation>
 <translation id="7182791023900310535">Transférer votre mot de passe</translation>
+<translation id="7185907299184016376">Contacts sélectionnés à proximité lorsque votre écran est déverrouillé et appareils à proximité lorsque le Partage à proximité est activé</translation>
 <translation id="7186088072322679094">Garder dans la barre d'outils</translation>
 <translation id="7187428571767585875">Entrées de registre à supprimer ou à modifier :</translation>
 <translation id="7187855807420906517">Lorsque vous quittez des sites ou passez hors connexion, la synchronisation des sites se poursuit généralement afin de terminer certaines tâches, comme télécharger des photos ou envoyer un message de chat</translation>
@@ -5411,6 +5416,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7380622428988553498">Le nom de l'appareil comporte des caractères non valides</translation>
 <translation id="7380768571499464492">L'imprimante "<ph name="PRINTER_NAME" />" a bien été mise à jour</translation>
 <translation id="7384687527486377545">Répétition automatique du clavier</translation>
+<translation id="7385490373498027129">L'ensemble des fichiers et des données locales de tous les utilisateurs sur cet appareil (<ph name="DEVICE_TYPE" />) seront supprimés définitivement.</translation>
 <translation id="7385854874724088939">Erreur lors de la tentative d'impression. Vérifiez votre imprimante et réessayez.</translation>
 <translation id="7385896526023870365">Cette extension n'a accès à aucun site supplémentaire.</translation>
 <translation id="7388044238629873883">Vous avez presque terminé !</translation>
@@ -5677,6 +5683,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7691077781194517083">Impossible de réinitialiser cette clé de sécurité. Erreur <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Mise à niveau de Crostini</translation>
 <translation id="7696063401938172191">Sur votre <ph name="PHONE_NAME" /> :</translation>
+<translation id="7697598343108519171">Scanner le code QR à l'aide de la caméra</translation>
 <translation id="7699968112832915395">Impossible d'ajouter le compte</translation>
 <translation id="7701040980221191251">Rien</translation>
 <translation id="7701869757853594372">Handles utilisateur</translation>
@@ -5868,7 +5875,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7893008570150657497">accéder aux photos, titres et autres médias de votre ordinateur ;</translation>
 <translation id="7893153962594818789">Le Bluetooth est désactivé sur ce <ph name="DEVICE_TYPE" />. Saisissez votre mot de passe et activez le Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (par défaut)</translation>
-<translation id="7897865097438730075">Google Cloud Print ne sera plus disponible après le 31 décembre. Contactez votre administrateur.</translation>
 <translation id="7897900149154324287">À l'avenir, assurez-vous d'éjecter votre appareil amovible via l'application Fichiers avant de le retirer afin d'éviter toute perte de données.</translation>
 <translation id="7898627924844766532">Garder dans la barre d'outils</translation>
 <translation id="7898725031477653577">Toujours traduire</translation>
@@ -6019,11 +6025,11 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8054563304616131773">Veuillez indiquer une adresse e-mail valide.</translation>
 <translation id="8054921503121346576">Clavier USB connecté.</translation>
 <translation id="8058655154417507695">Année d'expiration</translation>
-<translation id="8058811362315390556">Google Cloud Print ne sera plus disponible après le 31 décembre</translation>
 <translation id="8059417245945632445">&amp;Inspecter les appareils</translation>
 <translation id="8059456211585183827">Aucune imprimante ne peut être enregistrée.</translation>
 <translation id="8061091456562007989">Rétablir les anciens paramètres</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 feuille de papier}one{{COUNT} feuille de papier}other{{COUNT} feuilles de papier}}</translation>
+<translation id="8062879968880283306">Scannez le code QR à l'aide de la caméra de votre appareil ou saisissez le code d'activation fourni par votre opérateur.</translation>
 <translation id="8063235345342641131">Avatar vert par défaut</translation>
 <translation id="8063535366119089408">Afficher le fichier</translation>
 <translation id="8064279191081105977">Groupe <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -6115,6 +6121,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Déplacer l'onglet vers une nouvelle fenêtre}one{Déplacer l'onglet vers une nouvelle fenêtre}other{Déplacer les onglets vers une nouvelle fenêtre}}</translation>
 <translation id="8165997195302308593">Transfert de port Crostini</translation>
 <translation id="8168435359814927499">Contenu</translation>
+<translation id="8169165065843881617">{NUM_TABS,plural, =1{Ajouter l'onglet à la liste de lecture}one{Ajouter l'onglet à la liste de lecture}other{Ajouter les onglets à la liste de lecture}}</translation>
 <translation id="8174047975335711832">Informations sur l'appareil</translation>
 <translation id="8174876712881364124">Sauvegarder dans Google Drive. Restaurez des données ou changez d'appareil facilement et à tout moment. La sauvegarde inclut les données d'applications. Les sauvegardes sont importées dans Google et chiffrées à l'aide du mot de passe du compte Google de votre enfant. <ph name="BEGIN_LINK1" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="8176332201990304395">Rose et blanc</translation>
@@ -6124,12 +6131,12 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" dispose d'un droit d'accès en lecture/écriture sur les images, les vidéos et les fichiers audio figurant aux emplacements indiqués.</translation>
 <translation id="8181215761849004992">Impossible d'effectuer l'association au domaine. Vérifiez dans votre compte si vous disposez de droits suffisants pour ajouter des appareils.</translation>
 <translation id="8182105986296479640">L'application ne répond pas.</translation>
+<translation id="8182412589359523143">Pour supprimer toutes les données de cet <ph name="DEVICE_TYPE" />, <ph name="BEGIN_LINK" />cliquez ici<ph name="END_LINK" />.</translation>
 <translation id="8182664696082410784"><ph name="REASON" />
     Je ne pense pas que ce site devrait être bloqué.</translation>
 <translation id="8184288427634747179">Passer à <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Plus d'infos</translation>
 <translation id="8184472985242519288">Uniforme</translation>
-<translation id="8185331656081929126">Afficher des notifications lorsque de nouvelles imprimantes sont détectées sur le réseau</translation>
 <translation id="8186609076106987817">Impossible de trouver le fichier sur le serveur.</translation>
 <translation id="8188389033983459049">Activez le Bluetooth dans les paramètres de votre appareil pour continuer</translation>
 <translation id="8190193592390505034">Connexion à <ph name="PROVIDER_NAME" /></translation>
@@ -6383,6 +6390,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8498395510292172881">Poursuivre la lecture dans Chrome</translation>
 <translation id="8500234928660943538">Clé PUK incorrecte. Il vous reste <ph name="RETRIES" /> tentative(s).</translation>
 <translation id="8502536196501630039">Pour utiliser des applications de Google Play, vous devez d'abord restaurer vos applications. Certaines données peuvent avoir été perdues.</translation>
+<translation id="850314194061055138">utiliser de nouveau la caméra</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8504640708321980506">Données mobiles</translation>
 <translation id="8507227974644337342">Résolution d'écran</translation>
@@ -6440,6 +6448,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8574990355410201600">Toujours activer le son sur <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Maintenez la touche <ph name="KEY_EQUIVALENT" /> enfoncée pour quitter</translation>
 <translation id="8576249514688522074">Non initialisé</translation>
+<translation id="8576885347118332789">{NUM_TABS,plural, =1{Ajouter l'onglet à la liste de lecture}one{Ajouter l'onglet à la liste de lecture}other{Ajouter les onglets à la liste de lecture}}</translation>
 <translation id="8578639784464423491">Le mot ne peut pas comporter plus de 99 lettres</translation>
 <translation id="857943718398505171">Autorisé (recommandé)</translation>
 <translation id="8581809080475256101">Appuyer pour avancer, menu contextuel pour afficher l'historique</translation>
@@ -7035,6 +7044,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="939736085109172342">Nouveau dossier</translation>
 <translation id="941070664607309480">Cliquez ici pour devenir visible afin qu'il puisse le partager avec vous</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> partage un onglet Chrome et un contenu audio.</translation>
+<translation id="942603342650325556">Vous ne pouvez pas effectuer de capture d'écran, car l'administrateur a bloqué cette fonctionnalité.</translation>
 <translation id="945522503751344254">Envoyer un commentaire</translation>
 <translation id="947329552760389097">&amp;Examiner les éléments</translation>
 <translation id="951991426597076286">Refuser</translation>

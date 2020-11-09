@@ -94,13 +94,16 @@
 Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</translation>
 <translation id="5222676887888702881">Skrá út</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">Keyra rútínur aftur</translation>
 <translation id="5317780077021120954">Vista</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Veldu nýtt núna</translation>
 <translation id="5372659122375744710">Wi-Fi net er ekki öruggt</translation>
 <translation id="5401938042319910061">Keyra allar rútínur</translation>
+<translation id="5431318178759467895">Í lit</translation>
 <translation id="5457599981699367932">Vafra sem gestur</translation>
 <translation id="54609108002486618">Stjórnað</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">Bæta notanda við</translation>
 <translation id="5895138241574237353">Endurræsa</translation>
 <translation id="6040143037577758943">Loka</translation>
@@ -141,7 +144,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8364946094152050673">Auðir nafnaþjónar</translation>
 <translation id="8475690821716466388">Wi-Fi netið er varið með veikum samskiptareglum, WEP PSK</translation>
 <translation id="8477551185774834963">DNS-biðtími er aðeins yfir leyfðum þröskuldi</translation>
-<translation id="8668052347555487755">Litastilling</translation>
 <translation id="871560550817059752">Mistókst – blekið er búið</translation>
 <translation id="8723108084122415655">Ósjálfgefið net yfir biðþröskuldi</translation>
 <translation id="8726019395068607495">Stöðvað – hlíf er opin</translation>

@@ -1782,7 +1782,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3029466929721441205">Show stylus tools in shelf</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031557471081358569">Select items to be imported:</translation>
-<translation id="3036041939445522540">No available contacts</translation>
 <translation id="3036327949511794916">The deadline to return this <ph name="DEVICE_TYPE" /> has passed.</translation>
 <translation id="3036546437875325427">Enable Flash</translation>
 <translation id="3037754279345160234">Can't parse the configuration to join domain. Please contact your administrator.</translation>
@@ -4639,7 +4638,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6445450263907939268">If you didn't want these changes, you can restore your previous settings.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6450876761651513209">Change your privacy-related settings</translation>
-<translation id="6451180435462401570">Manage Cloud Print devices</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> and 1 other tab}other{<ph name="PAGE_TITLE" /> and # other tabs}}</translation>
 <translation id="6451689256222386810">If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Reject</translation>
@@ -4946,8 +4944,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6824584962142919697">&amp;Inspect elements</translation>
 <translation id="6825184156888454064">Sort by name</translation>
 <translation id="6826872289184051766">Verify via USB</translation>
-<translation id="6827487342470222762">No contacts are available. To use Nearby Share with your contacts, add the email address linked with their Google Account to your contacts.</translation>
-<translation id="6827623133556594466">Google Cloud Print will no longer be supported after 31 December. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Restrict sign-in to the following users:</translation>
 <translation id="6828182567531805778">Enter your passphrase to sync your data</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5878,7 +5874,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7893008570150657497">Access photos, music and other media from your computer</translation>
 <translation id="7893153962594818789">Bluetooth is off on this <ph name="DEVICE_TYPE" />. Enter your password, and turn on Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Default)</translation>
-<translation id="7897865097438730075">Google Cloud Print will no longer be supported after 31 December. Contact your administrator.</translation>
 <translation id="7897900149154324287">In the future, make sure that you eject your removable device in the Files app before unplugging it. Otherwise, you might lose data.</translation>
 <translation id="7898627924844766532">Keep in toolbar</translation>
 <translation id="7898725031477653577">Always translate</translation>
@@ -6029,7 +6024,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8054563304616131773">Please enter a valid email address</translation>
 <translation id="8054921503121346576">USB keyboard connected</translation>
 <translation id="8058655154417507695">Expiry year</translation>
-<translation id="8058811362315390556">Google Cloud Print will no longer be supported after 31 December</translation>
 <translation id="8059417245945632445">&amp;Inspect devices</translation>
 <translation id="8059456211585183827">There are no printers available to save.</translation>
 <translation id="8061091456562007989">Change it back</translation>
@@ -6142,7 +6136,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8184288427634747179">Switch to <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">More info</translation>
 <translation id="8184472985242519288">Uniform</translation>
-<translation id="8185331656081929126">Show notifications when new printers are detected on the network</translation>
 <translation id="8186609076106987817">The server could not find the file.</translation>
 <translation id="8188389033983459049">Check your device settings and turn it on to continue</translation>
 <translation id="8190193592390505034">Connecting to <ph name="PROVIDER_NAME" /></translation>

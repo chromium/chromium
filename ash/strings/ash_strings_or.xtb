@@ -8,6 +8,7 @@
 <translation id="1036672894875463507">ମୁଁ ଆପଣଙ୍କ Google Assistant, ଆପଣଙ୍କୁ ଦିନସାରା ସାହାଯ୍ୟ କରିବାକୁ ଏଠାରେ ଅଛି!
 ଆପଣ ଆରମ୍ଭ କରିବା ପାଇଁ ବ୍ୟବହାର କରିପାରୁଥିବା କିଛି ବିଷୟ ଏଠାରେ ଦିଆଯାଇଛି।</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ଯୋଗକରାଯାଇଛି</translation>
+<translation id="1047773237499189053">ନୂଆ ଫିଚର୍ ଉପଲବ୍ଧ ଅଛି, ଅଧିକ ଜାଣିବାକୁ ଅପ୍ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="1056775291175587022">ନେଟୱାର୍କ ନାହିଁ</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">ସେଲ୍ୟୁଲାର୍: <ph name="ADDRESS" /></translation>
@@ -20,6 +21,7 @@
 <translation id="1153356358378277386">ପେୟାର୍ ହୋଇଥିବା ଡିଭାଇସ୍</translation>
 <translation id="1175572348579024023">ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
 <translation id="1178581264944972037">ବିରତି</translation>
+<translation id="118532027333893379">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍ କରିବାକୁ ସ୍କ୍ରିନର ଯେ କୌଣସି ସ୍ଥାନରେ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="1190609913194133056">ବିଜ୍ଞପ୍ତି କେନ୍ଦ୍ର</translation>
 <translation id="1195412055398077112">ଓଭର୍‌ସ୍କାନ୍</translation>
 <translation id="119944043368869598">ସମସ୍ତ ଖାଲି କରନ୍ତୁ</translation>
@@ -56,7 +58,6 @@
 <translation id="1420527829902822813">ସ୍କ୍ରିନସଟ୍ ନିଆଯାଇଛି ଏବଂ କ୍ଲିପବୋର୍ଡରେ ସେଭ୍ କରାଯାଇଛି</translation>
 <translation id="1426410128494586442">ହଁ</translation>
 <translation id="1455242230282523554">ଭାଷାର ସେଟିଂସ୍‌ ଦେଖାନ୍ତୁ</translation>
-<translation id="1456407467406159627">ଆପଣଙ୍କ ସ୍କ୍ରିନରେ ଥିବା ଗୋପନୀୟ ବିଷୟବସ୍ତୁ ଯୋଗୁଁ ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ ବନ୍ଦ ହୋଇଯାଇଛି।</translation>
 <translation id="1460620680449458626">ଭଲ୍ୟୁମ୍ ମ୍ୟୁଟ୍ କରାଯାଇଛି।</translation>
 <translation id="1467432559032391204">ବାମ</translation>
 <translation id="1479909375538722835">ଫ୍ଲୋଟିଂ ଆକ୍ସେସିବିଲିଟୀ ମେନୁ</translation>
@@ -123,6 +124,7 @@
 <translation id="2127372758936585790">କମ୍-ଶକ୍ତି ବିଶିଷ୍ଟ ଚାର୍ଜର୍</translation>
 <translation id="2132302418721800944">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ ରେକର୍ଡ କରନ୍ତୁ</translation>
 <translation id="2135456203358955318">ଡକ୍‌ଡ ମ୍ୟାଗ୍ନିଫାୟର୍</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="2208323208084708176">ଏକୀକୃତ ଡେସ୍କଟପ୍ ମୋଡ୍</translation>
 <translation id="2220572644011485463">ପିନ୍‌ କିମ୍ବା ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="2222338659135520253">ସାଇନ୍ ଇନ୍ କରିବା ଆବଶ୍ୟକ</translation>
@@ -134,6 +136,7 @@
 <translation id="229397294990920565">ମୋବାଇଲ୍ ଡାଟା ବନ୍ଦ କରାଯାଉଛି...</translation>
 <translation id="2295777434187870477">ମାଇକ୍ ଚାଲୁ ଅଛି, ଟୋଗଲ୍ କରିବା ଦ୍ୱାରା ଇନପୁଟ୍ ମ୍ୟୁଟ୍ ହୋଇଯିବ।</translation>
 <translation id="2298170939937364391">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ ମ୍ୟାଗ୍ନିଫାୟର୍ ସକ୍ଷମ କରାଯାଇଛି। ଟୋଗଲ୍ କରି ଏହାକୁ ବନ୍ଦ କରିବା ପାଇଁ ପୁଣି Ctrl+Search+M ଦବାନ୍ତୁ।</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Assistantରେ ଫଳାଫଳ ଦେଖିବାକୁ ଡାଏଲଗରେ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
 <translation id="2302092602801625023">Family Link ଦ୍ୱାରା ଏହି ଆକାଉଣ୍ଟ ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="2303600792989757991">ୱିଣ୍ଡୋର ସାରାଂଶ ଟୋଗଲ୍ କରନ୍ତୁ</translation>
 <translation id="2322173485024759474">ଗୋଟିଏ ଅକ୍ଷର ପଛକୁ ଫେରନ୍ତୁ</translation>
@@ -160,6 +163,7 @@
 <translation id="2484513351006226581">କୀ'ବୋର୍ଡ ଲେଆଉଟ୍‌କୁ ସ୍ଵିଚ୍ କରିବା ପାଇଁ <ph name="KEYBOARD_SHORTCUT" /> ଦବାନ୍ତୁ।</translation>
 <translation id="2501920221385095727">ଷ୍ଟିକି କୀ'ଗୁଡ଼ିକ</translation>
 <translation id="2509468283778169019">CAPS LOCK ଅନ୍ ଅଛି</translation>
+<translation id="2536159006530886390">ଇଣ୍ଟରନେଟ୍ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="2542089167727451762">ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ୍ ଛବି ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="255671100581129685">Google ଆସିଷ୍ଟାଣ୍ଟ ଏକ ସାର୍ବଜନିକ ଅବଧିରେ ଉପଲବ୍ଧ ନୁହେଁ।</translation>
 <translation id="256712445991462162">ଡକ୍ ହୋଇଥିବା ମ୍ୟାଗ୍ନିଫାୟାର୍</translation>
@@ -181,6 +185,7 @@
 <translation id="2727977024730340865">କମ୍-ପାୱର୍‍ଯୁକ୍ତ ଚାର୍ଜର୍। ବ୍ୟାଟେରୀ ଚାର୍ଜିଂ ନିର୍ଭରଯୋଗ୍ୟ ହୋଇନପାରେ।</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">ବର୍ତ୍ତମାନ, ଆପଣଙ୍କୁ ସାଇନ୍‌ ଆଉଟ୍‌ କରିଦିଆଯିବ।</translation>
+<translation id="28232023175184696">ଇଣ୍ଟରନେଟ୍ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" />କୁ ସମର୍ଥନ କରେ ନାହିଁ। ରିଜୋଲ୍ୟୁସନକୁ <ph name="FALLBACK_RESOLUTION" />ରେ ବଦଳା ଯାଇଥିଲା।</translation>
 <translation id="2825619548187458965">ସେଲ୍ଫ</translation>
 <translation id="2841907151129139818">ଟାବଲେଟ୍ ମୋଡକୁ ସ୍ୱିଚ୍ କରାଯାଇଛି</translation>
@@ -320,6 +325,7 @@
 <translation id="4129129681837227511">ଆପଣଙ୍କର ଲକ୍ ସ୍କ୍ରିନ୍‌ରେ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଦେଖିବା ପାଇଁ, ସେଟିଂ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଅନ୍‌ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="4146833061457621061">ସଙ୍ଗୀତ ବଜାନ୍ତୁ</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> <ph name="DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
+<translation id="415719264485676252">ସ୍କ୍ରିନ୍ କ୍ୟାପଚରକୁ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="4157822100366708405">ଗାଢ଼ା ଥିମ୍ ସେଟିଂସ୍</translation>
 <translation id="4181841719683918333">ଭାଷାସମୂହ</translation>
 <translation id="4195877955194704651">ସ୍ଵଚାଳିତ କ୍ଲିକ୍ ବଟନ୍</translation>
@@ -386,6 +392,7 @@
 <translation id="4710243778082831592">IME ସେଟିଂସ୍</translation>
 <translation id="4731797938093519117">ମାତା-ପିତାଙ୍କର ଆକ୍ସେସ୍</translation>
 <translation id="4734965478015604180">ଭୂସମାନ୍ତର</translation>
+<translation id="4744944742468440486">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା</translation>
 <translation id="4759238208242260848">ଡାଉନଲୋଡସମୂହ</translation>
 <translation id="4774338217796918551">ଆସନ୍ତାକାଲି <ph name="COME_BACK_TIME" />ରେ ପୁଣି ଆସନ୍ତୁ।</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />ଙ୍କ ପାଇଁ ପାସ୍‌ୱାର୍ଡ</translation>
@@ -503,6 +510,7 @@
 <translation id="595202126637698455">କାର୍ଯ୍ୟଦକ୍ଷତା ଟ୍ରେସିଂ ସକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="5957083217255311415">ମୋବାଇଲ୍ ଡାଟା ବନ୍ଦ ଅଛି।</translation>
 <translation id="5958529069007801266">ପର୍ଯ୍ୟବେକ୍ଷିତ ଉପଯୋଗକର୍ତ୍ତା</translation>
+<translation id="5960825221082587934">ଆପଣଙ୍କ ଚୟନ ପାଇଁ Assistantକୁ ସଂଜ୍ଞା, ଅନୁବାଦ କିମ୍ବା ୟୁନିଟ୍ କନଭର୍ସନ୍ ପରି ସୂଚନା ଦେଖାଇବାକୁ ଦିଅନ୍ତୁ।</translation>
 <translation id="5977415296283489383">ହେଡ୍‌ଫୋନ୍‌</translation>
 <translation id="5978382165065462689">ରିମୋଟ୍‍ ସହାୟତା ମାଧ୍ୟମରେ ଆପଣଙ୍କର ସ୍କ୍ରିନ୍‌ର ନିୟନ୍ତ୍ରଣ ସେୟାର୍‌ ହେଉଛି।</translation>
 <translation id="5980301590375426705">ଅତିଥିରୁ ବାହାରି ଯାଅ</translation>
@@ -585,6 +593,7 @@
 <translation id="6777216307882431711">ସଂଯୁକ୍ତ ଥିବା USB-C ଡିଭାଇସ୍‌ଗୁଡ଼ିକୁ ଚାଲୁ କରୁଛି</translation>
 <translation id="6790428901817661496">ଚଲାନ୍ତୁ</translation>
 <translation id="6803622936009808957">ଏକାପରି ଡିସ୍‌ପ୍ଲେ କରାଯାଇପାରିଲା ନାହିଁ କାରଣ ସମର୍ଥିତ ରିଜୋଲ୍ୟୁଶନ୍ ମିଳିଲା ନାହିଁ। ଏହା ପରିବର୍ତ୍ତେ ବିସ୍ତାରିତ ଡେସ୍କଟପ୍‍ ଲେଖାଯାଇଛି।</translation>
+<translation id="6816797338148849397">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା ଉପଲବ୍ଧ ଅଛି। ଆକ୍ସେସ୍ କରିବାକୁ ଅପ୍ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="6818242057446442178">ଗୋଟିଏ ଶବ୍ଦ ପଛକୁ ଫେରନ୍ତୁ</translation>
 <translation id="6820676911989879663">ଏକ ବିରତି ନିଅନ୍ତୁ!</translation>
 <translation id="6850010208275816200">ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ଆପ୍ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ ମୋଡରେ ଅଛି। ଯଦି ଆପ୍ ଆପଣଙ୍କ ପାସୱାର୍ଡ ପଚାରେ ତେବେ ପ୍ରଥମେ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ ମୋଡରୁ ବାହାରି ଯାଆନ୍ତୁ।</translation>
@@ -648,6 +657,7 @@
 <translation id="7497767806359279797">ଭାଷା ଏବଂ କୀବୋର୍ଡ ବାଛନ୍ତୁ</translation>
 <translation id="7526573455193969409">ନେଟ୍‌ୱର୍କ ଉପରେ ହୁଏତ ନଜର ରଖାଯାଇପାରେ</translation>
 <translation id="7536035074519304529">IP ଠିକଣା: <ph name="ADDRESS" /></translation>
+<translation id="7542906349682405018">ଆପଣଙ୍କ ସ୍କ୍ରିନରେ ଥିବା ବିଷୟବସ୍ତୁର ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍ କରିବାର କ୍ଷମତାକୁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ବ୍ଲକ୍ କରାଯାଇଛି।</translation>
 <translation id="7548434653388805669">ଶୋଇବାର ସମୟ</translation>
 <translation id="7551643184018910560">ସେଲ୍ଫରେ ପିନ୍‌ କରନ୍ତୁ</translation>
 <translation id="7561982940498449837">ମେନୁ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -774,6 +784,7 @@
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">ନିମ୍ନ-ଶକ୍ତିର ଚାର୍ଜର୍ ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="8683506306463609433">କାର୍ଯ୍ୟଦକ୍ଷତା ଟ୍ରେସିଂ ସକ୍ରିୟ ଅଛି</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> ଏହି ଫିଚରକୁ ପରିଚାଳନା କରିବା ପାଇଁ ବାମ କିମ୍ବା ଡାହାଣ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="8712637175834984815">ବୁଝିଗଲି</translation>
 <translation id="8721053961083920564">ଭଲ୍ୟୁମ୍ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">ଆପଣଙ୍କ କୀ'ଷ୍ଟ୍ରୋକ୍‌କୁ ଚୋରି କରିବାକୁ ଏହା ଏକ ପ୍ରୟାସ ହୋଇପାରେ</translation>
@@ -794,6 +805,7 @@
 <translation id="8874184842967597500">ସଂଯୁକ୍ତ ନାହିଁ</translation>
 <translation id="8877788021141246043">ଗୋଟିଏ ରିମାଇଣ୍ଡର୍‌କୁ ସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="8878886163241303700">ସ୍କ୍ରିନ୍‍ର ବିସ୍ତାର କରନ୍ତୁ</translation>
+<translation id="8883473964424809116">Google Assistant ସେଟିଂସ୍ ଖୋଲିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
 <translation id="890616557918890486">ଉତ୍ସ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="8909138438987180327"><ph name="PERCENTAGE" /> ଶତକଡା ବ୍ୟାଟେରୀ ଅଛି।</translation>
 <translation id="8913384980486163186">ଥିମ୍ ଆଧାରିତ (ଡିଫଲ୍ଟ)</translation>

@@ -94,13 +94,16 @@
 Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5222676887888702881">Odhlásiť sa</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">Znova spustiť postupy</translation>
 <translation id="5317780077021120954">Uložiť</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Zvoľte si nové heslo teraz</translation>
 <translation id="5372659122375744710">Sieť Wi‑Fi nie je zabezpečená</translation>
 <translation id="5401938042319910061">Spustiť všetky postupy</translation>
+<translation id="5431318178759467895">Farebne</translation>
 <translation id="5457599981699367932">Prehliadať ako hosť</translation>
 <translation id="54609108002486618">Spravovaný</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">Pridať osobu</translation>
 <translation id="5895138241574237353">Reštartovať</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
@@ -141,7 +144,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8364946094152050673">Prázdne DNS servery</translation>
 <translation id="8475690821716466388">Sieť Wi‑Fi je zabezpečená slabým protokolom WEP PSK</translation>
 <translation id="8477551185774834963">Latencia servera DNS mierne prekračuje povolenú úroveň</translation>
-<translation id="8668052347555487755">Farebný režim</translation>
 <translation id="871560550817059752">Nepodarilo sa – minul sa atrament</translation>
 <translation id="8723108084122415655">Nepredvolená sieť prekračuje úroveň latencie</translation>
 <translation id="8726019395068607495">Zastavené – dvierka sú otvorené</translation>

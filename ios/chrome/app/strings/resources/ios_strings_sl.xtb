@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Printing failed.</translation>
 <translation id="1125564390852150847">Create new tab.</translation>
 <translation id="1145536944570833626">Izbris obstoječih podatkov.</translation>
+<translation id="1147031633655575115">Prijavljeni ste kot <ph name="USER" /></translation>
 <translation id="1154690515305205900">Povezave do označenega besedila ni mogoče ustvariti.</translation>
 <translation id="1157749421655780457">Dovoli lokacijo …</translation>
 <translation id="1165039591588034296">Napaka</translation>
@@ -83,7 +84,6 @@
 <translation id="1690731385917361335">Ni elementov</translation>
 <translation id="1692118695553449118">Sinhroniziranje je vklopljeno</translation>
 <translation id="1700629756560807968">Št. izbranih: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
-<translation id="1715940067130687605">Uporaba trenutne lokacije.</translation>
 <translation id="1740468249224277719">Dvakrat se dotaknite, če želite namestiti.</translation>
 <translation id="1746815479209538200">Če želite brskati po spletu, dodajte nov zavihek.</translation>
 <translation id="1752547299766512813">Shranjena gesla</translation>
@@ -269,6 +269,7 @@ Upoštevajte spodnja navodila:</translation>
 <translation id="385051799172605136">Nazaj</translation>
 <translation id="3892144330757387737">Tukaj bo prikazana zgodovina</translation>
 <translation id="3897092660631435901">Meni</translation>
+<translation id="3913386780052199712">Prijavljeni ste v Chrome</translation>
 <translation id="3915450441834151894">Podatki o spletnem mestu</translation>
 <translation id="3922310737605261887">Iskanje besedila, ki ste ga kopirali</translation>
 <translation id="3928666092801078803">Združevanje podatkov</translation>

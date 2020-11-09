@@ -1782,7 +1782,6 @@
 <translation id="3029466929721441205">แสดงเครื่องมือสไตลัสในชั้นวาง</translation>
 <translation id="3031417829280473749">เอเจนต์เอ็กซ์</translation>
 <translation id="3031557471081358569">เลือกรายการที่จะนำเข้าต่อไปนี้:</translation>
-<translation id="3036041939445522540">ไม่มีรายชื่อติดต่อที่ใช้ได้</translation>
 <translation id="3036327949511794916">เลยกำหนดเวลาส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้แล้ว</translation>
 <translation id="3036546437875325427">เปิดใช้ Flash</translation>
 <translation id="3037754279345160234">แยกวิเคราะห์การกำหนดค่าเพื่อเข้าร่วมโดเมนไม่ได้ โปรดติดต่อผู้ดูแลระบบ</translation>
@@ -4639,7 +4638,6 @@
 <translation id="6445450263907939268">หากคุณไม่ต้องการการเปลี่ยนแปลงเหล่านี้ คุณสามารถกู้คืนการตั้งค่าก่อนหน้าได้</translation>
 <translation id="6447842834002726250">คุกกี้</translation>
 <translation id="6450876761651513209">เปลี่ยนการตั้งค่าที่เกี่ยวข้องกับความเป็นส่วนตัว</translation>
-<translation id="6451180435462401570">จัดการอุปกรณ์ Cloud Print</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> และอีก 1 แท็บ}other{<ph name="PAGE_TITLE" /> และอีก # แท็บ}}</translation>
 <translation id="6451689256222386810">หากคุณลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" /></translation>
 <translation id="6452181791372256707">ปฏิเสธ</translation>
@@ -4946,8 +4944,6 @@
 <translation id="6824584962142919697">&amp;ตรวจสอบองค์ประกอบ</translation>
 <translation id="6825184156888454064">จัดเรียงตามชื่อ</translation>
 <translation id="6826872289184051766">ยืนยันผ่าน USB</translation>
-<translation id="6827487342470222762">ไม่มีรายชื่อติดต่อที่ใช้ได้ หากต้องการใช้การแชร์ใกล้เคียงกับรายชื่อติดต่อ ให้เพิ่มอีเมลที่ลิงก์กับบัญชี Google ของรายชื่อติดต่อนั้นลงในรายชื่อติดต่อของคุณ</translation>
-<translation id="6827623133556594466">ระบบจะไม่รองรับ Google Cloud Print อีกต่อไปหลังจากวันที่ 31 ธันวาคม <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">จำกัดการลงชื่อเข้าใช้ของผู้ใช้ต่อไปนี้:</translation>
 <translation id="6828182567531805778">ป้อนรหัสผ่านเพื่อซิงค์ข้อมูล</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5878,7 +5874,6 @@
 <translation id="7893008570150657497">เข้าถึงรูปภาพ เพลง และสื่ออื่นๆ จากคอมพิวเตอร์ของคุณ</translation>
 <translation id="7893153962594818789"><ph name="DEVICE_TYPE" /> ปิดบลูทูธอยู่ โปรดป้อนรหัสผ่านแล้วเปิดบลูทูธ</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (ค่าเริ่มต้น)</translation>
-<translation id="7897865097438730075">ระบบจะไม่รองรับ Google Cloud Print อีกต่อไปหลังจากวันที่ 31 ธันวาคม โปรดติดต่อผู้ดูแลระบบ</translation>
 <translation id="7897900149154324287">ในอนาคต โปรดตรวจสอบว่าได้ยกเลิกการเชื่อมต่ออุปกรณ์แบบถอดออกได้ในแอป Files ก่อนที่จะถอดปลั๊ก มิฉะนั้นคุณอาจสูญเสียข้อมูล</translation>
 <translation id="7898627924844766532">เก็บในแถบเครื่องมือ</translation>
 <translation id="7898725031477653577">แปลทุกครั้ง</translation>
@@ -6029,7 +6024,6 @@
 <translation id="8054563304616131773">โปรดป้อนที่อยู่อีเมลที่ถูกต้อง</translation>
 <translation id="8054921503121346576">เชื่อมต่อแป้นพิมพ์ USB แล้ว</translation>
 <translation id="8058655154417507695">ปีที่หมดอายุ</translation>
-<translation id="8058811362315390556">ระบบจะไม่รองรับ Google Cloud Print อีกต่อไปหลังจากวันที่ 31 ธันวาคม</translation>
 <translation id="8059417245945632445">&amp;ตรวจสอบอุปกรณ์</translation>
 <translation id="8059456211585183827">ไม่มีเครื่องพิมพ์ให้บันทึก</translation>
 <translation id="8061091456562007989">เปลี่ยนกลับ</translation>
@@ -6142,7 +6136,6 @@
 <translation id="8184288427634747179">สลับเป็น <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">ข้อมูลเพิ่มเติม</translation>
 <translation id="8184472985242519288">แบบเดียวกัน</translation>
-<translation id="8185331656081929126">แสดงการแจ้งเตือนเมื่อตรวจพบเครื่องพิมพ์ใหม่บนเครือข่าย</translation>
 <translation id="8186609076106987817">เซิร์ฟเวอร์ไม่พบไฟล์</translation>
 <translation id="8188389033983459049">ตรวจสอบการตั้งค่าอุปกรณ์และเปิดบลูทูธเพื่อดำเนินการต่อ</translation>
 <translation id="8190193592390505034">กำลังเชื่อมต่อกับ <ph name="PROVIDER_NAME" /></translation>

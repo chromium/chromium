@@ -58,7 +58,6 @@
 <translation id="1420527829902822813">צילום מסך בוצע ונשמר בלוח</translation>
 <translation id="1426410128494586442">כן</translation>
 <translation id="1455242230282523554">הצגת הגדרות השפה</translation>
-<translation id="1456407467406159627">הקלטת המסך הופסקה עקב תוכן סודי במסך.</translation>
 <translation id="1460620680449458626">צלילים מושתקים.</translation>
 <translation id="1467432559032391204">שמאלה</translation>
 <translation id="1479909375538722835">תפריט נגישות צף</translation>
@@ -543,7 +542,7 @@
 <translation id="6284232397434400372">הרזולוציה השתנתה</translation>
 <translation id="6288235558961782912">ניתן יהיה להוסיף את <ph name="USER_EMAIL_ADDRESS" /> מחדש מאוחר יותר לאחר שיתקבל אישור של הורה.</translation>
 <translation id="6297287540776456956">יש לבחור אזור באמצעות הסטיילוס</translation>
-<translation id="6310121235600822547">בוצע סיבוב של <ph name="DISPLAY_NAME" /> אל <ph name="ROTATION" /></translation>
+<translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> סובב אל <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">קול</translation>
 <translation id="6376931439017688372">‏Bluetooth פועל</translation>
 <translation id="6381109794406942707">כדי לבטל את הנעילה של המכשיר, יש להזין את קוד האימות.</translation>

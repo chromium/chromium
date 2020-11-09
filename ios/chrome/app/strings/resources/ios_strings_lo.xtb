@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">ການພິມບໍ່ສຳເລັດ.</translation>
 <translation id="1125564390852150847">ສ້າງ​ແຖບ​ໃໝ່.</translation>
 <translation id="1145536944570833626">ລຶບຂໍ້ມູນທີ່ມີຢູ່.</translation>
+<translation id="1147031633655575115">ເຂົ້າສູ່ລະບົບເປັນ <ph name="USER" /></translation>
 <translation id="1154690515305205900">ບໍ່ສາມາດສ້າງລິ້ງເຊື່ອມໂຍງໄປຍັງຂໍ້ຄວາມທີ່ໄຮໄລ້ໄວ້ໄດ້.</translation>
 <translation id="1157749421655780457">ອະນຸຍາດສະຖານທີ່...</translation>
 <translation id="1165039591588034296">ຜິດພາດ</translation>
@@ -83,7 +84,6 @@
 <translation id="1690731385917361335">ບໍ່​ມີ​ລາຍ​ການ</translation>
 <translation id="1692118695553449118">ຊິງຄ໌ເປີດຢູ່</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ຖືກ​ເລືອກ​ແລ້ວ</translation>
-<translation id="1715940067130687605">ໃຊ້ສະຖານທີ່ປັດຈຸບັນຂອງທ່ານ.</translation>
 <translation id="1740468249224277719">ແຕະສອງຄັ້ງເພື່ອຕິດຕັ້ງ.</translation>
 <translation id="1746815479209538200">ເພື່ອທ່ອງເວັບ, ກະລຸນາເພີ່ມແຖບໃໝ່.</translation>
 <translation id="1752547299766512813">ບັນທຶກລະ​ຫັດ​ຜ່ານ</translation>
@@ -269,6 +269,7 @@
 <translation id="385051799172605136">ກັບ​ຄືນ​</translation>
 <translation id="3892144330757387737">ທ່ານຈະເຫັນປະຫວັດຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
 <translation id="3897092660631435901">ເມ​ນູ</translation>
+<translation id="3913386780052199712">ເຂົ້າສູ່ລະບົບ Chrome ແລ້ວ</translation>
 <translation id="3915450441834151894">ຂໍ້ມູນເວັບໄຊ</translation>
 <translation id="3922310737605261887">ຊອກຫາຂໍ້ຄວາມທີ່ສຳເນົາໄວ້</translation>
 <translation id="3928666092801078803">ລວມຂໍ້ມູນຂອງຂ້ອຍເຂົ້າກັນ</translation>

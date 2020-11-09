@@ -1779,7 +1779,6 @@
 <translation id="3029466929721441205">نمایش ابزارهای قلم در قفسه</translation>
 <translation id="3031417829280473749">‏مأمور X</translation>
 <translation id="3031557471081358569">مواردی را برای وارد کردن انتخاب کنید:</translation>
-<translation id="3036041939445522540">مخاطبی دردسترس نیست</translation>
 <translation id="3036327949511794916">مهلت برگرداندن این <ph name="DEVICE_TYPE" /> گذشته است.</translation>
 <translation id="3036546437875325427">‏فعال کردن Flash</translation>
 <translation id="3037754279345160234">نمی‌توان پیکربندی پیوستن به دامنه را تجزیه کرد. لطفاً با سرپرست سیستم تماس بگیرید.</translation>
@@ -4636,7 +4635,6 @@
 <translation id="6445450263907939268">اگر این تغییرات مدنظر شما نبود، می‌توانید تنظیمات قبلی‌تان را بازیابی کنید.</translation>
 <translation id="6447842834002726250">کوکی‌ها</translation>
 <translation id="6450876761651513209">تغییر تنظیمات مربوط به حریم‌خصوصی شما</translation>
-<translation id="6451180435462401570">‏مدیریت دستگاه‌های Cloud Print</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> و ۱ برگه دیگر}one{<ph name="PAGE_TITLE" /> و # برگه دیگر}other{<ph name="PAGE_TITLE" /> و # برگه دیگر}}</translation>
 <translation id="6451689256222386810">اگر عبارت عبورتان را فراموش کرده‌اید یا می‌خواهید این تنظیم را تغییر دهید، <ph name="BEGIN_LINK" />همگام‌سازی را بازنشانی کنید<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">عدم پذیرش</translation>
@@ -4943,8 +4941,6 @@
 <translation id="6824584962142919697">&amp;بازرسی عناصر</translation>
 <translation id="6825184156888454064">به‌ترتیب نام</translation>
 <translation id="6826872289184051766">‏به‌تأیید رساندن ازطریق USB</translation>
-<translation id="6827487342470222762">‏مخاطبی دردسترس نیست. برای استفاده از «هم‌رسانی با اطراف» با مخاطبین، نشانی ایمیل پیوندشده با «حساب Google» آن‌ها را به مخاطبین خود اضافه کنید.</translation>
-<translation id="6827623133556594466">‏Google Cloud Print پس از ۳۱ دسامبر دیگر پشتیبانی نخواهد شد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">محدود کردن ورود به سیستم برای کاربران زیر:</translation>
 <translation id="6828182567531805778">برای همگام‌سازی داده‌ها، عبارت عبورتان را وارد کنید</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5875,7 +5871,6 @@
 <translation id="7893008570150657497">دسترسی به عکس‌ها، موسیقی، و دیگر رسانه‌ها از رایانه شما</translation>
 <translation id="7893153962594818789">بلوتوث در این <ph name="DEVICE_TYPE" /> خاموش است. گذرواژه‌تان را وارد و بلوتوث را روشن کنید.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (پیش‌فرض)</translation>
-<translation id="7897865097438730075">‏Google Cloud Print پس از ۳۱ دسامبر دیگر پشتیبانی نخواهد شد. با سرپرست تماس بگیرید.</translation>
 <translation id="7897900149154324287">‏در آینده، مطمئن شوید که قبل از جدا کردن دستگاه قابل حملتان، آن را در برنامه Files خارج کنید. در غیر این صورت ممکن است داده‌هایتان را از دست بدهید.</translation>
 <translation id="7898627924844766532">نگه داشتن در نوار ابزار</translation>
 <translation id="7898725031477653577">همیشه ترجمه شود</translation>
@@ -6026,7 +6021,6 @@
 <translation id="8054563304616131773">لطفاً یک نشانی ایمیل معتبر وارد کنید</translation>
 <translation id="8054921503121346576">‏صفحه‌کلید USB متصل شد</translation>
 <translation id="8058655154417507695">سال انقضا</translation>
-<translation id="8058811362315390556">‏Google Cloud Print پس از ۳۱ دسامبر دیگر پشتیبانی نمی‌شود</translation>
 <translation id="8059417245945632445">&amp;بازرسی دستگاه‌ها</translation>
 <translation id="8059456211585183827">هیچ چاپگری برای ذخیره در دسترس نیست.</translation>
 <translation id="8061091456562007989">تغییر را لغو کنید</translation>
@@ -6139,7 +6133,6 @@
 <translation id="8184288427634747179">تغییر به <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">اطلاعات بیشتر</translation>
 <translation id="8184472985242519288">یکسان</translation>
-<translation id="8185331656081929126">نمایش اعلان‌ها هنگامی که چاپگرهای جدیدی در شبکه شناسایی می‌شوند</translation>
 <translation id="8186609076106987817">سرور نتوانست فایل را پیدا کند.</translation>
 <translation id="8188389033983459049">تنظیمات دستگاه را بررسی کنید و برای ادامه، آن را روشن کنید</translation>
 <translation id="8190193592390505034">اتصال به <ph name="PROVIDER_NAME" /></translation>

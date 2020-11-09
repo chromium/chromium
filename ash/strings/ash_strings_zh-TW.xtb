@@ -8,6 +8,7 @@
 <translation id="1036672894875463507">我是你的 Google 助理，可協助你處理日常事務！
 如要開始使用，你可以先試試以下幾個指令。</translation>
 <translation id="1037492556044956303">已新增 <ph name="DEVICE_NAME" /></translation>
+<translation id="1047773237499189053">已推出新功能，請使用向上鍵瞭解詳情。</translation>
 <translation id="1056775291175587022">沒有網路</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />：<ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">行動裝置：<ph name="ADDRESS" /></translation>
@@ -20,6 +21,7 @@
 <translation id="1153356358378277386">配對裝置</translation>
 <translation id="1175572348579024023">捲動</translation>
 <translation id="1178581264944972037">暫停</translation>
+<translation id="118532027333893379">輕觸任一處即可擷取全螢幕畫面</translation>
 <translation id="1190609913194133056">通知中心</translation>
 <translation id="1195412055398077112">遮視區域</translation>
 <translation id="119944043368869598">全部清除</translation>
@@ -56,7 +58,6 @@
 <translation id="1420527829902822813">已擷取螢幕畫面並儲存至剪貼簿</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1455242230282523554">顯示語言設定</translation>
-<translation id="1456407467406159627">由於你的螢幕上有機密內容，因此系統已停止錄製螢幕畫面。</translation>
 <translation id="1460620680449458626">音量已設為靜音。</translation>
 <translation id="1467432559032391204">向左</translation>
 <translation id="1479909375538722835">浮動式無障礙選單</translation>
@@ -123,6 +124,7 @@
 <translation id="2127372758936585790">低功率充電器</translation>
 <translation id="2132302418721800944">錄製全螢幕畫面</translation>
 <translation id="2135456203358955318">停駐放大鏡</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />：重試</translation>
 <translation id="2208323208084708176">整合桌面模式</translation>
 <translation id="2220572644011485463">PIN 或密碼</translation>
 <translation id="2222338659135520253">必須登入</translation>
@@ -134,6 +136,7 @@
 <translation id="229397294990920565">正在關閉行動數據...</translation>
 <translation id="2295777434187870477">麥克風已開啟；使用切換按鈕可將麥克風設為靜音。</translation>
 <translation id="2298170939937364391">全螢幕放大鏡已啟用。再次按下 Ctrl 鍵 + 搜尋鍵 + M 鍵即可切換為停用。</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" />；按一下對話方塊即可查看 Google 助理中的結果。</translation>
 <translation id="2302092602801625023">這個帳戶是由 Family Link 所管理</translation>
 <translation id="2303600792989757991">切換視窗總覽</translation>
 <translation id="2322173485024759474">移至上一個字母</translation>
@@ -160,6 +163,7 @@
 <translation id="2484513351006226581">按下 <ph name="KEYBOARD_SHORTCUT" />可切換鍵盤配置。</translation>
 <translation id="2501920221385095727">相黏鍵</translation>
 <translation id="2509468283778169019">大寫鍵已啟用</translation>
+<translation id="2536159006530886390">無法連線至網際網路。</translation>
 <translation id="2542089167727451762">輕觸你的個人資料圖片</translation>
 <translation id="255671100581129685">Google 助理不適用於公開工作階段。</translation>
 <translation id="256712445991462162">停駐放大鏡</translation>
@@ -181,6 +185,7 @@
 <translation id="2727977024730340865">使用低功率充電器，可能導致充電狀態不穩定。</translation>
 <translation id="2792498699870441125">Alt + 搜尋鍵</translation>
 <translation id="2819276065543622893">現在即將登出。</translation>
+<translation id="28232023175184696">無法連線至網際網路。按一下即可重試。</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> 不支援 <ph name="SPECIFIED_RESOLUTION" />，解析度已變更為 <ph name="FALLBACK_RESOLUTION" />。</translation>
 <translation id="2825619548187458965">檔案櫃</translation>
 <translation id="2841907151129139818">已切換為平板電腦模式</translation>
@@ -320,6 +325,7 @@
 <translation id="4129129681837227511">如要在鎖定畫面上查看通知，請將裝置解鎖並修改相關設定</translation>
 <translation id="4146833061457621061">播放音樂</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" />，由 <ph name="DOMAIN" /> 管理</translation>
+<translation id="415719264485676252">擷取螢幕畫面的功能已遭到封鎖</translation>
 <translation id="4157822100366708405">深色主題設定</translation>
 <translation id="4181841719683918333">語言</translation>
 <translation id="4195877955194704651">自動點擊按鈕</translation>
@@ -386,6 +392,7 @@
 <translation id="4710243778082831592">輸入法編輯器設定</translation>
 <translation id="4731797938093519117">家長存取</translation>
 <translation id="4734965478015604180">橫向</translation>
+<translation id="4744944742468440486">所選內容的相關資訊</translation>
 <translation id="4759238208242260848">下載</translation>
 <translation id="4774338217796918551"><ph name="COME_BACK_TIME" /> 裝置就會解除鎖定。</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密碼</translation>
@@ -503,6 +510,7 @@
 <translation id="595202126637698455">效能追蹤已啟用</translation>
 <translation id="5957083217255311415">行動數據已關閉。</translation>
 <translation id="5958529069007801266">受監管的使用者</translation>
+<translation id="5960825221082587934">讓 Google 助理針對你選取的內容顯示定義、翻譯或單位轉換等資訊。</translation>
 <translation id="5977415296283489383">耳機</translation>
 <translation id="5978382165065462689">透過遠端協助分享螢幕控制功能。</translation>
 <translation id="5980301590375426705">結束訪客工作階段</translation>
@@ -585,6 +593,7 @@
 <translation id="6777216307882431711">為連接的 USB-C 裝置供電</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6803622936009808957">找不到系統支援的解析度，因此無法顯示鏡像。已改為進入延伸桌面。</translation>
+<translation id="6816797338148849397">所選內容的相關資訊。請使用向上鍵存取。</translation>
 <translation id="6818242057446442178">移至上一個字詞</translation>
 <translation id="6820676911989879663">目前禁止使用裝置！</translation>
 <translation id="6850010208275816200">目前的應用程式正處於全螢幕模式。如果應用程式要求你輸入密碼，請先結束全螢幕模式。</translation>
@@ -648,6 +657,7 @@
 <translation id="7497767806359279797">選擇語言和鍵盤配置</translation>
 <translation id="7526573455193969409">網路可能會受到監控</translation>
 <translation id="7536035074519304529">IP 位址：<ph name="ADDRESS" /></translation>
+<translation id="7542906349682405018">系統管理員已禁止擷取螢幕上的內容截圖。</translation>
 <translation id="7548434653388805669">就寢時間到了</translation>
 <translation id="7551643184018910560">固定至檔案櫃</translation>
 <translation id="7561982940498449837">關閉選單</translation>
@@ -774,6 +784,7 @@
 <translation id="8673028979667498656">270 度</translation>
 <translation id="8676770494376880701">已連接低功率充電器</translation>
 <translation id="8683506306463609433">效能追蹤已啟用</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" />請使用向左鍵或向右鍵管理這項功能。</translation>
 <translation id="8712637175834984815">我瞭解了</translation>
 <translation id="8721053961083920564">切換音量設定。<ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">你的按鍵行為可能會遭到側錄</translation>
@@ -794,6 +805,7 @@
 <translation id="8874184842967597500">未連線</translation>
 <translation id="8877788021141246043">設定提醒</translation>
 <translation id="8878886163241303700">延伸螢幕</translation>
+<translation id="8883473964424809116">按一下以開啟 Google 助理設定。</translation>
 <translation id="890616557918890486">變更來源</translation>
 <translation id="8909138438987180327">電池剩餘電量：<ph name="PERCENTAGE" />%。</translation>
 <translation id="8913384980486163186">主題 (預設值)</translation>

@@ -4,7 +4,6 @@
 <translation id="1000498691615767391">Sélectionner le dossier à ouvrir</translation>
 <translation id="1023220960495960452">Translittération (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">Affichage de diapositives</translation>
-<translation id="1045157690796831147">Translittération (namaskar → നമസ്കാരം)</translation>
 <translation id="1047956942837015229">Suppression de <ph name="COUNT" /> éléments en cours…</translation>
 <translation id="1049926623896334335">Document Word</translation>
 <translation id="1060368002126861100">Pour ouvrir des fichiers avec <ph name="APP_NAME" />, déplacez-les d'abord dans le dossier des fichiers Windows.</translation>
@@ -31,7 +30,6 @@
 <translation id="1293556467332435079">Fichiers</translation>
 <translation id="1297922636971898492">Google Disque n'est pas accessible pour le moment. Le téléversement reprendra lorsque Google Disque sera de nouveau fonctionnel.</translation>
 <translation id="1307931752636661898">Impossible d'afficher les fichiers Linux</translation>
-<translation id="1310751437842832374">Translittération (mausam → ନମସ୍ତେ)</translation>
 <translation id="1338950911836659113">Suppression en cours…</translation>
 <translation id="1346748346194534595">À droite</translation>
 <translation id="1351692861129622852">Importation de <ph name="FILE_COUNT" /> fichiers en cours...</translation>
@@ -46,7 +44,6 @@
 <translation id="1435838927755162558">Partager le dossier avec Parallels Desktop</translation>
 <translation id="1439494416798956626">Déplacé dans le dossier <ph name="FOLDER_NAME" />.</translation>
 <translation id="1441841714100794440">Clavier vietnamien (télex)</translation>
-<translation id="1455548678241328678">Clavier norvégien</translation>
 <translation id="1464724975715666883">Une erreur.</translation>
 <translation id="1467432559032391204">À gauche</translation>
 <translation id="1474339897586437869">Le fichier « <ph name="FILENAME" /> » n'a pas été mis à jour. Il n'y a pas suffisamment d'espace libre au sein de votre Google Disque.</translation>
@@ -102,7 +99,6 @@
 <translation id="2084108471225856927">Paramètres de l'appareil</translation>
 <translation id="2085470240340828803">Un fichier nommé « <ph name="FILENAME" /> » existe déjà. Que voulez-vous faire?</translation>
 <translation id="2121825465123208577">Redimensionner</translation>
-<translation id="2136953289241069843">Translittération (namaste → नमस्कार)</translation>
 <translation id="2163152940313951844">Caractère incorrect : <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Clavier vietnamien (TCVN)</translation>
 <translation id="2168214441502403371">Clavier perse</translation>
@@ -206,7 +202,6 @@
 <translation id="3338239663705455570">Clavier slovène</translation>
 <translation id="3353984535370177728">Sélectionner le dossier à téléverser</translation>
 <translation id="3356580349448036450">Terminé</translation>
-<translation id="3399597614303179694">Clavier macédonien</translation>
 <translation id="3414856743105198592">Le formatage du support amovible va effacer toutes les données. Voulez-vous continuer?</translation>
 <translation id="3437801641691368414">Date de création</translation>
 <translation id="3466147780910026086">Analyse de votre appareil de stockage multimédia en cours…</translation>
@@ -232,7 +227,6 @@
 <translation id="3644896802912593514">Largeur</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> éléments déplacés.</translation>
 <translation id="3645531960514756307">Annuler l'épinglage du dossier</translation>
-<translation id="3678559383040232393">Clavier maltais</translation>
 <translation id="3685122418104378273">La synchronisation Google Disque est désactivée par défaut, lors de l'utilisation de données mobiles.</translation>
 <translation id="3689865792480713551">Annuler <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3726463242007121105">Impossible d'ouvrir cet appareil, car son système de fichiers n'est pas compatible.</translation>
@@ -248,7 +242,6 @@
 <translation id="3810973564298564668">Gérer</translation>
 <translation id="3811494700605067549">1 fichier sélectionné</translation>
 <translation id="3815016854028376614">Mode d'entrée zhuyin</translation>
-<translation id="3825863595139017598">Clavier mongol</translation>
 <translation id="38275787300541712">Appuyez sur Entrée lorsque vous avez terminé</translation>
 <translation id="3830674330436234648">Aucune lecture disponible</translation>
 <translation id="3833761542219863804">Translittération (mausam → ਮੌਸਮ)</translation>
@@ -257,7 +250,6 @@
 <translation id="3855472144336161447">Allemand (Neo 2)</translation>
 <translation id="386548886866354912">Archiver avec <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Description</translation>
-<translation id="391445228316373457">Clavier népalais (phonétique)</translation>
 <translation id="3924145049010392604">Méta</translation>
 <translation id="3930521966936686665">Lire sur</translation>
 <translation id="3943857333388298514">Coller</translation>
@@ -346,7 +338,6 @@
 <translation id="4943368462779413526">Football</translation>
 <translation id="4961158930123534723">1 dossier partagé avec Parallels Desktop</translation>
 <translation id="4969785127455456148">Album</translation>
-<translation id="497244430928947428">Clavier malayalam (phonétique)</translation>
 <translation id="4973523518332075481">Utilisez un nom contenant au maximum <ph name="MAX_LENGTH" /> caractères</translation>
 <translation id="4973970068702235170">Échec de compression au format .zip en raison d'une erreur inattendue : <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4988205478593450158">Voulez-vous vraiment supprimer « <ph name="FILE_NAME" /> »?</translation>
@@ -412,7 +403,6 @@
 <translation id="5438282218546237410">Aucun résultat pour <ph name="SEARCH_TERM" />.</translation>
 <translation id="5449551289610225147">Mot de passe non valide</translation>
 <translation id="5464696796438641524">Clavier polonais</translation>
-<translation id="5465122519792752163">Clavier népalais (InScript)</translation>
 <translation id="5469868506864199649">Italien</translation>
 <translation id="5484429245813572665">Indonésien</translation>
 <translation id="5494920125229734069">Tout sélectionner</translation>

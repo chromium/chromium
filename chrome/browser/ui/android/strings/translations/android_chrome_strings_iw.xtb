@@ -345,7 +345,7 @@
 <translation id="3522247891732774234">יש עדכון זמין. עוד אפשרויות</translation>
 <translation id="3524138585025253783">ממשק משתמש למפתחים</translation>
 <translation id="3527085408025491307">תיקייה</translation>
-<translation id="3542235761944717775">‏‎<ph name="KILOBYTES" /> KB זמינים</translation>
+<translation id="3542235761944717775">‏‎<ph name="KILOBYTES" />KB זמינים</translation>
 <translation id="3549657413697417275">חיפוש בהיסטוריה שלך</translation>
 <translation id="3557336313807607643">הוספה לאנשי הקשר</translation>
 <translation id="3566923219790363270">‏Chrome עדיין מתכונן ל-VR. יש להפעיל מחדש את Chrome מאוחר יותר.</translation>
@@ -952,7 +952,7 @@
 <translation id="7761849928583394409">בחירת תאריך ושעה</translation>
 <translation id="7762668264895820836">‏כרטיס SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">הוספת כתובת</translation>
-<translation id="7772032839648071052">אשר משפט-סיסמה</translation>
+<translation id="7772032839648071052">אישור משפט-סיסמה</translation>
 <translation id="7772375229873196092">סגירת <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוסף}two{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוספים}many{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוספים}other{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוספים}}</translation>
 <translation id="7778840695157240389">בהמשך יהיו פה סיפורים חדשים</translation>
@@ -996,7 +996,7 @@
 <translation id="8037801708772278989">התבצעה בדיקה עכשיו</translation>
 <translation id="804335162455518893">‏לא נמצא כרטיס SD</translation>
 <translation id="805047784848435650">על סמך היסטוריית הגלישה שלך</translation>
-<translation id="8051695050440594747">‏‎<ph name="MEGABYTES" /> MB זמינים</translation>
+<translation id="8051695050440594747">‏‎<ph name="MEGABYTES" />MB זמינים</translation>
 <translation id="8058746566562539958">‏פתיחה בכרטיסייה חדשה של Chrome</translation>
 <translation id="8063895661287329888">הוספת הסימנייה נכשלה.</translation>
 <translation id="806745655614357130">שמירת הנתונים שלי בנפרד</translation>

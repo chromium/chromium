@@ -4,7 +4,6 @@
 <translation id="1000498691615767391">選取要開啟的資料夾</translation>
 <translation id="1023220960495960452">音譯 (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">投影片視圖</translation>
-<translation id="1045157690796831147">音譯 (namaskar → നമസ്കാരം)</translation>
 <translation id="1047956942837015229">正在刪除 <ph name="COUNT" /> 個項目...</translation>
 <translation id="1049926623896334335">Word 文件</translation>
 <translation id="1060368002126861100">如要使用「<ph name="APP_NAME" />」開啟檔案，請先將檔案移至 Windows 檔案資料夾。</translation>
@@ -31,7 +30,6 @@
 <translation id="1293556467332435079">檔案</translation>
 <translation id="1297922636971898492">Google 雲端硬碟目前無法提供服務。一旦 Google 雲端硬碟恢復正常運作，上傳作業將會自動重新啟動。</translation>
 <translation id="1307931752636661898">無法查看 Linux 檔案</translation>
-<translation id="1310751437842832374">音譯 (mausam → ନମସ୍ତେ)</translation>
 <translation id="1338950911836659113">刪除中...</translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351692861129622852">正在匯入 <ph name="FILE_COUNT" /> 個檔案...</translation>
@@ -46,7 +44,6 @@
 <translation id="1435838927755162558">與 Parallels Desktop 共用資料夾</translation>
 <translation id="1439494416798956626">已移至「<ph name="FOLDER_NAME" />」。</translation>
 <translation id="1441841714100794440">越南文鍵盤 (電報打字機)</translation>
-<translation id="1455548678241328678">挪威文鍵盤</translation>
 <translation id="1464724975715666883">發生 1 個錯誤。</translation>
 <translation id="1467432559032391204">向左</translation>
 <translation id="1474339897586437869">您的 Google 雲端硬碟的可用空間不足，因此無法上傳「<ph name="FILENAME" />」。</translation>
@@ -102,7 +99,6 @@
 <translation id="2084108471225856927">裝置設定</translation>
 <translation id="2085470240340828803">名稱為「<ph name="FILENAME" />」的檔案已經存在，你想要怎麼做？</translation>
 <translation id="2121825465123208577">調整大小</translation>
-<translation id="2136953289241069843">音譯 (namaste → नमस्कार)</translation>
 <translation id="2163152940313951844">無效的字元：<ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">越南文鍵盤 (TCVN)</translation>
 <translation id="2168214441502403371">波斯文鍵盤</translation>
@@ -206,7 +202,6 @@
 <translation id="3338239663705455570">斯洛維尼亞文鍵盤</translation>
 <translation id="3353984535370177728">選取要上傳的資料夾</translation>
 <translation id="3356580349448036450">完成</translation>
-<translation id="3399597614303179694">馬其頓文鍵盤</translation>
 <translation id="3414856743105198592">將卸除式媒體格式化會清除所有資料，你要繼續嗎？</translation>
 <translation id="3437801641691368414">建立時間</translation>
 <translation id="3466147780910026086">正在掃描您的媒體裝置...</translation>
@@ -232,7 +227,6 @@
 <translation id="3644896802912593514">寬度</translation>
 <translation id="3645233063072417428">已移動 <ph name="NUMBER_OF_ITEMS" /> 個項目。</translation>
 <translation id="3645531960514756307">取消固定資料夾</translation>
-<translation id="3678559383040232393">馬爾他文鍵盤</translation>
 <translation id="3685122418104378273">使用行動數據時，Google 雲端硬碟同步功能預設為停用。</translation>
 <translation id="3689865792480713551">取消<ph name="ACTIVITY_DESCRIPTION" />。</translation>
 <translation id="3726463242007121105">這個裝置所用的檔案系統不受支援，因此系統無法開啟這個裝置。</translation>
@@ -248,7 +242,6 @@
 <translation id="3810973564298564668">管理</translation>
 <translation id="3811494700605067549">已選取 1 個檔案</translation>
 <translation id="3815016854028376614">注音輸入法</translation>
-<translation id="3825863595139017598">蒙古文鍵盤</translation>
 <translation id="38275787300541712">完成時請按下 Enter 鍵</translation>
 <translation id="3830674330436234648">無法播放</translation>
 <translation id="3833761542219863804">音譯 (mausam → ਮੌਸਮ)</translation>
@@ -257,7 +250,6 @@
 <translation id="3855472144336161447">德文 Neo 2</translation>
 <translation id="386548886866354912">使用「<ph name="EXTENSION_NAME" />」封裝</translation>
 <translation id="3866249974567520381">說明</translation>
-<translation id="391445228316373457">尼泊爾文鍵盤 (拼音)</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">播放裝置</translation>
 <translation id="3943857333388298514">貼上</translation>
@@ -346,7 +338,6 @@
 <translation id="4943368462779413526">足球</translation>
 <translation id="4961158930123534723">已與 Parallels Desktop 共用 1 個資料夾</translation>
 <translation id="4969785127455456148">相簿</translation>
-<translation id="497244430928947428">馬來文鍵盤 (拼音)</translation>
 <translation id="4973523518332075481">請使用長度不超過 <ph name="MAX_LENGTH" /> 個字元的名稱</translation>
 <translation id="4973970068702235170">壓縮失敗，發生未預期的錯誤：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="4988205478593450158">你確定要刪除「<ph name="FILE_NAME" />」嗎？</translation>
@@ -411,7 +402,6 @@
 <translation id="5438282218546237410">找不到與「<ph name="SEARCH_TERM" />」相符的結果。</translation>
 <translation id="5449551289610225147">密碼無效</translation>
 <translation id="5464696796438641524">波蘭文鍵盤</translation>
-<translation id="5465122519792752163">尼泊爾文鍵盤 (InScript)</translation>
 <translation id="5469868506864199649">義大利文</translation>
 <translation id="5484429245813572665">印尼文</translation>
 <translation id="5494920125229734069">全選</translation>

@@ -314,6 +314,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3285080554353377245">Videos über die Verwendung von Chrome</translation>
 <translation id="3288003805934695103">Seite aktualisieren</translation>
 <translation id="32895400574683172">Benachrichtigungen sind erlaubt</translation>
+<translation id="3290991969712132877">Über die Schaltfläche „Weitere Optionen“ können Sie diese Seite zum Startbildschirm hinzufügen, um schneller zurückzukehren</translation>
 <translation id="3295530008794733555">Schneller surfen. Weniger Daten verbrauchen.</translation>
 <translation id="3298243779924642547">Lite-Modus</translation>
 <translation id="3303414029551471755">Inhalt herunterladen?</translation>
@@ -470,6 +471,7 @@ Eventuell finden Sie unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4532845899244822526">Ordner auswählen</translation>
 <translation id="4538018662093857852">Lite-Modus aktivieren</translation>
 <translation id="4550003330909367850">Um Ihr Passwort hier anzeigen zu lassen oder zu kopieren, legen Sie eine Displaysperre für dieses Gerät fest.</translation>
+<translation id="4557685098773234337">Fügen Sie diese Seite zum Startbildschirm hinzu, um schneller zurückzukehren</translation>
 <translation id="4558311620361989323">Tastenkombinationen für Webseiten</translation>
 <translation id="4561979708150884304">Keine Verbindung</translation>
 <translation id="4565377596337484307">Passwort ausblenden</translation>
@@ -499,6 +501,7 @@ Eventuell finden Sie unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4720982865791209136">Helfen Sie uns, Chrome zu verbessern. <ph name="BEGIN_LINK" />An Umfrage teilnehmen<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">Ihre Top-Websites aufrufen</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
+<translation id="4732693703583195378">Sie können diese Website zum Startbildschirm des Tablets hinzufügen, um schneller zurückzukehren</translation>
 <translation id="4738836084190194332">Letzte Synchronisierung: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Neuen Tab öffnen</translation>
 <translation id="4759238208242260848">Downloads</translation>
@@ -536,6 +539,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Ihre Passwörter werden als Textdatei exportiert und heruntergeladen. Sie sind für jeden Nutzer und jede App mit Zugriff auf den Zielordner sichtbar.</translation>
 <translation id="4932247056774066048">Da Sie sich von einem Konto abmelden, das von <ph name="DOMAIN_NAME" /> verwaltet wird, werden Ihre Chrome-Daten auf diesem Gerät gelöscht. Die Daten bleiben jedoch in Ihrem Google-Konto.</translation>
+<translation id="4936039914467572121">Schneller zu dieser Website gelangen</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
 <translation id="4943872375798546930">Keine Ergebnisse</translation>
 <translation id="4961107849584082341">Lassen Sie sich diese Seite in eine beliebige Sprache übersetzen</translation>
@@ -647,6 +651,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5763382633136178763">Inkognito-Tabs</translation>
 <translation id="5763514718066511291">Tippen, um die URL für diese App zu kopieren</translation>
 <translation id="5765780083710877561">Beschreibung:</translation>
+<translation id="5767013862801005129"><ph name="TAB_TITLE" />-Tab wiederhergestellt</translation>
 <translation id="5776970333778123608">Unwichtige Daten</translation>
 <translation id="5793665092639000975"><ph name="SPACE_USED" /> von <ph name="SPACE_AVAILABLE" /> werden verwendet</translation>
 <translation id="5795872532621730126">Suchen und surfen</translation>
@@ -952,6 +957,7 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}}</translation>
 <translation id="7778840695157240389">Kommen Sie später wieder vorbei, um neue Artikel zu lesen</translation>
 <translation id="7791543448312431591">Hinzufügen</translation>
+<translation id="7798392620021911922"><ph name="TAB_COUNT" /> Tabs wiederhergestellt</translation>
 <translation id="780301667611848630">Kein Interesse</translation>
 <translation id="7810647596859435254">Öffnen mit…</translation>
 <translation id="7821588508402923572">Ihre Einsparungen bei der Datennutzung werden hier angezeigt</translation>
@@ -1137,6 +1143,7 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Original anzeigen</translation>
 <translation id="9148126808321036104">Erneut anmelden</translation>
+<translation id="9149286894143103695">Sie können diese Website zum Startbildschirm des Smartphones hinzufügen, um schneller zurückzukehren</translation>
 <translation id="9155898266292537608">Sie können auch kurz auf ein Wort tippen, um eine Suche zu starten</translation>
 <translation id="9169507124922466868">Navigationsverlauf ist halb geöffnet</translation>
 <translation id="9191031968346938109">Hinzufügen zu…</translation>

@@ -1,18 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
-<translation id="1383876407941801731">Search</translation>
-<translation id="1545749641540134597">QR कोड स्कैन करें</translation>
-<translation id="1830082319619331740">Chrome डायनो गेम खेलें</translation>
-<translation id="2831536522572655517">यूआरएल खोजें या टाइप करें</translation>
-<translation id="2912595217608952684">अपनी होम स्क्रीन से Chrome Dino गेम खेलें.</translation>
-<translation id="3853299963775718654">Chrome डायनो गेम</translation>
-<translation id="3885450376086632131">यूआरएल खोजें या \nटाइप करें</translation>
-<translation id="5171045022955879922">URL खोजें या टाइप करें</translation>
-<translation id="5839058148541733625">Chrome डायनो</translation>
-<translation id="6120021866613542190">गुप्त खोज</translation>
-<translation id="6196207969502475924">बोलकर खोजें</translation>
-<translation id="6318237480241656530">तेज़ कार्रवाई</translation>
-<translation id="6406488357183850843">अपनी आवाज़ या क्यूआर कोड से, गुप्त मोड में खोजें या नए टैब पर जाएं.</translation>
-<translation id="6515180595365725274">अपने पसंदीदा सर्च इंजन के साथ Chrome में खोजें.</translation>
 </translationbundle>

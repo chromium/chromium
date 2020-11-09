@@ -329,6 +329,11 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1523774894176285446">Browser alternativo da aprire per i siti web configurati.</translation>
 <translation id="152657506688053119">Elenco di URL alternativi per il fornitore del servizio di ricerca predefinito</translation>
 <translation id="1530812829012954197">Visualizza sempre i seguenti schemi URL nel browser host</translation>
+<translation id="1552418937045050762">Se questa impostazione viene attivata, gli utenti possono scegliere di utilizzare la funzionalità Condivisione nelle vicinanze, che consente di inviare e ricevere file dalle persone nelle vicinanze.
+
+      Se viene disattivata, gli utenti non possono attivare la funzionalità.
+
+      Se il criterio non viene configurato, per impostazione predefinita, la funzionalità non è consentita per gli utenti gestiti a livello aziendale ed è consentita per gli utenti non gestiti.</translation>
 <translation id="1553532014072799546">Whitelist limiti di utilizzo per app</translation>
 <translation id="1553956579506604198">Blocca l'installazione delle estensioni esterne</translation>
 <translation id="1555248923316727072">Impostazioni di gestione dell'identità degli utenti SAML</translation>
@@ -533,6 +538,9 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 
           Il valore viene analizzato come un dizionario JSON di associazioni tra nomi e valori di norme.</translation>
 <translation id="1969808853498848952">Esegue sempre i plug-in che richiedono l'autorizzazione (ritirata)</translation>
+<translation id="1971991630422430420">Se il criterio viene impostato su Attivato, la funzionalità Fast Transition viene utilizzata quando il punto di accesso wireless la supporta. Viene applicato a tutti gli utenti e a tutte le interfacce del dispositivo.
+
+      Se il criterio viene impostato su Disattivato o se non viene configurato, la funzionalità Fast Transition non viene utilizzata.</translation>
 <translation id="1988345404999458987">Consente di specificare le configurazioni dei server di stampa disponibili.
 
       Questo criterio consente di specificare la configurazione dei server di stampa esterni sui dispositivi <ph name="PRODUCT_OS_NAME" /> come file JSON.
@@ -928,6 +936,9 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
           Se il criterio viene impostato su falso, gli utenti non hanno la possibilità di attivare
           la funzionalità nella pagina Impostazioni.</translation>
+<translation id="250151283451228612">Se il criterio <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> viene impostato su Attivato, la configurazione di <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> consente di impostare un valore percentuale per il limite di consumo della batteria per la variazione dei picchi energetici.
+
+       Se non viene configurato, la variazione dei picchi energetici rimane disattivata.</translation>
 <translation id="2502467045153796624">Comportamento del downgrade del canale</translation>
 <translation id="250670737672448119">Consente di attivare la funzione di accessibilità di evidenziazione del cursore di testo.
 
@@ -1010,10 +1021,22 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
       Se questo criterio non viene impostato, <ph name="PRODUCT_NAME" /> utilizzerà il valore predefinito di 10.000 millisecondi.</translation>
 <translation id="257788512393330403">Richiedi inserimento della password ogni sei ore</translation>
 <translation id="2587719089023392205">Imposta <ph name="PRODUCT_NAME" /> come browser predefinito</translation>
+<translation id="2588252329503406673">La configurazione del criterio consente di impostare il comportamento di <ph name="PRODUCT_OS_NAME" /> quando non viene rilevata alcuna attività utente per un determinato periodo di tempo durante la visualizzazione della schermata di accesso. Il criterio consente di controllare diverse impostazioni. Per conoscere la semantica e gli intervalli di valori di ognuna di esse, consulta i relativi criteri che controllano la gestione dell'alimentazione all'interno di una sessione.
+
+      Le differenze rispetto a questi criteri sono le seguenti:
+
+      * Le azioni da compiere in caso di inattività o chiusura del coperchio non possono essere la chiusura della sessione.
+
+      * L'azione predefinita compiuta in caso di inattività durante l'utilizzo della corrente CA è l'arresto.
+
+      Se il criterio o una qualsiasi delle relative impostazioni non vengono configurati, vengono utilizzati i valori predefiniti per le diverse impostazioni relative all'alimentazione.</translation>
 <translation id="2592091433672667839">Durata inattività prima della visualizzazione del salvaschermo nella schermata di accesso in modalità retail</translation>
 <translation id="2592162121850992309">Se questa norma è impostata su true o non è impostata, verrà attivata l'accelerazione hardware a meno che una determinata funzione della GPU non sia stata inserita nella lista nera.
 
       Se la norma è impostata su false, l'accelerazione hardware verrà disattivata.</translation>
+<translation id="259289618675490104">Se il criterio viene impostato su "All" (valore 0) o se non viene configurato, gli utenti possono gestire i certificati. Se viene impostato su "None" (valore 2), gli utenti possono soltanto visualizzare i certificati, ma non possono gestirli.
+
+      Se il criterio viene impostato su "UserOnly", gli utenti possono gestire i certificati a livello di utente, ma non quelli a livello di dispositivo.</translation>
 <translation id="2593762551209145088">Navigazione sicura non è mai attiva.</translation>
 <translation id="26023406105317310">Configura account Kerberos</translation>
 <translation id="2604182581880595781">Configura le norme relative alla funzione Condivisioni file di rete</translation>
@@ -1081,6 +1104,11 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
 <translation id="2716623398185506073">Se il criterio viene impostato su Attivato, i dispositivi registrati segnalano statistiche hardware e identificatori relativi al consumo di energia.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, i dispositivi registrati non segnalano statistiche relative al consumo di energia.</translation>
+<translation id="2723692978495226412">Se il criterio viene impostato su Attivato, vengono visualizzati dei consigli per le app precedentemente installate dall'utente su altri dispositivi. Questi consigli vengono visualizzati in Avvio app in seguito ai consigli sulle app locali, se non viene inserito alcun testo di ricerca.
+
+      Se il criterio viene impostato su Disattivato o se non viene configurato, questi consigli non vengono visualizzati.
+
+      Se viene configurato, gli utenti non possono modificarlo.</translation>
 <translation id="2725855586003209701">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano l'elenco di utenti dei dispositivi che hanno eseguito l'accesso di recente.
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano l'elenco di utenti.</translation>
@@ -1133,6 +1161,9 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
 <translation id="2787774054174244402">L'impostazione del criterio su True impedisce agli utenti di scrivere su dispositivi di archiviazione esterni.
 
       A meno che lo spazio di archiviazione esterno non sia bloccato, se imposti ExternalStorageReadOnly su False o non lo imposti, gli utenti possono creare e modificare i file dei dispositivi di archiviazione esterni fisicamente scrivibili. Puoi bloccare lo spazio di archiviazione esterno impostando ExternalStorageDisable su True.</translation>
+<translation id="2791750069439339908">Se il criterio <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> viene impostato su <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, la configurazione di <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> consente di personalizzare quando viene interrotta la ricarica della batteria. Si basa su una percentuale del livello di ricarica della batteria. Il valore del criterio <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> deve essere inferiore di almeno 5 punti percentuali rispetto a quello del criterio <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
+
+      Se il criterio non viene configurato, viene applicata la modalità di ricarica della batteria di <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" />.</translation>
 <translation id="2796714419743648316">Lista consentita limiti di utilizzo per app</translation>
 <translation id="2796896367838042659">Questo criterio consente di specificare le applicazioni e gli URL da autorizzare per i limiti di utilizzo per app.
         La lista consentita configurata viene applicata alle app installate su <ph name="PRODUCT_OS_NAME" /> per l'utente in questione con limiti di utilizzo per app.
@@ -1745,6 +1776,11 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
       Se questo criterio viene impostato su vero o non viene configurato, sarà possibile creare nuovi account utente purché <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> non impedisca all'utente di accedere.</translation>
 <translation id="3653237928288822292">Icona del provider di ricerca predefinito</translation>
 <translation id="3654906736796256792">Consenti l'esecuzione della sandbox dell'audio</translation>
+<translation id="3659542706175323490">Se il criterio viene impostato su Attivato, l'avvio tramite CA rimane abilitato, se supportato dal dispositivo. L'avvio tramite CA consente al sistema di riavviarsi dallo stato Off o Ibernazione quando il dispositivo viene collegato alla corrente.
+
+      Se il criterio viene impostato su Disattivato, l'avvio tramite CA viene disabilitato.
+
+      Se viene configurato, gli utenti non possono modificarlo. Se non viene configurato, il riavvio tramite CA viene disattivato e gli utenti non possono modificare questa impostazione.</translation>
 <translation id="3660510274595679517">
         Se questo criterio viene impostato su true, la registrazione alla gestione della cloud è obbligatoria e blocca il processo di avvio di Chrome, qualora l'esito fosse negativo.
 
@@ -1764,6 +1800,9 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 <translation id="3709266154059827597">Configura blacklist per l'installazione delle estensioni</translation>
 <translation id="3711895659073496551">Sospensione</translation>
 <translation id="3715569262675717862">Autenticazione basata su certificati client</translation>
+<translation id="3727476641336727380">A meno che <ph name="ALLOW_WAKE_LOCKS_POLICY_NAME" /> sia impostato su Disattivato, la mancata configurazione o l'impostazione del criterio <ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME" /> su Attivato, consente i wakelock dello schermo per la gestione dell'alimentazione. Le estensioni possono richiedere wakelock dello schermo tramite l'API dell'estensione di gestione dell'alimentazione e le app ARC.
+
+      Se il criterio viene impostato su Disattivato, le richieste di wakelock dello schermo vengono retrocesse a richieste di wakelock del sistema.</translation>
 <translation id="3727675072430693164">Se il criterio viene impostato su Attivato, i dispositivi registrati segnalano statistiche hardware relative ai componenti SoC.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, i dispositivi registrati non segnalano le statistiche.</translation>
@@ -1790,6 +1829,9 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
       Se queste norme non vengono impostate, gli utenti possono scegliere autonomamente le impostazioni del proxy.</translation>
 <translation id="3758249152301468420">Disabilita Strumenti per sviluppatori</translation>
 <translation id="3760231600118073732">La sessione corrente viene bloccata</translation>
+<translation id="3762520180381586267">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_OS_NAME" /> attiva il riavvio quando gli utenti arrestano il dispositivo. <ph name="PRODUCT_OS_NAME" /> sostituisce tutti i pulsanti di arresto nell'UI con quelli di riavvio. Se gli utenti arrestano i dispositivi utilizzando il tasto di accensione, non verrà eseguito alcun riavvio automatico, nemmeno se il criterio è stato attivato.
+
+      Se il criterio viene impostato su Disattivato o se non viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agli utenti di arrestare il dispositivo.</translation>
 <translation id="3765260570442823273">Durata del messaggio di avviso di uscita per inattività</translation>
 <translation id="377044054160169374">Applicazione dell'intervento in caso di esperienza intrusiva</translation>
 <translation id="3780152581321609624">Includi porta non standard in Kerberos SPN</translation>
@@ -1824,6 +1866,11 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
       Se questa norma non viene impostata o viene impostata su false, <ph name="PRODUCT_NAME" /> segue il piano di ritiro pubblico.
 
       Visita la pagina https://g.co/chrome/symantecpkicerts per avere ulteriori informazioni sul ritiro.</translation>
+<translation id="3831836327853123066">La configurazione del criterio consente di limitare il tempo di attività del dispositivo tramite la programmazione di riavvii automatici, che è possibile ritardare di massimo 24 ore se un utente sta utilizzando il dispositivo. Il valore del criterio deve essere specificato in secondi. Il valore minimo consentito è 3600 (1 ora).
+
+      Se il criterio viene configurato, gli utenti non possono modificarlo. Se non viene configurato, il tempo di attività del dispositivo non viene limitato.
+
+      Nota: gli avvii automatici vengono attivati solo quando viene visualizzata la schermata di accesso o durante la sessione di un'app kiosk.</translation>
 <translation id="3835692988507803626">Forza la disattivazione delle lingue per correttore ortografico</translation>
 <translation id="3837424079837455272">Questa norma consente di stabilire se i nuovi utenti possono essere aggiunti a <ph name="PRODUCT_OS_NAME" />. Non impedisce agli utenti di accedere ad Account Google aggiuntivi su Android. Se vuoi impedirlo, configura la norma <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> specifica per Android nell'ambito della norma <ph name="ARC_POLICY_POLICY_NAME" />.</translation>
 <translation id="3838094946886335701">Se il criterio viene impostato (solo come consigliato), puoi registrare un elenco di gestori di protocolli che vengono uniti a quelli registrati dall'utente, con conseguente utilizzo di entrambi i gruppi. Imposta la proprietà "protocollo" sullo schema (ad esempio "mailto") e la proprietà "URL" sul pattern URL dell'applicazione che gestisce lo schema specificato nel campo "protocollo". Il pattern può includere un segnaposto "%s", che viene sostituito dall'URL gestito.
@@ -1940,6 +1987,11 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 <translation id="3942041691320538491">Se il criterio è impostato su 0 (valore predefinito), è possibile accedere agli strumenti per sviluppatori e alla console JavaScript, ma non se ci sono estensioni installate in base alle norme aziendali. Se il criterio è impostato su 1, è possibile accedere agli strumenti per sviluppatori e alla console JavaScript in ogni caso, anche se ci sono estensioni installate in base alle norme aziendali. Se il criterio è impostato su 2, non è possibile accedere agli strumenti per sviluppatori, né esaminare gli elementi del sito web.
 
       Questa impostazione disattiva anche le scorciatoie da tastiera e le voci dei menu o dei menu contestuali per aprire gli strumenti per sviluppatori o la console JavaScript.</translation>
+<translation id="3947431236979598549">Consente di attivare o di disattivare una notifica quando lo spazio sul disco è in esaurimento. La scelta si applica a tutti gli utenti sul dispositivo.
+
+      Se il dispositivo non è gestito o se è presente un solo utente, il criterio viene ignorato e la notifica viene sempre visualizzata.
+
+      Se sono presenti diversi account utente su un dispositivo gestito, la notifica viene visualizzata soltanto se il criterio è stato attivato.</translation>
 <translation id="3950110092991281616">Attiva l'autenticazione ambientale solo nelle sessioni standard.</translation>
 <translation id="3950239119790560549">Limitazioni relative alla data/ora di aggiornamento</translation>
 <translation id="3956686688560604829">Utilizza la norma SiteList di Internet Explorer per il Supporto dei browser precedenti.</translation>
@@ -1955,6 +2007,9 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
       Se il criterio dello sfondo del dispositivo non viene impostato, è il criterio dello sfondo dell'utente a definire cosa mostrare se si imposta il criterio dello sfondo del dispositivo.</translation>
 <translation id="3964298692570794635">Consenti contenuti non sicuri su questi siti</translation>
 <translation id="3965339130942650562">Timeout fino a esecuzione uscita utente non attivo</translation>
+<translation id="3971673686578912106">Se il criterio viene impostato su Attivato, il plug-in <ph name="PLUGIN_VM_NAME" /> viene abilitato per il dispositivo, a condizione che anche le altre impostazioni lo permettano. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> e <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> devono essere impostati su Vero e <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> o <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> devono essere configurati per consentire l'esecuzione di <ph name="PLUGIN_VM_NAME" />.
+
+      Se il criterio viene impostato su Disattivato o se non viene configurato, il plug-in <ph name="PLUGIN_VM_NAME" /> non viene attivato per il dispositivo.</translation>
 <translation id="3973371701361892765">Non nascondere mai automaticamente lo shelf</translation>
 <translation id="3979738908158213640">URL a cui verrà concesso l'accesso per eseguire l'attestazione del dispositivo durante l'autenticazione SAML</translation>
 <translation id="3980024487013511975">Consente di specificare le stampanti non utilizzabili da un utente.
@@ -1973,6 +2028,9 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
       Se la norma è impostata su False, nella schermata di accesso di <ph name="PRODUCT_OS_NAME" /> non verranno visualizzati gli utenti esistenti. Verrà visualizzata la normale schermata di accesso (richiesta di email utente e password o telefono) o la schermata interstiziale SAML (se attivata tramite la norma <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />), a meno che non sia stata configurata una sessione gestita. Quando viene configurata una sessione gestita, verranno visualizzati solo gli account della sessione gestita, consentendo di selezionarne uno.
 
       Tieni presente che questa norma non influisce sull'eliminazione o meno dei dati utenti locali sul dispositivo.</translation>
+<translation id="4009527123617846557">Se il criterio <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> viene impostato su <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, la configurazione di <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> consente di personalizzare quando viene avviata la ricarica della batteria. Si basa su una percentuale del livello di esaurimento della batteria. Il valore deve essere di almeno 5 punti percentuali inferiore a <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
+
+      Se il criterio non viene configurato, viene applicata la modalità di ricarica standard della batteria.</translation>
 <translation id="4010738624545340900">Consenti richiamo di finestre di dialogo di selezione file</translation>
 <translation id="401260868452018796">Posiziona la shelf nella parte inferiore dello schermo</translation>
 <translation id="4012737788880122133">Se questa norma viene impostata su True, gli aggiornamenti automatici vengono disattivati.
@@ -2011,6 +2069,9 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 
       Se configuri il criterio, gli utenti non possono modificarlo. Se il criterio non è configurato, la Lente d'ingrandimento risulta disattivata all'inizio, ma gli utenti possono attivarla in qualsiasi momento.</translation>
 <translation id="410068710490553233">Consenti l'accesso ad altri Account Google</translation>
+<translation id="4103177213841380258">Questo criterio consente di gestire l'accesso alle funzionalità controllabili nell'UI di rilevamento dei dispositivi locali (<ph name="CHROME_DEVICES_LINK" />), in cui vengono mostrati i dispositivi rilevabili accanto all'utente, nonché i dispositivi cloud a cui è registrato. Su tutti i sistemi operativi tranne <ph name="PRODUCT_OS_NAME" />, l'UI di rilevamento dei dispositivi locali consente inoltre agli utenti di aggiungere a <ph name="CLOUD_PRINT_NAME" /> stampanti classiche collegate ai propri computer.
+
+      Se il criterio non viene configurato, questa funzionalità viene attivata.</translation>
 <translation id="4103289232974211388">Reindirizza a IdP SAML dopo la conferma dell'utente</translation>
 <translation id="4105884561459127998">Consente di configurare il tipo di autenticazione per gli accessi SAML.
 
@@ -2216,6 +2277,11 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="4447668084338250480">Comportamento di reindirizzamento Intranet</translation>
 <translation id="4449469846627734399">Consente di impostare la configurazione giornaliera della variazione dei picchi energetici</translation>
 <translation id="4449545651113180484">Ruota lo schermo in senso orario di 270°</translation>
+<translation id="4450005376189179872">Se il criterio <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> viene impostato su Attivato, la configurazione di <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> consente di impostare la modalità di ricarica avanzata della batteria. Il valore per il campo <ph name="CHARGE_START_TIME_FIELD_NAME" /> deve essere inferiore a quello per il campo <ph name="CHARGE_END_TIME_FIELD_NAME" />.
+
+      Se il criterio non viene configurato, la modalità di ricarica avanzata della batteria rimane disattivata.
+
+      I valori validi per il campo <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARGE_START_TIME_FIELD_NAME" /> e <ph name="CHARGE_END_TIME_FIELD_NAME" /> sono 0, 15, 30 e 45.</translation>
 <translation id="445270821089253489">Consente di stabilire i tipi di informazioni su dispositivi e utenti da segnalare.</translation>
 <translation id="4453913621209182880">Consenti solo la stampa con immagini di sfondo</translation>
 <translation id="4454820008017317557">Mostra l'icona della barra degli strumenti di <ph name="PRODUCT_NAME" /></translation>
@@ -3143,6 +3209,11 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 
       Questo comportamento non viene attivato se Navigazione sicura viene disattivata (tramite il criterio o dall'utente). Per l'attivazione forzata di Navigazione sicura, utilizza il criterio <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> o <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="5836064773277134605">Limita l'intervallo di porte UDP utilizzate dall'host di accesso remoto</translation>
+<translation id="5837898601525273156">Se il criterio <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> viene configurato, l'impostazione di <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> su Attivato consente di mantenere attivo il criterio di gestione della modalità di ricarica avanzata della batteria (se supportato dal dispositivo). Tramite un algoritmo di ricarica standard e altre tecniche al di fuori dell'orario di lavoro, questa modalità consente agli utenti di ottimizzare le condizioni della batteria Durante l'orario di lavoro, il sistema utilizza una ricarica express, consentendo alla batteria di ricaricarsi più rapidamente. Specifica quando il sistema viene utilizzato con maggiore frequenza ogni giorno e per quanto tempo tramite l'ora di inizio e la durata.
+
+      Se il criterio viene impostato su Disattivato o se non viene configurato, la modalità di ricarica avanzata della batteria rimane disabilitata.
+
+      Gli utenti non possono modificare questa impostazione.</translation>
 <translation id="5845686745936515940">Ti consente di ripristinare il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente per tutti i cookie. Se ripristini il comportamento precedente, i cookie per cui non è specificato un attributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> vengono considerati come se avessero il valore "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />"; viene rimosso il requisito che richiede che i cookie "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" abbiano l'attributo "<ph name="ATTRIBUTE_SECURE_NAME" />" e viene ignorato il confronto tra schemi nel valutare se due siti sono stesso sito. Per una descrizione completa, visita la pagina https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
 
           Se questo criterio non viene impostato, il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> predefinito per i cookie dipenderà dalla configurazione personale dell'utente per la funzionalità <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, la funzionalità <ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" />, e la funzionalità <ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" />, che potrebbero essere impostate in base a una prova pubblica o tramite l'attivazione o disattivazione rispettivamente dei flag <ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, <ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> o <ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" />.</translation>
@@ -3289,6 +3360,11 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 
       Se viene usato questo criterio, solo le stampanti con ID corrispondenti ai valori del criterio saranno disponibili per gli utenti. Gli ID devono corrispondere ai campi "id" o "guid" del file specificato nel criterio <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.
       </translation>
+<translation id="6058879286588763839">A meno che <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> venga specificato, sovrascrivendo <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />, la configurazione di <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> consente di specificare il criterio di gestione della modalità di ricarica della batteria (se supportato dal dispositivo). Per estendere la durata della batteria, il criterio controlla dinamicamente la ricarica della batteria riducendo al minimo l'usura e preservandone l'efficienza.
+
+      Se il criterio non viene configurato, è possibile applicare la modalità di ricarica standard della batteria (se supportata dal dispositivo) e gli utenti non possono modificarlo.
+
+      Nota: se viene selezionata la modalità di ricarica personalizzata della batteria, vengono specificati anche i criteri <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> e <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.</translation>
 <translation id="6066761914755798079">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> consente di specificare l'URL del motore di ricerca per fornire suggerimenti per le ricerche. L'URL dovrebbe includere la stringa <ph name="SEARCH_TERM_MARKER" />, sostituita nella query dai termini di ricerca degli utenti.
 
       Puoi specificare l'URL di ricerca di Google come: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
@@ -3550,6 +3626,7 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 <translation id="6467613372414922590">Consenti host di messaggistica nativi a livello di utente (installati senza privilegi di amministratore)</translation>
 <translation id="6473623140202114570">Configura l'elenco di domini sui quali Navigazione sicura non attiverà avvisi.</translation>
 <translation id="647698599569353771">Consenti l'attivazione di Condivisione nelle vicinanze.</translation>
+<translation id="6478261301433199402">La configurazione del criterio consente di specificare l'immagine <ph name="PLUGIN_VM_NAME" /> per un utente. È necessario specificare il criterio come stringa in formato JSON, per cui il campo <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> specifica dove l'immagine viene scaricata e il campo <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> come hash SHA-256 utilizzato per verificare l'integrità del download.</translation>
 <translation id="6485813825811798133">La configurazione del criterio consente di elencare pattern URL che specificano quale sito non può richiedere agli utenti l'accesso di lettura di file o directory nel file system del sistema operativo host tramite l'API file system.
 
       Se il criterio non viene configurato, <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> viene applicato a tutti i siti, se impostato. In caso contrario, vengono applicate le impostazioni personali degli utenti.
@@ -3623,6 +3700,7 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 
           Per informazioni dettagliate sui pattern URL validi, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="6553143066970470539">Percentuale di luminosità dello schermo</translation>
+<translation id="6558362593755624474">La configurazione del criterio consente di specificare il codice licenza <ph name="PLUGIN_VM_NAME" /> per il dispositivo.</translation>
 <translation id="6559057113164934677">Non consentire ad alcun sito di accedere alla fotocamera e al microfono</translation>
 <translation id="6559475864956112261">Questo criterio è deprecato. Utilizza il criterio <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
@@ -3834,6 +3912,7 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 
       Se il criterio viene impostato su Disattivato, viene visualizzato invece un messaggio di errore.</translation>
 <translation id="6821268164692776674">Destinazioni <ph name="CLOUD_PRINT_NAME" /> e "Salva su Google Drive"</translation>
+<translation id="6823711520976094072">La mancata configurazione o l'impostazione del criterio su valori inferiori a 1 MB implica l'utilizzo da parte di <ph name="PRODUCT_OS_NAME" /> della dimensione predefinita, corrispondente a 256 MiB, per le estensioni e le app di memorizzazione nella cache per l'installazione da parte di più utenti di un singolo dispositivo. In questo modo, non è necessario scaricare nuovamente tutte le app o estensioni per ogni utente.</translation>
 <translation id="682408981080798691">Se il criterio viene impostato su Attivato o se non viene configurato, l'integrità del codice del renderer viene attivata.
 
       Se viene impostato su Disattivato, la sicurezza e la stabilità di <ph name="PRODUCT_NAME" /> diminuiranno, in quanto codice sconosciuto e potenzialmente dannoso può essere caricato all'interno dei processi del renderer di <ph name="PRODUCT_NAME" />. Disattivalo solo se si verificano dei problemi di compatibilità con software di terze parti che devono essere eseguiti all'interno dei processi del renderer di <ph name="PRODUCT_NAME" />.
@@ -4106,6 +4185,9 @@ Se questa norma è impostata su True o non è impostata, il modello di oscuramen
 
       Se la norma non viene impostata, l'utente è libero di fare la propria scelta.</translation>
 <translation id="7145335384492396213">Modalità di stampa PIN predefinita</translation>
+<translation id="7146198347561863646">Se il criterio viene impostato su Attivato o se non viene configurato, sono consentiti wakelock per la gestione dell'alimentazione. Le estensioni possono richiedere wakelock tramite l'API dell'estensione di gestione dell'alimentazione e le app ARC.
+
+      Se il criterio viene impostato su Disattivato, le richieste di wakelock vengono ignorate.</translation>
 <translation id="7149042336307555519"> I tipi di connessioni che è consentito utilizzare per gli aggiornamenti del sistema operativo. Gli aggiornamenti del sistema operativo potrebbero gravare sulla connessione a causa delle loro dimensioni e potrebbero comportare costi aggiuntivi. Di conseguenza, per impostazione predefinita non sono attivi per i tipi di connessione considerati costosi (attualmente solo "cellulare").
 
       Gli identificatori dei tipi di connessione riconosciuti sono <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> e <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
@@ -4475,6 +4557,9 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
           Nota: se specificato, <ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" /> sostituisce questo criterio.</translation>
 <translation id="7632147323011514740">Intervalli in cui è possibile avviare la procedura di aggiornamento delle istantanee dei dati ARC per le sessioni Ospite gestite</translation>
 <translation id="7632724434767231364">Nome della libreria GSSAPI</translation>
+<translation id="7635106595080609261">La mancata configurazione o l'impostazione del criterio su Attivato, consente a Chrome di mostrare finestre di dialogo di selezione dei file che gli utenti possono aprire.
+
+      Se il criterio viene impostato su Disattivato, quando gli utenti eseguono delle azioni che comportano l'apertura di una finestra di dialogo di selezione dei file, come importare preferiti, caricare file e salvare link, viene visualizzato un messaggio. Il browser presuppone che l'utente abbia fatto clic su Annulla nella finestra di dialogo di selezione dei file.</translation>
 <translation id="7643883929273267746">Limita gli account visibili in <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648907905084499629">Usa il comportamento <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> per i cookie su tutti i siti</translation>
 <translation id="7657261947024629645">Ottimizza per ottenere il massimo rendimento.</translation>
@@ -4590,6 +4675,11 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
           Se questo criterio non viene impostato, le scorciatoie delle funzioni di accessibilità saranno attive per impostazione predefinita nella schermata di accesso.</translation>
 <translation id="7777535871204167559">Considera i dispositivi di archiviazione esterni come di sola lettura</translation>
+<translation id="7781853854781306082">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_OS_NAME" /> richiede agli utenti una password per sbloccare il dispositivo quando è inattivo.
+
+      Se viene impostato su Disattivato, agli utenti non viene richiesta alcuna password per sbloccare il dispositivo quando è in modalità di sospensione.
+
+      Se non viene configurato, gli utenti possono scegliere se dover inserire una password o meno per sbloccare il dispositivo quando è in modalità di sospensione.</translation>
 <translation id="7788511847830146438">Per profilo</translation>
 <translation id="780629758750905699">Consenti l'aggiunta di account Family Link al dispositivo</translation>
 <translation id="7807139251387225825">Elenco di tipi di dati che dovrebbero essere esclusi dalla sincronizzazione</translation>
@@ -4606,6 +4696,11 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Questo criterio è deprecato, utilizza <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> al suo posto.
       </translation>
 <translation id="782661371433719637">Non consentire a nessun sito di richiedere l'accesso di lettura di file e directory tramite l'API file system</translation>
+<translation id="7839180815400079700">Se il criterio <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> viene impostato su Attivato, la configurazione di <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> consente di impostare la variazione giornaliera dei picchi energetici.
+
+      Se il criterio non viene configurato, la variazione dei picchi energetici rimane disabilitata.
+
+      I valori validi per il campo <ph name="MINUTE_FIELD_NAME" /> in <ph name="START_TIME_FIELD_NAME" />, <ph name="END_TIME_FIELD_NAME" /> e <ph name="CHARGE_START_TIME_FIELD_NAME" /> sono 0, 15, 30 e 45.</translation>
 <translation id="7841880500990419427">Versione TLS minima a cui retrocedere</translation>
 <translation id="7846952520291088817">URL per cui vengono esposti IP locali nei candidati ICE WebRTC</translation>
 <translation id="7848641140449742406">Impostazioni del sistema operativo</translation>
@@ -4747,6 +4842,9 @@ Se attivi questa impostazione o non imposti un valore, la funzione Compilazione 
 <translation id="8053580360728293758">Consente di eseguire l'override della modalità di stampa a colori predefinita. Se la modalità non è disponibile, questa norma viene ignorata.</translation>
 <translation id="8056237304861875584">Consenti l'attivazione della continuazione di attività Phone Hub</translation>
 <translation id="8059164285174960932">URL su cui i client di accesso remoto dovrebbero ottenere il token di autenticazione</translation>
+<translation id="8076521374016204899">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti che hanno effettuato l'autenticazione con una password possono bloccare lo schermo.
+
+      Se viene impostato su Disattivato, gli utenti non possono bloccare lo schermo e possono soltanto uscire dalla sessione utente.</translation>
 <translation id="8077245272412229388">Aggiunge account Kerberos compilati automaticamente. Se le credenziali di Kerberos corrispondono alle credenziali di accesso, un account può essere configurato in modo da riutilizzare le credenziali di accesso specificando "<ph name="LOGIN_EMAIL_PLACEHOLDER" />" e "<ph name="PASSWORD_PLACEHOLDER" />" rispettivamente per l'account principale e la password, in modo che le richieste di Kerberos possano essere recuperate automaticamente, a meno che non sia configurata l'autenticazione a due fattori. Gli utenti non possono modificare gli account aggiunti tramite questo criterio.
 
           Se questo criterio è attivato, l'elenco degli account definiti dal criterio viene aggiunto alle impostazioni Account Kerberos.
@@ -5096,6 +5194,15 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
           Se questo criterio non viene impostato, viene usato un periodo di tempo predefinito.
 
           Il valore del criterio deve essere specificato in millisecondi.</translation>
+<translation id="8603454805657060638">La configurazione del criterio consente all'amministratore di modificare l'indirizzo MAC (Media Access Control) quando un dispositivo viene inserito nel dock. Quando alcuni modelli di dispositivi vengono inseriti nel dock, per impostazione predefinita, l'indirizzo MAC designato per il dispositivo viene utilizzato per identificare il dispositivo su Ethernet.
+
+      Se "DeviceDockMacAddress" viene selezionato o se il criterio non viene configurato, viene utilizzato l'indirizzo MAC designato del dock.
+
+      Se "DeviceNicMacAddress" viene selezionato, viene utilizzato l'indirizzo MAC NIC (Network Interface Controller) del dispositivo.
+
+      Se "DockNicMacAddress" viene selezionato, viene utilizzato l'indirizzo MAC NIC del dock.
+
+      Gli utenti non possono modificare questa impostazione.</translation>
 <translation id="8604178325750278068">Se il criterio viene impostato su Attivato, l'Assistente Google potrà ascoltare la frase di attivazione vocale. Se il criterio viene impostato su Disattivato, l'Assistente Google non potrà ascoltare la frase.
 
       Se il criterio non viene configurato, gli utenti potranno decidere se attivare o disattivare la funzionalità.</translation>

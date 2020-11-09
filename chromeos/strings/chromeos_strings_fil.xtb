@@ -94,13 +94,16 @@
 Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5222676887888702881">Mag-sign out</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">Patakbuhin Ulit ang Mga Routine</translation>
 <translation id="5317780077021120954">I-save</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Pumili ng bago ngayon</translation>
 <translation id="5372659122375744710">Hindi secure ang WiFi network</translation>
 <translation id="5401938042319910061">Patakbuhin ang Lahat ng Routine</translation>
+<translation id="5431318178759467895">Kulay</translation>
 <translation id="5457599981699367932">Mag-browse bilang Bisita</translation>
 <translation id="54609108002486618">Pinamamahalaan</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">Magdagdag ng Tao</translation>
 <translation id="5895138241574237353">I-restart</translation>
 <translation id="6040143037577758943">Isara</translation>
@@ -141,7 +144,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8364946094152050673">Mga walang lamang name server</translation>
 <translation id="8475690821716466388">Naka-secure ang WiFi network gamit ang mahinang protocol na WEP PSK</translation>
 <translation id="8477551185774834963">Medyo mas mataas sa pinapayagang limitasyon ang latency ng DNS</translation>
-<translation id="8668052347555487755">Mode ng kulay</translation>
 <translation id="871560550817059752">Hindi na-print - Wala nang ink</translation>
 <translation id="8723108084122415655">Mas mataas sa limitasyon ng latency ang hindi default na network</translation>
 <translation id="8726019395068607495">Huminto - Nakabukas ang door</translation>

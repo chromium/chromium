@@ -264,6 +264,7 @@
 <translation id="1300415640239881824">Сайт <ph name="DOMAIN" /> хоче, щоб система Google підтвердила ідентифікаційні дані вашого пристрою. Це допоможе визначити, чи він підтримує розширені можливості відтворення захищеного вмісту.</translation>
 <translation id="1300806585489372370">Щоб змінити це налаштування, спершу <ph name="BEGIN_LINK" />ввімкніть ідентифікатори<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080">Сайт <ph name="ORIGIN" /> може змінювати вказані нижче файли</translation>
+<translation id="1302139669997477151">Знімок екрана заблоковано</translation>
 <translation id="1302227299132585524">Дозволити JavaScript від подій Apple</translation>
 <translation id="1303101771013849280">HTML-файл із закладками</translation>
 <translation id="1303671224831497365">Пристрої Bluetooth не знайдено</translation>
@@ -311,6 +312,7 @@
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1353980523955420967">Не вдається знайти файл PPD. Переконайтеся, що Chromebook під’єднано до Інтернету, і повторіть спробу.</translation>
 <translation id="1354045473509304750">Надалі дозволяти сайту <ph name="HOST" /> використовувати й переміщувати камеру</translation>
+<translation id="1355088139103479645">Видалити всі дані?</translation>
 <translation id="1355466263109342573">Плагін <ph name="PLUGIN_NAME" /> заблоковано</translation>
 <translation id="1358741672408003399">Правопис і граматика</translation>
 <translation id="1359923111303110318">Ваш пристрій можна розблоковувати за допомогою Smart Lock. Натисніть клавішу Enter, щоб розблокувати.</translation>
@@ -494,6 +496,7 @@
 <translation id="1553538517812678578">без обмежень</translation>
 <translation id="1554390798506296774">Завжди дозволяти плагіни з неізольованим програмним середовищем на хості <ph name="HOST" /></translation>
 <translation id="1555130319947370107">Синій</translation>
+<translation id="1556302226221634923">Люди, чиї пристрої з розблокованим екраном видимі для вашого, і пристрої, які є поблизу, коли відкрито вікно функції "Передавання поблизу"</translation>
 <translation id="1556537182262721003">Не вдалося перемістити каталог розширення в профіль.</translation>
 <translation id="155865706765934889">Сенсорна панель</translation>
 <translation id="1562119309884184621">Якщо ви додасте цю людину в список контактів, надалі вона зможе передавати дані на ваш пристрій, коли буде поруч</translation>
@@ -1274,6 +1277,7 @@
 <translation id="2457246892030921239">Додатку <ph name="APP_NAME" /> потрібен дозвіл копіювати файли з тому <ph name="VOLUME_NAME" />.</translation>
 <translation id="2458379781610688953">Оновити обліковий запис, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Недійсний маркер керування пристрою.</translation>
+<translation id="2459703812219683497">Виявлено код активації</translation>
 <translation id="2462724976360937186">Ідентифікатор ключа центру сертифікації</translation>
 <translation id="2462752602710430187">Додано принтер <ph name="PRINTER_NAME" /></translation>
 <translation id="2464089476039395325">Проксі-сервер HTTP</translation>
@@ -1778,7 +1782,6 @@
 <translation id="3029466929721441205">Показувати інструменти стилуса на панелі</translation>
 <translation id="3031417829280473749">Агент X</translation>
 <translation id="3031557471081358569">Виберіть елементи для імпорту:</translation>
-<translation id="3036041939445522540">Доступних контактів немає</translation>
 <translation id="3036327949511794916">Кінцевий термін повернення пристрою <ph name="DEVICE_TYPE" /> минув.</translation>
 <translation id="3036546437875325427">Увімкнути Flash</translation>
 <translation id="3037754279345160234">Неможливо виконати синтаксичний аналіз конфігурації приєднання домену. Зв’яжіться з адміністратором.</translation>
@@ -2071,6 +2074,7 @@
 <translation id="3413122095806433232">Видавці ЦС: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Розмір:</translation>
 <translation id="3416468988018290825">Завжди показувати повні URL-адреси</translation>
+<translation id="3417835166382867856">Шукати вкладки</translation>
 <translation id="3417836307470882032">24-годинний формат часу</translation>
 <translation id="3420501302812554910">Потрібно скинути внутрішній ключ безпеки</translation>
 <translation id="3421376478111338173">{COUNT,plural, =1{1 зображення}one{# зображення}few{# зображень}many{# зображень}other{# зображення}}</translation>
@@ -2104,6 +2108,7 @@
 <translation id="3441653493275994384">Екран</translation>
 <translation id="3441663102605358937">Щоб підтвердити обліковий запис <ph name="ACCOUNT" />, увійдіть у нього ще раз</translation>
 <translation id="3445047461171030979">Швидкі відповіді Google Асистента</translation>
+<translation id="3445770710327978113">Щоб швидко повертатися сюди, установіть додаток</translation>
 <translation id="3445925074670675829">Пристрій із портом USB типу C</translation>
 <translation id="3446274660183028131">Щоб установити Windows, запустіть додаток Parallels Desktop.</translation>
 <translation id="344630545793878684">Переглядати ваші дані на декількох веб-сайтах</translation>
@@ -4633,7 +4638,6 @@
 <translation id="6445450263907939268">Якщо ви не хочете цих змін, можна відновити попередні налаштування.</translation>
 <translation id="6447842834002726250">Cookie-файли</translation>
 <translation id="6450876761651513209">Змінювати налаштування конфіденційності</translation>
-<translation id="6451180435462401570">Керувати пристроями Google Cloud Print</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> і ще одна вкладка}one{<ph name="PAGE_TITLE" /> і ще # вкладка}few{<ph name="PAGE_TITLE" /> і ще # вкладки}many{<ph name="PAGE_TITLE" /> і ще # вкладок}other{<ph name="PAGE_TITLE" /> і ще # вкладки}}</translation>
 <translation id="6451689256222386810">Якщо ви забули парольну фразу або хочете змінити це налаштування, <ph name="BEGIN_LINK" />скиньте синхронізацію<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Відхилити</translation>
@@ -4779,6 +4783,7 @@
 <translation id="6624687053722465643">Смакота</translation>
 <translation id="6628328486509726751">Завантажено: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630752851777525409">Розширенню <ph name="EXTENSION_NAME" /> потрібен постійний доступ до сертифіката, щоб проходити автентифікацію від вашого імені.</translation>
+<translation id="6630956688541588659">Усі контакти неподалік, коли екран розблоковано, та пристрої, які є поблизу, коли відкрито вікно функції "Передавання поблизу"</translation>
 <translation id="6635944431854494329">Власник може керувати цією функцією в меню "Налаштування &gt; Розширені &gt; Автоматично надсилати в Google дані про діагностику та використання".</translation>
 <translation id="6635956300022133031">Вибрати й налаштувати голоси для синтезу мовлення</translation>
 <translation id="6636588250634969791">Спершу вставте SIM-карту</translation>
@@ -4939,8 +4944,6 @@
 <translation id="6824584962142919697">&amp;Перевірити елементи</translation>
 <translation id="6825184156888454064">Сортувати за назвою</translation>
 <translation id="6826872289184051766">Підтвердити через USB</translation>
-<translation id="6827487342470222762">У вас немає відповідних контактів. Щоб використовувати функцію "Передавання поблизу" разом зі своїм списком контактів, додайте в нього електронні адреси облікових записів Google.</translation>
-<translation id="6827623133556594466">Після 31 грудня Google Cloud Print більше не підтримуватиметься. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Дозволити вхід цим користувачам:</translation>
 <translation id="6828182567531805778">Щоб синхронізувати дані, введіть парольну фразу</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5054,6 +5057,7 @@
 <translation id="6955535239952325894">Цей параметр вимкнено в керованих веб-переглядачах</translation>
 <translation id="6957044667612803194">Цей ключ безпеки не підтримує PIN-коди</translation>
 <translation id="6957231940976260713">Назва служби</translation>
+<translation id="696103774840402661">Усі файли та локальні дані всіх користувачів на цьому пристрої <ph name="DEVICE_TYPE" /> видалено назавжди.</translation>
 <translation id="6964390816189577014">Герой</translation>
 <translation id="6964760285928603117">Вилучити з групи</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -5244,6 +5248,7 @@
 <translation id="7180611975245234373">Оновити</translation>
 <translation id="7180865173735832675">Налаштувати</translation>
 <translation id="7182791023900310535">Перемістити пароль</translation>
+<translation id="7185907299184016376">Вибрані контакти неподалік, коли екран розблоковано, та пристрої, які є поблизу, коли відкрито вікно функції "Передавання поблизу"</translation>
 <translation id="7186088072322679094">Залишити на панелі інструментів</translation>
 <translation id="7187428571767585875">Записи в реєстрі, які буде видалено або змінено:</translation>
 <translation id="7187855807420906517">Коли ви закриваєте сторінку чи переходите в режим офлайн, сайти зазвичай продовжують синхронізацію, щоб завершити завдання (наприклад, завантажити фото чи надіслати повідомлення в чаті)</translation>
@@ -5410,6 +5415,7 @@
 <translation id="7380622428988553498">Назва пристрою містить недійсні символи</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> оновлено</translation>
 <translation id="7384687527486377545">Автоматичний повтор натиснутої клавіші</translation>
+<translation id="7385490373498027129">Усі файли та локальні дані всіх користувачів на цьому пристрої <ph name="DEVICE_TYPE" /> буде видалено назавжди.</translation>
 <translation id="7385854874724088939">Завдання друку не виконано. Перевірте свій принтер і спробуйте ще раз.</translation>
 <translation id="7385896526023870365">Це розширення не має додаткового доступу до сайтів.</translation>
 <translation id="7388044238629873883">Ви майже закінчили.</translation>
@@ -5676,6 +5682,7 @@
 <translation id="7691077781194517083">Не вдається скинути цей ключ безпеки. Помилка: <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Оновлення Crostini</translation>
 <translation id="7696063401938172191">На телефоні <ph name="PHONE_NAME" />:</translation>
+<translation id="7697598343108519171">Зісканувати QR-код за допомогою камери</translation>
 <translation id="7699968112832915395">Не вдається додати обліковий запис</translation>
 <translation id="7701040980221191251">Немає</translation>
 <translation id="7701869757853594372">Обробка КОРИСТУВАЧА</translation>
@@ -5867,7 +5874,6 @@
 <translation id="7893008570150657497">Отримувати доступ до фотографій, музики й інших медіа-файлів із вашого комп’ютера</translation>
 <translation id="7893153962594818789">Bluetooth вимкнено на цьому пристрої <ph name="DEVICE_TYPE" />. Введіть пароль і ввімкніть Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (за умовчанням)</translation>
-<translation id="7897865097438730075">З 31 грудня Google Cloud Print більше не підтримуватиметься. Зв'яжіться з адміністратором.</translation>
 <translation id="7897900149154324287">Надалі не забувайте відключати знімний пристрій у додатку Файли, перші ніж від’єднувати його. Інакше, ви можете втратити дані.</translation>
 <translation id="7898627924844766532">Залишити на панелі інструментів</translation>
 <translation id="7898725031477653577">Завжди перекладати</translation>
@@ -6018,11 +6024,11 @@
 <translation id="8054563304616131773">Введіть дійсну електронну адресу</translation>
 <translation id="8054921503121346576">Під’єднано клавіатуру USB</translation>
 <translation id="8058655154417507695">Рік закінчення терміну дії</translation>
-<translation id="8058811362315390556">З 31 грудня Google Cloud Print більше не підтримуватиметься</translation>
 <translation id="8059417245945632445">&amp;Перевірити пристрої</translation>
 <translation id="8059456211585183827">Немає принтерів, які можна зберегти.</translation>
 <translation id="8061091456562007989">Скасувати зміни</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 аркуш паперу}one{{COUNT} аркуш паперу}few{{COUNT} аркуші паперу}many{{COUNT} аркушів паперу}other{{COUNT} аркуша паперу}}</translation>
+<translation id="8062879968880283306">Відскануйте QR-код за допомогою камери пристрою або введіть код активації, який надає ваш оператор.</translation>
 <translation id="8063235345342641131">Стандартний зелений аватар</translation>
 <translation id="8063535366119089408">Переглянути файл</translation>
 <translation id="8064279191081105977">Група <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -6114,6 +6120,7 @@
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Перемістити вкладку в нове вікно}one{Перемістити вкладки в нове вікно}few{Перемістити вкладки в нове вікно}many{Перемістити вкладки в нове вікно}other{Перемістити вкладки в нове вікно}}</translation>
 <translation id="8165997195302308593">Переадресація порту в Crostini</translation>
 <translation id="8168435359814927499">Вміст</translation>
+<translation id="8169165065843881617">{NUM_TABS,plural, =1{Додати вкладку в список читання}one{Додати вкладки в список читання}few{Додати вкладки в список читання}many{Додати вкладки в список читання}other{Додати вкладки в список читання}}</translation>
 <translation id="8174047975335711832">Інформація про пристрій</translation>
 <translation id="8174876712881364124">Створення резервних копій на Google Диску. Легко відновлюйте дані та переносьте їх на інші пристрої. Ця резервна копія містить дані додатків. Резервні копії завантажуються в Google і шифруються за допомогою пароля облікового запису Google вашої дитини. <ph name="BEGIN_LINK1" />Докладніше<ph name="END_LINK1" /></translation>
 <translation id="8176332201990304395">Рожево-білий</translation>
@@ -6123,12 +6130,12 @@
 <translation id="8180786512391440389">Розширення "<ph name="EXTENSION" />" має доступ до читання й видалення зображень, відео та звукових файлів у вибраних розташуваннях.</translation>
 <translation id="8181215761849004992">Не вдається приєднатися до домену. Перевірте в обліковому записі, чи ви можете додавати пристрої.</translation>
 <translation id="8182105986296479640">Додаток не відповідає.</translation>
+<translation id="8182412589359523143">Щоб видалити всі дані з цього пристрою <ph name="DEVICE_TYPE" />, <ph name="BEGIN_LINK" />натисніть тут<ph name="END_LINK" />.</translation>
 <translation id="8182664696082410784"><ph name="REASON" />
     Цей сайт заблоковано помилково.</translation>
 <translation id="8184288427634747179">Перейти у профіль "<ph name="AVATAR_NAME" />"</translation>
 <translation id="8184318863960255706">Докладніше</translation>
 <translation id="8184472985242519288">Однорідний текст</translation>
-<translation id="8185331656081929126">Показувати сповіщення, якщо в мережі виявлено нові принтери</translation>
 <translation id="8186609076106987817">Серверу не вдалося знайти файл.</translation>
 <translation id="8188389033983459049">Щоб продовжити, перегляньте налаштування пристрою й увімкніть Bluetooth</translation>
 <translation id="8190193592390505034">З'єднання з <ph name="PROVIDER_NAME" /></translation>
@@ -6382,6 +6389,7 @@
 <translation id="8498395510292172881">Продовжити читати в Chrome</translation>
 <translation id="8500234928660943538">Неправильний PUK-код. Залишилося стільки спроб: <ph name="RETRIES" />.</translation>
 <translation id="8502536196501630039">Щоб використовувати додатки з Google Play, спершу потрібно відновити свої додатки. Деякі дані могло бути втрачено.</translation>
+<translation id="850314194061055138">знову відкрити камеру</translation>
 <translation id="8503813439785031346">Ім’я користувача</translation>
 <translation id="8504640708321980506">Трафік</translation>
 <translation id="8507227974644337342">Роздільна здатність екрана</translation>
@@ -6439,6 +6447,7 @@
 <translation id="8574990355410201600">Завжди дозволяти звук на сторінці <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Утримуйте <ph name="KEY_EQUIVALENT" />, щоб вийти</translation>
 <translation id="8576249514688522074">Не ініціалізовано</translation>
+<translation id="8576885347118332789">{NUM_TABS,plural, =1{Додати вкладку в список читання}one{Додати вкладки в список читання}few{Додати вкладки в список читання}many{Додати вкладки в список читання}other{Додати вкладки в список читання}}</translation>
 <translation id="8578639784464423491">Не може перевищувати 99 літер</translation>
 <translation id="857943718398505171">Дозволено (рекомендується)</translation>
 <translation id="8581809080475256101">Натисніть, щоб перейти далі, або відкрийте контекстне меню, щоб переглянути історію</translation>
@@ -7034,6 +7043,7 @@
 <translation id="939736085109172342">Нова папка</translation>
 <translation id="941070664607309480">Натисніть, щоб зробити свій пристрій видимим і отримати дані</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> транслює вкладку Chrome і аудіо.</translation>
+<translation id="942603342650325556">Адміністратор заблокував функцію знімків екрана</translation>
 <translation id="945522503751344254">Надіслати відгук</translation>
 <translation id="947329552760389097">&amp;Перевірити елементи</translation>
 <translation id="951991426597076286">Відхилити</translation>

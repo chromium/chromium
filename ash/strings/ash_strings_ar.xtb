@@ -58,7 +58,6 @@
 <translation id="1420527829902822813">تم التقاط لقطة شاشة وحفظها في الحافظة</translation>
 <translation id="1426410128494586442">نعم</translation>
 <translation id="1455242230282523554">عرض إعدادات اللغة</translation>
-<translation id="1456407467406159627">توقّف تسجيل الشاشة بسبب ظهور محتوى سري على شاشتك.</translation>
 <translation id="1460620680449458626">تم كتم الصوت.</translation>
 <translation id="1467432559032391204">اليسار</translation>
 <translation id="1479909375538722835">قائمة "أدوات تمكين الوصول" العائمة</translation>
@@ -370,7 +369,7 @@
 <translation id="4481530544597605423">الأجهزة التي تم إلغاء إقرانها</translation>
 <translation id="4485060137115666462">‏يمكنك النقر بزر الماوس الأيمن أو الضغط مع الاستمرار حتّى يعرض "مساعد Google" معلومات ذات صلة بالمحتوى الذي حدّدته مثل التعريف أو الترجمة أو تحويل الوحدات.</translation>
 <translation id="4505050298327493054">مكتب نشط</translation>
-<translation id="4513946894732546136">تعليقات</translation>
+<translation id="4513946894732546136">ملاحظات</translation>
 <translation id="4527045527269911712">يريد جهاز بلوتوث "<ph name="DEVICE_NAME" />" الحصول على إذن للإقران.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> حتى اكتمال الشحن</translation>
 <translation id="4538824937723742295">الحصول على لقطة شاشة في وضع ملء الشاشة</translation>

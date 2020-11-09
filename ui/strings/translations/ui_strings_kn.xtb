@@ -152,6 +152,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{ಇಂದು ಸಕ್ರಿಯ}=1{1 ದಿನದ ಹಿಂದೆ ಸಕ್ರಿಯ}one{# ದಿನಗಳ ಹಿಂದೆ ಸಕ್ರಿಯ}other{# ದಿನಗಳ ಹಿಂದೆ ಸಕ್ರಿಯ}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 ದಿನ ಮತ್ತು }one{# ದಿನಗಳು ಮತ್ತು }other{# ದಿನಗಳು ಮತ್ತು }}</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5843690142429128814">ಚಿತ್ರ.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{1ವ. ದಲ್ಲಿ}one{#ವ. ಗಳಲ್ಲಿ}other{#ವ. ಗಳಲ್ಲಿ}}</translation>
 <translation id="588258955323874662">ಪೂರ್ಣಪರದೆ</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 ಸೆಕೆಂಡ್ ಬಾಕಿ ಉಳಿದಿದೆ}one{# ಸೆಕೆಂಡುಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}other{# ಸೆಕೆಂಡುಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}}</translation>
@@ -192,6 +193,7 @@
 <translation id="6845533974506654842">ಒತ್ತಿ</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 ಗಂಟೆ ಬಾಕಿ ಉಳಿದಿದೆ}one{# ಗಂಟೆಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}other{# ಗಂಟೆಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}}</translation>
 <translation id="688711909580084195">ಶೀರ್ಷಿಕೆರಹಿತ ವೆಬ್‌ಪುಟ</translation>
+<translation id="6902419395050653510">HTML ಕಂಟೆಂಟ್.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{1 ವರ್ಷ ಉಳಿದಿದೆ}one{# ವರ್ಷಗಳು ಉಳಿದಿವೆ}other{# ವರ್ಷಗಳು ಉಳಿದಿವೆ}}</translation>
 <translation id="6945221475159498467">ಆಯ್ಕೆಮಾಡಿ</translation>

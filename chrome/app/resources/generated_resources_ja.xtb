@@ -1778,7 +1778,6 @@
 <translation id="3029466929721441205">シェルフでのタッチペン ツールの表示</translation>
 <translation id="3031417829280473749">エージェント X</translation>
 <translation id="3031557471081358569">インポートするデータを選択:</translation>
-<translation id="3036041939445522540">連絡先はありません</translation>
 <translation id="3036327949511794916">この <ph name="DEVICE_TYPE" />の返却期限が過ぎています。</translation>
 <translation id="3036546437875325427">Flash を有効にする</translation>
 <translation id="3037754279345160234">ドメインの参加設定を解析できません。管理者にお問い合わせください。</translation>
@@ -4633,7 +4632,6 @@
 <translation id="6445450263907939268">この変更を受け入れない場合は、以前の設定を復元できます。</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6450876761651513209">プライバシー関連の設定の変更</translation>
-<translation id="6451180435462401570">クラウド プリントデバイスを管理する</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" />、他 1 個のタブ}other{<ph name="PAGE_TITLE" />、他 # 個のタブ}}</translation>
 <translation id="6451689256222386810">パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />同期をリセット<ph name="END_LINK" />します。</translation>
 <translation id="6452181791372256707">拒否</translation>
@@ -4939,8 +4937,6 @@
 <translation id="6824584962142919697">要素の検証(&amp;I)</translation>
 <translation id="6825184156888454064">名前順</translation>
 <translation id="6826872289184051766">USB を使って確認</translation>
-<translation id="6827487342470222762">選択できる連絡先はありません。連絡先とニアバイシェアを使用するには、Google アカウントにリンクされているメールアドレスを連絡先に追加してください。</translation>
-<translation id="6827623133556594466">Google クラウド プリントのサポートは 12 月 31 日で終了します。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">ログインを以下のユーザーに制限する:</translation>
 <translation id="6828182567531805778">データを同期するにはパスフレーズを入力してください</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5867,7 +5863,6 @@
 <translation id="7893008570150657497">パソコンから画像、音楽、その他のメディアにアクセスする</translation>
 <translation id="7893153962594818789">この <ph name="DEVICE_TYPE" /> では Bluetooth がオフになっています。パスワードを入力し、Bluetooth をオンにしてください。</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (既定)</translation>
-<translation id="7897865097438730075">Google クラウド プリントのサポートは 12 月 31 日で終了します。管理者にお問い合わせください。</translation>
 <translation id="7897900149154324287">今後、リムーバブル デバイスを取り外す場合はまずファイル アプリで取り外しアイコンをクリックしてください。アイコンをクリックしないで取り外した場合、データを失うことがあります。</translation>
 <translation id="7898627924844766532">ツールバーに残す</translation>
 <translation id="7898725031477653577">常に翻訳する</translation>
@@ -6018,7 +6013,6 @@
 <translation id="8054563304616131773">有効なメールアドレスを入力してください</translation>
 <translation id="8054921503121346576">USB キーボードが接続されました</translation>
 <translation id="8058655154417507695">有効期限（年）</translation>
-<translation id="8058811362315390556">Google クラウド プリントのサポートは 12 月 31 日で終了します</translation>
 <translation id="8059417245945632445">デバイスを検証(&amp;I)</translation>
 <translation id="8059456211585183827">保存できるプリンタはありません。</translation>
 <translation id="8061091456562007989">元に戻す</translation>
@@ -6128,7 +6122,6 @@
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> に切り替える</translation>
 <translation id="8184318863960255706">詳細</translation>
 <translation id="8184472985242519288">均一</translation>
-<translation id="8185331656081929126">ネットワーク上で新しいプリンタが検出されたときに通知を表示する</translation>
 <translation id="8186609076106987817">お探しのファイルはサーバーにはありません。</translation>
 <translation id="8188389033983459049">続行するには、デバイスの設定で Bluetooth をオンにしてください</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> に接続中</translation>

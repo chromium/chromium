@@ -8,6 +8,7 @@
 <translation id="1036672894875463507">Je suis votre Assistant Google, à votre service tout au long de la journée.
 Pour commencer, voici des exemples de ce que vous pouvez me demander.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ajouté</translation>
+<translation id="1047773237499189053">Nouvelle fonctionnalité disponible. Cliquez sur la flèche vers le haut pour en savoir plus.</translation>
 <translation id="1056775291175587022">Aucun réseau</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" /> : <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mobile : <ph name="ADDRESS" /></translation>
@@ -20,6 +21,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1153356358378277386">Appareils associés</translation>
 <translation id="1175572348579024023">Faire défiler</translation>
 <translation id="1178581264944972037">Suspendre</translation>
+<translation id="118532027333893379">Appuyez n'importe où pour effectuer une capture en plein écran</translation>
 <translation id="1190609913194133056">Centre de notification</translation>
 <translation id="1195412055398077112">Surbalayage</translation>
 <translation id="119944043368869598">Tout effacer</translation>
@@ -56,7 +58,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1420527829902822813">Capture d'écran effectuée et enregistrée dans le presse-papiers</translation>
 <translation id="1426410128494586442">Oui</translation>
 <translation id="1455242230282523554">Afficher les paramètres de langue</translation>
-<translation id="1456407467406159627">Enregistrement d'écran arrêté en raison d'un contenu confidentiel à l'écran.</translation>
 <translation id="1460620680449458626">Le volume est désactivé.</translation>
 <translation id="1467432559032391204">À gauche</translation>
 <translation id="1479909375538722835">Menu d'accessibilité flottant</translation>
@@ -123,6 +124,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2127372758936585790">Chargeur de faible puissance</translation>
 <translation id="2132302418721800944">Enregistrer tout l'écran</translation>
 <translation id="2135456203358955318">Loupe ancrée</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" /> Réessayer</translation>
 <translation id="2208323208084708176">Mode bureau unifié</translation>
 <translation id="2220572644011485463">Code ou mot de passe</translation>
 <translation id="2222338659135520253">Connexion requise</translation>
@@ -134,6 +136,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="229397294990920565">Désactivation des données mobiles…</translation>
 <translation id="2295777434187870477">Le son du micro est activé et peut être coupé si vous déplacez le curseur vers la gauche.</translation>
 <translation id="2298170939937364391">Le mode Loupe plein écran est activé. Appuyez de nouveau sur Ctrl+Recherche+M pour le désactiver.</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" />. Cliquez sur la boîte de dialogue pour voir le résultat dans l'Assistant.</translation>
 <translation id="2302092602801625023">Ce compte est géré par Family Link</translation>
 <translation id="2303600792989757991">Activer/Désactiver la vue d'ensemble des fenêtres</translation>
 <translation id="2322173485024759474">Reculer par lettre</translation>
@@ -160,6 +163,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2484513351006226581">Appuyez sur <ph name="KEYBOARD_SHORTCUT" /> pour changer la disposition du clavier.</translation>
 <translation id="2501920221385095727">Touches persistantes</translation>
 <translation id="2509468283778169019">Touche VERR MAJ activée</translation>
+<translation id="2536159006530886390">Impossible de se connecter à Internet.</translation>
 <translation id="2542089167727451762">Appuyez sur votre image de profil</translation>
 <translation id="255671100581129685">L'Assistant Google n'est pas disponible dans une session publique.</translation>
 <translation id="256712445991462162">la loupe ancrée</translation>
@@ -181,6 +185,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2727977024730340865">L'appareil est branché à un chargeur de faible puissance. Il se peut que la charge ne soit pas fiable.</translation>
 <translation id="2792498699870441125">Alt + Recherche</translation>
 <translation id="2819276065543622893">Vous allez être déconnecté maintenant.</translation>
+<translation id="28232023175184696">Impossible d'établir la connexion Internet. Cliquez ici pour réessayer.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> n'est pas compatible avec la résolution <ph name="SPECIFIED_RESOLUTION" />. La résolution <ph name="FALLBACK_RESOLUTION" /> sera utilisée à la place.</translation>
 <translation id="2825619548187458965">Étagère</translation>
 <translation id="2841907151129139818">Mode tablette activé</translation>
@@ -320,6 +325,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4129129681837227511">Pour afficher les notifications sur l'écran de verrouillage, déverrouillez votre appareil afin de modifier ce paramètre</translation>
 <translation id="4146833061457621061">Joue de la musique</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> géré par <ph name="DOMAIN" /></translation>
+<translation id="415719264485676252">Capture d'écran bloquée</translation>
 <translation id="4157822100366708405">Paramètres du thème sombre</translation>
 <translation id="4181841719683918333">Langues</translation>
 <translation id="4195877955194704651">Bouton de clics automatiques</translation>
@@ -386,6 +392,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4710243778082831592">Paramètres IME</translation>
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4744944742468440486">Informations sur le texte sélectionné</translation>
 <translation id="4759238208242260848">Téléchargements</translation>
 <translation id="4774338217796918551">Revenez demain à <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Mot de passe de <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -503,6 +510,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="595202126637698455">Suivi des performances activé</translation>
 <translation id="5957083217255311415">Les données mobiles sont désactivées.</translation>
 <translation id="5958529069007801266">Utilis. supervisé</translation>
+<translation id="5960825221082587934">Laissez l'Assistant afficher des informations sur l'élément sélectionné, telles qu'une définition, une traduction ou une conversion d'unité.</translation>
 <translation id="5977415296283489383">Casque</translation>
 <translation id="5978382165065462689">Partager le contrôle de votre écran via l'assistance à distance</translation>
 <translation id="5980301590375426705">Fermer sess. Invité</translation>
@@ -585,6 +593,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6777216307882431711">En cours d'alimentation : plusieurs appareils USB-C connectés</translation>
 <translation id="6790428901817661496">Lire</translation>
 <translation id="6803622936009808957">Impossible de dupliquer les écrans, car aucune résolution compatible n'a été détectée. Le bureau étendu a été activé à la place.</translation>
+<translation id="6816797338148849397">Informations disponibles concernant le texte sélectionné. Pour y accéder, utilisez la flèche vers le haut.</translation>
 <translation id="6818242057446442178">Reculer par mot</translation>
 <translation id="6820676911989879663">Faites une pause !</translation>
 <translation id="6850010208275816200">Votre application actuelle est en plein écran. Si elle vous demande votre mot de passe, quittez d'abord le mode plein écran.</translation>
@@ -648,6 +657,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7497767806359279797">Choisir la langue et le clavier</translation>
 <translation id="7526573455193969409">Il est possible que le réseau soit surveillé</translation>
 <translation id="7536035074519304529">Adresse IP : <ph name="ADDRESS" /></translation>
+<translation id="7542906349682405018">Vous ne pouvez pas effectuer d'enregistrement d'écran, car l'administrateur a bloqué cette fonctionnalité.</translation>
 <translation id="7548434653388805669">Il est l'heure d'aller au lit</translation>
 <translation id="7551643184018910560">Épingler sur l'étagère</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>
@@ -774,6 +784,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Chargeur de faible puissance connecté</translation>
 <translation id="8683506306463609433">Suivi des performances actif</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Pour gérer cette fonctionnalité, utilisez les flèches vers la gauche ou vers la droite.</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8721053961083920564">Activer/désactiver le volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">Il est possible que cet autre clavier tente d'enregistrer les touches sur lesquelles vous appuyez afin de vous soutirer des informations</translation>
@@ -794,6 +805,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8874184842967597500">Non connecté</translation>
 <translation id="8877788021141246043">Définis un rappel</translation>
 <translation id="8878886163241303700">Extension de l'écran</translation>
+<translation id="8883473964424809116">Cliquez ici pour accéder aux paramètres de l'Assistant Google.</translation>
 <translation id="890616557918890486">Modifier la source</translation>
 <translation id="8909138438987180327">Niveau de charge de la batterie : <ph name="PERCENTAGE" /> %.</translation>
 <translation id="8913384980486163186">Thématique (par défaut)</translation>

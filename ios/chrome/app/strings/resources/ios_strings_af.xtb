@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Kon nie druk nie.</translation>
 <translation id="1125564390852150847">Skep nuwe oortjie.</translation>
 <translation id="1145536944570833626">Vee bestaande data uit.</translation>
+<translation id="1147031633655575115">Aangemeld as <ph name="USER" /></translation>
 <translation id="1154690515305205900">Kan nie 'n skakel na die gemerkte teks skep nie.</translation>
 <translation id="1157749421655780457">Laat ligging toe …</translation>
 <translation id="1165039591588034296">Fout</translation>
@@ -83,7 +84,6 @@
 <translation id="1690731385917361335">Geen items nie</translation>
 <translation id="1692118695553449118">Sinkronisering is aan</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> gekies</translation>
-<translation id="1715940067130687605">Gebruik jou huidige ligging.</translation>
 <translation id="1740468249224277719">Dubbeltik om te installeer.</translation>
 <translation id="1746815479209538200">Voeg 'n nuwe oortjie by om deur die web te blaai.</translation>
 <translation id="1752547299766512813">Stoor wagwoorde</translation>
@@ -269,6 +269,7 @@ Volg die stappe hieronder:</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="3892144330757387737">Jy sal jou geskiedenis hier kry</translation>
 <translation id="3897092660631435901">Kieslys</translation>
+<translation id="3913386780052199712">Aangemeld by Chrome</translation>
 <translation id="3915450441834151894">Werfinligting</translation>
 <translation id="3922310737605261887">Soek vir gekopieerde teks</translation>
 <translation id="3928666092801078803">Kombineer my data</translation>

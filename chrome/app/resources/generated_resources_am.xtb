@@ -1781,7 +1781,6 @@
 <translation id="3029466929721441205">የስታይለስ መሣሪያዎችን በመደርደሪያ ውስጥ አሳይ</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031557471081358569">ከውጪ ለማስመጣት ንጥሎችን ምረጥ፦</translation>
-<translation id="3036041939445522540">ምንም የሚገኙ እውቂያዎች የሉም</translation>
 <translation id="3036327949511794916">ይህን <ph name="DEVICE_TYPE" /> የሚመልሱበት ቀነገደብ አልፏል።</translation>
 <translation id="3036546437875325427">Flashን አንቃ</translation>
 <translation id="3037754279345160234">ጎራውን ለመቀላቀል ውቅረቱን መተንተን አልተቻለም። እባክዎ የእርስዎን አስተዳዳሪ ያነጋግሩ።</translation>
@@ -4636,7 +4635,6 @@
 <translation id="6445450263907939268">እነዚህን ለውጦች ካልፈለጓቸው ቀዳሚዎቹ ቅንብሮችዎን ወደነበሩበት መመለስ ይችላሉ።</translation>
 <translation id="6447842834002726250">ኩኪዎች</translation>
 <translation id="6450876761651513209">ከግላዊነት ጋር የሚዛመዱ ቅንብሮችዎን ይቀይራል</translation>
-<translation id="6451180435462401570">የደመና ሕትመት መሣሪያዎችን ያስተዳድሩ</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> እና 1 ሌላ ትር}one{<ph name="PAGE_TITLE" /> እና # ሌሎች ትሮች}other{<ph name="PAGE_TITLE" /> እና # ሌሎች ትሮች}}</translation>
 <translation id="6451689256222386810">የእርስዎን የይለፍ ሐረግ ከረሱት ወይም ይህን ቅንብር መለወጥ ከፈለጉ <ph name="BEGIN_LINK" />ስምረትን ዳግም ያስጀምሩ<ph name="END_LINK" /></translation>
 <translation id="6452181791372256707">አይቀበሉ</translation>
@@ -4943,8 +4941,6 @@
 <translation id="6824584962142919697">&amp;አባለ ነገሮችን መርምር</translation>
 <translation id="6825184156888454064">በስም ደርድር</translation>
 <translation id="6826872289184051766">በዩኤስቢ በኩል አረጋግጥ</translation>
-<translation id="6827487342470222762">ምንም እውቂያዎች አይገኙም። የአቅራቢያ ማጋሪያን ከእርስዎ እውቂያዎች ጋር ለመጠቀም ከGoogle መለያቸው ጋር የተገናኘውን የኢሜይል አድራሻ ወደ የእርስዎ እውቂያዎች ያክሉ።</translation>
-<translation id="6827623133556594466">Google ደመና ህትመት ከዲሴምበር 31 በኋላ አይደገፍም። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">መግባት በሚከተሉት ተጠቃሚዎች ገድብ፦</translation>
 <translation id="6828182567531805778">ውሂብዎን ለማሳመር የይለፍ ሐረግዎን ያስገቡ</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5875,7 +5871,6 @@
 <translation id="7893008570150657497">የኮምፒውተርዎን ፎቶዎች፣ ሙዚቃ እና ሌላ ማህደረ  መረጃ  ይደርሳል</translation>
 <translation id="7893153962594818789">በዚህ <ph name="DEVICE_TYPE" /> ላይ ብሉቱዝ ጠፍቷል። የእርስዎን የይለፍ ቃል ያስገቡ እና ብሉቱዝን ያብሩ።</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (ነባሪ)</translation>
-<translation id="7897865097438730075">Google ደመና ህትመት ከዲሴምበር 31 በኋላ አይደገፍም። የእርስዎን አስተዳዳሪ ያነጋግሩ።</translation>
 <translation id="7897900149154324287">ለወደፊቱ የሚነቀል መሳሪያዎን ከመንቀልዎ በፊት በፋይሎች መተግበሪያው ውስጥ ማላቀቅዎን እርግጠኛ ይኑ። ያለበለዚያ የተወሰነ ውሂብ ሊጠፋብዎ ይችላል።</translation>
 <translation id="7898627924844766532">በመሣሪያ አሞሌ ውስጥ አቆይ</translation>
 <translation id="7898725031477653577">ሁል ጊዜ ተርጉም</translation>
@@ -6031,7 +6026,6 @@ nil</translation>
 <translation id="8054563304616131773">እባክዎ ትክክለኛ የኢሜይል አድራሻ ያስገቡ</translation>
 <translation id="8054921503121346576">የUSB ቁልፍ ሰሌዳ ተገናኝቷል</translation>
 <translation id="8058655154417507695">ጊዜው የሚያበቃበት ዓመት</translation>
-<translation id="8058811362315390556">Google ደመና ህትመት ከዲሴምበር 31 በኋላ አይደገፍም</translation>
 <translation id="8059417245945632445">&amp;መሣሪያዎችን መርምር</translation>
 <translation id="8059456211585183827">ለማስቀመጥ ሊገኙ የሚችሉ ምንም አታሚዎች የሉም።</translation>
 <translation id="8061091456562007989">መልሰው ይቀይሩት</translation>
@@ -6143,7 +6137,6 @@ nil</translation>
 <translation id="8184288427634747179">ወደ <ph name="AVATAR_NAME" /> ቀይር</translation>
 <translation id="8184318863960255706">ተጨማሪ መረጃ</translation>
 <translation id="8184472985242519288">ወጥ የሆነ</translation>
-<translation id="8185331656081929126">አዲስ አታሚዎች በአውታረ መረቡ ላይ ሲገኙ ማሳወቂያዎችን አሳይ።</translation>
 <translation id="8186609076106987817">አገልጋዩ ፋይሉን ሊያገኝ አልቻለም።</translation>
 <translation id="8188389033983459049">የመሣሪያዎን ቅንብሮችዎ ይፈትሹና ለመቀጠል ያብሩት</translation>
 <translation id="8190193592390505034">ከ<ph name="PROVIDER_NAME" /> ጋር በመገናኘት ላይ</translation>

@@ -1783,7 +1783,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3029466929721441205">Afficher les outils de stylet sur l'étagère</translation>
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031557471081358569">Sélectionnez les éléments à importer :</translation>
-<translation id="3036041939445522540">Aucun contact à sélectionner</translation>
 <translation id="3036327949511794916">L'échéance pour retourner cet appareil <ph name="DEVICE_TYPE" /> est dépassée.</translation>
 <translation id="3036546437875325427">Activer le flash</translation>
 <translation id="3037754279345160234">Impossible d'analyser la configuration d'association à un domaine. Veuillez communiquer avec votre administrateur.</translation>
@@ -4640,7 +4639,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6445450263907939268">Si vous ne souhaitiez pas effectuer ces modifications, vous pouvez restaurer vos paramètres précédents.</translation>
 <translation id="6447842834002726250">Témoins</translation>
 <translation id="6450876761651513209">Modifier vos paramètres de confidentialité</translation>
-<translation id="6451180435462401570">Gérer les appareils Google Cloud Print</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> et 1 autre onglet}one{<ph name="PAGE_TITLE" /> et # autre onglet}other{<ph name="PAGE_TITLE" /> et # autres onglets}}</translation>
 <translation id="6451689256222386810">Si vous avez oublié votre phrase de passe ou souhaitez modifier ce paramètre, veuillez <ph name="BEGIN_LINK" />réinitialiser la synchronisation<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Refuser</translation>
@@ -4947,8 +4945,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6824584962142919697">&amp;Inspecter des éléments</translation>
 <translation id="6825184156888454064">Trier par nom</translation>
 <translation id="6826872289184051766">Vérifier par l'intermédiaire de la technologie USB</translation>
-<translation id="6827487342470222762">Aucun contact n'est disponible. Pour utiliser la fonctionnalité Partage à proximité avec vos contacts, ajoutez l'adresse de courriel associée à leur compte Google dans vos contacts.</translation>
-<translation id="6827623133556594466">Google Cloud Print ne sera plus pris en charge après le 31 décembre. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Autoriser uniquement les utilisateurs suivants à se connecter :</translation>
 <translation id="6828182567531805778">Entrez votre phrase de passe pour synchroniser vos données</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5879,7 +5875,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7893008570150657497">Accéder aux photos, à la musique et aux autres médias stockés sur votre ordinateur</translation>
 <translation id="7893153962594818789">Le Bluetooth est désactivé sur ce <ph name="DEVICE_TYPE" />. Entrez votre mot de passe et activez le Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (par défaut)</translation>
-<translation id="7897865097438730075">Google Cloud Print ne sera plus pris en charge après le 31 décembre. Communiquez avec votre administrateur.</translation>
 <translation id="7897900149154324287">À l'avenir, assurez-vous d'éjecter votre périphérique amovible dans l'application Fichiers avant de le débrancher. Sinon, vous risquez de perdre des données.</translation>
 <translation id="7898627924844766532">Garder dans la barre d'outils</translation>
 <translation id="7898725031477653577">Toujours traduire</translation>
@@ -6029,7 +6024,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8054563304616131773">Veuillez entrer une adresse de courriel valide</translation>
 <translation id="8054921503121346576">Clavier USB connecté</translation>
 <translation id="8058655154417507695">Année d'expiration</translation>
-<translation id="8058811362315390556">Google Cloud Print ne sera plus pris en charge après le 31 décembre</translation>
 <translation id="8059417245945632445">&amp;Inspecter les appareils</translation>
 <translation id="8059456211585183827">Il n'y a aucune imprimante à enregistrer.</translation>
 <translation id="8061091456562007989">Rétablir</translation>
@@ -6142,7 +6136,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8184288427634747179">Utiliser <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Renseignements supplémentaires</translation>
 <translation id="8184472985242519288">Uniforme</translation>
-<translation id="8185331656081929126">Afficher des notifications lorsque de nouvelles imprimantes sont détectées sur le réseau</translation>
 <translation id="8186609076106987817">Le serveur n'a pas trouvé le fichier.</translation>
 <translation id="8188389033983459049">Vérifiez les paramètres de votre appareil et activez cette option pour continuer</translation>
 <translation id="8190193592390505034">Connexion à <ph name="PROVIDER_NAME" /></translation>

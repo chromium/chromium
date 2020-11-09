@@ -316,6 +316,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="214556005048008348">Annuler le paiement</translation>
 <translation id="2147827593068025794">Synchronisation en arrière-plan</translation>
 <translation id="2148613324460538318">Ajouter une carte</translation>
+<translation id="2149968176347646218">La connexion n'est pas sécurisée</translation>
 <translation id="2154054054215849342">La synchronisation n'est pas disponible pour votre domaine</translation>
 <translation id="2154484045852737596">Modifier la carte</translation>
 <translation id="2161656808144014275">Texte</translation>
@@ -1167,6 +1168,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5571083550517324815">Enlèvement impossible à cette adresse. Sélectionnez-en une autre.</translation>
 <translation id="5580958916614886209">Veuillez vérifier le mois d'expiration, puis réessayer</translation>
 <translation id="5586446728396275693">Aucune adresse enregistrée</translation>
+<translation id="5593349413089863479">La connexion n'est pas totalement sécurisée</translation>
 <translation id="5595485650161345191">Modifier l'adresse</translation>
 <translation id="5598944008576757369">Sélectionner un mode de paiement</translation>
 <translation id="560412284261940334">Gestion non acceptée.</translation>

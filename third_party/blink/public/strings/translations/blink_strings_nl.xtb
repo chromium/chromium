@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Deze maand</translation>
 <translation id="1637811476055996098">Bestanden kiezen</translation>
 <translation id="1650423536718072820">pullquote</translation>
+<translation id="1681022320378710418">huidige tijd</translation>
 <translation id="1727886345390570319">ondertitelingsmenu verbergen</translation>
 <translation id="1729654308190250600">Geef een e-mailadres op.</translation>
 <translation id="1758486001363313524">Anders...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Geef een URL op.</translation>
 <translation id="3175736971608411871">timer</translation>
 <translation id="3199563858620722075">keuzelijst met invoervak</translation>
+<translation id="3220661731597678625">huidige stap</translation>
 <translation id="3329013043687509092">Verzadiging</translation>
 <translation id="3450233048674729344">Waarde moet kleiner dan of gelijk zijn aan <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">definitie</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="479989351350248267">zoeken</translation>
 <translation id="4812940957355064477">Voer een getal in.</translation>
+<translation id="4912200001568447310">huidig item</translation>
 <translation id="4912536737030637138">bibliografievermelding</translation>
 <translation id="4915360478455618802">Tijdkiezer weergeven</translation>
 <translation id="492244087561876220">reactie</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Kan media niet afspelen.</translation>
 <translation id="537648784377940524">De minimum datum (<ph name="MIN_DATE_OR_TIME" />) moet voor de maximum datum (<ph name="MAX_DATE_OR_TIME" />) liggen.</translation>
 <translation id="5406322316791861025">figuur</translation>
+<translation id="5425179576310518467">huidige datum</translation>
 <translation id="5453733299334684579">item in boomstructuur</translation>
 <translation id="5466621249238537318">Selecteer een of meer bestanden.</translation>
 <translation id="5468998798572797635">volledig scherm sluiten</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">meter</translation>
 <translation id="6166809985690652833">nawoord</translation>
 <translation id="6209276755895393898">Lijkt het volgende te zijn: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">huidige pagina</translation>
 <translation id="6213469881011901533">woordenlijst</translation>
 <translation id="6281588256137006900">Helderheid</translation>
 <translation id="6281763101136022427">url</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Breid deze tekst uit tot <ph name="MIN_CHARACTERS" /> tekens of meer (je gebruikt momenteel één teken).</translation>
 <translation id="7034405885550056553">suggestie</translation>
 <translation id="709897737746224366">Zorg dat de indeling voldoet aan de gevraagde indeling.</translation>
+<translation id="7102274145889307184">huidige locatie</translation>
 <translation id="7118469954320184356">Geen beschrijving beschikbaar.</translation>
 <translation id="7139483182332611405">voorwoord</translation>
 <translation id="7214187073215825913">Gegevens over de content</translation>

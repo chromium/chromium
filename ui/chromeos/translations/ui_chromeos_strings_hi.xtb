@@ -4,7 +4,6 @@
 <translation id="1000498691615767391">खोलने के लिए फ़ोल्‍डर को चुनें</translation>
 <translation id="1023220960495960452">लिप्यंतरण (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">स्लाइड व्यू</translation>
-<translation id="1045157690796831147">लिप्यंतरण (namaskar → നമസ്കാരം)</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> आइटम हटा रहा है...</translation>
 <translation id="1049926623896334335">Word दस्तावेज़</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> में फ़ाइलें खोलने के लिए, पहले उन्हें Windows के फ़ाइल फ़ोल्डर में ले जाएं.</translation>
@@ -31,7 +30,6 @@
 <translation id="1293556467332435079">फ़ाइल</translation>
 <translation id="1297922636971898492">Google डिस्क इस समय उपलब्ध नहीं है. Google डिस्क के वापस आ जाने पर अपलोडिंग अपने आप फिर से प्रारंभ हो जाएगी.</translation>
 <translation id="1307931752636661898">Linux फ़ाइलें नहीं दिखाई जा सकीं</translation>
-<translation id="1310751437842832374">लिप्यंतरण (mausam → ନମସ୍ତେ)</translation>
 <translation id="1338950911836659113">हटाए जा रहे हैं...</translation>
 <translation id="1346748346194534595">दाएं</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> फ़ाइलें आयात की जा रही हैं...</translation>
@@ -46,7 +44,6 @@
 <translation id="1435838927755162558">Parallels Desktop के साथ फ़ोल्डर शेयर करें</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> में ले जाया गया.</translation>
 <translation id="1441841714100794440">वियतनामी कीबोर्ड (टेलेक्स)</translation>
-<translation id="1455548678241328678">नार्वेजियाई कीबोर्ड</translation>
 <translation id="1464724975715666883">1 गड़बड़ी.</translation>
 <translation id="1467432559032391204">बाएं</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" को अपलोड नहीं किया गया. आपकी Google डिस्क में काफ़ी जगह नहीं है.</translation>
@@ -102,7 +99,6 @@
 <translation id="2084108471225856927">डिवाइस की सेटिंग</translation>
 <translation id="2085470240340828803">"<ph name="FILENAME" />" नाम की फ़ाइल पहले से मौजूद है. आप क्‍या करना चाहते हैं?</translation>
 <translation id="2121825465123208577">आकार बदलें</translation>
-<translation id="2136953289241069843">लिप्यंतरण (namaste → नमस्ते)</translation>
 <translation id="2163152940313951844">अमान्य वर्ण : <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">वियतनामी कीबोर्ड (TCVN)</translation>
 <translation id="2168214441502403371">पारसी कीबोर्ड</translation>
@@ -206,7 +202,6 @@
 <translation id="3338239663705455570">स्लोवेनियाई कीबोर्ड</translation>
 <translation id="3353984535370177728">अपलोड करने के लिए फ़ोल्डर चुनें</translation>
 <translation id="3356580349448036450">पूरा हुआ</translation>
-<translation id="3399597614303179694">मकदूनियाई कीबोर्ड</translation>
 <translation id="3414856743105198592">निकालने योग्य मीडिया को स्‍वरूपित करने से संपूर्ण डेटा मिट जाएगा. क्‍या आप जारी रखना चाहते हैं?</translation>
 <translation id="3437801641691368414">बनाने का समय</translation>
 <translation id="3466147780910026086">आपका मीडिया डिवाइस स्‍कैन किया जा रहा है...</translation>
@@ -232,7 +227,6 @@
 <translation id="3644896802912593514">चौड़ाई</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> आइटम भेजे गए.</translation>
 <translation id="3645531960514756307">फ़ोल्डर को अनपिन करें</translation>
-<translation id="3678559383040232393">माल्‍टीज़ कीबोर्ड</translation>
 <translation id="3685122418104378273">मोबाइल डेटा का उपयोग करते समय, Google डिस्‍क समन्‍वयन डिफ़ॉल्‍ट रूप से अक्षम रहता है.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> रद्द करें.</translation>
 <translation id="3726463242007121105">यह डिवाइस नहीं खोला जा सकता क्‍योंकि इसका फ़ाइल सिस्‍टम समर्थित नहीं है.</translation>
@@ -248,7 +242,6 @@
 <translation id="3810973564298564668">प्रबंधित करें</translation>
 <translation id="3811494700605067549">1 फ़ाइल चुनी गई</translation>
 <translation id="3815016854028376614">झुयिन इनपुट पद्धति</translation>
-<translation id="3825863595139017598">मंगोलियाई कीबोर्ड</translation>
 <translation id="38275787300541712">पूरा हो जाने पर Enter दबाएं</translation>
 <translation id="3830674330436234648">कोई प्लेबैक उपलब्ध नहीं है</translation>
 <translation id="3833761542219863804">लिप्यंतरण (mausam → ਮੌਸਮ)</translation>
@@ -257,7 +250,6 @@
 <translation id="3855472144336161447">जर्मन नियो 2</translation>
 <translation id="386548886866354912"><ph name="EXTENSION_NAME" /> के साथ पैक करें</translation>
 <translation id="3866249974567520381">वर्णन</translation>
-<translation id="391445228316373457">नेपाली कीबोर्ड (फ़ोनेटिक)</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">इसपर चलाएं</translation>
 <translation id="3943857333388298514">चिपकाएं</translation>
@@ -346,7 +338,6 @@
 <translation id="4943368462779413526">फ़ुटबॉल</translation>
 <translation id="4961158930123534723">Parallels Desktop से एक फ़ोल्डर शेयर किया गया</translation>
 <translation id="4969785127455456148">एल्‍बम</translation>
-<translation id="497244430928947428">मलयालम कीबोर्ड (फ़ोनेटिक)</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> या उससे कम वर्ण वाले नाम का उपयोग करें</translation>
 <translation id="4973970068702235170">ज़िप नहीं हो सका, अनचाही गड़बड़ी आई : <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4988205478593450158">क्या आप वाकई "<ph name="FILE_NAME" />" को मिटाना चाहते हैं?</translation>
@@ -411,7 +402,6 @@
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> खोज के लिए कोई नतीजा नहीं मिला.</translation>
 <translation id="5449551289610225147">गलत पासवर्ड</translation>
 <translation id="5464696796438641524">पोलिश कीबोर्ड</translation>
-<translation id="5465122519792752163">नेपाली कीबोर्ड (इंस्क्रिप्ट)</translation>
 <translation id="5469868506864199649">इतालवी</translation>
 <translation id="5484429245813572665">इंडोनेशियन</translation>
 <translation id="5494920125229734069">सभी को चुनें</translation>

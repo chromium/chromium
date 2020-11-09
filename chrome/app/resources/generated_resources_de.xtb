@@ -264,6 +264,7 @@
 <translation id="1300415640239881824"><ph name="DOMAIN" /> setzt eine Identitätsprüfung durch Google voraus, um festzustellen, ob Ihr Gerät zur erweiterten Wiedergabe von geschützten Inhalten berechtigt ist.</translation>
 <translation id="1300806585489372370">Um diese Einstellung zu ändern, <ph name="BEGIN_LINK" />aktivieren Sie zuerst die Kennzeichnungen<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> kann die folgenden Dateien bearbeiten</translation>
+<translation id="1302139669997477151">Screenshot ist blockiert</translation>
 <translation id="1302227299132585524">JavaScript von Apple Events erlauben</translation>
 <translation id="1303101771013849280">Lesezeichen-HTML-Datei</translation>
 <translation id="1303671224831497365">Keine Bluetooth-Geräte gefunden</translation>
@@ -311,6 +312,7 @@
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1353980523955420967">PPD kann nicht gefunden werden. Vergewissern Sie sich, dass Ihr Chromebook online ist und versuchen Sie es noch einmal.</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> weiterhin erlauben, meine Kamera zu verwenden und zu bewegen</translation>
+<translation id="1355088139103479645">Alle Daten löschen?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> ist blockiert</translation>
 <translation id="1358741672408003399">Rechtschreibung und Grammatik</translation>
 <translation id="1359923111303110318">Ihr Gerät kann mit Smart Lock entsperrt werden. Drücken Sie zum Entsperren die Eingabetaste.</translation>
@@ -491,6 +493,7 @@
 <translation id="1553538517812678578">unbegrenzt</translation>
 <translation id="1554390798506296774">Plug-ins ohne Sandbox auf <ph name="HOST" /> immer zulassen</translation>
 <translation id="1555130319947370107">Blau</translation>
+<translation id="1556302226221634923">Personen, die festgelegt haben, dass sie für Sie sichtbar sind, während ihr Display entsperrt ist, und Geräte in der Nähe, wenn Nearby Share geöffnet ist</translation>
 <translation id="1556537182262721003">Erweiterungsverzeichnis konnte nicht in Profil verschoben werden.</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1562119309884184621">Wenn Sie diesen Kontakt hinzufügen, wird er beim nächsten Teilen von Inhalten wiedererkannt</translation>
@@ -1270,6 +1273,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2457246892030921239"><ph name="APP_NAME" /> möchte Dateien von <ph name="VOLUME_NAME" /> kopieren.</translation>
 <translation id="2458379781610688953">Konto aktualisieren, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Das Geräteverwaltungstoken ist ungültig.</translation>
+<translation id="2459703812219683497">Aktivierungscode erkannt</translation>
 <translation id="2462724976360937186">Schlüssel-ID der Zertifizierungsstelle</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> hinzugefügt</translation>
 <translation id="2464089476039395325">HTTP-Proxy</translation>
@@ -1774,7 +1778,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3029466929721441205">Eingabestift-Tools in Ablage anzeigen</translation>
 <translation id="3031417829280473749">Agentin X</translation>
 <translation id="3031557471081358569">Zu importierende Daten wählen:</translation>
-<translation id="3036041939445522540">Keine Kontakte verfügbar</translation>
 <translation id="3036327949511794916">Die Rückgabefrist für dieses <ph name="DEVICE_TYPE" /> ist abgelaufen.</translation>
 <translation id="3036546437875325427">Flash aktivieren</translation>
 <translation id="3037754279345160234">Die Konfiguration zum Domainbeitritt kann nicht geparst werden. Bitte wenden Sie sich an Ihren Administrator.</translation>
@@ -2067,6 +2070,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3413122095806433232">Aussteller von Zertifizierungsstellen: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Größe:</translation>
 <translation id="3416468988018290825">Immer vollständige URLs anzeigen</translation>
+<translation id="3417835166382867856">Tabs suchen</translation>
 <translation id="3417836307470882032">24-Stunden-Format</translation>
 <translation id="3420501302812554910">Interner Sicherheitsschlüssel muss zurückgesetzt werden</translation>
 <translation id="3421376478111338173">{COUNT,plural, =1{1 Bild}other{# Bilder}}</translation>
@@ -2100,6 +2104,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3441653493275994384">Bildschirm</translation>
 <translation id="3441663102605358937">Melden Sie sich noch einmal bei <ph name="ACCOUNT" /> an, um dieses Konto zu bestätigen</translation>
 <translation id="3445047461171030979">Schnelle Antworten bei Google Assistant</translation>
+<translation id="3445770710327978113">Installieren Sie diese App, um schnell zurückzukehren</translation>
 <translation id="3445925074670675829">USB-C-Gerät</translation>
 <translation id="3446274660183028131">Bitte Parallels Desktop starten, um Windows zu installieren.</translation>
 <translation id="344630545793878684">Ihre Daten auf verschiedenen Websites lesen</translation>
@@ -4629,7 +4634,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6445450263907939268">Wenn Sie diese Änderungen nicht beabsichtigt hatten, können Sie Ihre vorherigen Einstellungen wiederherstellen.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6450876761651513209">Datenschutzeinstellungen ändern</translation>
-<translation id="6451180435462401570">Cloud Print-Geräte verwalten</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> und 1 weiterer Tab}other{<ph name="PAGE_TITLE" /> und # weitere Tabs}}</translation>
 <translation id="6451689256222386810">Wenn Sie Ihre Passphrase vergessen haben oder diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie die Synchronisierung zurück<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Ablehnen</translation>
@@ -4775,6 +4779,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6624687053722465643">Törtchen</translation>
 <translation id="6628328486509726751">Hochgeladen am <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> fordert ständigen Zugriff auf ein Zertifikat an, um sich in Ihrem Namen zu authentifizieren.</translation>
+<translation id="6630956688541588659">Alle Kontakte in meiner Nähe, wenn das Display entsperrt ist, und Geräte in der Nähe, wenn Nearby Share geöffnet ist</translation>
 <translation id="6635944431854494329">Diese Funktion kann vom Inhaber über "Einstellungen" &gt; "Erweitert" &gt; "Diagnose- und Nutzungsdaten automatisch an Google senden" gesteuert werden.</translation>
 <translation id="6635956300022133031">Stimmen für die Sprachausgabe auswählen und anpassen</translation>
 <translation id="6636588250634969791">SIM-Karte einlegen, um fortzufahren</translation>
@@ -4935,8 +4940,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6824584962142919697">&amp;Elemente untersuchen</translation>
 <translation id="6825184156888454064">Nach Name sortieren</translation>
 <translation id="6826872289184051766">Über USB bestätigen</translation>
-<translation id="6827487342470222762">Es sind keine Kontakte verfügbar. Wenn Sie Nearby Share mit Ihren Kontakten verwenden möchten, müssen Sie Ihren Kontakten die mit ihren Google-Konten verknüpften E-Mail-Adressen hinzufügen.</translation>
-<translation id="6827623133556594466">Google Cloud Print wird ab dem 1. Januar nicht mehr unterstützt. <ph name="BEGIN_LINK" />Weitere Informationen.<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Anmeldung auf die folgenden Nutzer beschränken:</translation>
 <translation id="6828182567531805778">Geben Sie die Passphrase ein, um Ihre Daten zu synchronisieren</translation>
 <translation id="682871081149631693">QuickFix-Build</translation>
@@ -5050,6 +5053,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6955535239952325894">Diese Einstellung ist bei verwalteten Browsern deaktiviert</translation>
 <translation id="6957044667612803194">Der Sicherheitsschlüssel unterstützt keine PINs</translation>
 <translation id="6957231940976260713">Name des Dienstes</translation>
+<translation id="696103774840402661">Alle Dateien und lokalen Daten für alle Nutzer auf diesem <ph name="DEVICE_TYPE" /> wurden dauerhaft gelöscht.</translation>
 <translation id="6964390816189577014">Held</translation>
 <translation id="6964760285928603117">Aus Gruppe entfernen</translation>
 <translation id="6965382102122355670">Ok</translation>
@@ -5240,6 +5244,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7180611975245234373">Aktualisieren</translation>
 <translation id="7180865173735832675">Anpassen</translation>
 <translation id="7182791023900310535">Passwort verschieben</translation>
+<translation id="7185907299184016376">Ausgewählte Kontakte in meiner Nähe, wenn mein Display entsperrt ist, und Geräte in der Nähe, wenn Nearby Share geöffnet ist</translation>
 <translation id="7186088072322679094">In Symbolleiste behalten</translation>
 <translation id="7187428571767585875">Registrierungseinträge, die entfernt oder geändert werden:</translation>
 <translation id="7187855807420906517">Wenn Sie eine Website verlassen oder offline gehen, setzen Websites die Synchronisierung normalerweise trotzdem fort, um Aufgaben wie das Hochladen von Fotos oder das Versenden einer Chatnachricht zu beenden</translation>
@@ -5406,6 +5411,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7380622428988553498">Gerätename enthält ungültige Zeichen</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> aktualisiert</translation>
 <translation id="7384687527486377545">Automatische Wiederholung für Tastatur</translation>
+<translation id="7385490373498027129">Alle Dateien und lokalen Daten für alle Nutzer auf diesem <ph name="DEVICE_TYPE" /> werden dauerhaft gelöscht.</translation>
 <translation id="7385854874724088939">Beim Drucken ist ein Fehler aufgetreten. Bitte überprüfen Sie Ihren Drucker und versuchen Sie es erneut.</translation>
 <translation id="7385896526023870365">Diese Erweiterung ermöglicht keinen zusätzlichen Websitezugriff.</translation>
 <translation id="7388044238629873883">Sie haben es fast geschafft.</translation>
@@ -5672,6 +5678,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7691077781194517083">Dieser Sicherheitsschlüssel kann nicht zurückgesetzt werden. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Crostini-Upgrade</translation>
 <translation id="7696063401938172191">Auf Ihrem <ph name="PHONE_NAME" />:</translation>
+<translation id="7697598343108519171">Kamera zum Scannen des QR-Codes verwenden</translation>
 <translation id="7699968112832915395">Konto kann nicht hinzugefügt werden</translation>
 <translation id="7701040980221191251">Keine</translation>
 <translation id="7701869757853594372">NUTZER-Handles</translation>
@@ -5863,7 +5870,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7893008570150657497">Auf Fotos, Musik und andere Medien auf Ihrem Computer zugreifen</translation>
 <translation id="7893153962594818789">Bluetooth ist auf diesem <ph name="DEVICE_TYPE" /> deaktiviert. Geben Sie Ihr Passwort ein und aktivieren Sie Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Standard)</translation>
-<translation id="7897865097438730075">Google Cloud Print wird ab dem 1. Januar nicht mehr unterstützt. Wenden Sie sich an Ihren Administrator.</translation>
 <translation id="7897900149154324287">Werfen Sie Ihr externes Gerät in Zukunft über die Dateien-App aus, bevor Sie die Verbindung trennen. Andernfalls könnte es zu einem Datenverlust kommen.</translation>
 <translation id="7898627924844766532">In Symbolleiste behalten</translation>
 <translation id="7898725031477653577">Immer übersetzen</translation>
@@ -6014,11 +6020,11 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8054563304616131773">Geben Sie eine gültige E-Mail-Adresse ein.</translation>
 <translation id="8054921503121346576">USB-Tastatur angeschlossen</translation>
 <translation id="8058655154417507695">Ablaufjahr</translation>
-<translation id="8058811362315390556">Google Cloud Print wird ab dem 1. Januar nicht mehr unterstützt</translation>
 <translation id="8059417245945632445">&amp;Geräte untersuchen</translation>
 <translation id="8059456211585183827">Es sind keine Drucker verfügbar, die gespeichert werden können.</translation>
 <translation id="8061091456562007989">Änderung rückgängig machen</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 Blatt Papier}other{{COUNT} Blätter Papier}}</translation>
+<translation id="8062879968880283306">Scannen Sie den QR-Code mit der Kamera Ihres Geräts oder geben Sie den von Ihrem Mobilfunkanbieter angegebenen Aktivierungscode ein.</translation>
 <translation id="8063235345342641131">Grüner Standardavatar</translation>
 <translation id="8063535366119089408">Datei ansehen</translation>
 <translation id="8064279191081105977">Gruppe <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
@@ -6109,6 +6115,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Tab in ein neues Fenster verschieben}other{Tabs in ein neues Fenster verschieben}}</translation>
 <translation id="8165997195302308593">Crostini-Portweiterleitung</translation>
 <translation id="8168435359814927499">Inhalte</translation>
+<translation id="8169165065843881617">{NUM_TABS,plural, =1{Tab zur Leseliste hinzufügen}other{Tabs zur Leseliste hinzufügen}}</translation>
 <translation id="8174047975335711832">Gerätebezogene Informationen</translation>
 <translation id="8174876712881364124">In Google Drive sichern: Sie können Ihre Daten jederzeit wiederherstellen – auch auf einem anderen Gerät. Diese Sicherung enthält App-Daten. Sicherungen werden bei Google hochgeladen und mit dem Passwort des Google-Kontos Ihres Kindes verschlüsselt. <ph name="BEGIN_LINK1" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="8176332201990304395">Rosa und Weiß</translation>
@@ -6118,12 +6125,12 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" kann Bilder, Video- und Sounddateien an den angegebenen Orten lesen und löschen.</translation>
 <translation id="8181215761849004992">Beitritt zur Domain nicht möglich. Prüfen Sie in Ihrem Konto, ob Sie Geräte hinzufügen dürfen.</translation>
 <translation id="8182105986296479640">App antwortet nicht.</translation>
+<translation id="8182412589359523143">Um alle Daten von diesem <ph name="DEVICE_TYPE" /> zu löschen, <ph name="BEGIN_LINK" />klicken Sie hier<ph name="END_LINK" />.</translation>
 <translation id="8182664696082410784"><ph name="REASON" />
     Meiner Meinung nach sollte diese Website nicht blockiert werden.</translation>
 <translation id="8184288427634747179">Zu "<ph name="AVATAR_NAME" />" wechseln</translation>
 <translation id="8184318863960255706">Weitere Informationen</translation>
 <translation id="8184472985242519288">Einheitlich</translation>
-<translation id="8185331656081929126">Benachrichtigung anzeigen, wenn neue Drucker im Netzwerk gefunden werden</translation>
 <translation id="8186609076106987817">Die Datei konnte nicht gefunden werden.</translation>
 <translation id="8188389033983459049">Überprüfen Sie Ihre Geräteeinstellungen und aktivieren Sie Bluetooth, um fortzufahren</translation>
 <translation id="8190193592390505034">Verbindung zu <ph name="PROVIDER_NAME" /> wird hergestellt.</translation>
@@ -6377,6 +6384,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8498395510292172881">In Chrome weiterlesen</translation>
 <translation id="8500234928660943538">Falscher PUK. Noch <ph name="RETRIES" /> Versuche.</translation>
 <translation id="8502536196501630039">Wenn Sie Apps von Google Play verwenden möchten, müssen Sie zuerst Ihre Apps wiederherstellen. Einige Daten sind möglicherweise verloren gegangen.</translation>
+<translation id="850314194061055138">Wieder Kamera verwenden</translation>
 <translation id="8503813439785031346">Nutzername</translation>
 <translation id="8504640708321980506">Mobile Daten</translation>
 <translation id="8507227974644337342">Bildschirmauflösung</translation>
@@ -6434,6 +6442,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8574990355410201600">Ton auf <ph name="HOST" /> immer zulassen</translation>
 <translation id="8575286410928791436">Zum Beenden <ph name="KEY_EQUIVALENT" /> gedrückt halten</translation>
 <translation id="8576249514688522074">Noch nicht initialisiert</translation>
+<translation id="8576885347118332789">{NUM_TABS,plural, =1{Tab zur Leseliste hinzufügen}other{Tabs zur Leseliste hinzufügen}}</translation>
 <translation id="8578639784464423491">Maximale Länge: 99 Buchstaben</translation>
 <translation id="857943718398505171">Zugelassen (empfohlen)</translation>
 <translation id="8581809080475256101">Drücken, um weiterzugehen. Kontextmenü, um Verlauf aufzurufen</translation>
@@ -7029,6 +7038,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="939736085109172342">Neuer Ordner</translation>
 <translation id="941070664607309480">Hier klicken, damit Ihr Gerät sichtbar wird und die Inhalte mit Ihnen geteilt werden können</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> hat einen Chrome-Tab und Audio freigegeben.</translation>
+<translation id="942603342650325556">Ihr Administrator hat das Erstellen eines Screenshots Ihres Bildschirminhalts blockiert.</translation>
 <translation id="945522503751344254">Feedback geben</translation>
 <translation id="947329552760389097">&amp;Elemente untersuchen</translation>
 <translation id="951991426597076286">Ablehnen</translation>

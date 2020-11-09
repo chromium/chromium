@@ -1782,7 +1782,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3029466929721441205">Erakutsi arkatzaren tresnak biltegian</translation>
 <translation id="3031417829280473749">X agentea</translation>
 <translation id="3031557471081358569">Hautatu inportatu beharreko elementuak:</translation>
-<translation id="3036041939445522540">Ez dago kontakturik erabilgarri</translation>
 <translation id="3036327949511794916">Pasatu egin da <ph name="DEVICE_TYPE" /> hau itzultzeko epemuga.</translation>
 <translation id="3036546437875325427">Gaitu Flash</translation>
 <translation id="3037754279345160234">Ezin da analizatu domeinuan sartzeko konfigurazioa. Jarri administratzailearekin harremanetan.</translation>
@@ -4639,7 +4638,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6445450263907939268">Ez bazenuen nahi aldaketa horiek egiterik, aurreko ezarpenak berrezar ditzakezu.</translation>
 <translation id="6447842834002726250">Cookieak</translation>
 <translation id="6450876761651513209">Aldatu zure pribatutasun-ezarpenak</translation>
-<translation id="6451180435462401570">Kudeatu Cloud Print gailuak</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> eta beste fitxa bat}other{<ph name="PAGE_TITLE" /> eta beste # fitxa}}</translation>
 <translation id="6451689256222386810">Pasaesaldia ahaztu bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Baztertu</translation>
@@ -4946,8 +4944,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6824584962142919697">&amp;Aztertu elementuak</translation>
 <translation id="6825184156888454064">Ordenatu izenaren arabera</translation>
 <translation id="6826872289184051766">Egiaztatu USB bidez</translation>
-<translation id="6827487342470222762">Ez dago kontakturik erabilgarri. Kontaktuekin Nearby Share erabiltzeko, gehitu zure kontaktuetan haien Google-ko kontuarekin lotuta dagoen helbide elektronikoa.</translation>
-<translation id="6827623133556594466">Abenduaren 31ren ondoren ezingo da erabili Google Cloud Print. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Mugatu erabiltzaile hauen saio-hasiera:</translation>
 <translation id="6828182567531805778">Datuak sinkronizatzeko, idatzi pasaesaldia</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5878,7 +5874,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="7893008570150657497">Atzitu ordenagailuko argazkiak, musika eta bestelako multimedia-edukia</translation>
 <translation id="7893153962594818789">Bluetooth-a desaktibatuta dago <ph name="DEVICE_TYPE" /> gailuan. Idatzi pasahitza eta aktibatu Bluetooth-a.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (lehenetsia)</translation>
-<translation id="7897865097438730075">Abenduaren 31ren ondoren ezingo da erabili Google Cloud Print. Jarri administratzailearekin harremanetan.</translation>
 <translation id="7897900149154324287">Aurrerantzean, gailu aldagarria desentxufatu aurretik, egiaztatu Fitxategiak aplikaziotik kanporatzen duzula. Bestela, baliteke datuak galtzea.</translation>
 <translation id="7898627924844766532">Mantendu tresna-barran</translation>
 <translation id="7898725031477653577">Itzuli beti</translation>
@@ -6028,7 +6023,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8054563304616131773">Idatzi balio duen helbide elektroniko bat</translation>
 <translation id="8054921503121346576">USB teklatua konektatu da</translation>
 <translation id="8058655154417507695">Iraungitze-urtea</translation>
-<translation id="8058811362315390556">Abenduaren 31ren ondoren ezingo da erabili Google Cloud Print</translation>
 <translation id="8059417245945632445">&amp;Aztertu gailuak</translation>
 <translation id="8059456211585183827">Ez dago inprimagailurik gordetzeko.</translation>
 <translation id="8061091456562007989">Leheneratu</translation>
@@ -6141,7 +6135,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8184288427634747179">Aldatu <ph name="AVATAR_NAME" /> profilera</translation>
 <translation id="8184318863960255706">Informazio gehiago</translation>
 <translation id="8184472985242519288">Uniformea</translation>
-<translation id="8185331656081929126">Erakutsi jakinarazpenak sarean inprimagailu berriak hautematen direnean</translation>
 <translation id="8186609076106987817">Zerbitzariak ezin izan du fitxategia aurkitu.</translation>
 <translation id="8188389033983459049">Aurrera egiteko, egiaztatu gailuaren ezarpenak eta aktibatu giltza</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> hornitzailera konektatzen</translation>

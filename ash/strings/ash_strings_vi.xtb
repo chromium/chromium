@@ -8,6 +8,7 @@
 <translation id="1036672894875463507">Tôi là Trợ lý Google của bạn. Tôi có thể giúp bạn bất cứ lúc nào!
 Dưới đây là một số việc bạn có thể thử để bắt đầu.</translation>
 <translation id="1037492556044956303">Đã thêm <ph name="DEVICE_NAME" /></translation>
+<translation id="1047773237499189053">Đã có tính năng mới, hãy sử dụng phím Mũi tên lên để tìm hiểu thêm.</translation>
 <translation id="1056775291175587022">Không có mạng</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Thiết bị di động: <ph name="ADDRESS" /></translation>
@@ -20,6 +21,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1153356358378277386">Thiết bị được ghép nối</translation>
 <translation id="1175572348579024023">Cuộn</translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
+<translation id="118532027333893379">Nhấn vào vị trí bất kỳ để chụp toàn màn hình</translation>
 <translation id="1190609913194133056">Trung tâm thông báo</translation>
 <translation id="1195412055398077112">quét quá mức</translation>
 <translation id="119944043368869598">Xóa tất cả</translation>
@@ -56,7 +58,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1420527829902822813">Đã chụp ảnh màn hình và lưu vào khay nhớ tạm</translation>
 <translation id="1426410128494586442">Có</translation>
 <translation id="1455242230282523554">Hiển thị các tùy chọn cài đặt ngôn ngữ</translation>
-<translation id="1456407467406159627">Đã dừng ghi màn hình do có nội dung cần bảo mật trên màn hình của bạn.</translation>
 <translation id="1460620680449458626">Đang tắt tiếng.</translation>
 <translation id="1467432559032391204">Trái</translation>
 <translation id="1479909375538722835">Trình đơn hỗ trợ tiếp cận nổi</translation>
@@ -123,6 +124,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2127372758936585790">Bộ sạc công suất thấp</translation>
 <translation id="2132302418721800944">Ghi toàn màn hình</translation>
 <translation id="2135456203358955318">Phóng to ở vị trí cố định</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: Thử lại</translation>
 <translation id="2208323208084708176">Chế độ màn hình đồng nhất</translation>
 <translation id="2220572644011485463">Mã PIN hoặc mật khẩu</translation>
 <translation id="2222338659135520253">Cần đăng nhập</translation>
@@ -134,6 +136,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="229397294990920565">Đang tắt dữ liệu di động...</translation>
 <translation id="2295777434187870477">Micrô đang bật. Nhấn vào nút bật tắt sẽ tắt micrô và không thu được tiếng.</translation>
 <translation id="2298170939937364391">Đã bật tính năng Phóng to toàn màn hình. Hãy nhấn lại tổ hợp phím Ctrl+Tìm kiếm+M để tắt tính năng này.</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Nhấp vào hộp thoại để xem kết quả trong Trợ lý.</translation>
 <translation id="2302092602801625023">Tài khoản này do Family Link quản lý</translation>
 <translation id="2303600792989757991">Tổng quan về chuyển đổi cửa sổ</translation>
 <translation id="2322173485024759474">Lùi một ký tự</translation>
@@ -160,6 +163,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2484513351006226581">Hãy nhấn <ph name="KEYBOARD_SHORTCUT" /> để chuyển bố cục bàn phím.</translation>
 <translation id="2501920221385095727">Phím cố định</translation>
 <translation id="2509468283778169019">Đang bật CAPS LOCK</translation>
+<translation id="2536159006530886390">Không thể kết nối Internet.</translation>
 <translation id="2542089167727451762">Nhấn vào ảnh hồ sơ của bạn</translation>
 <translation id="255671100581129685">Bạn không thể sử dụng Trợ lý Google trong phiên công khai.</translation>
 <translation id="256712445991462162">tính năng phóng to ở vị trí cố định</translation>
@@ -181,6 +185,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2727977024730340865">Được cắm vào bộ sạc công suất thấp. Việc sạc pin có thể không được đảm bảo.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">Bạn sẽ bị đăng xuất bây giờ.</translation>
+<translation id="28232023175184696">Không thể kết nối Internet. Hãy nhấp để thử lại.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> không hỗ trợ <ph name="SPECIFIED_RESOLUTION" />. Độ phân giải đã được thay đổi thành <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Giá</translation>
 <translation id="2841907151129139818">Đã chuyển sang chế độ máy tính bảng</translation>
@@ -320,6 +325,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4129129681837227511">Để xem thông báo trên màn hình khóa, hãy mở khóa thiết bị để thay đổi tùy chọn cài đặt này</translation>
 <translation id="4146833061457621061">Phát nhạc</translation>
 <translation id="4149156641122542261"><ph name="DOMAIN" /> quản lý <ph name="DEVICE_TYPE" /></translation>
+<translation id="415719264485676252">Tính năng Chụp ảnh màn hình đã bị chặn</translation>
 <translation id="4157822100366708405">Tùy chọn cài đặt giao diện tối</translation>
 <translation id="4181841719683918333">Ngôn ngữ</translation>
 <translation id="4195877955194704651">Nút Lượt nhấp tự động</translation>
@@ -386,6 +392,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4710243778082831592">Cài đặt Trình chỉnh sửa phương thức nhập (IME)</translation>
 <translation id="4731797938093519117">Quyền truy cập của cha mẹ</translation>
 <translation id="4734965478015604180">Ngang</translation>
+<translation id="4744944742468440486">Thông tin liên quan đến nội dung bạn chọn</translation>
 <translation id="4759238208242260848">Tệp đã tải xuống</translation>
 <translation id="4774338217796918551">Hãy quay lại lúc <ph name="COME_BACK_TIME" /> ngày mai.</translation>
 <translation id="4776917500594043016">Mật khẩu cho <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -503,6 +510,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="595202126637698455">Đã bật theo dõi hoạt động</translation>
 <translation id="5957083217255311415">Dữ liệu di động đã bị tắt.</translation>
 <translation id="5958529069007801266">Người dùng được giám sát</translation>
+<translation id="5960825221082587934">Cho phép Trợ lý hiển thị những thông tin như định nghĩa, bản dịch hoặc kết quả chuyển đổi đơn vị cho nội dung bạn chọn.</translation>
 <translation id="5977415296283489383">Tai nghe</translation>
 <translation id="5978382165065462689">Chia sẻ quyền kiểm soát màn hình của bạn qua Trợ giúp từ xa.</translation>
 <translation id="5980301590375426705">Thoát phiên khách</translation>
@@ -585,6 +593,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6777216307882431711">Đang cấp nguồn cho các thiết bị USB-C đã kết nối</translation>
 <translation id="6790428901817661496">Phát</translation>
 <translation id="6803622936009808957">Không thể phản chiếu màn hình do không tìm thấy độ phân giải được hỗ trợ. Thay vào đó, đã chuyển sang chế độ màn hình mở rộng.</translation>
+<translation id="6816797338148849397">Có thông tin liên quan đến nội dung bạn chọn. Sử dụng phím Mũi tên lên để truy cập.</translation>
 <translation id="6818242057446442178">Lùi một từ</translation>
 <translation id="6820676911989879663">Hãy nghỉ giải lao!</translation>
 <translation id="6850010208275816200">Ứng dụng hiện tại đang ở chế độ toàn màn hình. Nếu ứng dụng yêu cầu bạn nhập mật khẩu, trước tiên, hãy thoát khỏi chế độ toàn màn hình.</translation>
@@ -648,6 +657,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7497767806359279797">Chọn ngôn ngữ và bàn phím</translation>
 <translation id="7526573455193969409">Mạng có thể được giám sát</translation>
 <translation id="7536035074519304529">Địa chỉ IP: <ph name="ADDRESS" /></translation>
+<translation id="7542906349682405018">Quản trị viên của bạn đã chặn tính năng chụp nội dung trên màn hình.</translation>
 <translation id="7548434653388805669">Giờ đi ngủ</translation>
 <translation id="7551643184018910560">Ghim vào giá</translation>
 <translation id="7561982940498449837">Đóng trình đơn</translation>
@@ -774,6 +784,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Đã kết nối bộ sạc công suất thấp</translation>
 <translation id="8683506306463609433">Tính năng theo dõi hiệu suất đang hoạt động</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Dùng phím mũi tên Trái hoặc Phải để quản lý tính năng này.</translation>
 <translation id="8712637175834984815">Bỏ qua</translation>
 <translation id="8721053961083920564">Bật/tắt tiếng. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">Bàn phím này có thể đang cố gắng đánh cắp thao tác nhấn phím của bạn</translation>
@@ -794,6 +805,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8874184842967597500">Chưa kết nối</translation>
 <translation id="8877788021141246043">Đặt lời nhắc</translation>
 <translation id="8878886163241303700">Mở rộng màn hình</translation>
+<translation id="8883473964424809116">Nhấp để mở phần cài đặt của Trợ lý Google.</translation>
 <translation id="890616557918890486">Thay đổi nguồn</translation>
 <translation id="8909138438987180327">Pin ở mức <ph name="PERCENTAGE" />%.</translation>
 <translation id="8913384980486163186">Theo giao diện (mặc định)</translation>

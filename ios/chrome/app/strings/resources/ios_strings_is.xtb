@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Prentun tókst ekki.</translation>
 <translation id="1125564390852150847">Búa til nýjan flipa.</translation>
 <translation id="1145536944570833626">Eyða fyrirliggjandi gögnum.</translation>
+<translation id="1147031633655575115">Skráð(ur) inn sem <ph name="USER" /></translation>
 <translation id="1154690515305205900">Ekki er hægt að búa til tengil í merkta textann.</translation>
 <translation id="1157749421655780457">Leyfa staðsetningu...</translation>
 <translation id="1165039591588034296">Villa</translation>
@@ -83,7 +84,6 @@
 <translation id="1690731385917361335">Engin atriði</translation>
 <translation id="1692118695553449118">Kveikt er á samstillingu</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valin</translation>
-<translation id="1715940067130687605">Nota núverandi staðsetningu.</translation>
 <translation id="1740468249224277719">Ýttu tvisvar til að setja upp.</translation>
 <translation id="1746815479209538200">Opnaðu nýjan flipa til að vafra.</translation>
 <translation id="1752547299766512813">Vista aðgangsorð</translation>
@@ -269,6 +269,7 @@ Fylgdu leiðbeiningunum hér að neðan:</translation>
 <translation id="385051799172605136">Til baka</translation>
 <translation id="3892144330757387737">Þú finnur ferilinn þinn hér</translation>
 <translation id="3897092660631435901">Valmynd</translation>
+<translation id="3913386780052199712">Skráð(ur) inn á Chrome</translation>
 <translation id="3915450441834151894">Upplýsingar um vefsvæði</translation>
 <translation id="3922310737605261887">Leita að afrituðum texta</translation>
 <translation id="3928666092801078803">Sameina gögnin mín</translation>

@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Hindi na-print.</translation>
 <translation id="1125564390852150847">Gumawa ng bagong tab.</translation>
 <translation id="1145536944570833626">I-delete ang kasalukuyang data.</translation>
+<translation id="1147031633655575115">Naka-sign in bilang <ph name="USER" /></translation>
 <translation id="1154690515305205900">Hindi makagawa ng link sa naka-highlight na text.</translation>
 <translation id="1157749421655780457">Payagan ang Lokasyon...</translation>
 <translation id="1165039591588034296">Error</translation>
@@ -83,7 +84,6 @@
 <translation id="1690731385917361335">Walang mga item</translation>
 <translation id="1692118695553449118">Naka-on ang pag-sync</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ang napili</translation>
-<translation id="1715940067130687605">Gamitin ang Iyong Kasalukuyang Lokasyon.</translation>
 <translation id="1740468249224277719">I-double tap upang i-install.</translation>
 <translation id="1746815479209538200">Para mag-browse sa web, magdagdag ng bagong tab.</translation>
 <translation id="1752547299766512813">I-save ang Mga Password</translation>
@@ -269,6 +269,7 @@ Sundin ang mga hakbang sa ibaba:</translation>
 <translation id="385051799172605136">Bumalik</translation>
 <translation id="3892144330757387737">Makikita mo rito ang iyong history</translation>
 <translation id="3897092660631435901">Menu</translation>
+<translation id="3913386780052199712">Naka-sign in sa Chrome</translation>
 <translation id="3915450441834151894">Impormasyon ng Site</translation>
 <translation id="3922310737605261887">Maghanap para sa Kinopyang Text</translation>
 <translation id="3928666092801078803">Pagsamahin ang aking data</translation>

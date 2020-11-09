@@ -8,6 +8,7 @@
 <translation id="1036672894875463507">Saya Asisten Google Anda, saya hadir untuk membantu Anda sepanjang hari.
 Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ditambahkan</translation>
+<translation id="1047773237499189053">Fitur baru tersedia, gunakan tombol Panah atas untuk mempelajari lebih lanjut.</translation>
 <translation id="1056775291175587022">Jaringan nihil</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Seluler: <ph name="ADDRESS" /></translation>
@@ -20,6 +21,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1153356358378277386">Perangkat dihubungkan</translation>
 <translation id="1175572348579024023">Scroll</translation>
 <translation id="1178581264944972037">Jeda</translation>
+<translation id="118532027333893379">Ketuk di mana saja untuk mengambil gambar dalam layar penuh</translation>
 <translation id="1190609913194133056">Pusat Notifikasi</translation>
 <translation id="1195412055398077112">pemindaian berlebih</translation>
 <translation id="119944043368869598">Hapus semua</translation>
@@ -56,7 +58,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1420527829902822813">Screenshot diambil dan disimpan ke papan klip</translation>
 <translation id="1426410128494586442">Ya</translation>
 <translation id="1455242230282523554">Tampilkan setelan bahasa</translation>
-<translation id="1456407467406159627">Perekaman layar dihentikan karena terdapat konten rahasia di layar.</translation>
 <translation id="1460620680449458626">Volume dibisukan.</translation>
 <translation id="1467432559032391204">Kiri</translation>
 <translation id="1479909375538722835">Menu aksesibilitas mengambang</translation>
@@ -123,6 +124,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2127372758936585790">Pengisi daya rendah</translation>
 <translation id="2132302418721800944">Rekam dalam layar penuh</translation>
 <translation id="2135456203358955318">Kaca pembesar tersemat</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: Coba lagi</translation>
 <translation id="2208323208084708176">Mode desktop terpadu</translation>
 <translation id="2220572644011485463">PIN atau sandi</translation>
 <translation id="2222338659135520253">Perlu login</translation>
@@ -134,6 +136,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="229397294990920565">Data seluler dinonaktifkan ...</translation>
 <translation id="2295777434187870477">Mikrofon aktif, mengalihkan tombol akan membisukan masukan.</translation>
 <translation id="2298170939937364391">Kaca Pembesar Layar diaktifkan. Tekan Ctrl+Penelusuran+M lagi untuk menonaktifkannya.</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Klik dialog untuk melihat hasil di Asisten.</translation>
 <translation id="2302092602801625023">Akun ini dikelola oleh Family Link</translation>
 <translation id="2303600792989757991">Beralih ikhtisar jendela</translation>
 <translation id="2322173485024759474">Mundur per huruf</translation>
@@ -160,6 +163,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2484513351006226581">Tekan <ph name="KEYBOARD_SHORTCUT" /> untuk mengganti tata letak keyboard.</translation>
 <translation id="2501920221385095727">Tombol sticky</translation>
 <translation id="2509468283778169019">CAPS LOCK aktif</translation>
+<translation id="2536159006530886390">Tidak dapat terhubung ke internet.</translation>
 <translation id="2542089167727451762">Ketuk gambar profil Anda</translation>
 <translation id="255671100581129685">Asisten Google tidak tersedia dalam sesi publik.</translation>
 <translation id="256712445991462162">kaca pembesar tersemat</translation>
@@ -181,6 +185,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2727977024730340865">Dipasang ke pengisi daya rendah. Pengisian daya baterai mungkin tidak dapat diandalkan.</translation>
 <translation id="2792498699870441125">Alt+Telusuri</translation>
 <translation id="2819276065543622893">Anda akan dikeluarkan sekarang.</translation>
+<translation id="28232023175184696">Tidak dapat terhubung ke internet. Klik untuk mencoba lagi.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> tidak mendukung <ph name="SPECIFIED_RESOLUTION" />. Resolusi diubah ke <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Rak</translation>
 <translation id="2841907151129139818">Beralih ke mode tablet</translation>
@@ -320,6 +325,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4129129681837227511">Untuk melihat notifikasi di layar kunci, buka kunci untuk mengubah setelan</translation>
 <translation id="4146833061457621061">Putar musik</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> dikelola oleh <ph name="DOMAIN" /></translation>
+<translation id="415719264485676252">Tangkapan layar diblokir</translation>
 <translation id="4157822100366708405">Setelan Tema Gelap</translation>
 <translation id="4181841719683918333">Bahasa</translation>
 <translation id="4195877955194704651">Tombol klik otomatis</translation>
@@ -386,6 +392,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4710243778082831592">Setelan IME</translation>
 <translation id="4731797938093519117">Akses orang tua</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4744944742468440486">Info terkait pilihan Anda</translation>
 <translation id="4759238208242260848">Download</translation>
 <translation id="4774338217796918551">Gunakan lagi besok pukul <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Sandi untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -503,6 +510,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="595202126637698455">Kinerja pelacakan aktif</translation>
 <translation id="5957083217255311415">Data seluler dinonaktifkan.</translation>
 <translation id="5958529069007801266">Pengguna yang diawasi</translation>
+<translation id="5960825221082587934">Izinkan Asisten menampilkan info seperti definisi, terjemahan, atau konversi unit untuk teks yang Anda pilih.</translation>
 <translation id="5977415296283489383">Headphone</translation>
 <translation id="5978382165065462689">Berbagi kontrol layar via Remote Assistance.</translation>
 <translation id="5980301590375426705">Hentikan sesi tamu</translation>
@@ -585,6 +593,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6777216307882431711">Mengisi daya perangkat USB-C yang terhubung</translation>
 <translation id="6790428901817661496">Putar</translation>
 <translation id="6803622936009808957">Tidak dapat menggandakan tampilan karena tidak ditemukan resolusi yang didukung. Memasuki desktop yang diperluas sebagai gantinya.</translation>
+<translation id="6816797338148849397">Info terkait pilihan Anda tersedia. Gunakan tombol Panah atas untuk mengakses.</translation>
 <translation id="6818242057446442178">Mundur per kata</translation>
 <translation id="6820676911989879663">Istirahatlah sebentar</translation>
 <translation id="6850010208275816200">Aplikasi saat ini dalam mode layar penuh. Jika aplikasi meminta sandi, keluar dari mode layar penuh terlebih dahulu.</translation>
@@ -648,6 +657,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7497767806359279797">Pilih bahasa dan keyboard</translation>
 <translation id="7526573455193969409">Jaringan mungkin dipantau</translation>
 <translation id="7536035074519304529">Alamat IP: <ph name="ADDRESS" /></translation>
+<translation id="7542906349682405018">Kemampuan mengambil tangkapan layar konten di layar diblokir oleh administrator Anda.</translation>
 <translation id="7548434653388805669">Waktunya tidur</translation>
 <translation id="7551643184018910560">Pin ke rak</translation>
 <translation id="7561982940498449837">Tutup menu</translation>
@@ -774,6 +784,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Pengisi daya rendah terpasang</translation>
 <translation id="8683506306463609433">Pelacakan performa aktif</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gunakan tombol Panah kiri atau kanan untuk mengelola fitur ini.</translation>
 <translation id="8712637175834984815">Mengerti</translation>
 <translation id="8721053961083920564">Ubah Volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">Keyboard mungkin mencoba mencuri ketukan tombol Anda</translation>
@@ -794,6 +805,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8874184842967597500">Tak terhubung</translation>
 <translation id="8877788021141246043">Setel pengingat</translation>
 <translation id="8878886163241303700">Memperluas layar</translation>
+<translation id="8883473964424809116">Klik untuk membuka setelan Asisten Google.</translation>
 <translation id="890616557918890486">Ubah sumber</translation>
 <translation id="8909138438987180327">Baterai <ph name="PERCENTAGE" /> persen.</translation>
 <translation id="8913384980486163186">Tema (default)</translation>

@@ -1775,7 +1775,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3029466929721441205">Mostrar herramientas de la pluma stylus en la biblioteca</translation>
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031557471081358569">Selecciona elementos para importar:</translation>
-<translation id="3036041939445522540">No hay contactos disponibles</translation>
 <translation id="3036327949511794916">Ya pasó la fecha límite para devolver este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3036546437875325427">Habilitar Flash</translation>
 <translation id="3037754279345160234">No se puede analizar la configuración para vincular el dominio. Comunícate con el administrador.</translation>
@@ -4630,7 +4629,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6445450263907939268">Si no querías realizar estos cambios, puedes restablecer la configuración previa.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6450876761651513209">Cambiar la configuración relacionada con la privacidad</translation>
-<translation id="6451180435462401570">Administrar dispositivos en Cloud Print</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> y 1 pestaña más}other{<ph name="PAGE_TITLE" /> y # pestañas más}}</translation>
 <translation id="6451689256222386810">Si olvidaste tu frase de contraseña o deseas cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincronización<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Rechazar</translation>
@@ -4936,8 +4934,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6824584962142919697">Analizar elementos</translation>
 <translation id="6825184156888454064">Ordenar por nombre</translation>
 <translation id="6826872289184051766">Verificar mediante USB</translation>
-<translation id="6827487342470222762">No hay contactos disponibles. Para usar Compartir con Nearby con tus contactos, agrégales las direcciones de correo electrónico vinculadas a su Cuenta de Google.</translation>
-<translation id="6827623133556594466">Google Cloud Print dejará de ser compatible después del 31 de diciembre. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Restringir el inicio de sesión a los siguientes usuarios:</translation>
 <translation id="6828182567531805778">Ingresa la frase de contraseña para sincronizar tus datos</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5864,7 +5860,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7893008570150657497">Acceder a fotos, música y otros medios desde tu computadora</translation>
 <translation id="7893153962594818789">Bluetooth está desactivado en esta <ph name="DEVICE_TYPE" />. Ingresa tu contraseña y activa Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (predeterminado)</translation>
-<translation id="7897865097438730075">A partir del 31 de diciembre, Google Cloud Print dejará de ser compatible. Comunícate con el administrador.</translation>
 <translation id="7897900149154324287">En el futuro, asegúrate de quitar el dispositivo extraíble desde la aplicación Archivos antes de desconectarlo. De lo contario, es posible que pierdas datos.</translation>
 <translation id="7898627924844766532">Mantener en la barra de herramientas</translation>
 <translation id="7898725031477653577">Traducir siempre</translation>
@@ -6015,7 +6010,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8054563304616131773">Ingresa una dirección de correo electrónico válida.</translation>
 <translation id="8054921503121346576">Teclado USB conectado</translation>
 <translation id="8058655154417507695">Año de vencimiento</translation>
-<translation id="8058811362315390556">Google Cloud Print dejará de ser compatible después del 31 de diciembre</translation>
 <translation id="8059417245945632445">&amp;Inspeccionar dispositivos</translation>
 <translation id="8059456211585183827">No hay impresoras disponibles para guardar.</translation>
 <translation id="8061091456562007989">Deshacer el cambio</translation>
@@ -6125,7 +6119,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8184288427634747179">Cambiar a <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Más información</translation>
 <translation id="8184472985242519288">Uniforme</translation>
-<translation id="8185331656081929126">Mostrar notificaciones cuando se detecten nuevas impresoras en la red</translation>
 <translation id="8186609076106987817">El servidor no pudo encontrar el archivo.</translation>
 <translation id="8188389033983459049">Revisa la configuración del dispositivo y activa la conexión Bluetooth para continuar</translation>
 <translation id="8190193592390505034">Estableciendo conexión con <ph name="PROVIDER_NAME" /></translation>

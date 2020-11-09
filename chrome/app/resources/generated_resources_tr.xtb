@@ -1782,7 +1782,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3029466929721441205">Ekran kalemi araçlarını rafta göster</translation>
 <translation id="3031417829280473749">Ajan X</translation>
 <translation id="3031557471081358569">İçe aktarılacak öğeleri seçin:</translation>
-<translation id="3036041939445522540">Müsait kişi yok</translation>
 <translation id="3036327949511794916">Bu <ph name="DEVICE_TYPE" /> cihazı iade etmek için son tarih geçti.</translation>
 <translation id="3036546437875325427">Flash'ı etkinleştir</translation>
 <translation id="3037754279345160234">Alana katılmak için yapılandırma ayrıştırılamıyor. Lütfen yöneticinizle iletişime geçin.</translation>
@@ -4640,7 +4639,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6445450263907939268">Bu değişiklikleri istemiyorsanız önceki ayarlarınızı geri yükleyebilirsiniz.</translation>
 <translation id="6447842834002726250">Çerezler</translation>
 <translation id="6450876761651513209">Gizlilikle ilgili ayarlarınızı değiştirme</translation>
-<translation id="6451180435462401570">Cloud Print cihazlarını yönet</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> ve 1 sekme daha}other{<ph name="PAGE_TITLE" /> ve # sekme daha}}</translation>
 <translation id="6451689256222386810">Parolanızı unuttuysanız veya bu ayarı değiştirmek istiyorsanız <ph name="BEGIN_LINK" />senkronizasyonu sıfırlayın<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Reddet</translation>
@@ -4947,8 +4945,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6824584962142919697">Öğeleri &amp;incele</translation>
 <translation id="6825184156888454064">Ada göre sırala</translation>
 <translation id="6826872289184051766">USB kullanarak doğrula</translation>
-<translation id="6827487342470222762">Müsait kişi yok. Yakındakilerle Paylaş'ı kişilerinizle kullanabilmek için bu kişilerin Google Hesaplarıyla bağlantılı e-posta adreslerini kişilerinize ekleyin.</translation>
-<translation id="6827623133556594466">Google Cloud Print, 31 Aralık'tan sonra artık desteklenmeyecektir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">Yalnızca aşağıdaki kullanıcıların oturum açmasına izin ver:</translation>
 <translation id="6828182567531805778">Verilerinizi senkronize etmek için parolanızı girin</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5878,7 +5874,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7893008570150657497">Bilgisayarınızdan fotoğraf, müzik ve diğer medyalara erişme</translation>
 <translation id="7893153962594818789">Bu <ph name="DEVICE_TYPE" /> cihazında Bluetooth kapalı. Şifrenizi girip Bluetooth'u açın.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Varsayılan)</translation>
-<translation id="7897865097438730075">Google Cloud Print, 31 Aralık'tan sonra artık desteklenmeyecektir. Yöneticinizle iletişime geçin.</translation>
 <translation id="7897900149154324287">Gelecekte, kaldırılabilir cihazınızı yerinden sökmeden önce cihazı Dosyalar uygulamasından çıkardığınızdan emin olun. Aksi halde veri kaybedebilirsiniz.</translation>
 <translation id="7898627924844766532">Araç çubuğunda tut</translation>
 <translation id="7898725031477653577">Her zaman çevir</translation>
@@ -6029,7 +6024,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8054563304616131773">Lütfen geçerli bir e-posta adresi girin</translation>
 <translation id="8054921503121346576">USB klavyesi bağlandı</translation>
 <translation id="8058655154417507695">Son kullanım tarihinin yılı</translation>
-<translation id="8058811362315390556">Google Cloud Print, 31 Aralık'tan sonra artık desteklenmeyecektir</translation>
 <translation id="8059417245945632445">&amp;Cihazları denetle</translation>
 <translation id="8059456211585183827">Kaydedilebilecek yazıcı yok.</translation>
 <translation id="8061091456562007989">Geri değiştir</translation>
@@ -6142,7 +6136,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> kullanıcısına geç</translation>
 <translation id="8184318863960255706">Daha fazla bilgi</translation>
 <translation id="8184472985242519288">Tek tip</translation>
-<translation id="8185331656081929126">Ağ üzerinde yeni yazıcılar algılandığında bildirim göster</translation>
 <translation id="8186609076106987817">Sunucu dosyayı bulamadı.</translation>
 <translation id="8188389033983459049">Cihaz ayarlarınızı kontrol edin ve devam etmek için açın</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> ağına bağlanılıyor</translation>

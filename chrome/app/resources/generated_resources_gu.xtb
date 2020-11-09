@@ -1774,7 +1774,6 @@
 <translation id="3029466929721441205">શેલ્ફમાં સ્ટાઇલસના સાધનો બતાવો</translation>
 <translation id="3031417829280473749">એજંટ X</translation>
 <translation id="3031557471081358569">આયાત કરવા માટે આઇટમ્સ પસંદ કરો:</translation>
-<translation id="3036041939445522540">કોઈ સંપર્ક ઉપલબ્ધ નથી</translation>
 <translation id="3036327949511794916">આ <ph name="DEVICE_TYPE" />ને પરત કરવાની સમયસીમા સમાપ્ત થઈ ગઈ છે.</translation>
 <translation id="3036546437875325427">ફ્લૅશ ચાલુ કરો</translation>
 <translation id="3037754279345160234">ડોમેનમાં જોડાવા માટે ગોઠવણીનું વિશ્લેષણ કરી શકતાં નથી. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
@@ -4631,7 +4630,6 @@ USB ડિવાઇસ</translation>
 <translation id="6445450263907939268">જો તમે આ ફેરફારો ઇચ્છતા ન હોય, તો તમે તમારા પાછલાં સેટિંગને પહેલાંના જેવું કરો.</translation>
 <translation id="6447842834002726250">કૂકીઝ</translation>
 <translation id="6450876761651513209">તમારી ગોપનીયતા સંબંધિત સેટિંગ્સ બદલો</translation>
-<translation id="6451180435462401570">ક્લાઉડ પ્રિન્ટ ડિવાઇસને મેનેજ કરો</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> અને અન્ય 1 ટૅબ}one{<ph name="PAGE_TITLE" /> અને અન્ય # ટૅબ}other{<ph name="PAGE_TITLE" /> અને અન્ય # ટૅબ}}</translation>
 <translation id="6451689256222386810">જો તમે તમારો પાસફ્રેઝ ભૂલી ગયાં હોવ અથવા આ સેટિંગ બદલવા માગતા હોવ, તો <ph name="BEGIN_LINK" />સમન્વયનને ફરીથી સેટ કરો<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">નકારો</translation>
@@ -4937,8 +4935,6 @@ USB ડિવાઇસ</translation>
 <translation id="6824584962142919697">&amp;ઘટકોની તપાસ કરો</translation>
 <translation id="6825184156888454064">નામ અનુસાર સૉર્ટ કરો</translation>
 <translation id="6826872289184051766">USB મારફતે ચકાસો</translation>
-<translation id="6827487342470222762">કોઈ સંપર્ક ઉપલબ્ધ નથી. તમારા સંપર્કોની સાથે 'નજીકના શેર' સુવિધાનો ઉપયોગ કરવા માટે, તેમના Google એકાઉન્ટ સાથે લિંક કરવામાં આવેલું ઇમેઇલ ઍડ્રેસ તમારા સંપર્કોમાં ઉમેરો.</translation>
-<translation id="6827623133556594466">Google Cloud Printને 31 ડિસેમ્બર પછી સપોર્ટ આપવામાં આવશે નહીં. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="6828153365543658583">નીચેના વપરાશકર્તાઓ માટે સાઇન-ઇન નિયંત્રિત કરો:</translation>
 <translation id="6828182567531805778">તમારો ડેટા સિંક કરવા માટે તમારો પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5864,7 +5860,6 @@ USB ડિવાઇસ</translation>
 <translation id="7893008570150657497">તમારા કમ્પ્યુટર પરથી ફોટો, સંગીત અને અન્ય મીડિયા ઍક્સેસ કરો</translation>
 <translation id="7893153962594818789">આ <ph name="DEVICE_TYPE" />માં Bluetooth બંધ છે. તમારો પાસવર્ડ દાખલ કરો અને Bluetooth ચાલુ કરો.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (ડિફૉલ્ટ)</translation>
-<translation id="7897865097438730075">Google Cloud Printને 31 ડિસેમ્બર પછી સપોર્ટ આપવામાં આવશે નહીં. તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="7897900149154324287">ભવિષ્યમાં, તમારા કાઢવાયોગ્ય ઉપકરણને અનપ્લગ કરતાં પહેલાં ફાઇલ્સ એપ્લિકેશનમાં તેને બહાર કાઢવાનું યાદ રાખો. અન્યથા, તમે ડેટા ગુમાવી શકો છો.</translation>
 <translation id="7898627924844766532">ટુલબારમાં રાખો</translation>
 <translation id="7898725031477653577">હંમેશાં અનુવાદ કરો</translation>
@@ -6010,7 +6005,6 @@ USB ડિવાઇસ</translation>
 <translation id="8054563304616131773">કૃપા કરીને માન્ય ઇમેઇલ ઍડ્રેસ દાખલ કરો</translation>
 <translation id="8054921503121346576">USB કીબોર્ડ કનેક્ટ કર્યું</translation>
 <translation id="8058655154417507695">સમાપ્તિ વર્ષ</translation>
-<translation id="8058811362315390556">Google Cloud Printને 31 ડિસેમ્બર પછી સપોર્ટ આપવામાં આવશે નહીં</translation>
 <translation id="8059417245945632445">&amp;ઉપકરણોની તપાસ કરો</translation>
 <translation id="8059456211585183827">સાચવવા માટે કોઈ પ્રિન્ટર ઉપલબ્ધ નથી.</translation>
 <translation id="8061091456562007989">તેને પાછું બદલો</translation>
@@ -6120,7 +6114,6 @@ USB ડિવાઇસ</translation>
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> પર સ્વિચ કરો</translation>
 <translation id="8184318863960255706">વધુ માહિતી</translation>
 <translation id="8184472985242519288">સમાન</translation>
-<translation id="8185331656081929126">નેટવર્ક પર નવા પ્રિન્ટર્સ શોધવામાં આવે ત્યારે સૂચનાઓ બતાવો</translation>
 <translation id="8186609076106987817">સર્વર ફાઇલને શોધી શક્યું નથી.</translation>
 <translation id="8188389033983459049">તમારા ઉપકરણની સેટિંગ તપાસો અને ચાલુ રાખવા માટે તેને ચાલુ કરો</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> થી કનેક્ટ કરે છે</translation>

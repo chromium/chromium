@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Falha ao imprimir.</translation>
 <translation id="1125564390852150847">Criar novo separador</translation>
 <translation id="1145536944570833626">Eliminar dados existentes.</translation>
+<translation id="1147031633655575115">Sessão iniciada como <ph name="USER" /></translation>
 <translation id="1154690515305205900">Não é possível criar um link para o texto realçado.</translation>
 <translation id="1157749421655780457">Permitir localização…</translation>
 <translation id="1165039591588034296">Erro</translation>
@@ -83,7 +84,6 @@
 <translation id="1690731385917361335">Sem itens</translation>
 <translation id="1692118695553449118">A sincronização está ativada</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selecionados</translation>
-<translation id="1715940067130687605">Utilize a localização atual</translation>
 <translation id="1740468249224277719">Toque duas vezes para instalar.</translation>
 <translation id="1746815479209538200">Para navegar na Web, adicione um novo separador.</translation>
 <translation id="1752547299766512813">Guardar Palavras-passe</translation>
@@ -269,6 +269,7 @@ Siga os passos abaixo:</translation>
 <translation id="385051799172605136">Anterior</translation>
 <translation id="3892144330757387737">O seu histórico será apresentado aqui</translation>
 <translation id="3897092660631435901">Menu</translation>
+<translation id="3913386780052199712">Sessão iniciada no Chrome</translation>
 <translation id="3915450441834151894">Informações do site</translation>
 <translation id="3922310737605261887">Pesquisar texto copiado</translation>
 <translation id="3928666092801078803">Combinar os meus dados</translation>

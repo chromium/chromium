@@ -94,13 +94,16 @@
 Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">Znova zaženi rutine</translation>
 <translation id="5317780077021120954">Shrani</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Izberite novo</translation>
 <translation id="5372659122375744710">Omrežje Wi-Fi ni varno</translation>
 <translation id="5401938042319910061">Izvedi vse rutine</translation>
+<translation id="5431318178759467895">Barvno</translation>
 <translation id="5457599981699367932">Brskajte kot gost</translation>
 <translation id="54609108002486618">Upravljan</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">Dodaj osebo</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>
 <translation id="6040143037577758943">Zapri</translation>
@@ -141,7 +144,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8364946094152050673">Prazni imenski strežniki</translation>
 <translation id="8475690821716466388">Omrežje Wi-Fi je zavarovano s šibkim protokolom WEP PSK</translation>
 <translation id="8477551185774834963">Zakasnitev DNS-ja je nekoliko nad dovoljenim pragom</translation>
-<translation id="8668052347555487755">Barvni način</translation>
 <translation id="871560550817059752">Napaka – zmanjkalo je črnila</translation>
 <translation id="8723108084122415655">Omrežje, ki ni privzeto, je nad pragom zakasnitve</translation>
 <translation id="8726019395068607495">Ustavljeno – vrata so odprta</translation>

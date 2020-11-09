@@ -339,6 +339,11 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="1523774894176285446">Browser alternatif untuk membuka situs yang dikonfigurasi.</translation>
 <translation id="152657506688053119">Daftar URL pengganti untuk penyedia penelusuran default</translation>
 <translation id="1530812829012954197">Selalu urai pola URL berikut di browser host</translation>
+<translation id="1552418937045050762">Jika setelan ini diaktifkan, pengguna akan diizinkan memilih untuk menggunakan Berbagi Langsung yang memungkinkan mereka mengirim dan menerima file dari pengguna terdekat.
+
+      Jika setelan ini dinonaktifkan, pengguna tidak diizinkan memilih untuk menggunakan Berbagi Langsung.
+
+      Jika kebijakan ini tidak disetel, secara default pengguna yang dikelola perusahaan tidak akan diizinkan dan pengguna yang tidak dikelola perusahaan akan diizinkan.</translation>
 <translation id="1553532014072799546">Daftar yang Diizinkan terkait Batas Waktu per Aplikasi</translation>
 <translation id="1553956579506604198">Memblokir ekstensi eksternal sehingga tidak dapat diinstal</translation>
 <translation id="1555248923316727072">Setelan pengelolaan identitas pengguna SAML</translation>
@@ -552,6 +557,9 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
           Nilainya diuraikan dalam bentuk kamus nama kebijakan JSON untuk pemetaan nilai kebijakan.</translation>
 <translation id="1969808853498848952">Selalu menjalankan plugin yang membutuhkan otorisasi (tidak berlaku lagi)</translation>
+<translation id="1971991630422430420">Jika kebijakan disetel ke Aktif, Transisi Cepat akan digunakan saat titik akses nirkabel mendukungnya. Ini berlaku untuk semua pengguna dan antarmuka di perangkat.
+
+      Jika kebijakan disetel ke Nonaktif atau tidak disetel, Transisi Cepat tidak akan digunakan.</translation>
 <translation id="1988345404999458987">Memberikan konfigurasi server cetak yang tersedia.
 
       Kebijakan ini memungkinkan Anda memberikan konfigurasi server cetak eksternal bagi perangkat <ph name="PRODUCT_OS_NAME" /> sebagai file JSON.
@@ -946,6 +954,9 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
           Jika kebijakan ini disetel ke salah (false), pengguna tidak akan memiliki opsi untuk mengaktifkan
           fitur tersebut di halaman Setelan.</translation>
+<translation id="250151283451228612">Jika <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> Diaktifkan, menyetel <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> akan menyetel nilai minimum pengaktifan daya baterai dalam persen.
+
+       Jika kebijakan tidak disetel, pengaktifan daya baterai akan tetap nonaktif.</translation>
 <translation id="2502467045153796624">Perilaku downgrade saluran rilis</translation>
 <translation id="250670737672448119">Mengaktifkan fitur aksesibilitas sorotan tanda sisipan.
 
@@ -1028,10 +1039,22 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Jika kebijakan ini tidak ditetapkan, <ph name="PRODUCT_NAME" /> akan menggunakan nilai default 10000 milidetik.</translation>
 <translation id="257788512393330403">Sandi harus dimasukkan setiap enam jam</translation>
 <translation id="2587719089023392205">Setel <ph name="PRODUCT_NAME" /> sebagai Browser Default</translation>
+<translation id="2588252329503406673">Menyetel kebijakan akan memungkinkan Anda menyetel perilaku <ph name="PRODUCT_OS_NAME" /> saat tidak ada aktivitas pengguna untuk jangka waktu tertentu ketika layar login muncul. Kebijakan ini mengontrol beberapa setelan. Untuk semantik dan rentang nilai masing-masing, lihat kebijakan terkait yang mengontrol pengelolaan daya dalam suatu sesi.
+
+      Penyimpangan dari kebijakan ini adalah:
+
+      * Tindakan yang akan diambil saat tidak ada aktivitas atau penutup ditutup tidak dapat mengakhiri sesi.
+
+      * Tindakan default yang diambil saat tidak ada aktivitas jika menjalankan daya AC adalah mematikan perangkat.
+
+      Jika kebijakan atau salah satu setelannya tidak disetel, nilai default akan digunakan untuk berbagai setelan daya.</translation>
 <translation id="2592091433672667839">Durasi keadaan tidak aktif sebelum tirai layar ditampilkan di layar masuk dalam mode eceran</translation>
 <translation id="2592162121850992309">Jika kebijakan ini ditetapkan ke True atau tidak ditetapkan, akselerasi hardware akan diaktifkan kecuali jika fitur GPU tertentu termasuk dalam daftar tidak diizinkan.
 
       Jika kebijakan ini ditetapkan ke False, akselerasi hardware akan dinonaktifkan.</translation>
+<translation id="259289618675490104">Jika kebijakan disetel ke 'All' (nilai 0) atau tidak disetel, pengguna akan dapat mengelola sertifikat. Jika kebijakan disetel ke 'None' (nilai 2), pengguna hanya dapat melihat (tidak mengelola) sertifikat.
+
+      Jika kebijakan disetel ke 'UserOnly' (nilai 1), pengguna akan dapat mengelola sertifikat pengguna, tetapi bukan sertifikat di seluruh perangkat.</translation>
 <translation id="2593762551209145088">Safe Browsing selalu tidak aktif.</translation>
 <translation id="26023406105317310">Konfigurasikan akun Kerberos</translation>
 <translation id="2604182581880595781">Mengonfigurasi kebijakan terkait fitur Berbagi File Jaringan.</translation>
@@ -1099,6 +1122,11 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2716623398185506073">Jika kebijakan disetel ke Aktif, perangkat yang terdaftar akan melaporkan statistik dan ID hardware yang terkait daya.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, perangkat yang terdaftar tidak akan melaporkan statistik daya.</translation>
+<translation id="2723692978495226412">Jika kebijakan ini disetel ke Aktif, rekomendasi untuk aplikasi yang sebelumnya diinstal oleh pengguna pada perangkat lain akan ditampilkan. Jika tidak ada penelusuran teks yang dimasukkan, rekomendasi ini akan muncul di peluncur setelah rekomendasi aplikasi lokal.
+
+      Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, rekomendasi ini tidak akan muncul.
+
+      Jika kebijakan ini disetel, pengguna tidak dapat mengubahnya.</translation>
 <translation id="2725855586003209701">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat yang terdaftar akan melaporkan daftar pengguna perangkat yang login baru-baru ini.
 
       Jika kebijakan disetel ke Nonaktif, perangkat yang terdaftar tidak akan melaporkan daftar pengguna.</translation>
@@ -1151,6 +1179,9 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2787774054174244402">Jika kebijakan ditetapkan ke Benar (True), pengguna tidak akan dapat menulis ke perangkat penyimpanan eksternal.
 
       Jika ExternalStorageReadOnly ditetapkan ke Salah (False) atau tidak ditetapkan, pengguna dapat membuat dan memodifikasi file perangkat penyimpanan eksternal yang dapat ditulis secara fisik, kecuali penyimpanan eksternal diblokir. (Anda dapat memblokir penyimpanan eksternal dengan menetapkan ExternalStorageDisable ke Benar (True).)</translation>
+<translation id="2791750069439339908">Jika <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> disetel ke <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, menyetel <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> akan menyesuaikan waktu berhenti pengisian daya baterai. Ini didasarkan pada persentase pengisian daya baterai. <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> harus setidaknya 5 persen di bawah <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
+
+      Tidak menyetel kebijakan akan memberlakukan mode pengisian daya baterai <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" /></translation>
 <translation id="2796714419743648316">Daftar yang Diizinkan terkait Batas Waktu per Aplikasi</translation>
 <translation id="2796896367838042659">Kebijakan ini akan menentukan aplikasi dan URL mana yang harus diizinkan untuk batasan penggunaan per aplikasi.
         Daftar yang diizinkan dan dikonfigurasi akan diterapkan ke aplikasi yang diinstal pada <ph name="PRODUCT_OS_NAME" /> untuk pengguna tertentu dengan batas waktu per aplikasi.
@@ -1765,6 +1796,11 @@ Jika ditetapkan ke False, <ph name="PRODUCT_NAME" /> tidak akan menggunakan noti
       Jika kebijakan ini disetel ke benar (true) atau tidak dikonfigurasi, akun pengguna baru akan diizinkan untuk dibuat asalkan kebijakan <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> tidak mencegah pengguna untuk login.</translation>
 <translation id="3653237928288822292">Ikon penyedia penelusuran default</translation>
 <translation id="3654906736796256792">Mengizinkan sandbox audio berjalan</translation>
+<translation id="3659542706175323490">Menyetel kebijakan ke Aktif akan membuat booting pada tegangan AC tetap aktif jika didukung di perangkat. Booting pada tegangan AC memungkinkan sistem memulai ulang dari status Nonaktif atau Hibernasi setelah kabel listrik dihubungkan.
+
+      Jika kebijakan disetel ke Nonaktif, booting pada tegangan AC akan dinonaktifkan.
+
+      Jika kebijakan ini disetel, pengguna tidak dapat mengubahnya. Jika tidak disetel, booting pada tegangan AC akan dinonaktifkan, dan pengguna tidak dapat mengaktifkannya.</translation>
 <translation id="3660510274595679517">
         Jika kebijakan ini disetel ke True, pendaftaran pengelolaan cloud bersifat wajib dan akan memblokir proses peluncuran Chrome jika gagal.
 
@@ -1784,6 +1820,9 @@ Jika ditetapkan ke False, <ph name="PRODUCT_NAME" /> tidak akan menggunakan noti
 <translation id="3709266154059827597">Konfigurasikan daftar penginstalan ekstensi yang tidak diizinkan</translation>
 <translation id="3711895659073496551">Tangguhkan</translation>
 <translation id="3715569262675717862">Autentikasi berdasarkan sertifikat klien</translation>
+<translation id="3727476641336727380">Jika <ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME" /> disetel ke Aktif atau tidak disetel, penguncian layar saat aktif akan diizinkan untuk pengelolaan daya, kecuali <ph name="ALLOW_WAKE_LOCKS_POLICY_NAME" /> disetel ke Nonaktif. Ekstensi dapat meminta penguncian layar saat aktif melalui aplikasi ARC dan API ekstensi pengelolaan daya.
+
+      Jika kebijakan disetel ke Nonaktif, permintaan penguncian layar saat aktif akan didemosikan ke permintaan penguncian layar saat aktif di sistem.</translation>
 <translation id="3727675072430693164">Jika kebijakan disetel ke Aktif, perangkat yang terdaftar akan melaporkan statistik hardware untuk komponen SoC.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, perangkat yang terdaftar tidak akan melaporkan statistik.</translation>
@@ -1811,6 +1850,9 @@ Jika ditetapkan ke False, <ph name="PRODUCT_NAME" /> tidak akan menggunakan noti
       Membiarkan kebijakan ini tidak tersetel akan memungkinkan pengguna memilih setelan proxy-nya sendiri.</translation>
 <translation id="3758249152301468420">Nonaktifkan Alat Pengembang</translation>
 <translation id="3760231600118073732">Mengunci sesi saat ini.</translation>
+<translation id="3762520180381586267">Menyetel kebijakan ke Aktif berarti <ph name="PRODUCT_OS_NAME" /> akan memicu mulai ulang jika pengguna mematikan perangkat. <ph name="PRODUCT_OS_NAME" /> mengganti semua tombol matikan dalam UI dengan tombol mulai ulang. Jika pengguna mematikan perangkat menggunakan tombol daya, perangkat tidak akan otomatis memulai ulang, meskipun kebijakan diaktifkan.
+
+      Jika kebijakan disetel ke Nonaktif atau tidak disetel, <ph name="PRODUCT_OS_NAME" /> memungkinkan pengguna mematikan perangkat.</translation>
 <translation id="3765260570442823273">Durasi pesan peringatan proses keluar nganggur</translation>
 <translation id="377044054160169374">Penerapan Pencegahan Pengalaman yang Menyinggung</translation>
 <translation id="3780152581321609624">Sertakan port non-standar di SPN Kerberos</translation>
@@ -1845,6 +1887,11 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
       Jika kebijakan ini tidak disetel, atau disetel ke false, <ph name="PRODUCT_NAME" /> akan mengikuti jadwal penghentian yang diumumkan secara publik.
 
       Lihat https://g.co/chrome/symantecpkicerts untuk mengetahui detail selengkapnya tentang penghentian ini.</translation>
+<translation id="3831836327853123066">Menyetel kebijakan akan membatasi waktu beroperasi perangkat dengan menjadwalkan mulai ulang otomatis, yang dapat Anda tunda hingga 24 jam jika pengguna sedang aktif di perangkat. Nilai kebijakan harus ditentukan dalam detik. Nilai dikunci ke setidaknya 3.600 (satu jam).
+
+      Jika kebijakan disetel, pengguna tidak dapat mengubahnya. Jika tidak disetel, waktu beroperasi perangkat tidak akan dibatasi.
+
+      Catatan: Mulai ulang otomatis hanya aktif saat layar login muncul atau selama sesi aplikasi kios.</translation>
 <translation id="3835692988507803626">Menonaktifkan secara paksa fitur pemeriksa ejaan bahasa</translation>
 <translation id="3837424079837455272">Kebijakan ini mengontrol apakah pengguna baru dapat ditambahkan ke <ph name="PRODUCT_OS_NAME" /> atau tidak. Kebijakan ini tidak mencegah pengguna login ke akun Google lain dalam Android. Jika Anda ingin mencegah tindakan ini, konfigurasikan kebijakan <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> khusus Android sebagai bagian dari <ph name="ARC_POLICY_POLICY_NAME" />.</translation>
 <translation id="3838094946886335701">Jika menyetel kebijakan (sebagai direkomendasikan saja), Anda akan dapat mendaftarkan daftar pengendali protokol, yang digabungkan dengan yang didaftarkan pengguna, sehingga keduanya dapat digunakan. Setel properti "protokol" ke skema, seperti "mailto", dan setel properti "URL" ke pola URL aplikasi yang menangani skema yang ditentukan dalam kolom "protokol". Pola dapat mencakup placeholder "%s", yang diganti dengan URL yang ditangani.
@@ -1961,6 +2008,11 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="3942041691320538491">Jika kebijakan ditetapkan ke 0 (default), Anda akan dapat mengakses alat developer dan konsol JavaScript, tetapi bukan dalam konteks ekstensi yang diinstal oleh kebijakan perusahaan. Jika kebijakan ditetapkan ke 1, Anda akan dapat mengakses alat developer dan konsol JavaScript di semua konteks, termasuk yang berasal dari ekstensi yang diinstal oleh kebijakan perusahaan. Jika kebijakan ditetapkan ke 2, Anda tidak akan dapat mengakses alat developer, dan Anda tidak dapat memeriksa elemen situs.
 
       Setelan ini juga menonaktifkan pintasan keyboard dan entri menu atau menu konteks untuk membuka alat developer atau konsol JavaScript.</translation>
+<translation id="3947431236979598549">Mengizinkan pengaktifan atau penonaktifan notifikasi saat ruang penyimpanan hampir penuh. Ini berlaku untuk semua pengguna di perangkat.
+
+      Kebijakan ini akan diabaikan dan notifikasi akan selalu ditampilkan jika perangkat tidak dikelola atau hanya terdapat satu pengguna.
+
+      Jika terdapat beberapa akun pengguna di perangkat terkelola, notifikasi hanya akan ditampilkan saat kebijakan ini diaktifkan.</translation>
 <translation id="3950110092991281616">Mengaktifkan autentikasi pasif di sesi reguler saja.</translation>
 <translation id="3950239119790560549">Memperbarui Batasan Waktu</translation>
 <translation id="3956686688560604829">Gunakan kebijakan SiteList Internet Explorer untuk Dukungan Browser Lama.</translation>
@@ -1976,6 +2028,9 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
       Jika kebijakan wallpaper perangkat tidak ditetapkan, kebijakan wallpaper pengguna yang akan menentukan gambar yang ditampilkan apabila kebijakan wallpaper pengguna ditetapkan.</translation>
 <translation id="3964298692570794635">Izinkan konten tidak aman di situs ini</translation>
 <translation id="3965339130942650562">Waktu tunggu sampai proses keluar pengguna nganggur dieksekusi</translation>
+<translation id="3971673686578912106">Jika kebijakan disetel ke Aktif, <ph name="PLUGIN_VM_NAME" /> akan diaktifkan untuk perangkat, selama setelan lainnya memungkinkan pengaktifan. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> dan <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> harus disetel ke Benar (True), dan <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> atau <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> harus disetel agar <ph name="PLUGIN_VM_NAME" /> dapat berjalan.
+
+      Jika kebijakan disetel ke Nonaktif atau tidak disetel, <ph name="PLUGIN_VM_NAME" /> tidak akan diaktifkan untuk perangkat.</translation>
 <translation id="3973371701361892765">Jangan sembunyikan rak secara otomatis</translation>
 <translation id="3979738908158213640">URL yang akan diberi akses untuk melakukan pengesahan perangkat saat autentikasi SAML</translation>
 <translation id="3980024487013511975">Menentukan printer yang tidak dapat digunakan pengguna.
@@ -1994,6 +2049,9 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
       Jika kebijakan ini ditetapkan ke false, <ph name="PRODUCT_OS_NAME" /> tidak akan menampilkan pengguna yang ada di layar login. Layar login normal (yang meminta email dan sandi atau ponsel pengguna) atau layar interstisial SAML (jika diaktifkan melalui kebijakan <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />) akan ditampilkan, kecuali jika Sesi Terkelola dikonfigurasi. Jika Sesi Terkelola dikonfigurasi, hanya akun Sesi Terkelola yang akan ditampilkan, sehingga memungkinkan untuk memilih salah satu akun.
 
       Perhatikan bahwa kebijakan ini tidak memengaruhi apakah perangkat menyimpan atau menghapus data pengguna lokal.</translation>
+<translation id="4009527123617846557">Jika <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> disetel ke <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, menyetel <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> akan menyesuaikan waktu mulai pengisian daya baterai. Ini didasarkan pada persentase pengurangan daya baterai. Nilai harus setidaknya 5 persen di bawah <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
+
+      Tidak menyetel kebijakan akan memberlakukan mode pengisian daya baterai standar.</translation>
 <translation id="4010738624545340900">Izinkan permintaan dialog pemilihan file</translation>
 <translation id="401260868452018796">Posisikan rak di bagian bawah layar</translation>
 <translation id="4012737788880122133">Menonaktifkan update otomatis saat disetel ke True.
@@ -2032,6 +2090,9 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 
       Jika kebijakan ditetapkan, pengguna tidak dapat mengubahnya. Jika tidak ditetapkan, kaca pembesar layar mula-mula akan dinonaktifkan, tetapi pengguna dapat mengaktifkannya kapan saja.</translation>
 <translation id="410068710490553233">Mengizinkan Login ke Akun Google Tambahan</translation>
+<translation id="4103177213841380258">Kebijakan ini mengontrol akses ke fitur yang dapat dikontrol di UI penemuan lokal (<ph name="CHROME_DEVICES_LINK" />) yang menampilkan perangkat yang dapat ditemukan di dekat pengguna serta perangkat cloud yang terdaftar atas nama mereka. Pada semua sistem operasi kecuali <ph name="PRODUCT_OS_NAME" />, UI penemuan lokal juga mengizinkan pengguna menambahkan printer klasik yang terhubung dengan komputer mereka ke <ph name="CLOUD_PRINT_NAME" />.
+
+      Jika kebijakan ini tidak disetel, fitur ini akan Diaktifkan.</translation>
 <translation id="4103289232974211388">Alihkan ke SAML IdP setelah konfirmasi pengguna</translation>
 <translation id="4105884561459127998">Mengonfigurasi jenis autentikasi untuk login SAML.
 
@@ -2237,6 +2298,11 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="4447668084338250480">Perilaku Pengalihan Intranet</translation>
 <translation id="4449469846627734399">Menetapkan konfigurasi hari pergeseran puncak daya</translation>
 <translation id="4449545651113180484">Putar layar searah jarum jam sebesar 270 derajat</translation>
+<translation id="4450005376189179872">Jika <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> disetel ke Aktif, menyetel <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> akan memungkinkan Anda menyiapkan mode pengisian daya baterai lanjutan. Nilai untuk <ph name="CHARGE_START_TIME_FIELD_NAME" /> harus lebih kecil dari <ph name="CHARGE_END_TIME_FIELD_NAME" />.
+
+      Jika kebijakan tidak disetel, mode pengisian daya baterai lanjutan akan tetap nonaktif.
+
+      Nilai yang valid untuk kolom <ph name="MINUTE_FIELD_NAME" /> dalam <ph name="CHARGE_START_TIME_FIELD_NAME" /> dan <ph name="CHARGE_END_TIME_FIELD_NAME" /> adalah 0, 15, 30, 45.</translation>
 <translation id="445270821089253489">Mengontrol jenis informasi perangkat dan pengguna yang dilaporkan.</translation>
 <translation id="4453913621209182880">Izinkan pencetakan hanya dengan grafis latar belakang</translation>
 <translation id="4454820008017317557">Tampilkan ikon toolbar <ph name="PRODUCT_NAME" /></translation>
@@ -3162,6 +3228,11 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Perilaku ini tidak akan berlaku jika Safe Browsing dinonaktifkan (oleh kebijakan ataupun pengguna). Untuk mengaktifkan paksa Safe Browsing, gunakan kebijakan <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> atau <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="5836064773277134605">Batasi jangkauan port UDP yang digunakan oleh hosting akses jarak jauh</translation>
+<translation id="5837898601525273156">Jika <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> disetel, menyetel <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> ke Aktif akan membuat kebijakan pengelolaan daya mode pengisian daya baterai lanjutan tetap aktif (jika didukung di perangkat). Dengan algoritme pengisian daya standar dan teknik lainnya di luar jam kerja, mode ini memungkinkan pengguna memaksimalkan kesehatan baterai. Selama jam kerja, sistem akan menggunakan pengisian daya ekspres sehingga pengisian daya baterai dapat lebih cepat. Tentukan waktu saat sistem paling sering digunakan setiap harinya menurut waktu mulai dan durasi.
+
+      Jika kebijakan disetel ke Nonaktif atau tidak disetel, mode pengisian daya baterai lanjutan akan dinonaktifkan.
+
+      Pengguna tidak dapat mengubah setelan ini.</translation>
 <translation id="5845686745936515940">Mengizinkan Anda mengembalikan semua cookie ke perilaku <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama. Pengembalian ke perilaku lama akan menyebabkan cookie yang tidak menentukan atribut <ph name="ATTRIBUTE_SAMESITE_NAME" /> dianggap sebagai "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />", menghapus persyaratan bagi cookie "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" untuk membawa atribut "<ph name="ATTRIBUTE_SECURE_NAME" />", dan melewati perbandingan skema saat evaluasi jika dua situs adalah situs yang sama. Lihat penjelasan lengkapnya di https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
 
           Jika kebijakan ini tidak disetel, perilaku <ph name="ATTRIBUTE_SAMESITE_NAME" /> default bagi cookie akan bergantung pada konfigurasi pribadi pengguna untuk fitur <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, fitur <ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" />, dan fitur <ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" /> yang dapat disetel berdasarkan uji coba lapangan atau dengan mengaktifkan atau menonaktifkan tanda <ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, tanda <ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" />, atau tanda <ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" />, secara berurutan.</translation>
@@ -3308,6 +3379,11 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Jika kebijakan ini digunakan, hanya printer dengan id yang cocok dengan nilai di kebijakan ini yang tersedia bagi pengguna. Id harus sesuai dengan kolom "id" atau "guid" dalam file yang ditentukan di <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.
       </translation>
+<translation id="6058879286588763839">Menyetel <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> akan menentukan kebijakan pengelolaan daya mode pengisian daya baterai (jika didukung di perangkat), kecuali <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> yang menggantikan <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> ditentukan. Untuk memperpanjang masa pakai baterai, kebijakan secara dinamis mengontrol pengisian daya baterai dengan meminimalkan ketegangan dan keausan.
+
+      Tidak menyetel kebijakan (jika didukung di perangkat) akan menerapkan mode pengisian daya baterai standar, dan pengguna tidak dapat mengubahnya.
+
+      Catatan: Jika mode pengisian daya baterai Kustom dipilih, <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> dan <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> juga harus ditentukan.</translation>
 <translation id="6066761914755798079">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> akan menentukan URL mesin telusur untuk menyediakan saran penelusuran. URL harus menyertakan string <ph name="SEARCH_TERM_MARKER" />, yang diganti di kueri dengan istilah penelusuran pengguna.
 
       Anda dapat menentukan URL penelusuran Google sebagai: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
@@ -3569,6 +3645,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="6467613372414922590">Mengizinkan host Native Messaging level pengguna (diinstal tanpa izin admin)</translation>
 <translation id="6473623140202114570">Mengonfigurasi daftar domain tempat Safe Browsing tidak akan memicu peringatan.</translation>
 <translation id="647698599569353771">Mengizinkan pengaktifan Berbagi Langsung.</translation>
+<translation id="6478261301433199402">Menyetel kebijakan akan menentukan image <ph name="PLUGIN_VM_NAME" /> bagi pengguna. Tentukan kebijakan ini sebagai string berformat JSON, dengan <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> yang menyatakan tempat mendownload image dan <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> sebagai hash SHA-256 yang digunakan untuk memverifikasi integritas download.</translation>
 <translation id="6485813825811798133">Jika menyetel kebijakan, Anda dapat menyetel daftar pola URL untuk menentukan situs yang tidak dapat meminta akses baca ke file, atau direktori, di sistem file pada sistem operasi host melalui File System API.
 
       Tidak menyetel kebijakan berarti <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan berlaku.
@@ -3642,6 +3719,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
           Untuk informasi mendetail tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="6553143066970470539">Persentase kecerahan layar</translation>
+<translation id="6558362593755624474">Menyetel kebijakan akan menentukan kunci lisensi <ph name="PLUGIN_VM_NAME" /> untuk perangkat ini.</translation>
 <translation id="6559057113164934677">Jangan izinkan situs apa pun mengakses kamera dan mikrofon</translation>
 <translation id="6559475864956112261">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
@@ -3854,6 +3932,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Jika kebijakan disetel ke Nonaktif, pesan error akan ditampilkan.</translation>
 <translation id="6821268164692776674">Tujuan <ph name="CLOUD_PRINT_NAME" /> dan 'Simpan ke Google Drive'</translation>
+<translation id="6823711520976094072">Jika disetel di bawah 1 MB atau tidak disetel, <ph name="PRODUCT_OS_NAME" /> akan menggunakan ukuran default 256 MiB untuk menyimpan cache aplikasi dan ekstensi yang akan diinstal oleh beberapa pengguna di satu perangkat, sehingga setiap pengguna tidak perlu mendownload ulang satu per satu aplikasi dan ekstensi tersebut.</translation>
 <translation id="682408981080798691">Jika kebijakan disetel ke Aktif atau tidak disetel, Integritas Kode Perender akan diaktifkan.
 
       Menyetel kebijakan ke Nonaktif akan merugikan keamanan dan stabilitas <ph name="PRODUCT_NAME" /> karena kode yang tidak dikenal dan berpotensi berbahaya dapat dimuat dalam proses perender <ph name="PRODUCT_NAME" />. Nonaktifkan kebijakan hanya jika terdapat masalah kompatibilitas dengan software pihak ketiga yang harus berjalan dalam proses perender <ph name="PRODUCT_NAME" />.
@@ -4124,6 +4203,9 @@ Kebijakan ini hanya berlaku jika dukungan aplikasi Linux diaktifkan.</translatio
 
       Jika kebijakan tidak disetel, pengguna akan dapat memilih sendiri.</translation>
 <translation id="7145335384492396213">Mode pencetakan PIN default</translation>
+<translation id="7146198347561863646">Jika kebijakan disetel ke Aktif atau tidak disetel, penguncian layar saat aktif akan diizinkan untuk pengelolaan daya. Ekstensi dapat meminta penguncian layar saat aktif melalui aplikasi ARC dan API ekstensi pengelolaan daya.
+
+      Jika kebijakan disetel ke Nonaktif, permintaan penguncian layar saat aktif akan diabaikan.</translation>
 <translation id="7149042336307555519"> Jenis sambungan yang diizinkan untuk digunakan update OS. Update OS berpotensi menyebabkan beban berat pada sambungan karena ukurannya dan mungkin menimbulkan biaya tambahan. Oleh karena itu, update tersebut akan dinonaktifkan secara default untuk jenis sambungan yang dianggap mahal (saat ini hanya "data seluler").
 
       Pengidentifikasi jenis sambungan yang dikenal adalah <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" />, dan <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
@@ -4492,6 +4574,9 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
           Catatan: <ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" /> akan mengganti kebijakan ini jika kebijakan tersebut ditentukan.</translation>
 <translation id="7632147323011514740">Interval saat proses pembaruan snapshot data ARC dapat dimulai untuk Sesi Tamu Terkelola</translation>
 <translation id="7632724434767231364">Nama pustaka GSSAPI</translation>
+<translation id="7635106595080609261">Jika kebijakan disetel ke Aktif atau tidak disetel, Chrome akan dapat menampilkan dialog pemilihan file, dan pengguna dapat membukanya.
+
+      Jika kebijakan disetel ke Nonaktif, pesan akan muncul setiap kali pengguna melakukan tindakan yang memicu dialog pemilihan file, seperti mengimpor bookmark, mengupload file, atau menyimpan link. Pengguna dianggap telah mengklik Batal pada dialog pemilihan file.</translation>
 <translation id="7643883929273267746">Batasi akun yang terlihat di <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648907905084499629">Gunakan perilaku <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> untuk cookie di semua situs</translation>
 <translation id="7657261947024629645">Mengoptimalkan performa.</translation>
@@ -4606,6 +4691,11 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 
           Jika kebijakan ini tidak ditetapkan, pintasan fitur aksesibilitas akan diaktifkan secara default di layar login.</translation>
 <translation id="7777535871204167559">Memperlakukan perangkat penyimpanan eksternal sebagai hanya baca</translation>
+<translation id="7781853854781306082">Jika kebijakan disetel ke Aktif, <ph name="PRODUCT_OS_NAME" /> akan meminta sandi kepada pengguna untuk membuka kunci saat perangkat tidak ada aktivitas.
+
+      Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dimintai sandi untuk membuka kunci perangkat dari mode tidur.
+
+      Jika kebijakan tidak disetel, pengguna dapat memilih apakah akan dimintai sandi untuk membuka kunci perangkat dari mode tidur.</translation>
 <translation id="7788511847830146438">Per Profil</translation>
 <translation id="780629758750905699">Mengizinkan penambahan akun Family Link ke perangkat</translation>
 <translation id="7807139251387225825">Daftar jenis yang harus dikecualikan dari sinkronisasi</translation>
@@ -4622,6 +4712,11 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
       </translation>
 <translation id="782661371433719637">Jangan izinkan situs apa pun meminta akses baca ke file dan direktori melalui File System API</translation>
+<translation id="7839180815400079700">Jika <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> Diaktifkan, menyetel <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> akan menyetel konfigurasi hari pengaktifan daya baterai.
+
+      Jika kebijakan tidak disetel, pengaktifan daya baterai akan dinonaktifkan.
+
+      Nilai yang valid untuk kolom <ph name="MINUTE_FIELD_NAME" /> dalam <ph name="START_TIME_FIELD_NAME" />, <ph name="END_TIME_FIELD_NAME" /> dan <ph name="CHARGE_START_TIME_FIELD_NAME" /> adalah 0, 15, 30, 45.</translation>
 <translation id="7841880500990419427">Versi TLS minimum untuk kembali</translation>
 <translation id="7846952520291088817">URL yang akan menampilkan IP lokal dalam kandidat WebRTC ICE</translation>
 <translation id="7848641140449742406">Setelan OS</translation>
@@ -4759,6 +4854,9 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="8053580360728293758">Mengganti mode warna pencetakan default. Jika mode tersebut tidak tersedia, kebijakan ini akan diabaikan.</translation>
 <translation id="8056237304861875584">Izinkan pengaktifkan kelanjutan tugas Phone Hub.</translation>
 <translation id="8059164285174960932">URL tempat klien akses jarak jauh seharusnya memperoleh token autentikasi mereka</translation>
+<translation id="8076521374016204899">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna yang melakukan autentikasi dengan sandi akan dapat mengunci layar.
+
+      Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat mengunci layar. (Mereka hanya dapat logout dari sesi pengguna).</translation>
 <translation id="8077245272412229388">Menambahkan akun Kerberos yang telah diisi. Jika kredensial Kerberos cocok dengan kredensial login, akun dapat dikonfigurasi untuk menggunakan kembali kredensial login dengan menentukan '<ph name="LOGIN_EMAIL_PLACEHOLDER" />' dan <ph name="PASSWORD_PLACEHOLDER" />', masing-masing untuk akun utama dan sandi, sehingga tiket Kerberos dapat diambil secara otomatis kecuali autentikasi 2 langkah dikonfigurasi. Pengguna tidak dapat memodifikasi akun yang ditambahkan melalui kebijakan ini.
 
           Jika kebijakan ini diaktifkan, daftar akun yang ditentukan oleh kebijakan akan ditambahkan ke setelan Akun Kerberos.
@@ -5105,6 +5203,15 @@ Kebijakan akan dihapus pada M75.</translation>
           Jika kebijakan ini tidak ditetapkan, durasi waktu default akan digunakan.
 
           Nilai kebijakan harus ditentukan dalam milidetik.</translation>
+<translation id="8603454805657060638">Menyetel kebijakan memungkinkan administrator mengubah alamat MAC (kontrol akses media) saat menghubungkan perangkat ke dok. Jika dok dihubungkan ke beberapa model perangkat, alamat MAC dok khusus perangkat akan membantu mengidentifikasi perangkat di Ethernet secara default.
+
+      Jika 'DeviceDockMacAddress' dipilih atau kebijakan ini tidak disetel, alamat MAC dok yang ditetapkan untuk perangkat akan digunakan.
+
+      Jika 'DeviceNicMacAddress' dipilih, alamat MAC NIC (pengontrol antarmuka jaringan) perangkat akan digunakan.
+
+      Jika 'DockNicMacAddress' dipilih, alamat MAC NIC dok akan digunakan.
+
+      Pengguna tidak dapat mengubah setelan ini.</translation>
 <translation id="8604178325750278068">Jika kebijakan disetel ke Aktif, Asisten Google akan diizinkan untuk mendengarkan frasa aktivasi suara. Jika kebijakan disetel ke Nonaktif, Asisten Google tidak akan diizinkan mendengarkan frasa tersebut.
 
       Jika kebijakan tidak disetel, pengguna akan dapat mengaktifkan atau menonaktifkan fitur ini.</translation>

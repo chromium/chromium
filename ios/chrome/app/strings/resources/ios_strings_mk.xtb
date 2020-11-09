@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Печатењето не успеа.</translation>
 <translation id="1125564390852150847">Создај нова картичка.</translation>
 <translation id="1145536944570833626">Избришете ги постоечките податоци.</translation>
+<translation id="1147031633655575115">Најавени сте како <ph name="USER" /></translation>
 <translation id="1154690515305205900">Не може да се создаде линк до нагласениот текст.</translation>
 <translation id="1157749421655780457">Дозволете ја локацијата…</translation>
 <translation id="1165039591588034296">Грешка</translation>
@@ -83,7 +84,6 @@
 <translation id="1690731385917361335">Нема ставки</translation>
 <translation id="1692118695553449118">Синхронизацијата е вклучена</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> избрани</translation>
-<translation id="1715940067130687605">Користете ја тековната локација.</translation>
 <translation id="1740468249224277719">Двоен допир за инсталирање.</translation>
 <translation id="1746815479209538200">За прелистување на интернет, додајте нова картичка.</translation>
 <translation id="1752547299766512813">Зачувај лозинки</translation>
@@ -269,6 +269,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3892144330757387737">Вашата историја ќе ја најдете тука</translation>
 <translation id="3897092660631435901">Мени</translation>
+<translation id="3913386780052199712">Најавени сте на Chrome</translation>
 <translation id="3915450441834151894">Информации за сајтот</translation>
 <translation id="3922310737605261887">Пребарајте го копираниот текст</translation>
 <translation id="3928666092801078803">Комбинирај ги моите податоци</translation>

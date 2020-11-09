@@ -4,7 +4,6 @@
 <translation id="1000498691615767391">খুলতে একটি ফোল্ডার বেছে নিন</translation>
 <translation id="1023220960495960452">লিপ্যন্তরকরণ (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">স্লাইড দৃশ্য</translation>
-<translation id="1045157690796831147">লিপ্যন্তরকরণ (namaskar → നമസ്കാരം)</translation>
 <translation id="1047956942837015229"><ph name="COUNT" />টি আইটেম মুছে ফেলা হচ্ছে...</translation>
 <translation id="1049926623896334335">Word document</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> ব্যবহার করে ফাইল খুলতে, সেগুলি প্রথমে Windows ফাইল ফোল্ডারে সরিয়ে রাখুন।</translation>
@@ -31,7 +30,6 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">এই মুহূর্তে Google ড্রাইভ উপলব্ধ নেই৷ একবার Google ড্রাইভ উপলব্ধ হলেই আপলোড করার কাজটি স্বয়ংক্রিয়ভাবে পুনরায় চালু হবে৷</translation>
 <translation id="1307931752636661898">Linux ফাইল দেখা যায়নি</translation>
-<translation id="1310751437842832374">লিপ্যন্তরকরণ (mausam → ନମସ୍ତେ)</translation>
 <translation id="1338950911836659113">মোছা হচ্ছে...</translation>
 <translation id="1346748346194534595">ডানে</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" />টি ফাইল ইমপোর্ট করা হচ্ছে...</translation>
@@ -46,7 +44,6 @@
 <translation id="1435838927755162558">Parallels Desktop-এর সাথে ফোল্ডার শেয়ার করুন</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> এ সরানো হয়েছে।</translation>
 <translation id="1441841714100794440">ভিয়েতনামি কীবোর্ড (টেলেক্স)</translation>
-<translation id="1455548678241328678">নরওয়েয়ান কীবোর্ড</translation>
 <translation id="1464724975715666883">১টি ত্রুটি৷</translation>
 <translation id="1467432559032391204">বামে</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" আপলোড করা হয়নি। আপনার Google ড্রাইভে পর্যাপ্ত ফাঁকা স্থান নেই।</translation>
@@ -102,7 +99,6 @@
 <translation id="2084108471225856927">ডিভাইস সেটিংস</translation>
 <translation id="2085470240340828803">"<ph name="FILENAME" />" নামের একটি ফাইল ইতিমধ্যেই বিদ্যমান৷ আপনি কী করতে চান?</translation>
 <translation id="2121825465123208577">ছোট বড় করুন</translation>
-<translation id="2136953289241069843">লিপ্যন্তরকরণ (namaste → नमस्कार)</translation>
 <translation id="2163152940313951844">ভুল অক্ষর: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">ভিয়েতনামি কীবোর্ড (TCVN)</translation>
 <translation id="2168214441502403371">ফার্সি কীবোর্ড</translation>
@@ -206,7 +202,6 @@
 <translation id="3338239663705455570">স্লোভেনিয় কীবোর্ড</translation>
 <translation id="3353984535370177728">আপলোড করতে একটি ফোল্ডার বেছে নিন</translation>
 <translation id="3356580349448036450">সম্পূর্ণ</translation>
-<translation id="3399597614303179694">ম্যাসেডোনীয় কীবোর্ড</translation>
 <translation id="3414856743105198592">সরানোযোগ্য মিডিয়া বিন্যাস করা সমস্ত ডেটা মুছে দিতে চলেছে৷ আপনি কি চালিয়ে যেতে চান?</translation>
 <translation id="3437801641691368414">যে সময় তৈরি করা হয়েছে</translation>
 <translation id="3466147780910026086">আপনার মিডিয়া ডিভাইস স্ক্যান করা হচ্ছে...</translation>
@@ -232,7 +227,6 @@
 <translation id="3644896802912593514">প্রস্থ</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" />টি আইটেম সরানো হয়েছে।</translation>
 <translation id="3645531960514756307">ফোল্ডারটি আনপিন করুন</translation>
-<translation id="3678559383040232393">মাল্টাদেশীয় কীবোর্ড</translation>
 <translation id="3685122418104378273">মোবাইল ডেটা ব্যবহার করার সময় ডিফল্টরূপে Google ড্রাইভ সিঙ্ক বন্ধ করা হয়৷</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> বাতিল করুন।</translation>
 <translation id="3726463242007121105">এই ডিভাইসটি ফাইল সিস্টেমটি সমর্থিত না হওয়ার কারণে খুলতে পারা যায়না৷</translation>
@@ -248,7 +242,6 @@
 <translation id="3810973564298564668">পরিচালনা</translation>
 <translation id="3811494700605067549">১টি ফাইল নির্বাচিত</translation>
 <translation id="3815016854028376614">ঝুইন ইনপুট পদ্ধতি</translation>
-<translation id="3825863595139017598">মঙ্গোলিয়ান কীবোর্ড</translation>
 <translation id="38275787300541712">সম্পূর্ণ হলে Enter টিপুন</translation>
 <translation id="3830674330436234648">কোনো প্লেব্যাক উপলব্ধ নেই</translation>
 <translation id="3833761542219863804">লিপ্যন্তরকরণ (mausam → ਮੌਸਮ)</translation>
@@ -257,7 +250,6 @@
 <translation id="3855472144336161447">জার্মান নিও ২</translation>
 <translation id="386548886866354912"><ph name="EXTENSION_NAME" /> দিয়ে প্যাক করুন</translation>
 <translation id="3866249974567520381">বর্ণনা</translation>
-<translation id="391445228316373457">নেপালি কীবোর্ড (ফোনেটিক)</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">এতে প্লে করুন</translation>
 <translation id="3943857333388298514">পেস্ট করুন</translation>
@@ -346,7 +338,6 @@
 <translation id="4943368462779413526">ফুটবল</translation>
 <translation id="4961158930123534723">১টি ফোল্ডার Parallels Desktop-এর সাথে শেয়ার করা হয়েছে</translation>
 <translation id="4969785127455456148">অ্যালবাম</translation>
-<translation id="497244430928947428">মালায়ালম কীবোর্ড (ফোনেটিক)</translation>
 <translation id="4973523518332075481">এমন একটি নাম ব্যবহার করুন যেটিতে <ph name="MAX_LENGTH" /> বা তার কম অক্ষর আছে</translation>
 <translation id="4973970068702235170">জিপ করা যায়নি, অপ্রত্যাশিত সমস্যা হয়েছে: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4988205478593450158">আপনি কি "<ph name="FILE_NAME" />" মুছে ফেলার ব্যাপারে নিশ্চিত?</translation>
@@ -410,7 +401,6 @@
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" />-এর জন্য কোনও ফলাফল পাওয়া যায়নি।</translation>
 <translation id="5449551289610225147">ভুল পাসওয়ার্ড</translation>
 <translation id="5464696796438641524">পোলিশ কীবোর্ড</translation>
-<translation id="5465122519792752163">নেপালি কীবোর্ড (ইনস্ক্রিপ্ট)</translation>
 <translation id="5469868506864199649">ইতালীয়</translation>
 <translation id="5484429245813572665">ইন্দোনেশীয়</translation>
 <translation id="5494920125229734069">সকল বেছে নিন</translation>

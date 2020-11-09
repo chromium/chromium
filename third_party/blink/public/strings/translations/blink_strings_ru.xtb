@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">В этом месяце</translation>
 <translation id="1637811476055996098">Выбрать файлы</translation>
 <translation id="1650423536718072820">цитата в виде врезки</translation>
+<translation id="1681022320378710418">текущее время</translation>
 <translation id="1727886345390570319">скрыть меню субтитров</translation>
 <translation id="1729654308190250600">Введите адрес электронной почты.</translation>
 <translation id="1758486001363313524">Другое…</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Введите URL.</translation>
 <translation id="3175736971608411871">таймер</translation>
 <translation id="3199563858620722075">поле со списком</translation>
+<translation id="3220661731597678625">текущий этап</translation>
 <translation id="3329013043687509092">Насыщенность</translation>
 <translation id="3450233048674729344">Значение должно быть меньше или равно <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">описание</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">видео</translation>
 <translation id="479989351350248267">поиск</translation>
 <translation id="4812940957355064477">Введите число.</translation>
+<translation id="4912200001568447310">текущий объект</translation>
 <translation id="4912536737030637138">запись в библиографии</translation>
 <translation id="4915360478455618802">Показать окно выбора времени</translation>
 <translation id="492244087561876220">комментарий</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Не удалось воспроизвести медиафайл.</translation>
 <translation id="537648784377940524">Минимальная дата (<ph name="MIN_DATE_OR_TIME" />) должна быть раньше максимальной даты (<ph name="MAX_DATE_OR_TIME" />)</translation>
 <translation id="5406322316791861025">фигура</translation>
+<translation id="5425179576310518467">текущая дата</translation>
 <translation id="5453733299334684579">элемент дерева</translation>
 <translation id="5466621249238537318">Выберите один или несколько файлов.</translation>
 <translation id="5468998798572797635">выход из полноэкранного режима</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">счетчик</translation>
 <translation id="6166809985690652833">послесловие</translation>
 <translation id="6209276755895393898">Кажется, это "<ph name="DESCRIPTION" />"</translation>
+<translation id="6212595056017402527">текущая страница</translation>
 <translation id="6213469881011901533">словарь</translation>
 <translation id="6281588256137006900">Светлота</translation>
 <translation id="6281763101136022427">url</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Текст должен быть не короче <ph name="MIN_CHARACTERS" /> симв. Длина текста сейчас: 1 символ.</translation>
 <translation id="7034405885550056553">рекомендация</translation>
 <translation id="709897737746224366">Введите данные в указанном формате.</translation>
+<translation id="7102274145889307184">текущее местоположение</translation>
 <translation id="7118469954320184356">Нет описания.</translation>
 <translation id="7139483182332611405">вступление</translation>
 <translation id="7214187073215825913">информация о содержании</translation>

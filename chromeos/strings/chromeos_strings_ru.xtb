@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">Сервисы</translation>
 <translation id="2872961005593481000">Завершить работу</translation>
 <translation id="3008341117444806826">ОБНОВИТЬ</translation>
+<translation id="3009958530611748826">Выберите папку для сохранения</translation>
 <translation id="3083667275341675831">Диагностика соединений</translation>
 <translation id="3091839911843451378">Сбой: остановка работы</translation>
 <translation id="3188257591659621405">Мои файлы</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">Задания печати</translation>
 <translation id="3527036260304016759">Сбой: неизвестная ошибка</translation>
 <translation id="360565022852130722">Безопасность сети Wi-Fi обеспечивается недостаточно надежным протоколом WEP 802.1x.</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (отзывов: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3749289110408117711">Название файла</translation>
 <translation id="38114475217616659">Очистить всю историю</translation>
 <translation id="3820172043799983114">Неверный PIN-код.</translation>
@@ -80,10 +82,12 @@
 <translation id="4731797938093519117">Родительский доступ</translation>
 <translation id="4773299976671772492">Остановлено</translation>
 <translation id="4808449224298348341">Отменено задание печати файла "<ph name="DOCUMENT_TITLE" />"</translation>
+<translation id="4832079907277790330">Выбрать папку в приложении Files…</translation>
 <translation id="4890353053343094602">Смените пароль как можно скорее.</translation>
 <translation id="4917889632206600977">Печать прервана: нет бумаги</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4985509611418653372">Проверить</translation>
+<translation id="4991056862642197104">Поместите документ и нажмите "Сканировать"</translation>
 <translation id="5094480857972195099">Это управляемый аккаунт. Администратор (<ph name="ENROLLMENT_DOMAIN" />) может отслеживать действия пользователя, а также удаленно изменять настройки.</translation>
 <translation id="520299634122159966">Нет доступных сканеров.</translation>
 <translation id="5212543919916444558">Я не нашла на экране ничего подходящего.
@@ -95,6 +99,7 @@
 <translation id="5332948983412042822">Смените пароль как можно скорее.</translation>
 <translation id="5372659122375744710">Сеть Wi-Fi недостаточно безопасна.</translation>
 <translation id="5401938042319910061">Запустить все проверки</translation>
+<translation id="5431318178759467895">Цветная печать</translation>
 <translation id="5457599981699367932">Войти в гостевой режим</translation>
 <translation id="54609108002486618">Автоматическое управление</translation>
 <translation id="5832805196449965646">Добавить пользователя</translation>
@@ -123,6 +128,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Тип файла</translation>
 <translation id="7561454561030345039">Этим действием управляет администратор.</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7690294790491645610">Введите новый пароль ещё раз</translation>
 <translation id="7805768142964895445">Состояние</translation>
@@ -136,7 +142,6 @@
 <translation id="8364946094152050673">Не указаны серверы доменных имен.</translation>
 <translation id="8475690821716466388">Безопасность сети Wi-Fi обеспечивается недостаточно надежным протоколом WEP PSK</translation>
 <translation id="8477551185774834963">Задержка на сервере доменных имен незначительно превышает допустимое значение.</translation>
-<translation id="8668052347555487755">Цвета</translation>
 <translation id="871560550817059752">Сбой: закончились чернила</translation>
 <translation id="8723108084122415655">В сети, не используемой по умолчанию, превышено пороговое значение задержки.</translation>
 <translation id="8726019395068607495">Печать прервана: открыта крышка</translation>

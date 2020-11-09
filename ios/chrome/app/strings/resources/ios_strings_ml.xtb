@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">പ്രിന്റിംഗ് പരാജയപ്പെട്ടു.</translation>
 <translation id="1125564390852150847">പുതിയ ടാബ് സൃഷ്‌ടിക്കുക.</translation>
 <translation id="1145536944570833626">നിലവിലുള്ള വിവരങ്ങൾ ഇല്ലാതാക്കുക.</translation>
+<translation id="1147031633655575115"><ph name="USER" /> ആയി സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="1154690515305205900">ഹൈലൈറ്റ് ചെയ്ത ടെക്‌സ്റ്റിലേക്കുള്ള ലിങ്ക് സൃഷ്‌ടിക്കാനാകുന്നില്ല.</translation>
 <translation id="1157749421655780457">ലൊക്കേഷൻ അനുവദിക്കുക...</translation>
 <translation id="1165039591588034296">പിശക്</translation>
@@ -83,7 +84,6 @@
 <translation id="1690731385917361335">ഇനങ്ങളൊന്നുമില്ല</translation>
 <translation id="1692118695553449118">സമന്വയം ഓണാണ്</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> തിരഞ്ഞെടുത്തു</translation>
-<translation id="1715940067130687605">നിങ്ങളുടെ നിലവിലെ ലൊക്കേഷൻ ഉപയോഗിക്കുക.</translation>
 <translation id="1740468249224277719">ഇൻസ്‌റ്റാൾ ചെയ്യാൻ രണ്ടുതവണ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="1746815479209538200">വെബ് ബ്രൗസ് ചെയ്യാൻ, ഒരു പുതിയ ടാബ് ചേർക്കുക.</translation>
 <translation id="1752547299766512813">സംരക്ഷിച്ച പാസ്‌വേഡുകള്‍</translation>
@@ -269,6 +269,7 @@
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
 <translation id="3892144330757387737">നിങ്ങളുടെ ചരിത്രം ഇവിടെ കാണാം</translation>
 <translation id="3897092660631435901">മെനു</translation>
+<translation id="3913386780052199712">Chrome-ൽ സൈൻ ഇൻ ചെയ്‌തു</translation>
 <translation id="3915450441834151894">സൈറ്റ് വിവരങ്ങള്‍</translation>
 <translation id="3922310737605261887">പകർത്തിയ ടെക്‌സ്‌റ്റ് തിരയുക</translation>
 <translation id="3928666092801078803">എന്റെ വിവരങ്ങൾ സംയോജിപ്പിക്കുക</translation>

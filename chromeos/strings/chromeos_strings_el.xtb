@@ -94,13 +94,16 @@
 Πατήστε στο μικρόφωνο για να ρωτήσετε οτιδήποτε θέλετε.</translation>
 <translation id="5222676887888702881">Έξοδος</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">Επανεκτέλεση ρουτινών</translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Επιλέξτε έναν νέο τώρα</translation>
 <translation id="5372659122375744710">Το δίκτυο Wi-Fi δεν είναι ασφαλές.</translation>
 <translation id="5401938042319910061">Εκτέλεση όλων των ρουτινών</translation>
+<translation id="5431318178759467895">Χρώμα</translation>
 <translation id="5457599981699367932">Περιήγηση ως επισκέπτης</translation>
 <translation id="54609108002486618">Διαχειριζόμενη</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">Προσθήκη ατόμου</translation>
 <translation id="5895138241574237353">Επανεκκίνηση</translation>
 <translation id="6040143037577758943">Κλείσιμο</translation>
@@ -141,7 +144,6 @@
 <translation id="8364946094152050673">Κενά ονόματα διακομιστών</translation>
 <translation id="8475690821716466388">Η ασφάλεια του δικτύου Wi-Fi βασίζεται σε ένα αδύναμο πρωτόκολλο WEP PSK.</translation>
 <translation id="8477551185774834963">Ο λανθάνων χρόνος DNS έχει υπερβεί ελαφρώς το επιτρεπόμενο ελάχιστο όριο.</translation>
-<translation id="8668052347555487755">Λειτουργία χρώματος</translation>
 <translation id="871560550817059752">Σφάλμα - Τελείωσε το μελάνι</translation>
 <translation id="8723108084122415655">Ο λανθάνων χρόνος του μη προεπιλεγμένου δικτύου έχει υπερβεί το ελάχιστο όριο.</translation>
 <translation id="8726019395068607495">Διακοπή - Ανοικτή θύρα</translation>

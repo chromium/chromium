@@ -8,6 +8,7 @@
 <translation id="1036672894875463507">Я ваш Google Ассистент. Я могу помогать вам в течение всего дня.
 Вот что вы можете сделать для начала.</translation>
 <translation id="1037492556044956303">Добавлено устройство <ph name="DEVICE_NAME" /></translation>
+<translation id="1047773237499189053">Доступна новая функция. Чтобы получить подробную информацию, нажмите на стрелку вверх.</translation>
 <translation id="1056775291175587022">Нет сетей</translation>
 <translation id="1059194134494239015">Разрешение экрана <ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">MAC-адрес мобильного устройства: <ph name="ADDRESS" /></translation>
@@ -20,6 +21,7 @@
 <translation id="1153356358378277386">Сопряженные устройства</translation>
 <translation id="1175572348579024023">Прокрутка</translation>
 <translation id="1178581264944972037">Пауза</translation>
+<translation id="118532027333893379">Чтобы снять экран полностью, нажмите в любом его месте</translation>
 <translation id="1190609913194133056">Центр уведомлений</translation>
 <translation id="1195412055398077112">Каемка экрана</translation>
 <translation id="119944043368869598">Удалить все</translation>
@@ -56,7 +58,6 @@
 <translation id="1420527829902822813">Скриншот скопирован в буфер обмена</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1455242230282523554">Показать языковые настройки</translation>
-<translation id="1456407467406159627">На вашем экране обнаружены конфиденциальные данные.</translation>
 <translation id="1460620680449458626">Сейчас звук выключен.</translation>
 <translation id="1467432559032391204">Слева</translation>
 <translation id="1479909375538722835">Плавающее меню специальных возможностей</translation>
@@ -123,6 +124,7 @@
 <translation id="2127372758936585790">Маломощное зарядное устройство</translation>
 <translation id="2132302418721800944">Запись видео со всего экрана</translation>
 <translation id="2135456203358955318">Закрепленная лупа</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />. Повторить</translation>
 <translation id="2208323208084708176">Единый рабочий стол</translation>
 <translation id="2220572644011485463">PIN-код или пароль</translation>
 <translation id="2222338659135520253">Требуется выполнить вход.</translation>
@@ -134,6 +136,7 @@
 <translation id="229397294990920565">Отключение мобильного Интернета…</translation>
 <translation id="2295777434187870477">Микрофон включен. Нажмите, чтобы отключить его.</translation>
 <translation id="2298170939937364391">Полноэкранная лупа включена. Чтобы отключить ее, ещё раз нажмите Ctrl + Поиск + M.</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" />. Чтобы ознакомиться с результатами в Ассистенте, нажмите на диалоговое окно.</translation>
 <translation id="2302092602801625023">Аккаунт находится под управлением Family Link</translation>
 <translation id="2303600792989757991">Переключить режим обзора</translation>
 <translation id="2322173485024759474">Назад на одну букву</translation>
@@ -160,6 +163,7 @@
 <translation id="2484513351006226581">Чтобы переключить раскладку клавиатуры, нажмите клавиши <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2501920221385095727">Залипание клавиш</translation>
 <translation id="2509468283778169019">Включен режим CAPS LOCK</translation>
+<translation id="2536159006530886390">Ошибка подключения к Интернету.</translation>
 <translation id="2542089167727451762">Нажмите на фото профиля</translation>
 <translation id="255671100581129685">Google Ассистент не работает в сеансе общего доступа.</translation>
 <translation id="256712445991462162">Закрепленная лупа</translation>
@@ -181,6 +185,7 @@
 <translation id="2727977024730340865">Подключено маломощное зарядное устройство. Возможны проблемы при зарядке.</translation>
 <translation id="2792498699870441125">Alt + Search</translation>
 <translation id="2819276065543622893">Сеанс завершен.</translation>
+<translation id="28232023175184696">Ошибка подключения к Интернету. Нажмите, чтобы повторить попытку.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> не поддерживает разрешение <ph name="SPECIFIED_RESOLUTION" />. Установлено разрешение <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Полка</translation>
 <translation id="2841907151129139818">Вы перешли в режим планшета.</translation>
@@ -320,6 +325,7 @@
 <translation id="4129129681837227511">Чтобы разрешить показ уведомлений на заблокированном экране, разблокируйте устройство, а затем измените эту настройку.</translation>
 <translation id="4146833061457621061">Включить музыку</translation>
 <translation id="4149156641122542261">Устройство <ph name="DEVICE_TYPE" /> находится в домене <ph name="DOMAIN" />.</translation>
+<translation id="415719264485676252">Съемка экрана заблокирована</translation>
 <translation id="4157822100366708405">Настройки тёмной темы</translation>
 <translation id="4181841719683918333">Языки</translation>
 <translation id="4195877955194704651">Меню "Автоматическое нажатие"</translation>
@@ -386,6 +392,7 @@
 <translation id="4710243778082831592">Настройки редактора методов ввода</translation>
 <translation id="4731797938093519117">Родительский доступ</translation>
 <translation id="4734965478015604180">Горизонтально</translation>
+<translation id="4744944742468440486">Информация на основе выделенного текста</translation>
 <translation id="4759238208242260848">Скачанные файлы</translation>
 <translation id="4774338217796918551">Возвращайтесь завтра в <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Пароль для адреса электронной почты <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -503,6 +510,7 @@
 <translation id="595202126637698455">Включено отслеживание эффективности</translation>
 <translation id="5957083217255311415">Мобильный Интернет отключен.</translation>
 <translation id="5958529069007801266">Контролируемый профиль</translation>
+<translation id="5960825221082587934">Разрешите Google Ассистенту показывать определение и перевод слова, а также конвертировать одни единицы измерения в другие.</translation>
 <translation id="5977415296283489383">Наушники</translation>
 <translation id="5978382165065462689">Доступ к экрану с помощью удаленного помощника</translation>
 <translation id="5980301590375426705">Закрыть сеанс гостя</translation>
@@ -585,6 +593,7 @@
 <translation id="6777216307882431711">Питание подключенных устройств USB-C</translation>
 <translation id="6790428901817661496">Воспроизвести</translation>
 <translation id="6803622936009808957">Не удалось дублировать изображение экрана, т. к. указанное разрешение не поддерживается. Включен режим расширенного рабочего стола.</translation>
+<translation id="6816797338148849397">Доступна информация на основе выделенного текста. Чтобы перейти к ней, нажмите стрелку вверх.</translation>
 <translation id="6818242057446442178">Назад на одно слово</translation>
 <translation id="6820676911989879663">Пора отдохнуть!</translation>
 <translation id="6850010208275816200">Текущее приложение используется в полноэкранном режиме. Если оно запрашивает пароль, сначала выйдите из этого режима.</translation>
@@ -648,6 +657,7 @@
 <translation id="7497767806359279797">Выберите язык и клавиатуру</translation>
 <translation id="7526573455193969409">Сеть может отслеживаться</translation>
 <translation id="7536035074519304529">IP-адрес: <ph name="ADDRESS" /></translation>
+<translation id="7542906349682405018">Съемка экрана заблокирована администратором.</translation>
 <translation id="7548434653388805669">Пора ложиться спать</translation>
 <translation id="7551643184018910560">Закрепить на панели запуска</translation>
 <translation id="7561982940498449837">Закрыть меню</translation>
@@ -774,6 +784,7 @@
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Подключено маломощное зарядное устройство</translation>
 <translation id="8683506306463609433">Отслеживание эффективности</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Этой функцией можно управлять нажатием стрелки влево или вправо.</translation>
 <translation id="8712637175834984815">Готово</translation>
 <translation id="8721053961083920564">Включить или выключить звук. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">Это может быть попыткой узнать, какие клавиши вы нажимаете.</translation>
@@ -794,6 +805,7 @@
 <translation id="8874184842967597500">Не подключено</translation>
 <translation id="8877788021141246043">Создать напоминание</translation>
 <translation id="8878886163241303700">Раскрытый экран</translation>
+<translation id="8883473964424809116">Нажмите, чтобы открыть настройки Google Ассистента.</translation>
 <translation id="890616557918890486">Изменить источник</translation>
 <translation id="8909138438987180327">Уровень заряда батареи: <ph name="PERCENTAGE" />.</translation>
 <translation id="8913384980486163186">Из обоев</translation>

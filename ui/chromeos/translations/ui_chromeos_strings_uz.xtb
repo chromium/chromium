@@ -4,7 +4,6 @@
 <translation id="1000498691615767391">Jildni tanlang</translation>
 <translation id="1023220960495960452">Transliteratsiya (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">Slayd</translation>
-<translation id="1045157690796831147">Transliteratsiya (namaskar → നമസ്കാരം)</translation>
 <translation id="1047956942837015229">Fayllar (<ph name="COUNT" /> ta) o‘chirilmoqda...</translation>
 <translation id="1049926623896334335">Word hujjati</translation>
 <translation id="1060368002126861100">Fayllarni <ph name="APP_NAME" /> ilovasidan ochishdan avval ularni Windows fayllari jildiga oling.</translation>
@@ -19,6 +18,7 @@
 <translation id="1150565364351027703">Qora ko‘zoynak</translation>
 <translation id="115443833402798225">Koreys (Ahnmatae)</translation>
 <translation id="1155759005174418845">Katalan tili</translation>
+<translation id="1169885125071442573">Gujarot tili transliteratsiyasi</translation>
 <translation id="1172970565351728681">Taxminan <ph name="REMAINING_TIME" /> qoldi</translation>
 <translation id="1173894706177603556">Qayta nomlash</translation>
 <translation id="117624967391683467">“<ph name="FILE_NAME" />” fayli nusxalanmoqda...</translation>
@@ -31,8 +31,8 @@
 <translation id="1293556467332435079">Fayllar</translation>
 <translation id="1297922636971898492">Google Disk hozir ish faoliyatida emas. Xizmat ish faoliyatiga qaytishi bilan yuklash amali avtomatik davom ettiriladi.</translation>
 <translation id="1307931752636661898">Linux fayllari ochilmadi</translation>
-<translation id="1310751437842832374">Transliteratsiya (mausam → ନମସ୍ତେ)</translation>
 <translation id="1338950911836659113">O‘chirilmoqda...</translation>
+<translation id="1345094301418504404">Fransuz (Kanada)</translation>
 <translation id="1346748346194534595">O‘ngga</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> ta fayl import qilinmoqda...</translation>
 <translation id="1352103415082130575">Tay klaviaturasi (Pattachote)</translation>
@@ -46,9 +46,9 @@
 <translation id="1435838927755162558">Jildni Parallels Desktopga ulashish</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> jildiga koʻchirildi</translation>
 <translation id="1441841714100794440">Vyetnam klaviaturasi (telex)</translation>
-<translation id="1455548678241328678">Norveg klaviaturasi</translation>
 <translation id="1464724975715666883">1 ta xato.</translation>
 <translation id="1467432559032391204">Chapga</translation>
+<translation id="1472351751615457820">Yunon tili transliteratsiyasi</translation>
 <translation id="1474339897586437869"><ph name="FILENAME" /> faylini yuklab bo‘lmadi. Google Drive omborida yetarli bo‘sh joy yo‘q.</translation>
 <translation id="148466539719134488">Shveytsariya</translation>
 <translation id="1497522201463361063">“<ph name="FILE_NAME" />” faylini qayta nomlab bo‘lmadi. <ph name="ERROR_MESSAGE" /></translation>
@@ -59,6 +59,7 @@
 <translation id="1572585716423026576">Fon rasmi sifatida belgilash</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1622022025445651011">Fransuz (Fransiya)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ta fayl oflaynga nusxalanmoqda</translation>
 <translation id="164729547906544836">Tamil klaviaturasi (itrans)</translation>
 <translation id="164969095109328410">Chrome qurilmasi</translation>
@@ -96,13 +97,14 @@
 <translation id="2009067268969781306">Xotira formatlansa, undagi barcha maʼlumotlar oʻchib ketadi. Bu amal bekor qilinmaydi.</translation>
 <translation id="2028997212275086731">RAR arxivi</translation>
 <translation id="2046702855113914483">Ramyon</translation>
+<translation id="2060251957438343874">Nemis (Germaniya)</translation>
+<translation id="2066433303065022982">Ivrit tili transliteratsiyasi</translation>
 <translation id="2070909990982335904">Nuqta bilan boshlanuvchi nomlar tizim fayllari uchun ajratilgan. Boshqa nom tanlang.</translation>
 <translation id="2079545284768500474">Bekor qilish</translation>
 <translation id="2080010875307505892">Serb klaviaturasi</translation>
 <translation id="2084108471225856927">Qurilma sozlamalari</translation>
 <translation id="2085470240340828803">“<ph name="FILENAME" />” nomli fayl allaqachon mavjud. Kerakli amalni tanlang.</translation>
 <translation id="2121825465123208577">O‘lchamini o‘zgartirish</translation>
-<translation id="2136953289241069843">Transliteratsiya (namaste → नमस्कार)</translation>
 <translation id="2163152940313951844">Yaroqsiz belgi: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Vyetnam klaviaturasi (TCVN)</translation>
 <translation id="2168214441502403371">Fors klaviaturasi</translation>
@@ -110,6 +112,7 @@
 <translation id="2208158072373999562">Zip-arxiv</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> ta element oʻchirib tashlansinmi?</translation>
 <translation id="2230062665678605299">“<ph name="FOLDER_NAME" />” jildini yaratib bo‘lmadi. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2258078827108167865">Xmer</translation>
 <translation id="2275059641601412272">Boshqa joyga olindi.</translation>
 <translation id="2287742181953707290">Portugal va kompyuter uchun AQSH klaviaturasi (xalqaro)</translation>
 <translation id="2288278176040912387">Patefon</translation>
@@ -125,6 +128,7 @@
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> mavjud</translation>
 <translation id="2425665904502185219">Fayllarning umumiy hajmi</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> ta fayl <ph name="FOLDER_NAME" /> jildiga nusxalanmoqda</translation>
+<translation id="2445471348947930094">Gujarot, fonetik</translation>
 <translation id="2448312741937722512">Turi</translation>
 <translation id="2453576648990281505">Bu fayl allaqachon mavjud</translation>
 <translation id="2464079411014186876">Muzqaymoq</translation>
@@ -161,6 +165,7 @@
 <translation id="2887525882758501333">PDF hujjat</translation>
 <translation id="2888807692577297075">&lt;b&gt;“<ph name="SEARCH_STRING" />”&lt;/b&gt; so‘rovi bo‘yicha hech qanday fayl topilmadi</translation>
 <translation id="2894654529758326923">Ma’lumot</translation>
+<translation id="2899393425226141282">Nemis (Germaniya) va Neo 2 klaviaturasi</translation>
 <translation id="2902312830803030883">Boshqa amallar</translation>
 <translation id="2902734494705624966">Kengaytirilgan AQSH klaviaturasi</translation>
 <translation id="2923240520113693977">Estoncha</translation>
@@ -206,7 +211,6 @@
 <translation id="3338239663705455570">Slovyan klaviaturasi</translation>
 <translation id="3353984535370177728">Yuklash uchun jildni tanlang</translation>
 <translation id="3356580349448036450">Tayyor</translation>
-<translation id="3399597614303179694">Makedoncha klaviatura</translation>
 <translation id="3414856743105198592">Tashqi xotira qurilmasini formatlash undagi barcha ma’lumotlarni tozalaydi. Davom etasizmi?</translation>
 <translation id="3437801641691368414">Yaratilgan vaqti</translation>
 <translation id="3466147780910026086">Media qurilmasi tekshirilmoqda...</translation>
@@ -232,7 +236,6 @@
 <translation id="3644896802912593514">Eni</translation>
 <translation id="3645233063072417428">Boshqa joyga olindi: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="3645531960514756307">Jildni olib tashlash</translation>
-<translation id="3678559383040232393">Malta klaviaturasi</translation>
 <translation id="3685122418104378273">Google Disk‘ni mobil internet orqali sinxronlash birlamchi holatda o‘chirib qo‘yilgan.</translation>
 <translation id="3689865792480713551">Bekor qilish <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3726463242007121105">Bu qurilmani fayl tizimi qo‘llab-quvvatlanmasligi sababli ochib bo‘lmadi.</translation>
@@ -248,7 +251,6 @@
 <translation id="3810973564298564668">Sozlash</translation>
 <translation id="3811494700605067549">1 ta fayl tanlandi</translation>
 <translation id="3815016854028376614">Chjuyin kiritish usuli</translation>
-<translation id="3825863595139017598">Mo‘g‘ul klaviaturasi</translation>
 <translation id="38275787300541712">Tugatgach, Enterni bosing</translation>
 <translation id="3830674330436234648">Ijro etib bo‘lmaydi.</translation>
 <translation id="3833761542219863804">Transliteratsiya (mausam → ਮੌਸਮ)</translation>
@@ -257,7 +259,6 @@
 <translation id="3855472144336161447">Nemis Neo 2</translation>
 <translation id="386548886866354912"><ph name="EXTENSION_NAME" /> arxiv yaratish</translation>
 <translation id="3866249974567520381">Tavsif</translation>
-<translation id="391445228316373457">Nepal klaviaturasi (fonetik)</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">Ijro etish</translation>
 <translation id="3943857333388298514">Joylash</translation>
@@ -266,6 +267,7 @@
 <translation id="4002066346123236978">Nomi</translation>
 <translation id="4070370845051020638">Kantoncha matn kiritish usuli</translation>
 <translation id="4072248638558688893">Tamil klaviaturasi (fonetik)</translation>
+<translation id="4097397818890482665">Kannada tili transliteratsiyasi</translation>
 <translation id="4124935795427217608">Bir shoxli ot</translation>
 <translation id="4158739975813877944">Pleylistni ochish</translation>
 <translation id="4159731583141908892">Boshqa joyga olindi: <ph name="FILE_NAME" />.</translation>
@@ -294,6 +296,7 @@
 <translation id="4479812471636796472">AQSH Dvorak klaviaturasi</translation>
 <translation id="4522570452068850558">Tafsilotlar</translation>
 <translation id="4527800702232535228">Bu jild Parallels Desktopga ulashilgan</translation>
+<translation id="4532112105534982530">Fransuz (Fransiya) va Bépo klaviaturasi</translation>
 <translation id="4552678318981539154">Ko‘proq joy sotib olish</translation>
 <translation id="4559318885353833501"><ph name="FILE_NAME" /> oʻchirib tashlandi</translation>
 <translation id="4559767610552730302">Boke</translation>
@@ -302,6 +305,7 @@
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> tanlamaga kiritildi.</translation>
 <translation id="4582497162516204941">Linux (Beta) bilan o‘rnatish</translation>
 <translation id="4594543368593301662">Natijalarini chiqarish: <ph name="SEARCH_TERM" /></translation>
+<translation id="4598673198033263991">Harf va raqamlari bor Yapon klaviaturasi</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> fayli <ph name="FOLDER_NAME" /> jildiga nusxalanmoqda</translation>
 <translation id="4627439232948440198">Sanskrit</translation>
 <translation id="4631887759990505102">Ijrochi</translation>
@@ -321,6 +325,7 @@
 <translation id="4737050008115666127">Lending</translation>
 <translation id="4747271164117300400">Makedon</translation>
 <translation id="4759238208242260848">Yuklanmalar</translation>
+<translation id="4763055924467562718">Kannada, fonetik</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint taqdimoti</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
@@ -346,7 +351,6 @@
 <translation id="4943368462779413526">Futbol</translation>
 <translation id="4961158930123534723">1 ta jild Parallels Desktopga ulashilgan</translation>
 <translation id="4969785127455456148">Albom</translation>
-<translation id="497244430928947428">Malay klaviaturasi (Fonetik)</translation>
 <translation id="4973523518332075481">Nom <ph name="MAX_LENGTH" /> yoki undan kam belgilardan iborat bo‘lishi zarur</translation>
 <translation id="4973970068702235170">Arxivlashda kutilmagan xatolik yuz berdi: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4988205478593450158">“<ph name="FILE_NAME" />” fayli oʻchirib tashlansinmi?</translation>
@@ -410,7 +414,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5438282218546237410">Bu soʻrov bilan hech narsa topilmadi: <ph name="SEARCH_TERM" /></translation>
 <translation id="5449551289610225147">Parol noto‘g‘ri</translation>
 <translation id="5464696796438641524">Polyak klaviaturasi</translation>
-<translation id="5465122519792752163">Nepal klaviaturasi (InScript)</translation>
 <translation id="5469868506864199649">Italyan</translation>
 <translation id="5484429245813572665">Indonez</translation>
 <translation id="5494920125229734069">Hammasini tanlash</translation>
@@ -429,6 +432,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
    Arxiv yoki virtual diskdagi barcha fayllarni yoping va qayta urining.</translation>
 <translation id="5691596662111998220">“<ph name="FILE_NAME" />” fayli o‘chirilgan.</translation>
 <translation id="5700087501958648444">Audio haqida</translation>
+<translation id="570049376144986742">Fransuz (Shveysariya)</translation>
 <translation id="5731409020711461763">1 ta yangi surat</translation>
 <translation id="5752453871435543420">Nusxalarni Chrome OS bulutiga zahiralash</translation>
 <translation id="5756666464756035725">Venger QWERTY klaviaturasi</translation>
@@ -463,6 +467,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6096979789310008754">Qidiruv qatori tozalandi, barcha fayl va jildlar chiqarildi.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> fayli <ph name="FOLDER_NAME" /> jildiga koʻchirilmoqda</translation>
 <translation id="6111770213269631447">Transliteratsiya (namaskar → নমস্কার)</translation>
+<translation id="6113836390962820517">Yapon va AQSH klaviaturasi</translation>
 <translation id="6129953537138746214">Bo‘shliq</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> ko‘chirilmoqda...</translation>
 <translation id="6146563240635539929">Videolar</translation>
@@ -486,6 +491,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6394388407447716302">Faqat oʻqish</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ta fayl</translation>
 <translation id="6398765197997659313">To‘liq ekran rejimidan chiqish</translation>
+<translation id="6412376911804527326">Lao</translation>
 <translation id="642282551015776456">Fayl yoki jildga noto‘g‘ri nom berildi</translation>
 <translation id="6485131920355264772">Bo‘shliq ma’lumotini olib bo‘lmadi</translation>
 <translation id="6505918941256367791">Tamil klaviaturasi (InScript)</translation>
@@ -504,6 +510,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6643016212128521049">Tozalash</translation>
 <translation id="6650726141019353908">Pushti kapalak</translation>
 <translation id="6657585470893396449">Parol</translation>
+<translation id="6680841910911617814">Golland (Niderlandiya)</translation>
 <translation id="6710213216561001401">Avvalgi</translation>
 <translation id="6718273304615422081">Arxivlanmoqda...</translation>
 <translation id="6751256176799620176">1 ta jild tanlandi</translation>
@@ -600,6 +607,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7724603315864178912">Qirqish</translation>
 <translation id="7730494089396812859">Bulutdagi zahiralangan nuxsalar haqidagi ma’lumotlarni ko‘rsatish</translation>
 <translation id="7748626145866214022">Amallar panelida qo‘shimcha sozlamalar mavjud. Amallar paneliga o‘tish uchun Alt+A tugmalarini bosing.</translation>
+<translation id="7756956835689272676">Fransuz (Kanada) va koʻp tillik klaviatura</translation>
 <translation id="7765158879357617694">Ko‘chirib o‘tkazish</translation>
 <translation id="7774365994322694683">Qush</translation>
 <translation id="7788080748068240085">“<ph name="FILE_NAME" />” faylini oflayn foydalanish maqsadida saqlab olish uchun <ph name="TOTAL_FILE_SIZE" /> joy bo‘shatish zarur.<ph name="MARKUP_1" />
@@ -646,6 +654,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8106045200081704138">Menga ulashilgan</translation>
 <translation id="8116072619078571545">Muzlagan suv</translation>
 <translation id="8117957376775388318">Dayi kiritish usuli</translation>
+<translation id="8130367958112291342">Chex va Qwerty klaviaturasi</translation>
 <translation id="8137331602592933310">Siz “<ph name="FILENAME" />” faylini o‘chira olmaysiz, chunki bu fayl sizga tegishli emas.</translation>
 <translation id="8145409227593688472">Ubi</translation>
 <translation id="8148264977957212129">Pinyin kiritish usuli</translation>
@@ -694,6 +703,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8600173386174225982">Fayllar roʻyxati uchun saralash shakli eskizlarga almashdi.</translation>
 <translation id="8601932370724196034">Crostini tasvir fayli</translation>
 <translation id="8669949407341943408">Ko‘chirilmoqda...</translation>
+<translation id="8688649574682805922">Nemis (Shveysariya)</translation>
 <translation id="8694836330346852143">Urdu</translation>
 <translation id="8698464937041809063">Google-chizmasi</translation>
 <translation id="8714406895390098252">Velosiped</translation>
@@ -707,6 +717,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8808686172382650546">Mushuk</translation>
 <translation id="8810671769985673465">Arxivlanmadi, bunday element allaqachon arxivlangan: “<ph name="FILE_NAME" />”</translation>
 <translation id="8834164572807951958">“<ph name="DESTINATION_NAME" />” foydalanuvchilari bu obyektlar nusxalaridan foydalanish huquqini oladilar</translation>
+<translation id="8846896937446866962">Venger va Qwerty klaviaturasi</translation>
 <translation id="885381502874625531">Belarus klaviaturasi</translation>
 <translation id="8860454412039442620">Excel elektron jadvali</translation>
 <translation id="8900820606136623064">Venger tili</translation>

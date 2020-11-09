@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Štampanje nije uspelo.</translation>
 <translation id="1125564390852150847">Napravi novu karticu.</translation>
 <translation id="1145536944570833626">Izbrišite postojeće podatke</translation>
+<translation id="1147031633655575115">Prijavljeni ste kao <ph name="USER" /></translation>
 <translation id="1154690515305205900">Pravljenje linka do istaknutog teksta nije uspelo.</translation>
 <translation id="1157749421655780457">Dozvoli lokaciju...</translation>
 <translation id="1165039591588034296">Greška</translation>
@@ -83,7 +84,6 @@
 <translation id="1690731385917361335">Nema stavki</translation>
 <translation id="1692118695553449118">Sinhronizacija je uključena</translation>
 <translation id="1700629756560807968">Broj izabranih stavki je <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
-<translation id="1715940067130687605">Koristite trenutnu lokaciju.</translation>
 <translation id="1740468249224277719">Dodirnite dvaput da biste instalirali.</translation>
 <translation id="1746815479209538200">Da biste pregledali veb, dodajte novu karticu.</translation>
 <translation id="1752547299766512813">Sačuvane lozinke</translation>
@@ -269,6 +269,7 @@ Pratite korake u nastavku:</translation>
 <translation id="385051799172605136">Nazad</translation>
 <translation id="3892144330757387737">Ovde ćete pronaći istoriju</translation>
 <translation id="3897092660631435901">Meni</translation>
+<translation id="3913386780052199712">Prijavljen/a u Chrome</translation>
 <translation id="3915450441834151894">Informacije o sajtu</translation>
 <translation id="3922310737605261887">Potražite tekst koji ste kopirali</translation>
 <translation id="3928666092801078803">Kombinuj podatke</translation>
