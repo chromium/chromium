@@ -267,6 +267,10 @@ const char kDivWrappedFormHTML[] =
     "  </DIV>"
     "</DIV>";
 
+const char kJavaScriptRemoveForm[] =
+    "var form = document.getElementById('LoginTestForm');"
+    "form.parentNode.removeChild(form);";
+
 // Sets the "readonly" attribute of |element| to the value given by |read_only|.
 void SetElementReadOnly(WebInputElement& element, bool read_only) {
   element.SetAttribute(WebString::FromUTF8("readonly"),
@@ -3454,10 +3458,7 @@ TEST_F(PasswordAutofillAgentTest,
 
   // Simulate that JavaScript removes the submitted form from DOM. That means
   // that a submission was successful.
-  std::string remove_form =
-      "var form = document.getElementById('LoginTestForm');"
-      "form.parentNode.removeChild(form);";
-  ExecuteJavaScriptForTests(remove_form.c_str());
+  ExecuteJavaScriptForTests(kJavaScriptRemoveForm);
 
   FireDidFinishSameDocumentNavigation();
 
@@ -3960,6 +3961,37 @@ TEST_F(PasswordAutofillAgentTest, NoRefillOfUserInput) {
   CheckTextFieldsStateForElements(username_element_, kAliceUsername, true,
                                   password_element_, "newpwd", false, false,
                                   false);
+}
+
+// Tests that a JavaScript submission (e.g. via removing the form from a DOM)
+// gets registered following a autofill after user trigger.
+TEST_F(PasswordAutofillAgentTest, XhrSubmissionAfterFillingSuggestion) {
+  SimulateOnFillPasswordForm(fill_data_);
+
+  SimulateSuggestionChoiceOfUsernameAndPassword(username_element_,
+                                                ASCIIToUTF16(kBobUsername),
+                                                ASCIIToUTF16(kBobPassword));
+
+  // Simulate that JavaScript removes the submitted form from DOM. That means
+  // that a submission was successful.
+  ExecuteJavaScriptForTests(kJavaScriptRemoveForm);
+  ExpectSameDocumentNavigationWithUsernameAndPasswords(
+      fill_data_.form_renderer_id, kBobUsername, kBobPassword, std::string(),
+      SubmissionIndicatorEvent::DOM_MUTATION_AFTER_XHR);
+}
+
+// Tests that a JavaScript submission (e.g. via removing the form from a DOM)
+// does not get registered following a mere autofill on page load. This is
+// necessary, because we potentially fill many forms on pageload, which the user
+// likely won't interact with.
+TEST_F(PasswordAutofillAgentTest, NoXhrSubmissionAfterFillingOnPageload) {
+  SimulateOnFillPasswordForm(fill_data_);
+
+  // Simulate that JavaScript removes the submitted form from DOM. That means
+  // that a submission was successful.
+  ExecuteJavaScriptForTests(kJavaScriptRemoveForm);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(fake_driver_.called_same_document_navigation());
 }
 
 }  // namespace autofill

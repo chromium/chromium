@@ -1103,6 +1103,11 @@ void AutofillAgent::RemoveFormObserver(Observer* observer) {
   form_tracker_.RemoveObserver(observer);
 }
 
+void AutofillAgent::TrackAutofilledElement(
+    const blink::WebFormControlElement& element) {
+  form_tracker_.TrackAutofilledElement(element);
+}
+
 base::Optional<FormData> AutofillAgent::GetSubmittedForm() const {
   if (!last_interacted_form_.IsNull()) {
     FormData form;

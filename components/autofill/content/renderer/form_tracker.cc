@@ -106,6 +106,21 @@ void FormTracker::SelectControlDidChange(const WebFormControlElement& element) {
                                 Observer::ElementChangeSource::SELECT_CHANGED));
 }
 
+void FormTracker::TrackAutofilledElement(const WebFormControlElement& element) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+  DCHECK(element.IsAutofilled());
+
+  if (ignore_control_changes_)
+    return;
+
+  ResetLastInteractedElements();
+  if (element.Form().IsNull())
+    last_interacted_formless_element_ = element;
+  else
+    last_interacted_form_ = element.Form();
+  TrackElement();
+}
+
 void FormTracker::FireProbablyFormSubmittedForTesting() {
   FireProbablyFormSubmitted();
 }

@@ -73,6 +73,11 @@ class FormTracker : public content::RenderFrameObserver {
   void TextFieldDidChange(const blink::WebFormControlElement& element);
   void SelectControlDidChange(const blink::WebFormControlElement& element);
 
+  // Tells the tracker to track the autofilled `element`. Since autofilling a
+  // form or field won't trigger the regular *DidChange events, the tracker
+  // won't be notified of this `element` otherwise.
+  void TrackAutofilledElement(const blink::WebFormControlElement& element);
+
   void set_ignore_control_changes(bool ignore_control_changes) {
     ignore_control_changes_ = ignore_control_changes;
   }
