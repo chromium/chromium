@@ -18,6 +18,7 @@
 #include "base/trace_event/trace_event.h"
 #include "jingle/glue/utils.h"
 #include "net/base/ip_address.h"
+#include "net/base/port_util.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/platform/p2p/host_address_request.h"
 #include "third_party/blink/renderer/platform/p2p/socket_client_delegate.h"
@@ -760,6 +761,10 @@ rtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateClientTcpSocket(
     const rtc::ProxyInfo& proxy_info,
     const std::string& user_agent,
     const rtc::PacketSocketTcpOptions& opts) {
+  if (!net::IsPortAllowedForScheme(remote_address.port(), "stun")) {
+    // Attempt to create IPC TCP socket on blocked port
+    return nullptr;
+  }
   network::P2PSocketType type;
   if (opts.opts & rtc::PacketSocketFactory::OPT_SSLTCP) {
     type = (opts.opts & rtc::PacketSocketFactory::OPT_STUN)
