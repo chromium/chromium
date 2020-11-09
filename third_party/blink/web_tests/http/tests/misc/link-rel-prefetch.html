@@ -1,67 +1,23 @@
 <html>
 <head>
   <script>
-function CallCommand(cmd)
-{
- try {
-     var req = new XMLHttpRequest;
-     req.open("GET", "/resources/network-simulator.php?command=" + cmd, false);
-     req.send(null);
-     return req.responseText;
- } catch (ex) {
-     return "";
- }
-}
+    window.addEventListener('load', e => {
+        if (window.testRunner) {
+            testRunner.dumpAsText();
+            testRunner.waitUntilDone();
+        }
+    }, false);
 
-function startTest()
-{
-    if (window.testRunner) {
-        testRunner.dumpAsText();
-        testRunner.waitUntilDone();
+    var linkLoadCount = 3;
+    function decrementLinkLoadCount()
+    {
+        linkLoadCount--;
+        if (linkLoadCount == 0 && window.testRunner)
+            window.testRunner.notifyDone();
     }
-}
-
-function endTest()
-{
-    getResourceLog();
-    CallCommand("clear-resource-request-log");
-
-    if (window.testRunner)
-        testRunner.notifyDone();
-}
-
-function getResourceLog()
-{
-    var log = CallCommand("get-resource-request-log");
-    var logLines = log.split('\n');
-    logLines.sort();
-    document.getElementById('result').innerText = logLines.join('\n');
-}
-
-CallCommand("start-resource-request-log");
-window.addEventListener('load', startTest, false);
   </script>
-
-  <script>
-  var linkLoadCount = 3;
-
-  function decrementLinkLoadCount()
-  {
-      linkLoadCount--;
-      if (linkLoadCount == 0) {
-          endTest();
-      }
-  }
-  </script>
-  <link rel=prefetch onload="decrementLinkLoadCount()" href="/resources/network-simulator.php?command=log-resource-request&path=1st.jpg">
-  <link rel=prefetch onload="decrementLinkLoadCount()" href="/resources/network-simulator.php?command=log-resource-request&path=2nd.jpg">
-  <link rel=prefetch onload="decrementLinkLoadCount()" href="/resources/network-simulator.php?command=log-resource-request&path=3rd.jpg">
+  <link rel=prefetch onload="decrementLinkLoadCount()" href="/resources/square100.png">
+  <link rel=prefetch onload="decrementLinkLoadCount()" href="/resources/square200.png">
+  <link rel=prefetch onload="decrementLinkLoadCount()" href="/resources/square20.png">
 </head>
-<body>
-
-  <div class="box bordered"></div>
-
-  <h2>Resource requests:</h2>
-  <pre id="result">Request log goes here in DRT</pre>
-</body>
 </html>
