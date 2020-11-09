@@ -19882,10 +19882,11 @@
       ],
       'supported_on': ['chrome_os:85-'],
       'tags': [],
-      'future': True,
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
+        'unlisted': True,
+        'cloud_only': True,
       },
       'example_value': 'Default',
       'default': 'Default',
