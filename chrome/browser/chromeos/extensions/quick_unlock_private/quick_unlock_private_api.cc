@@ -469,6 +469,8 @@ QuickUnlockPrivateCheckCredentialFunction::Run() {
   Profile* profile = GetActiveProfile(browser_context());
   PrefService* pref_service = profile->GetPrefs();
   bool allow_weak = pref_service->GetBoolean(prefs::kPinUnlockWeakPinsAllowed);
+  bool is_allow_weak_pin_pref_set =
+      pref_service->HasPrefPath(prefs::kPinUnlockWeakPinsAllowed);
 
   // Check and return the problems.
   std::vector<CredentialProblem>& warnings = result->warnings;
@@ -481,7 +483,8 @@ QuickUnlockPrivateCheckCredentialFunction::Run() {
   if (length_problem != CredentialProblem::CREDENTIAL_PROBLEM_NONE)
     errors.push_back(length_problem);
 
-  if (!IsPinDifficultEnough(credential)) {
+  if ((!allow_weak || !is_allow_weak_pin_pref_set) &&
+      !IsPinDifficultEnough(credential)) {
     auto& log = allow_weak ? warnings : errors;
     log.push_back(CredentialProblem::CREDENTIAL_PROBLEM_TOO_WEAK);
   }
