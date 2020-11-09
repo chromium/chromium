@@ -310,26 +310,40 @@ void NearbyConnections::StartDiscovery(
       .is_out_of_band_connection = options->is_out_of_band_connection,
       .fast_advertisement_service_uuid = fast_advertisement_service_uuid};
   mojo::SharedRemote<mojom::EndpointDiscoveryListener> remote(
-      std::move(listener));
+      std::move(listener), thread_task_runner_);
   DiscoveryListener discovery_listener{
       .endpoint_found_cb =
-          [remote](const std::string& endpoint_id,
-                   const ByteArray& endpoint_info,
-                   const std::string& service_id) {
+          [task_runner = thread_task_runner_, remote](
+              const std::string& endpoint_id, const ByteArray& endpoint_info,
+              const std::string& service_id) {
             if (!remote) {
               return;
             }
 
-            remote->OnEndpointFound(
-                endpoint_id, mojom::DiscoveredEndpointInfo::New(
-                                 ByteArrayToMojom(endpoint_info), service_id));
+            // This call must be posted to the same sequence that |remote| was
+            // bound on.
+            task_runner->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    &mojom::EndpointDiscoveryListener::OnEndpointFound,
+                    base::Unretained(remote.get()), endpoint_id,
+                    mojom::DiscoveredEndpointInfo::New(
+                        ByteArrayToMojom(endpoint_info), service_id)));
           },
       .endpoint_lost_cb =
-          [remote](const std::string& endpoint_id) {
-            if (!remote)
+          [task_runner = thread_task_runner_,
+           remote](const std::string& endpoint_id) {
+            if (!remote) {
               return;
+            }
 
-            remote->OnEndpointLost(endpoint_id);
+            // This call must be posted to the same sequence that |remote| was
+            // bound on.
+            task_runner->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    &mojom::EndpointDiscoveryListener::OnEndpointLost,
+                    base::Unretained(remote.get()), endpoint_id));
           },
   };
   ResultCallback result_callback = ResultCallbackFromMojom(std::move(callback));
