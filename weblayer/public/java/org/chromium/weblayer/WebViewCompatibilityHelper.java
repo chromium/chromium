@@ -46,8 +46,11 @@ final class WebViewCompatibilityHelper {
         // this to a background thread.
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
         try {
+            // Use the system class loader's parent here, since it is much more efficient. This
+            // matches what Android does when constructing class loaders, see
+            // android.app.ApplicationLoaders.
             return new PathClassLoader(
-                    dexPath, librarySearchPath, ClassLoader.getSystemClassLoader()) {
+                    dexPath, librarySearchPath, ClassLoader.getSystemClassLoader().getParent()) {
                 @Override
                 public Class<?> loadClass(String name) throws ClassNotFoundException {
                     // TODO(crbug.com/1112001): Investigate why loading classes causes strict mode
