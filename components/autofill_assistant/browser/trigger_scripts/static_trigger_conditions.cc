@@ -31,6 +31,10 @@ void StaticTriggerConditions::Init(Client* client,
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
+void StaticTriggerConditions::set_is_first_time_user(bool first_time_user) {
+  is_first_time_user_ = first_time_user;
+}
+
 bool StaticTriggerConditions::is_first_time_user() const {
   return is_first_time_user_;
 }

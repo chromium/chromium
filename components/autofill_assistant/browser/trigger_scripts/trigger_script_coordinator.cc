@@ -4,22 +4,153 @@
 
 #include "components/autofill_assistant/browser/trigger_scripts/trigger_script_coordinator.h"
 
+#include <map>
+
+#include "components/autofill_assistant/browser/client_context.h"
+#include "components/autofill_assistant/browser/protocol_utils.h"
+#include "components/autofill_assistant/browser/url_utils.h"
+#include "components/version_info/version_info.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "net/http/http_status_code.h"
+
+namespace {
+
+const char kScriptParameterDebugBundleId[] = "DEBUG_BUNDLE_ID";
+const char kScriptParameterDebugBundleVersion[] = "DEBUG_BUNDLE_VERSION";
+const char kScriptParameterDebugSocketId[] = "DEBUG_SOCKET_ID";
+
+std::map<std::string, std::string> ExtractDebugScriptParameters(
+    const autofill_assistant::TriggerContext& trigger_context) {
+  std::map<std::string, std::string> debug_script_parameters;
+  auto debug_bundle_id =
+      trigger_context.GetParameter(kScriptParameterDebugBundleId);
+  auto debug_bundle_version =
+      trigger_context.GetParameter(kScriptParameterDebugBundleVersion);
+  auto debug_socket_id =
+      trigger_context.GetParameter(kScriptParameterDebugSocketId);
+
+  if (debug_bundle_id) {
+    debug_script_parameters.insert(
+        {kScriptParameterDebugBundleId, *debug_bundle_id});
+  }
+  if (debug_bundle_version) {
+    debug_script_parameters.insert(
+        {kScriptParameterDebugBundleVersion, *debug_bundle_version});
+  }
+  if (debug_socket_id) {
+    debug_script_parameters.insert(
+        {kScriptParameterDebugSocketId, *debug_socket_id});
+  }
+  return debug_script_parameters;
+}
+
+}  // namespace
+
 namespace autofill_assistant {
 
-// TODO(b/171776026): implement this stub.
 TriggerScriptCoordinator::TriggerScriptCoordinator(
     Client* client,
     std::unique_ptr<WebController> web_controller,
     std::unique_ptr<ServiceRequestSender> request_sender,
-    const GURL& get_trigger_scripts_server)
-    : content::WebContentsObserver(client->GetWebContents()) {}
+    const GURL& get_trigger_scripts_server,
+    std::unique_ptr<StaticTriggerConditions> static_trigger_conditions,
+    std::unique_ptr<DynamicTriggerConditions> dynamic_trigger_conditions)
+    : content::WebContentsObserver(client->GetWebContents()),
+      client_(client),
+      request_sender_(std::move(request_sender)),
+      get_trigger_scripts_server_(get_trigger_scripts_server),
+      web_controller_(std::move(web_controller)),
+      static_trigger_conditions_(std::move(static_trigger_conditions)),
+      dynamic_trigger_conditions_(std::move(dynamic_trigger_conditions)) {}
 
 TriggerScriptCoordinator::~TriggerScriptCoordinator() = default;
 
-void TriggerScriptCoordinator::Start(const GURL& url) {}
+void TriggerScriptCoordinator::Start(
+    const GURL& deeplink_url,
+    std::unique_ptr<TriggerContext> trigger_context) {
+  deeplink_url_ = deeplink_url;
+  GURL current_url = client_->GetWebContents()->GetLastCommittedURL();
+  if (!url_utils::IsInDomainOrSubDomain(current_url, deeplink_url_)) {
+    LOG(ERROR) << "Trigger script requested for domain other than the deeplink";
+    NotifyOnTriggerScriptFinished(
+        Metrics::LiteScriptFinishedState::LITE_SCRIPT_UNKNOWN_FAILURE);
+    return;
+  }
+
+  trigger_context_ = std::make_unique<TriggerContextImpl>(
+      ExtractDebugScriptParameters(*trigger_context),
+      trigger_context->experiment_ids());
+  ClientContextProto client_context;
+  client_context.mutable_chrome()->set_chrome_version(
+      version_info::GetProductNameAndVersionForUserAgent());
+
+  request_sender_->SendRequest(
+      get_trigger_scripts_server_,
+      ProtocolUtils::CreateGetTriggerScriptsRequest(
+          deeplink_url_, client_context, trigger_context_->GetParameters()),
+      base::BindOnce(&TriggerScriptCoordinator::OnGetTriggerScripts,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TriggerScriptCoordinator::OnGetTriggerScripts(
+    int http_status,
+    const std::string& response) {
+  if (http_status != net::HTTP_OK) {
+    NotifyOnTriggerScriptFinished(
+        Metrics::LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_FAILED);
+    return;
+  }
+
+  trigger_scripts_.clear();
+  additional_allowed_domains_.clear();
+  if (!ProtocolUtils::ParseTriggerScripts(response, &trigger_scripts_,
+                                          &additional_allowed_domains_)) {
+    NotifyOnTriggerScriptFinished(
+        Metrics::LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_PARSE_ERROR);
+    return;
+  }
+
+  StartCheckingTriggerConditions();
+}
 
 void TriggerScriptCoordinator::PerformTriggerScriptAction(
-    TriggerScriptProto::TriggerScriptAction action) {}
+    TriggerScriptProto::TriggerScriptAction action) {
+  switch (action) {
+    case TriggerScriptProto::NOT_NOW:
+      if (visible_trigger_script_ != -1) {
+        trigger_scripts_[visible_trigger_script_]
+            ->waiting_for_precondition_no_longer_true(true);
+        HideTriggerScript();
+      }
+      return;
+    case TriggerScriptProto::CANCEL_SESSION:
+      HideTriggerScript();
+      NotifyOnTriggerScriptFinished(
+          Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_CLOSE);
+      return;
+    case TriggerScriptProto::CANCEL_FOREVER:
+      HideTriggerScript();
+      NotifyOnTriggerScriptFinished(
+          Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_CLOSE);
+      return;
+    case TriggerScriptProto::SHOW_CANCEL_POPUP:
+      NOTREACHED();
+      return;
+    case TriggerScriptProto::ACCEPT:
+      if (visible_trigger_script_ == -1) {
+        NOTREACHED();
+        return;
+      }
+      // Do not hide the trigger script here, to facilitate a smooth transition
+      // to the regular flow.
+      NotifyOnTriggerScriptFinished(
+          Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED);
+      return;
+    case TriggerScriptProto::UNDEFINED:
+      return;
+  }
+}
 
 void TriggerScriptCoordinator::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
@@ -29,7 +160,168 @@ void TriggerScriptCoordinator::RemoveObserver(const Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void TriggerScriptCoordinator::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // Ignore navigation events if any of the following is true:
+  // - not in the main frame.
+  // - document does not change (e.g., same page history navigation).
+  // - WebContents stays at the existing URL (e.g., downloads).
+  if (!navigation_handle->IsInMainFrame() ||
+      navigation_handle->IsSameDocument() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+
+  // Chrome has encountered an error and is now displaying an error message
+  // (e.g., network connection lost). This will cancel the current trigger
+  // script session.
+  if (navigation_handle->IsErrorPage()) {
+    PerformTriggerScriptAction(TriggerScriptProto::CANCEL_SESSION);
+    return;
+  }
+
+  // The user has navigated away from the target domain. This will cancel the
+  // current trigger script session.
+  if (!url_utils::IsInDomainOrSubDomain(web_contents()->GetLastCommittedURL(),
+                                        deeplink_url_) &&
+      !url_utils::IsInDomainOrSubDomain(web_contents()->GetLastCommittedURL(),
+                                        additional_allowed_domains_)) {
+    PerformTriggerScriptAction(TriggerScriptProto::CANCEL_SESSION);
+    return;
+  }
+}
+
 void TriggerScriptCoordinator::OnVisibilityChanged(
-    content::Visibility visibility) {}
+    content::Visibility visibility) {
+  bool visible = visibility == content::Visibility::VISIBLE;
+  if (web_contents_visible_ == visible) {
+    return;
+  }
+
+  web_contents_visible_ = visible;
+  if (web_contents_visible_) {
+    // Restore UI on tab switch. NOTE: an arbitrary amount of time can pass
+    // between tab-hide and tab-show. It is not guaranteed that the trigger
+    // script that was shown before is still available, hence we need to fetch
+    // it again.
+    DCHECK(visible_trigger_script_ == -1);
+    Start(deeplink_url_, std::move(trigger_context_));
+  } else {
+    // Hide UI on tab switch.
+    StopCheckingTriggerConditions();
+    HideTriggerScript();
+  }
+}
+
+void TriggerScriptCoordinator::StartCheckingTriggerConditions() {
+  is_checking_trigger_conditions_ = true;
+  static_trigger_conditions_->Init(
+      client_, deeplink_url_, trigger_context_.get(),
+      base::BindOnce(&TriggerScriptCoordinator::CheckDynamicTriggerConditions,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TriggerScriptCoordinator::CheckDynamicTriggerConditions() {
+  dynamic_trigger_conditions_->Update(
+      web_controller_.get(),
+      base::BindOnce(
+          &TriggerScriptCoordinator::OnDynamicTriggerConditionsEvaluated,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TriggerScriptCoordinator::StopCheckingTriggerConditions() {
+  is_checking_trigger_conditions_ = false;
+}
+
+void TriggerScriptCoordinator::ShowTriggerScript(int index) {
+  if (visible_trigger_script_ == index) {
+    return;
+  }
+
+  visible_trigger_script_ = index;
+  static_trigger_conditions_->set_is_first_time_user(false);
+  auto proto = trigger_scripts_[index]->AsProto().user_interface();
+  for (Observer& observer : observers_) {
+    observer.OnTriggerScriptShown(proto);
+  }
+}
+
+void TriggerScriptCoordinator::HideTriggerScript() {
+  if (visible_trigger_script_ == -1) {
+    return;
+  }
+
+  visible_trigger_script_ = -1;
+  for (Observer& observer : observers_) {
+    observer.OnTriggerScriptHidden();
+  }
+}
+
+void TriggerScriptCoordinator::OnDynamicTriggerConditionsEvaluated() {
+  if (!web_contents_visible_ || !is_checking_trigger_conditions_) {
+    return;
+  }
+
+  std::vector<bool> evaluated_trigger_conditions;
+  for (const auto& trigger_script : trigger_scripts_) {
+    evaluated_trigger_conditions.emplace_back(
+        trigger_script->EvaluateTriggerConditions(
+            *static_trigger_conditions_, *dynamic_trigger_conditions_));
+  }
+
+  // Trigger condition for the currently shown trigger script is no longer true.
+  if (visible_trigger_script_ != -1 &&
+      !evaluated_trigger_conditions[visible_trigger_script_]) {
+    HideTriggerScript();
+    // Do not return here: a different trigger script may have become eligible
+    // at the same time.
+  }
+
+  for (size_t i = 0; i < trigger_scripts_.size(); ++i) {
+    // The currently visible trigger script is still visible, nothing to do.
+    if (visible_trigger_script_ != -1 &&
+        i == static_cast<size_t>(visible_trigger_script_) &&
+        evaluated_trigger_conditions[i]) {
+      DCHECK(!trigger_scripts_[i]->waiting_for_precondition_no_longer_true());
+      continue;
+    }
+
+    // The script was waiting for the precondition to no longer be true.
+    // It can now resume regular precondition checking.
+    if (!evaluated_trigger_conditions[i] &&
+        trigger_scripts_[i]->waiting_for_precondition_no_longer_true()) {
+      trigger_scripts_[i]->waiting_for_precondition_no_longer_true(false);
+      continue;
+    }
+
+    if (evaluated_trigger_conditions[i] && visible_trigger_script_ != -1 &&
+        i != static_cast<size_t>(visible_trigger_script_)) {
+      // Should not happen, as trigger script conditions should be mutually
+      // exclusive. If it happens, we just ignore it. This is essentially
+      // first-come-first-serve, prioritizing scripts w.r.t. occurrence in the
+      // proto.
+      continue;
+    }
+
+    // A new trigger script has become eligible for showing.
+    if (evaluated_trigger_conditions[i] &&
+        !trigger_scripts_[i]->waiting_for_precondition_no_longer_true()) {
+      ShowTriggerScript(i);
+    }
+  }
+
+  content::GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&TriggerScriptCoordinator::CheckDynamicTriggerConditions,
+                     weak_ptr_factory_.GetWeakPtr()),
+      periodic_element_check_interval_);
+}
+
+void TriggerScriptCoordinator::NotifyOnTriggerScriptFinished(
+    Metrics::LiteScriptFinishedState state) {
+  for (Observer& observer : observers_) {
+    observer.OnTriggerScriptFinished(state);
+  }
+}
 
 }  // namespace autofill_assistant

@@ -8,6 +8,8 @@
 #include "base/test/mock_callback.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_scripts/dynamic_trigger_conditions.h"
+#include "components/autofill_assistant/browser/trigger_scripts/mock_dynamic_trigger_conditions.h"
+#include "components/autofill_assistant/browser/trigger_scripts/mock_static_trigger_conditions.h"
 #include "components/autofill_assistant/browser/trigger_scripts/static_trigger_conditions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -15,32 +17,6 @@ namespace autofill_assistant {
 
 using ::testing::NiceMock;
 using ::testing::Return;
-
-class MockStaticTriggerConditions : public StaticTriggerConditions {
- public:
-  MOCK_METHOD4(Init,
-               void(Client* client,
-                    const GURL& url,
-                    TriggerContext* trigger_context,
-                    base::OnceCallback<void(void)> callback));
-  MOCK_CONST_METHOD0(is_first_time_user, bool());
-  MOCK_CONST_METHOD0(has_stored_login_credentials, bool());
-  MOCK_CONST_METHOD1(is_in_experiment, bool(int experiment_id));
-};
-
-class MockDynamicTriggerConditions : public DynamicTriggerConditions {
- public:
-  MOCK_CONST_METHOD1(GetSelectorMatches,
-                     base::Optional<bool>(const Selector& selector));
-
-  void Update(WebController* web_controller,
-              base::OnceCallback<void(void)> callback) override {
-    OnUpdate(web_controller, callback);
-  }
-  MOCK_METHOD2(OnUpdate,
-               void(WebController* web_controller,
-                    base::OnceCallback<void(void)>& callback));
-};
 
 class TriggerScriptTest : public testing::Test {
  public:

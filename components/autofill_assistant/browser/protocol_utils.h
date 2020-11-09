@@ -54,6 +54,12 @@ class ProtocolUtils {
       const RoundtripTimingStats& timing_stats,
       const ClientContextProto& client_context);
 
+  // Create request to get the available trigger scripts for |url|.
+  static std::string CreateGetTriggerScriptsRequest(
+      const GURL& url,
+      const ClientContextProto& client_context,
+      const std::map<std::string, std::string>& script_parameters);
+
   // Create an action from the |action|.
   static std::unique_ptr<Action> CreateAction(ActionDelegate* delegate,
                                               const ActionProto& action);
@@ -79,7 +85,8 @@ class ProtocolUtils {
   // |trigger_scripts|. Returns false if parsing failed, else true.
   static bool ParseTriggerScripts(
       const std::string& response,
-      std::vector<std::unique_ptr<TriggerScript>>* trigger_scripts);
+      std::vector<std::unique_ptr<TriggerScript>>* trigger_scripts,
+      std::vector<std::string>* additional_allowed_domains);
 
  private:
   // To avoid instantiate this class by accident.

@@ -12,11 +12,17 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "components/autofill_assistant/browser/client.h"
+#include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/service_request_sender.h"
+#include "components/autofill_assistant/browser/trigger_context.h"
+#include "components/autofill_assistant/browser/trigger_scripts/dynamic_trigger_conditions.h"
+#include "components/autofill_assistant/browser/trigger_scripts/static_trigger_conditions.h"
 #include "components/autofill_assistant/browser/trigger_scripts/trigger_script.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
@@ -37,21 +43,29 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
 
     virtual void OnTriggerScriptShown(const TriggerScriptUIProto& proto) = 0;
     virtual void OnTriggerScriptHidden() = 0;
-    virtual void OnTriggerScriptFinished(int state) = 0;
+    // TODO(b/171776026): Add new states to our metrics and use them in the
+    // coordinator.
+    virtual void OnTriggerScriptFinished(
+        Metrics::LiteScriptFinishedState state) = 0;
   };
 
   // |client| and |web_contents| must outlive this instance.
-  TriggerScriptCoordinator(Client* client,
-                           std::unique_ptr<WebController> web_controller,
-                           std::unique_ptr<ServiceRequestSender> request_sender,
-                           const GURL& get_trigger_scripts_server);
+  TriggerScriptCoordinator(
+      Client* client,
+      std::unique_ptr<WebController> web_controller,
+      std::unique_ptr<ServiceRequestSender> request_sender,
+      const GURL& get_trigger_scripts_server,
+      std::unique_ptr<StaticTriggerConditions> static_trigger_conditions,
+      std::unique_ptr<DynamicTriggerConditions> dynamic_trigger_conditions);
   ~TriggerScriptCoordinator() override;
   TriggerScriptCoordinator(const TriggerScriptCoordinator&) = delete;
   TriggerScriptCoordinator& operator=(const TriggerScriptCoordinator&) = delete;
 
-  // Retrieves all trigger scripts for |url| and starts evaluating their
-  // preconditions. Observers will be notified of all relevant status updates.
-  void Start(const GURL& url);
+  // Retrieves all trigger scripts for |deeplink_url| and starts evaluating
+  // their trigger conditions. Observers will be notified of all relevant status
+  // updates.
+  void Start(const GURL& deeplink_url,
+             std::unique_ptr<TriggerContext> trigger_context);
 
   // Performs |action|. This is usually invoked by the UI as a result of user
   // interactions.
@@ -62,16 +76,73 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   void RemoveObserver(const Observer* observer);
 
  private:
-  struct PendingTriggerScript {
-    TriggerScript trigger_script;
-    bool waiting_for_precondition_no_longer_true = false;
-  };
+  friend class TriggerScriptCoordinatorTest;
 
   // From content::WebContentsObserver.
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
+
+  void StartCheckingTriggerConditions();
+  void StopCheckingTriggerConditions();
+  void ShowTriggerScript(int index);
+  void HideTriggerScript();
+  void CheckDynamicTriggerConditions();
+  void OnDynamicTriggerConditionsEvaluated();
+  void OnGetTriggerScripts(int http_status, const std::string& response);
+
+  void NotifyOnTriggerScriptFinished(Metrics::LiteScriptFinishedState state);
+
+  // Used to retrieve deps and also to request shutdown and, if applicable,
+  // start of the regular script.
+  Client* client_;
+
+  // The original deeplink to request trigger scripts for.
+  GURL deeplink_url_;
+
+  // List of additional domains. If the user leaves the (sub)domain of
+  // |deeplink_url_| or |additional_allowed_domains_|, the session stops.
+  std::vector<std::string> additional_allowed_domains_;
+
+  // The trigger context for the most recent |Start|. This is stored as a member
+  // to allow pausing and resuming the same trigger flow.
+  std::unique_ptr<TriggerContext> trigger_context_;
+
+  // Keeps track of whether the tab is currently visible or not. While
+  // invisible, trigger scripts are hidden and condition evaluation is
+  // suspended.
+  bool web_contents_visible_ = true;
+
+  // Whether the coordinator is currently checking trigger conditions.
+  bool is_checking_trigger_conditions_ = false;
+
+  // Index of the trigger script that is currently being shown. -1 if no script
+  // is being shown.
+  int visible_trigger_script_ = -1;
+
+  // Used to request trigger scripts from the backend.
+  std::unique_ptr<ServiceRequestSender> request_sender_;
+
+  // The URL of the server that should be contacted by |request_sender_|.
+  GURL get_trigger_scripts_server_;
+
+  // The web controller to evaluate element conditions.
+  std::unique_ptr<WebController> web_controller_;
 
   // The list of currently registered observers.
   base::ObserverList<Observer> observers_;
+
+  // The list of trigger scripts that were fetched from the backend.
+  std::vector<std::unique_ptr<TriggerScript>> trigger_scripts_;
+
+  // Evaluate and cache the results for static and dynamic trigger conditions.
+  std::unique_ptr<StaticTriggerConditions> static_trigger_conditions_;
+  std::unique_ptr<DynamicTriggerConditions> dynamic_trigger_conditions_;
+
+  // The time between consecutive evaluations of dynamic trigger conditions.
+  // TODO(arbesser): Maybe make this configurable in proto?
+  base::TimeDelta periodic_element_check_interval_ =
+      base::TimeDelta::FromSeconds(1);
 
   base::WeakPtrFactory<TriggerScriptCoordinator> weak_ptr_factory_{this};
 };

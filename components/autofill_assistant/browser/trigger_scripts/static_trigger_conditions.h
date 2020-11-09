@@ -22,7 +22,7 @@ namespace autofill_assistant {
 class StaticTriggerConditions {
  public:
   StaticTriggerConditions();
-  ~StaticTriggerConditions();
+  virtual ~StaticTriggerConditions();
 
   // Initializes the field values according to |url| and the current state of
   // |client|. Invokes |callback| when done. |client| and |trigger_context| must
@@ -33,6 +33,7 @@ class StaticTriggerConditions {
                     const GURL& url,
                     TriggerContext* trigger_context,
                     base::OnceCallback<void(void)> callback);
+  virtual void set_is_first_time_user(bool first_time_user);
   virtual bool is_first_time_user() const;
   virtual bool has_stored_login_credentials() const;
   virtual bool is_in_experiment(int experiment_id) const;

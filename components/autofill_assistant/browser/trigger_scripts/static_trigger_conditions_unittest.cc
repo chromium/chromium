@@ -55,5 +55,11 @@ TEST_F(StaticTriggerConditionsTest, Init) {
   EXPECT_TRUE(static_trigger_conditions_.is_in_experiment(4));
 }
 
+TEST_F(StaticTriggerConditionsTest, SetIsFirstTimeUser) {
+  EXPECT_TRUE(static_trigger_conditions_.is_first_time_user());
+  static_trigger_conditions_.set_is_first_time_user(false);
+  EXPECT_FALSE(static_trigger_conditions_.is_first_time_user());
+}
+
 }  // namespace
 }  // namespace autofill_assistant

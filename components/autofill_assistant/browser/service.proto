@@ -438,8 +438,8 @@ message Empty {}
 
 // RPC request to fetch the available trigger scripts for a particular domain.
 message GetTriggerScriptsRequestProto {
-  // The domain for which to fetch the trigger scripts.
-  optional string domain = 1;
+  // The exact url for which to fetch the trigger scripts.
+  optional string url = 1;
   // The client context.
   // NOTE: Currently, this will only contain the Chrome version number for
   // privacy reasons.
@@ -452,6 +452,11 @@ message GetTriggerScriptsRequestProto {
 message GetTriggerScriptsResponseProto {
   // The available trigger scripts, if any.
   repeated TriggerScriptProto trigger_scripts = 1;
+
+  // A list of additional domains and subdomains. Trigger scripts will
+  // automatically cancel the ongoing session if the user navigates away from
+  // the original domain or any of the additional domains.
+  repeated string additional_allowed_domains = 2;
 }
 
 // A trigger script contains the full specification for a trigger script that is
@@ -478,12 +483,11 @@ message TriggerScriptProto {
 
   // The |trigger_condition| must be true for the script to trigger.
   optional TriggerScriptConditionProto trigger_condition = 1;
-  // The action that should automatically be executed when a trigger condition
-  // is first true and then stops being true.
-  optional TriggerScriptAction on_trigger_condition_no_longer_true = 2;
 
   // The user interface to show.
   optional TriggerScriptUIProto user_interface = 3;
+
+  reserved 2;
 }
 
 message TriggerScriptConditionProto {

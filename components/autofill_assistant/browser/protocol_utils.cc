@@ -287,10 +287,31 @@ bool ProtocolUtils::ParseActions(ActionDelegate* delegate,
 }
 
 // static
+std::string ProtocolUtils::CreateGetTriggerScriptsRequest(
+    const GURL& url,
+    const ClientContextProto& client_context,
+    const std::map<std::string, std::string>& script_parameters) {
+  GetTriggerScriptsRequestProto request_proto;
+  request_proto.set_url(url.spec());
+  *request_proto.mutable_client_context() = client_context;
+  if (!script_parameters.empty()) {
+    AppendScriptParametersToRepeatedField(
+        script_parameters, request_proto.mutable_debug_script_parameters());
+  }
+
+  std::string serialized_request_proto;
+  bool success = request_proto.SerializeToString(&serialized_request_proto);
+  DCHECK(success);
+  return serialized_request_proto;
+}
+
+// static
 bool ProtocolUtils::ParseTriggerScripts(
     const std::string& response,
-    std::vector<std::unique_ptr<TriggerScript>>* trigger_scripts) {
+    std::vector<std::unique_ptr<TriggerScript>>* trigger_scripts,
+    std::vector<std::string>* additional_allowed_domains) {
   DCHECK(trigger_scripts);
+  DCHECK(additional_allowed_domains);
 
   GetTriggerScriptsResponseProto response_proto;
   if (!response_proto.ParseFromString(response)) {
@@ -301,6 +322,11 @@ bool ProtocolUtils::ParseTriggerScripts(
   for (const auto& trigger_script_proto : response_proto.trigger_scripts()) {
     trigger_scripts->emplace_back(
         std::make_unique<TriggerScript>(trigger_script_proto));
+  }
+
+  for (const auto& allowed_domain :
+       response_proto.additional_allowed_domains()) {
+    additional_allowed_domains->emplace_back(allowed_domain);
   }
   return true;
 }

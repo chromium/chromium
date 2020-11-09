@@ -4,12 +4,17 @@
 
 #include "components/autofill_assistant/browser/trigger_scripts/trigger_script_coordinator.h"
 
-#include "components/autofill_assistant/browser/mock_client.h"
-#include "components/autofill_assistant/browser/service/mock_service_request_sender.h"
-#include "components/autofill_assistant/browser/web/mock_web_controller.h"
-
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
+#include "components/autofill_assistant/browser/mock_client.h"
+#include "components/autofill_assistant/browser/service/mock_service_request_sender.h"
+#include "components/autofill_assistant/browser/test_util.h"
+#include "components/autofill_assistant/browser/trigger_scripts/mock_dynamic_trigger_conditions.h"
+#include "components/autofill_assistant/browser/trigger_scripts/mock_static_trigger_conditions.h"
+#include "components/autofill_assistant/browser/web/mock_web_controller.h"
+#include "components/version_info/version_info.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/http/http_status_code.h"
@@ -17,24 +22,33 @@
 
 namespace autofill_assistant {
 
+using ::base::test::RunOnceCallback;
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::NaggyMock;
 using ::testing::NiceMock;
 using ::testing::Return;
-
-namespace {
+using ::testing::UnorderedElementsAreArray;
 
 class MockObserver : public TriggerScriptCoordinator::Observer {
  public:
   MOCK_METHOD1(OnTriggerScriptShown, void(const TriggerScriptUIProto& proto));
   MOCK_METHOD0(OnTriggerScriptHidden, void());
-  MOCK_METHOD1(OnTriggerScriptFinished, void(int state));
+  MOCK_METHOD1(OnTriggerScriptFinished,
+               void(Metrics::LiteScriptFinishedState state));
 };
 
+const char kFakeDeepLink[] = "https://example.com/q?data=test";
+const char kFakeSubdomainDeepLink[] = "https://b.example.com";
 const char kFakeServerUrl[] =
     "https://www.fake.backend.com/trigger_script_server";
 
 class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
  public:
-  TriggerScriptCoordinatorTest() = default;
+  TriggerScriptCoordinatorTest()
+      : content::RenderViewHostTestHarness(
+            base::test::TaskEnvironment::MainThreadType::UI,
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~TriggerScriptCoordinatorTest() override = default;
 
   void SetUp() override {
@@ -49,25 +63,352 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
     auto mock_web_controller = std::make_unique<NiceMock<MockWebController>>();
     mock_web_controller_ = mock_web_controller.get();
 
+    auto mock_static_trigger_conditions =
+        std::make_unique<NiceMock<MockStaticTriggerConditions>>();
+    mock_static_trigger_conditions_ = mock_static_trigger_conditions.get();
+    auto mock_dynamic_trigger_conditions =
+        std::make_unique<NiceMock<MockDynamicTriggerConditions>>();
+    mock_dynamic_trigger_conditions_ = mock_dynamic_trigger_conditions.get();
+
     coordinator_ = std::make_unique<TriggerScriptCoordinator>(
         &mock_client_, std::move(mock_web_controller),
-        std::move(mock_request_sender), GURL(kFakeServerUrl));
+        std::move(mock_request_sender), GURL(kFakeServerUrl),
+        std::move(mock_static_trigger_conditions),
+        std::move(mock_dynamic_trigger_conditions));
     coordinator_->AddObserver(&mock_observer_);
+
+    SimulateNavigateToUrl(GURL(kFakeDeepLink));
   }
 
   void TearDown() override { coordinator_->RemoveObserver(&mock_observer_); }
+
+  void CallOnVisibilityChangedForTest(content::Visibility visibility) {
+    coordinator_->OnVisibilityChanged(visibility);
+  }
+
+  void SimulateNavigateToUrl(const GURL& url) {
+    content::WebContentsTester::For(web_contents())->SetLastCommittedURL(url);
+    content::NavigationSimulator::NavigateAndCommitFromDocument(
+        url, web_contents()->GetMainFrame());
+    content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
+  }
 
  protected:
   NiceMock<MockServiceRequestSender>* mock_request_sender_;
   NiceMock<MockWebController>* mock_web_controller_;
   NiceMock<MockClient> mock_client_;
-  NiceMock<MockObserver> mock_observer_;
+  NaggyMock<MockObserver> mock_observer_;
   std::unique_ptr<TriggerScriptCoordinator> coordinator_;
+  NiceMock<MockStaticTriggerConditions>* mock_static_trigger_conditions_;
+  NiceMock<MockDynamicTriggerConditions>* mock_dynamic_trigger_conditions_;
 };
 
-TEST_F(TriggerScriptCoordinatorTest, SmokeTest) {
-  // stub
+TEST_F(TriggerScriptCoordinatorTest, StartSucceedsForCorrectDomain) {
+  SimulateNavigateToUrl(GURL(kFakeDeepLink));
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest).Times(1);
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+}
+TEST_F(TriggerScriptCoordinatorTest, StartSucceedsForSubDomain) {
+  SimulateNavigateToUrl(GURL(kFakeSubdomainDeepLink));
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest).Times(1);
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
 }
 
-}  // namespace
+TEST_F(TriggerScriptCoordinatorTest, StartFailsForDifferentDomain) {
+  SimulateNavigateToUrl(GURL("https://different.com/example"));
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest).Times(0);
+  EXPECT_CALL(
+      mock_observer_,
+      OnTriggerScriptFinished(
+          Metrics::LiteScriptFinishedState::LITE_SCRIPT_UNKNOWN_FAILURE));
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+}
+
+TEST_F(TriggerScriptCoordinatorTest, StartSendsOnlyApprovedFields) {
+  std::map<std::string, std::string> input_script_params{
+      {"keyA", "valueA"},
+      {"DEBUG_BUNDLE_ID", "bundle_id"},
+      {"DEBUG_SOCKET_ID", "socket_id"},
+      {"keyB", "valueB"},
+      {"DEBUG_BUNDLE_VERSION", "socket_version"}};
+
+  std::map<std::string, std::string> expected_script_params{
+      {"DEBUG_BUNDLE_ID", "bundle_id"},
+      {"DEBUG_SOCKET_ID", "socket_id"},
+      {"DEBUG_BUNDLE_VERSION", "socket_version"}};
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce([&](const GURL& url, const std::string& request_body,
+                    ServiceRequestSender::ResponseCallback& callback) {
+        GetTriggerScriptsRequestProto request;
+        ASSERT_TRUE(request.ParseFromString(request_body));
+        EXPECT_THAT(request.url(), Eq(kFakeDeepLink));
+
+        std::map<std::string, std::string> params;
+        for (const auto& param : request.debug_script_parameters()) {
+          params[param.name()] = param.value();
+        }
+        EXPECT_THAT(params, UnorderedElementsAreArray(expected_script_params));
+
+        ClientContextProto expected_client_context;
+        expected_client_context.mutable_chrome()->set_chrome_version(
+            version_info::GetProductNameAndVersionForUserAgent());
+        EXPECT_THAT(request.client_context(), Eq(expected_client_context));
+      });
+
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>(
+                          /* params = */ input_script_params,
+                          /* exp = */ "1,2,4"));
+}
+
+TEST_F(TriggerScriptCoordinatorTest, StopOnNetworkError) {
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_FORBIDDEN, ""));
+  EXPECT_CALL(
+      mock_observer_,
+      OnTriggerScriptFinished(
+          Metrics::LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_FAILED));
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+}
+
+TEST_F(TriggerScriptCoordinatorTest, StopOnParsingError) {
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "invalid"));
+  EXPECT_CALL(mock_observer_,
+              OnTriggerScriptFinished(Metrics::LiteScriptFinishedState::
+                                          LITE_SCRIPT_GET_ACTIONS_PARSE_ERROR));
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+}
+
+TEST_F(TriggerScriptCoordinatorTest, StartChecksStaticAndDynamicConditions) {
+  GetTriggerScriptsResponseProto response;
+  auto* trigger_condition_all_of = response.add_trigger_scripts()
+                                       ->mutable_trigger_condition()
+                                       ->mutable_all_of();
+  *trigger_condition_all_of->add_conditions()->mutable_selector() =
+      ToSelectorProto("#selector");
+  trigger_condition_all_of->add_conditions()->mutable_is_first_time_user();
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<3>());
+  ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
+      .WillByDefault(RunOnceCallback<1>());
+  ON_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+      .WillByDefault(Return(false));
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              OnUpdate(mock_web_controller_, _))
+      .WillOnce(RunOnceCallback<1>());
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+}
+
+TEST_F(TriggerScriptCoordinatorTest, ShowAndHideTriggerScript) {
+  GetTriggerScriptsResponseProto response;
+  *response.add_trigger_scripts()
+       ->mutable_trigger_condition()
+       ->mutable_selector() = ToSelectorProto("#selector");
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<3>());
+  ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
+      .WillByDefault(RunOnceCallback<1>());
+  ON_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+
+  // Condition stays true, no further notification should be sent to observers.
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  // Condition turns false, trigger script is hidden.
+  ON_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+      .WillByDefault(Return(false));
+  EXPECT_CALL(mock_observer_, OnTriggerScriptHidden).Times(1);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  // Condition is true again, trigger script is shown again.
+  ON_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+}
+
+TEST_F(TriggerScriptCoordinatorTest, PauseAndResumeOnTabVisibilityChange) {
+  GetTriggerScriptsResponseProto response;
+  *response.add_trigger_scripts()
+       ->mutable_trigger_condition()
+       ->mutable_selector() = ToSelectorProto("#selector");
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<3>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              OnUpdate(mock_web_controller_, _))
+      .WillOnce(RunOnceCallback<1>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+
+  // When a tab becomes invisible, the trigger script is hidden and trigger
+  // condition evaluation is suspended.
+  EXPECT_CALL(mock_observer_, OnTriggerScriptHidden).Times(1);
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              OnUpdate(mock_web_controller_, _))
+      .Times(0);
+  CallOnVisibilityChangedForTest(content::Visibility::HIDDEN);
+
+  // When a hidden tab becomes visible again, the trigger scripts must be
+  // fetched again.
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<3>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              OnUpdate(mock_web_controller_, _))
+      .WillOnce(RunOnceCallback<1>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
+  CallOnVisibilityChangedForTest(content::Visibility::VISIBLE);
+}
+
+TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionNotNow) {
+  GetTriggerScriptsResponseProto response;
+  *response.add_trigger_scripts()
+       ->mutable_trigger_condition()
+       ->mutable_selector() = ToSelectorProto("#selector");
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<3>());
+  ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
+      .WillByDefault(RunOnceCallback<1>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+
+  EXPECT_CALL(mock_observer_, OnTriggerScriptHidden).Times(1);
+  coordinator_->PerformTriggerScriptAction(TriggerScriptProto::NOT_NOW);
+
+  // Despite the trigger condition still being true, the trigger script is not
+  // shown again until the condition has become first false and then true again.
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(0);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+      .WillOnce(Return(false));
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+}
+
+TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionCancelSession) {
+  // TODO(b/171776026): Implement this once the new states have been added to
+  // the metrics.
+}
+
+TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionCancelForever) {
+  // TODO(b/171776026): Implement this once the new states have been added to
+  // the metrics.
+}
+
+TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionAccept) {
+  GetTriggerScriptsResponseProto response;
+  *response.add_trigger_scripts()
+       ->mutable_trigger_condition()
+       ->mutable_selector() = ToSelectorProto("#selector");
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<3>());
+  ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
+      .WillByDefault(RunOnceCallback<1>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+
+  EXPECT_CALL(
+      mock_observer_,
+      OnTriggerScriptFinished(
+          Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED))
+      .Times(1);
+  coordinator_->PerformTriggerScriptAction(TriggerScriptProto::ACCEPT);
+}
+
+TEST_F(TriggerScriptCoordinatorTest, CancelOnNavigateAway) {
+  GetTriggerScriptsResponseProto response;
+  response.add_additional_allowed_domains("other-example.com");
+  *response.add_trigger_scripts()
+       ->mutable_trigger_condition()
+       ->mutable_selector() = ToSelectorProto("#selector");
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<3>());
+  ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
+      .WillByDefault(RunOnceCallback<1>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+
+  // Same-domain navigation is ok.
+  EXPECT_CALL(mock_observer_, OnTriggerScriptFinished(_)).Times(0);
+  SimulateNavigateToUrl(GURL("https://example.com/cart"));
+
+  // Navigating to sub-domain of original domain is ok.
+  SimulateNavigateToUrl(GURL("https://subdomain.example.com/test"));
+
+  // Navigating to whitelisted domain is ok.
+  SimulateNavigateToUrl(GURL("https://other-example.com/page"));
+
+  // Navigating to subdomain of whitelisted domain is ok.
+  SimulateNavigateToUrl(GURL("https://other-example.com/page"));
+
+  // Navigating to non-whitelisted domain is not ok.
+  EXPECT_CALL(mock_observer_, OnTriggerScriptFinished(_)).Times(1);
+  SimulateNavigateToUrl(GURL("https://example.different.com/page"));
+}
+
 }  // namespace autofill_assistant

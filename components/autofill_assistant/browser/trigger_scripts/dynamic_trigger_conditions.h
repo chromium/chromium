@@ -22,7 +22,7 @@ namespace autofill_assistant {
 class DynamicTriggerConditions {
  public:
   DynamicTriggerConditions();
-  ~DynamicTriggerConditions();
+  virtual ~DynamicTriggerConditions();
 
   // Adds the selector trigger conditions specified in |proto| to the list of
   // selectors to be queried in |Update|.

@@ -77,4 +77,12 @@ TriggerScriptProto TriggerScript::AsProto() const {
   return proto_;
 }
 
+bool TriggerScript::waiting_for_precondition_no_longer_true() const {
+  return waiting_for_precondition_no_longer_true_;
+}
+
+void TriggerScript::waiting_for_precondition_no_longer_true(bool waiting) {
+  waiting_for_precondition_no_longer_true_ = waiting;
+}
+
 }  // namespace autofill_assistant

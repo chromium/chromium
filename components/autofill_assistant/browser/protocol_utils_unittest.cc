@@ -327,19 +327,35 @@ TEST_F(ProtocolUtilsTest, ParseActionsUpdateScriptListFullFeatured) {
 
 TEST_F(ProtocolUtilsTest, ParseTriggerScriptsParseError) {
   std::vector<std::unique_ptr<TriggerScript>> trigger_scripts;
-  EXPECT_FALSE(ProtocolUtils::ParseTriggerScripts("invalid", &trigger_scripts));
+  std::vector<std::string> additional_allowed_domains;
+  EXPECT_FALSE(ProtocolUtils::ParseTriggerScripts("invalid", &trigger_scripts,
+                                                  &additional_allowed_domains));
   EXPECT_TRUE(trigger_scripts.empty());
+}
+
+TEST_F(ProtocolUtilsTest, CreateGetTriggerScriptsRequest) {
+  std::map<std::string, std::string> parameters = {{"key_a", "value_a"},
+                                                   {"key_b", "value_b"}};
+
+  GetTriggerScriptsRequestProto request;
+  EXPECT_TRUE(
+      request.ParseFromString(ProtocolUtils::CreateGetTriggerScriptsRequest(
+          GURL("http://example.com/"), client_context_proto_, parameters)));
+
+  AssertClientContext(request.client_context());
+  AssertScriptParameters(request.debug_script_parameters(), parameters);
+  EXPECT_EQ("http://example.com/", request.url());
 }
 
 TEST_F(ProtocolUtilsTest, ParseTriggerScriptsValid) {
   GetTriggerScriptsResponseProto proto;
+  proto.add_additional_allowed_domains("example.com");
+  proto.add_additional_allowed_domains("other-example.com");
 
   TriggerScriptProto trigger_script_1;
   *trigger_script_1.mutable_trigger_condition()->mutable_selector() =
       ToSelectorProto("fake_element_1");
   TriggerScriptProto trigger_script_2;
-  trigger_script_2.set_on_trigger_condition_no_longer_true(
-      TriggerScriptProto::CANCEL_SESSION);
 
   *proto.add_trigger_scripts() = trigger_script_1;
   *proto.add_trigger_scripts() = trigger_script_2;
@@ -348,12 +364,16 @@ TEST_F(ProtocolUtilsTest, ParseTriggerScriptsValid) {
   proto.SerializeToString(&proto_str);
 
   std::vector<std::unique_ptr<TriggerScript>> trigger_scripts;
-  EXPECT_TRUE(ProtocolUtils::ParseTriggerScripts(proto_str, &trigger_scripts));
+  std::vector<std::string> additional_allowed_domains;
+  EXPECT_TRUE(ProtocolUtils::ParseTriggerScripts(proto_str, &trigger_scripts,
+                                                 &additional_allowed_domains));
   EXPECT_THAT(
       trigger_scripts,
       ElementsAre(
           Pointee(Property(&TriggerScript::AsProto, Eq(trigger_script_1))),
           Pointee(Property(&TriggerScript::AsProto, Eq(trigger_script_2)))));
+  EXPECT_THAT(additional_allowed_domains,
+              ElementsAre("example.com", "other-example.com"));
 }
 
 }  // namespace
