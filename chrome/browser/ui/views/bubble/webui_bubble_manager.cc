@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "ui/views/widget/widget.h"
 
@@ -48,6 +49,8 @@ bool WebUIBubbleManagerBase::ShowBubble() {
       std::make_unique<WebUIBubbleDialogView>(anchor_view_,
                                               std::move(cached_web_view_)));
   observed_bubble_widget_.Add(bubble_view_->GetWidget());
+  close_bubble_helper_ = std::make_unique<CloseBubbleOnTabActivationHelper>(
+      bubble_view_.get(), BrowserList::GetInstance()->GetLastActive());
   return true;
 }
 

@@ -11,6 +11,7 @@
 #include "base/scoped_observer.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_view.h"
+#include "chrome/browser/ui/views/close_bubble_on_tab_activation_helper.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -71,6 +72,10 @@ class WebUIBubbleManagerBase : public views::WidgetObserver {
 
   ScopedObserver<views::Widget, views::WidgetObserver> observed_bubble_widget_{
       this};
+
+  // This is necessary to prevent a bug closing the active tab in the bubble.
+  // See https://crbug.com/1139028.
+  std::unique_ptr<CloseBubbleOnTabActivationHelper> close_bubble_helper_;
 };
 
 template <typename T>
