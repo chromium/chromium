@@ -138,6 +138,7 @@ source_set("unit_tests") {
     "reporting/browser_report_generator_ios_unittest.mm",
     "reporting/profile_report_generator_ios_unittest.mm",
     "reporting/report_generator_ios_unittest.mm",
+    "reporting/report_scheduler_ios_unittest.mm",
   ]
   deps = [
     ":policy",
@@ -145,6 +146,8 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/enterprise",
+    "//components/enterprise:test_support",
     "//components/policy/core/browser:test_support",
     "//ios/chrome/browser:chrome_paths",
     "//ios/chrome/browser:pref_names",
