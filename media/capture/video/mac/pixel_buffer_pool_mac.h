@@ -35,6 +35,15 @@ class CAPTURE_EXPORT PixelBufferPool {
   // Freeing all buffer references returns the underlying buffer to the pool. In
   // order to free memory, you must both release all buffers and call Flush() or
   // delete the pool. It is safe for a buffer to outlive its pool.
+  //
+  // Retaining a pixel buffer and preventing it from returning to the pool can
+  // be done either by keeping a reference directly to the CVPixelBuffer, e.g.
+  // with a base::ScopedCFTypeRef<CVPixelBufferRef>, or by incrementing the use
+  // count of the IOSurface, i.e. with IOSurfaceIncrementUseCount().
+  //
+  // WARNING: Retaining references to the pixel buffer's IOSurface (e.g. with
+  // base::ScopedCFTypeRef<IOSurfaceRef>) without incrementing its use count
+  // does NOT prevent it from being recycled!
   base::ScopedCFTypeRef<CVPixelBufferRef> CreateBuffer();
 
   // Frees the memory of any released buffers returned to the pool.
