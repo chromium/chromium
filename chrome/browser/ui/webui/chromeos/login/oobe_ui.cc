@@ -145,11 +145,19 @@ constexpr char kProductLogoPath[] = "product-logo.png";
 constexpr char kRecommendAppListViewHTMLPath[] = "recommend_app_list_view.html";
 constexpr char kRecommendAppListViewJSPath[] = "recommend_app_list_view.js";
 // Components
+constexpr char kCommonStylesHTML[] = "components/common_styles.html";
 constexpr char kI18nBehaviorHTML[] = "components/oobe_i18n_behavior.html";
 constexpr char kI18nBehaviorJS[] = "components/oobe_i18n_behavior.js";
-constexpr char kCommonStylesHTML[] = "components/common_styles.html";
 constexpr char kHDIronIconHTML[] = "components/hd_iron_icon.html";
 constexpr char kHDIronIconJS[] = "components/hd_iron_icon.js";
+constexpr char kOobeCarouselHTML[] = "components/oobe_carousel.html";
+constexpr char kOobeCarouselJS[] = "components/oobe_carousel.js";
+constexpr char kOobeSlideHTML[] = "components/oobe_slide.html";
+constexpr char kOobeSlideJS[] = "components/oobe_slide.js";
+constexpr char kProgressListItemHTML[] = "components/progress_list_item.html";
+constexpr char kProgressListItemJS[] = "components/progress_list_item.js";
+constexpr char kThrobberNoticeHTML[] = "components/throbber_notice.html";
+constexpr char kThrobberNoticeJS[] = "components/throbber_notice.js";
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kLogo24PX1XSvgPath[] = "logo_24px-1x.svg";
@@ -628,6 +636,23 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
   source->AddResourcePath(kHDIronIconHTML,
                           IDR_OOBE_COMPONENTS_HD_IRON_ICON_HTML);
   source->AddResourcePath(kHDIronIconJS, IDR_OOBE_COMPONENTS_HD_IRON_ICON_JS);
+
+  source->AddResourcePath(kOobeCarouselHTML,
+                          IDR_OOBE_COMPONENTS_OOBE_CAROUSEL_HTML);
+  source->AddResourcePath(kOobeCarouselJS,
+                          IDR_OOBE_COMPONENTS_OOBE_CAROUSEL_JS);
+  source->AddResourcePath(kOobeSlideHTML, IDR_OOBE_COMPONENTS_OOBE_SLIDE_HTML);
+  source->AddResourcePath(kOobeSlideJS, IDR_OOBE_COMPONENTS_OOBE_SLIDE_JS);
+
+  source->AddResourcePath(kProgressListItemHTML,
+                          IDR_OOBE_COMPONENTS_PROGRESS_LIST_ITEM_HTML);
+  source->AddResourcePath(kProgressListItemJS,
+                          IDR_OOBE_COMPONENTS_PROGRESS_LIST_ITEM_JS);
+
+  source->AddResourcePath(kThrobberNoticeHTML,
+                          IDR_OOBE_COMPONENTS_THROBBER_NOTICE_HTML);
+  source->AddResourcePath(kThrobberNoticeJS,
+                          IDR_OOBE_COMPONENTS_THROBBER_NOTICE_JS);
 }
 
 CoreOobeView* OobeUI::GetCoreOobeView() {

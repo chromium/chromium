@@ -3,8 +3,8 @@
      found in the LICENSE file. -->
 <link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
 
 <link rel="import" href="/components/common_styles.html">
@@ -29,8 +29,43 @@
 -->
 <dom-module id="progress-list-item">
   <template>
-    <style include="oobe-common"></style>
-    <link rel="stylesheet" href="progress_list_item.css">
+    <style include="oobe-common">
+      #container {
+        height: 56px;
+      }
+
+      #icon {
+        min-width: 48px;
+      }
+
+      #icon-pending {
+        background-color: var(--google-grey-500);
+        border-radius: 50%;
+        height: 8px;
+        margin-inline-start: 8px;
+        width: 8px;
+      }
+
+      #icon-active {
+        height: 24px;
+        width: 24px;
+      }
+
+      #icon-completed {
+        color: var(--google-blue-600);
+      }
+
+      #text {
+        color: var(--oobe-text-color);
+        font-family: var(--oobe-default-font-family);
+        font-size: 15px;
+        line-height: 16px;
+      }
+
+      #text-active {
+        color: black;
+      }
+    </style>
 
     <div class="flex layout horizontal center" id="container" role="listitem">
       <div id="icon">
@@ -55,4 +90,5 @@
       </div>
     </div>
   </template>
+  <script src="progress_list_item.js"></script>
 </dom-module>

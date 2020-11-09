@@ -9,7 +9,6 @@
 // <include src="../oobe_network.js">
 // <include src="../oobe_eula.js">
 // <include src="../oobe_update.js">
-// <include src="../components/oobe_slide.js">
 // <include src="../demo_setup.js">
 // <include src="../demo_preferences.js">
 // <include src="../enterprise_enrollment.js">

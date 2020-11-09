@@ -11,11 +11,31 @@
 
 <dom-module id="throbber-notice">
   <template>
-    <link rel="stylesheet" href="throbber_notice.css">
+    <style>
+      :host {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 0;
+      }
+
+      paper-spinner-lite {
+        height: 38px;
+        margin-bottom: 28px;
+        width: 38px;
+      }
+
+      #comment {
+        @apply --oobe-default-font;
+        color: #747474;
+      }
+    </style>
     <paper-spinner-lite dir="ltr" active></paper-spinner-lite>
     <div id="comment" aria-live="polite"
         aria-label$="[[i18nDynamic(locale, textKey)]]">
       [[i18nDynamic(locale, textKey)]]
     </div>
   </template>
+  <script src="throbber_notice.js"></script>
 </dom-module>

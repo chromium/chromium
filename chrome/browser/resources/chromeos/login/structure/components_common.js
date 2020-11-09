@@ -12,9 +12,6 @@
 // <include src="../components/oobe_dialog.js">
 // <include src="../components/oobe_help_dialog.js">
 // <include src="../components/html-echo.js">
-// <include src="../components/progress_list_item.js">
-// <include src="../components/oobe_carousel.js">
-// <include src="../throbber_notice.js">
 // <include src="../notification_card.js">
 
 // <include src="../gaia_buttons.js">

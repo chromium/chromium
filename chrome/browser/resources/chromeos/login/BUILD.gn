@@ -50,7 +50,6 @@ js_type_check("closure_compile_local") {
     ":recommend_apps",
     ":saml_confirm_password",
     ":sync_consent",
-    ":throbber_notice",
     ":update_required_card",
     ":user_creation",
   ]
@@ -322,9 +321,6 @@ js_library("sync_consent") {
     "components:oobe_dialog_host_behavior",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
-}
-
-js_library("throbber_notice") {
 }
 
 js_library("update_required_card") {
