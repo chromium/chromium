@@ -111,9 +111,6 @@ const char kAuthIframeParentName[] = "signin-frame";
 
 const char kEndpointGen[] = "1.0";
 
-const char kOAUTHCodeCookie[] = "oauth_code";
-const char kGAPSCookie[] = "GAPS";
-
 // Must be kept consistent with ChromeOSSamlApiUsed in enums.xml
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused
@@ -246,27 +243,6 @@ void GetVersionAndConsent(std::string* out_version, bool* out_consent) {
   *out_consent = GoogleUpdateSettings::GetCollectStatsConsent();
 }
 
-user_manager::UserType GetUsertypeFromServicesString(
-    const ::login::StringList& services) {
-  bool is_child = false;
-  const bool support_usm =
-      base::FeatureList::IsEnabled(::features::kCrOSEnableUSMUserService);
-  using KnownFlags = base::flat_set<std::string>;
-  const KnownFlags known_flags =
-      support_usm ? KnownFlags({"uca", "usm"}) : KnownFlags({"uca"});
-
-  size_t i = 0;
-  for (const std::string& item : services) {
-    if (known_flags.find(item) != known_flags.end()) {
-      is_child = true;
-    }
-    ++i;
-  }
-
-  return is_child ? user_manager::USER_TYPE_CHILD
-                  : user_manager::USER_TYPE_REGULAR;
-}
-
 user_manager::UserType CalculateUserType(const AccountId& account_id) {
   if (user_manager::UserManager::Get()->IsSupervisedAccountId(account_id))
     return user_manager::USER_TYPE_SUPERVISED;
@@ -287,10 +263,6 @@ std::string GetAdErrorMessage(authpolicy::ErrorType error) {
       DLOG(WARNING) << "Unhandled error code: " << error;
       return l10n_util::GetStringUTF8(IDS_AD_AUTH_UNKNOWN_ERROR);
   }
-}
-
-bool ExtractSamlPasswordAttributesEnabled() {
-  return base::FeatureList::IsEnabled(::features::kInSessionPasswordChange);
 }
 
 PinDialogManager* GetLoginScreenPinDialogManager() {
@@ -317,28 +289,6 @@ base::Value MakeSecurityTokenPinDialogParameters(
 }  // namespace
 
 constexpr StaticOobeScreenId GaiaView::kScreenId;
-
-// A class that's used to specify the way how Gaia should be loaded.
-struct GaiaScreenHandler::GaiaContext {
-  GaiaContext();
-
-  // Forces Gaia to reload.
-  bool force_reload = false;
-
-  // Whether Gaia should be loaded in offline mode.
-  bool use_offline = false;
-
-  // Email of the current user.
-  std::string email;
-
-  // GAIA ID of the current user.
-  std::string gaia_id;
-
-  // GAPS cookie.
-  std::string gaps_cookie;
-};
-
-GaiaScreenHandler::GaiaContext::GaiaContext() {}
 
 GaiaScreenHandler::GaiaScreenHandler(
     JSCallsContainer* js_calls_container,
@@ -384,18 +334,10 @@ void GaiaScreenHandler::DisableRestrictiveProxyCheckForTest() {
   disable_restrictive_proxy_check_for_test_ = true;
 }
 
-void GaiaScreenHandler::LoadGaia(const GaiaContext& context) {
-  // Start a new session with SigninPartitionManager, generating a unique
-  // StoragePartition.
-  login::SigninPartitionManager* signin_partition_manager =
-      login::SigninPartitionManager::Factory::GetForBrowserContext(
-          Profile::FromWebUI(web_ui()));
-
-  auto partition_call = base::BindOnce(
-      &login::SigninPartitionManager::StartSigninSession,
-      base::Unretained(signin_partition_manager), web_ui()->GetWebContents(),
-      base::BindOnce(&GaiaScreenHandler::LoadGaiaWithPartition,
-                     weak_factory_.GetWeakPtr(), context));
+void GaiaScreenHandler::LoadGaia(const login::GaiaContext& context) {
+  auto partition_call = login::GetStartSigninSession(
+      web_ui(), base::BindOnce(&GaiaScreenHandler::LoadGaiaWithPartition,
+                               weak_factory_.GetWeakPtr(), context));
 
   if (!context.email.empty()) {
     const AccountId account_id = GetAccountId(
@@ -416,7 +358,7 @@ void GaiaScreenHandler::LoadGaia(const GaiaContext& context) {
 }
 
 void GaiaScreenHandler::LoadGaiaWithPartition(
-    const GaiaContext& context,
+    const login::GaiaContext& context,
     const std::string& partition_name) {
   auto callback =
       base::BindOnce(&GaiaScreenHandler::OnSetCookieForLoadGaiaWithPartition,
@@ -432,33 +374,13 @@ void GaiaScreenHandler::LoadGaiaWithPartition(
   login::SigninPartitionManager* signin_partition_manager =
       login::SigninPartitionManager::Factory::GetForBrowserContext(
           Profile::FromWebUI(web_ui()));
-  content::StoragePartition* partition =
-      signin_partition_manager->GetCurrentStoragePartition();
-  if (!partition)
-    return;
 
-  // Note: The CanonicalCookie created here is not Secure. This is fine because
-  // it's being set into a different StoragePartition than the user's actual
-  // profile. The SetCanonicalCookie call will succeed regardless of the scheme
-  // of `gaia_url` since there are no scheme restrictions since the cookie is
-  // not Secure, and there is no preexisting Secure cookie in the profile that
-  // would preclude updating it insecurely. `gaia_url` is usually secure, and
-  // only insecure in local testing.
-
-  std::string gaps_cookie_value(kGAPSCookie);
-  gaps_cookie_value += "=" + context.gaps_cookie;
-  const GURL& gaia_url = GaiaUrls::GetInstance()->gaia_url();
-  std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
-      gaia_url, gaps_cookie_value, base::Time::Now(),
-      base::nullopt /* server_time */));
-
-  const net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
-  partition->GetCookieManagerForBrowserProcess()->SetCanonicalCookie(
-      *cc.get(), gaia_url, options, std::move(callback));
+  login::SetCookieForPartition(context, signin_partition_manager,
+                               std::move(callback));
 }
 
 void GaiaScreenHandler::OnSetCookieForLoadGaiaWithPartition(
-    const GaiaContext& context,
+    const login::GaiaContext& context,
     const std::string& partition_name,
     net::CookieAccessResult result) {
   std::unique_ptr<std::string> version = std::make_unique<std::string>();
@@ -476,7 +398,7 @@ void GaiaScreenHandler::OnSetCookieForLoadGaiaWithPartition(
 }
 
 void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
-    const GaiaContext& context,
+    const login::GaiaContext& context,
     const std::string& partition_name,
     const std::string* platform_version,
     const bool* collect_stats_consent) {
@@ -582,7 +504,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   signin_partition_name_ = partition_name;
 
   params.SetBoolean("extractSamlPasswordAttributes",
-                    ExtractSamlPasswordAttributesEnabled());
+                    login::ExtractSamlPasswordAttributesEnabled());
   params.SetBoolean("enableGaiaActionButtons", true);
 
   if (public_saml_url_fetcher_) {
@@ -851,7 +773,7 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
 
   // Execute delayed allowlist check that is based on user type.
   const user_manager::UserType user_type =
-      GetUsertypeFromServicesString(services);
+      login::GetUsertypeFromServicesString(services);
   if (ShouldCheckUserTypeBeforeAllowing() &&
       !LoginDisplayHost::default_host()->IsUserAllowlisted(
           GetAccountId(email, gaia_id, AccountType::GOOGLE), user_type)) {
@@ -862,12 +784,24 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
   const std::string sanitized_email = gaia::SanitizeEmail(email);
   LoginDisplayHost::default_host()->SetDisplayEmail(sanitized_email);
 
+  login::SigninPartitionManager* signin_partition_manager =
+      login::SigninPartitionManager::Factory::GetForBrowserContext(
+          Profile::FromWebUI(web_ui()));
+  online_login_helper_ = std::make_unique<OnlineLoginHelper>(
+      signin_partition_name_, signin_partition_manager,
+      base::BindOnce(&GaiaScreenHandler::OnCookieWaitTimeout,
+                     weak_factory_.GetWeakPtr()),
+      base::BindOnce(&LoginDisplayHost::CompleteLogin,
+                     base::Unretained(LoginDisplayHost::default_host())));
+
   pending_user_context_ = std::make_unique<UserContext>();
   std::string error_message;
-  if (!BuildUserContextForGaiaSignIn(
-          GetUsertypeFromServicesString(services),
+  if (!login::BuildUserContextForGaiaSignIn(
+          login::GetUsertypeFromServicesString(services),
           GetAccountId(email, gaia_id, AccountType::GOOGLE), using_saml,
-          password, SamlPasswordAttributes::FromJs(*password_attributes),
+          using_saml_api_, password,
+          SamlPasswordAttributes::FromJs(*password_attributes),
+          *extension_provided_client_cert_usage_observer_,
           pending_user_context_.get(), &error_message)) {
     core_oobe_view_->ShowSignInError(0, error_message, std::string(),
                                      HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
@@ -875,7 +809,8 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
     return;
   }
 
-  ContinueAuthenticationWhenCookiesAvailable();
+  online_login_helper_->SetUserContext(std::move(pending_user_context_));
+  online_login_helper_->RequestCookiesAndCompleteAuthentication();
 
   if (test_expects_complete_login_) {
     VLOG(2) << "Complete test login for " << sanitized_email
@@ -887,76 +822,7 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
   }
 }
 
-void GaiaScreenHandler::ContinueAuthenticationWhenCookiesAvailable() {
-  // When the network service is enabled, the webRequest API doesn't expose
-  // cookie headers. So manually fetch the cookies for the GAIA URL from the
-  // CookieManager.
-  login::SigninPartitionManager* signin_partition_manager =
-      login::SigninPartitionManager::Factory::GetForBrowserContext(
-          Profile::FromWebUI(web_ui()));
-  content::StoragePartition* partition =
-      signin_partition_manager->GetCurrentStoragePartition();
-  if (!partition)
-    return;
-
-  // Validity check that partition did not change during login flow.
-  DCHECK_EQ(signin_partition_manager->GetCurrentStoragePartitionName(),
-            signin_partition_name_);
-
-  network::mojom::CookieManager* cookie_manager =
-      partition->GetCookieManagerForBrowserProcess();
-  if (!oauth_code_waiter_) {
-    // Set listener before requesting the cookies to avoid race conditions.
-    oauth_code_waiter_ = std::make_unique<CookieWaiter>(
-        cookie_manager, kOAUTHCodeCookie,
-        base::BindRepeating(
-            &GaiaScreenHandler::ContinueAuthenticationWhenCookiesAvailable,
-            weak_factory_.GetWeakPtr()),
-        base::BindOnce(&GaiaScreenHandler::OnCookieWaitTimeout,
-                       weak_factory_.GetWeakPtr()));
-  }
-
-  const net::CookieOptions cookie_options =
-      net::CookieOptions::MakeAllInclusive();
-  cookie_manager->GetCookieList(
-      GaiaUrls::GetInstance()->gaia_url(), cookie_options,
-      base::BindOnce(&GaiaScreenHandler::OnGetCookiesForCompleteAuthentication,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void GaiaScreenHandler::OnGetCookiesForCompleteAuthentication(
-    const net::CookieAccessResultList& cookies,
-    const net::CookieAccessResultList& excluded_cookies) {
-  std::string auth_code, gaps_cookie;
-  for (const auto& cookie_with_access_result : cookies) {
-    const auto& cookie = cookie_with_access_result.cookie;
-    if (cookie.Name() == kOAUTHCodeCookie)
-      auth_code = cookie.Value();
-    else if (cookie.Name() == kGAPSCookie)
-      gaps_cookie = cookie.Value();
-  }
-
-  if (auth_code.empty()) {
-    // Will try again from oauth_code_waiter callback.
-    return;
-  }
-
-  DCHECK(pending_user_context_);
-  UserContext user_context = *pending_user_context_;
-  pending_user_context_.reset();
-  oauth_code_waiter_.reset();
-
-  user_context.SetAuthCode(auth_code);
-  if (!gaps_cookie.empty())
-    user_context.SetGAPSCookie(gaps_cookie);
-
-  LoginDisplayHost::default_host()->CompleteLogin(user_context);
-}
-
 void GaiaScreenHandler::OnCookieWaitTimeout() {
-  DCHECK(pending_user_context_);
-  pending_user_context_.reset();
-  oauth_code_waiter_.reset();
   LoadAuthExtension(true /* force */, false /* offline */);
   core_oobe_view_->ShowSignInError(
       0, l10n_util::GetStringUTF8(IDS_LOGIN_FATAL_ERROR_NO_AUTH_TOKEN),
@@ -1146,10 +1012,12 @@ void GaiaScreenHandler::DoCompleteLogin(
 
   UserContext user_context;
   std::string error_message;
-  if (!BuildUserContextForGaiaSignIn(
+  if (!login::BuildUserContextForGaiaSignIn(
           user ? user->GetType() : CalculateUserType(account_id),
           GetAccountId(typed_email, gaia_id, AccountType::GOOGLE), using_saml,
-          password, password_attributes, &user_context, &error_message)) {
+          using_saml_api_, password, password_attributes,
+          *extension_provided_client_cert_usage_observer_, &user_context,
+          &error_message)) {
     core_oobe_view_->ShowSignInError(0, error_message, std::string(),
                                      HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
     return;
@@ -1489,7 +1357,7 @@ void GaiaScreenHandler::LoadAuthExtension(bool force, bool offline) {
   }
 
   auth_extension_being_loaded_ = true;
-  GaiaContext context;
+  login::GaiaContext context;
   context.force_reload = force;
   context.use_offline = offline;
   context.email = populated_account_id_.GetUserEmail();
@@ -1523,53 +1391,6 @@ void GaiaScreenHandler::UpdateState(NetworkError::ErrorReason reason) {
 bool GaiaScreenHandler::IsRestrictiveProxy() const {
   return !disable_restrictive_proxy_check_for_test_ &&
          !IsOnline(captive_portal_status_);
-}
-
-bool GaiaScreenHandler::BuildUserContextForGaiaSignIn(
-    user_manager::UserType user_type,
-    const AccountId& account_id,
-    bool using_saml,
-    const std::string& password,
-    const SamlPasswordAttributes& password_attributes,
-    UserContext* user_context,
-    std::string* error_message) {
-  *user_context = UserContext(user_type, account_id);
-  if (using_saml && extension_provided_client_cert_usage_observer_ &&
-      extension_provided_client_cert_usage_observer_->ClientCertsWereUsed()) {
-    scoped_refptr<net::X509Certificate> saml_client_cert;
-    std::vector<ChallengeResponseKey::SignatureAlgorithm> signature_algorithms;
-    std::string extension_id;
-    if (!extension_provided_client_cert_usage_observer_->GetOnlyUsedClientCert(
-            &saml_client_cert, &signature_algorithms, &extension_id)) {
-      *error_message = l10n_util::GetStringUTF8(
-          IDS_CHALLENGE_RESPONSE_AUTH_MULTIPLE_CLIENT_CERTS_ERROR);
-      return false;
-    }
-    ChallengeResponseKey challenge_response_key;
-    if (!ExtractChallengeResponseKeyFromCert(
-            *saml_client_cert, signature_algorithms, &challenge_response_key)) {
-      *error_message = l10n_util::GetStringUTF8(
-          IDS_CHALLENGE_RESPONSE_AUTH_INVALID_CLIENT_CERT_ERROR);
-      return false;
-    }
-    challenge_response_key.set_extension_id(extension_id);
-    user_context->GetMutableChallengeResponseKeys()->push_back(
-        challenge_response_key);
-  } else {
-    Key key(password);
-    key.SetLabel(kCryptohomeGaiaKeyLabel);
-    user_context->SetKey(key);
-    user_context->SetPasswordKey(Key(password));
-  }
-  user_context->SetAuthFlow(using_saml
-                                ? UserContext::AUTH_FLOW_GAIA_WITH_SAML
-                                : UserContext::AUTH_FLOW_GAIA_WITHOUT_SAML);
-  if (using_saml)
-    user_context->SetIsUsingSamlPrincipalsApi(using_saml_api_);
-  if (using_saml && ExtractSamlPasswordAttributesEnabled()) {
-    user_context->SetSamlPasswordAttributes(password_attributes);
-  }
-  return true;
 }
 
 }  // namespace chromeos

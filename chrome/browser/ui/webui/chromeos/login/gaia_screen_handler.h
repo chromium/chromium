@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
+#include "chrome/browser/ui/webui/chromeos/login/online_login_helper.h"
 #include "chrome/browser/ui/webui/chromeos/login/saml_challenge_key_handler.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/user_manager/user_type.h"
@@ -35,10 +36,8 @@ class NSSTempCertsCacheChromeOS;
 
 namespace chromeos {
 
-class CookieWaiter;
 class SamlPasswordAttributes;
 class SigninScreenHandler;
-class UserContext;
 class PublicSamlUrlFetcher;
 class GaiaScreen;
 
@@ -160,24 +159,22 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // TODO (xiaoyinh): remove this dependency.
   friend class SigninScreenHandler;
 
-  struct GaiaContext;
-
-  void LoadGaia(const GaiaContext& context);
+  void LoadGaia(const login::GaiaContext& context);
 
   // Callback that loads GAIA after version and stat consent information has
   // been retrieved.
-  void LoadGaiaWithPartition(const GaiaContext& context,
+  void LoadGaiaWithPartition(const login::GaiaContext& context,
                              const std::string& partition_name);
 
   // Called after the GAPS cookie, if present, is added to the cookie store.
-  void OnSetCookieForLoadGaiaWithPartition(const GaiaContext& context,
+  void OnSetCookieForLoadGaiaWithPartition(const login::GaiaContext& context,
                                            const std::string& partition_name,
                                            net::CookieAccessResult result);
 
   // Callback that loads GAIA after version and stat consent information has
   // been retrieved.
   void LoadGaiaWithPartitionAndVersionAndConsent(
-      const GaiaContext& context,
+      const login::GaiaContext& context,
       const std::string& partition_name,
       const std::string* platform_version,
       const bool* collect_stats_consent);
@@ -311,22 +308,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // Records whether WebUI is currently in offline mode.
   void SetOfflineLoginIsActive(bool is_active);
 
-  // Builds the UserContext with the information from the given Gaia user
-  // sign-in. On failure, returns false and sets `error_message`.
-  bool BuildUserContextForGaiaSignIn(
-      user_manager::UserType user_type,
-      const AccountId& account_id,
-      bool using_saml,
-      const std::string& password,
-      const SamlPasswordAttributes& password_attributes,
-      UserContext* user_context,
-      std::string* error_message);
-
-  void ContinueAuthenticationWhenCookiesAvailable();
-  void OnGetCookiesForCompleteAuthentication(
-      const net::CookieAccessResultList& cookies,
-      const net::CookieAccessResultList& excluded_cookies);
-
   void OnCookieWaitTimeout();
 
   bool is_security_token_pin_dialog_running() const {
@@ -447,8 +428,8 @@ class GaiaScreenHandler : public BaseScreenHandler,
   std::unique_ptr<SamlChallengeKeyHandler> saml_challenge_key_handler_;
   std::unique_ptr<SamlChallengeKeyHandler> saml_challenge_key_handler_for_test_;
 
-  // Connection to the CookieManager that signals when the GAIA cookies change.
-  std::unique_ptr<CookieWaiter> oauth_code_waiter_;
+  std::unique_ptr<OnlineLoginHelper> online_login_helper_;
+
   std::unique_ptr<UserContext> pending_user_context_;
 
   base::WeakPtrFactory<GaiaScreenHandler> weak_factory_{this};
