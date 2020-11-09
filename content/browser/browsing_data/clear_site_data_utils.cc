@@ -4,7 +4,7 @@
 
 #include "content/public/browser/clear_site_data_utils.h"
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -38,11 +38,10 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
         avoid_closing_connections_(avoid_closing_connections),
         callback_(std::move(callback)),
         pending_task_count_(0),
-        remover_(nullptr),
-        scoped_observer_(this) {
+        remover_(nullptr) {
     remover_ = BrowserContext::GetBrowsingDataRemover(browser_context);
     DCHECK(remover_);
-    scoped_observer_.Add(remover_);
+    scoped_observation_.Observe(remover_);
   }
 
   ~SiteDataClearer() override {
@@ -129,8 +128,8 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
   base::OnceClosure callback_;
   int pending_task_count_;
   BrowsingDataRemover* remover_;
-  ScopedObserver<BrowsingDataRemover, BrowsingDataRemover::Observer>
-      scoped_observer_;
+  base::ScopedObservation<BrowsingDataRemover, BrowsingDataRemover::Observer>
+      scoped_observation_{this};
 };
 
 }  // namespace
