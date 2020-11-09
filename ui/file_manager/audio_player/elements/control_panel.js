@@ -17,30 +17,10 @@
  *   volumeSlider: string,
  * }}
  */
-var AriaLabels;
+let AriaLabels;
 
 (function() {
   'use strict';
-
-  /**
-   * Moves |target| element above |anchor| element, in order to match the
-   * bottom lines.
-   * @param {HTMLElement} target Target element.
-   * @param {HTMLElement} anchor Anchor element.
-   */
-  function matchBottomLine(target, anchor) {
-    var targetRect = target.getBoundingClientRect();
-    var anchorRect = anchor.getBoundingClientRect();
-
-    var pos = {
-      left: anchorRect.left + anchorRect.width / 2 - targetRect.width / 2,
-      bottom: window.innerHeight - anchorRect.bottom,
-    };
-
-    target.style.position = 'fixed';
-    target.style.left = pos.left + 'px';
-    target.style.bottom = pos.bottom + 'px';
-  }
 
   Polymer({
     is: 'control-panel',
@@ -137,12 +117,13 @@ var AriaLabels;
      * element is ready.
      */
     ready: function() {
-      var timeSlider = /** @type {!CrSliderElement} */ (this.$.timeSlider);
+      const timeSlider = /** @type {!CrSliderElement} */ (this.$.timeSlider);
       timeSlider.addEventListener('cr-slider-value-changed', () => {
         this.fire('update-time', timeSlider.value);
       });
 
-      var volumeSlider = /** @type {!CrSliderElement} */ (this.$.volumeSlider);
+      const volumeSlider =
+          /** @type {!CrSliderElement} */ (this.$.volumeSlider);
       volumeSlider.addEventListener('cr-slider-value-changed', () => {
         this.volume = volumeSlider.value;
       });
@@ -203,9 +184,9 @@ var AriaLabels;
      * @private
      */
     skip_: function(small, forward) {
-      var maxSkip = small ? 5000 : 10000;
-      var percentOfDuration = (small ? .1 : .2) * this.duration;
-      var update = (forward ? 1 : -1) * Math.min(maxSkip, percentOfDuration);
+      const maxSkip = small ? 5000 : 10000;
+      const percentOfDuration = (small ? .1 : .2) * this.duration;
+      const update = (forward ? 1 : -1) * Math.min(maxSkip, percentOfDuration);
       if (this.duration > 0) {
         this.fire(
             'update-time',
