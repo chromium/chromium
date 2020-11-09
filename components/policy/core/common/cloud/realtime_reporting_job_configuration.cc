@@ -11,7 +11,6 @@
 #include "components/enterprise/common/strings.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
-#include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/version_info/version_info.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -42,28 +41,15 @@ base::Value RealtimeReportingJobConfiguration::BuildReport(
 
 RealtimeReportingJobConfiguration::RealtimeReportingJobConfiguration(
     CloudPolicyClient* client,
-    std::unique_ptr<DMAuth> auth_data,
     const std::string& server_url,
     bool add_connector_url_params,
     UploadCompleteCallback callback)
     : ReportingJobConfigurationBase(TYPE_UPLOAD_REAL_TIME_REPORT,
-                                    std::move(auth_data),
-                                    base::nullopt,
                                     client->GetURLLoaderFactory(),
                                     client,
                                     server_url,
                                     std::move(callback)) {
-  DCHECK(GetAuth().has_dm_token());
-
-  AddParameter("key", google_apis::GetAPIKey());
-
-  // If specified add extra enterprise connector URL params.
-  if (add_connector_url_params) {
-    AddParameter(enterprise::kUrlParamConnector, "OnSecurityEvent");
-    AddParameter(enterprise::kUrlParamDeviceToken, client->dm_token());
-  }
-
-  InitializePayloadInternal();
+  InitializePayloadInternal(client, add_connector_url_params);
 }
 
 RealtimeReportingJobConfiguration::~RealtimeReportingJobConfiguration() {}
@@ -72,14 +58,18 @@ bool RealtimeReportingJobConfiguration::AddReport(base::Value report) {
   if (!report.is_dict())
     return false;
 
-  base::Optional<base::Value> context = report.ExtractKey(kContextKey);
+  base::Optional<base::Value> context_result = report.ExtractKey(kContextKey);
   base::Optional<base::Value> event_list = report.ExtractKey(kEventListKey);
-  if (!context || !event_list || !event_list->is_list())
+  if (!context_result || !event_list || !event_list->is_list())
     return false;
 
-  // Move context keys to the payload.  It is possible to add multiple reports
-  // to the payload in which case the context values are the same.
-  payload_.MergeDictionary(&*context);
+  // Overwrite internal context. |context_| will be merged with |payload_| in
+  // |GetPayload|.
+  if (context_.has_value()) {
+    context_->MergeDictionary(&context_result.value());
+  } else {
+    context_ = std::move(context_result);
+  }
 
   // Append event_list to the payload.
   base::Value* to = payload_.FindListKey(kEventListKey);
@@ -88,8 +78,16 @@ bool RealtimeReportingJobConfiguration::AddReport(base::Value report) {
   return true;
 }
 
-void RealtimeReportingJobConfiguration::InitializePayloadInternal() {
+void RealtimeReportingJobConfiguration::InitializePayloadInternal(
+    CloudPolicyClient* client,
+    bool add_connector_url_params) {
   payload_.SetPath(kEventListKey, base::Value(base::Value::Type::LIST));
+
+  // If specified add extra enterprise connector URL params.
+  if (add_connector_url_params) {
+    AddParameter(enterprise::kUrlParamConnector, "OnSecurityEvent");
+    AddParameter(enterprise::kUrlParamDeviceToken, client->dm_token());
+  }
 }
 
 DeviceManagementService::Job::RetryMethod

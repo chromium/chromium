@@ -55,7 +55,6 @@ enum class DMServerRequestSuccess {
   kRequestError = 11,
 
   kMaxValue = kRequestError,
-
 };
 
 // The device management service is responsible for everything related to
@@ -188,6 +187,7 @@ class POLICY_EXPORT DeviceManagementService {
       TYPE_CHROME_OS_USER_REPORT = 24,
       TYPE_CERT_PROVISIONING_REQUEST = 25,
       TYPE_PSM_HAS_DEVICE_STATE_REQUEST = 26,
+      TYPE_UPLOAD_ENCRYPTED_REPORT = 27,
     };
 
     // The set of HTTP query parameters of the request.

@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
 
+#include <memory>
 #include <string>
 
 #include "base/callback.h"
@@ -20,6 +21,7 @@
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/policy_export.h"
 #include "components/version_info/version_info.h"
+#include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace policy {
@@ -157,6 +159,11 @@ ReportingJobConfigurationBase::BrowserDictionaryBuilder::GetStringPath(
 }
 
 std::string ReportingJobConfigurationBase::GetPayload() {
+  // Move context keys to the payload.
+  if (context_.has_value()) {
+    payload_.MergeDictionary(&context_.value());
+    context_.reset();
+  }
   std::string payload_string;
   base::JSONWriter::Write(payload_, &payload_string);
   return payload_string;
@@ -249,19 +256,18 @@ GURL ReportingJobConfigurationBase::GetURL(int last_error) const {
 
 ReportingJobConfigurationBase::ReportingJobConfigurationBase(
     JobType type,
-    std::unique_ptr<DMAuth> auth_data,
-    base::Optional<std::string> oauth_token,
     scoped_refptr<network::SharedURLLoaderFactory> factory,
     CloudPolicyClient* client,
     const std::string& server_url,
     UploadCompleteCallback callback)
     : JobConfigurationBase(type,
-                           std::move(auth_data),
-                           std::move(oauth_token),
+                           DMAuth::FromDMToken(client->dm_token()),
+                           /*oauth_token=*/base::nullopt,
                            factory),
       payload_(base::Value::Type::DICTIONARY),
-      server_url_(server_url),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)),
+      server_url_(server_url) {
+  DCHECK(GetAuth().has_dm_token());
   InitializePayload(client);
 }
 
@@ -269,9 +275,11 @@ ReportingJobConfigurationBase::~ReportingJobConfigurationBase() = default;
 
 void ReportingJobConfigurationBase::InitializePayload(
     CloudPolicyClient* client) {
+  AddParameter("key", google_apis::GetAPIKey());
+
   payload_.SetKey(DeviceDictionaryBuilder::kDeviceKey,
                   DeviceDictionaryBuilder::BuildDeviceDictionary(
-                      GetAuth().dm_token(), client->client_id()));
+                      client->dm_token(), client->client_id()));
   payload_.SetKey(BrowserDictionaryBuilder::kBrowserKey,
                   BrowserDictionaryBuilder::BuildBrowserDictionary());
 }

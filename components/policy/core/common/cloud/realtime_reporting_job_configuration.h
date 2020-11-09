@@ -18,7 +18,6 @@
 namespace policy {
 
 class CloudPolicyClient;
-class DMAuth;
 
 class POLICY_EXPORT RealtimeReportingJobConfiguration
     : public ReportingJobConfigurationBase {
@@ -43,8 +42,9 @@ class POLICY_EXPORT RealtimeReportingJobConfiguration
   // endpoint.  If |add_connector_url_params| is true then URL parameters
   // specific to enterprise connectors are added to the request uploading
   // the report.  |callback| is invoked once the report is uploaded.
+  // |add_connector_url_params| will flip whether the service provider endpoint
+  // parameters will be used.
   RealtimeReportingJobConfiguration(CloudPolicyClient* client,
-                                    std::unique_ptr<DMAuth> auth_data,
                                     const std::string& server_url,
                                     bool add_connector_url_params,
                                     UploadCompleteCallback callback);
@@ -75,7 +75,8 @@ class POLICY_EXPORT RealtimeReportingJobConfiguration
  private:
   // Does one time initialization of the payload when the configuration is
   // created.
-  void InitializePayloadInternal();
+  void InitializePayloadInternal(CloudPolicyClient* client,
+                                 bool add_connector_url_params);
 
   // Gathers the ids of the uploads that failed
   std::set<std::string> GetFailedUploadIds(

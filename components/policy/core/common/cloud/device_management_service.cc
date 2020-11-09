@@ -194,6 +194,9 @@ std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
     case DeviceManagementService::JobConfiguration::
         TYPE_PSM_HAS_DEVICE_STATE_REQUEST:
       return "PSMDeviceStateRequest";
+    case DeviceManagementService::JobConfiguration::
+        TYPE_UPLOAD_ENCRYPTED_REPORT:
+      return "UploadEncryptedReport";
   }
   NOTREACHED() << "Invalid job type " << type;
   return "";

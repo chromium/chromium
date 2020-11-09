@@ -75,7 +75,7 @@ const char* JobTypeToRequestType(
       return dm_protocol::kValueRequestPublicSamlUser;
     case DeviceManagementService::JobConfiguration::
         TYPE_UPLOAD_REAL_TIME_REPORT:
-      NOTREACHED() << "Not a DMServer request type" << type;
+      NOTREACHED() << "Not a DMServer request type " << type;
       break;
     case DeviceManagementService::JobConfiguration::TYPE_CHROME_OS_USER_REPORT:
       return dm_protocol::kValueRequestChromeOsUserReport;
@@ -85,6 +85,10 @@ const char* JobTypeToRequestType(
     case DeviceManagementService::JobConfiguration::
         TYPE_PSM_HAS_DEVICE_STATE_REQUEST:
       return dm_protocol::kValueRequestPsmHasDeviceState;
+    case DeviceManagementService::JobConfiguration::
+        TYPE_UPLOAD_ENCRYPTED_REPORT:
+      NOTREACHED() << "Not a DMServer request type " << type;
+      break;
   }
   NOTREACHED() << "Invalid job type " << type;
   return "";

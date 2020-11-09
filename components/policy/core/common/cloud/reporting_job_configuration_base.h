@@ -19,7 +19,6 @@
 namespace policy {
 
 class CloudPolicyClient;
-class DMAuth;
 
 // Base for common elements in JobConfigurations for the Reporting pipeline.
 // Ensures the following elements are added to each request.
@@ -114,10 +113,10 @@ class POLICY_EXPORT ReportingJobConfigurationBase
   GURL GetURL(int last_error) const override;
 
  protected:
+  // |type| indicates which type of job.
+  // |callback| will be called on upload completion.
   ReportingJobConfigurationBase(
       JobType type,
-      std::unique_ptr<DMAuth> auth_data,
-      base::Optional<std::string> oauth_token,
       scoped_refptr<network::SharedURLLoaderFactory> factory,
       CloudPolicyClient* client,
       const std::string& server_url,
@@ -138,12 +137,19 @@ class POLICY_EXPORT ReportingJobConfigurationBase
 
   base::Value payload_;
 
+  // Available to set additional fields by the child. An example of a context
+  // being generated can be seen with the ::reporting::GetContext function. Once
+  // |GetPayload| is called, |context_| will be merged into the payload and
+  // reset.
+  base::Optional<base::Value> context_;
+
+  UploadCompleteCallback callback_;
+
  private:
   // Initializes request payload.
   void InitializePayload(CloudPolicyClient* client);
 
   const std::string server_url_;
-  UploadCompleteCallback callback_;
 
   DISALLOW_COPY_AND_ASSIGN(ReportingJobConfigurationBase);
 };

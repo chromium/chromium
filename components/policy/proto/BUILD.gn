@@ -16,9 +16,10 @@ component("proto") {
 # Record constants for use with the reporting messaging library.
 proto_library("policy_record_constants") {
   visibility = [
-    "//chrome/browser:browser",
     ":reporting_record_proto",
     ":reporting_record_proto_gen",
+    "//chrome/browser:browser",
+    "//components/policy/*",
   ]
   sources = [ "record_constants.proto" ]
 
@@ -27,7 +28,10 @@ proto_library("policy_record_constants") {
 
 # Record definitions for reporting.
 proto_library("reporting_record_proto") {
-  visibility = [ "//chrome/browser:browser" ]
+  visibility = [
+    "//chrome/browser:browser",
+    "//components/policy/*",
+  ]
   sources = [ "record.proto" ]
 
   deps = [ ":policy_record_constants" ]
@@ -37,10 +41,10 @@ proto_library("reporting_record_proto") {
 
 proto_library("policy_common_definitions_compile_proto") {
   visibility = [
-    "//components/policy:cloud_policy_proto_generated_compile_proto",
-    "//components/policy:chrome_settings_proto_generated_compile_proto",
-    "//components/policy:generated",
     ":proto_internal",
+    "//components/policy:chrome_settings_proto_generated_compile_proto",
+    "//components/policy:cloud_policy_proto_generated_compile_proto",
+    "//components/policy:generated",
   ]
 
   sources = [ "policy_common_definitions.proto" ]

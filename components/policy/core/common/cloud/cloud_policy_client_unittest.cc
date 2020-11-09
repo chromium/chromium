@@ -1564,8 +1564,8 @@ TEST_F(CloudPolicyClientTest, UploadSecurityEventReport) {
 
 TEST_F(CloudPolicyClientTest, RealtimeReportMerge) {
   auto config = std::make_unique<RealtimeReportingJobConfiguration>(
-      client_.get(), DMAuth::FromDMToken(kDMToken),
-      service_.configuration()->GetRealtimeReportingServerUrl(), false,
+      client_.get(), service_.configuration()->GetRealtimeReportingServerUrl(),
+      /*add_connector_url_params=*/false,
       RealtimeReportingJobConfiguration::UploadCompleteCallback());
 
   // Add one report to the config.

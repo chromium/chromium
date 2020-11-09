@@ -61,6 +61,8 @@ source_set("internal") {
     "cloud/dm_token.h",
     "cloud/dmserver_job_configurations.cc",
     "cloud/dmserver_job_configurations.h",
+    "cloud/encrypted_reporting_job_configuration.cc",
+    "cloud/encrypted_reporting_job_configuration.h",
     "cloud/enterprise_metrics.cc",
     "cloud/enterprise_metrics.h",
     "cloud/external_policy_data_fetcher.cc",
@@ -161,6 +163,8 @@ source_set("internal") {
     ":common_constants",
     "//components/policy:generated",
     "//components/policy/proto",
+    "//components/policy/proto:policy_record_constants",
+    "//components/policy/proto:reporting_record_proto",
   ]
 
   deps = [
@@ -359,6 +363,8 @@ static_library("test_support") {
     "//components/account_id",
     "//components/policy:generated",
     "//components/policy/proto",
+    "//components/policy/proto:policy_record_constants",
+    "//components/policy/proto:reporting_record_proto",
     "//components/strings",
     "//crypto",
     "//net",
@@ -465,6 +471,7 @@ source_set("unit_tests") {
       "cloud/component_cloud_policy_service_unittest.cc",
       "cloud/component_cloud_policy_store_unittest.cc",
       "cloud/component_cloud_policy_updater_unittest.cc",
+      "cloud/encrypted_reporting_job_configuration_unittest.cc",
       "cloud/external_policy_data_fetcher_unittest.cc",
       "cloud/external_policy_data_updater_unittest.cc",
       "cloud/realtime_reporting_job_configuration_unittest.cc",
