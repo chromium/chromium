@@ -17,6 +17,7 @@
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> webgunea gehitu da</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
 <translation id="1384959399684842514">Pausatu da deskarga</translation>
+<translation id="1415402041810619267">URLa moztuta dago</translation>
 <translation id="1431402976894535801">Ez utzi webguneei presente noiz zauden jakiten</translation>
 <translation id="1446450296470737166">Onartu MIDI gailuen kontrol osoa</translation>
 <translation id="1509960214886564027">Baliteke webgune askotako eginbideek ez funtzionatzea</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">Baimendu webguneei eduki babestua erreproduzitzea</translation>
 <translation id="4468959413250150279">Desaktibatu webgune jakin baten audioa.</translation>
 <translation id="4479647676395637221">Webguneei kamera erabiltzeko baimena eman aurretik, eskatu onespena (gomendatua)</translation>
+<translation id="4505788138578415521">URLa zabalduta dago</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> aplikazioari mikrofonoa atzitzeko baimena emateko, mikrofonoa atzitzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="4570913071927164677">Xehetasunak</translation>
 <translation id="4645575059429386691">Gurasoek kudeatuta</translation>

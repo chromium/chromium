@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">Aplikazioak</translation>
 <translation id="2872961005593481000">Itzali</translation>
 <translation id="3008341117444806826">FRESKATU</translation>
+<translation id="3009958530611748826">Hautatu zer karpetatan gorde nahi duzun</translation>
 <translation id="3083667275341675831">Konexio-diagnostikoak</translation>
 <translation id="3091839911843451378">Hutsegitea - Gelditu egin da</translation>
 <translation id="3188257591659621405">Nire fitxategiak</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">Inprimatze-lanak</translation>
 <translation id="3527036260304016759">Hutsegitea - Errore ezezaguna</translation>
 <translation id="360565022852130722">WEP 802.1x protokolo ahulak babesten du wifi-sarea</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> iritzi)</translation>
 <translation id="3749289110408117711">Fitxategiaren izena</translation>
 <translation id="38114475217616659">Garbitu historia guztia</translation>
 <translation id="3820172043799983114">PIN kodeak ez du balio.</translation>
@@ -80,10 +82,12 @@
 <translation id="4731797938093519117">Gurasoen sarbidea</translation>
 <translation id="4773299976671772492">Gelditu egin da</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> inprimatze-lana bertan behera utzi da</translation>
+<translation id="4832079907277790330">Hautatu karpeta Fitxategiak aplikazioan…</translation>
 <translation id="4890353053343094602">Aukeratu beste bat berehala</translation>
 <translation id="4917889632206600977">Geldituta: ez dago paperik</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Exekutatu</translation>
+<translation id="4991056862642197104">Kokatu dokumentua eta sakatu "Eskaneatu" prozesua abian jartzeko</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> arduratzen da erabiltzaile hau kudeatzeaz eta haren jarduerak gainbegira ditzake urrunetik.</translation>
 <translation id="520299634122159966">Ez dago eskanerrik erabilgarri</translation>
 <translation id="5212543919916444558">Ezin dizut lagundu pantailako ezerekin.
@@ -123,6 +127,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Fitxategi mota</translation>
 <translation id="7561454561030345039">Administratzaileak kudeatzen du ekintza hau</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7690294790491645610">Berretsi pasahitz berria</translation>
 <translation id="7805768142964895445">Egoera</translation>

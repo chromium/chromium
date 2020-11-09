@@ -8,6 +8,7 @@
 <translation id="1036672894875463507">Ben Google Asistanınım, gün boyunca sana yardımcı olmak için buradayım.
 Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> eklendi</translation>
+<translation id="1047773237499189053">Yeni özellik mevcut. Daha fazla bilgi için Yukarı ok tuşunu kullanın.</translation>
 <translation id="1056775291175587022">Ağ yok</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Cep telefonu: <ph name="ADDRESS" /></translation>
@@ -20,6 +21,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1153356358378277386">Eşlenen cihazlar</translation>
 <translation id="1175572348579024023">Kaydır</translation>
 <translation id="1178581264944972037">Duraklat</translation>
+<translation id="118532027333893379">Tam ekran görüntüsü almak için herhangi bir yere dokunun</translation>
 <translation id="1190609913194133056">Bildirim Merkezi</translation>
 <translation id="1195412055398077112">fazla tarama</translation>
 <translation id="119944043368869598">Tümünü temizle</translation>
@@ -123,6 +125,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2127372758936585790">Düşük güçlü şarj cihazı</translation>
 <translation id="2132302418721800944">Tam ekran kaydet</translation>
 <translation id="2135456203358955318">Yerleştirilmiş büyüteç</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: Yeniden dene</translation>
 <translation id="2208323208084708176">Birleştirilmiş masaüstü modu</translation>
 <translation id="2220572644011485463">PIN veya şifre</translation>
 <translation id="2222338659135520253">Oturum açılması gerekiyor</translation>
@@ -134,6 +137,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="229397294990920565">Mobil veriler kapanıyor...</translation>
 <translation id="2295777434187870477">Mikrofon açık, düğmeye basılırsa girişin sesi kapatılacak.</translation>
 <translation id="2298170939937364391">Tam Ekran Büyüteci etkinleştirildi. Kapatmak için tekrar Ctrl+Arama+M tuşlarına basın.</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Asistan'da sonucu görmek için iletişim kutusunu tıklayın.</translation>
 <translation id="2302092602801625023">Bu hesap Family Link tarafından yönetiliyor</translation>
 <translation id="2303600792989757991">Pencere genel bakışını değiştir</translation>
 <translation id="2322173485024759474">Harf bazında geri git</translation>
@@ -160,6 +164,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2484513351006226581">Klavye düzenini değiştirmek için <ph name="KEYBOARD_SHORTCUT" /> tuşlarına basın.</translation>
 <translation id="2501920221385095727">Yapışkan tuşlar</translation>
 <translation id="2509468283778169019">CAPS LOCK açık</translation>
+<translation id="2536159006530886390">İnternete bağlanamıyor.</translation>
 <translation id="2542089167727451762">Profil resminize dokunun</translation>
 <translation id="255671100581129685">Google Asistan, herkese açık oturumda kullanılamaz.</translation>
 <translation id="256712445991462162">yerleştirilmiş büyüteç</translation>
@@ -181,6 +186,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2727977024730340865">Düşük güçlü bir şarj cihazına takıldı. Şarj durumu güvenilir olmayabilir.</translation>
 <translation id="2792498699870441125">Alt+Arama</translation>
 <translation id="2819276065543622893">Şimdi çıkış yapacaksınız.</translation>
+<translation id="28232023175184696">İnternete bağlanamıyor. Tekrar denemek için tıklayın.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> çözünürlüğü desteklemiyor. Çözünürlük <ph name="FALLBACK_RESOLUTION" /> olarak değiştirildi.</translation>
 <translation id="2825619548187458965">Raf</translation>
 <translation id="2841907151129139818">Tablet moduna geçildi</translation>
@@ -320,6 +326,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4129129681837227511">Kilit ekranınızda bildirim göstermek için cihazın kilidini açarak ayarı değiştirin</translation>
 <translation id="4146833061457621061">Müzik çal</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" />, <ph name="DOMAIN" /> tarafından yönetilmektedir</translation>
+<translation id="415719264485676252">Ekran görüntüsü alma engellendi</translation>
 <translation id="4157822100366708405">Koyu Tema ayarları</translation>
 <translation id="4181841719683918333">Diller</translation>
 <translation id="4195877955194704651">Otomatik tıklamalar düğmesi</translation>
@@ -386,6 +393,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4710243778082831592">IME Ayarları</translation>
 <translation id="4731797938093519117">Ebeveyn erişimi</translation>
 <translation id="4734965478015604180">Yatay</translation>
+<translation id="4744944742468440486">Seçiminizle ilgili bilgi</translation>
 <translation id="4759238208242260848">İndirilenler</translation>
 <translation id="4774338217796918551">Saat <ph name="COME_BACK_TIME" /> olduğunda geri gelin.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> için şifre</translation>
@@ -503,6 +511,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="595202126637698455">Performans izleme etkin</translation>
 <translation id="5957083217255311415">Mobil veri kapatıldı.</translation>
 <translation id="5958529069007801266">Denetlenen kullanıcı</translation>
+<translation id="5960825221082587934">Asistan'ın yaptığınız seçimin tanımı, çevirisi veya birimin dönüştürülmesi gibi bilgileri göstermesine izin verir.</translation>
 <translation id="5977415296283489383">Kulaklık</translation>
 <translation id="5978382165065462689">Ekranınızın kontrolü Uzaktan Yardım kullanılarak paylaşılıyor.</translation>
 <translation id="5980301590375426705">Misafir oturumundan çık</translation>
@@ -586,6 +595,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6777216307882431711">Bağlı USB-C cihazlarına güç sağlıyor</translation>
 <translation id="6790428901817661496">Oynat</translation>
 <translation id="6803622936009808957">Desteklenen bir çözünürlük bulunamadığı için ekranlar yansıtılamıyor. Bunun yerine genişletilmiş masaüstüne geçiliyor.</translation>
+<translation id="6816797338148849397">Seçiminizle ilgili bilgi mevcut. Erişmek için Yukarı ok tuşunu kullanın.</translation>
 <translation id="6818242057446442178">Kelime bazında geri git</translation>
 <translation id="6820676911989879663">Mola verin!</translation>
 <translation id="6850010208275816200">Geçerli uygulamanız tam ekran modunda. Uygulama, şifrenizi isterse önce tam ekrandan çıkın.</translation>
@@ -649,6 +659,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7497767806359279797">Dil ve klavye seçin</translation>
 <translation id="7526573455193969409">Ağ trafiği izleniyor olabilir</translation>
 <translation id="7536035074519304529">IP adresi: <ph name="ADDRESS" /></translation>
+<translation id="7542906349682405018">Ekranınızdaki içeriğin ekran görüntüsünü alma özelliği yöneticiniz tarafından engellendi.</translation>
 <translation id="7548434653388805669">Uyku vakti geldi</translation>
 <translation id="7551643184018910560">Rafa sabitle</translation>
 <translation id="7561982940498449837">Menüyü kapat</translation>
@@ -775,6 +786,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Düşük güçlü şarj cihazı bağlandı</translation>
 <translation id="8683506306463609433">Performans izleme etkin</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Bu özelliği yönetmek için Sol veya Sağ ok tuşlarını kullanın.</translation>
 <translation id="8712637175834984815">Anlaşıldı</translation>
 <translation id="8721053961083920564">Sesi Aç/Kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">Bu klavye, tuş vuruşlarınızı çalmaya çalışıyor olabilir</translation>
@@ -795,6 +807,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8874184842967597500">Bağlı değil</translation>
 <translation id="8877788021141246043">Hatırlatıcı oluştur</translation>
 <translation id="8878886163241303700">Genişletilmiş ekran</translation>
+<translation id="8883473964424809116">Google Asistan ayarlarını açmak için tıklayın.</translation>
 <translation id="890616557918890486">Kaynağı değiştir</translation>
 <translation id="8909138438987180327">Pil yüzde <ph name="PERCENTAGE" /> dolu.</translation>
 <translation id="8913384980486163186">Temalı (varsayılan)</translation>

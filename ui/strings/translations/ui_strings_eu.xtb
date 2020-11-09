@@ -152,6 +152,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktibo gaur}=1{Aktibo duela 1 egun}other{Aktibo duela # egun}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 egun eta }other{# egun eta }}</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5843690142429128814">Irudia.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{1 urte barru}other{# urte barru}}</translation>
 <translation id="588258955323874662">Pantaila osoa</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 segundo gelditzen da}other{# segundo gelditzen dira}}</translation>
@@ -192,6 +193,7 @@
 <translation id="6845533974506654842">sakatu</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 ordu gelditzen da}other{# ordu gelditzen dira}}</translation>
 <translation id="688711909580084195">Titulurik gabeko web-orria</translation>
+<translation id="6902419395050653510">HTML edukia.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/seg</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{1 urte gelditzen da}other{# urte gelditzen dira}}</translation>
 <translation id="6945221475159498467">Hautatu</translation>

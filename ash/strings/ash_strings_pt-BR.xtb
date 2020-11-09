@@ -8,6 +8,7 @@
 <translation id="1036672894875463507">Eu sou a assistente do Google e estou aqui para ajudar no seu dia.
 Veja o que você pode fazer para começar.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> adicionado</translation>
+<translation id="1047773237499189053">Novo recurso disponível, use a tecla de seta para cima para saber mais.</translation>
 <translation id="1056775291175587022">Nenhuma rede</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Celular: <ph name="ADDRESS" /></translation>
@@ -20,6 +21,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1153356358378277386">Dispositivos pareados</translation>
 <translation id="1175572348579024023">Rolar</translation>
 <translation id="1178581264944972037">Pausar</translation>
+<translation id="118532027333893379">Toque em qualquer lugar para capturar a tela cheia</translation>
 <translation id="1190609913194133056">Central de Notificações</translation>
 <translation id="1195412055398077112">overscan</translation>
 <translation id="119944043368869598">Limpar tudo</translation>
@@ -123,6 +125,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2127372758936585790">Carregador de baixa potência</translation>
 <translation id="2132302418721800944">Gravar tela cheia</translation>
 <translation id="2135456203358955318">Lupa em área fixa</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: tentar novamente</translation>
 <translation id="2208323208084708176">Modo de área de trabalho unificada.</translation>
 <translation id="2220572644011485463">PIN ou senha</translation>
 <translation id="2222338659135520253">É necessário fazer login</translation>
@@ -134,6 +137,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="229397294990920565">Desativando dados móveis…</translation>
 <translation id="2295777434187870477">O microfone está ativado. Desativá-lo silenciará a entrada.</translation>
 <translation id="2298170939937364391">Lupa de tela cheia ativada. Pressione Ctrl+Pesquisa+M novamente para desativá-la.</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" />. Clique na caixa de diálogo para ver o resultado no Assistente.</translation>
 <translation id="2302092602801625023">Esta conta é gerenciada pelo Family Link</translation>
 <translation id="2303600792989757991">Visão geral da janela de alternância</translation>
 <translation id="2322173485024759474">Voltar por letra</translation>
@@ -160,6 +164,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2484513351006226581">Pressione <ph name="KEYBOARD_SHORTCUT" /> para alterar o layout do teclado.</translation>
 <translation id="2501920221385095727">Teclas aderentes</translation>
 <translation id="2509468283778169019">CAPS LOCK está ativado</translation>
+<translation id="2536159006530886390">Não é possível se conectar à Internet.</translation>
 <translation id="2542089167727451762">Toque na imagem do seu perfil</translation>
 <translation id="255671100581129685">O Google Assistente não está disponível para uma sessão pública.</translation>
 <translation id="256712445991462162">a lupa em área fixa</translation>
@@ -181,6 +186,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2727977024730340865">Conectado a um carregador de baixa potência. O carregamento da bateria pode não ser confiável.</translation>
 <translation id="2792498699870441125">Alt + Pesquisar</translation>
 <translation id="2819276065543622893">Você sairá agora.</translation>
+<translation id="28232023175184696">Não é possível se conectar à Internet. Clique para tentar novamente.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> não é compatível com <ph name="SPECIFIED_RESOLUTION" />. A resolução foi modificada para <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Estante</translation>
 <translation id="2841907151129139818">Modo tablet ativado</translation>
@@ -320,6 +326,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4129129681837227511">Para ver as notificações na sua tela de bloqueio, desbloqueie a tela e altere a configuração</translation>
 <translation id="4146833061457621061">Ouvir música</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> gerenciado por <ph name="DOMAIN" /></translation>
+<translation id="415719264485676252">A captura de tela está bloqueada</translation>
 <translation id="4157822100366708405">Configurações do tema escuro</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4195877955194704651">Botão de cliques automáticos</translation>
@@ -386,6 +393,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4710243778082831592">Configurações do IME</translation>
 <translation id="4731797938093519117">Acesso de pai/mãe</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4744944742468440486">Informações relacionadas à sua seleção</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4774338217796918551">Volte amanhã, neste horário: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Senha para <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -503,6 +511,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="595202126637698455">Rastreamento de desempenho ativado</translation>
 <translation id="5957083217255311415">Os dados móveis estão desativados.</translation>
 <translation id="5958529069007801266">Usuário supervisionado</translation>
+<translation id="5960825221082587934">Permitir que o Assistente mostre informações como a definição ou a conversão de unidades da sua seleção.</translation>
 <translation id="5977415296283489383">Fone de ouvido</translation>
 <translation id="5978382165065462689">Compartilhando o controle de sua tela por meio da Assistência remota.</translation>
 <translation id="5980301590375426705">Sair sessão visit.</translation>
@@ -586,6 +595,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6777216307882431711">Carregando dispositivos USB-C conectados</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6803622936009808957">Não foi possível espelhar os displays porque não foram encontradas resoluções suportadas. Em vez disso, foi ativada a área de trabalho estendida.</translation>
+<translation id="6816797338148849397">Informações relacionadas à sua seleção disponíveis. Use a tecla de seta para cima para acessar.</translation>
 <translation id="6818242057446442178">Voltar por palavra</translation>
 <translation id="6820676911989879663">Faça uma pausa</translation>
 <translation id="6850010208275816200">O app atual está no modo tela cheia. Se o app pedir sua senha, saia da tela cheia antes de digitá-la.</translation>
@@ -649,6 +659,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7497767806359279797">Escolher idioma e teclado</translation>
 <translation id="7526573455193969409">A rede pode ser monitorada</translation>
 <translation id="7536035074519304529">Endereço IP: <ph name="ADDRESS" /></translation>
+<translation id="7542906349682405018">A capacidade de fazer uma captura do conteúdo da sua tela foi bloqueada pelo administrador.</translation>
 <translation id="7548434653388805669">Hora de dormir</translation>
 <translation id="7551643184018910560">Fixar na estante</translation>
 <translation id="7561982940498449837">Fechar menu</translation>
@@ -775,6 +786,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Carregador de baixa potência conectado</translation>
 <translation id="8683506306463609433">Acompanhamento de desempenho ativo</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Use as teclas de seta para a esquerda ou direita para gerenciar este recurso.</translation>
 <translation id="8712637175834984815">Entendi</translation>
 <translation id="8721053961083920564">Altere o volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">Ele pode estar tentando capturar sua digitação</translation>
@@ -795,6 +807,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="8874184842967597500">Não conectado</translation>
 <translation id="8877788021141246043">Definir um lembrete</translation>
 <translation id="8878886163241303700">Tela ampla</translation>
+<translation id="8883473964424809116">Clique para abrir as configurações do Google Assistente.</translation>
 <translation id="890616557918890486">Alterar origem</translation>
 <translation id="8909138438987180327">Bateria em <ph name="PERCENTAGE" /> por cento.</translation>
 <translation id="8913384980486163186">Temático (padrão)</translation>

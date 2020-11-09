@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">ஆப்ஸ்</translation>
 <translation id="2872961005593481000">நிறுத்து</translation>
 <translation id="3008341117444806826">புதுப்பி</translation>
+<translation id="3009958530611748826">சேமிப்பதற்கான கோப்புறையைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="3083667275341675831">இணைப்புநிலையைக் கண்டறிதல்</translation>
 <translation id="3091839911843451378">பிரிண்டர் நிறுத்தப்பட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="3188257591659621405">எனது கோப்புகள்</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">அச்சுப் பணிகள்</translation>
 <translation id="3527036260304016759">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
 <translation id="360565022852130722">WEP 802.1x என்னும் வலுவற்ற நெறிமுறை மூலம் WiFi நெட்வொர்க் பாதுகாக்கப்படுகிறது</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> மதிப்புரைகள்)</translation>
 <translation id="3749289110408117711">கோப்பு பெயர்</translation>
 <translation id="38114475217616659">அனைத்து வரலாற்றையும் அழி</translation>
 <translation id="3820172043799983114">தவறான பின்.</translation>
@@ -80,10 +82,12 @@
 <translation id="4731797938093519117">பெற்றோர் அணுகல்</translation>
 <translation id="4773299976671772492">நிறுத்தப்பட்டது</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> அச்சுப் பணி ரத்துசெய்யப்பட்டது</translation>
+<translation id="4832079907277790330">Files ஆப்ஸில் கோப்புறையைத் தேர்ந்தெடு...</translation>
 <translation id="4890353053343094602">புதிய கடவுச்சொல்லை உடனே தேர்ந்தெடுக்கவும்</translation>
 <translation id="4917889632206600977">காகிதம் தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="4932733599132424254">தேதி</translation>
 <translation id="4985509611418653372">இயக்கு</translation>
+<translation id="4991056862642197104">ஸ்கேன் செய்ய, ஆவணத்தின் மீது கேமராவைக் காட்டி ஸ்கேன் செய் என்பதைத் தட்டவும்</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> இந்தப் பயனரை நிர்வகிக்கிறது. இது தொலைநிலையிலிருந்து அமைப்புகளை நிர்வகிக்கலாம், அத்துடன் பயனர் செயல்பாட்டையும் கண்காணிக்கலாம்.</translation>
 <translation id="520299634122159966">ஸ்கேனர்கள் எதுவும் இல்லை</translation>
 <translation id="5212543919916444558">உங்களுக்கு நான் உதவும் வகையில், உங்கள் திரையில் எதுவுமில்லை.
@@ -123,6 +127,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">கோப்பு வகை</translation>
 <translation id="7561454561030345039">இந்தச் செயல் உங்கள் நிர்வாகியால் நிர்வகிக்கப்படுகிறது</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="7690294790491645610">புதிய கடவுச்சொல்லை உறுதிப்படுத்துக</translation>
 <translation id="7805768142964895445">நிலை</translation>

@@ -152,6 +152,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{Bugün etkin}=1{1 gün önce etkindi}other{# gün önce etkindi}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 gün ve }other{# gün ve }}</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5843690142429128814">Resim.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{1 yıl içinde}other{# yıl içinde}}</translation>
 <translation id="588258955323874662">Tam ekran</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 saniye kaldı}other{# saniye kaldı}}</translation>
@@ -192,6 +193,7 @@
 <translation id="6845533974506654842">bas</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 saat kaldı}other{# saat kaldı}}</translation>
 <translation id="688711909580084195">Başlıksız Web Sayfası</translation>
+<translation id="6902419395050653510">HTML içeriği.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/sn</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{1 yıl kaldı}other{# yıl kaldı}}</translation>
 <translation id="6945221475159498467">Seç</translation>

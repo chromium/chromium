@@ -152,6 +152,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{פעילות אחרונה: היום}=1{פעילות אחרונה: אתמול}two{פעילות אחרונה: לפני יומיים}many{פעילות אחרונה: לפני # ימים}other{פעילות אחרונה: לפני # ימים}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{יום אחד ו }two{יומיים ו }many{# ימים ו }other{# ימים ו }}</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5843690142429128814">תמונה.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{עוד שנה אחת}two{עוד 2 שנים}many{עוד # שנים}other{עוד # שנים}}</translation>
 <translation id="588258955323874662">מסך מלא</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{נותרה שנייה אחת}two{נותרו # שניות}many{נותרו # שניות}other{נותרו # שניות}}</translation>
@@ -192,6 +193,7 @@
 <translation id="6845533974506654842">לחיצה</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{נותרה שעה אחת}two{נותרו שעתיים}many{נותרו # שעות}other{נותרו # שעות}}</translation>
 <translation id="688711909580084195">דף אינטרנט ללא כותרת</translation>
+<translation id="6902419395050653510">‏תוכן HTML.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{נותרה שנה אחת}two{נותרו שנתיים}many{נותרו # שנים}other{נותרו # שנים}}</translation>
 <translation id="6945221475159498467">בחירה</translation>

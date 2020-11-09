@@ -17,6 +17,7 @@
 <translation id="1369915414381695676">Le site <ph name="SITE_NAME" /> a été ajouté</translation>
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1384959399684842514">Téléchargement interrompu</translation>
+<translation id="1415402041810619267">URL tronquée</translation>
 <translation id="1431402976894535801">Empêcher les sites de savoir lorsque vous êtes présent</translation>
 <translation id="1446450296470737166">Autoriser le contrôle des appareils MIDI</translation>
 <translation id="1509960214886564027">Des fonctionnalités sur de nombreux sites risquent de ne pas fonctionner</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">Autoriser les sites à lire du contenu protégé</translation>
 <translation id="4468959413250150279">Désactivez le son sur un site précis.</translation>
 <translation id="4479647676395637221">Demander avant d'autoriser des sites à utiliser votre caméra (recommandé)</translation>
+<translation id="4505788138578415521">URL développée</translation>
 <translation id="4534723447064627427">Pour autoriser <ph name="APP_NAME" /> à accéder à votre microphone, vous devez aussi activer le microphone dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
 <translation id="4570913071927164677">Détails</translation>
 <translation id="4645575059429386691">Géré par l’un de tes parents</translation>

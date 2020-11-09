@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">Uneko hilabetea</translation>
 <translation id="1637811476055996098">Aukeratu fitxategiak</translation>
 <translation id="1650423536718072820">aipamena</translation>
+<translation id="1681022320378710418">une honetako ordua</translation>
 <translation id="1727886345390570319">ezkutatu azpitituluen menua</translation>
 <translation id="1729654308190250600">Idatzi helbide elektronikoa.</translation>
 <translation id="1758486001363313524">Beste batzuk…</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">Idatzi URLa.</translation>
 <translation id="3175736971608411871">tenporizadorea</translation>
 <translation id="3199563858620722075">koadro konbinatua</translation>
+<translation id="3220661731597678625">une honetako urratsa</translation>
 <translation id="3329013043687509092">Saturazioa</translation>
 <translation id="3450233048674729344">Balioak <ph name="MAXIMUM" /> edo gutxiago izan behar du.</translation>
 <translation id="3486220673238053218">definizioa</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="479989351350248267">bilaketa</translation>
 <translation id="4812940957355064477">Idatzi zenbaki bat.</translation>
+<translation id="4912200001568447310">une honetako elementua</translation>
 <translation id="4912536737030637138">bibliografia-sarrera</translation>
 <translation id="4915360478455618802">Erakutsi ordu-hautatzailea</translation>
 <translation id="492244087561876220">iruzkina</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">Ezin da erreproduzitu multimedia-edukia.</translation>
 <translation id="537648784377940524">Gutxieneko datak (<ph name="MIN_DATE_OR_TIME" />) gehienekoaren aurrekoa izan behar du (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">zenbakia</translation>
+<translation id="5425179576310518467">une honetako data</translation>
 <translation id="5453733299334684579">zuhaitzeko elementua</translation>
 <translation id="5466621249238537318">Hautatu fitxategi bat gutxienez.</translation>
 <translation id="5468998798572797635">irten pantaila osoko modutik</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">neurgailua</translation>
 <translation id="6166809985690652833">hitzatzea</translation>
 <translation id="6209276755895393898">Badirudi hau dela: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">une honetako orria</translation>
 <translation id="6213469881011901533">glosarioa</translation>
 <translation id="6281588256137006900">Ikusgaitasuna</translation>
 <translation id="6281763101136022427">urla</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">Luzatu testua <ph name="MIN_CHARACTERS" /> karaktere izan ditzan gutxienez (1 karaktere erabiltzen ari zara).</translation>
 <translation id="7034405885550056553">iradokizuna</translation>
 <translation id="709897737746224366">Erabili eskatutako formatua.</translation>
+<translation id="7102274145889307184">uneko kokapena</translation>
 <translation id="7118469954320184356">Ez dago azalpenik erabilgarri.</translation>
 <translation id="7139483182332611405">atarikoa</translation>
 <translation id="7214187073215825913">edukiari buruzko informazioa</translation>

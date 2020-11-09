@@ -152,6 +152,7 @@
 <translation id="5763338081255973061">{DAYS,plural, =0{இன்று பயன்படுத்தியுள்ளார்}=1{நேற்று பயன்படுத்தியுள்ளார்}other{# நாட்களுக்கு முன்பு பயன்படுத்தியுள்ளார்}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 நாள், }other{# நாட்கள், }}</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5843690142429128814">படம்.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{இன்னும் 1ஆ}other{இன்னும் #ஆ}}</translation>
 <translation id="588258955323874662">முழுத்திரை</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 நிமிடம் உள்ளது}other{# நிமிடங்கள் உள்ளன}}</translation>
@@ -192,6 +193,7 @@
 <translation id="6845533974506654842">அழுத்துக</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 மணிநேரம் உள்ளது}other{# மணிநேரம் உள்ளது}}</translation>
 <translation id="688711909580084195">தலைப்பிடாத வலைப்பக்கம்</translation>
+<translation id="6902419395050653510">HTML உள்ளடக்கம்.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> பெ.பை/வி</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{1 ஆண்டு உள்ளது}other{# ஆண்டுகள் உள்ளன}}</translation>
 <translation id="6945221475159498467">தேர்ந்தெடு</translation>

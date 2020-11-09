@@ -17,6 +17,7 @@
 <translation id="1369915414381695676">Site <ph name="SITE_NAME" /> adicionado</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1384959399684842514">Download pausado</translation>
+<translation id="1415402041810619267">URL truncado</translation>
 <translation id="1431402976894535801">Impedir que sites saibam quando você está interagindo</translation>
 <translation id="1446450296470737166">Permitir controle total de dispositivos MIDI</translation>
 <translation id="1509960214886564027">Os recursos de muitos sites podem apresentar falhas</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">Permitir que sites reproduzam conteúdo protegido</translation>
 <translation id="4468959413250150279">Desative o som de um site específico.</translation>
 <translation id="4479647676395637221">Perguntar antes de permitir que sites usem sua câmera (recomendado)</translation>
+<translation id="4505788138578415521">URL expandido</translation>
 <translation id="4534723447064627427">Para permitir que o app <ph name="APP_NAME" /> acesse seu microfone, também é necessário ativá-lo nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="4570913071927164677">Detalhes</translation>
 <translation id="4645575059429386691">Gerenciado pelos seus pais</translation>

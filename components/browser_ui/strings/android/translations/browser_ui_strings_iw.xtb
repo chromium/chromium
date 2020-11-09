@@ -17,6 +17,7 @@
 <translation id="1369915414381695676">האתר <ph name="SITE_NAME" /> נוסף</translation>
 <translation id="1383876407941801731">חפש</translation>
 <translation id="1384959399684842514">ההורדה הושהתה</translation>
+<translation id="1415402041810619267">‏כתובת ה-URL קוצרה</translation>
 <translation id="1431402976894535801">אתרים לא יוכלו לדעת על זמני הנוכחות שלך</translation>
 <translation id="1446450296470737166">‏התר שליטה מלאה על מכשירי MIDI</translation>
 <translation id="1509960214886564027">ייתכן שהתכונות של חלק גדול מהאתרים לא יפעלו כראוי</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">מתן הרשאה לאתרים להציג תוכן מוגן</translation>
 <translation id="4468959413250150279">השתקת צלילים באתר ספציפי.</translation>
 <translation id="4479647676395637221">יש לשאול לפני שמאפשרים לאתרים להשתמש במצלמה שלך (מומלץ)</translation>
+<translation id="4505788138578415521">‏כתובת ה-URL הורחבה</translation>
 <translation id="4534723447064627427">‏כדי לאפשר ל-<ph name="APP_NAME" /> לגשת אל המיקרופון, צריך להפעיל את המיקרופון גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="4570913071927164677">פרטים</translation>
 <translation id="4645575059429386691">מנוהל על-ידי ההורה שלך</translation>
