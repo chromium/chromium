@@ -12,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -53,6 +54,9 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     private final ButtonCompat mContinueAsButton;
     private final ButtonCompat mDismissButton;
 
+    private @StringRes int mTitleId;
+    private @StringRes int mContentDescriptionId;
+
     /**
      * @param activity The activity that hosts this view. Used for inflating views.
      * @param backPressListener The listener to be notified when the user taps the back button.
@@ -77,6 +81,12 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         mSpinnerView = mContentView.findViewById(R.id.account_picker_signin_spinner_view);
         mContinueAsButton = mContentView.findViewById(R.id.account_picker_continue_as_button);
         mDismissButton = mContentView.findViewById(R.id.account_picker_dismiss_button);
+    }
+
+    void setTitleAndContentDescriptionStrings(
+            @StringRes int titleId, @StringRes @Nullable Integer subtitleId) {
+        mTitleId = titleId;
+        mContentDescriptionId = subtitleId != null ? subtitleId : titleId;
     }
 
     /**
@@ -281,29 +291,23 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
 
     @Override
     public int getSheetContentDescriptionStringId() {
-        // TODO(https://crbug.com/1081253): The description will
-        // be adapter once the UI mock will be finalized
-        return R.string.signin_account_picker_dialog_title;
+        return mContentDescriptionId;
     }
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        // TODO(https://crbug.com/1081253): The description will
-        // be adapter once the UI mock will be finalized
-        return R.string.signin_account_picker_dialog_title;
+        return mTitleId;
     }
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        // TODO(https://crbug.com/1081253): The description will
-        // be adapter once the UI mock will be finalized
-        return R.string.signin_account_picker_dialog_title;
+        return mTitleId;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        // TODO(https://crbug.com/1081253): The description will
-        // be adapter once the UI mock will be finalized
-        return R.string.signin_account_picker_dialog_title;
+        // TODO(https://crbug.com/1112696): Use more specific string to when the account
+        // picker is closed.
+        return R.string.close;
     }
 }
