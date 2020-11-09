@@ -2929,13 +2929,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.PowerfulCount" units="extensions"
-    expires_after="2020-12-01">
+    expires_after="2021-12-01">
   <owner>tnagel@chromium.org</owner>
   <owner>chrome-privacy-core@chromium.org</owner>
   <summary>
-    The number of extensions reported in chrome://management ui with powerful
+    The number of extensions reported in chrome://management UI with powerful
     permissions. This number is recorded every time the user opens
-    chrome://management ui.
+    chrome://management UI.
   </summary>
 </histogram>
 
