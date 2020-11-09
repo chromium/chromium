@@ -33,7 +33,8 @@ def _IsCorpMachine():
   if sys.platform.startswith('linux'):
     import subprocess
     try:
-      return subprocess.check_output('lsb_release -sc').rstrip() == 'rodete'
+      return subprocess.check_output(['lsb_release',
+                                      '-sc']).rstrip() == b'rodete'
     except:
       return False
   return False
