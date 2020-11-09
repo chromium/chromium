@@ -475,7 +475,7 @@ class Surface final : public ui::PropertyHandler {
 class ScopedSurface {
  public:
   ScopedSurface(Surface* surface, SurfaceObserver* observer);
-  ~ScopedSurface();
+  virtual ~ScopedSurface();
   Surface* get() { return surface_; }
 
  private:

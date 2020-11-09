@@ -5,11 +5,13 @@
 #ifndef COMPONENTS_EXO_DRAG_DROP_OPERATION_H_
 #define COMPONENTS_EXO_DRAG_DROP_OPERATION_H_
 
+#include <memory>
+#include <string>
+
 #include "components/exo/data_device.h"
 #include "components/exo/data_offer_observer.h"
 #include "components/exo/data_source_observer.h"
 #include "components/exo/surface_observer.h"
-#include "components/exo/surface_tree_host.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
@@ -18,6 +20,8 @@
 #if defined(OS_CHROMEOS)
 #include "components/exo/extended_drag_source.h"
 #endif
+
+class SkBitmap;
 
 namespace ash {
 class DragDropController;
@@ -33,12 +37,10 @@ namespace ui {
 class OSExchangeData;
 }
 
-namespace viz {
-class CopyOutputResult;
-}
-
 namespace exo {
 class ScopedDataSource;
+class Surface;
+class ScopedSurface;
 
 // This class represents an ongoing drag-drop operation started by an exo
 // client. It manages its own lifetime. It will delete itself when the drag
@@ -46,7 +48,6 @@ class ScopedDataSource;
 // (e.g. the client deletes the data source used to start the drag operation),
 // or if another drag operation races with this one to start and wins.
 class DragDropOperation : public DataSourceObserver,
-                          public SurfaceTreeHost,
                           public SurfaceObserver,
 #if defined(OS_CHROMEOS)
                           public ExtendedDragSource::Observer,
@@ -67,9 +68,6 @@ class DragDropOperation : public DataSourceObserver,
   // DataSourceObserver:
   void OnDataSourceDestroying(DataSource* source) override;
 
-  // SurfaceDelegate:
-  void OnSurfaceCommit() override;
-
   // SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;
 
@@ -84,6 +82,8 @@ class DragDropOperation : public DataSourceObserver,
 #endif
 
  private:
+  class IconSurface;
+
   // A private constructor and destructor are used to prevent anyone else from
   // attempting to manage the lifetime of a DragDropOperation.
   DragDropOperation(DataSource* source,
@@ -93,8 +93,7 @@ class DragDropOperation : public DataSourceObserver,
                     ui::mojom::DragEventSource event_source);
   ~DragDropOperation() override;
 
-  void CaptureDragIcon();
-  void OnDragIconCaptured(std::unique_ptr<viz::CopyOutputResult> icon_result);
+  void OnDragIconCaptured(const SkBitmap& icon_bitmap);
 
   void OnTextRead(const std::string& mime_type, base::string16 data);
   void OnHTMLRead(const std::string& mime_type, base::string16 data);

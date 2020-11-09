@@ -12,6 +12,7 @@
 #include "components/exo/data_source.h"
 #include "components/exo/seat.h"
 #include "components/exo/surface.h"
+#include "components/exo/surface_tree_host.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "ui/aura/client/drag_drop_client.h"
@@ -23,6 +24,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/transform_util.h"
 #include "url/gurl.h"
 
@@ -83,6 +85,63 @@ DndAction DragOperationToDndAction(int op) {
 
 }  // namespace
 
+// Internal representation of a drag icon surface. Used when a non-null surface
+// is passed in wl_data_device::start_drag requests.
+// TODO(crbug.com/1119385): Rework icon implementation to avoid frame copies.
+class DragDropOperation::IconSurface final : public SurfaceTreeHost,
+                                             public ScopedSurface {
+ public:
+  IconSurface(Surface* icon, DragDropOperation* operation)
+      : SurfaceTreeHost("ExoDragIcon"),
+        ScopedSurface(icon, operation),
+        operation_(operation) {
+    DCHECK(operation_);
+    DCHECK(!icon->HasSurfaceDelegate());
+
+    Surface* origin_surface = operation_->origin_->get();
+    origin_surface->window()->AddChild(host_window());
+    SetRootSurface(icon);
+  }
+
+  IconSurface(const IconSurface&) = delete;
+  IconSurface& operator=(const IconSurface&) = delete;
+  ~IconSurface() override = default;
+
+ private:
+  // SurfaceTreeHost:
+  void OnSurfaceCommit() override {
+    SurfaceTreeHost::OnSurfaceCommit();
+    RequestCaptureIcon();
+  }
+
+  void RequestCaptureIcon() {
+    SubmitCompositorFrame();
+
+    std::unique_ptr<viz::CopyOutputRequest> request =
+        std::make_unique<viz::CopyOutputRequest>(
+            viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+            base::BindOnce(&IconSurface::OnCaptured,
+                           weak_ptr_factory_.GetWeakPtr()));
+    request->set_result_task_runner(base::SequencedTaskRunnerHandle::Get());
+
+    host_window()->layer()->RequestCopyOfOutput(std::move(request));
+  }
+
+  void OnCaptured(std::unique_ptr<viz::CopyOutputResult> icon_result) {
+    // An empty response means the request was deleted before it was completed.
+    // If this happens, and no operation has yet finished, restart the capture.
+    if (icon_result->IsEmpty()) {
+      RequestCaptureIcon();
+      return;
+    }
+
+    operation_->OnDragIconCaptured(icon_result->AsSkBitmap());
+  }
+
+  DragDropOperation* const operation_;
+  base::WeakPtrFactory<IconSurface> weak_ptr_factory_{this};
+};
+
 base::WeakPtr<DragDropOperation> DragDropOperation::Create(
     DataSource* source,
     Surface* origin,
@@ -99,8 +158,7 @@ DragDropOperation::DragDropOperation(DataSource* source,
                                      Surface* icon,
                                      const gfx::PointF& drag_start_point,
                                      ui::mojom::DragEventSource event_source)
-    : SurfaceTreeHost("ExoDragDropOperation"),
-      source_(std::make_unique<ScopedDataSource>(source, this)),
+    : source_(std::make_unique<ScopedDataSource>(source, this)),
       origin_(std::make_unique<ScopedSurface>(origin, this)),
       drag_start_point_(drag_start_point),
       os_exchange_data_(std::make_unique<ui::OSExchangeData>()),
@@ -130,7 +188,7 @@ DragDropOperation::DragDropOperation(DataSource* source,
 #endif
 
   if (icon)
-    icon_ = std::make_unique<ScopedSurface>(icon, this);
+    icon_ = std::make_unique<IconSurface>(icon, this);
 
   auto start_op_callback =
       base::BindOnce(&DragDropOperation::ScheduleStartDragDropOperation,
@@ -151,11 +209,6 @@ DragDropOperation::DragDropOperation(DataSource* source,
       base::BindOnce(&DragDropOperation::OnFilenamesRead,
                      weak_ptr_factory_.GetWeakPtr()),
       counter_);
-
-  if (icon) {
-    origin_->get()->window()->AddChild(host_window());
-    SetRootSurface(icon);
-  }
 }
 
 DragDropOperation::~DragDropOperation() {
@@ -219,48 +272,18 @@ void DragDropOperation::OnFilenamesRead(const std::string& mime_type,
   counter_.Run();
 }
 
-void DragDropOperation::OnSurfaceCommit() {
-  SurfaceTreeHost::OnSurfaceCommit();
-
-  if (icon_)
-    CaptureDragIcon();
-}
-
-void DragDropOperation::CaptureDragIcon() {
-  SubmitCompositorFrame();
-
-  std::unique_ptr<viz::CopyOutputRequest> request =
-      std::make_unique<viz::CopyOutputRequest>(
-          viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
-          base::BindOnce(&DragDropOperation::OnDragIconCaptured,
-                         weak_ptr_factory_.GetWeakPtr()));
-  request->set_result_task_runner(base::SequencedTaskRunnerHandle::Get());
-
-  host_window()->layer()->RequestCopyOfOutput(std::move(request));
-}
-
-void DragDropOperation::OnDragIconCaptured(
-    std::unique_ptr<viz::CopyOutputResult> icon_result) {
-  gfx::ImageSkia icon_skia;
-
-  // An empty response means the request was deleted before it was completed. If
-  // this happens, and no operation has yet finished, restart the capture.
-  if (icon_result->IsEmpty()) {
-    CaptureDragIcon();
-    return;
-  }
+void DragDropOperation::OnDragIconCaptured(const SkBitmap& icon_bitmap) {
+  DCHECK(icon_);
 
   float scale_factor = origin_->get()->window()->layer()->device_scale_factor();
-  icon_skia = gfx::ImageSkia(
-      gfx::ImageSkiaRep(icon_result->AsSkBitmap(), scale_factor));
+  gfx::ImageSkia icon_skia(gfx::ImageSkiaRep(icon_bitmap, scale_factor));
+  gfx::Vector2d icon_offset = -icon_->get()->GetBufferOffset();
 
   if (os_exchange_data_) {
-    os_exchange_data_->provider().SetDragImage(
-        icon_skia, -icon_->get()->GetBufferOffset());
+    os_exchange_data_->provider().SetDragImage(icon_skia, icon_offset);
   } else {
 #if defined(OS_CHROMEOS)
-    drag_drop_controller_->SetDragImage(icon_skia,
-                                        -icon_->get()->GetBufferOffset());
+    drag_drop_controller_->SetDragImage(icon_skia, icon_offset);
 #endif
   }
 
@@ -361,7 +384,7 @@ void DragDropOperation::ResetExtendedDragSource() {
 #endif
 
 void DragDropOperation::OnSurfaceDestroying(Surface* surface) {
-  DCHECK(surface == origin_->get() || surface == icon_->get());
+  DCHECK(surface == origin_->get() || (icon_ && surface == icon_->get()));
   delete this;
 }
 
