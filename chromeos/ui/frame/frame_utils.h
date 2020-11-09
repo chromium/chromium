@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_FRAME_UTILS_H_
-#define ASH_PUBLIC_CPP_FRAME_UTILS_H_
+#ifndef CHROMEOS_UI_FRAME_FRAME_UTILS_H_
+#define CHROMEOS_UI_FRAME_FRAME_UTILS_H_
 
 #include "base/component_export.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -34,4 +34,4 @@ bool ShouldUseRestoreFrame(const views::Widget* widget);
 
 }  // namespace chromeos
 
-#endif  // ASH_PUBLIC_CPP_FRAME_UTILS_H_
+#endif  // CHROMEOS_UI_FRAME_FRAME_UTILS_H_

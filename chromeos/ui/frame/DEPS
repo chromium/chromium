@@ -1,7 +1,7 @@
 include_rules = [
   "+ui/aura",
   "+ui/base",
-  "+ui/compositor/scoped_animation_duration_scale_mode.h",
+  "+ui/compositor",
   "+ui/display",
   "+ui/events",
   "+ui/gfx",

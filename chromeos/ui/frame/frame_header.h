@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_FRAME_HEADER_H_
-#define ASH_PUBLIC_CPP_FRAME_HEADER_H_
+#ifndef CHROMEOS_UI_FRAME_FRAME_HEADER_H_
+#define CHROMEOS_UI_FRAME_FRAME_HEADER_H_
 
-#include "ash/public/cpp/ash_public_export.h"
 #include "base/callback.h"
+#include "base/component_export.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -15,9 +15,12 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/window/frame_caption_button.h"
 
-namespace chromeos {
-class CaptionButtonModel;
-}  // namespace chromeos
+namespace ash {
+FORWARD_DECLARE_TEST(DefaultFrameHeaderTest, BackButtonAlignment);
+FORWARD_DECLARE_TEST(DefaultFrameHeaderTest, TitleIconAlignment);
+FORWARD_DECLARE_TEST(DefaultFrameHeaderTest, FrameColors);
+class FramePaintWaiter;
+}  // namespace ash
 
 namespace gfx {
 class Canvas;
@@ -30,10 +33,12 @@ class View;
 class Widget;
 }  // namespace views
 
-namespace ash {
+namespace chromeos {
+
+class CaptionButtonModel;
 
 // Helper class for managing the window header.
-class ASH_PUBLIC_EXPORT FrameHeader {
+class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
  public:
   enum Mode { MODE_ACTIVE, MODE_INACTIVE };
 
@@ -123,10 +128,10 @@ class ASH_PUBLIC_EXPORT FrameHeader {
 
  private:
   class FrameAnimatorView;
-  FRIEND_TEST_ALL_PREFIXES(DefaultFrameHeaderTest, BackButtonAlignment);
-  FRIEND_TEST_ALL_PREFIXES(DefaultFrameHeaderTest, TitleIconAlignment);
-  FRIEND_TEST_ALL_PREFIXES(DefaultFrameHeaderTest, FrameColors);
-  friend class FramePaintWaiter;
+  FRIEND_TEST_ALL_PREFIXES(ash::DefaultFrameHeaderTest, BackButtonAlignment);
+  FRIEND_TEST_ALL_PREFIXES(ash::DefaultFrameHeaderTest, TitleIconAlignment);
+  FRIEND_TEST_ALL_PREFIXES(ash::DefaultFrameHeaderTest, FrameColors);
+  friend class ash::FramePaintWaiter;
 
   void LayoutHeaderInternal();
 
@@ -139,7 +144,7 @@ class ASH_PUBLIC_EXPORT FrameHeader {
   // The view into which |this| paints.
   views::View* view_;
   views::FrameCaptionButton* back_button_ = nullptr;  // May remain nullptr.
-  views::View* left_header_view_ = nullptr;    // May remain nullptr.
+  views::View* left_header_view_ = nullptr;           // May remain nullptr.
   chromeos::FrameCaptionButtonContainerView* caption_button_container_ =
       nullptr;
   FrameAnimatorView* frame_animator_ = nullptr;  // owned by view tree.
@@ -158,6 +163,6 @@ class ASH_PUBLIC_EXPORT FrameHeader {
   DISALLOW_COPY_AND_ASSIGN(FrameHeader);
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // ASH_PUBLIC_CPP_FRAME_HEADER_H_
+#endif  // CHROMEOS_UI_FRAME_FRAME_HEADER_H_

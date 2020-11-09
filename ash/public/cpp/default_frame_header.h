@@ -8,17 +8,17 @@
 #include <memory>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "ash/public/cpp/frame_header.h"
 #include "base/compiler_specific.h"  // override
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "chromeos/ui/frame/frame_header.h"
 
 namespace ash {
 
 // Helper class for managing the default window header, which is used for
 // Chrome apps (but not bookmark apps), for example.
-class ASH_PUBLIC_EXPORT DefaultFrameHeader : public FrameHeader {
+class ASH_PUBLIC_EXPORT DefaultFrameHeader : public chromeos::FrameHeader {
  public:
   // DefaultFrameHeader does not take ownership of any of the parameters.
   DefaultFrameHeader(

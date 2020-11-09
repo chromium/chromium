@@ -1268,7 +1268,7 @@ void ClientControlledShellSurface::UpdateFrame() {
 
       UpdateCaptionButtonModel();
     }
-    DCHECK_EQ(ash::FrameHeader::Get(widget_),
+    DCHECK_EQ(chromeos::FrameHeader::Get(widget_),
               wide_frame_->header_view()->GetFrameHeader());
   } else {
     if (wide_frame_) {
@@ -1282,7 +1282,7 @@ void ClientControlledShellSurface::UpdateFrame() {
 
       UpdateCaptionButtonModel();
     }
-    DCHECK_EQ(ash::FrameHeader::Get(widget_),
+    DCHECK_EQ(chromeos::FrameHeader::Get(widget_),
               GetFrameView()->GetHeaderView()->GetFrameHeader());
     UpdateFrameWidth();
   }

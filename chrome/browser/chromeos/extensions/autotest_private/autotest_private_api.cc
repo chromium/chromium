@@ -23,7 +23,6 @@
 #include "ash/public/cpp/autotest_private_api_utils.h"
 #include "ash/public/cpp/default_frame_header.h"
 #include "ash/public/cpp/desks_helper.h"
-#include "ash/public/cpp/frame_header.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/overview_test_api.h"
@@ -123,6 +122,7 @@
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
@@ -3657,7 +3657,7 @@ AutotestPrivateGetAppWindowListFunction::Run() {
             api::autotest_private::FrameMode::FRAME_MODE_NORMAL;
         window_info.is_frame_visible = IsFrameVisible(widget);
       }
-      auto* frame_header = ash::FrameHeader::Get(widget);
+      auto* frame_header = chromeos::FrameHeader::Get(widget);
       window_info.caption_height = frame_header->GetHeaderHeight();
 
       const chromeos::CaptionButtonModel* button_model =

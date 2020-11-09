@@ -174,7 +174,7 @@ class BrowserNonClientFrameViewAsh
   void OnAddedToOrRemovedFromOverview();
 
   // Creates the frame header for the browser window.
-  std::unique_ptr<ash::FrameHeader> CreateFrameHeader();
+  std::unique_ptr<chromeos::FrameHeader> CreateFrameHeader();
 
   // Triggers the web-app origin and icon animations, assumes the web-app UI
   // elements exist.
@@ -212,7 +212,7 @@ class BrowserNonClientFrameViewAsh
   ProfileIndicatorIcon* profile_indicator_icon_ = nullptr;
 
   // Helper class for painting the header.
-  std::unique_ptr<ash::FrameHeader> frame_header_;
+  std::unique_ptr<chromeos::FrameHeader> frame_header_;
 
   ScopedObserver<aura::Window, aura::WindowObserver> window_observer_{this};
 

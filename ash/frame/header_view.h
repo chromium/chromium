@@ -8,11 +8,11 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/frame_header.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
+#include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_delegate.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"

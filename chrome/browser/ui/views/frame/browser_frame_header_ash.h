@@ -5,14 +5,14 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_HEADER_ASH_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_HEADER_ASH_H_
 
-#include "ash/public/cpp/frame_header.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "chromeos/ui/frame/frame_header.h"
 #include "ui/gfx/image/image_skia.h"
 
 // Helper class for drawing a custom frame (such as for a themed Chrome Browser
 // frame).
-class BrowserFrameHeaderAsh : public ash::FrameHeader {
+class BrowserFrameHeaderAsh : public chromeos::FrameHeader {
  public:
   class AppearanceProvider {
    public:

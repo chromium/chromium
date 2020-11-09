@@ -4,7 +4,6 @@
 
 #include "ash/wm/window_resizer.h"
 
-#include "ash/public/cpp/frame_header.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -12,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
+#include "chromeos/ui/frame/frame_header.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -29,6 +29,8 @@
 
 namespace ash {
 namespace {
+
+using ::chromeos::FrameHeader;
 
 // Returns true for resize components along the right edge, where a drag in
 // positive x will make the window larger.

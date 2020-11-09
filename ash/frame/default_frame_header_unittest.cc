@@ -27,6 +27,7 @@
 
 using chromeos::FrameBackButton;
 using chromeos::FrameCaptionButtonContainerView;
+using chromeos::FrameHeader;
 using views::NonClientFrameView;
 using views::Widget;
 

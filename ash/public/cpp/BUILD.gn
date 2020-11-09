@@ -124,8 +124,6 @@ component("cpp") {
     "file_icon_util.h",
     "fps_counter.cc",
     "fps_counter.h",
-    "frame_header.cc",
-    "frame_header.h",
     "gesture_action_type.h",
     "holding_space/holding_space_client.h",
     "holding_space/holding_space_color_provider.cc",
@@ -336,7 +334,6 @@ component("cpp") {
     "//ui/events/devices",
     "//ui/message_center/public/cpp",
     "//ui/views",
-    "//ui/views/window/vector_icons",
     "//ui/wm",
     "//ui/wm/public",
   ]

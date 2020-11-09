@@ -622,9 +622,9 @@ void BrowserNonClientFrameViewAsh::OnAddedToOrRemovedFromOverview() {
     web_app_frame_toolbar()->SetVisible(should_show_caption_buttons);
 }
 
-std::unique_ptr<ash::FrameHeader>
+std::unique_ptr<chromeos::FrameHeader>
 BrowserNonClientFrameViewAsh::CreateFrameHeader() {
-  std::unique_ptr<ash::FrameHeader> header;
+  std::unique_ptr<chromeos::FrameHeader> header;
   Browser* browser = browser_view()->browser();
   if (!UsePackagedAppHeaderStyle(browser)) {
     header = std::make_unique<BrowserFrameHeaderAsh>(frame(), this, this,

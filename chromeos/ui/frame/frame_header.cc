@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/frame_header.h"
+#include "chromeos/ui/frame/frame_header.h"
 
-#include "ash/public/cpp/window_properties.h"
 #include "base/logging.h"  // DCHECK
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -26,9 +25,9 @@
 #include "ui/views/window/caption_button_layout_constants.h"
 #include "ui/views/window/vector_icons/vector_icons.h"
 
-DEFINE_UI_CLASS_PROPERTY_TYPE(ash::FrameHeader*)
+DEFINE_UI_CLASS_PROPERTY_TYPE(chromeos::FrameHeader*)
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
@@ -411,4 +410,4 @@ gfx::Rect FrameHeader::GetTitleBounds() const {
                                  GetHeaderHeight());
 }
 
-}  // namespace ash
+}  // namespace chromeos
