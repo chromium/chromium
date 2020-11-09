@@ -206,8 +206,6 @@ class Component {
    private:
     // State overrides.
     void DoHandle() override;
-
-    void UpdateCheckComplete();
   };
 
   class StateUpdateError : public State {
@@ -488,8 +486,6 @@ class Component {
   CallbackHandleComplete callback_handle_complete_;
   std::unique_ptr<State> state_;
   const UpdateContext& update_context_;
-
-  base::OnceClosure update_check_complete_;
 
   ComponentState previous_state_ = ComponentState::kLastStatus;
 

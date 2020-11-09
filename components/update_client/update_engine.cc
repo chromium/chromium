@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/check_op.h"
 #include "base/guid.h"
 #include "base/location.h"
@@ -140,33 +141,6 @@ void UpdateEngine::Update(
     return;
   }
 
-  for (const auto& id : update_context->components_to_check_for_updates)
-    update_context->components[id]->Handle(
-        base::BindOnce(&UpdateEngine::ComponentCheckingForUpdatesStart, this,
-                       update_context, id));
-}
-
-void UpdateEngine::ComponentCheckingForUpdatesStart(
-    scoped_refptr<UpdateContext> update_context,
-    const std::string& id) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(update_context);
-
-  DCHECK_EQ(1u, update_context->components.count(id));
-  DCHECK(update_context->components.at(id));
-
-  // Handle |kChecking| state.
-  auto& component = *update_context->components.at(id);
-  component.Handle(
-      base::BindOnce(&UpdateEngine::ComponentCheckingForUpdatesComplete, this,
-                     update_context));
-
-  ++update_context->num_components_ready_to_check;
-  if (update_context->num_components_ready_to_check <
-      update_context->components_to_check_for_updates.size()) {
-    return;
-  }
-
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&UpdateEngine::DoUpdateCheck, this, update_context));
@@ -175,6 +149,10 @@ void UpdateEngine::ComponentCheckingForUpdatesStart(
 void UpdateEngine::DoUpdateCheck(scoped_refptr<UpdateContext> update_context) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(update_context);
+
+  // Make the components transition from |kNew| to |kChecking| state.
+  for (const auto& id : update_context->components_to_check_for_updates)
+    update_context->components[id]->Handle(base::DoNothing());
 
   update_context->update_checker =
       update_checker_factory_(config_, metadata_.get());
@@ -222,6 +200,9 @@ void UpdateEngine::UpdateCheckResultsAvailable(
       component->SetUpdateCheckResult(base::nullopt,
                                       ErrorCategory::kUpdateCheck, error);
     }
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&UpdateEngine::UpdateCheckComplete, this,
+                                  update_context));
     return;
   }
 
@@ -262,18 +243,6 @@ void UpdateEngine::UpdateCheckResultsAvailable(
           static_cast<int>(ProtocolError::UPDATE_RESPONSE_NOT_FOUND));
     }
   }
-}
-
-void UpdateEngine::ComponentCheckingForUpdatesComplete(
-    scoped_refptr<UpdateContext> update_context) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(update_context);
-
-  ++update_context->num_components_checked;
-  if (update_context->num_components_checked <
-      update_context->components_to_check_for_updates.size()) {
-    return;
-  }
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -285,8 +254,16 @@ void UpdateEngine::UpdateCheckComplete(
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(update_context);
 
-  for (const auto& id : update_context->components_to_check_for_updates)
+  for (const auto& id : update_context->components_to_check_for_updates) {
     update_context->component_queue.push(id);
+
+    // Handle the |kChecking| state and transition the component to the
+    // next state, depending on the update check results.
+    DCHECK_EQ(1u, update_context->components.count(id));
+    auto& component = update_context->components.at(id);
+    DCHECK_EQ(component->state(), ComponentState::kChecking);
+    component->Handle(base::DoNothing());
+  }
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
