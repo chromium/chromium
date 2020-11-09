@@ -53,16 +53,6 @@ export const TutorialLesson = Polymer({
     // Observed properties.
 
     activeLessonNum: {type: Number, observer: 'setVisibility'},
-
-    titleHint: {
-      type: String,
-      value: 'Press Search + left/right arrow to navigate the lesson'
-    },
-
-    practiceTitleHint: {
-      type: String,
-      value: 'Press Search + left/right arrow to navigate the practice area'
-    }
   },
 
   /** @override */
@@ -144,12 +134,13 @@ export const TutorialLesson = Polymer({
    * @private
    */
   populatePracticeContent() {
-    const path = '../i_tutorial/lessons/' + this.practiceFile + '.html';
+    const path = '../i_tutorial/practice_areas/' + this.practiceFile + '.html';
     const xhr = new XMLHttpRequest();
     xhr.open('GET', path, true);
     xhr.onload = (evt) => {
       if (xhr.readyState === 4 && xhr.status === 200) {
         this.$.practiceContent.innerHTML = xhr.responseText;
+        this.localizePracticeAreaContent();
       } else {
         console.error(xhr.statusText);
       }
@@ -235,12 +226,6 @@ export const TutorialLesson = Polymer({
   onGoalStateReached() {
     const previousState = this.goalStateReached;
     this.goalStateReached = true;
-    if (previousState === false) {
-      // Only perform when crossing the threshold from not reached to reached.
-      this.requestSpeech(
-          'You have passed this tutorial lesson. Find and press the exit ' +
-          'practice area button to continue');
-    }
   },
 
   // Miscellaneous methods.
@@ -289,5 +274,15 @@ export const TutorialLesson = Polymer({
   /** @return {string} */
   getTitleText() {
     return this.$.title.textContent;
+  },
+
+  /** @private */
+  localizePracticeAreaContent() {
+    const root = this.$.practiceContent;
+    const elements = root.querySelectorAll('[msgid]');
+    for (const element of elements) {
+      const msgId = element.getAttribute('msgid');
+      element.textContent = this.getMsg(msgId);
+    }
   }
 });

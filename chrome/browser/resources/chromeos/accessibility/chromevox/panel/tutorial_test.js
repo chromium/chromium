@@ -120,7 +120,8 @@ TEST_F('ChromeVoxTutorialTest', 'BasicTest', function() {
     mockFeedback
         .expectSpeech(
             'ChromeVox tutorial', 'Heading 1',
-            'Press Search + left/right arrow to browse topics')
+            ' Press Search + Right Arrow, or Search + Left Arrow to browse' +
+                ' topics ')
         .call(doCmd('nextObject'))
         .expectSpeech('Quick orientation', 'Link')
         .call(doCmd('nextObject'))
@@ -152,8 +153,8 @@ TEST_F('ChromeVoxTutorialTest', 'LessonSetTest', function() {
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech(/Quick Orientation Tutorial, [0-9]+ Lessons/)
         .expectSpeech(
-            'Press Search + left/right arrow to browse lessons for ' +
-            'this topic')
+            ' Press Search + Right Arrow, or Search + Left Arrow to browse ' +
+            'lessons for this topic ')
         .call(doCmd('nextObject'))
         .expectSpeech('Welcome to ChromeVox!')
         .call(() => {
@@ -192,7 +193,8 @@ TEST_F('ChromeVoxTutorialTest', 'NoPracticeAreaTest', function() {
         })
         .expectSpeech(
             'On, Off, and Stop', 'Heading 1',
-            'Press Search + left/right arrow to navigate the lesson')
+            ' Press Search + Right Arrow, or Search + Left Arrow to navigate ' +
+                'this lesson ')
         .call(doCmd('nextButton'))
         .expectSpeech('Next lesson')
         .replay();
@@ -219,7 +221,7 @@ TEST_F('ChromeVoxTutorialTest', 'HasPracticeAreaTest', function() {
         })
         .expectSpeech('Jump Commands', 'Heading 1')
         .call(doCmd('nextButton'))
-        .expectSpeech('Practice Area')
+        .expectSpeech('Practice area')
         .replay();
   });
 });
@@ -278,7 +280,7 @@ TEST_F('ChromeVoxTutorialTest', 'DISABLED_PracticeAreaNudgesTest', function() {
         })
         .expectSpeech('Basic Navigation', 'Heading 1')
         .call(doCmd('nextButton'))
-        .expectSpeech('Practice Area')
+        .expectSpeech('Practice area')
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech(/Try using basic navigation to navigate/)
         .call(giveNudge)
@@ -454,7 +456,9 @@ TEST_F('ChromeVoxTutorialTest', 'LessonHint', function() {
           tutorial.showLesson(0);
         })
         .expectSpeech('On, Off, and Stop', 'Heading 1')
-        .expectSpeech('Press Search + left/right arrow to navigate the lesson')
+        .expectSpeech(
+            ' Press Search + Right Arrow, or Search + Left Arrow to navigate' +
+            ' this lesson ')
         .replay();
   });
 });
@@ -539,7 +543,7 @@ TEST_F('ChromeVoxTutorialTest', 'QuickOrientationLessonTest', function() {
         // the next lesson.
         .call(simulateKeyPress.bind(this, KeyCode.SPACE, {}))
         .expectSpeech('Essential Keys: Control')
-        .expectSpeech(/Let's start with a few keys you'll use regularly:/)
+        .expectSpeech(/Let's start with a few keys you'll use regularly./)
         .call(() => {
           assertEquals(1, tutorial.activeLessonNum);
           assertNotEquals(firstLessonNode, getRangeStartNode());

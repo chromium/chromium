@@ -20,13 +20,6 @@ export const TutorialCommon = {
    * @return {string} The localized message.
    */
   getMsg(idOrValue, opt_subs) {
-    // TODO(akihiroota): Remove this check after adding all strings to
-    // chromevox_strings.grdp.
-    // If we get a string that doesn't include a '_', then it's a hard-coded
-    // string value. Return it, since a message id doesn't exist for it yet.
-    if (!idOrValue.includes('_')) {
-      return idOrValue;
-    }
     return Msgs.getMsg(idOrValue, opt_subs);
   }
 };

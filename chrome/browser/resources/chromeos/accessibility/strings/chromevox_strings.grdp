@@ -2020,7 +2020,7 @@
     On, Off, and Stop
   </message>
   <message desc="Part of ChromeVox tutorial, explains that pressing Control on the keyboard stops it from speaking" name="IDS_CHROMEVOX_TUTORIAL_CONTROL">
-    To temporarily stop ChromeVox from speaking, press the Control key.
+    To stop any current ChromeVox speech, press the Control key.
   </message>
   <message desc="Part of ChromeVox tutorial, explains that you can turn ChromeVox on or turn it off, by pressing Control+Alt+Z on the keyboard" name="IDS_CHROMEVOX_TUTORIAL_ON_OFF">
     To turn ChromeVox on or off, use Control+Alt+Z.
@@ -2051,6 +2051,16 @@
   </message>
   <message desc="Part of the ChromeVox tutorial, explains two keystrokes to jump to the next or previous heading." name="IDS_CHROMEVOX_TUTORIAL_JUMP">
     Use jump commands to skip to specific types of elements. To jump forward between headings, press Search + H, or to jump backward, press Search + Shift + H.
+  </message>
+
+  <message desc="Part of the ChromeVox tutorial, explains that jump commands can be used to efficiently navigate." name="IDS_CHROMEVOX_TUTORIAL_JUMP_EFFICIENCY">
+    Jump commands can be used to efficiently navigate through a web page.
+  </message>
+  <message desc="Part of the ChromeVox tutorial, explains where to find more jump commands." name="IDS_CHROMEVOX_TUTORIAL_JUMP_MORE">
+    Additional jump commands include jumping by link, button, and checkbox, to name a few. A full list of jump commands can be found in the ChromeVox menus, which can be opened by pressing Search + Period.
+  </message>
+  <message desc="Part of the ChromeVox tutorial, heading used to illustrate jumping." name="IDS_CHROMEVOX_TUTORIAL_JUMP_FIRST_HEADING">
+    This is the first heading. Press Search + H to go to the next heading.
   </message>
   <message desc="Part of the ChromeVox tutorial, heading used to illustrate jumping." name="IDS_CHROMEVOX_TUTORIAL_JUMP_SECOND_HEADING">
     This is the second heading. Keep going; either press Search+H or Search+Shift+H
@@ -2343,7 +2353,7 @@
     Tap with 4 fingers to enter the ChromeVox menus
   </message>
   <message desc="Part of the ChromeVox touch tutorial page. Describes a two finger tap to stop speech." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_TWO_FINGER_TAP">
-    Tap with 2 fingers to temporarily stop speech
+    Tap with 2 fingers to stop any current speech
   </message>
   <message desc="Part of the ChromeVox touch tutorial page. Concludes this page." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_LEARN_MORE">
     Explore more gestures in Learn Mode and the Chromebook Help Center
@@ -3041,5 +3051,163 @@
   <message desc="Describes an element with the ARIA role mark. We use 'marked content' since it's more descriptive than 'mark'." name="IDS_CHROMEVOX_ROLE_MARK" is_accessibility_with_no_ui="true">
     Marked content
   </message>
-
+  <message desc="The title displayed on the main menu of the ChromeVox tutorial." name="IDS_CHROMEVOX_TUTORIAL_MAIN_MENU_HEADER">
+    ChromeVox tutorial
+  </message>
+  <message desc="The title displayed for the quick orientation lesson set." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_TITLE">
+    Quick orientation
+  </message>
+  <message desc="The title displayed for the essential keys lesson set." name="IDS_CHROMEVOX_TUTORIAL_ESSENTIAL_KEYS_TITLE">
+    Essential keys
+  </message>
+  <message desc="The title displayed for the navigation lesson set." name="IDS_CHROMEVOX_TUTORIAL_NAVIGATION_TITLE">
+    Navigation
+  </message>
+  <message desc="The title displayed for the command references lesson set." name="IDS_CHROMEVOX_TUTORIAL_COMMAND_REFERENCES_TITLE">
+    Command references
+  </message>
+  <message desc="The title displayed for the sounds and settings lesson set." name="IDS_CHROMEVOX_TUTORIAL_SOUNDS_AND_SETTINGS_TITLE">
+    Sounds and settings
+  </message>
+  <message desc="The title displayed for the resources lesson set." name="IDS_CHROMEVOX_TUTORIAL_RESOURCES_TITLE">
+    Resources
+  </message>
+  <message desc="The label for the button that restarts the quick orientation in the tutorial." name="IDS_CHROMEVOX_TUTORIAL_RESTART_QUICK_ORIENTATION_BUTTON">
+    Restart quick orientation
+  </message>
+  <message desc="The label for the button that moves to the previous lesson in the tutorial." name="IDS_CHROMEVOX_TUTORIAL_PREVIOUS_LESSON_BUTTON">
+    Previous lesson
+  </message>
+  <message desc="The label for the button that moves to the next lesson in the tutorial." name="IDS_CHROMEVOX_TUTORIAL_NEXT_LESSON_BUTTON">
+    Next lesson
+  </message>
+  <message desc="The label for the button that moves to the main menu in the tutorial." name="IDS_CHROMEVOX_TUTORIAL_MAIN_MENU_BUTTON">
+    Main menu
+  </message>
+  <message desc="The label for the button that moves to the lesson menu in the tutorial." name="IDS_CHROMEVOX_TUTORIAL_LESSON_MENU_BUTTON">
+    All lessons
+  </message>
+  <message desc="The label for the button that exits the tutorial." name="IDS_CHROMEVOX_TUTORIAL_EXIT_BUTTON">
+    Exit tutorial
+  </message>
+  <message desc="The label for the button that opens the practice area in the tutorial." name="IDS_CHROMEVOX_TUTORIAL_PRACTICE_AREA_OPEN_BUTTON">
+    Practice area
+  </message>
+  <message desc="The label for the button that closes the practice area in the tutorial." name="IDS_CHROMEVOX_TUTORIAL_PRACTICE_AREA_CLOSE_BUTTON">
+    Close practice area
+  </message>
+  <message desc="Spoken to give supplemental information when focusing the main menu header in the tutorial." name="IDS_CHROMEVOX_TUTORIAL_MAIN_MENU_HEADER_DESCRIPTION" is_accessibility_with_no_ui="true">
+    Press Search + Right Arrow, or Search + Left Arrow to browse topics
+  </message>
+  <message desc="Spoken to give supplemental information when focusing the lesson menu header in the tutorial." name="IDS_CHROMEVOX_TUTORIAL_LESSON_MENU_HEADER_DESCRIPTION" is_accessibility_with_no_ui="true">
+    Press Search + Right Arrow, or Search + Left Arrow to browse lessons for this topic
+  </message>
+  <message desc="Spoken to give supplemental information when focusing lesson titles in the tutorial." name="IDS_CHROMEVOX_TUTORIAL_LESSON_TITLE_DESCRIPTION" is_accessibility_with_no_ui="true">
+    Press Search + Right Arrow, or Search + Left Arrow to navigate this lesson
+  </message>
+  <message desc="Text content for the 'Welcome to ChromeVox!' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_INTRO_TEXT">
+    Welcome to the ChromeVox tutorial. To exit this tutorial at any time, press the Escape key on the top left corner of the keyboard. To turn off ChromeVox, hold Control and Alt, and press Z. When you're ready, use the spacebar to move to the next lesson.
+  </message>
+  <message desc="Title for the 'Essential Keys: Control' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_CONTROL_TITLE">
+    Essential Keys: Control
+  </message>
+  <message desc="Text content for the 'Essential Keys: Control' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_CONTROL_TEXT">
+    Let's start with a few keys you'll use regularly. The Control key can be used to stop any current speech. Find the Control key on the bottom left corner of your keyboard. To continue, press the Control key.
+  </message>
+  <message desc="Title for the 'Essential Keys: Shift' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_SHIFT_TITLE">
+    Essential Keys: Shift
+  </message>
+  <message desc="Text content for the 'Essential Keys: Shift' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_SHIFT_TEXT">
+    Now, find the left Shift key, which is directly above the Control key. To continue, press the left Shift key.
+  </message>
+  <message desc="Title for the 'Essential keys: search' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_SEARCH_TITLE">
+    Essential Keys: Search
+  </message>
+  <message desc="Text content for the 'Essential keys: search' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_SEARCH_TEXT">
+    Next, you’ll learn about the Search key. The Search key is used in combination with other keys for ChromeVox commands. The Search key is immediately above the left Shift key. To continue, press the Search key.
+  </message>
+  <message desc="Title for the 'Basic Navigation' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_BASIC_NAVIGATION_TITLE">
+    Basic navigation
+  </message>
+  <message desc="Text content for the 'Basic Navigation' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_BASIC_NAVIGATION_MOVE_TEXT">
+    Now you’ll learn some basic navigation. You can hold Search and press the arrow keys to move around the screen. To continue, press Search + Right arrow.
+  </message>
+  <message desc="Text content for the 'Basic Navigation' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_BASIC_NAVIGATION_CLICK_TEXT">
+    If you reach an item you want to click, press Search + Space. Try it now to continue.
+  </message>
+  <message desc="Title for the 'Tab Navigation' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_TAB_TITLE">
+    Tab Navigation
+  </message>
+  <message desc="Text content for the 'Tab Navigation' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_TAB_TEXT">
+    You can also use the Tab key to move to the next interactive item on the screen. Find the Tab key, which is directly above the Search key. To continue, press the Tab key.
+  </message>
+  <message desc="Title for the 'Tab Navigation Continued' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_SHIFT_TAB_TITLE">
+    Tab Navigation Continued
+  </message>
+  <message desc="Text content for the 'Tab Navigation Continued' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_SHIFT_TAB_TEXT">
+    You can use Shift + Tab to move to the previous interactive item. To continue, press Shift + Tab.
+  </message>
+  <message desc="Title for the 'Enter' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_ENTER_TITLE">
+    Enter
+  </message>
+  <message desc="Text content for the 'Enter' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_ENTER_TEXT">
+    You can also press Enter to activate items. For example, Enter can be used to submit text in a form. To continue, press Enter.
+  </message>
+  <message desc="Title for the 'Drop-down lists' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_LISTS_TITLE">
+    Drop-Down Lists
+  </message>
+  <message desc="Text content for the 'Drop-down lists' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_LISTS_TEXT">
+    There will be times when you need to select an item from a drop-down list. To do so, first expand the list by pressing Search + Space. Then use the Up and Down arrow keys to select an item. Finally, collapse the list by pressing Search + Space.
+  </message>
+  <message desc="Text content for the 'Drop-down lists' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_LISTS_CONTINUE_TEXT">
+    Press Search + Right arrow to find the practice area or the Next lesson button. Then press Search + Space to activate.
+  </message>
+  <message desc="Title for the practice area of the drop-down lists lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_LISTS_PRACTICE_TITLE">
+    Practice area: Drop-down lists
+  </message>
+  <message desc="Instructions for the practice area of the drop-down lists lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_LISTS_PRACTICE_INSTRUCTIONS">
+    Try selecting your favorite season from the list.
+  </message>
+  <message desc="A label for a select element in the drop-down lists lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_LISTS_PRACTICE_LABEL">
+    My favorite season
+  </message>
+  <message desc="An option of the select element in the drop-down lists lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_LISTS_PRACTICE_SPRING">
+    Spring
+  </message>
+  <message desc="An option of the select element in the drop-down lists lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_LISTS_PRACTICE_SUMMER">
+    Summer
+  </message>
+  <message desc="An option of the select element in the drop-down lists lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_LISTS_PRACTICE_FALL">
+    Fall
+  </message>
+  <message desc="An option of the select element in the drop-down lists lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_LISTS_PRACTICE_WINTER">
+    Winter
+  </message>
+  <message desc="Title for the 'Quick orientation complete' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_COMPLETE_TITLE">
+    Quick orientation complete!
+  </message>
+  <message desc="Text content for the 'Quick orientation complete' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_COMPLETE_TEXT">
+    Well done! You’ve learned the ChromeVox basics. You can go through the tutorial again or exit this tutorial by finding and clicking on a button below.
+  </message>
+  <message desc="Text content for the 'Quick orientation complete' lesson in the quick orientation." name="IDS_CHROMEVOX_TUTORIAL_QUICK_ORIENTATION_COMPLETE_ADDITIONAL_TEXT">
+    After you set up your device, you can come back and view more tutorials by pressing Search + O, then T.
+  </message>
+  <message desc="Title for the practice area of the jump commands lists lesson in the tutorial." name="IDS_CHROMEVOX_TUTORIAL_JUMP_PRACTICE_TITLE">
+    Practice area: Jump commands
+  </message>
+  <message desc="Instructions for the practice area of the jump commands lesson in the tutorial." name="IDS_CHROMEVOX_TUTORIAL_JUMP_PRACTICE_INSTRUCTIONS">
+    Try jumping by heading to navigate the text below.
+  </message>
+  <message desc="The lesson menu header in the tutorial." name="IDS_CHROMEVOX_TUTORIAL_LESSON_MENU_HEADER">
+    <ph name="topic">$1<ex>Quick Orientation</ex></ph> Tutorial, <ph name="lessons">$2<ex>3</ex></ph> Lessons
+  </message>
+  <message desc="A spoken announcement given in the tutorial if the user becomes inactive." name="IDS_CHROMEVOX_TUTORIAL_HINT_NAVIGATE" is_accessibility_with_no_ui="true">
+    Hint: Hold Search and press the arrow keys to navigate.
+  </message>
+  <message desc="A spoken announcement given in the tutorial if the user becomes inactive." name="IDS_CHROMEVOX_TUTORIAL_HINT_CLICK" is_accessibility_with_no_ui="true">
+    Hint: Press Search + Space to activate the current item.
+  </message>
+  <message desc="A spoken announcement given in the tutorial if the user becomes inactive." name="IDS_CHROMEVOX_TUTORIAL_HINT_EXIT" is_accessibility_with_no_ui="true">
+    Hint: Press Escape if you would like to exit this tutorial.
+  </message>
 </grit-part>

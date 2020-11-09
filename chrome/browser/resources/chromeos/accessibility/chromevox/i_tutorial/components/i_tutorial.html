@@ -101,27 +101,32 @@ cr-button {
 <div id="mainMenu"
     hidden$="[[ shouldHideMainMenu(activeScreen) ]]">
   <h1 id="mainMenuHeader" tabindex="-1" aria-describedby="mainMenuHeaderHint">
-    [[ mainMenuHeader ]]
+    [[ getMsg('tutorial_main_menu_header') ]]
   </h1>
-  <div id="mainMenuHeaderHint" hidden>[[ mainMenuHeaderHint ]]</div>
+  <div id="mainMenuHeaderHint" hidden>
+    [[ getMsg('tutorial_main_menu_header_description') ]]
+  </div>
   <div id="mainMenuButtons">
     <cr-link-row id="quickOrientationButton" class="hr"
-        on-click="chooseCurriculum" label="[[ quickOrientation ]]">
+        on-click="chooseCurriculum"
+        label="[[ getMsg('tutorial_quick_orientation_title') ]]">
     </cr-link-row>
     <cr-link-row id="essentialKeysButton" class="hr" on-click="chooseCurriculum"
-        label="[[ essentialKeys ]]">
+        label="[[ getMsg('tutorial_essential_keys_title') ]]">
     </cr-link-row>
     <cr-link-row id="navigationButton" class="hr" on-click="chooseCurriculum"
-        label="[[ navigation ]]">
+        label="[[ getMsg('tutorial_navigation_title') ]]">
     </cr-link-row>
     <cr-link-row id="commandReferencesButton" class="hr"
-        on-click="chooseCurriculum" label="[[ commandReferences ]]">
+        on-click="chooseCurriculum"
+        label="[[ getMsg('tutorial_command_references_title') ]]">
     </cr-link-row>
     <cr-link-row id="soundsAndSettingsButton" class="hr"
-        on-click="chooseCurriculum" label="[[ soundsAndSettings ]]">
+        on-click="chooseCurriculum"
+        label="[[ getMsg('tutorial_sounds_and_settings_title') ]]">
     </cr-link-row>
     <cr-link-row id="resourcesButton" class="hr" on-click="chooseCurriculum"
-        label="[[ resources ]]">
+        label="[[ getMsg('tutorial_resources_title') ]]">
     </cr-link-row>
   </div>
 </div>
@@ -132,7 +137,9 @@ cr-button {
       tabindex="-1" aria-describedby="lessonMenuHeaderHint">
     [[ computeLessonMenuHeader(curriculum) ]]
   </h1>
-  <div id="lessonMenuHeaderHint" hidden>[[ lessonMenuHeaderHint ]]</div>
+  <div id="lessonMenuHeaderHint" hidden>
+    [[ getMsg('tutorial_lesson_menu_header_description') ]]
+  </div>
   <div id="lessonShortcuts"></div>
 </div>
 
@@ -168,12 +175,12 @@ cr-button {
       <cr-button id="nextLesson" class="action-button" on-click="showNextLesson"
           hidden$="[[
         shouldHideNextLessonButton(activeLessonIndex, activeScreen) ]]">
-        [[ nextLesson ]]
+        [[ getMsg('tutorial_next_lesson_button') ]]
       </cr-button>
       <cr-button on-click="showPreviousLesson"
           hidden$="[[
         shouldHidePreviousLessonButton(activeLessonIndex, activeScreen) ]]">
-        [[ previousLesson ]]
+        [[ getMsg('tutorial_previous_lesson_button') ]]
       </cr-button>
     </div>
     <div id="menuNav">
@@ -181,18 +188,18 @@ cr-button {
           hidden$="[[
         shouldHideRestartQuickOrientationButton(activeLessonIndex, activeScreen)
           ]]">
-        [[ restartQuickOrientation ]]
+        [[ getMsg('tutorial_restart_quick_orientation_button') ]]
       </cr-button>
       <cr-button on-click="showLessonMenu"
           hidden$="[[ shouldHideLessonMenuButton(activeScreen) ]]">
-        [[ lessonMenu ]]
+        [[ getMsg('tutorial_lesson_menu_button') ]]
       </cr-button>
       <cr-button on-click="showMainMenu"
           hidden$="[[ shouldHideMainMenuButton(activeScreen) ]]">
-        [[ mainMenu ]]
+        [[ getMsg('tutorial_main_menu_button') ]]
       </cr-button>
       <cr-button id="exitTutorial" on-click="exit">
-        [[ exitTutorial ]]
+        [[ getMsg('tutorial_exit_button') ]]
       </cr-button>
     </div>
   </div>

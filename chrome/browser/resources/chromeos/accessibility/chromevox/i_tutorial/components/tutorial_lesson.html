@@ -33,16 +33,22 @@ a {
   text-align: start
 }
 
+#content a,
 #content p,
 #practiceInstructions,
 #practiceBody {
-  color: black;
   font-size: 22px;
   font-weight: normal;
   line-height: 28px;
   margin-bottom: 16px;
   margin-top: 0;
   text-align: start
+}
+
+#content p,
+#practiceInstructions,
+#practiceBody {
+  color: black;
 }
 
 /* Practice area */
@@ -94,7 +100,9 @@ a {
     <h1 id="title" tabindex="-1" aria-describedby="titleHint">
       [[ getMsg(title) ]]
     </h1>
-    <div id="titleHint" hidden>[[ titleHint ]]</div>
+    <div id="titleHint" hidden>
+      [[ getMsg('tutorial_lesson_title_description') ]]
+    </div>
   </template>
   <div id="content">
     <template id="contentTemplate" is="dom-repeat" items="[[ content ]]"
@@ -104,18 +112,22 @@ a {
   </div>
   <cr-dialog id="practice">
     <div id="practiceTitle" class="title" slot="title" tabindex="-1">
-      [[ practiceTitle ]]
+      [[ getMsg(practiceTitle) ]]
     </div>
     <div id="practiceBody" class="body" slot="body" tabindex="-1">
-      <p id="practiceInstructions" tabindex="-1">[[ practiceInstructions ]]</p>
+      <p id="practiceInstructions" tabindex="-1">
+        [[ getMsg(practiceInstructions) ]]
+      </p>
       <div id="practiceContent"></div>
     </div>
     <div class="button-container" slot="button-container">
       <cr-button id="closePractice" on-click="endPractice">
-        Close
+        [[ getMsg('tutorial_practice_area_close_button') ]]
       </cr-button>
     </div>
   </cr-dialog>
   <cr-button id="startPractice" on-click="startPractice"
-    hidden$="[[ shouldHidePracticeButton() ]]">Practice Area</cr-button>
+      hidden$="[[ shouldHidePracticeButton() ]]">
+    [[ getMsg('tutorial_practice_area_open_button') ]]
+  </cr-button>
 </div>
