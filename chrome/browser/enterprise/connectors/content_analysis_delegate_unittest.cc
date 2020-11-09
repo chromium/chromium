@@ -123,14 +123,6 @@ class BaseTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures({}, {kEnterpriseConnectorsEnabled});
   }
 
-  void AddUrlToList(const char* pref_name, const std::string& url) {
-    safe_browsing::AddUrlToListForConnectors(pref_name, url);
-  }
-
-  void AddUrlToList(const char* pref_name, const GURL& url) {
-    AddUrlToList(pref_name, url.host());
-  }
-
   void ScanUpload(content::WebContents* web_contents,
                   ContentAnalysisDelegate::Data data,
                   ContentAnalysisDelegate::CompletionCallback callback) {

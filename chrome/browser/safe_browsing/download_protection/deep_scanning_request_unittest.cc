@@ -185,9 +185,6 @@ class DeepScanningRequestTest : public testing::Test {
         policy::DMToken::CreateValidTokenForTesting("dm_token"));
 
     enterprise_connectors::ConnectorsManager::GetInstance()->SetUpForTesting();
-
-    AddUrlToListForConnectors(prefs::kURLsToCheckComplianceOfDownloadedContent,
-                              tab_url_.host());
   }
 
   void TearDown() override {
@@ -810,6 +807,7 @@ INSTANTIATE_TEST_SUITE_P(
         DownloadPrefs::DownloadRestriction::MALICIOUS_FILES));
 
 TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
+  SetAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED, kScanForMalware);
   {
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,

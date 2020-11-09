@@ -150,8 +150,6 @@ class DownloadDeepScanningBrowserTest
   void SetUpOnMainThread() override {
     embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
     ASSERT_TRUE(embedded_test_server()->Start());
-    AddUrlsToCheckComplianceOfDownloadsForConnectors(
-        {embedded_test_server()->base_url().spec()});
 
     SetBinaryUploadServiceTestFactory();
     SetUrlLoaderInterceptor();

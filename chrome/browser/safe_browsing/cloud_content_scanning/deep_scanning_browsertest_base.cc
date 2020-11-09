@@ -88,19 +88,10 @@ void DeepScanningBrowserTestBase::TearDownOnMainThread() {
   enterprise_connectors::ConnectorsManager::GetInstance()->TearDownForTesting();
   enterprise_connectors::ContentAnalysisDelegate::ResetFactoryForTesting();
 
-  SetDlpPolicyForConnectors(CheckContentComplianceValues::CHECK_NONE);
-  SetMalwarePolicyForConnectors(SendFilesForMalwareCheckValues::DO_NOT_SCAN);
-  SetDelayDeliveryUntilVerdictPolicyForConnectors(
-      DelayDeliveryUntilVerdictValues::DELAY_NONE);
-  SetAllowPasswordProtectedFilesPolicyForConnectors(
-      AllowPasswordProtectedFilesValues::ALLOW_UPLOADS_AND_DOWNLOADS);
-  SetBlockUnsupportedFileTypesPolicyForConnectors(
-      BlockUnsupportedFiletypesValues::BLOCK_UNSUPPORTED_FILETYPES_NONE);
-  SetBlockLargeFileTransferPolicyForConnectors(
-      BlockLargeFileTransferValues::BLOCK_NONE);
+  ClearAnalysisConnector(enterprise_connectors::FILE_ATTACHED);
+  ClearAnalysisConnector(enterprise_connectors::FILE_DOWNLOADED);
+  ClearAnalysisConnector(enterprise_connectors::BULK_DATA_ENTRY);
   SetOnSecurityEventReporting(false);
-  ClearUrlsToCheckComplianceOfDownloadsForConnectors();
-  ClearUrlsToCheckForMalwareOfUploadsForConnectors();
 }
 
 void DeepScanningBrowserTestBase::SetUpDelegate() {

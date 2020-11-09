@@ -145,32 +145,7 @@ class EventReportValidator {
   base::RepeatingClosure done_closure_;
 };
 
-// Helper functions that set matching connector policies values from legacy
-// policy values.
-void SetDlpPolicyForConnectors(CheckContentComplianceValues state);
-void SetMalwarePolicyForConnectors(SendFilesForMalwareCheckValues state);
-void SetDelayDeliveryUntilVerdictPolicyForConnectors(
-    DelayDeliveryUntilVerdictValues state);
-void SetAllowPasswordProtectedFilesPolicyForConnectors(
-    AllowPasswordProtectedFilesValues state);
-void SetBlockUnsupportedFileTypesPolicyForConnectors(
-    BlockUnsupportedFiletypesValues state);
-void SetBlockLargeFileTransferPolicyForConnectors(
-    BlockLargeFileTransferValues state);
-void AddUrlsToCheckComplianceOfDownloadsForConnectors(
-    const std::vector<std::string>& urls);
-void AddUrlsToNotCheckComplianceOfUploadsForConnectors(
-    const std::vector<std::string>& urls);
-void AddUrlsToCheckForMalwareOfUploadsForConnectors(
-    const std::vector<std::string>& urls);
-void AddUrlsToNotCheckForMalwareOfDownloadsForConnectors(
-    const std::vector<std::string>& urls);
-void AddUrlToListForConnectors(const char* pref_name, const std::string& url);
-void ClearUrlsToCheckComplianceOfUploadsForConnectors();
-void ClearUrlsToCheckForMalwareOfUploadsForConnectors();
-void ClearUrlsToCheckComplianceOfDownloadsForConnectors();
-void ClearUrlsToCheckForMalwareOfDownloadsForConnectors();
-
+// Helper functions that set Connector policies for testing.
 void SetAnalysisConnector(enterprise_connectors::AnalysisConnector connector,
                           const std::string& pref_value);
 void SetOnSecurityEventReporting(bool enabled);

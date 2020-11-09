@@ -96,14 +96,6 @@ const char kPasswordProtectionWarningTrigger[] =
     "safebrowsing.password_protection_warning_trigger";
 const char kAdvancedProtectionLastRefreshInUs[] =
     "safebrowsing.advanced_protection_last_refresh";
-const char kURLsToCheckComplianceOfDownloadedContent[] =
-    "safebrowsing.urls_to_check_compliance_of_downloaded_content";
-const char kURLsToCheckForMalwareOfUploadedContent[] =
-    "safebrowsing.urls_to_check_for_malware_of_uploaded_content";
-const char kURLsToNotCheckForMalwareOfDownloadedContent[] =
-    "safebrowsing.urls_to_not_check_for_malware_of_downloaded_content";
-const char kURLsToNotCheckComplianceOfUploadedContent[] =
-    "policy.urls_to_not_check_compliance_of_uploaded_content";
 const char kAdvancedProtectionAllowed[] =
     "safebrowsing.advanced_protection_allowed";
 const char kSafeBrowsingMetricsLastLogTime[] =

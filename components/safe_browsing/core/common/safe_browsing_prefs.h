@@ -92,24 +92,6 @@ extern const char kPasswordProtectionWarningTrigger[];
 // microseconds);
 extern const char kAdvancedProtectionLastRefreshInUs[];
 
-// TODO(crbug.com/1109242): Remove the following kURLsTo* constants once they
-// are no longer needed by testing code.
-
-// List of url patterns where Chrome should check compliance of downloaded
-// files.
-extern const char kURLsToCheckComplianceOfDownloadedContent[];
-
-// List of url patterns where Chrome should check for malware of uploaded files.
-extern const char kURLsToCheckForMalwareOfUploadedContent[];
-
-// List of url patterns where Chrome should not check for malware downloaded
-// files.
-extern const char kURLsToNotCheckForMalwareOfDownloadedContent[];
-
-// List of url patterns where Chrome should not check compliance of uploaded
-// files.
-extern const char kURLsToNotCheckComplianceOfUploadedContent[];
-
 // Boolean that indicates if Chrome is allowed to provide extra
 // features to users enrolled in the Advanced Protection Program.
 extern const char kAdvancedProtectionAllowed[];
@@ -162,64 +144,6 @@ enum PasswordProtectionTrigger {
   PHISHING_REUSE = 2,
   // New triggers must be added before PASSWORD_PROTECTION_TRIGGER_MAX.
   PASSWORD_PROTECTION_TRIGGER_MAX,
-};
-
-// Enum representing possible values of the SendFilesForMalwareCheck policy.
-// TODO(crbug/1109242): Remove this once tests use connector policies directly.
-enum SendFilesForMalwareCheckValues {
-  DO_NOT_SCAN = 0,
-  SEND_DOWNLOADS = 2,
-  SEND_UPLOADS = 3,
-  SEND_UPLOADS_AND_DOWNLOADS = 4,
-  // New options must be added before SEND_FILES_FOR_MALWARE_CHECK_MAX.
-  SEND_FILES_FOR_MALWARE_CHECK_MAX = SEND_UPLOADS_AND_DOWNLOADS,
-};
-
-// Enum representing possible values of the CheckContentCompliance policy.
-// TODO(crbug/1109242): Remove this once tests use connector policies directly.
-enum CheckContentComplianceValues {
-  CHECK_NONE = 0,
-  CHECK_DOWNLOADS = 1,
-  CHECK_UPLOADS = 2,
-  CHECK_UPLOADS_AND_DOWNLOADS = 3,
-  // New options must be added before CHECK_CONTENT_COMPLIANCE_MAX.
-  CHECK_CONTENT_COMPLIANCE_MAX = CHECK_UPLOADS_AND_DOWNLOADS,
-};
-
-// Enum representing possible values of the BlockUnsupportedFiletypes policy.
-// This must be kept in sync with policy_templates.json.
-enum BlockUnsupportedFiletypesValues {
-  BLOCK_UNSUPPORTED_FILETYPES_NONE = 0,
-  BLOCK_UNSUPPORTED_FILETYPES_DOWNLOADS = 1,
-  BLOCK_UNSUPPORTED_FILETYPES_UPLOADS = 2,
-  BLOCK_UNSUPPORTED_FILETYPES_UPLOADS_AND_DOWNLOADS = 3,
-};
-
-// Enum representing possible values of the AllowPasswordProtectedFiles policy.
-// This must be kept in sync with policy_templates.json.
-enum AllowPasswordProtectedFilesValues {
-  ALLOW_NONE = 0,
-  ALLOW_DOWNLOADS = 1,
-  ALLOW_UPLOADS = 2,
-  ALLOW_UPLOADS_AND_DOWNLOADS = 3,
-};
-
-// Enum representing possible values of the BlockLargeFileTransfer policy. This
-// must be kept in sync with policy_templates.json.
-enum BlockLargeFileTransferValues {
-  BLOCK_NONE = 0,
-  BLOCK_LARGE_DOWNLOADS = 1,
-  BLOCK_LARGE_UPLOADS = 2,
-  BLOCK_LARGE_UPLOADS_AND_DOWNLOADS = 3,
-};
-
-// Enum representing possible values of the DelayDeliveryUntilVerdict policy.
-// This must be kept in sync with policy_templates.json.
-enum DelayDeliveryUntilVerdictValues {
-  DELAY_NONE = 0,
-  DELAY_DOWNLOADS = 1,
-  DELAY_UPLOADS = 2,
-  DELAY_UPLOADS_AND_DOWNLOADS = 3,
 };
 
 // Enum representing possible values of the Safe Browsing state.
