@@ -33,9 +33,6 @@ class SingleThreadTaskRunner;
 
 namespace user_manager {
 
-// Hides all Supervised Users.
-USER_MANAGER_EXPORT extern const base::Feature kHideSupervisedUsers;
-
 class RemoveUserDelegate;
 
 // Base implementation of the UserManager interface.
@@ -93,7 +90,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   bool IsLoggedInAsChildUser() const override;
   bool IsLoggedInAsPublicAccount() const override;
   bool IsLoggedInAsGuest() const override;
-  bool IsLoggedInAsSupervisedUser() const override;
   bool IsLoggedInAsKioskApp() const override;
   bool IsLoggedInAsArcKioskApp() const override;
   bool IsLoggedInAsWebKioskApp() const override;
@@ -182,9 +178,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   virtual void NotifyUserAddedToSession(const User* added_user,
                                         bool user_switch_pending);
 
-  // Performs any additional actions before user list is loaded.
-  virtual void PerformPreUserListLoadingActions() = 0;
-
   // Performs any additional actions after user list is loaded.
   virtual void PerformPostUserListLoadingActions() = 0;
 
@@ -243,9 +236,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // Indicates that a regular user just logged in as ephemeral.
   virtual void RegularUserLoggedInAsEphemeral(const AccountId& account_id,
                                               const UserType user_type);
-
-  // Indicates that a supervised user just logged in.
-  virtual void SupervisedUserLoggedIn(const AccountId& account_id) = 0;
 
   // Should be called when regular user was removed.
   virtual void OnUserRemoved(const AccountId& account_id) = 0;

@@ -508,10 +508,6 @@ ExistingUserController::ExistingUserController()
       kAccountsPrefAllowGuest,
       base::Bind(&ExistingUserController::DeviceSettingsChanged,
                  base::Unretained(this)));
-  allow_supervised_user_subscription_ = cros_settings_->AddSettingsObserver(
-      kAccountsPrefSupervisedUsersEnabled,
-      base::Bind(&ExistingUserController::DeviceSettingsChanged,
-                 base::Unretained(this)));
   users_subscription_ = cros_settings_->AddSettingsObserver(
       kAccountsPrefUsers,
       base::Bind(&ExistingUserController::DeviceSettingsChanged,
@@ -569,9 +565,8 @@ void ExistingUserController::UpdateLoginDisplay(
     if (user->IsKioskType())
       continue;
     // TODO(xiyuan): Clean user profile whose email is not in allowlist.
-    const bool meets_supervised_requirements =
-        user->GetType() != user_manager::USER_TYPE_SUPERVISED ||
-        user_manager->AreSupervisedUsersAllowed();
+    if (user->GetType() == user_manager::USER_TYPE_SUPERVISED)
+      continue;
     const bool meets_allowlist_requirements =
         !user->HasGaiaAccount() || user_manager->IsGaiaUserAllowed(*user);
 
@@ -579,7 +574,7 @@ void ExistingUserController::UpdateLoginDisplay(
     const bool meets_show_users_requirements =
         show_users_on_signin ||
         user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
-    if (meets_supervised_requirements && meets_allowlist_requirements) {
+    if (meets_allowlist_requirements) {
       if (meets_show_users_requirements) {
         filtered_users.push_back(user);
       }
@@ -819,18 +814,13 @@ void ExistingUserController::PerformLogin(
     }
   }
 
-  if (user_manager::UserManager::Get()->IsSupervisedAccountId(
-          user_context.GetAccountId())) {
-    login_performer_->LoginAsSupervisedUser(new_user_context);
-  } else {
-    // If a regular user log in to a device which supports ARC, we should make
-    // sure that the user's cryptohome is encrypted in ext4 dircrypto to run the
-    // latest Android runtime.
-    new_user_context.SetIsForcingDircrypto(
-        ShouldForceDircrypto(new_user_context.GetAccountId()));
-    login_performer_->PerformLogin(new_user_context, auth_mode);
-    RecordPasswordLoginEvent(new_user_context);
-  }
+  // If a regular user log in to a device which supports ARC, we should make
+  // sure that the user's cryptohome is encrypted in ext4 dircrypto to run the
+  // latest Android runtime.
+  new_user_context.SetIsForcingDircrypto(
+      ShouldForceDircrypto(new_user_context.GetAccountId()));
+  login_performer_->PerformLogin(new_user_context, auth_mode);
+  RecordPasswordLoginEvent(new_user_context);
   SendAccessibilityAlert(
       l10n_util::GetStringUTF8(IDS_CHROMEOS_ACC_LOGIN_SIGNING_IN));
   if (timer_init_) {
@@ -1751,17 +1741,6 @@ gfx::NativeWindow ExistingUserController::GetNativeWindow() const {
 void ExistingUserController::ShowError(int error_id,
                                        const std::string& details) {
   VLOG(1) << details;
-
-  if (error_id == IDS_LOGIN_ERROR_AUTHENTICATING) {
-    if (num_login_attempts_ > 1) {
-      const user_manager::User* user =
-          user_manager::UserManager::Get()->FindUser(
-              last_login_attempt_account_id_);
-      if (user && (user->GetType() == user_manager::USER_TYPE_SUPERVISED))
-        error_id = IDS_LOGIN_ERROR_AUTHENTICATING_2ND_TIME_SUPERVISED;
-    }
-  }
-
   GetLoginDisplay()->ShowError(error_id, num_login_attempts_,
                                HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
 }

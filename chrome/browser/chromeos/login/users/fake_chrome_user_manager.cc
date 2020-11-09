@@ -147,16 +147,6 @@ user_manager::User* FakeChromeUserManager::AddWebKioskAppUser(
   return user;
 }
 
-user_manager::User* FakeChromeUserManager::AddSupervisedUser(
-    const AccountId& account_id) {
-  user_manager::User* user =
-      user_manager::User::CreateSupervisedUser(account_id);
-  user->set_username_hash(ProfileHelper::GetUserIdHashByUserIdForTesting(
-      account_id.GetUserEmail()));
-  users_.push_back(user);
-  return user;
-}
-
 user_manager::User* FakeChromeUserManager::AddGuestUser() {
   user_manager::User* user =
       user_manager::User::CreateGuestUser(GetGuestAccountId());
@@ -570,10 +560,6 @@ bool FakeChromeUserManager::IsLoggedInAsGuest() const {
   return false;
 }
 
-bool FakeChromeUserManager::IsLoggedInAsSupervisedUser() const {
-  return false;
-}
-
 bool FakeChromeUserManager::IsLoggedInAsKioskApp() const {
   const user_manager::User* active_user = GetActiveUser();
   return active_user
@@ -609,10 +595,6 @@ bool FakeChromeUserManager::IsUserNonCryptohomeDataEphemeral(
   return current_user_ephemeral_;
 }
 
-bool FakeChromeUserManager::AreSupervisedUsersAllowed() const {
-  return true;
-}
-
 bool FakeChromeUserManager::IsGuestSessionAllowed() const {
   bool is_guest_allowed = false;
   CrosSettings::Get()->GetBoolean(kAccountsPrefAllowGuest, &is_guest_allowed);
@@ -636,8 +618,7 @@ bool FakeChromeUserManager::IsUserAllowed(
   if (user.GetType() == user_manager::USER_TYPE_GUEST &&
       !IsGuestSessionAllowed())
     return false;
-  if (user.GetType() == user_manager::USER_TYPE_SUPERVISED &&
-      !AreSupervisedUsersAllowed())
+  if (user.GetType() == user_manager::USER_TYPE_SUPERVISED)
     return false;
   if (user.HasGaiaAccount() && !IsGaiaUserAllowed(user))
     return false;
@@ -687,10 +668,6 @@ bool FakeChromeUserManager::IsEnterpriseManaged() const {
   return is_enterprise_managed_;
 }
 
-void FakeChromeUserManager::PerformPreUserListLoadingActions() {
-  NOTREACHED();
-}
-
 void FakeChromeUserManager::PerformPostUserListLoadingActions() {
   NOTREACHED();
 }
@@ -717,11 +694,6 @@ void FakeChromeUserManager::KioskAppLoggedIn(user_manager::User* user) {}
 
 void FakeChromeUserManager::PublicAccountUserLoggedIn(
     user_manager::User* user) {
-  NOTREACHED();
-}
-
-void FakeChromeUserManager::SupervisedUserLoggedIn(
-    const AccountId& account_id) {
   NOTREACHED();
 }
 

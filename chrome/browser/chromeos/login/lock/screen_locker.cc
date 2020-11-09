@@ -40,10 +40,8 @@
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
-#include "chrome/browser/chromeos/login/supervised/supervised_user_authentication.h"
 #include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
-#include "chrome/browser/chromeos/login/users/supervised_user_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
@@ -472,25 +470,6 @@ void ScreenLocker::OnPinAttemptDone(const UserContext& user_context,
 
 void ScreenLocker::ContinueAuthenticate(
     const chromeos::UserContext& user_context) {
-  const user_manager::User* user = FindUnlockUser(user_context.GetAccountId());
-  if (user) {
-    // Special case: supervised users. Use special authenticator.
-    if (user->GetType() == user_manager::USER_TYPE_SUPERVISED) {
-      UserContext updated_context = ChromeUserManager::Get()
-                                        ->GetSupervisedUserManager()
-                                        ->GetAuthentication()
-                                        ->TransformKey(user_context);
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              &ExtendedAuthenticator::AuthenticateToCheck,
-              extended_authenticator_.get(), updated_context,
-              base::Bind(&ScreenLocker::OnPasswordAuthSuccess,
-                         weak_factory_.GetWeakPtr(), updated_context)));
-      return;
-    }
-  }
-
   if (user_context.GetAccountId().GetAccountType() ==
           AccountType::ACTIVE_DIRECTORY &&
       user_context.GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {

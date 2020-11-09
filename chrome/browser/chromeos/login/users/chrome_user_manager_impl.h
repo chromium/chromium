@@ -96,7 +96,6 @@ class ChromeUserManagerImpl
   bool CanCurrentUserLock() const override;
   bool IsUserNonCryptohomeDataEphemeral(
       const AccountId& account_id) const override;
-  bool AreSupervisedUsersAllowed() const override;
   bool IsGuestSessionAllowed() const override;
   bool IsGaiaUserAllowed(const user_manager::User& user) const override;
   bool IsUserAllowed(const user_manager::User& user) const override;
@@ -159,7 +158,6 @@ class ChromeUserManagerImpl
   void NotifyOnLogin() override;
   void NotifyUserAddedToSession(const user_manager::User* added_user,
                                 bool user_switch_pending) override;
-  void PerformPreUserListLoadingActions() override;
   void PerformPostUserListLoadingActions() override;
   void PerformPostUserLoggedInActions(bool browser_restart) override;
   void RemoveNonCryptohomeData(const AccountId& account_id) override;
@@ -177,7 +175,6 @@ class ChromeUserManagerImpl
   void RegularUserLoggedInAsEphemeral(
       const AccountId& account_id,
       const user_manager::UserType user_type) override;
-  void SupervisedUserLoggedIn(const AccountId& account_id) override;
 
  private:
   friend class SupervisedUserManagerImpl;
@@ -271,8 +268,6 @@ class ChromeUserManagerImpl
 
   // Cros settings change subscriptions.
   std::unique_ptr<CrosSettings::ObserverSubscription> allow_guest_subscription_;
-  std::unique_ptr<CrosSettings::ObserverSubscription>
-      allow_supervised_user_subscription_;
   std::unique_ptr<CrosSettings::ObserverSubscription> users_subscription_;
 
   std::unique_ptr<CrosSettings::ObserverSubscription>

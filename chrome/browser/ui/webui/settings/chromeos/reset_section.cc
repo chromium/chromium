@@ -43,7 +43,6 @@ const std::vector<SearchConcept>& GetResetSearchConcepts() {
 bool IsPowerwashAllowed() {
   return !webui::IsEnterpriseManaged() &&
          !user_manager::UserManager::Get()->IsLoggedInAsGuest() &&
-         !user_manager::UserManager::Get()->IsLoggedInAsSupervisedUser() &&
          !user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 }
 

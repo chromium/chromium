@@ -25,10 +25,6 @@ bool AreAllUsersAllowed(const user_manager::UserList& users,
   DeviceSettingsProvider::DecodePolicies(device_settings_proto,
                                          &decoded_policies);
 
-  bool supervised_users_allowed = false;
-  decoded_policies.GetBoolean(kAccountsPrefSupervisedUsersEnabled,
-                              &supervised_users_allowed);
-
   bool is_guest_allowed = false;
   decoded_policies.GetBoolean(kAccountsPrefAllowGuest, &is_guest_allowed);
 
@@ -54,7 +50,7 @@ bool AreAllUsersAllowed(const user_manager::UserList& users,
         allow_family_link && user->IsChild();
     const bool is_gaia_user_allowed =
         allow_new_user || is_user_allowlisted || is_allowed_because_family_link;
-    if (!IsUserAllowed(*user, supervised_users_allowed, is_guest_allowed,
+    if (!IsUserAllowed(*user, is_guest_allowed,
                        user->HasGaiaAccount() && is_gaia_user_allowed))
       return false;
   }
@@ -62,7 +58,6 @@ bool AreAllUsersAllowed(const user_manager::UserList& users,
 }
 
 bool IsUserAllowed(const user_manager::User& user,
-                   bool supervised_users_allowed,
                    bool is_guest_allowed,
                    bool is_user_allowlisted) {
   DCHECK(user.GetType() == user_manager::USER_TYPE_REGULAR ||
@@ -73,8 +68,7 @@ bool IsUserAllowed(const user_manager::User& user,
   if (user.GetType() == user_manager::USER_TYPE_GUEST && !is_guest_allowed) {
     return false;
   }
-  if (user.GetType() == user_manager::USER_TYPE_SUPERVISED &&
-      !supervised_users_allowed) {
+  if (user.GetType() == user_manager::USER_TYPE_SUPERVISED) {
     return false;
   }
   if (user.HasGaiaAccount() && !is_user_allowlisted) {

@@ -17,23 +17,13 @@ class PrefRegistrySimple;
 
 namespace chromeos {
 
-class SupervisedUserAuthentication;
-
 // Keys in dictionary with supervised password information.
 extern const char kSchemaVersion[];
 extern const char kPasswordRevision[];
 extern const char kSalt[];
 extern const char kRequirePasswordUpdate[];
 extern const char kHasIncompleteKey[];
-extern const int kMinPasswordRevision;
 
-// Values for these keys are not stored in local state.
-extern const char kEncryptedPassword[];
-extern const char kPasswordSignature[];
-extern const char kPasswordEncryptionKey[];
-extern const char kPasswordSignatureKey[];
-
-extern const char kPasswordUpdateFile[];
 
 // Base class for SupervisedUserManagerImpl - provides a mechanism for getting
 // and setting specific values for supervised users, as well as additional
@@ -45,10 +35,6 @@ class SupervisedUserManager {
 
   SupervisedUserManager() {}
   virtual ~SupervisedUserManager() {}
-
-  // Checks if given user have supervised users on this device.
-
-  virtual bool HasSupervisedUsers(const std::string& manager_id) const = 0;
 
   // Returns sync_user_id for supervised user with `user_id` or empty string if
   // such user is not found or it doesn't have user_id defined.
@@ -70,9 +56,6 @@ class SupervisedUserManager {
   // Otherwise, returns an empty string.
   virtual std::string GetManagerDisplayEmail(
       const std::string& user_id) const = 0;
-
-  // Return object that handles specifics of supervised user authentication.
-  virtual SupervisedUserAuthentication* GetAuthentication() = 0;
 
   // Fill `result` with public password-specific data for `user_id` from Local
   // State.

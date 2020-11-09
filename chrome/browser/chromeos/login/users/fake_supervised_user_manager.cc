@@ -12,11 +12,6 @@ FakeSupervisedUserManager::FakeSupervisedUserManager() {}
 
 FakeSupervisedUserManager::~FakeSupervisedUserManager() {}
 
-bool FakeSupervisedUserManager::HasSupervisedUsers(
-    const std::string& manager_id) const {
-  return false;
-}
-
 std::string FakeSupervisedUserManager::GetUserSyncId(
     const std::string& supervised_user_id) const {
   return std::string();
@@ -35,10 +30,6 @@ std::string FakeSupervisedUserManager::GetManagerUserId(
 std::string FakeSupervisedUserManager::GetManagerDisplayEmail(
     const std::string& supervised_user_id) const {
   return std::string();
-}
-
-SupervisedUserAuthentication* FakeSupervisedUserManager::GetAuthentication() {
-  return NULL;
 }
 
 }  // namespace chromeos

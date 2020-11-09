@@ -68,7 +68,6 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
   // Should be called before any InProcessBrowserTestMixin functions.
   void AppendRegularUsers(int n);
   void AppendManagedUsers(int n);
-  void AppendLegacySupervisedUsers(int n);
 
   explicit LoginManagerMixin(InProcessBrowserTestMixinHost* host);
   LoginManagerMixin(InProcessBrowserTestMixinHost* host,

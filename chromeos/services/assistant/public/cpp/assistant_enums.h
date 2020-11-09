@@ -25,6 +25,8 @@ enum AssistantAllowedState {
   DISALLOWED_BY_LOCALE,
   // Disallowed because current user is not primary user.
   DISALLOWED_BY_NONPRIMARY_USER,
+  // TODO(crbug.com/866790): Remove this value as a part of Supervised users
+  // code cleanup.
   // Disallowed because current user is supervised user.
   DISALLOWED_BY_SUPERVISED_USER,
   // Disallowed because incognito mode.

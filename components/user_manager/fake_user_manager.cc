@@ -266,10 +266,6 @@ bool FakeUserManager::IsLoggedInAsGuest() const {
   return false;
 }
 
-bool FakeUserManager::IsLoggedInAsSupervisedUser() const {
-  return false;
-}
-
 bool FakeUserManager::IsLoggedInAsKioskApp() const {
   const User* active_user = GetActiveUser();
   return active_user ? active_user->GetType() == USER_TYPE_KIOSK_APP : false;
@@ -299,10 +295,6 @@ bool FakeUserManager::IsLoggedInAsStub() const {
 bool FakeUserManager::IsUserNonCryptohomeDataEphemeral(
     const AccountId& account_id) const {
   return false;
-}
-
-bool FakeUserManager::AreSupervisedUsersAllowed() const {
-  return true;
 }
 
 bool FakeUserManager::IsGuestSessionAllowed() const {

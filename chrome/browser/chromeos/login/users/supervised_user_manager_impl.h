@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/supervised/supervised_user_authentication.h"
 #include "chrome/browser/chromeos/login/users/supervised_user_manager.h"
 
 namespace chromeos {
@@ -23,13 +22,11 @@ class SupervisedUserManagerImpl : public SupervisedUserManager {
  public:
   ~SupervisedUserManagerImpl() override;
 
-  bool HasSupervisedUsers(const std::string& manager_id) const override;
   std::string GetUserSyncId(const std::string& user_id) const override;
   base::string16 GetManagerDisplayName(
       const std::string& user_id) const override;
   std::string GetManagerUserId(const std::string& user_id) const override;
   std::string GetManagerDisplayEmail(const std::string& user_id) const override;
-  SupervisedUserAuthentication* GetAuthentication() override;
   void GetPasswordInformation(const std::string& user_id,
                               base::DictionaryValue* result) override;
   void SetPasswordInformation(
@@ -43,16 +40,12 @@ class SupervisedUserManagerImpl : public SupervisedUserManager {
 
   explicit SupervisedUserManagerImpl(ChromeUserManagerImpl* owner);
 
-  // Returns true if there is non-committed user creation transaction.
-  bool HasFailedUserCreationTransaction();
-
-  // Attempts to clean up data that could be left from failed user creation.
-  void RollbackUserCreationTransaction();
-
   void RemoveNonCryptohomeData(const std::string& user_id);
 
   bool CheckForFirstRun(const std::string& user_id);
 
+  // TODO(crbug.com/866790): Check it is not used anymore and remove it with
+  // all dependencies.
   // Update name if this user is manager of some managed users.
   void UpdateManagerName(const std::string& manager_id,
                          const base::string16& new_display_name);
@@ -87,8 +80,6 @@ class SupervisedUserManagerImpl : public SupervisedUserManager {
 
   // Interface to the signed settings store.
   CrosSettings* cros_settings_;
-
-  std::unique_ptr<SupervisedUserAuthentication> authentication_;
 
   DISALLOW_COPY_AND_ASSIGN(SupervisedUserManagerImpl);
 };

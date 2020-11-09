@@ -409,8 +409,6 @@ class ExistingUserController : public LoginDisplay::Delegate,
       show_user_names_subscription_;
   std::unique_ptr<CrosSettings::ObserverSubscription>
       allow_new_user_subscription_;
-  std::unique_ptr<CrosSettings::ObserverSubscription>
-      allow_supervised_user_subscription_;
   std::unique_ptr<CrosSettings::ObserverSubscription> allow_guest_subscription_;
   std::unique_ptr<CrosSettings::ObserverSubscription> users_subscription_;
   std::unique_ptr<CrosSettings::ObserverSubscription>

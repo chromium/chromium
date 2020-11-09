@@ -106,13 +106,6 @@ std::unique_ptr<ash::UserSession> UserToUserSession(const User& user) {
             IDR_LOGIN_DEFAULT_USER);
   }
 
-  if (user.IsSupervised()) {
-    SupervisedUserService* service =
-        SupervisedUserServiceFactory::GetForProfile(profile);
-    session->custodian_email = service->GetCustodianEmailAddress();
-    session->second_custodian_email = service->GetSecondCustodianEmailAddress();
-  }
-
   chromeos::UserFlow* const user_flow =
       chromeos::ChromeUserManager::Get()->GetUserFlow(user.GetAccountId());
   session->should_enable_settings = user_flow->ShouldEnableSettings();

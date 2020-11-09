@@ -34,7 +34,6 @@ bool g_instance_created = false;
 
 constexpr char kGmailDomain[] = "@gmail.com";
 constexpr char kManagedDomain[] = "@example.com";
-constexpr char kLegacySupervisedDomain[] = "@locally-managed.localhost";
 
 void AppendUsers(LoginManagerMixin::UserList* users,
                  const std::string& domain,
@@ -64,10 +63,6 @@ void LoginManagerMixin::AppendRegularUsers(int n) {
 
 void LoginManagerMixin::AppendManagedUsers(int n) {
   AppendUsers(&initial_users_, kManagedDomain, n);
-}
-
-void LoginManagerMixin::AppendLegacySupervisedUsers(int n) {
-  AppendUsers(&initial_users_, kLegacySupervisedDomain, n);
 }
 
 LoginManagerMixin::LoginManagerMixin(InProcessBrowserTestMixinHost* host)

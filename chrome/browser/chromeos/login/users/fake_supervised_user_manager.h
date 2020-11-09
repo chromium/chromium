@@ -17,13 +17,11 @@ class FakeSupervisedUserManager : public SupervisedUserManager {
   FakeSupervisedUserManager();
   ~FakeSupervisedUserManager() override;
 
-  bool HasSupervisedUsers(const std::string& manager_id) const override;
   std::string GetUserSyncId(const std::string& user_id) const override;
   base::string16 GetManagerDisplayName(
       const std::string& user_id) const override;
   std::string GetManagerUserId(const std::string& user_id) const override;
   std::string GetManagerDisplayEmail(const std::string& user_id) const override;
-  SupervisedUserAuthentication* GetAuthentication() override;
   void GetPasswordInformation(const std::string& user_id,
                               base::DictionaryValue* result) override {}
   void SetPasswordInformation(

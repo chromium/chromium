@@ -55,14 +55,6 @@ class ChromeLoginPerformer : public LoginPerformer {
                                const std::string& refresh_token,
                                base::OnceClosure success_callback,
                                base::OnceClosure failure_callback) override;
-  bool AreSupervisedUsersAllowed() override;
-
-  bool UseExtendedAuthenticatorForSupervisedUser(
-      const UserContext& user_context) override;
-
-  UserContext TransformSupervisedKey(const UserContext& context) override;
-
-  void SetupSupervisedUserFlow(const AccountId& account_id) override;
 
   void SetupEasyUnlockUserFlow(const AccountId& account_id) override;
 

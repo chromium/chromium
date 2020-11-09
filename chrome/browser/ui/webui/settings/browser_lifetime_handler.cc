@@ -106,7 +106,6 @@ void BrowserLifetimeHandler::HandleFactoryReset(
   bool allow_powerwash =
       !webui::IsEnterpriseManaged() &&
       !user_manager::UserManager::Get()->IsLoggedInAsGuest() &&
-      !user_manager::UserManager::Get()->IsLoggedInAsSupervisedUser() &&
       !user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 
   if (!allow_powerwash)

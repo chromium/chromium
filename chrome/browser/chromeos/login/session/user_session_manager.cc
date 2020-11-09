@@ -308,10 +308,6 @@ bool NeedRestartToApplyPerSessionFlags(
   if (user_manager::UserManager::Get()->GetLoggedInUsers().size() != 1)
     return false;
 
-  // Only restart if needed and if not going into managed mode.
-  if (user_manager::UserManager::Get()->IsLoggedInAsSupervisedUser())
-    return false;
-
   auto* current_command_line = base::CommandLine::ForCurrentProcess();
   if (about_flags::AreSwitchesIdenticalToCurrentCommandLine(
           user_flags, *current_command_line, out_command_line_difference)) {
@@ -1275,14 +1271,7 @@ void UserSessionManager::InitProfilePreferences(
     }
   }
 
-  if (user_manager->IsLoggedInAsSupervisedUser()) {
-    user_manager::User* active_user = user_manager->GetActiveUser();
-    std::string supervised_user_sync_id =
-        ChromeUserManager::Get()->GetSupervisedUserManager()->GetUserSyncId(
-            active_user->GetAccountId().GetUserEmail());
-    profile->GetPrefs()->SetString(::prefs::kSupervisedUserId,
-                                   supervised_user_sync_id);
-  } else if (user_manager->IsLoggedInAsUserWithGaiaAccount()) {
+  if (user_manager->IsLoggedInAsUserWithGaiaAccount()) {
     // Get the Gaia ID from the user context. This may not be available when
     // unlocking a previously opened profile, or when creating a supervised
     // user. However, in these cases the gaia_id should be already available in
@@ -1440,15 +1429,6 @@ void UserSessionManager::UserProfileInitialized(Profile* profile,
   // to turn on OS sync in OOBE, so they get the default sync pref values.
   if (!IsNewProfile(profile))
     os_sync_util::MigrateOsSyncPreferences(profile->GetPrefs());
-
-  // http://crbug/866790: After Supervised Users are deprecated, remove this.
-  bool is_supervised_user =
-      user_manager::UserManager::Get()->IsLoggedInAsSupervisedUser();
-  bool is_manager =
-      ChromeUserManager::Get()->GetSupervisedUserManager()->HasSupervisedUsers(
-          account_id.GetUserEmail());
-  if (is_manager || is_supervised_user)
-    ShowSupervisedUserDeprecationNotification(profile, is_manager);
 
   // Demo user signed in.
   if (is_incognito_profile) {

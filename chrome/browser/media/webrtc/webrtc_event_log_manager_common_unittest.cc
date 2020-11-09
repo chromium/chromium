@@ -701,9 +701,6 @@ TEST_P(DoesProfileDefaultToLoggingEnabledForUserTypeParametrizedTest,
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
       fake_user_manager_->AddPublicAccountUser(account_id);
       break;
-    case user_manager::USER_TYPE_SUPERVISED:
-      fake_user_manager_->AddSupervisedUser(account_id);
-      break;
     case user_manager::USER_TYPE_KIOSK_APP:
       fake_user_manager_->AddKioskAppUser(account_id);
       break;
@@ -740,7 +737,6 @@ INSTANTIATE_TEST_CASE_P(
             {user_manager::USER_TYPE_REGULAR, true},
             {user_manager::USER_TYPE_GUEST, false},
             {user_manager::USER_TYPE_PUBLIC_ACCOUNT, false},
-            {user_manager::USER_TYPE_SUPERVISED, false},
             {user_manager::USER_TYPE_KIOSK_APP, false},
             {user_manager::USER_TYPE_CHILD, false},
             {user_manager::USER_TYPE_ARC_KIOSK_APP, false},

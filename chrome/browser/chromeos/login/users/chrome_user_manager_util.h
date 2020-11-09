@@ -24,7 +24,6 @@ bool AreAllUsersAllowed(const user_manager::UserList& users,
 // Accepted user types: USER_TYPE_REGULAR, USER_TYPE_GUEST,
 // USER_TYPE_SUPERVISED, USER_TYPE_CHILD.
 bool IsUserAllowed(const user_manager::User& user,
-                   bool supervised_users_allowed,
                    bool is_guest_allowed,
                    bool is_user_allowlisted);
 

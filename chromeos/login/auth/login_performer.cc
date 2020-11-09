@@ -166,51 +166,10 @@ void LoginPerformer::DoPerformLogin(const UserContext& user_context,
 }
 
 void LoginPerformer::LoginAsSupervisedUser(const UserContext& user_context) {
-  DCHECK_EQ(
-      user_manager::kSupervisedUserDomain,
-      gaia::ExtractDomainName(user_context.GetAccountId().GetUserEmail()));
-
-  user_context_ = user_context;
-  if (user_context_.GetUserType() != user_manager::USER_TYPE_SUPERVISED) {
-    LOG(FATAL) << "Incorrect supervised user type "
-               << user_context_.GetUserType();
-  }
-
-  if (RunTrustedCheck(
-          base::BindOnce(&LoginPerformer::TrustedLoginAsSupervisedUser,
-                         weak_factory_.GetWeakPtr(), user_context_))) {
-    return;
-  }
-  TrustedLoginAsSupervisedUser(user_context_);
-}
-
-void LoginPerformer::TrustedLoginAsSupervisedUser(
-    const UserContext& user_context) {
-  if (!AreSupervisedUsersAllowed()) {
-    LOG(ERROR) << "Login attempt of supervised user detected.";
-    delegate_->AllowlistCheckFailed(user_context.GetAccountId().GetUserEmail());
-    return;
-  }
-
-  SetupSupervisedUserFlow(user_context.GetAccountId());
-  UserContext user_context_copy = TransformSupervisedKey(user_context);
-
-  if (UseExtendedAuthenticatorForSupervisedUser(user_context)) {
-    EnsureExtendedAuthenticator();
-    // TODO(antrim) : Replace empty callback with explicit method.
-    // http://crbug.com/351268
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ExtendedAuthenticator::AuthenticateToMount,
-                       extended_authenticator_.get(), user_context_copy,
-                       ExtendedAuthenticator::ResultCallback()));
-
-  } else {
-    EnsureAuthenticator();
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&Authenticator::LoginAsSupervisedUser,
-                                  authenticator_.get(), user_context_copy));
-  }
+  // TODO(crbug.com/866790): remove this method as a part of further clean-up.
+  LOG(ERROR) << "Login attempt of supervised user detected.";
+  delegate_->AllowlistCheckFailed(user_context.GetAccountId().GetUserEmail());
+  return;
 }
 
 void LoginPerformer::LoginAsPublicSession(const UserContext& user_context) {

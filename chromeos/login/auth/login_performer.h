@@ -74,6 +74,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginPerformer
   void PerformLogin(const UserContext& user_context,
                     AuthorizationMode auth_mode);
 
+  // TODO(crbug.com/866790): Check it is not used anymore and remove it.
   // Performs supervised user login with a given |user_context|.
   void LoginAsSupervisedUser(const UserContext& user_context);
 
@@ -155,21 +156,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginPerformer
                                        base::OnceClosure success_callback,
                                        base::OnceClosure failure_callback) = 0;
 
-  // Supervised users-related methods.
-
-  // Check if supervised users are allowed on this device.
-  virtual bool AreSupervisedUsersAllowed() = 0;
-
-  // Check which authenticator should be used for supervised user.
-  virtual bool UseExtendedAuthenticatorForSupervisedUser(
-      const UserContext& user_context) = 0;
-
-  // Probably transform supervised user's authentication key.
-  virtual UserContext TransformSupervisedKey(const UserContext& context) = 0;
-
-  // Set up sign-in flow for supervised user.
-  virtual void SetupSupervisedUserFlow(const AccountId& account_id) = 0;
-
   // Set up sign-in flow for Easy Unlock.
   virtual void SetupEasyUnlockUserFlow(const AccountId& account_id) = 0;
 
@@ -203,10 +189,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginPerformer
   // Makes sure that authenticator is created.
   void EnsureAuthenticator();
   void EnsureExtendedAuthenticator();
-
-  // Actual implementation of LoginAsSupervisedUser that is run after trusted
-  // values check.
-  void TrustedLoginAsSupervisedUser(const UserContext& user_context);
 
   // Actual implementantion of PeformLogin that is run after trusted values
   // check.

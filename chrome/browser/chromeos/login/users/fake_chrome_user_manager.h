@@ -34,7 +34,6 @@ class FakeChromeUserManager : public ChromeUserManager {
   user_manager::User* AddKioskAppUser(const AccountId& account_id);
   user_manager::User* AddArcKioskAppUser(const AccountId& account_id);
   user_manager::User* AddWebKioskAppUser(const AccountId& account_id);
-  user_manager::User* AddSupervisedUser(const AccountId& account_id);
   user_manager::User* AddPublicAccountUser(const AccountId& account_id);
   user_manager::User* AddActiveDirectoryUser(const AccountId& account_id);
 
@@ -114,7 +113,6 @@ class FakeChromeUserManager : public ChromeUserManager {
   bool IsLoggedInAsChildUser() const override;
   bool IsLoggedInAsPublicAccount() const override;
   bool IsLoggedInAsGuest() const override;
-  bool IsLoggedInAsSupervisedUser() const override;
   bool IsLoggedInAsKioskApp() const override;
   bool IsLoggedInAsArcKioskApp() const override;
   bool IsLoggedInAsWebKioskApp() const override;
@@ -122,7 +120,6 @@ class FakeChromeUserManager : public ChromeUserManager {
   bool IsLoggedInAsStub() const override;
   bool IsUserNonCryptohomeDataEphemeral(
       const AccountId& account_id) const override;
-  bool AreSupervisedUsersAllowed() const override;
   bool IsGuestSessionAllowed() const override;
   bool IsGaiaUserAllowed(const user_manager::User& user) const override;
   bool IsUserAllowed(const user_manager::User& user) const override;
@@ -151,7 +148,6 @@ class FakeChromeUserManager : public ChromeUserManager {
       user_manager::User::OAuthTokenStatus status) const override;
   void LoadDeviceLocalAccounts(std::set<AccountId>* users_set) override;
   bool IsEnterpriseManaged() const override;
-  void PerformPreUserListLoadingActions() override;
   void PerformPostUserListLoadingActions() override;
   void PerformPostUserLoggedInActions(bool browser_restart) override;
   bool IsDemoApp(const AccountId& account_id) const override;
@@ -160,7 +156,6 @@ class FakeChromeUserManager : public ChromeUserManager {
   void DemoAccountLoggedIn() override;
   void KioskAppLoggedIn(user_manager::User* user) override;
   void PublicAccountUserLoggedIn(user_manager::User* user) override;
-  void SupervisedUserLoggedIn(const AccountId& account_id) override;
   void OnUserRemoved(const AccountId& account_id) override;
   void SetOwnerId(const AccountId& account_id) override;
 

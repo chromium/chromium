@@ -54,6 +54,9 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) ExtendedAuthenticator
   // Updates consumer of the class.
   virtual void SetConsumer(AuthStatusConsumer* consumer) = 0;
 
+  // TODO(crbug.com/866790): Following method was only used for supervised
+  // users authentication. Check if there is a reason to keep it and remove it.
+
   // This call will attempt to mount the home dir for the user, key (and key
   // label) in |context|. If the key is of type KEY_TYPE_PASSWORD_PLAIN, it will
   // be hashed with the system salt before being passed to cryptohomed. This

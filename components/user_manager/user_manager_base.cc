@@ -88,10 +88,6 @@ UserType GetStoredUserType(const base::DictionaryValue* prefs_user_types,
 
 }  // namespace
 
-// Feature that hides Supervised Users.
-const base::Feature kHideSupervisedUsers{"HideSupervisedUsers",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
 // static
 void UserManagerBase::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kRegularUsersPref);
@@ -199,7 +195,7 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
         break;
 
       case USER_TYPE_SUPERVISED:
-        SupervisedUserLoggedIn(account_id);
+        NOTREACHED() << "Supervised users are not supported anymore";
         break;
 
       case USER_TYPE_KIOSK_APP:
@@ -342,13 +338,6 @@ void UserManagerBase::RemoveUserFromList(const AccountId& account_id) {
     // to the account_id in the User object.
     DeleteUser(
         RemoveRegularOrSupervisedUserFromList(account_id, true /* notify */));
-  } else if (user_loading_stage_ == STAGE_LOADING) {
-    DCHECK(IsSupervisedAccountId(account_id));
-    // Special case, removing partially-constructed supervised user during user
-    // list loading.
-    ListPrefUpdate users_update(GetLocalState(), kRegularUsersPref);
-    users_update->Remove(base::Value(account_id.GetUserEmail()), nullptr);
-    OnUserRemoved(account_id);
   } else {
     NOTREACHED() << "Users are not loaded yet.";
     return;
@@ -598,11 +587,6 @@ bool UserManagerBase::IsLoggedInAsGuest() const {
   return IsUserLoggedIn() && active_user_->GetType() == USER_TYPE_GUEST;
 }
 
-bool UserManagerBase::IsLoggedInAsSupervisedUser() const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
-  return IsUserLoggedIn() && active_user_->GetType() == USER_TYPE_SUPERVISED;
-}
-
 bool UserManagerBase::IsLoggedInAsKioskApp() const {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
   return IsUserLoggedIn() && active_user_->GetType() == USER_TYPE_KIOSK_APP;
@@ -740,10 +724,8 @@ void UserManagerBase::NotifyUsersSignInConstraintsChanged() {
 }
 
 bool UserManagerBase::CanUserBeRemoved(const User* user) const {
-  // Only regular and supervised users are allowed to be manually removed.
-  if (!user ||
-      !(user->HasGaiaAccount() || user->IsSupervised() ||
-        user->IsActiveDirectoryUser()))
+  // Only regular users are allowed to be manually removed.
+  if (!user || !(user->HasGaiaAccount() || user->IsActiveDirectoryUser()))
     return false;
 
   // Sanity check: we must not remove single user unless it's an enterprise
@@ -800,8 +782,6 @@ void UserManagerBase::EnsureUsersLoaded() {
     return;
   user_loading_stage_ = STAGE_LOADING;
 
-  PerformPreUserListLoadingActions();
-
   PrefService* local_state = GetLocalState();
   const base::ListValue* prefs_regular_users =
       local_state->GetList(kRegularUsersPref);
@@ -826,15 +806,10 @@ void UserManagerBase::EnsureUsersLoaded() {
                 &regular_users_set);
   for (std::vector<AccountId>::const_iterator it = regular_users.begin();
        it != regular_users.end(); ++it) {
-    User* user = nullptr;
-    if (IsSupervisedAccountId(*it)) {
-      if (base::FeatureList::IsEnabled(kHideSupervisedUsers))
-        continue;
-      user = User::CreateSupervisedUser(*it);
-    } else {
-      user = User::CreateRegularUser(*it,
-                                     GetStoredUserType(prefs_user_types, *it));
-    }
+    if (IsSupervisedAccountId(*it))
+      continue;
+    User* user =
+        User::CreateRegularUser(*it, GetStoredUserType(prefs_user_types, *it));
     user->set_oauth_token_status(LoadUserOAuthStatus(*it));
     user->set_force_online_signin(LoadForceOnlineSignin(*it));
     user->set_using_saml(known_user::IsUsingSAML(*it));
@@ -1034,8 +1009,7 @@ User* UserManagerBase::RemoveRegularOrSupervisedUserFromList(
       user = *it;
       it = users_.erase(it);
     } else {
-      if ((*it)->HasGaiaAccount() || (*it)->IsSupervised() ||
-          (*it)->IsActiveDirectoryUser()) {
+      if ((*it)->HasGaiaAccount() || (*it)->IsActiveDirectoryUser()) {
         const std::string user_email = (*it)->GetAccountId().GetUserEmail();
         prefs_users_update->AppendString(user_email);
       }

@@ -278,9 +278,6 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns true if we're logged in as a Guest.
   virtual bool IsLoggedInAsGuest() const = 0;
 
-  // Returns true if we're logged in as a legacy supervised user.
-  virtual bool IsLoggedInAsSupervisedUser() const = 0;
-
   // Returns true if we're logged in as a kiosk app.
   virtual bool IsLoggedInAsKioskApp() const = 0;
 
@@ -319,9 +316,6 @@ class USER_MANAGER_EXPORT UserManager {
       const User& user,
       const gfx::ImageSkia& profile_image) = 0;
   virtual void NotifyUsersSignInConstraintsChanged() = 0;
-
-  // Returns true if supervised users allowed.
-  virtual bool AreSupervisedUsersAllowed() const = 0;
 
   // Returns true if guest user is allowed.
   virtual bool IsGuestSessionAllowed() const = 0;
@@ -362,6 +356,7 @@ class USER_MANAGER_EXPORT UserManager {
   virtual bool IsStubAccountId(const AccountId& account_id) const = 0;
 
   // Returns true if |account_id| is supervised.
+  // TODO(crbug.com/866790): Check it is not used anymore and remove it.
   virtual bool IsSupervisedAccountId(const AccountId& account_id) const = 0;
 
   virtual bool IsDeviceLocalAccountMarkedForRemoval(
