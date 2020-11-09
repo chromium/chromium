@@ -19,4 +19,8 @@ const base::Feature kRestoreGaiaCookiesIfDeleted{
 const char kDelayThresholdMinutesToUpdateGaiaCookie[] =
     "minutes-delay-to-restore-gaia-cookies-if-deleted";
 
+const base::Feature kSigninNotificationInfobarUsernameInTitle{
+    "SigninNotificationInfobarUsernameInTitle",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace signin

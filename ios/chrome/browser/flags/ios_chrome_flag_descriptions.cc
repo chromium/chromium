@@ -271,6 +271,12 @@ const char kInfobarUIRebootOnlyiOS13Name[] = "Infobar UI Reboot iOS13";
 const char kInfobarUIRebootOnlyiOS13Description[] =
     "When enabled, Infobar will use the new UI only on iOS13";
 
+const char kSigninNotificationInfobarUsernameInTitleName[] =
+    "Sign-in notification infobar title";
+const char kSigninNotificationInfobarUsernameInTitleDescription[] =
+    "When enabled, uses the authenticated user's full name in the infobar "
+    "title.";
+
 const char kInProductHelpDemoModeName[] = "In-Product Help Demo Mode";
 const char kInProductHelpDemoModeDescription[] =
     "When enabled, in-product help promotions occur exactly once per cold "
