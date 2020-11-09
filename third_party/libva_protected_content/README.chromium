@@ -1,0 +1,15 @@
+Name: Protected Content Interface for libva
+Short Name: libva_protected_content
+Version: 2.9.0
+Date: 2020-11-02
+License: MIT
+License File: LICENSE
+Security Critical: no
+
+Description:
+This contains a header file supplied by Intel that is used for protected content
+functionality with libva. All the functional pieces are contained within libva
+and the corresponding driver implementation beneath libva. The entrypoints,
+attributes and buffers defined here are passed through by libva to the driver
+implementation which utilizes these as part of a closed source implementation
+for Chrome OS for playing back protected content.
