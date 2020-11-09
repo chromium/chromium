@@ -368,6 +368,14 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     DCHECK(CanEnterOverview());
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "OverviewController::EnterOverview",
                                       this);
+    auto* active_window = window_util::GetActiveWindow();
+    if (active_window) {
+      auto* active_widget =
+          views::Widget::GetWidgetForNativeView(active_window);
+      if (active_widget)
+        paint_as_active_lock_ = active_widget->LockPaintAsActive();
+    }
+
     Shell::Get()->frame_throttling_controller()->StartThrottling(windows);
 
     // Clear any animations that may be running from last overview end.
@@ -517,15 +525,18 @@ void OverviewController::OnStartingAnimationComplete(bool canceled) {
 }
 
 void OverviewController::OnEndingAnimationComplete(bool canceled) {
-  // Unblur when animation is completed (or right away if there was no
-  // delayed animation) unless it's canceled, in which case, we should keep
-  // the blur.
-  if (!canceled)
-    overview_wallpaper_controller_->Unblur();
-
   for (auto& observer : observers_)
     observer.OnOverviewModeEndingAnimationComplete(canceled);
   UnpauseOcclusionTracker(occlusion_pause_duration_for_end_);
+
+  // Unblur when animation is completed (or right away if there was no
+  // delayed animation) unless it's canceled, in which case, we should keep
+  // the blur. Also resume the activation frame state.
+  if (!canceled) {
+    overview_wallpaper_controller_->Unblur();
+    paint_as_active_lock_.reset();
+  }
+
   TRACE_EVENT_NESTABLE_ASYNC_END1("ui", "OverviewController::ExitOverview",
                                   this, "canceled", canceled);
 }
