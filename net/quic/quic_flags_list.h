@@ -281,7 +281,7 @@ QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_enable_aead_limits, true)
 // asynchronously.
 QUIC_FLAG(
     FLAGS_quic_reloadable_flag_quic_process_undecryptable_packets_after_async_decrypt_callback,
-    false)
+    true)
 
 // When true, QUIC server will send version negotiation packets even if the
 // original connection ID was under 64bits in length.
@@ -328,3 +328,8 @@ QUIC_FLAG(
 
 // If true, use ScopedEncryptionLevelContext when sending data.
 QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_use_encryption_level_context, false)
+
+// If true, replace std::deque with circular_deque for unacked_packets.
+QUIC_FLAG(
+    FLAGS_quic_reloadable_flag_quic_use_circular_deque_for_unacked_packets,
+    false)
