@@ -6409,8 +6409,16 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, NavigateTo304) {
 
 // Ensure that we do not corrupt a NavigationEntry's PageState if two forward
 // navigations compete in different frames.  See https://crbug.com/623319.
+// Currently flaking on Android and Mac, see https://crubug.com/1101292.
+#if defined(OS_ANDROID) || defined(OS_MAC)
+#define MAYBE_PageStateAfterForwardInCompetingFrames \
+  DISABLED_PageStateAfterForwardInCompetingFrames
+#else
+#define MAYBE_PageStateAfterForwardInCompetingFrames \
+  PageStateAfterForwardInCompetingFrames
+#endif
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       PageStateAfterForwardInCompetingFrames) {
+                       MAYBE_PageStateAfterForwardInCompetingFrames) {
   // Navigate to a page with an iframe.
   GURL url_a(embedded_test_server()->GetURL(
       "/navigation_controller/page_with_data_iframe.html"));
