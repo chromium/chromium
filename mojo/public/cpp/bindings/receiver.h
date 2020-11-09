@@ -185,9 +185,9 @@ class Receiver {
   }
 
   // Sets the message filter to be notified of each incoming message before
-  // dispatch. If a filter returns |false| from Accept(), the message is not
-  // dispatched and the pipe is closed. Filters cannot be removed once added
-  // and only one can be set.
+  // dispatch. If a filter returns |false| from WillDispatch(), the message is
+  // not dispatched and the pipe is closed. Filters cannot be removed once
+  // added and only one can be set.
   void SetFilter(std::unique_ptr<MessageFilter> filter) {
     DCHECK(is_bound());
     internal_state_.SetFilter(std::move(filter));
