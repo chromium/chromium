@@ -195,26 +195,11 @@ void RecordGetCharacteristicsCharacteristic(
     blink::mojom::WebBluetoothGATTQueryQuantity quantity,
     const base::Optional<device::BluetoothUUID>& characteristic);
 
-// There should be a call to this function whenever
-// RemoteServiceGetDescriptorsCallback is run.
-// Pass blink::mojom::WebBluetoothGATTQueryQuantity::SINGLE for
-// getDescriptor.
-// Pass blink::mojom::WebBluetoothGATTQueryQuantity::MULTIPLE for
-// getDescriptors.
-void RecordGetDescriptorsOutcome(
-    blink::mojom::WebBluetoothGATTQueryQuantity quantity,
-    UMAGetDescriptorOutcome outcome);
-
 // Records the outcome of the cache query for getDescriptors. Should only be
 // called if QueryCacheForService fails.
 void RecordGetDescriptorsOutcome(
     blink::mojom::WebBluetoothGATTQueryQuantity quantity,
     CacheQueryOutcome outcome);
-
-// Records the UUID of the descriptor used when calling getDescriptor.
-void RecordGetDescriptorsDescriptor(
-    blink::mojom::WebBluetoothGATTQueryQuantity quantity,
-    const base::Optional<device::BluetoothUUID>& descriptor);
 
 // GATT Operations Metrics
 
@@ -286,26 +271,6 @@ void RecordStartNotificationsOutcome(UMAGATTOperationOutcome outcome);
 // Records the outcome of a cache query for startNotifications. Should only be
 // called if QueryCacheForCharacteristic fails.
 void RecordStartNotificationsOutcome(CacheQueryOutcome outcome);
-
-// Descriptor.readValue() Metrics
-// There should be a call to this function for every call to
-// Send(BluetoothMsg_ReadDescriptorValueSuccess) and
-// Send(BluetoothMsg_ReadDescriptorValueError).
-void RecordDescriptorReadValueOutcome(UMAGATTOperationOutcome error);
-
-// Records the outcome of a cache query for readValue. Should only be called if
-// QueryCacheForDescriptor fails.
-void RecordDescriptorReadValueOutcome(CacheQueryOutcome outcome);
-
-// Descriptor.writeValue() Metrics
-// There should be a call to this function for every call to
-// Send(BluetoothMsg_ReadDescriptorValueSuccess) and
-// Send(BluetoothMsg_ReadDescriptorValueError).
-void RecordDescriptorWriteValueOutcome(UMAGATTOperationOutcome error);
-
-// Records the outcome of a cache query for writeValue. Should only be called if
-// QueryCacheForDescriptor fails.
-void RecordDescriptorWriteValueOutcome(CacheQueryOutcome outcome);
 
 enum class UMARSSISignalStrengthLevel {
   LESS_THAN_OR_EQUAL_TO_MIN_RSSI,

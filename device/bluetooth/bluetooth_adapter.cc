@@ -641,22 +641,6 @@ void BluetoothAdapter::RemoveTimedOutDevices() {
 }
 
 // static
-void BluetoothAdapter::RecordBluetoothDiscoverySessionStartOutcome(
-    UMABluetoothDiscoverySessionOutcome outcome) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Bluetooth.DiscoverySession.Start.Outcome", static_cast<int>(outcome),
-      static_cast<int>(UMABluetoothDiscoverySessionOutcome::COUNT));
-}
-
-// static
-void BluetoothAdapter::RecordBluetoothDiscoverySessionStopOutcome(
-    UMABluetoothDiscoverySessionOutcome outcome) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Bluetooth.DiscoverySession.Stop.Outcome", static_cast<int>(outcome),
-      static_cast<int>(UMABluetoothDiscoverySessionOutcome::COUNT));
-}
-
-// static
 constexpr base::TimeDelta BluetoothAdapter::timeoutSec =
     base::TimeDelta::FromSeconds(180);
 

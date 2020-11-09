@@ -197,6 +197,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.DiscoverySession.Start.Outcome"
     enum="BluetoothDiscoveryOutcomes" expires_after="M85">
+  <obsolete>
+    Removed 2020/11/05. crbug.com/1088659
+  </obsolete>
   <owner>odejesush@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
@@ -242,6 +245,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.PairingResult" enum="BluetoothPairingResult"
     expires_after="M85">
+  <obsolete>
+    Removed 2020/11/05. crbug.com/1088659
+  </obsolete>
   <owner>adlr@chromium.org</owner>
   <summary>
     Records the result of pairing each Bluetooth Device. Used to understand
@@ -262,6 +268,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.Blocklist.ParsedNonEmptyString"
     enum="BooleanSuccess" expires_after="M85">
+  <obsolete>
+    Removed 2020/11/05. crbug.com/1088659
+  </obsolete>
   <owner>odejesush@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
@@ -360,6 +369,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.Descriptor.ReadValue.Outcome"
     enum="WebBluetoothGATTOperationOutcome" expires_after="M85">
+  <obsolete>
+    Removed 2020/11/05. crbug.com/1088659
+  </obsolete>
   <owner>odejesush@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
@@ -373,6 +385,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.Descriptor.WriteValue.Outcome"
     enum="WebBluetoothGATTOperationOutcome" expires_after="M85">
+  <obsolete>
+    Removed 2020/11/05. crbug.com/1088659
+  </obsolete>
   <owner>odejesush@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
@@ -398,6 +413,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.GetCharacteristic.Outcome"
     enum="WebBluetoothGetCharacteristicOutcome" expires_after="2021-01-31">
+  <obsolete>
+    Removed 2020/11/05. crbug.com/1088659
+  </obsolete>
   <owner>odejesush@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
@@ -422,6 +440,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.GetCharacteristics.Outcome"
     enum="WebBluetoothGetCharacteristicOutcome" expires_after="M85">
+  <obsolete>
+    Removed 2020/11/05. crbug.com/1088659
+  </obsolete>
   <owner>odejesush@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
@@ -434,6 +455,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.GetDescriptor.Descriptor"
     enum="GATTDescriptorHash" expires_after="M85">
+  <obsolete>
+    Removed 2020/11/05. crbug.com/1088659
+  </obsolete>
   <owner>odejesush@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
@@ -446,6 +470,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.GetDescriptor.Outcome"
     enum="WebBluetoothGetDescriptorOutcome" expires_after="M85">
+  <obsolete>
+    Removed 2020/11/05. crbug.com/1088659
+  </obsolete>
   <owner>odejesush@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
@@ -458,6 +485,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.GetDescriptors.Descriptor"
     enum="GATTDescriptorHash" expires_after="M85">
+  <obsolete>
+    Removed 2020/11/05. crbug.com/1088659
+  </obsolete>
   <owner>odejesush@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
@@ -470,6 +500,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.GetDescriptors.Outcome"
     enum="WebBluetoothGetDescriptorOutcome" expires_after="M85">
+  <obsolete>
+    Removed 2020/11/05. crbug.com/1088659
+  </obsolete>
   <owner>odejesush@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>

@@ -102,38 +102,6 @@ void ParseModalias(const dbus::ObjectPath& object_path,
     *device_id = device_value;
 }
 
-void RecordPairingResult(BluetoothDevice::ConnectErrorCode error_code) {
-  UMAPairingResult pairing_result;
-  switch (error_code) {
-    case BluetoothDevice::ERROR_INPROGRESS:
-      pairing_result = UMA_PAIRING_RESULT_INPROGRESS;
-      break;
-    case BluetoothDevice::ERROR_FAILED:
-      pairing_result = UMA_PAIRING_RESULT_FAILED;
-      break;
-    case BluetoothDevice::ERROR_AUTH_FAILED:
-      pairing_result = UMA_PAIRING_RESULT_AUTH_FAILED;
-      break;
-    case BluetoothDevice::ERROR_AUTH_CANCELED:
-      pairing_result = UMA_PAIRING_RESULT_AUTH_CANCELED;
-      break;
-    case BluetoothDevice::ERROR_AUTH_REJECTED:
-      pairing_result = UMA_PAIRING_RESULT_AUTH_REJECTED;
-      break;
-    case BluetoothDevice::ERROR_AUTH_TIMEOUT:
-      pairing_result = UMA_PAIRING_RESULT_AUTH_TIMEOUT;
-      break;
-    case BluetoothDevice::ERROR_UNSUPPORTED_DEVICE:
-      pairing_result = UMA_PAIRING_RESULT_UNSUPPORTED_DEVICE;
-      break;
-    default:
-      pairing_result = UMA_PAIRING_RESULT_UNKNOWN_ERROR;
-  }
-
-  UMA_HISTOGRAM_ENUMERATION("Bluetooth.PairingResult", pairing_result,
-                            UMA_PAIRING_RESULT_COUNT);
-}
-
 BluetoothDevice::ConnectErrorCode DBusErrorToConnectError(
     const std::string& error_name) {
   BluetoothDevice::ConnectErrorCode error_code = BluetoothDevice::ERROR_UNKNOWN;
@@ -554,8 +522,7 @@ void BluetoothDeviceBlueZ::Connect(
                ConnectErrorCallback error_callback) {
               BLUETOOTH_LOG(EVENT) << "Successfully paused discovery";
               if (weak_ptr)
-                weak_ptr->ConnectInternal(false /* after_pairing */,
-                                          std::move(callback),
+                weak_ptr->ConnectInternal(std::move(callback),
                                           std::move(error_callback));
             },
             weak_ptr_factory_.GetWeakPtr(), dupe_callback, dupe_error_callback),
@@ -566,7 +533,7 @@ void BluetoothDeviceBlueZ::Connect(
                const std::string& error_message) {
               BLUETOOTH_LOG(EVENT) << "Failed to pause discovery";
               if (weak_ptr)
-                weak_ptr->ConnectInternal(false, std::move(callback),
+                weak_ptr->ConnectInternal(std::move(callback),
                                           std::move(error_callback));
             },
             weak_ptr_factory_.GetWeakPtr(), dupe_callback,
@@ -970,22 +937,19 @@ void BluetoothDeviceBlueZ::OnAbortWriteError(
 #endif
 
 void BluetoothDeviceBlueZ::ConnectInternal(
-    bool after_pairing,
     base::OnceClosure callback,
     ConnectErrorCallback error_callback) {
   BLUETOOTH_LOG(EVENT) << object_path_.value() << ": Connecting";
   bluez::BluezDBusManager::Get()->GetBluetoothDeviceClient()->Connect(
       object_path_,
       base::BindOnce(&BluetoothDeviceBlueZ::OnConnect,
-                     weak_ptr_factory_.GetWeakPtr(), after_pairing,
-                     std::move(callback)),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       base::BindOnce(&BluetoothDeviceBlueZ::OnConnectError,
-                     weak_ptr_factory_.GetWeakPtr(), after_pairing,
+                     weak_ptr_factory_.GetWeakPtr(),
                      std::move(error_callback)));
 }
 
-void BluetoothDeviceBlueZ::OnConnect(bool after_pairing,
-                                     base::OnceClosure callback) {
+void BluetoothDeviceBlueZ::OnConnect(base::OnceClosure callback) {
   BLUETOOTH_LOG(EVENT) << object_path_.value()
                        << ": Unpausing discovery after connection";
   UnpauseDiscovery();
@@ -998,16 +962,10 @@ void BluetoothDeviceBlueZ::OnConnect(bool after_pairing,
 
   SetTrusted();
 
-  if (after_pairing)
-    UMA_HISTOGRAM_ENUMERATION("Bluetooth.PairingResult",
-                              UMA_PAIRING_RESULT_SUCCESS,
-                              UMA_PAIRING_RESULT_COUNT);
-
   std::move(callback).Run();
 }
 
-void BluetoothDeviceBlueZ::OnConnectError(bool after_pairing,
-                                          ConnectErrorCallback error_callback,
+void BluetoothDeviceBlueZ::OnConnectError(ConnectErrorCallback error_callback,
                                           const std::string& error_name,
                                           const std::string& error_message) {
   BLUETOOTH_LOG(EVENT) << object_path_.value()
@@ -1034,8 +992,6 @@ void BluetoothDeviceBlueZ::OnConnectError(bool after_pairing,
     error_code = ERROR_UNSUPPORTED_DEVICE;
   }
 
-  if (after_pairing)
-    RecordPairingResult(error_code);
   std::move(error_callback).Run(error_code);
 }
 
@@ -1046,7 +1002,7 @@ void BluetoothDeviceBlueZ::OnPairDuringConnect(
 
   EndPairing();
 
-  ConnectInternal(true, std::move(callback), std::move(error_callback));
+  ConnectInternal(std::move(callback), std::move(error_callback));
 }
 
 void BluetoothDeviceBlueZ::OnPairDuringConnectError(
@@ -1068,7 +1024,6 @@ void BluetoothDeviceBlueZ::OnPairDuringConnectError(
   // Determine the error code from error_name.
   ConnectErrorCode error_code = DBusErrorToConnectError(error_name);
 
-  RecordPairingResult(error_code);
   std::move(error_callback).Run(error_code);
 }
 
@@ -1086,7 +1041,6 @@ void BluetoothDeviceBlueZ::OnPairError(ConnectErrorCallback error_callback,
                        << error_message;
   EndPairing();
   ConnectErrorCode error_code = DBusErrorToConnectError(error_name);
-  RecordPairingResult(error_code);
   std::move(error_callback).Run(error_code);
 }
 

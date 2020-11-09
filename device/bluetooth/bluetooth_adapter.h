@@ -796,14 +796,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   std::set<BluetoothDiscoverySession*> discovery_sessions_;
 
  private:
-  // Histograms the result of StartDiscoverySession.
-  static void RecordBluetoothDiscoverySessionStartOutcome(
-      UMABluetoothDiscoverySessionOutcome outcome);
-
-  // Histograms the result of BluetoothDiscoverySession::Stop.
-  static void RecordBluetoothDiscoverySessionStopOutcome(
-      UMABluetoothDiscoverySessionOutcome outcome);
-
   // This is the callback for all OS level calls to StartScanWithFilter,
   // UpdateFilter, and StopScan.  It updates the state accordingly, calls all
   // appropriate callbacks, and calls ProcessDiscoveryQueue().

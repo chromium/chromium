@@ -957,8 +957,6 @@ void WebBluetoothServiceImpl::RemoteServiceGetCharacteristics(
 
   if (characteristics_uuid &&
       BluetoothBlocklist::Get().IsExcluded(characteristics_uuid.value())) {
-    RecordGetCharacteristicsOutcome(quantity,
-                                    UMAGetCharacteristicOutcome::BLOCKLISTED);
     std::move(callback).Run(
         blink::mojom::WebBluetoothResult::BLOCKLISTED_CHARACTERISTIC_UUID,
         base::nullopt /* characteristics */);
@@ -973,7 +971,6 @@ void WebBluetoothServiceImpl::RemoteServiceGetCharacteristics(
   }
 
   if (query_result.outcome != CacheQueryOutcome::SUCCESS) {
-    RecordGetCharacteristicsOutcome(quantity, query_result.outcome);
     std::move(callback).Run(query_result.GetWebResult(),
                             base::nullopt /* characteristics */);
     return;
@@ -1012,17 +1009,11 @@ void WebBluetoothServiceImpl::RemoteServiceGetCharacteristics(
   }
 
   if (!response_characteristics.empty()) {
-    RecordGetCharacteristicsOutcome(quantity,
-                                    UMAGetCharacteristicOutcome::SUCCESS);
     std::move(callback).Run(blink::mojom::WebBluetoothResult::SUCCESS,
                             std::move(response_characteristics));
     return;
   }
 
-  RecordGetCharacteristicsOutcome(
-      quantity, characteristics_uuid
-                    ? UMAGetCharacteristicOutcome::NOT_FOUND
-                    : UMAGetCharacteristicOutcome::NO_CHARACTERISTICS);
   std::move(callback).Run(
       characteristics_uuid
           ? blink::mojom::WebBluetoothResult::CHARACTERISTIC_NOT_FOUND
@@ -1037,11 +1028,8 @@ void WebBluetoothServiceImpl::RemoteCharacteristicGetDescriptors(
     RemoteCharacteristicGetDescriptorsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  RecordGetDescriptorsDescriptor(quantity, descriptors_uuid);
-
   if (descriptors_uuid &&
       BluetoothBlocklist::Get().IsExcluded(descriptors_uuid.value())) {
-    RecordGetDescriptorsOutcome(quantity, UMAGetDescriptorOutcome::BLOCKLISTED);
     std::move(callback).Run(
         blink::mojom::WebBluetoothResult::BLOCKLISTED_DESCRIPTOR_UUID,
         base::nullopt /* descriptor */);
@@ -1056,7 +1044,6 @@ void WebBluetoothServiceImpl::RemoteCharacteristicGetDescriptors(
   }
 
   if (query_result.outcome != CacheQueryOutcome::SUCCESS) {
-    RecordGetDescriptorsOutcome(quantity, query_result.outcome);
     std::move(callback).Run(query_result.GetWebResult(),
                             base::nullopt /* descriptor */);
     return;
@@ -1091,14 +1078,10 @@ void WebBluetoothServiceImpl::RemoteCharacteristicGetDescriptors(
   }
 
   if (!response_descriptors.empty()) {
-    RecordGetDescriptorsOutcome(quantity, UMAGetDescriptorOutcome::SUCCESS);
     std::move(callback).Run(blink::mojom::WebBluetoothResult::SUCCESS,
                             std::move(response_descriptors));
     return;
   }
-  RecordGetDescriptorsOutcome(
-      quantity, descriptors_uuid ? UMAGetDescriptorOutcome::NOT_FOUND
-                                 : UMAGetDescriptorOutcome::NO_DESCRIPTORS);
   std::move(callback).Run(
       descriptors_uuid ? blink::mojom::WebBluetoothResult::DESCRIPTOR_NOT_FOUND
                        : blink::mojom::WebBluetoothResult::NO_DESCRIPTORS_FOUND,
@@ -1300,7 +1283,6 @@ void WebBluetoothServiceImpl::RemoteDescriptorReadValue(
   }
 
   if (query_result.outcome != CacheQueryOutcome::SUCCESS) {
-    RecordDescriptorReadValueOutcome(query_result.outcome);
     std::move(callback).Run(query_result.GetWebResult(),
                             base::nullopt /* value */);
     return;
@@ -1308,7 +1290,6 @@ void WebBluetoothServiceImpl::RemoteDescriptorReadValue(
 
   if (BluetoothBlocklist::Get().IsExcludedFromReads(
           query_result.descriptor->GetUUID())) {
-    RecordDescriptorReadValueOutcome(UMAGATTOperationOutcome::BLOCKLISTED);
     std::move(callback).Run(blink::mojom::WebBluetoothResult::BLOCKLISTED_READ,
                             base::nullopt /* value */);
     return;
@@ -1346,14 +1327,12 @@ void WebBluetoothServiceImpl::RemoteDescriptorWriteValue(
   }
 
   if (query_result.outcome != CacheQueryOutcome::SUCCESS) {
-    RecordDescriptorWriteValueOutcome(query_result.outcome);
     std::move(callback).Run(query_result.GetWebResult());
     return;
   }
 
   if (BluetoothBlocklist::Get().IsExcludedFromWrites(
           query_result.descriptor->GetUUID())) {
-    RecordDescriptorWriteValueOutcome(UMAGATTOperationOutcome::BLOCKLISTED);
     std::move(callback).Run(
         blink::mojom::WebBluetoothResult::BLOCKLISTED_WRITE);
     return;
@@ -1944,7 +1923,6 @@ void WebBluetoothServiceImpl::OnDescriptorReadValueSuccess(
     RemoteDescriptorReadValueCallback callback,
     const std::vector<uint8_t>& value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RecordDescriptorReadValueOutcome(UMAGATTOperationOutcome::SUCCESS);
   std::move(callback).Run(blink::mojom::WebBluetoothResult::SUCCESS, value);
 }
 
@@ -1968,7 +1946,6 @@ void WebBluetoothServiceImpl::OnDescriptorWriteValueFailed(
     RemoteDescriptorWriteValueCallback callback,
     device::BluetoothRemoteGattService::GattErrorCode error_code) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RecordDescriptorWriteValueOutcome(UMAGATTOperationOutcome::SUCCESS);
   std::move(callback).Run(TranslateGATTErrorAndRecord(
       error_code, UMAGATTOperation::DESCRIPTOR_WRITE));
 }

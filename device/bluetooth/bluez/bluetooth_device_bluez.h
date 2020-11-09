@@ -222,12 +222,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
 
   // Internal method to initiate a connection to this device, and methods called
   // by dbus:: on completion of the D-Bus method call.
-  void ConnectInternal(bool after_pairing,
-                       base::OnceClosure callback,
+  void ConnectInternal(base::OnceClosure callback,
                        ConnectErrorCallback error_callback);
-  void OnConnect(bool after_pairing, base::OnceClosure callback);
-  void OnConnectError(bool after_pairing,
-                      ConnectErrorCallback error_callback,
+  void OnConnect(base::OnceClosure callback);
+  void OnConnectError(ConnectErrorCallback error_callback,
                       const std::string& error_name,
                       const std::string& error_message);
 
