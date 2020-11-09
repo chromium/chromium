@@ -575,7 +575,8 @@ bool BookmarkBridge::DoesBookmarkExist(JNIEnv* env,
   if (!node)
     return false;
 
-  if (type == BookmarkType::BOOKMARK_TYPE_NORMAL) {
+  if (type == BookmarkType::BOOKMARK_TYPE_NORMAL ||
+      type == BookmarkType::BOOKMARK_TYPE_READING_LIST) {
     return true;
   } else {
     DCHECK(type == BookmarkType::BOOKMARK_TYPE_PARTNER);
@@ -749,10 +750,13 @@ void BookmarkBridge::DeleteBookmark(
     return;
   }
 
-  if (partner_bookmarks_shim_->IsPartnerBookmark(node))
+  if (partner_bookmarks_shim_->IsPartnerBookmark(node)) {
     partner_bookmarks_shim_->RemoveBookmark(node);
-  else
+  } else if (type == BookmarkType::BOOKMARK_TYPE_READING_LIST) {
+    reading_list_manager_->Delete(node->url());
+  } else {
     bookmark_model_->Remove(node);
+  }
 }
 
 void BookmarkBridge::RemoveAllUserBookmarks(

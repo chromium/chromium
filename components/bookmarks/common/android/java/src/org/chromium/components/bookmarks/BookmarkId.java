@@ -18,6 +18,7 @@ public class BookmarkId {
 
     private static final String LOG_TAG = "BookmarkId";
     private static final char TYPE_PARTNER = 'p';
+    private static final char TYPE_READING_LIST = 'r';
     private static final int ROOT_FOLDER_ID = -1;
 
     private final long mId;
@@ -36,6 +37,8 @@ public class BookmarkId {
         switch (c) {
             case TYPE_PARTNER:
                 return BookmarkType.PARTNER;
+            case TYPE_READING_LIST:
+                return BookmarkType.READING_LIST;
             default:
                 return BookmarkType.NORMAL;
         }
@@ -46,7 +49,7 @@ public class BookmarkId {
      * @return Whether the char representing the bookmark type is a valid type.
      */
     private static boolean isValidBookmarkTypeFromChar(char c) {
-        return c == TYPE_PARTNER;
+        return c == TYPE_PARTNER || c == TYPE_READING_LIST;
     }
 
     /**
@@ -101,6 +104,8 @@ public class BookmarkId {
         switch (mType) {
             case BookmarkType.PARTNER:
                 return String.valueOf(TYPE_PARTNER);
+            case BookmarkType.READING_LIST:
+                return String.valueOf(TYPE_READING_LIST);
             case BookmarkType.NORMAL:
             default:
                 return "";
