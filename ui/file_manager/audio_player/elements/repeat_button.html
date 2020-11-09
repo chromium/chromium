@@ -4,13 +4,14 @@
   -->
 
 <link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-behaviors/iron-button-state.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-behaviors/iron-control-state.html">
 <link rel="import" href="chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/elements/files_toggle_ripple.html">
 
 <dom-module id="repeat-button">
-  <link rel="import" type="css" href="repeat_button.css">
   <template>
+    <link rel="stylesheet" href="elements/repeat_button.css">
     <files-toggle-ripple activated="[[isActive(repeatMode)]]" class$="{{repeatMode}}"></files-toggle-ripple>
   </template>
-
   <script src="repeat_button.js"></script>
 </dom-module>

@@ -3,21 +3,23 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
 
-js_type_check("closure_compile") {
+group("closure_compile") {
+  deps = [
+    ":closure_compile_internal",
+    ":closure_compile_jsmodules",
+  ]
+}
+
+js_type_check("closure_compile_internal") {
   deps = [
     ":audio_player",
-    ":closure_compile_externs",
     ":control_panel",
     ":repeat_button",
     ":track_info_panel",
     ":track_list",
   ]
-}
-
-js_library("closure_compile_externs") {
-  sources = []
-  externs_list = []
 }
 
 js_library("audio_player") {
@@ -47,4 +49,38 @@ js_library("track_info_panel") {
 }
 
 js_library("track_list") {
+}
+
+polymer_modulizer("repeat_button") {
+  js_file = "repeat_button.js"
+  html_file = "repeat_button.html"
+  html_type = "dom-module"
+  preserve_url_scheme = true
+
+  namespace_rewrites = [
+    "Polymer.IronButtonState|IronButtonState",
+    "Polymer.IronControlState|IronControlState",
+  ]
+
+  auto_imports = [
+    "third_party/polymer/v1_0/components-chromium/iron-behaviors/iron-button-state.html|IronButtonState",
+    "third_party/polymer/v1_0/components-chromium/iron-behaviors/iron-control-state.html|IronControlState",
+  ]
+}
+
+js_library("repeat_button.m") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/audio_player/elements/repeat_button.m.js",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-button-state",
+    "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-control-state",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":repeat_button_module" ]
+}
+
+js_type_check("closure_compile_jsmodules") {
+  is_polymer3 = true
+  deps = [ ":repeat_button.m" ]
 }
