@@ -2377,6 +2377,18 @@ const FeatureEntry::FeatureVariation kSCTAuditingVariations[] = {
 };
 #endif  // !defined(OS_ANDROID)
 
+const FeatureEntry::FeatureParam kCheckOfflineCapabilityWarnOnly[] = {
+    {"check_mode", "warn_only"}};
+const FeatureEntry::FeatureParam kCheckOfflineCapabilityEnforce[] = {
+    {"check_mode", "enforce"}};
+
+const FeatureEntry::FeatureVariation kCheckOfflineCapabilityVariations[] = {
+    {"Warn-only", kCheckOfflineCapabilityWarnOnly,
+     base::size(kCheckOfflineCapabilityWarnOnly), nullptr},
+    {"Enforce", kCheckOfflineCapabilityEnforce,
+     base::size(kCheckOfflineCapabilityEnforce), nullptr},
+};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -6658,7 +6670,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"check-offline-capability", flag_descriptions::kCheckOfflineCapabilityName,
      flag_descriptions::kCheckOfflineCapabilityDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kCheckOfflineCapability)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kCheckOfflineCapability,
+                                    kCheckOfflineCapabilityVariations,
+                                    "CheckOfflineCapability")},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
