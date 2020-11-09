@@ -93,6 +93,14 @@ TEST_F(ServiceConnectionTest, LoadHandwritingModelWithSpec) {
       base::BindOnce([](mojom::LoadModelResult result) {}));
 }
 
+// Tests that LoadGrammarChecker runs OK (no crash) in a basic Mojo environment.
+TEST_F(ServiceConnectionTest, LoadGrammarModel) {
+  mojo::Remote<mojom::GrammarChecker> grammar_checker;
+  ServiceConnection::GetInstance()->LoadGrammarChecker(
+      grammar_checker.BindNewPipeAndPassReceiver(),
+      base::BindOnce([](mojom::LoadModelResult result) {}));
+}
+
 // Tests the fake ML service for builtin model.
 TEST_F(ServiceConnectionTest, FakeServiceConnectionForBuiltinModel) {
   mojo::Remote<mojom::Model> model;
@@ -454,6 +462,52 @@ TEST_F(ServiceConnectionTest, FakeHandWritingRecognizerWithSpec) {
             // Check if the annotation is correct.
             ASSERT_EQ(result->status,
                       mojom::HandwritingRecognizerResult::Status::OK);
+            EXPECT_EQ(result->candidates.at(0)->text, "cat");
+            EXPECT_EQ(result->candidates.at(0)->score, 0.5f);
+          },
+          &infer_callback_done));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(infer_callback_done);
+}
+
+TEST_F(ServiceConnectionTest, FakeGrammarChecker) {
+  mojo::Remote<mojom::GrammarChecker> checker;
+  bool callback_done = false;
+  FakeServiceConnectionImpl fake_service_connection;
+  ServiceConnection::UseFakeServiceConnectionForTesting(
+      &fake_service_connection);
+
+  ServiceConnection::GetInstance()->LoadGrammarChecker(
+      checker.BindNewPipeAndPassReceiver(),
+      base::BindOnce(
+          [](bool* callback_done, mojom::LoadModelResult result) {
+            EXPECT_EQ(result, mojom::LoadModelResult::OK);
+            *callback_done = true;
+          },
+          &callback_done));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(callback_done);
+  ASSERT_TRUE(checker.is_bound());
+
+  // Construct fake output
+  mojom::GrammarCheckerResultPtr result = mojom::GrammarCheckerResult::New();
+  result->status = mojom::GrammarCheckerResult::Status::OK;
+  mojom::GrammarCheckerCandidatePtr candidate =
+      mojom::GrammarCheckerCandidate::New();
+  candidate->text = "cat";
+  candidate->score = 0.5f;
+  result->candidates.emplace_back(std::move(candidate));
+  fake_service_connection.SetOutputGrammarCheckerResult(result);
+
+  auto query = mojom::GrammarCheckerQuery::New();
+  bool infer_callback_done = false;
+  checker->Check(
+      std::move(query),
+      base::BindOnce(
+          [](bool* infer_callback_done, mojom::GrammarCheckerResultPtr result) {
+            *infer_callback_done = true;
+            // Check if the annotation is correct.
+            ASSERT_EQ(result->status, mojom::GrammarCheckerResult::Status::OK);
             EXPECT_EQ(result->candidates.at(0)->text, "cat");
             EXPECT_EQ(result->candidates.at(0)->score, 0.5f);
           },

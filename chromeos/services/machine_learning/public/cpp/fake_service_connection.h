@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
+#include "chromeos/services/machine_learning/public/mojom/grammar_checker.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/graph_executor.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/handwriting_recognizer.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/model.mojom.h"
@@ -35,6 +36,7 @@ class FakeServiceConnectionImpl : public ServiceConnection,
                                   public mojom::Model,
                                   public mojom::TextClassifier,
                                   public mojom::HandwritingRecognizer,
+                                  public mojom::GrammarChecker,
                                   public mojom::GraphExecutor {
  public:
   FakeServiceConnectionImpl();
@@ -70,6 +72,11 @@ class FakeServiceConnectionImpl : public ServiceConnection,
       mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
       mojom::MachineLearningService::LoadHandwritingModelWithSpecCallback
           result_callback) override;
+
+  void LoadGrammarChecker(
+      mojo::PendingReceiver<mojom::GrammarChecker> receiver,
+      mojom::MachineLearningService::LoadGrammarCheckerCallback callback)
+      override;
 
   // mojom::Model:
   void CreateGraphExecutor(
@@ -126,6 +133,11 @@ class FakeServiceConnectionImpl : public ServiceConnection,
   // languages.
   void SetOutputLanguages(const std::vector<mojom::TextLanguagePtr>& languages);
 
+  // Call SetOutputGrammarCheckerResult() before Check() to set the output of
+  // grammar checker.
+  void SetOutputGrammarCheckerResult(
+      const mojom::GrammarCheckerResultPtr& result);
+
   // Call SetOutputHandwritingRecognizerResult() before Recognize() to set the
   // output of handwriting.
   void SetOutputHandwritingRecognizerResult(
@@ -149,6 +161,10 @@ class FakeServiceConnectionImpl : public ServiceConnection,
   void Recognize(
       mojom::HandwritingRecognitionQueryPtr query,
       mojom::HandwritingRecognizer::RecognizeCallback callback) override;
+
+  // mojom::GrammarChecker:
+  void Check(mojom::GrammarCheckerQueryPtr query,
+             mojom::GrammarChecker::CheckCallback callback) override;
 
  private:
   void ScheduleCall(base::OnceClosure call);
@@ -183,11 +199,17 @@ class FakeServiceConnectionImpl : public ServiceConnection,
   void HandleRecognize(
       mojom::HandwritingRecognitionQueryPtr query,
       mojom::HandwritingRecognizer::RecognizeCallback callback);
+  void HandleLoadGrammarChecker(
+      mojo::PendingReceiver<mojom::GrammarChecker> receiver,
+      mojom::MachineLearningService::LoadGrammarCheckerCallback callback);
+  void HandleGrammarCheckerQuery(mojom::GrammarCheckerQueryPtr query,
+                                 mojom::GrammarChecker::CheckCallback callback);
 
   mojo::ReceiverSet<mojom::Model> model_receivers_;
   mojo::ReceiverSet<mojom::GraphExecutor> graph_receivers_;
   mojo::ReceiverSet<mojom::TextClassifier> text_classifier_receivers_;
   mojo::ReceiverSet<mojom::HandwritingRecognizer> handwriting_receivers_;
+  mojo::ReceiverSet<mojom::GrammarChecker> grammar_checker_receivers_;
   mojom::TensorPtr output_tensor_;
   mojom::LoadHandwritingModelResult load_handwriting_model_result_;
   mojom::LoadModelResult load_model_result_;
@@ -198,6 +220,7 @@ class FakeServiceConnectionImpl : public ServiceConnection,
   mojom::CodepointSpanPtr suggest_selection_result_;
   std::vector<mojom::TextLanguagePtr> find_languages_result_;
   mojom::HandwritingRecognizerResultPtr handwriting_result_;
+  mojom::GrammarCheckerResultPtr grammar_checker_result_;
 
   bool async_mode_;
   std::vector<base::OnceClosure> pending_calls_;

@@ -56,6 +56,11 @@ class ServiceConnectionImpl : public ServiceConnection {
       mojom::MachineLearningService::LoadHandwritingModelWithSpecCallback
           result_callback) override;
 
+  void LoadGrammarChecker(
+      mojo::PendingReceiver<mojom::GrammarChecker> receiver,
+      mojom::MachineLearningService::LoadGrammarCheckerCallback result_callback)
+      override;
+
  private:
   // Binds the top level interface |machine_learning_service_| to an
   // implementation in the ML Service daemon, if it is not already bound. The
@@ -126,6 +131,15 @@ void ServiceConnectionImpl::LoadHandwritingModelWithSpec(
   BindMachineLearningServiceIfNeeded();
   machine_learning_service_->LoadHandwritingModelWithSpec(
       std::move(spec), std::move(receiver), std::move(result_callback));
+}
+
+void ServiceConnectionImpl::LoadGrammarChecker(
+    mojo::PendingReceiver<mojom::GrammarChecker> receiver,
+    mojom::MachineLearningService::LoadGrammarCheckerCallback result_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  BindMachineLearningServiceIfNeeded();
+  machine_learning_service_->LoadGrammarChecker(std::move(receiver),
+                                                std::move(result_callback));
 }
 
 void ServiceConnectionImpl::BindMachineLearningServiceIfNeeded() {

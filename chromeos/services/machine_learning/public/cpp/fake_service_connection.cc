@@ -84,6 +84,14 @@ void FakeServiceConnectionImpl::LoadHandwritingModelWithSpec(
       base::Unretained(this), std::move(receiver), std::move(callback)));
 }
 
+void FakeServiceConnectionImpl::LoadGrammarChecker(
+    mojo::PendingReceiver<mojom::GrammarChecker> receiver,
+    mojom::MachineLearningService::LoadGrammarCheckerCallback callback) {
+  ScheduleCall(base::BindOnce(
+      &FakeServiceConnectionImpl::HandleLoadGrammarChecker,
+      base::Unretained(this), std::move(receiver), std::move(callback)));
+}
+
 void FakeServiceConnectionImpl::Execute(
     base::flat_map<std::string, mojom::TensorPtr> inputs,
     const std::vector<std::string>& output_names,
@@ -252,6 +260,11 @@ void FakeServiceConnectionImpl::SetOutputHandwritingRecognizerResult(
   handwriting_result_ = result.Clone();
 }
 
+void FakeServiceConnectionImpl::SetOutputGrammarCheckerResult(
+    const mojom::GrammarCheckerResultPtr& result) {
+  grammar_checker_result_ = result.Clone();
+}
+
 void FakeServiceConnectionImpl::Annotate(
     mojom::TextAnnotationRequestPtr request,
     mojom::TextClassifier::AnnotateCallback callback) {
@@ -284,6 +297,14 @@ void FakeServiceConnectionImpl::Recognize(
                               std::move(callback)));
 }
 
+void FakeServiceConnectionImpl::Check(
+    mojom::GrammarCheckerQueryPtr query,
+    mojom::GrammarChecker::CheckCallback callback) {
+  ScheduleCall(base::BindOnce(
+      &FakeServiceConnectionImpl::HandleGrammarCheckerQuery,
+      base::Unretained(this), std::move(query), std::move(callback)));
+}
+
 void FakeServiceConnectionImpl::HandleLoadHandwritingModel(
     mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
     mojom::MachineLearningService::LoadHandwritingModelCallback callback) {
@@ -307,6 +328,21 @@ void FakeServiceConnectionImpl::HandleRecognize(
     mojom::HandwritingRecognitionQueryPtr query,
     mojom::HandwritingRecognizer::RecognizeCallback callback) {
   std::move(callback).Run(handwriting_result_.Clone());
+}
+
+void FakeServiceConnectionImpl::HandleLoadGrammarChecker(
+    mojo::PendingReceiver<mojom::GrammarChecker> receiver,
+    mojom::MachineLearningService::LoadGrammarCheckerCallback callback) {
+  if (load_model_result_ == mojom::LoadModelResult::OK)
+    grammar_checker_receivers_.Add(this, std::move(receiver));
+
+  std::move(callback).Run(load_model_result_);
+}
+
+void FakeServiceConnectionImpl::HandleGrammarCheckerQuery(
+    mojom::GrammarCheckerQueryPtr query,
+    mojom::GrammarChecker::CheckCallback callback) {
+  std::move(callback).Run(grammar_checker_result_.Clone());
 }
 
 }  // namespace machine_learning
