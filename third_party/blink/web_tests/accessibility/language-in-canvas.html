@@ -15,6 +15,7 @@
 
   <script>
     setup(() => {
+      window.axRoot = accessibilityController.rootElement;
       window.axCanvas = accessibilityController.accessibleElementById('canvas');
       window.axParagraph = accessibilityController.accessibleElementById('paragraph');
       window.axSpan = accessibilityController.accessibleElementById('span');
@@ -23,6 +24,8 @@
     async_test((t) => {
       internals.setUserPreferredLanguages([ 'de' ]);
 
+      assert_equals(window.axRoot.language, 'AXLanguage: en',
+          'The first language in the meta tag should apply.');
       assert_equals(window.axCanvas.language, 'AXLanguage: en',
           'The first language in the meta tag should apply.');
       assert_equals(window.axParagraph.language, 'AXLanguage: en',
@@ -35,6 +38,8 @@
       meta.content = '';
 
       t.step_timeout(() => {
+        assert_equals(window.axRoot.language, 'AXLanguage: de',
+            'The browser language should apply.');
         assert_equals(window.axCanvas.language, 'AXLanguage: de',
             'The browser language should apply.');
         assert_equals(window.axParagraph.language, 'AXLanguage: de',

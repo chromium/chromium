@@ -3639,6 +3639,8 @@ AtomicString AXNodeObject::Language() const {
   if (!GetNode())
     return AXObject::Language();
 
+  Vector<String> languages;
+
   // If it's the root, get the computed language for the document element,
   // because the root LayoutObject doesn't have the right value.
   if (RoleValue() == ax::mojom::blink::Role::kRootWebArea) {
@@ -3646,9 +3648,16 @@ AtomicString AXNodeObject::Language() const {
     if (!document_element)
       return g_empty_atom;
 
+    // Ensure we return only the first language tag. ComputeInheritedLanguage
+    // consults ContentLanguage which can be set from 2 different sources.
+    // DocumentLoader::DidInstallNewDocument from HTTP headers which truncates
+    // until the first comma.
+    // HttpEquiv::Process from <meta> tag which does not truncate.
+    // TODO(chrishall): Consider moving this comma handling to setter side.
     AtomicString lang = document_element->ComputeInheritedLanguage();
-    if (!lang.IsEmpty())
-      return lang;
+    String(lang).Split(',', languages);
+    if (!languages.IsEmpty())
+      return AtomicString(languages[0].StripWhiteSpace());
   }
 
   // Uses the style engine to figure out the object's language.
@@ -3660,7 +3669,6 @@ AtomicString AXNodeObject::Language() const {
   if (!style || !style->Locale())
     return AXObject::Language();
 
-  Vector<String> languages;
   String(style->Locale()).Split(',', languages);
   if (languages.IsEmpty())
     return AXObject::Language();
