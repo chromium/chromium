@@ -903,10 +903,13 @@ void CertProvisioningWorkerImpl::RegisterForInvalidationTopic() {
     return;
   }
 
+  // Registering the callback with base::Unretained is OK because this class
+  // owns |invalidator_|, and the callback will never be called after
+  // |invalidator_| is destroyed.
   invalidator_->Register(
       invalidation_topic_,
       base::BindRepeating(&CertProvisioningWorkerImpl::OnShouldContinue,
-                          weak_factory_.GetWeakPtr(),
+                          base::Unretained(this),
                           ContinueReason::kInvalidation));
 
   RecordEvent(cert_scope_,
