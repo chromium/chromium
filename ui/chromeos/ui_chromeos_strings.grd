@@ -758,7 +758,7 @@
         French (Canada) with Multilingual keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_CATALAN" desc="The input method name shows in system tray menu and settings page.">
-        Catalan keyboard
+        Catalan
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_CROATIAN" desc="The input method name shows in system tray menu and settings page.">
         Croatian
@@ -954,13 +954,13 @@
       </message>
 
       <message name="IDS_IME_NAME_INPUTMETHOD_ARRAY" desc="The input method name shows in system tray menu, this is Array (\u884c\u5217) input method for Traditional Chinese.">
-        Array input method
+        Chinese Array
       </message>
       <message name="IDS_IME_NAME_INPUTMETHOD_CANGJIE" desc="The input method name shows in system tray menu, this is Cangjie input method for Tradition Chinese.">
-        Cangjie input method
+        Chinese Cangjie
       </message>
       <message name="IDS_IME_NAME_INPUTMETHOD_DAYI" desc="The input method name shows in system tray menu, this is Dayi (\u5927\u6613) input method for Traditional Chinese.">
-        Dayi input method
+        Chinese Dayi
       </message>
       <message name="IDS_IME_NAME_INPUTMETHOD_MOZC_JP" desc="The input method name shows in system tray menu, this is Google Japanese input method on Japanese JIS keyboard layout. Native name in Japanese is '日本語入力（日本語キーボード用）'.">
         Japanese
@@ -969,22 +969,22 @@
         Japanese with US keyboard
       </message>
       <message name="IDS_IME_NAME_INPUTMETHOD_PINYIN" desc="The input method name shows in system tray menu, this is Pinyin input method for Simplified Chinese.">
-        Pinyin input method
+        Chinese Pinyin
       </message>
       <message name="IDS_IME_NAME_INPUTMETHOD_QUICK" desc="The input method name shows in system tray menu, this is Quick input method for Traditional Chinese.">
-        Quick input method
+        Chinese Quick
       </message>
       <message name="IDS_IME_NAME_INPUTMETHOD_TRADITIONAL_PINYIN" desc="The input method name shows in system tray menu, this is Pinyin input method for Traditional Chinese.">
-        Traditional Pinyin input method
+        Chinese (Traditional) Pinyin
       </message>
       <message name="IDS_IME_NAME_INPUTMETHOD_WUBI" desc="The input method name shows in system tray menu, this is Wubi input method for Simplified Chinese.">
-        Wubi input method
+        Chinese Wubi
       </message>
       <message name="IDS_IME_NAME_INPUTMETHOD_ZHUYIN" desc="The input method name shows in system tray menu, this is Zhuyin input method for Traditional Chinese.">
-        Zhuyin input method
+        Chinese Zhuyin
       </message>
       <message name="IDS_IME_NAME_INPUTMETHOD_CANTONESE" desc="The input method name shows in system tray menu, this is Cantonese input method for Traditional Chinese.">
-        Cantonese input method
+        Cantonese
       </message>
       <message name="IDS_IME_NAME_INPUTMETHOD_HANGUL" desc="The input method name shows in system tray menu, this is Korean Hangul input method.">
         Korean
