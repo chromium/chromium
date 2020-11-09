@@ -63,4 +63,7 @@ interface ITestWebLayer {
   // Gets a button from the currently visible media route selection dialog. The button represents a
   // route and contains the text |name|. Returns null if no such dialog or button exists.
   IObjectWrapper /* View */ getMediaRouteButton(String name) = 19;
+
+  // Causes the renderer process in the tab's main frame to crash.
+  void crashTab(in ITab tab) = 20;
 }

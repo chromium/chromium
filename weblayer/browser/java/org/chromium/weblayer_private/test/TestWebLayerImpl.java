@@ -22,6 +22,7 @@ import org.chromium.components.media_router.MockMediaRouteProvider;
 import org.chromium.components.media_router.RouterTestUtils;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
 import org.chromium.net.NetworkChangeNotifier;
@@ -36,6 +37,7 @@ import org.chromium.weblayer_private.media.MediaRouteDialogFragmentImpl;
 import org.chromium.weblayer_private.test_interfaces.ITestWebLayer;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Root implementation class for TestWebLayer.
@@ -225,5 +227,15 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
         FragmentManager fm =
                 MediaRouteDialogFragmentImpl.getInstanceForTest().getSupportFragmentManager();
         return ObjectWrapper.wrap(RouterTestUtils.waitForRouteButton(fm, name));
+    }
+
+    @Override
+    public void crashTab(ITab tab) {
+        try {
+            TabImpl tabImpl = (TabImpl) tab;
+            WebContentsUtils.crashTabAndWait(tabImpl.getWebContents());
+        } catch (TimeoutException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

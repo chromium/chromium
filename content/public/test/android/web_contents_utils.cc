@@ -10,6 +10,7 @@
 #include "content/browser/web_contents/web_contents_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/android/content_test_jni/WebContentsUtils_jni.h"
@@ -55,6 +56,13 @@ void JNI_WebContentsUtils_EvaluateJavaScriptWithUserGesture(
     return;
   web_contents->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
       ConvertJavaStringToUTF16(env, script));
+}
+
+void JNI_WebContentsUtils_CrashTab(JNIEnv* env,
+                                   const JavaParamRef<jobject>& jweb_contents) {
+  WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
+      WebContents::FromJavaWebContents(jweb_contents));
+  web_contents->GetMainFrame()->GetProcess()->Shutdown(RESULT_CODE_KILLED);
 }
 
 }  // namespace content

@@ -149,4 +149,8 @@ public final class TestWebLayer {
     public View getMediaRouteButton(String name) throws RemoteException {
         return (View) ObjectWrapper.unwrap(mITestWebLayer.getMediaRouteButton(name), View.class);
     }
+
+    public void crashTab(Tab tab) throws RemoteException {
+        mITestWebLayer.crashTab(tab.getITab());
+    }
 }
