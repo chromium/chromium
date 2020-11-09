@@ -433,7 +433,7 @@ void ResponseBodyLoader::OnStateChange() {
 
   size_t num_bytes_consumed = 0;
 
-  while (!aborted_ && !suspended_) {
+  while (!aborted_) {
     if (kMaxNumConsumedBytesInTask == num_bytes_consumed) {
       // We've already consumed many bytes in this task. Defer the remaining
       // to the next task.
@@ -441,6 +441,22 @@ void ResponseBodyLoader::OnStateChange() {
                              base::BindOnce(&ResponseBodyLoader::OnStateChange,
                                             WrapPersistent(this)));
       return;
+    }
+
+    if (!suspended_ && bytes_remaining_in_buffer_ > 0) {
+      // We need to empty |buffered_data_| first before reading more from
+      // |bytes_consumer_|.
+      auto* start_position = buffered_data_.end() - bytes_remaining_in_buffer_;
+      size_t size_to_send =
+          std::min(bytes_remaining_in_buffer_,
+                   kMaxNumConsumedBytesInTask - num_bytes_consumed);
+      DidReceiveData(
+          base::make_span(start_position, start_position + size_to_send));
+      bytes_remaining_in_buffer_ -= size_to_send;
+      num_bytes_consumed += size_to_send;
+      if (bytes_remaining_in_buffer_ == 0)
+        buffered_data_.clear();
+      continue;
     }
 
     const char* buffer = nullptr;
@@ -455,7 +471,13 @@ void ResponseBodyLoader::OnStateChange() {
 
       available =
           std::min(available, kMaxNumConsumedBytesInTask - num_bytes_consumed);
-      DidReceiveData(base::make_span(buffer, available));
+      if (suspended_) {
+        // When suspended, save the read data into |buffered_data_| instead.
+        buffered_data_.insert(buffered_data_.size(), buffer, available);
+        bytes_remaining_in_buffer_ += available;
+      } else {
+        DidReceiveData(base::make_span(buffer, available));
+      }
       result = bytes_consumer_->EndRead(available);
       in_two_phase_read_ = false;
       num_bytes_consumed += available;
@@ -466,6 +488,11 @@ void ResponseBodyLoader::OnStateChange() {
       }
     }
     DCHECK_NE(result, BytesConsumer::Result::kShouldWait);
+    if (suspended_ && result != BytesConsumer::Result::kOk) {
+      // Don't dispatch finish/failure messages when suspended. We'll dispatch
+      // them later when we call OnStateChange again after resuming.
+      return;
+    }
     if (result == BytesConsumer::Result::kDone) {
       DidFinishLoadingBody();
       return;

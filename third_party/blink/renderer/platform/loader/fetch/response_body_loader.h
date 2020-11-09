@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/response_body_loader_client.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -124,6 +125,8 @@ class PLATFORM_EXPORT ResponseBodyLoader final
   Member<DelegatingBytesConsumer> delegating_bytes_consumer_;
   const Member<ResponseBodyLoaderClient> client_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  Vector<char> buffered_data_;
+  size_t bytes_remaining_in_buffer_ = 0;
   bool started_ = false;
   bool aborted_ = false;
   bool suspended_ = false;

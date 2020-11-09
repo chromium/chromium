@@ -431,6 +431,70 @@ TEST_F(ResponseBodyLoaderTest, DrainAsDataPipe) {
   EXPECT_EQ("xyzabc", client->GetData());
 }
 
+TEST_F(ResponseBodyLoaderTest, ReadDataFromConsumerWhileSuspended) {
+  auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  auto* consumer = MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
+  auto* client = MakeGarbageCollected<TestClient>();
+  auto* body_loader =
+      MakeGarbageCollected<ResponseBodyLoader>(*consumer, *client, task_runner);
+  consumer->Add(Command(Command::kData, "he"));
+  body_loader->Start();
+  task_runner->RunUntilIdle();
+  EXPECT_EQ("he", client->GetData());
+  EXPECT_FALSE(client->LoadingIsFinished());
+  EXPECT_FALSE(client->LoadingIsFailed());
+
+  // Suspend, then add some data to |consumer|.
+  body_loader->Suspend();
+  consumer->Add(Command(Command::kData, "llo"));
+  consumer->Add(Command(Command::kWait));
+  consumer->Add(Command(Command::kData, "wo"));
+  task_runner->RunUntilIdle();
+  EXPECT_EQ("he", client->GetData());
+  EXPECT_FALSE(client->LoadingIsFinished());
+  EXPECT_FALSE(client->LoadingIsFailed());
+
+  // The data received while suspended will be processed after resuming, before
+  // processing newer data.
+  body_loader->Resume();
+  consumer->Add(Command(Command::kData, "rld"));
+  consumer->Add(Command(Command::kDone));
+
+  task_runner->RunUntilIdle();
+  EXPECT_EQ("helloworld", client->GetData());
+  EXPECT_TRUE(client->LoadingIsFinished());
+  EXPECT_FALSE(client->LoadingIsFailed());
+}
+
+TEST_F(ResponseBodyLoaderTest, ReadDataFromConsumerWhileSuspendedLong) {
+  auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  auto* consumer = MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
+  auto* client = MakeGarbageCollected<TestClient>();
+  auto* body_loader =
+      MakeGarbageCollected<ResponseBodyLoader>(*consumer, *client, task_runner);
+  body_loader->Start();
+  task_runner->RunUntilIdle();
+  EXPECT_EQ("", client->GetData());
+  EXPECT_FALSE(client->LoadingIsFinished());
+  EXPECT_FALSE(client->LoadingIsFailed());
+
+  // Suspend, then add a long response body to |consumer|.
+  body_loader->Suspend();
+  std::string body(70000, '*');
+  consumer->Add(Command(Command::kDataAndDone, body.c_str()));
+  task_runner->RunUntilIdle();
+  EXPECT_EQ("", client->GetData());
+  EXPECT_FALSE(client->LoadingIsFinished());
+  EXPECT_FALSE(client->LoadingIsFailed());
+
+  // The data received while suspended will be processed after resuming.
+  body_loader->Resume();
+  task_runner->RunUntilIdle();
+  EXPECT_EQ(AtomicString(body.c_str()), client->GetData());
+  EXPECT_TRUE(client->LoadingIsFinished());
+  EXPECT_FALSE(client->LoadingIsFailed());
+}
+
 TEST_F(ResponseBodyLoaderTest, DrainAsDataPipeAndReportError) {
   mojo::ScopedDataPipeConsumerHandle consumer_end;
   mojo::ScopedDataPipeProducerHandle producer_end;
