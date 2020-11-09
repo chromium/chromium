@@ -10155,6 +10155,12 @@ histogram as enum -->
   <int value="1" label="A hash is saved"/>
 </enum>
 
+<enum name="ChromeStartupDelegateResult">
+  <int value="0" label="Failure"/>
+  <int value="1" label="Allow"/>
+  <int value="2" label="Disallow"/>
+</enum>
+
 <enum name="ChromeVoxGestureType">
   <int value="1" label="click"/>
   <int value="2" label="swipeDown1"/>
