@@ -306,7 +306,14 @@ String LayoutTheme::ExtraFullscreenStyleSheet() {
 
 Color LayoutTheme::ActiveSelectionBackgroundColor(
     mojom::blink::ColorScheme color_scheme) const {
-  return PlatformActiveSelectionBackgroundColor(color_scheme).BlendWithWhite();
+  Color color = PlatformActiveSelectionBackgroundColor(color_scheme);
+#if defined(OS_MAC)
+  // BlendWithWhite() darkens Mac system colors too much.
+  // Apply .8 (204/255) alpha instead, same as Safari.
+  if (color_scheme == mojom::blink::ColorScheme::kDark)
+    return Color(color.Red(), color.Green(), color.Blue(), 204);
+#endif
+  return color.BlendWithWhite();
 }
 
 Color LayoutTheme::InactiveSelectionBackgroundColor(

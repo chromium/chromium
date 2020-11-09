@@ -6054,7 +6054,6 @@ crbug.com/1113127 fast/canvas/downsample-quality.html [ Pass Failure Crash ]
 crbug.com/1113791 [ Win ] media/video-zoom.html [ Pass Failure ]
 
 # Virtual dark mode tests currently fails.
-crbug.com/1111937 virtual/dark-color-scheme/fast/forms/color-scheme/text-selection-outside-control.html [ Failure ]
 crbug.com/1111932 virtual/dark-color-scheme/fast/forms/color-scheme/suggestion-picker/date-suggestion-picker-appearance.html [ Failure ]
 crbug.com/1111932 virtual/dark-color-scheme/fast/forms/color-scheme/suggestion-picker/datetimelocal-suggestion-picker-appearance.html [ Failure ]
 crbug.com/1111932 virtual/dark-color-scheme/fast/forms/color-scheme/suggestion-picker/month-suggestion-picker-appearance.html [ Failure ]
