@@ -25,8 +25,6 @@ namespace syncer {
 // sync with the server.
 class NudgeTracker {
  public:
-  enum : size_t { kDefaultMaxPayloadsPerType = 10 };
-
   NudgeTracker();
   ~NudgeTracker();
 
@@ -160,10 +158,16 @@ class NudgeTracker {
   // Update the default nudge delay.
   void SetDefaultNudgeDelay(base::TimeDelta nudge_delay);
 
+  size_t GetDefaultMaxPayloadsPerTypeForTesting() {
+    return kDefaultMaxPayloadsPerType;
+  }
+
  private:
   using TypeTrackerMap = std::map<ModelType, std::unique_ptr<DataTypeTracker>>;
 
   friend class SyncSchedulerImplTest;
+
+  const size_t kDefaultMaxPayloadsPerType = 10;
 
   TypeTrackerMap type_trackers_;
 

@@ -47,7 +47,7 @@ struct WaitInterval {
 // A class to track the per-type scheduling data.
 class DataTypeTracker {
  public:
-  DataTypeTracker();
+  explicit DataTypeTracker(size_t initial_payload_buffer_size);
   ~DataTypeTracker();
 
   // For STL compatibility, we do not forbid the creation of a default copy

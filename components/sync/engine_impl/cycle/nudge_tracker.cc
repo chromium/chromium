@@ -64,7 +64,8 @@ NudgeTracker::NudgeTracker()
           base::TimeDelta::FromMilliseconds(kSyncSchedulerDelayMilliseconds)) {
   // Default initialize all the type trackers.
   for (ModelType type : ProtocolTypes()) {
-    type_trackers_.emplace(type, std::make_unique<DataTypeTracker>());
+    type_trackers_.emplace(
+        type, std::make_unique<DataTypeTracker>(kDefaultMaxPayloadsPerType));
   }
 }
 

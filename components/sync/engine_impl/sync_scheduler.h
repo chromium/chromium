@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "components/sync/base/invalidation_interface.h"
 #include "components/sync/engine_impl/cycle/sync_cycle.h"
-#include "components/sync/engine_impl/nudge_source.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 
 namespace base {

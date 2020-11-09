@@ -112,7 +112,6 @@ void RecordSyncInitialState(SyncService::DisableReasonSet disable_reasons,
 
 EngineComponentsFactory::Switches EngineSwitchesFromCommandLine() {
   EngineComponentsFactory::Switches factory_switches = {
-      EngineComponentsFactory::ENCRYPTION_KEYSTORE,
       EngineComponentsFactory::BACKOFF_NORMAL};
 
   base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
@@ -230,7 +229,6 @@ ProfileSyncService::ProfileSyncService(InitParams init_params)
       network_connection_tracker_(init_params.network_connection_tracker),
       is_first_time_sync_configure_(false),
       sync_disabled_by_admin_(false),
-      unrecoverable_error_reason_(ERROR_REASON_UNSET),
       expect_sync_configuration_aborted_(false),
       invalidations_identity_provider_(
           init_params.invalidations_identity_provider),
@@ -730,7 +728,7 @@ SyncService::DisableReasonSet ProfileSyncService::GetDisableReasons() const {
   if (!user_settings_->IsSyncRequested() && !IsLocalSyncEnabled()) {
     result.Put(DISABLE_REASON_USER_CHOICE);
   }
-  if (unrecoverable_error_reason_ != ERROR_REASON_UNSET) {
+  if (unrecoverable_error_reason_) {
     result.Put(DISABLE_REASON_UNRECOVERABLE_ERROR);
   }
   return result;
@@ -811,7 +809,7 @@ void ProfileSyncService::NotifyShutdown() {
 }
 
 void ProfileSyncService::ClearUnrecoverableError() {
-  unrecoverable_error_reason_ = ERROR_REASON_UNSET;
+  unrecoverable_error_reason_ = base::nullopt;
   unrecoverable_error_message_.clear();
   unrecoverable_error_location_ = base::Location();
 }
@@ -821,7 +819,6 @@ void ProfileSyncService::OnUnrecoverableErrorImpl(
     const std::string& message,
     UnrecoverableErrorReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(reason, ERROR_REASON_UNSET);
   unrecoverable_error_reason_ = reason;
   unrecoverable_error_message_ = message;
   unrecoverable_error_location_ = from_here;

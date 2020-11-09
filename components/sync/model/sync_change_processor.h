@@ -23,9 +23,6 @@ namespace syncer {
 // An interface for services that handle receiving SyncChanges.
 class SyncChangeProcessor {
  public:
-  // Whether a context change should force a datatype refresh or not.
-  enum ContextRefreshStatus { NO_REFRESH, REFRESH_NEEDED };
-
   SyncChangeProcessor() = default;
   virtual ~SyncChangeProcessor() = default;
 

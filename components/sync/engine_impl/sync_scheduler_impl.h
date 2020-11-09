@@ -23,7 +23,6 @@
 #include "components/sync/engine_impl/cycle/sync_cycle.h"
 #include "components/sync/engine_impl/cycle/sync_cycle_context.h"
 #include "components/sync/engine_impl/net/server_connection_manager.h"
-#include "components/sync/engine_impl/nudge_source.h"
 #include "components/sync/engine_impl/sync_scheduler.h"
 #include "components/sync/engine_impl/syncer.h"
 

@@ -165,7 +165,6 @@ static_library("rest_of_sync") {
     "engine_impl/net/url_translator.cc",
     "engine_impl/net/url_translator.h",
     "engine_impl/nudge_handler.h",
-    "engine_impl/nudge_source.h",
     "engine_impl/sync_cycle_event.cc",
     "engine_impl/sync_cycle_event.h",
     "engine_impl/sync_engine_event_listener.h",

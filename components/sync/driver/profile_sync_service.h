@@ -257,12 +257,8 @@ class ProfileSyncService : public SyncService,
   };
 
   enum UnrecoverableErrorReason {
-    ERROR_REASON_UNSET,
-    ERROR_REASON_SYNCER,
     ERROR_REASON_ENGINE_INIT_FAILURE,
-    ERROR_REASON_CONFIGURATION_RETRY,
     ERROR_REASON_ACTIONABLE_ERROR,
-    ERROR_REASON_LIMIT
   };
 
   // Virtual for testing.
@@ -433,7 +429,8 @@ class ProfileSyncService : public SyncService,
   bool sync_disabled_by_admin_;
 
   // Information describing an unrecoverable error.
-  UnrecoverableErrorReason unrecoverable_error_reason_;
+  base::Optional<UnrecoverableErrorReason> unrecoverable_error_reason_ =
+      base::nullopt;
   std::string unrecoverable_error_message_;
   base::Location unrecoverable_error_location_;
 

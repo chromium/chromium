@@ -37,9 +37,9 @@ class NudgeTrackerTest : public ::testing::Test {
  public:
   NudgeTrackerTest() { SetInvalidationsInSync(); }
 
-  static size_t GetHintBufferSize() {
+  size_t GetHintBufferSize() {
     // Assumes that no test has adjusted this size.
-    return NudgeTracker::kDefaultMaxPayloadsPerType;
+    return nudge_tracker_.GetDefaultMaxPayloadsPerTypeForTesting();
   }
 
   bool InvalidationsOutOfSync() const {

@@ -157,10 +157,6 @@ class SyncEncryptionHandlerObserverMock
 
 class SyncManagerTest : public testing::Test {
  protected:
-  enum NigoriStatus { DONT_WRITE_NIGORI, WRITE_TO_NIGORI };
-
-  enum EncryptionStatus { UNINITIALIZED, DEFAULT_ENCRYPTION, FULL_ENCRYPTION };
-
   SyncManagerTest()
       : sync_manager_("Test sync manager",
                       network::TestNetworkConnectionTracker::GetInstance()) {

@@ -14,7 +14,6 @@
 #include "base/sequence_checker.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/sync_status.h"
-#include "components/sync/engine_impl/nudge_source.h"
 #include "components/sync/engine_impl/sync_engine_event_listener.h"
 
 namespace syncer {

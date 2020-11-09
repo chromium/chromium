@@ -27,12 +27,6 @@ class SyncScheduler;
 // components used by the SyncManager and other things inside engine/.
 class EngineComponentsFactory {
  public:
-  enum EncryptionMethod {
-    ENCRYPTION_LEGACY,
-    // Option to enable support for keystore key based encryption.
-    ENCRYPTION_KEYSTORE
-  };
-
   enum BackoffOverride {
     BACKOFF_NORMAL,
     // Use this value for integration testing to avoid long delays /
@@ -47,7 +41,6 @@ class EngineComponentsFactory {
   // EngineComponentsFactory can use this information to build components
   // with appropriate bells and whistles.
   struct Switches {
-    EncryptionMethod encryption_method;
     BackoffOverride backoff_override;
     bool force_short_nudge_delay_for_test;
   };
