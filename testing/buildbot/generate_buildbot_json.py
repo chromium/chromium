@@ -1439,6 +1439,13 @@ class BBJSONGenerator(object):
         'win32-dbg',
         'win-archive-dbg',
         'win32-archive-dbg',
+        # TODO(https://crbug.com/1127088): remove once LTS version has been set
+        "chromeos-arm-generic-lts",
+        "chromeos-betty-pi-arc-chrome-lts",
+        "chromeos-eve-chrome-lts",
+        "chromeos-kevin-chrome-lts",
+        "linux-chromeos-lts",
+        "linux64-lts",
     ]
 
   def get_internal_waterfalls(self):
