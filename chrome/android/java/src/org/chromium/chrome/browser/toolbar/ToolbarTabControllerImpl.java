@@ -4,14 +4,11 @@
 
 package org.chromium.chrome.browser.toolbar;
 
-import android.text.TextUtils;
-
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
@@ -31,6 +28,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     private final Supplier<Boolean> mOverrideHomePageSupplier;
     private final Supplier<Profile> mProfileSupplier;
     private final Supplier<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier;
+    private final Supplier<String> mHomepageUrlSupplier;
     private final Runnable mOnSuccessRunnable;
 
     /**
@@ -39,6 +37,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
      * @param overrideHomePageSupplier Supplier that returns true if it overrides the default
      *         homepage behavior.
      * @param profileSupplier Supplier for the current profile.
+     * @param homepageUrlSupplier Supplier for the homepage URL.
      * @param onSuccessRunnable Runnable that is invoked when the active tab is asked to perform the
      *         corresponding ToolbarTabController action; it is not invoked if the tab cannot
      *         perform the action or for openHompage.
@@ -46,11 +45,12 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     public ToolbarTabControllerImpl(Supplier<Tab> tabSupplier,
             Supplier<Boolean> overrideHomePageSupplier, Supplier<Profile> profileSupplier,
             Supplier<BottomControlsCoordinator> bottomControlsCoordinatorSupplier,
-            Runnable onSuccessRunnable) {
+            Supplier<String> homepageUrlSupplier, Runnable onSuccessRunnable) {
         mTabSupplier = tabSupplier;
         mOverrideHomePageSupplier = overrideHomePageSupplier;
         mProfileSupplier = profileSupplier;
         mBottomControlsCoordinatorSupplier = bottomControlsCoordinatorSupplier;
+        mHomepageUrlSupplier = homepageUrlSupplier;
         mOnSuccessRunnable = onSuccessRunnable;
     }
 
@@ -114,10 +114,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
         }
         Tab currentTab = mTabSupplier.get();
         if (currentTab == null) return;
-        String homePageUrl = HomepageManager.getHomepageUri();
-        if (TextUtils.isEmpty(homePageUrl)) {
-            homePageUrl = UrlConstants.NTP_URL;
-        }
+        String homePageUrl = mHomepageUrlSupplier.get();
         boolean is_chrome_internal =
                 homePageUrl.startsWith(ContentUrlConstants.ABOUT_URL_SHORT_PREFIX)
                 || homePageUrl.startsWith(UrlConstants.CHROME_URL_SHORT_PREFIX)

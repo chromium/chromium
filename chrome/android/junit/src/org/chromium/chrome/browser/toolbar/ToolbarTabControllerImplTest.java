@@ -87,9 +87,9 @@ public class ToolbarTabControllerImplTest {
         doReturn(mTab).when(mTabSupplier).get();
         doReturn(false).when(mOverrideHomePageSupplier).get();
         TrackerFactory.setTrackerForTests(mTracker);
-        mToolbarTabController =
-                new ToolbarTabControllerImpl(mTabSupplier, mOverrideHomePageSupplier,
-                        mProfileSupplier, mBottomControlsCoordinatorSupplier, mRunnable);
+        mToolbarTabController = new ToolbarTabControllerImpl(mTabSupplier,
+                mOverrideHomePageSupplier, mProfileSupplier, mBottomControlsCoordinatorSupplier,
+                ToolbarManager::homepageUrl, mRunnable);
     }
 
     @Test

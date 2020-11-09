@@ -139,8 +139,11 @@ public class HomeButtonCoordinatorTest {
     }
 
     private HomeButtonCoordinator newHomeButtonCoordinator(View view) {
+        // clang-format off
         return new HomeButtonCoordinator(mContext, view, mActivityTabProvider, mUserEducationHelper,
-                () -> mIsIncognito, mIntentMetadataOneshotSupplier, mPromoShownOneshotSupplier);
+                () -> mIsIncognito, mIntentMetadataOneshotSupplier, mPromoShownOneshotSupplier,
+                HomepageManager::isHomepageNonNtp);
+        // clang-format on
     }
 
     private void verifyIphNotShown() {

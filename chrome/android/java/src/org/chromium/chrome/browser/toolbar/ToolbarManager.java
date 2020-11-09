@@ -116,6 +116,7 @@ import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -156,7 +157,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             new ObservableSupplierImpl<>();
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
 
-    private BottomControlsCoordinator mBottomControlsCoordinator;
+    private ObservableSupplierImpl<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier =
+            new ObservableSupplierImpl<>();
     private TabModelSelector mTabModelSelector;
     private TabModelSelectorObserver mTabModelSelectorObserver;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -362,10 +364,11 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mCustomTabThemeColorProvider = new SettableThemeColorProvider(/* context= */ mActivity);
 
         mActivityTabProvider = tabProvider;
+        // clang-format off
         mToolbarTabController = new ToolbarTabControllerImpl(mLocationBarModel::getTab,
-                // clang-format off
                 () -> mShowStartSurfaceSupplier != null && mShowStartSurfaceSupplier.get(),
-                profileSupplier, () -> mBottomControlsCoordinator, this::updateButtonStatus);
+                profileSupplier, mBottomControlsCoordinatorSupplier, ToolbarManager::homepageUrl,
+                this::updateButtonStatus);
         // clang-format on
 
         BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate =
@@ -920,21 +923,21 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * Enable the bottom controls.
      */
     public void enableBottomControls() {
-        mBottomControlsCoordinator = new BottomControlsCoordinator(mBrowserControlsSizer,
+        // clang-format off
+        mBottomControlsCoordinatorSupplier.set(new BottomControlsCoordinator(mBrowserControlsSizer,
                 mFullscreenManager, mActivity.findViewById(R.id.bottom_controls_stub),
                 mActivityTabProvider, mAppThemeColorProvider, mShareDelegateSupplier,
-                mMenuButtonCoordinator.getMenuButtonHelperSupplier(), mShowStartSurfaceSupplier,
-                mToolbarTabController::openHomepage,
-                (reason)
-                        -> setUrlBarFocus(true, reason),
-                mScrimCoordinator, mOmniboxFocusStateSupplier);
+                mMenuButtonCoordinator.getMenuButtonHelperSupplier(),
+                mToolbarTabController::openHomepage, (reason) -> setUrlBarFocus(true, reason),
+                mScrimCoordinator, mOmniboxFocusStateSupplier));
+        // clang-format on
     }
 
     /**
      * @return The coordinator for the bottom controls if it exists.
      */
     public BottomControlsCoordinator getBottomControlsCoordinator() {
-        return mBottomControlsCoordinator;
+        return mBottomControlsCoordinatorSupplier.get();
     }
 
     /**
@@ -995,13 +998,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         // init directly.
         mMenuButtonCoordinator.onNativeInitialized();
 
-        if (mBottomControlsCoordinator != null) {
+        BottomControlsCoordinator bcc = mBottomControlsCoordinatorSupplier.get();
+        if (bcc != null) {
             Runnable closeAllTabsAction = () -> {
                 mTabModelSelector.getModel(mIncognitoStateProvider.isIncognitoSelected())
                         .closeAllTabs();
             };
-            mBottomControlsCoordinator.initializeWithNative(mActivity,
-                    mCompositorViewHolder.getResourceManager(),
+            bcc.initializeWithNative(mActivity, mCompositorViewHolder.getResourceManager(),
                     mCompositorViewHolder.getLayoutManager(), tabSwitcherClickHandler,
                     newTabClickHandler, mWindowAndroid, mTabCountProvider, mIncognitoStateProvider,
                     mActivity.findViewById(R.id.control_container), closeAllTabsAction);
@@ -1033,10 +1036,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             UserEducationHelper userEducationHelper = new UserEducationHelper(
                     mActivity, mHandler, TrackerFactory::getTrackerForProfile);
             View homeButton = mControlContainer.findViewById(R.id.home_button);
-            mHomeButtonCoordinator =
-                    new HomeButtonCoordinator(mActivity, homeButton, mActivityTabProvider,
-                            userEducationHelper, mIncognitoStateProvider::isIncognitoSelected,
-                            mIntentMetadataOneshotSupplier, mPromoShownOneshotSupplier);
+            mHomeButtonCoordinator = new HomeButtonCoordinator(mActivity, homeButton,
+                    mActivityTabProvider, userEducationHelper,
+                    mIncognitoStateProvider::isIncognitoSelected, mIntentMetadataOneshotSupplier,
+                    mPromoShownOneshotSupplier, HomepageManager::isHomepageNonNtp);
             ToggleTabStackButton toggleTabStackButton =
                     mControlContainer.findViewById(R.id.tab_switcher_button);
             mToggleTabStackButtonCoordinator = new ToggleTabStackButtonCoordinator(mActivity,
@@ -1135,9 +1138,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         HomepageManager.getInstance().removeListener(mHomepageStateListener);
 
-        if (mBottomControlsCoordinator != null) {
-            mBottomControlsCoordinator.destroy();
-            mBottomControlsCoordinator = null;
+        if (mBottomControlsCoordinatorSupplier.get() != null) {
+            mBottomControlsCoordinatorSupplier.get().destroy();
+            mBottomControlsCoordinatorSupplier = null;
         }
 
         mToolbar.removeUrlExpansionObserver(mStatusBarColorController);
@@ -1216,6 +1219,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     @Override
     public void onAccessibilityModeChanged(boolean enabled) {
         mToolbar.onAccessibilityStatusChanged(enabled);
+    }
+
+    @VisibleForTesting
+    static String homepageUrl() {
+        String homePageUrl = HomepageManager.getHomepageUri();
+        if (TextUtils.isEmpty(homePageUrl)) homePageUrl = UrlConstants.NTP_URL;
+        return homePageUrl;
     }
 
     private void registerTemplateUrlObserver() {

@@ -11,11 +11,11 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.flags.FeatureParamUtils;
-import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.intent.IntentMetadata;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.HomeButton;
@@ -43,6 +43,7 @@ public class HomeButtonCoordinator {
     private final ActivityTabProvider.ActivityTabTabObserver mPageLoadObserver;
     private final OneshotSupplier<IntentMetadata> mIntentMetadataOneshotSupplier;
     private final OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
+    private final Supplier<Boolean> mIsHomepageNonNtpSupplier;
 
     /**
      * @param context The Android context used for various view operations.
@@ -52,18 +53,21 @@ public class HomeButtonCoordinator {
      * @param isIncognitoSupplier Supplier for whether the current tab is incognito.
      * @param intentMetadataOneshotSupplier Potentially delayed information about launching intent.
      * @param promoShownOneshotSupplier Potentially delayed information about if a promo was shown.
+     * @param isHomepageNonNtpSupplier Supplier for whether the current homepage is not NTP.
      */
     public HomeButtonCoordinator(Context context, View homeButton,
             ActivityTabProvider activityTabProvider, UserEducationHelper userEducationHelper,
             BooleanSupplier isIncognitoSupplier,
             OneshotSupplier<IntentMetadata> intentMetadataOneshotSupplier,
-            OneshotSupplier<Boolean> promoShownOneshotSupplier) {
+            OneshotSupplier<Boolean> promoShownOneshotSupplier,
+            Supplier<Boolean> isHomepageNonNtpSupplier) {
         mContext = context;
         mHomeButton = homeButton;
         mUserEducationHelper = userEducationHelper;
         mIsIncognitoSupplier = isIncognitoSupplier;
         mIntentMetadataOneshotSupplier = intentMetadataOneshotSupplier;
         mPromoShownOneshotSupplier = promoShownOneshotSupplier;
+        mIsHomepageNonNtpSupplier = isHomepageNonNtpSupplier;
         mPageLoadObserver = new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider) {
             @Override
             public void onPageLoadFinished(Tab tab, String url) {
@@ -87,7 +91,7 @@ public class HomeButtonCoordinator {
         if (mHomeButton == null || !mHomeButton.isShown()) return;
         if (mIsIncognitoSupplier.getAsBoolean()) return;
         if (UrlUtilities.isNTPUrl(url)) return;
-        if (HomepageManager.isHomepageNonNtp()) return;
+        if (mIsHomepageNonNtpSupplier.get()) return;
         if (mPromoShownOneshotSupplier.get() == null || mPromoShownOneshotSupplier.get()) return;
 
         IntentMetadata intentMetadata = mIntentMetadataOneshotSupplier.get();

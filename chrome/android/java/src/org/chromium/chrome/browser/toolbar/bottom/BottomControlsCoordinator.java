@@ -68,8 +68,6 @@ public class BottomControlsCoordinator {
      * @param themeColorProvider The {@link ThemeColorProvider} for the bottom toolbar.
      * @param shareDelegateSupplier The supplier for the {@link ShareDelegate} the bottom controls
      *         should use to share content.
-     * @param showStartSurfaceCallable The action that opens the start surface, returning true if
-     *         the start surface is shown.
      * @param openHomepageAction The action that opens the homepage.
      * @param setUrlBarFocusAction The function that sets Url bar focus. The first argument is
      *         whether the bar should be focused, and the second is the OmniboxFocusReason.
@@ -82,8 +80,8 @@ public class BottomControlsCoordinator {
             ThemeColorProvider themeColorProvider,
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             ObservableSupplier<AppMenuButtonHelper> menuButtonHelperSupplier,
-            Supplier<Boolean> showStartSurfaceCallable, Runnable openHomepageAction,
-            Callback<Integer> setUrlBarFocusAction, ScrimCoordinator scrimCoordinator,
+            Runnable openHomepageAction, Callback<Integer> setUrlBarFocusAction,
+            ScrimCoordinator scrimCoordinator,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier) {
         final ScrollingBottomViewResourceFrameLayout root =
                 (ScrollingBottomViewResourceFrameLayout) stub.inflate();
