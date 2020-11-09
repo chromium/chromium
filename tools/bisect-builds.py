@@ -411,7 +411,7 @@ class PathContext(object):
     else:
       return self._GetSVNRevisionFromGitHashFromGitCheckout(git_sha1, depot)
 
-  def GetRevList(self):
+  def GetRevList(self, archive):
     """Gets the list of revision numbers between self.good_revision and
     self.bad_revision."""
 
@@ -465,6 +465,31 @@ class PathContext(object):
       _SaveBucketToCache()
 
     revlist = [x for x in revlist_all if x >= int(minrev) and x <= int(maxrev)]
+    if len(revlist) < 2:  # Don't have enough builds to bisect.
+      last_known_rev = revlist_all[-1] if revlist_all else 0
+      first_known_rev = revlist_all[0] if revlist_all else 0
+      # Check for specifying a number before the available range.
+      if maxrev < first_known_rev:
+        msg = (
+            'First available bisect revision for %s is %d. Be sure to specify revision '
+            'numbers, not branch numbers.' % (archive, first_known_rev))
+        raise (RuntimeError(msg))
+
+      # Check for specifying a number beyond the available range.
+      if maxrev > last_known_rev:
+        # Check for the special case of linux where bisect builds stopped at
+        # revision 382086, around March 2016.
+        if archive == 'linux':
+          msg = 'Last available bisect revision for %s is %d. Try linux64 instead.' % (
+              archive, last_known_rev)
+        else:
+          msg = 'Last available bisect revision for %s is %d. Try a different good/bad range.' % (
+              archive, last_known_rev)
+        raise (RuntimeError(msg))
+
+      # Otherwise give a generic message.
+      msg = 'We don\'t have enough builds to bisect. revlist: %s' % revlist
+      raise RuntimeError(msg)
 
     # Set good and bad revisions to be legit revisions.
     if revlist:
@@ -769,7 +794,8 @@ def Bisect(context,
            try_args=(),
            profile=None,
            evaluate=AskIsGoodBuild,
-           verify_range=False):
+           verify_range=False,
+           archive=None):
   """Given known good and known bad revisions, run a binary search on all
   archived revisions to determine the last known good revision.
 
@@ -811,12 +837,9 @@ def Bisect(context,
     print()
   _GetDownloadPath = lambda rev: os.path.join(cwd,
       '%s-%s' % (str(rev), context.archive_name))
-  revlist = context.GetRevList()
 
   # Get a list of revisions to bisect across.
-  if len(revlist) < 2:  # Don't have enough builds to bisect.
-    msg = 'We don\'t have enough builds to bisect. revlist: %s' % revlist
-    raise RuntimeError(msg)
+  revlist = context.GetRevList(archive)
 
   # Figure out our bookends and first pivot point; fetch the pivot revision.
   minrev = 0
@@ -1278,9 +1301,9 @@ def main():
   print('Scanning from %d to %d (%d revisions).' %
         (good_rev, bad_rev, abs(good_rev - bad_rev)))
 
-  (min_chromium_rev, max_chromium_rev, context) = Bisect(
-      context, opts.times, opts.command, args, opts.profile,
-      evaluator, opts.verify_range)
+  (min_chromium_rev, max_chromium_rev,
+   context) = Bisect(context, opts.times, opts.command, args, opts.profile,
+                     evaluator, opts.verify_range, opts.archive)
 
   # Get corresponding blink revisions.
   try:
