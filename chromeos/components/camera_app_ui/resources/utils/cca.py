@@ -47,8 +47,7 @@ def build_locale_strings():
 
 
 def build_mojom_bindings(mojom_bindings):
-    pylib = os.path.join(get_chromium_root(),
-                         'mojo/public/tools/mojom')
+    pylib = os.path.join(get_chromium_root(), 'mojo/public/tools/mojom')
     sys.path.insert(0, pylib)
     # pylint: disable=import-error,import-outside-toplevel
     from mojom.parse.parser import Parse
@@ -91,9 +90,8 @@ def build_mojom_bindings(mojom_bindings):
     ]
     run(precompile_cmd)
 
-    parser = os.path.join(
-        get_chromium_root(),
-        'mojo/public/tools/mojom/mojom_parser.py')
+    parser = os.path.join(get_chromium_root(),
+                          'mojo/public/tools/mojom/mojom_parser.py')
 
     parse_cmd = [
         parser,
@@ -271,36 +269,6 @@ def test(args):
     run(cmd)
 
 
-def pack(args):
-    assert os.path.exists(args.key), f'There is no key at {args.key}'
-
-    pubkey = None
-    if shutil.which('openssl'):
-        openssl_cmd = ['openssl', 'rsa', '-in', args.key, '-pubout']
-        openssl_output = subprocess.check_output(openssl_cmd,
-                                                 stderr=subprocess.DEVNULL,
-                                                 text=True)
-        pubkey = ''.join(openssl_output.splitlines()[1:-1])
-    build_cca(overlay='dev', key=pubkey)
-
-    if os.path.exists('build/camera.crx'):
-        os.remove('build/camera.crx')
-    pack_cmd = [
-        'google-chrome',
-        '--disable-gpu',  # suppress an error about sandbox on gpu process
-        '--pack-extension=build/camera',
-        shlex.quote(f'--pack-extension-key={args.key}'),
-    ]
-    if shutil.which('xvfb-run'):
-        # Run it in a virtual X server environment
-        pack_cmd.insert(0, 'xvfb-run')
-    run(pack_cmd)
-    assert os.path.exists('build/camera.crx')
-    shutil.move('build/camera.crx', args.output)
-
-    # TODO(shik): Add an option to deploy/install the packed crx on device
-
-
 def lint(args):
     root = get_chromium_root()
     node = os.path.join(root, 'third_party/node/linux/node-linux-x64/bin/node')
@@ -340,19 +308,6 @@ def parse_args(args):
                              default=['camera.CCAUI*'],
                              help='test patterns. (default: camera.CCAUI*)')
     test_parser.set_defaults(func=test)
-
-    pack_parser = subparsers.add_parser('pack',
-                                        help='pack crx',
-                                        description='Pack CCA into a crx.')
-    pack_parser.add_argument('-o',
-                             '--output',
-                             help='output file (default: build/camera.crx)',
-                             default='build/camera.crx')
-    pack_parser.add_argument('-k',
-                             '--key',
-                             help='private key file (default: camera.pem)',
-                             default='camera.pem')
-    pack_parser.set_defaults(func=pack)
 
     lint_parser = subparsers.add_parser('lint',
                                         help='check code',

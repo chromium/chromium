@@ -17,9 +17,6 @@ $ ./cca deploy <device>
 
 # Run CCA Tast tests on <device>
 $ ./cca test <device> [patterns...]
-
-# Pack CCA into a distributable .crx.
-$ ./cca pack
 ```
 
 For more details, please check the usage of individual commands with the
