@@ -6,6 +6,8 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/ukm/content/source_url_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace autofill_assistant {
 
@@ -106,6 +108,26 @@ void Metrics::RecordPaymentRequestMandatoryPostalCode(bool required,
 
   base::UmaHistogramEnumeration(kPaymentRequestMandatoryPostalCode,
                                 mandatory_postal_code);
+}
+
+// static
+void Metrics::RecordLiteScriptFinished(ukm::UkmRecorder* ukm_recorder,
+                                       content::WebContents* web_contents,
+                                       LiteScriptFinishedState event) {
+  ukm::builders::AutofillAssistant_LiteScriptFinished(
+      ukm::GetSourceIdForWebContentsDocument(web_contents))
+      .SetLiteScriptFinished(static_cast<int64_t>(event))
+      .Record(ukm_recorder);
+}
+
+// static
+void Metrics::RecordLiteScriptShownToUser(ukm::UkmRecorder* ukm_recorder,
+                                          content::WebContents* web_contents,
+                                          LiteScriptShownToUser event) {
+  ukm::builders::AutofillAssistant_LiteScriptShownToUser(
+      ukm::GetSourceIdForWebContentsDocument(web_contents))
+      .SetLiteScriptShownToUser(static_cast<int64_t>(event))
+      .Record(ukm_recorder);
 }
 
 }  // namespace autofill_assistant

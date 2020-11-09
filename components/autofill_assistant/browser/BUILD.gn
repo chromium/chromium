@@ -239,10 +239,13 @@ static_library("browser") {
     "//components/password_manager/core/browser/form_parsing:form_parsing",
     "//components/signin/public/identity_manager",
     "//components/strings:components_strings_grit",
+    "//components/ukm/content:content",
     "//components/version_info",
     "//content/public/browser",
     "//google_apis",
     "//net",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
     "//third_party/re2",
   ]
 }
@@ -379,6 +382,8 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/common",
     "//components/strings:components_strings_grit",
+    "//components/ukm:test_support",
+    "//components/ukm/content:content",
     "//components/version_info",
     "//content/test:test_support",
     "//services/network:test_support",

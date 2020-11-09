@@ -25,6 +25,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
@@ -54,7 +55,8 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
       std::unique_ptr<ServiceRequestSender> request_sender,
       const GURL& get_trigger_scripts_server,
       std::unique_ptr<StaticTriggerConditions> static_trigger_conditions,
-      std::unique_ptr<DynamicTriggerConditions> dynamic_trigger_conditions);
+      std::unique_ptr<DynamicTriggerConditions> dynamic_trigger_conditions,
+      ukm::UkmRecorder* ukm_recorder);
   ~TriggerScriptCoordinator() override;
   TriggerScriptCoordinator(const TriggerScriptCoordinator&) = delete;
   TriggerScriptCoordinator& operator=(const TriggerScriptCoordinator&) = delete;
@@ -80,6 +82,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
+  void WebContentsDestroyed() override;
 
   void StartCheckingTriggerConditions();
   void StopCheckingTriggerConditions();
@@ -142,6 +145,12 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   // TODO(arbesser): Maybe make this configurable in proto?
   base::TimeDelta periodic_element_check_interval_ =
       base::TimeDelta::FromSeconds(1);
+
+  // The UKM recorder used for metrics.
+  ukm::UkmRecorder* const ukm_recorder_;
+
+  // Flag to ensure that we only get one LiteScriptFinished event per run.
+  bool finished_state_recorded_ = false;
 
   base::WeakPtrFactory<TriggerScriptCoordinator> weak_ptr_factory_{this};
 };

@@ -55,14 +55,16 @@ TriggerScriptCoordinator::TriggerScriptCoordinator(
     std::unique_ptr<ServiceRequestSender> request_sender,
     const GURL& get_trigger_scripts_server,
     std::unique_ptr<StaticTriggerConditions> static_trigger_conditions,
-    std::unique_ptr<DynamicTriggerConditions> dynamic_trigger_conditions)
+    std::unique_ptr<DynamicTriggerConditions> dynamic_trigger_conditions,
+    ukm::UkmRecorder* ukm_recorder)
     : content::WebContentsObserver(client->GetWebContents()),
       client_(client),
       request_sender_(std::move(request_sender)),
       get_trigger_scripts_server_(get_trigger_scripts_server),
       web_controller_(std::move(web_controller)),
       static_trigger_conditions_(std::move(static_trigger_conditions)),
-      dynamic_trigger_conditions_(std::move(dynamic_trigger_conditions)) {}
+      dynamic_trigger_conditions_(std::move(dynamic_trigger_conditions)),
+      ukm_recorder_(ukm_recorder) {}
 
 TriggerScriptCoordinator::~TriggerScriptCoordinator() = default;
 
@@ -108,6 +110,9 @@ void TriggerScriptCoordinator::OnGetTriggerScripts(
     return;
   }
 
+  Metrics::RecordLiteScriptShownToUser(
+      ukm_recorder_, client_->GetWebContents(),
+      Metrics::LiteScriptShownToUser::LITE_SCRIPT_RUNNING);
   StartCheckingTriggerConditions();
 }
 
@@ -116,6 +121,9 @@ void TriggerScriptCoordinator::PerformTriggerScriptAction(
   switch (action) {
     case TriggerScriptProto::NOT_NOW:
       if (visible_trigger_script_ != -1) {
+        Metrics::RecordLiteScriptShownToUser(
+            ukm_recorder_, client_->GetWebContents(),
+            Metrics::LiteScriptShownToUser::LITE_SCRIPT_NOT_NOW);
         trigger_scripts_[visible_trigger_script_]
             ->waiting_for_precondition_no_longer_true(true);
         HideTriggerScript();
@@ -165,10 +173,11 @@ void TriggerScriptCoordinator::RemoveObserver(const Observer* observer) {
 void TriggerScriptCoordinator::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   // Ignore navigation events if any of the following is true:
+  // - not currently checking for preconditions (i.e., not yet started).
   // - not in the main frame.
   // - document does not change (e.g., same page history navigation).
   // - WebContents stays at the existing URL (e.g., downloads).
-  if (!navigation_handle->IsInMainFrame() ||
+  if (!is_checking_trigger_conditions_ || !navigation_handle->IsInMainFrame() ||
       navigation_handle->IsSameDocument() ||
       !navigation_handle->HasCommitted()) {
     return;
@@ -215,6 +224,19 @@ void TriggerScriptCoordinator::OnVisibilityChanged(
   }
 }
 
+void TriggerScriptCoordinator::WebContentsDestroyed() {
+  if (!finished_state_recorded_) {
+    Metrics::RecordLiteScriptFinished(
+        ukm_recorder_, client_->GetWebContents(),
+        visible_trigger_script_ == -1
+            ? Metrics::LiteScriptFinishedState::
+                  LITE_SCRIPT_WEB_CONTENTS_DESTROYED_WHILE_INVISIBLE
+            : Metrics::LiteScriptFinishedState::
+                  LITE_SCRIPT_WEB_CONTENTS_DESTROYED_WHILE_VISIBLE);
+    finished_state_recorded_ = true;
+  }
+}
+
 void TriggerScriptCoordinator::StartCheckingTriggerConditions() {
   is_checking_trigger_conditions_ = true;
   static_trigger_conditions_->Init(
@@ -240,6 +262,9 @@ void TriggerScriptCoordinator::ShowTriggerScript(int index) {
     return;
   }
 
+  Metrics::RecordLiteScriptShownToUser(
+      ukm_recorder_, client_->GetWebContents(),
+      Metrics::LiteScriptShownToUser::LITE_SCRIPT_SHOWN_TO_USER);
   visible_trigger_script_ = index;
   static_trigger_conditions_->set_is_first_time_user(false);
   auto proto = trigger_scripts_[index]->AsProto().user_interface();
@@ -274,6 +299,10 @@ void TriggerScriptCoordinator::OnDynamicTriggerConditionsEvaluated() {
   // Trigger condition for the currently shown trigger script is no longer true.
   if (visible_trigger_script_ != -1 &&
       !evaluated_trigger_conditions[visible_trigger_script_]) {
+    Metrics::RecordLiteScriptShownToUser(
+        ukm_recorder_, client_->GetWebContents(),
+        Metrics::LiteScriptShownToUser::
+            LITE_SCRIPT_HIDE_ON_TRIGGER_CONDITION_NO_LONGER_TRUE);
     HideTriggerScript();
     // Do not return here: a different trigger script may have become eligible
     // at the same time.
@@ -321,6 +350,12 @@ void TriggerScriptCoordinator::OnDynamicTriggerConditionsEvaluated() {
 
 void TriggerScriptCoordinator::NotifyOnTriggerScriptFinished(
     Metrics::LiteScriptFinishedState state) {
+  if (!finished_state_recorded_) {
+    finished_state_recorded_ = true;
+    Metrics::RecordLiteScriptFinished(ukm_recorder_, client_->GetWebContents(),
+                                      state);
+  }
+
   for (Observer& observer : observers_) {
     observer.OnTriggerScriptFinished(state);
   }

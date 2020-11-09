@@ -6,10 +6,12 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_METRICS_H_
 
 #include <ostream>
+#include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace autofill_assistant {
 
-// A class to generate Autofill Assistant related histograms.
+// A class to generate Autofill Assistant metrics.
 class Metrics {
  public:
   // The different ways that autofill assistant can stop.
@@ -155,6 +157,7 @@ class Metrics {
   // tools/metrics/ukm/ukm.xml as necessary.
   enum class LiteScriptShownToUser {
     // The number of times a lite script was successfully fetched and started.
+    // Can happen multiple times per run (in case of tab switch).
     LITE_SCRIPT_RUNNING = 0,
     // The number of times a lite script was shown to the user. Can happen
     // multiple times per run.
@@ -311,6 +314,12 @@ class Metrics {
   static void RecordPaymentRequestMandatoryPostalCode(bool required,
                                                       bool initially_right,
                                                       bool success);
+  static void RecordLiteScriptFinished(ukm::UkmRecorder* ukm_recorder,
+                                       content::WebContents* web_contents,
+                                       LiteScriptFinishedState event);
+  static void RecordLiteScriptShownToUser(ukm::UkmRecorder* ukm_recorder,
+                                          content::WebContents* web_contents,
+                                          LiteScriptShownToUser event);
 
   // Intended for debugging: writes string representation of |reason| to |out|.
   friend std::ostream& operator<<(std::ostream& out,
