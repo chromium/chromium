@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
@@ -19,6 +18,7 @@
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync/model/entity_change.h"
+#include "components/sync/model/entity_data.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model_impl/in_memory_metadata_change_list.h"
 #include "components/sync/protocol/model_type_state.pb.h"
@@ -49,6 +49,14 @@ const char kTitleFormat[] = "title %d";
 const char kDeviceFormat[] = "device %d";
 const char kLocalDeviceCacheGuid[] = "local_device_guid";
 const char kLocalDeviceName[] = "local_device_name";
+
+// Action SaveArgPointeeMove<k>(pointer) saves the value pointed to by the k-th
+// (0-based) argument of the mock function by moving it to *pointer.
+ACTION_TEMPLATE(SaveArgPointeeMove,
+                HAS_1_TEMPLATE_PARAMS(int, k),
+                AND_1_VALUE_PARAMS(pointer)) {
+  *pointer = std::move(*testing::get<k>(args));
+}
 
 sync_pb::SendTabToSelfSpecifics CreateSpecifics(
     int suffix,
@@ -237,8 +245,6 @@ class SendTabToSelfBridgeTest : public testing::Test {
 
   testing::NiceMock<MockSendTabToSelfModelObserver> mock_observer_;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   std::unique_ptr<syncer::DeviceInfo> local_device_;
 
   DISALLOW_COPY_AND_ASSIGN(SendTabToSelfBridgeTest);
@@ -369,6 +375,8 @@ TEST_F(SendTabToSelfBridgeTest, LocalHistoryDeletion) {
   urls_to_remove.push_back(history::URLRow(GURL("http://www.example2.com/")));
 
   EXPECT_CALL(*mock_observer(), EntriesRemovedRemotely(SizeIs(2)));
+  EXPECT_CALL(*processor(), Delete("guid1", _));
+  EXPECT_CALL(*processor(), Delete("guid2", _));
 
   bridge()->OnURLsDeleted(nullptr, history::DeletionInfo::ForUrls(
                                        urls_to_remove, std::set<GURL>()));
@@ -457,6 +465,47 @@ TEST_F(SendTabToSelfBridgeTest, ApplyDeleteNonexistent) {
   EXPECT_FALSE(error);
 }
 
+TEST_F(SendTabToSelfBridgeTest, MarkEntryOpenedInformsServer) {
+  InitializeBridge();
+
+  SendTabToSelfEntry entry("guid", GURL("http://g.com/"), "title",
+                           AdvanceAndGetTime(), AdvanceAndGetTime(), "remote",
+                           "remote");
+  syncer::EntityChangeList remote_data;
+  remote_data.push_back(
+      syncer::EntityChange::CreateAdd("guid", MakeEntityData(entry)));
+  bridge()->MergeSyncData(bridge()->CreateMetadataChangeList(),
+                          std::move(remote_data));
+  ASSERT_THAT(bridge()->GetAllGuids(), UnorderedElementsAre("guid"));
+
+  syncer::EntityData uploaded_opened_entity;
+  EXPECT_CALL(*processor(), Put("guid", _, _))
+      .WillOnce(SaveArgPointeeMove<1>(&uploaded_opened_entity));
+  bridge()->MarkEntryOpened("guid");
+  EXPECT_TRUE(uploaded_opened_entity.specifics.send_tab_to_self().opened());
+}
+
+TEST_F(SendTabToSelfBridgeTest, DismissEntryInformsServer) {
+  InitializeBridge();
+
+  SendTabToSelfEntry entry("guid", GURL("http://g.com/"), "title",
+                           AdvanceAndGetTime(), AdvanceAndGetTime(), "remote",
+                           "remote");
+  syncer::EntityChangeList remote_data;
+  remote_data.push_back(
+      syncer::EntityChange::CreateAdd("guid", MakeEntityData(entry)));
+  bridge()->MergeSyncData(bridge()->CreateMetadataChangeList(),
+                          std::move(remote_data));
+  ASSERT_THAT(bridge()->GetAllGuids(), UnorderedElementsAre("guid"));
+
+  syncer::EntityData uploaded_dismissed_entity;
+  EXPECT_CALL(*processor(), Put("guid", _, _))
+      .WillOnce(SaveArgPointeeMove<1>(&uploaded_dismissed_entity));
+  bridge()->DismissEntry("guid");
+  EXPECT_TRUE(uploaded_dismissed_entity.specifics.send_tab_to_self()
+                  .notification_dismissed());
+}
+
 TEST_F(SendTabToSelfBridgeTest, PreserveDissmissalAfterRestartBridge) {
   InitializeBridge();
 
@@ -468,8 +517,7 @@ TEST_F(SendTabToSelfBridgeTest, PreserveDissmissalAfterRestartBridge) {
                                           EntityAddList({specifics}));
   ASSERT_FALSE(error);
 
-  EXPECT_CALL(*processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(*processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(*processor(), Put(_, _, _));
 
   bridge()->DismissEntry(specifics.guid());
 
@@ -503,11 +551,13 @@ TEST_F(SendTabToSelfBridgeTest, ExpireEntryDuringInit) {
       EntityAddList({expired_specifics, not_expired_specifics}));
   ASSERT_FALSE(error);
 
+  ShutdownBridge();
+
   AdvanceAndGetTime(kExpiryTime / 2.0);
 
   EXPECT_CALL(*mock_observer(), EntriesRemovedRemotely(SizeIs(1)));
+  EXPECT_CALL(*processor(), Delete(_, _));
 
-  ShutdownBridge();
   InitializeBridge();
 
   std::vector<std::string> guids = bridge()->GetAllGuids();
@@ -532,6 +582,8 @@ TEST_F(SendTabToSelfBridgeTest, AddExpiredEntry) {
   const sync_pb::SendTabToSelfSpecifics not_expired_specifics =
       CreateSpecifics(2, AdvanceAndGetTime(), AdvanceAndGetTime());
 
+  EXPECT_CALL(*processor(), Delete(_, _));
+
   auto error = bridge()->ApplySyncChanges(
       std::move(metadata_changes),
       EntityAddList({expired_specifics, not_expired_specifics}));
@@ -549,11 +601,13 @@ TEST_F(SendTabToSelfBridgeTest, AddInvalidEntries) {
   EXPECT_CALL(*mock_observer(), EntriesAddedRemotely(_)).Times(0);
 
   // Add Entry should succeed in this case.
+  EXPECT_CALL(*processor(), Put(_, _, _));
   EXPECT_NE(nullptr,
             bridge()->AddEntry(GURL("http://www.example.com/"), "d",
                                AdvanceAndGetTime(), kLocalDeviceCacheGuid));
 
   // Add Entry should fail on invalid URLs.
+  EXPECT_CALL(*processor(), Put(_, _, _)).Times(0);
   EXPECT_EQ(nullptr, bridge()->AddEntry(GURL(), "d", AdvanceAndGetTime(),
                                         kLocalDeviceCacheGuid));
   EXPECT_EQ(nullptr,
@@ -565,6 +619,7 @@ TEST_F(SendTabToSelfBridgeTest, AddInvalidEntries) {
 
   // Add Entry should succeed on an invalid navigation_time, since that is the
   // case for sending links.
+  EXPECT_CALL(*processor(), Put(_, _, _));
   EXPECT_NE(nullptr, bridge()->AddEntry(GURL("http://www.example.com/"), "d",
                                         base::Time(), kLocalDeviceCacheGuid));
 }
@@ -585,12 +640,14 @@ TEST_F(SendTabToSelfBridgeTest, AddDuplicateEntries) {
   base::Time navigation_time = AdvanceAndGetTime();
   // The de-duplication code does not use the title as a comparator.
   // So they are intentionally different here.
+  EXPECT_CALL(*processor(), Put(_, _, _)).Times(1);
   bridge()->AddEntry(GURL("http://a.com"), "a", navigation_time,
                      kLocalDeviceCacheGuid);
   bridge()->AddEntry(GURL("http://a.com"), "b", navigation_time,
                      kLocalDeviceCacheGuid);
   EXPECT_EQ(1ul, bridge()->GetAllGuids().size());
 
+  EXPECT_CALL(*processor(), Put(_, _, _)).Times(2);
   bridge()->AddEntry(GURL("http://a.com"), "a", AdvanceAndGetTime(),
                      kLocalDeviceCacheGuid);
   bridge()->AddEntry(GURL("http://b.com"), "b", AdvanceAndGetTime(),
@@ -599,8 +656,6 @@ TEST_F(SendTabToSelfBridgeTest, AddDuplicateEntries) {
 }
 
 TEST_F(SendTabToSelfBridgeTest, NotifyRemoteSendTabToSelfEntryAdded) {
-  base::test::ScopedFeatureList scoped_features;
-
   const std::string kRemoteGuid = "RemoteDevice";
   InitializeBridge();
 
@@ -805,8 +860,6 @@ TEST_F(SendTabToSelfBridgeTest,
 }
 
 TEST_F(SendTabToSelfBridgeTest, NotifyRemoteSendTabToSelfEntryOpened) {
-  base::test::ScopedFeatureList scoped_features;
-
   InitializeBridge();
   SetLocalDeviceCacheGuid("Device1");
 
@@ -831,8 +884,9 @@ TEST_F(SendTabToSelfBridgeTest, NotifyRemoteSendTabToSelfEntryOpened) {
       std::make_unique<syncer::InMemoryMetadataChangeList>();
 
   // an entry with "guid1" should be sent to the observers.
-  EXPECT_CALL(*mock_observer(), EntriesOpenedRemotely(AllOf(
-                                    SizeIs(1), ElementsAre(GuidIs("guid1")))));
+  EXPECT_CALL(*mock_observer(),
+              EntriesOpenedRemotely(
+                  AllOf(SizeIs(1), UnorderedElementsAre(GuidIs("guid1")))));
   bridge()->MergeSyncData(std::move(metadata_change_list),
                           std::move(remote_input));
 
