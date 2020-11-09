@@ -16,6 +16,13 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/leveldb_proto/public/proto_database.h"
 
+#if defined(OS_ANDROID)
+
+#include "base/android/scoped_java_ref.h"
+#include "build/build_config.h"
+
+#endif  // OS_ANDROID
+
 namespace leveldb_proto {
 class ProtoDatabaseProvider;
 }  // namespace leveldb_proto
@@ -64,6 +71,30 @@ class PersistedStateDB : public KeyedService {
 
   // Delete all content in the database
   void DeleteAllContent(OperationCallback callback);
+
+#if defined(OS_ANDROID)
+  // The following are callable from LevelDBPersistedTabDataStorage over JNI.
+
+  // Save byte array for key.
+  void Save(JNIEnv* env,
+            const base::android::JavaParamRef<jstring>& jkey,
+            const base::android::JavaParamRef<jbyteArray>& byte_array,
+            const base::android::JavaRef<jobject>& jcallback);
+
+  // Load byte array corresponding to key.
+  void Load(JNIEnv* env,
+            const base::android::JavaParamRef<jstring>& jkey,
+            const base::android::JavaRef<jobject>& jcallback);
+
+  // Delete entry corresponding to key.
+  void Delete(JNIEnv* env,
+              const base::android::JavaParamRef<jstring>& jkey,
+              const base::android::JavaRef<jobject>& jcallback);
+
+  // Destroy PersistedStateDB object.
+  void Destroy(JNIEnv* env);
+
+#endif  // OS_ANDROID
 
  private:
   friend class ::PersistedStateDBTest;

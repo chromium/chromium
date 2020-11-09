@@ -14,6 +14,18 @@
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "third_party/leveldatabase/src/include/leveldb/options.h"
 
+#if defined(OS_ANDROID)
+
+#include "base/android/callback_android.h"
+#include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
+#include "chrome/browser/persisted_state_db/persisted_state_db_factory.h"
+#include "chrome/browser/tab/jni_headers/LevelDBPersistedTabDataStorage_jni.h"
+#include "components/embedder_support/android/browser_context/browser_context_handle.h"
+
+#endif  // defined(OS_ANDROID)
+
 namespace {
 
 const char kPersistedStateDBFolder[] = "persisted_state_db";
@@ -174,3 +186,77 @@ bool PersistedStateDB::FailedToInit() const {
   return database_status_.has_value() &&
          database_status_.value() != leveldb_proto::Enums::InitStatus::kOK;
 }
+
+#if defined(OS_ANDROID)
+
+namespace {
+void OnUpdateCallback(
+    const base::android::JavaRef<jobject>& joncomplete_for_testing,
+    bool success) {
+  if (!success)
+    LOG(WARNING) << "There was an error modifying PersistedStateDB";
+  // Callback for save and delete is only used in tests for synchronization.
+  // Otherwise the callback is a no-op.
+  if (joncomplete_for_testing)
+    base::android::RunRunnableAndroid(joncomplete_for_testing);
+}
+
+void OnLoadCallback(const base::android::JavaRef<jobject>& jcallback,
+                    bool success,
+                    std::vector<PersistedStateDB::KeyAndValue> data) {
+  if (!success)
+    LOG(WARNING) << "There was an error loading from PersistedStateDB";
+  base::android::RunObjectCallbackAndroid(
+      jcallback, base::android::ToJavaByteArray(
+                     base::android::AttachCurrentThread(),
+                     data.empty() ? std::vector<uint8_t>() : data[0].second));
+}
+}  // namespace
+
+void PersistedStateDB::Save(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& jkey,
+    const base::android::JavaParamRef<jbyteArray>& byte_array,
+    const base::android::JavaRef<jobject>& joncomplete_for_testing) {
+  std::vector<uint8_t> data;
+  base::android::JavaByteArrayToByteVector(env, byte_array, &data);
+  InsertContent(base::android::ConvertJavaStringToUTF8(env, jkey), data,
+                base::BindOnce(&OnUpdateCallback,
+                               base::android::ScopedJavaGlobalRef<jobject>(
+                                   joncomplete_for_testing)));
+}
+
+void PersistedStateDB::Load(JNIEnv* env,
+                            const base::android::JavaParamRef<jstring>& jkey,
+                            const base::android::JavaRef<jobject>& jcallback) {
+  LoadContent(
+      base::android::ConvertJavaStringToUTF8(env, jkey),
+      base::BindOnce(&OnLoadCallback,
+                     base::android::ScopedJavaGlobalRef<jobject>(jcallback)));
+}
+
+void PersistedStateDB::Delete(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& jkey,
+    const base::android::JavaRef<jobject>& joncomplete_for_testing) {
+  DeleteContent(base::android::ConvertJavaStringToUTF8(env, jkey),
+                base::BindOnce(&OnUpdateCallback,
+                               base::android::ScopedJavaGlobalRef<jobject>(
+                                   joncomplete_for_testing)));
+}
+
+void PersistedStateDB::Destroy(JNIEnv* env) {
+  delete this;
+}
+
+static void JNI_LevelDBPersistedTabDataStorage_Init(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    const base::android::JavaParamRef<jobject>& jprofile) {
+  PersistedStateDB* persisted_state_db =
+      PersistedStateDBFactory::GetInstance()->GetForProfile(
+          browser_context::BrowserContextFromJavaHandle(jprofile));
+  Java_LevelDBPersistedTabDataStorage_setNativePtr(
+      env, obj, reinterpret_cast<intptr_t>(persisted_state_db));
+}
+#endif  // OS_ANDROID

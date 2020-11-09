@@ -21,6 +21,12 @@ source_set("persisted_state_db") {
     "//content/public/browser:browser",
     "//third_party/leveldatabase",
   ]
+  if (is_android) {
+    deps += [
+      "//chrome/browser/tab:jni_headers",
+      "//components/embedder_support/android:browser_context",
+    ]
+  }
 }
 
 proto_library("persisted_state_db_content_proto") {
