@@ -1361,6 +1361,17 @@ deps = {
       'dep_type': 'cipd',
   },
 
+  'src/third_party/zstd': {
+      'packages': [
+          {
+              'package': 'fuchsia/third_party/zstd/linux-amd64',
+              'version': 'nVy-mclpAVYv0eyAe8SDxiE1g2UuafhnjOx2wr6vd_IC'
+          },
+      ],
+      'condition': 'host_os == "linux" and checkout_fuchsia',
+      'dep_type': 'cipd',
+  },
+
   'src/third_party/re2/src':
     Var('chromium_git') + '/external/github.com/google/re2.git' + '@' + 'a84f9718f35f62ae2a7a32abb016a1fa9862346a',
 
