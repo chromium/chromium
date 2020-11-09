@@ -63,34 +63,18 @@ bool ConvertCharToKeyCode(
 }
 
 bool SwitchToUSKeyboardLayout() {
-  // For LoadKeyboardLayout - Prior to Windows 8: If the specified input
-  // locale identifier is not already loaded, the function loads and
-  // activates the input locale identifier for the current thread.
-  // Beginning in Windows 8: If the specified input locale identifier is not
-  // already loaded, the function loads and activates the input
-  // locale identifier for the system.
-  // For Windows 8 - Use ActivateKeyboardLayout instead of LoadKeyboardLayout
+  // Prior to Windows 8, calling LoadKeyboardLayout() with KLF_SETFORPROCESS
+  // activates specified keyboard layout for the entire process.
+  //
+  // Beginning in Windows 8: KLF_SETFORPROCESS flag is not used.
+  // LoadKeyboardLayout always activates an input locale identifier for
+  // the entire system if the current process owns the window with keyboard
+  // focus.
   LPCTSTR kUsKeyboardLayout = TEXT("00000409");
+  HKL hkl =
+      ::LoadKeyboardLayout(kUsKeyboardLayout, KLF_SETFORPROCESS | KLF_ACTIVATE);
 
-  if (IsWindows8OrGreater()) {
-    int size;
-    TCHAR active_keyboard[KL_NAMELENGTH];
-
-    if ((size = ::GetKeyboardLayoutList(0, NULL)) <= 0)
-      return false;
-
-    std::unique_ptr<HKL[]> keyboard_handles_list(new HKL[size]);
-    ::GetKeyboardLayoutList(size, keyboard_handles_list.get());
-
-    for (int keyboard_index = 0; keyboard_index < size; keyboard_index++) {
-      ::ActivateKeyboardLayout(keyboard_handles_list[keyboard_index],
-          KLF_SETFORPROCESS);
-      ::GetKeyboardLayoutName(active_keyboard);
-      if (wcscmp(active_keyboard, kUsKeyboardLayout) == 0)
-        return true;
-    }
-    return false;
-  } else {
-    return ::LoadKeyboardLayout(kUsKeyboardLayout, KLF_ACTIVATE) != NULL;
-  }
+  // Inspect only the low word that contains keyboard language identifier,
+  // ignoring the device identifier (Dvorak keyboard, etc) in the high word.
+  return LOWORD(hkl) == 0x0409;
 }
