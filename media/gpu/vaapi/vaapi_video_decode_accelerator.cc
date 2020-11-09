@@ -699,14 +699,13 @@ void VaapiVideoDecodeAccelerator::AssignPictureBuffers(
   std::vector<VASurfaceID> va_surface_ids;
   scoped_refptr<VaapiWrapper> vaapi_wrapper_for_picture = vaapi_wrapper_;
 
-  // The X11/ANGLE implementation can use |vaapi_wrapper_| to copy from an
-  // internal libva buffer into an X Pixmap without having to use a processing
-  // wrapper.
-#if !defined(USE_X11)
-  // If we aren't in BufferAllocationMode::kNone, we have to allocate a
-  // |vpp_vaapi_wrapper_| for VaapiPicture to DownloadFromSurface() the VA's
-  // internal decoded frame.
-  if (buffer_allocation_mode_ != BufferAllocationMode::kNone) {
+  const bool requires_vpp =
+      vaapi_picture_factory_->NeedsProcessingPipelineForDownloading();
+  // If we aren't in BufferAllocationMode::kNone mode and the VaapiPicture
+  // implementation we get from |vaapi_picture_factory_| requires the video
+  // processing pipeline for downloading the decoded frame from the internal
+  // surface, we need to create a |vpp_vaapi_wrapper_|.
+  if (requires_vpp && buffer_allocation_mode_ != BufferAllocationMode::kNone) {
     if (!vpp_vaapi_wrapper_) {
       vpp_vaapi_wrapper_ = VaapiWrapper::Create(
           VaapiWrapper::kVideoProcess, VAProfileNone,
@@ -723,8 +722,6 @@ void VaapiVideoDecodeAccelerator::AssignPictureBuffers(
     }
     vaapi_wrapper_for_picture = vpp_vaapi_wrapper_;
   }
-
-#endif  // !defined(USE_X11)
 
   for (size_t i = 0; i < buffers.size(); ++i) {
     // TODO(b/139460315): Create with buffers[i] once the AMD driver issue is
