@@ -393,9 +393,11 @@ void ProcessMemoryDump::SerializeAllocatorDumpsInto(TracedValue* value) const {
 }
 
 void ProcessMemoryDump::SerializeAllocatorDumpsInto(
-    perfetto::protos::pbzero::MemoryTrackerSnapshot* memory_snapshot) const {
+    perfetto::protos::pbzero::MemoryTrackerSnapshot* memory_snapshot,
+    const base::ProcessId pid) const {
   ProcessSnapshot* process_snapshot =
       memory_snapshot->add_process_memory_dumps();
+  process_snapshot->set_pid(static_cast<int>(pid));
 
   for (const auto& allocator_dump_it : allocator_dumps_) {
     ProcessSnapshot::MemoryNode* memory_node =

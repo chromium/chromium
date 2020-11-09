@@ -233,7 +233,8 @@ class BASE_EXPORT ProcessMemoryDump {
   void SerializeAllocatorDumpsInto(TracedValue* value) const;
 
   void SerializeAllocatorDumpsInto(
-      perfetto::protos::pbzero::MemoryTrackerSnapshot* memory_snapshot) const;
+      perfetto::protos::pbzero::MemoryTrackerSnapshot* memory_snapshot,
+      const base::ProcessId pid) const;
 
   const MemoryDumpArgs& dump_args() const { return dump_args_; }
 

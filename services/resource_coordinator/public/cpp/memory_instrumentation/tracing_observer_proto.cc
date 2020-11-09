@@ -76,7 +76,7 @@ bool TracingObserverProto::AddChromeDumpToTraceIfEnabled(
       handle->set_memory_tracker_snapshot();
   memory_snapshot->set_level_of_detail(
       MemoryDumpLevelOfDetailToProto(args.level_of_detail));
-  process_memory_dump->SerializeAllocatorDumpsInto(memory_snapshot);
+  process_memory_dump->SerializeAllocatorDumpsInto(memory_snapshot, pid);
 
   return true;
 }
@@ -100,6 +100,7 @@ bool TracingObserverProto::AddOsDumpToTraceIfEnabled(
       process_stats_packet->set_process_stats();
   perfetto::protos::pbzero::ProcessStats::Process* process =
       process_stats->add_processes();
+  process->set_pid(static_cast<int>(pid));
 
   OsDumpAsProtoInto(process, os_dump);
 

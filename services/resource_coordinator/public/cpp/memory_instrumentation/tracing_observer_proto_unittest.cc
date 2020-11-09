@@ -272,6 +272,9 @@ TEST_F(TracingObserverProtoTest, AddChromeDumpToTraceIfEnabled) {
       snapshot.process_memory_dumps(0);
   EXPECT_EQ(3, process_memory_dump.allocator_dumps_size());
 
+  EXPECT_TRUE(process_memory_dump.has_pid());
+  EXPECT_EQ(static_cast<int>(kTestPid), process_memory_dump.pid());
+
   const MemoryTrackerSnapshot::ProcessSnapshot::MemoryNode& dump0 =
       process_memory_dump.allocator_dumps(0);
   EXPECT_EQ("mad1", dump0.absolute_name());
@@ -329,6 +332,9 @@ TEST_F(TracingObserverProtoTest, AddOsDumpToTraceIfEnabled) {
 
   const ::perfetto::protos::ProcessStats::Process& process =
       process_stats.processes(0);
+
+  EXPECT_TRUE(process.has_pid());
+  EXPECT_EQ(static_cast<int>(kTestPid), process.pid());
 
   EXPECT_TRUE(process.has_chrome_private_footprint_kb());
   EXPECT_EQ(kPrivateFootprintKb, process.chrome_private_footprint_kb());
