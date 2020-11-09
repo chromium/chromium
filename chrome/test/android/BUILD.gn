@@ -131,6 +131,7 @@ instrumentation_test_apk("chrome_java_test_webapk_launch_tests") {
   deps = [
     ":chrome_java_test_pagecontroller",
     "//base:base_java",
+    "//base:base_java_test_support",
     "//chrome/android:chrome_java",
     "//chrome/android/webapk/libs/client:client_java",
     "//components/webapk/android/libs/client:java",

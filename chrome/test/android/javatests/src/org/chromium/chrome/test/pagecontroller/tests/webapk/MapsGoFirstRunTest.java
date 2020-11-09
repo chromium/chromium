@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
@@ -54,6 +55,7 @@ public class MapsGoFirstRunTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/1142821")
     public void testFirstRunIsShown() {
         FirstRunStatus.setLightweightFirstRunFlowComplete(false);
         launchWebapk("org.chromium.test.maps_go_webapk", "org.chromium.chrome");
