@@ -781,14 +781,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestCase("sortColumns"),
                       TestCase("sortColumns").InGuestMode()));
 
-// TODO(crbug.com/1139247): Failing on ChromeOS.
-#if defined(OS_CHROMEOS)
-#define MAYBE_TabIndex DISABLED_TabIndex
-#else
-#define MAYBE_TabIndex TabIndex
-#endif
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
-    MAYBE_TabIndex, /* tab_index.js: */
+    TabIndex, /* tab_index.js: */
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("tabindexSearchBoxFocus").FilesNg(),

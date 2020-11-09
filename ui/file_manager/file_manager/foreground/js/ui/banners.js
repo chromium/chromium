@@ -646,6 +646,12 @@ class Banners extends cr.EventTarget {
    * @private
    */
   maybeShowLowSpaceWarning_(volume) {
+    // Never show low space warning banners in a test as it will cause flakes.
+    // TODO(crbug.com/1146265): Somehow figure out a way to test these banners.
+    if (window.IN_TEST) {
+      return;
+    }
+
     // TODO(kaznacheev): Unify the two low space warning.
     switch (volume.volumeType) {
       case VolumeManagerCommon.VolumeType.DOWNLOADS:
