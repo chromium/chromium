@@ -956,7 +956,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-	# TODO(crbug.com/1141606) - re-enable resultdb integration
+        'resultdb': {
+          'enable': True,
+        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 12,
@@ -996,7 +998,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-	# TODO(crbug.com/1141606) - re-enable resultdb integration
+        'resultdb': {
+          'enable': True,
+        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 12,
@@ -1021,7 +1025,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-	# TODO(crbug.com/1141606) - re-enable resultdb integration
+        'resultdb': {
+          'enable': True,
+        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 12,
@@ -1191,7 +1197,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-	# TODO(crbug.com/1141606) - re-enable resultdb integration
+        'resultdb': {
+          'enable': True,
+        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 12,
@@ -1269,7 +1277,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-	# TODO(crbug.com/1141606) - re-enable resultdb integration
+        'resultdb': {
+          'enable': True,
+        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 12,
@@ -1292,7 +1302,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-	# TODO(crbug.com/1141606) - re-enable resultdb integration
+        'resultdb': {
+          'enable': True,
+        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 4,
@@ -2171,7 +2183,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-	# TODO(crbug.com/1141606) - re-enable resultdb integration
+        'resultdb': {
+          'enable': True,
+        },
         'results_handler': 'layout tests',
       },
     },
@@ -2207,7 +2221,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-	# TODO(crbug.com/1141606) - re-enable resultdb integration
+        'resultdb': {
+          'enable': True,
+        },
         'results_handler': 'layout tests',
       },
    },
@@ -3233,7 +3249,9 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'isolate_name': 'webgpu_blink_web_tests',
-	# TODO(crbug.com/1141606) - re-enable resultdb integration
+        'resultdb': {
+          'enable': True,
+        },
       },
     },
 
@@ -3271,7 +3289,9 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'isolate_name': 'webgpu_blink_web_tests',
-	# TODO(crbug.com/1141606) - re-enable resultdb integration
+        'resultdb': {
+          'enable': True,
+        },
       },
     },
 
@@ -3547,7 +3567,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-	# TODO(crbug.com/1141606) - re-enable resultdb integration
+        'resultdb': {
+          'enable': True,
+        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 10,
@@ -4051,7 +4073,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-	# TODO(crbug.com/1141606) - re-enable resultdb integration
+        'resultdb': {
+          'enable': True,
+        },
         'results_handler': 'layout tests',
       },
       'vulkan_swiftshader_blink_web_tests': {
@@ -4079,7 +4103,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-	# TODO(crbug.com/1141606) - re-enable resultdb integration
+        'resultdb': {
+          'enable': True,
+        },
         'results_handler': 'layout tests',
       },
     },
