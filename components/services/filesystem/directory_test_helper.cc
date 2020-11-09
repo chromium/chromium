@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "components/services/filesystem/directory_impl.h"
 #include "components/services/filesystem/lock_table.h"
 #include "components/services/filesystem/public/mojom/directory.mojom.h"

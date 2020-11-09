@@ -5,7 +5,7 @@
 #include "media/capture/video/fuchsia/video_capture_device_fuchsia.h"
 
 #include "base/fuchsia/test_component_context_for_process.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
 #include "media/capture/video/fuchsia/video_capture_device_factory_fuchsia.h"
 #include "media/fuchsia/camera/fake_fuchsia_camera.h"

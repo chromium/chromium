@@ -9,7 +9,7 @@
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/public/browser/service_process_host.h"

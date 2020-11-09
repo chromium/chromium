@@ -12,7 +12,7 @@
 #include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_waitable_event.h"

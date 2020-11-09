@@ -29,7 +29,7 @@
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/path_service.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"

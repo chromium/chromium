@@ -8,7 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/geo/state_names.h"
 #include "components/autofill/core/common/autofill_prefs.h"

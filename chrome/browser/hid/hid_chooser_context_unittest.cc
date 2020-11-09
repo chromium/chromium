@@ -5,7 +5,7 @@
 #include "chrome/browser/hid/hid_chooser_context.h"
 
 #include "base/run_loop.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"

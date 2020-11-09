@@ -5,7 +5,7 @@
 #include "chrome/browser/sharing/sms/sms_remote_fetcher.h"
 
 #include "base/run_loop.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sharing/fake_device_info.h"
 #include "chrome/browser/sharing/mock_sharing_service.h"

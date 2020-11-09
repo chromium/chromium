@@ -10,7 +10,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"

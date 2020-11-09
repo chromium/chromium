@@ -14,7 +14,7 @@
 #include "ash/shell.h"
 #include "ash/system/power/power_status.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"

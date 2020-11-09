@@ -7,7 +7,7 @@
 #include "base/guid.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/post_async_results.h"

@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"

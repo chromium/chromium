@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "content/browser/hid/hid_test_utils.h"
 #include "content/public/browser/content_browser_client.h"

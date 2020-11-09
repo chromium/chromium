@@ -26,7 +26,7 @@
 #include "base/bind_helpers.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"

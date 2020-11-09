@@ -7,7 +7,7 @@
 #include <memory>
 #include <ostream>
 
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"

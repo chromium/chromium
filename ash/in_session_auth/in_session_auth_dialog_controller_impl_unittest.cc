@@ -8,7 +8,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/callback.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 
 using ::testing::_;
 

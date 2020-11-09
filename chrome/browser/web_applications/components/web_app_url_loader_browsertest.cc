@@ -7,7 +7,7 @@
 #include "base/barrier_closure.h"
 #include "base/callback.h"
 #include "base/optional.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"

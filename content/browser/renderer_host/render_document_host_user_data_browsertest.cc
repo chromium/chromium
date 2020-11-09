@@ -6,7 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"

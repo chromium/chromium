@@ -6,7 +6,7 @@
 
 #include "ash/public/cpp/shelf_model.h"
 #include "base/files/file_util.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"

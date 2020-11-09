@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/task/thread_pool/environment_config.h"
 #include "base/task/thread_pool/thread_pool_impl.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_waitable_event.h"

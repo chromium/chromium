@@ -5,7 +5,7 @@
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "content/browser/serial/serial_test_utils.h"
 #include "content/public/common/content_client.h"

@@ -8,7 +8,7 @@
 #include <string>
 #include <utility>
 
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/read_later/read_later_test_utils.h"

@@ -16,7 +16,7 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"

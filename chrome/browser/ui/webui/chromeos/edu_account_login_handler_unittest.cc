@@ -8,7 +8,7 @@
 
 #include "base/bind_helpers.h"
 #include "base/json/json_writer.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/net/network_portal_detector_test_impl.h"

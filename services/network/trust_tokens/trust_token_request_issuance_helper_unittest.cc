@@ -8,7 +8,7 @@
 
 #include "base/callback.h"
 #include "base/no_destructor.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"

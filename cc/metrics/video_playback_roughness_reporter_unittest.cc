@@ -11,7 +11,7 @@
 
 #include "base/bind_helpers.h"
 #include "base/callback.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using VideoFrame = media::VideoFrame;

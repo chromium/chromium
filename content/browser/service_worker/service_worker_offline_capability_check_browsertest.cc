@@ -11,7 +11,7 @@
 #include "base/optional.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
 #include "content/browser/service_worker/service_worker_version.h"

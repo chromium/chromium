@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/browser/render_process_host.h"

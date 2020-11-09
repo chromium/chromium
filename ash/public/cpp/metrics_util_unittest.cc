@@ -5,7 +5,7 @@
 #include "ash/public/cpp/metrics_util.h"
 
 #include "base/optional.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -5,7 +5,7 @@
 #include "chrome/browser/nearby_sharing/nearby_receive_manager.h"
 
 #include "base/optional.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/nearby_sharing/mock_nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/share_target.h"

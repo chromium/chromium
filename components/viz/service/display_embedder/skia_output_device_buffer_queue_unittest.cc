@@ -12,7 +12,7 @@
 
 #include "base/bind_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/service/display_embedder/output_presenter_gl.h"

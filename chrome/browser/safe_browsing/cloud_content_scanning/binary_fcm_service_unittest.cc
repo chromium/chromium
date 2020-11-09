@@ -8,7 +8,7 @@
 #include "base/bind_helpers.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"

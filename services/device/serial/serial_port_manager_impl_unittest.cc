@@ -13,7 +13,7 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/task/post_task.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/threading/thread.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"

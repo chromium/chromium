@@ -21,7 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
 #include "components/services/storage/dom_storage/legacy_dom_storage_database.h"
 #include "components/services/storage/dom_storage/storage_area_test_util.h"

@@ -28,7 +28,7 @@
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
 #include "base/time/default_clock.h"
 #include "components/services/storage/indexed_db/scopes/disjoint_range_lock_manager.h"

@@ -12,7 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool/task.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"

@@ -10,7 +10,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "base/scoped_observer.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"

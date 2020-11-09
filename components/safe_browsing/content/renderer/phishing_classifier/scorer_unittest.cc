@@ -13,7 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "base/threading/thread.h"

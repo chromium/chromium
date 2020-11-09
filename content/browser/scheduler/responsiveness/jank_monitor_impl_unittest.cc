@@ -7,7 +7,7 @@
 #include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "content/browser/scheduler/responsiveness/native_event_observer.h"
 #include "content/public/browser/browser_task_traits.h"

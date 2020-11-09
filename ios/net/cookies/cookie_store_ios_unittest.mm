@@ -14,7 +14,7 @@
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
 #include "ios/net/cookies/cookie_store_ios_client.h"
 #import "ios/net/cookies/cookie_store_ios_test_util.h"

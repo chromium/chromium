@@ -27,7 +27,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
 #include "base/system/sys_info.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/timer/timer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/image/image_skia.h"

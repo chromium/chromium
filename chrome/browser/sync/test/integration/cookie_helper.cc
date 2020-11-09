@@ -5,7 +5,7 @@
 #include "chrome/browser/sync/test/integration/cookie_helper.h"
 
 #include "base/run_loop.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_TEST_BIND_H_
-#define BASE_TEST_BIND_H_
+#ifndef BASE_TEST_BIND_TEST_UTIL_H_
+#define BASE_TEST_BIND_TEST_UTIL_H_
 
 #include <type_traits>
 #include <utility>

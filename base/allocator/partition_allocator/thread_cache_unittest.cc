@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/synchronization/lock.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"

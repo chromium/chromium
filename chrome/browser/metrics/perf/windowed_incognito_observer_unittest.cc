@@ -5,7 +5,7 @@
 #include "chrome/browser/metrics/perf/windowed_incognito_observer.h"
 
 #include "base/macros.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"

@@ -4,7 +4,7 @@
 
 #include "ui/views/animation/compositor_animation_runner.h"
 
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/compositor/throughput_tracker.h"

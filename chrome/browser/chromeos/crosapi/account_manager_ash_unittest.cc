@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/account_manager/tokens.pb.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom-test-utils.h"

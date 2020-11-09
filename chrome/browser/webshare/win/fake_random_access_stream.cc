@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/fake_iasync_operation_win.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/webshare/win/fake_iasync_operation_with_progress.h"

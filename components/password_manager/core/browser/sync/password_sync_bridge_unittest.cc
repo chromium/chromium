@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"

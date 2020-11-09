@@ -7,7 +7,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "build/build_config.h"
 #include "content/browser/appcache/appcache_subresource_url_factory.h"
 #include "content/public/browser/navigation_entry.h"

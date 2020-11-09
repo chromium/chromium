@@ -4,7 +4,7 @@
 
 #include "chrome/browser/safe_browsing/client_side_detection_service.h"
 
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 #include "chrome/browser/ui/browser.h"

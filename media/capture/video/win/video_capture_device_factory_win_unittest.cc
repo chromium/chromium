@@ -17,7 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
 #include "base/win/windows_version.h"
 #include "media/capture/video/win/video_capture_device_factory_win.h"

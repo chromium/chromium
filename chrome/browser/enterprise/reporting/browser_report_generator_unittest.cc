@@ -9,7 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"

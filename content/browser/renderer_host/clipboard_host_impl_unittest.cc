@@ -9,7 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "content/browser/renderer_host/clipboard_host_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"

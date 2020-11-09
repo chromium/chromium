@@ -43,7 +43,7 @@
 #include "base/task/sequence_manager/thread_controller_with_message_pump_impl.h"
 #include "base/task/sequence_manager/work_queue.h"
 #include "base/task/sequence_manager/work_queue_sets.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/mock_callback.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"

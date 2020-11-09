@@ -9,7 +9,7 @@
 #include "base/bind_helpers.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "media/base/media_util.h"

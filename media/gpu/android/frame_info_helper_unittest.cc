@@ -4,7 +4,7 @@
 
 #include "media/gpu/android/frame_info_helper.h"
 
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/service/mock_texture_owner.h"

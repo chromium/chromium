@@ -4,7 +4,7 @@
 
 #include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "components/autofill_assistant/browser/actions/action_test_utils.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"

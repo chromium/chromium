@@ -10,7 +10,7 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/test_suite.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/metrics/perf/collection_params.h"

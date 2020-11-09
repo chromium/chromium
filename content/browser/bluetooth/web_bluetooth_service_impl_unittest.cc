@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/test/test_render_view_host.h"

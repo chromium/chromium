@@ -9,7 +9,7 @@
 #include "base/bind_helpers.h"
 #include "base/callback_forward.h"
 #include "base/containers/queue.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager_factory.h"
 #include "chrome/browser/chromeos/borealis/borealis_task.h"

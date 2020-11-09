@@ -15,7 +15,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
 #include "components/encrypted_messages/encrypted_message.pb.h"
 #include "components/encrypted_messages/message_encrypter.h"

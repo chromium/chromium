@@ -4,7 +4,7 @@
 
 #include "chromeos/services/ime/decoder/system_engine.h"
 
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/constants/chromeos_features.h"

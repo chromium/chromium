@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/time/time.h"
 #include "content/browser/browsing_data/browsing_data_test_utils.h"
 #include "content/browser/browsing_data/same_site_data_remover_impl.h"

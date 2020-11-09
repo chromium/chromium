@@ -9,7 +9,7 @@
 #include "base/base_paths_fuchsia.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "components/cast/message_port/message_port_fuchsia.h"
 #include "content/public/test/browser_test.h"
 #include "fuchsia/base/fit_adapter.h"

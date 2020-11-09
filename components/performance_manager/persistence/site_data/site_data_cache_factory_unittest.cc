@@ -13,7 +13,7 @@
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/threading/sequence_bound.h"
 #include "components/performance_manager/performance_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"

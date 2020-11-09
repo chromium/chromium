@@ -15,7 +15,7 @@
 #include "base/scoped_observer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"

@@ -6,7 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_PERFORMANCE_MANAGER_BROWSERTEST_HARNESS_H_
 
 #include "base/run_loop.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/test/content_browser_test.h"
 

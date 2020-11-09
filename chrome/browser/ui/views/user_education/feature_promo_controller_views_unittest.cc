@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/optional.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"

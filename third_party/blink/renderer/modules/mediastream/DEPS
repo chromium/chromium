@@ -63,7 +63,7 @@ specific_include_rules = {
         "+base/files/scoped_temp_dir.h",
         "+base/memory/aligned_memory.h",
         "+base/path_service.h",
-        "+base/test/bind.h",
+        "+base/test/bind_test_util.h",
         "+base/threading/thread.h",
         "+third_party/blink/renderer/platform/testing/video_frame_utils.h",
     ],

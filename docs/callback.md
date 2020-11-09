@@ -232,7 +232,7 @@ When writing tests, it is often useful to capture arguments that need to be
 modified in a callback.
 
 ``` cpp
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 
 int i = 2;
 base::Callback<void()> lambda_cb = base::BindLambdaForTesting([&]() { i++; });

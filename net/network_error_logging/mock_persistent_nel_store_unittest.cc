@@ -6,7 +6,7 @@
 
 #include "base/location.h"
 #include "base/strings/strcat.h"
-#include "base/test/bind.h"
+#include "base/test/bind_test_util.h"
 #include "net/base/network_isolation_key.h"
 #include "net/network_error_logging/mock_persistent_nel_store.h"
 #include "net/network_error_logging/network_error_logging_service.h"
