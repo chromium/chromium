@@ -160,7 +160,7 @@ class PagePopupChromeClient final : public EmptyChromeClient {
                            const String&,
                            const String&) override {
 #ifndef NDEBUG
-    fprintf(stderr, "CONSOLE MESSSAGE:%u: %s\n", line_number,
+    fprintf(stderr, "CONSOLE MESSAGE:%u: %s\n", line_number,
             message.Utf8().c_str());
 #endif
   }
@@ -664,6 +664,11 @@ WebInputEventResult WebPagePopupImpl::HandleKeyEvent(
     const WebKeyboardEvent& event) {
   if (closing_)
     return WebInputEventResult::kNotHandled;
+
+  if (suppress_next_keypress_event_) {
+    suppress_next_keypress_event_ = false;
+    return WebInputEventResult::kHandledSuppressed;
+  }
 
   if (WebInputEvent::Type::kRawKeyDown == event.GetType()) {
     Element* focused_element = FocusedElement();

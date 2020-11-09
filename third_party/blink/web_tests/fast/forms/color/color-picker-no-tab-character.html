@@ -24,6 +24,14 @@ t.step(() => {
     assert_equals(bValueContainer.value, '255');
     const hueSliderSelectionRing = popupDocument.querySelector('hue-slider > color-selection-ring');
     hueSliderSelectionRing.focus();
+
+    [rValueContainer, gValueContainer, bValueContainer].forEach(container => {
+      container.addEventListener('keypress', t.step_func(event => {
+        assert_not_equals(event.key, 'Tab',
+          'If tab key suppression was successful, there should be no keypress event for it.');
+      }));
+    });
+
     assert_equals(popupDocument.activeElement, hueSliderSelectionRing);
     eventSender.keyDown('Tab');
     assert_equals(popupDocument.activeElement, rValueContainer, 'rValueContainer should be the active element');
