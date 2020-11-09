@@ -55,14 +55,11 @@ class Layer;
 }
 
 namespace blink {
-class Frame;
 class Element;
-class HTMLPlugInElement;
 class LocalFrame;
 class PaintLayerCompositor;
 class WebFrameWidget;
 class WebMouseEvent;
-class WebMouseWheelEvent;
 class WebFrameWidgetImpl;
 
 // Implements WebFrameWidget for a child local root frame (OOPIF). This object
@@ -119,8 +116,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
   void ResetZoomLevelForTesting() override;
   void SetDeviceScaleFactorForTesting(float factor) override;
 
-  Frame* FocusedCoreFrame() const;
-
   // Returns the currently focused Element or null if no element has focus.
   Element* FocusedElement() const;
 
@@ -161,29 +156,15 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
 
   void UpdateMainFrameLayoutSize();
 
-  // Event related methods:
-  void MouseContextMenu(const WebMouseEvent&);
-
-  void Trace(Visitor*) const override;
-
  private:
   friend class WebFrameWidget;  // For WebFrameWidget::create.
-
-  // Perform a hit test for a point relative to the root frame of the page.
-  HitTestResult HitTestResultForRootFramePos(
-      const FloatPoint& pos_in_root_frame);
 
   void UpdateLayerTreeViewport();
 
   // PageWidgetEventHandler functions
   void HandleMouseLeave(LocalFrame&, const WebMouseEvent&) override;
-  void HandleMouseDown(LocalFrame&, const WebMouseEvent&) override;
-  WebInputEventResult HandleMouseUp(LocalFrame&, const WebMouseEvent&) override;
-  WebInputEventResult HandleMouseWheel(LocalFrame&,
-                                       const WebMouseWheelEvent&) override;
   WebInputEventResult HandleGestureEvent(const WebGestureEvent&) override;
   WebInputEventResult HandleKeyEvent(const WebKeyboardEvent&) override;
-  WebInputEventResult HandleCharEvent(const WebKeyboardEvent&) override;
 
   LocalFrameView* GetLocalFrameViewForAnimationScrolling() override;
 
@@ -200,14 +181,9 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
 
   base::Optional<gfx::Size> size_;
 
-  // If set, the (plugin) element which has mouse capture.
-  Member<HTMLPlugInElement> mouse_capture_element_;
-
   // Metrics gathering timing information
   base::Optional<base::TimeTicks> update_layers_start_time_;
   base::Optional<base::TimeTicks> commit_compositor_frame_start_time_;
-
-  bool suppress_next_keypress_event_ = false;
 
   bool did_suspend_parsing_ = false;
 

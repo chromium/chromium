@@ -46,7 +46,9 @@ class PointF;
 
 namespace blink {
 class AnimationWorkletMutatorDispatcherImpl;
+class FloatPoint;
 class HitTestResult;
+class HTMLPlugInElement;
 class LocalFrameView;
 class Page;
 class PageWidgetEventHandler;
@@ -658,6 +660,12 @@ class CORE_EXPORT WebFrameWidgetBase
   // of WebViewImpl::HandleInputEvent and WebFrameWidgetImpl::HandleInputEvent.
   void NotifyInputObservers(const WebCoalescedInputEvent& coalesced_event);
 
+  Frame* FocusedCoreFrame() const;
+
+  // Perform a hit test for a point relative to the root frame of the page.
+  HitTestResult HitTestResultForRootFramePos(
+      const FloatPoint& pos_in_root_frame);
+
   // A copy of the web drop data object we received from the browser.
   Member<DataObject> current_drag_data_;
 
@@ -686,7 +694,26 @@ class CORE_EXPORT WebFrameWidgetBase
   float page_scale_factor_in_mainframe_ = 1.f;
   bool is_pinch_gesture_active_in_mainframe_ = false;
 
+  // If set, the (plugin) element which has mouse capture.
+  // TODO(dtapuska): Move to private once all input handling is moved to
+  // base class.
+  Member<HTMLPlugInElement> mouse_capture_element_;
+
+  // keyPress events to be suppressed if the associated keyDown event was
+  // handled.
+  // TODO(dtapuska): Move to private once all input handling is moved to
+  // base class.
+  bool suppress_next_keypress_event_ = false;
+
  private:
+  // PageWidgetEventHandler methods:
+  void HandleMouseDown(LocalFrame&, const WebMouseEvent&) override;
+  WebInputEventResult HandleMouseUp(LocalFrame&, const WebMouseEvent&) override;
+  WebInputEventResult HandleMouseWheel(LocalFrame&,
+                                       const WebMouseWheelEvent&) override;
+  WebInputEventResult HandleCharEvent(const WebKeyboardEvent&) override;
+
+  void MouseContextMenu(const WebMouseEvent&);
   void CancelDrag();
   void RequestAnimationAfterDelayTimerFired(TimerBase*);
   void PresentationCallbackForMeaningfulLayout(blink::WebSwapResult,

@@ -227,11 +227,6 @@ WebFrameWidgetImpl::WebFrameWidgetImpl(
 
 WebFrameWidgetImpl::~WebFrameWidgetImpl() = default;
 
-void WebFrameWidgetImpl::Trace(Visitor* visitor) const {
-  visitor->Trace(mouse_capture_element_);
-  WebFrameWidgetBase::Trace(visitor);
-}
-
 // WebWidget ------------------------------------------------------------------
 
 void WebFrameWidgetImpl::Close(
@@ -679,119 +674,6 @@ void WebFrameWidgetImpl::HandleMouseLeave(LocalFrame& main_frame,
   PageWidgetEventHandler::HandleMouseLeave(main_frame, event);
 }
 
-void WebFrameWidgetImpl::HandleMouseDown(LocalFrame& main_frame,
-                                         const WebMouseEvent& event) {
-  WebViewImpl* view_impl = View();
-  // If there is a popup open, close it as the user is clicking on the page
-  // (outside of the popup). We also save it so we can prevent a click on an
-  // element from immediately reopening the same popup.
-  scoped_refptr<WebPagePopupImpl> page_popup;
-  if (event.button == WebMouseEvent::Button::kLeft) {
-    page_popup = view_impl->GetPagePopup();
-    view_impl->CancelPagePopup();
-  }
-
-  // Take capture on a mouse down on a plugin so we can send it mouse events.
-  // If the hit node is a plugin but a scrollbar is over it don't start mouse
-  // capture because it will interfere with the scrollbar receiving events.
-  PhysicalOffset point(LayoutUnit(event.PositionInWidget().x()),
-                       LayoutUnit(event.PositionInWidget().y()));
-  if (event.button == WebMouseEvent::Button::kLeft) {
-    HitTestLocation location(
-        LocalRootImpl()->GetFrameView()->ConvertFromRootFrame(point));
-    HitTestResult result(
-        LocalRootImpl()->GetFrame()->GetEventHandler().HitTestResultAtLocation(
-            location));
-    result.SetToShadowHostIfInRestrictedShadowRoot();
-    Node* hit_node = result.InnerNode();
-    auto* html_element = DynamicTo<HTMLElement>(hit_node);
-    if (!result.GetScrollbar() && hit_node && hit_node->GetLayoutObject() &&
-        hit_node->GetLayoutObject()->IsEmbeddedObject() && html_element &&
-        html_element->IsPluginElement()) {
-      mouse_capture_element_ = To<HTMLPlugInElement>(hit_node);
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("input", "capturing mouse",
-                                        TRACE_ID_LOCAL(this));
-    }
-  }
-
-  PageWidgetEventHandler::HandleMouseDown(main_frame, event);
-
-  if (view_impl->GetPagePopup() && page_popup &&
-      view_impl->GetPagePopup()->HasSamePopupClient(page_popup.get())) {
-    // That click triggered a page popup that is the same as the one we just
-    // closed.  It needs to be closed.
-    view_impl->CancelPagePopup();
-  }
-
-  // Dispatch the contextmenu event regardless of if the click was swallowed.
-  if (!GetPage()->GetSettings().GetShowContextMenuOnMouseUp()) {
-#if defined(OS_MAC)
-    if (event.button == WebMouseEvent::Button::kRight ||
-        (event.button == WebMouseEvent::Button::kLeft &&
-         event.GetModifiers() & WebMouseEvent::kControlKey))
-      MouseContextMenu(event);
-#else
-    if (event.button == WebMouseEvent::Button::kRight)
-      MouseContextMenu(event);
-#endif
-  }
-}
-
-void WebFrameWidgetImpl::MouseContextMenu(const WebMouseEvent& event) {
-  GetPage()->GetContextMenuController().ClearContextMenu();
-
-  WebMouseEvent transformed_event =
-      TransformWebMouseEvent(LocalRootImpl()->GetFrameView(), event);
-  transformed_event.menu_source_type = kMenuSourceMouse;
-
-  // Find the right target frame. See issue 1186900.
-  HitTestResult result = HitTestResultForRootFramePos(
-      FloatPoint(transformed_event.PositionInRootFrame()));
-  Frame* target_frame;
-  if (result.InnerNodeOrImageMapImage())
-    target_frame = result.InnerNodeOrImageMapImage()->GetDocument().GetFrame();
-  else
-    target_frame = GetPage()->GetFocusController().FocusedOrMainFrame();
-
-  // This will need to be changed to a nullptr check when focus control
-  // is refactored, at which point focusedOrMainFrame will never return a
-  // RemoteFrame.
-  // See https://crbug.com/341918.
-  LocalFrame* target_local_frame = DynamicTo<LocalFrame>(target_frame);
-  if (!target_local_frame)
-    return;
-
-  {
-    ContextMenuAllowedScope scope;
-    target_local_frame->GetEventHandler().SendContextMenuEvent(
-        transformed_event);
-  }
-  // Actually showing the context menu is handled by the ContextMenuClient
-  // implementation...
-}
-
-WebInputEventResult WebFrameWidgetImpl::HandleMouseUp(
-    LocalFrame& main_frame,
-    const WebMouseEvent& event) {
-  WebInputEventResult result =
-      PageWidgetEventHandler::HandleMouseUp(main_frame, event);
-
-  if (GetPage()->GetSettings().GetShowContextMenuOnMouseUp()) {
-    // Dispatch the contextmenu event regardless of if the click was swallowed.
-    // On Mac/Linux, we handle it on mouse down, not up.
-    if (event.button == WebMouseEvent::Button::kRight)
-      MouseContextMenu(event);
-  }
-  return result;
-}
-
-WebInputEventResult WebFrameWidgetImpl::HandleMouseWheel(
-    LocalFrame& frame,
-    const WebMouseWheelEvent& event) {
-  View()->CancelPagePopup();
-  return PageWidgetEventHandler::HandleMouseWheel(frame, event);
-}
-
 WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
     const WebGestureEvent& event) {
   DCHECK(Client());
@@ -931,63 +813,6 @@ WebInputEventResult WebFrameWidgetImpl::HandleKeyEvent(
   return WebInputEventResult::kNotHandled;
 }
 
-WebInputEventResult WebFrameWidgetImpl::HandleCharEvent(
-    const WebKeyboardEvent& event) {
-  DCHECK_EQ(event.GetType(), WebInputEvent::Type::kChar);
-
-  // Please refer to the comments explaining the m_suppressNextKeypressEvent
-  // member.  The m_suppressNextKeypressEvent is set if the KeyDown is
-  // handled by Webkit. A keyDown event is typically associated with a
-  // keyPress(char) event and a keyUp event. We reset this flag here as it
-  // only applies to the current keyPress event.
-  bool suppress = suppress_next_keypress_event_;
-  suppress_next_keypress_event_ = false;
-
-  // If there is a popup open, it should be the one processing the event,
-  // not the page.
-  scoped_refptr<WebPagePopupImpl> page_popup = View()->GetPagePopup();
-  if (page_popup)
-    return page_popup->HandleKeyEvent(event);
-
-  LocalFrame* frame = To<LocalFrame>(FocusedCoreFrame());
-  if (!frame) {
-    return suppress ? WebInputEventResult::kHandledSuppressed
-                    : WebInputEventResult::kNotHandled;
-  }
-
-  EventHandler& handler = frame->GetEventHandler();
-
-  if (!event.IsCharacterKey())
-    return WebInputEventResult::kHandledSuppressed;
-
-  // Accesskeys are triggered by char events and can't be suppressed.
-  // It is unclear whether a keypress should be dispatched as well
-  // crbug.com/563507
-  if (handler.HandleAccessKey(event))
-    return WebInputEventResult::kHandledSystem;
-
-  // Safari 3.1 does not pass off windows system key messages (WM_SYSCHAR) to
-  // the eventHandler::keyEvent. We mimic this behavior on all platforms since
-  // for now we are converting other platform's key events to windows key
-  // events.
-  if (event.is_system_key)
-    return WebInputEventResult::kNotHandled;
-
-  if (suppress)
-    return WebInputEventResult::kHandledSuppressed;
-
-  WebInputEventResult result = handler.KeyEvent(event);
-  if (result != WebInputEventResult::kNotHandled)
-    return result;
-
-  return WebInputEventResult::kNotHandled;
-}
-
-Frame* WebFrameWidgetImpl::FocusedCoreFrame() const {
-  return GetPage() ? GetPage()->GetFocusController().FocusedOrMainFrame()
-                   : nullptr;
-}
-
 Element* WebFrameWidgetImpl::FocusedElement() const {
   LocalFrame* frame = GetPage()->GetFocusController().FocusedFrame();
   if (!frame)
@@ -1046,19 +871,6 @@ void WebFrameWidgetImpl::SetAutoResizeMode(bool auto_resize,
                                            const gfx::Size& max_size_before_dsf,
                                            float device_scale_factor) {
   // Auto resize mode only exists on the top level widget.
-}
-
-HitTestResult WebFrameWidgetImpl::HitTestResultForRootFramePos(
-    const FloatPoint& pos_in_root_frame) {
-  FloatPoint doc_point =
-      LocalRootImpl()->GetFrame()->View()->ConvertFromRootFrame(
-          pos_in_root_frame);
-  HitTestLocation location(doc_point);
-  HitTestResult result =
-      LocalRootImpl()->GetFrame()->GetEventHandler().HitTestResultAtLocation(
-          location, HitTestRequest::kReadOnly | HitTestRequest::kActive);
-  result.SetToShadowHostIfInRestrictedShadowRoot();
-  return result;
 }
 
 LocalFrame* WebFrameWidgetImpl::FocusedLocalFrameAvailableForIme() const {
