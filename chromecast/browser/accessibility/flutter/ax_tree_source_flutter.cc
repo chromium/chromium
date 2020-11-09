@@ -643,11 +643,13 @@ void AXTreeSourceFlutter::HandleRoutes(std::vector<ui::AXEvent>* events) {
       continue;
     }
 
-    scopes_route_cache_.push_back(node->GetId());
-
     // Find a node in the sub-tree with names route flag set.
     FlutterSemanticsNode* sub_node = FindRoutesNode(node);
     if (sub_node) {
+      // Only register the scopes route node in our cache
+      // if a names route is found.
+      scopes_route_cache_.push_back(node->GetId());
+
       ui::AXNodeData data;
       SerializeNode(sub_node, &data);
       std::string name;
