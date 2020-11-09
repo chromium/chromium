@@ -612,10 +612,6 @@ public class AwActivityTestRule extends ActivityTestRule<AwTestRunnerActivity> {
         return TestThreadUtils.runOnUiThreadBlocking(() -> awContents.canZoomOut());
     }
 
-    public void killRenderProcessOnUiThreadAsync(final AwContents awContents) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> awContents.killRenderProcess());
-    }
-
     /**
      * Loads the main html then triggers the popup window.
      */

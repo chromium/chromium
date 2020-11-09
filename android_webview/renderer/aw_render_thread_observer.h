@@ -33,7 +33,6 @@ class AwRenderThreadObserver : public content::RenderThreadObserver,
 
   void OnRendererAssociatedRequest(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
-  void OnKillProcess();
   void OnSetJsOnlineProperty(bool network_up);
 
   mojo::AssociatedReceiver<mojom::Renderer> receiver_{this};

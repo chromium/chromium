@@ -22,7 +22,6 @@ bool AwRenderThreadObserver::OnControlMessageReceived(
     const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(AwRenderThreadObserver, message)
-    IPC_MESSAGE_HANDLER(AwViewMsg_KillProcess, OnKillProcess)
     IPC_MESSAGE_HANDLER(AwViewMsg_SetJsOnlineProperty, OnSetJsOnlineProperty)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
@@ -51,11 +50,6 @@ void AwRenderThreadObserver::OnRendererAssociatedRequest(
 
 void AwRenderThreadObserver::ClearCache() {
   blink::WebCache::Clear();
-}
-
-void AwRenderThreadObserver::OnKillProcess() {
-  LOG(ERROR) << "Killing process (" << getpid() << ") upon request.";
-  kill(getpid(), SIGKILL);
 }
 
 void AwRenderThreadObserver::OnSetJsOnlineProperty(bool network_up) {

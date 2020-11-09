@@ -2452,16 +2452,6 @@ public class AwContents implements SmartClipProvider {
         }
     }
 
-    @VisibleForTesting
-    public void killRenderProcess() {
-        if (TRACE) Log.i(TAG, "%s killRenderProcess", this);
-        if (isDestroyed(WARN)) {
-            throw new IllegalStateException("killRenderProcess() shouldn't be invoked after render"
-                    + " process is gone or webview is destroyed");
-        }
-        AwContentsJni.get().killRenderProcess(mNativeAwContents, AwContents.this);
-    }
-
     public void documentHasImages(Message message) {
         if (!isDestroyed(WARN)) {
             AwContentsJni.get().documentHasImages(mNativeAwContents, AwContents.this, message);
@@ -4183,7 +4173,6 @@ public class AwContents implements SmartClipProvider {
         void findNext(long nativeAwContents, AwContents caller, boolean forward);
         void clearMatches(long nativeAwContents, AwContents caller);
         void clearCache(long nativeAwContents, AwContents caller, boolean includeDiskFiles);
-        void killRenderProcess(long nativeAwContents, AwContents caller);
         byte[] getCertificate(long nativeAwContents, AwContents caller);
         // Coordinates are in physical pixels when --use-zoom-for-dsf is enabled.
         // Otherwise, coordinates are in desity independent pixels.

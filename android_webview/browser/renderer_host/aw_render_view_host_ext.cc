@@ -54,11 +54,6 @@ void AwRenderViewHostExt::DocumentHasImages(DocumentHasImagesResult result) {
   }
 }
 
-void AwRenderViewHostExt::KillRenderProcess() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  web_contents()->GetRenderViewHost()->Send(new AwViewMsg_KillProcess);
-}
-
 bool AwRenderViewHostExt::HasNewHitTestData() const {
   return has_new_hit_test_data_;
 }
