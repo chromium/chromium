@@ -182,6 +182,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.HitTest" enum="EventHitTest" expires_after="2020-05-31">
+  <obsolete>
+    Removed in M88.
+  </obsolete>
   <owner>dtapuska@chromium.org</owner>
   <summary>
     For each hit test, records whether it was a hit or miss, and why.

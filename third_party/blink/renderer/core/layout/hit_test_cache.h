@@ -65,22 +65,6 @@ class CORE_EXPORT HitTestCache final : public GarbageCollected<HitTestCache> {
   void Trace(Visitor*) const;
 
  private:
-  // The below UMA values reference a validity region. This code has not
-  // been written yet; and exact matches are only supported but the
-  // UMA enumerations have been added for future support.
-
-  // These values are reported in UMA as the "EventHitTest" enumeration.
-  // Do not reorder, append new values at the end, deprecate old
-  // values and update histograms.xml.
-  enum class HitHistogramMetric {
-    MISS,                 // Miss, not found in cache.
-    MISS_EXPLICIT_AVOID,  // Miss, callee asked to explicitly avoid cache.
-    MISS_VALIDITY_RECT_MATCHES,  // Miss, validity region matches, type doesn't.
-    HIT_EXACT_MATCH,             // Hit, exact point matches.
-    HIT_REGION_MATCH,            // Hit, validity region matches.
-    MAX_HIT_METRIC = HIT_REGION_MATCH,
-  };
-
   unsigned update_index_;
 
   HeapVector<HitTestCacheEntry, HIT_TEST_CACHE_SIZE> items_;
