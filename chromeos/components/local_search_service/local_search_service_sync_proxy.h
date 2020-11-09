@@ -7,7 +7,7 @@
 
 #include <map>
 
-#include "chromeos/components/local_search_service/mojom/local_search_service_proxy.mojom.h"
+#include "chromeos/components/local_search_service/public/mojom/local_search_service_proxy.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

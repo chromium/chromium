@@ -11,7 +11,7 @@
 #include "chromeos/components/help_app_ui/url_constants.h"
 #include "chromeos/components/local_search_service/local_search_service_sync_proxy.h"
 #include "chromeos/components/local_search_service/local_search_service_sync_proxy_factory.h"
-#include "chromeos/components/local_search_service/mojom/types.mojom.h"
+#include "chromeos/components/local_search_service/public/mojom/types.mojom.h"
 #include "chromeos/grit/chromeos_help_app_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/content_settings/core/common/content_settings_types.h"

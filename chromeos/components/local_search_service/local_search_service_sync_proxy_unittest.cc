@@ -9,7 +9,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/components/local_search_service/index_sync_proxy.h"
 #include "chromeos/components/local_search_service/local_search_service_sync.h"
-#include "chromeos/components/local_search_service/mojom/types.mojom.h"
+#include "chromeos/components/local_search_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

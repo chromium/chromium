@@ -33,7 +33,7 @@ js_library("browser_proxy") {
   deps = [
     ":message_types",
     "//chromeos/components/help_app_ui:mojo_bindings_js_library_for_compile",
-    "//chromeos/components/local_search_service/mojom:mojom_js_library_for_compile",
+    "//chromeos/components/local_search_service/public/mojom:mojom_js_library_for_compile",
     "//chromeos/components/system_apps/public/js:message_pipe",
   ]
 }

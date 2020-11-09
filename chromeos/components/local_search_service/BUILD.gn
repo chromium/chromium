@@ -8,6 +8,8 @@ source_set("local_search_service") {
   sources = [
     "content_extraction_utils.cc",
     "content_extraction_utils.h",
+    "index.cc",
+    "index.h",
     "index_sync.cc",
     "index_sync.h",
     "inverted_index.cc",
@@ -33,6 +35,7 @@ source_set("local_search_service") {
   deps = [
     "//base:i18n",
     "//cc",
+    "//chromeos/components/local_search_service/public/mojom",
     "//chromeos/components/string_matching",
   ]
 
@@ -64,7 +67,7 @@ source_set("local_search_service_proxy") {
   public_deps = [
     ":local_search_service",
     "//base",
-    "//chromeos/components/local_search_service/mojom",
+    "//chromeos/components/local_search_service/public/mojom",
     "//components/keyed_service/content:content",
     "//components/prefs",
   ]

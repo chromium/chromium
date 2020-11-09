@@ -141,7 +141,7 @@ grit("help_app_resources") {
 
   deps = [
     "//chromeos/components/help_app_ui:mojo_bindings_js",
-    "//chromeos/components/local_search_service/mojom:mojom_js",
+    "//chromeos/components/local_search_service/public/mojom:mojom_js",
   ]
 }
 

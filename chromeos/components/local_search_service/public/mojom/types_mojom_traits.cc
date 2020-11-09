@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/local_search_service/mojom/types_mojom_traits.h"
+#include "chromeos/components/local_search_service/public/mojom/types_mojom_traits.h"
 
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 

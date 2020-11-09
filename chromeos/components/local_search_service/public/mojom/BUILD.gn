@@ -6,6 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
+    "index.mojom",
     "local_search_service_proxy.mojom",
     "types.mojom",
   ]
@@ -48,10 +49,8 @@ mojom("mojom") {
           cpp = "::chromeos::local_search_service::Backend"
         },
       ]
-      traits_headers = [
-        "//chromeos/components/local_search_service/mojom/types_mojom_traits.h",
-      ]
-      traits_sources = [ "//chromeos/components/local_search_service/mojom/types_mojom_traits.cc" ]
+      traits_headers = [ "//chromeos/components/local_search_service/public/mojom/types_mojom_traits.h" ]
+      traits_sources = [ "//chromeos/components/local_search_service/public/mojom/types_mojom_traits.cc" ]
     },
   ]
 }

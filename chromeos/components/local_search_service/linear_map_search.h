@@ -12,6 +12,7 @@
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
+#include "chromeos/components/local_search_service/index.h"
 #include "chromeos/components/local_search_service/index_sync.h"
 #include "chromeos/components/local_search_service/shared_structs.h"
 
@@ -25,11 +26,19 @@ class TokenizedString;
 
 namespace local_search_service {
 
+// A map from key to a vector of (tag-id, tokenized tag).
+typedef std::map<
+    std::string,
+    std::vector<
+        std::pair<std::string,
+                  std::unique_ptr<chromeos::string_matching::TokenizedString>>>>
+    KeyToTagVector;
+
 // An implementation of Index.
 // A search backend that linearly scans all documents in the storage and finds
 // documents that match the input query. Search is done by matching query with
 // documents' search tags.
-class LinearMapSearch : public IndexSync {
+class LinearMapSearch : public IndexSync, public Index {
  public:
   LinearMapSearch(IndexId index_id, PrefService* local_state);
   ~LinearMapSearch() override;
@@ -37,7 +46,7 @@ class LinearMapSearch : public IndexSync {
   LinearMapSearch(const LinearMapSearch&) = delete;
   LinearMapSearch& operator=(const LinearMapSearch&) = delete;
 
-  // Index overrides:
+  // IndexSync overrides:
   uint64_t GetSizeSync() override;
   void AddOrUpdateSync(const std::vector<Data>& data) override;
   uint32_t DeleteSync(const std::vector<std::string>& ids) override;
@@ -49,17 +58,25 @@ class LinearMapSearch : public IndexSync {
                           uint32_t max_results,
                           std::vector<Result>* results) override;
 
+  // Index overrides:
+  void GetSize(GetSizeCallback callback) override;
+  void AddOrUpdate(const std::vector<Data>& data,
+                   AddOrUpdateCallback callback) override;
+  void Delete(const std::vector<std::string>& ids,
+              DeleteCallback callback) override;
+  void UpdateDocuments(const std::vector<Data>& data,
+                       UpdateDocumentsCallback callback) override;
+  void Find(const base::string16& query,
+            uint32_t max_results,
+            FindCallback callback) override;
+  void ClearIndex(ClearIndexCallback callback) override;
+
  private:
   // Returns all search results for a given query.
   std::vector<Result> GetSearchResults(const base::string16& query,
                                        uint32_t max_results) const;
 
-  // A map from key to a vector of (tag-id, tokenized tag).
-  std::map<std::string,
-           std::vector<std::pair<
-               std::string,
-               std::unique_ptr<chromeos::string_matching::TokenizedString>>>>
-      data_;
+  KeyToTagVector data_;
 };
 
 }  // namespace local_search_service
