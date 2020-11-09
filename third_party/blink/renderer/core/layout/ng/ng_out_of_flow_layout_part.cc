@@ -1022,11 +1022,8 @@ bool NGOutOfFlowLayoutPart::IsContainingBlockForCandidate(
   // Candidates whose containing block is inline are always positioned inside
   // closest parent block flow.
   if (candidate.inline_container) {
-    DCHECK(
-        candidate.node.Style().GetPosition() == EPosition::kAbsolute &&
-            candidate.inline_container->CanContainAbsolutePositionObjects() ||
-        (candidate.node.Style().GetPosition() == EPosition::kFixed &&
-         candidate.inline_container->CanContainFixedPositionObjects()));
+    DCHECK(candidate.inline_container->CanContainOutOfFlowPositionedElement(
+        candidate.node.Style().GetPosition()));
     return container_builder_->GetLayoutObject() ==
            candidate.node.GetLayoutBox()->ContainingBlock();
   }
