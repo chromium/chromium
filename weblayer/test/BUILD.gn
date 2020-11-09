@@ -111,6 +111,7 @@ test("weblayer_browsertests") {
     "//components/signin/core/browser",
     "//components/site_isolation",
     "//components/strings",
+    "//components/subresource_filter/content/browser",
     "//components/translate/content/browser",
     "//components/translate/content/browser:test_support",
     "//components/ukm:test_support",
@@ -125,6 +126,7 @@ test("weblayer_browsertests") {
     "//testing/gtest",
     "//ui/base",
     "//ui/gfx:test_support",
+    "//weblayer:resources",
     "//weblayer/shell:weblayer_shell_lib",
   ]
 

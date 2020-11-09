@@ -795,6 +795,7 @@ if (is_android) {
 
 grit("resources") {
   source = "weblayer_resources.grd"
+  use_brotli = true
 
   outputs = [
     "grit/weblayer_resources.h",
