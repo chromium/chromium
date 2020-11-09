@@ -25,6 +25,7 @@
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
@@ -287,11 +288,20 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+
+  self.view.backgroundColor = UIColor.cr_systemBackgroundColor;
+
   if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
-    self.navigationBar.backgroundColor = UIColor.whiteColor;
+    self.navigationBar.translucent = NO;
+    self.navigationBar.barTintColor = UIColor.cr_systemBackgroundColor;
+
+    self.toolbar.translucent = NO;
+    self.toolbar.barTintColor = UIColor.cr_systemBackgroundColor;
   }
+
   self.navigationBar.prefersLargeTitles = YES;
   self.navigationBar.accessibilityIdentifier = @"SettingNavigationBar";
+
   // Set the NavigationController delegate.
   self.delegate = self;
 }
