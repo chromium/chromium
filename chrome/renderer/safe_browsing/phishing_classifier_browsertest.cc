@@ -17,6 +17,7 @@
 #include "chrome/renderer/safe_browsing/murmurhash3_util.h"
 #include "chrome/renderer/safe_browsing/scorer.h"
 #include "chrome/test/base/chrome_render_view_test.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
@@ -272,6 +273,7 @@ TEST_F(PhishingClassifierTest, DisableDetection) {
   EXPECT_FALSE(classifier_->is_ready());
 }
 
+#if BUILDFLAG(FULL_SAFE_BROWSING)
 TEST_F(PhishingClassifierTest, TestSendsVisualHash) {
   LoadHtml(GURL("https://host.net"),
            "<html><body><a href=\"http://safe.com/\">login</a></body></html>");
@@ -288,6 +290,7 @@ TEST_F(PhishingClassifierTest, TestSendsVisualDigest) {
 
   EXPECT_FALSE(screenshot_digest_.empty());
 }
+#endif
 
 // TODO(jialiul): Add test to verify that classification only starts on GET
 // method. It seems there is no easy way to simulate a HTTP POST in

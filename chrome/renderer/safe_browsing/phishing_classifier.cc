@@ -26,6 +26,7 @@
 #include "chrome/renderer/safe_browsing/phishing_url_feature_extractor.h"
 #include "chrome/renderer/safe_browsing/scorer.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "content/public/renderer/render_frame.h"
@@ -162,7 +163,11 @@ void PhishingClassifier::DOMExtractionFinished(bool success) {
 
 void PhishingClassifier::TermExtractionFinished(bool success) {
   if (success) {
+#if BUILDFLAG(FULL_SAFE_BROWSING)
     ExtractVisualFeatures();
+#else
+    VisualExtractionFinished(true);
+#endif
   } else {
     RunFailureCallback();
   }
@@ -228,12 +233,16 @@ void PhishingClassifier::VisualExtractionFinished(bool success) {
   verdict->set_client_score(score);
   verdict->set_is_phishing(score >= scorer_->threshold_probability());
 
+#if BUILDFLAG(FULL_SAFE_BROWSING)
   visual_matching_start_ = base::TimeTicks::Now();
 
   scorer_->GetMatchingVisualTargets(
       *bitmap_, std::move(verdict),
       base::BindOnce(&PhishingClassifier::OnVisualTargetsMatched,
                      weak_factory_.GetWeakPtr()));
+#else
+  RunCallback(*verdict);
+#endif
 }
 
 void PhishingClassifier::OnVisualTargetsMatched(
