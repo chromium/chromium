@@ -2852,12 +2852,6 @@
       },
     },
   },
-  'webgl_conformance_fast_call_tests': {
-    'remove_from': [
-      # Test failures on x86. https://crbug.com/1144751
-      'Win10 FYI x86 Release (NVIDIA)',
-    ],
-  },
   'webgl_conformance_gl_passthrough_tests': {
     'remove_from': [
       # crbug.com/555545 and crbug.com/649824:
