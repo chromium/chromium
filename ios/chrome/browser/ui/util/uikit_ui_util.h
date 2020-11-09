@@ -202,4 +202,8 @@ NSString* TextForTabCount(long count);
 // if a UIMenuItem with the same selector as |item| has already been registered.
 void RegisterEditMenuItem(UIMenuItem* item);
 
+// Finds the root of |view|'s view hierarchy -- its window if it has one, or
+// the first (recursive) superview with no superview.
+UIView* ViewHierarchyRootForView(UIView* view);
+
 #endif  // IOS_CHROME_BROWSER_UI_UTIL_UIKIT_UI_UTIL_H_

@@ -401,3 +401,13 @@ void RegisterEditMenuItem(UIMenuItem* item) {
 
   [menu setMenuItems:items];
 }
+
+UIView* ViewHierarchyRootForView(UIView* view) {
+  if (view.window)
+    return view.window;
+
+  if (!view.superview)
+    return view;
+
+  return ViewHierarchyRootForView(view.superview);
+}

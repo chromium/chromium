@@ -121,4 +121,23 @@ TEST_F(UIKitUIUtilTest, TintImageKeepsImageProperties) {
             tintedImage.flipsForRightToLeftLayoutDirection);
 }
 
+TEST_F(UIKitUIUtilTest, ViewHierarchyRootForView) {
+  UIView* view1 = [[UIView alloc] init];
+  EXPECT_EQ(ViewHierarchyRootForView(view1), view1);
+
+  UIView* view2 = [[UIView alloc] init];
+  [view1 addSubview:view2];
+  EXPECT_EQ(ViewHierarchyRootForView(view2), view1);
+
+  UIWindow* window = [[UIWindow alloc] init];
+  [window addSubview:view1];
+
+  EXPECT_EQ(ViewHierarchyRootForView(view1), window);
+  EXPECT_EQ(ViewHierarchyRootForView(view2), window);
+
+  [view1 removeFromSuperview];
+  EXPECT_EQ(ViewHierarchyRootForView(view1), view1);
+  EXPECT_EQ(ViewHierarchyRootForView(view2), view1);
+}
+
 }  // namespace
