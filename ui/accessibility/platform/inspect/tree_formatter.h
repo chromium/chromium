@@ -23,9 +23,9 @@ class AXPlatformNodeDelegate;
 // implemented.
 class AX_EXPORT AXTreeFormatter {
  public:
-  using AXTreeSelector = AXTreeSelector;
-  using AXPropertyFilter = AXPropertyFilter;
-  using AXNodeFilter = AXNodeFilter;
+  using AXTreeSelector = ui::AXTreeSelector;
+  using AXPropertyFilter = ui::AXPropertyFilter;
+  using AXNodeFilter = ui::AXNodeFilter;
 
   virtual ~AXTreeFormatter() = default;
 
