@@ -433,9 +433,11 @@ class SystemProxyManagerPolicyCredentialsBrowserTest
         client_test_interface()->GetLastAuthenticationDetailsRequest();
     EXPECT_EQ(username, request.credentials().username());
     EXPECT_EQ(password, request.credentials().password());
-    ASSERT_EQ(auth_schemes.size(),
-              request.credentials().policy_credentials_auth_schemes().size());
-    for (int i = 0; i < auth_schemes.size(); ++i) {
+    ASSERT_EQ(
+        auth_schemes.size(),
+        static_cast<size_t>(
+            request.credentials().policy_credentials_auth_schemes().size()));
+    for (size_t i = 0; i < auth_schemes.size(); ++i) {
       EXPECT_EQ(request.credentials().policy_credentials_auth_schemes()[i],
                 auth_schemes[i]);
     }
