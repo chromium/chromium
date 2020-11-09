@@ -9,10 +9,11 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
-class LocalDOMWindow;
+class Navigator;
 class PresentationReceiver;
 class PresentationRequest;
 
@@ -21,13 +22,13 @@ class PresentationRequest;
 // See https://w3c.github.io/presentation-api/#navigatorpresentation for
 // details.
 class Presentation final : public ScriptWrappable,
-                           public ExecutionContextClient {
+                           public Supplement<Navigator> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static Presentation* Create(LocalDOMWindow*);
-
-  explicit Presentation(LocalDOMWindow*);
+  static const char kSupplementName[];
+  static Presentation* presentation(Navigator&);
+  explicit Presentation(Navigator&);
 
   void Trace(Visitor*) const override;
 
@@ -37,6 +38,8 @@ class Presentation final : public ScriptWrappable,
   PresentationReceiver* receiver();
 
  private:
+  void MaybeInitReceiver();
+
   // Default PresentationRequest used by the embedder.
   Member<PresentationRequest> default_request_;
 

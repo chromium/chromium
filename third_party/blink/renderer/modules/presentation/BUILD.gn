@@ -6,8 +6,6 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("presentation") {
   sources = [
-    "navigator_presentation.cc",
-    "navigator_presentation.h",
     "presentation.cc",
     "presentation.h",
     "presentation_availability.cc",

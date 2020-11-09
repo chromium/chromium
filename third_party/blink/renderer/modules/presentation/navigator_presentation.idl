@@ -5,7 +5,7 @@
 // https://w3c.github.io/presentation-api/#interface-navigatorpresentation
 
 [
-    ImplementedAs=NavigatorPresentation,
+    ImplementedAs=Presentation,
     RuntimeEnabled=Presentation
 ] partial interface Navigator {
     [SameObject, SecureContext] readonly attribute Presentation presentation;

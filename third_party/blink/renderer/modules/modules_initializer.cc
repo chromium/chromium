@@ -71,7 +71,7 @@
 #include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_tracker.h"
 #include "third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_controller_impl.h"
-#include "third_party/blink/renderer/modules/presentation/presentation_receiver.h"
+#include "third_party/blink/renderer/modules/presentation/presentation.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_messaging_client.h"
 #include "third_party/blink/renderer/modules/remoteplayback/html_media_element_remote_playback.h"
 #include "third_party/blink/renderer/modules/remoteplayback/remote_playback.h"
@@ -231,9 +231,10 @@ void ModulesInitializer::OnClearWindowObjectInMainWorld(
   DOMWindowStorageController::From(window);
   if (RuntimeEnabledFeatures::PresentationEnabled() &&
       settings.GetPresentationReceiver()) {
-    // We eagerly create PresentationReceiver so that the frame creating the
-    // presentation can offer a connection to the presentation receiver.
-    PresentationReceiver::From(document);
+    // We eagerly create Presentation and associated PresentationReceiver so
+    // that the frame creating the presentation can offer a connection to the
+    // presentation receiver.
+    Presentation::presentation(*window.navigator());
   }
   ManifestManager::From(window);
 

@@ -7,19 +7,10 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/local_frame_client.h"
-#include "third_party/blink/renderer/core/frame/navigator.h"
-#include "third_party/blink/renderer/modules/presentation/navigator_presentation.h"
-#include "third_party/blink/renderer/modules/presentation/presentation.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_connection.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_connection_list.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -39,18 +30,6 @@ PresentationReceiver::PresentationReceiver(LocalDOMWindow* window)
   // to receive updates on new connections becoming available.
   presentation_service_remote_->SetReceiver(
       presentation_receiver_receiver_.BindNewPipeAndPassRemote(task_runner));
-}
-
-// static
-PresentationReceiver* PresentationReceiver::From(Document& document) {
-  if (!document.IsInMainFrame() || !document.GetFrame()->DomWindow())
-    return nullptr;
-  Navigator& navigator = *document.GetFrame()->DomWindow()->navigator();
-  Presentation* presentation = NavigatorPresentation::presentation(navigator);
-  if (!presentation)
-    return nullptr;
-
-  return presentation->receiver();
 }
 
 ScriptPromise PresentationReceiver::connectionList(ScriptState* script_state) {
