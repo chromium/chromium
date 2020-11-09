@@ -11,6 +11,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 import * as gestures from './lib/utils/gestures.js';
 
 export {DomIf} from './lib/elements/dom-if.js';
+export {DomRepeat} from './lib/elements/dom-repeat.js';
 export {mixinBehaviors} from './lib/legacy/class.js';
 export {OptionalMutableDataBehavior} from './lib/legacy/mutable-data-behavior.js';
 export {Polymer} from './lib/legacy/polymer-fn.js';
