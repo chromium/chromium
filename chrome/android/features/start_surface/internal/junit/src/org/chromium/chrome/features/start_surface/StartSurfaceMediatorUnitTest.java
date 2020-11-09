@@ -71,6 +71,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.TasksSurfaceProperties;
@@ -85,6 +87,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /** Tests for {@link StartSurfaceMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -103,6 +106,12 @@ public class StartSurfaceMediatorUnitTest {
     private TabModel mNormalTabModel;
     @Mock
     private TabModel mIncognitoTabModel;
+    @Mock
+    private List<TabModel> mTabModels;
+    @Mock
+    private TabModelFilterProvider mTabModelFilterProvider;
+    @Mock
+    private TabModelFilter mTabModelFilter;
     @Mock
     private FakeboxDelegate mFakeBoxDelegate;
     @Mock
@@ -147,6 +156,10 @@ public class StartSurfaceMediatorUnitTest {
         mPropertyModel = new PropertyModel(allProperties);
         mSecondaryTasksSurfacePropertyModel = new PropertyModel(allProperties);
 
+        mTabModels = new ArrayList<>(2);
+        mTabModels.add(mNormalTabModel);
+        mTabModels.add(mIncognitoTabModel);
+        when(mTabModelSelector.getModels()).thenReturn(mTabModels);
         doReturn(mNormalTabModel).when(mTabModelSelector).getModel(false);
         doReturn(mIncognitoTabModel).when(mTabModelSelector).getModel(true);
         doReturn(false).when(mNormalTabModel).isIncognito();
@@ -682,7 +695,79 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    public void addAndRemoveTabModelObserverWithOverview() {
+    public void pendingTabModelObserverWithBothShowOverviewAndHideBeforeTabModelInitialization() {
+        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(mVoiceRecognitionHandler).when(mFakeBoxDelegate).getVoiceRecognitionHandler();
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+
+        mTabModels.clear();
+        StartSurfaceMediator mediator = createStartSurfaceMediator(SurfaceMode.SINGLE_PANE, false);
+        verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
+
+        mediator.setOverviewState(StartSurfaceState.SHOWN_HOMEPAGE);
+        mediator.showOverview(false);
+        verify(mNormalTabModel, never()).addObserver(mTabModelObserverCaptor.capture());
+        mediator.startedHiding();
+        verify(mNormalTabModel, never()).addObserver(mTabModelObserverCaptor.capture());
+        verify(mNormalTabModel, never()).removeObserver(mTabModelObserverCaptor.capture());
+    }
+
+    @Test
+    public void pendingTabModelObserverWithShowOverviewBeforeAndHideAfterTabModelInitialization() {
+        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(mVoiceRecognitionHandler).when(mFakeBoxDelegate).getVoiceRecognitionHandler();
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+
+        mTabModels.clear();
+        StartSurfaceMediator mediator = createStartSurfaceMediator(SurfaceMode.SINGLE_PANE, false);
+        verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
+
+        mediator.setOverviewState(StartSurfaceState.SHOWN_HOMEPAGE);
+        mediator.showOverview(false);
+        verify(mNormalTabModel, never()).addObserver(mTabModelObserverCaptor.capture());
+
+        mTabModels.add(mNormalTabModel);
+        mTabModels.add(mIncognitoTabModel);
+        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
+        when(mTabModelFilterProvider.getTabModelFilter(false)).thenReturn(mTabModelFilter);
+        when(mTabModelFilterProvider.getTabModelFilter(true)).thenReturn(mTabModelFilter);
+        mTabModelSelectorObserverCaptor.getValue().onChange();
+        verify(mTabModelSelector).removeObserver(mTabModelSelectorObserverCaptor.capture());
+        verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
+
+        mediator.startedHiding();
+        verify(mNormalTabModel).removeObserver(mTabModelObserverCaptor.capture());
+    }
+
+    @Test
+    public void pendingTabModelObserverWithBothShowAndHideOverviewAfterTabModelInitialization() {
+        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(mVoiceRecognitionHandler).when(mFakeBoxDelegate).getVoiceRecognitionHandler();
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+
+        mTabModels.clear();
+        StartSurfaceMediator mediator = createStartSurfaceMediator(SurfaceMode.SINGLE_PANE, false);
+        verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
+
+        mTabModels.add(mNormalTabModel);
+        mTabModels.add(mIncognitoTabModel);
+        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
+        when(mTabModelFilterProvider.getTabModelFilter(false)).thenReturn(mTabModelFilter);
+        when(mTabModelFilterProvider.getTabModelFilter(true)).thenReturn(mTabModelFilter);
+        mTabModelSelectorObserverCaptor.getValue().onChange();
+        verify(mTabModelSelector).removeObserver(mTabModelSelectorObserverCaptor.capture());
+        verify(mNormalTabModel, never()).addObserver(mTabModelObserverCaptor.capture());
+
+        mediator.setOverviewState(StartSurfaceState.SHOWN_HOMEPAGE);
+        mediator.showOverview(false);
+        verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
+
+        mediator.startedHiding();
+        verify(mNormalTabModel).removeObserver(mTabModelObserverCaptor.capture());
+    }
+
+    @Test
+    public void addAndRemoveTabModelSelectorObserverWithOverviewAfterTabModelInitialization() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(mVoiceRecognitionHandler).when(mFakeBoxDelegate).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();

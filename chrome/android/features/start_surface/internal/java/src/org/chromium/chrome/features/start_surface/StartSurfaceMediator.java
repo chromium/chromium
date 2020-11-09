@@ -138,7 +138,6 @@ class StartSurfaceMediator
     private int mStartSurfaceState;
     @StartSurfaceState
     private int mPreviousStartSurfaceState;
-    private boolean mIsOmniboxFocused;
     @Nullable
     private TabModel mNormalTabModel;
     @Nullable
@@ -151,6 +150,11 @@ class StartSurfaceMediator
     private boolean mExcludeMVTiles;
     private boolean mShowStackTabSwitcher;
     private OneshotSupplier<StartSurface> mStartSurfaceSupplier;
+    /**
+     * Whether a pending observer needed be added to the normal TabModel after the TabModel is
+     * initialized.
+     */
+    private boolean mPendingObserver;
     /**
      * The value of {@link Pref#ARTICLES_LIST_VISIBLE} on Startup. Getting this value for recording
      * the consistency of {@link ChromePreferenceKeys#FEED_ARTICLES_LIST_VISIBLE} with {@link
@@ -230,12 +234,11 @@ class StartSurfaceMediator
 
                 // Hide tab carousel, which does not exist in incognito mode, when closing all
                 // normal tabs.
-                mNormalTabModel = mTabModelSelector.getModel(false);
                 mNormalTabModelObserver = new TabModelObserver() {
                     @Override
                     public void willCloseTab(Tab tab, boolean animate) {
                         if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
-                                && mNormalTabModel.getCount() <= 1) {
+                                && mTabModelSelector.getModel(false).getCount() <= 1) {
                             setTabCarouselVisibility(false);
                         }
                     }
@@ -256,6 +259,30 @@ class StartSurfaceMediator
                                 mTabModelSelector.getModel(false).getCount() > 0 && !mIsIncognito);
                     }
                 };
+                if (mTabModelSelector.getModels().isEmpty()) {
+                    TabModelSelectorObserver selectorObserver =
+                            new EmptyTabModelSelectorObserver() {
+                                @Override
+                                public void onChange() {
+                                    assert !mTabModelSelector.getModels().isEmpty();
+                                    assert mTabModelSelector.getTabModelFilterProvider()
+                                                    .getTabModelFilter(false)
+                                            != null;
+                                    assert mTabModelSelector.getTabModelFilterProvider()
+                                                    .getTabModelFilter(true)
+                                            != null;
+                                    mTabModelSelector.removeObserver(this);
+                                    mNormalTabModel = mTabModelSelector.getModel(false);
+                                    if (mPendingObserver) {
+                                        mPendingObserver = false;
+                                        mNormalTabModel.addObserver(mNormalTabModelObserver);
+                                    }
+                                }
+                            };
+                    mTabModelSelector.addObserver(selectorObserver);
+                } else {
+                    mNormalTabModel = mTabModelSelector.getModel(false);
+                }
             }
 
             mBrowserControlsObserver = new BrowserControlsStateProvider.Observer() {
@@ -467,8 +494,11 @@ class StartSurfaceMediator
             // bottom bar.
             mPropertyModel.set(
                     BOTTOM_BAR_HEIGHT, mBrowserControlsStateProvider.getBottomControlsHeight());
-            mNormalTabModel.addObserver(mNormalTabModelObserver);
-
+            if (mNormalTabModel != null) {
+                mNormalTabModel.addObserver(mNormalTabModelObserver);
+            } else {
+                mPendingObserver = true;
+            }
         } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) {
             mPropertyModel.set(IS_SHOWING_STACK_TAB_SWITCHER, mShowStackTabSwitcher);
 
@@ -669,7 +699,11 @@ class StartSurfaceMediator
                 destroyFeedSurfaceCoordinator();
             }
             if (mNormalTabModelObserver != null) {
-                mNormalTabModel.removeObserver(mNormalTabModelObserver);
+                if (mNormalTabModel != null) {
+                    mNormalTabModel.removeObserver(mNormalTabModelObserver);
+                } else if (mPendingObserver) {
+                    mPendingObserver = false;
+                }
             }
             if (mTabModelSelectorObserver != null) {
                 mTabModelSelector.removeObserver(mTabModelSelectorObserver);

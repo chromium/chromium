@@ -44,6 +44,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.test.espresso.ViewAction;
@@ -1123,6 +1124,63 @@ public class StartSurfaceTest {
                     RecordHistogram.getHistogramValueCountForTesting(
                             FEED_VISIBILITY_CONSISTENCY, 1));
         }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    public void testShow_SingleAsHomepage_CloseAllTabsShouldHideTabSwitcher() {
+        // clang-format on
+        if (!mImmediateReturn) {
+            onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
+        }
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        CriteriaHelper.pollUiThread(
+                () -> cta.getLayoutManager() != null && cta.getLayoutManager().overviewVisible());
+        waitForTabModel();
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+        assertEquals(cta.findViewById(org.chromium.chrome.tab_ui.R.id.tab_switcher_title)
+                             .getVisibility(),
+                View.VISIBLE);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { cta.getTabModelSelector().getModel(false).closeAllTabs(); });
+        TabUiTestHelper.verifyTabModelTabCount(cta, 0, 0);
+        assertEquals(cta.findViewById(org.chromium.chrome.tab_ui.R.id.tab_switcher_title)
+                             .getVisibility(),
+                View.GONE);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/exclude_mv_tiles/true"
+            + "/show_last_active_tab_only/true/show_stack_tab_switcher/true"})
+    public void testShow_SingleAsHomepageV2_CloseAllTabsShouldHideTabSwitcher() {
+        // clang-format on
+        if (!mImmediateReturn) {
+            onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
+        }
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        CriteriaHelper.pollUiThread(
+                () -> cta.getLayoutManager() != null && cta.getLayoutManager().overviewVisible());
+        waitForTabModel();
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+        assertEquals(cta.findViewById(org.chromium.chrome.tab_ui.R.id.tab_switcher_title)
+                             .getVisibility(),
+                View.VISIBLE);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { cta.getTabModelSelector().getModel(false).closeAllTabs(); });
+        TabUiTestHelper.verifyTabModelTabCount(cta, 0, 0);
+        assertEquals(cta.findViewById(org.chromium.chrome.tab_ui.R.id.tab_switcher_title)
+                             .getVisibility(),
+                View.GONE);
     }
 }
 
