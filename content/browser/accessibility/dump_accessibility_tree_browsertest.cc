@@ -971,6 +971,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaOwnsCrash) {
   RunAriaTest(FILE_PATH_LITERAL("aria-owns-crash.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaOwnsCrash2) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-owns-crash-2.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaOwnsIgnored) {
   RunAriaTest(FILE_PATH_LITERAL("aria-owns-ignored.html"));

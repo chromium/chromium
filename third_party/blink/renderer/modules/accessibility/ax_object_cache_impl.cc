@@ -1352,6 +1352,11 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
   }
 
   ProcessUpdates(document);
+
+  // Changes to ids or aria-owns may have resulted in queued up relation
+  // cache work; do that now.
+  relation_cache_->ProcessUpdatesWithCleanLayout();
+
   PostNotifications(document);
 }
 
@@ -1568,23 +1573,12 @@ AXObject* AXObjectCacheImpl::GetAriaOwnedParent(const AXObject* object) const {
   return relation_cache_->GetAriaOwnedParent(object);
 }
 
-void AXObjectCacheImpl::UpdateAriaOwns(
+void AXObjectCacheImpl::GetAriaOwnedChildren(
     const AXObject* owner,
-    const Vector<String>& id_vector,
     HeapVector<Member<AXObject>>& owned_children) {
   DCHECK(GetDocument().Lifecycle().GetState() >=
          DocumentLifecycle::kLayoutClean);
-  relation_cache_->UpdateAriaOwns(owner, id_vector, owned_children);
-}
-
-void AXObjectCacheImpl::UpdateAriaOwnsFromAttrAssociatedElements(
-    const AXObject* owner,
-    const HeapVector<Member<Element>>& attr_associated_elements,
-    HeapVector<Member<AXObject>>& owned_children) {
-  DCHECK(GetDocument().Lifecycle().GetState() >=
-         DocumentLifecycle::kLayoutClean);
-  relation_cache_->UpdateAriaOwnsFromAttrAssociatedElements(
-      owner, attr_associated_elements, owned_children);
+  relation_cache_->GetAriaOwnedChildren(owner, owned_children);
 }
 
 bool AXObjectCacheImpl::MayHaveHTMLLabel(const HTMLElement& elem) {
@@ -1907,12 +1901,8 @@ void AXObjectCacheImpl::HandleAttributeChangedWithCleanLayout(
   } else if (attr_name == html_names::kAriaErrormessageAttr) {
     MarkElementDirty(element, false);
   } else if (attr_name == html_names::kAriaOwnsAttr) {
-    ChildrenChangedWithCleanLayout(element);
-    // Ensure aria-owns update fires on original parent as well
-    if (AXObject* obj = GetOrCreate(element)) {
-      obj->ClearChildren();
-      obj->AddChildren();
-    }
+    if (AXObject* obj = GetOrCreate(element))
+      relation_cache_->UpdateAriaOwnsWithCleanLayout(obj);
   } else {
     PostNotification(element, ax::mojom::Event::kAriaAttributeChanged);
   }

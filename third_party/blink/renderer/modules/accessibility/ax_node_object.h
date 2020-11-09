@@ -74,7 +74,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   void AccessibilityChildrenFromAOMProperty(AOMRelationListProperty,
                                             AXObject::AXObjectVector&) const;
 
-  bool HasContentEditableAttributeSet() const;
   bool IsTextControl() const override;
   Element* MenuItemElementForMenu() const;
   Element* MouseButtonListener() const;
@@ -99,6 +98,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool IsMultiline() const override;
   bool IsEditable() const override { return IsNativeTextControl(); }
   bool ComputeIsEditableRoot() const override;
+  bool HasContentEditableAttributeSet() const override;
   bool IsFieldset() const final;
   bool IsHovered() const final;
   bool IsImageButton() const;

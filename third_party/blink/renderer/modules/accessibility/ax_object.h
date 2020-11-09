@@ -801,6 +801,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool IsEditable() const { return false; }
   bool IsEditableRoot() const;
   virtual bool ComputeIsEditableRoot() const { return false; }
+  virtual bool HasContentEditableAttributeSet() const { return false; }
   virtual bool IsMultiline() const { return false; }
   virtual bool IsRichlyEditable() const { return false; }
   bool AriaCheckedIsPresent() const;

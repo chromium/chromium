@@ -2838,7 +2838,7 @@ String AXNodeObject::TextFromDescendants(AXObjectSet& visited,
   AXObjectVector children;
 
   HeapVector<Member<AXObject>> owned_children;
-  ComputeAriaOwnsChildren(owned_children);
+  AXObjectCache().GetAriaOwnedChildren(this, owned_children);
 
   for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
        child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
@@ -3391,7 +3391,7 @@ void AXNodeObject::AddChildren() {
   have_children_ = true;
 
   AXObjectVector owned_children;
-  ComputeAriaOwnsChildren(owned_children);
+  AXObjectCache().GetAriaOwnedChildren(this, owned_children);
 
   if (ShouldUseLayoutBuilderTraversal()) {
     for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
@@ -3951,36 +3951,6 @@ AXObject* AXNodeObject::ErrorMessage() const {
     return nullptr;
 
   return AXObjectCache().ValidationMessageObjectIfInvalid();
-}
-
-void AXNodeObject::ComputeAriaOwnsChildren(
-    HeapVector<Member<AXObject>>& owned_children) const {
-  Vector<String> id_vector;
-  // Case 1: owned children not allowed
-  if (!CanHaveChildren() || IsNativeTextControl() ||
-      HasContentEditableAttributeSet()) {
-    if (GetNode())
-      AXObjectCache().UpdateAriaOwns(this, id_vector, owned_children);
-    return;
-  }
-
-  // We first check if the element has an explicitly set aria-owns association.
-  // Explicitly set elements are validated on setting time (that they are in a
-  // valid scope etc). The content attribute can contain ids that are not
-  // legally ownable.
-  Element* element = GetElement();
-  if (element && element->HasExplicitlySetAttrAssociatedElements(
-                     html_names::kAriaOwnsAttr)) {
-    AXObjectCache().UpdateAriaOwnsFromAttrAssociatedElements(
-        this,
-        element->GetElementArrayAttribute(html_names::kAriaOwnsAttr).value(),
-        owned_children);
-    return;
-  }
-
-  // Case 2: aria-owns attribute
-  TokenVectorFromAttribute(id_vector, html_names::kAriaOwnsAttr);
-  AXObjectCache().UpdateAriaOwns(this, id_vector, owned_children);
 }
 
 // According to the standard, the figcaption should only be the first or

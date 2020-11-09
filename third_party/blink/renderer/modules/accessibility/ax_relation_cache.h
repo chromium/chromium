@@ -22,6 +22,10 @@ class AXRelationCache {
   explicit AXRelationCache(AXObjectCacheImpl*);
   virtual ~AXRelationCache();
 
+  //
+  // Safe to call at any time. Doesn't make any changes to the tree.
+  //
+
   // Scan the initial document.
   void Init();
 
@@ -32,32 +36,17 @@ class AXRelationCache {
   // Returns the parent of the given object due to aria-owns.
   AXObject* GetAriaOwnedParent(const AXObject*) const;
 
-  // Given an object that has an aria-owns attributes, and a vector of ids from
-  // the value of that attribute, updates the internal state to reflect the new
-  // set of children owned by this object, returning the result in
-  // |ownedChildren|. The result is validated - illegal, duplicate, or cyclical
-  // references have been removed.
-  void UpdateAriaOwns(const AXObject* owner,
-                      const Vector<String>& id_vector,
-                      HeapVector<Member<AXObject>>& owned_children);
-
-  // Given an object that has explicitly set elements for aria-owns, update the
-  // internal state to reflect the new set of children owned by this object.
-  // Note that |owned_children| will be the AXObjects corresponding to the
-  // elements in |attr_associated_elements|. These elements are validated -
-  // exist in the DOM, and are a descendant of a shadow including ancestor.
-  void UpdateAriaOwnsFromAttrAssociatedElements(
-      const AXObject* owner,
-      const HeapVector<Member<Element>>& attr_associated_elements,
-      HeapVector<Member<AXObject>>& owned_children);
+  // Returns the validated owned children of this element with aria-owns.
+  void GetAriaOwnedChildren(const AXObject* owner,
+                            HeapVector<Member<AXObject>>& owned_children);
 
   // Return true if any label ever pointed to the element via the for attribute.
   bool MayHaveHTMLLabelViaForAttribute(const HTMLElement&);
 
   // Given an element in the DOM tree that was either just added or whose id
   // just changed, check to see if another object wants to be its parent due to
-  // aria-owns. If so, update the tree by calling childrenChanged() on the
-  // potential owner, possibly reparenting this element.
+  // aria-owns. If so, add it to a queue of ids to process later during
+  // ProcessUpdatesWithCleanLayout.
   void UpdateRelatedTree(Node*);
 
   // Remove given AXID from cache.
@@ -70,9 +59,40 @@ class AXRelationCache {
   void UpdateReverseRelations(const AXObject* relation_source,
                               const Vector<String>& target_ids);
 
+  // Called when the "for" attribute of a label element changes and the
+  // reverse mapping needs to be updated.
   void LabelChanged(Node*);
 
+  //
+  // Only called when layout is clean, in the kInAccessibility lifecycle
+  // stage.
+  //
+
+  // Called once towards the end of the kInAccessibility lifecycle stage.
+  // Iterates over a list of ququed nodes that may require changes to their
+  // set of owned children and calls UpdateAriaOwnsWithCleanLayout on each
+  // of them.
+  void ProcessUpdatesWithCleanLayout();
+
+  // Determines the set of child nodes that this object owns due to aria-owns
+  // (fully validating that the ownership is legal and free of cycles).
+  // If that differs from the previously cached set of owned children,
+  // calls ChildrenChanged on all affected nodes (old and new parents).
+  // This affects the tree, which is why it should only be called at a
+  // specific time in the lifecycle.
+  void UpdateAriaOwnsWithCleanLayout(AXObject* owner);
+
  private:
+  // Given an object that has explicitly set elements for aria-owns, update the
+  // internal state to reflect the new set of children owned by this object.
+  // Note that |owned_children| will be the AXObjects corresponding to the
+  // elements in |attr_associated_elements|. These elements are validated -
+  // exist in the DOM, and are a descendant of a shadow including ancestor.
+  void UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
+      AXObject* owner,
+      const HeapVector<Member<Element>>& attr_associated_elements,
+      HeapVector<Member<AXObject>>& owned_children);
+
   // If any object is related to this object via <label for>, aria-owns,
   // aria-describedby or aria-labeledby, update the text for the related object.
   void UpdateRelatedText(Node*);
@@ -84,8 +104,8 @@ class AXRelationCache {
 
   // Updates |aria_owner_to_children_mapping_| after calling UpdateAriaOwns for
   // either the content attribute or the attr associated elements.
-  void UpdateAriaOwnerToChildrenMapping(
-      const AXObject* owner,
+  void UpdateAriaOwnerToChildrenMappingWithCleanLayout(
+      AXObject* owner,
       HeapVector<Member<AXObject>>& validated_owned_children_result);
 
   WeakPersistent<AXObjectCacheImpl> object_cache_;
@@ -97,11 +117,6 @@ class AXRelationCache {
 
   // Map from the AXID of a child to the AXID of the parent that owns it.
   HashMap<AXID, AXID> aria_owned_child_to_owner_mapping_;
-
-  // Map from the AXID of a child to the AXID of its real parent in the tree if
-  // we ignored aria-owns. This is needed in case the owner no longer wants to
-  // own it.
-  HashMap<AXID, AXID> aria_owned_child_to_real_parent_mapping_;
 
   // Reverse relation map from an ID (the ID attribute of a DOM element) to the
   // set of elements that at some time pointed to that ID via aria-owns,
@@ -120,6 +135,12 @@ class AXRelationCache {
   // labelable element has never had an associated label allows the accessible
   // name calculation to be optimized.
   HashSet<AtomicString> all_previously_seen_label_target_ids_;
+
+  // A set of IDs that need to be updated during the kInAccessibility
+  // lifecycle phase. For each of these, the new set of owned children
+  // will be computed, and if it's different than before, ChildrenChanged
+  // will be fired on all affected nodes.
+  HashSet<AXID> owner_ids_to_update_;
 
   // Helpers that call back into object cache
   AXObject* ObjectFromAXID(AXID) const;

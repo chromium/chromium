@@ -253,28 +253,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Returns the parent of the given object due to aria-owns.
   AXObject* GetAriaOwnedParent(const AXObject*) const;
 
-  // Given an object that has an aria-owns attributes, and a vector of ids from
-  // the value of that attribute, updates the internal state to reflect the new
-  // set of children owned by this object, returning the result in
-  // |ownedChildren|. The result is validated - illegal, duplicate, or cyclical
-  // references have been removed.
-  //
-  // If one or more ids aren't found, they're added to a lookup table so that if
-  // an element with that id appears later, it can be added when you call
-  // updateTreeIfElementIdIsAriaOwned.
-  void UpdateAriaOwns(const AXObject* owner,
-                      const Vector<String>& id_vector,
-                      HeapVector<Member<AXObject>>& owned_children);
-
-  // Given an object that has explicitly set elements for aria-owns, update the
-  // internal state to reflect the new set of children owned by this object.
-  // Note that |owned_children| will be the AXObjects corresponding to the
-  // elements in |attr_associated_elements|. These elements are validated -
-  // exist in the DOM, and are a descendant of a shadow including ancestor.
-  void UpdateAriaOwnsFromAttrAssociatedElements(
-      const AXObject* owner,
-      const HeapVector<Member<Element>>& attr_associated_elements,
-      HeapVector<Member<AXObject>>& owned_children);
+  // Given an object that has an aria-owns attribute, return the validated
+  // set of aria-owned children.
+  void GetAriaOwnedChildren(const AXObject* owner,
+                            HeapVector<Member<AXObject>>& owned_children);
 
   // Adds |object| to |fixed_or_sticky_node_ids_| if it has a fixed or sticky
   // position.

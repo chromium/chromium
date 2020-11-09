@@ -7,10 +7,14 @@
 </div>
 <script>
   function go() {
-    // This change will cause AXTreeSerializer::SerializeChanges to clear the
-    // subtree whose least common ancestor is the ignored generic container
-    // parent of the group. As a result, all of its descendants are treated
-    // as reparented, and we fire the parent-changed event on the group.
+    // Note: originally this test caught a case where
+    // AXTreeSerializer::SerializeChanges cleared the subtree whose
+    // least common ancestor was the ignored generic container
+    // parent of the group, which caused all of its descendants are treated
+    // as reparented.
+    //
+    // This behavior no longer happens, it's just a straighforward case
+    // of reparenting one node.
     document.getElementById("group").setAttribute("aria-owns", "search");
   }
 </script>
