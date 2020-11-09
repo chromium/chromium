@@ -199,6 +199,11 @@ void CastSessionClientImpl::HandleParsedClientMessage(
       activity_->HandleLeaveSession(client_id());
       break;
 
+    case CastInternalMessage::Type::kClientConnect:
+      // This message type is obsolete and can be safely ignored (see b/34104690
+      // and the corresponding TODO in the Cast API implementation).
+      break;
+
     default:
       auto opt_string = cast_util::EnumToString(cast_message->type());
       if (opt_string) {
