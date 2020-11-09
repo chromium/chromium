@@ -256,8 +256,13 @@ void VideoCaptureDeviceFuchsia::InitializeBufferCollection(
   // Request just one buffer in collection constraints: each frame is copied as
   // soon as it's received.
   const size_t kMaxUsedOutputFrames = 1;
+
+  // Sysmem calculates buffer size based on image constraints, so it doesn't
+  // need to specified explicitly.
   fuchsia::sysmem::BufferCollectionConstraints constraints =
-      SysmemBufferReader::GetRecommendedConstraints(kMaxUsedOutputFrames);
+      SysmemBufferReader::GetRecommendedConstraints(
+          kMaxUsedOutputFrames,
+          /*min_buffer_size=*/base::nullopt);
   buffer_collection_creator_->Create(
       std::move(constraints),
       base::BindOnce(&VideoCaptureDeviceFuchsia::OnBufferCollectionCreated,

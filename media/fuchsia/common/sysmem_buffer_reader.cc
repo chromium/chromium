@@ -93,10 +93,19 @@ std::unique_ptr<SysmemBufferReader> SysmemBufferReader::Create(
 
 // static
 fuchsia::sysmem::BufferCollectionConstraints
-SysmemBufferReader::GetRecommendedConstraints(size_t max_used_output_frames) {
+SysmemBufferReader::GetRecommendedConstraints(
+    size_t min_buffer_count,
+    base::Optional<size_t> min_buffer_size) {
   fuchsia::sysmem::BufferCollectionConstraints buffer_constraints;
   buffer_constraints.usage.cpu = fuchsia::sysmem::cpuUsageRead;
-  buffer_constraints.min_buffer_count_for_camping = max_used_output_frames;
+  buffer_constraints.min_buffer_count = min_buffer_count;
+  if (min_buffer_size) {
+    buffer_constraints.has_buffer_memory_constraints = true;
+    buffer_constraints.buffer_memory_constraints.min_size_bytes =
+        min_buffer_size.value();
+    buffer_constraints.buffer_memory_constraints.ram_domain_supported = true;
+    buffer_constraints.buffer_memory_constraints.cpu_domain_supported = true;
+  }
   return buffer_constraints;
 }
 

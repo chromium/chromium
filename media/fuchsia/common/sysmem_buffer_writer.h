@@ -22,8 +22,7 @@ class SysmemBufferWriter {
   class Buffer;
 
   static base::Optional<fuchsia::sysmem::BufferCollectionConstraints>
-  GetRecommendedConstraints(
-      const fuchsia::media::StreamBufferConstraints& stream_constraints);
+  GetRecommendedConstraints(size_t min_buffer_count, size_t min_buffer_size);
 
   static std::unique_ptr<SysmemBufferWriter> Create(
       fuchsia::sysmem::BufferCollectionInfo_2 info);

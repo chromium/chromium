@@ -122,8 +122,6 @@ class StreamProcessorHelper {
   void CompleteInputBuffersAllocation(
       fuchsia::sysmem::BufferCollectionTokenPtr token);
   void CompleteOutputBuffersAllocation(
-      size_t num_buffers_for_client,
-      size_t num_buffers_for_server,
       fuchsia::sysmem::BufferCollectionTokenPtr token);
 
   void Reset();

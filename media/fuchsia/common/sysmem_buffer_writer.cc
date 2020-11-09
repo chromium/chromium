@@ -168,16 +168,9 @@ std::unique_ptr<SysmemBufferWriter> SysmemBufferWriter::Create(
 
 // static
 base::Optional<fuchsia::sysmem::BufferCollectionConstraints>
-SysmemBufferWriter::GetRecommendedConstraints(
-    const fuchsia::media::StreamBufferConstraints& stream_constraints) {
+SysmemBufferWriter::GetRecommendedConstraints(size_t min_buffer_count,
+                                              size_t min_buffer_size) {
   fuchsia::sysmem::BufferCollectionConstraints buffer_constraints;
-
-  if (!stream_constraints.has_default_settings() ||
-      !stream_constraints.default_settings().has_packet_count_for_client()) {
-    DLOG(ERROR)
-        << "Received StreamBufferConstaints with missing required fields.";
-    return base::nullopt;
-  }
 
   // Currently we have to map buffers VMOs to write to them (see ZX-4854) and
   // memory cannot be mapped as write-only (see ZX-4872), so request RW access
@@ -185,16 +178,9 @@ SysmemBufferWriter::GetRecommendedConstraints(
   buffer_constraints.usage.cpu =
       fuchsia::sysmem::cpuUsageRead | fuchsia::sysmem::cpuUsageWrite;
 
-  buffer_constraints.min_buffer_count_for_camping =
-      stream_constraints.default_settings().packet_count_for_client();
+  buffer_constraints.min_buffer_count = min_buffer_count;
   buffer_constraints.has_buffer_memory_constraints = true;
-
-  const int kDefaultPacketSize = 512 * 1024;
-  buffer_constraints.buffer_memory_constraints.min_size_bytes =
-      stream_constraints.has_per_packet_buffer_bytes_recommended()
-          ? stream_constraints.per_packet_buffer_bytes_recommended()
-          : kDefaultPacketSize;
-
+  buffer_constraints.buffer_memory_constraints.min_size_bytes = min_buffer_size;
   buffer_constraints.buffer_memory_constraints.ram_domain_supported = true;
   buffer_constraints.buffer_memory_constraints.cpu_domain_supported = true;
 

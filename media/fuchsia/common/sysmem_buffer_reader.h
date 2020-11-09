@@ -12,14 +12,20 @@
 
 #include "base/containers/span.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/optional.h"
 
 namespace media {
 
 // Helper class to read content from fuchsia::sysmem::BufferCollection.
 class SysmemBufferReader {
  public:
+  // Returns sysmem buffer constraints with the specified |min_buffer_count|.
+  // Currently it doesn't request buffers for camping or any shared slack, so
+  // the clients are expected to read incoming buffers (using Read() or
+  // GetMappingForBuffer()) and then release them back to the source.
   static fuchsia::sysmem::BufferCollectionConstraints GetRecommendedConstraints(
-      size_t max_used_output_frames);
+      size_t min_buffer_count,
+      base::Optional<size_t> min_buffer_size);
 
   static std::unique_ptr<SysmemBufferReader> Create(
       fuchsia::sysmem::BufferCollectionInfo_2 info);

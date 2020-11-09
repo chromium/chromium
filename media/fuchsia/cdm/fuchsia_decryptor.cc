@@ -15,6 +15,10 @@
 
 namespace media {
 
+// Audio packets are normally smaller than 128kB (more than enough for 2 seconds
+// at 320kb/s).
+const size_t kAudioStreamBufferSize = 128 * 1024;
+
 FuchsiaDecryptor::FuchsiaDecryptor(
     fuchsia::media::drm::ContentDecryptionModule* cdm)
     : cdm_(cdm) {
@@ -38,7 +42,8 @@ void FuchsiaDecryptor::Decrypt(StreamType stream_type,
 
   if (!audio_decryptor_) {
     audio_decryptor_task_runner_ = base::ThreadTaskRunnerHandle::Get();
-    audio_decryptor_ = FuchsiaClearStreamDecryptor::Create(cdm_);
+    audio_decryptor_ =
+        FuchsiaClearStreamDecryptor::Create(cdm_, kAudioStreamBufferSize);
   }
 
   audio_decryptor_->Decrypt(std::move(encrypted), std::move(decrypt_cb));

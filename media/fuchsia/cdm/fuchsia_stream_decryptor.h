@@ -21,8 +21,8 @@ class SysmemBufferReader;
 // Base class for media stream decryptor implementations.
 class FuchsiaStreamDecryptorBase : public StreamProcessorHelper::Client {
  public:
-  explicit FuchsiaStreamDecryptorBase(
-      fuchsia::media::StreamProcessorPtr processor);
+  FuchsiaStreamDecryptorBase(fuchsia::media::StreamProcessorPtr processor,
+                             size_t min_buffer_size);
   ~FuchsiaStreamDecryptorBase() override;
 
  protected:
@@ -35,6 +35,8 @@ class FuchsiaStreamDecryptorBase : public StreamProcessorHelper::Client {
   void ResetStream();
 
   StreamProcessorHelper processor_;
+
+  const size_t min_buffer_size_;
 
   BufferAllocator allocator_;
 
@@ -63,9 +65,11 @@ class FuchsiaStreamDecryptorBase : public StreamProcessorHelper::Client {
 class FuchsiaClearStreamDecryptor : public FuchsiaStreamDecryptorBase {
  public:
   static std::unique_ptr<FuchsiaClearStreamDecryptor> Create(
-      fuchsia::media::drm::ContentDecryptionModule* cdm);
+      fuchsia::media::drm::ContentDecryptionModule* cdm,
+      size_t min_buffer_size);
 
-  FuchsiaClearStreamDecryptor(fuchsia::media::StreamProcessorPtr processor);
+  FuchsiaClearStreamDecryptor(fuchsia::media::StreamProcessorPtr processor,
+                              size_t min_buffer_size);
   ~FuchsiaClearStreamDecryptor() override;
 
   // Decrypt() behavior should match media::Decryptor interface.
@@ -82,9 +86,7 @@ class FuchsiaClearStreamDecryptor : public FuchsiaStreamDecryptorBase {
   void OnNoKey() final;
   void OnError() final;
 
-  void OnOutputBufferPoolCreated(size_t num_buffers_for_client,
-                                 size_t num_buffers_for_server,
-                                 std::unique_ptr<SysmemBufferPool> pool);
+  void OnOutputBufferPoolCreated(std::unique_ptr<SysmemBufferPool> pool);
   void OnOutputBufferPoolReaderCreated(
       std::unique_ptr<SysmemBufferReader> reader);
 
@@ -108,6 +110,7 @@ class FuchsiaSecureStreamDecryptor : public FuchsiaStreamDecryptorBase {
  public:
   class Client {
    public:
+    virtual size_t GetInputBufferSize() = 0;
     virtual void OnDecryptorOutputPacket(
         StreamProcessorHelper::IoPacket packet) = 0;
     virtual void OnDecryptorEndOfStreamPacket() = 0;
@@ -123,9 +126,7 @@ class FuchsiaSecureStreamDecryptor : public FuchsiaStreamDecryptorBase {
   ~FuchsiaSecureStreamDecryptor() override;
 
   void SetOutputBufferCollectionToken(
-      fuchsia::sysmem::BufferCollectionTokenPtr token,
-      size_t num_buffers_for_decryptor,
-      size_t num_buffers_for_codec);
+      fuchsia::sysmem::BufferCollectionTokenPtr token);
 
   // Enqueues the specified buffer to the input queue. Caller is allowed to
   // queue as many buffers as it needs without waiting for results from the

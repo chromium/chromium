@@ -343,30 +343,20 @@ void StreamProcessorHelper::CompleteInputBuffersAllocation(
   settings.set_buffer_constraints_version_ordinal(
       input_buffer_constraints_.buffer_constraints_version_ordinal());
   settings.set_single_buffer_mode(false);
-  settings.set_packet_count_for_server(
-      input_buffer_constraints_.default_settings().packet_count_for_server());
-  settings.set_packet_count_for_client(
-      input_buffer_constraints_.default_settings().packet_count_for_client());
   settings.set_sysmem_token(std::move(sysmem_token));
   processor_->SetInputBufferPartialSettings(std::move(settings));
 }
 
 void StreamProcessorHelper::CompleteOutputBuffersAllocation(
-    size_t num_buffers_for_client,
-    size_t num_buffers_for_server,
     fuchsia::sysmem::BufferCollectionTokenPtr collection_token) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!output_buffer_constraints_.IsEmpty());
-  DCHECK_LE(num_buffers_for_client,
-            output_buffer_constraints_.packet_count_for_client_max());
 
   // Pass new output buffer settings to the stream processor.
   fuchsia::media::StreamBufferPartialSettings settings;
   settings.set_buffer_lifetime_ordinal(output_buffer_lifetime_ordinal_);
   settings.set_buffer_constraints_version_ordinal(
       output_buffer_constraints_.buffer_constraints_version_ordinal());
-  settings.set_packet_count_for_client(num_buffers_for_client);
-  settings.set_packet_count_for_server(num_buffers_for_server);
   settings.set_sysmem_token(std::move(collection_token));
   processor_->SetOutputBufferPartialSettings(std::move(settings));
   processor_->CompleteOutputBufferPartialSettings(

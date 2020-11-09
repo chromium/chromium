@@ -57,6 +57,17 @@ namespace {
 // renderer will stall because decoded frames are not available on time.
 const uint32_t kMaxUsedOutputFrames = 6;
 
+// Use 2 buffers for decoder input. Limiting total number of buffers to 2 allows
+// to minimize required memory without significant effect on performance.
+const size_t kNumInputBuffers = 2;
+
+// Some codecs do not support splitting video frames across multiple input
+// buffers, so the buffers need to be large enough to fit all video frames. The
+// buffer size is calculated to fit 1080p frame with MinCR=2 (per H264 spec),
+// plus 128KiB for SEI/SPS/PPS. (note that the same size is used for all codecs,
+// not just H264).
+const size_t kInputBufferSize = 1920 * 1080 * 3 / 2 / 2 + 128 * 1024;
+
 // Helper used to hold mailboxes for the output textures. OutputMailbox may
 // outlive FuchsiaVideoDecoder if is referenced by a VideoFrame.
 class OutputMailbox {
@@ -198,6 +209,7 @@ class FuchsiaVideoDecoder : public VideoDecoder,
   bool InitializeDecryptor(CdmContext* cdm_context);
 
   // FuchsiaSecureStreamDecryptor::Client implementation.
+  size_t GetInputBufferSize() override;
   void OnDecryptorOutputPacket(StreamProcessorHelper::IoPacket packet) override;
   void OnDecryptorEndOfStreamPacket() override;
   void OnDecryptorError() override;
@@ -526,6 +538,10 @@ bool FuchsiaVideoDecoder::InitializeDecryptor(CdmContext* cdm_context) {
   return true;
 }
 
+size_t FuchsiaVideoDecoder::GetInputBufferSize() {
+  return kInputBufferSize;
+}
+
 void FuchsiaVideoDecoder::OnDecryptorOutputPacket(
     StreamProcessorHelper::IoPacket packet) {
   SendInputPacket(nullptr, std::move(packet));
@@ -570,10 +586,18 @@ void FuchsiaVideoDecoder::OnInputConstraints(
     // output and decoder input. It is not used directly.
     num_tokens = 2;
     buffer_constraints.usage.none = fuchsia::sysmem::noneUsage;
+    buffer_constraints.min_buffer_count = kNumInputBuffers;
+    buffer_constraints.has_buffer_memory_constraints = true;
+    buffer_constraints.buffer_memory_constraints.min_size_bytes =
+        kInputBufferSize;
+    buffer_constraints.buffer_memory_constraints.ram_domain_supported = true;
+    buffer_constraints.buffer_memory_constraints.cpu_domain_supported = true;
+    buffer_constraints.buffer_memory_constraints.inaccessible_domain_supported =
+        true;
   } else {
     num_tokens = 1;
     auto writer_constraints = SysmemBufferWriter::GetRecommendedConstraints(
-        decoder_input_constraints_.value());
+        kNumInputBuffers, kInputBufferSize);
     if (!writer_constraints.has_value()) {
       OnError();
       return;
@@ -598,29 +622,18 @@ void FuchsiaVideoDecoder::OnInputBufferPoolCreated(
   }
 
   input_buffer_collection_ = std::move(pool);
-  num_input_buffers_ =
-      decoder_input_constraints_->default_settings().packet_count_for_server() +
-      decoder_input_constraints_->default_settings().packet_count_for_client();
 
   fuchsia::media::StreamBufferPartialSettings settings;
   settings.set_buffer_lifetime_ordinal(input_buffer_lifetime_ordinal_);
   settings.set_buffer_constraints_version_ordinal(
       decoder_input_constraints_->buffer_constraints_version_ordinal());
   settings.set_single_buffer_mode(false);
-  settings.set_packet_count_for_server(
-      decoder_input_constraints_->default_settings().packet_count_for_server());
-  settings.set_packet_count_for_client(
-      decoder_input_constraints_->default_settings().packet_count_for_client());
   settings.set_sysmem_token(input_buffer_collection_->TakeToken());
   decoder_->SetInputBufferPartialSettings(std::move(settings));
 
   if (decryptor_) {
     decryptor_->SetOutputBufferCollectionToken(
-        input_buffer_collection_->TakeToken(),
-        decoder_input_constraints_->default_settings()
-            .packet_count_for_client(),
-        decoder_input_constraints_->default_settings()
-            .packet_count_for_server());
+        input_buffer_collection_->TakeToken());
   } else {
     input_buffer_collection_->CreateWriter(base::BindOnce(
         &FuchsiaVideoDecoder::OnWriterCreated, base::Unretained(this)));
@@ -633,6 +646,8 @@ void FuchsiaVideoDecoder::OnWriterCreated(
     OnError();
     return;
   }
+
+  num_input_buffers_ = writer->num_buffers();
 
   input_writer_queue_.Start(
       std::move(writer),
@@ -742,10 +757,7 @@ void FuchsiaVideoDecoder::OnOutputConstraints(
   const fuchsia::media::StreamBufferConstraints& buffer_constraints =
       output_constraints.buffer_constraints();
 
-  if (!buffer_constraints.has_default_settings() ||
-      !buffer_constraints.has_packet_count_for_client_max() ||
-      !buffer_constraints.default_settings().has_packet_count_for_server() ||
-      !buffer_constraints.default_settings().has_packet_count_for_client()) {
+  if (!buffer_constraints.has_packet_count_for_client_max()) {
     DLOG(ERROR)
         << "Received OnOutputConstraints() with missing required fields.";
     OnError();
