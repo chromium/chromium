@@ -1779,8 +1779,6 @@ source_set("browser") {
     "web_contents/aura/types.h",
     "web_contents/file_chooser_impl.cc",
     "web_contents/file_chooser_impl.h",
-    "web_contents/frame_tree_node_id_registry.cc",
-    "web_contents/frame_tree_node_id_registry.h",
     "web_contents/javascript_dialog_navigation_deferrer.cc",
     "web_contents/javascript_dialog_navigation_deferrer.h",
     "web_contents/web_contents_impl.cc",

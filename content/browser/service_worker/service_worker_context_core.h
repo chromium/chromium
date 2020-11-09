@@ -234,6 +234,10 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   ServiceWorkerContainerHost* GetContainerHostByClientID(
       const std::string& client_uuid);
 
+  // Retrieves a container host given its window ID.
+  ServiceWorkerContainerHost* GetContainerHostByWindowId(
+      const base::UnguessableToken& window_id);
+
   void OnContainerHostReceiverDisconnected();
 
   void RegisterServiceWorker(

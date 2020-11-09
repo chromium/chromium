@@ -60,12 +60,13 @@
 #include "content/browser/network_context_client_base_impl.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/quota/quota_context.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/service_sandbox_type.h"
+#include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/ssl/ssl_client_auth_handler.h"
 #include "content/browser/ssl/ssl_error_handler.h"
 #include "content/browser/ssl_private_key_impl.h"
-#include "content/browser/web_contents/frame_tree_node_id_registry.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/navigation_params.mojom.h"
 #include "content/common/service_worker/service_worker_utils.h"
@@ -547,11 +548,7 @@ void OnAuthRequiredContinuation(
     mojo::PendingRemote<network::mojom::AuthChallengeResponder>
         auth_challenge_responder,
     base::RepeatingCallback<WebContents*(void)> web_contents_getter) {
-  if (!web_contents_getter) {
-    web_contents_getter =
-        base::BindRepeating(GetWebContents, process_id, routing_id);
-  }
-  if (!web_contents_getter.Run()) {
+  if (!web_contents_getter || !web_contents_getter.Run()) {
     mojo::Remote<network::mojom::AuthChallengeResponder>
         auth_challenge_responder_remote(std::move(auth_challenge_responder));
     auth_challenge_responder_remote->OnAuthCredentials(base::nullopt);
@@ -562,63 +559,6 @@ void OnAuthRequiredContinuation(
                            is_request_for_main_frame, process_id, routing_id,
                            request_id, url, head ? head->headers : nullptr,
                            first_auth_attempt);  // deletes self
-}
-
-FrameTreeNodeIdRegistry::IsMainFrameGetter GetIsMainFrameFromRegistry(
-    const base::UnguessableToken& window_id) {
-  return FrameTreeNodeIdRegistry::GetInstance()->GetIsMainFrameGetter(
-      window_id);
-}
-
-base::RepeatingCallback<WebContents*(void)> GetWebContentsFromRegistry(
-    const base::UnguessableToken& window_id) {
-  return FrameTreeNodeIdRegistry::GetInstance()->GetWebContentsGetter(
-      window_id);
-}
-
-void OnAuthRequiredContinuationForWindowId(
-    const base::UnguessableToken& window_id,
-    uint32_t process_id,
-    uint32_t routing_id,
-    uint32_t request_id,
-    const GURL& url,
-    bool first_auth_attempt,
-    const net::AuthChallengeInfo& auth_info,
-    network::mojom::URLResponseHeadPtr head,
-    mojo::PendingRemote<network::mojom::AuthChallengeResponder>
-        auth_challenge_responder,
-    FrameTreeNodeIdRegistry::IsMainFrameGetter is_main_frame_getter) {
-  if (!is_main_frame_getter) {
-    // FrameTreeNode id may already be removed from FrameTreeNodeIdRegistry
-    // due to thread hopping.
-    mojo::Remote<network::mojom::AuthChallengeResponder>
-        auth_challenge_responder_remote(std::move(auth_challenge_responder));
-    auth_challenge_responder_remote->OnAuthCredentials(base::nullopt);
-    return;
-  }
-  base::Optional<bool> is_main_frame_opt = is_main_frame_getter.Run();
-  // The frame may already be gone due to thread hopping.
-  if (!is_main_frame_opt) {
-    mojo::Remote<network::mojom::AuthChallengeResponder>
-        auth_challenge_responder_remote(std::move(auth_challenge_responder));
-    auth_challenge_responder_remote->OnAuthCredentials(base::nullopt);
-    return;
-  }
-
-  if (ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-    OnAuthRequiredContinuation(process_id, routing_id, request_id, url,
-                               *is_main_frame_opt, first_auth_attempt,
-                               auth_info, std::move(head),
-                               std::move(auth_challenge_responder),
-                               GetWebContentsFromRegistry(window_id));
-  } else {
-    GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce(&GetWebContentsFromRegistry, window_id),
-        base::BindOnce(&OnAuthRequiredContinuation, process_id, routing_id,
-                       request_id, url, *is_main_frame_opt, first_auth_attempt,
-                       auth_info, std::move(head),
-                       std::move(auth_challenge_responder)));
-  }
 }
 
 bool IsMainFrameRequest(int process_id, int routing_id) {
@@ -703,11 +643,10 @@ void OnCertificateRequestedContinuation(
     mojo::PendingRemote<network::mojom::ClientCertificateResponder>
         client_cert_responder_remote,
     base::RepeatingCallback<WebContents*(void)> web_contents_getter) {
-  if (!web_contents_getter) {
-    web_contents_getter =
-        base::BindRepeating(GetWebContents, process_id, routing_id);
-  }
-  WebContents* web_contents = web_contents_getter.Run();
+  WebContents* web_contents = nullptr;
+  if (web_contents_getter)
+    web_contents = web_contents_getter.Run();
+
   if (!web_contents) {
     DCHECK(client_cert_responder_remote);
     mojo::Remote<network::mojom::ClientCertificateResponder>
@@ -1729,26 +1668,33 @@ void StoragePartitionImpl::OnAuthRequired(
     mojo::PendingRemote<network::mojom::AuthChallengeResponder>
         auth_challenge_responder) {
   if (window_id) {
-    if (ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-      OnAuthRequiredContinuationForWindowId(
-          *window_id, process_id, routing_id, request_id, url,
-          first_auth_attempt, auth_info, std::move(head),
-          std::move(auth_challenge_responder),
-          GetIsMainFrameFromRegistry(*window_id));
-    } else {
-      GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
-          FROM_HERE, base::BindOnce(&GetIsMainFrameFromRegistry, *window_id),
-          base::BindOnce(&OnAuthRequiredContinuationForWindowId, *window_id,
-                         process_id, routing_id, request_id, url,
-                         first_auth_attempt, auth_info, std::move(head),
-                         std::move(auth_challenge_responder)));
+    bool is_main_frame = false;
+    base::RepeatingCallback<WebContents*(void)> web_contents_getter;
+    if (service_worker_context_->context()) {
+      auto* container_host =
+          service_worker_context_->context()->GetContainerHostByWindowId(
+              *window_id);
+      if (container_host) {
+        int frame_tree_node_id = container_host->frame_tree_node_id();
+        if (FrameTreeNode* frame_tree_node =
+                FrameTreeNode::GloballyFindByID(frame_tree_node_id)) {
+          is_main_frame = frame_tree_node->IsMainFrame();
+          web_contents_getter = base::BindRepeating(
+              &WebContents::FromFrameTreeNodeId, frame_tree_node_id);
+        }
+      }
     }
+    OnAuthRequiredContinuation(
+        process_id, routing_id, request_id, url, is_main_frame,
+        first_auth_attempt, auth_info, std::move(head),
+        std::move(auth_challenge_responder), web_contents_getter);
     return;
   }
-  OnAuthRequiredContinuation(process_id, routing_id, request_id, url,
-                             IsMainFrameRequest(process_id, routing_id),
-                             first_auth_attempt, auth_info, std::move(head),
-                             std::move(auth_challenge_responder), {});
+  OnAuthRequiredContinuation(
+      process_id, routing_id, request_id, url,
+      IsMainFrameRequest(process_id, routing_id), first_auth_attempt, auth_info,
+      std::move(head), std::move(auth_challenge_responder),
+      base::BindRepeating(GetWebContents, process_id, routing_id));
 }
 
 void StoragePartitionImpl::OnCertificateRequested(
@@ -1761,22 +1707,26 @@ void StoragePartitionImpl::OnCertificateRequested(
         cert_responder) {
   // Use |window_id| if it's provided.
   if (window_id) {
-    if (ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-      OnCertificateRequestedContinuation(
-          process_id, routing_id, request_id, cert_info,
-          std::move(cert_responder), GetWebContentsFromRegistry(*window_id));
-    } else {
-      GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
-          FROM_HERE, base::BindOnce(&GetWebContentsFromRegistry, *window_id),
-          base::BindOnce(&OnCertificateRequestedContinuation, process_id,
-                         routing_id, request_id, cert_info,
-                         std::move(cert_responder)));
+    base::RepeatingCallback<WebContents*(void)> web_contents_getter;
+    if (service_worker_context_->context()) {
+      auto* container_host =
+          service_worker_context_->context()->GetContainerHostByWindowId(
+              *window_id);
+      if (container_host) {
+        int frame_tree_node_id = container_host->frame_tree_node_id();
+        web_contents_getter = base::BindRepeating(
+            &WebContents::FromFrameTreeNodeId, frame_tree_node_id);
+      }
     }
+    OnCertificateRequestedContinuation(process_id, routing_id, request_id,
+                                       cert_info, std::move(cert_responder),
+                                       web_contents_getter);
     return;
   }
 
-  OnCertificateRequestedContinuation(process_id, routing_id, request_id,
-                                     cert_info, std::move(cert_responder), {});
+  OnCertificateRequestedContinuation(
+      process_id, routing_id, request_id, cert_info, std::move(cert_responder),
+      base::BindRepeating(GetWebContents, process_id, routing_id));
 }
 
 void StoragePartitionImpl::OnSSLCertificateError(

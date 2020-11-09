@@ -16,7 +16,6 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
 #include "content/browser/service_worker/service_worker_registration_object_host.h"
-#include "content/browser/web_contents/frame_tree_node_id_registry.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/service_worker/service_worker_utils.h"
@@ -138,9 +137,6 @@ ServiceWorkerContainerHost::~ServiceWorkerContainerHost() {
     if (rfh)
       rfh->RemoveServiceWorkerContainerHost(client_uuid());
   }
-
-  if (fetch_request_window_id_)
-    FrameTreeNodeIdRegistry::GetInstance()->Remove(fetch_request_window_id_);
 
   if (IsContainerForClient() && controller_)
     controller_->OnControlleeDestroyed(client_uuid());
@@ -853,13 +849,8 @@ void ServiceWorkerContainerHost::UpdateUrls(
     // Revoke the token on URL change since any service worker holding the token
     // may no longer be the potential controller of this frame and shouldn't
     // have the power to display SSL dialogs for it.
-    if (IsContainerForWindowClient()) {
-      auto* registry = FrameTreeNodeIdRegistry::GetInstance();
-      registry->Remove(fetch_request_window_id_);
+    if (IsContainerForWindowClient())
       fetch_request_window_id_ = base::UnguessableToken::Create();
-      registry->Add(fetch_request_window_id_,
-                    client_info_->GetFrameTreeNodeId());
-    }
   }
 
   auto previous_origin = url::Origin::Create(previous_url);

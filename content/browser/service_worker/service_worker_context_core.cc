@@ -475,6 +475,17 @@ ServiceWorkerContextCore::GetContainerHostByClientID(
   return it->second.get();
 }
 
+ServiceWorkerContainerHost*
+ServiceWorkerContextCore::GetContainerHostByWindowId(
+    const base::UnguessableToken& window_id) {
+  for (auto& it : container_host_by_uuid_) {
+    if (it.second->fetch_request_window_id() == window_id)
+      return it.second.get();
+  }
+
+  return nullptr;
+}
+
 void ServiceWorkerContextCore::OnContainerHostReceiverDisconnected() {
   ServiceWorkerContainerHost* container_host =
       container_host_receivers_->current_context();
