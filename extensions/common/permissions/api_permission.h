@@ -270,6 +270,7 @@ class APIPermission {
     kAutofillAssistantPrivate = 226,
     kEnterpriseNetworkingAttributes = 227,
     kSearch = 228,
+    kTabGroups = 229,
     // Last entry: Add new entries above and ensure to update the
     // "ExtensionPermission3" enum in tools/metrics/histograms/enums.xml
     // (by running update_extension_permission.py).

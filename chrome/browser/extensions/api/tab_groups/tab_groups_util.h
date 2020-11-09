@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "chrome/common/extensions/api/tab_groups.h"
 #include "components/tab_groups/tab_group_color.h"
 
 class Browser;
@@ -29,6 +30,19 @@ namespace tab_groups_util {
 // Gets the extensions-specific Group ID.
 int GetGroupId(const tab_groups::TabGroupId& id);
 
+// Gets the window ID that the group belongs to.
+int GetWindowIdOfGroup(const tab_groups::TabGroupId& id);
+
+// Creates a TabGroup object
+// (see chrome/common/extensions/api/tab_groups.json) with information about
+// the state of a tab group for the given group |id|. Most group metadata is
+// derived from the |visual_data|, which specifies group color, title, etc.
+std::unique_ptr<api::tab_groups::TabGroup> CreateTabGroupObject(
+    const tab_groups::TabGroupId& id,
+    const tab_groups::TabGroupVisualData& visual_data);
+std::unique_ptr<api::tab_groups::TabGroup> CreateTabGroupObject(
+    const tab_groups::TabGroupId& id);
+
 // Gets the metadata for the group with ID |group_id|. Sets the |error| if not
 // found. |browser|, |id|, or |visual_data| may be nullptr and will not be set
 // within the function if so.
@@ -44,6 +58,12 @@ bool GetGroupById(int group_id,
                   bool include_incognito,
                   tab_groups::TabGroupId* id,
                   std::string* error);
+
+// Conversions between the api::tab_groups::Color enum and the TabGroupColorId
+// enum.
+api::tab_groups::Color ColorIdToColor(
+    const tab_groups::TabGroupColorId& color_id);
+tab_groups::TabGroupColorId ColorToColorId(api::tab_groups::Color color);
 
 }  // namespace tab_groups_util
 }  // namespace extensions

@@ -30,6 +30,38 @@ int GetGroupId(const tab_groups::TabGroupId& id) {
   return std::abs(static_cast<int>(hash));
 }
 
+int GetWindowIdOfGroup(const tab_groups::TabGroupId& id) {
+  Browser* browser = chrome::FindBrowserWithGroup(id, nullptr);
+  if (browser)
+    return browser->session_id().id();
+  return -1;
+}
+
+std::unique_ptr<api::tab_groups::TabGroup> CreateTabGroupObject(
+    const tab_groups::TabGroupId& id,
+    const tab_groups::TabGroupVisualData& visual_data) {
+  auto tab_group_object = std::make_unique<api::tab_groups::TabGroup>();
+  tab_group_object->id = GetGroupId(id);
+  tab_group_object->collapsed = visual_data.is_collapsed();
+  tab_group_object->color = ColorIdToColor(visual_data.color());
+  tab_group_object->title =
+      std::make_unique<std::string>(base::UTF16ToUTF8(visual_data.title()));
+  tab_group_object->window_id = GetWindowIdOfGroup(id);
+
+  return tab_group_object;
+}
+
+std::unique_ptr<api::tab_groups::TabGroup> CreateTabGroupObject(
+    const tab_groups::TabGroupId& id) {
+  Browser* browser = chrome::FindBrowserWithGroup(id, nullptr);
+  const tab_groups::TabGroupVisualData* visual_data =
+      browser->tab_strip_model()->group_model()->GetTabGroup(id)->visual_data();
+
+  DCHECK(visual_data);
+
+  return CreateTabGroupObject(id, *visual_data);
+}
+
 bool GetGroupById(int group_id,
                   content::BrowserContext* browser_context,
                   bool include_incognito,
@@ -80,6 +112,57 @@ bool GetGroupById(int group_id,
                   std::string* error) {
   return GetGroupById(group_id, browser_context, include_incognito, nullptr, id,
                       nullptr, error);
+}
+
+api::tab_groups::Color ColorIdToColor(
+    const tab_groups::TabGroupColorId& color_id) {
+  switch (color_id) {
+    case tab_groups::TabGroupColorId::kGrey:
+      return api::tab_groups::COLOR_GREY;
+    case tab_groups::TabGroupColorId::kBlue:
+      return api::tab_groups::COLOR_BLUE;
+    case tab_groups::TabGroupColorId::kRed:
+      return api::tab_groups::COLOR_RED;
+    case tab_groups::TabGroupColorId::kYellow:
+      return api::tab_groups::COLOR_YELLOW;
+    case tab_groups::TabGroupColorId::kGreen:
+      return api::tab_groups::COLOR_GREEN;
+    case tab_groups::TabGroupColorId::kPink:
+      return api::tab_groups::COLOR_PINK;
+    case tab_groups::TabGroupColorId::kPurple:
+      return api::tab_groups::COLOR_PURPLE;
+    case tab_groups::TabGroupColorId::kCyan:
+      return api::tab_groups::COLOR_CYAN;
+  }
+
+  NOTREACHED();
+  return api::tab_groups::COLOR_CYAN;
+}
+
+tab_groups::TabGroupColorId ColorToColorId(api::tab_groups::Color color) {
+  switch (color) {
+    case api::tab_groups::COLOR_GREY:
+      return tab_groups::TabGroupColorId::kGrey;
+    case api::tab_groups::COLOR_BLUE:
+      return tab_groups::TabGroupColorId::kBlue;
+    case api::tab_groups::COLOR_RED:
+      return tab_groups::TabGroupColorId::kRed;
+    case api::tab_groups::COLOR_YELLOW:
+      return tab_groups::TabGroupColorId::kYellow;
+    case api::tab_groups::COLOR_GREEN:
+      return tab_groups::TabGroupColorId::kGreen;
+    case api::tab_groups::COLOR_PINK:
+      return tab_groups::TabGroupColorId::kPink;
+    case api::tab_groups::COLOR_PURPLE:
+      return tab_groups::TabGroupColorId::kPurple;
+    case api::tab_groups::COLOR_CYAN:
+      return tab_groups::TabGroupColorId::kCyan;
+    case api::tab_groups::COLOR_NONE:
+      NOTREACHED();
+  }
+
+  NOTREACHED();
+  return tab_groups::TabGroupColorId::kGrey;
 }
 
 }  // namespace tab_groups_util

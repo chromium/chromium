@@ -771,6 +771,10 @@
     "contexts": ["blessed_extension"],
     "disallow_for_service_workers": true
   },
+  "tabGroups": {
+    "dependencies": ["permission:tabGroups"],
+    "contexts": ["blessed_extension"]
+  },
   "tabs": [{
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],

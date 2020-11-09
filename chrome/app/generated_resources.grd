@@ -4072,6 +4072,9 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_EXTENSION_PROMPT_WARNING_SYSTEM_STORAGE" desc="The permission string for access to connected system storage devices.">
           Identify and eject storage devices
         </message>
+        <message name="IDS_EXTENSION_PROMPT_WARNING_TAB_GROUPS" desc="Permission string for access to tab groups.">
+          View and manage your tab groups
+        </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_TOPSITES" desc="Permission string for access to the list of most frequently visited websites.">
           Read a list of your most frequently visited websites
         </message>

@@ -7,6 +7,10 @@
 namespace extensions {
 namespace tab_groups_constants {
 
+const char kCollapsedKey[] = "collapsed";
+const char kColorKey[] = "color";
+const char kTitleKey[] = "title";
+
 const char kGroupNotFoundError[] = "No group with id: *.";
 
 }  // namespace tab_groups_constants

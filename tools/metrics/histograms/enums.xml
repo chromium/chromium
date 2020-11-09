@@ -25297,6 +25297,9 @@ Called by update_extension_histograms.py.-->
       label="FILEMANAGERPRIVATEINTERNAL_GETARCDOCUMENTSPROVIDERTHUMBNAIL"/>
   <int value="1525" label="ACCESSIBILITY_PRIVATE_ISFEATUREENABLED"/>
   <int value="1526" label="INPUTMETHODPRIVATE_ONAUTOCORRECT"/>
+  <int value="1527" label="TAB_GROUPS_GET"/>
+  <int value="1528" label="TAB_GROUPS_QUERY"/>
+  <int value="1529" label="TAB_GROUPS_UPDATE"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -25898,6 +25901,7 @@ Called by update_extension_permission.py.-->
   <int value="226" label="kAutofillAssistantPrivate"/>
   <int value="227" label="kEnterpriseNetworkingAttributes"/>
   <int value="228" label="kSearch"/>
+  <int value="229" label="kTabGroups"/>
 </enum>
 
 <enum name="ExtensionPolicyReinstallReason">

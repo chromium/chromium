@@ -10,6 +10,12 @@ namespace extensions {
 // Constants used for the Tab Groups API.
 namespace tab_groups_constants {
 
+// Keys used in serializing group data & events.
+extern const char kCollapsedKey[];
+extern const char kColorKey[];
+extern const char kTitleKey[];
+
+// Error messages.
 extern const char kGroupNotFoundError[];
 
 }  // namespace tab_groups_constants
