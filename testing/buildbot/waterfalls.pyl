@@ -2182,6 +2182,40 @@
         'use_swarming': True,
         'os_type': 'android',
       },
+      'android-paeverywhere-arm-fyi-dbg': {
+        'test_suites': {
+          'gtest_tests': 'paeverywhere_gtests',
+        },
+        'mixins': [
+          'walleye',
+        ],
+      },
+      'android-paeverywhere-arm-fyi-rel': {
+        'test_suites': {
+          'gtest_tests': 'paeverywhere_gtests',
+        },
+        'mixins': [
+          'walleye',
+        ],
+      },
+      'android-paeverywhere-arm64-fyi-dbg': {
+        'test_suites': {
+          'gtest_tests': 'paeverywhere_gtests',
+        },
+        'mixins': [
+          'walleye',
+          'arm64',
+        ],
+      },
+      'android-paeverywhere-arm64-fyi-rel': {
+        'test_suites': {
+          'gtest_tests': 'paeverywhere_gtests',
+        },
+        'mixins': [
+          'walleye',
+          'arm64',
+        ],
+      },
       'chromeos-amd64-generic-lacros-rel': {
         'additional_compile_targets': [
           'chrome',
@@ -2754,6 +2788,42 @@
         'test_suites': {
           'scripts': 'test_traffic_annotation_auditor_script',
         },
+      },
+      'win-paeverywhere-x64-fyi-dbg': {
+        'test_suites': {
+          'gtest_tests': 'paeverywhere_gtests',
+        },
+        'mixins': [
+          'win10',
+          'x86-64',
+        ],
+      },
+      'win-paeverywhere-x64-fyi-rel': {
+        'test_suites': {
+          'gtest_tests': 'paeverywhere_gtests',
+        },
+        'mixins': [
+          'win10',
+          'x86-64',
+        ],
+      },
+      'win-paeverywhere-x86-fyi-dbg': {
+        'test_suites': {
+          'gtest_tests': 'paeverywhere_gtests',
+        },
+        'mixins': [
+          'win10',
+          'x86-32',
+        ],
+      },
+      'win-paeverywhere-x86-fyi-rel': {
+        'test_suites': {
+          'gtest_tests': 'paeverywhere_gtests',
+        },
+        'mixins': [
+          'win10',
+          'x86-32',
+        ],
       },
       'win-pixel-tester-rel': {
         'mixins': [

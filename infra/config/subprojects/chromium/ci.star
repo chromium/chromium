@@ -196,6 +196,7 @@ ci.console_view(
             "viz",
             "win10",
             "win32",
+            "paeverywhere",
         ],
         "code_coverage": ci.ordering(
             short_names = ["and", "ann", "lnx", "lcr", "jcr", "mac"],
@@ -2342,6 +2343,42 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
+    name = "android-paeverywhere-arm-fyi-dbg",
+    console_view_entry = ci.console_view_entry(
+        category = "paeverywhere|android",
+        short_name = "32dbg",
+    ),
+    notifies = ["chrome-memory-safety"],
+)
+
+ci.fyi_builder(
+    name = "android-paeverywhere-arm-fyi-rel",
+    console_view_entry = ci.console_view_entry(
+        category = "paeverywhere|android",
+        short_name = "32rel",
+    ),
+    notifies = ["chrome-memory-safety"],
+)
+
+ci.fyi_builder(
+    name = "android-paeverywhere-arm64-fyi-dbg",
+    console_view_entry = ci.console_view_entry(
+        category = "paeverywhere|android",
+        short_name = "64dbg",
+    ),
+    notifies = ["chrome-memory-safety"],
+)
+
+ci.fyi_builder(
+    name = "android-paeverywhere-arm64-fyi-rel",
+    console_view_entry = ci.console_view_entry(
+        category = "paeverywhere|android",
+        short_name = "64rel",
+    ),
+    notifies = ["chrome-memory-safety"],
+)
+
+ci.fyi_builder(
     name = "chromeos-amd64-generic-lacros-rel",
     console_view_entry = ci.console_view_entry(
         category = "chromeos",
@@ -2669,6 +2706,42 @@ ci.fyi_builder(
     ),
     os = os.WINDOWS_10,
     triggered_by = ["win-omaha-builder-rel"],
+)
+
+ci.fyi_builder(
+    name = "win-paeverywhere-x86-fyi-dbg",
+    console_view_entry = ci.console_view_entry(
+        category = "paeverywhere|win",
+        short_name = "32dbg",
+    ),
+    notifies = ["chrome-memory-safety"],
+)
+
+ci.fyi_builder(
+    name = "win-paeverywhere-x86-fyi-rel",
+    console_view_entry = ci.console_view_entry(
+        category = "paeverywhere|win",
+        short_name = "32rel",
+    ),
+    notifies = ["chrome-memory-safety"],
+)
+
+ci.fyi_builder(
+    name = "win-paeverywhere-x64-fyi-dbg",
+    console_view_entry = ci.console_view_entry(
+        category = "paeverywhere|win",
+        short_name = "64dbg",
+    ),
+    notifies = ["chrome-memory-safety"],
+)
+
+ci.fyi_builder(
+    name = "win-paeverywhere-x64-fyi-rel",
+    console_view_entry = ci.console_view_entry(
+        category = "paeverywhere|win",
+        short_name = "64rel",
+    ),
+    notifies = ["chrome-memory-safety"],
 )
 
 ci.fyi_builder(

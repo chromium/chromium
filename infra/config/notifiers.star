@@ -13,6 +13,14 @@ luci.notifier(
 )
 
 luci.notifier(
+    name = "chrome-memory-safety",
+    on_status_change = True,
+    notify_emails = [
+        "chrome-memory-safety+bots@google.com",
+    ],
+)
+
+luci.notifier(
     name = "chrome-memory-sheriffs",
     on_status_change = True,
     notify_emails = [

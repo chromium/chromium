@@ -3836,6 +3836,11 @@
       },
     },
 
+
+    'paeverywhere_gtests': {
+      'base_unittests': {},
+    },
+
     'perfetto_gtests': {
       'base_unittests': {},
       'content_browsertests': {

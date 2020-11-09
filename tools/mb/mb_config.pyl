@@ -274,6 +274,10 @@
       'Win 10 Fast Ring': 'release_trybot',
       'android-code-coverage': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_java_coverage',
       'android-code-coverage-native': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_native_coverage',
+      'android-paeverywhere-arm-fyi-dbg': 'debug_bot_paeverywhere_arm',
+      'android-paeverywhere-arm-fyi-rel': 'release_trybot_paeverywhere_arm',
+      'android-paeverywhere-arm64-fyi-dbg': 'debug_bot_paeverywhere_arm64',
+      'android-paeverywhere-arm64-fyi-rel': 'release_trybot_paeverywhere_arm64',
       'chromeos-amd64-generic-lacros-rel': 'chromeos_amd64-generic_lacros_rel',
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
       'fuchsia-fyi-arm64-rel': 'release_bot_fuchsia_arm64',
@@ -312,6 +316,10 @@
       'win-annotator-rel': 'release_bot',
       'win-celab-builder-rel': 'release_bot_minimal_symbols',
       'win-omaha-builder-rel': 'updater_release_bot',
+      'win-paeverywhere-x86-fyi-dbg': 'debug_bot_paeverywhere_x86',
+      'win-paeverywhere-x86-fyi-rel': 'release_trybot_paeverywhere_x86',
+      'win-paeverywhere-x64-fyi-dbg': 'debug_bot_paeverywhere_x64',
+      'win-paeverywhere-x64-fyi-rel': 'release_trybot_paeverywhere_x64',
       'win-pixel-builder-rel': 'release_bot',
       'win-upload-perfetto': 'release_bot',
       'win10-code-coverage': 'clang_code_coverage',
@@ -1815,6 +1823,22 @@
       'debug_bot', 'fuchsia', 'compile_only',
     ],
 
+    'debug_bot_paeverywhere_x86': [
+      'debug_bot', 'paeverywhere', 'x86',
+    ],
+
+    'debug_bot_paeverywhere_x64': [
+      'debug_bot', 'paeverywhere', 'x64',
+    ],
+
+    'debug_bot_paeverywhere_arm': [
+      'debug_bot', 'paeverywhere', 'android_without_codecs', 'arm',
+    ],
+
+    'debug_bot_paeverywhere_arm64': [
+      'debug_bot', 'paeverywhere', 'android_without_codecs', 'arm64',
+    ],
+
     'debug_bot_x86': [
       'debug_bot', 'x86',
     ],
@@ -2407,6 +2431,22 @@
       'release_trybot', 'disable_nacl',
     ],
 
+    'release_trybot_paeverywhere_x86': [
+      'release_trybot', 'paeverywhere', 'x86',
+    ],
+
+    'release_trybot_paeverywhere_x64': [
+      'release_trybot', 'paeverywhere', 'x64',
+    ],
+
+    'release_trybot_paeverywhere_arm': [
+      'release_trybot', 'paeverywhere', 'android_without_codecs', 'arm',
+    ],
+
+    'release_trybot_paeverywhere_arm64': [
+      'release_trybot', 'paeverywhere', 'android_without_codecs', 'arm64',
+    ],
+
     'release_trybot_tsan': [
       'release_trybot', 'tsan'
     ],
@@ -2982,6 +3022,10 @@
     # angle on Linux Ozone/X11/Wayland yet).
     'ozone_linux_non_x11': {
       'gn_args': 'use_x11=false'
+    },
+
+    'paeverywhere': {
+      'gn_args': 'use_allocator="partition"',
     },
 
     # Used to pass the list of files to instrument for coverage to the compile
