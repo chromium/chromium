@@ -444,9 +444,8 @@
         'swarming': {
           'idempotent': False,  # https://crbug.com/923426#c27
         },
-        # TODO(crbug.com/1140593): Re-enable resultdb.
         'resultdb': {
-          'enable': False,
+          'enable': True,
         },
       },
       'disk_usage_tast_test': {
