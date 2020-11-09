@@ -1066,7 +1066,8 @@ static_library("extensions") {
       "//ui/base/ime/chromeos",
       "//ui/chromeos",
       "//ui/chromeos/events",
-      "//ui/file_manager",
+      "//ui/file_manager:file_manager_gen_resources",
+      "//ui/file_manager:resources",
       "//ui/ozone",
       "//ui/views",
     ]

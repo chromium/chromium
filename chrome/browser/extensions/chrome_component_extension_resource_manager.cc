@@ -27,8 +27,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/file_manager/file_manager_string_util.h"
 #include "third_party/ink/grit/ink_resources.h"
-#include "ui/file_manager/file_manager_resource_util.h"
-#include "ui/file_manager/grit/file_manager_resources.h"
+#include "ui/file_manager/grit/file_manager_gen_resources_map.h"
+#include "ui/file_manager/grit/file_manager_resources_map.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -92,11 +92,10 @@ ChromeComponentExtensionResourceManager::Data::Data() {
   AddComponentResourceEntries(kExtraComponentExtensionResources,
                               base::size(kExtraComponentExtensionResources));
 #if defined(OS_CHROMEOS)
-  size_t file_manager_resource_size;
-  const GritResourceMap* file_manager_resources =
-      file_manager::GetFileManagerResources(&file_manager_resource_size);
-  AddComponentResourceEntries(file_manager_resources,
-                              file_manager_resource_size);
+  // Add Files app JS modules resources.
+  AddComponentResourceEntries(kFileManagerResources, kFileManagerResourcesSize);
+  AddComponentResourceEntries(kFileManagerGenResources,
+                              kFileManagerGenResourcesSize);
 
   // ResourceBundle and g_browser_process are not always initialized in unit
   // tests.

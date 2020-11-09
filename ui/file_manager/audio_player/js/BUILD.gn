@@ -80,7 +80,7 @@ preprocess_folder =
     rebase_path("$target_gen_dir/../../preprocessed/audio_player/js",
                 root_build_dir)
 
-optimize_webui("audio_player_bundle") {
+optimize_webui("build") {
   host = "audio_player"
 
   input = preprocess_folder
@@ -92,5 +92,6 @@ optimize_webui("audio_player_bundle") {
     ":main.m",
     "//ui/file_manager:preprocess_generated",
     "//ui/file_manager:preprocess_static",
+    "//ui/webui/resources:preprocess",
   ]
 }
