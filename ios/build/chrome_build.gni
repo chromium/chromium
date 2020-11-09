@@ -12,7 +12,7 @@ declare_args() {
   ios_enable_search_widget_extension = true
 
   # Enable iOS 14, WidgetKit extension.
-  ios_enable_widget_kit_extension = false
+  ios_enable_widget_kit_extension = true
 
   # Enable iOS 14, WidgetKit extension (prebuilt).
   ios_enable_prebuilt_widget_kit_extension = false
