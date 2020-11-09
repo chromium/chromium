@@ -22,10 +22,15 @@ public class LinkToTextMetricsBridge {
         LinkToTextMetricsBridgeJni.get().logGenerateErrorTabCrash();
     }
 
+    public static void logGenerateErrorIFrame() {
+        LinkToTextMetricsBridgeJni.get().logGenerateErrorIFrame();
+    }
+
     @NativeMethods
     interface Natives {
         void logGenerateErrorTabHidden();
         void logGenerateErrorOmniboxNavigation();
         void logGenerateErrorTabCrash();
+        void logGenerateErrorIFrame();
     }
 }

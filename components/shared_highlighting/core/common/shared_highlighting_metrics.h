@@ -28,7 +28,10 @@ enum class LinkGenerationError {
   // Catch-all bucket.
   kUnknown = 9,
 
-  kMaxValue = kUnknown
+  // Selection happened on iframe.
+  kIFrame = 10,
+
+  kMaxValue = kIFrame
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -71,6 +74,10 @@ void LogGenerateErrorOmniboxNavigation();
 
 // Records when tab crashes before generation is complete.
 void LogGenerateErrorTabCrash();
+
+// Records when link generation was not completed because selection happened on
+// iframe.
+void LogGenerateErrorIFrame();
 
 }  // namespace shared_highlighting
 

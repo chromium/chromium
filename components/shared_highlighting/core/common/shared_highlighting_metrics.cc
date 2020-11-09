@@ -66,4 +66,8 @@ void LogGenerateErrorOmniboxNavigation() {
 void LogGenerateErrorTabCrash() {
   LogLinkGenerationErrorReason(LinkGenerationError::kTabCrash);
 }
+
+void LogGenerateErrorIFrame() {
+  LogLinkGenerationErrorReason(LinkGenerationError::kIFrame);
+}
 }  // namespace shared_highlighting

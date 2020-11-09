@@ -82,6 +82,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
 
     public void requestSelector() {
         if (mTab.getWebContents().getMainFrame() != mTab.getWebContents().getFocusedFrame()) {
+            LinkToTextMetricsBridge.logGenerateErrorIFrame();
             onSelectorReady(INVALID_SELECTOR);
             return;
         }
