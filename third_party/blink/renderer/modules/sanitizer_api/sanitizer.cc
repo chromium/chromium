@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_node_filter.h"
 #include "third_party/blink/renderer/bindings/modules/v8/string_or_document_fragment_or_document.h"
+#include "third_party/blink/renderer/bindings/modules/v8/string_or_trusted_html_or_document_fragment_or_document.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sanitizer_config.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -14,6 +15,8 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -88,13 +91,41 @@ Sanitizer::~Sanitizer() = default;
 String Sanitizer::sanitizeToString(ScriptState* script_state,
                                    StringOrDocumentFragmentOrDocument& input,
                                    ExceptionState& exception_state) {
-  return CreateMarkup(sanitize(script_state, input, exception_state),
+  return CreateMarkup(SanitizeImpl(script_state, input, exception_state),
                       kChildrenOnly);
 }
 
-DocumentFragment* Sanitizer::sanitize(ScriptState* script_state,
-                                      StringOrDocumentFragmentOrDocument& input,
-                                      ExceptionState& exception_state) {
+DocumentFragment* Sanitizer::sanitize(
+    ScriptState* script_state,
+    StringOrTrustedHTMLOrDocumentFragmentOrDocument& input,
+    ExceptionState& exception_state) {
+  StringOrDocumentFragmentOrDocument new_input;
+  if (input.IsString() || input.IsNull()) {
+    LocalDOMWindow* window = LocalDOMWindow::From(script_state);
+    if (!window) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Cannot find current DOM window.");
+      return nullptr;
+    }
+    new_input.SetString(TrustedTypesCheckForHTML(
+        input.GetAsString(), window->GetExecutionContext(), exception_state));
+    if (exception_state.HadException()) {
+      return nullptr;
+    }
+  } else if (input.IsTrustedHTML()) {
+    new_input.SetString(input.GetAsTrustedHTML()->toString());
+  } else if (input.IsDocument()) {
+    new_input.SetDocument(input.GetAsDocument());
+  } else if (input.IsDocumentFragment()) {
+    new_input.SetDocumentFragment(input.GetAsDocumentFragment());
+  }
+  return SanitizeImpl(script_state, new_input, exception_state);
+}
+
+DocumentFragment* Sanitizer::SanitizeImpl(
+    ScriptState* script_state,
+    StringOrDocumentFragmentOrDocument& input,
+    ExceptionState& exception_state) {
   DocumentFragment* fragment = nullptr;
 
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);

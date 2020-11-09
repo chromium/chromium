@@ -59,6 +59,24 @@
         assert_true(fragment instanceof DocumentFragment);
         assert_equals(getString(fragment), c.result);
     }, "SanitizerAPI with config: " + c.message + ", sanitize from document fragment function for " + c.message));
+
+    test(t => {
+      let s = new Sanitizer();
+      let policy = trustedTypes.createPolicy("myPolicy", {createHTML: s=>s+1});
+      let html_string = policy.createHTML("testHTML");
+      fragment = s.sanitize(html_string);
+      assert_true(fragment instanceof DocumentFragment);
+      assert_equals(getString(fragment), "testHTML1");
+    }, "SanitizerAPI sanitize from TrustedHTML.");
+
+    test(t => {
+      let s = new Sanitizer();
+      let policy = trustedTypes.createPolicy("default", {createHTML: s=>s+2});
+      let html_string = policy.createHTML("testHTML");
+      fragment = s.sanitize(html_string);
+      assert_true(fragment instanceof DocumentFragment);
+      assert_equals(getString(fragment), "testHTML2");
+    }, "SanitizerAPI sanitize from string with default policy.");
 </script>
 </body>
 </html>

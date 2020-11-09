@@ -101,6 +101,8 @@ bindings_modules_generated_union_type_files = [
   "$bindings_modules_v8_output_dir/string_or_document_fragment_or_document.h",
   "$bindings_modules_v8_output_dir/string_or_string_sequence_or_constrain_dom_string_parameters.cc",
   "$bindings_modules_v8_output_dir/string_or_string_sequence_or_constrain_dom_string_parameters.h",
+  "$bindings_modules_v8_output_dir/string_or_trusted_html_or_document_fragment_or_document.cc",
+  "$bindings_modules_v8_output_dir/string_or_trusted_html_or_document_fragment_or_document.h",
   "$bindings_modules_v8_output_dir/string_or_unsigned_long.cc",
   "$bindings_modules_v8_output_dir/string_or_unsigned_long.h",
   "$bindings_modules_v8_output_dir/uint32_array_or_unsigned_long_sequence.cc",

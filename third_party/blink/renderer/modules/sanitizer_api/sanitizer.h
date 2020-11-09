@@ -17,6 +17,7 @@ class ExceptionState;
 class SanitizerConfig;
 class ScriptState;
 class StringOrDocumentFragmentOrDocument;
+class StringOrTrustedHTMLOrDocumentFragmentOrDocument;
 
 class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -30,7 +31,7 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
                           StringOrDocumentFragmentOrDocument&,
                           ExceptionState&);
   DocumentFragment* sanitize(ScriptState*,
-                             StringOrDocumentFragmentOrDocument&,
+                             StringOrTrustedHTMLOrDocumentFragmentOrDocument&,
                              ExceptionState&);
 
   void Trace(Visitor*) const override;
@@ -39,6 +40,10 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   void ElementFormatter(HashSet<String>&, const Vector<String>&);
   void AttrFormatter(HashMap<String, Vector<String>>&,
                      const Vector<std::pair<String, Vector<String>>>&);
+
+  DocumentFragment* SanitizeImpl(ScriptState*,
+                                 StringOrDocumentFragmentOrDocument&,
+                                 ExceptionState&);
 
   HashSet<String> allow_elements_ = {};
   HashSet<String> block_elements_ = {};

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 104 tests; 101 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 106 tests; 103 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS SanitizerAPI sanitize function without argument should throw an error.
 PASS SanitizerAPI sanitize function for null.
 PASS SanitizerAPI with config: string, sanitize from string function for string
@@ -104,5 +104,7 @@ PASS SanitizerAPI with config: allowAttributes list {"id": ["div"]} with id attr
 PASS SanitizerAPI with config: allowAttributes list {"id": ["*"]} with id attribute and onclick scripts, sanitize from document fragment function for allowAttributes list {"id": ["*"]} with id attribute and onclick scripts
 PASS SanitizerAPI with config: allowAttributes list {"*": ["a"]} with style attribute, sanitize from document fragment function for allowAttributes list {"*": ["a"]} with style attribute
 PASS SanitizerAPI with config: allowAttributes list has no influence to dropAttributes, sanitize from document fragment function for allowAttributes list has no influence to dropAttributes
+PASS SanitizerAPI sanitize from TrustedHTML.
+PASS SanitizerAPI sanitize from string with default policy.
 Harness: the test ran to completion.
 
