@@ -292,13 +292,17 @@ CompositorFrameReporter::CompositorFrameReporter(
     LatencyUkmReporter* latency_ukm_reporter,
     bool should_report_metrics,
     SmoothThread smooth_thread,
-    int layer_tree_host_id)
+    int layer_tree_host_id,
+    DroppedFrameCounter* dropped_frame_counter)
     : should_report_metrics_(should_report_metrics),
       args_(args),
       active_trackers_(active_trackers),
       latency_ukm_reporter_(latency_ukm_reporter),
+      dropped_frame_counter_(dropped_frame_counter),
       smooth_thread_(smooth_thread),
-      layer_tree_host_id_(layer_tree_host_id) {}
+      layer_tree_host_id_(layer_tree_host_id) {
+  dropped_frame_counter_->OnBeginFrame(args);
+}
 
 std::unique_ptr<CompositorFrameReporter>
 CompositorFrameReporter::CopyReporterAtBeginImplStage() {
@@ -310,7 +314,7 @@ CompositorFrameReporter::CopyReporterAtBeginImplStage() {
   }
   auto new_reporter = std::make_unique<CompositorFrameReporter>(
       active_trackers_, args_, latency_ukm_reporter_, should_report_metrics_,
-      smooth_thread_, layer_tree_host_id_);
+      smooth_thread_, layer_tree_host_id_, dropped_frame_counter_);
   new_reporter->did_finish_impl_frame_ = did_finish_impl_frame_;
   new_reporter->impl_frame_finish_time_ = impl_frame_finish_time_;
   new_reporter->main_frame_abort_time_ = main_frame_abort_time_;
@@ -318,7 +322,6 @@ CompositorFrameReporter::CopyReporterAtBeginImplStage() {
       StageType::kBeginImplFrameToSendBeginMainFrame;
   new_reporter->current_stage_.start_time = stage_history_.front().start_time;
   new_reporter->set_tick_clock(tick_clock_);
-  new_reporter->SetDroppedFrameCounter(dropped_frame_counter_);
   new_reporter->cloned_from_ = weak_factory_.GetWeakPtr();
 
   // TODO(https://crbug.com/1127872) Check |cloned_to_| is null before replacing
@@ -494,8 +497,8 @@ void CompositorFrameReporter::TerminateReporter() {
         dropped_frame_counter_->AddGoodFrame();
     }
 
-    if (IsDroppedFrameAffectingSmoothness())
-      dropped_frame_counter_->AddDroppedFrameAffectingSmoothness();
+    dropped_frame_counter_->OnEndFrame(args_,
+                                       IsDroppedFrameAffectingSmoothness());
   }
 }
 

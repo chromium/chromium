@@ -12,7 +12,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
+#include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/metrics/total_frame_counter.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,9 +36,11 @@ class CompositorFrameReporterTest : public testing::Test {
             nullptr,
             /*should_report_metrics=*/true,
             CompositorFrameReporter::SmoothThread::kSmoothBoth,
-            /*layer_tree_host_id=*/1)) {
+            /*layer_tree_host_id=*/1,
+            &dropped_frame_counter_)) {
     pipeline_reporter_->set_tick_clock(&test_tick_clock_);
     AdvanceNowByMs(1);
+    dropped_frame_counter_.set_total_counter(&total_frame_counter_);
   }
 
  protected:
@@ -80,6 +84,8 @@ class CompositorFrameReporterTest : public testing::Test {
   // and destroyed after that.
   base::SimpleTestTickClock test_tick_clock_;
 
+  DroppedFrameCounter dropped_frame_counter_;
+  TotalFrameCounter total_frame_counter_;
   std::unique_ptr<CompositorFrameReporter> pipeline_reporter_;
 };
 

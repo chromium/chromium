@@ -48,6 +48,7 @@ class CompositorTimingHistoryTest : public testing::Test {
                         reporting_controller_.get()) {
     AdvanceNowBy(base::TimeDelta::FromMilliseconds(1));
     timing_history_.SetRecordingEnabled(true);
+    reporting_controller_->SetDroppedFrameCounter(&dropped_counter);
   }
 
   void AdvanceNowBy(base::TimeDelta delta) { now_ += delta; }
@@ -60,6 +61,7 @@ class CompositorTimingHistoryTest : public testing::Test {
   TestCompositorTimingHistory timing_history_;
   base::TimeTicks now_;
   uint64_t sequence_number = 0;
+  DroppedFrameCounter dropped_counter;
 
   viz::BeginFrameArgs GetFakeBeginFrameArg(bool on_critical_path = true) {
     viz::BeginFrameArgs args = viz::BeginFrameArgs();

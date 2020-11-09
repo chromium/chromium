@@ -4,18 +4,18 @@
 
 #include "cc/metrics/dropped_frame_counter.h"
 
-#include <stddef.h>
-
-#include <limits>
-
-#include "base/memory/ptr_util.h"
+#include "base/bind.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/total_frame_counter.h"
 #include "cc/metrics/ukm_smoothness_data.h"
 
 namespace cc {
 
-DroppedFrameCounter::DroppedFrameCounter() = default;
+DroppedFrameCounter::DroppedFrameCounter()
+    : frame_sorter_(base::BindRepeating(&DroppedFrameCounter::NotifyFrameResult,
+                                        base::Unretained(this))) {}
+DroppedFrameCounter::~DroppedFrameCounter() = default;
 
 uint32_t DroppedFrameCounter::GetAverageThroughput() const {
   size_t good_frames = 0;
@@ -44,10 +44,22 @@ void DroppedFrameCounter::AddDroppedFrame() {
   ++total_dropped_;
 }
 
-void DroppedFrameCounter::AddDroppedFrameAffectingSmoothness() {
-  if (fcp_received_)
-    ++total_smoothness_dropped_;
-  ReportFrames();
+void DroppedFrameCounter::ResetFrameSorter() {
+  frame_sorter_.Reset();
+}
+
+void DroppedFrameCounter::OnBeginFrame(const viz::BeginFrameArgs& args) {
+  frame_sorter_.AddNewFrame(args);
+}
+
+void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
+                                     bool is_dropped) {
+  if (is_dropped) {
+    if (fcp_received_)
+      ++total_smoothness_dropped_;
+    ReportFrames();
+  }
+  frame_sorter_.AddFrameResult(args, is_dropped);
 }
 
 void DroppedFrameCounter::ReportFrames() {
@@ -81,6 +93,12 @@ void DroppedFrameCounter::Reset() {
   total_smoothness_dropped_ = 0;
   fcp_received_ = false;
   ring_buffer_.Clear();
+  frame_sorter_.Reset();
+}
+
+void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
+                                            bool is_dropped) {
+  // TODO(crbug.com/1115141) The implementation of smoothness metrics.
 }
 
 void DroppedFrameCounter::OnFcpReceived() {
