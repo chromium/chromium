@@ -73,6 +73,17 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
 
   apps::AppServiceProxy* app_service_proxy() { return app_service_proxy_; }
 
+  bool IsAppPaused() {
+    app_service_proxy()->FlushMojoCallsForTesting();
+
+    bool is_app_paused = false;
+    app_service_proxy()->AppRegistryCache().ForOneApp(
+        app_id(), [&is_app_paused](const apps::AppUpdate& update) {
+          is_app_paused = (update.Paused() == apps::mojom::OptionalBool::kTrue);
+        });
+    return is_app_paused;
+  }
+
   void ShowUi(const std::string& name) override {
     arc::mojom::AppInfo app;
     app.name = "Fake App 0";
@@ -126,7 +137,10 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
 
       EXPECT_TRUE(state_is_set);
     } else {
-      ActiveView(name)->AcceptDialog();
+      if (name == "pause_close")
+        ActiveView(name)->Close();
+      else
+        ActiveView(name)->AcceptDialog();
     }
   }
 
@@ -143,14 +157,10 @@ IN_PROC_BROWSER_TEST_F(AppDialogViewBrowserTest, InvokeUi_block) {
 
 IN_PROC_BROWSER_TEST_F(AppDialogViewBrowserTest, InvokeUi_pause) {
   ShowAndVerifyUi();
+  EXPECT_TRUE(IsAppPaused());
+}
 
-  app_service_proxy()->FlushMojoCallsForTesting();
-
-  bool state_is_set = false;
-  app_service_proxy()->AppRegistryCache().ForOneApp(
-      app_id(), [&state_is_set](const apps::AppUpdate& update) {
-        state_is_set = (update.Paused() == apps::mojom::OptionalBool::kTrue);
-      });
-
-  EXPECT_TRUE(state_is_set);
+IN_PROC_BROWSER_TEST_F(AppDialogViewBrowserTest, InvokeUi_pause_close) {
+  ShowAndVerifyUi();
+  EXPECT_TRUE(IsAppPaused());
 }
