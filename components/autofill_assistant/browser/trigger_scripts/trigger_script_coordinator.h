@@ -43,8 +43,6 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
 
     virtual void OnTriggerScriptShown(const TriggerScriptUIProto& proto) = 0;
     virtual void OnTriggerScriptHidden() = 0;
-    // TODO(b/171776026): Add new states to our metrics and use them in the
-    // coordinator.
     virtual void OnTriggerScriptFinished(
         Metrics::LiteScriptFinishedState state) = 0;
   };
@@ -90,6 +88,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   void CheckDynamicTriggerConditions();
   void OnDynamicTriggerConditionsEvaluated();
   void OnGetTriggerScripts(int http_status, const std::string& response);
+  void Stop(Metrics::LiteScriptFinishedState state);
 
   void NotifyOnTriggerScriptFinished(Metrics::LiteScriptFinishedState state);
 

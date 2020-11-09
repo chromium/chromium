@@ -73,8 +73,7 @@ void TriggerScriptCoordinator::Start(
   GURL current_url = client_->GetWebContents()->GetLastCommittedURL();
   if (!url_utils::IsInDomainOrSubDomain(current_url, deeplink_url_)) {
     LOG(ERROR) << "Trigger script requested for domain other than the deeplink";
-    NotifyOnTriggerScriptFinished(
-        Metrics::LiteScriptFinishedState::LITE_SCRIPT_UNKNOWN_FAILURE);
+    Stop(Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE);
     return;
   }
 
@@ -97,8 +96,7 @@ void TriggerScriptCoordinator::OnGetTriggerScripts(
     int http_status,
     const std::string& response) {
   if (http_status != net::HTTP_OK) {
-    NotifyOnTriggerScriptFinished(
-        Metrics::LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_FAILED);
+    Stop(Metrics::LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_FAILED);
     return;
   }
 
@@ -106,8 +104,7 @@ void TriggerScriptCoordinator::OnGetTriggerScripts(
   additional_allowed_domains_.clear();
   if (!ProtocolUtils::ParseTriggerScripts(response, &trigger_scripts_,
                                           &additional_allowed_domains_)) {
-    NotifyOnTriggerScriptFinished(
-        Metrics::LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_PARSE_ERROR);
+    Stop(Metrics::LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_PARSE_ERROR);
     return;
   }
 
@@ -125,14 +122,12 @@ void TriggerScriptCoordinator::PerformTriggerScriptAction(
       }
       return;
     case TriggerScriptProto::CANCEL_SESSION:
-      HideTriggerScript();
-      NotifyOnTriggerScriptFinished(
-          Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_CLOSE);
+      Stop(Metrics::LiteScriptFinishedState::
+               LITE_SCRIPT_PROMPT_FAILED_CANCEL_SESSION);
       return;
     case TriggerScriptProto::CANCEL_FOREVER:
-      HideTriggerScript();
-      NotifyOnTriggerScriptFinished(
-          Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_CLOSE);
+      Stop(Metrics::LiteScriptFinishedState::
+               LITE_SCRIPT_PROMPT_FAILED_CANCEL_FOREVER);
       return;
     case TriggerScriptProto::SHOW_CANCEL_POPUP:
       NOTREACHED();
@@ -144,12 +139,19 @@ void TriggerScriptCoordinator::PerformTriggerScriptAction(
       }
       // Do not hide the trigger script here, to facilitate a smooth transition
       // to the regular flow.
+      StopCheckingTriggerConditions();
       NotifyOnTriggerScriptFinished(
           Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED);
       return;
     case TriggerScriptProto::UNDEFINED:
       return;
   }
+}
+
+void TriggerScriptCoordinator::Stop(Metrics::LiteScriptFinishedState state) {
+  HideTriggerScript();
+  StopCheckingTriggerConditions();
+  NotifyOnTriggerScriptFinished(state);
 }
 
 void TriggerScriptCoordinator::AddObserver(Observer* observer) {
@@ -176,7 +178,7 @@ void TriggerScriptCoordinator::DidFinishNavigation(
   // (e.g., network connection lost). This will cancel the current trigger
   // script session.
   if (navigation_handle->IsErrorPage()) {
-    PerformTriggerScriptAction(TriggerScriptProto::CANCEL_SESSION);
+    Stop(Metrics::LiteScriptFinishedState::LITE_SCRIPT_NAVIGATION_ERROR);
     return;
   }
 
@@ -186,7 +188,7 @@ void TriggerScriptCoordinator::DidFinishNavigation(
                                         deeplink_url_) &&
       !url_utils::IsInDomainOrSubDomain(web_contents()->GetLastCommittedURL(),
                                         additional_allowed_domains_)) {
-    PerformTriggerScriptAction(TriggerScriptProto::CANCEL_SESSION);
+    Stop(Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE);
     return;
   }
 }

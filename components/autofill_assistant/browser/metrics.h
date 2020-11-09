@@ -156,11 +156,18 @@ class Metrics {
   enum class LiteScriptShownToUser {
     // The number of times a lite script was successfully fetched and started.
     LITE_SCRIPT_RUNNING = 0,
-    // The subset of |LITE_SCRIPT_RUNNING| where the lite script prompt was
-    // shown.
+    // The number of times a lite script was shown to the user. Can happen
+    // multiple times per run.
     LITE_SCRIPT_SHOWN_TO_USER = 1,
+    // Since Chrome M-88. The user tapped the 'not now' button. Can happen
+    // multiple times per run.
+    LITE_SCRIPT_NOT_NOW = 2,
+    // Since Chrome M-88. The lite script was automatically hidden due to the
+    // trigger condition no longer being true. Can happen multiple times per
+    // run.
+    LITE_SCRIPT_HIDE_ON_TRIGGER_CONDITION_NO_LONGER_TRUE = 3,
 
-    kMaxValue = LITE_SCRIPT_SHOWN_TO_USER
+    kMaxValue = LITE_SCRIPT_HIDE_ON_TRIGGER_CONDITION_NO_LONGER_TRUE
   };
 
   // The different ways a user might have opted out of the lite script
@@ -178,9 +185,6 @@ class Metrics {
   enum class LiteScriptStarted {
     // Device did not have DFM downloaded.
     LITE_SCRIPT_DFM_UNAVAILABLE = 0,
-    // User has explicitly rejected the lite script two times and thus opted
-    // out of  the experience.
-    LITE_SCRIPT_CANCELED_TWO_TIMES = 1,
     // User has rejected the onboarding and thus opted out of the experience.
     LITE_SCRIPT_ONBOARDING_REJECTED = 2,
     // User has not seen the lite script before and will see first time
@@ -189,8 +193,22 @@ class Metrics {
     // User has seen the first-time experience before and will see returning
     // user experience.
     LITE_SCRIPT_RETURNING_USER = 4,
+    // Since Chrome M-88. The proactive trigger setting is disabled. The user
+    // has either chosen 'never show again' in the prompt or manually disabled
+    // the setting in Chrome settings.
+    LITE_SCRIPT_PROACTIVE_TRIGGERING_DISABLED = 5,
+    // Since Chrome M-88. Intended as a catch-all. This is reported as soon as a
+    // lite-script intent is received (of course, only for people with MSBB
+    // enabled).
+    LITE_SCRIPT_INTENT_RECEIVED = 6,
 
-    kMaxValue = LITE_SCRIPT_RETURNING_USER
+    // DEPRECATED, only sent by Chrome M-86 and M-87.
+    //
+    // User has explicitly rejected the lite script two times and thus opted
+    // out of  the experience.
+    LITE_SCRIPT_CANCELED_TWO_TIMES = 1,
+
+    kMaxValue = LITE_SCRIPT_INTENT_RECEIVED
   };
 
   // The different ways in which a lite script may finish.
@@ -205,31 +223,52 @@ class Metrics {
   // tools/metrics/histograms/enums.xml and the description in
   // tools/metrics/ukm/ukm.xml as necessary.
   enum class LiteScriptFinishedState {
+    // Communication with backend failed.
+    LITE_SCRIPT_GET_ACTIONS_FAILED = 3,
+    // Failed to parse the proto sent by the backend.
+    LITE_SCRIPT_GET_ACTIONS_PARSE_ERROR = 4,
+    // Lite script failed due to a navigation event to a non-allowed domain.
+    LITE_SCRIPT_PROMPT_FAILED_NAVIGATE = 9,
+    // Lite script succeeded. The user accepted the prompt.
+    LITE_SCRIPT_PROMPT_SUCCEEDED = 13,
+    // Since Chrome M-88. The user tapped the 'cancel for this session' button.
+    LITE_SCRIPT_PROMPT_FAILED_CANCEL_SESSION = 14,
+    // Since Chrome M-88. The user tapped the 'never show again' button.
+    LITE_SCRIPT_PROMPT_FAILED_CANCEL_FOREVER = 15,
+    // Since Chrome M-88. The bottom sheet was swipe-dismissed by the user.
+    LITE_SCRIPT_PROMPT_SWIPE_DISMISSED = 16,
+    // Since Chrome M-88. The trigger script has timed out. This indicates that
+    // trigger conditions were evaluated for >= timeout without success. Time is
+    // only counted while the tab is visible and the lite script is invisible.
+    // The timeout resets on tab change.
+    LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT = 17,
+    // Since Chrome M-88. A navigation error occurred, leading to Chrome showing
+    // an error page.
+    LITE_SCRIPT_NAVIGATION_ERROR = 18,
+    // Since Chrome M-88. The tab was closed while the prompt was visible.
+    LITE_SCRIPT_WEB_CONTENTS_DESTROYED_WHILE_VISIBLE = 19,
+    // Since Chrome M-88. The tab was closed while the prompt was invisible.
+    LITE_SCRIPT_WEB_CONTENTS_DESTROYED_WHILE_INVISIBLE = 20,
+
+    // NOTE: All values in this block are DEPRECATED and will only be sent by
+    // Chrome M-86 and M-87.
+    //
     // The lite script failed for an unknown reason.
     LITE_SCRIPT_UNKNOWN_FAILURE = 0,
     // Can happen when users close the tab or similar.
     LITE_SCRIPT_SERVICE_DELETED = 1,
     // |GetActions| was asked to retrieve a wrong script path.
     LITE_SCRIPT_PATH_MISMATCH = 2,
-    // Communication with backend failed.
-    LITE_SCRIPT_GET_ACTIONS_FAILED = 3,
-    // Failed to parse the proto response to |GetActions|.
-    LITE_SCRIPT_GET_ACTIONS_PARSE_ERROR = 4,
     // One or multiple unsafe actions were contained in script.
     LITE_SCRIPT_UNSAFE_ACTIONS = 5,
     // The mini script is invalid. A valid script must contain a prompt
     // (browse=true) action and end in a prompt(browse=false) action.
     LITE_SCRIPT_INVALID_SCRIPT = 6,
-
     // The prompt(browse) action failed due to a navigation event to a
     // non-allowed domain.
     LITE_SCRIPT_BROWSE_FAILED_NAVIGATE = 7,
     // The prompt(browse) action failed for an unknown reason.
     LITE_SCRIPT_BROWSE_FAILED_OTHER = 8,
-
-    // The prompt(regular) action failed due to a navigation event to a
-    // non-allowed domain.
-    LITE_SCRIPT_PROMPT_FAILED_NAVIGATE = 9,
     // The prompt(regular) action failed because the condition to show it was no
     // longer true.
     LITE_SCRIPT_PROMPT_FAILED_CONDITION_NO_LONGER_TRUE = 10,
@@ -237,11 +276,8 @@ class Metrics {
     LITE_SCRIPT_PROMPT_FAILED_CLOSE = 11,
     // The prompt(regular) action failed for an unknown reason.
     LITE_SCRIPT_PROMPT_FAILED_OTHER = 12,
-    // The prompt(regular) action succeeded because the user tapped the continue
-    // chip.
-    LITE_SCRIPT_PROMPT_SUCCEEDED = 13,
 
-    kMaxValue = LITE_SCRIPT_PROMPT_SUCCEEDED
+    kMaxValue = LITE_SCRIPT_WEB_CONTENTS_DESTROYED_WHILE_INVISIBLE
   };
 
   // The different ways a user who has successfully completed a light script may

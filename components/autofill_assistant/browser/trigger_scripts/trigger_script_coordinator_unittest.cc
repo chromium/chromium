@@ -119,10 +119,9 @@ TEST_F(TriggerScriptCoordinatorTest, StartSucceedsForSubDomain) {
 TEST_F(TriggerScriptCoordinatorTest, StartFailsForDifferentDomain) {
   SimulateNavigateToUrl(GURL("https://different.com/example"));
   EXPECT_CALL(*mock_request_sender_, OnSendRequest).Times(0);
-  EXPECT_CALL(
-      mock_observer_,
-      OnTriggerScriptFinished(
-          Metrics::LiteScriptFinishedState::LITE_SCRIPT_UNKNOWN_FAILURE));
+  EXPECT_CALL(mock_observer_,
+              OnTriggerScriptFinished(Metrics::LiteScriptFinishedState::
+                                          LITE_SCRIPT_PROMPT_FAILED_NAVIGATE));
   coordinator_->Start(GURL(kFakeDeepLink),
                       std::make_unique<TriggerContextImpl>());
 }
@@ -335,13 +334,59 @@ TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionNotNow) {
 }
 
 TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionCancelSession) {
-  // TODO(b/171776026): Implement this once the new states have been added to
-  // the metrics.
+  GetTriggerScriptsResponseProto response;
+  *response.add_trigger_scripts()
+       ->mutable_trigger_condition()
+       ->mutable_selector() = ToSelectorProto("#selector");
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<3>());
+  ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
+      .WillByDefault(RunOnceCallback<1>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+
+  EXPECT_CALL(mock_observer_, OnTriggerScriptFinished(
+                                  Metrics::LiteScriptFinishedState::
+                                      LITE_SCRIPT_PROMPT_FAILED_CANCEL_SESSION))
+      .Times(1);
+  EXPECT_CALL(mock_observer_, OnTriggerScriptHidden).Times(1);
+  coordinator_->PerformTriggerScriptAction(TriggerScriptProto::CANCEL_SESSION);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionCancelForever) {
-  // TODO(b/171776026): Implement this once the new states have been added to
-  // the metrics.
+  GetTriggerScriptsResponseProto response;
+  *response.add_trigger_scripts()
+       ->mutable_trigger_condition()
+       ->mutable_selector() = ToSelectorProto("#selector");
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<3>());
+  ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
+      .WillByDefault(RunOnceCallback<1>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+
+  EXPECT_CALL(mock_observer_, OnTriggerScriptFinished(
+                                  Metrics::LiteScriptFinishedState::
+                                      LITE_SCRIPT_PROMPT_FAILED_CANCEL_FOREVER))
+      .Times(1);
+  EXPECT_CALL(mock_observer_, OnTriggerScriptHidden).Times(1);
+  coordinator_->PerformTriggerScriptAction(TriggerScriptProto::CANCEL_FOREVER);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionAccept) {
@@ -407,7 +452,11 @@ TEST_F(TriggerScriptCoordinatorTest, CancelOnNavigateAway) {
   SimulateNavigateToUrl(GURL("https://other-example.com/page"));
 
   // Navigating to non-whitelisted domain is not ok.
-  EXPECT_CALL(mock_observer_, OnTriggerScriptFinished(_)).Times(1);
+  EXPECT_CALL(
+      mock_observer_,
+      OnTriggerScriptFinished(
+          Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE))
+      .Times(1);
   SimulateNavigateToUrl(GURL("https://example.different.com/page"));
 }
 

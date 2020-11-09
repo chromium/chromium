@@ -4566,6 +4566,16 @@ Unknown properties are collapsed to zero. -->
   <int value="11" label="User explicitly canceled the PROMPT"/>
   <int value="12" label="Unknown failure in PROMPT"/>
   <int value="13" label="User explicitly accepted the PROMPT"/>
+  <int value="14" label="User chose 'not for this session'"/>
+  <int value="15" label="User chose 'never show again'"/>
+  <int value="16" label="User swipe-dismissed the bottom sheet"/>
+  <int value="17"
+      label="Timeout while waiting for trigger condition to become true"/>
+  <int value="18"
+      label="Navigation error occurred, leading to Chrome showing an error
+             page"/>
+  <int value="19" label="Tab was closed while prompt was visible"/>
+  <int value="20" label="Tab was closed while prompt was invisible"/>
 </enum>
 
 <enum name="AutofillAssistantLiteScriptOnboarding">
@@ -4577,6 +4587,8 @@ Unknown properties are collapsed to zero. -->
 <enum name="AutofillAssistantLiteScriptShownToUser">
   <int value="0" label="Running"/>
   <int value="1" label="Ui shown"/>
+  <int value="2" label="User chose 'not now'"/>
+  <int value="3" label="Ui hidden due to trigger condition no longer true"/>
 </enum>
 
 <enum name="AutofillAssistantLiteScriptStarted">
@@ -4585,6 +4597,8 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Onboarding rejected"/>
   <int value="3" label="Success, first time user"/>
   <int value="4" label="Success, returning user"/>
+  <int value="5" label="Proactive triggering setting disabled"/>
+  <int value="6" label="Intent received"/>
 </enum>
 
 <enum name="AutofillAssistantOnBoarding">
