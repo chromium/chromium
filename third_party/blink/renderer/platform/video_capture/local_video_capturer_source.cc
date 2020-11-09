@@ -49,6 +49,11 @@ void LocalVideoCapturerSource::StartCapture(
       new_frame_callback);
 }
 
+media::VideoCaptureFeedbackCB LocalVideoCapturerSource::GetFeedbackCallback()
+    const {
+  return manager_->GetFeedbackCallback(session_id_);
+}
+
 void LocalVideoCapturerSource::RequestRefreshFrame() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!stop_capture_cb_)

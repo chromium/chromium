@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "media/base/video_frame_feedback.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video_capture_types.h"
 
@@ -68,6 +69,10 @@ class CAPTURE_EXPORT VideoCapturerSource {
       const media::VideoCaptureParams& params,
       const VideoCaptureDeliverFrameCB& new_frame_callback,
       const RunningCallback& running_callback) = 0;
+
+  // Returns a callback for providing the feedback from the consumer.
+  // The callback can be called on any thread.
+  virtual media::VideoCaptureFeedbackCB GetFeedbackCallback() const;
 
   // Asks source to send a refresh frame. In cases where source does not provide
   // a continuous rate of new frames (e.g. canvas capture, screen capture where

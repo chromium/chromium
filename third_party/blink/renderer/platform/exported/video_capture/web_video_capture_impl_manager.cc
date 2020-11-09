@@ -30,6 +30,7 @@
 #include "base/bind_helpers.h"
 #include "base/location.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "media/base/bind_to_current_loop.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -315,12 +316,47 @@ void WebVideoCaptureImplManager::OnLog(const media::VideoCaptureSessionId& id,
       devices_.begin(), devices_.end(),
       [id](const DeviceEntry& entry) { return entry.session_id == id; });
   DCHECK(it != devices_.end());
-  // Use of base::Unretained() is safe because |devices_| is released on the
-  // |io_task_runner()| as well.
+  // Use of base::CrossthreadUnretained() is safe because |devices_| is released
+  // on the |io_task_runner()| as well.
   PostCrossThreadTask(*Platform::Current()->GetIOTaskRunner().get(), FROM_HERE,
                       CrossThreadBindOnce(&VideoCaptureImpl::OnLog,
                                           CrossThreadUnretained(it->impl.get()),
                                           String(message)));
+}
+
+VideoCaptureFeedbackCB WebVideoCaptureImplManager::GetFeedbackCallback(
+    const media::VideoCaptureSessionId& id) const {
+  DCHECK(render_main_task_runner_->BelongsToCurrentThread());
+  return base::BindRepeating(
+      &WebVideoCaptureImplManager::ProcessFeedback,
+      media::BindToCurrentLoop(base::BindRepeating(
+          &WebVideoCaptureImplManager::ProcessFeedbackInternal,
+          weak_factory_.GetWeakPtr(), id)));
+}
+
+// static
+void WebVideoCaptureImplManager::ProcessFeedback(
+    VideoCaptureFeedbackCB callback_to_io_thread,
+    const media::VideoFrameFeedback& feedback) {
+  // process feedback can be called on any thread by the client.
+  callback_to_io_thread.Run(feedback);
+}
+
+void WebVideoCaptureImplManager::ProcessFeedbackInternal(
+    const media::VideoCaptureSessionId& id,
+    const media::VideoFrameFeedback& feedback) {
+  DCHECK(render_main_task_runner_->BelongsToCurrentThread());
+  const auto it = std::find_if(
+      devices_.begin(), devices_.end(),
+      [id](const DeviceEntry& entry) { return entry.session_id == id; });
+  if (it != devices_.end()) {
+    // Use of base::CrossthreadUnretained() is safe because |devices_| is
+    // released on the |io_task_runner()| as well.
+    PostCrossThreadTask(
+        *Platform::Current()->GetIOTaskRunner().get(), FROM_HERE,
+        CrossThreadBindOnce(&VideoCaptureImpl::ProcessFeedback,
+                            CrossThreadUnretained(it->impl.get()), feedback));
+  }
 }
 
 }  // namespace blink

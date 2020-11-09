@@ -40,9 +40,16 @@ class WebRtcVideoTrackSourceTest
   WebRtcVideoTrackSourceTest()
       : track_source_(new rtc::RefCountedObject<WebRtcVideoTrackSource>(
             /*is_screencast=*/false,
-            /*needs_denoising=*/absl::nullopt)) {
+            /*needs_denoising=*/absl::nullopt,
+            base::BindRepeating(&WebRtcVideoTrackSourceTest::ProcessFeedback,
+                                base::Unretained(this)))) {
     track_source_->AddOrUpdateSink(&mock_sink_, rtc::VideoSinkWants());
   }
+
+  void ProcessFeedback(const media::VideoFrameFeedback& feedback) {
+    feedback_ = feedback;
+  }
+
   ~WebRtcVideoTrackSourceTest() override {
     track_source_->RemoveSink(&mock_sink_);
   }
@@ -66,8 +73,8 @@ class WebRtcVideoTrackSourceTest
     scoped_refptr<media::VideoFrame> frame =
         CreateTestFrame(coded_size, visible_rect, natural_size, storage_type);
     track_source_->OnFrameCaptured(frame);
-    EXPECT_EQ(frame->feedback()->max_pixels, max_pixels);
-    EXPECT_EQ(frame->feedback()->max_framerate_fps, max_framerate);
+    EXPECT_EQ(feedback_.max_pixels, max_pixels);
+    EXPECT_EQ(feedback_.max_framerate_fps, max_framerate);
   }
 
   void SendTestFrameWithUpdateRect(
@@ -126,6 +133,7 @@ class WebRtcVideoTrackSourceTest
  protected:
   MockVideoSink mock_sink_;
   scoped_refptr<WebRtcVideoTrackSource> track_source_;
+  media::VideoFrameFeedback feedback_;
 };
 
 TEST_P(WebRtcVideoTrackSourceTest, CropFrameTo640360) {

@@ -7,9 +7,15 @@
 
 #include <limits>
 
+#include "base/callback.h"
 #include "media/base/media_export.h"
 
 namespace media {
+
+struct VideoFrameFeedback;
+
+using VideoCaptureFeedbackCB =
+    base::RepeatingCallback<void(const VideoFrameFeedback&)>;
 
 // Feedback from the frames consumer.
 // This class is passed from the frames sink to the capturer to limit

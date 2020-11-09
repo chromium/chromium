@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
+#include "media/base/video_frame_feedback.h"
 #include "media/base/video_frame_pool.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
@@ -34,7 +35,8 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
   };
 
   WebRtcVideoTrackSource(bool is_screencast,
-                         absl::optional<bool> needs_denoising);
+                         absl::optional<bool> needs_denoising,
+                         media::VideoCaptureFeedbackCB callback);
   ~WebRtcVideoTrackSource() override;
 
   void SetCustomFrameAdaptationParamsForTesting(
@@ -53,7 +55,7 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
   using webrtc::VideoTrackSourceInterface::RemoveSink;
 
  private:
-  void SetFrameFeedback(scoped_refptr<media::VideoFrame> frame);
+  void SendFeedback();
 
   FrameAdaptationParams ComputeAdaptationParams(int width,
                                                 int height,
@@ -85,6 +87,8 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
 
   absl::optional<FrameAdaptationParams>
       custom_frame_adaptation_params_for_testing_;
+
+  const media::VideoCaptureFeedbackCB callback_;
 
   DISALLOW_COPY_AND_ASSIGN(WebRtcVideoTrackSource);
 };

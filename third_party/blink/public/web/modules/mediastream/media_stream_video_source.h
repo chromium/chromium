@@ -172,6 +172,11 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
 
   bool IsStoppedForRestart() const { return state_ == STOPPED_FOR_RESTART; }
 
+  // Provides a callback for consumers to trigger when they have some
+  // feedback to report.
+  // The returned callback can be called on any thread.
+  virtual VideoCaptureFeedbackCB GetFeedbackCallback() const;
+
   size_t NumTracks() const {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     return tracks_.size();

@@ -66,6 +66,10 @@ namespace gpu {
 struct SyncToken;
 }
 
+namespace media {
+struct VideoFrameFeedback;
+}
+
 namespace mojo {
 template <typename Interface>
 class PendingReceiver;
@@ -337,6 +341,12 @@ struct CrossThreadCopier<
 template <>
 struct CrossThreadCopier<gfx::Size>
     : public CrossThreadCopierPassThrough<gfx::Size> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<media::VideoFrameFeedback>
+    : public CrossThreadCopierPassThrough<media::VideoFrameFeedback> {
   STATIC_ONLY(CrossThreadCopier);
 };
 

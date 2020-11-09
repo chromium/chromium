@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/capture/video_capturer_source.h"
+#include "base/bind_helpers.h"
 
 namespace media {
 
@@ -12,5 +13,9 @@ namespace media {
 // breaks linking. Consider removing this file when the compiler+linker is able
 // to generate symbols across linking units.
 VideoCapturerSource::~VideoCapturerSource() = default;
+
+media::VideoCaptureFeedbackCB VideoCapturerSource::GetFeedbackCallback() const {
+  return base::DoNothing();
+}
 
 }  // namespace media

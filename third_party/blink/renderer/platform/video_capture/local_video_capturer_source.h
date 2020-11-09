@@ -54,6 +54,7 @@ class PLATFORM_EXPORT LocalVideoCapturerSource
   void StopCapture() override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
   void OnLog(const std::string& message) override;
+  media::VideoCaptureFeedbackCB GetFeedbackCallback() const override;
 
  private:
   void OnStateUpdate(blink::VideoCaptureState state);

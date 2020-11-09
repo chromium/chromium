@@ -508,6 +508,11 @@ bool MediaStreamVideoSource::SupportsEncodedOutput() const {
   return false;
 }
 
+VideoCaptureFeedbackCB MediaStreamVideoSource::GetFeedbackCallback() const {
+  // Each source implementation has to implement its own feedback callbacks.
+  return base::DoNothing();
+}
+
 MediaStreamVideoSource::PendingTrackInfo::PendingTrackInfo(
     MediaStreamVideoTrack* track,
     const VideoCaptureDeliverFrameCB& frame_callback,

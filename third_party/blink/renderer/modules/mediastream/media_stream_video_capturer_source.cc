@@ -97,6 +97,11 @@ void MediaStreamVideoCapturerSource::StartSourceImpl(
                          WTF::Unretained(this), capture_params_));
 }
 
+media::VideoCaptureFeedbackCB
+MediaStreamVideoCapturerSource::GetFeedbackCallback() const {
+  return source_->GetFeedbackCallback();
+}
+
 void MediaStreamVideoCapturerSource::StopSourceImpl() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   source_->StopCapture();

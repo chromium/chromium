@@ -172,8 +172,9 @@ MediaStreamVideoWebRtcSink::MediaStreamVideoWebRtcSink(
   // TODO(pbos): Consolidate WebRtcVideoCapturerAdapter into WebRtcVideoSource
   // by removing the need for and dependency on a cricket::VideoCapturer.
   video_source_ = scoped_refptr<WebRtcVideoTrackSource>(
-      new rtc::RefCountedObject<WebRtcVideoTrackSource>(is_screencast,
-                                                        needs_denoising));
+      new rtc::RefCountedObject<WebRtcVideoTrackSource>(
+          is_screencast, needs_denoising,
+          video_track->source()->GetFeedbackCallback()));
 
   // TODO(pbos): Consolidate the local video track with the source proxy and
   // move into PeerConnectionDependencyFactory. This now separately holds on a

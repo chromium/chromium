@@ -8,6 +8,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIA_VIDEO_CAPTURE_H_
 
 #include "base/callback.h"
+#include "media/base/video_frame_feedback.h"
 #include "media/capture/video_capture_types.h"
 #include "media/capture/video_capturer_source.h"
 
@@ -18,6 +19,8 @@ using VideoCaptureDeviceFormatsCB =
 
 using VideoCaptureDeliverFrameCB =
     media::VideoCapturerSource::VideoCaptureDeliverFrameCB;
+
+using VideoCaptureFeedbackCB = media::VideoCaptureFeedbackCB;
 
 // Current status of the video capture device. It's used by multiple classes in
 // browser process and renderer process. Browser process sends information about

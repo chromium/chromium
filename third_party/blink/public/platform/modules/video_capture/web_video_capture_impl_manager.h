@@ -107,9 +107,21 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
   virtual std::unique_ptr<VideoCaptureImpl> CreateVideoCaptureImplForTesting(
       const media::VideoCaptureSessionId& session_id) const;
 
+  // Get the feedback callback for the corresponding capture session.
+  // Consumers may call the returned callback in any thread to provide
+  // the capturer with feedback information.
+  VideoCaptureFeedbackCB GetFeedbackCallback(
+      const media::VideoCaptureSessionId& id) const;
+
  private:
   // Holds bookkeeping info for each VideoCaptureImpl shared by clients.
   struct DeviceEntry;
+
+  static void ProcessFeedback(VideoCaptureFeedbackCB callback_to_io_thread,
+                              const media::VideoFrameFeedback& feedback);
+
+  void ProcessFeedbackInternal(const media::VideoCaptureSessionId& id,
+                               const media::VideoFrameFeedback& feedback);
 
   void StopCapture(int client_id, const media::VideoCaptureSessionId& id);
   void UnrefDevice(const media::VideoCaptureSessionId& id);

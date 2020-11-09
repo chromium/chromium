@@ -100,6 +100,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
                      media::mojom::blink::VideoFrameInfoPtr info) override;
   void OnBufferDestroyed(int32_t buffer_id) override;
 
+  void ProcessFeedback(const media::VideoFrameFeedback& feedback);
+
   static constexpr base::TimeDelta kCaptureStartTimeout =
       base::TimeDelta::FromSeconds(10);
 
@@ -114,8 +116,7 @@ class PLATFORM_EXPORT VideoCaptureImpl
   struct ClientInfo;
   using ClientInfoMap = std::map<int, ClientInfo>;
 
-  using BufferFinishedCallback =
-      base::OnceCallback<void(media::VideoFrameFeedback feedback)>;
+  using BufferFinishedCallback = base::OnceClosure;
 
   void OnVideoFrameReady(int32_t buffer_id,
                          base::TimeTicks reference_time,
@@ -125,8 +126,7 @@ class PLATFORM_EXPORT VideoCaptureImpl
 
   void OnAllClientsFinishedConsumingFrame(
       int buffer_id,
-      scoped_refptr<BufferContext> buffer_context,
-      media::VideoFrameFeedback feedback);
+      scoped_refptr<BufferContext> buffer_context);
 
   void StopDevice();
   void RestartCapture();
@@ -150,7 +150,6 @@ class PLATFORM_EXPORT VideoCaptureImpl
   // RESOURCE_UTILIZATION value from the |metadata| and then runs the given
   // callback, to trampoline back to the IO thread with the values.
   static void DidFinishConsumingFrame(
-      const media::VideoFrameFeedback* feedback,
       BufferFinishedCallback callback_to_io_thread);
 
   void OnStartTimedout();
@@ -203,6 +202,10 @@ class PLATFORM_EXPORT VideoCaptureImpl
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
   std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support_;
+
+  // Stores feedback from the clients, received in |ProcessFeedback()|.
+  // Only accessed on the IO thread.
+  media::VideoFrameFeedback feedback_;
 
   THREAD_CHECKER(io_thread_checker_);
 

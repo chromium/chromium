@@ -87,11 +87,13 @@ namespace blink {
 
 WebRtcVideoTrackSource::WebRtcVideoTrackSource(
     bool is_screencast,
-    absl::optional<bool> needs_denoising)
+    absl::optional<bool> needs_denoising,
+    media::VideoCaptureFeedbackCB callback)
     : AdaptedVideoTrackSource(/*required_alignment=*/1),
       scaled_frame_pool_(new WebRtcVideoFrameAdapter::BufferPoolOwner()),
       is_screencast_(is_screencast),
-      needs_denoising_(needs_denoising) {
+      needs_denoising_(needs_denoising),
+      callback_(callback) {
   DETACH_FROM_THREAD(thread_checker_);
 }
 
@@ -124,11 +126,15 @@ absl::optional<bool> WebRtcVideoTrackSource::needs_denoising() const {
   return needs_denoising_;
 }
 
-void WebRtcVideoTrackSource::SetFrameFeedback(
-    scoped_refptr<media::VideoFrame> frame) {
-  media::VideoFrameFeedback* feedback = frame->feedback();
-  feedback->max_pixels = video_adapter()->GetTargetPixels();
-  feedback->max_framerate_fps = video_adapter()->GetMaxFramerate();
+void WebRtcVideoTrackSource::SendFeedback() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (callback_.is_null()) {
+    return;
+  }
+  media::VideoFrameFeedback feedback;
+  feedback.max_pixels = video_adapter()->GetTargetPixels();
+  feedback.max_framerate_fps = video_adapter()->GetMaxFramerate();
+  callback_.Run(feedback);
 }
 
 void WebRtcVideoTrackSource::OnFrameCaptured(
@@ -149,7 +155,7 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
     return;
   }
 
-  SetFrameFeedback(frame);
+  SendFeedback();
 
   // Compute what rectangular region has changed since the last frame
   // that we successfully delivered to the base class method
