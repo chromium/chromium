@@ -68,6 +68,9 @@ namespace {
 // Record of the Java VM passed to JNI_OnLoad().
 static JavaVM* s_java_vm = nullptr;
 
+// Guarded by.sLock in Linker.java.
+RelroSharingStatus s_relro_sharing_status = RelroSharingStatus::NOT_ATTEMPTED;
+
 // Helper class for anonymous memory mapping.
 class ScopedAnonymousMmap {
  public:
@@ -491,9 +494,11 @@ bool LoadUseSharedRelocations(const String& path,
       munmap(shared_relro_mapping_address, metadata.relro_size);
       return false;
     }
+    s_relro_sharing_status = RelroSharingStatus::SHARED;
   } else {
     munmap(shared_relro_mapping_address, metadata.relro_size);
     LOG_ERROR("Relocations are not identical, giving up.");
+    s_relro_sharing_status = RelroSharingStatus::NOT_IDENTICAL;
   }
 
   if (!CallJniOnLoad(handle))
@@ -574,6 +579,13 @@ Java_org_chromium_base_library_1loader_ModernLinker_nativeLoadLibraryNoRelros(
     jstring jdlopen_ext_path) {
   String library_path(env, jdlopen_ext_path);
   return LoadNoSharedRelocations(library_path);
+}
+
+JNI_GENERATOR_EXPORT jint
+Java_org_chromium_base_library_1loader_ModernLinker_nativeGetRelroSharingResult(
+    JNIEnv* env,
+    jclass clazz) {
+  return static_cast<jint>(s_relro_sharing_status);
 }
 
 bool ModernLinkerJNIInit(JavaVM* vm, JNIEnv* env) {

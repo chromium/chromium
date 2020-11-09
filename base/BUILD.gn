@@ -4015,6 +4015,7 @@ if (is_android) {
       "android/application_status_listener.h",
       "android/child_process_binding_types.h",
       "android/library_loader/library_loader_hooks.h",
+      "android/linker/modern_linker_jni.h",
       "android/task_scheduler/task_runner_android.h",
       "memory/memory_pressure_listener.h",
       "metrics/histogram_base.h",

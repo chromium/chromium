@@ -62912,6 +62912,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
       label="Not shown due to background mode with no windows (deprecated)"/>
 </enum>
 
+<enum name="RelroSharingStatus">
+  <int value="0" label="Not attempted (this value must not be recorded)"/>
+  <int value="1" label="Using shared RELRO succeeded"/>
+  <int value="2" label="Using shared RELRO failed, contents did not match"/>
+</enum>
+
 <enum name="RemoteBookmarkUpdateError">
   <int value="0"
       label="Remote and local bookmarks types don't match (URL vs. Folder)"/>

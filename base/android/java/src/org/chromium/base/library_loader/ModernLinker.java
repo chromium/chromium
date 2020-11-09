@@ -6,6 +6,7 @@ package org.chromium.base.library_loader;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.JniIgnoreNatives;
+import org.chromium.base.metrics.RecordHistogram;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -89,6 +90,14 @@ class ModernLinker extends Linker {
             throw new UnsatisfiedLinkError(
                     "Unable to load the library a second time with the system linker");
         }
+
+        // Record whether using shared relocations succeeded, only when an attempt was made.
+        if (!loadNoRelro && !provideRelro) {
+            int status = nativeGetRelroSharingResult();
+            assert status != RelroSharingStatus.NOT_ATTEMPTED;
+            RecordHistogram.recordEnumeratedHistogram(
+                    "ChromiumAndroidLinker.RelroSharingStatus", status, RelroSharingStatus.COUNT);
+        }
     }
 
     @GuardedBy("sLock")
@@ -103,4 +112,5 @@ class ModernLinker extends Linker {
     private static native boolean nativeLoadLibraryUseRelros(
             String dlopenExtPath, long loadAddress, int fd);
     private static native boolean nativeLoadLibraryNoRelros(String dlopenExtPath);
+    private static native int nativeGetRelroSharingResult();
 }

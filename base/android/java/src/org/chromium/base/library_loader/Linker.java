@@ -251,7 +251,7 @@ public abstract class Linker {
 
     /**
      * Call this method before loading any libraries to indicate that this
-     * process shall neither create or reuse shared RELRO sections.
+     * process shall neither create nor reuse shared RELRO sections.
      */
     public final void disableSharedRelros() {
         if (DEBUG) Log.i(TAG, "disableSharedRelros() called");
