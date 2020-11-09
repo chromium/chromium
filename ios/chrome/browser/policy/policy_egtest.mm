@@ -244,7 +244,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
   // Set history to a clean state and verify it is clean.
   [ChromeEarlGrey clearBrowsingHistory];
   [ChromeEarlGrey resetBrowsingDataPrefs];
-  GREYAssertEqual([ChromeEarlGrey getBrowsingHistoryEntryCount], 0,
+  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
                   @"History was unexpectedly non-empty");
 
   // Verify that the unmanaged pref's default value is false. While we generally
@@ -265,7 +265,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
   // Perform a navigation and make sure the history isn't changed.
   [ChromeEarlGrey loadURL:testURL];
   [ChromeEarlGrey waitForWebStateContainingText:pageText];
-  GREYAssertEqual([ChromeEarlGrey getBrowsingHistoryEntryCount], 0,
+  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
                   @"History was unexpectedly non-empty");
 
   // Force the preference to false via policy (enables history).
@@ -277,7 +277,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
   // Perform a navigation and make sure history is being saved.
   [ChromeEarlGrey loadURL:testURL];
   [ChromeEarlGrey waitForWebStateContainingText:pageText];
-  GREYAssertEqual([ChromeEarlGrey getBrowsingHistoryEntryCount], 1,
+  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 1,
                   @"History had an unexpected entry count");
 }
 

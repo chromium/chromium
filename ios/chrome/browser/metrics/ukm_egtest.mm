@@ -352,7 +352,7 @@ using chrome_test_util::SettingsDoneButton;
              @"Dummy source failed to record.");
 
   [ChromeEarlGrey clearBrowsingHistory];
-  GREYAssertEqual([ChromeEarlGrey getBrowsingHistoryEntryCount], 0,
+  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
                   @"History was unexpectedly non-empty");
 
   // Other sources may have already been recorded since the data was cleared,

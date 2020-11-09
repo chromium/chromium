@@ -125,8 +125,12 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   GREYWaitForAppToIdle(@"App failed to idle");
 }
 
-- (NSInteger)getBrowsingHistoryEntryCount {
-  return [ChromeEarlGreyAppInterface getBrowsingHistoryEntryCount];
+- (NSInteger)browsingHistoryEntryCount {
+  NSError* error = nil;
+  NSInteger result =
+      [ChromeEarlGreyAppInterface browsingHistoryEntryCountWithError:&error];
+  EG_TEST_HELPER_ASSERT_NO_ERROR(error);
+  return result;
 }
 
 - (void)removeBrowsingCache {
