@@ -9,7 +9,7 @@ import {getSourceTypeString} from 'chrome://scanning/scanning_app_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
-import {createScannerSource} from './scanning_app_test_utils.js';
+import {assertOrderedAlphabetically, createScannerSource} from './scanning_app_test_utils.js';
 
 const FileType = {
   JPG: chromeos.scanning.mojom.FileType.kJpg,
@@ -55,9 +55,9 @@ export function sourceSelectTest() {
     assertEquals(0, select.length);
 
     const firstSource =
-        createScannerSource(SourceType.FLATBED, 'platen', pageSizes);
-    const secondSource =
         createScannerSource(SourceType.ADF_SIMPLEX, 'adf simplex', pageSizes);
+    const secondSource =
+        createScannerSource(SourceType.FLATBED, 'platen', pageSizes);
     const sourceArr = [firstSource, secondSource];
     sourceSelect.sources = sourceArr;
     flush();
@@ -72,7 +72,7 @@ export function sourceSelectTest() {
     assertEquals(
         getSourceTypeString(secondSource.type),
         select.options[1].textContent.trim());
-    assertEquals(firstSource.name, select.value);
+    assertEquals(secondSource.name, select.value);
   });
 
   test('sourceSelectDisabled', () => {
@@ -96,5 +96,41 @@ export function sourceSelectTest() {
     // Verify the dropdown is enabled when there's more than one option.
     assertEquals(2, select.length);
     assertFalse(select.disabled);
+  });
+
+  test('sourcesSortedAlphabetically', () => {
+    const sources = [
+      createScannerSource(SourceType.FLATBED, 'C', pageSizes),
+      createScannerSource(SourceType.ADF_DUPLEX, 'B', pageSizes),
+      createScannerSource(SourceType.FLATBED, 'D', pageSizes),
+      createScannerSource(SourceType.ADF_DUPLEX, 'A', pageSizes),
+    ];
+    sourceSelect.sources = sources;
+    flush();
+    assertOrderedAlphabetically(
+        sourceSelect.sources, (source) => getSourceTypeString(source.type));
+  });
+
+  test('flatbedSelectedByDefaultIfProvided', () => {
+    const sources = [
+      createScannerSource(SourceType.FLATBED, 'C', pageSizes),
+      createScannerSource(SourceType.ADF_SIMPLEX, 'B', pageSizes),
+      createScannerSource(SourceType.ADF_DUPLEX, 'A', pageSizes),
+    ];
+    sourceSelect.sources = sources;
+    flush();
+    const flatbedSource =
+        sourceSelect.sources.find(source => source.type === SourceType.FLATBED);
+    assertEquals(sourceSelect.selectedSource, flatbedSource.name);
+  });
+
+  test('firstSourceUsedWhenFlatbedNotProvided', () => {
+    const sources = [
+      createScannerSource(SourceType.ADF_SIMPLEX, 'C', pageSizes),
+      createScannerSource(SourceType.ADF_DUPLEX, 'B', pageSizes),
+    ];
+    sourceSelect.sources = sources;
+    flush();
+    assertEquals(sourceSelect.selectedSource, sourceSelect.sources[0].name);
   });
 }

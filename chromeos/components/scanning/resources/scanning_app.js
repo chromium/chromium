@@ -224,7 +224,6 @@ Polymer({
 
     // Set the first options as the selected options since they will be the
     // first options in the dropdowns.
-    this.selectedSource = this.capabilities_.sources[0].name;
     this.selectedColorMode = this.capabilities_.colorModes[0].toString();
     this.selectedPageSize =
         this.capabilities_.sources[0].pageSizes[0].toString();

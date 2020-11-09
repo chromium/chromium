@@ -54,6 +54,7 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"appTitle", IDS_SCANNING_APP_TITLE},
       {"colorModeDropdownLabel", IDS_SCANNING_APP_COLOR_MODE_DROPDOWN_LABEL},
+      {"defaultSourceOptionText", IDS_SCANNING_APP_DEFAULT_SOURCE_OPTION_TEXT},
       {"fileTypeDropdownLabel", IDS_SCANNING_APP_FILE_TYPE_DROPDOWN_LABEL},
       {"jpgOptionText", IDS_SCANNING_APP_JPG_OPTION_TEXT},
       {"moreSettings", IDS_SCANNING_APP_MORE_SETTINGS},

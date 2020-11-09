@@ -267,8 +267,8 @@ export function scanningAppTest() {
 
     const firstCapabilities = {
       sources: [
-        createScannerSource(SourceType.FLATBED, 'platen', pageSizes),
         createScannerSource(SourceType.ADF_DUPLEX, 'adf duplex', pageSizes),
+        createScannerSource(SourceType.FLATBED, 'platen', pageSizes),
       ],
       colorModes: [ColorMode.BLACK_AND_WHITE, ColorMode.COLOR],
       resolutions: [75, 100, 300]
@@ -317,8 +317,10 @@ export function scanningAppTest() {
         .then(() => {
           assertEquals(
               tokenToString(firstScannerId), scanningApp.selectedScannerId);
+          // A scanner with type "FLATBED" will be used as the selectedSource
+          // if it exists.
           assertEquals(
-              firstCapabilities.sources[0].name, scanningApp.selectedSource);
+              firstCapabilities.sources[1].name, scanningApp.selectedSource);
           assertEquals(FileType.PNG.toString(), scanningApp.selectedFileType);
           assertEquals(
               firstCapabilities.colorModes[0].toString(),

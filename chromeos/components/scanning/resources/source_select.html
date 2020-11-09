@@ -6,9 +6,14 @@
         should announce when a new option is focused). -->
     <select class="md-select" value="{{selectedSource::change}}"
         disabled="[[disabled]]">
-      <!-- TODO(jschettler): Determine how the sources should be sorted. -->
+      <template is="dom-if" if="[[!sources.length]]" restamp>
+        <option value="">
+          [[i18n('defaultSourceOptionText')]]
+        </option>
+      </template>
       <template is="dom-repeat" items="[[sources]]" as="source">
-        <option value="[[source.name]]">
+        <option value="[[source.name]]"
+            selected$='[[isDefaultSource_(source.type)]]'>
           [[getSourceTypeString_(source.type)]]
         </option>
       </template>

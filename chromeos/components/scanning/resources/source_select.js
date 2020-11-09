@@ -9,7 +9,7 @@ import './strings.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getSourceTypeString} from './scanning_app_util.js';
+import {alphabeticalCompare, getSourceTypeString} from './scanning_app_util.js';
 import {SelectBehavior} from './select_behavior.js';
 
 /**
@@ -37,7 +37,10 @@ Polymer({
     },
   },
 
-  observers: ['onNumOptionsChange(sources.length)'],
+  observers: [
+    'onNumOptionsChange(sources.length)',
+    'sortSources_(sources.*)',
+  ],
 
   /**
    * @param {chromeos.scanning.mojom.SourceType} mojoSourceType
@@ -46,5 +49,45 @@ Polymer({
    */
   getSourceTypeString_(mojoSourceType) {
     return getSourceTypeString(mojoSourceType);
+  },
+
+  /**
+   * "Flatbed" should always be the default option if it exists. If not, use
+   * the first source in the sorted sources array.
+   * @param {!Array<!chromeos.scanning.mojom.ScanSource>} sources
+   * @return {string}
+   * @private
+   */
+  getDefaultSelectedSource_(sources) {
+    const flatbedSourceIndex = sources.findIndex((source) => {
+      return source.type === chromeos.scanning.mojom.SourceType.kFlatbed;
+    });
+
+    return flatbedSourceIndex === -1 ? sources[0].name :
+                                       sources[flatbedSourceIndex].name;
+  },
+
+  /** @private */
+  sortSources_() {
+    if (this.sources.length <= 1) {
+      return;
+    }
+
+    const sortedSources = this.customSort(
+        this.sources, alphabeticalCompare,
+        (source) => getSourceTypeString(source.type));
+
+    const defaultSelectedSource = this.getDefaultSelectedSource_(sortedSources);
+    this.setProperties(
+        {sources: sortedSources, selectedSource: defaultSelectedSource});
+  },
+
+  /**
+   * @param {!chromeos.scanning.mojom.SourceType} sourceType
+   * @return {boolean}
+   * @private
+   */
+  isDefaultSource_(sourceType) {
+    return sourceType === chromeos.scanning.mojom.SourceType.kFlatbed;
   },
 });
