@@ -36,6 +36,11 @@ namespace ui {
 
 namespace {
 
+constexpr uint32_t kTestModesetFlags =
+    DRM_MODE_ATOMIC_TEST_ONLY | DRM_MODE_ATOMIC_ALLOW_MODESET;
+
+constexpr uint32_t kCommitModesetFlags = DRM_MODE_ATOMIC_ALLOW_MODESET;
+
 template <class Object>
 Object* DrmAllocator() {
   return static_cast<Object*>(drmMalloc(sizeof(Object)));
@@ -327,7 +332,7 @@ ScopedDrmPropertyBlob MockDrmDevice::CreatePropertyBlob(const void* blob,
                                                         size_t size) {
   uint32_t id = ++property_id_generator_;
   allocated_property_blobs_.insert(id);
-  return ScopedDrmPropertyBlob(new DrmPropertyBlobMetadata(this, id));
+  return std::make_unique<DrmPropertyBlobMetadata>(this, id);
 }
 
 void MockDrmDevice::DestroyPropertyBlob(uint32_t id) {
@@ -427,6 +432,11 @@ bool MockDrmDevice::CommitProperties(
     uint32_t flags,
     uint32_t crtc_count,
     scoped_refptr<PageFlipRequest> page_flip_request) {
+  if (flags == kTestModesetFlags)
+    ++test_modeset_count_;
+  else if (flags == kCommitModesetFlags)
+    ++commit_modeset_count_;
+
   commit_count_++;
   if (!commit_expectation_)
     return false;
