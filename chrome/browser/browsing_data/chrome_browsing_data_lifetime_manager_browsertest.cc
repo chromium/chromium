@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/browsing_data/browsing_data_remover_browsertest_base.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager_factory.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/browsing_data/counters/site_data_counting_helper.h"
@@ -50,94 +51,31 @@
 #include "storage/browser/quota/special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace {
 
-static const char* kExampleHost = "example.com";
 enum class BrowserType { Default, Incognito };
 
 }  // namespace
 
-// TODO(ydago) : Extract this into a base class shared with BrowsingDataRemover
-// browser tests.
 class ChromeBrowsingDataLifetimeManagerTest
-    : public InProcessBrowserTest,
+    : public BrowsingDataRemoverBrowserTestBase,
       public testing::WithParamInterface<BrowserType> {
  public:
   ChromeBrowsingDataLifetimeManagerTest() {
-    feature_list_.InitAndEnableFeature(
-        browsing_data::features::kEnableBrowsingDataLifetimeManager);
+    InitFeatureList(
+        {browsing_data::features::kEnableBrowsingDataLifetimeManager});
   }
+
   ~ChromeBrowsingDataLifetimeManagerTest() override = default;
 
   void SetUpOnMainThread() override {
-    base::FilePath path;
-    base::PathService::Get(content::DIR_TEST_DATA, &path);
-    host_resolver()->AddRule(kExampleHost, "127.0.0.1");
-    embedded_test_server()->ServeFilesFromDirectory(path);
-    ASSERT_TRUE(embedded_test_server()->Start());
+    BrowsingDataRemoverBrowserTestBase::SetUpOnMainThread();
     if (GetParam() == BrowserType::Incognito)
       UseIncognitoBrowser();
   }
 
-  bool RunScriptAndGetBool(const std::string& script) {
-    bool data;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        GetBrowser()->tab_strip_model()->GetActiveWebContents(), script,
-        &data));
-    return data;
-  }
-
-  void SetDataForType(const std::string& type) {
-    ASSERT_TRUE(RunScriptAndGetBool("set" + type + "()"))
-        << "Couldn't create data for: " << type;
-  }
-
-  bool HasDataForType(const std::string& type) {
-    return RunScriptAndGetBool("has" + type + "()");
-  }
-
-  void VerifyDownloadCount(size_t expected) {
-    content::DownloadManager* download_manager =
-        content::BrowserContext::GetDownloadManager(GetBrowser()->profile());
-    std::vector<download::DownloadItem*> downloads;
-    download_manager->GetAllDownloads(&downloads);
-    EXPECT_EQ(expected, downloads.size());
-  }
-
-  void DownloadAnItem() {
-    // Start a download.
-    content::DownloadManager* download_manager =
-        content::BrowserContext::GetDownloadManager(GetBrowser()->profile());
-    std::unique_ptr<content::DownloadTestObserver> observer(
-        new content::DownloadTestObserverTerminal(
-            download_manager, 1,
-            content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_ACCEPT));
-
-    GURL download_url = ui_test_utils::GetTestUrl(
-        base::FilePath().AppendASCII("downloads"),
-        base::FilePath().AppendASCII("a_zip_file.zip"));
-    ui_test_utils::NavigateToURL(GetBrowser(), download_url);
-    observer->WaitForFinished();
-  }
-
-  network::mojom::NetworkContext* network_context() const {
-    return content::BrowserContext::GetDefaultStoragePartition(
-               GetBrowser()->profile())
-        ->GetNetworkContext();
-  }
-
-  // Call to use an Incognito browser rather than the default.
-  void UseIncognitoBrowser() {
-    ASSERT_EQ(nullptr, incognito_browser_);
-    incognito_browser_ = CreateIncognitoBrowser();
-  }
-
-  bool IsIncognito() { return incognito_browser_ != nullptr; }
-
-  Browser* GetBrowser() const {
-    return incognito_browser_ ? incognito_browser_ : browser();
-  }
 
   void ApplyBrowsingDataLifetimeDeletion(base::StringPiece pref) {
     auto* browsing_data_lifetime_manager =
@@ -156,10 +94,6 @@ class ChromeBrowsingDataLifetimeManagerTest
 
     completion_observer.BlockUntilCompletion();
   }
-
- private:
-  Browser* incognito_browser_ = nullptr;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerTest,

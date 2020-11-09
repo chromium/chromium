@@ -972,6 +972,8 @@ if (!is_android) {
       "../browser/browser_encoding_browsertest.cc",
       "../browser/browsing_data/access_context_audit_browsertest.cc",
       "../browser/browsing_data/browsing_data_remover_browsertest.cc",
+      "../browser/browsing_data/browsing_data_remover_browsertest_base.cc",
+      "../browser/browsing_data/browsing_data_remover_browsertest_base.h",
       "../browser/browsing_data/chrome_browsing_data_lifetime_manager_browsertest.cc",
       "../browser/browsing_data/counters/autofill_counter_browsertest.cc",
       "../browser/browsing_data/counters/browsing_data_counter_utils_browsertest.cc",

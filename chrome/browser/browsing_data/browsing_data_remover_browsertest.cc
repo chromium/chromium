@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
+#include "chrome/browser/browsing_data/browsing_data_remover_browsertest_base.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
@@ -297,7 +298,8 @@ bool SetGaiaCookieForProfile(Profile* profile) {
 
 }  // namespace
 
-class BrowsingDataRemoverBrowserTest : public InProcessBrowserTest {
+class BrowsingDataRemoverBrowserTest
+    : public BrowsingDataRemoverBrowserTestBase {
  public:
   BrowsingDataRemoverBrowserTest() {
     std::vector<base::Feature> enabled_features = {
@@ -305,70 +307,13 @@ class BrowsingDataRemoverBrowserTest : public InProcessBrowserTest {
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     enabled_features.push_back(media::kExternalClearKeyForTesting);
 #endif
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
-
-  // Call to use an Incognito browser rather than the default.
-  void UseIncognitoBrowser() {
-    ASSERT_EQ(nullptr, incognito_browser_);
-    incognito_browser_ = CreateIncognitoBrowser();
-  }
-
-  Browser* GetBrowser() const {
-    return incognito_browser_ ? incognito_browser_ : browser();
+    InitFeatureList(std::move(enabled_features));
   }
 
   void SetUpOnMainThread() override {
-    base::FilePath path;
-    base::PathService::Get(content::DIR_TEST_DATA, &path);
+    BrowsingDataRemoverBrowserTestBase::SetUpOnMainThread();
     host_resolver()->AddRule(kExampleHost, "127.0.0.1");
-    embedded_test_server()->ServeFilesFromDirectory(path);
-    ASSERT_TRUE(embedded_test_server()->Start());
   }
-
-  void RunScriptAndCheckResult(const std::string& script,
-                               const std::string& result) {
-    std::string data;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        GetBrowser()->tab_strip_model()->GetActiveWebContents(), script,
-        &data));
-    ASSERT_EQ(data, result);
-  }
-
-  bool RunScriptAndGetBool(const std::string& script) {
-    bool data;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        GetBrowser()->tab_strip_model()->GetActiveWebContents(), script,
-        &data));
-    return data;
-  }
-
-  void VerifyDownloadCount(size_t expected) {
-    content::DownloadManager* download_manager =
-        content::BrowserContext::GetDownloadManager(GetBrowser()->profile());
-    std::vector<download::DownloadItem*> downloads;
-    download_manager->GetAllDownloads(&downloads);
-    EXPECT_EQ(expected, downloads.size());
-  }
-
-  void DownloadAnItem() {
-    // Start a download.
-    content::DownloadManager* download_manager =
-        content::BrowserContext::GetDownloadManager(GetBrowser()->profile());
-    std::unique_ptr<content::DownloadTestObserver> observer(
-        new content::DownloadTestObserverTerminal(
-            download_manager, 1,
-            content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_ACCEPT));
-
-    GURL download_url = ui_test_utils::GetTestUrl(
-        base::FilePath().AppendASCII("downloads"),
-        base::FilePath().AppendASCII("a_zip_file.zip"));
-    ui_test_utils::NavigateToURL(GetBrowser(), download_url);
-    observer->WaitForFinished();
-
-    VerifyDownloadCount(1u);
-  }
-
   void RemoveAndWait(uint64_t remove_mask) {
     RemoveAndWait(remove_mask, base::Time(), base::Time::Max());
   }
@@ -449,28 +394,6 @@ class BrowsingDataRemoverBrowserTest : public InProcessBrowserTest {
     ExpectCookieTreeModelCount(0);
   }
 
-  bool HasDataForType(const std::string& type) {
-    return RunScriptAndGetBool("has" + type + "()");
-  }
-
-  void SetDataForType(const std::string& type) {
-    ASSERT_TRUE(RunScriptAndGetBool("set" + type + "()"))
-        << "Couldn't create data for: " << type;
-  }
-
-  int GetSiteDataCount() {
-    base::RunLoop run_loop;
-    int count = -1;
-    (new SiteDataCountingHelper(GetBrowser()->profile(), base::Time(),
-                                base::Time::Max(),
-                                base::BindLambdaForTesting([&](int c) {
-                                  count = c;
-                                  run_loop.Quit();
-                                })))
-        ->CountAndDestroySelfWhenFinished();
-    run_loop.Run();
-    return count;
-  }
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   int GetMediaLicenseCount() {
@@ -579,9 +502,6 @@ class BrowsingDataRemoverBrowserTest : public InProcessBrowserTest {
     RegisterClearKeyCdm(command_line);
 #endif
   }
-
-  base::test::ScopedFeatureList feature_list_;
-  Browser* incognito_browser_ = nullptr;
 };
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
