@@ -17,8 +17,6 @@ namespace {
 
 using payments::mojom::blink::CreateDigitalGoodsResponseCode;
 
-const char known_payment_method_[] = "https://play.google.com/billing";
-
 void OnCreateDigitalGoodsResponse(
     ScriptPromiseResolver* resolver,
     CreateDigitalGoodsResponseCode code,
@@ -55,10 +53,6 @@ ScriptPromise DOMWindowDigitalGoods::GetDigitalGoodsService(
   auto promise = resolver->Promise();
 
   if (payment_method.IsEmpty()) {
-    resolver->Resolve(v8::Null(script_state->GetIsolate()));
-    return promise;
-  }
-  if (payment_method != known_payment_method_) {
     resolver->Resolve(v8::Null(script_state->GetIsolate()));
     return promise;
   }
