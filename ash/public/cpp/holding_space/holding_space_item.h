@@ -35,7 +35,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
     kScreenshot = 1,
     kDownload = 2,
     kNearbyShare = 3,
-    kMaxValue = kNearbyShare,
+    kScreenRecording = 4,
+    kMaxValue = kScreenRecording,
   };
 
   HoldingSpaceItem(const HoldingSpaceItem&) = delete;

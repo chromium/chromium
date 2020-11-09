@@ -1351,4 +1351,88 @@ TEST_F(HoldingSpaceKeyedServiceNearbySharingTest, AddNearbyShareItem) {
   EXPECT_EQ(base::ASCIIToUTF16("File 2.png"), item_2->text());
 }
 
+TEST_F(HoldingSpaceKeyedServiceTest, AddScreenRecordingItem) {
+  // Create a test downloads mount point.
+  std::unique_ptr<ScopedTestMountPoint> downloads_mount =
+      ScopedTestMountPoint::CreateAndMountDownloads(GetProfile());
+  ASSERT_TRUE(downloads_mount->IsValid());
+
+  // Wait for the holding space model.
+  HoldingSpaceModelAttachedWaiter(GetProfile()).Wait();
+
+  // Verify that the holding space model gets set even if the holding space
+  // keyed service is not explicitly created.
+  HoldingSpaceModel* const initial_model =
+      HoldingSpaceController::Get()->model();
+  EXPECT_TRUE(initial_model);
+
+  HoldingSpaceKeyedService* const holding_space_service =
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
+  const base::FilePath item_1_virtual_path("Screen Recording 1.mpg");
+  // Create some fake screen recording file on the local file system - later
+  // parts of the test will try to resolve the file's file system URL, which
+  // fails if the file does not exist.
+  const base::FilePath item_1_full_path =
+      downloads_mount->CreateFile(item_1_virtual_path, "recording 1");
+  ASSERT_FALSE(item_1_full_path.empty());
+
+  holding_space_service->AddScreenRecording(item_1_full_path);
+
+  const base::FilePath item_2_virtual_path =
+      base::FilePath("Alt/Screen Recording 2.mpg");
+  const base::FilePath item_2_full_path =
+      downloads_mount->CreateFile(item_2_virtual_path, "recording 2");
+  ASSERT_FALSE(item_2_full_path.empty());
+  holding_space_service->AddScreenRecording(item_2_full_path);
+
+  EXPECT_EQ(initial_model, HoldingSpaceController::Get()->model());
+  EXPECT_EQ(HoldingSpaceController::Get()->model(),
+            holding_space_service->model_for_testing());
+
+  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+  ASSERT_EQ(2u, model->items().size());
+
+  const HoldingSpaceItem* item_1 = model->items()[0].get();
+  EXPECT_EQ(item_1_full_path, item_1->file_path());
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *holding_space_util::ResolveImage(
+           holding_space_service->thumbnail_loader_for_testing(),
+           HoldingSpaceItem::Type::kScreenRecording, item_1_full_path)
+           ->image_skia()
+           .bitmap(),
+      *item_1->image().image_skia().bitmap()));
+  // Verify the item file system URL resolves to the correct file in the file
+  // manager's context.
+  EXPECT_EQ(item_1_virtual_path,
+            GetVirtualPathFromUrl(item_1->file_system_url(),
+                                  downloads_mount->name()));
+  EXPECT_EQ(base::ASCIIToUTF16("Screen Recording 1.mpg"), item_1->text());
+
+  const HoldingSpaceItem* item_2 = model->items()[1].get();
+  EXPECT_EQ(item_2_full_path, item_2->file_path());
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *holding_space_util::ResolveImage(
+           holding_space_service->thumbnail_loader_for_testing(),
+           HoldingSpaceItem::Type::kScreenRecording, item_2_full_path)
+           ->image_skia()
+           .bitmap(),
+      *item_2->image().image_skia().bitmap()));
+  // Verify the item file system URL resolves to the correct file in the file
+  // manager's context.
+  EXPECT_EQ(item_2_virtual_path,
+            GetVirtualPathFromUrl(item_2->file_system_url(),
+                                  downloads_mount->name()));
+  EXPECT_EQ(base::ASCIIToUTF16("Screen Recording 2.mpg"), item_2->text());
+
+  // Attempt to add an item with an empty file. Verify nothing gets added to the
+  // model.
+  const base::FilePath item_3_virtual_path = base::FilePath("");
+  const base::FilePath item_3_full_path =
+      downloads_mount->CreateFile(item_3_virtual_path, "");
+  ASSERT_TRUE(item_3_full_path.empty());
+  holding_space_service->AddScreenRecording(item_3_full_path);
+
+  ASSERT_EQ(2u, model->items().size());
+}
+
 }  // namespace ash

@@ -37,6 +37,8 @@ std::string TypeToString(HoldingSpaceItem::Type type) {
       return "screenshot";
     case HoldingSpaceItem::Type::kNearbyShare:
       return "nearby_share";
+    case HoldingSpaceItem::Type::kScreenRecording:
+      return "screen_recording";
   }
 }
 

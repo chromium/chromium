@@ -171,6 +171,11 @@ HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddScreenshotFile() {
                  /*file_path=*/CreateImageFile(GetProfile()));
 }
 
+HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddScreenRecordingFile() {
+  return AddItem(GetProfile(), HoldingSpaceItem::Type::kScreenRecording,
+                 /*file_path=*/CreateImageFile(GetProfile()));
+}
+
 HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddItem(
     Profile* profile,
     HoldingSpaceItem::Type type,

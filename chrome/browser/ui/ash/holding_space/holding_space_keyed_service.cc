@@ -198,6 +198,21 @@ void HoldingSpaceKeyedService::AddNearbyShare(
                                        nearby_share_path)));
 }
 
+void HoldingSpaceKeyedService::AddScreenRecording(
+    const base::FilePath& screen_recording_file) {
+  GURL file_system_url =
+      holding_space_util::ResolveFileSystemUrl(profile_, screen_recording_file);
+  if (file_system_url.is_empty())
+    return;
+
+  AddItem(HoldingSpaceItem::CreateFileBackedItem(
+      HoldingSpaceItem::Type::kScreenRecording, screen_recording_file,
+      file_system_url,
+      holding_space_util::ResolveImage(&thumbnail_loader_,
+                                       HoldingSpaceItem::Type::kScreenRecording,
+                                       screen_recording_file)));
+}
+
 void HoldingSpaceKeyedService::AddItem(std::unique_ptr<HoldingSpaceItem> item) {
   holding_space_model_.AddItem(std::move(item));
 }

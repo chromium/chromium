@@ -64,6 +64,9 @@ class HoldingSpaceBrowserTestBase : public InProcessBrowserTest {
   // Adds and returns an arbitrary screenshot file to the holding space.
   HoldingSpaceItem* AddScreenshotFile();
 
+  // Adds and returns an arbitrary screen recording file to the holding space.
+  HoldingSpaceItem* AddScreenRecordingFile();
+
   // Adds and returns a holding space item of the specified `type` backed by the
   // file at the specified `file_path`.
   HoldingSpaceItem* AddItem(Profile* profile,

@@ -77,6 +77,9 @@ class HoldingSpaceKeyedService : public KeyedService,
   // Adds a nearby share item backed by the provided absolute file path.
   void AddNearbyShare(const base::FilePath& nearby_share_path);
 
+  // Adds a screen recording item backed by the provided absolute file path.
+  void AddScreenRecording(const base::FilePath& screen_recording_path);
+
   // Adds the specified `item` to the holding space model.
   void AddItem(std::unique_ptr<HoldingSpaceItem> item);
 

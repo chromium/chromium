@@ -52,6 +52,8 @@ std::string ItemTypeToString(HoldingSpaceItem::Type type) {
       return "Screenshot";
     case HoldingSpaceItem::Type::kNearbyShare:
       return "NearbyShare";
+    case HoldingSpaceItem::Type::kScreenRecording:
+      return "ScreenRecording";
   }
   NOTREACHED();
   return std::string();
