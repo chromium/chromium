@@ -883,9 +883,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListRecommendedImpResultCountAfterOpen" units="shows"
-    expires_after="2020-09-27">
+    expires_after="2021-09-27">
   <owner>napper@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>jiameng@chromium.org</owner>
   <summary>
     When a user opens an app recommendation result, this is the number of times
     we showed the result before opening. Number of times shown is reset to 0
@@ -894,9 +896,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListRecommendedResponse"
-    enum="ReinstallResponseParseResult" expires_after="2020-06-28">
+    enum="ReinstallResponseParseResult" expires_after="2021-06-28">
   <owner>napper@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>jiameng@chromium.org</owner>
   <summary>
     Response when parsing the recommended app list from Play Store for candidate
     app list, recorded every time a response from the play store is parsed in
@@ -905,9 +909,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListRecommendedResponse.Count" units="units"
-    expires_after="2020-10-18">
+    expires_after="2021-10-18">
   <owner>napper@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>jiameng@chromium.org</owner>
   <summary>
     Number of responses from server in Apps.AppListRecommendedResponse.count
     when fetching appListRecommendded GetAppReinstallCandidates.
@@ -915,9 +921,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListRecommendedResponse.Latency" units="ms"
-    expires_after="2020-10-25">
+    expires_after="2021-10-25">
   <owner>napper@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>jiameng@chromium.org</owner>
   <summary>
     Milliseconds elapsed to fetch appListRecommended GetAppReinstallCandidates.
   </summary>
