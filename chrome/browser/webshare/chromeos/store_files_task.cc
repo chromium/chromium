@@ -4,27 +4,23 @@
 
 #include "chrome/browser/webshare/chromeos/store_files_task.h"
 
-#include <memory>
-
 #include "base/bind.h"
-#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "storage/browser/blob/blob_storage_context.h"
 
 using content::BrowserThread;
 
 namespace webshare {
 
 StoreFilesTask::StoreFilesTask(
-    content::BrowserContext::BlobContextGetter blob_context_getter,
     std::vector<base::FilePath> filenames,
     std::vector<blink::mojom::SharedFilePtr> files,
+    uint64_t available_space,
     blink::mojom::ShareService::ShareCallback callback)
-    : blob_context_getter_(std::move(blob_context_getter)),
-      filenames_(std::move(filenames)),
+    : filenames_(std::move(filenames)),
       files_(std::move(files)),
+      available_space_(available_space),
       callback_(std::move(callback)),
       index_(files_.size()) {
   DCHECK_EQ(filenames_.size(), files_.size());
@@ -36,40 +32,40 @@ StoreFilesTask::~StoreFilesTask() = default;
 void StoreFilesTask::Start() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/1132202): Limit the total size of shared files to
-  // kMaxSharedFileBytes.
+  // The tasks posted to this sequenced task runner do synchronous File I/O.
+  file_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
 
-  // The StoreFilesTask is self-owned. It is deleted in OnProgress.
-  content::GetIOThreadTaskRunner({})->PostTask(
+  // The StoreFilesTask is self-owned. It is deleted in OnStoreFile.
+  file_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&StoreFilesTask::OnProgress, base::Unretained(this),
-                     storage::mojom::WriteBlobToFileResult::kSuccess));
+      base::BindOnce(&StoreFilesTask::OnStoreFile, base::Unretained(this),
+                     blink::mojom::ShareError::OK));
 }
 
-void StoreFilesTask::OnProgress(storage::mojom::WriteBlobToFileResult result) {
-  blink::mojom::ShareError share_result = blink::mojom::ShareError::OK;
-  storage::mojom::BlobStorageContext* const blob_storage_context =
-      blob_context_getter_.Run().get();
-  if (!blob_storage_context ||
-      result != storage::mojom::WriteBlobToFileResult::kSuccess) {
-    share_result = blink::mojom::ShareError::PERMISSION_DENIED;
+void StoreFilesTask::OnStoreFile(blink::mojom::ShareError result) {
+  DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
+
+  store_file_task_.reset();
+  if (result != blink::mojom::ShareError::OK) {
     index_ = 0U;
   }
 
   if (index_ == 0U) {
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback_), share_result));
+        FROM_HERE, base::BindOnce(std::move(callback_), result));
 
     delete this;
     return;
   }
 
   --index_;
-  blob_storage_context->WriteBlobToFile(
-      std::move(files_[index_]->blob->blob), filenames_[index_],
-      /*flush_on_write=*/true,
-      /*last_modified=*/base::nullopt,
-      base::BindOnce(&StoreFilesTask::OnProgress, base::Unretained(this)));
+  // The StoreFilesTask is self-owned. It is deleted in OnStoreFile.
+  store_file_task_ = std::make_unique<StoreFileTask>(
+      std::move(filenames_[index_]), std::move(files_[index_]),
+      available_space_,
+      base::BindOnce(&StoreFilesTask::OnStoreFile, base::Unretained(this)));
+  store_file_task_->Start();
 }
 
 }  // namespace webshare

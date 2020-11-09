@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_WEBSHARE_CHROMEOS_STORE_FILES_TASK_H_
 #define CHROME_BROWSER_WEBSHARE_CHROMEOS_STORE_FILES_TASK_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
-#include "content/public/browser/browser_context.h"
+#include "base/sequenced_task_runner.h"
+#include "chrome/browser/webshare/chromeos/store_file_task.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 
 namespace webshare {
@@ -17,9 +18,9 @@ namespace webshare {
 // Stores shared |files| using the specified |filenames|.
 class StoreFilesTask {
  public:
-  StoreFilesTask(content::BrowserContext::BlobContextGetter blob_context_getter,
-                 std::vector<base::FilePath> filenames,
+  StoreFilesTask(std::vector<base::FilePath> filenames,
                  std::vector<blink::mojom::SharedFilePtr> files,
+                 uint64_t available_space,
                  blink::mojom::ShareService::ShareCallback callback);
   StoreFilesTask(const StoreFilesTask&) = delete;
   StoreFilesTask& operator=(const StoreFilesTask&) = delete;
@@ -30,14 +31,16 @@ class StoreFilesTask {
   void Start();
 
  private:
-  // Runs on the IO thread.
-  void OnProgress(storage::mojom::WriteBlobToFileResult result);
+  // Runs on |file_task_runner_| thread.
+  void OnStoreFile(blink::mojom::ShareError result);
 
-  content::BrowserContext::BlobContextGetter blob_context_getter_;
   std::vector<base::FilePath> filenames_;
   std::vector<blink::mojom::SharedFilePtr> files_;
+  uint64_t available_space_;
   blink::mojom::ShareService::ShareCallback callback_;
   unsigned index_;
+  scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
+  std::unique_ptr<StoreFileTask> store_file_task_;
 };
 
 }  // namespace webshare

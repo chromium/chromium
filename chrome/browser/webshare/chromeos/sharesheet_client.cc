@@ -18,17 +18,16 @@
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/webshare/chromeos/prepare_directory_task.h"
 #include "chrome/browser/webshare/chromeos/store_files_task.h"
+#include "chrome/browser/webshare/share_service_impl.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/dbus/cros_disks_client.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/filename_util.h"
 
-using content::BrowserContext;
 using content::BrowserThread;
-using content::StoragePartition;
 using content::WebContents;
 
 namespace {
@@ -96,13 +95,11 @@ void SharesheetClient::Share(
     return;
   }
 
-  BrowserContext* const browser_context = web_contents()->GetBrowserContext();
-  StoragePartition* const partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context);
-
   current_share_ = CurrentShare();
   current_share_->files = std::move(files);
-  current_share_->directory = partition->GetPath().Append(kWebShareDirname);
+  current_share_->directory =
+      chromeos::CrosDisksClient::GetArchiveMountPoint().Append(
+          kWebShareDirname);
   current_share_->callback = std::move(callback);
 
   current_share_->prepare_directory_task =
@@ -134,11 +131,10 @@ void SharesheetClient::OnPrepareDirectory(blink::mojom::ShareError error) {
         GenerateFileName(current_share_->directory, file->name));
   }
 
-  BrowserContext* const browser_context = web_contents()->GetBrowserContext();
   std::unique_ptr<StoreFilesTask> store_files_task =
       std::make_unique<StoreFilesTask>(
-          BrowserContext::GetBlobStorageContext(browser_context),
           current_share_->file_paths, std::move(current_share_->files),
+          kMaxSharedFileBytes,
           base::BindOnce(&SharesheetClient::OnStoreFiles,
                          weak_ptr_factory_.GetWeakPtr()));
 
