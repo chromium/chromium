@@ -5,10 +5,7 @@
 #include <stddef.h>
 
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "media/video/h265_parser.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/size.h"
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {

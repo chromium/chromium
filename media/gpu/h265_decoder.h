@@ -124,6 +124,14 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
     // the accelerator needs additional data before being able to proceed.
     virtual Status SubmitDecode(scoped_refptr<H265Picture> pic) = 0;
 
+    // Schedule output (display) of |pic|. Note that returning from this
+    // method does not mean that |pic| has already been outputted (displayed),
+    // but guarantees that all pictures will be outputted in the same order
+    // as this method was called for them. Decoder may drop its reference
+    // to |pic| after calling this method.
+    // Return true if successful.
+    virtual bool OutputPicture(scoped_refptr<H265Picture> pic) = 0;
+
     // Reset any current state that may be cached in the accelerator, dropping
     // any cached parameters/slices that have not been committed yet.
     virtual void Reset() = 0;
@@ -205,6 +213,42 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   // Commits all pending data for HW decoder and starts HW decoder.
   H265Accelerator::Status DecodePicture();
 
+  // Notifies client that a picture is ready for output.
+  bool OutputPic(scoped_refptr<H265Picture> pic);
+
+  // Output all pictures in DPB that have not been outputted yet.
+  bool OutputAllRemainingPics();
+
+  // Calculates the picture output flags using |slice_hdr| for |curr_pic_|.
+  void CalcPicOutputFlags(const H265SliceHeader* slice_hdr);
+
+  // Calculates picture order count (POC) using |pps| and|slice_hdr| for
+  // |curr_pic_|.
+  void CalcPictureOrderCount(const H265PPS* pps,
+                             const H265SliceHeader* slice_hdr);
+
+  // Calculates the POCs for the reference pictures for |curr_pic_| using
+  // |sps|, |pps| and |slice_hdr| and stores them in the member variables.
+  // Returns false if bitstream conformance is not maintained, true otherwise.
+  bool CalcRefPicPocs(const H265SPS* sps,
+                      const H265PPS* pps,
+                      const H265SliceHeader* slice_hdr);
+
+  // Builds the reference pictures lists for |curr_pic_| using |sps|, |pps|,
+  // |slice_hdr| and the member variables calculated in CalcRefPicPocs. Returns
+  // false if bitstream conformance is not maintained or needed reference
+  // pictures are missing, true otherwise. At the end of this,
+  // |ref_pic_list{0,1}| will be populated with the required reference pictures
+  // for submitting to the accelerator.
+  bool BuildRefPicLists(const H265SPS* sps,
+                        const H265PPS* pps,
+                        const H265SliceHeader* slice_hdr);
+
+  // Performs DPB management operations for |curr_pic_| by removing no longer
+  // needed entries from the DPB and outputting pictures from the DPB. |sps|
+  // should be the corresponding SPS for |curr_pic_|.
+  bool PerformDpbOperations(const H265SPS* sps);
+
   // Decoder state.
   State state_;
 
@@ -241,6 +285,18 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   // Global state values, needed in decoding. See spec.
   scoped_refptr<H265Picture> prev_tid0_pic_;
   int max_pic_order_cnt_lsb_;
+  bool curr_delta_poc_msb_present_flag_[kMaxDpbSize];
+  bool foll_delta_poc_msb_present_flag_[kMaxDpbSize];
+  int num_poc_st_curr_before_;
+  int num_poc_st_curr_after_;
+  int num_poc_st_foll_;
+  int num_poc_lt_curr_;
+  int num_poc_lt_foll_;
+  int poc_st_curr_before_[kMaxDpbSize];
+  int poc_st_curr_after_[kMaxDpbSize];
+  int poc_st_foll_[kMaxDpbSize];
+  int poc_lt_curr_[kMaxDpbSize];
+  int poc_lt_foll_[kMaxDpbSize];
   H265Picture::Vector ref_pic_list0_;
   H265Picture::Vector ref_pic_list1_;
 

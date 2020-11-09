@@ -607,3 +607,14 @@ if (use_v4l2_codec || use_vaapi) {
     ]
   }
 }
+
+if (proprietary_codecs && enable_platform_hevc) {
+  fuzzer_test("media_h265_decoder_fuzzer") {
+    sources = [ "h265_decoder_fuzzertest.cc" ]
+    deps = [
+      ":gpu",
+      "//base",
+      "//media",
+    ]
+  }
+}

@@ -67,6 +67,7 @@ class MEDIA_GPU_EXPORT H265Picture : public CodecPicture {
   // Our own state variables.
   bool irap_pic_;
   bool first_picture_;
+  bool processed_{false};
 
   ReferenceType ref_{kUnused};
 
@@ -93,6 +94,41 @@ class H265DPB {
 
   // Removes all entries from the DPB.
   void Clear();
+
+  // Stores |pic| in the DPB. If |used_for_long_term| is true it'll be marked as
+  // used for long term reference, otherwise it'll be marked as used for short
+  // term reference.
+  void StorePicture(scoped_refptr<H265Picture> pic,
+                    H265Picture::ReferenceType ref);
+
+  // Mark all pictures in DPB as unused for reference.
+  void MarkAllUnusedForReference();
+
+  // Removes all pictures from the DPB that do not have |pic_output_flag_| set
+  // and are marked Unused for reference.
+  void DeleteUnused();
+
+  // Returns the number of pictures in the DPB that are marked for reference.
+  int GetReferencePicCount();
+
+  // Returns a picture in the DPB which has a POC equal to |poc| and marks it
+  // with |ref| reference type. If not found, returns nullptr.
+  scoped_refptr<H265Picture> GetPicByPocAndMark(int poc,
+                                                H265Picture::ReferenceType ref);
+
+  // Returns a picture in the DPB which has a POC bitmasked by |mask| which
+  // equals |poc| and marks it with |ref| reference type. If not found, returns
+  // nullptr. If |mask| is zero, then no bitmasking is done.
+  scoped_refptr<H265Picture>
+  GetPicByPocMaskedAndMark(int poc, int mask, H265Picture::ReferenceType ref);
+
+  // Appends to |out| all of the pictures in the DPB that are flagged for output
+  // but have not be outputted yet.
+  void AppendPendingOutputPics(H265Picture::Vector* out);
+
+  // Appends to |out| all of the pictures in the DPB that are not marked as
+  // unused for reference.
+  void AppendReferencePics(H265Picture::Vector* out);
 
   size_t size() const { return pics_.size(); }
   bool IsFull() const { return pics_.size() >= max_num_pics_; }

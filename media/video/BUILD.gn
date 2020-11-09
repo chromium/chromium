@@ -155,8 +155,6 @@ fuzzer_test("media_h264_parser_fuzzer") {
   ]
 }
 
-# TODO(jkardatzke): Get the fuzzer build config updated so this target will
-# be included.
 if (proprietary_codecs && enable_platform_hevc) {
   fuzzer_test("media_h265_parser_fuzzer") {
     sources = [ "h265_parser_fuzzertest.cc" ]
