@@ -15,6 +15,7 @@
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "components/signin/ios/browser/features.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar_utils.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -74,9 +75,17 @@ SigninNotificationInfoBarDelegate::SigninNotificationInfoBarDelegate(
     image = [UIImage imageNamed:@"ios_default_avatar"];
   }
   icon_ = gfx::Image(CircularImageFromImage(image, kAvatarImageDimension));
-  message_ = base::SysNSStringToUTF16(l10n_util::GetNSStringF(
-      IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE_WITH_USERNAME,
-      base::SysNSStringToUTF16(identity.userFullName)));
+
+  if (base::FeatureList::IsEnabled(
+          signin::kSigninNotificationInfobarUsernameInTitle)) {
+    message_ = base::SysNSStringToUTF16(l10n_util::GetNSStringF(
+        IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE_WITH_USERNAME,
+        base::SysNSStringToUTF16(identity.userFullName)));
+  } else {
+    message_ = base::SysNSStringToUTF16(
+        l10n_util::GetNSString(IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE));
+  }
+
   button_text_ =
       base::SysNSStringToUTF16(l10n_util::GetNSString(IDS_IOS_SETTINGS_TITLE));
 }

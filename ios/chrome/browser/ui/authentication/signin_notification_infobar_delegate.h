@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_NOTIFICATION_INFOBAR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_NOTIFICATION_INFOBAR_DELEGATE_H_
 
-#import <UIKit/UIKit.h>
 #include <memory>
 
 #include "base/macros.h"
@@ -17,6 +16,7 @@
 
 @protocol ApplicationSettingsCommands;
 class ChromeBrowserState;
+@class UIViewController;
 
 namespace gfx {
 class Image;
