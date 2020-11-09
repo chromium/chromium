@@ -1,0 +1,17 @@
+# Copyright 2020 The Chromium Authors.All rights reserved.
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+source_set("services") {
+  sources = [
+    "long_screenshots_tab_service.cc",
+    "long_screenshots_tab_service.h",
+    "long_screenshots_tab_service_factory.cc",
+    "long_screenshots_tab_service_factory.h",
+  ]
+
+  deps = [
+    "//components/keyed_service/core",
+    "//components/paint_preview/browser",
+  ]
+}
