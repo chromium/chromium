@@ -63,10 +63,11 @@ constexpr int kBadgeSize = 16;
 constexpr int kCircularImageButtonSize = 28;
 // TODO(crbug.com/1128499): Remove this constant by extracting art height from
 // |avatar_header_art|.
-constexpr int kHeaderArtHeight = 72;
+constexpr int kHeaderArtHeight = 80;
 constexpr int kIdentityImageBorder = 2;
 constexpr int kIdentityImageSizeInclBorder =
     ProfileMenuViewBase::kIdentityImageSize + 2 * kIdentityImageBorder;
+constexpr int kHalfOfAvatarImageViewSize = kIdentityImageSizeInclBorder / 2;
 
 // If the bubble is too large to fit on the screen, it still needs to be at
 // least this tall to show one row.
@@ -157,6 +158,7 @@ gfx::ImageSkia SizeImageModel(const ui::ImageModel& image_model,
                    .GetImageSkia(native_theme, size);
 }
 
+// TODO(crbug.com/1146998): Adjust button size to be 16x16.
 class CircularImageButton : public views::ImageButton {
  public:
   CircularImageButton(PressedCallback callback,
@@ -362,18 +364,14 @@ void BuildProfileBackgroundContainer(
     views::View* parent,
     std::unique_ptr<views::View> heading_label,
     base::Optional<SkColor> background_color,
-    int corner_radius,
     std::unique_ptr<views::View> avatar_image_view,
     std::unique_ptr<views::View> edit_button,
     const ui::ThemedVectorIcon& avatar_header_art) {
-  constexpr int kExtraMarginInsideProfileBackground = 2;
 
   views::View* profile_background_container =
       parent->AddChildView(std::make_unique<views::View>());
 
-  gfx::Insets background_container_insets(
-      kExtraMarginInsideProfileBackground, kExtraMarginInsideProfileBackground,
-      /*bottom=*/0, kExtraMarginInsideProfileBackground);
+  gfx::Insets background_container_insets(0, /*horizontal=*/kMenuEdgeMargin);
   if (edit_button) {
     // Compensate for the edit button on the right with an extra margin on the
     // left so that the rest is centered.
@@ -383,17 +381,17 @@ void BuildProfileBackgroundContainer(
   profile_background_container
       ->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kEnd)
       .SetInteriorMargin(background_container_insets);
   if (background_color.has_value()) {
     // The bottom background edge should match the center of the identity image.
-    gfx::Insets background_insets(0, 0,
-                                  /*bottom=*/kIdentityImageSizeInclBorder / 2,
+    gfx::Insets background_insets(0, 0, /*bottom=*/kHalfOfAvatarImageViewSize,
                                   0);
+    // TODO(crbug.com/1147038): Remove the zero-radius rounded background.
     profile_background_container->SetBackground(
         views::CreateBackgroundFromPainter(
             views::Painter::CreateSolidRoundRectPainter(
-                background_color.value(), corner_radius, background_insets)));
+                background_color.value(), /*radius=*/0, background_insets)));
   } else {
     profile_background_container->SetBackground(
         views::CreateThemedVectorIconBackground(profile_background_container,
@@ -403,13 +401,9 @@ void BuildProfileBackgroundContainer(
   // |avatar_margin| is derived from |avatar_header_art| asset height, it
   // increases margin for the avatar icon to make |avatar_header_art| visible
   // above the center of the avatar icon.
-  // Subtracting |kIdentityImageBorder| from the height as it isn't part of the
-  // actual image and shouldn't affect the margin.
-  const int avatar_margin =
-      avatar_header_art.empty()
-          ? kDefaultMargin
-          : kHeaderArtHeight - kIdentityImageBorder -
-                ProfileMenuViewBase::kIdentityImageSize / 2;
+  const int avatar_margin = avatar_header_art.empty()
+                                ? kMenuEdgeMargin
+                                : kHeaderArtHeight - kHalfOfAvatarImageViewSize;
 
   // The |heading_and_image_container| is on the left and it stretches almost
   // the full width. It contains the profile heading and the avatar image.
@@ -443,7 +437,15 @@ void BuildProfileBackgroundContainer(
         views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                  views::MaximumFlexSizeRule::kPreferred)
             .WithOrder(2));
-    profile_background_container->AddChildView(std::move(edit_button));
+    views::View* edit_button_container =
+        profile_background_container->AddChildView(
+            std::make_unique<views::View>());
+    edit_button_container->SetLayoutManager(CreateBoxLayout(
+        views::BoxLayout::Orientation::kVertical,
+        views::BoxLayout::CrossAxisAlignment::kCenter,
+        gfx::Insets(
+            0, 0, /*bottom=*/kHalfOfAvatarImageViewSize + kDefaultMargin, 0)));
+    edit_button_container->AddChildView(std::move(edit_button));
   }
 }
 
@@ -521,7 +523,8 @@ ProfileMenuViewBase::ProfileMenuViewBase(views::Button* anchor_button,
   // TODO(tluk): Remove when fixing https://crbug.com/822075
   // The sign in webview will be clipped on the bottom corners without these
   // margins, see related bug <http://crbug.com/593203>.
-  set_margins(gfx::Insets(2, 0));
+  SetPaintClientToLayer(true);
+  set_margins(gfx::Insets(0));
   DCHECK(anchor_button);
   anchor_button->AnimateInkDrop(views::InkDropState::ACTIVATED, nullptr);
 
@@ -555,10 +558,10 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
       base::FeatureList::IsEnabled(features::kNewProfilePicker);
 
   identity_info_container_->RemoveAllChildViews(/*delete_children=*/true);
-  // In the new design, the colored background must only have|kDefaultMargin|
-  // margins so this container cannot have larger margins. In this case, further
-  // margins will be added by children views.
-  const int container_margin = new_design ? kDefaultMargin : kMenuEdgeMargin;
+  // In the new design, the colored background fully bleeds to the edges of the
+  // menu and to achieve that |container_margin| is set to 0. In this case,
+  // further margins will be added by children views.
+  const int container_margin = new_design ? 0 : kMenuEdgeMargin;
   identity_info_container_->SetLayoutManager(
       CreateBoxLayout(views::BoxLayout::Orientation::kVertical,
                       views::BoxLayout::CrossAxisAlignment::kStretch,
@@ -642,7 +645,6 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
   BuildProfileBackgroundContainer(
       /*parent=*/identity_info_container_, std::move(heading_label),
       background_color,
-      GetCornerRadius(),  // Use the same radius as the bubble has.
       std::move(avatar_image_view), std::move(edit_button), avatar_header_art);
   BuildProfileTitleAndSubtitle(/*parent=*/identity_info_container_, title,
                                subtitle);
