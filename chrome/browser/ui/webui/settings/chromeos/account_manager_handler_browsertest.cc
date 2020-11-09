@@ -37,7 +37,7 @@ struct DeviceAccountInfo {
   std::string organization;
 
   user_manager::UserType user_type;
-  chromeos::account_manager::AccountType account_type;
+  account_manager::AccountType account_type;
   std::string token;
 
   friend std::ostream& operator<<(std::ostream& stream,
@@ -56,8 +56,7 @@ DeviceAccountInfo GetActiveDirectoryDeviceAccountInfo() {
           "primary" /*fullName*/,
           "example.com" /*organization*/,
           user_manager::USER_TYPE_ACTIVE_DIRECTORY /*user_type*/,
-          chromeos::account_manager::AccountType::
-              ACCOUNT_TYPE_ACTIVE_DIRECTORY /*account_type*/,
+          account_manager::AccountType::kActiveDirectory /*account_type*/,
           chromeos::AccountManager::kActiveDirectoryDummyToken /*token*/};
 }
 
@@ -67,8 +66,7 @@ DeviceAccountInfo GetGaiaDeviceAccountInfo() {
           "primary" /*fullName*/,
           "" /*organization*/,
           user_manager::USER_TYPE_REGULAR /*user_type*/,
-          chromeos::account_manager::AccountType::
-              ACCOUNT_TYPE_GAIA /*account_type*/,
+          account_manager::AccountType::kGaia /*account_type*/,
           "device-account-token" /*token*/};
 }
 
@@ -78,8 +76,7 @@ DeviceAccountInfo GetChildDeviceAccountInfo() {
           "child" /*fullName*/,
           "Family Link" /*organization*/,
           user_manager::USER_TYPE_CHILD /*user_type*/,
-          chromeos::account_manager::AccountType::
-              ACCOUNT_TYPE_GAIA /*account_type*/,
+          account_manager::AccountType::kGaia /*account_type*/,
           "device-account-token" /*token*/};
 }
 
@@ -191,9 +188,8 @@ class AccountManagerUIHandlerTest
 
   void UpsertAccount(std::string email) {
     account_manager_->UpsertAccount(
-        ::account_manager::AccountKey{
-            signin::GetTestGaiaIdForEmail(email),
-            chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA},
+        ::account_manager::AccountKey{signin::GetTestGaiaIdForEmail(email),
+                                      account_manager::AccountType::kGaia},
         email, AccountManager::kInvalidToken);
   }
 
@@ -277,7 +273,7 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   EXPECT_TRUE(device_account.FindBoolKey("isDeviceAccount").value());
   EXPECT_TRUE(device_account.FindBoolKey("isSignedIn").value());
   EXPECT_FALSE(device_account.FindBoolKey("unmigrated").value());
-  EXPECT_EQ(GetDeviceAccountInfo().account_type,
+  EXPECT_EQ(static_cast<int>(GetDeviceAccountInfo().account_type),
             device_account.FindIntKey("accountType"));
   EXPECT_EQ(GetDeviceAccountInfo().email,
             ValueOrEmpty(device_account.FindStringKey("email")));
@@ -322,7 +318,7 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   EXPECT_TRUE(device_account.FindBoolKey("isDeviceAccount").value());
   EXPECT_TRUE(device_account.FindBoolKey("isSignedIn").value());
   EXPECT_FALSE(device_account.FindBoolKey("unmigrated").value());
-  EXPECT_EQ(GetDeviceAccountInfo().account_type,
+  EXPECT_EQ(static_cast<int>(GetDeviceAccountInfo().account_type),
             device_account.FindIntKey("accountType"));
   EXPECT_EQ(GetDeviceAccountInfo().email,
             ValueOrEmpty(device_account.FindStringKey("email")));
@@ -345,10 +341,9 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
       continue;
     EXPECT_FALSE(account.FindBoolKey("isDeviceAccount").value());
 
-    ::account_manager::Account expected_account =
-        GetAccountByKey(account_manager_accounts,
-                        {ValueOrEmpty(account.FindStringKey("id")),
-                         account_manager::AccountType::ACCOUNT_TYPE_GAIA});
+    ::account_manager::Account expected_account = GetAccountByKey(
+        account_manager_accounts, {ValueOrEmpty(account.FindStringKey("id")),
+                                   account_manager::AccountType::kGaia});
     if (GetDeviceAccountInfo().user_type ==
         user_manager::UserType::USER_TYPE_CHILD) {
       EXPECT_FALSE(account.FindBoolKey("unmigrated").value());
@@ -356,7 +351,7 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
       EXPECT_EQ(HasDummyGaiaToken(expected_account.key),
                 account.FindBoolKey("unmigrated").value());
     }
-    EXPECT_EQ(expected_account.key.account_type,
+    EXPECT_EQ(static_cast<int>(expected_account.key.account_type),
               account.FindIntKey("accountType"));
     EXPECT_EQ(expected_account.raw_email,
               ValueOrEmpty(account.FindStringKey("email")));

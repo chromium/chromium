@@ -35,9 +35,9 @@ constexpr char kGaiaToken[] = "gaia_token";
 constexpr char kNewGaiaToken[] = "new_gaia_token";
 constexpr char kRawUserEmail[] = "user@example.com";
 const ::account_manager::AccountKey kGaiaAccountKey = {
-    "gaia_id", account_manager::AccountType::ACCOUNT_TYPE_GAIA};
+    "gaia_id", ::account_manager::AccountType::kGaia};
 const ::account_manager::AccountKey kActiveDirectoryAccountKey = {
-    "object_guid", account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY};
+    "object_guid", ::account_manager::AccountType::kActiveDirectory};
 
 bool IsAccountKeyPresent(
     const std::vector<::account_manager::Account>& accounts,
@@ -288,16 +288,12 @@ class AccountManagerObserver : public AccountManager::Observer {
 };
 
 TEST(AccountManagerKeyTest, TestValidity) {
-  ::account_manager::AccountKey key1{
-      std::string(), account_manager::AccountType::ACCOUNT_TYPE_GAIA};
+  ::account_manager::AccountKey key1{std::string(),
+                                     ::account_manager::AccountType::kGaia};
   EXPECT_FALSE(key1.IsValid());
 
-  ::account_manager::AccountKey key2{
-      "abc", account_manager::AccountType::ACCOUNT_TYPE_UNSPECIFIED};
-  EXPECT_FALSE(key2.IsValid());
-
-  ::account_manager::AccountKey key3{
-      "abc", account_manager::AccountType::ACCOUNT_TYPE_GAIA};
+  ::account_manager::AccountKey key3{"abc",
+                                     ::account_manager::AccountType::kGaia};
   EXPECT_TRUE(key3.IsValid());
 }
 

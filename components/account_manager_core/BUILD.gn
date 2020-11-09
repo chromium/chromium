@@ -14,9 +14,6 @@ component("account_manager_core") {
     "account_manager_facade.h",
   ]
 
-  public_deps =
-      [ "//chromeos/components/account_manager:account_manager_proto" ]
-
   deps = [ "//base" ]
 
   defines = [ "IS_ACCOUNT_MANAGER_CORE_IMPL" ]

@@ -12,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chromeos/components/account_manager/tokens.pb.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/prefs/testing_pref_service.h"
@@ -68,13 +67,14 @@ class TestAccountManagerObserver
   // mojom::AccountManagerObserverInterceptorForTesting override:
   void OnTokenUpserted(mojom::AccountPtr account) override {
     ++num_token_upserted_calls_;
-    last_upserted_account_ = AccountManagerAsh::FromMojoAccount(account);
+    last_upserted_account_ =
+        AccountManagerAsh::FromMojoAccount(account).value();
   }
 
   // mojom::AccountManagerObserverInterceptorForTesting override:
   void OnAccountRemoved(mojom::AccountPtr account) override {
     ++num_account_removed_calls_;
-    last_removed_account_ = AccountManagerAsh::FromMojoAccount(account);
+    last_removed_account_ = AccountManagerAsh::FromMojoAccount(account).value();
   }
 
   int num_token_upserted_calls_ = 0;
@@ -168,7 +168,7 @@ TEST_F(AccountManagerAshTest,
 
 TEST_F(AccountManagerAshTest, LacrosObserversAreNotifiedOnAccountUpdates) {
   const account_manager::AccountKey kTestAccountKey{
-      kFakeGaiaId, chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA};
+      kFakeGaiaId, account_manager::AccountType::kGaia};
   ASSERT_TRUE(InitializeAccountManager());
   TestAccountManagerObserver observer;
   observer.Observe(account_manager_async_waiter());
@@ -184,7 +184,7 @@ TEST_F(AccountManagerAshTest, LacrosObserversAreNotifiedOnAccountUpdates) {
 
 TEST_F(AccountManagerAshTest, LacrosObserversAreNotifiedOnAccountRemovals) {
   const account_manager::AccountKey kTestAccountKey{
-      kFakeGaiaId, chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA};
+      kFakeGaiaId, account_manager::AccountType::kGaia};
   ASSERT_TRUE(InitializeAccountManager());
   TestAccountManagerObserver observer;
   observer.Observe(account_manager_async_waiter());

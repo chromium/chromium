@@ -66,9 +66,9 @@ std::string GetEnterpriseDomainFromUsername(const std::string& username) {
   DCHECK(account_type_value);
   const int account_type_int = account_type_value->GetInt();
   DCHECK((account_type_int >=
-          account_manager::AccountType::ACCOUNT_TYPE_UNSPECIFIED) &&
+          static_cast<int>(account_manager::AccountType::kGaia)) &&
          (account_type_int <=
-          account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY));
+          static_cast<int>(account_manager::AccountType::kActiveDirectory)));
   const account_manager::AccountType account_type =
       static_cast<account_manager::AccountType>(account_type_int);
 
@@ -78,14 +78,12 @@ std::string GetEnterpriseDomainFromUsername(const std::string& username) {
 bool IsSameAccount(const ::account_manager::AccountKey& account_key,
                    const AccountId& account_id) {
   switch (account_key.account_type) {
-    case chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA:
+    case account_manager::AccountType::kGaia:
       return (account_id.GetAccountType() == AccountType::GOOGLE) &&
              (account_id.GetGaiaId() == account_key.id);
-    case chromeos::account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY:
+    case account_manager::AccountType::kActiveDirectory:
       return (account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY) &&
              (account_id.GetObjGuid() == account_key.id);
-    case chromeos::account_manager::AccountType::ACCOUNT_TYPE_UNSPECIFIED:
-      return false;
   }
 }
 
@@ -251,7 +249,7 @@ void AccountManagerUIHandler::OnCheckDummyGaiaTokenForAllAccounts(
   if (user->IsActiveDirectoryUser()) {
     device_account.SetId(user->GetAccountId().GetObjGuid())
         .SetAccountType(
-            account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY)
+            static_cast<int>(account_manager::AccountType::kActiveDirectory))
         .SetEmail(user->GetDisplayEmail())
         .SetFullName(base::UTF16ToUTF8(user->GetDisplayName()))
         .SetIsSignedIn(true)
@@ -302,8 +300,7 @@ base::ListValue AccountManagerUIHandler::GetSecondaryGaiaAccounts(
     const ::account_manager::Account& stored_account = account_token_pair.first;
     const ::account_manager::AccountKey& account_key = stored_account.key;
     // We are only interested in listing GAIA accounts.
-    if (account_key.account_type !=
-        account_manager::AccountType::ACCOUNT_TYPE_GAIA) {
+    if (account_key.account_type != account_manager::AccountType::kGaia) {
       continue;
     }
 
@@ -315,7 +312,7 @@ base::ListValue AccountManagerUIHandler::GetSecondaryGaiaAccounts(
 
     AccountBuilder account;
     account.SetId(account_key.id)
-        .SetAccountType(account_key.account_type)
+        .SetAccountType(static_cast<int>(account_key.account_type))
         .SetIsDeviceAccount(false)
         .SetFullName(maybe_account_info->full_name)
         .SetEmail(stored_account.raw_email)

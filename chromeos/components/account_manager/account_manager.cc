@@ -16,11 +16,14 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chromeos/components/account_manager/tokens.pb.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -69,6 +72,30 @@ void RecordInitializationTime(
   base::UmaHistogramMicrosecondsTimes(
       "AccountManager.InitializationTime",
       base::TimeTicks::Now() - initialization_start_time);
+}
+
+// Returns `nullopt` if `account_type` is `ACCOUNT_TYPE_UNSPECIFIED`.
+base::Optional<::account_manager::AccountType> FromProtoAccountType(
+    const chromeos::account_manager::AccountType& account_type) {
+  switch (account_type) {
+    case chromeos::account_manager::AccountType::ACCOUNT_TYPE_UNSPECIFIED:
+      return base::nullopt;
+    case chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA:
+      return ::account_manager::AccountType::kGaia;
+    case chromeos::account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY:
+      return ::account_manager::AccountType::kActiveDirectory;
+  }
+}
+
+chromeos::account_manager::AccountType ToProtoAccountType(
+    const ::account_manager::AccountType& account_type) {
+  switch (account_type) {
+    case ::account_manager::AccountType::kGaia:
+      return chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA;
+    case ::account_manager::AccountType::kActiveDirectory:
+      return chromeos::account_manager::AccountType::
+          ACCOUNT_TYPE_ACTIVE_DIRECTORY;
+  }
 }
 
 }  // namespace
@@ -270,9 +297,15 @@ AccountManager::AccountMap AccountManager::LoadAccountsFromDisk(
 
   bool is_any_account_corrupt = false;
   for (const auto& account : accounts_proto.accounts()) {
+    const base::Optional<::account_manager::AccountType> account_type =
+        FromProtoAccountType(account.account_type());
+    if (!account_type.has_value()) {
+      LOG(WARNING) << "Ignoring invalid account_type load from disk";
+      is_any_account_corrupt = true;
+      continue;
+    }
     ::account_manager::AccountKey account_key{account.id(),
-                                              account.account_type()};
-
+                                              account_type.value()};
     if (!account_key.IsValid()) {
       LOG(WARNING) << "Ignoring invalid account_key load from disk: "
                    << account_key;
@@ -443,7 +476,7 @@ void AccountManager::UpdateToken(
   DCHECK_NE(init_state_, InitializationState::kNotStarted);
 
   if (account_key.account_type ==
-      account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY) {
+      ::account_manager::AccountType::kActiveDirectory) {
     DCHECK_EQ(token, kActiveDirectoryDummyToken);
   }
 
@@ -496,8 +529,7 @@ void AccountManager::UpsertAccountInternal(
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
   DCHECK(account_key.IsValid()) << "Invalid account_key: " << account_key;
 
-  if (account_key.account_type ==
-      account_manager::AccountType::ACCOUNT_TYPE_GAIA) {
+  if (account_key.account_type == ::account_manager::AccountType::kGaia) {
     DCHECK(!account.raw_email.empty())
         << "Email must be present for Gaia accounts";
   }
@@ -554,7 +586,8 @@ std::string AccountManager::GetSerializedAccounts() {
   for (const auto& account : accounts_) {
     account_manager::Account* account_proto = accounts_proto.add_accounts();
     account_proto->set_id(account.first.id);
-    account_proto->set_account_type(account.first.account_type);
+    account_proto->set_account_type(
+        ToProtoAccountType(account.first.account_type));
     account_proto->set_raw_email(account.second.raw_email);
     account_proto->set_token(account.second.token);
   }
@@ -687,8 +720,7 @@ void AccountManager::CheckDummyGaiaTokenForAllAccountsInternal(
 void AccountManager::MaybeRevokeTokenOnServer(
     const ::account_manager::AccountKey& account_key,
     const std::string& old_token) {
-  if ((account_key.account_type ==
-       account_manager::AccountType::ACCOUNT_TYPE_GAIA) &&
+  if ((account_key.account_type == ::account_manager::AccountType::kGaia) &&
       !old_token.empty() && (old_token != kInvalidToken)) {
     RevokeGaiaTokenOnServer(old_token);
   }

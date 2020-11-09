@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "account.h": [
-    "+chromeos/components/account_manager/tokens.pb.h",
-  ]
-}

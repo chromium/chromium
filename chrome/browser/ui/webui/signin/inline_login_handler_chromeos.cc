@@ -103,7 +103,7 @@ class SigninHelper : public GaiaAuthConsumer {
                            gaia::GaiaSource::kChrome,
                            url_loader_factory) {
     account_key_ = ::account_manager::AccountKey{
-        gaia_id, chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA};
+        gaia_id, account_manager::AccountType::kGaia};
 
     DCHECK(!signin_scoped_device_id.empty());
     gaia_auth_fetcher_.StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
@@ -478,7 +478,7 @@ void InlineLoginHandlerChromeOS::OnGetAccounts(
   base::ListValue account_emails;
   for (const auto& account : accounts) {
     if (account.key.account_type ==
-        account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY) {
+        ::account_manager::AccountType::kActiveDirectory) {
       // Don't send Active Directory account email to Gaia.
       account_emails.Append(AnonymizeAccountEmail(account.raw_email));
     } else {

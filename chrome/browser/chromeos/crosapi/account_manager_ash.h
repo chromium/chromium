@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_CROSAPI_ACCOUNT_MANAGER_ASH_H_
 #define CHROME_BROWSER_CHROMEOS_CROSAPI_ACCOUNT_MANAGER_ASH_H_
 
+#include "base/optional.h"
 #include "chromeos/components/account_manager/account_manager.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
@@ -39,14 +40,16 @@ class AccountManagerAsh : public mojom::AccountManager,
   friend class TestAccountManagerObserver;
 
   // Following util functions are static for ease of testing.
-  static account_manager::Account FromMojoAccount(
+  // Returns `base::nullopt` if `mojom_account` cannot be parsed.
+  static base::Optional<account_manager::Account> FromMojoAccount(
       const mojom::AccountPtr& mojom_account);
   static mojom::AccountPtr ToMojoAccount(
       const account_manager::Account& account);
-  static chromeos::account_manager::AccountType FromMojoAccountType(
+  // Returns `base::nullopt` if `account_type` cannot be parsed.
+  static base::Optional<account_manager::AccountType> FromMojoAccountType(
       const mojom::AccountType& account_type);
   static mojom::AccountType ToMojoAccountType(
-      const chromeos::account_manager::AccountType& account_type);
+      const account_manager::AccountType& account_type);
 
   void FlushMojoForTesting();
 

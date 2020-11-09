@@ -687,14 +687,12 @@ void AddParentalControlStrings(content::WebUIDataSource* html_source,
 bool IsSameAccount(const ::account_manager::AccountKey& account_key,
                    const AccountId& account_id) {
   switch (account_key.account_type) {
-    case account_manager::AccountType::ACCOUNT_TYPE_GAIA:
+    case account_manager::AccountType::kGaia:
       return account_id.GetAccountType() == AccountType::GOOGLE &&
              account_id.GetGaiaId() == account_key.id;
-    case account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY:
+    case account_manager::AccountType::kActiveDirectory:
       return account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY &&
              account_id.GetObjGuid() == account_key.id;
-    case account_manager::AccountType::ACCOUNT_TYPE_UNSPECIFIED:
-      return false;
   }
 }
 

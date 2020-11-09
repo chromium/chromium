@@ -85,9 +85,8 @@ void UpdateRefreshTokenForAccount(
 
   DCHECK(account_manager);
   account_manager->UpsertAccount(
-      account_manager::AccountKey{
-          account_info.gaia,
-          chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA},
+      account_manager::AccountKey{account_info.gaia,
+                                  account_manager::AccountType::kGaia},
       account_info.email, new_token);
 #else
   token_service->UpdateCredentials(account_id, new_token);
@@ -337,9 +336,8 @@ void RemoveRefreshTokenForAccount(IdentityManager* identity_manager,
       identity_manager->GetAccountTrackerService()->GetAccountInfo(account_id);
 
   identity_manager->GetChromeOSAccountManager()->RemoveAccount(
-      account_manager::AccountKey{
-          account_info.gaia,
-          chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA});
+      account_manager::AccountKey{account_info.gaia,
+                                  account_manager::AccountType::kGaia});
 #else
   identity_manager->GetTokenService()->RevokeCredentials(account_id);
 #endif

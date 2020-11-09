@@ -16,7 +16,7 @@
 #include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/account_manager/account_manager.h"
-#include "chromeos/components/account_manager/tokens.pb.h"
+#include "components/account_manager_core/account.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -33,9 +33,6 @@
 namespace signin {
 
 namespace {
-
-using chromeos::account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY;
-using chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA;
 
 constexpr char kGaiaId[] = "gaia-id";
 constexpr char kGaiaToken[] = "gaia-token";
@@ -169,8 +166,10 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
 
     account_info_ = CreateAccountInfoTestFixture(kGaiaId, kUserEmail);
     account_tracker_service_.SeedAccountInfo(account_info_);
-    gaia_account_key_ = {account_info_.gaia, ACCOUNT_TYPE_GAIA};
-    ad_account_key_ = {"object-guid", ACCOUNT_TYPE_ACTIVE_DIRECTORY};
+    gaia_account_key_ = {account_info_.gaia,
+                         account_manager::AccountType::kGaia};
+    ad_account_key_ = {"object-guid",
+                       account_manager::AccountType::kActiveDirectory};
 
     delegate_ = std::make_unique<ProfileOAuth2TokenServiceDelegateChromeOS>(
         &account_tracker_service_,
@@ -214,9 +213,8 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
     // Will result in chromeos::AccountManager calling
     // |ProfileOAuth2TokenServiceDelegateChromeOS::OnTokenUpserted|.
     account_manager_.UpsertAccount(
-        account_manager::AccountKey{gaia_id,
-                                    chromeos::account_manager::AccountType::
-                                        ACCOUNT_TYPE_GAIA} /* account_key */,
+        account_manager::AccountKey{
+            gaia_id, account_manager::AccountType::kGaia} /* account_key */,
         email /* email */, refresh_token);
   }
 
@@ -366,8 +364,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   // Deliberately add an error.
   delegate_->UpdateAuthError(account_info_.account_id, error);
   account_manager_.RemoveAccount(account_manager::AccountKey{
-      account_info_.gaia,
-      chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA});
+      account_info_.gaia, account_manager::AccountType::kGaia});
   EXPECT_EQ(GoogleServiceAuthError::AuthErrorNone(),
             delegate_->GetAuthError(account_info_.account_id));
 }
@@ -439,10 +436,12 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   account_tracker_service_.SeedAccountInfo(account1);
   account_tracker_service_.SeedAccountInfo(account2);
   account_manager_.UpsertAccount(
-      account_manager::AccountKey{account1.gaia, ACCOUNT_TYPE_GAIA},
+      account_manager::AccountKey{account1.gaia,
+                                  account_manager::AccountType::kGaia},
       "user1@example.com", "token1");
   account_manager_.UpsertAccount(
-      account_manager::AccountKey{account2.gaia, ACCOUNT_TYPE_GAIA},
+      account_manager::AccountKey{account2.gaia,
+                                  account_manager::AccountType::kGaia},
       "user2@example.com", "token2");
   task_environment_.RunUntilIdle();
 
@@ -532,8 +531,8 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   // accounts, 1 has a valid refresh token and 1 has a dummy token.
   account_manager_.UpsertAccount(gaia_account_key_, kUserEmail, kGaiaToken);
 
-  account_manager::AccountKey gaia_account_key2{"random-gaia-id",
-                                                ACCOUNT_TYPE_GAIA};
+  account_manager::AccountKey gaia_account_key2{
+      "random-gaia-id", account_manager::AccountType::kGaia};
   account_tracker_service_.SeedAccountInfo(
       CreateAccountInfoTestFixture(gaia_account_key2.id, kUserEmail2));
   account_manager_.UpsertAccount(gaia_account_key2, kUserEmail2,

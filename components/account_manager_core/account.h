@@ -5,21 +5,30 @@
 #ifndef COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_H_
 #define COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_H_
 
+#include <ostream>
 #include <string>
 
 #include "base/component_export.h"
-#include "chromeos/components/account_manager/tokens.pb.h"
 
 namespace account_manager {
 
+// Type of an account, based on the authentication backend of the account.
+// Loosely based on //chromeos/components/account_manager/tokens.proto
+enum class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountType : int {
+  // Gaia account (aka Google account) - including enterprise and consumer
+  // accounts.
+  kGaia = 1,
+  // Microsoft Active Directory accounts.
+  kActiveDirectory = 2,
+};
+
+// Uniquely identifies an account.
 struct COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountKey {
-  // |id| is obfuscated GAIA id for |AccountType::ACCOUNT_TYPE_GAIA|.
+  // |id| is obfuscated GAIA id for |AccountType::kGaia|.
   // |id| is object GUID (|AccountId::GetObjGuid|) for
-  // |AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY|.
+  // |AccountType::kActiveDirectory|.
   std::string id;
-  // TODO(sinhak): Remove dependency on chromeos::account_manager::AccountType
-  // by creating a new standalone AccountType enum.
-  chromeos::account_manager::AccountType account_type;
+  AccountType account_type;
 
   bool IsValid() const;
 
@@ -38,6 +47,9 @@ struct COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) Account {
 };
 
 // For logging.
+COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
+std::ostream& operator<<(std::ostream& os, const AccountType& account_type);
+
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
 std::ostream& operator<<(std::ostream& os, const AccountKey& account_key);
 

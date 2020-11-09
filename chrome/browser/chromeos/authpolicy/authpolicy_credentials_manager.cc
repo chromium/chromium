@@ -63,7 +63,7 @@ void SetupAccountManager(Profile* profile, const AccountId& account_id) {
   account_manager->UpsertAccount(
       ::account_manager::AccountKey{
           account_id.GetObjGuid(),
-          account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY},
+          account_manager::AccountType::kActiveDirectory},
       account_id.GetUserEmail(), AccountManager::kActiveDirectoryDummyToken);
 }
 

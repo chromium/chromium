@@ -66,14 +66,12 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
 
     // Add accounts in Account Manager.
     account_manager_->UpsertAccount(
-        ::account_manager::AccountKey{
-            primary_account_info.gaia,
-            account_manager::AccountType::ACCOUNT_TYPE_GAIA},
+        ::account_manager::AccountKey{primary_account_info.gaia,
+                                      account_manager::AccountType::kGaia},
         primary_account_info.email, AccountManager::kInvalidToken);
     account_manager_->UpsertAccount(
-        ::account_manager::AccountKey{
-            kFakeSecondaryGaiaId,
-            account_manager::AccountType::ACCOUNT_TYPE_GAIA},
+        ::account_manager::AccountKey{kFakeSecondaryGaiaId,
+                                      account_manager::AccountType::kGaia},
         kFakeSecondaryUsername, AccountManager::kInvalidToken);
 
     AccountManagerPolicyControllerFactory::GetForBrowserContext(profile());

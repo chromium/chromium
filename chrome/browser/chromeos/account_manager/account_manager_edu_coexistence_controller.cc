@@ -138,8 +138,7 @@ void EduCoexistenceConsentInvalidationController::InvalidateEduAccounts(
     const std::vector<std::string>& account_gaia_ids_to_invalidate,
     const std::vector<::account_manager::Account>& accounts) {
   for (const ::account_manager::Account& account : accounts) {
-    if (account.key.account_type !=
-        chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA) {
+    if (account.key.account_type != account_manager::AccountType::kGaia) {
       continue;
     }
 

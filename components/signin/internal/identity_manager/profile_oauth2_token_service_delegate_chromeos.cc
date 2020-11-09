@@ -47,8 +47,7 @@ std::vector<CoreAccountId> GetOAuthAccountIdsFromAccountKeys(
     const AccountTrackerService* const account_tracker_service) {
   std::vector<CoreAccountId> accounts;
   for (auto& account_key : account_keys) {
-    if (account_key.account_type !=
-        chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA) {
+    if (account_key.account_type != account_manager::AccountType::kGaia) {
       continue;
     }
 
@@ -122,8 +121,7 @@ ProfileOAuth2TokenServiceDelegateChromeOS::CreateAccessTokenFetcher(
   return account_manager_->CreateAccessTokenFetcher(
       account_manager::AccountKey{
           account_tracker_service_->GetAccountInfo(account_id).gaia,
-          chromeos::account_manager::AccountType::
-              ACCOUNT_TYPE_GAIA} /* account_key */,
+          account_manager::AccountType::kGaia} /* account_key */,
       consumer);
 }
 
@@ -314,8 +312,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::OnTokenUpserted(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   account_keys_.insert(account.key);
 
-  if (account.key.account_type !=
-      chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA) {
+  if (account.key.account_type != account_manager::AccountType::kGaia) {
     return;
   }
 
@@ -345,8 +342,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::OnAccountRemoved(
   }
   account_keys_.erase(it);
 
-  if (account.key.account_type !=
-      chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA) {
+  if (account.key.account_type != account_manager::AccountType::kGaia) {
     return;
   }
   CoreAccountId account_id =

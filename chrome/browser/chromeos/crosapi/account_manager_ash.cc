@@ -48,15 +48,17 @@ void AccountManagerAsh::OnAccountRemoved(
 }
 
 // static
-account_manager::Account AccountManagerAsh::FromMojoAccount(
+base::Optional<account_manager::Account> AccountManagerAsh::FromMojoAccount(
     const mojom::AccountPtr& mojom_account) {
-  account_manager::Account account;
-
-  account.key.id = mojom_account->key->id;
-  account.key.account_type =
+  const base::Optional<account_manager::AccountType> account_type =
       FromMojoAccountType(mojom_account->key->account_type);
-  account.raw_email = mojom_account->raw_email;
+  if (!account_type.has_value())
+    return base::nullopt;
 
+  account_manager::Account account;
+  account.key.id = mojom_account->key->id;
+  account.key.account_type = account_type.value();
+  account.raw_email = mojom_account->raw_email;
   return account;
 }
 
@@ -75,33 +77,28 @@ mojom::AccountPtr AccountManagerAsh::ToMojoAccount(
 }
 
 // static
-chromeos::account_manager::AccountType AccountManagerAsh::FromMojoAccountType(
-    const mojom::AccountType& account_type) {
+base::Optional<account_manager::AccountType>
+AccountManagerAsh::FromMojoAccountType(const mojom::AccountType& account_type) {
   switch (account_type) {
-    case mojom::AccountType::kUnspecified:
-      return chromeos::account_manager::AccountType::ACCOUNT_TYPE_UNSPECIFIED;
     case mojom::AccountType::kGaia:
-      return chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA;
+      return account_manager::AccountType::kGaia;
     case mojom::AccountType::kActiveDirectory:
-      return chromeos::account_manager::AccountType::
-          ACCOUNT_TYPE_ACTIVE_DIRECTORY;
+      return account_manager::AccountType::kActiveDirectory;
     default:
       // Ash does not know about this new account type. Don't consider this as
       // as error to preserve forwards compatibility with lacros.
       LOG(WARNING) << "Unknown account type: " << account_type;
-      return chromeos::account_manager::AccountType::ACCOUNT_TYPE_UNSPECIFIED;
+      return base::nullopt;
   }
 }
 
 // static
 mojom::AccountType AccountManagerAsh::ToMojoAccountType(
-    const chromeos::account_manager::AccountType& account_type) {
+    const account_manager::AccountType& account_type) {
   switch (account_type) {
-    case chromeos::account_manager::AccountType::ACCOUNT_TYPE_UNSPECIFIED:
-      return mojom::AccountType::kUnspecified;
-    case chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA:
+    case account_manager::AccountType::kGaia:
       return mojom::AccountType::kGaia;
-    case chromeos::account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY:
+    case account_manager::AccountType::kActiveDirectory:
       return mojom::AccountType::kActiveDirectory;
   }
 }

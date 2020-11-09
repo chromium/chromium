@@ -69,15 +69,13 @@ constexpr int kMaxMigrationRuns = 1;
     case AccountType::ACTIVE_DIRECTORY:
       return ::account_manager::AccountKey{
           account_id.GetObjGuid(),
-          account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY};
+          account_manager::AccountType::kActiveDirectory};
     case AccountType::GOOGLE:
-      return ::account_manager::AccountKey{
-          account_id.GetGaiaId(),
-          account_manager::AccountType::ACCOUNT_TYPE_GAIA};
+      return ::account_manager::AccountKey{account_id.GetGaiaId(),
+                                           account_manager::AccountType::kGaia};
     case AccountType::UNKNOWN:
-      return ::account_manager::AccountKey{
-          std::string(),
-          account_manager::AccountType::ACCOUNT_TYPE_UNSPECIFIED};
+      return ::account_manager::AccountKey{std::string(),
+                                           account_manager::AccountType::kGaia};
   }
 }
 
@@ -109,18 +107,17 @@ class AccountMigrationBaseStep : public AccountMigrationRunner::Step {
 
   void MigrateSecondaryAccount(const std::string& gaia_id,
                                const std::string& email) {
-    if (base::Contains(
-            account_manager_accounts_,
-            ::account_manager::AccountKey{
-                gaia_id, account_manager::AccountType::ACCOUNT_TYPE_GAIA})) {
+    if (base::Contains(account_manager_accounts_,
+                       ::account_manager::AccountKey{
+                           gaia_id, account_manager::AccountType::kGaia})) {
       // Do not overwrite any existing account in |AccountManager|.
       VLOG(1) << "Ignoring migration of existing account: " << email;
       return;
     }
 
     account_manager_->UpsertAccount(
-        ::account_manager::AccountKey{
-            gaia_id, account_manager::AccountType::ACCOUNT_TYPE_GAIA},
+        ::account_manager::AccountKey{gaia_id,
+                                      account_manager::AccountType::kGaia},
         email, AccountManager::kInvalidToken);
     VLOG(1) << "Successfully migrated: " << email;
   }
@@ -208,14 +205,11 @@ class DeviceAccountMigration : public AccountMigrationBaseStep,
 
   void MigrateDeviceAccount() {
     switch (device_account_.account_type) {
-      case account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY:
+      case account_manager::AccountType::kActiveDirectory:
         MigrateActiveDirectoryAccount();
         break;
-      case account_manager::AccountType::ACCOUNT_TYPE_GAIA:
+      case account_manager::AccountType::kGaia:
         MigrateGaiaAccount();
-        break;
-      case account_manager::AccountType::ACCOUNT_TYPE_UNSPECIFIED:
-        NOTREACHED();
         break;
     }
   }
@@ -545,8 +539,7 @@ bool AccountManagerMigrator::ShouldRunMigrations() const {
   }
 
   // Do not run migrations if the Device Account is invalid.
-  if (GetDeviceAccount(profile_).account_type ==
-      account_manager::AccountType::ACCOUNT_TYPE_UNSPECIFIED) {
+  if (GetDeviceAccount(profile_).id.empty()) {
     // Unfortunately this is a valid case for tests. See
     // https://crbug.com/915628. Early exit here because if the Device Account
     // itself is invalid, we should not attempt any migration.

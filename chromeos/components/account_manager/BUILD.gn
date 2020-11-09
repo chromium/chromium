@@ -51,6 +51,7 @@ source_set("unit_tests") {
 }
 
 proto_library("account_manager_proto") {
+  visibility = [ ":*" ]
   sources = [ "tokens.proto" ]
 
   proto_out_dir = "chromeos/components/account_manager"

@@ -1325,7 +1325,7 @@ void UserSessionManager::InitProfilePreferences(
     DCHECK(account_manager->IsInitialized());
 
     const ::account_manager::AccountKey account_key{
-        gaia_id, account_manager::AccountType::ACCOUNT_TYPE_GAIA};
+        gaia_id, account_manager::AccountType::kGaia};
 
     // 1. Make sure that the account is present in `AccountManager`.
     if (!user_context.GetRefreshToken().empty()) {

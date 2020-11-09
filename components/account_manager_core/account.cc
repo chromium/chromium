@@ -7,9 +7,7 @@
 namespace account_manager {
 
 bool AccountKey::IsValid() const {
-  return !id.empty() &&
-         account_type !=
-             chromeos::account_manager::AccountType::ACCOUNT_TYPE_UNSPECIFIED;
+  return !id.empty();
 }
 
 bool AccountKey::operator<(const AccountKey& other) const {
@@ -26,6 +24,20 @@ bool AccountKey::operator==(const AccountKey& other) const {
 
 bool AccountKey::operator!=(const AccountKey& other) const {
   return !(*this == other);
+}
+
+COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
+std::ostream& operator<<(std::ostream& os, const AccountType& account_type) {
+  switch (account_type) {
+    case account_manager::AccountType::kGaia:
+      os << "Gaia";
+      break;
+    case account_manager::AccountType::kActiveDirectory:
+      os << "ActiveDirectory";
+      break;
+  }
+
+  return os;
 }
 
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)

@@ -55,8 +55,7 @@ const AccountId kDeviceAccount =
   ::account_manager::Account account;
   account.raw_email = email;
   account.key.id = gaia_id;
-  account.key.account_type =
-      chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA;
+  account.key.account_type = account_manager::AccountType::kGaia;
   return account;
 }
 
@@ -65,8 +64,7 @@ void AddAccount(AccountManager* account_manager,
                 const std::string& gaia_id) {
   ::account_manager::AccountKey account_key;
   account_key.id = gaia_id;
-  account_key.account_type =
-      chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA;
+  account_key.account_type = account_manager::AccountType::kGaia;
 
   account_manager->UpsertAccount(account_key, email, kValidToken);
 }
