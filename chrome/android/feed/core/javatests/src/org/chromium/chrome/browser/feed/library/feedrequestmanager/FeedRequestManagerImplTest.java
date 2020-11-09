@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.feed.library.feedrequestmanager;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
@@ -113,7 +115,8 @@ import java.util.Set;
 @Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
 @Features.EnableFeatures(ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS)
 @Features.
-DisableFeatures({ChromeFeatureList.REPORT_FEED_USER_ACTIONS, ChromeFeatureList.INTEREST_FEED_V2})
+DisableFeatures({ChromeFeatureList.REPORT_FEED_USER_ACTIONS, ChromeFeatureList.INTEREST_FEED_V2,
+        ChromeFeatureList.INTEREST_FEED_NOTICE_CARD_AUTO_DISMISS})
 public class FeedRequestManagerImplTest {
     private static final int NOT_FOUND = 404;
     private static final String TABLE = "table";
@@ -460,6 +463,40 @@ public class FeedRequestManagerImplTest {
     public void testTriggerRefresh_enableFeedActions() throws Exception {
         testCapabilityAdded(Capability.CLICK_ACTION, Capability.VIEW_ACTION,
                 Capability.REPORT_FEED_USER_ACTIONS_NOTICE_CARD);
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.INTEREST_FEED_NOTICE_CARD_AUTO_DISMISS})
+    public void testTriggerRefresh_dismissNoticeCard() throws Exception {
+        // Simulate enough views and clicks.
+        when(mPrefService.getInteger(Pref.NOTICE_CARD_CLICKS_COUNT)).thenReturn(1);
+        when(mPrefService.getInteger(Pref.NOTICE_CARD_VIEWS_COUNT)).thenReturn(3);
+
+        assertTrue(mRequestManager.shouldDismissNoticeCard());
+    }
+
+    @Test
+    public void testTriggerRefresh_dontDismissNoticeCard_whenFeatureDisabled() throws Exception {
+        // Simulate enough views and clicks.
+        when(mPrefService.getInteger(Pref.NOTICE_CARD_CLICKS_COUNT)).thenReturn(1);
+        when(mPrefService.getInteger(Pref.NOTICE_CARD_VIEWS_COUNT)).thenReturn(3);
+
+        mRequestManager.triggerRefresh(RequestReason.HOST_REQUESTED, input -> {});
+
+        assertFalse(mRequestManager.shouldDismissNoticeCard());
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.INTEREST_FEED_NOTICE_CARD_AUTO_DISMISS})
+    public void testTriggerRefresh_dontDismissNoticeCard_whenCountThresholdsNotReached()
+            throws Exception {
+        // Simulate not enough views nor clicks.
+        when(mPrefService.getInteger(Pref.NOTICE_CARD_CLICKS_COUNT)).thenReturn(0);
+        when(mPrefService.getInteger(Pref.NOTICE_CARD_VIEWS_COUNT)).thenReturn(2);
+
+        mRequestManager.triggerRefresh(RequestReason.HOST_REQUESTED, input -> {});
+
+        assertFalse(mRequestManager.shouldDismissNoticeCard());
     }
 
     @Test

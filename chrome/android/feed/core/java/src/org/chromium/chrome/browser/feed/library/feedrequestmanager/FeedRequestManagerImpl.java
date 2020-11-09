@@ -8,6 +8,8 @@ import android.content.Context;
 import android.os.Build;
 import android.util.DisplayMetrics;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.google.protobuf.ByteString;
 
 import org.chromium.base.Consumer;
@@ -42,6 +44,7 @@ import org.chromium.chrome.browser.feed.library.common.time.TimingUtils;
 import org.chromium.chrome.browser.feed.library.common.time.TimingUtils.ElapsedTimeTracker;
 import org.chromium.chrome.browser.feed.library.feedrequestmanager.internal.Utils;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -79,6 +82,11 @@ import java.util.Map;
 /** Default implementation of FeedRequestManager. */
 public class FeedRequestManagerImpl implements FeedRequestManager {
     private static final String TAG = "FeedRequestManagerImpl";
+
+    static final String NOTICE_CARD_VIEWS_COUNT_THRESHOLD_PARAM_NAME =
+            "notice-card-views-count-threshold";
+    static final String NOTICE_CARD_CLICKS_COUNT_THRESHOLD_PARAM_NAME =
+            "notice-card-clicks-count-threshold";
 
     private final Configuration mConfiguration;
     private final NetworkClient mNetworkClient;
@@ -145,6 +153,10 @@ public class FeedRequestManagerImpl implements FeedRequestManager {
         Logger.i(TAG, "trigger refresh %s", reason);
         RequestBuilder request = newDefaultRequest(reason).setConsistencyToken(token);
 
+        if (shouldDismissNoticeCard()) {
+            request.dismissNoticeCard();
+        }
+
         if (mThreadUtils.isMainThread()) {
             // This will make a new request, it should invalidate the existing head to delay
             // everything until the response is obtained.
@@ -153,6 +165,34 @@ public class FeedRequestManagerImpl implements FeedRequestManager {
         } else {
             executeRequest(request, consumer, true);
         }
+    }
+
+    @VisibleForTesting
+    boolean shouldDismissNoticeCard() {
+        if (!ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.INTEREST_FEED_NOTICE_CARD_AUTO_DISMISS)) {
+            return false;
+        }
+
+        int viewsCountThreshold = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.INTEREST_FEED_NOTICE_CARD_AUTO_DISMISS,
+                NOTICE_CARD_VIEWS_COUNT_THRESHOLD_PARAM_NAME, 3);
+        int viewsCount = UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                 .getInteger(Pref.NOTICE_CARD_VIEWS_COUNT);
+        if (viewsCount >= viewsCountThreshold) {
+            return true;
+        }
+
+        int clicksCountThreshold = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.INTEREST_FEED_NOTICE_CARD_AUTO_DISMISS,
+                NOTICE_CARD_CLICKS_COUNT_THRESHOLD_PARAM_NAME, 1);
+        int clicksCount = UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                  .getInteger(Pref.NOTICE_CARD_CLICKS_COUNT);
+        if (clicksCount >= clicksCountThreshold) {
+            return true;
+        }
+
+        return false;
     }
 
     private RequestBuilder newDefaultRequest(@RequestReason int requestReason) {
@@ -405,6 +445,10 @@ public class FeedRequestManagerImpl implements FeedRequestManager {
 
             return requestBuilder.build();
         }
+
+        // TODO(b/1146458): Implement this function once we are decided on the right wire protocol
+        // to dismiss the notice card from the client.
+        public void dismissNoticeCard() {}
 
         private void addCapabilities(FeedRequest.Builder feedRequestBuilder) {
             addCapabilityIfConfigEnabled(

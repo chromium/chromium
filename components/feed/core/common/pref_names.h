@@ -60,6 +60,12 @@ extern const char kLastFetchHadNoticeCard[];
 // was signed in.
 extern const char kLastRefreshWasSignedIn[];
 
+// The pref name for the counter for the number of views on the notice card.
+extern const char kNoticeCardViewsCount[];
+
+// The pref name for the counter for the number of clicks on the notice card.
+extern const char kNoticeCardClicksCount[];
+
 // The following prefs are used only by v2.
 
 // The pref name for the request throttler counts.

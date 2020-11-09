@@ -43,7 +43,8 @@ import org.chromium.components.embedder_support.util.UrlConstants;
                        "disable-features=IPH_FeedHeaderMenu"})
 @Features.DisableFeatures({ChromeFeatureList.EXPLORE_SITES,
                            ChromeFeatureList.REPORT_FEED_USER_ACTIONS,
-                           ChromeFeatureList.QUERY_TILES, ChromeFeatureList.VIDEO_TUTORIALS})
+                           ChromeFeatureList.QUERY_TILES, ChromeFeatureList.VIDEO_TUTORIALS,
+                           ChromeFeatureList.INTEREST_FEED_NOTICE_CARD_AUTO_DISMISS})
 // clang-format on
 public class NewTabPageColorTest {
     @Rule

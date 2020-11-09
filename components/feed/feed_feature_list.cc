@@ -44,6 +44,11 @@ const base::Feature kInterestFeedV2ClicksAndViewsConditionalUpload{
     "InterestFeedV2ClickAndViewActionsConditionalUpload",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Feature that allows the client to automatically dismiss the notice card based
+// on the clicks and views on the notice card.
+const base::Feature kInterestFeedNoticeCardAutoDismiss{
+    "InterestFeedNoticeCardAutoDismiss", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const char kDefaultReferrerUrl[] =
     "https://www.googleapis.com/auth/chrome-content-suggestions";
 

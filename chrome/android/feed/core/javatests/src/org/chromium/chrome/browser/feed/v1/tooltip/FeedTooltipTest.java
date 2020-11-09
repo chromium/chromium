@@ -49,12 +49,12 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  * Tests for tooltips (i.e. in-product help) shown on the {@link Stream}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags
-        .Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=IPH_DemoMode<Trial",
-                "force-fieldtrials=Trial/Group",
-                "force-fieldtrial-params=Trial.Group:chosen_feature/IPH_FeedCardMenu"})
-        @Features.EnableFeatures(ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS)
-        public class FeedTooltipTest {
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        "enable-features=IPH_DemoMode<Trial", "force-fieldtrials=Trial/Group",
+        "force-fieldtrial-params=Trial.Group:chosen_feature/IPH_FeedCardMenu"})
+@Features.EnableFeatures(ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS)
+@Features.DisableFeatures(ChromeFeatureList.INTEREST_FEED_NOTICE_CARD_AUTO_DISMISS)
+public class FeedTooltipTest {
     private static final String FEED_TEST_RESPONSE_FILE_PATH =
             "/chrome/test/data/android/feed/feed_tooltip.gcl.bin";
 

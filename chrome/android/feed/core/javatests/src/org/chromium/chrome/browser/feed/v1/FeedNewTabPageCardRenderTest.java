@@ -60,7 +60,8 @@ import java.util.List;
 @Features.DisableFeatures({ChromeFeatureList.REPORT_FEED_USER_ACTIONS,
     ChromeFeatureList.QUERY_TILES, ChromeFeatureList.VIDEO_TUTORIALS,
     ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD,
-    ChromeFeatureList.INTEREST_FEED_V2})
+    ChromeFeatureList.INTEREST_FEED_V2, ChromeFeatureList.INTEREST_FEED_NOTICE_CARD_AUTO_DISMISS,
+    ChromeFeatureList.INTEREST_FEEDV1_CLICKS_AND_VIEWS_CONDITIONAL_UPLOAD})
 public class FeedNewTabPageCardRenderTest {
     // clang-format on
     private static final String TEST_FEED_DATA_BASE_PATH = "/chrome/test/data/android/feed/";

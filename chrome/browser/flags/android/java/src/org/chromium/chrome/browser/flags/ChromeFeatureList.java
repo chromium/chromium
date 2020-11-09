@@ -315,6 +315,8 @@ public abstract class ChromeFeatureList {
     public static final String INTEREST_FEEDV1_CLICKS_AND_VIEWS_CONDITIONAL_UPLOAD =
             "InterestFeedV1ClickAndViewActionsConditionalUpload";
     public static final String INTEREST_FEED_CONTENT_SUGGESTIONS = "InterestFeedContentSuggestions";
+    public static final String INTEREST_FEED_NOTICE_CARD_AUTO_DISMISS =
+            "InterestFeedNoticeCardAutoDismiss";
     public static final String INTEREST_FEED_V2 = "InterestFeedV2";
     public static final String KITKAT_SUPPORTED = "KitKatSupported";
     public static final String LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI =

@@ -5,6 +5,8 @@ package org.chromium.chrome.browser.feed.v1;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -29,6 +31,7 @@ import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.feed.library.api.host.logging.ActionType;
 import org.chromium.chrome.browser.feed.library.api.host.logging.ContentLoggingData;
 import org.chromium.chrome.browser.feed.library.api.host.logging.ScrollType;
 import org.chromium.chrome.browser.feed.library.common.time.testing.FakeClock;
@@ -43,7 +46,8 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 /** Tests of the {@link FeedLoggingBridge} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
-@Features.DisableFeatures(ChromeFeatureList.INTEREST_FEEDV1_CLICKS_AND_VIEWS_CONDITIONAL_UPLOAD)
+@Features.DisableFeatures({ChromeFeatureList.INTEREST_FEEDV1_CLICKS_AND_VIEWS_CONDITIONAL_UPLOAD,
+        ChromeFeatureList.INTEREST_FEED_NOTICE_CARD_AUTO_DISMISS})
 public class FeedLoggingBridgeTest {
     private static final String HISTOGRAM_ENGAGEMENT_TYPE =
             "ContentSuggestions.Feed.EngagementType";
@@ -201,7 +205,7 @@ public class FeedLoggingBridgeTest {
     @SmallTest
     @Feature({"Feed"})
     @Features.EnableFeatures(ChromeFeatureList.INTEREST_FEEDV1_CLICKS_AND_VIEWS_CONDITIONAL_UPLOAD)
-    public void onContentViewed_setPrefOnces_whenReachLoggingThresholdAndFeatureEnabled()
+    public void onContentViewed_setPrefOnce_whenReachLoggingThresholdAndFeatureEnabled()
             throws Exception {
         ContentLoggingData data = makeContentData(2);
         mFeedLoggingBridge.onContentViewed(data);
@@ -236,6 +240,111 @@ public class FeedLoggingBridgeTest {
 
         verify(mPrefService, never())
                 .setBoolean(Pref.HAS_REACHED_CLICK_AND_VIEW_ACTIONS_UPLOAD_CONDITIONS, true);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Feed"})
+    @Features.EnableFeatures({ChromeFeatureList.INTEREST_FEED_NOTICE_CARD_AUTO_DISMISS,
+            ChromeFeatureList.INTEREST_FEEDV1_CLICKS_AND_VIEWS_CONDITIONAL_UPLOAD})
+    public void
+    onContentViewed_updateClicksAndViewsCount_whenNoticeCardAt2ndPos() throws Exception {
+        when(mPrefService.getBoolean(Pref.LAST_FETCH_HAD_NOTICE_CARD)).thenReturn(true);
+
+        int initialCount = 1;
+        when(mPrefService.getInteger(Pref.NOTICE_CARD_CLICKS_COUNT)).thenReturn(initialCount);
+        when(mPrefService.getInteger(Pref.NOTICE_CARD_VIEWS_COUNT)).thenReturn(initialCount);
+
+        // Determine the notice card index to be one because the conditional logging feature is
+        // enabled which is tied to having the notice card at the 2nd position.
+        int noticeCardIndex = 1;
+        ContentLoggingData data = makeContentData(noticeCardIndex);
+        mFeedLoggingBridge.onContentViewed(data);
+        mFeedLoggingBridge.onClientAction(data, ActionType.UNKNOWN);
+
+        // Verify that the counts are incremented by one.
+        verify(mPrefService, times(1)).setInteger(Pref.NOTICE_CARD_CLICKS_COUNT, initialCount + 1);
+        verify(mPrefService, times(1)).setInteger(Pref.NOTICE_CARD_VIEWS_COUNT, initialCount + 1);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Feed"})
+    @Features.EnableFeatures({ChromeFeatureList.INTEREST_FEED_NOTICE_CARD_AUTO_DISMISS})
+    public void onContentViewed_updateClicksAndViewsCount_whenNoticeCardAt1stPos()
+            throws Exception {
+        when(mPrefService.getBoolean(Pref.LAST_FETCH_HAD_NOTICE_CARD)).thenReturn(true);
+
+        int initialCount = 1;
+        when(mPrefService.getInteger(Pref.NOTICE_CARD_CLICKS_COUNT)).thenReturn(initialCount);
+        when(mPrefService.getInteger(Pref.NOTICE_CARD_VIEWS_COUNT)).thenReturn(initialCount);
+
+        // Determine the notice card index to be zero because the notice card at the 1st position
+        // when conditional logging is disabled.
+        int noticeCardIndex = 0;
+        ContentLoggingData data = makeContentData(noticeCardIndex);
+        mFeedLoggingBridge.onContentViewed(data);
+        mFeedLoggingBridge.onClientAction(data, ActionType.UNKNOWN);
+
+        // Verify that the counts are incremented by one.
+        verify(mPrefService, times(1)).setInteger(Pref.NOTICE_CARD_CLICKS_COUNT, initialCount + 1);
+        verify(mPrefService, times(1)).setInteger(Pref.NOTICE_CARD_VIEWS_COUNT, initialCount + 1);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Feed"})
+    public void onContentViewed_dontUpdateClicksAndViewsCount_whenFeatureDisabled()
+            throws Exception {
+        when(mPrefService.getBoolean(Pref.LAST_FETCH_HAD_NOTICE_CARD)).thenReturn(true);
+
+        // Determine the notice card index to be zero because the notice card is at the 1st position
+        // when conditional logging is disabled.
+        int noticeCardIndex = 0;
+        ContentLoggingData data = makeContentData(noticeCardIndex);
+        mFeedLoggingBridge.onContentViewed(data);
+        mFeedLoggingBridge.onClientAction(data, ActionType.UNKNOWN);
+
+        // Verify that the counts are not incremented.
+        verify(mPrefService, never()).setInteger(eq(Pref.NOTICE_CARD_CLICKS_COUNT), anyInt());
+        verify(mPrefService, never()).setInteger(eq(Pref.NOTICE_CARD_VIEWS_COUNT), anyInt());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Feed"})
+    @Features.EnableFeatures({ChromeFeatureList.INTEREST_FEED_NOTICE_CARD_AUTO_DISMISS})
+    public void onContentViewed_dontUpdateClicksAndViewsCount_whenNoNoticeCard() throws Exception {
+        when(mPrefService.getBoolean(Pref.LAST_FETCH_HAD_NOTICE_CARD)).thenReturn(false);
+
+        // Determine the notice card index to be zero because the notice card at the 1st position
+        // when conditional logging is disabled.
+        int noticeCardIndex = 0;
+        ContentLoggingData data = makeContentData(noticeCardIndex);
+        mFeedLoggingBridge.onContentViewed(data);
+        mFeedLoggingBridge.onClientAction(data, ActionType.UNKNOWN);
+
+        // Verify that the counts are not incremented.
+        verify(mPrefService, never()).setInteger(eq(Pref.NOTICE_CARD_CLICKS_COUNT), anyInt());
+        verify(mPrefService, never()).setInteger(eq(Pref.NOTICE_CARD_VIEWS_COUNT), anyInt());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Feed"})
+    @Features.EnableFeatures({ChromeFeatureList.INTEREST_FEED_NOTICE_CARD_AUTO_DISMISS})
+    public void onContentViewed_dontUpdateClicksAndViewsCount_whenNotNoticeCardIndex()
+            throws Exception {
+        when(mPrefService.getBoolean(Pref.LAST_FETCH_HAD_NOTICE_CARD)).thenReturn(true);
+
+        int nonNoticeCardIndex = 4;
+        ContentLoggingData data = makeContentData(nonNoticeCardIndex);
+        mFeedLoggingBridge.onContentViewed(data);
+        mFeedLoggingBridge.onClientAction(data, ActionType.UNKNOWN);
+
+        // Verify that the counts are not incremented.
+        verify(mPrefService, never()).setInteger(eq(Pref.NOTICE_CARD_CLICKS_COUNT), anyInt());
+        verify(mPrefService, never()).setInteger(eq(Pref.NOTICE_CARD_VIEWS_COUNT), anyInt());
     }
 
     private void verifyHistogram(int sample, int expectedCount) {
