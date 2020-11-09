@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/flat_map.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -48,6 +49,35 @@ std::atomic<bool> g_use_hang_watcher{false};
 std::atomic<bool> g_hang_watch_workers{false};
 std::atomic<bool> g_hang_watch_io_thread{false};
 std::atomic<bool> g_hang_watch_ui_thread{false};
+
+// Emits the hung thread count histogram. |count| is the number of threads
+// of type |thread_type| that were hung or became hung during the last
+// monitoring window. This function should be invoked for each thread type
+// encountered on each call to Monitor().
+void LogHungThreadCountHistogram(HangWatcher::ThreadType thread_type,
+                                 int count) {
+  constexpr int kMaxHungThreadCount = 100;
+  switch (thread_type) {
+    case HangWatcher::ThreadType::kIOThread:
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          "HangWatcher.NumberOfHungThreadsDuringWatchWindow.BrowserProcess."
+          "IOThread",
+          count, kMaxHungThreadCount);
+      break;
+    case HangWatcher::ThreadType::kUIThread:
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          "HangWatcher.NumberOfHungThreadsDuringWatchWindow.BrowserProcess."
+          "UIThread",
+          count, kMaxHungThreadCount);
+      break;
+    case HangWatcher::ThreadType::kThreadPoolThread:
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          "HangWatcher.NumberOfHungThreadsDuringWatchWindow.BrowserProcess."
+          "ThreadPool",
+          count, kMaxHungThreadCount);
+      break;
+  }
+}
 }
 
 constexpr const char* kThreadName = "HangWatcher";
@@ -424,6 +454,17 @@ HangWatcher::WatchStateSnapShot::WatchStateSnapShot(
   bool all_threads_marked = true;
   bool found_deadline_before_ignore_threshold = false;
 
+  // Use an std::array to store the hang counts to avoid allocations. The
+  // numerical values of the HangWatcher::ThreadType enum is used to index into
+  // the array. A |kInvalidHangCount| is used to signify there were no threads
+  // of the type found.
+  constexpr size_t kHangCountArraySize =
+      static_cast<std::size_t>(base::HangWatcher::ThreadType::kMax) + 1;
+  std::array<int, kHangCountArraySize> hung_counts_per_thread_type;
+
+  constexpr int kInvalidHangCount = -1;
+  hung_counts_per_thread_type.fill(kInvalidHangCount);
+
   // Copy hung thread information.
   for (const auto& watch_state : watch_states) {
     uint64_t flags;
@@ -441,8 +482,18 @@ HangWatcher::WatchStateSnapShot::WatchStateSnapShot(
       continue;
     }
 
+    // If a thread type is monitored and did not hang it still needs to be
+    // logged as a zero count;
+    const size_t hang_count_index =
+        static_cast<size_t>(watch_state.get()->thread_type());
+    if (hung_counts_per_thread_type[hang_count_index] == kInvalidHangCount) {
+      hung_counts_per_thread_type[hang_count_index] = 0;
+    }
+
     // Only copy hung threads.
     if (deadline <= now) {
+      ++hung_counts_per_thread_type[hang_count_index];
+
       // Attempt to mark the thread as needing to stay within its current
       // HangWatchScopeEnabled until capture is complete.
       bool thread_marked = watch_state->SetShouldBlockOnHang(flags, deadline);
@@ -459,6 +510,15 @@ HangWatcher::WatchStateSnapShot::WatchStateSnapShot(
         all_threads_marked = false;
       }
     }
+  }
+
+  // Log the hung thread counts to histograms for each thread type if any thread
+  // of the type were found.
+  for (size_t i = 0; i < kHangCountArraySize; ++i) {
+    const int hang_count = hung_counts_per_thread_type[i];
+    if (hang_count != kInvalidHangCount)
+      LogHungThreadCountHistogram(static_cast<HangWatcher::ThreadType>(i),
+                                  hang_count);
   }
 
   // Two cases can invalidate this snapshot and prevent the capture of the hang.

@@ -141,7 +141,7 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
     kIOThread = 0,
     kUIThread = 1,
     kThreadPoolThread = 2,
-    kThreadForTesting = 3
+    kMax = kThreadPoolThread
   };
 
   // The first invocation of the constructor will set the global instance
