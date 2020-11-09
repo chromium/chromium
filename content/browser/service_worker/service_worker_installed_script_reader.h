@@ -74,6 +74,7 @@ class ServiceWorkerInstalledScriptReader
       base::Optional<mojo_base::BigBuffer> metadata,
       mojo::ScopedDataPipeConsumerHandle body_consumer_handle);
   void OnMetaDataSent(bool success);
+  void OnReaderDisconnected();
   void CompleteSendIfNeeded(FinishedReason reason);
   bool WasMetadataWritten() const { return !meta_data_sender_; }
   bool WasBodyWritten() const { return was_body_written_; }

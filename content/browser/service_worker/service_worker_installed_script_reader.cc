@@ -94,12 +94,17 @@ class ServiceWorkerInstalledScriptReader::MetaDataSender {
 ServiceWorkerInstalledScriptReader::ServiceWorkerInstalledScriptReader(
     mojo::Remote<storage::mojom::ServiceWorkerResourceReader> reader,
     Client* client)
-    : reader_(std::move(reader)), client_(client) {}
+    : reader_(std::move(reader)), client_(client) {
+  DCHECK(reader_.is_connected());
+  reader_.set_disconnect_handler(base::BindOnce(
+      &ServiceWorkerInstalledScriptReader::OnReaderDisconnected, AsWeakPtr()));
+}
 
 ServiceWorkerInstalledScriptReader::~ServiceWorkerInstalledScriptReader() {}
 
 void ServiceWorkerInstalledScriptReader::Start() {
   TRACE_EVENT0("ServiceWorker", "ServiceWorkerInstalledScriptReader::Start");
+  DCHECK(reader_.is_connected());
   reader_->ReadResponseHead(base::BindOnce(
       &ServiceWorkerInstalledScriptReader::OnReadResponseHeadComplete,
       AsWeakPtr()));
@@ -122,6 +127,7 @@ void ServiceWorkerInstalledScriptReader::OnReadResponseHeadComplete(
   }
 
   DCHECK_GE(result, 0);
+  DCHECK(reader_.is_connected());
 
   body_size_ = response_head->content_length;
   int64_t content_length = response_head->content_length;
@@ -174,6 +180,10 @@ void ServiceWorkerInstalledScriptReader::OnReadDataStarted(
   client_->OnStarted(std::move(response_head), std::move(metadata),
                      std::move(body_consumer_handle),
                      std::move(meta_data_consumer));
+}
+
+void ServiceWorkerInstalledScriptReader::OnReaderDisconnected() {
+  CompleteSendIfNeeded(FinishedReason::kConnectionError);
 }
 
 void ServiceWorkerInstalledScriptReader::OnMetaDataSent(bool success) {

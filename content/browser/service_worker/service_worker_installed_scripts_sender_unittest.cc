@@ -148,6 +148,7 @@ class ServiceWorkerInstalledScriptsSenderTest : public testing::Test {
 
   EmbeddedWorkerTestHelper* helper() { return helper_.get(); }
   ServiceWorkerContextCore* context() { return helper_->context(); }
+  ServiceWorkerRegistry* registry() { return context()->registry(); }
   ServiceWorkerVersion* version() { return version_.get(); }
 
  private:
@@ -648,6 +649,66 @@ TEST_F(ServiceWorkerInstalledScriptsSenderTest, NoContext) {
 
   sender->Start();
   EXPECT_EQ(sender->last_finished_reason(), FinishedReason::kNoContextError);
+}
+
+// Test that the scripts sender aborts gracefully when a remote connection to
+// the Storage Service is disconnected.
+TEST_F(ServiceWorkerInstalledScriptsSenderTest, RemoteStorageDisconnection) {
+  const GURL kMainScriptURL = version()->script_url();
+  std::map<GURL, ExpectedScriptInfo> kExpectedScriptInfoMap = {
+      {kMainScriptURL,
+       {1,
+        kMainScriptURL,
+        {{"Content-Length", "35"},
+         {"Content-Type", "text/javascript; charset=utf-8"},
+         {"TestHeader", "BlahBlah"}},
+        "utf-8",
+        "I'm script body for the main script",
+        "I'm meta data for the main script"}}};
+  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> records;
+  for (const auto& info : kExpectedScriptInfoMap)
+    records.push_back(
+        info.second.WriteToDiskCache(context()->GetStorageControl()));
+  version()->script_cache_map()->SetResources(records);
+  auto sender =
+      std::make_unique<ServiceWorkerInstalledScriptsSender>(version());
+
+  sender->Start();
+
+  registry()->SimulateStorageRestartForTesting();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(sender->last_finished_reason(), FinishedReason::kConnectionError);
+}
+
+// Test that the scripts sender aborts gracefully when the storage is disabled.
+TEST_F(ServiceWorkerInstalledScriptsSenderTest, StorageDisabled) {
+  const GURL kMainScriptURL = version()->script_url();
+  std::map<GURL, ExpectedScriptInfo> kExpectedScriptInfoMap = {
+      {kMainScriptURL,
+       {1,
+        kMainScriptURL,
+        {{"Content-Length", "35"},
+         {"Content-Type", "text/javascript; charset=utf-8"},
+         {"TestHeader", "BlahBlah"}},
+        "utf-8",
+        "I'm script body for the main script",
+        "I'm meta data for the main script"}}};
+  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> records;
+  for (const auto& info : kExpectedScriptInfoMap)
+    records.push_back(
+        info.second.WriteToDiskCache(context()->GetStorageControl()));
+  version()->script_cache_map()->SetResources(records);
+
+  registry()->GetRemoteStorageControl()->Disable();
+  registry()->GetRemoteStorageControl().FlushForTesting();
+
+  auto sender =
+      std::make_unique<ServiceWorkerInstalledScriptsSender>(version());
+  sender->Start();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(sender->last_finished_reason(), FinishedReason::kConnectionError);
 }
 
 }  // namespace content
