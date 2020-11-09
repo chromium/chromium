@@ -525,6 +525,12 @@ void ServiceWorkerContainerHost::CountFeature(
   if (!is_execution_ready())
     return;
 
+  // `container_` shouldn't be disconnected during the lifetime of `this` but
+  // there seems a situation where `container_` is disconnected.
+  // TODO(crbug.com/1136843): Figure out the cause and remove this check.
+  if (!container_.is_connected())
+    return;
+
   container_->CountFeature(feature);
 }
 
