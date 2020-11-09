@@ -366,11 +366,15 @@ void TtsPlatformImplBackgroundWorker::OnSpeechEvent(int utterance_id) {
         SendTtsEvent(utterance_id_, TTS_EVENT_MARKER, utterance_char_position_);
         break;
       case SPEI_WORD_BOUNDARY:
+        utterance_char_position_ =
+            static_cast<size_t>(event.lParam) - utterance_prefix_length_;
         SendTtsEvent(utterance_id_, TTS_EVENT_WORD, utterance_char_position_,
                      static_cast<ULONG>(event.wParam));
 
         break;
       case SPEI_SENTENCE_BOUNDARY:
+        utterance_char_position_ =
+            static_cast<size_t>(event.lParam) - utterance_prefix_length_;
         SendTtsEvent(utterance_id_, TTS_EVENT_SENTENCE,
                      utterance_char_position_);
         break;
