@@ -15,7 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/trees/render_frame_metadata.h"
@@ -237,7 +237,9 @@ class PageHandler : public DevToolsDomainHandler,
   BrowserHandler* browser_handler_;
 
   std::unique_ptr<Page::Frontend> frontend_;
-  ScopedObserver<RenderWidgetHost, RenderWidgetHostObserver> observer_{this};
+
+  base::ScopedObservation<RenderWidgetHost, RenderWidgetHostObserver>
+      observation_{this};
   JavaScriptDialogCallback pending_dialog_;
   base::flat_map<base::UnguessableToken, std::unique_ptr<NavigateCallback>>
       navigate_callbacks_;
