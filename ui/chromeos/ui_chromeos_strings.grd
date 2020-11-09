@@ -725,10 +725,10 @@
       </message>
 
       <message name="IDS_IME_NAME_KEYBOARD_ARMENIAN_PHONETIC" desc="The input method name shows in system tray menu and settings page.">
-        Armenian Phonetic keyboard
+        Armenian
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_BELARUSIAN" desc="The input method name shows in system tray menu and settings page.">
-        Belarusian keyboard
+        Belarusian
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_BELGIAN_DUTCH" desc="The input method name shows in system tray menu and settings page.">
         Dutch (Belgium)
@@ -743,10 +743,10 @@
         Brazilian keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_BULGARIAN" desc="The input method name shows in system tray menu and settings page.">
-        Bulgarian keyboard
+        Bulgarian
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_BULGARIAN_PHONETIC" desc="The input method name shows in system tray menu and settings page.">
-        Bulgarian Phonetic keyboard
+        Bulgarian with Phonetic keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_CANADIAN_ENGLISH" desc="The input method name shows in system tray menu and settings page.">
         Canadian English keyboard
@@ -1009,7 +1009,7 @@
       </message>
 
       <message name="IDS_IME_NAME_KEYBOARD_ARABIC" desc="The input method name shows in system tray menu and settings page.">
-        Arabic keyboard
+        Arabic
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_BENGALI_PHONETIC" desc="The input method name shows in system tray menu and settings page.">
         Bengali keyboard (Phonetic)
@@ -1112,7 +1112,7 @@
         Transliteration (salam &#x2192; &#x1230;&#x120b;&#x121d;)
       </message>
       <message name="IDS_IME_NAME_TRANSLITERATION_AR" desc="The input method name shows in system tray menu and settings page. Please translate only for 'transliteration'.">
-        Transliteration (marhaban &#x2190; &#x0645;&#x0631;&#x062d;&#x0628;&#x0627;)
+        Arabic Transliteration
       </message>
       <message name="IDS_IME_NAME_TRANSLITERATION_BN" desc="The input method name shows in system tray menu and settings page. Please translate only for 'transliteration'.">
         Transliteration (namaskar &#x2192; &#x09a8;&#x09ae;&#x09b8;&#x09cd;&#x0995;&#x09be;&#x09b0;)
