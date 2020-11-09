@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/libyuv/include/libyuv.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 
 namespace blink {
 
@@ -61,6 +62,36 @@ bool IsValidSkColorType(SkColorType sk_color_type) {
     }
   }
   return false;
+}
+
+void OnYUVReadbackDone(
+    void* raw_frame_ptr,
+    std::unique_ptr<const SkImage::AsyncReadResult> async_result) {
+  scoped_refptr<media::VideoFrame> frame(
+      static_cast<media::VideoFrame*>(raw_frame_ptr));
+  if (!async_result) {
+    LOG(ERROR) << "Failed to read yuv420 back!";
+    return;
+  }
+  auto* data0 = static_cast<const uint8_t*>(async_result->data(0));
+  DCHECK(data0);
+  auto* data1 = static_cast<const uint8_t*>(async_result->data(1));
+  DCHECK(data1);
+  auto* data2 = static_cast<const uint8_t*>(async_result->data(2));
+  DCHECK(data2);
+  gfx::Size size = frame->coded_size();
+  libyuv::CopyPlane(data0, static_cast<int>(async_result->rowBytes(0)),
+                    frame->visible_data(media::VideoFrame::kYPlane),
+                    frame->stride(media::VideoFrame::kYPlane), size.width(),
+                    size.height());
+  libyuv::CopyPlane(data1, static_cast<int>(async_result->rowBytes(1)),
+                    frame->visible_data(media::VideoFrame::kUPlane),
+                    frame->stride(media::VideoFrame::kUPlane), size.width() / 2,
+                    size.height() / 2);
+  libyuv::CopyPlane(data2, static_cast<int>(async_result->rowBytes(2)),
+                    frame->visible_data(media::VideoFrame::kVPlane),
+                    frame->stride(media::VideoFrame::kVPlane), size.width() / 2,
+                    size.height() / 2);
 }
 
 }  // namespace
@@ -107,22 +138,6 @@ VideoFrame* VideoFrame::Create(ImageBitmap* source,
                                       "Invalid color space");
     return nullptr;
   }
-  auto sk_color_type = sk_image_info.colorType();
-  if (!IsValidSkColorType(sk_color_type)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid pixel format");
-    return nullptr;
-  }
-
-  // TODO(jie.a.chen@intel.com): Handle data of float type.
-  // Full copy #1
-  WTF::Vector<uint8_t> pixel_data = source->CopyBitmapData();
-  if (pixel_data.size() <
-      media::VideoFrame::AllocationSize(media::PIXEL_FORMAT_ARGB, size)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kBufferOverrunError,
-                                      "Image buffer is too small.");
-    return nullptr;
-  }
 
   auto frame = media::VideoFrame::CreateFrame(media::PIXEL_FORMAT_I420, size,
                                               rect, size, timestamp);
@@ -132,41 +147,72 @@ VideoFrame* VideoFrame::Create(ImageBitmap* source,
     return nullptr;
   }
 
-#if SK_PMCOLOR_BYTE_ORDER(B, G, R, A)
-  auto libyuv_convert_to_i420 = libyuv::ARGBToI420;
-#else
-  auto libyuv_convert_to_i420 = libyuv::ABGRToI420;
-#endif
-  if (sk_color_type != kN32_SkColorType) {
-    // Swap ARGB and ABGR if not using the native pixel format.
-    libyuv_convert_to_i420 =
-        (libyuv_convert_to_i420 == libyuv::ARGBToI420 ? libyuv::ABGRToI420
-                                                      : libyuv::ARGBToI420);
-  }
+  bool is_texture =
+      source->BitmapImage()->PaintImageForCurrentFrame().IsTextureBacked();
+  // Now only SkImage_Gpu implemented the readbackYUV420 method, so for
+  // non-texture image, still use libyuv do the csc until SkImage_Base
+  // implement asyncRescaleAndReadPixelsYUV420.
+  if (is_texture) {
+    auto sk_image =
+        source->BitmapImage()->PaintImageForCurrentFrame().GetSkImage();
+    SkIRect src_rect = SkIRect::MakeWH(source->width(), source->height());
+    sk_image->asyncRescaleAndReadPixelsYUV420(
+        kRec709_SkYUVColorSpace, sk_color_space, src_rect,
+        {source->width(), source->height()}, SkImage::RescaleGamma::kSrc,
+        kHigh_SkFilterQuality, &OnYUVReadbackDone, frame.get());
+    GrDirectContext* gr_context =
+        source->BitmapImage()->ContextProvider()->GetGrContext();
+    DCHECK(gr_context);
+    gr_context->flushAndSubmit(/*syncCpu=*/true);
+  } else {
+    auto sk_color_type = sk_image_info.colorType();
+    if (!IsValidSkColorType(sk_color_type)) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Invalid pixel format");
+      return nullptr;
+    }
 
-  // TODO(jie.a.chen@intel.com): Use GPU to do the conversion.
-  // Full copy #2
-  int error =
-      libyuv_convert_to_i420(pixel_data.data(), source->width() * 4,
-                             frame->visible_data(media::VideoFrame::kYPlane),
-                             frame->stride(media::VideoFrame::kYPlane),
-                             frame->visible_data(media::VideoFrame::kUPlane),
-                             frame->stride(media::VideoFrame::kUPlane),
-                             frame->visible_data(media::VideoFrame::kVPlane),
-                             frame->stride(media::VideoFrame::kVPlane),
-                             source->width(), source->height());
-  if (error) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                      "ARGB to YUV420 conversion error");
-    return nullptr;
+    // TODO(jie.a.chen@intel.com): Handle data of float type.
+    // Full copy #1
+    WTF::Vector<uint8_t> pixel_data = source->CopyBitmapData();
+    if (pixel_data.size() <
+        media::VideoFrame::AllocationSize(media::PIXEL_FORMAT_ARGB, size)) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kBufferOverrunError,
+                                        "Image buffer is too small.");
+      return nullptr;
+    }
+
+    DCHECK(sk_color_type == kRGBA_8888_SkColorType ||
+           sk_color_type == kBGRA_8888_SkColorType);
+    auto libyuv_convert_to_i420 = (sk_color_type == kRGBA_8888_SkColorType)
+                                      ? libyuv::ABGRToI420
+                                      : libyuv::ARGBToI420;
+
+    // TODO(jie.a.chen@intel.com): Use GPU to do the conversion.
+    // Full copy #2
+    int error =
+        libyuv_convert_to_i420(pixel_data.data(), source->width() * 4,
+                               frame->visible_data(media::VideoFrame::kYPlane),
+                               frame->stride(media::VideoFrame::kYPlane),
+                               frame->visible_data(media::VideoFrame::kUPlane),
+                               frame->stride(media::VideoFrame::kUPlane),
+                               frame->visible_data(media::VideoFrame::kVPlane),
+                               frame->stride(media::VideoFrame::kVPlane),
+                               source->width(), source->height());
+    if (error) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                        "ARGB to YUV420 conversion error");
+      return nullptr;
+    }
+    gfx::ColorSpace gfx_color_space(*sk_color_space);
+    // 'libyuv_convert_to_i420' assumes SMPTE170M.
+    // Refer to the func below to check the actual conversion:
+    // third_party/libyuv/source/row_common.cc -- RGBToY(...)
+    gfx_color_space = gfx_color_space.GetWithMatrixAndRange(
+        gfx::ColorSpace::MatrixID::SMPTE170M,
+        gfx::ColorSpace::RangeID::LIMITED);
+    frame->set_color_space(gfx_color_space);
   }
-  gfx::ColorSpace gfx_color_space(*sk_color_space);
-  // 'libyuv_convert_to_i420' assumes SMPTE170M.
-  // Refer to the func below to check the actual conversion:
-  // third_party/libyuv/source/row_common.cc -- RGBToY(...)
-  gfx_color_space = gfx_color_space.GetWithMatrixAndRange(
-      gfx::ColorSpace::MatrixID::SMPTE170M, gfx::ColorSpace::RangeID::LIMITED);
-  frame->set_color_space(gfx_color_space);
   auto* result = MakeGarbageCollected<VideoFrame>(std::move(frame));
   return result;
 }
