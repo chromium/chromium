@@ -24,9 +24,12 @@ class PlatformFieldTrials {
   // FeatureList::AssociateReportingFieldTrial. |has_seed| indicates that the
   // variations service used a seed to create field trials. This can be used to
   // prevent associating a field trial with a feature that you expect to be
-  // controlled by the variations seed.
+  // controlled by the variations seed. |low_entropy_provider| can be used as a
+  // parameter to creating a FieldTrial that should be visible to Google web
+  // properties.
   virtual void SetupFeatureControllingFieldTrials(
       bool has_seed,
+      const base::FieldTrial::EntropyProvider& low_entropy_provider,
       base::FeatureList* feature_list) = 0;
 
   // Register any synthetic field trials. Will be called later than the above

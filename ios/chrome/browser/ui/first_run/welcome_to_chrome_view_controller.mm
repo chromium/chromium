@@ -25,6 +25,7 @@
 #include "ios/chrome/browser/ui/fancy_ui/primary_action_button.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #include "ios/chrome/browser/ui/first_run/first_run_util.h"
+#import "ios/chrome/browser/ui/first_run/location_permissions_field_trial.h"
 #include "ios/chrome/browser/ui/first_run/static_file_view_controller.h"
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -249,8 +250,8 @@ const BOOL kDefaultStatsCheckboxValue = YES;
                              [self.dispatcher
                                  showAdvancedSigninSettingsFromViewController:
                                      presentingViewController];
-                           } else if (base::FeatureList::IsEnabled(
-                                          kLocationFirstRunModal)) {
+                           } else if (location_permissions_field_trial::
+                                          IsInFirstRunModalGroup()) {
                              [self.dispatcher
                                  showLocationPermissionsFromViewController:
                                      presentingViewController];

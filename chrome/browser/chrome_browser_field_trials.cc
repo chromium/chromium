@@ -79,6 +79,7 @@ void ChromeBrowserFieldTrials::SetupFieldTrials() {
 
 void ChromeBrowserFieldTrials::SetupFeatureControllingFieldTrials(
     bool has_seed,
+    const base::FieldTrial::EntropyProvider& low_entropy_provider,
     base::FeatureList* feature_list) {
   // Only create the fallback trials if there isn't already a variations seed
   // being applied. This should occur during first run when first-run variations

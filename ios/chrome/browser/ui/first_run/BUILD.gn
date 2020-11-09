@@ -2,6 +2,25 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("field_trial") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "ios_first_run_field_trials.cc",
+    "ios_first_run_field_trials.h",
+    "location_permissions_field_trial.cc",
+    "location_permissions_field_trial.h",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//components/variations",
+    "//components/version_info",
+    "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/common",
+  ]
+}
+
 source_set("first_run") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -23,6 +42,7 @@ source_set("first_run") {
   ]
   deps = [
     ":constants",
+    ":field_trial",
     "resources:checkbox",
     "resources:checkbox_checked",
     "resources:first_run_location_permissions",
