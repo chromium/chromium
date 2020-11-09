@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_notification_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
@@ -153,6 +154,7 @@ void DlpContentManager::OnScreenCaptureStopped(
                 [=](const ScreenCaptureInfo& capture) -> bool {
                   return capture.label == label && capture.media_id == media_id;
                 });
+  MaybeUpdateScreenCaptureNotification();
 }
 
 /* static */
@@ -375,6 +377,39 @@ void DlpContentManager::CheckRunningVideoCapture() {
   }
 }
 
+void DlpContentManager::MaybeUpdateScreenCaptureNotification() {
+  bool is_running = false;
+  bool is_paused = false;
+  for (auto& capture : running_screen_captures_) {
+    is_running |= capture.is_running;
+    is_paused |= !capture.is_running;
+  }
+  // If a capture was paused and a "paused" notification was shown, but the
+  // capture is resumed/stopped - hide the "paused" notification.
+  if (showing_paused_notification_ && !is_paused) {
+    HideDlpScreenCapturePausedNotification();
+    showing_paused_notification_ = false;
+    // If a capture was paused and later resumed - show a "resumed" notification
+    // if not yet shown.
+    if (!showing_resumed_notification_ && is_running) {
+      ShowDlpScreenCaptureResumedNotification();
+      showing_resumed_notification_ = true;
+    }
+  }
+  // If a capture was resumed and "resumed" notification was shown, but the
+  // capture is not running anymore - hide the "resumed" notification.
+  if (showing_resumed_notification_ && !is_running) {
+    HideDlpScreenCaptureResumedNotification();
+    showing_resumed_notification_ = false;
+  }
+  // If a capture was paused, but no notification is yet shown - show "paused"
+  // notification.
+  if (!showing_paused_notification_ && is_paused) {
+    ShowDlpScreenCapturePausedNotification();
+    showing_paused_notification_ = true;
+  }
+}
+
 void DlpContentManager::CheckRunningScreenCaptures() {
   for (auto& capture : running_screen_captures_) {
     bool is_allowed = !IsScreenCaptureRestricted(capture.media_id);
@@ -384,6 +419,7 @@ void DlpContentManager::CheckRunningScreenCaptures() {
                                 ? blink::mojom::MediaStreamStateChange::PAUSE
                                 : blink::mojom::MediaStreamStateChange::PLAY);
       capture.is_running = is_allowed;
+      MaybeUpdateScreenCaptureNotification();
     }
   }
 }

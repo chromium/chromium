@@ -591,5 +591,17 @@ Additional details:
   <message name="IDS_POLICY_DLP_PRINTING_BLOCKED_MESSAGE" desc="The message for notification informing the user that printing is blocked.">
     Printing of this content is blocked by your administrator.
   </message>
+  <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_PAUSED_TITLE" desc="The title for notification informing the user that screen capture is paused.">
+    Screen capture paused
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_PAUSED_MESSAGE" desc="The message for notification informing the user that screen capture is paused.">
+    Screen capture has been paused by your administrator due to content on your screen.
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_RESUMED_TITLE" desc="The title for notification informing the user that screen capture is resumed.">
+    Screen capture resumed
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_RESUMED_MESSAGE" desc="The message for notification informing the user that screen capture is resumed.">
+    Screen capture has been resumed.
+  </message>
 
 </grit-part>

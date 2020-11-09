@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
 #include "chrome/browser/ui/browser.h"
@@ -18,6 +19,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "content/public/browser/desktop_media_id.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -26,6 +28,7 @@
 namespace policy {
 
 namespace {
+const DlpContentRestrictionSet kEmptyRestrictionSet;
 const DlpContentRestrictionSet kScreenshotRestricted(
     DlpContentRestriction::kScreenshot);
 const DlpContentRestrictionSet kPrivacyScreenEnforced(
@@ -35,6 +38,11 @@ const DlpContentRestrictionSet kVideoCaptureRestricted(
     DlpContentRestriction::kVideoCapture);
 const DlpContentRestrictionSet kScreenShareRestricted(
     DlpContentRestriction::kScreenShare);
+
+constexpr char kScreenCapturePausedNotificationId[] =
+    "screen_capture_dlp_paused";
+constexpr char kScreenCaptureResumedNotificationId[] =
+    "screen_capture_dlp_resumed";
 }  // namespace
 
 class DlpContentManagerBrowserTest : public InProcessBrowserTest {
@@ -223,6 +231,46 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   run_loop.RunUntilIdle();
 
   browser2->window()->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
+                       ScreenCaptureNotification) {
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  DlpContentManager* manager = DlpContentManager::Get();
+  ui_test_utils::NavigateToURL(browser(), GURL("https://example.com"));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  aura::Window* root_window =
+      browser()->window()->GetNativeWindow()->GetRootWindow();
+  const auto media_id = content::DesktopMediaID::RegisterNativeWindow(
+      content::DesktopMediaID::TYPE_SCREEN, root_window);
+  manager->OnScreenCaptureStarted("label", {media_id}, base::DoNothing());
+
+  EXPECT_FALSE(display_service_tester.GetNotification(
+      kScreenCapturePausedNotificationId));
+  EXPECT_FALSE(display_service_tester.GetNotification(
+      kScreenCaptureResumedNotificationId));
+
+  manager->OnConfidentialityChanged(web_contents, kScreenShareRestricted);
+
+  EXPECT_TRUE(display_service_tester.GetNotification(
+      kScreenCapturePausedNotificationId));
+  EXPECT_FALSE(display_service_tester.GetNotification(
+      kScreenCaptureResumedNotificationId));
+
+  manager->OnConfidentialityChanged(web_contents, kEmptyRestrictionSet);
+
+  EXPECT_FALSE(display_service_tester.GetNotification(
+      kScreenCapturePausedNotificationId));
+  EXPECT_TRUE(display_service_tester.GetNotification(
+      kScreenCaptureResumedNotificationId));
+
+  manager->OnScreenCaptureStopped("label", media_id);
+
+  EXPECT_FALSE(display_service_tester.GetNotification(
+      kScreenCapturePausedNotificationId));
+  EXPECT_FALSE(display_service_tester.GetNotification(
+      kScreenCaptureResumedNotificationId));
 }
 
 class DlpContentManagerPolicyBrowserTest : public PolicyTest {

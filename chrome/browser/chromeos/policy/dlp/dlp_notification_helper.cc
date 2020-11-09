@@ -21,16 +21,18 @@ namespace policy {
 namespace {
 
 constexpr char kPrintBlockedNotificationId[] = "print_dlp_blocked";
+constexpr char kScreenCapturePausedNotificationId[] =
+    "screen_capture_dlp_paused";
+constexpr char kScreenCaptureResumedNotificationId[] =
+    "screen_capture_dlp_resumed";
 constexpr char kDlpPolicyNotifierId[] = "policy.dlp";
 
-}  // namespace
-
-void ShowDlpPrintDisabledNotification() {
+void ShowDlpNotification(const std::string& id,
+                         const base::string16& title,
+                         const base::string16& message) {
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, kPrintBlockedNotificationId,
-          l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_BLOCKED_TITLE),
-          l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_BLOCKED_MESSAGE),
+          message_center::NOTIFICATION_TYPE_SIMPLE, id, title, message,
           /*display_source=*/base::string16(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
@@ -40,11 +42,47 @@ void ShowDlpPrintDisabledNotification() {
           vector_icons::kBusinessIcon,
           message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
   notification->set_renotify(true);
-
   NotificationDisplayService::GetForProfile(
       ProfileManager::GetActiveUserProfile())
       ->Display(NotificationHandler::Type::TRANSIENT, *notification,
                 /*metadata=*/nullptr);
+}
+
+}  // namespace
+
+void ShowDlpPrintDisabledNotification() {
+  ShowDlpNotification(
+      kPrintBlockedNotificationId,
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_BLOCKED_TITLE),
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_BLOCKED_MESSAGE));
+}
+
+void HideDlpScreenCapturePausedNotification() {
+  NotificationDisplayService::GetForProfile(
+      ProfileManager::GetActiveUserProfile())
+      ->Close(NotificationHandler::Type::TRANSIENT,
+              kScreenCapturePausedNotificationId);
+}
+
+void ShowDlpScreenCapturePausedNotification() {
+  ShowDlpNotification(
+      kScreenCapturePausedNotificationId,
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_CAPTURE_PAUSED_TITLE),
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_CAPTURE_PAUSED_MESSAGE));
+}
+
+void HideDlpScreenCaptureResumedNotification() {
+  NotificationDisplayService::GetForProfile(
+      ProfileManager::GetActiveUserProfile())
+      ->Close(NotificationHandler::Type::TRANSIENT,
+              kScreenCaptureResumedNotificationId);
+}
+
+void ShowDlpScreenCaptureResumedNotification() {
+  ShowDlpNotification(
+      kScreenCaptureResumedNotificationId,
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_CAPTURE_RESUMED_TITLE),
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_CAPTURE_RESUMED_MESSAGE));
 }
 
 }  // namespace policy

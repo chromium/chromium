@@ -110,6 +110,8 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
                            VideoCaptureNotStoppedWhenConfidentialWindowHidden);
   FRIEND_TEST_ALL_PREFIXES(DlpContentManagerPolicyBrowserTest,
                            GetRestrictionSetForURL);
+  FRIEND_TEST_ALL_PREFIXES(DlpContentManagerBrowserTest,
+                           ScreenCaptureNotification);
   FRIEND_TEST_ALL_PREFIXES(::WebRtcGetDisplayMediaBrowserTestWithPicker,
                            GetDisplayMediaVideoWithDlp);
   friend class DlpContentManagerTest;
@@ -179,6 +181,10 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
   // in the corresponding areas.
   void CheckRunningVideoCapture();
 
+  // Checks whether screen capture paused/resumed notification should be shown
+  // or hidden.
+  void MaybeUpdateScreenCaptureNotification();
+
   // Checks and stops the running screen captures if restricted content appeared
   // in the corresponding areas.
   void CheckRunningScreenCaptures();
@@ -203,6 +209,11 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
 
   // List of the currently running screen captures.
   std::vector<ScreenCaptureInfo> running_screen_captures_;
+
+  // Indicates whether screen capture paused/resumed notification is currently
+  // shown.
+  bool showing_paused_notification_ = false;
+  bool showing_resumed_notification_ = false;
 };
 
 }  // namespace policy
