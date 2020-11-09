@@ -18,6 +18,7 @@
 #include "ash/system/tray/size_range_layout.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/unfocusable_label.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
@@ -350,7 +351,7 @@ void TrayPopupUtils::InitializeAsCheckableRow(HoverHighlightView* container,
           AshColorProvider::ContentLayerType::kIconColorProminent));
   if (enterprise_managed) {
     gfx::ImageSkia enterprise_managed_icon = CreateVectorIcon(
-        kLoginScreenEnterpriseIcon, dip_size, gfx::kGoogleGrey100);
+        chromeos::kEnterpriseIcon, dip_size, gfx::kGoogleGrey100);
     container->AddRightIcon(enterprise_managed_icon,
                             enterprise_managed_icon.width());
   }

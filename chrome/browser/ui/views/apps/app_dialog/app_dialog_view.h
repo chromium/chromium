@@ -7,6 +7,7 @@
 
 #include "base/strings/string16.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/label.h"
 
 namespace gfx {
 class ImageSkia;
@@ -21,6 +22,12 @@ class AppDialogView : public views::BubbleDialogDelegateView {
 
  protected:
   void InitializeView(const base::string16& heading_text);
+
+  // Can only be called after InitializeView().
+  void SetLabelText(const base::string16& text);
+
+ private:
+  views::Label* label_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_DIALOG_APP_DIALOG_VIEW_H_

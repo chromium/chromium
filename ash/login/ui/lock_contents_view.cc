@@ -55,6 +55,7 @@
 #include "chromeos/components/proximity_auth/public/mojom/auth_type.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_type.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -776,7 +777,7 @@ void LockContentsView::ShowEnterpriseDomainManager(
   if (!chromeos::features::IsLoginDeviceManagementDisclosureEnabled())
     return;
   bottom_status_indicator_->SetIcon(
-      kLoginScreenEnterpriseIcon,
+      chromeos::kEnterpriseIcon,
       AshColorProvider::ContentLayerType::kIconColorPrimary);
   bottom_status_indicator_->SetText(l10n_util::GetStringFUTF16(
       IDS_ASH_LOGIN_MANAGED_DEVICE_INDICATOR, ui::GetChromeOSDeviceName(),

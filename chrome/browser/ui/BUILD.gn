@@ -2010,6 +2010,8 @@ static_library("ui") {
       "ash/screen_orientation_delegate_chromeos.h",
       "ash/screenshot_area.cc",
       "ash/screenshot_area.h",
+      "ash/security_token_session_restriction_view.cc",
+      "ash/security_token_session_restriction_view.h",
       "ash/session_controller_client_impl.cc",
       "ash/session_controller_client_impl.h",
       "ash/session_util.cc",

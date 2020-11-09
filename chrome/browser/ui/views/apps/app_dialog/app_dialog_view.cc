@@ -31,8 +31,13 @@ void AppDialogView::InitializeView(const base::string16& heading_text) {
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
-  auto* label = AddChildView(std::make_unique<views::Label>(heading_text));
-  label->SetMultiLine(true);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetAllowCharacterBreak(true);
+  label_ = AddChildView(std::make_unique<views::Label>(heading_text));
+  label_->SetMultiLine(true);
+  label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label_->SetAllowCharacterBreak(true);
+}
+
+void AppDialogView::SetLabelText(const base::string16& text) {
+  DCHECK(label_);
+  label_->SetText(text);
 }

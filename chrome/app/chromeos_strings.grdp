@@ -5878,4 +5878,40 @@ You can manage this account’s settings by installing the Family Link app on yo
     Can’t connect to proxy, please sign in again
   </message>
 
+  <!-- Strings for Security Token Sessions -->
+  <message name="IDS_SECURITY_TOKEN_SESSION_LOGOUT_NOTIFICATION_BUTTON_TITLE" desc="This belongs to a notification that informs the user that they will be logged out in a few seconds. This string is the title of a button with which the user can log out immediately.">
+    Sign out now
+  </message>
+  <message name="IDS_SECURITY_TOKEN_SESSION_LOGOUT_NOTIFICATION_TITLE" desc="This is the title of a notification informing the user that they will be logged out soon, unless they re-insert the smart card they used to log into the session. The notification appears when they remove this smart card.">
+    Insert smart card to stay signed in
+  </message>
+  <message name="IDS_SECURITY_TOKEN_SESSION_LOGOUT_NOTIFICATION_BODY" desc="This is the text of a notification informing the user that they will be logged out soon, unless they re-insert the smart card they used to log into the session. The notification appears when they remove this smart card.">
+{0, plural,
+=1 {You will be automatically signed out in # second.
+<ph name="DOMAIN">{1}<ex>example.com</ex></ph> requires you to keep your smart card inserted.}
+other {You will be automatically signed out in # seconds.
+<ph name="DOMAIN">{1}<ex>example.com</ex></ph> requires you to keep your smart card inserted.}}
+  </message>
+  <message name="IDS_SECURITY_TOKEN_SESSION_IMMEDIATE_LOGOUT_NOTIFICATION_BODY" desc="This is the text of a notification informing the user that they will be logged out now because they removed their smart card.">
+You will be automatically signed out now.
+<ph name="DOMAIN">{0}<ex>example.com</ex></ph> requires you to keep your smart card inserted.
+  </message>
+  <message name="IDS_SECURITY_TOKEN_SESSION_LOCK_NOTIFICATION_BUTTON_TITLE" desc="This belongs to a notification that informs the user that the session will be locked in a few seconds. This string is the title of a button with which the user can lock the session immediately.">
+    Lock now
+  </message>
+  <message name="IDS_SECURITY_TOKEN_SESSION_LOCK_NOTIFICATION_TITLE" desc="This is the title of a notification informing the user that the session will be locked soon, unless they re-insert the smart card they used to log into the session. The notification appears when they remove this smart card.">
+    Insert smart card to keep using your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+  </message>
+  <message name="IDS_SECURITY_TOKEN_SESSION_LOCK_NOTIFICATION_BODY" desc="This is the text of a notification informing the user that the session will be locked soon, unless they re-insert the smart card they used to log into the session. The notification appears when they remove this smart card.">
+{0, plural,
+=1 {Your <ph name="DEVICE_TYPE">{1}<ex>Chromebook</ex></ph> will be locked automatically in # second.
+<ph name="DOMAIN">{2}<ex>example.com</ex></ph> requires you to keep your smart card inserted.}
+other {Your <ph name="DEVICE_TYPE">{1}<ex>Chromebook</ex></ph> will be locked automatically in # seconds.
+<ph name="DOMAIN">{2}<ex>example.com</ex></ph> requires you to keep your smart card inserted.}}
+  </message>
+  <message name="IDS_SECURITY_TOKEN_SESSION_IMMEDIATE_LOCK_NOTIFICATION_BODY" desc="This is the text of a notification informing the user that the session will be locked now because they removed their smart card.">
+Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
+<ph name="DOMAIN">{1}<ex>example.com</ex></ph> requires you to keep your smart card inserted.
+  </message>
+
 </grit-part>

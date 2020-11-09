@@ -96,6 +96,7 @@
 #include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/user_manager/user_type.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_manager.h"
@@ -1281,7 +1282,7 @@ void NotifyAccessibilityFeatureDisabledByAdmin(
               feature_state ? IDS_ASH_ACCESSIBILITY_FEATURE_ACTIVATED
                             : IDS_ASH_ACCESSIBILITY_FEATURE_DEACTIVATED),
           l10n_util::GetStringUTF16(feature_name_id)),
-      notification_id, kLoginScreenEnterpriseIcon);
+      notification_id, chromeos::kEnterpriseIcon);
 }
 
 void RemoveStickyNotitification(const std::string& notification_id) {

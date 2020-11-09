@@ -40,6 +40,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "skia/ext/image_operations.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -554,7 +555,7 @@ LoginShelfView::LoginShelfView(
                  &LoginScreenController::HandleAccelerator,
                  base::Unretained(Shell::Get()->login_screen_controller()),
                  ash::LoginAcceleratorAction::kStartEnrollment),
-             IDS_ASH_ENTERPRISE_ENROLLMENT_BUTTON, kLoginScreenEnterpriseIcon);
+             IDS_ASH_ENTERPRISE_ENROLLMENT_BUTTON, chromeos::kEnterpriseIcon);
 
   // Adds observers for states that affect the visiblity of different buttons.
   tray_action_observer_.Add(Shell::Get()->tray_action());

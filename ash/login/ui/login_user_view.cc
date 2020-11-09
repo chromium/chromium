@@ -22,6 +22,7 @@
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/user_manager/user_type.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -103,7 +104,7 @@ class IconRoundedView : public views::View {
  public:
   IconRoundedView(int size) : radius_(size / 2) {
     icon_ = gfx::ImageSkiaOperations::CreateResizedImage(
-        gfx::CreateVectorIcon(kLoginScreenEnterpriseIcon, gfx::kGoogleGrey500),
+        gfx::CreateVectorIcon(chromeos::kEnterpriseIcon, gfx::kGoogleGrey500),
         skia::ImageOperations::RESIZE_BEST,
         gfx::Size(size * kIconProportion, size * kIconProportion));
   }
