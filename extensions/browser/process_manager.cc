@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -58,13 +59,38 @@ namespace extensions {
 
 namespace {
 
-// The time to delay between an extension becoming idle and
-// sending a ShouldSuspend message.
-unsigned g_event_page_idle_time_msec = 10000;
+// Feature to control the delay between an extension becoming idle and sending a
+// ShouldSuspend message.
+const base::Feature kChangeExtensionEventPageSuspendDelay{
+    "ChangeExtensionEventPageSuspendDelay", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// The delay between an extension becoming idle and sending a ShouldSuspend
+// message. The default value is used when the
+// |kChangeExtensionEventPageSuspendDelay| feature is disabled.
+//
+// TODO(crbug.com/1144166): Cleanup the feature param after experiments with a
+// longer delay are complete.
+const base::FeatureParam<int> kEventPageSuspendDelayMs{
+    &kChangeExtensionEventPageSuspendDelay, "event-page-suspend-delay-ms",
+    10000};
+
+// Overrides |kEventPageSuspendDelayMs| if not -1. For testing.
+constexpr int kInvalidSuspendDelay = -1;
+int g_event_page_suspend_delay_ms_for_testing = kInvalidSuspendDelay;
 
 // The time to delay between sending a ShouldSuspend message and
 // sending a Suspend message.
 unsigned g_event_page_suspending_time_msec = 5000;
+
+// Returns the delay between an extension becoming idle and sending a
+// ShouldSuspend message, taking into account experiments and testing overrides.
+base::TimeDelta GetEventPageSuspendDelay() {
+  if (g_event_page_suspend_delay_ms_for_testing != kInvalidSuspendDelay) {
+    return base::TimeDelta::FromMilliseconds(
+        g_event_page_suspend_delay_ms_for_testing);
+  }
+  return base::TimeDelta::FromMilliseconds(kEventPageSuspendDelayMs.Get());
+}
 
 std::string GetExtensionIdForSiteInstance(
     content::SiteInstance* site_instance) {
@@ -626,7 +652,7 @@ void ProcessManager::CloseBackgroundHosts() {
 // static
 void ProcessManager::SetEventPageIdleTimeForTesting(unsigned idle_time_msec) {
   CHECK_GT(idle_time_msec, 0u);
-  g_event_page_idle_time_msec = idle_time_msec;
+  g_event_page_suspend_delay_ms_for_testing = idle_time_msec;
 }
 
 // static
@@ -816,7 +842,7 @@ void ProcessManager::DecrementLazyKeepaliveCount(
           base::BindOnce(&ProcessManager::OnLazyBackgroundPageIdle,
                          weak_ptr_factory_.GetWeakPtr(), extension_id,
                          last_background_close_sequence_id_),
-          base::TimeDelta::FromMilliseconds(g_event_page_idle_time_msec));
+          GetEventPageSuspendDelay());
     }
   }
 }
