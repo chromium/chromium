@@ -500,7 +500,7 @@ bool CanonicalizePort(const base::char16* spec,
                       Component* out_port);
 
 // Returns the default port for the given canonical scheme, or PORT_UNSPECIFIED
-// if the scheme is unknown.
+// if the scheme is unknown. Based on https://url.spec.whatwg.org/#default-port
 COMPONENT_EXPORT(URL)
 int DefaultPortForScheme(const char* scheme, int scheme_len);
 

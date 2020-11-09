@@ -44,12 +44,12 @@ bool IsDefaultPortForProtocol(uint16_t port, const WTF::String& protocol) {
       return protocol == "https" || protocol == "wss";
     case 21:
       return protocol == "ftp";
-    case 990:
-      return protocol == "ftps";
   }
   return false;
 }
 
+// Please keep blink::DefaultPortForProtocol and url::DefaultPortForProtocol in
+// sync.
 uint16_t DefaultPortForProtocol(const WTF::String& protocol) {
   if (protocol == "http" || protocol == "ws")
     return 80;
@@ -57,8 +57,6 @@ uint16_t DefaultPortForProtocol(const WTF::String& protocol) {
     return 443;
   if (protocol == "ftp")
     return 21;
-  if (protocol == "ftps")
-    return 990;
 
   return 0;
 }
