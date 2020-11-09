@@ -451,7 +451,7 @@ body {
   .calendar-table-view:focus .day-cell.selected,
   .year-list-view:focus .month-button.selected,
   .calendar-table-view:focus .week-number-cell.selected {
-    outline: solid 1px #858585;
+    outline: solid 1px #FFFFFF;
     outline-offset: -1px;
   }
 
@@ -460,7 +460,7 @@ body {
   .week-number-cell.selected {
     background-color: #99C8FF;
     color: #3B3B3B;
-    border-color: #858585;
+    border-color: #FFFFFF;
   }
 
   .day-cell.disabled,
