@@ -47,6 +47,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -1844,7 +1845,12 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
         getMenuButtonCoordinator().setVisibility(!inTabSwitcherMode);
 
-        triggerUrlFocusAnimation(inTabSwitcherMode && !urlHasFocus());
+        // The URL focusing animator set shouldn't be populated before native initialization. It is
+        // possible that this function is called before native initialization when Instant Start
+        // is enabled.
+        if (LibraryLoader.getInstance().isInitialized()) {
+            triggerUrlFocusAnimation(inTabSwitcherMode && !urlHasFocus());
+        }
 
         if (inTabSwitcherMode) mUrlBar.setText("");
 
