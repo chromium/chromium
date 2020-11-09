@@ -40,14 +40,14 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
 
   // syncer::DeviceInfoSyncClient:
   std::string GetSigninScopedDeviceId() const override {
-// Since the local sync backend is currently only supported on Windows don't
-// even check the pref on other os-es.
-#if defined(OS_WIN)
+// Since the local sync backend is currently only supported on Windows, Mac and
+// Linux don't even check the pref on other os-es.
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
     syncer::SyncPrefs prefs(profile_->GetPrefs());
     if (prefs.IsLocalSyncEnabled()) {
       return "local_device";
     }
-#endif  // defined(OS_WIN)
+#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
 
     return GetSigninScopedDeviceIdForProfile(profile_);
   }

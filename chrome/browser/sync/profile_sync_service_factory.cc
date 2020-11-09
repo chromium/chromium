@@ -197,9 +197,9 @@ KeyedService* ProfileSyncServiceFactory::BuildServiceInstanceFor(
 
   bool local_sync_backend_enabled = false;
 
-// Since the local sync backend is currently only supported on Windows don't
-// even check the pref on other os-es.
-#if defined(OS_WIN)
+// Only check the local sync backend pref on the supported platforms of
+// Windows, Mac and Linux.
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
   syncer::SyncPrefs prefs(profile->GetPrefs());
   local_sync_backend_enabled = prefs.IsLocalSyncEnabled();
   UMA_HISTOGRAM_BOOLEAN("Sync.Local.Enabled", local_sync_backend_enabled);
@@ -217,7 +217,7 @@ KeyedService* ProfileSyncServiceFactory::BuildServiceInstanceFor(
 
     init_params.start_behavior = syncer::ProfileSyncService::AUTO_START;
   }
-#endif  // defined(OS_WIN)
+#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
 
   if (!local_sync_backend_enabled) {
     // Always create the GCMProfileService instance such that we can listen to

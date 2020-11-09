@@ -3487,7 +3487,7 @@
       'owners': ['file://components/policy/resources/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.win:57-'],
+      'supported_on': ['chrome.win:57-', 'chrome.mac:88-', 'chrome.linux:88-'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -3508,7 +3508,7 @@
       'owners': ['file://components/policy/resources/OWNERS'],
       'type': 'string',
       'schema': { 'type': 'string' },
-      'supported_on': ['chrome.win:57-'],
+      'supported_on': ['chrome.win:57-', 'chrome.mac:88-', 'chrome.linux:88-'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -3523,7 +3523,9 @@
 
       See https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables for a list of variables that can be used.
 
-      If this policy is left not set the default roaming profile path will be used.''',
+      On non-Windows platforms, this policy must be set for roaming profiles to work.
+
+      On Windows, if this policy is left unset, the default roaming profile path will be used.''',
       'label': '''Set the roaming profile directory''',
     },
     {
