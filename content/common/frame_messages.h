@@ -30,7 +30,6 @@
 #include "content/common/navigation_gesture.h"
 #include "content/common/navigation_params.h"
 #include "content/public/common/common_param_traits.h"
-#include "content/public/common/frame_navigate_params.h"
 #include "content/public/common/impression.h"
 #include "content/public/common/navigation_policy.h"
 #include "content/public/common/referrer.h"
@@ -199,19 +198,6 @@ IPC_STRUCT_TRAITS_BEGIN(blink::FramePolicy)
   IPC_STRUCT_TRAITS_MEMBER(disallow_document_access)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(content::FrameNavigateParams)
-  IPC_STRUCT_TRAITS_MEMBER(nav_entry_id)
-  IPC_STRUCT_TRAITS_MEMBER(item_sequence_number)
-  IPC_STRUCT_TRAITS_MEMBER(document_sequence_number)
-  IPC_STRUCT_TRAITS_MEMBER(url)
-  IPC_STRUCT_TRAITS_MEMBER(base_url)
-  IPC_STRUCT_TRAITS_MEMBER(referrer)
-  IPC_STRUCT_TRAITS_MEMBER(transition)
-  IPC_STRUCT_TRAITS_MEMBER(redirects)
-  IPC_STRUCT_TRAITS_MEMBER(should_update_history)
-  IPC_STRUCT_TRAITS_MEMBER(contents_mime_type)
-IPC_STRUCT_TRAITS_END()
-
 IPC_STRUCT_TRAITS_BEGIN(blink::ScreenInfo)
   IPC_STRUCT_TRAITS_MEMBER(device_scale_factor)
   IPC_STRUCT_TRAITS_MEMBER(display_color_spaces)
@@ -226,10 +212,55 @@ IPC_STRUCT_TRAITS_BEGIN(blink::ScreenInfo)
 IPC_STRUCT_TRAITS_END()
 
 // Parameters structure for mojom::FrameHost::DidCommitProvisionalLoad.
-// TODO(https://crbug.com/729021): Convert this to a Mojo struct.
-IPC_STRUCT_BEGIN_WITH_PARENT(FrameHostMsg_DidCommitProvisionalLoad_Params,
-                             content::FrameNavigateParams)
-  IPC_STRUCT_TRAITS_PARENT(content::FrameNavigateParams)
+// TODO(https://crbug.com/729021, https://crbug.com/1145888):
+// Convert this to a Mojo struct.
+IPC_STRUCT_BEGIN(FrameHostMsg_DidCommitProvisionalLoad_Params)
+  // The unique ID of the NavigationEntry for browser-initiated navigations.
+  // This value was given to the render process in the HistoryNavigationParams
+  // and is being returned by the renderer without it having any idea what it
+  // means. If the navigation was renderer-initiated, this value is 0.
+  IPC_STRUCT_MEMBER(int, nav_entry_id, 0)
+
+  // The item sequence number identifies each stop in the session history.  It
+  // is unique within the renderer process and makes a best effort to be unique
+  // across browser sessions (using a renderer process timestamp).
+  IPC_STRUCT_MEMBER(int64_t, item_sequence_number, -1)
+
+  // The document sequence number is used to identify cross-document navigations
+  // in session history.  It increments for each new document and is unique in
+  // the same way as |item_sequence_number|.  In-page navigations get a new item
+  // sequence number but the same document sequence number.
+  IPC_STRUCT_MEMBER(int64_t, document_sequence_number, -1)
+
+  // URL of the page being loaded.
+  IPC_STRUCT_MEMBER(GURL, url)
+
+  // The base URL for the page's document when the frame was committed. Empty if
+  // similar to 'url' above. Note that any base element in the page has not been
+  // parsed yet and is therefore not reflected.
+  // This is of interest when a MHTML file is loaded, as the base URL has been
+  // set to original URL of the site the MHTML represents.
+  IPC_STRUCT_MEMBER(GURL, base_url)
+
+  // URL of the referrer of this load. WebKit generates this based on the
+  // source of the event that caused the load.
+  IPC_STRUCT_MEMBER(content::Referrer, referrer)
+
+  // The type of transition.
+  IPC_STRUCT_MEMBER(ui::PageTransition, transition, ui::PAGE_TRANSITION_LINK)
+
+  // Lists the redirects that occurred on the way to the current page. This
+  // vector has the same format as reported by the WebDataSource in the glue,
+  // with the current page being the last one in the list (so even when
+  // there's no redirect, there will be one entry in the list.
+  IPC_STRUCT_MEMBER(std::vector<GURL>, redirects)
+
+  // Set to false if we want to update the session history but not update
+  // the browser history.  E.g., on unreachable urls.
+  IPC_STRUCT_MEMBER(bool, should_update_history, false)
+
+  // Contents MIME type of main frame.
+  IPC_STRUCT_MEMBER(std::string, contents_mime_type)
 
   // This is the value from the browser (copied from the navigation request)
   // indicating whether it intended to make a new entry. TODO(avi): Remove this

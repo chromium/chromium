@@ -33,7 +33,6 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "content/public/common/frame_navigate_params.h"
 
 using content::DevToolsAgentHost;
 using content::WebContents;

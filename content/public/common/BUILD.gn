@@ -111,8 +111,6 @@ source_set("common_sources") {
     "content_switches.h",
     "drop_data.cc",
     "drop_data.h",
-    "frame_navigate_params.cc",
-    "frame_navigate_params.h",
     "impression.cc",
     "impression.h",
     "input_event_ack_state.h",
