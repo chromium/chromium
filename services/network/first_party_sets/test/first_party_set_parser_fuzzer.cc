@@ -7,18 +7,7 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/at_exit.h"
-#include "base/i18n/icu_util.h"
 #include "net/base/schemeful_site.h"
-
-struct TestCase {
-  TestCase() { CHECK(base::i18n::InitializeICU()); }
-
-  // used by ICU integration.
-  base::AtExitManager at_exit_manager;
-};
-
-TestCase* test_case = new TestCase();
 
 namespace network {
 
