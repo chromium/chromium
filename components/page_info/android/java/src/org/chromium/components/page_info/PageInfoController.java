@@ -265,6 +265,8 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             containerParams.urlTitleShown = viewParams.urlTitleShown;
             containerParams.previewUIShown = viewParams.previewUIShown;
             containerParams.previewUIIcon = mDelegate.getPreviewUiIcon();
+            containerParams.beginHeightChangeAnimationCallback =
+                    () -> mDialog.beginHeightChangeTransition();
             mContainer.setParams(containerParams);
             mDelegate.getFavicon(mFullUrl, favicon -> {
                 if (favicon != null) {

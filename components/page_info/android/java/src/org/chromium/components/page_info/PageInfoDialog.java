@@ -13,10 +13,15 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.transition.ChangeBounds;
+import android.transition.Transition;
+import android.transition.TransitionManager;
+import android.transition.TransitionSet;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -264,5 +269,35 @@ public class PageInfoDialog {
         if (mCurrentAnimation != null) mCurrentAnimation.cancel();
         mCurrentAnimation = allAnimations;
         return allAnimations;
+    }
+
+    public void beginHeightChangeTransition() {
+        // Set minimum height for scrollView parent to avoid scrollView getting clipped.
+        ((ViewGroup) mScrollView.getParent()).setMinimumHeight(mScrollView.getHeight());
+        Transition transition = new ChangeBounds()
+                                        .setDuration(PageInfoContainer.sInDuration)
+                                        .addTarget(mScrollView)
+                                        .setInterpolator(new DecelerateInterpolator());
+        TransitionManager.beginDelayedTransition(mScrollView,
+                new TransitionSet()
+                        .addTransition(transition)
+                        .addListener(new Transition.TransitionListener() {
+                            @Override
+                            public void onTransitionStart(Transition transition) {}
+
+                            @Override
+                            public void onTransitionEnd(Transition transition) {
+                                ((ViewGroup) mScrollView.getParent()).setMinimumHeight(0);
+                            }
+
+                            @Override
+                            public void onTransitionCancel(Transition transition) {}
+
+                            @Override
+                            public void onTransitionPause(Transition transition) {}
+
+                            @Override
+                            public void onTransitionResume(Transition transition) {}
+                        }));
     }
 }
