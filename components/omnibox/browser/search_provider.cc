@@ -900,7 +900,8 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
   search_term_args.cursor_position = input.cursor_position();
   search_term_args.page_classification = input.current_page_classification();
   // Session token and prefetch data required for answers.
-  search_term_args.session_token = GetSessionToken();
+  search_term_args.session_token =
+      client()->GetTemplateURLService()->GetSessionToken();
   if (!prefetch_data_.full_query_text.empty()) {
     search_term_args.prefetch_query =
         base::UTF16ToUTF8(prefetch_data_.full_query_text);
@@ -931,14 +932,13 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
     return nullptr;
 
   // Send the current page URL if user setting and URL requirements are met.
-  TemplateURLService* template_url_service = client()->GetTemplateURLService();
   if (CanSendURL(input.current_url(), suggest_url, template_url,
-                 input.current_page_classification(),
-                 template_url_service->search_terms_data(), client(), true)) {
+                 input.current_page_classification(), search_terms_data,
+                 client(), true)) {
     search_term_args.current_page_url = input.current_url().spec();
     // Create the suggest URL again with the current page URL.
     suggest_url = GURL(template_url->suggestions_url_ref().ReplaceSearchTerms(
-        search_term_args, template_url_service->search_terms_data()));
+        search_term_args, search_terms_data));
   }
 
   LogOmniboxSuggestRequest(REQUEST_SENT);
@@ -1554,26 +1554,6 @@ void SearchProvider::UpdateDone() {
   // We're done when the timer isn't running and there are no suggest queries
   // pending.
   done_ = !timer_.IsRunning() && !default_loader_ && !keyword_loader_;
-}
-
-std::string SearchProvider::GetSessionToken() {
-  base::TimeTicks current_time(base::TimeTicks::Now());
-  // Renew token if it expired.
-  if (current_time > token_expiration_time_) {
-    const size_t kTokenBytes = 12;
-    std::string raw_data;
-    base::RandBytes(base::WriteInto(&raw_data, kTokenBytes + 1), kTokenBytes);
-    base::Base64Encode(raw_data, &current_token_);
-
-    // Make the base64 encoded value URL and filename safe(see RFC 3548).
-    std::replace(current_token_.begin(), current_token_.end(), '+', '-');
-    std::replace(current_token_.begin(), current_token_.end(), '/', '_');
-  }
-
-  // Extend expiration time another 60 seconds.
-  token_expiration_time_ = current_time + base::TimeDelta::FromSeconds(60);
-
-  return current_token_;
 }
 
 AnswersQueryData SearchProvider::FindAnswersPrefetchData() {

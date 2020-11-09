@@ -7,11 +7,14 @@
 #include <algorithm>
 
 #include "base/auto_reset.h"
+#include "base/base64.h"
+#include "base/base64url.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/debug/crash_logging.h"
 #include "base/format_macros.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1258,6 +1261,27 @@ void TemplateURLService::ProcessTemplateURLChange(
   syncer::SyncChangeList changes = {
       syncer::SyncChange(from_here, type, sync_data)};
   sync_processor_->ProcessSyncChanges(FROM_HERE, changes);
+}
+
+std::string TemplateURLService::GetSessionToken() {
+  base::TimeTicks current_time(base::TimeTicks::Now());
+  // Renew token if it expired.
+  if (current_time > token_expiration_time_) {
+    const size_t kTokenBytes = 12;
+    std::string raw_data;
+    base::RandBytes(base::WriteInto(&raw_data, kTokenBytes + 1), kTokenBytes);
+    base::Base64UrlEncode(raw_data,
+                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                          &current_token_);
+  }
+
+  // Extend expiration time another 60 seconds.
+  token_expiration_time_ = current_time + base::TimeDelta::FromSeconds(60);
+  return current_token_;
+}
+
+void TemplateURLService::ClearSessionToken() {
+  token_expiration_time_ = base::TimeTicks();
 }
 
 // static

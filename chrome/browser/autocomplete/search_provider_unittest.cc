@@ -3670,7 +3670,8 @@ TEST_F(SearchProviderTest, SuggestQueryUsesToken) {
 
   // And the URL matches what we expected.
   TemplateURLRef::SearchTermsArgs search_terms_args(term);
-  search_terms_args.session_token = provider_->current_token_;
+  search_terms_args.session_token =
+      provider_->client()->GetTemplateURLService()->GetSessionToken();
   std::string expected_url(
       default_t_url_->suggestions_url_ref().ReplaceSearchTerms(
           search_terms_args, turl_model->search_terms_data()));
@@ -3681,36 +3682,6 @@ TEST_F(SearchProviderTest, SuggestQueryUsesToken) {
   // Complete running the fetcher to clean up.
   test_url_loader_factory_.AddResponse(expected_url, "");
   RunTillProviderDone();
-}
-
-TEST_F(SearchProviderTest, SessionToken) {
-  // Subsequent calls always get the same token.
-  std::string token = provider_->GetSessionToken();
-  std::string token2 = provider_->GetSessionToken();
-  EXPECT_EQ(token, token2);
-  EXPECT_FALSE(token.empty());
-
-  // Calls do not regenerate a token.
-  provider_->current_token_ = "PRE-EXISTING TOKEN";
-  token = provider_->GetSessionToken();
-  EXPECT_EQ(token, "PRE-EXISTING TOKEN");
-
-  // ... unless the token has expired.
-  provider_->current_token_.clear();
-  const base::TimeDelta kSmallDelta = base::TimeDelta::FromMilliseconds(1);
-  provider_->token_expiration_time_ = base::TimeTicks::Now() - kSmallDelta;
-  token = provider_->GetSessionToken();
-  EXPECT_FALSE(token.empty());
-  EXPECT_EQ(token, provider_->current_token_);
-
-  // The expiration time is always updated.
-  provider_->GetSessionToken();
-  base::TimeTicks expiration_time_1 = provider_->token_expiration_time_;
-  base::PlatformThread::Sleep(kSmallDelta);
-  provider_->GetSessionToken();
-  base::TimeTicks expiration_time_2 = provider_->token_expiration_time_;
-  EXPECT_GT(expiration_time_2, expiration_time_1);
-  EXPECT_GE(expiration_time_2, expiration_time_1 + kSmallDelta);
 }
 
 TEST_F(SearchProviderTest, AnswersCache) {

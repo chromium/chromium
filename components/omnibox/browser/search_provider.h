@@ -99,7 +99,6 @@ class SearchProvider : public BaseSearchProvider,
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, SuggestRelevanceExperiment);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, TestDeleteMatch);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, SuggestQueryUsesToken);
-  FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, SessionToken);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, AnswersCache);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, RemoveExtraAnswers);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, DoesNotProvideOnFocus);
@@ -374,9 +373,6 @@ class SearchProvider : public BaseSearchProvider,
   // Updates the value of |done_| from the internal state.
   void UpdateDone();
 
-  // Obtains a session token, regenerating if necessary.
-  std::string GetSessionToken();
-
   // Answers prefetch handling - finds the previously displayed answer matching
   // the current top-scoring history result. If there is a previous answer,
   // returns the query data associated with it. Otherwise, returns an empty
@@ -427,10 +423,6 @@ class SearchProvider : public BaseSearchProvider,
   base::string16 top_query_suggestion_fill_into_edit_;
   // The top navigation suggestion, left blank/invalid if none.
   GURL top_navigation_suggestion_;
-
-  // Session token management.
-  std::string current_token_;
-  base::TimeTicks token_expiration_time_;
 
   // Answers prefetch management.
   AnswersCache answers_cache_;  // Cache for last answers seen.

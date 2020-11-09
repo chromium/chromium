@@ -1104,13 +1104,13 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  // Zero suggest and Search prefetch.
+  // Zero suggest, Search prefetch, and search session token.
   // Remove omnibox zero-suggest cache results and Search Prefetch cached
-  // results, we only delete when the default search engine is in the filter.
+  // results only when their respective URLs are in the filter.
   if ((remove_mask & (content::BrowsingDataRemover::DATA_TYPE_CACHE |
                       content::BrowsingDataRemover::DATA_TYPE_COOKIES))) {
     // If there is no template service or DSE, clear the caches.
-    bool should_clear_zero_suggest = true;
+    bool should_clear_zero_suggest_and_session_token = true;
     bool should_clear_search_prefetch = true;
 
     auto* template_url_service =
@@ -1122,7 +1122,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       // The suggest URL is used for zero suggest.
       GURL suggest_url(
           template_url_service->GetDefaultSearchProvider()->suggestions_url());
-      should_clear_zero_suggest =
+      should_clear_zero_suggest_and_session_token =
           nullable_filter.is_null() || nullable_filter.Run(suggest_url);
 
       // The search URL is used for search prefetch.
@@ -1131,7 +1131,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           nullable_filter.is_null() || nullable_filter.Run(search_url);
     }
 
-    if (should_clear_zero_suggest)
+    if (should_clear_zero_suggest_and_session_token)
       prefs->SetString(omnibox::kZeroSuggestCachedResults, std::string());
 
     // |search_prefetch_service| is null if |profile_| is off the record.
@@ -1139,6 +1139,9 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         SearchPrefetchServiceFactory::GetForProfile(profile_);
     if (should_clear_search_prefetch && search_prefetch_service)
       search_prefetch_service->ClearPrefetches();
+
+    if (should_clear_zero_suggest_and_session_token && template_url_service)
+      template_url_service->ClearSessionToken();
   }
 
   //////////////////////////////////////////////////////////////////////////////

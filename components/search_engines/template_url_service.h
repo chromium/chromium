@@ -400,6 +400,13 @@ class TemplateURLService : public WebDataServiceConsumer,
     return *search_terms_data_;
   }
 
+  // Obtains a session token, regenerating if necessary.
+  std::string GetSessionToken();
+
+  // Clears the session token. Should be called when the user clears browsing
+  // data.
+  void ClearSessionToken();
+
   // Returns a SyncData with a sync representation of the search engine data
   // from |turl|.
   static syncer::SyncData CreateSyncDataFromTemplateURL(
@@ -455,6 +462,7 @@ class TemplateURLService : public WebDataServiceConsumer,
   FRIEND_TEST_ALL_PREFIXES(TemplateURLServiceSyncTest, PreSyncDeletes);
   FRIEND_TEST_ALL_PREFIXES(TemplateURLServiceSyncTest, MergeInSyncTemplateURL);
   FRIEND_TEST_ALL_PREFIXES(LocationBarModelTest, GoogleBaseURL);
+  FRIEND_TEST_ALL_PREFIXES(TemplateURLServiceUnitTest, SessionToken);
 
   friend class InstantUnitTestBase;
   friend class Scoper;
@@ -846,6 +854,10 @@ class TemplateURLService : public WebDataServiceConsumer,
   // mutated. The outermost Scoper handles, can be used to defer notifications,
   // but if no model mutation occurs, the deferred notification can be skipped.
   bool model_mutated_notification_pending_ = false;
+
+  // Session token management.
+  std::string current_token_;
+  base::TimeTicks token_expiration_time_;
 
 #if defined(OS_ANDROID)
   // Manage and fetch the java object that wraps this TemplateURLService on
