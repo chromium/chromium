@@ -2083,8 +2083,10 @@ base::string16 RenderText::Elide(const base::string16& text,
       }
 
       // Append the ellipsis and the optional directional marker characters.
+      // Do not append the BiDi marker if the only codepoint in the text is
+      // an ellipsis.
       new_text.append(ellipsis);
-      if (trailing_text_direction != text_direction) {
+      if (new_text.size() != 1 && trailing_text_direction != text_direction) {
         if (trailing_text_direction == base::i18n::LEFT_TO_RIGHT)
           new_text += base::i18n::kLeftToRightMark;
         else

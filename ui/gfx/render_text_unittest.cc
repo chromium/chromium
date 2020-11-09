@@ -1950,7 +1950,7 @@ const ElideTextCase kElideTailTextCases[] = {
     {"ltr_0", L"abc", L""},
     {"rtl_3", L"\u05d0\u05d1\u05d2", L"\u05d0\u05d1\u05d2"},
     {"rtl_2", L"\u05d0\u05d1\u05d2", L"\u05d0\u2026"},
-    {"rtl_1", L"\u05d0\u05d1\u05d2", L"\u2026\x200E"},
+    {"rtl_1", L"\u05d0\u05d1\u05d2", L"\u2026"},
     {"rtl_0", L"\u05d0\u05d1\u05d2", L""},
     {"ltr_rtl_5", L"abc\u05d0\u05d1\u05d2", L"abc\u05d0\u2026\x200F"},
     {"ltr_rtl_4", L"abc\u05d0\u05d1\u05d2", L"abc\u2026"},
