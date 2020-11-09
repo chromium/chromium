@@ -178,6 +178,7 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kAddressSpacePrivateEmbeddedInPublicNonSecureContext,
           WebFeature::kAddressSpacePrivateEmbeddedInUnknownSecureContext,
           WebFeature::kAddressSpacePrivateEmbeddedInUnknownNonSecureContext,
+          WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation,
       }));
   return *opt_in_features;
 }

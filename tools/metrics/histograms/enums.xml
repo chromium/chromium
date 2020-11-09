@@ -29596,6 +29596,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3699" label="ThirdPartyActivation"/>
   <int value="3700" label="ThirdPartyAccessAndActivation"/>
   <int value="3701" label="FullscreenAllowedByScreensChange"/>
+  <int value="3721" label="V8SharedArrayBufferConstructedWithoutIsolation"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
