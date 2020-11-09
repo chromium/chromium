@@ -60,7 +60,7 @@ declare_args() {
   use_system_xcode = ""
 }
 
-if (host_os == "mac" && use_system_xcode == "") {
+if (is_apple && use_system_xcode == "") {
   _result = exec_script("//build/mac/should_use_hermetic_xcode.py",
                         [
                           "--xcode-version=$mac_xcode_version",
@@ -76,4 +76,5 @@ if (host_os == "mac" && use_system_xcode == "") {
              "Please install Xcode.")
 
   use_system_xcode = _result != 1
+  assert(host_os == "mac" || !use_system_xcode)
 }

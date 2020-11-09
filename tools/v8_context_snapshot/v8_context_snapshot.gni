@@ -13,11 +13,12 @@ import("//v8/gni/v8.gni")
 
 declare_args() {
   # TODO(crbug.com/764576): Enable the feature on more environments.
-  # Disable in win/cross builds since buliding Blink twice is slow.
+  # Disable in mac and win cross builds since building Blink twice is slow.
   use_v8_context_snapshot =
       !is_chromeos && !is_android && !is_chromecast && !is_fuchsia &&
       !(host_os == "mac" && current_cpu == "x86") &&
-      (v8_target_cpu == target_cpu || is_msan) && !(is_win && host_os != "win")
+      (v8_target_cpu == target_cpu || is_msan) &&
+      !(is_win && host_os != "win") && !(is_mac && host_os != "mac")
 
   # We use a different filename for arm64 macOS builds so that the arm64 and
   # x64 snapshots can live side-by-side in a universal macOS app.
