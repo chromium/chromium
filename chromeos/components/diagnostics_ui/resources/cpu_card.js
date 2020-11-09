@@ -6,7 +6,7 @@ import './data_point.js';
 import './diagnostics_card.js';
 import './diagnostics_shared_css.js';
 import './realtime_cpu_chart.js';
-import './routine_section.js'
+import './routine_section.js';
 import './strings.m.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
