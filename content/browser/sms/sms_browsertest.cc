@@ -47,8 +47,6 @@ class SmsBrowserTest : public ContentBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "WebOTPService");
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitchASCII(switches::kWebOtpBackend,
