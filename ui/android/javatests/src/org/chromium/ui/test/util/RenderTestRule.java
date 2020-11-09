@@ -88,6 +88,7 @@ public class RenderTestRule extends TestWatcher {
 
     // State for a test method.
     private String mTestClassName;
+    private String mFullTestName;
     private boolean mHasRenderTestFeature;
 
     /** Parameterized tests have a prefix inserted at the front of the test description. */
@@ -137,6 +138,7 @@ public class RenderTestRule extends TestWatcher {
     protected void starting(Description desc) {
         // desc.getClassName() gets the fully qualified name.
         mTestClassName = desc.getTestClass().getSimpleName();
+        mFullTestName = desc.getClassName() + "#" + desc.getMethodName();
 
         Feature feature = desc.getAnnotation(Feature.class);
         mHasRenderTestFeature =
@@ -202,6 +204,10 @@ public class RenderTestRule extends TestWatcher {
                 goldKeys.put("revision_description", mSkiaGoldRevisionDescription);
             }
             goldKeys.put("fail_on_unsupported_configs", String.valueOf(mFailOnUnsupportedConfigs));
+            // This key will be deleted by the test runner before uploading to Gold. It is used to
+            // differentiate results from different tests if the test runner has batched multiple
+            // tests together in a single run.
+            goldKeys.put("full_test_name", mFullTestName);
         } catch (JSONException e) {
             Assert.fail("Failed to create Skia Gold JSON keys: " + e.toString());
         }

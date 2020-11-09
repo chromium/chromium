@@ -700,7 +700,8 @@ class LocalDeviceInstrumentationTestRun(
               json_archive_name, 'ui_capture', output_manager.Datatype.JSON
               ) as json_archive:
             json.dump(screenshots, json_archive)
-          _SetLinkOnResults(results, 'ui screenshot', json_archive.Link())
+          _SetLinkOnResults(results, test_name, 'ui screenshot',
+                            json_archive.Link())
 
       def pull_ui_screenshot(filename):
         source_dir = ui_capture_dir.name
@@ -739,7 +740,7 @@ class LocalDeviceInstrumentationTestRun(
           step()
 
     if logcat_file:
-      _SetLinkOnResults(results, 'logcat', logcat_file.Link())
+      _SetLinkOnResults(results, test_name, 'logcat', logcat_file.Link())
 
     # Update the result name if the test used flags.
     if flags_to_add:
@@ -995,7 +996,8 @@ class LocalDeviceInstrumentationTestRun(
                           screenshot_host_file.name)
         finally:
           screenshot_device_file.close()
-      _SetLinkOnResults(results, link_name, screenshot_host_file.Link())
+      _SetLinkOnResults(results, test_name, link_name,
+                        screenshot_host_file.Link())
 
   def _ProcessRenderTestResults(self, device, results):
     if not self._render_tests_device_output_dir:
@@ -1026,10 +1028,12 @@ class LocalDeviceInstrumentationTestRun(
         json_name = render_name + '.json'
         json_path = os.path.join(host_dir, json_name)
         image_path = os.path.join(host_dir, image_name)
+        full_test_name = None
         if not os.path.exists(json_path):
-          _FailTestIfNecessary(results)
+          _FailTestIfNecessary(results, full_test_name)
           _AppendToLog(
-              results, 'Unable to find corresponding JSON file for image %s '
+              results, full_test_name,
+              'Unable to find corresponding JSON file for image %s '
               'when doing Skia Gold comparison.' % image_name)
           continue
 
@@ -1041,6 +1045,7 @@ class LocalDeviceInstrumentationTestRun(
         # not our final retry attempt in order to prevent unrelated CLs from
         # getting spammed if a test is flaky.
         optional_keys = {}
+        should_rewrite = False
         with open(json_path) as infile:
           # All the key/value pairs in the JSON file are strings, so convert
           # to a bool.
@@ -1048,6 +1053,17 @@ class LocalDeviceInstrumentationTestRun(
           fail_on_unsupported = json_dict.get('fail_on_unsupported_configs',
                                               'false')
           fail_on_unsupported = fail_on_unsupported.lower() == 'true'
+          # Grab the full test name so we can associate the comparison with a
+          # particular test, which is necessary if tests are batched together.
+          # Remove the key/value pair from the JSON since we don't need/want to
+          # upload it to Gold.
+          full_test_name = json_dict.get('full_test_name')
+          if 'full_test_name' in json_dict:
+            should_rewrite = True
+            del json_dict['full_test_name']
+        if should_rewrite:
+          with open(json_path, 'w') as outfile:
+            json.dump(json_dict, outfile)
         running_on_unsupported = (
             device.build_version_sdk not in RENDER_TEST_MODEL_SDK_CONFIGS.get(
                 device.product_model, []) and not fail_on_unsupported)
@@ -1078,8 +1094,9 @@ class LocalDeviceInstrumentationTestRun(
               use_luci=use_luci,
               optional_keys=optional_keys)
         except Exception as e:  # pylint: disable=broad-except
-          _FailTestIfNecessary(results)
-          _AppendToLog(results, 'Skia Gold comparison raised exception: %s' % e)
+          _FailTestIfNecessary(results, full_test_name)
+          _AppendToLog(results, full_test_name,
+                       'Skia Gold comparison raised exception: %s' % e)
           continue
 
         if not status:
@@ -1091,56 +1108,61 @@ class LocalDeviceInstrumentationTestRun(
         if should_hide_failure:
           if self._test_instance.skia_gold_properties.local_pixel_tests:
             _AppendToLog(
-                results, 'Gold comparison for %s failed, but model %s with SDK '
+                results, full_test_name,
+                'Gold comparison for %s failed, but model %s with SDK '
                 '%d is not a supported configuration. This failure would be '
                 'ignored on the bots, but failing since tests are being run '
-                'locally.' % (render_name, device.product_model,
-                              device.build_version_sdk))
+                'locally.' %
+                (render_name, device.product_model, device.build_version_sdk))
           else:
             _AppendToLog(
-                results, 'Gold comparison for %s failed, but model %s with SDK '
+                results, full_test_name,
+                'Gold comparison for %s failed, but model %s with SDK '
                 '%d is not a supported configuration, so ignoring failure.' %
                 (render_name, device.product_model, device.build_version_sdk))
             continue
 
-        _FailTestIfNecessary(results)
+        _FailTestIfNecessary(results, full_test_name)
         failure_log = (
             'Skia Gold reported failure for RenderTest %s. See '
             'RENDER_TESTS.md for how to fix this failure.' % render_name)
         status_codes =\
             self._skia_gold_session_manager.GetSessionClass().StatusCodes
         if status == status_codes.AUTH_FAILURE:
-          _AppendToLog(results,
+          _AppendToLog(results, full_test_name,
                        'Gold authentication failed with output %s' % error)
         elif status == status_codes.INIT_FAILURE:
-          _AppendToLog(results,
+          _AppendToLog(results, full_test_name,
                        'Gold initialization failed with output %s' % error)
         elif status == status_codes.COMPARISON_FAILURE_REMOTE:
           public_triage_link, internal_triage_link =\
               gold_session.GetTriageLinks(render_name)
           if not public_triage_link:
             _AppendToLog(
-                results, 'Failed to get triage link for %s, raw output: %s' %
+                results, full_test_name,
+                'Failed to get triage link for %s, raw output: %s' %
                 (render_name, error))
             _AppendToLog(
-                results, 'Reason for no triage link: %s' %
+                results, full_test_name, 'Reason for no triage link: %s' %
                 gold_session.GetTriageLinkOmissionReason(render_name))
             continue
           if gold_properties.IsTryjobRun():
-            _SetLinkOnResults(results,
+            _SetLinkOnResults(results, full_test_name,
                               'Public Skia Gold triage link for entire CL',
                               public_triage_link)
-            _SetLinkOnResults(results,
+            _SetLinkOnResults(results, full_test_name,
                               'Internal Skia Gold triage link for entire CL',
                               internal_triage_link)
           else:
             _SetLinkOnResults(
-                results, 'Public Skia Gold triage link for %s' % render_name,
+                results, full_test_name,
+                'Public Skia Gold triage link for %s' % render_name,
                 public_triage_link)
             _SetLinkOnResults(
-                results, 'Internal Skia Gold triage link for %s' % render_name,
+                results, full_test_name,
+                'Internal Skia Gold triage link for %s' % render_name,
                 internal_triage_link)
-          _AppendToLog(results, failure_log)
+          _AppendToLog(results, full_test_name, failure_log)
 
         elif status == status_codes.COMPARISON_FAILURE_LOCAL:
           given_link = gold_session.GetGivenImageLink(render_name)
@@ -1153,12 +1175,13 @@ class LocalDeviceInstrumentationTestRun(
               '%s.html' % render_name, 'gold_local_diffs',
               output_manager.Datatype.HTML) as html_results:
             html_results.write(processed_template_output)
-          _SetLinkOnResults(results, render_name, html_results.Link())
+          _SetLinkOnResults(results, full_test_name, render_name,
+                            html_results.Link())
           _AppendToLog(
-              results,
+              results, full_test_name,
               'See %s link for diff image with closest positive.' % render_name)
         elif status == status_codes.LOCAL_DIFF_FAILURE:
-          _AppendToLog(results,
+          _AppendToLog(results, full_test_name,
                        'Failed to generate diffs from Gold: %s' % error)
         else:
           logging.error(
@@ -1261,7 +1284,7 @@ def _GenerateRenderTestHtml(image_name, failure_link, golden_link, diff_link):
       diff_link=diff_link)
 
 
-def _FailTestIfNecessary(results):
+def _FailTestIfNecessary(results, full_test_name):
   """Marks the given results as failed if it wasn't already.
 
   Marks the result types as ResultType.FAIL unless they were already some sort
@@ -1269,8 +1292,17 @@ def _FailTestIfNecessary(results):
 
   Args:
     results: A list of base_test_result.BaseTestResult objects.
+    full_test_name: A string containing the full name of the test, e.g.
+        org.chromium.chrome.SomeTestClass#someTestMethod.
   """
+  found_matching_test = _MatchingTestInResults(results, full_test_name)
+  if not found_matching_test and _ShouldReportNoMatchingResult(full_test_name):
+    logging.error(
+        'Could not find result specific to %s, failing all tests in the batch.',
+        full_test_name)
   for result in results:
+    if found_matching_test and result.GetName() != full_test_name:
+      continue
     if result.GetType() not in [
         base_test_result.ResultType.FAIL, base_test_result.ResultType.CRASH,
         base_test_result.ResultType.TIMEOUT, base_test_result.ResultType.UNKNOWN
@@ -1278,24 +1310,75 @@ def _FailTestIfNecessary(results):
       result.SetType(base_test_result.ResultType.FAIL)
 
 
-def _AppendToLog(results, line):
+def _AppendToLog(results, full_test_name, line):
   """Appends the given line to the end of the logs of the given results.
 
   Args:
     results: A list of base_test_result.BaseTestResult objects.
+    full_test_name: A string containing the full name of the test, e.g.
+        org.chromium.chrome.SomeTestClass#someTestMethod.
     line: A string to be appended as a neww line to the log of |result|.
   """
+  found_matching_test = _MatchingTestInResults(results, full_test_name)
+  if not found_matching_test and _ShouldReportNoMatchingResult(full_test_name):
+    logging.error(
+        'Could not find result specific to %s, appending to log of all tests '
+        'in the batch.', full_test_name)
   for result in results:
+    if found_matching_test and result.GetName() != full_test_name:
+      continue
     result.SetLog(result.GetLog() + '\n' + line)
 
 
-def _SetLinkOnResults(results, link_name, link):
+def _SetLinkOnResults(results, full_test_name, link_name, link):
   """Sets the given link on the given results.
 
   Args:
     results: A list of base_test_result.BaseTestResult objects.
+    full_test_name: A string containing the full name of the test, e.g.
+        org.chromium.chrome.SomeTestClass#someTestMethod.
     link_name: A string containing the name of the link being set.
     link: A string containing the lkink being set.
   """
+  found_matching_test = _MatchingTestInResults(results, full_test_name)
+  if not found_matching_test and _ShouldReportNoMatchingResult(full_test_name):
+    logging.error(
+        'Could not find result specific to %s, adding link to results of all '
+        'tests in the batch.', full_test_name)
   for result in results:
+    if found_matching_test and result.GetName() != full_test_name:
+      continue
     result.SetLink(link_name, link)
+
+
+def _MatchingTestInResults(results, full_test_name):
+  """Checks if any tests named |full_test_name| are in |results|.
+
+  Args:
+    results: A list of base_test_result.BaseTestResult objects.
+    full_test_name: A string containing the full name of the test, e.g.
+        org.chromium.chrome.Some
+
+  Returns:
+    True if one of the results in |results| has the same name as
+    |full_test_name|, otherwise False.
+  """
+  return any([r for r in results if r.GetName() == full_test_name])
+
+
+def _ShouldReportNoMatchingResult(full_test_name):
+  """Determines whether a failure to find a matching result is actually bad.
+
+  Args:
+    full_test_name: A string containing the full name of the test, e.g.
+        org.chromium.chrome.Some
+
+  Returns:
+    False if the failure to find a matching result is expected and should not
+    be reported, otherwise True.
+  """
+  if full_test_name is not None and full_test_name.endswith('_batch'):
+    # Handle batched tests, whose reported name is the first test's name +
+    # "_batch".
+    return False
+  return True
