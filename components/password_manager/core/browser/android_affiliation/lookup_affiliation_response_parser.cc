@@ -15,8 +15,6 @@ template <typename MessageT>
 bool ParseFacets(const std::vector<FacetURI>& requested_facet_uris,
                  const MessageT& response,
                  std::vector<std::vector<Facet>>& result) {
-  result.reserve(requested_facet_uris.size());
-
   std::map<FacetURI, size_t> facet_uri_to_class_index;
   for (const auto& equivalence_class : response) {
     std::vector<Facet> facets;

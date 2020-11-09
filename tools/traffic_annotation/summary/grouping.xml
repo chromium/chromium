@@ -222,6 +222,7 @@ hidden="true" so that these annotations don't show up in the document.
   <group name="Identity and Security">
     <sender name="Accounts, Identity, and Authentication">
       <traffic_annotation unique_id="accounts_image_fetcher"/>
+      <traffic_annotation unique_id="affiliation_lookup_by_hash"/>
       <traffic_annotation unique_id="device_management_service"/>
       <traffic_annotation unique_id="lookup_single_password_leak"/>
     </sender>
