@@ -58,9 +58,7 @@ LayoutObject* HTMLProgressElement::CreateLayoutObject(
 }
 
 LayoutProgress* HTMLProgressElement::GetLayoutProgress() const {
-  if (GetLayoutObject() && GetLayoutObject()->IsProgress())
-    return ToLayoutProgress(GetLayoutObject());
-  return nullptr;
+  return DynamicTo<LayoutProgress>(GetLayoutObject());
 }
 
 void HTMLProgressElement::ParseAttribute(

@@ -1340,7 +1340,7 @@ String AXLayoutObject::StringValue() const {
     return GetText();
 
   if (layout_object_->IsFileUploadControl())
-    return ToLayoutFileUploadControl(layout_object_)->FileTextValue();
+    return To<LayoutFileUploadControl>(layout_object_)->FileTextValue();
 
   // Handle other HTML input elements that aren't text controls, like date and
   // time controls, by returning their value converted to text, with the

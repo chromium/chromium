@@ -460,7 +460,7 @@ bool ThemePainterDefault::PaintProgressBar(const Element& element,
   if (!o.IsProgress())
     return true;
 
-  const LayoutProgress& layout_progress = ToLayoutProgress(o);
+  const auto& layout_progress = To<LayoutProgress>(o);
   IntRect value_rect = ProgressValueRectFor(layout_progress, rect);
 
   WebThemeEngine::ExtraParams extra_params;

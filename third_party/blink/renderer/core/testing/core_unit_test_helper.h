@@ -146,7 +146,7 @@ class RenderingTest : public PageTestBase {
 
   const DisplayItemClient* GetDisplayItemClientFromLayoutObject(
       LayoutObject* obj) const {
-    LayoutNGBlockFlow* block_flow = ToLayoutNGBlockFlowOrNull(obj);
+    auto* block_flow = DynamicTo<LayoutNGBlockFlow>(obj);
     if (block_flow && block_flow->PaintFragment())
       return block_flow->PaintFragment();
     return obj;

@@ -71,7 +71,12 @@ class CORE_EXPORT LayoutProgress : public LayoutBlockFlow {
   friend class LayoutProgressTest;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutProgress, IsProgress());
+template <>
+struct DowncastTraits<LayoutProgress> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsProgress();
+  }
+};
 
 }  // namespace blink
 

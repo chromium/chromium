@@ -133,10 +133,11 @@ void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
   ts << " " << rect;
 
   if (!(o.IsText() && !o.IsBR())) {
-    if (o.IsFileUploadControl())
+    if (o.IsFileUploadControl()) {
       ts << " "
          << QuoteAndEscapeNonPrintables(
-                ToLayoutFileUploadControl(&o)->FileTextValue());
+                To<LayoutFileUploadControl>(o).FileTextValue());
+    }
 
     if (o.Parent()) {
       Color color = o.ResolveColor(GetCSSPropertyColor());
@@ -234,7 +235,7 @@ void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
 
   if (o.IsDetailsMarker()) {
     ts << ": ";
-    switch (ToLayoutDetailsMarker(&o)->GetOrientation()) {
+    switch (To<LayoutDetailsMarker>(o).GetOrientation()) {
       case LayoutDetailsMarker::kLeft:
         ts << "left";
         break;

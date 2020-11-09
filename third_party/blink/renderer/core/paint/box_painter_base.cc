@@ -1029,7 +1029,7 @@ bool BoxPainterBase::ShouldSkipPaintUnderInvalidationChecking(
   // We paint an indeterminate progress based on the position calculated from
   // the animation progress. Harmless under-invalidatoin may happen during a
   // paint that is not scheduled for animation.
-  if (box.IsProgress() && !ToLayoutProgress(box).IsDeterminate())
+  if (box.IsProgress() && !To<LayoutProgress>(box).IsDeterminate())
     return true;
 
   return false;

@@ -66,7 +66,12 @@ class CORE_EXPORT LayoutFileUploadControl final : public LayoutBlockFlow {
   int MaxFilenameWidth() const;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutFileUploadControl, IsFileUploadControl());
+template <>
+struct DowncastTraits<LayoutFileUploadControl> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsFileUploadControl();
+  }
+};
 
 }  // namespace blink
 

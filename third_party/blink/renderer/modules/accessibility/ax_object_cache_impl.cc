@@ -482,7 +482,7 @@ AXObject* AXObjectCacheImpl::CreateFromRenderer(LayoutObject* layout_object) {
     // progress bar
     if (css_box->IsProgress()) {
       return MakeGarbageCollected<AXProgressIndicator>(
-          ToLayoutProgress(css_box), *this);
+          To<LayoutProgress>(css_box), *this);
     }
   }
 

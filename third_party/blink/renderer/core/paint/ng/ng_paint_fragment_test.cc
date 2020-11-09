@@ -21,8 +21,8 @@ class NGPaintFragmentTest : public RenderingTest,
 
  protected:
   const NGPaintFragment* GetPaintFragmentByElementId(const char* id) {
-    const LayoutNGBlockFlow* block_flow =
-        ToLayoutNGBlockFlow(GetLayoutObjectByElementId(id));
+    const auto* block_flow =
+        To<LayoutNGBlockFlow>(GetLayoutObjectByElementId(id));
     return block_flow ? block_flow->PaintFragment() : nullptr;
   }
 

@@ -933,18 +933,14 @@ TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsEmptyBlockWithClearance) {
 
     LayoutNGBlockFlow* child;
     // #float
-    child = ToLayoutNGBlockFlow(
-        GetDocument().getElementById("float")->GetLayoutObject());
+    child = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("float"));
     EXPECT_EQ(LayoutSize(LayoutUnit(50), LayoutUnit(50)), child->Size());
     EXPECT_EQ(LayoutPoint(LayoutUnit(0), LayoutUnit(0)), child->Location());
 
     // We need to manually test the position of #zero, #abs, #inflow.
-    zero = ToLayoutNGBlockFlow(
-        GetDocument().getElementById("zero")->GetLayoutObject());
-    inflow = ToLayoutNGBlockFlow(
-        GetDocument().getElementById("inflow")->GetLayoutObject());
-    abs = ToLayoutNGBlockFlow(
-        GetDocument().getElementById("abs")->GetLayoutObject());
+    zero = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("zero"));
+    inflow = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("inflow"));
+    abs = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("abs"));
   };
 
   // Base case of no margins.
@@ -2433,7 +2429,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, RootFragmentOffsetInsideLegacy) {
 
   ASSERT_TRUE(innerNGRoot->IsLayoutNGMixin());
   const NGPhysicalBoxFragment* fragment =
-      CurrentFragmentFor(ToLayoutNGBlockFlow(innerNGRoot));
+      CurrentFragmentFor(To<LayoutNGBlockFlow>(innerNGRoot));
 
   ASSERT_TRUE(fragment);
   // TODO(crbug.com/781241: Re-enable when we calculate inline offset at

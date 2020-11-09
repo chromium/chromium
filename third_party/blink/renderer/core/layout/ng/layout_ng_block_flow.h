@@ -26,7 +26,12 @@ class CORE_EXPORT LayoutNGBlockFlow
   bool IsOfType(LayoutObjectType) const override;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutNGBlockFlow, IsLayoutNGBlockFlow());
+template <>
+struct DowncastTraits<LayoutNGBlockFlow> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsLayoutNGBlockFlow();
+  }
+};
 
 }  // namespace blink
 

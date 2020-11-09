@@ -54,7 +54,12 @@ class LayoutDetailsMarker final : public LayoutBlockFlow {
   bool IsOpen() const;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutDetailsMarker, IsDetailsMarker());
+template <>
+struct DowncastTraits<LayoutDetailsMarker> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsDetailsMarker();
+  }
+};
 
 }  // namespace blink
 
