@@ -10,4 +10,7 @@ interface Renderer {
   // Clear the memory cache. The cache is process wide so this will influence
   // other webview instances as well.
   ClearCache();
+
+  // Adjusts the javascript 'online' property value.
+  SetJsOnlineProperty(bool network_up);
 };

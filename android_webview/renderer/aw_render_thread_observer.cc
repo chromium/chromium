@@ -4,8 +4,6 @@
 
 #include "android_webview/renderer/aw_render_thread_observer.h"
 
-#include "android_webview/common/render_view_messages.h"
-#include "ipc/ipc_message_macros.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/platform/web_cache.h"
 #include "third_party/blink/public/platform/web_network_state_notifier.h"
@@ -16,16 +14,6 @@ AwRenderThreadObserver::AwRenderThreadObserver() {
 }
 
 AwRenderThreadObserver::~AwRenderThreadObserver() {
-}
-
-bool AwRenderThreadObserver::OnControlMessageReceived(
-    const IPC::Message& message) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(AwRenderThreadObserver, message)
-    IPC_MESSAGE_HANDLER(AwViewMsg_SetJsOnlineProperty, OnSetJsOnlineProperty)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
 }
 
 void AwRenderThreadObserver::RegisterMojoInterfaces(
@@ -52,7 +40,7 @@ void AwRenderThreadObserver::ClearCache() {
   blink::WebCache::Clear();
 }
 
-void AwRenderThreadObserver::OnSetJsOnlineProperty(bool network_up) {
+void AwRenderThreadObserver::SetJsOnlineProperty(bool network_up) {
   blink::WebNetworkStateNotifier::SetOnLine(network_up);
 }
 

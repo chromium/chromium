@@ -33,6 +33,7 @@ class AwRenderProcess : public content::RenderProcessHostObserver,
   ~AwRenderProcess() override;
 
   void ClearCache();
+  void SetJsOnlineProperty(bool network_up);
 
  private:
   void Ready();

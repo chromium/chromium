@@ -109,11 +109,6 @@ void AwRenderViewHostExt::SetWillSuppressErrorPage(bool suppress) {
   will_suppress_error_page_ = suppress;
 }
 
-void AwRenderViewHostExt::SetJsOnlineProperty(bool network_up) {
-  web_contents()->GetRenderViewHost()->Send(
-      new AwViewMsg_SetJsOnlineProperty(network_up));
-}
-
 void AwRenderViewHostExt::SmoothScroll(int target_x,
                                        int target_y,
                                        base::TimeDelta duration) {

@@ -1433,7 +1433,11 @@ void AwContents::SetJsOnlineProperty(JNIEnv* env,
                                      const JavaParamRef<jobject>& obj,
                                      jboolean network_up) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  render_view_host_ext_->SetJsOnlineProperty(network_up);
+  AwRenderProcess* aw_render_process =
+      AwRenderProcess::GetInstanceForRenderProcessHost(
+          web_contents_->GetMainFrame()->GetProcess());
+
+  aw_render_process->SetJsOnlineProperty(network_up);
 }
 
 void AwContents::TrimMemory(JNIEnv* env,

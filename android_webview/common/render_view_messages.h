@@ -68,9 +68,6 @@ IPC_MESSAGE_ROUTED0(AwViewMsg_ResetScrollAndScaleState)
 IPC_MESSAGE_ROUTED1(AwViewMsg_SetInitialPageScale,
                     double /* page_scale_factor */)
 
-IPC_MESSAGE_CONTROL1(AwViewMsg_SetJsOnlineProperty,
-                     bool /* network_up */)
-
 // Tells blink to smooth scroll to the specified location within |duration_ms|.
 IPC_MESSAGE_ROUTED3(AwViewMsg_SmoothScroll,
                     int /* target_x */,

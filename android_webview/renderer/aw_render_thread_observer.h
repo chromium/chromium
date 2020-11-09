@@ -21,7 +21,6 @@ class AwRenderThreadObserver : public content::RenderThreadObserver,
   ~AwRenderThreadObserver() override;
 
   // content::RenderThreadObserver implementation.
-  bool OnControlMessageReceived(const IPC::Message& message) override;
   void RegisterMojoInterfaces(
       blink::AssociatedInterfaceRegistry* associated_interfaces) override;
   void UnregisterMojoInterfaces(
@@ -30,10 +29,10 @@ class AwRenderThreadObserver : public content::RenderThreadObserver,
  private:
   // mojom::Renderer overrides:
   void ClearCache() override;
+  void SetJsOnlineProperty(bool network_up) override;
 
   void OnRendererAssociatedRequest(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
-  void OnSetJsOnlineProperty(bool network_up);
 
   mojo::AssociatedReceiver<mojom::Renderer> receiver_{this};
 };
