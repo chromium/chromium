@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL TestDriver actions: pointerevent properties of pen type assert_equals: expected 0.36 but got 0.5
+Harness: the test ran to completion.
+

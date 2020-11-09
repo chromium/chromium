@@ -232061,6 +232061,14 @@
       "iframeChild.html": [
        "a46c54a7b7b51fec65d335ad54fc8fb4ca4c2050",
        []
+      ],
+      "penPointerEventProperties-expected.txt": [
+       "3c0804007d58a732319c4f3bc70455a6a2e41839",
+       []
+      ],
+      "touchPointerEventProperties-expected.txt": [
+       "9eefd095a2984d7fb1434ea709d3d8b7fa67172b",
+       []
       ]
      },
      "click_child.html": [
@@ -239553,7 +239561,7 @@
      []
     ],
     "testdriver-actions.js": [
-     "f3e6388e8acd1998d89750150e0779df327a5417",
+     "4dafa0c018b101563e99643ec0c896fb14ed9840",
      []
     ],
     "testdriver-vendor.js": [
@@ -250593,7 +250601,7 @@
        []
       ],
       "client.py": [
-       "f4e3c763795e905a85f3c41951f86e558b7c1073",
+       "73fec5a892523b8965deead70a39eb02ffc01242",
        []
       ],
       "error.py": [
@@ -253677,7 +253685,7 @@
        []
       ],
       "conftest.py": [
-       "970f7b7dd9be42356b64c5082862e11abbe80c68",
+       "188f8ddbb5ef742b91c192775f3c9f7fd59aea7a",
        []
       ],
       "support": {
@@ -253695,6 +253703,10 @@
        ],
        "refine.py": [
         "d5d24e934f61684be8512d120a4853bff7efadef",
+        []
+       ],
+       "test_actions_pointer_wdspec.html": [
+        "f1fd9b2da3f860a4c2afcd4176bfc2aee067d2f8",
         []
        ],
        "test_actions_scroll_wdspec.html": [
@@ -377522,7 +377534,25 @@
        ]
       ],
       "penPointerEventProperties.html": [
+       "ba6c15f022539cd1ec86c23559064e205746c5b1",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "penPointerEvents.html": [
        "c5a2b1c06d902d54f63b329ef3f5253b5d72ff04",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "touchPointerEventProperties.html": [
+       "b636dfde7970fa33a1392c62e0bfed36006f79f4",
        [
         null,
         {
@@ -416896,7 +416926,7 @@
      ]
     ],
     "require-trusted-types-for.tentative.html": [
-     "2a3820a89b8ad36c324139bf75fab8d72d7087a4",
+     "bf3dedd978c3810e24e61454086977dfbbca1237",
      [
       null,
       {}
@@ -454098,7 +454128,7 @@
        ]
       ],
       "pointer.py": [
-       "ad546921460e53842da8071679e9154a61d661f7",
+       "1cb824fc8ecf130d64fe65fe60a7745654dc2480",
        [
         null,
         {

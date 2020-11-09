@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL TestDriver actions: pointerevent properties of touch type assert_equals: expected 23 but got 40
+Harness: the test ran to completion.
+
