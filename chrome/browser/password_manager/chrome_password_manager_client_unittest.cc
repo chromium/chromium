@@ -671,24 +671,24 @@ TEST_F(ChromePasswordManagerClientTest, CanShowBubbleOnURL) {
     const char* scheme;
     bool can_show_bubble;
   } kTestCases[] = {
-      {url::kHttpScheme, true},
-      {url::kHttpsScheme, true},
-      {url::kFtpScheme, true},
-      {url::kDataScheme, true},
-      {"feed", true},
-      {url::kBlobScheme, true},
-      {url::kFileSystemScheme, true},
+    {url::kHttpScheme, true},
+    {url::kHttpsScheme, true},
+    {url::kFtpScheme, true},
+    {url::kDataScheme, true},
+    {"feed", true},
+    {url::kBlobScheme, true},
+    {url::kFileSystemScheme, true},
 
-      {"invalid-scheme-i-just-made-up", false},
+    {"invalid-scheme-i-just-made-up", false},
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-      {extensions::kExtensionScheme, false},
+    {extensions::kExtensionScheme, false},
 #endif
-      {url::kAboutScheme, false},
-      {content::kChromeDevToolsScheme, false},
-      {content::kChromeUIScheme, false},
-      {url::kJavaScriptScheme, false},
-      {url::kMailToScheme, false},
-      {content::kViewSourceScheme, false},
+    {url::kAboutScheme, false},
+    {content::kChromeDevToolsScheme, false},
+    {content::kChromeUIScheme, false},
+    {url::kJavaScriptScheme, false},
+    {url::kMailToScheme, false},
+    {content::kViewSourceScheme, false},
   };
 
   for (const TestCase& test_case : kTestCases) {
@@ -806,6 +806,8 @@ class ChromePasswordManagerClientAndroidTest
   std::unique_ptr<password_manager::ContentPasswordManagerDriver>
   CreateContentPasswordManagerDriver(content::RenderFrameHost* rfh);
 
+  void SetUp() override;
+
   void CreateManualFillingController(content::WebContents* web_contents);
 
   ManualFillingControllerImpl* controller() {
@@ -822,6 +824,15 @@ class ChromePasswordManagerClientAndroidTest
   NiceMock<MockAddressAccessoryController> mock_address_controller_;
   NiceMock<MockCreditCardAccessoryController> mock_cc_controller_;
 };
+
+void ChromePasswordManagerClientAndroidTest::SetUp() {
+  ChromePasswordManagerClientTest::SetUp();
+  PasswordStoreFactory::GetInstance()->SetTestingFactory(
+      GetBrowserContext(),
+      base::BindRepeating(
+          &password_manager::BuildPasswordStore<
+              content::BrowserContext, password_manager::MockPasswordStore>));
+}
 
 std::unique_ptr<password_manager::ContentPasswordManagerDriver>
 ChromePasswordManagerClientAndroidTest::CreateContentPasswordManagerDriver(

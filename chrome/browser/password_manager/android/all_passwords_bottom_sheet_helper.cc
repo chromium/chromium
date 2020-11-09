@@ -1,0 +1,42 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_helper.h"
+
+#include "components/password_manager/core/browser/password_store.h"
+
+AllPasswordsBottomSheetHelper::AllPasswordsBottomSheetHelper(
+    password_manager::PasswordStore* store) {
+  DCHECK(store);
+  store->GetAllLoginsWithAffiliationAndBrandingInformation(this);
+}
+
+AllPasswordsBottomSheetHelper::~AllPasswordsBottomSheetHelper() = default;
+
+void AllPasswordsBottomSheetHelper::SetLastFocusedFieldType(
+    autofill::mojom::FocusedFieldType focused_field_type) {
+  last_focused_field_type_ = focused_field_type;
+}
+
+void AllPasswordsBottomSheetHelper::SetUpdateCallback(
+    base::OnceClosure update_callback) {
+  DCHECK(update_callback);
+  update_callback_ = std::move(update_callback);
+}
+
+void AllPasswordsBottomSheetHelper::ClearUpdateCallback() {
+  update_callback_.Reset();
+}
+
+void AllPasswordsBottomSheetHelper::OnGetPasswordStoreResults(
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
+  available_credentials_ = results.size();
+  if (results.empty())
+    return;  // Don't update if sheet still wouldn't be available.
+  if (update_callback_.is_null())
+    return;  // No update if cannot be triggered right now.
+  if (last_focused_field_type_ == autofill::mojom::FocusedFieldType::kUnknown)
+    return;  // Don't update if no valid field was focused.
+  std::move(update_callback_).Run();
+}

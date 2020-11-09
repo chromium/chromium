@@ -3005,6 +3005,8 @@ static_library("browser") {
       "password_manager/android/account_chooser_dialog_android.h",
       "password_manager/android/all_passwords_bottom_sheet_controller.cc",
       "password_manager/android/all_passwords_bottom_sheet_controller.h",
+      "password_manager/android/all_passwords_bottom_sheet_helper.cc",
+      "password_manager/android/all_passwords_bottom_sheet_helper.h",
       "password_manager/android/auto_signin_first_run_dialog_android.cc",
       "password_manager/android/auto_signin_first_run_dialog_android.h",
       "password_manager/android/auto_signin_prompt_controller.cc",

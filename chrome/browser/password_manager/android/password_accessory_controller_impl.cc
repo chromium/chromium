@@ -242,7 +242,8 @@ void PasswordAccessoryControllerImpl::OnToggleChanged(
 void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
     FocusedFieldType focused_field_type,
     bool is_manual_generation_available) {
-  last_focused_field_type_ = focused_field_type;
+  all_passwords_helper_.SetLastFocusedFieldType(focused_field_type);
+
   // Prevent crashing by not acting at all if frame became unfocused at any
   // point. The next time a focus event happens, this will be called again and
   // ensure we show correct data.
@@ -272,9 +273,18 @@ void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
     }
   }
 
-  if (IsSecureSite() && origin.GetURL().SchemeIsCryptographic() &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kFillingPasswordsFromAnyOrigin)) {
+  all_passwords_helper_.ClearUpdateCallback();
+  if (!all_passwords_helper_.available_credentials().has_value()) {
+    // Don't add the button yet but wait for helper to determine whether there
+    // are credentials at all.
+    all_passwords_helper_.SetUpdateCallback(base::BindOnce(
+        &PasswordAccessoryControllerImpl::RefreshSuggestionsForField,
+        base::Unretained(this), focused_field_type,
+        is_manual_generation_available));
+  } else if (IsSecureSite() && origin.GetURL().SchemeIsCryptographic() &&
+             all_passwords_helper_.available_credentials().value() > 0 &&
+             base::FeatureList::IsEnabled(
+                 password_manager::features::kFillingPasswordsFromAnyOrigin)) {
     base::string16 button_title =
         is_password_field
             ? l10n_util::GetStringUTF16(
@@ -432,7 +442,7 @@ void PasswordAccessoryControllerImpl::ShowAllPasswords() {
           base::BindOnce(
               &PasswordAccessoryControllerImpl::AllPasswordsSheetDismissed,
               base::Unretained(this)),
-          last_focused_field_type_);
+          all_passwords_helper_.last_focused_field_type());
 
   all_passords_bottom_sheet_controller_->Show();
 }

@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_helper.h"
 #include "chrome/browser/password_manager/android/password_accessory_controller.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
@@ -153,9 +154,9 @@ class PasswordAccessoryControllerImpl
   std::unique_ptr<AllPasswordsBottomSheetController>
       all_passords_bottom_sheet_controller_;
 
-  // Records the last focused field type that `RefreshSuggestionsForField()` was
-  // called with.
-  autofill::mojom::FocusedFieldType last_focused_field_type_;
+  // Helper for determining whether a bottom sheet showing passwords is useful.
+  AllPasswordsBottomSheetHelper all_passwords_helper_{
+      password_client_->GetProfilePasswordStore()};
 
   // Security level used for testing only.
   security_state::SecurityLevel security_level_for_testing_ =
