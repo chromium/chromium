@@ -69,7 +69,7 @@ class UnusedElementsDetector(object):
     text = re.sub('<if .*?>', '', text, flags=re.IGNORECASE)
     text = re.sub('</if>', '', text, flags=re.IGNORECASE)
 
-    return node.RunNode([node_modules.PathToUglify(), filename])
+    return node.RunNode([node_modules.PathToTerser(), filename])
 
   @staticmethod
   def __StripComments(filename):
