@@ -94,7 +94,7 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     EXPECT_EQ(CONTENT_SETTING_BLOCK,
               map->GetContentSetting(example_url, example_url,
                                      ContentSettingsType::JAVASCRIPT));
-    EXPECT_EQ(CONTENT_SETTING_ALLOW,
+    EXPECT_EQ(CONTENT_SETTING_BLOCK,
               map->GetContentSetting(example_url, example_url,
                                      ContentSettingsType::PLUGINS));
     EXPECT_EQ(CONTENT_SETTING_BLOCK,
@@ -130,7 +130,7 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     EXPECT_EQ(
         CONTENT_SETTING_BLOCK,
         map->GetContentSetting(url, url, ContentSettingsType::JAVASCRIPT));
-    EXPECT_EQ(CONTENT_SETTING_DETECT_IMPORTANT_CONTENT,
+    EXPECT_EQ(CONTENT_SETTING_BLOCK,
               map->GetContentSetting(url, url, ContentSettingsType::PLUGINS));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               map->GetContentSetting(url, url, ContentSettingsType::POPUPS));
@@ -274,9 +274,8 @@ class ExtensionContentSettingsApiTestWithStandardFeatures
     : public ExtensionContentSettingsApiLazyTest {
  public:
   ExtensionContentSettingsApiTestWithStandardFeatures() {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {content_settings::kDisallowWildcardsInPluginContentSettings,
-             content_settings::kDisallowExtensionsToSetPluginContentSettings});
+    scoped_feature_list_.InitAndEnableFeature(
+        content_settings::kDisallowWildcardsInPluginContentSettings);
   }
 
  private:
@@ -314,37 +313,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiTestWithStandardFeatures,
 
   LoadExtension(test_data_dir_.AppendASCII(kExtensionPath));
   CheckContentSettingsDefault();
-}
-
-// TODO(crbug.com/1073588): Make this test work in branded builds.
-// Pass the plugins to look for into the JS to make this test less
-// brittle or just have the JS side look for the additional plugins.
-//
-// Flaky on the trybots. See http://crbug.com/96725.
-IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest,
-                       DISABLED_GetResourceIdentifiers) {
-  base::FilePath::CharType kFooPath[] =
-      FILE_PATH_LITERAL("/plugins/foo.plugin");
-  base::FilePath::CharType kBarPath[] =
-      FILE_PATH_LITERAL("/plugins/bar.plugin");
-  const char kFooName[] = "Foo Plugin";
-  const char kBarName[] = "Bar Plugin";
-
-  content::PluginService::GetInstance()->RegisterInternalPlugin(
-      content::WebPluginInfo(base::ASCIIToUTF16(kFooName),
-                             base::FilePath(kFooPath),
-                             base::ASCIIToUTF16("1.2.3"),
-                             base::ASCIIToUTF16("foo")),
-      false);
-  content::PluginService::GetInstance()->RegisterInternalPlugin(
-    content::WebPluginInfo(base::ASCIIToUTF16(kBarName),
-                           base::FilePath(kBarPath),
-                           base::ASCIIToUTF16("2.3.4"),
-                           base::ASCIIToUTF16("bar")),
-      false);
-
-  EXPECT_TRUE(RunLazyTest("content_settings/getresourceidentifiers"))
-      << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest,
@@ -427,63 +395,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest,
       "ContentSettings.ExtensionNonEmbeddedSettingSet", 2);
 }
 
-class ExtensionContentSettingsApiTestWithWildcardMatchingDisabled
-    : public ExtensionContentSettingsApiLazyTest {
- public:
-  ExtensionContentSettingsApiTestWithWildcardMatchingDisabled() {
-    scoped_feature_list_.InitWithFeatures(
-        {content_settings::kDisallowWildcardsInPluginContentSettings},
-        {content_settings::kDisallowExtensionsToSetPluginContentSettings});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    EventPage,
-    ExtensionContentSettingsApiTestWithWildcardMatchingDisabled,
-    ::testing::Values(ContextType::kEventPage));
-
-INSTANTIATE_TEST_SUITE_P(
-    ServiceWorker,
-    ExtensionContentSettingsApiTestWithWildcardMatchingDisabled,
-    ::testing::Values(ContextType::kServiceWorker));
-
-IN_PROC_BROWSER_TEST_P(
-    ExtensionContentSettingsApiTestWithWildcardMatchingDisabled,
-    PluginTest) {
-  constexpr char kExtensionPath[] = "content_settings/pluginswildcardmatching";
-  EXPECT_TRUE(RunLazyTest(kExtensionPath)) << message_;
-}
-
-IN_PROC_BROWSER_TEST_P(
-    ExtensionContentSettingsApiTestWithWildcardMatchingDisabled,
-    ConsoleErrorTest) {
-  constexpr char kExtensionPath[] = "content_settings/pluginswildcardmatching";
-  const extensions::Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII(kExtensionPath));
-  ASSERT_TRUE(extension);
-  auto* web_contents = extensions::ProcessManager::Get(profile())
-                           ->GetBackgroundHostForExtension(extension->id())
-                           ->host_contents();
-  content::WebContentsConsoleObserver console_observer(web_contents);
-  console_observer.SetPattern(
-      content_settings_api_constants::kWildcardPatternsForPluginsDisallowed);
-  browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-      profile(), extension->id(), "setWildcardedPatterns()");
-  console_observer.Wait();
-  EXPECT_EQ(1u, console_observer.messages().size());
-}
-
 class ExtensionContentSettingsApiTestWithPluginsApiDisabled
     : public ExtensionContentSettingsApiLazyTest {
  public:
   ExtensionContentSettingsApiTestWithPluginsApiDisabled() {
-    scoped_feature_list_.InitWithFeatures(
-        {content_settings::kDisallowWildcardsInPluginContentSettings,
-         content_settings::kDisallowExtensionsToSetPluginContentSettings},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        content_settings::kDisallowWildcardsInPluginContentSettings);
   }
 
  private:

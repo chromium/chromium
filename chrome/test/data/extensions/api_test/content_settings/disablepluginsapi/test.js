@@ -20,22 +20,21 @@ function expect(expected, message) {
 
 chrome.test.runTests([
   function testPluginsApi() {
-    cs['plugins'].set({
-      'primaryPattern': 'https://drive.google.com/*',
-      'secondaryPattern': '<all_urls>',
-      'setting': 'allow'
-    });
-    cs['plugins'].set({
-      'primaryPattern': 'https://*.google.com:443/*',
-      'secondaryPattern': '<all_urls>',
-      'setting': 'allow'
-    });
+    cs['plugins'].set(
+        {
+          'primaryPattern': 'https://*.google.com:443/*',
+          'secondaryPattern': '<all_urls>',
+          'setting': 'allow'
+        },
+        chrome.test.callbackFail(
+            '`chrome.contentSettings.plugins.set()` API is no longer supported.'));
     cs['plugins'].get(
         {'primaryUrl': 'https://drive.google.com:443/*'},
-        expect({'setting': 'block'}, 'Flash should be blocked on this page'));
-    cs['plugins'].get(
-        {'primaryUrl': 'http://mail.google.com:80/*'},
-        expect({'setting': 'block'}, 'Flash should be blocked on this page'));
-    cs['plugins'].clear({});
+        chrome.test.callbackFail(
+            '`chrome.contentSettings.plugins.get()` API is no longer supported.'));
+    cs['plugins'].clear(
+        {},
+        chrome.test.callbackFail(
+            '`chrome.contentSettings.plugins.clear()` API is no longer supported.'));
   },
 ]);

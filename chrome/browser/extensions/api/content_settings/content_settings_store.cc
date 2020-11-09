@@ -427,6 +427,10 @@ void ContentSettingsStore::SetExtensionContentSettingFromList(
       // settings from the pref store when it is written back.
       continue;
     }
+    if (content_settings_type == ContentSettingsType::PLUGINS) {
+      // Plugin content settings are no longer supported for extensions.
+      continue;
+    }
 
     const content_settings::ContentSettingsInfo* info =
         content_settings::ContentSettingsRegistry::GetInstance()->Get(
@@ -442,12 +446,6 @@ void ContentSettingsStore::SetExtensionContentSettingFromList(
       // Some types may have had embedded exceptions written even though they
       // aren't supported. This will implicitly delete these old settings from
       // the pref store when it is written back.
-      continue;
-    }
-    if (base::FeatureList::IsEnabled(
-            content_settings::kDisallowExtensionsToSetPluginContentSettings) &&
-        content_settings_type == ContentSettingsType::PLUGINS) {
-      // Plugin content settings are no longer supported for extensions.
       continue;
     }
 
