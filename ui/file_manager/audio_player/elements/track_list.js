@@ -11,7 +11,7 @@
  *   active: boolean
  * }}
  */
-var TrackInfo;
+let TrackInfo;
 
 (function() {
   'use strict';
@@ -99,7 +99,7 @@ var TrackInfo;
       }
 
       if (0 <= newValue && newValue < this.tracks.length) {
-        var currentPlayOrder = this.playOrder.indexOf(newValue);
+        const currentPlayOrder = this.playOrder.indexOf(newValue);
         if (currentPlayOrder !== -1) {
           // Success
           this.set('tracks.' + newValue + '.active', true);
@@ -146,8 +146,8 @@ var TrackInfo;
      * @param {Event} event Click event.
      */
     trackClicked: function(event) {
-      var index = ~~event.currentTarget.getAttribute('index');
-      var track = this.tracks[index];
+      const index = ~~event.currentTarget.getAttribute('index');
+      const track = this.tracks[index];
       if (track) {
         this.selectTrack(track);
       }
@@ -159,12 +159,12 @@ var TrackInfo;
      * @private
      */
     ensureTrackInViewport_: function(trackIndex) {
-      var trackElement = this.$$('.track[index="' + trackIndex + '"]');
+      const trackElement = this.$$('.track[index="' + trackIndex + '"]');
       if (trackElement) {
-        var viewTop = this.scrollTop;
-        var viewHeight = this.clientHeight;
-        var elementTop = trackElement.offsetTop - this.offsetTop;
-        var elementHeight = trackElement.offsetHeight;
+        const viewTop = this.scrollTop;
+        const viewHeight = this.clientHeight;
+        const elementTop = trackElement.offsetTop - this.offsetTop;
+        const elementHeight = trackElement.offsetHeight;
 
         if (elementTop <= viewTop) {
           // Adjust the tops.
@@ -231,8 +231,8 @@ var TrackInfo;
      *     track.
      */
     selectTrack: function(track) {
-      var index = -1;
-      for (var i = 0; i < this.tracks.length; i++) {
+      let index = -1;
+      for (let i = 0; i < this.tracks.length; i++) {
         if (this.tracks[i].url === track.url) {
           index = i;
           break;
@@ -276,21 +276,21 @@ var TrackInfo;
         return -1;
       }
 
-      var defaultTrackIndex =
+      const defaultTrackIndex =
           forward ? this.playOrder[0] : this.playOrder[this.tracks.length - 1];
 
-      var currentPlayOrder = this.playOrder.indexOf(this.currentTrackIndex);
+      const currentPlayOrder = this.playOrder.indexOf(this.currentTrackIndex);
       console.assert(
           (0 <= currentPlayOrder && currentPlayOrder < this.tracks.length),
           'Insufficient TrackList.playOrder. The current track is not on the ' +
               'track list.');
 
-      var newPlayOrder = currentPlayOrder + (forward ? +1 : -1);
+      const newPlayOrder = currentPlayOrder + (forward ? +1 : -1);
       if (newPlayOrder === -1 || newPlayOrder === this.tracks.length) {
         return cyclic ? defaultTrackIndex : -1;
       }
 
-      var newTrackIndex = this.playOrder[newPlayOrder];
+      const newTrackIndex = this.playOrder[newPlayOrder];
       console.assert(
           (0 <= newTrackIndex && newTrackIndex < this.tracks.length),
           'Insufficient TrackList.playOrder. New Play Order: ' + newPlayOrder);
