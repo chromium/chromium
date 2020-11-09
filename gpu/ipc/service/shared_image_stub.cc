@@ -171,7 +171,6 @@ bool SharedImageStub::CreateSharedImageWithAHB(const Mailbox& out_mailbox,
   }
   if (!factory_->CreateSharedImageWithAHB(out_mailbox, in_mailbox, usage)) {
     LOG(ERROR) << "SharedImageStub: Unable to update shared image";
-    OnError();
     return false;
   }
   return true;
