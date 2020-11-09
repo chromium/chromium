@@ -356,6 +356,10 @@ void RenderWidgetHostViewMac::InitAsPopup(
   }
   popup_parent_host_view_->popup_child_host_view_ = this;
 
+  // Use transparent background color for the popup in order to avoid flashing
+  // the white background on popup open when dark color-scheme is used.
+  SetContentBackgroundColor(SK_ColorTRANSPARENT);
+
   // This path is used by the time/date picker.
   // When FormControlsRefresh is enabled the popup window should use
   // the native shadow.

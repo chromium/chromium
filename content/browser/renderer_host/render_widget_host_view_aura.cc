@@ -375,6 +375,9 @@ void RenderWidgetHostViewAura::InitAsPopup(
   }
   popup_parent_host_view_->SetPopupChild(this);
   CreateAuraWindow(aura::client::WINDOW_TYPE_MENU);
+  // Use transparent background color for the popup in order to avoid flashing
+  // the white background on popup open when dark color-scheme is used.
+  SetContentBackgroundColor(SK_ColorTRANSPARENT);
 
   // Setting the transient child allows for the popup to get mouse events when
   // in a system modal dialog. Do this before calling ParentWindowWithContext
