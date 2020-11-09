@@ -65,7 +65,7 @@ struct CORE_EXPORT ViewportDescription {
     kMetaMobileOptimized = 5,
     kXhtmlMobileProfile = 6,
 
-    kTypeCount = 7
+    kMaxValue = kXhtmlMobileProfile,
   };
 
   constexpr static float kValueAuto = -1.;

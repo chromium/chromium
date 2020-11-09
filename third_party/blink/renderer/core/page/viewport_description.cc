@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -52,6 +51,11 @@ static const float& CompareIgnoringAuto(const float& value1,
     return value1;
 
   return compare(value1, value2);
+}
+
+static void RecordViewportTypeMetric(
+    ViewportDescription::ViewportUMAType type) {
+  UMA_HISTOGRAM_ENUMERATION("Viewport.MetaTagType", type);
 }
 
 float ViewportDescription::ResolveViewportLength(
@@ -252,35 +256,26 @@ void ViewportDescription::ReportMobilePageStats(
   if (!main_frame->GetDocument()->Url().ProtocolIsInHTTPFamily())
     return;
 
-  DEFINE_STATIC_LOCAL(
-      EnumerationHistogram, meta_tag_type_histogram,
-      ("Viewport.MetaTagType", static_cast<int>(ViewportUMAType::kTypeCount)));
   if (!IsSpecifiedByAuthor()) {
-    meta_tag_type_histogram.Count(
-        main_frame->GetDocument()->IsMobileDocument()
-            ? static_cast<int>(ViewportUMAType::kXhtmlMobileProfile)
-            : static_cast<int>(ViewportUMAType::kNoViewportTag));
+    RecordViewportTypeMetric(main_frame->GetDocument()->IsMobileDocument()
+                                 ? ViewportUMAType::kXhtmlMobileProfile
+                                 : ViewportUMAType::kNoViewportTag);
     return;
   }
 
   if (IsMetaViewportType()) {
     if (max_width.IsFixed()) {
-      meta_tag_type_histogram.Count(
-          static_cast<int>(ViewportUMAType::kConstantWidth));
+      RecordViewportTypeMetric(ViewportUMAType::kConstantWidth);
     } else if (max_width.IsDeviceWidth() || max_width.IsExtendToZoom()) {
-      meta_tag_type_histogram.Count(
-          static_cast<int>(ViewportUMAType::kDeviceWidth));
+      RecordViewportTypeMetric(ViewportUMAType::kDeviceWidth);
     } else {
       // Overflow bucket for cases we may be unaware of.
-      meta_tag_type_histogram.Count(
-          static_cast<int>(ViewportUMAType::kMetaWidthOther));
+      RecordViewportTypeMetric(ViewportUMAType::kMetaWidthOther);
     }
   } else if (type == ViewportDescription::kHandheldFriendlyMeta) {
-    meta_tag_type_histogram.Count(
-        static_cast<int>(ViewportUMAType::kMetaHandheldFriendly));
+    RecordViewportTypeMetric(ViewportUMAType::kMetaHandheldFriendly);
   } else if (type == ViewportDescription::kMobileOptimizedMeta) {
-    meta_tag_type_histogram.Count(
-        static_cast<int>(ViewportUMAType::kMetaMobileOptimized));
+    RecordViewportTypeMetric(ViewportUMAType::kMetaMobileOptimized);
   }
 }
 
