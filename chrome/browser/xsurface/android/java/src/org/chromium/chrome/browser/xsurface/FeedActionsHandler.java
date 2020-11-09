@@ -102,4 +102,11 @@ public interface FeedActionsHandler {
      */
     default void showSnackbar(String text, String actionLabel, SnackbarDuration duration,
             SnackbarController controller) {}
+
+    /**
+     * Share a URL. This will bring up the sharing sheet.
+     * @param url The url of the page to be shared.
+     * @param title The title of the page to be shared.
+     */
+    default void share(String url, String title) {}
 }
