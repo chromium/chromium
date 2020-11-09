@@ -80,6 +80,8 @@ class SafeBrowsingPrivateEventRouter
   static const char kKeyContentSize[];
   static const char kKeyTrigger[];
   static const char kKeyEventResult[];
+  static const char kKeyMalwareFamily[];
+  static const char kKeyMalwareCategory[];
 
   static const char kKeyPasswordReuseEvent[];
   static const char kKeyPasswordChangedEvent[];
@@ -266,7 +268,9 @@ class SafeBrowsingPrivateEventRouter
                                      const std::string& mime_type,
                                      const std::string& trigger,
                                      const int64_t content_size,
-                                     safe_browsing::EventResult event_result);
+                                     safe_browsing::EventResult event_result,
+                                     const std::string& malware_family,
+                                     const std::string& malware_category);
 
   // Notifies listeners that the analysis connector detected a violation.
   void OnSensitiveDataEvent(

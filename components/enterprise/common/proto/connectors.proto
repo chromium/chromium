@@ -102,6 +102,11 @@ message ContentAnalysisResponse {
       optional string rule_id = 3;
     }
     repeated TriggeredRule triggered_rules = 3;
+
+    // TODO(crbug.com/1147036): Remove fields 4-5 once a definitive approach is
+    // agreed upon.
+    optional string malware_family = 4;
+    optional string malware_category = 5;
   }
   repeated Result results = 4;
 
