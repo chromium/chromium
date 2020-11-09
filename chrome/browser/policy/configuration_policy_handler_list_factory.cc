@@ -1732,9 +1732,14 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<chromeos::platform_keys::KeyPermissionsPolicyHandler>(
           chrome_schema));
   handlers->AddHandler(std::make_unique<DefaultGeolocationPolicyHandler>());
-  handlers->AddHandler(std::make_unique<extensions::ExtensionListPolicyHandler>(
-      key::kNoteTakingAppsLockScreenAllowlist,
-      prefs::kNoteTakingAppsLockScreenAllowlist, false /*allow_wildcards*/));
+  handlers->AddHandler(std::make_unique<policy::SimpleDeprecatingPolicyHandler>(
+      std::make_unique<extensions::ExtensionListPolicyHandler>(
+          key::kNoteTakingAppsLockScreenWhitelist,
+          prefs::kNoteTakingAppsLockScreenAllowlist, false /*allow_wildcards*/),
+      std::make_unique<extensions::ExtensionListPolicyHandler>(
+          key::kNoteTakingAppsLockScreenAllowlist,
+          prefs::kNoteTakingAppsLockScreenAllowlist,
+          false /*allow_wildcards*/)));
   handlers->AddHandler(
       std::make_unique<SecondaryGoogleAccountSigninPolicyHandler>());
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(

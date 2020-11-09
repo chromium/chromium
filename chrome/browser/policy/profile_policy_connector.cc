@@ -227,9 +227,6 @@ void ProfilePolicyConnector::Init(
   migrators.push_back(std::make_unique<LegacyChromePolicyMigrator>(
       policy::key::kDeviceNativePrinters, policy::key::kDevicePrinters));
   migrators.push_back(std::make_unique<LegacyChromePolicyMigrator>(
-      policy::key::kNoteTakingAppsLockScreenWhitelist,
-      policy::key::kNoteTakingAppsLockScreenAllowlist));
-  migrators.push_back(std::make_unique<LegacyChromePolicyMigrator>(
       policy::key::kDeviceUserWhitelist, policy::key::kDeviceUserAllowlist));
   migrators.push_back(std::make_unique<LegacyChromePolicyMigrator>(
       policy::key::kNativePrintersBulkConfiguration,
