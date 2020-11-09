@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/sequence_checker.h"
 #include "base/task/current_thread.h"
+#include "base/time/time.h"
 #include "components/device_event_log/device_event_log.h"
 
 namespace device {
@@ -156,8 +157,22 @@ bool SerialIoHandlerWin::PostOpen() {
   read_context_.reset(new base::MessagePumpForIO::IOContext());
   write_context_.reset(new base::MessagePumpForIO::IOContext());
 
+  // Based on the MSDN documentation setting both ReadIntervalTimeout and
+  // ReadTotalTimeoutMultiplier to MAXDWORD should cause ReadFile() to return
+  // immediately if there is data in the buffer or when a byte arrives while
+  // waiting.
+  //
+  // ReadTotalTimeoutConstant is set to a value low enough to ensure that the
+  // timeout case is exercised frequently but high enough to avoid unnecessary
+  // wakeups as it is not possible to have ReadFile() return immediately when a
+  // byte is received without specifying a timeout.
+  //
+  // https://docs.microsoft.com/en-us/windows/win32/api/winbase/ns-winbase-commtimeouts#remarks
   COMMTIMEOUTS timeouts = {0};
-  timeouts.ReadIntervalTimeout = 1;
+  timeouts.ReadIntervalTimeout = MAXDWORD;
+  timeouts.ReadTotalTimeoutMultiplier = MAXDWORD;
+  timeouts.ReadTotalTimeoutConstant =
+      base::TimeDelta::FromMinutes(5).InMilliseconds();
   if (!::SetCommTimeouts(file().GetPlatformFile(), &timeouts)) {
     SERIAL_PLOG(DEBUG) << "Failed to set serial timeouts";
     return false;
