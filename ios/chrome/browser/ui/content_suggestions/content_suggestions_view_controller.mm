@@ -495,14 +495,6 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
   return cell;
 }
 
-- (UITargetedPreview*)collectionView:(UICollectionView*)collectionView
-    previewForDismissingContextMenuWithConfiguration:
-        (UIContextMenuConfiguration*)configuration API_AVAILABLE(ios(13.0)) {
-  UITargetedPreview* preview =
-      [[UITargetedPreview alloc] initWithView:self.view];
-  return preview;
-}
-
 - (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
     contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
                                          point:(CGPoint)point
