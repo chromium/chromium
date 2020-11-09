@@ -74,15 +74,6 @@ class AppMenuIconController : public GlobalErrorObserver,
   // Returns the icon type and severity based on the current state.
   TypeAndSeverity GetTypeAndSeverity() const;
 
-  // Returns the image to be used for the app menu's icon and the upgrade item
-  // in the app menu (when the IconType is UPGRADE_NOTIFICATION). |touch_ui|
-  // indicates whether the touch-friendly variant is requested.
-  // |severity_none_color|, if provided, will be used when the Severity is NONE.
-  // Otherwise the basic toolbar button icon color will be used.
-  ui::ImageModel GetIconImage(
-      bool touch_ui,
-      const base::Optional<SkColor>& severity_none_color = base::nullopt) const;
-
   // Gets the color to be used for the app menu's icon.
   // |severity_none_color|, if provided, will be used when the Severity is NONE.
   // Otherwise the basic toolbar button icon color will be used.

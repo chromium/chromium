@@ -20,6 +20,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/banners/app_banner_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/defaults.h"
@@ -334,7 +335,9 @@ ui::ImageModel AppMenuModel::GetIconForCommandId(int command_id) const {
   if (command_id == IDC_UPGRADE_DIALOG) {
     DCHECK(browser_defaults::kShowUpgradeMenuItem);
     DCHECK(app_menu_icon_controller_);
-    return app_menu_icon_controller_->GetIconImage(false);
+    return ui::ImageModel::FromVectorIcon(
+        kBrowserToolsUpdateIcon,
+        app_menu_icon_controller_->GetIconColor(base::nullopt));
   }
   return ui::ImageModel();
 }

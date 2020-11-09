@@ -199,22 +199,14 @@ void BrowserAppMenuButton::OnThemeChanged() {
 }
 
 void BrowserAppMenuButton::UpdateIcon() {
-  bool touch_ui = ui::TouchUiController::Get()->touch_ui();
-  if (base::FeatureList::IsEnabled(features::kUseTextForUpdateButton)) {
-    const gfx::VectorIcon& icon =
-        touch_ui ? kBrowserToolsTouchIcon : kBrowserToolsIcon;
-    for (auto state : kButtonStates) {
-      SkColor icon_color =
-          toolbar_view_->app_menu_icon_controller()->GetIconColor(
-              GetForegroundColor(state));
-      SetImageModel(state, ui::ImageModel::FromVectorIcon(icon, icon_color));
-    }
-    return;
-  }
+  const gfx::VectorIcon& icon = ui::TouchUiController::Get()->touch_ui()
+                                    ? kBrowserToolsTouchIcon
+                                    : kBrowserToolsIcon;
   for (auto state : kButtonStates) {
-    SetImageModel(state,
-                  toolbar_view_->app_menu_icon_controller()->GetIconImage(
-                      touch_ui, GetForegroundColor(state)));
+    SkColor icon_color =
+        toolbar_view_->app_menu_icon_controller()->GetIconColor(
+            GetForegroundColor(state));
+    SetImageModel(state, ui::ImageModel::FromVectorIcon(icon, icon_color));
   }
 }
 
@@ -274,9 +266,7 @@ void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
   }
 
   SetTooltipText(l10n_util::GetStringUTF16(tooltip_message_id));
-
-  if (base::FeatureList::IsEnabled(features::kUseTextForUpdateButton))
-    SetHighlight(text, color);
+  SetHighlight(text, color);
 }
 
 void BrowserAppMenuButton::SetHasInProductHelpPromo(
