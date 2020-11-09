@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.compositor.layouts;
+package org.chromium.chrome.browser.layouts;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -39,7 +38,6 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
         /**
          * Request to generate a new frame.
          */
-        @VisibleForTesting
         void request() {
             mRenderRequestRunnable.run();
         }

@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/layouts/CompositorModelChangeProcessor.java",
     "java/src/org/chromium/chrome/browser/layouts/EventFilter.java",
     "java/src/org/chromium/chrome/browser/layouts/LayoutStateProvider.java",
     "java/src/org/chromium/chrome/browser/layouts/LayoutType.java",
@@ -53,6 +54,7 @@ java_library("junit") {
   testonly = true
 
   sources = [
+    "java/src/org/chromium/chrome/browser/layouts/CompositorModelChangeProcessorUnitTest.java",
     "java/src/org/chromium/chrome/browser/layouts/animation/CompositorAnimationHandlerTest.java",
     "java/src/org/chromium/chrome/browser/layouts/animation/CompositorAnimatorTest.java",
   ]
@@ -66,5 +68,6 @@ java_library("junit") {
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
   ]
 }

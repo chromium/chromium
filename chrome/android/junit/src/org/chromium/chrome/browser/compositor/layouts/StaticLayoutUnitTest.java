@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
+import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -87,9 +88,9 @@ public class StaticLayoutUnitTest {
     @Mock
     private LayoutManagerHost mViewHost;
     @Mock
-    private CompositorModelChangeProcessor.FrameRequestSupplier mRequestSupplier;
-    @Mock
     StaticTabSceneLayer mStaticTabSceneLayer;
+
+    private CompositorModelChangeProcessor.FrameRequestSupplier mRequestSupplier;
 
     @Mock
     private TabContentManager mTabContentManager;
@@ -127,6 +128,8 @@ public class StaticLayoutUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        mRequestSupplier = new CompositorModelChangeProcessor.FrameRequestSupplier(() -> {});
+
         mCompositorAnimationHandler = new CompositorAnimationHandler(mUpdateHost::requestUpdate);
         CompositorAnimationHandler.setTestingMode(true);
 
@@ -151,7 +154,6 @@ public class StaticLayoutUnitTest {
         doReturn(Arrays.asList(mTabModel)).when(mTabModelSelector).getModels();
         doNothing().when(mTabModel).addObserver(mTabModelObserverCaptor.capture());
 
-        doNothing().when(mRequestSupplier).request();
         doNothing()
                 .when(mBrowserControlsStateProvider)
                 .addObserver(mBrowserControlsStateProviderObserverCaptor.capture());

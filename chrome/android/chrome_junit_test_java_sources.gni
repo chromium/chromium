@@ -42,7 +42,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/browserservices/ui/view/DisclosureSnackbarTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/CompositorSurfaceManagerImplTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/CompositorViewHolderUnitTest.java",
-  "junit/src/org/chromium/chrome/browser/compositor/layouts/CompositorModelChangeProcessorUnitTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/layouts/SceneOverlayTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/layouts/StaticLayoutUnitTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutHelperTest.java",
