@@ -49,7 +49,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
 
   if (base::FeatureList::IsEnabled(features::kTabSearch) &&
       base::FeatureList::IsEnabled(features::kTabSearchFixedEntrypoint) &&
-      !tab_strip_->controller()->GetProfile()->IsIncognitoProfile()) {
+      !tab_strip_->controller()->GetProfile()->IsIncognitoProfile() &&
+      tab_strip_->controller()->GetBrowser()->is_type_normal()) {
     // TODO(tluk): |tab_search_container| is only needed here so the tab search
     // button can be vertically centered. This can be removed if FlexLayout is
     // updated to support per-child cross-axis alignment.
