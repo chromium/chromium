@@ -178,6 +178,8 @@ Polymer({
       const lottieElement = /** @type{CrLottieElement} */ (
           this.$.setupFingerprint.querySelector('#scannerLocationLottie'));
       lottieElement.setPlay(playing);
+      /** @type {!CrFingerprintProgressArcElement} */ (this.$.arc)
+          .setPlay(playing);
     }
   },
 

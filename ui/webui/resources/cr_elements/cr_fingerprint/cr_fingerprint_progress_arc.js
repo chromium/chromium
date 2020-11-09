@@ -92,6 +92,15 @@ Polymer({
     },
 
     /**
+     * Whether lottie animation should be autoplayed.
+     * @type {boolean}
+     */
+    autoplay: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
      * Scale factor based the configured radius (circleRadius) vs the default
      * radius (DEFAULT_CANVAS_CIRCLE_RADIUS).
      * This will affect the size of icons and checkmark.
@@ -261,6 +270,16 @@ Polymer({
     } else {
       this.animateScanProgress_();
     }
+  },
+
+  /**
+   * Controls the animation based on the value of |shouldPlay|.
+   * @param {boolean} shouldPlay Will play the animation if true else pauses it.
+   */
+  setPlay(shouldPlay) {
+    const scanningAnimation =
+        /** @type {CrLottieElement|HTMLElement} */ (this.$.scanningAnimation);
+    scanningAnimation.setPlay(shouldPlay);
   },
 
   /**
