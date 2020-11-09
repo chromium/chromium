@@ -11,18 +11,17 @@
 namespace web_app {
 namespace {
 
-std::vector<PreinstalledAppData>* g_preinstalled_app_data_for_testing = nullptr;
+std::vector<ExternalInstallOptions>* g_preinstalled_app_data_for_testing =
+    nullptr;
 
-std::vector<PreinstalledAppData> GetPreinstalledAppData() {
+std::vector<ExternalInstallOptions> GetPreinstalledAppData() {
   if (g_preinstalled_app_data_for_testing)
     return *g_preinstalled_app_data_for_testing;
 
-  std::vector<PreinstalledAppData> preinstalled_app_data = {
-      // TODO(devlin): Add the web apps that should come preinstalled, gated
-      // by OS.
+  return {
+      // TODO(devlin): Add the web apps that should come preinstalled, gated by
+      // OS.
   };
-
-  return preinstalled_app_data;
 }
 
 }  // namespace
@@ -37,31 +36,20 @@ ScopedTestingPreinstalledAppData::~ScopedTestingPreinstalledAppData() {
   g_preinstalled_app_data_for_testing = nullptr;
 }
 
-PreinstalledWebApps::PreinstalledWebApps() = default;
-PreinstalledWebApps::PreinstalledWebApps(PreinstalledWebApps&&) = default;
-PreinstalledWebApps::~PreinstalledWebApps() = default;
+std::vector<ExternalInstallOptions> GetPreinstalledWebApps() {
+  std::vector<ExternalInstallOptions> result;
 
-PreinstalledWebApps GetPreinstalledWebApps() {
-  PreinstalledWebApps result;
+  for (ExternalInstallOptions& app_data : GetPreinstalledAppData()) {
+    DCHECK_EQ(app_data.install_source, ExternalInstallSource::kExternalDefault);
 
-  for (const PreinstalledAppData& app_data : GetPreinstalledAppData()) {
-    if (app_data.feature_name &&
-        !IsExternalAppInstallFeatureEnabled(app_data.feature_name)) {
-      ++result.disabled_count;
-      continue;
-    }
-
-    ExternalInstallOptions options(app_data.install_url, DisplayMode::kBrowser,
-                                   ExternalInstallSource::kExternalDefault);
     // Preinstalled web apps should not have OS shortcuts of any kind.
-    options.add_to_applications_menu = false;
-    options.add_to_desktop = false;
-    options.add_to_quick_launch_bar = false;
-    options.add_to_search = false;
-    options.add_to_management = false;
-    options.require_manifest = true;
-    options.uninstall_and_replace = {app_data.app_id_to_replace};
-    result.options.push_back(std::move(options));
+    app_data.add_to_applications_menu = false;
+    app_data.add_to_desktop = false;
+    app_data.add_to_quick_launch_bar = false;
+    app_data.add_to_search = false;
+    app_data.add_to_management = false;
+    app_data.require_manifest = true;
+    result.push_back(std::move(app_data));
   }
 
   return result;

@@ -28,6 +28,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/user_type_filter.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/components/external_app_install_features.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -46,7 +47,9 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
-#endif
+#include "chromeos/constants/chromeos_switches.h"
+#include "components/arc/arc_util.h"
+#endif  // defined(OS_CHROMEOS)
 
 namespace web_app {
 
@@ -106,12 +109,10 @@ LoadedConfigs LoadConfigsBlocking(const base::FilePath& config_dir) {
 
 struct ParsedConfigs {
   std::vector<ExternalInstallOptions> options_list;
-  int disabled_count = 0;
   int error_count = 0;
 };
 
 ParsedConfigs ParseConfigsBlocking(const base::FilePath& config_dir,
-                                   const std::string& user_type,
                                    LoadedConfigs loaded_configs) {
   ParsedConfigs result;
   result.error_count = loaded_configs.error_count;
@@ -121,20 +122,12 @@ ParsedConfigs ParseConfigsBlocking(const base::FilePath& config_dir,
                         : std::make_unique<FileUtilsWrapper>();
 
   for (const LoadedConfig& loaded_config : loaded_configs.configs) {
-    ExternalConfigParseResult parse_result =
-        ParseConfig(*file_utils, config_dir, loaded_config.file, user_type,
-                    loaded_config.contents);
-    switch (parse_result.type) {
-      case ExternalConfigParseResult::kEnabled:
-        result.options_list.push_back(std::move(parse_result.options.value()));
-        break;
-      case ExternalConfigParseResult::kDisabled:
-        ++result.disabled_count;
-        break;
-      case ExternalConfigParseResult::kError:
-        ++result.error_count;
-        break;
-    }
+    base::Optional<ExternalInstallOptions> parse_result = ParseConfig(
+        *file_utils, config_dir, loaded_config.file, loaded_config.contents);
+    if (parse_result)
+      result.options_list.push_back(std::move(*parse_result));
+    else
+      ++result.error_count;
   }
 
   return result;
@@ -242,7 +235,6 @@ void ExternalWebAppManager::ParseConfigs(ConsumeParsedConfigs callback,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&ParseConfigsBlocking, GetConfigDir(),
-                     apps::DetermineUserType(profile_),
                      std::move(loaded_configs)),
       std::move(callback));
 }
@@ -250,19 +242,44 @@ void ExternalWebAppManager::ParseConfigs(ConsumeParsedConfigs callback,
 void ExternalWebAppManager::PostProcessConfigs(ConsumeInstallOptions callback,
                                                ParsedConfigs parsed_configs) {
   // Add hard coded configs.
-  PreinstalledWebApps preinstalled_web_apps = GetPreinstalledWebApps();
-  for (ExternalInstallOptions& options : preinstalled_web_apps.options)
+  for (ExternalInstallOptions& options : GetPreinstalledWebApps())
     parsed_configs.options_list.push_back(std::move(options));
-  parsed_configs.disabled_count += preinstalled_web_apps.disabled_count;
 
-  // Track this separately as we may remove apps due to user uninstall (not the
-  // same as being disabled).
-  int enabled_count = parsed_configs.options_list.size();
-
+  const int total_count = parsed_configs.options_list.size();
+  int disabled_count = 0;
   bool is_new_user = IsNewUser();
-
+  std::string user_type = apps::DetermineUserType(profile_);
   base::EraseIf(
       parsed_configs.options_list, [&](const ExternalInstallOptions& options) {
+        // Remove if not applicable to current user type.
+        DCHECK_GT(options.user_type_allowlist.size(), 0u);
+        if (!base::Contains(options.user_type_allowlist, user_type)) {
+          ++disabled_count;
+          return true;
+        }
+
+        // Remove if gated on a disabled feature.
+        if (options.gate_on_feature &&
+            !IsExternalAppInstallFeatureEnabled(*options.gate_on_feature)) {
+          ++disabled_count;
+          return true;
+        }
+
+#if defined(OS_CHROMEOS)
+        // Remove if ARC is supported and app should be disabled.
+        if (options.disable_if_arc_supported && arc::IsArcAvailable()) {
+          ++disabled_count;
+          return true;
+        }
+
+        // Remove if device is tablet and app should be disabled.
+        if (options.disable_if_tablet_form_factor &&
+            chromeos::switches::IsTabletFormFactor()) {
+          ++disabled_count;
+          return true;
+        }
+#endif  // defined(OS_CHROMEOS)
+
         // Remove if only for new users, user isn't new and app was not
         // installed previously.
         if (options.only_for_new_users && !is_new_user) {
@@ -277,8 +294,7 @@ void ExternalWebAppManager::PostProcessConfigs(ConsumeInstallOptions callback,
         // Remove if any apps to replace are blocked by admin policy.
         for (const AppId& app_id : options.uninstall_and_replace) {
           if (extensions::IsExtensionBlockedByPolicy(profile_, app_id)) {
-            ++parsed_configs.disabled_count;
-            --enabled_count;
+            ++disabled_count;
             return true;
           }
         }
@@ -299,9 +315,9 @@ void ExternalWebAppManager::PostProcessConfigs(ConsumeInstallOptions callback,
       });
 
   base::UmaHistogramCounts100(ExternalWebAppManager::kHistogramEnabledCount,
-                              enabled_count);
+                              total_count - disabled_count);
   base::UmaHistogramCounts100(ExternalWebAppManager::kHistogramDisabledCount,
-                              parsed_configs.disabled_count);
+                              disabled_count);
   base::UmaHistogramCounts100(ExternalWebAppManager::kHistogramConfigErrorCount,
                               parsed_configs.error_count);
 

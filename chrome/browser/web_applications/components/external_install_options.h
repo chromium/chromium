@@ -80,6 +80,21 @@ struct ExternalInstallOptions {
   // the first time.
   bool only_for_new_users = false;
 
+  // Which user types this app should be installed for.
+  // See apps::DetermineUserType() for relevant string constants.
+  std::vector<std::string> user_type_allowlist;
+
+  // Which feature flag should be enabled to install this app. See
+  // chrome/browser/web_applications/components/external_app_install_features.h
+  // for available features to gate on.
+  base::Optional<std::string> gate_on_feature;
+
+  // Whether this should not be installed for devices that support ARC.
+  bool disable_if_arc_supported = false;
+
+  // Whether this should not be installed for tablet devices.
+  bool disable_if_tablet_form_factor = false;
+
   // This must only be used by pre-installed default or system apps that are
   // valid PWAs if loading the real service worker is too costly to verify
   // programmatically.

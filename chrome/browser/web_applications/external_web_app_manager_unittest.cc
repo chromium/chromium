@@ -200,11 +200,11 @@ TEST_F(ExternalWebAppManagerTest, ReplacementExtensionBlockedByPolicy) {
   ScopedTestingPreinstalledAppData scoped_preinstalled_apps;
   GURL install_url("https://test.app");
   constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
-  scoped_preinstalled_apps.apps.push_back({
-      .install_url = install_url,
-      .feature_name = nullptr,
-      .app_id_to_replace = kExtensionId,
-  });
+  ExternalInstallOptions options(install_url, DisplayMode::kBrowser,
+                                 ExternalInstallSource::kExternalDefault);
+  options.user_type_allowlist = {"unmanaged"};
+  options.uninstall_and_replace = {kExtensionId};
+  scoped_preinstalled_apps.apps.push_back(std::move(options));
 
   auto expect_present = [&]() {
     std::vector<ExternalInstallOptions> options_list =
@@ -251,6 +251,7 @@ TEST_F(ExternalWebAppManagerTest, GoodJson) {
     ExternalInstallOptions install_options(
         GURL("https://www.chromestatus.com/features"), DisplayMode::kBrowser,
         ExternalInstallSource::kExternalDefault);
+    install_options.user_type_allowlist = {"unmanaged"};
     install_options.add_to_applications_menu = true;
     install_options.add_to_search = true;
     install_options.add_to_management = true;
@@ -263,6 +264,7 @@ TEST_F(ExternalWebAppManagerTest, GoodJson) {
     ExternalInstallOptions install_options(
         GURL("https://events.google.com/io2016/?utm_source=web_app_manifest"),
         DisplayMode::kStandalone, ExternalInstallSource::kExternalDefault);
+    install_options.user_type_allowlist = {"unmanaged"};
     install_options.add_to_applications_menu = true;
     install_options.add_to_search = true;
     install_options.add_to_management = true;

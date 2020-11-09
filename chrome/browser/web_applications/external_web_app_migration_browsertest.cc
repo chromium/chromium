@@ -424,10 +424,13 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
                        MigrateToPreinstalledWebApp) {
   ScopedTestingPreinstalledAppData preinstalled_apps;
-  preinstalled_apps.apps.push_back(
-      {GetWebAppUrl(), kMigrationFlag, kExtensionId});
-  EXPECT_EQ(1, GetPreinstalledWebApps().disabled_count);
-
+  ExternalInstallOptions options(GetWebAppUrl(), DisplayMode::kBrowser,
+                                 ExternalInstallSource::kExternalDefault);
+  options.gate_on_feature = kMigrationFlag;
+  options.user_type_allowlist = {"unmanaged"};
+  options.uninstall_and_replace.push_back(kExtensionId);
+  preinstalled_apps.apps.push_back(std::move(options));
+  EXPECT_EQ(1u, GetPreinstalledWebApps().size());
   // Set up pre-migration state.
   {
     base::HistogramTester histograms;
