@@ -8,7 +8,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
@@ -172,9 +172,9 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   // Observes |controller_connector_| while this loader dispatches a fetch event
   // to the controller. If a broken connection is observed, this loader attempts
   // to restart the controller and dispatch the event again.
-  ScopedObserver<ControllerServiceWorkerConnector,
-                 ControllerServiceWorkerConnector::Observer>
-      controller_connector_observer_{this};
+  base::ScopedObservation<ControllerServiceWorkerConnector,
+                          ControllerServiceWorkerConnector::Observer>
+      controller_connector_observation_{this};
   bool fetch_request_restarted_;
   bool body_reading_complete_;
   bool side_data_reading_complete_;
