@@ -673,10 +673,17 @@ bool DXVAVideoDecodeAccelerator::Initialize(const Config& config,
     decoder_output_p010_or_p016_ = true;
   }
 
-  // Unfortunately, the profile is currently unreliable for
-  // VP9 (https://crbug.com/592074) so also try to use fp16 if HDR is on.
-  if (config.target_color_space.IsHDR()) {
+  // While we can rely on the profile to indicate HBD status for other codecs,
+  // AV1 may have both 8-bit SDR and 10-bit HDR in the same profile, so also
+  // check the color space to determine if HDR should be used. It's possible for
+  // HDR 8-bit content to be created too, it's just rare.
+  if (config.container_color_space.ToGfxColorSpace().IsHDR()) {
     use_fp16_ = true;
+    if (config.profile == AV1PROFILE_PROFILE_PRO ||
+        config.profile == AV1PROFILE_PROFILE_MAIN ||
+        config.profile == AV1PROFILE_PROFILE_HIGH) {
+      decoder_output_p010_or_p016_ = true;
+    }
   }
 
   // Not all versions of Windows 7 and later include Media Foundation DLLs.
@@ -2892,11 +2899,9 @@ bool DXVAVideoDecodeAccelerator::InitializeID3D11VideoProcessor(
   // Since the video processor doesn't support HLG, lets just do the YUV->RGB
   // conversion and let the output color space be HLG. This won't work well
   // unless color management is on, but if color management is off we don't
-  // support HLG anyways.
-  if (color_space == gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                                     gfx::ColorSpace::TransferID::ARIB_STD_B67,
-                                     gfx::ColorSpace::MatrixID::BT709,
-                                     gfx::ColorSpace::RangeID::LIMITED)) {
+  // support HLG anyways. See https://crbug.com/1144260#c6.
+  if (color_space.GetTransferID() ==
+      gfx::ColorSpace::TransferID::ARIB_STD_B67) {
     video_context1->VideoProcessorSetStreamColorSpace1(
         d3d11_processor_.Get(), 0,
         DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_LEFT_P2020);

@@ -1189,7 +1189,7 @@ TEST_P(GpuImageDecodeCacheTest, GetHdrDecodedImageForDrawToHdr) {
 
   auto cs = gfx::ColorSpace(*decoded_draw_image.image()->colorSpace());
   float sdr_white_level;
-  ASSERT_TRUE(cs.GetPQSDRWhiteLevel(&sdr_white_level));
+  ASSERT_TRUE(cs.GetSDRWhiteLevel(&sdr_white_level));
   EXPECT_FLOAT_EQ(sdr_white_level, kCustomWhiteLevel);
 
   EXPECT_FALSE(cache->DiscardableIsLockedForTesting(draw_image));
@@ -3043,7 +3043,7 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
 
     float sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel;
     if (target_cs.IsHDR())
-      ASSERT_TRUE(target_cs.GetPQSDRWhiteLevel(&sdr_white_level));
+      ASSERT_TRUE(target_cs.GetSDRWhiteLevel(&sdr_white_level));
 
     DrawImage draw_image(
         image, false, SkIRect::MakeWH(image.width(), image.height()),

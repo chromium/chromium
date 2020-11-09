@@ -722,7 +722,7 @@ TEST(ColorSpaceTest, PQSDRWhiteLevel) {
     ColorSpace hdr10 =
         i < 3 ? ColorSpace::CreateHDR10(nits[i]) : ColorSpace::CreateHDR10();
     float white_level = 0;
-    EXPECT_TRUE(hdr10.GetPQSDRWhiteLevel(&white_level));
+    EXPECT_TRUE(hdr10.GetSDRWhiteLevel(&white_level));
     if (i < 3)
       EXPECT_EQ(white_level, nits[i]);
     else
@@ -769,6 +769,74 @@ TEST(ColorSpaceTest, PQSDRWhiteLevel) {
     EXPECT_NEAR(val.x(), pq_encoded_nits[0], kMathEpsilon);
     EXPECT_NEAR(val.y(), pq_encoded_nits[1], kMathEpsilon);
     EXPECT_NEAR(val.z(), pq_encoded_nits[2], kMathEpsilon);
+  }
+}
+
+TEST(ColorSpaceTest, HLGSDRWhiteLevel) {
+  // These values are (1.0f * nits[i] / kDefaultSDRWhiteLevel) converted to
+  // LINEAR_HDR via the HLG transfer function.
+  constexpr float hlg_encoded_nits[] = {
+      0.447214f,  // 0.5 * sqrt(1.0 * 80 / 100)
+      0.5f,       // 0.5 * sqrt(1.0 * 100 / 100)
+      0.65641f,   // 0.17883277 * ln(1.0 * 200 / 100 - 0.28466892) + 0.55991073
+  };
+  constexpr float nits[] = {80.f, 100.f, 200.f};
+
+  for (size_t i = 0; i < 4; ++i) {
+    // We'll set the SDR white level to the values in |nits| and also the
+    // default.
+    ColorSpace hlg = i < 3
+                         ? ColorSpace::CreateHLG().GetWithSDRWhiteLevel(nits[i])
+                         : ColorSpace::CreateHLG();
+    float white_level = 0;
+    EXPECT_TRUE(hlg.GetSDRWhiteLevel(&white_level));
+    if (i < 3)
+      EXPECT_EQ(white_level, nits[i]);
+    else
+      EXPECT_EQ(white_level, ColorSpace::kDefaultSDRWhiteLevel);
+
+    // Transform to the same color space, but with the LINEAR_HDR transfer
+    // function.
+    ColorSpace target(ColorSpace::PrimaryID::BT2020,
+                      ColorSpace::TransferID::LINEAR_HDR,
+                      ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL);
+    std::unique_ptr<ColorTransform> xform(ColorTransform::NewColorTransform(
+        hlg, target, ColorTransform::Intent::INTENT_ABSOLUTE));
+
+    // Do the transform to the values in |hlg_encoded_nits|.
+    ColorTransform::TriStim val(hlg_encoded_nits[0], hlg_encoded_nits[1],
+                                hlg_encoded_nits[2]);
+    xform->Transform(&val, 1);
+
+    // Each |hlg_encoded_nits| value should map back to 1.0f after conversion
+    // via a ColorSpace with the right SDR white level.
+    switch (i) {
+      case 0:
+        EXPECT_NEAR(val.x(), 1.f, kMathEpsilon);
+        break;
+      case 1:
+        EXPECT_NEAR(val.y(), 1.f, kMathEpsilon);
+        break;
+      case 2:
+        EXPECT_NEAR(val.z(), 1.f, kMathEpsilon);
+        break;
+      case 3:
+        // Check that the default white level is 100 nits.
+        EXPECT_NEAR(val.y(), 1.f, kMathEpsilon);
+        break;
+    }
+
+    // The nit ratios should be preserved by the transform.
+    EXPECT_NEAR(val.y() / val.x(), nits[1] / nits[0], kMathEpsilon);
+    EXPECT_NEAR(val.z() / val.x(), nits[2] / nits[0], kMathEpsilon);
+
+    // Test the inverse transform.
+    std::unique_ptr<ColorTransform> xform_inv(ColorTransform::NewColorTransform(
+        target, hlg, ColorTransform::Intent::INTENT_ABSOLUTE));
+    xform_inv->Transform(&val, 1);
+    EXPECT_NEAR(val.x(), hlg_encoded_nits[0], kMathEpsilon);
+    EXPECT_NEAR(val.y(), hlg_encoded_nits[1], kMathEpsilon);
+    EXPECT_NEAR(val.z(), hlg_encoded_nits[2], kMathEpsilon);
   }
 }
 

@@ -318,10 +318,10 @@ class COLOR_SPACE_EXPORT ColorSpace {
   bool GetTransferFunction(skcms_TransferFunction* fn) const;
   bool GetInverseTransferFunction(skcms_TransferFunction* fn) const;
 
-  // Returns the SDR white level specified for the PQ transfer function. If
-  // no value was specified, then use kDefaultSDRWhiteLevel. If the transfer
+  // Returns the SDR white level specified for the PQ or HLG transfer functions.
+  // If no value was specified, then use kDefaultSDRWhiteLevel. If the transfer
   // function is not PQ then return false.
-  bool GetPQSDRWhiteLevel(float* sdr_white_level) const;
+  bool GetSDRWhiteLevel(float* sdr_white_level) const;
 
   // Returns the parameters for a PIECEWISE_HDR transfer function. See
   // CreatePiecewiseHDR for parameter meanings.

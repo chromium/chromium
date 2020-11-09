@@ -128,18 +128,11 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
           output_color_space.reset();
         }
 
-        // TODO(liberato): Handle HLG, if we can get the input color space.
-        // The rough outline looks something like this:
-#if 0
-        if (hlg) {
-        video_context1->VideoProcessorSetStreamColorSpace1(
-        d3d11_processor_.Get(), 0,
-        DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_LEFT_P2020);
-    video_context1->VideoProcessorSetOutputColorSpace1(
-        d3d11_processor_.Get(), DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
-    dx11_converter_output_color_space_ = color_space.GetAsFullRangeRGB();
-  }
-#endif
+        // TODO(liberato): Handle HLG, if we can get the input color space. The
+        // VideoProcessor doesn't support HLG, so we need to use it only for YUV
+        // -> RGB conversion by setting the input color space to PQ YUV and the
+        // output color space to PQ RGB. The texture should then be marked as
+        // full range HLG so that Chrome's color management can fix it up.
       }
       break;
     }

@@ -253,7 +253,7 @@ TEST(ColorSpace, PQToSkColorSpace) {
   color_space = ColorSpace::CreateHDR10(50.f);
   roundtrip_color_space = ColorSpace(*color_space.ToSkColorSpace());
   EXPECT_TRUE(
-      roundtrip_color_space.GetPQSDRWhiteLevel(&roundtrip_sdr_white_level));
+      roundtrip_color_space.GetSDRWhiteLevel(&roundtrip_sdr_white_level));
   EXPECT_NEAR(50.f, roundtrip_sdr_white_level, kEpsilon);
   EXPECT_EQ(ColorSpace::TransferID::SMPTEST2084,
             roundtrip_color_space.GetTransferID());
@@ -264,7 +264,35 @@ TEST(ColorSpace, PQToSkColorSpace) {
   color_space = ColorSpace::CreateHDR10();
   roundtrip_color_space = ColorSpace(*color_space.ToSkColorSpace());
   EXPECT_TRUE(
-      roundtrip_color_space.GetPQSDRWhiteLevel(&roundtrip_sdr_white_level));
+      roundtrip_color_space.GetSDRWhiteLevel(&roundtrip_sdr_white_level));
+  EXPECT_NEAR(ColorSpace::kDefaultSDRWhiteLevel, roundtrip_sdr_white_level,
+              kEpsilon);
+}
+
+TEST(ColorSpace, HLGToSkColorSpace) {
+  ColorSpace color_space;
+  ColorSpace roundtrip_color_space;
+  float roundtrip_sdr_white_level;
+
+  // We expect that when a white point is specified, the conversion from
+  // ColorSpace -> SkColorSpace -> ColorSpace be the identity. Because of
+  // rounding error, this will not quite be the case.
+  constexpr float kSDRWhiteLevel = 50.0f;
+  color_space = ColorSpace::CreateHLG().GetWithSDRWhiteLevel(kSDRWhiteLevel);
+  roundtrip_color_space = ColorSpace(*color_space.ToSkColorSpace());
+  EXPECT_TRUE(
+      roundtrip_color_space.GetSDRWhiteLevel(&roundtrip_sdr_white_level));
+  EXPECT_FLOAT_EQ(kSDRWhiteLevel, roundtrip_sdr_white_level);
+  EXPECT_EQ(ColorSpace::TransferID::ARIB_STD_B67,
+            roundtrip_color_space.GetTransferID());
+
+  // When no white level is specified, we should get an SkColorSpace that
+  // specifies the default white level. Of note is that in the roundtrip, the
+  // value of kDefaultSDRWhiteLevel gets baked in.
+  color_space = ColorSpace::CreateHLG();
+  roundtrip_color_space = ColorSpace(*color_space.ToSkColorSpace());
+  EXPECT_TRUE(
+      roundtrip_color_space.GetSDRWhiteLevel(&roundtrip_sdr_white_level));
   EXPECT_NEAR(ColorSpace::kDefaultSDRWhiteLevel, roundtrip_sdr_white_level,
               kEpsilon);
 }
@@ -317,23 +345,23 @@ TEST(ColorSpace, PQWhiteLevel) {
   ColorSpace color_space = ColorSpace::CreateHDR10(kCustomWhiteLevel);
   EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::SMPTEST2084);
   float sdr_white_level;
-  EXPECT_TRUE(color_space.GetPQSDRWhiteLevel(&sdr_white_level));
+  EXPECT_TRUE(color_space.GetSDRWhiteLevel(&sdr_white_level));
   EXPECT_EQ(sdr_white_level, kCustomWhiteLevel);
 
   color_space = ColorSpace::CreateHDR10();
   EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::SMPTEST2084);
-  EXPECT_TRUE(color_space.GetPQSDRWhiteLevel(&sdr_white_level));
+  EXPECT_TRUE(color_space.GetSDRWhiteLevel(&sdr_white_level));
   EXPECT_EQ(sdr_white_level, ColorSpace::kDefaultSDRWhiteLevel);
 
   color_space = color_space.GetWithSDRWhiteLevel(kCustomWhiteLevel);
   EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::SMPTEST2084);
-  EXPECT_TRUE(color_space.GetPQSDRWhiteLevel(&sdr_white_level));
+  EXPECT_TRUE(color_space.GetSDRWhiteLevel(&sdr_white_level));
   EXPECT_EQ(sdr_white_level, kCustomWhiteLevel);
 
   constexpr float kCustomWhiteLevel2 = kCustomWhiteLevel * 2;
   color_space = color_space.GetWithSDRWhiteLevel(kCustomWhiteLevel2);
   EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::SMPTEST2084);
-  EXPECT_TRUE(color_space.GetPQSDRWhiteLevel(&sdr_white_level));
+  EXPECT_TRUE(color_space.GetSDRWhiteLevel(&sdr_white_level));
   EXPECT_EQ(sdr_white_level, kCustomWhiteLevel2);
 }
 

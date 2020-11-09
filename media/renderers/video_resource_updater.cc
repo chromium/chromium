@@ -123,10 +123,15 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
       return VideoFrameResourceType::YUV;
 
     case PIXEL_FORMAT_P016LE:
-      DCHECK_EQ(num_textures, 1);
+      if (num_textures == 1) {
+        // Single-texture multi-planar frames can be sampled as RGB.
+        buffer_formats[0] = gfx::BufferFormat::P010;
+        return VideoFrameResourceType::RGB;
+      }
       // TODO(mcasas): Support other formats such as e.g. P012.
-      buffer_formats[0] = gfx::BufferFormat::P010;
-      return VideoFrameResourceType::RGB;
+      buffer_formats[0] = gfx::BufferFormat::R_16;
+      buffer_formats[1] = gfx::BufferFormat::RG_88;
+      return VideoFrameResourceType::YUV;
 
     case PIXEL_FORMAT_UYVY:
       NOTREACHED();
@@ -583,6 +588,7 @@ void VideoResourceUpdater::AppendQuads(
                 VideoFrame::NumPlanes(frame->format()));
       if (frame->HasTextures()) {
         DCHECK(frame->format() == PIXEL_FORMAT_NV12 ||
+               frame->format() == PIXEL_FORMAT_P016LE ||
                frame->format() == PIXEL_FORMAT_I420);
       }
 

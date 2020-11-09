@@ -60,6 +60,20 @@ skcms_TransferFunction GetPQSkTransferFunction(float sdr_white_level) {
   return fn;
 }
 
+skcms_TransferFunction GetHLGSkTransferFunction(float sdr_white_level) {
+  // Note that SkColorSpace doesn't have the notion of an unspecified SDR white
+  // level.
+  if (sdr_white_level == 0.f)
+    sdr_white_level = ColorSpace::kDefaultSDRWhiteLevel;
+
+  // The reference white level for HLG is 100 nits. We want to setup the
+  // returned transfer function such that output values are scaled by the white
+  // level; Skia uses the |f| transfer function parameter for this.
+  skcms_TransferFunction fn = SkNamedTransferFn::kHLG;
+  fn.f = ColorSpace::kDefaultSDRWhiteLevel / sdr_white_level - 1;
+  return fn;
+}
+
 float GetSDRWhiteLevelFromPQSkTransferFunction(
     const skcms_TransferFunction& fn) {
   DCHECK_EQ(fn.g, SkNamedTransferFn::kPQ.g);
@@ -67,6 +81,14 @@ float GetSDRWhiteLevelFromPQSkTransferFunction(
   const double w_a = pow(ws_a, fn.f);
   const double sdr_white_level_a = 10000.0f / w_a;
   return sdr_white_level_a;
+}
+
+float GetSDRWhiteLevelFromHLGSkTransferFunction(
+    const skcms_TransferFunction& fn) {
+  DCHECK_EQ(fn.g, SkNamedTransferFn::kHLG.g);
+  if (fn.f == 0)
+    return ColorSpace::kDefaultSDRWhiteLevel;
+  return 1.0f / ((fn.f + 1) / ColorSpace::kDefaultSDRWhiteLevel);
 }
 
 bool PrimaryIdContainsSRGB(ColorSpace::PrimaryID id) {
@@ -122,6 +144,7 @@ ColorSpace::ColorSpace(const SkColorSpace& sk_color_space)
     SetCustomTransferFunction(fn);
   } else if (skcms_TransferFunction_isHLGish(&fn)) {
     transfer_ = TransferID::ARIB_STD_B67;
+    transfer_params_[0] = GetSDRWhiteLevelFromHLGSkTransferFunction(fn);
   } else if (skcms_TransferFunction_isPQish(&fn)) {
     transfer_ = TransferID::SMPTEST2084;
     transfer_params_[0] = GetSDRWhiteLevelFromPQSkTransferFunction(fn);
@@ -278,6 +301,7 @@ size_t ColorSpace::TransferParamCount(TransferID transfer) {
     case TransferID::PIECEWISE_HDR:
       return 2;
     case TransferID::SMPTEST2084:
+    case TransferID::ARIB_STD_B67:
       return 1;
     default:
       return 0;
@@ -470,9 +494,16 @@ std::string ColorSpace::ToString() const {
     PRINT_ENUM_CASE(TransferID, BT2020_10)
     PRINT_ENUM_CASE(TransferID, BT2020_12)
     PRINT_ENUM_CASE(TransferID, SMPTEST428_1)
-    PRINT_ENUM_CASE(TransferID, ARIB_STD_B67)
     PRINT_ENUM_CASE(TransferID, IEC61966_2_1_HDR)
     PRINT_ENUM_CASE(TransferID, LINEAR_HDR)
+    case TransferID::ARIB_STD_B67:
+      ss << "HLG (SDR white point ";
+      if (transfer_params_[0] == 0.f)
+        ss << "default " << kDefaultSDRWhiteLevel;
+      else
+        ss << transfer_params_[0];
+      ss << " nits)";
+      break;
     case TransferID::SMPTEST2084:
       ss << "PQ (SDR white point ";
       if (transfer_params_[0] == 0.f)
@@ -580,6 +611,7 @@ bool ColorSpace::IsSuitableForBlending() const {
       // PQ is not an acceptable space to do blending in -- blending 0 and 1
       // evenly will get a result of sRGB 0.259 (instead of 0.5).
       return false;
+    case TransferID::ARIB_STD_B67:
     case TransferID::LINEAR_HDR:
       // If the color space is nearly-linear, then it is not suitable for
       // blending -- blending 0 and 1 evenly will get a result of sRGB 0.735
@@ -614,7 +646,8 @@ ColorSpace ColorSpace::GetWithMatrixAndRange(MatrixID matrix,
 
 ColorSpace ColorSpace::GetWithSDRWhiteLevel(float sdr_white_level) const {
   ColorSpace result = *this;
-  if (transfer_ == TransferID::SMPTEST2084) {
+  if (transfer_ == TransferID::SMPTEST2084 ||
+      transfer_ == TransferID::ARIB_STD_B67) {
     result.transfer_params_[0] = sdr_white_level;
   } else if (transfer_ == TransferID::LINEAR_HDR) {
     result.transfer_ = TransferID::CUSTOM_HDR;
@@ -658,7 +691,7 @@ sk_sp<SkColorSpace> ColorSpace::ToSkColorSpace() const {
       transfer_fn = SkNamedTransferFn::kLinear;
       break;
     case TransferID::ARIB_STD_B67:
-      transfer_fn = SkNamedTransferFn::kHLG;
+      transfer_fn = GetHLGSkTransferFunction(transfer_params_[0]);
       break;
     case TransferID::SMPTEST2084:
       transfer_fn = GetPQSkTransferFunction(transfer_params_[0]);
@@ -1033,9 +1066,11 @@ bool ColorSpace::GetInverseTransferFunction(skcms_TransferFunction* fn) const {
   return true;
 }
 
-bool ColorSpace::GetPQSDRWhiteLevel(float* sdr_white_level) const {
-  if (transfer_ != TransferID::SMPTEST2084)
+bool ColorSpace::GetSDRWhiteLevel(float* sdr_white_level) const {
+  if (transfer_ != TransferID::SMPTEST2084 &&
+      transfer_ != TransferID::ARIB_STD_B67) {
     return false;
+  }
   if (transfer_params_[0] == 0.0f)
     *sdr_white_level = kDefaultSDRWhiteLevel;
   else

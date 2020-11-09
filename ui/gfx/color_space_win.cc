@@ -189,6 +189,10 @@ DXGI_COLOR_SPACE_TYPE ColorSpaceWin::GetDXGIColorSpace(
         return DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_LEFT_P2020;
         // Could also be:
         // DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_TOPLEFT_P2020
+      } else if (color_space.GetTransferID() ==
+                 gfx::ColorSpace::TransferID::ARIB_STD_B67) {
+        // Note: This may not always work. See https://crbug.com/1144260#c6.
+        return DXGI_COLOR_SPACE_YCBCR_STUDIO_GHLG_TOPLEFT_P2020;
       } else {
         // For YUV, we default to LIMITED
         if (color_space.GetRangeID() == gfx::ColorSpace::RangeID::FULL) {
