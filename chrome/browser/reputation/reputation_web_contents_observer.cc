@@ -196,10 +196,17 @@ void RecordSafetyTipStatusWithInitiatorOriginInfo(
 
 // Returns whether a safety tip should be shown, according to finch.
 bool IsSafetyTipEnabled(security_state::SafetyTipStatus status) {
-  if (!base::FeatureList::IsEnabled(security_state::features::kSafetyTipUI)) {
+  if (!security_state::IsSafetyTipUIFeatureEnabled()) {
     return false;
   }
-  if (status == security_state::SafetyTipStatus::kBadReputation) {
+  // Safety Tips can be enabled for Safe Browsing delayed warnings
+  // (https://crbug.com/1146471) or independently. When enabled independently,
+  // there are a variety of triggers that can be toggled: a suspicious site
+  // check and various lookalike URL checks. We check the suspicious site
+  // trigger here; lookalike URL parameters are checked when computing whether
+  // the URL is a lookalike.
+  if (status == security_state::SafetyTipStatus::kBadReputation &&
+      base::FeatureList::IsEnabled(security_state::features::kSafetyTipUI)) {
     return kEnableSuspiciousSiteChecks.Get();
   }
   return true;
@@ -303,10 +310,11 @@ void ReputationWebContentsObserver::MaybeShowSafetyTip(
 
   ReputationService* service = ReputationService::Get(profile_);
   service->GetReputationStatus(
-      url, base::BindOnce(
-               &ReputationWebContentsObserver::HandleReputationCheckResult,
-               weak_factory_.GetWeakPtr(), navigation_source_id,
-               called_from_visibility_check, record_ukm_if_tip_not_shown));
+      url, web_contents(),
+      base::BindOnce(
+          &ReputationWebContentsObserver::HandleReputationCheckResult,
+          weak_factory_.GetWeakPtr(), navigation_source_id,
+          called_from_visibility_check, record_ukm_if_tip_not_shown));
 }
 
 void ReputationWebContentsObserver::HandleReputationCheckResult(

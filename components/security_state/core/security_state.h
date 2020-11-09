@@ -269,6 +269,10 @@ bool IsSHA1InChain(const VisibleSecurityState& visible_security_state);
 // info to danger triangle as part of an experiment (crbug.com/997972).
 bool ShouldShowDangerTriangleForWarningLevel();
 
+// Returns true if Safety Tip UI should be shown because a relevant field trial
+// is enabled.
+bool IsSafetyTipUIFeatureEnabled();
+
 }  // namespace security_state
 
 #endif  // COMPONENTS_SECURITY_STATE_CORE_SECURITY_STATE_H_

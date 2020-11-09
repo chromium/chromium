@@ -17,10 +17,12 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reputation/local_heuristics.h"
+#include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/reputation/core/safety_tips_config.h"
+#include "components/security_state/core/features.h"
 #include "components/security_state/core/security_state.h"
 #include "components/url_formatter/spoof_checks/top_domains/top500_domains.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -105,19 +107,23 @@ ReputationService* ReputationService::Get(Profile* profile) {
 }
 
 void ReputationService::GetReputationStatus(const GURL& url,
+                                            content::WebContents* web_contents,
                                             ReputationCheckCallback callback) {
   DCHECK(url.SchemeIsHTTPOrHTTPS());
 
   LookalikeUrlService* service = LookalikeUrlService::Get(profile_);
   if (service->EngagedSitesNeedUpdating()) {
-    service->ForceUpdateEngagedSites(
-        base::BindOnce(&ReputationService::GetReputationStatusWithEngagedSites,
-                       weak_factory_.GetWeakPtr(), url, std::move(callback)));
+    service->ForceUpdateEngagedSites(base::BindOnce(
+        &ReputationService::GetReputationStatusWithEngagedSites,
+        weak_factory_.GetWeakPtr(), url,
+        !!safe_browsing::SafeBrowsingUserInteractionObserver::FromWebContents(
+            web_contents),
+        std::move(callback)));
     // If the engaged sites need updating, there's nothing to do until callback.
     return;
   }
 
-  GetReputationStatusWithEngagedSites(url, std::move(callback),
+  GetReputationStatusWithEngagedSites(url, web_contents, std::move(callback),
                                       service->GetLatestEngagedSites());
 }
 
@@ -142,6 +148,7 @@ void ReputationService::SetSensitiveKeywordsForTesting(
 
 void ReputationService::GetReputationStatusWithEngagedSites(
     const GURL& url,
+    bool has_delayed_warning,
     ReputationCheckCallback callback,
     const std::vector<DomainInfo>& engaged_sites) {
   const DomainInfo navigated_domain = GetDomainInfo(url);
@@ -216,6 +223,25 @@ void ReputationService::GetReputationStatusWithEngagedSites(
     }
 
     result.triggered_heuristics.keywords_heuristic_triggered = true;
+    done_checking_reputation_status = true;
+  }
+
+  // 6. This case is an experimental variation on Safe Browsing delayed warnings
+  // (https://crbug.com/1057157) to measure the effect of simplified domain
+  // display (https://crbug.com/1090393). In this experiment, Chrome delays Safe
+  // Browsing warnings until user interaction to see if the simplified domain
+  // display UI treatment affects how people interact with the page. In this
+  // variation, Chrome shows a Safety Tip on such pages, to try to isolate the
+  // effect of the UI treatment to when people's attention is drawn to the
+  // omnibox.
+  if (has_delayed_warning &&
+      base::FeatureList::IsEnabled(
+          security_state::features::kSafetyTipUIOnDelayedWarning)) {
+    // Intentionally don't check |done_checking_reputation_status| here, as we
+    // want this Safety Tip to take precedence. In this case, where there is a
+    // delayed Safe Browsing warning, we know the page is actually suspicious.
+    result.safety_tip_status = SafetyTipStatus::kBadReputation;
+    result.triggered_heuristics.blocklist_heuristic_triggered = true;
     done_checking_reputation_status = true;
   }
 

@@ -44,6 +44,12 @@ extern const base::Feature kLegacyTLSWarnings;
 COMPONENT_EXPORT(SECURITY_STATE_FEATURES)
 extern const base::Feature kSafetyTipUI;
 
+// This feature enables Safety Tip warnings on pages where there is a delayed
+// Safe Browsing warning. Has no effect unless safe_browsing::kDelayedWarnings
+// is also enabled. Can be enabled independently of kSafetyTipUI.
+COMPONENT_EXPORT(SECURITY_STATE_FEATURES)
+extern const base::Feature kSafetyTipUIOnDelayedWarning;
+
 }  // namespace features
 }  // namespace security_state
 

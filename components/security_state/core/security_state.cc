@@ -328,4 +328,9 @@ bool ShouldShowDangerTriangleForWarningLevel() {
   return true;
 }
 
+bool IsSafetyTipUIFeatureEnabled() {
+  return base::FeatureList::IsEnabled(features::kSafetyTipUI) ||
+         base::FeatureList::IsEnabled(features::kSafetyTipUIOnDelayedWarning);
+}
+
 }  // namespace security_state

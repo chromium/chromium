@@ -48,7 +48,6 @@
 #include "components/safe_browsing/content/password_protection/password_protection_service.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
-#include "components/security_state/core/features.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/ssl_errors/error_info.h"
 #include "components/strings/grit/components_chromium_strings.h"
@@ -794,7 +793,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
 
   safety_tip_info_ = visible_security_state.safety_tip_info;
 #if defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(security_state::features::kSafetyTipUI)) {
+  if (security_state::IsSafetyTipUIFeatureEnabled()) {
     // identity_status_description_android_ is only displayed on Android when
     // the user taps "Details" link on the page info. Reuse the description from
     // page info UI.
@@ -1023,7 +1022,7 @@ void PageInfo::PresentSiteIdentity() {
   info.connection_status_description = UTF16ToUTF8(site_connection_details_);
   info.identity_status = site_identity_status_;
   info.safe_browsing_status = safe_browsing_status_;
-  if (base::FeatureList::IsEnabled(security_state::features::kSafetyTipUI)) {
+  if (security_state::IsSafetyTipUIFeatureEnabled()) {
     info.safety_tip_info = safety_tip_info_;
   }
 #if defined(OS_ANDROID)
