@@ -18,7 +18,6 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/test/assistant_test_api.h"
-#include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
@@ -105,7 +104,6 @@ AssistantAshTestBase::AssistantAshTestBase(
       test_api_(AssistantTestApi::Create()),
       test_setup_(std::make_unique<TestAssistantSetup>()),
       test_web_view_factory_(std::make_unique<TestAssistantWebViewFactory>()),
-      test_image_downloader_(std::make_unique<TestImageDownloader>()),
       assistant_client_(std::make_unique<TestAssistantClient>()) {}
 
 AssistantAshTestBase::~AssistantAshTestBase() = default;

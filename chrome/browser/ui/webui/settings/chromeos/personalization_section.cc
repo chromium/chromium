@@ -123,7 +123,9 @@ const std::vector<SearchConcept>& GetAmbientModeOffSearchConcepts() {
 }
 
 bool IsAmbientModeAllowed() {
+  // TODO(b/172029925): Set up to test this code.
   return chromeos::features::IsAmbientModeEnabled() &&
+         ash::AmbientClient::Get() &&
          ash::AmbientClient::Get()->IsAmbientModeAllowed();
 }
 

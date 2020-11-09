@@ -11,6 +11,7 @@
 #include "ash/ambient/ambient_access_token_controller.h"
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_photo_controller.h"
+#include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/ambient/ui/ambient_background_image_view.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
@@ -29,7 +30,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
@@ -136,14 +136,6 @@ AmbientAshTestBase::AmbientAshTestBase()
 AmbientAshTestBase::~AmbientAshTestBase() = default;
 
 void AmbientAshTestBase::SetUp() {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      chromeos::features::kAmbientModeFeature,
-      {{"GeoPhotosEnabled", "true"},
-       {"CapturedOnPixelPhotosEnabled", "false"}});
-  image_downloader_ = std::make_unique<TestImageDownloader>();
-  ambient_client_ = std::make_unique<TestAmbientClient>(&wake_lock_provider_);
-  chromeos::PowerManagerClient::InitializeFake();
-
   AshTestBase::SetUp();
 
   // Need to reset first and then assign the TestPhotoClient because can only
@@ -162,9 +154,6 @@ void AmbientAshTestBase::SetUp() {
 }
 
 void AmbientAshTestBase::TearDown() {
-  ambient_client_.reset();
-  image_downloader_.reset();
-
   AshTestBase::TearDown();
 }
 
@@ -346,7 +335,7 @@ int AmbientAshTestBase::GetNumOfActiveWakeLocks(
     device::mojom::WakeLockType type) {
   base::RunLoop run_loop;
   int result_count = 0;
-  wake_lock_provider_.GetActiveWakeLocksForTests(
+  GetAmbientAshTestHelper()->wake_lock_provider()->GetActiveWakeLocksForTests(
       type, base::BindOnce(
                 [](base::RunLoop* run_loop, int* result_count, int32_t count) {
                   *result_count = count;
@@ -359,11 +348,11 @@ int AmbientAshTestBase::GetNumOfActiveWakeLocks(
 
 void AmbientAshTestBase::IssueAccessToken(const std::string& token,
                                           bool with_error) {
-  ambient_client_->IssueAccessToken(token, with_error);
+  GetAmbientAshTestHelper()->IssueAccessToken(token, with_error);
 }
 
-bool AmbientAshTestBase::IsAccessTokenRequestPending() const {
-  return ambient_client_->IsAccessTokenRequestPending();
+bool AmbientAshTestBase::IsAccessTokenRequestPending() {
+  return GetAmbientAshTestHelper()->IsAccessTokenRequestPending();
 }
 
 base::TimeDelta AmbientAshTestBase::GetRefreshTokenDelay() {

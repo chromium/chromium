@@ -172,11 +172,9 @@ AmbientController::AmbientController(
   // |SessionController| is initialized before |this| in Shell.
   session_observer_.Add(Shell::Get()->session_controller());
 
-  // Checks the current lid state on initialization.
   auto* power_manager_client = chromeos::PowerManagerClient::Get();
   DCHECK(power_manager_client);
   power_manager_client_observer_.Add(power_manager_client);
-  power_manager_client->RequestStatusUpdate();
 
   ambient_backend_model_observer_.Add(
       ambient_photo_controller_.ambient_backend_model());
@@ -194,7 +192,6 @@ void AmbientController::OnAmbientUiVisibilityChanged(
     AmbientUiVisibility visibility) {
   switch (visibility) {
     case AmbientUiVisibility::kShown:
-
       // Record metrics on ambient mode usage.
       ambient::RecordAmbientModeActivation(
           /*ui_mode=*/LockScreen::HasInstance() ? AmbientUiMode::kLockScreenUi

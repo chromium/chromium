@@ -12,10 +12,7 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/test/test_ambient_client.h"
 #include "ash/ambient/ui/ambient_background_image_view.h"
-#include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
-#include "services/device/public/cpp/test/test_wake_lock_provider.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/views/widget/widget.h"
 
@@ -119,7 +116,7 @@ class AmbientAshTestBase : public AshTestBase {
   // If |with_error| is true, will return an empty access token.
   void IssueAccessToken(const std::string& access_token, bool with_error);
 
-  bool IsAccessTokenRequestPending() const;
+  bool IsAccessTokenRequestPending();
 
   base::TimeDelta GetRefreshTokenDelay();
 
@@ -150,11 +147,6 @@ class AmbientAshTestBase : public AshTestBase {
   void SetImageDecoderImage(const gfx::ImageSkia& image);
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<TestImageDownloader> image_downloader_;
-
-  device::TestWakeLockProvider wake_lock_provider_;
-  std::unique_ptr<TestAmbientClient> ambient_client_;
   std::unique_ptr<views::Widget> widget_;
 };
 

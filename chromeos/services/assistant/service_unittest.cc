@@ -21,7 +21,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/audio/cras_audio_handler.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/services/assistant/fake_assistant_manager_service_impl.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
@@ -77,11 +76,8 @@ class AssistantServiceTest : public testing::Test {
   ~AssistantServiceTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kAmbientModeFeature,
-                              chromeos::assistant::features::
-                                  kEnableAmbientAssistant},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::assistant::features::kEnableAmbientAssistant);
 
     chromeos::CrasAudioHandler::InitializeForTesting();
 

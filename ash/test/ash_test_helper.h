@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "ash/assistant/test/test_assistant_service.h"
-#include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/session/test_pref_service_provider.h"
 #include "ash/session/test_session_controller_client.h"
@@ -44,6 +43,7 @@ class TestViewsDelegate;
 namespace ash {
 
 class AppListTestHelper;
+class AmbientAshTestHelper;
 class TestKeyboardControllerObserver;
 class TestNewWindowDelegate;
 
@@ -130,6 +130,10 @@ class AshTestHelper : public aura::test::AuraTestHelper {
     return assistant_service_.get();
   }
 
+  AmbientAshTestHelper* ambient_ash_test_helper() {
+    return ambient_ash_test_helper_.get();
+  }
+
  private:
   // Scoping objects to manage init/teardown of services.
   class BluezDBusManagerInitializer;
@@ -159,6 +163,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   std::unique_ptr<TestSessionControllerClient> session_controller_client_;
   std::unique_ptr<TestKeyboardControllerObserver>
       test_keyboard_controller_observer_;
+  std::unique_ptr<AmbientAshTestHelper> ambient_ash_test_helper_;
 
   DISALLOW_COPY_AND_ASSIGN(AshTestHelper);
 };

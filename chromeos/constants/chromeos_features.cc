@@ -26,7 +26,7 @@ const base::Feature kAllowScrollSettings{"AllowScrollSettings",
 
 // Controls whether to enable Ambient mode feature.
 const base::Feature kAmbientModeFeature{"ChromeOSAmbientMode",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 constexpr base::FeatureParam<bool> kAmbientModeCapturedOnPixelAlbumEnabled{
     &kAmbientModeFeature, "CapturedOnPixelAlbumEnabled", false};

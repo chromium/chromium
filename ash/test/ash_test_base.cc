@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/accessibility/accessibility_panel_layout_manager.h"
+#include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/display/extended_mouse_warp_controller.h"
 #include "ash/display/mouse_cursor_event_filter.h"
@@ -380,6 +381,10 @@ TestSystemTrayClient* AshTestBase::GetSystemTrayClient() {
 
 AppListTestHelper* AshTestBase::GetAppListTestHelper() {
   return ash_test_helper_->app_list_test_helper();
+}
+
+AmbientAshTestHelper* AshTestBase::GetAmbientAshTestHelper() {
+  return ash_test_helper_->ambient_ash_test_helper();
 }
 
 void AshTestBase::CreateUserSessions(int n) {

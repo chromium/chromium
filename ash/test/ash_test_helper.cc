@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "ash/accelerometer/accelerometer_reader.h"
+#include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/assistant/test/test_assistant_service.h"
@@ -141,6 +142,8 @@ void AshTestHelper::SetUp() {
 }
 
 void AshTestHelper::TearDown() {
+  ambient_ash_test_helper_.reset();
+
   // The AppListTestHelper holds a pointer to the AppListController the Shell
   // owns, so shut the test helper down first.
   app_list_test_helper_.reset();
@@ -224,6 +227,8 @@ void AshTestHelper::SetUp(InitParams init_params) {
     new_window_delegate_ = std::make_unique<TestNewWindowDelegate>();
   if (!views::ViewsDelegate::GetInstance())
     test_views_delegate_ = MakeTestViewsDelegate();
+
+  ambient_ash_test_helper_ = std::make_unique<AmbientAshTestHelper>();
 
   ShellInitParams shell_init_params;
   shell_init_params.delegate = std::move(init_params.delegate);

@@ -212,10 +212,11 @@ void AssistantManagerServiceImpl::Start(const base::Optional<UserInfo>& user,
   // Check the AmbientModeState to keep us synced on |ambient_state|.
   if (chromeos::features::IsAmbientModeEnabled()) {
     auto* model = ash::AmbientUiModel::Get();
-    DCHECK(model);
-
-    EnableAmbientMode(model->ui_visibility() !=
-                      ash::AmbientUiVisibility::kClosed);
+    // Could be nullptr in test.
+    if (model) {
+      EnableAmbientMode(model->ui_visibility() !=
+                        ash::AmbientUiVisibility::kClosed);
+    }
   }
 
   InitAssistant(user, assistant_state()->locale().value());
