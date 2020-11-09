@@ -294,7 +294,7 @@ struct BLINK_COMMON_EXPORT
       const ::blink::Manifest::ShareTarget& share_target) {
     return share_target.method;
   }
-  static ::blink::Manifest::ShareTarget::Enctype enctype(
+  static ::blink::mojom::ManifestShareTarget_Enctype enctype(
       const ::blink::Manifest::ShareTarget& share_target) {
     return share_target.enctype;
   }
@@ -341,35 +341,6 @@ struct BLINK_COMMON_EXPORT
   }
   static bool Read(blink::mojom::ManifestProtocolHandlerDataView data,
                    ::blink::Manifest::ProtocolHandler* out);
-};
-
-template <>
-struct BLINK_COMMON_EXPORT EnumTraits<blink::mojom::ManifestShareTarget_Enctype,
-                                      ::blink::Manifest::ShareTarget::Enctype> {
-  static blink::mojom::ManifestShareTarget_Enctype ToMojom(
-      ::blink::Manifest::ShareTarget::Enctype enctype) {
-    switch (enctype) {
-      case ::blink::Manifest::ShareTarget::Enctype::kFormUrlEncoded:
-        return blink::mojom::ManifestShareTarget_Enctype::kFormUrlEncoded;
-      case ::blink::Manifest::ShareTarget::Enctype::kMultipartFormData:
-        return blink::mojom::ManifestShareTarget_Enctype::kMultipartFormData;
-    }
-    NOTREACHED();
-    return blink::mojom::ManifestShareTarget_Enctype::kFormUrlEncoded;
-  }
-  static bool FromMojom(blink::mojom::ManifestShareTarget_Enctype input,
-                        ::blink::Manifest::ShareTarget::Enctype* out) {
-    switch (input) {
-      case blink::mojom::ManifestShareTarget_Enctype::kFormUrlEncoded:
-        *out = ::blink::Manifest::ShareTarget::Enctype::kFormUrlEncoded;
-        return true;
-      case blink::mojom::ManifestShareTarget_Enctype::kMultipartFormData:
-        *out = ::blink::Manifest::ShareTarget::Enctype::kMultipartFormData;
-        return true;
-    }
-
-    return false;
-  }
 };
 
 }  // namespace mojo

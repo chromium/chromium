@@ -86,11 +86,6 @@ struct BLINK_COMMON_EXPORT Manifest {
 
   // Structure representing how a Web Share target handles an incoming share.
   struct BLINK_COMMON_EXPORT ShareTarget {
-    enum class Enctype {
-      kFormUrlEncoded,
-      kMultipartFormData,
-    };
-
     ShareTarget();
     ~ShareTarget();
 
@@ -102,7 +97,7 @@ struct BLINK_COMMON_EXPORT Manifest {
     blink::mojom::ManifestShareTarget_Method method;
 
     // The way that share data is encoded in "POST" request.
-    Enctype enctype;
+    blink::mojom::ManifestShareTarget_Enctype enctype;
 
     ShareTargetParams params;
   };

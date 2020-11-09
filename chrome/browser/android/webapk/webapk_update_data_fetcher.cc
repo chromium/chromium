@@ -238,7 +238,7 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
          blink::mojom::ManifestShareTarget_Method::kPost);
     java_share_params_is_enctype_multipart =
         (info_.share_target->enctype ==
-         blink::Manifest::ShareTarget::Enctype::kMultipartFormData);
+         blink::mojom::ManifestShareTarget_Enctype::kMultipartFormData);
 
     std::vector<base::string16> file_names;
     std::vector<std::vector<base::string16>> accepts;

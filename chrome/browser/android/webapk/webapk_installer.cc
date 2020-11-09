@@ -217,7 +217,7 @@ std::unique_ptr<std::string> BuildProtoInBackground(
       share_target->set_method("GET");
     }
     if (shortcut_info.share_target->enctype ==
-        blink::Manifest::ShareTarget::Enctype::kMultipartFormData) {
+        blink::mojom::ManifestShareTarget_Enctype::kMultipartFormData) {
       share_target->set_enctype("multipart/form-data");
     } else {
       share_target->set_enctype("application/x-www-form-urlencoded");

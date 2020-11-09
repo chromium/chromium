@@ -145,14 +145,7 @@ TypeConverter<blink::Manifest::ShareTarget,
 
   output.action = input->action;
   output.method = input->method;
-
-  ::blink::Manifest::ShareTarget::Enctype output_enctype;
-  if (!EnumTraits<blink::mojom::ManifestShareTarget_Enctype,
-                  ::blink::Manifest::ShareTarget::Enctype>::
-          FromMojom(input->enctype, &output_enctype)) {
-    NOTREACHED();
-  }
-  output.enctype = output_enctype;
+  output.enctype = input->enctype;
 
   output.params = input->params.To<::blink::Manifest::ShareTargetParams>();
 

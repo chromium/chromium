@@ -139,11 +139,11 @@ apps::ShareTarget::Method ToAppsShareTargetMethod(
 }
 
 apps::ShareTarget::Enctype ToAppsShareTargetEnctype(
-    blink::Manifest::ShareTarget::Enctype enctype) {
+    blink::mojom::ManifestShareTarget_Enctype enctype) {
   switch (enctype) {
-    case blink::Manifest::ShareTarget::Enctype::kFormUrlEncoded:
+    case blink::mojom::ManifestShareTarget_Enctype::kFormUrlEncoded:
       return apps::ShareTarget::Enctype::kFormUrlEncoded;
-    case blink::Manifest::ShareTarget::Enctype::kMultipartFormData:
+    case blink::mojom::ManifestShareTarget_Enctype::kMultipartFormData:
       return apps::ShareTarget::Enctype::kMultipartFormData;
   }
   NOTREACHED();

@@ -40,7 +40,7 @@ struct ShareTargetParams {
 struct ShareTarget {
   GURL action;
   blink::mojom::ManifestShareTarget_Method method;
-  blink::Manifest::ShareTarget::Enctype enctype;
+  blink::mojom::ManifestShareTarget_Enctype enctype;
   ShareTargetParams params;
   ShareTarget();
   ~ShareTarget();

@@ -118,8 +118,8 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
 
     info.share_target->enctype =
         java_share_target_param_is_enctype_multipart == JNI_TRUE
-            ? blink::Manifest::ShareTarget::Enctype::kMultipartFormData
-            : blink::Manifest::ShareTarget::Enctype::kFormUrlEncoded;
+            ? blink::mojom::ManifestShareTarget_Enctype::kMultipartFormData
+            : blink::mojom::ManifestShareTarget_Enctype::kFormUrlEncoded;
 
     std::vector<base::string16> fileNames;
     base::android::AppendJavaStringArrayToStringVector(
