@@ -30,7 +30,7 @@ class BoxDecorationData {
                     const ComputedStyle& style)
       : BoxDecorationData(
             paint_info,
-            ToLayoutBox(*fragment.GetLayoutObject()),
+            To<LayoutBox>(*fragment.GetLayoutObject()),
             style,
             !fragment.HasCollapsedBorders() && style.HasBorderDecoration()) {}
 

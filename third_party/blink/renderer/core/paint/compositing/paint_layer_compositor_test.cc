@@ -29,8 +29,7 @@ class PaintLayerCompositorTest : public RenderingTest {
 TEST_F(PaintLayerCompositorTest, AdvancingToCompositingInputsClean) {
   SetBodyInnerHTML("<div id='box' style='position: relative'></div>");
 
-  PaintLayer* box_layer =
-      ToLayoutBox(GetLayoutObjectByElementId("box"))->Layer();
+  PaintLayer* box_layer = GetPaintLayerByElementId("box");
   ASSERT_TRUE(box_layer);
   EXPECT_FALSE(box_layer->NeedsCompositingInputsUpdate());
 

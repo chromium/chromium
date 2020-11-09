@@ -145,8 +145,7 @@ TEST_P(BlockPainterTest, BlockingWheelEventRectSubsequenceCaching) {
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
 
-  const auto& hit_test_client =
-      *ToLayoutBox(GetLayoutObjectByElementId("stacking-context"))->Layer();
+  const auto& hit_test_client = *GetPaintLayerByElementId("stacking-context");
   EXPECT_SUBSEQUENCE_FROM_CHUNK(hit_test_client,
                                 ContentPaintChunks().begin() + 1, 1);
 
@@ -252,7 +251,8 @@ TEST_P(BlockPainterTest, BlockingWheelRectScrollingContents) {
   )HTML");
 
   auto* scroller_element = GetElementById("scroller");
-  auto* scroller = ToLayoutBoxModelObject(scroller_element->GetLayoutObject());
+  auto* scroller =
+      To<LayoutBoxModelObject>(scroller_element->GetLayoutObject());
   const auto& scroller_scrolling_client =
       scroller->GetScrollableArea()->GetScrollingBackgroundDisplayItemClient();
 
@@ -411,8 +411,7 @@ TEST_P(BlockPainterTest, TouchActionRectSubsequenceCaching) {
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
 
-  const auto& hit_test_client =
-      *ToLayoutBox(GetLayoutObjectByElementId("stacking-context"))->Layer();
+  const auto& hit_test_client = *GetPaintLayerByElementId("stacking-context");
   EXPECT_SUBSEQUENCE_FROM_CHUNK(hit_test_client,
                                 ContentPaintChunks().begin() + 1, 1);
 
@@ -514,7 +513,8 @@ TEST_P(BlockPainterTest, TouchActionRectScrollingContents) {
   )HTML");
 
   auto* scroller_element = GetElementById("scroller");
-  auto* scroller = ToLayoutBoxModelObject(scroller_element->GetLayoutObject());
+  auto* scroller =
+      To<LayoutBoxModelObject>(scroller_element->GetLayoutObject());
   const auto& scroller_scrolling_client =
       scroller->GetScrollableArea()->GetScrollingBackgroundDisplayItemClient();
   HitTestData hit_test_data;

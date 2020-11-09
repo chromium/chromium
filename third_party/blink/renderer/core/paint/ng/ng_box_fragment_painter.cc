@@ -386,8 +386,8 @@ PhysicalRect NGBoxFragmentPainter::SelfInkOverflow() const {
   if (box_item_)
     return box_item_->SelfInkOverflow();
   const NGPhysicalFragment& fragment = PhysicalFragment();
-  DCHECK(fragment.IsBox() && !fragment.IsInlineBox());
-  return ToLayoutBox(fragment.GetLayoutObject())
+  DCHECK(!fragment.IsInlineBox());
+  return To<LayoutBox>(fragment.GetLayoutObject())
       ->PhysicalSelfVisualOverflowRect();
 }
 
@@ -417,7 +417,7 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
   if (original_phase == PaintPhase::kForeground &&
       box_fragment_.GetLayoutObject()->IsBox()) {
     scoped_paint_timing_detector_block_paint_hook.EmplaceIfNeeded(
-        ToLayoutBox(*box_fragment_.GetLayoutObject()),
+        To<LayoutBox>(*box_fragment_.GetLayoutObject()),
         paint_info.context.GetPaintController().CurrentPaintChunkProperties());
   }
 
@@ -432,7 +432,7 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
     // paints the background, and then the scrolling contents graphics layer
     // paints the background.
     if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      auto paint_location = ToLayoutBox(*box_fragment_.GetLayoutObject())
+      auto paint_location = To<LayoutBox>(*box_fragment_.GetLayoutObject())
                                 .GetBackgroundPaintLocation();
       if (!(paint_location & kBackgroundPaintInGraphicsLayer))
         info.SetSkipsBackground(true);
@@ -462,7 +462,7 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
       PaintObject(info, paint_offset);
     } else {
       ScopedBoxContentsPaintState contents_paint_state(
-          paint_state, ToLayoutBox(*box_fragment_.GetLayoutObject()));
+          paint_state, To<LayoutBox>(*box_fragment_.GetLayoutObject()));
       PaintObject(contents_paint_state.GetPaintInfo(),
                   contents_paint_state.PaintOffset());
     }
@@ -507,7 +507,7 @@ void NGBoxFragmentPainter::RecordScrollHitTestData(
     const DisplayItemClient& background_client) {
   if (!box_fragment_.GetLayoutObject()->IsBox())
     return;
-  BoxPainter(ToLayoutBox(*box_fragment_.GetLayoutObject()))
+  BoxPainter(To<LayoutBox>(*box_fragment_.GetLayoutObject()))
       .RecordScrollHitTestData(paint_info, background_client);
 }
 
@@ -973,7 +973,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
     // For the case where we are painting the background into the scrolling
     // contents layer of a composited scroller we need to include the entire
     // overflow rect.
-    const LayoutBox& layout_box = ToLayoutBox(layout_object);
+    const LayoutBox& layout_box = To<LayoutBox>(layout_object);
     paint_rect = layout_box.PhysicalLayoutOverflowRect();
 
     contents_paint_state.emplace(paint_info, paint_offset, layout_box);
@@ -993,7 +993,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
     paint_rect.size = box_fragment_.Size();
     if (layout_object.IsTableCell()) {
       paint_rect.size =
-          PhysicalSize(ToLayoutBox(layout_object).PixelSnappedSize());
+          PhysicalSize(To<LayoutBox>(layout_object).PixelSnappedSize());
     }
     background_client = &GetDisplayItemClient();
     visual_rect = VisualRect(paint_offset);
@@ -1071,7 +1071,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithRect(
     const IntRect& visual_rect,
     const PhysicalRect& paint_rect,
     const DisplayItemClient& background_client) {
-  const LayoutBox& layout_box = ToLayoutBox(*box_fragment_.GetLayoutObject());
+  const auto& layout_box = To<LayoutBox>(*box_fragment_.GetLayoutObject());
 
   base::Optional<DisplayItemCacheSkipper> cache_skipper;
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
@@ -1100,7 +1100,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
     const PhysicalRect& paint_rect,
     const BoxDecorationData& box_decoration_data) {
   const LayoutObject& layout_object = *box_fragment_.GetLayoutObject();
-  const LayoutBox& layout_box = ToLayoutBox(layout_object);
+  const LayoutBox& layout_box = To<LayoutBox>(layout_object);
 
   const ComputedStyle& style = box_fragment_.Style();
 
@@ -1305,7 +1305,7 @@ void NGBoxFragmentPainter::PaintBackground(
     const PhysicalRect& paint_rect,
     const Color& background_color,
     BackgroundBleedAvoidance bleed_avoidance) {
-  const LayoutBox& layout_box = ToLayoutBox(*box_fragment_.GetLayoutObject());
+  const auto& layout_box = To<LayoutBox>(*box_fragment_.GetLayoutObject());
   if (layout_box.BackgroundTransfersToView())
     return;
   if (layout_box.BackgroundIsKnownToBeObscured())
@@ -1797,7 +1797,8 @@ bool NGBoxFragmentPainter::ShouldPaint(
   const NGPhysicalBoxFragment& fragment = PhysicalFragment();
   if (!fragment.IsInlineBox()) {
     return paint_state.LocalRectIntersectsCullRect(
-        ToLayoutBox(fragment.GetLayoutObject())->PhysicalVisualOverflowRect());
+        To<LayoutBox>(fragment.GetLayoutObject())
+            ->PhysicalVisualOverflowRect());
   }
   NOTREACHED();
   return false;
@@ -1874,7 +1875,7 @@ PhysicalRect NGBoxFragmentPainter::AdjustRectForScrolledContent(
 
 LayoutRectOutsets NGBoxFragmentPainter::ComputeBorders() const {
   if (box_fragment_.GetLayoutObject()->IsTableCellLegacy())
-    return ToLayoutBox(box_fragment_.GetLayoutObject())->BorderBoxOutsets();
+    return To<LayoutBox>(box_fragment_.GetLayoutObject())->BorderBoxOutsets();
   return BoxStrutToLayoutRectOutsets(PhysicalFragment().BorderWidths());
 }
 
@@ -2627,7 +2628,8 @@ bool NGBoxFragmentPainter::HitTestClippedOutByBorder(
 bool NGBoxFragmentPainter::HitTestOverflowControl(
     const HitTestContext& hit_test,
     PhysicalOffset accumulated_offset) {
-  const auto* layout_box = ToLayoutBoxOrNull(box_fragment_.GetLayoutObject());
+  const auto* layout_box =
+      DynamicTo<LayoutBox>(box_fragment_.GetLayoutObject());
   return layout_box &&
          layout_box->HitTestOverflowControl(*hit_test.result, hit_test.location,
                                             accumulated_offset);
@@ -2635,7 +2637,7 @@ bool NGBoxFragmentPainter::HitTestOverflowControl(
 
 IntRect NGBoxFragmentPainter::VisualRect(const PhysicalOffset& paint_offset) {
   if (const auto* layout_box =
-          ToLayoutBoxOrNull(box_fragment_.GetLayoutObject()))
+          DynamicTo<LayoutBox>(box_fragment_.GetLayoutObject()))
     return BoxPainter(*layout_box).VisualRect(paint_offset);
 
   PhysicalRect ink_overflow;

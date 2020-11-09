@@ -140,6 +140,10 @@ class RenderingTest : public PageTestBase {
     return element ? element->GetLayoutObject() : nullptr;
   }
 
+  LayoutBox* GetLayoutBoxByElementId(const char* id) const {
+    return To<LayoutBox>(GetLayoutObjectByElementId(id));
+  }
+
   PaintLayer* GetPaintLayerByElementId(const char* id) {
     return ToLayoutBoxModelObject(GetLayoutObjectByElementId(id))->Layer();
   }

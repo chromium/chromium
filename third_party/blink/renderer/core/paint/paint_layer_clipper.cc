@@ -57,10 +57,9 @@
 namespace blink {
 
 static bool HasNonVisibleOverflow(const PaintLayer& layer) {
-  if (!layer.GetLayoutObject().IsBox())
-    return false;
-  const LayoutBox& box = ToLayoutBox(layer.GetLayoutObject());
-  return box.ShouldClipOverflowAlongEitherAxis();
+  if (const auto* box = layer.GetLayoutBox())
+    return box->ShouldClipOverflowAlongEitherAxis();
+  return false;
 }
 
 bool ClipRectsContext::ShouldRespectRootLayerClip() const {
@@ -93,8 +92,7 @@ static void ApplyClipRects(const ClipRectsContext& context,
                            const LayoutBoxModelObject& layout_object,
                            const PhysicalOffset& offset,
                            ClipRects& clip_rects) {
-  DCHECK(layout_object.IsBox());
-  const LayoutBox& box = *ToLayoutBox(&layout_object);
+  const LayoutBox& box = *To<LayoutBox>(&layout_object);
 
   DCHECK(box.ShouldClipOverflowAlongEitherAxis() || box.HasClip());
   LayoutView* view = box.View();
@@ -291,7 +289,7 @@ void PaintLayerClipper::CalculateRectsWithGeometryMapper(
   if (ShouldClipOverflowAlongEitherAxis(context)) {
     LayoutBoxModelObject& layout_object = layer_.GetLayoutObject();
     foreground_rect =
-        ToLayoutBox(layout_object)
+        To<LayoutBox>(layout_object)
             .OverflowClipRect(layer_bounds.offset,
                               context.overlay_scrollbar_clip_behavior);
     if (layout_object.StyleRef().HasBorderRadius())
@@ -347,7 +345,7 @@ void PaintLayerClipper::CalculateRects(
   // Update the clip rects that will be passed to child layers.
   if (ShouldClipOverflowAlongEitherAxis(context)) {
     PhysicalRect overflow_and_clip_rect =
-        ToLayoutBox(layout_object)
+        To<LayoutBox>(layout_object)
             .OverflowClipRect(offset, context.overlay_scrollbar_clip_behavior);
     foreground_rect.Intersect(overflow_and_clip_rect);
     if (layout_object.StyleRef().HasBorderRadius())
@@ -365,7 +363,7 @@ void PaintLayerClipper::CalculateRects(
   // even if it falls outside of the border box.
   if (layout_object.HasClip()) {
     // Clip applies to *us* as well, so go ahead and update the damageRect.
-    PhysicalRect new_pos_clip = ToLayoutBox(layout_object).ClipRect(offset);
+    PhysicalRect new_pos_clip = To<LayoutBox>(layout_object).ClipRect(offset);
     background_rect.Intersect(new_pos_clip);
     foreground_rect.Intersect(new_pos_clip);
   }
@@ -509,7 +507,7 @@ PhysicalRect PaintLayerClipper::LocalVisualRect(
   PhysicalRect layer_bounds_with_visual_overflow =
       affected_by_url_bar
           ? layout_object.View()->ViewRect()
-          : ToLayoutBox(layout_object).PhysicalVisualOverflowRect();
+          : To<LayoutBox>(layout_object).PhysicalVisualOverflowRect();
   // At this point layer_bounds_with_visual_overflow only includes the visual
   // overflow induced by paint, prior to applying filters. This function is
   // expected the return the final visual rect after filtering.

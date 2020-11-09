@@ -30,7 +30,7 @@ inline Node* GetNode(const LayoutObject* box_model) {
 
 inline const LayoutBoxModelObject* GetBoxModelObject(
     const InlineFlowBox& flow_box) {
-  return ToLayoutBoxModelObject(
+  return To<LayoutBoxModelObject>(
       LineLayoutAPIShim::LayoutObjectFrom(flow_box.BoxModelObject()));
 }
 
@@ -217,7 +217,7 @@ void InlineFlowBoxPainter::PaintBackgroundBorderShadow(
 
   bool object_has_multiple_boxes = inline_flow_box_.PrevForSameLayoutObject() ||
                                    inline_flow_box_.NextForSameLayoutObject();
-  const auto& box_model = *ToLayoutBoxModelObject(
+  const auto& box_model = *To<LayoutBoxModelObject>(
       LineLayoutAPIShim::LayoutObjectFrom(inline_flow_box_.BoxModelObject()));
   BackgroundImageGeometry geometry(box_model);
   BoxModelObjectPainter box_painter(box_model, &inline_flow_box_);
@@ -229,7 +229,7 @@ void InlineFlowBoxPainter::PaintBackgroundBorderShadow(
 void InlineFlowBoxPainter::PaintMask(const PaintInfo& paint_info,
                                      const PhysicalOffset& paint_offset) {
   DCHECK_EQ(PaintPhase::kMask, paint_info.phase);
-  const auto& box_model = *ToLayoutBoxModelObject(
+  const auto& box_model = *To<LayoutBoxModelObject>(
       LineLayoutAPIShim::LayoutObjectFrom(inline_flow_box_.BoxModelObject()));
   if (!box_model.HasMask() ||
       box_model.StyleRef().Visibility() != EVisibility::kVisible)

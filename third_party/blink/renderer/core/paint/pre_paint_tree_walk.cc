@@ -113,7 +113,7 @@ NGPrePaintInfo SetupFragmentData(const NGFragmentChildIterator& iterator,
       // This isn't the first fragment for the node. We now need to walk past
       // all preceding fragments to figure out which FragmentData to return (or
       // create, if it doesn't already exist).
-      const LayoutBox& layout_box = ToLayoutBox(object);
+      const auto& layout_box = To<LayoutBox>(object);
       for (wtf_size_t idx = 0;; idx++) {
         DCHECK_LT(idx, layout_box.PhysicalFragmentCount());
         if (layout_box.GetPhysicalFragment(idx) == box_fragment)
@@ -155,7 +155,7 @@ static void SetNeedsCompositingLayerPropertyUpdate(const LayoutObject& object) {
   if (!compositor)
     return;
 
-  PaintLayer* paint_layer = ToLayoutBoxModelObject(object).Layer();
+  PaintLayer* paint_layer = To<LayoutBoxModelObject>(object).Layer();
 
   DisableCompositingQueryAsserts disabler;
   // This ensures that CompositingLayerPropertyUpdater::Update will
@@ -415,7 +415,7 @@ void PrePaintTreeWalk::UpdateAuxiliaryObjectProperties(
   if (!object.HasLayer())
     return;
 
-  PaintLayer* paint_layer = ToLayoutBoxModelObject(object).Layer();
+  PaintLayer* paint_layer = To<LayoutBoxModelObject>(object).Layer();
   paint_layer->UpdateAncestorScrollContainerLayer(
       context.ancestor_scroll_container_paint_layer);
 
@@ -516,10 +516,10 @@ void PrePaintTreeWalk::UpdatePaintInvalidationContainer(
   DisableCompositingQueryAsserts disabler;
 
   if (object.IsPaintInvalidationContainer()) {
-    context.paint_invalidation_container = ToLayoutBoxModelObject(&object);
+    context.paint_invalidation_container = To<LayoutBoxModelObject>(&object);
     if (object.IsStackingContext() || object.IsSVGRoot()) {
       context.paint_invalidation_container_for_stacked_contents =
-          ToLayoutBoxModelObject(&object);
+          To<LayoutBoxModelObject>(&object);
     }
   } else if (IsA<LayoutView>(object)) {
     // paint_invalidation_container_for_stacked_contents is only for stacked
@@ -542,7 +542,7 @@ void PrePaintTreeWalk::UpdatePaintInvalidationContainer(
              // This is to exclude some objects (e.g. LayoutText) inheriting
              // stacked style from parent but aren't actually stacked.
              object.HasLayer() &&
-             !ToLayoutBoxModelObject(object)
+             !To<LayoutBoxModelObject>(object)
                   .Layer()
                   ->IsReplacedNormalFlowStacking() &&
              context.paint_invalidation_container !=
@@ -663,7 +663,7 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
   // When this or ancestor clip changed, the layer needs repaint because it
   // may paint more or less results according to the changed clip.
   if (context.clip_changed && object.HasLayer())
-    ToLayoutBoxModelObject(object).Layer()->SetNeedsRepaint();
+    To<LayoutBoxModelObject>(object).Layer()->SetNeedsRepaint();
 }
 
 LocalFrameView* FindWebViewPluginContentFrameView(
@@ -738,7 +738,7 @@ void PrePaintTreeWalk::WalkNGChildren(const LayoutObject* parent,
 
 void PrePaintTreeWalk::WalkLegacyChildren(const LayoutObject& object,
                                           bool is_wheel_event_regions_enabled) {
-  if (const LayoutBox* layout_box = ToLayoutBoxOrNull(&object)) {
+  if (const auto* layout_box = DynamicTo<LayoutBox>(&object)) {
     if (layout_box->CanTraversePhysicalFragments()) {
       // Enter NG child fragment traversal. We'll stay in this mode for all
       // descendants that support fragment traversal. We'll re-enter
@@ -858,7 +858,7 @@ void PrePaintTreeWalk::WalkChildren(const LayoutObject* object,
   if (object && !object->CanTraversePhysicalFragments()) {
     DCHECK(!object->FlowThreadContainingBlock() ||
            (object->IsBox() &&
-            ToLayoutBox(object)->GetNGPaginationBreakability() ==
+            To<LayoutBox>(object)->GetNGPaginationBreakability() ==
                 LayoutBox::kForbidBreaks));
     WalkLegacyChildren(*object, is_wheel_event_regions_enabled);
     return;

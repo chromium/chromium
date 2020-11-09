@@ -211,7 +211,7 @@ void PaintLayerStackingNode::RebuildZOrderLists() {
       auto* child_element = DynamicTo<Element>(child->GetNode());
       if (child_element && child_element->IsInTopLayer() &&
           child->IsStacked()) {
-        pos_z_order_list_.push_back(ToLayoutBoxModelObject(child)->Layer());
+        pos_z_order_list_.push_back(To<LayoutBoxModelObject>(child)->Layer());
       }
     }
   }

@@ -18,7 +18,7 @@ void AddURLRectsForInlineChildrenRecursively(
   for (LayoutObject* child = layout_object.SlowFirstChild(); child;
        child = child->NextSibling()) {
     if (!child->IsLayoutInline() ||
-        ToLayoutBoxModelObject(child)->HasSelfPaintingLayer())
+        To<LayoutBoxModelObject>(child)->HasSelfPaintingLayer())
       continue;
     ObjectPainter(*child).AddURLRectIfNeeded(paint_info, paint_offset);
     AddURLRectsForInlineChildrenRecursively(*child, paint_info, paint_offset);

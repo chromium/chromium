@@ -444,16 +444,16 @@ BackgroundImageGeometry::BackgroundImageGeometry(
     const LayoutObject* background_object)
     : box_(&cell),
       positioning_box_(background_object && !background_object->IsTableCell()
-                           ? &ToLayoutBoxModelObject(*background_object)
+                           ? &To<LayoutBoxModelObject>(*background_object)
                            : &cell),
       painting_table_cell_(true) {
   cell_using_container_background_ =
       background_object && !background_object->IsTableCell();
   if (cell_using_container_background_) {
     element_positioning_area_offset_ =
-        GetPositioningOffsetForCell(cell, ToLayoutBox(*background_object));
+        GetPositioningOffsetForCell(cell, To<LayoutBox>(*background_object));
     positioning_size_override_ =
-        GetBackgroundObjectDimensions(cell, ToLayoutBox(*background_object));
+        GetBackgroundObjectDimensions(cell, To<LayoutBox>(*background_object));
   }
 }
 

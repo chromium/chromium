@@ -299,7 +299,7 @@ void PaintLayerPainter::AdjustForPaintProperties(
 static IntRect FirstFragmentVisualRect(const LayoutBoxModelObject& object) {
   // We don't want to include overflowing contents.
   PhysicalRect overflow_rect =
-      object.IsBox() ? ToLayoutBox(object).PhysicalSelfVisualOverflowRect()
+      object.IsBox() ? To<LayoutBox>(object).PhysicalSelfVisualOverflowRect()
                      : object.PhysicalVisualOverflowRect();
   overflow_rect.Move(object.FirstFragment().PaintOffset());
   return EnclosingIntRect(overflow_rect);

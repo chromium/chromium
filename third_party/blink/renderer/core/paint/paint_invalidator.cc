@@ -42,8 +42,8 @@ void PaintInvalidator::UpdatePaintingLayer(const LayoutObject& object,
                                            PaintInvalidatorContext& context,
                                            bool is_ng_painting) {
   if (object.HasLayer() &&
-      ToLayoutBoxModelObject(object).HasSelfPaintingLayer()) {
-    context.painting_layer = ToLayoutBoxModelObject(object).Layer();
+      To<LayoutBoxModelObject>(object).HasSelfPaintingLayer()) {
+    context.painting_layer = To<LayoutBoxModelObject>(object).Layer();
   } else if (!is_ng_painting &&
              (object.IsColumnSpanAll() ||
               object.IsFloatingWithNonContainingBlockParent())) {
@@ -77,10 +77,11 @@ void PaintInvalidator::UpdateDirectlyCompositedContainer(
     return;
 
   if (object.CanBeCompositedForDirectReasons()) {
-    context.directly_composited_container = ToLayoutBoxModelObject(&object);
-    if (object.IsStackingContext() || object.IsSVGRoot())
+    context.directly_composited_container = To<LayoutBoxModelObject>(&object);
+    if (object.IsStackingContext() || object.IsSVGRoot()) {
       context.directly_composited_container_for_stacked_contents =
-          ToLayoutBoxModelObject(&object);
+          To<LayoutBoxModelObject>(&object);
+    }
   } else if (IsA<LayoutView>(object)) {
     // paint_invalidation_container_for_stacked_contents is only for stacked
     // descendants in its own frame, because it doesn't establish stacking
@@ -103,7 +104,7 @@ void PaintInvalidator::UpdateDirectlyCompositedContainer(
              // This is to exclude some objects (e.g. LayoutText) inheriting
              // stacked style from parent but aren't actually stacked.
              object.HasLayer() &&
-             !ToLayoutBoxModelObject(object)
+             !To<LayoutBoxModelObject>(object)
                   .Layer()
                   ->IsReplacedNormalFlowStacking() &&
              context.directly_composited_container !=
@@ -205,7 +206,7 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
   }
 
   DCHECK(object.IsBox());
-  const auto& box = ToLayoutBox(object);
+  const auto& box = To<LayoutBox>(object);
 
   PhysicalRect new_rect = box.PhysicalVisualOverflowRect();
   PhysicalRect old_rect = box.PreviousPhysicalVisualOverflowRect();
@@ -219,7 +220,7 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
     // Track self-painting layers separately because their ancestors'
     // PhysicalVisualOverflowRect may not cover them.
     if (object.HasLayer() &&
-        ToLayoutBoxModelObject(object).HasSelfPaintingLayer())
+        To<LayoutBoxModelObject>(object).HasSelfPaintingLayer())
       return true;
     // We don't report shift for anonymous objects but report for the children.
     if (object.Parent()->IsAnonymous())

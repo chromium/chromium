@@ -63,7 +63,7 @@ TEST_P(NGBoxFragmentPainterTest, ScrollHitTestOrder) {
     </style>
     <div id='scroller'>TEXT</div>
   )HTML");
-  auto& scroller = ToLayoutBox(*GetLayoutObjectByElementId("scroller"));
+  auto& scroller = *GetLayoutBoxByElementId("scroller");
 
   const DisplayItemClient& root_fragment =
       scroller.PaintFragment()

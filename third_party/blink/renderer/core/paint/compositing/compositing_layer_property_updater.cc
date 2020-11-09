@@ -30,7 +30,7 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
 
   if (!object.HasLayer())
     return;
-  const auto* paint_layer = ToLayoutBoxModelObject(object).Layer();
+  const auto* paint_layer = To<LayoutBoxModelObject>(object).Layer();
   const auto* mapping = paint_layer->GetCompositedLayerMapping();
   if (!mapping)
     return;
@@ -138,7 +138,7 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
     // See comments for ScrollTranslation in object_paint_properties.h for the
     // reason of adding ScrollOrigin().
     auto contents_paint_offset =
-        snapped_paint_offset + ToLayoutBox(object).ScrollOrigin();
+        snapped_paint_offset + To<LayoutBox>(object).ScrollOrigin();
     auto SetScrollingContentsLayerState = [&fragment_data,
                                            &contents_paint_offset](
                                               GraphicsLayer* graphics_layer) {

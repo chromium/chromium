@@ -320,7 +320,7 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
           ->getElementById(shadow_element_names::kIdSliderThumb)
           ->GetLayoutObject();
   if (thumb_layout_object && thumb_layout_object->IsBox())
-    thumb_size = FlooredIntSize(ToLayoutBox(thumb_layout_object)->Size());
+    thumb_size = FlooredIntSize(To<LayoutBox>(thumb_layout_object)->Size());
 
   IntSize tick_size = LayoutTheme::GetTheme().SliderTickSize();
   float zoom_factor = o.StyleRef().EffectiveZoom();
@@ -335,7 +335,7 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
   if (track_layout_object && track_layout_object->IsBox()) {
     track_bounds = IntRect(
         CeiledIntPoint(track_layout_object->FirstFragment().PaintOffset()),
-        FlooredIntSize(ToLayoutBox(track_layout_object)->Size()));
+        FlooredIntSize(To<LayoutBox>(track_layout_object)->Size()));
   }
 
   if (is_horizontal) {

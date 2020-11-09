@@ -533,7 +533,7 @@ TEST_P(PaintAndRasterInvalidationTest,
   Element* child = GetDocument().getElementById("child");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* target_obj = ToLayoutBoxModelObject(target->GetLayoutObject());
+  auto* target_obj = To<LayoutBoxModelObject>(target->GetLayoutObject());
   EXPECT_EQ(kBackgroundPaintInScrollingContents,
             target_obj->GetBackgroundPaintLocation());
 
@@ -595,8 +595,7 @@ TEST_P(PaintAndRasterInvalidationTest,
   Element* child = GetDocument().getElementById("child");
   UpdateAllLifecyclePhasesForTest();
 
-  LayoutBoxModelObject* target_obj =
-      ToLayoutBoxModelObject(target->GetLayoutObject());
+  auto* target_obj = To<LayoutBoxModelObject>(target->GetLayoutObject());
   auto container_raster_invalidation_tracking =
       [&]() -> const RasterInvalidationTracking* {
     if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
@@ -662,7 +661,7 @@ TEST_P(PaintAndRasterInvalidationTest,
   if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
     EXPECT_EQ(&GetLayoutView(), EnclosingCompositedContainer(*object));
   EXPECT_EQ(kBackgroundPaintInScrollingContents,
-            ToLayoutBoxModelObject(object)
+            To<LayoutBoxModelObject>(object)
                 ->ComputeBackgroundPaintLocationIfComposited());
   EXPECT_EQ(kBackgroundPaintInGraphicsLayer,
             object->GetBackgroundPaintLocation());
@@ -703,8 +702,7 @@ TEST_P(PaintAndRasterInvalidationTest, CompositedSolidBackgroundResize) {
   target->setAttribute(html_names::kStyleAttr, "width: 100px");
   UpdateAllLifecyclePhasesForTest();
 
-  LayoutBoxModelObject* target_object =
-      ToLayoutBoxModelObject(target->GetLayoutObject());
+  auto* target_object = To<LayoutBoxModelObject>(target->GetLayoutObject());
   EXPECT_EQ(
       kBackgroundPaintInScrollingContents | kBackgroundPaintInGraphicsLayer,
       target_object->GetBackgroundPaintLocation());
@@ -863,7 +861,7 @@ TEST_P(PaintAndRasterInvalidationTest, PaintPropertyChange) {
   target->setAttribute(html_names::kClassAttr, "solid transform");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* layer = ToLayoutBoxModelObject(object)->Layer();
+  auto* layer = To<LayoutBoxModelObject>(object)->Layer();
   GetDocument().View()->SetTracksRasterInvalidations(true);
   target->setAttribute(html_names::kStyleAttr, "transform: scale(3)");
   UpdateAllLifecyclePhasesExceptPaint();
@@ -979,7 +977,7 @@ TEST_P(PaintAndRasterInvalidationTest, ResizeElementWhichHasNonCustomResizer) {
   invalidations.push_back(RasterInvalidationInfo{
       object, object->DebugName(), IntRect(100, 0, 100, 100),
       PaintInvalidationReason::kIncremental});
-  const auto& scroll_corner = ToLayoutBoxModelObject(object)
+  const auto& scroll_corner = To<LayoutBoxModelObject>(object)
                                   ->GetScrollableArea()
                                   ->GetScrollCornerDisplayItemClient();
   invalidations.push_back(RasterInvalidationInfo{

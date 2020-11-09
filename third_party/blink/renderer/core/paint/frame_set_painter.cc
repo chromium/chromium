@@ -142,7 +142,7 @@ void FrameSetPainter::PaintChildren(const PaintInfo& paint_info) {
       // Self-painting layers are painted during the PaintLayer paint recursion,
       // not LayoutObject.
       if (!child->IsBoxModelObject() ||
-          !ToLayoutBoxModelObject(child)->HasSelfPaintingLayer())
+          !To<LayoutBoxModelObject>(child)->HasSelfPaintingLayer())
         child->Paint(paint_info);
       child = child->NextSibling();
       if (!child)

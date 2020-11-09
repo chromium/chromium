@@ -36,7 +36,7 @@ void TablePainter::PaintObject(const PaintInfo& paint_info,
 
     for (LayoutObject* child = layout_table_.FirstChild(); child;
          child = child->NextSibling()) {
-      if (child->IsBox() && !ToLayoutBox(child)->HasSelfPaintingLayer() &&
+      if (child->IsBox() && !To<LayoutBox>(child)->HasSelfPaintingLayer() &&
           (child->IsTableSection() || child->IsTableCaption())) {
         child->Paint(paint_info_for_descendants);
       }

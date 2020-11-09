@@ -502,7 +502,7 @@ void NGPaintFragment::LayoutObjectWillBeDestroyed() {
 const LayoutBox* NGPaintFragment::InkOverflowOwnerBox() const {
   const NGPhysicalFragment& fragment = PhysicalFragment();
   if (fragment.IsBox() && !fragment.IsInlineBox())
-    return ToLayoutBox(fragment.GetLayoutObject());
+    return To<LayoutBox>(fragment.GetLayoutObject());
   return nullptr;
 }
 
@@ -556,8 +556,7 @@ PhysicalRect NGPaintFragment::RecalcContentsInkOverflow() const {
     // A BFC root establishes a separate NGPaintFragment tree. Re-compute the
     // child tree using its LayoutObject, because it may not be NG.
     if (child_fragment.IsFormattingContextRoot()) {
-      LayoutBox* layout_box =
-          ToLayoutBox(child_fragment.GetMutableLayoutObject());
+      auto* layout_box = To<LayoutBox>(child_fragment.GetMutableLayoutObject());
       layout_box->RecalcVisualOverflow();
       child_rect = PhysicalRect(layout_box->VisualOverflowRect());
     } else {

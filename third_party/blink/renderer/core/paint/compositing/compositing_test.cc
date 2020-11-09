@@ -141,8 +141,7 @@ TEST_P(CompositingTest, DidScrollCallbackAfterScrollableAreaChanges) {
   Document* document = WebView()->MainFrameImpl()->GetFrame()->GetDocument();
   Element* scrollable = document->getElementById("scrollable");
 
-  auto* scrollable_area =
-      ToLayoutBox(scrollable->GetLayoutObject())->GetScrollableArea();
+  auto* scrollable_area = scrollable->GetLayoutBox()->GetScrollableArea();
   EXPECT_NE(nullptr, scrollable_area);
 
   CompositorElementId scroll_element_id = scrollable_area->GetScrollElementId();
@@ -175,8 +174,7 @@ TEST_P(CompositingTest, DidScrollCallbackAfterScrollableAreaChanges) {
       WebScriptSource("var forceLayoutFromScript = scrollable.offsetTop;"));
   EXPECT_EQ(document->Lifecycle().GetState(), DocumentLifecycle::kLayoutClean);
 
-  EXPECT_EQ(nullptr,
-            ToLayoutBox(scrollable->GetLayoutObject())->GetScrollableArea());
+  EXPECT_EQ(nullptr, scrollable->GetLayoutBox()->GetScrollableArea());
 
   // The web scroll layer has not been deleted yet and we should be able to
   // apply impl-side offsets without crashing.
@@ -338,7 +336,7 @@ TEST_P(CompositingTest, BackgroundColorInScrollingContentsLayer) {
 
   LayoutView* layout_view = GetLocalFrameView()->GetLayoutView();
   Element* scroller = GetElementById("scroller");
-  LayoutBox* scroller_box = ToLayoutBox(scroller->GetLayoutObject());
+  LayoutBox* scroller_box = scroller->GetLayoutBox();
   ASSERT_TRUE(layout_view->GetBackgroundPaintLocation() ==
               kBackgroundPaintInScrollingContents);
   ASSERT_TRUE(scroller_box->GetBackgroundPaintLocation() ==
@@ -396,7 +394,7 @@ TEST_P(CompositingTest, BackgroundColorInGraphicsLayer) {
 
   LayoutView* layout_view = GetLocalFrameView()->GetLayoutView();
   Element* scroller = GetElementById("scroller");
-  LayoutBox* scroller_box = ToLayoutBox(scroller->GetLayoutObject());
+  LayoutBox* scroller_box = scroller->GetLayoutBox();
   ASSERT_TRUE(layout_view->GetBackgroundPaintLocation() ==
               kBackgroundPaintInGraphicsLayer);
   ASSERT_TRUE(scroller_box->GetBackgroundPaintLocation() ==

@@ -85,15 +85,13 @@ static PhysicalRect ContentsRect(const LayoutObject& layout_object) {
     return PhysicalRect();
   if (auto* replaced = DynamicTo<LayoutReplaced>(layout_object))
     return replaced->ReplacedContentRect();
-  return ToLayoutBox(layout_object).PhysicalContentBoxRect();
+  return To<LayoutBox>(layout_object).PhysicalContentBoxRect();
 }
 
 static PhysicalRect BackgroundRect(const LayoutObject& layout_object) {
-  if (!layout_object.IsBox())
-    return PhysicalRect();
-
-  const LayoutBox& box = ToLayoutBox(layout_object);
-  return box.PhysicalBackgroundRect(kBackgroundClipRect);
+  if (const auto* box = DynamicTo<LayoutBox>(layout_object))
+    return box->PhysicalBackgroundRect(kBackgroundClipRect);
+  return PhysicalRect();
 }
 
 static inline bool IsTextureLayerCanvas(const LayoutObject& layout_object) {
@@ -305,7 +303,7 @@ void CompositedLayerMapping::UpdateContentsOpaque() {
     // within the scrolling contents layer but since we currently only trigger
     // this for solid color backgrounds the answer will be the same.
     bool contents_opaque = owning_layer_.BackgroundIsKnownToBeOpaqueInRect(
-        ToLayoutBox(GetLayoutObject()).PhysicalPaddingBoxRect(),
+        To<LayoutBox>(GetLayoutObject()).PhysicalPaddingBoxRect(),
         should_check_children);
     scrolling_contents_layer_->SetContentsOpaque(contents_opaque);
     if (!contents_opaque) {
@@ -741,8 +739,7 @@ void CompositedLayerMapping::ComputeGraphicsLayerParentLocation(
 
   if (compositing_container &&
       compositing_container->NeedsCompositedScrolling()) {
-    LayoutBox& layout_box =
-        ToLayoutBox(compositing_container->GetLayoutObject());
+    auto& layout_box = To<LayoutBox>(compositing_container->GetLayoutObject());
     IntSize scroll_offset =
         FlooredIntSize(layout_box.PixelSnappedScrolledContentOffset());
     IntPoint scroll_origin =
@@ -771,7 +768,7 @@ void CompositedLayerMapping::UpdateScrollingContentsLayerGeometry(
   }
 
   DCHECK(scrolling_contents_layer_);
-  LayoutBox& layout_box = ToLayoutBox(GetLayoutObject());
+  auto& layout_box = To<LayoutBox>(GetLayoutObject());
   IntRect overflow_clip_rect = PixelSnappedIntRect(
       layout_box.OverflowClipRect(owning_layer_.SubpixelAccumulation()));
 

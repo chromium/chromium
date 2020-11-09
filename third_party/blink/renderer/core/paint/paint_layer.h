@@ -257,7 +257,7 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
 
   LayoutBoxModelObject& GetLayoutObject() const { return *layout_object_; }
   LayoutBox* GetLayoutBox() const {
-    return layout_object_->IsBox() ? ToLayoutBox(layout_object_) : nullptr;
+    return DynamicTo<LayoutBox>(layout_object_);
   }
   PaintLayer* Parent() const { return parent_; }
   PaintLayer* PreviousSibling() const { return previous_; }
@@ -324,7 +324,7 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
   // blocks writing mode.
   IntSize PixelSnappedSize() const {
     LayoutPoint location = layout_object_->IsBox()
-                               ? ToLayoutBox(layout_object_)->Location()
+                               ? To<LayoutBox>(layout_object_)->Location()
                                : LayoutPoint();
     return PixelSnappedIntSize(Size(), location);
   }

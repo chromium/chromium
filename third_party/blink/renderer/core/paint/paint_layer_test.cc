@@ -160,8 +160,7 @@ TEST_P(PaintLayerTest, SticksToScrollerNoAnchor) {
     <div style='width: 10px; height: 1000px'></div>
   )HTML");
 
-  PaintLayer* layer =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("target"))->Layer();
+  PaintLayer* layer = GetPaintLayerByElementId("target");
   EXPECT_FALSE(layer->SticksToScroller());
 }
 
@@ -1934,7 +1933,7 @@ TEST_P(PaintLayerTest, PaintLayerTransformUpdatedOnStyleTransformAnimation) {
   LayoutObject* target_object =
       GetDocument().getElementById("target")->GetLayoutObject();
   PaintLayer* target_paint_layer =
-      ToLayoutBoxModelObject(target_object)->Layer();
+      To<LayoutBoxModelObject>(target_object)->Layer();
   EXPECT_EQ(nullptr, target_paint_layer->Transform());
 
   const ComputedStyle* old_style = target_object->Style();
@@ -1954,11 +1953,10 @@ TEST_P(PaintLayerTest, NeedsRepaintOnSelfPaintingStatusChange) {
     </span>
   )HTML");
 
-  auto* span_layer =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("span"))->Layer();
+  auto* span_layer = GetPaintLayerByElementId("span");
   auto* target_element = GetDocument().getElementById("target");
   auto* target_object = target_element->GetLayoutObject();
-  auto* target_layer = ToLayoutBoxModelObject(target_object)->Layer();
+  auto* target_layer = To<LayoutBoxModelObject>(target_object)->Layer();
 
   // Target layer is self painting because it is a multicol container.
   EXPECT_TRUE(target_layer->IsSelfPaintingLayer());
@@ -1977,7 +1975,7 @@ TEST_P(PaintLayerTest, NeedsRepaintOnSelfPaintingStatusChange) {
   // assignments. This is because the layout tree maybe reattached. In LayoutNG
   // phase 1, layout tree is reattached because multicol forces legacy layout.
   target_object = target_element->GetLayoutObject();
-  target_layer = ToLayoutBoxModelObject(target_object)->Layer();
+  target_layer = To<LayoutBoxModelObject>(target_object)->Layer();
   EXPECT_FALSE(target_layer->IsSelfPaintingLayer());
   if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     EXPECT_EQ(span_layer, target_layer->CompositingContainer());
@@ -1999,7 +1997,7 @@ TEST_P(PaintLayerTest, NeedsRepaintOnRemovingStackedLayer) {
   auto* body_layer = body->GetLayoutBox()->Layer();
   auto* target_element = GetDocument().getElementById("target");
   auto* target_object = target_element->GetLayoutObject();
-  auto* target_layer = ToLayoutBoxModelObject(target_object)->Layer();
+  auto* target_layer = To<LayoutBoxModelObject>(target_object)->Layer();
 
   // |container| is not the CompositingContainer of |target| because |target|
   // is stacked but |container| is not a stacking context.
@@ -2096,8 +2094,7 @@ TEST_P(PaintLayerTest, SquashingOffsets) {
     <div style='width: 10px; height: 3000px'></div>
   )HTML");
 
-  auto* squashed =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("squashed"))->Layer();
+  auto* squashed = GetPaintLayerByElementId("squashed");
   EXPECT_EQ(kPaintsIntoGroupedBacking, squashed->GetCompositingState());
   PhysicalOffset point;
   PaintLayer::MapPointInPaintInvalidationContainerToBacking(
@@ -2245,9 +2242,9 @@ TEST_P(PaintLayerTest, SetNeedsRepaintSelfPaintingUnderNonSelfPainting) {
     </span>
   )HTML");
 
-  auto* html_layer =
-      ToLayoutBoxModelObject(GetDocument().documentElement()->GetLayoutObject())
-          ->Layer();
+  auto* html_layer = To<LayoutBoxModelObject>(
+                         GetDocument().documentElement()->GetLayoutObject())
+                         ->Layer();
   auto* span_layer = GetPaintLayerByElementId("span");
   auto* floating_layer = GetPaintLayerByElementId("floating");
   auto* multicol_layer = GetPaintLayerByElementId("multicol");
@@ -2618,8 +2615,7 @@ TEST_P(PaintLayerTest, FixedUsesExpandedBoundingBoxForOverlap) {
     <div id=fixed></div>
   )HTML");
 
-  PaintLayer* fixed =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("fixed"))->Layer();
+  PaintLayer* fixed = GetPaintLayerByElementId("fixed");
   EXPECT_EQ(fixed->BoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 30, 20));
 
@@ -2668,17 +2664,14 @@ TEST_P(PaintLayerTest, FixedInScrollerUsesExpandedBoundingBoxForOverlap) {
     </div>
   )HTML");
 
-  PaintLayer* fixed =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("fixed"))->Layer();
+  PaintLayer* fixed = GetPaintLayerByElementId("fixed");
   EXPECT_EQ(fixed->BoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 30, 20));
 
   // Modify the inner scroll offset and ensure that the bounding box is still
   // the same.
   PaintLayerScrollableArea* scrollable_area =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"))
-          ->Layer()
-          ->GetScrollableArea();
+      GetPaintLayerByElementId("scroller")->GetScrollableArea();
   scrollable_area->ScrollToAbsolutePosition(FloatPoint(10, 10));
   UpdateAllLifecyclePhasesForTest();
 
@@ -2733,8 +2726,7 @@ TEST_P(PaintLayerTest, FixedUnderTransformDoesNotExpandBoundingBoxForOverlap) {
   // The animation is to cause the fixed to be composited. However, even with
   // fixed composited, it shouldn't have expanded bounds because its containing
   // block isn't the viewport.
-  PaintLayer* fixed =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("fixed"))->Layer();
+  PaintLayer* fixed = GetPaintLayerByElementId("fixed");
   EXPECT_EQ(fixed->BoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 50, 50));
 }
@@ -2781,7 +2773,7 @@ TEST_P(PaintLayerTest, NestedFixedUsesExpandedBoundingBoxForOverlap) {
   UpdateAllLifecyclePhasesForTest();
 
   PaintLayer* fixed =
-      ToLayoutBoxModelObject(
+      To<LayoutBoxModelObject>(
           ChildDocument().getElementById("fixed")->GetLayoutObject())
           ->Layer();
   EXPECT_EQ(fixed->BoundingBoxForCompositingOverlapTest(),
@@ -2819,7 +2811,7 @@ TEST_P(PaintLayerTest, DirectCompositingReasonsCrossingFrameBoundaries) {
   UpdateAllLifecyclePhasesForTest();
 
   PaintLayer* target =
-      ToLayoutBoxModelObject(
+      To<LayoutBoxModelObject>(
           ChildDocument().getElementById("target")->GetLayoutObject())
           ->Layer();
 
@@ -2841,12 +2833,12 @@ TEST_P(PaintLayerTest,
   UpdateAllLifecyclePhasesForTest();
 
   PaintLayer* target =
-      ToLayoutBoxModelObject(
+      To<LayoutBoxModelObject>(
           ChildDocument().getElementById("target")->GetLayoutObject())
           ->Layer();
 
   PaintLayer* iframe =
-      ToLayoutBoxModelObject(
+      To<LayoutBoxModelObject>(
           GetDocument().getElementById("iframe")->GetLayoutObject())
           ->Layer();
 
@@ -2870,12 +2862,12 @@ TEST_P(PaintLayerTest,
   UpdateAllLifecyclePhasesForTest();
 
   PaintLayer* target =
-      ToLayoutBoxModelObject(
+      To<LayoutBoxModelObject>(
           ChildDocument().getElementById("target")->GetLayoutObject())
           ->Layer();
 
   PaintLayer* parent =
-      ToLayoutBoxModelObject(
+      To<LayoutBoxModelObject>(
           ChildDocument().getElementById("parent")->GetLayoutObject())
           ->Layer();
 
@@ -2934,7 +2926,7 @@ TEST_P(PaintLayerTest, HasNonEmptyChildLayoutObjectsZeroSizeOverflowVisible) {
     </div>
   )HTML");
 
-  auto* layer = ToLayoutBox(GetLayoutObjectByElementId("layer"))->Layer();
+  auto* layer = GetPaintLayerByElementId("layer");
   EXPECT_TRUE(layer->HasVisibleContent());
   EXPECT_FALSE(layer->HasVisibleDescendant());
   EXPECT_TRUE(layer->HasNonEmptyChildLayoutObjects());

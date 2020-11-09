@@ -132,8 +132,7 @@ TEST_F(CompositingLayerPropertyUpdaterTest,
     </div>
   )HTML");
 
-  PaintLayer* scroller_layer =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"))->Layer();
+  PaintLayer* scroller_layer = GetPaintLayerByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area =
       scroller_layer->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
@@ -215,8 +214,7 @@ TEST_F(CompositingLayerPropertyUpdaterTest,
 
   // Non root scrollbar should use scroller's transform node.
   {
-    PaintLayer* scroller_layer =
-        ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"))->Layer();
+    PaintLayer* scroller_layer = GetPaintLayerByElementId("scroller");
     PaintLayerScrollableArea* scrollable_area =
         scroller_layer->GetScrollableArea();
     ASSERT_TRUE(scrollable_area);
@@ -256,7 +254,7 @@ TEST_F(CompositingLayerPropertyUpdaterTest, OverflowControlsClip) {
 
   // Initially the vertical scrollbar overflows the narrow border box.
   auto* container = GetDocument().getElementById("container");
-  auto* target = ToLayoutBox(GetLayoutObjectByElementId("target"));
+  auto* target = GetLayoutBoxByElementId("target");
   auto* scrollbar_layer =
       target->GetScrollableArea()->GraphicsLayerForVerticalScrollbar();
   auto target_state = target->FirstFragment().LocalBorderBoxProperties();

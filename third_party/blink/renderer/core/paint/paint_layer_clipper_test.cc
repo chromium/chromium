@@ -28,9 +28,7 @@ TEST_F(PaintLayerClipperTest, ParentBackgroundClipRectSubpixelAccumulation) {
     </div>
   )HTML");
 
-  Element* target = GetDocument().getElementById("target");
-  PaintLayer* target_paint_layer =
-      ToLayoutBoxModelObject(target->GetLayoutObject())->Layer();
+  PaintLayer* target_paint_layer = GetPaintLayerByElementId("target");
   ClipRectsContext context(GetDocument().GetLayoutView()->Layer(),
                            &GetDocument().GetLayoutView()->FirstFragment(),
                            kUncachedClipRects, kIgnoreOverlayScrollbarSize,
@@ -62,9 +60,7 @@ TEST_F(PaintLayerClipperTest, BackgroundClipRectSubpixelAccumulation) {
     <div id=target width=200 height=300 style='position: relative'>
   )HTML");
 
-  Element* target = GetDocument().getElementById("target");
-  PaintLayer* target_paint_layer =
-      ToLayoutBoxModelObject(target->GetLayoutObject())->Layer();
+  PaintLayer* target_paint_layer = GetPaintLayerByElementId("target");
   ClipRectsContext context(GetDocument().GetLayoutView()->Layer(),
                            &GetDocument().GetLayoutView()->FirstFragment(),
                            kUncachedClipRects, kIgnoreOverlayScrollbarSize,
@@ -96,9 +92,7 @@ TEST_F(PaintLayerClipperTest, SVGBackgroundClipRectSubpixelAccumulation) {
     </svg>
   )HTML");
 
-  Element* target = GetDocument().getElementById("target");
-  PaintLayer* target_paint_layer =
-      ToLayoutBoxModelObject(target->GetLayoutObject())->Layer();
+  PaintLayer* target_paint_layer = GetPaintLayerByElementId("target");
   ClipRectsContext context(GetDocument().GetLayoutView()->Layer(),
                            &GetDocument().GetLayoutView()->FirstFragment(),
                            kUncachedClipRects, kIgnoreOverlayScrollbarSize,
@@ -130,9 +124,7 @@ TEST_F(PaintLayerClipperTest, LayoutSVGRoot) {
     </svg>
   )HTML");
 
-  Element* target = GetDocument().getElementById("target");
-  PaintLayer* target_paint_layer =
-      ToLayoutBoxModelObject(target->GetLayoutObject())->Layer();
+  PaintLayer* target_paint_layer = GetPaintLayerByElementId("target");
   // When RLS is enabled, the LayoutView will have a composited scrolling layer,
   // so don't apply an overflow clip.
   ClipRectsContext context(GetDocument().GetLayoutView()->Layer(),
@@ -166,9 +158,8 @@ TEST_F(PaintLayerClipperTest, ControlClip) {
     <input id=target style='position:absolute; width: 200px; height: 300px'
         type=button>
   )HTML");
-  Element* target = GetDocument().getElementById("target");
-  PaintLayer* target_paint_layer =
-      ToLayoutBoxModelObject(target->GetLayoutObject())->Layer();
+
+  PaintLayer* target_paint_layer = GetPaintLayerByElementId("target");
   // When RLS is enabled, the LayoutView will have a composited scrolling layer,
   // so don't apply an overflow clip.
   ClipRectsContext context(GetDocument().GetLayoutView()->Layer(),
@@ -199,9 +190,7 @@ TEST_F(PaintLayerClipperTest, RoundedClip) {
     </div>
   )HTML");
 
-  Element* target = GetDocument().getElementById("target");
-  PaintLayer* target_paint_layer =
-      ToLayoutBoxModelObject(target->GetLayoutObject())->Layer();
+  PaintLayer* target_paint_layer = GetPaintLayerByElementId("target");
   ClipRectsContext context(GetDocument().GetLayoutView()->Layer(),
                            &GetDocument().GetLayoutView()->FirstFragment(),
                            kUncachedClipRects, kIgnoreOverlayScrollbarSize,
@@ -236,13 +225,9 @@ TEST_F(PaintLayerClipperTest, RoundedClipNested) {
     </div>
   )HTML");
 
-  Element* parent = GetDocument().getElementById("parent");
-  PaintLayer* parent_paint_layer =
-      ToLayoutBoxModelObject(parent->GetLayoutObject())->Layer();
+  PaintLayer* parent_paint_layer = GetPaintLayerByElementId("parent");
 
-  Element* child = GetDocument().getElementById("child");
-  PaintLayer* child_paint_layer =
-      ToLayoutBoxModelObject(child->GetLayoutObject())->Layer();
+  PaintLayer* child_paint_layer = GetPaintLayerByElementId("child");
 
   ClipRectsContext context(
       parent_paint_layer,
@@ -274,7 +259,7 @@ TEST_F(PaintLayerClipperTest, ControlClipSelect) {
       </option>
     </select>
   )HTML");
-  LayoutBox* target = ToLayoutBox(GetLayoutObjectByElementId("target"));
+  LayoutBox* target = GetLayoutBoxByElementId("target");
   PaintLayer* target_paint_layer = target->Layer();
   ClipRectsContext context(GetDocument().GetLayoutView()->Layer(),
                            &GetDocument().GetLayoutView()->FirstFragment(),
@@ -306,9 +291,7 @@ TEST_F(PaintLayerClipperTest, LayoutSVGRootChild) {
     </svg>
   )HTML");
 
-  Element* target = GetDocument().getElementById("target");
-  PaintLayer* target_paint_layer =
-      ToLayoutBoxModelObject(target->GetLayoutObject())->Layer();
+  PaintLayer* target_paint_layer = GetPaintLayerByElementId("target");
   ClipRectsContext context(GetDocument().GetLayoutView()->Layer(),
                            &GetDocument().GetLayoutView()->FirstFragment(),
                            kUncachedClipRects);
@@ -333,8 +316,7 @@ TEST_F(PaintLayerClipperTest, ContainPaintClip) {
     </div>
   )HTML");
 
-  PaintLayer* layer =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("target"))->Layer();
+  PaintLayer* layer = GetPaintLayerByElementId("target");
   ClipRectsContext context(layer, &layer->GetLayoutObject().FirstFragment(),
                            kUncachedClipRects, kIgnoreOverlayScrollbarSize,
                            kIgnoreOverflowClip);
@@ -369,8 +351,7 @@ TEST_F(PaintLayerClipperTest, NestedContainPaintClip) {
     </div>
   )HTML");
 
-  PaintLayer* layer =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("target"))->Layer();
+  PaintLayer* layer = GetPaintLayerByElementId("target");
   ClipRectsContext context(
       layer->Parent(), &layer->Parent()->GetLayoutObject().FirstFragment(),
       kUncachedClipRects, kIgnoreOverlayScrollbarSize, kIgnoreOverflowClip);
@@ -408,11 +389,8 @@ TEST_F(PaintLayerClipperTest, LocalClipRectFixedUnderTransform) {
     </div>
   )HTML");
 
-  PaintLayer* transformed =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("transformed"))
-          ->Layer();
-  PaintLayer* fixed =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("fixed"))->Layer();
+  PaintLayer* transformed = GetPaintLayerByElementId("transformed");
+  PaintLayer* fixed = GetPaintLayerByElementId("fixed");
 
   EXPECT_EQ(
       PhysicalRect(0, 0, 100, 100),
@@ -445,10 +423,8 @@ TEST_F(PaintLayerClipperTest, ClearClipRectsRecursive) {
     </div>
   )HTML");
 
-  PaintLayer* parent =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("parent"))->Layer();
-  PaintLayer* child =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("child"))->Layer();
+  PaintLayer* parent = GetPaintLayerByElementId("parent");
+  PaintLayer* child = GetPaintLayerByElementId("child");
 
   EXPECT_TRUE(parent->GetClipRectsCache());
   EXPECT_TRUE(child->GetClipRectsCache());
@@ -482,10 +458,8 @@ TEST_F(PaintLayerClipperTest, ClearClipRectsRecursiveChild) {
     </div>
   )HTML");
 
-  PaintLayer* parent =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("parent"))->Layer();
-  PaintLayer* child =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("child"))->Layer();
+  PaintLayer* parent = GetPaintLayerByElementId("parent");
+  PaintLayer* child = GetPaintLayerByElementId("child");
 
   EXPECT_TRUE(parent->GetClipRectsCache());
   EXPECT_TRUE(child->GetClipRectsCache());
@@ -509,8 +483,7 @@ TEST_F(PaintLayerClipperTest, CSSClip) {
     <div id='target'></div>
   )HTML");
 
-  PaintLayer* target =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("target"))->Layer();
+  PaintLayer* target = GetPaintLayerByElementId("target");
   ClipRectsContext context(target, &target->GetLayoutObject().FirstFragment(),
                            kUncachedClipRects);
   PhysicalRect infinite_rect(LayoutRect::InfiniteIntRect());
@@ -537,8 +510,7 @@ TEST_F(PaintLayerClipperTest, Filter) {
     <div id='target'></div>
   )HTML");
 
-  PaintLayer* target =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("target"))->Layer();
+  PaintLayer* target = GetPaintLayerByElementId("target");
 
   // First test clip rects in the target layer itself.
   ClipRectsContext context(target, &target->GetLayoutObject().FirstFragment(),
@@ -617,10 +589,8 @@ TEST_F(PaintLayerClipperTest, IgnoreRootLayerClipWithCSSClip) {
     </div>
   )HTML");
 
-  PaintLayer* root =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("root"))->Layer();
-  PaintLayer* target =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("target"))->Layer();
+  PaintLayer* root = GetPaintLayerByElementId("root");
+  PaintLayer* target = GetPaintLayerByElementId("target");
   ClipRectsContext context(root, &root->GetLayoutObject().FirstFragment(),
                            kUncachedClipRects, kIgnoreOverlayScrollbarSize,
                            kIgnoreOverflowClip);
@@ -652,10 +622,8 @@ TEST_F(PaintLayerClipperTest, IgnoreRootLayerClipWithOverflowClip) {
     </div>
   )HTML");
 
-  PaintLayer* root =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("root"))->Layer();
-  PaintLayer* target =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("target"))->Layer();
+  PaintLayer* root = GetPaintLayerByElementId("root");
+  PaintLayer* target = GetPaintLayerByElementId("target");
   ClipRectsContext context(root, &root->GetLayoutObject().FirstFragment(),
                            kUncachedClipRects, kIgnoreOverlayScrollbarSize,
                            kIgnoreOverflowClip);
@@ -688,10 +656,8 @@ TEST_F(PaintLayerClipperTest, IgnoreRootLayerClipWithBothClip) {
     </div>
   )HTML");
 
-  PaintLayer* root =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("root"))->Layer();
-  PaintLayer* target =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("target"))->Layer();
+  PaintLayer* root = GetPaintLayerByElementId("root");
+  PaintLayer* target = GetPaintLayerByElementId("target");
   ClipRectsContext context(root, &root->GetLayoutObject().FirstFragment(),
                            kUncachedClipRects, kIgnoreOverlayScrollbarSize,
                            kIgnoreOverflowClip);
@@ -718,18 +684,14 @@ TEST_F(PaintLayerClipperTest, Fragmentation) {
     </div>
   )HTML");
 
-  Element* root = GetDocument().getElementById("root");
-  PaintLayer* root_paint_layer =
-      ToLayoutBoxModelObject(root->GetLayoutObject())->Layer();
+  PaintLayer* root_paint_layer = GetPaintLayerByElementId("root");
   ClipRectsContext context(root_paint_layer,
                            &root_paint_layer->GetLayoutObject().FirstFragment(),
                            kUncachedClipRects, kIgnoreOverlayScrollbarSize);
   PhysicalRect layer_bounds;
   ClipRect background_rect, foreground_rect;
 
-  Element* target = GetDocument().getElementById("target");
-  PaintLayer* target_paint_layer =
-      ToLayoutBoxModelObject(target->GetLayoutObject())->Layer();
+  PaintLayer* target_paint_layer = GetPaintLayerByElementId("target");
   EXPECT_TRUE(
       target_paint_layer->GetLayoutObject().FirstFragment().NextFragment());
   EXPECT_FALSE(target_paint_layer->GetLayoutObject()
@@ -773,13 +735,8 @@ TEST_F(PaintLayerClipperTest, ScrollbarClipBehaviorChild) {
     </div>
   )HTML");
 
-  Element* parent = GetDocument().getElementById("parent");
-  PaintLayer* parent_paint_layer =
-      ToLayoutBoxModelObject(parent->GetLayoutObject())->Layer();
-
-  Element* child = GetDocument().getElementById("child");
-  PaintLayer* child_paint_layer =
-      ToLayoutBoxModelObject(child->GetLayoutObject())->Layer();
+  PaintLayer* parent_paint_layer = GetPaintLayerByElementId("parent");
+  PaintLayer* child_paint_layer = GetPaintLayerByElementId("child");
 
   ClipRectsContext context(
       parent_paint_layer,
@@ -824,9 +781,7 @@ TEST_F(PaintLayerClipperTest, ScrollbarClipBehaviorChildScrollBetween) {
   Element* parent = GetDocument().getElementById("parent");
   PaintLayer* root_paint_layer = parent->GetLayoutObject()->View()->Layer();
 
-  Element* child = GetDocument().getElementById("child");
-  PaintLayer* child_paint_layer =
-      ToLayoutBoxModelObject(child->GetLayoutObject())->Layer();
+  PaintLayer* child_paint_layer = GetPaintLayerByElementId("child");
 
   ClipRectsContext context(
       root_paint_layer, &root_paint_layer->GetLayoutObject().FirstFragment(),
@@ -867,9 +822,7 @@ TEST_F(PaintLayerClipperTest, ScrollbarClipBehaviorParent) {
     </div>
   )HTML");
 
-  Element* parent = GetDocument().getElementById("parent");
-  PaintLayer* parent_paint_layer =
-      ToLayoutBoxModelObject(parent->GetLayoutObject())->Layer();
+  PaintLayer* parent_paint_layer = GetPaintLayerByElementId("parent");
 
   ClipRectsContext context(
       parent_paint_layer,
@@ -939,9 +892,7 @@ TEST_F(PaintLayerClipperTest, FixedLayerClipRectInDocumentSpace) {
     <div style="height:3000px;"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById("target");
-  PaintLayer* target_layer =
-      ToLayoutBoxModelObject(target->GetLayoutObject())->Layer();
+  PaintLayer* target_layer = GetPaintLayerByElementId("target");
 
   GetDocument().domWindow()->scrollTo(0, 50);
   UpdateAllLifecyclePhasesForTest();
@@ -966,9 +917,7 @@ TEST_F(PaintLayerClipperTest,
     <div style="height:3000px;"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById("target");
-  PaintLayer* target_layer =
-      ToLayoutBoxModelObject(target->GetLayoutObject())->Layer();
+  PaintLayer* target_layer = GetPaintLayerByElementId("target");
 
   GetDocument().domWindow()->scrollTo(0, 50);
   UpdateAllLifecyclePhasesForTest();
@@ -994,9 +943,7 @@ TEST_F(PaintLayerClipperTest,
     <div style="height:3000px;"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById("target");
-  PaintLayer* target_layer =
-      ToLayoutBoxModelObject(target->GetLayoutObject())->Layer();
+  PaintLayer* target_layer = GetPaintLayerByElementId("target");
 
   // At 10, target is still scrolling - clip_rect shouldn't change.
   GetDocument().domWindow()->scrollTo(0, 10);

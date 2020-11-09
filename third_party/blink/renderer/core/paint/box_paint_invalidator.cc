@@ -244,7 +244,7 @@ BoxPaintInvalidator::ComputeViewBackgroundInvalidation() {
   if (Element* root_element = box_.GetDocument().documentElement()) {
     if (const auto* root_object = root_element->GetLayoutObject()) {
       if (root_object->IsBox()) {
-        const auto* root_box = ToLayoutBox(root_object);
+        const auto* root_box = To<LayoutBox>(root_object);
         // LayoutView's non-fixed-attachment background is positioned in the
         // root element and needs to invalidate if the size changes.
         // See: https://drafts.csswg.org/css-backgrounds-3/#root-background.

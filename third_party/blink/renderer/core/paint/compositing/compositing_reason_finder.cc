@@ -134,7 +134,7 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
 
   reasons |= CompositingReasonsFor3DTransform(object);
 
-  auto* layer = ToLayoutBoxModelObject(object).Layer();
+  auto* layer = To<LayoutBoxModelObject>(object).Layer();
   if (layer->Has3DTransformedDescendant()) {
     // Perspective (specified either by perspective or transform properties)
     // with 3d descendants need a render surface for flattening purposes.

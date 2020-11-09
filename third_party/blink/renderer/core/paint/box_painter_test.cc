@@ -76,7 +76,7 @@ TEST_P(BoxPainterTest, ScrollHitTestOrderWithScrollBackgroundAttachment) {
     </div>
   )HTML");
 
-  auto& container = ToLayoutBox(*GetLayoutObjectByElementId("container"));
+  auto& container = *GetLayoutBoxByElementId("container");
   auto& child = *GetLayoutObjectByElementId("child");
 
   // As a reminder, "background-attachment: scroll" does not move when the
@@ -144,7 +144,7 @@ TEST_P(BoxPainterTest, ScrollHitTestOrderWithLocalBackgroundAttachment) {
     </div>
   )HTML");
 
-  auto& container = ToLayoutBox(*GetLayoutObjectByElementId("container"));
+  auto& container = *GetLayoutBoxByElementId("container");
   auto& child = *GetLayoutObjectByElementId("child");
   auto* container_scrolling_client =
       &container.GetScrollableArea()->GetScrollingBackgroundDisplayItemClient();

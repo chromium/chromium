@@ -94,7 +94,7 @@ PhysicalRect BoxModelObjectPainter::AdjustRectForScrolledContent(
   if (!info.is_clipped_with_local_scrolling)
     return rect;
 
-  const auto& this_box = ToLayoutBox(box_model_);
+  const auto& this_box = To<LayoutBox>(box_model_);
   if (BoxDecorationData::IsPaintingScrollingBackground(paint_info, this_box))
     return rect;
 
@@ -150,7 +150,7 @@ bool BoxModelObjectPainter::IsPaintingScrollingBackground(
   if (!box_model_.IsBox())
     return false;
 
-  const auto& this_box = ToLayoutBox(box_model_);
+  const auto& this_box = To<LayoutBox>(box_model_);
   return BoxDecorationData::IsPaintingScrollingBackground(paint_info, this_box);
 }
 

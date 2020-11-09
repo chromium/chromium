@@ -64,34 +64,34 @@ TEST_F(ObjectPaintInvalidatorTest, TraverseNonCompositingDescendants) {
   )HTML");
 
   auto* container = GetLayoutObjectByElementId("container");
-  auto* container_layer = ToLayoutBoxModelObject(container)->Layer();
+  auto* container_layer = To<LayoutBoxModelObject>(container)->Layer();
   auto* stacked_child = GetLayoutObjectByElementId("stacked-child");
-  auto* stacked_child_layer = ToLayoutBoxModelObject(stacked_child)->Layer();
+  auto* stacked_child_layer = To<LayoutBoxModelObject>(stacked_child)->Layer();
   auto* composited_stacking_context =
       GetLayoutObjectByElementId("composited-stacking-context");
   auto* composited_stacking_context_layer =
-      ToLayoutBoxModelObject(composited_stacking_context)->Layer();
+      To<LayoutBoxModelObject>(composited_stacking_context)->Layer();
   auto* stacked_child_of_composited_stacking_context =
       GetLayoutObjectByElementId(
           "stacked-child-of-composited-stacking-context");
   auto* stacked_child_of_composited_stacking_context_layer =
-      ToLayoutBoxModelObject(stacked_child_of_composited_stacking_context)
+      To<LayoutBoxModelObject>(stacked_child_of_composited_stacking_context)
           ->Layer();
   auto* composited_non_stacking_context =
       GetLayoutObjectByElementId("composited-non-stacking-context");
   auto* composited_non_stacking_context_layer =
-      ToLayoutBoxModelObject(composited_non_stacking_context)->Layer();
+      To<LayoutBoxModelObject>(composited_non_stacking_context)->Layer();
   auto* stacked_child_of_composited_non_stacking_context =
       GetLayoutObjectByElementId(
           "stacked-child-of-composited-non-stacking-context");
   auto* stacked_child_of_composited_non_stacking_context_layer =
-      ToLayoutBoxModelObject(stacked_child_of_composited_non_stacking_context)
+      To<LayoutBoxModelObject>(stacked_child_of_composited_non_stacking_context)
           ->Layer();
   auto* non_stacked_layered_child_of_composited_non_stacking_context =
       GetLayoutObjectByElementId(
           "non-stacked-layered-child-of-composited-non-stacking-context");
   auto* non_stacked_layered_child_of_composited_non_stacking_context_layer =
-      ToLayoutBoxModelObject(
+      To<LayoutBoxModelObject>(
           non_stacked_layered_child_of_composited_non_stacking_context)
           ->Layer();
 
@@ -137,15 +137,13 @@ TEST_F(ObjectPaintInvalidatorTest, TraverseFloatUnderCompositedInline) {
   )HTML");
 
   auto* target = GetLayoutObjectByElementId("target");
-  auto* containing_block = GetLayoutObjectByElementId("containingBlock");
-  auto* containing_block_layer =
-      ToLayoutBoxModelObject(containing_block)->Layer();
+  auto* containing_block_layer = GetPaintLayerByElementId("containingBlock");
   auto* composited_container =
       GetLayoutObjectByElementId("compositedContainer");
   auto* composited_container_layer =
-      ToLayoutBoxModelObject(composited_container)->Layer();
+      To<LayoutBoxModelObject>(composited_container)->Layer();
   auto* span = GetLayoutObjectByElementId("span");
-  auto* span_layer = ToLayoutBoxModelObject(span)->Layer();
+  auto* span_layer = To<LayoutBoxModelObject>(span)->Layer();
 
   EXPECT_TRUE(span->IsPaintInvalidationContainer());
   EXPECT_TRUE(span->IsStackingContext());
@@ -217,9 +215,9 @@ TEST_F(ObjectPaintInvalidatorTest, TraverseStackedFloatUnderCompositedInline) {
   )HTML");
 
   auto* target = GetLayoutObjectByElementId("target");
-  auto* target_layer = ToLayoutBoxModelObject(target)->Layer();
+  auto* target_layer = To<LayoutBoxModelObject>(target)->Layer();
   auto* span = GetLayoutObjectByElementId("span");
-  auto* span_layer = ToLayoutBoxModelObject(span)->Layer();
+  auto* span_layer = To<LayoutBoxModelObject>(span)->Layer();
   auto* text = span->SlowFirstChild();
 
   EXPECT_TRUE(span->IsPaintInvalidationContainer());

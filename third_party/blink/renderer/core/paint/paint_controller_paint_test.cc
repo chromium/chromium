@@ -327,10 +327,10 @@ TEST_P(PaintControllerPaintTestForCAP, NonStackingScrollHitTestOrder) {
   )HTML");
 
   auto& html = *GetDocument().documentElement()->GetLayoutBox();
-  auto& container = *ToLayoutBox(GetLayoutObjectByElementId("container"));
+  auto& container = *GetLayoutBoxByElementId("container");
   auto& child = *GetLayoutObjectByElementId("child");
-  auto& neg_z_child = *ToLayoutBox(GetLayoutObjectByElementId("negZChild"));
-  auto& pos_z_child = *ToLayoutBox(GetLayoutObjectByElementId("posZChild"));
+  auto& neg_z_child = *GetLayoutBoxByElementId("negZChild");
+  auto& pos_z_child = *GetLayoutBoxByElementId("posZChild");
 
   // Container is not a stacking context because no z-index is auto.
   // Negative z-index descendants are painted before the background and
@@ -404,10 +404,10 @@ TEST_P(PaintControllerPaintTestForCAP, StackingScrollHitTestOrder) {
     </div>
   )HTML");
 
-  auto& container = *ToLayoutBox(GetLayoutObjectByElementId("container"));
+  auto& container = *GetLayoutBoxByElementId("container");
   auto& child = *GetLayoutObjectByElementId("child");
-  auto& neg_z_child = *ToLayoutBox(GetLayoutObjectByElementId("negZChild"));
-  auto& pos_z_child = *ToLayoutBox(GetLayoutObjectByElementId("posZChild"));
+  auto& neg_z_child = *GetLayoutBoxByElementId("negZChild");
+  auto& pos_z_child = *GetLayoutBoxByElementId("posZChild");
 
   // Container is a stacking context because z-index is non-auto.
   // Both positive and negative z-index descendants are painted after the
@@ -480,10 +480,10 @@ TEST_P(PaintControllerPaintTestForCAP,
   )HTML");
 
   auto& html = *GetDocument().documentElement()->GetLayoutBox();
-  auto& container = *ToLayoutBox(GetLayoutObjectByElementId("container"));
+  auto& container = *GetLayoutBoxByElementId("container");
   auto& child = *GetLayoutObjectByElementId("child");
-  auto& neg_z_child = *ToLayoutBox(GetLayoutObjectByElementId("negZChild"));
-  auto& pos_z_child = *ToLayoutBox(GetLayoutObjectByElementId("posZChild"));
+  auto& neg_z_child = *GetLayoutBoxByElementId("negZChild");
+  auto& pos_z_child = *GetLayoutBoxByElementId("posZChild");
 
   // Even though container does not paint a background, the scroll hit test
   // should still be between the negative z-index child and the regular child.

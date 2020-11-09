@@ -31,8 +31,7 @@ TEST_F(CompositedLayerAssignerTest, SquashingSimple) {
         height: 100px; background: green"></div>
     )HTML");
 
-  PaintLayer* squashed =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("squashed"))->Layer();
+  PaintLayer* squashed = GetPaintLayerByElementId("squashed");
   EXPECT_EQ(kPaintsIntoGroupedBacking, squashed->GetCompositingState());
   CompositedLayerMapping* mapping = squashed->GroupedMapping();
   EXPECT_EQ(mapping->NonScrollingSquashingLayer(),
@@ -51,8 +50,7 @@ TEST_F(CompositedLayerAssignerTest, SquashingAcrossClipPathDisallowed) {
     )HTML");
   // #squashed should not be squashed after all, because of the clip path above
   // #squashing.
-  PaintLayer* squashed =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("squashed"))->Layer();
+  PaintLayer* squashed = GetPaintLayerByElementId("squashed");
   EXPECT_EQ(kPaintsIntoOwnBacking, squashed->GetCompositingState());
 }
 
@@ -66,8 +64,7 @@ TEST_F(CompositedLayerAssignerTest, SquashingAcrossMaskDisallowed) {
     )HTML");
   // #squashed should not be squashed after all, because of the mask above
   // #squashing.
-  PaintLayer* squashed =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("squashed"))->Layer();
+  PaintLayer* squashed = GetPaintLayerByElementId("squashed");
   EXPECT_EQ(kPaintsIntoOwnBacking, squashed->GetCompositingState());
 }
 
@@ -82,8 +79,7 @@ TEST_F(CompositedLayerAssignerTest,
     )HTML");
   // #squashed should not be squashed after all, because of 'contain: layout' on
   // #squashing.
-  PaintLayer* squashed =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("squashed"))->Layer();
+  PaintLayer* squashed = GetPaintLayerByElementId("squashed");
   EXPECT_EQ(kPaintsIntoOwnBacking, squashed->GetCompositingState());
 }
 
@@ -96,8 +92,7 @@ TEST_F(CompositedLayerAssignerTest,
     )HTML");
   // #squashed should not be squashed after all, because of 'contain: layout' on
   // #squahed.
-  PaintLayer* squashed =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("squashed"))->Layer();
+  PaintLayer* squashed = GetPaintLayerByElementId("squashed");
   EXPECT_EQ(kPaintsIntoOwnBacking, squashed->GetCompositingState());
 }
 
@@ -115,8 +110,7 @@ TEST_F(CompositedLayerAssignerTest,
   )HTML");
   LocalFrameView* frame_view = GetDocument().View();
   frame_view->UpdateAllLifecyclePhasesForTest();
-  PaintLayer* top =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("top"))->Layer();
+  PaintLayer* top = GetPaintLayerByElementId("top");
   EXPECT_EQ(kPaintsIntoOwnBacking, top->GetCompositingState());
 }
 

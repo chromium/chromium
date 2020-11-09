@@ -18,8 +18,7 @@ BoxReflection BoxReflectionForPaintLayer(const PaintLayer& layer,
                                          const ComputedStyle& style) {
   const StyleReflection* reflect_style = style.BoxReflect();
 
-  LayoutRect frame_layout_rect =
-      ToLayoutBox(layer.GetLayoutObject()).FrameRect();
+  LayoutRect frame_layout_rect = layer.GetLayoutBox()->FrameRect();
   FloatRect frame_rect(frame_layout_rect);
   BoxReflection::ReflectionDirection direction =
       BoxReflection::kVerticalReflection;

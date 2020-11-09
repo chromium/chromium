@@ -305,7 +305,7 @@ static bool NeedsScrollOrScrollTranslation(
   if (!object.IsScrollContainer())
     return false;
 
-  const LayoutBox& box = ToLayoutBox(object);
+  const LayoutBox& box = To<LayoutBox>(object);
   if (!box.GetScrollableArea())
     return false;
 
@@ -393,7 +393,7 @@ static bool NeedsPaintOffsetTranslation(
   if (object.IsSVGForeignObject())
     return false;
 
-  const LayoutBoxModelObject& box_model = ToLayoutBoxModelObject(object);
+  const auto& box_model = To<LayoutBoxModelObject>(object);
 
   if (IsA<LayoutView>(box_model)) {
     // A translation node for LayoutView is always created to ensure fixed and
@@ -437,7 +437,7 @@ static bool NeedsPaintOffsetTranslation(
   if ((box_model.IsLayoutBlock() || object.IsLayoutReplaced()) &&
       // TODO(wangxianzhu): Don't depend on PaintLayer for CompositeAfterPaint.
       object.HasLayer()) {
-    PaintLayer* layer = ToLayoutBoxModelObject(object).Layer();
+    PaintLayer* layer = To<LayoutBoxModelObject>(object).Layer();
     if (!layer->EnclosingPaginationLayer()) {
       if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
         if (direct_compositing_reasons != CompositingReason::kNone)
@@ -580,7 +580,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
 
   if (NeedsPaintPropertyUpdate()) {
     if (NeedsStickyTranslation(object_)) {
-      const auto& box_model = ToLayoutBoxModelObject(object_);
+      const auto& box_model = To<LayoutBoxModelObject>(object_);
       TransformPaintPropertyNode::State state{
           FloatSize(box_model.StickyPositionOffset())};
       // TODO(wangxianzhu): Not using GetCompositorElementId() here because
@@ -878,7 +878,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
       TransformPaintPropertyNode::State state;
 
       if (object_.IsBox()) {
-        auto& box = ToLayoutBox(object_);
+        auto& box = To<LayoutBox>(object_);
         TransformationMatrix matrix;
         style.ApplyTransform(
             matrix, box.Size(), ComputedStyle::kExcludeTransformOrigin,
@@ -1031,7 +1031,7 @@ static bool NeedsEffect(const LayoutObject& object,
     return true;
 
   if (is_css_isolated_group) {
-    const auto* layer = ToLayoutBoxModelObject(object).Layer();
+    const auto* layer = To<LayoutBoxModelObject>(object).Layer();
     DCHECK(layer);
 
     if (layer->HasNonIsolatedDescendantWithBlendMode())
@@ -1087,7 +1087,7 @@ bool FragmentPaintPropertyTreeBuilder::EffectCanUseCurrentClipAsOutputClip()
     return true;
   }
 
-  const auto* layer = ToLayoutBoxModelObject(object_).Layer();
+  const auto* layer = To<LayoutBoxModelObject>(object_).Layer();
   // Out-of-flow descendants not contained by this object may escape clips.
   if (layer->HasNonContainedAbsolutePositionDescendant() &&
       &object_.ContainerForAbsolutePosition()
@@ -1160,7 +1160,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
             kCompositeSourceOver, style.GetBlendMode());
       }
       if (object_.IsBoxModelObject()) {
-        if (auto* layer = ToLayoutBoxModelObject(object_).Layer()) {
+        if (auto* layer = To<LayoutBoxModelObject>(object_).Layer()) {
           // Try to use the cached effect for backdrop-filter.
           if (properties_->Effect()) {
             state.backdrop_filter = properties_->Effect()->BackdropFilter();
@@ -1342,7 +1342,8 @@ static bool NeedsFilter(const LayoutObject& object,
       CompositingReasonsForFilterProperty())
     return true;
 
-  if (object.IsBoxModelObject() && ToLayoutBoxModelObject(object).HasLayer()) {
+  if (object.IsBoxModelObject() &&
+      To<LayoutBoxModelObject>(object).HasLayer()) {
     if (object.StyleRef().HasFilter() || object.HasReflection())
       return true;
   } else if (object.IsSVGChild() && !object.IsText() &&
@@ -1360,11 +1361,12 @@ static bool NeedsFilter(const LayoutObject& object,
 static void UpdateFilterEffect(const LayoutObject& object,
                                const EffectPaintPropertyNode* effect_node,
                                CompositorFilterOperations& filter) {
-  if (object.IsBoxModelObject() && ToLayoutBoxModelObject(object).HasLayer()) {
+  if (object.IsBoxModelObject() &&
+      To<LayoutBoxModelObject>(object).HasLayer()) {
     // Try to use the cached filter.
     if (effect_node)
       filter = effect_node->Filter();
-    PaintLayer* layer = ToLayoutBoxModelObject(object).Layer();
+    PaintLayer* layer = To<LayoutBoxModelObject>(object).Layer();
     layer->UpdateFilterReferenceBox();
     layer->UpdateCompositorFilterOperationsForFilter(filter);
     layer->ClearFilterOnEffectNodeDirty();
@@ -1497,7 +1499,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateCssClip() {
       // copy from in-flow context later at updateOutOfFlowContext() step.
       DCHECK(object_.CanContainAbsolutePositionObjects());
       const auto& clip_rect =
-          ToLayoutBox(object_).ClipRect(context_.current.paint_offset);
+          To<LayoutBox>(object_).ClipRect(context_.current.paint_offset);
       OnUpdateClip(properties_->UpdateCssClip(
           *context_.current.clip,
           ClipPaintPropertyNode::State(context_.current.transform,
@@ -1590,7 +1592,7 @@ static bool NeedsOverflowClip(const LayoutObject& object) {
     return true;
 
   return object.IsBox() &&
-         ToLayoutBox(object).ShouldClipOverflowAlongEitherAxis() &&
+         To<LayoutBox>(object).ShouldClipOverflowAlongEitherAxis() &&
          !IsPrintingRootLayoutView(object);
 }
 
@@ -1620,7 +1622,7 @@ bool FragmentPaintPropertyTreeBuilder::NeedsOverflowControlsClip() const {
   if (!object_.IsScrollContainer())
     return false;
 
-  const auto& box = ToLayoutBox(object_);
+  const auto& box = To<LayoutBox>(object_);
   const auto* scrollable_area = box.GetScrollableArea();
   IntRect scroll_controls_bounds =
       scrollable_area->ScrollCornerAndResizerRect();
@@ -1652,7 +1654,7 @@ static PhysicalOffset VisualOffsetFromPaintOffsetRoot(
   PaintLayer* painting_layer = paint_offset_root->PaintingLayer();
   PhysicalOffset result = child->VisualOffsetFromAncestor(painting_layer);
   if (!paint_offset_root->HasLayer() ||
-      ToLayoutBoxModelObject(paint_offset_root)->Layer() != painting_layer) {
+      To<LayoutBoxModelObject>(paint_offset_root)->Layer() != painting_layer) {
     result -= paint_offset_root->OffsetFromAncestor(
         &painting_layer->GetLayoutObject());
   }
@@ -1680,7 +1682,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowControlsClip() {
     // OnUpdate() to let PrePaintTreeWalk see the change. This may cause
     // unnecessary subtree update, but is not a big deal because it is rare.
     const auto& clip_rect = PhysicalRect(context_.current.paint_offset,
-                                         ToLayoutBox(object_).Size());
+                                         To<LayoutBox>(object_).Size());
     OnUpdate(properties_->UpdateOverflowControlsClip(
         *context_.current.clip,
         ClipPaintPropertyNode::State(context_.current.transform,
@@ -1699,7 +1701,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
 
   if (NeedsPaintPropertyUpdate()) {
     if (NeedsInnerBorderRadiusClip(object_)) {
-      const LayoutBox& box = ToLayoutBox(object_);
+      const auto& box = To<LayoutBox>(object_);
       PhysicalRect box_rect(context_.current.paint_offset, box.Size());
       ClipPaintPropertyNode::State state(
           context_.current.transform,
@@ -1802,13 +1804,13 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
           state.SetClipRect(adjusted_clip_rect, adjusted_clip_rect);
         }
       } else if (object_.IsBox()) {
-        const auto& clip_rect = ToLayoutBox(object_).OverflowClipRect(
+        const auto& clip_rect = To<LayoutBox>(object_).OverflowClipRect(
             context_.current.paint_offset);
         state.SetClipRect(FloatRoundedRect(FloatRect(clip_rect)),
                           ToSnappedClipRect(clip_rect));
 
         state.clip_rect_excluding_overlay_scrollbars =
-            FloatClipRect(FloatRect(ToLayoutBox(object_).OverflowClipRect(
+            FloatClipRect(FloatRect(To<LayoutBox>(object_).OverflowClipRect(
                 context_.current.paint_offset,
                 kExcludeOverlayScrollbarSizeForHitTesting)));
       } else {
@@ -1855,7 +1857,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePerspective() {
       TransformPaintPropertyNode::State state{
           TransformPaintPropertyNode::TransformAndOrigin(
               TransformationMatrix().ApplyPerspective(style.Perspective()),
-              PerspectiveOrigin(ToLayoutBox(object_)) +
+              PerspectiveOrigin(To<LayoutBox>(object_)) +
                   FloatSize(context_.current.paint_offset))};
       state.flags.flattens_inherited_transform =
           context_.current.should_flatten_inherited_transform;
@@ -1973,7 +1975,7 @@ static MainThreadScrollingReasons GetMainThreadScrollingReasons(
       // composited smooth-scroll animations. For this reason, we use
       // HasOverflow instead of ScrollsOverflow (which is false for overflow:
       // hidden).
-      if (ToLayoutBox(object).GetScrollableArea()->HasOverflow() &&
+      if (To<LayoutBox>(object).GetScrollableArea()->HasOverflow() &&
           object.StyleRef().VisibleToHitTesting() &&
           object.GetFrameView()
               ->HasVisibleSlowRepaintViewportConstrainedObjects()) {
@@ -1999,9 +2001,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
   DCHECK(properties_);
 
   if (NeedsPaintPropertyUpdate()) {
-    if (object_.IsBox() && ToLayoutBox(object_).NeedsScrollNode(
+    if (object_.IsBox() && To<LayoutBox>(object_).NeedsScrollNode(
                                full_context_.direct_compositing_reasons)) {
-      const LayoutBox& box = ToLayoutBox(object_);
+      const auto& box = To<LayoutBox>(object_);
       PaintLayerScrollableArea* scrollable_area = box.GetScrollableArea();
       ScrollPaintPropertyNode::State state;
 
@@ -2100,7 +2102,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
     // hidden with scroll offset) or cases that scroll and have a scroll node.
     if (NeedsScrollOrScrollTranslation(
             object_, full_context_.direct_compositing_reasons)) {
-      const auto& box = ToLayoutBox(object_);
+      const auto& box = To<LayoutBox>(object_);
       DCHECK(box.GetScrollableArea());
 
       // Bake ScrollOrigin into ScrollTranslation. See comments for
@@ -2153,7 +2155,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
     // See comments for ScrollTranslation in object_paint_properties.h for the
     // reason of adding ScrollOrigin().
     context_.current.paint_offset +=
-        PhysicalOffset(ToLayoutBox(object_).ScrollOrigin());
+        PhysicalOffset(To<LayoutBox>(object_).ScrollOrigin());
   }
 }
 
@@ -2184,7 +2186,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOutOfFlowContext() {
       // Also undo the ScrollOrigin part in paint offset that was added when
       // ScrollTranslation was updated.
       context_.fixed_position.paint_offset -=
-          PhysicalOffset(ToLayoutBox(object_).ScrollOrigin());
+          PhysicalOffset(To<LayoutBox>(object_).ScrollOrigin());
     }
   } else if (object_.CanContainFixedPositionObjects()) {
     context_.fixed_position = context_.current;
@@ -2283,7 +2285,7 @@ static PhysicalRect BoundingBoxInPaginationContainer(
       // Table section may repeat, and doesn't need the special layer path
       // because it doesn't have contents visual overflow.
       !object.IsTableSection()) {
-    const auto* layer = ToLayoutBoxModelObject(object).Layer();
+    const auto* layer = To<LayoutBoxModelObject>(object).Layer();
     if (layer->ShouldFragmentCompositedBounds()) {
       ClipRect clip;
       layer->Clipper(PaintLayer::GeometryMapperOption::kDoNotUseGeometryMapper)
@@ -2299,7 +2301,7 @@ static PhysicalRect BoundingBoxInPaginationContainer(
   PhysicalRect local_bounds;
   const LayoutBox* local_space_object = nullptr;
   if (object.IsBox()) {
-    local_space_object = ToLayoutBox(&object);
+    local_space_object = To<LayoutBox>(&object);
     local_bounds = local_space_object->PhysicalBorderBoxRect();
   } else {
     // Non-boxes paint in the space of their containing block.
@@ -2336,8 +2338,8 @@ static PhysicalRect BoundingBoxInPaginationContainer(
     // with all fragments containing the original and repeatings, i.e. to
     // intersect any fragment containing any row.
     if (const auto* bottom_section = table.BottomNonEmptySectionInterface()) {
-      const LayoutBox* bottom_section_box =
-          ToLayoutBox(bottom_section->ToLayoutObject());
+      const auto* bottom_section_box =
+          To<LayoutBox>(bottom_section->ToLayoutObject());
       bounding_box.Unite(MapLocalRectToAncestorLayer(
           *bottom_section_box, bottom_section_box->PhysicalBorderBoxRect(),
           enclosing_pagination_layer));
@@ -2349,8 +2351,7 @@ static PhysicalRect BoundingBoxInPaginationContainer(
   // Similar to repeating header, expand bounding_box to intersect any
   // fragment containing any row first.
   if (const auto* top_section = table.TopNonEmptySectionInterface()) {
-    const LayoutBox* top_section_box =
-        ToLayoutBox(top_section->ToLayoutObject());
+    const auto* top_section_box = To<LayoutBox>(top_section->ToLayoutObject());
     bounding_box.Unite(MapLocalRectToAncestorLayer(
         *top_section_box, top_section_box->PhysicalBorderBoxRect(),
         enclosing_pagination_layer));
@@ -2361,7 +2362,7 @@ static PhysicalRect BoundingBoxInPaginationContainer(
     LayoutUnit top_exclusion = table.RowOffsetFromRepeatingFooter();
     if (top_section != &section) {
       top_exclusion +=
-          ToLayoutBox(top_section->FirstRowInterface()->ToLayoutObject())
+          To<LayoutBox>(top_section->FirstRowInterface()->ToLayoutObject())
               ->LogicalHeight() +
           table.VBorderSpacing();
     }
@@ -2435,8 +2436,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
   }
 
   if (object_.IsBoxModelObject()) {
-    const LayoutBoxModelObject& box_model_object =
-        ToLayoutBoxModelObject(object_);
+    const auto& box_model_object = To<LayoutBoxModelObject>(object_);
     EPosition position = box_model_object.StyleRef().GetPosition();
     if (IsInNGFragmentTraversal() &&
         (position == EPosition::kAbsolute || position == EPosition::kFixed)) {
@@ -2463,7 +2463,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
           full_context_.container_for_fixed_position = container;
         full_context_.container_for_absolute_position = container;
         PhysicalOffset relative_offset;
-        if (const LayoutBox* box = ToLayoutBoxOrNull(container)) {
+        if (const auto* box = DynamicTo<LayoutBox>(container)) {
           // If the OOF is contained by an anonymous block (because of inline
           // continuations), we need to take that into account.
           //
@@ -2516,7 +2516,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
           DCHECK(box_model_object.IsBox());
           context_.current.paint_offset +=
               ToLayoutInline(container)->OffsetForInFlowPositionedInline(
-                  ToLayoutBox(box_model_object));
+                  To<LayoutBox>(box_model_object));
         }
         break;
       }
@@ -2541,7 +2541,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
           DCHECK(box_model_object.IsBox());
           context_.current.paint_offset +=
               ToLayoutInline(container)->OffsetForInFlowPositionedInline(
-                  ToLayoutBox(box_model_object));
+                  To<LayoutBox>(box_model_object));
         }
         break;
       }
@@ -2564,7 +2564,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
     // calculate containers (e.g., physicalLocation, offsetForInFlowPosition*).
     // The containing block and other containers can be stored on
     // PaintPropertyTreeBuilderFragmentContext instead of recomputing them.
-    context_.current.paint_offset += ToLayoutBox(object_).PhysicalLocation();
+    context_.current.paint_offset += To<LayoutBox>(object_).PhysicalLocation();
 
     // This is a weird quirk that table cells paint as children of table rows,
     // but their location have the row's location baked-in.
@@ -2573,7 +2573,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
       LayoutObject* parent_row = object_.Parent();
       DCHECK(parent_row && parent_row->IsTableRow());
       context_.current.paint_offset -=
-          ToLayoutBox(parent_row)->PhysicalLocation();
+          To<LayoutBox>(parent_row)->PhysicalLocation();
     }
   }
 
@@ -2582,14 +2582,14 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
 
 void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
   if (object_.HasLayer()) {
-    PaintLayer* layer = ToLayoutBoxModelObject(object_).Layer();
+    PaintLayer* layer = To<LayoutBoxModelObject>(object_).Layer();
     layer->UpdateFilterReferenceBox();
   }
 
   if (!object_.IsBox())
     return;
 
-  const LayoutBox& box = ToLayoutBox(object_);
+  const LayoutBox& box = To<LayoutBox>(object_);
 
   if (NeedsOverflowClip(box)) {
     bool had_overflow_clip = properties_ && properties_->OverflowClip();
@@ -2664,7 +2664,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForObjectLocationAndSize(
     if (object_.IsBox()) {
       // See PaintLayerScrollableArea::PixelSnappedBorderBoxSize() for the
       // reason of this.
-      if (auto* scrollable_area = ToLayoutBox(object_).GetScrollableArea())
+      if (auto* scrollable_area = To<LayoutBox>(object_).GetScrollableArea())
         scrollable_area->PositionOverflowControls();
     }
 
@@ -2674,7 +2674,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForObjectLocationAndSize(
   }
 
   if (paint_offset_translation)
-    context_.current.paint_offset_root = &ToLayoutBoxModelObject(object_);
+    context_.current.paint_offset_root = &To<LayoutBoxModelObject>(object_);
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateClipPathCache() {
@@ -2873,7 +2873,7 @@ void PaintPropertyTreeBuilder::InitSingleFragmentFromParent(
   bool skip_fragment_clip_for_composited_layer =
       !RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
       object_.CanBeCompositedForDirectReasons() &&
-      ToLayoutBoxModelObject(object_).Layer()->EnclosingPaginationLayer();
+      To<LayoutBoxModelObject>(object_).Layer()->EnclosingPaginationLayer();
   if (!skip_fragment_clip_for_composited_layer && !object_.IsColumnSpanAll())
     return;
 
@@ -3025,7 +3025,7 @@ void PaintPropertyTreeBuilder::
   // this header (which is the lowest repeating header seen by this table.
   auto repeating_offset_in_fragment =
       table.RowOffsetFromRepeatingHeader() -
-      ToLayoutBox(section.ToLayoutObject())->LogicalHeight();
+      To<LayoutBox>(section.ToLayoutObject())->LogicalHeight();
 
   // For a repeating table header, the original location (which may be in the
   // middle of the fragment) and repeated locations (which should be always,
@@ -3042,9 +3042,10 @@ void PaintPropertyTreeBuilder::
   // border-spacing, and also bottom captions. No room has been made for a
   // repeated header there.
   auto sections_logical_height =
-      ToLayoutBox(table.BottomSectionInterface()->ToLayoutObject())
+      To<LayoutBox>(table.BottomSectionInterface()->ToLayoutObject())
           ->LogicalBottom() -
-      ToLayoutBox(table.TopSectionInterface()->ToLayoutObject())->LogicalTop();
+      To<LayoutBox>(table.TopSectionInterface()->ToLayoutObject())
+          ->LogicalTop();
   auto content_remaining = sections_logical_height - table.VBorderSpacing();
 
   for (wtf_size_t i = 0; i < context_.fragments.size(); ++i) {
@@ -3080,7 +3081,7 @@ void PaintPropertyTreeBuilder::
   LayoutUnit fragment_height;
   LayoutUnit original_offset_in_flow_thread =
       context_.repeating_table_section_bounding_box.Bottom() -
-      ToLayoutBox(section.ToLayoutObject())->LogicalHeight();
+      To<LayoutBox>(section.ToLayoutObject())->LogicalHeight();
   LayoutUnit original_offset_in_fragment;
   const LayoutFlowThread* flow_thread = nullptr;
   if (const auto* pagination_layer =
@@ -3116,7 +3117,7 @@ void PaintPropertyTreeBuilder::
   // collapses borders.
   if (table.ShouldCollapseBorders()) {
     repeating_offset_in_fragment -=
-        ToLayoutBox(table.ToLayoutObject())->BorderBottom();
+        To<LayoutBox>(table.ToLayoutObject())->BorderBottom();
   }
 
   // Similar to repeating header, this is to adjust the repeating footer from
@@ -3633,7 +3634,7 @@ bool PaintPropertyTreeBuilder::UpdateFragments() {
   }
 
   if (object_.HasLayer()) {
-    ToLayoutBoxModelObject(object_).Layer()->SetIsUnderSVGHiddenContainer(
+    To<LayoutBoxModelObject>(object_).Layer()->SetIsUnderSVGHiddenContainer(
         context_.has_svg_hidden_container_ancestor);
   }
 
@@ -3655,8 +3656,8 @@ bool PaintPropertyTreeBuilder::ObjectTypeMightNeedMultipleFragmentData() const {
 
 void PaintPropertyTreeBuilder::UpdatePaintingLayer() {
   if (object_.HasLayer() &&
-      ToLayoutBoxModelObject(object_).HasSelfPaintingLayer()) {
-    context_.painting_layer = ToLayoutBoxModelObject(object_).Layer();
+      To<LayoutBoxModelObject>(object_).HasSelfPaintingLayer()) {
+    context_.painting_layer = To<LayoutBoxModelObject>(object_).Layer();
   } else if (!IsInNGFragmentTraversal() &&
              (object_.IsColumnSpanAll() ||
               object_.IsFloatingWithNonContainingBlockParent())) {

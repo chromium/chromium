@@ -47,11 +47,11 @@ TEST_F(CompositingInputsUpdaterTest,
   )HTML");
 
   LayoutBoxModelObject* outer_scroller =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("outerScroller"));
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("outerScroller"));
   LayoutBoxModelObject* inner_scroller =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("innerScroller"));
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("innerScroller"));
   LayoutBoxModelObject* sticky =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("sticky"));
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("sticky"));
 
   // Both scrollers must always have a layer.
   EXPECT_TRUE(outer_scroller->Layer());
@@ -107,8 +107,7 @@ TEST_F(CompositingInputsUpdaterTest, UnclippedAndClippedRectsUnderScroll) {
      <div style="position: relative; width: 20px; height: 3000px"></div>
   )HTML");
 
-  LayoutBoxModelObject* target =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("target"));
+  auto* target = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("target"));
 
   GetDocument().View()->LayoutViewport()->ScrollBy(
       ScrollOffset(0, 25), mojom::blink::ScrollType::kUser);
@@ -133,8 +132,7 @@ TEST_F(CompositingInputsUpdaterTest,
      <div style="position: relative; width: 20px; height: 3000px"></div>
   )HTML");
 
-  LayoutBoxModelObject* target =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("target"));
+  auto* target = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("target"));
 
   GetDocument().View()->LayoutViewport()->ScrollBy(
       ScrollOffset(0, 25), mojom::blink::ScrollType::kUser);
@@ -168,12 +166,9 @@ TEST_F(CompositingInputsUpdaterTest, ClipPathAncestor) {
     </div>
   )HTML");
 
-  PaintLayer* parent =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("parent"))->Layer();
-  PaintLayer* child =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("child"))->Layer();
-  PaintLayer* grandchild =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("grandchild"))->Layer();
+  PaintLayer* parent = GetPaintLayerByElementId("parent");
+  PaintLayer* child = GetPaintLayerByElementId("child");
+  PaintLayer* grandchild = GetPaintLayerByElementId("grandchild");
 
   EXPECT_EQ(nullptr, parent->ClipPathAncestor());
   EXPECT_EQ(parent, child->ClipPathAncestor());
@@ -189,12 +184,9 @@ TEST_F(CompositingInputsUpdaterTest, MaskAncestor) {
     </div>
   )HTML");
 
-  PaintLayer* parent =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("parent"))->Layer();
-  PaintLayer* child =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("child"))->Layer();
-  PaintLayer* grandchild =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("grandchild"))->Layer();
+  PaintLayer* parent = GetPaintLayerByElementId("parent");
+  PaintLayer* child = GetPaintLayerByElementId("child");
+  PaintLayer* grandchild = GetPaintLayerByElementId("grandchild");
 
   EXPECT_EQ(nullptr, parent->MaskAncestor());
   EXPECT_EQ(parent, child->MaskAncestor());
@@ -212,15 +204,10 @@ TEST_F(CompositingInputsUpdaterTest, LayoutContainmentLayer) {
     </div>
   )HTML");
 
-  PaintLayer* parent =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("parent"))->Layer();
-  PaintLayer* child =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("child"))->Layer();
-  PaintLayer* grandchild =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("grandchild"))->Layer();
-  PaintLayer* greatgrandchild =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("greatgrandchild"))
-          ->Layer();
+  PaintLayer* parent = GetPaintLayerByElementId("parent");
+  PaintLayer* child = GetPaintLayerByElementId("child");
+  PaintLayer* grandchild = GetPaintLayerByElementId("grandchild");
+  PaintLayer* greatgrandchild = GetPaintLayerByElementId("greatgrandchild");
 
   EXPECT_EQ(parent, parent->NearestContainedLayoutLayer());
   EXPECT_EQ(parent, child->NearestContainedLayoutLayer());

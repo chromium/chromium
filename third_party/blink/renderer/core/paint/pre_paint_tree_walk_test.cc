@@ -44,11 +44,6 @@ class PrePaintTreeWalkTest : public PaintControllerPaintTest {
         ->ScrollTranslation();
   }
 
- protected:
-  PaintLayer* GetPaintLayerByElementId(const char* id) {
-    return ToLayoutBoxModelObject(GetLayoutObjectByElementId(id))->Layer();
-  }
-
  private:
   void SetUp() override {
     EnableCompositing();
@@ -159,9 +154,7 @@ TEST_P(PrePaintTreeWalkTest, ClearSubsequenceCachingClipChange) {
   )HTML");
 
   auto* parent = GetDocument().getElementById("parent");
-  auto* child = GetDocument().getElementById("child");
-  auto* child_paint_layer =
-      ToLayoutBoxModelObject(child->GetLayoutObject())->Layer();
+  auto* child_paint_layer = GetPaintLayerByElementId("child");
   EXPECT_FALSE(child_paint_layer->SelfNeedsRepaint());
   EXPECT_FALSE(child_paint_layer->NeedsPaintPhaseFloat());
 
@@ -185,9 +178,7 @@ TEST_P(PrePaintTreeWalkTest, ClearSubsequenceCachingClipChange2DTransform) {
   )HTML");
 
   auto* parent = GetDocument().getElementById("parent");
-  auto* child = GetDocument().getElementById("child");
-  auto* child_paint_layer =
-      ToLayoutBoxModelObject(child->GetLayoutObject())->Layer();
+  auto* child_paint_layer = GetPaintLayerByElementId("child");
   EXPECT_FALSE(child_paint_layer->SelfNeedsRepaint());
   EXPECT_FALSE(child_paint_layer->NeedsPaintPhaseFloat());
 
@@ -212,9 +203,7 @@ TEST_P(PrePaintTreeWalkTest, ClearSubsequenceCachingClipChangePosAbs) {
   )HTML");
 
   auto* parent = GetDocument().getElementById("parent");
-  auto* child = GetDocument().getElementById("child");
-  auto* child_paint_layer =
-      ToLayoutBoxModelObject(child->GetLayoutObject())->Layer();
+  auto* child_paint_layer = GetPaintLayerByElementId("child");
   EXPECT_FALSE(child_paint_layer->SelfNeedsRepaint());
   EXPECT_FALSE(child_paint_layer->NeedsPaintPhaseFloat());
 
@@ -241,9 +230,7 @@ TEST_P(PrePaintTreeWalkTest, ClearSubsequenceCachingClipChangePosFixed) {
   )HTML");
 
   auto* parent = GetDocument().getElementById("parent");
-  auto* child = GetDocument().getElementById("child");
-  auto* child_paint_layer =
-      ToLayoutBoxModelObject(child->GetLayoutObject())->Layer();
+  auto* child_paint_layer = GetPaintLayerByElementId("child");
   EXPECT_FALSE(child_paint_layer->SelfNeedsRepaint());
   EXPECT_FALSE(child_paint_layer->NeedsPaintPhaseFloat());
 
@@ -276,8 +263,7 @@ TEST_P(PrePaintTreeWalkTest, ClipChangeRepaintsDescendants) {
   GetDocument().getElementById("parent")->removeAttribute("style");
   UpdateAllLifecyclePhasesExceptPaint();
 
-  auto* greatgrandchild = GetLayoutObjectByElementId("greatgrandchild");
-  auto* paint_layer = ToLayoutBoxModelObject(greatgrandchild)->Layer();
+  auto* paint_layer = GetPaintLayerByElementId("greatgrandchild");
   EXPECT_TRUE(paint_layer->SelfNeedsRepaint());
 }
 
@@ -296,7 +282,7 @@ TEST_P(PrePaintTreeWalkTest, ClipChangeHasRadius) {
   )HTML");
 
   auto* target = GetDocument().getElementById("target");
-  auto* target_object = ToLayoutBoxModelObject(target->GetLayoutObject());
+  auto* target_object = To<LayoutBoxModelObject>(target->GetLayoutObject());
   target->setAttribute(html_names::kStyleAttr, "border-radius: 5px");
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(target_object->Layer()->SelfNeedsRepaint());

@@ -281,8 +281,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollExcludeScrollbars) {
   EXPECT_EQ(FloatRoundedRect(10, 10, 100, 100),
             overflow_clip->UnsnappedClipRect());
 
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"))->Layer();
+  PaintLayer* paint_layer = GetPaintLayerByElementId("scroller");
   EXPECT_TRUE(paint_layer->GetScrollableArea()
                   ->VerticalScrollbar()
                   ->IsOverlayScrollbar());
@@ -340,7 +339,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollExcludeScrollbarsSubpixel) {
   EXPECT_EQ(FloatRoundedRect(10, 10, 101, 100),
             overflow_clip->PixelSnappedClipRect());
 
-  EXPECT_TRUE(ToLayoutBox(scroller)
+  EXPECT_TRUE(To<LayoutBox>(scroller)
                   ->GetScrollableArea()
                   ->VerticalScrollbar()
                   ->IsOverlayScrollbar());
@@ -380,7 +379,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollVerticalRL) {
     </div>
   )HTML");
 
-  const auto* scroller = ToLayoutBox(GetLayoutObjectByElementId("scroller"));
+  const auto* scroller = GetLayoutBoxByElementId("scroller");
   const auto* content = GetLayoutObjectByElementId("content");
   const auto* properties = scroller->FirstFragment().PaintProperties();
   const auto* overflow_clip = properties->OverflowClip();
@@ -434,7 +433,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollRTL) {
     </div>
   )HTML");
 
-  const auto* scroller = ToLayoutBox(GetLayoutObjectByElementId("scroller"));
+  const auto* scroller = GetLayoutBoxByElementId("scroller");
   const auto* content = GetLayoutObjectByElementId("content");
   const auto* properties = scroller->FirstFragment().PaintProperties();
   const auto* overflow_clip = properties->OverflowClip();
@@ -517,7 +516,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollVerticalRLMulticol) {
   check_fragments();
 
   // Fragment geometries are not affected by parent scrolling.
-  ToLayoutBox(GetLayoutObjectByElementId("scroller"))
+  GetLayoutBoxByElementId("scroller")
       ->GetScrollableArea()
       ->ScrollBy(ScrollOffset(-100, 200), mojom::blink::ScrollType::kUser);
   UpdateAllLifecyclePhasesForTest();
@@ -3535,7 +3534,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowClipContentsTreeState) {
   )HTML");
 
   LayoutBoxModelObject* clipper =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("clipper"));
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("clipper"));
   const ObjectPaintProperties* clip_properties =
       clipper->FirstFragment().PaintProperties();
   LayoutObject* child = GetLayoutObjectByElementId("child");
@@ -3574,7 +3573,7 @@ TEST_P(PaintPropertyTreeBuilderTest, ReplacedSvgContentWithIsolation) {
   )HTML");
 
   LayoutBoxModelObject* svg =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("replacedsvg"));
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("replacedsvg"));
   const ObjectPaintProperties* svg_properties =
       svg->FirstFragment().PaintProperties();
 
@@ -3594,7 +3593,7 @@ TEST_P(PaintPropertyTreeBuilderTest, ReplacedContentTransformFlattening) {
     </svg>
   )HTML");
 
-  const auto* svg = ToLayoutBoxModelObject(GetLayoutObjectByElementId("svg"));
+  const auto* svg = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("svg"));
   const auto* svg_properties = svg->FirstFragment().PaintProperties();
 
   const auto* replaced_transform = svg_properties->ReplacedContentTransform();
@@ -3616,8 +3615,8 @@ TEST_P(PaintPropertyTreeBuilderTest, ContainPaintOrStyleLayoutTreeState) {
     )HTML",
                                     containment));
 
-    LayoutBoxModelObject* clipper =
-        ToLayoutBoxModelObject(GetLayoutObjectByElementId("clipper"));
+    auto* clipper =
+        To<LayoutBoxModelObject>(GetLayoutObjectByElementId("clipper"));
     const ObjectPaintProperties* clip_properties =
         clipper->FirstFragment().PaintProperties();
     LayoutObject* child = GetLayoutObjectByElementId("child");
@@ -3722,8 +3721,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollContentsTreeState) {
   Element* clipper_element = GetDocument().getElementById("clipper");
   clipper_element->scrollTo(1, 2);
 
-  LayoutBoxModelObject* clipper =
-      ToLayoutBoxModelObject(clipper_element->GetLayoutObject());
+  auto* clipper = To<LayoutBoxModelObject>(clipper_element->GetLayoutObject());
   const ObjectPaintProperties* clip_properties =
       clipper->FirstFragment().PaintProperties();
   LayoutObject* child = GetLayoutObjectByElementId("child");
@@ -3810,8 +3808,8 @@ TEST_P(PaintPropertyTreeBuilderTest, CssClipContentsTreeState) {
     </div>
   )HTML");
 
-  LayoutBoxModelObject* clipper =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("clipper"));
+  auto* clipper =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("clipper"));
   const ObjectPaintProperties* clip_properties =
       clipper->FirstFragment().PaintProperties();
   LayoutObject* child = GetLayoutObjectByElementId("child");
@@ -4247,9 +4245,9 @@ TEST_P(PaintPropertyTreeBuilderTest, PaintOffsetsUnderMultiColumnScrolled) {
     </div>
   )HTML");
 
-  LayoutObject* scroller = GetLayoutObjectByElementId("scroller");
-  ToLayoutBox(scroller)->GetScrollableArea()->ScrollBy(
-      ScrollOffset(0, 300), mojom::blink::ScrollType::kUser);
+  LayoutBox* scroller = GetLayoutBoxByElementId("scroller");
+  scroller->GetScrollableArea()->ScrollBy(ScrollOffset(0, 300),
+                                          mojom::blink::ScrollType::kUser);
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_EQ(FloatSize(8, 8), scroller->FirstFragment()
@@ -5032,8 +5030,8 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowClipSubpixelPosition) {
     </div>
   )HTML");
 
-  LayoutBoxModelObject* clipper =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("clipper"));
+  auto* clipper =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("clipper"));
   const ObjectPaintProperties* clip_properties =
       clipper->FirstFragment().PaintProperties();
 
@@ -5608,13 +5606,13 @@ TEST_P(PaintPropertyTreeBuilderTest,
   Element* opacity_element = GetDocument().getElementById("opacity");
   const auto* target = GetLayoutObjectByElementId("target");
 
-  EXPECT_FALSE(ToLayoutBoxModelObject(target)->Layer()->SelfNeedsRepaint());
+  EXPECT_FALSE(To<LayoutBoxModelObject>(target)->Layer()->SelfNeedsRepaint());
 
   opacity_element->setAttribute(html_names::kStyleAttr, "opacity: 0.5");
   UpdateAllLifecyclePhasesExceptPaint();
 
   EXPECT_TRUE(opacity_element->GetLayoutBox()->Layer()->SelfNeedsRepaint());
-  EXPECT_FALSE(ToLayoutBoxModelObject(target)->Layer()->SelfNeedsRepaint());
+  EXPECT_FALSE(To<LayoutBoxModelObject>(target)->Layer()->SelfNeedsRepaint());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, SVGRootWithMask) {
@@ -5786,7 +5784,7 @@ TEST_P(PaintPropertyTreeBuilderTest, ClipHitTestChangeDoesNotCauseFullRepaint) {
   CHECK(GetDocument().GetPage()->GetScrollbarTheme().UsesOverlayScrollbars());
   UpdateAllLifecyclePhasesForTest();
 
-  auto* child_layer = ToLayoutBox(GetLayoutObjectByElementId("child"))->Layer();
+  auto* child_layer = GetPaintLayerByElementId("child");
   EXPECT_FALSE(child_layer->SelfNeedsRepaint());
 
   GetDocument().body()->setAttribute(html_names::kClassAttr, "noscrollbars");
@@ -5804,7 +5802,7 @@ TEST_P(PaintPropertyTreeBuilderTest, ClipPathInheritanceWithoutMutation) {
     </div>
   )HTML");
 
-  auto* child = ToLayoutBox(GetLayoutObjectByElementId("child"));
+  auto* child = GetLayoutBoxByElementId("child");
   const auto& old_clip_state =
       child->FirstFragment().LocalBorderBoxProperties().Clip();
 
@@ -6157,7 +6155,7 @@ TEST_P(PaintPropertyTreeBuilderTest, PaintOffsetForTextareaWithResizer) {
     <textarea id="target"></textarea>
   )HTML");
 
-  const auto* box = ToLayoutBox(GetLayoutObjectByElementId("target"));
+  const auto* box = GetLayoutBoxByElementId("target");
   const auto& fragment = box->FirstFragment();
   ASSERT_TRUE(fragment.PaintProperties());
   EXPECT_NE(fragment.PaintProperties()->PaintOffsetTranslation(), nullptr);
@@ -6364,7 +6362,7 @@ TEST_P(PaintPropertyTreeBuilderTest, WillChangeOpacityInducesAnEffectNode) {
   div->setAttribute(html_names::kClassAttr, "transluscent");
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_FALSE(
-      ToLayoutBox(div->GetLayoutObject())->Layer()->SelfNeedsRepaint());
+      To<LayoutBox>(div->GetLayoutObject())->Layer()->SelfNeedsRepaint());
 
   ASSERT_TRUE(properties->Effect());
   EXPECT_FLOAT_EQ(properties->Effect()->Opacity(), 0.5f);

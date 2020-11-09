@@ -493,7 +493,7 @@ void NGTableSectionPainter::PaintBoxDecorationBackground(
   BoxDecorationData box_decoration_data(paint_info, fragment_);
   if (!box_decoration_data.ShouldPaint())
     return;
-  const LayoutBox& layout_section = *ToLayoutBox(fragment_.GetLayoutObject());
+  const auto& layout_section = *To<LayoutBox>(fragment_.GetLayoutObject());
   if (DrawingRecorder::UseCachedDrawingIfPossible(
           paint_info.context, layout_section, paint_info.phase))
     return;
@@ -538,7 +538,7 @@ void NGTableRowPainter::PaintBoxDecorationBackground(
   BoxDecorationData box_decoration_data(paint_info, fragment_);
   if (!box_decoration_data.ShouldPaint())
     return;
-  const LayoutBox& layout_row = *ToLayoutBox(fragment_.GetLayoutObject());
+  const auto& layout_row = *To<LayoutBox>(fragment_.GetLayoutObject());
   if (DrawingRecorder::UseCachedDrawingIfPossible(paint_info.context,
                                                   layout_row, paint_info.phase))
     return;

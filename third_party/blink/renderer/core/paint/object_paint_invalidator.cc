@@ -123,8 +123,8 @@ static void TraverseNonCompositingDescendantsInPaintOrder(
 static void SetPaintingLayerNeedsRepaintDuringTraverse(
     const LayoutObject& object) {
   if (object.HasLayer() &&
-      ToLayoutBoxModelObject(object).HasSelfPaintingLayer()) {
-    ToLayoutBoxModelObject(object).Layer()->SetNeedsRepaint();
+      To<LayoutBoxModelObject>(object).HasSelfPaintingLayer()) {
+    To<LayoutBoxModelObject>(object).Layer()->SetNeedsRepaint();
   } else if (object.IsFloating() && object.Parent() &&
              MayBeSkippedContainerForFloating(*object.Parent())) {
     // The following is for legacy layout only because LayoutNG allows an

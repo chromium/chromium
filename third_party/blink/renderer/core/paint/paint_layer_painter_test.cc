@@ -31,8 +31,7 @@ class PaintLayerPainterTest : public PaintControllerPaintTest {
     if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
       return;
 
-    PaintLayer* target_layer =
-        ToLayoutBox(GetLayoutObjectByElementId(element_name))->Layer();
+    PaintLayer* target_layer = GetPaintLayerByElementId(element_name);
     bool invisible = PaintLayerPainter::PaintedOutputInvisible(
         target_layer->GetLayoutObject().StyleRef());
     EXPECT_EQ(expected_invisible, invisible);
@@ -76,10 +75,10 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithBackgrounds) {
   auto* content2 = GetLayoutObjectByElementId("content2");
   auto* filler2 = GetLayoutObjectByElementId("filler2");
 
-  auto* container1_layer = ToLayoutBoxModelObject(container1)->Layer();
-  auto* filler1_layer = ToLayoutBoxModelObject(filler1)->Layer();
-  auto* container2_layer = ToLayoutBoxModelObject(container2)->Layer();
-  auto* filler2_layer = ToLayoutBoxModelObject(filler2)->Layer();
+  auto* container1_layer = To<LayoutBoxModelObject>(container1)->Layer();
+  auto* filler1_layer = To<LayoutBoxModelObject>(filler1)->Layer();
+  auto* container2_layer = To<LayoutBoxModelObject>(container2)->Layer();
+  auto* filler2_layer = To<LayoutBoxModelObject>(filler2)->Layer();
   auto chunk_state = GetLayoutView().FirstFragment().ContentsProperties();
 
   auto check_results = [&]() {
@@ -170,10 +169,10 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
 
-  auto* container_layer = ToLayoutBoxModelObject(container)->Layer();
-  auto* content_layer = ToLayoutBoxModelObject(content)->Layer();
-  auto* inner_content_layer = ToLayoutBoxModelObject(inner_content)->Layer();
-  auto* filler_layer = ToLayoutBoxModelObject(filler)->Layer();
+  auto* container_layer = To<LayoutBoxModelObject>(container)->Layer();
+  auto* content_layer = To<LayoutBoxModelObject>(content)->Layer();
+  auto* inner_content_layer = To<LayoutBoxModelObject>(inner_content)->Layer();
+  auto* filler_layer = To<LayoutBoxModelObject>(filler)->Layer();
 
   auto chunks = ContentPaintChunks();
   EXPECT_SUBSEQUENCE_FROM_CHUNK(*container_layer, chunks.begin() + 1, 4);
@@ -412,7 +411,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
     <div id="change" style="display: none"></div>
   )HTML");
 
-  const auto* target = ToLayoutBox(GetLayoutObjectByElementId("target"));
+  const auto* target = GetLayoutBoxByElementId("target");
   const auto* target_layer = target->Layer();
   const auto* content1 = GetLayoutObjectByElementId("content1");
   const auto* content2 = GetLayoutObjectByElementId("content2");
@@ -538,12 +537,12 @@ TEST_P(PaintLayerPainterTest, HintedPaintChunksWithBackgrounds) {
     </div>
   )HTML");
 
-  auto* container1 = ToLayoutBox(GetLayoutObjectByElementId("container1"));
-  auto* content1a = ToLayoutBox(GetLayoutObjectByElementId("content1a"));
-  auto* content1b = ToLayoutBox(GetLayoutObjectByElementId("content1b"));
-  auto* container2 = ToLayoutBox(GetLayoutObjectByElementId("container2"));
-  auto* content2a = ToLayoutBox(GetLayoutObjectByElementId("content2a"));
-  auto* content2b = ToLayoutBox(GetLayoutObjectByElementId("content2b"));
+  auto* container1 = GetLayoutBoxByElementId("container1");
+  auto* content1a = GetLayoutBoxByElementId("content1a");
+  auto* content1b = GetLayoutBoxByElementId("content1b");
+  auto* container2 = GetLayoutBoxByElementId("container2");
+  auto* content2a = GetLayoutBoxByElementId("content2a");
+  auto* content2b = GetLayoutBoxByElementId("content2b");
   auto chunk_state = GetLayoutView().FirstFragment().ContentsProperties();
 
   EXPECT_THAT(ContentDisplayItems(),
@@ -600,11 +599,11 @@ TEST_P(PaintLayerPainterTest, HintedPaintChunksWithoutBackgrounds) {
     </div>
   )HTML");
 
-  auto* container1 = ToLayoutBox(GetLayoutObjectByElementId("container1"));
-  auto* content1b = ToLayoutBox(GetLayoutObjectByElementId("content1b"));
-  auto* container2 = ToLayoutBox(GetLayoutObjectByElementId("container2"));
-  auto* content2a = ToLayoutBox(GetLayoutObjectByElementId("content2a"));
-  auto* content2b = ToLayoutBox(GetLayoutObjectByElementId("content2b"));
+  auto* container1 = GetLayoutBoxByElementId("container1");
+  auto* content1b = GetLayoutBoxByElementId("content1b");
+  auto* container2 = GetLayoutBoxByElementId("container2");
+  auto* content2a = GetLayoutBoxByElementId("content2a");
+  auto* content2b = GetLayoutBoxByElementId("content2b");
   auto chunk_state = GetLayoutView().FirstFragment().ContentsProperties();
 
   EXPECT_THAT(ContentDisplayItems(),
@@ -656,15 +655,12 @@ TEST_P(PaintLayerPainterTest, PaintPhaseOutline) {
       ->setAttribute(html_names::kStyleAttr, style_without_outline);
   UpdateAllLifecyclePhasesForTest();
 
-  LayoutBoxModelObject& self_painting_layer_object = *ToLayoutBoxModelObject(
+  auto& self_painting_layer_object = *To<LayoutBoxModelObject>(
       GetDocument().getElementById("self-painting-layer")->GetLayoutObject());
   PaintLayer& self_painting_layer = *self_painting_layer_object.Layer();
   ASSERT_TRUE(self_painting_layer.IsSelfPaintingLayer());
-  PaintLayer& non_self_painting_layer =
-      *ToLayoutBoxModelObject(GetDocument()
-                                  .getElementById("non-self-painting-layer")
-                                  ->GetLayoutObject())
-           ->Layer();
+  auto& non_self_painting_layer =
+      *GetPaintLayerByElementId("non-self-painting-layer");
   ASSERT_FALSE(non_self_painting_layer.IsSelfPaintingLayer());
   ASSERT_TRUE(&non_self_painting_layer == outline_div.EnclosingLayer());
 
@@ -725,15 +721,12 @@ TEST_P(PaintLayerPainterTest, PaintPhaseFloat) {
       ->setAttribute(html_names::kStyleAttr, style_without_float);
   UpdateAllLifecyclePhasesForTest();
 
-  LayoutBoxModelObject& self_painting_layer_object = *ToLayoutBoxModelObject(
+  auto& self_painting_layer_object = *To<LayoutBoxModelObject>(
       GetDocument().getElementById("self-painting-layer")->GetLayoutObject());
   PaintLayer& self_painting_layer = *self_painting_layer_object.Layer();
   ASSERT_TRUE(self_painting_layer.IsSelfPaintingLayer());
-  PaintLayer& non_self_painting_layer =
-      *ToLayoutBoxModelObject(GetDocument()
-                                  .getElementById("non-self-painting-layer")
-                                  ->GetLayoutObject())
-           ->Layer();
+  auto& non_self_painting_layer =
+      *GetPaintLayerByElementId("non-self-painting-layer");
   ASSERT_FALSE(non_self_painting_layer.IsSelfPaintingLayer());
   ASSERT_TRUE(&non_self_painting_layer == float_div.EnclosingLayer());
 
@@ -775,24 +768,17 @@ TEST_P(PaintLayerPainterTest, PaintPhaseFloatUnderInlineLayer) {
 
   LayoutObject& float_div =
       *GetDocument().getElementById("float")->GetLayoutObject();
-  LayoutBoxModelObject& span = *ToLayoutBoxModelObject(
-      GetDocument().getElementById("span")->GetLayoutObject());
-  PaintLayer& span_layer = *span.Layer();
+  PaintLayer& span_layer = *GetPaintLayerByElementId("span");
   ASSERT_TRUE(&span_layer == float_div.EnclosingLayer());
   if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     ASSERT_TRUE(span_layer.NeedsPaintPhaseFloat());
   } else {
     ASSERT_FALSE(span_layer.NeedsPaintPhaseFloat());
   }
-  LayoutBoxModelObject& self_painting_layer_object = *ToLayoutBoxModelObject(
-      GetDocument().getElementById("self-painting-layer")->GetLayoutObject());
-  PaintLayer& self_painting_layer = *self_painting_layer_object.Layer();
+  auto& self_painting_layer = *GetPaintLayerByElementId("self-painting-layer");
   ASSERT_TRUE(self_painting_layer.IsSelfPaintingLayer());
-  PaintLayer& non_self_painting_layer =
-      *ToLayoutBoxModelObject(GetDocument()
-                                  .getElementById("non-self-painting-layer")
-                                  ->GetLayoutObject())
-           ->Layer();
+  auto& non_self_painting_layer =
+      *GetPaintLayerByElementId("non-self-painting-layer");
   ASSERT_FALSE(non_self_painting_layer.IsSelfPaintingLayer());
 
   if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
@@ -819,12 +805,12 @@ TEST_P(PaintLayerPainterTest, PaintPhasesUpdateOnLayerAddition) {
     </div>
   )HTML");
 
-  LayoutBoxModelObject& layer_div = *ToLayoutBoxModelObject(
+  auto& layer_div = *To<LayoutBoxModelObject>(
       GetDocument().getElementById("will-be-layer")->GetLayoutObject());
   EXPECT_FALSE(layer_div.HasLayer());
 
   PaintLayer& html_layer =
-      *ToLayoutBoxModelObject(
+      *To<LayoutBoxModelObject>(
            GetDocument().documentElement()->GetLayoutObject())
            ->Layer();
   EXPECT_TRUE(html_layer.NeedsPaintPhaseDescendantOutlines());
@@ -852,13 +838,13 @@ TEST_P(PaintLayerPainterTest, PaintPhasesUpdateOnBecomingSelfPainting) {
     </div>
   )HTML");
 
-  LayoutBoxModelObject& layer_div = *ToLayoutBoxModelObject(
-      GetDocument().getElementById("will-be-self-painting")->GetLayoutObject());
+  auto& layer_div = *To<LayoutBoxModelObject>(
+      GetLayoutObjectByElementId("will-be-self-painting"));
   ASSERT_TRUE(layer_div.HasLayer());
   EXPECT_FALSE(layer_div.Layer()->IsSelfPaintingLayer());
 
   PaintLayer& html_layer =
-      *ToLayoutBoxModelObject(
+      *To<LayoutBoxModelObject>(
            GetDocument().documentElement()->GetLayoutObject())
            ->Layer();
   EXPECT_TRUE(html_layer.NeedsPaintPhaseDescendantOutlines());
@@ -885,17 +871,15 @@ TEST_P(PaintLayerPainterTest, PaintPhasesUpdateOnBecomingNonSelfPainting) {
     </div>
   )HTML");
 
-  LayoutBoxModelObject& layer_div =
-      *ToLayoutBoxModelObject(GetDocument()
-                                  .getElementById("will-be-non-self-painting")
-                                  ->GetLayoutObject());
+  auto& layer_div = *To<LayoutBoxModelObject>(
+      GetLayoutObjectByElementId("will-be-non-self-painting"));
   ASSERT_TRUE(layer_div.HasLayer());
   PaintLayer& layer = *layer_div.Layer();
   EXPECT_TRUE(layer.IsSelfPaintingLayer());
   EXPECT_TRUE(layer.NeedsPaintPhaseDescendantOutlines());
 
   PaintLayer& html_layer =
-      *ToLayoutBoxModelObject(
+      *To<LayoutBoxModelObject>(
            GetDocument().documentElement()->GetLayoutObject())
            ->Layer();
   EXPECT_FALSE(html_layer.NeedsPaintPhaseDescendantOutlines());
@@ -1164,7 +1148,7 @@ TEST_P(PaintLayerPainterTestCAP, WholeDocumentCullRect) {
                            kBackgroundType),
                   IsSameId(GetDisplayItemClientFromElementId("scroll"),
                            kBackgroundType),
-                  IsSameId(&ToLayoutBox(GetLayoutObjectByElementId("scroll"))
+                  IsSameId(&GetLayoutBoxByElementId("scroll")
                                 ->GetScrollableArea()
                                 ->GetScrollingBackgroundDisplayItemClient(),
                            kBackgroundType),

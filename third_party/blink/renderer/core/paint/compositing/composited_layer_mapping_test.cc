@@ -186,9 +186,7 @@ TEST_F(CompositedLayerMappingTest, SimpleInterestRect) {
       "transform'></div>");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* element = GetDocument().getElementById("target");
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(element->GetLayoutObject())->Layer();
+  PaintLayer* paint_layer = GetPaintLayerByElementId("target");
   ASSERT_TRUE(paint_layer->GraphicsLayerBacking());
   ASSERT_TRUE(paint_layer->GetCompositedLayerMapping());
   EXPECT_EQ(IntRect(0, 0, 200, 200),
@@ -201,9 +199,7 @@ TEST_F(CompositedLayerMappingTest, TallLayerInterestRect) {
       "transform'></div>");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* element = GetDocument().getElementById("target");
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(element->GetLayoutObject())->Layer();
+  PaintLayer* paint_layer = GetPaintLayerByElementId("target");
   ASSERT_TRUE(paint_layer->GraphicsLayerBacking());
   // Screen-space visible content rect is [8, 8, 200, 600]. Mapping back to
   // local, adding 4000px in all directions, then clipping, yields this rect.
@@ -224,9 +220,7 @@ TEST_F(CompositedLayerMappingTest, TallCompositedScrolledLayerInterestRect) {
       ScrollOffset(0, 8000), mojom::blink::ScrollType::kProgrammatic);
   UpdateAllLifecyclePhasesForTest();
 
-  Element* element = GetDocument().getElementById("target");
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(element->GetLayoutObject())->Layer();
+  PaintLayer* paint_layer = GetPaintLayerByElementId("target");
   ASSERT_TRUE(paint_layer->GraphicsLayerBacking());
   EXPECT_EQ(IntRect(0, 2992, 200, 7008),
             RecomputeInterestRect(paint_layer->GraphicsLayerBacking()));
@@ -256,9 +250,7 @@ TEST_F(CompositedLayerMappingTest, TallLayerWholeDocumentInterestRect) {
   GetDocument().GetSettings()->SetMainFrameClipsContent(false);
 
   UpdateAllLifecyclePhasesForTest();
-  Element* element = GetDocument().getElementById("target");
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(element->GetLayoutObject())->Layer();
+  PaintLayer* paint_layer = GetPaintLayerByElementId("target");
   ASSERT_TRUE(paint_layer->GraphicsLayerBacking());
   ASSERT_TRUE(paint_layer->GetCompositedLayerMapping());
   // Clipping is disabled in recomputeInterestRect.
@@ -297,9 +289,7 @@ TEST_F(CompositedLayerMappingTest, RotatedInterestRect) {
       "transform; transform: rotateZ(45deg)'></div>");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* element = GetDocument().getElementById("target");
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(element->GetLayoutObject())->Layer();
+  PaintLayer* paint_layer = GetPaintLayerByElementId("target");
   ASSERT_TRUE(!!paint_layer->GraphicsLayerBacking());
   EXPECT_EQ(IntRect(0, 0, 200, 200),
             RecomputeInterestRect(paint_layer->GraphicsLayerBacking()));
@@ -311,9 +301,7 @@ TEST_F(CompositedLayerMappingTest, RotatedInterestRectNear90Degrees) {
       "transform; transform: rotateY(89.9999deg)'></div>");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* element = GetDocument().getElementById("target");
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(element->GetLayoutObject())->Layer();
+  PaintLayer* paint_layer = GetPaintLayerByElementId("target");
   ASSERT_TRUE(!!paint_layer->GraphicsLayerBacking());
   // Because the layer is rotated to almost 90 degrees, floating-point error
   // leads to a reverse-projected rect that is much much larger than the
@@ -361,9 +349,7 @@ TEST_F(CompositedLayerMappingTest, LargeScaleInterestRect) {
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* element = GetDocument().getElementById("target");
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(element->GetLayoutObject())->Layer();
+  PaintLayer* paint_layer = GetPaintLayerByElementId("target");
   ASSERT_TRUE(!!paint_layer->GraphicsLayerBacking());
   EXPECT_EQ(IntRect(0, 0, 1920, 5300),
             RecomputeInterestRect(paint_layer->GraphicsLayerBacking()));
@@ -378,9 +364,7 @@ TEST_F(CompositedLayerMappingTest, PerspectiveInterestRect) {
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* element = GetDocument().getElementById("target");
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(element->GetLayoutObject())->Layer();
+  PaintLayer* paint_layer = GetPaintLayerByElementId("target");
   ASSERT_TRUE(!!paint_layer->GraphicsLayerBacking());
   EXPECT_EQ(IntRect(0, 0, 1202, 837),
             RecomputeInterestRect(paint_layer->GraphicsLayerBacking()));
@@ -414,9 +398,7 @@ TEST_F(CompositedLayerMappingTest, RotationInterestRect) {
   GetFrame().View()->Resize(2000, 3000);
 
   UpdateAllLifecyclePhasesForTest();
-  Element* element = GetDocument().getElementById("target");
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(element->GetLayoutObject())->Layer();
+  PaintLayer* paint_layer = GetPaintLayerByElementId("target");
   ASSERT_TRUE(!!paint_layer->GraphicsLayerBacking());
   EXPECT_EQ(IntRect(0, 0, 3000, 100),
             RecomputeInterestRect(paint_layer->GraphicsLayerBacking()));
@@ -431,9 +413,7 @@ TEST_F(CompositedLayerMappingTest, 3D90DegRotatedTallInterestRect) {
       "transform; transform: rotateY(90deg)'></div>");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* element = GetDocument().getElementById("target");
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(element->GetLayoutObject())->Layer();
+  PaintLayer* paint_layer = GetPaintLayerByElementId("target");
   ASSERT_TRUE(!!paint_layer->GraphicsLayerBacking());
   EXPECT_EQ(IntRect(0, 0, 200, 4000),
             RecomputeInterestRect(paint_layer->GraphicsLayerBacking()));
@@ -445,9 +425,7 @@ TEST_F(CompositedLayerMappingTest, 3D45DegRotatedTallInterestRect) {
       "transform; transform: rotateY(45deg)'></div>");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* element = GetDocument().getElementById("target");
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(element->GetLayoutObject())->Layer();
+  PaintLayer* paint_layer = GetPaintLayerByElementId("target");
   ASSERT_TRUE(!!paint_layer->GraphicsLayerBacking());
   EXPECT_EQ(IntRect(0, 0, 200, 6226),
             RecomputeInterestRect(paint_layer->GraphicsLayerBacking()));
@@ -459,9 +437,7 @@ TEST_F(CompositedLayerMappingTest, RotatedTallInterestRect) {
       "transform; transform: rotateZ(45deg)'></div>");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* element = GetDocument().getElementById("target");
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(element->GetLayoutObject())->Layer();
+  PaintLayer* paint_layer = GetPaintLayerByElementId("target");
   ASSERT_TRUE(!!paint_layer->GraphicsLayerBacking());
   EXPECT_EQ(IntRect(0, 0, 200, 4000),
             RecomputeInterestRect(paint_layer->GraphicsLayerBacking()));
@@ -473,9 +449,7 @@ TEST_F(CompositedLayerMappingTest, WideLayerInterestRect) {
       "transform'></div>");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* element = GetDocument().getElementById("target");
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(element->GetLayoutObject())->Layer();
+  PaintLayer* paint_layer = GetPaintLayerByElementId("target");
   ASSERT_TRUE(!!paint_layer->GraphicsLayerBacking());
   // Screen-space visible content rect is [8, 8, 800, 200] (the screen is
   // 800x600).  Mapping back to local, adding 4000px in all directions, then
@@ -490,9 +464,7 @@ TEST_F(CompositedLayerMappingTest, FixedPositionInterestRect) {
       "transform; position: fixed; top: 100px; left: 200px;'></div>");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* element = GetDocument().getElementById("target");
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(element->GetLayoutObject())->Layer();
+  PaintLayer* paint_layer = GetPaintLayerByElementId("target");
   ASSERT_TRUE(!!paint_layer->GraphicsLayerBacking());
   EXPECT_EQ(IntRect(0, 0, 300, 400),
             RecomputeInterestRect(paint_layer->GraphicsLayerBacking()));
@@ -506,9 +478,7 @@ TEST_F(CompositedLayerMappingTest, LayerOffscreenInterestRect) {
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* element = GetDocument().getElementById("target");
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(element->GetLayoutObject())->Layer();
+  PaintLayer* paint_layer = GetPaintLayerByElementId("target");
   ASSERT_TRUE(!!paint_layer->GraphicsLayerBacking());
   // Offscreen layers are painted as usual.
   EXPECT_EQ(IntRect(0, 0, 200, 200),
@@ -526,9 +496,7 @@ TEST_F(CompositedLayerMappingTest, ScrollingLayerInterestRect) {
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* element = GetDocument().getElementById("target");
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(element->GetLayoutObject())->Layer();
+  PaintLayer* paint_layer = GetPaintLayerByElementId("target");
   ASSERT_TRUE(paint_layer->GraphicsLayerBacking());
   // Offscreen layers are painted as usual.
   ASSERT_TRUE(
@@ -550,9 +518,7 @@ TEST_F(CompositedLayerMappingTest, ClippedBigLayer) {
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* element = GetDocument().getElementById("target");
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(element->GetLayoutObject())->Layer();
+  PaintLayer* paint_layer = GetPaintLayerByElementId("target");
   ASSERT_TRUE(paint_layer->GraphicsLayerBacking());
   // Offscreen layers are painted as usual.
   EXPECT_EQ(IntRect(0, 0, 4001, 4001),
@@ -1102,7 +1068,7 @@ TEST_F(CompositedLayerMappingTest,
 
   Element* element = GetDocument().getElementById("target");
   PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(element->GetLayoutObject())->Layer();
+      To<LayoutBoxModelObject>(element->GetLayoutObject())->Layer();
   ASSERT_TRUE(paint_layer);
 
   // Decoration outline layer is created when composited scrolling.
@@ -1115,7 +1081,7 @@ TEST_F(CompositedLayerMappingTest,
   // No decoration outline layer is created when not composited scrolling.
   element->setAttribute(html_names::kStyleAttr, "overflow: visible;");
   UpdateAllLifecyclePhasesForTest();
-  paint_layer = ToLayoutBoxModelObject(element->GetLayoutObject())->Layer();
+  paint_layer = To<LayoutBoxModelObject>(element->GetLayoutObject())->Layer();
   ASSERT_TRUE(paint_layer);
 
   mapping = paint_layer->GetCompositedLayerMapping();
@@ -1139,7 +1105,7 @@ TEST_F(CompositedLayerMappingTest,
 
   Element* scroller = GetDocument().getElementById("scroller");
   PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(scroller->GetLayoutObject())->Layer();
+      To<LayoutBoxModelObject>(scroller->GetLayoutObject())->Layer();
   ASSERT_TRUE(paint_layer);
 
   CompositedLayerMapping* mapping = paint_layer->GetCompositedLayerMapping();
@@ -1149,7 +1115,7 @@ TEST_F(CompositedLayerMappingTest,
   // with an outline drawn over the composited scrolling region.
   scroller->setAttribute(html_names::kStyleAttr, "outline-offset: -2px;");
   UpdateAllLifecyclePhasesForTest();
-  paint_layer = ToLayoutBoxModelObject(scroller->GetLayoutObject())->Layer();
+  paint_layer = To<LayoutBoxModelObject>(scroller->GetLayoutObject())->Layer();
   ASSERT_TRUE(paint_layer);
 
   mapping = paint_layer->GetCompositedLayerMapping();
@@ -1160,7 +1126,7 @@ TEST_F(CompositedLayerMappingTest,
   // will not be covered up by the outline.
   scroller->removeAttribute(html_names::kStyleAttr);
   UpdateAllLifecyclePhasesForTest();
-  paint_layer = ToLayoutBoxModelObject(scroller->GetLayoutObject())->Layer();
+  paint_layer = To<LayoutBoxModelObject>(scroller->GetLayoutObject())->Layer();
   ASSERT_TRUE(paint_layer);
 
   mapping = paint_layer->GetCompositedLayerMapping();
@@ -1182,15 +1148,14 @@ TEST_F(CompositedLayerMappingTest, StickyPositionMainThreadOffset) {
       </div></div></div>
   )HTML");
 
-  PaintLayer* sticky_layer =
-      ToLayoutBox(GetLayoutObjectByElementId("sticky"))->Layer();
+  PaintLayer* sticky_layer = GetPaintLayerByElementId("sticky");
   CompositedLayerMapping* sticky_mapping =
       sticky_layer->GetCompositedLayerMapping();
   ASSERT_TRUE(sticky_mapping);
 
   // Now scroll the page - this should increase the main thread offset.
   LayoutBoxModelObject* scroller =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   scrollable_area->ScrollToAbsolutePosition(
       FloatPoint(scrollable_area->ScrollPosition().X(), 100));
@@ -1251,7 +1216,7 @@ TEST_F(CompositedLayerMappingTest,
   )HTML");
 
   LayoutBoxModelObject* sticky =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("sticky"));
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("sticky"));
   CompositedLayerMapping* mapping =
       sticky->Layer()->GetCompositedLayerMapping();
   ASSERT_TRUE(mapping);
@@ -1354,8 +1319,8 @@ TEST_F(CompositedLayerMappingTest, ScrollingContainerBoundsChange) {
 
   UpdateAllLifecyclePhasesForTest();
   Element* scrollerElement = GetDocument().getElementById("scroller");
-  LayoutBoxModelObject* scroller =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
 
   cc::Layer* scrolling_layer = scrollable_area->LayerForScrolling();
@@ -1434,9 +1399,8 @@ TEST_F(CompositedLayerMappingTest, ScrollLayerSizingSubpixelAccumulation) {
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  auto* mapping = ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"))
-                      ->Layer()
-                      ->GetCompositedLayerMapping();
+  auto* mapping =
+      GetPaintLayerByElementId("scroller")->GetCompositedLayerMapping();
   ASSERT_TRUE(mapping);
   ASSERT_TRUE(mapping->ScrollingContentsLayer());
   EXPECT_EQ(gfx::Size(200, 200), mapping->MainGraphicsLayer()->Size());
@@ -1454,8 +1418,7 @@ TEST_F(CompositedLayerMappingTest, SquashingScrollInterestRect) {
         style='width: 200px; height: 6000px; top: -200px; position: relative;'></div>
   )HTML");
 
-  auto* squashed =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("squashed"))->Layer();
+  auto* squashed = GetPaintLayerByElementId("squashed");
   EXPECT_EQ(kPaintsIntoGroupedBacking, squashed->GetCompositingState());
 
   GetDocument().View()->LayoutViewport()->ScrollBy(
@@ -1483,12 +1446,10 @@ TEST_F(CompositedLayerMappingTest,
   auto* scroller = scroller_element->GetLayoutObject();
   EXPECT_EQ(kPaintsIntoOwnBacking, scroller->GetCompositingState());
 
-  auto* squashing =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("squashing"))->Layer();
+  auto* squashing = GetPaintLayerByElementId("squashing");
   EXPECT_EQ(kPaintsIntoOwnBacking, squashing->GetCompositingState());
 
-  auto* squashed =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("squashed"))->Layer();
+  auto* squashed = GetPaintLayerByElementId("squashed");
   EXPECT_EQ(kPaintsIntoGroupedBacking, squashed->GetCompositingState());
 
   scroller_element->setScrollTop(300);
@@ -1517,8 +1478,7 @@ TEST_F(CompositedLayerMappingTest, ContentsNotOpaqueWithForegroundLayer) {
       <div style='background: blue'></div>
     </div>
     )HTML");
-  PaintLayer* target_layer =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("target"))->Layer();
+  PaintLayer* target_layer = GetPaintLayerByElementId("target");
   CompositedLayerMapping* mapping = target_layer->GetCompositedLayerMapping();
   EXPECT_TRUE(mapping->ForegroundLayer());
   EXPECT_FALSE(mapping->MainGraphicsLayer()->ContentsOpaque());
@@ -1537,8 +1497,7 @@ TEST_F(CompositedLayerMappingTest, EmptyBoundsDoesntDrawContent) {
     <div id='target' style='will-change: transform; background: blue'>
     </div>
     )HTML");
-  PaintLayer* target_layer =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("target"))->Layer();
+  PaintLayer* target_layer = GetPaintLayerByElementId("target");
   CompositedLayerMapping* mapping = target_layer->GetCompositedLayerMapping();
   EXPECT_FALSE(mapping->MainGraphicsLayer()->DrawsContent());
 }
@@ -1547,7 +1506,7 @@ TEST_F(CompositedLayerMappingTest, TouchActionRectsWithoutContent) {
   SetBodyInnerHTML(
       "<div id='target' style='will-change: transform; width: 100px;"
       "    height: 100px; touch-action: none;'></div>");
-  auto* box = ToLayoutBoxModelObject(GetLayoutObjectByElementId("target"));
+  auto* box = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("target"));
   auto* mapping = box->Layer()->GetCompositedLayerMapping();
 
   const auto& layer = mapping->MainGraphicsLayer()->CcLayer();
@@ -1576,8 +1535,7 @@ TEST_F(CompositedLayerMappingTest, ContentsOpaque) {
       <div style='background: blue'></div>
     </div>
     )HTML");
-  PaintLayer* target_layer =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("target"))->Layer();
+  PaintLayer* target_layer = GetPaintLayerByElementId("target");
   CompositedLayerMapping* mapping = target_layer->GetCompositedLayerMapping();
   EXPECT_FALSE(mapping->ForegroundLayer());
   EXPECT_TRUE(mapping->MainGraphicsLayer()->ContentsOpaque());
@@ -1586,9 +1544,7 @@ TEST_F(CompositedLayerMappingTest, ContentsOpaque) {
 TEST_F(CompositedLayerMappingTest, NullOverflowControlLayers) {
   SetHtmlInnerHTML("<div id='target' style='will-change: transform'></div>");
   CompositedLayerMapping* mapping =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("target"))
-          ->Layer()
-          ->GetCompositedLayerMapping();
+      GetPaintLayerByElementId("target")->GetCompositedLayerMapping();
   EXPECT_FALSE(mapping->LayerForHorizontalScrollbar());
   EXPECT_FALSE(mapping->LayerForVerticalScrollbar());
   EXPECT_FALSE(mapping->LayerForScrollCorner());
@@ -1614,8 +1570,7 @@ TEST_F(CompositedLayerMappingTest, CompositedHiddenAnimatingLayer) {
     <div id="animated"></div>
   )HTML");
 
-  PaintLayer* animated =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("animated"))->Layer();
+  PaintLayer* animated = GetPaintLayerByElementId("animated");
   CompositedLayerMapping* mapping = animated->GetCompositedLayerMapping();
   ASSERT_TRUE(mapping);
   EXPECT_TRUE(mapping->MainGraphicsLayer()->GetCompositingReasons() &
@@ -1662,8 +1617,7 @@ TEST_F(CompositedLayerMappingTest,
     <div id="uncorrelated"></div>
   )HTML");
 
-  PaintLayer* scroller =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"))->Layer();
+  PaintLayer* scroller = GetPaintLayerByElementId("scroller");
 
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
@@ -1743,7 +1697,7 @@ TEST_F(CompositedLayerMappingTest, IsolationClippingContainer) {
 
   auto* squash_container_a = GetDocument().getElementById("squash_container_a");
   PaintLayer* squash_container_a_layer =
-      ToLayoutBoxModelObject(squash_container_a->GetLayoutObject())->Layer();
+      To<LayoutBoxModelObject>(squash_container_a->GetLayoutObject())->Layer();
   EXPECT_EQ(squash_container_a_layer->ClippingContainer(), isolation_a_object);
 }
 
@@ -1767,9 +1721,9 @@ TEST_F(CompositedLayerMappingTest, SquashIntoScrollingContents) {
     </div>
   )HTML");
 
-  auto* scroller = ToLayoutBox(GetLayoutObjectByElementId("scroller"))->Layer();
-  auto* target1 = ToLayoutBox(GetLayoutObjectByElementId("target1"))->Layer();
-  auto* target2 = ToLayoutBox(GetLayoutObjectByElementId("target2"))->Layer();
+  auto* scroller = GetPaintLayerByElementId("scroller");
+  auto* target1 = GetPaintLayerByElementId("target1");
+  auto* target2 = GetPaintLayerByElementId("target2");
 
   auto* scroller_mapping = scroller->GetCompositedLayerMapping();
   ASSERT_TRUE(scroller_mapping);
@@ -1817,7 +1771,7 @@ TEST_F(CompositedLayerMappingTest,
 
   auto* container_element = GetDocument().getElementById("container");
   auto* container = container_element->GetLayoutBox()->Layer();
-  auto* squashed = ToLayoutBox(GetLayoutObjectByElementId("squashed"))->Layer();
+  auto* squashed = GetPaintLayerByElementId("squashed");
   auto* mapping = container->GetCompositedLayerMapping();
   ASSERT_TRUE(mapping);
   EXPECT_EQ(mapping, squashed->GroupedMapping());
@@ -1860,9 +1814,7 @@ TEST_F(CompositedLayerMappingTest, WillChangeTransformHintOnSVG) {
     </svg>
   )HTML");
 
-  Element* svg = GetDocument().getElementById("willChange");
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(svg->GetLayoutObject())->Layer();
+  PaintLayer* paint_layer = GetPaintLayerByElementId("willChange");
   GraphicsLayer* graphics_layer = paint_layer->GraphicsLayerBacking();
   EXPECT_FALSE(graphics_layer->ShouldCreateLayersAfterPaint());
 }
@@ -1879,7 +1831,7 @@ TEST_F(CompositedLayerMappingTest, WillChangeTransformHintInSVGChanged) {
 
   Element* svg = GetDocument().getElementById("svg");
   PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(svg->GetLayoutObject())->Layer();
+      To<LayoutBoxModelObject>(svg->GetLayoutObject())->Layer();
   EXPECT_FALSE(
       paint_layer->GraphicsLayerBacking()->ShouldCreateLayersAfterPaint());
 
@@ -1898,7 +1850,7 @@ TEST_F(CompositedLayerMappingTest, WillChangeTransformHintInSVGChanged) {
   // z-index just ensures a paint layer exists so the test is similar.
   svg->setAttribute(html_names::kStyleAttr, "z-index: 5;");
   UpdateAllLifecyclePhasesForTest();
-  paint_layer = ToLayoutBoxModelObject(svg->GetLayoutObject())->Layer();
+  paint_layer = To<LayoutBoxModelObject>(svg->GetLayoutObject())->Layer();
   EXPECT_FALSE(paint_layer->GraphicsLayerBacking());
 
   rect->setAttribute(html_names::kStyleAttr, "will-change: transform;");

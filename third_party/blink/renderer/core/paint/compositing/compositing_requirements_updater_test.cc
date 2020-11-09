@@ -42,8 +42,7 @@ TEST_F(CompositingRequirementsUpdaterTest,
     <div id=target></div>
   )HTML");
 
-  PaintLayer* target =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("target"))->Layer();
+  PaintLayer* target = GetPaintLayerByElementId("target");
   EXPECT_FALSE(target->GetCompositingReasons());
 
   // Now make |target| self-painting.
@@ -78,8 +77,7 @@ TEST_F(CompositingRequirementsUpdaterTest,
     <div id=squashed></div>
   )HTML");
 
-  PaintLayer* squashed =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("squashed"))->Layer();
+  PaintLayer* squashed = GetPaintLayerByElementId("squashed");
   EXPECT_EQ(kPaintsIntoGroupedBacking, squashed->GetCompositingState());
 
   GetDocument().View()->SetTracksRasterInvalidations(true);
@@ -123,75 +121,72 @@ TEST_F(CompositingRequirementsUpdaterTest, NonTrivial3DTransforms) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  const auto* transform_3d = GetLayoutObjectByElementId("3d-transform");
+  const auto* transform_3d = GetLayoutBoxByElementId("3d-transform");
   EXPECT_TRUE(transform_3d->StyleRef().HasNonTrivial3DTransformOperation());
   EXPECT_TRUE(CompositingReason::k3DTransform &
-              ToLayoutBox(transform_3d)->Layer()->GetCompositingReasons());
-  const auto* transform_2d = GetLayoutObjectByElementId("2d-transform");
+              transform_3d->Layer()->GetCompositingReasons());
+  const auto* transform_2d = GetLayoutBoxByElementId("2d-transform");
   EXPECT_FALSE(transform_2d->StyleRef().HasNonTrivial3DTransformOperation());
   EXPECT_TRUE(CompositingReason::kTrivial3DTransform &
-              ToLayoutBox(transform_2d)->Layer()->GetCompositingReasons());
+              transform_2d->Layer()->GetCompositingReasons());
 
   const auto* transform_3d_translate_z =
-      GetLayoutObjectByElementId("3d-transform-translate-z");
+      GetLayoutBoxByElementId("3d-transform-translate-z");
   EXPECT_TRUE(
       transform_3d_translate_z->StyleRef().HasNonTrivial3DTransformOperation());
-  EXPECT_TRUE(
-      CompositingReason::k3DTransform &
-      ToLayoutBox(transform_3d_translate_z)->Layer()->GetCompositingReasons());
+  EXPECT_TRUE(CompositingReason::k3DTransform &
+              transform_3d_translate_z->Layer()->GetCompositingReasons());
   const auto* transform_2d_translate_z =
-      GetLayoutObjectByElementId("2d-transform-translate-z");
+      GetLayoutBoxByElementId("2d-transform-translate-z");
   EXPECT_FALSE(
       transform_2d_translate_z->StyleRef().HasNonTrivial3DTransformOperation());
-  EXPECT_TRUE(
-      CompositingReason::kTrivial3DTransform &
-      ToLayoutBox(transform_2d_translate_z)->Layer()->GetCompositingReasons());
+  EXPECT_TRUE(CompositingReason::kTrivial3DTransform &
+              transform_2d_translate_z->Layer()->GetCompositingReasons());
   const auto* transform_2d_translate_x =
-      GetLayoutObjectByElementId("2d-transform-translate-x");
+      GetLayoutBoxByElementId("2d-transform-translate-x");
   EXPECT_FALSE(
       transform_2d_translate_x->StyleRef().HasNonTrivial3DTransformOperation());
-  EXPECT_FALSE(
-      ToLayoutBox(transform_2d_translate_x)->Layer()->GetCompositingReasons());
+  EXPECT_FALSE(transform_2d_translate_x->Layer()->GetCompositingReasons());
 
-  const auto* xform_rot_x_3d = GetLayoutObjectByElementId("3d-transform-rot-x");
+  const auto* xform_rot_x_3d = GetLayoutBoxByElementId("3d-transform-rot-x");
   EXPECT_TRUE(xform_rot_x_3d->StyleRef().HasNonTrivial3DTransformOperation());
   EXPECT_TRUE(CompositingReason::k3DTransform &
-              ToLayoutBox(xform_rot_x_3d)->Layer()->GetCompositingReasons());
-  const auto* xform_rot_x_2d = GetLayoutObjectByElementId("2d-transform-rot-x");
+              xform_rot_x_3d->Layer()->GetCompositingReasons());
+  const auto* xform_rot_x_2d = GetLayoutBoxByElementId("2d-transform-rot-x");
   EXPECT_FALSE(xform_rot_x_2d->StyleRef().HasNonTrivial3DTransformOperation());
   EXPECT_TRUE(CompositingReason::kTrivial3DTransform &
-              ToLayoutBox(xform_rot_x_2d)->Layer()->GetCompositingReasons());
-  const auto* xform_rot_z_2d = GetLayoutObjectByElementId("2d-transform-rot-z");
+              xform_rot_x_2d->Layer()->GetCompositingReasons());
+  const auto* xform_rot_z_2d = GetLayoutBoxByElementId("2d-transform-rot-z");
   EXPECT_FALSE(xform_rot_z_2d->StyleRef().HasNonTrivial3DTransformOperation());
-  EXPECT_FALSE(ToLayoutBox(xform_rot_z_2d)->Layer()->GetCompositingReasons());
+  EXPECT_FALSE(xform_rot_z_2d->Layer()->GetCompositingReasons());
 
-  const auto* rotation_y_3d = GetLayoutObjectByElementId("3d-rotation-y");
+  const auto* rotation_y_3d = GetLayoutBoxByElementId("3d-rotation-y");
   EXPECT_TRUE(rotation_y_3d->StyleRef().HasNonTrivial3DTransformOperation());
   EXPECT_TRUE(CompositingReason::k3DTransform &
-              ToLayoutBox(rotation_y_3d)->Layer()->GetCompositingReasons());
-  const auto* rotation_y_2d = GetLayoutObjectByElementId("2d-rotation-y");
+              rotation_y_3d->Layer()->GetCompositingReasons());
+  const auto* rotation_y_2d = GetLayoutBoxByElementId("2d-rotation-y");
   EXPECT_FALSE(rotation_y_2d->StyleRef().HasNonTrivial3DTransformOperation());
   EXPECT_TRUE(CompositingReason::kTrivial3DTransform &
-              ToLayoutBox(rotation_y_2d)->Layer()->GetCompositingReasons());
-  const auto* rotation_z_2d = GetLayoutObjectByElementId("2d-rotation-z");
+              rotation_y_2d->Layer()->GetCompositingReasons());
+  const auto* rotation_z_2d = GetLayoutBoxByElementId("2d-rotation-z");
   EXPECT_FALSE(rotation_z_2d->StyleRef().HasNonTrivial3DTransformOperation());
-  EXPECT_FALSE(ToLayoutBox(rotation_z_2d)->Layer()->GetCompositingReasons());
+  EXPECT_FALSE(rotation_z_2d->Layer()->GetCompositingReasons());
 
-  const auto* translation_3d = GetLayoutObjectByElementId("3d-translation");
+  const auto* translation_3d = GetLayoutBoxByElementId("3d-translation");
   EXPECT_TRUE(translation_3d->StyleRef().HasNonTrivial3DTransformOperation());
   EXPECT_TRUE(CompositingReason::k3DTransform &
-              ToLayoutBox(translation_3d)->Layer()->GetCompositingReasons());
-  const auto* translation_2d = GetLayoutObjectByElementId("2d-translation");
+              translation_3d->Layer()->GetCompositingReasons());
+  const auto* translation_2d = GetLayoutBoxByElementId("2d-translation");
   EXPECT_FALSE(translation_2d->StyleRef().HasNonTrivial3DTransformOperation());
-  EXPECT_FALSE(ToLayoutBox(translation_2d)->Layer()->GetCompositingReasons());
+  EXPECT_FALSE(translation_2d->Layer()->GetCompositingReasons());
 
-  const auto* scale_3d = GetLayoutObjectByElementId("3d-scale");
+  const auto* scale_3d = GetLayoutBoxByElementId("3d-scale");
   EXPECT_TRUE(scale_3d->StyleRef().HasNonTrivial3DTransformOperation());
   EXPECT_TRUE(CompositingReason::k3DTransform &
-              ToLayoutBox(scale_3d)->Layer()->GetCompositingReasons());
-  const auto* scale_2d = GetLayoutObjectByElementId("2d-scale");
+              scale_3d->Layer()->GetCompositingReasons());
+  const auto* scale_2d = GetLayoutBoxByElementId("2d-scale");
   EXPECT_FALSE(scale_2d->StyleRef().HasNonTrivial3DTransformOperation());
-  EXPECT_FALSE(ToLayoutBox(scale_2d)->Layer()->GetCompositingReasons());
+  EXPECT_FALSE(scale_2d->Layer()->GetCompositingReasons());
 }
 
 TEST_F(CompositingRequirementsUpdaterTest,
@@ -213,25 +208,18 @@ TEST_F(CompositingRequirementsUpdaterTest,
 
   // Perspective with descendant with only a 2d transform should not be layered
   // (neither should the descendant).
-  EXPECT_FALSE(ToLayoutBoxModelObject(
-                   GetLayoutObjectByElementId("perspective-no-3d-descendant"))
-                   ->Layer()
+  EXPECT_FALSE(GetPaintLayerByElementId("perspective-no-3d-descendant")
                    ->GetCompositingState());
-  EXPECT_FALSE(ToLayoutBoxModelObject(GetLayoutObjectByElementId("transform2d"))
-                   ->Layer()
-                   ->GetCompositingReasons());
+  EXPECT_FALSE(
+      GetPaintLayerByElementId("transform2d")->GetCompositingReasons());
 
   // Both the perspective and 3d descendant should be layered, the former for
   // flattening purposes, as it contains 3d transformed content.
   EXPECT_EQ(CompositingReason::kPerspectiveWith3DDescendants,
-            ToLayoutBoxModelObject(
-                GetLayoutObjectByElementId("perspective-with-3d-descendant"))
-                ->Layer()
+            GetPaintLayerByElementId("perspective-with-3d-descendant")
                 ->GetCompositingReasons());
   EXPECT_EQ(CompositingReason::k3DTransform,
-            ToLayoutBoxModelObject(GetLayoutObjectByElementId("3d-descendant"))
-                ->Layer()
-                ->GetCompositingReasons());
+            GetPaintLayerByElementId("3d-descendant")->GetCompositingReasons());
 }
 
 }  // namespace blink

@@ -61,7 +61,7 @@ FloatRect ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
     return SVGResources::ReferenceBoxForEffects(object);
 
   if (object.IsBox())
-    return FloatRect(ToLayoutBox(object).BorderBoxRect());
+    return FloatRect(To<LayoutBox>(object).BorderBoxRect());
 
   SECURITY_DCHECK(object.IsLayoutInline());
   return FloatRect(ToLayoutInline(object).ReferenceBoxForClipPath());

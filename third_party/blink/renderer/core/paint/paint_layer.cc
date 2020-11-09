@@ -788,13 +788,13 @@ void PaintLayer::UpdateLayerPosition() {
       if (curr->IsBox() && !curr->IsLegacyTableRow()) {
         // Rows and cells share the same coordinate space (that of the section).
         // Omit them when computing our xpos/ypos.
-        local_point += ToLayoutBox(curr)->PhysicalLocation();
+        local_point += To<LayoutBox>(curr)->PhysicalLocation();
       }
       curr = curr->Container();
     }
     if (curr && curr->IsLegacyTableRow()) {
       // Put ourselves into the row coordinate space.
-      local_point -= ToLayoutBox(curr)->PhysicalLocation();
+      local_point -= To<LayoutBox>(curr)->PhysicalLocation();
     }
   }
 
@@ -807,7 +807,7 @@ void PaintLayer::UpdateLayerPosition() {
       // Adjust offset for absolute under in-flow positioned inline.
       PhysicalOffset offset =
           ToLayoutInline(container).OffsetForInFlowPositionedInline(
-              ToLayoutBox(GetLayoutObject()));
+              To<LayoutBox>(GetLayoutObject()));
       local_point += offset;
     }
   }
@@ -899,7 +899,7 @@ PaintLayer* PaintLayer::ContainingLayer(const PaintLayer* ancestor,
     if (skipped_ancestor && skip_info->AncestorSkipped())
       *skipped_ancestor = true;
     if (container->HasLayer())
-      return ToLayoutBoxModelObject(container)->Layer();
+      return To<LayoutBoxModelObject>(container)->Layer();
     object = container;
   }
   return nullptr;
@@ -913,7 +913,7 @@ PhysicalOffset PaintLayer::ComputeOffsetFromAncestor(
       PhysicalOffset(), &ancestor_object, kIgnoreTransforms);
   if (ancestor_object.UsesCompositedScrolling()) {
     result += PhysicalOffset(
-        ToLayoutBox(ancestor_object).PixelSnappedScrolledContentOffset());
+        To<LayoutBox>(ancestor_object).PixelSnappedScrolledContentOffset());
   }
   return result;
 }
@@ -1729,7 +1729,7 @@ void PaintLayer::CollectFragments(
     fragment.fragment_data = fragment_data;
 
     if (GetLayoutObject().CanTraversePhysicalFragments()) {
-      if (const LayoutBox* layout_box = ToLayoutBoxOrNull(GetLayoutObject())) {
+      if (const auto* layout_box = GetLayoutBox()) {
         fragment.physical_fragment =
             layout_box->GetPhysicalFragment(physical_fragment_idx);
         DCHECK(fragment.physical_fragment);
@@ -3095,7 +3095,7 @@ bool PaintLayer::HasNonEmptyChildLayoutObjects() const {
       if (child->IsLayoutInline() || !child->IsBox())
         return true;
 
-      const auto* box = ToLayoutBox(child);
+      const auto* box = To<LayoutBox>(child);
       if (!box->Size().IsZero() || box->HasVisualOverflow())
         return true;
     }
