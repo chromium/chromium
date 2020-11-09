@@ -105,6 +105,20 @@ void OpenUrlViaClickTarget(const ToRenderFrameHost& adapter, const GURL& url) {
                                          "(\"" + url.spec() + "\");"));
 }
 
+content::RenderFrameHostChangedCallback GetAsyncScriptExecutorCallback(
+    std::string callback_script) {
+  return base::BindOnce(
+      [](std::string callback_script, RenderFrameHost* old_host,
+         RenderFrameHost* new_host) {
+        ExecuteScriptAsync(old_host, callback_script);
+      },
+      callback_script);
+}
+
+// DO NOT USE THIS FUNCTION, use GetAsyncScriptExecutorCallback() instead.
+// GetScriptExecutorCallback must not be used, because it forces waiting for a
+// browser <-> renderer IPC roundtrip while being in the middle of a very
+// complex operation: swapping the current RenderFrameHost
 content::RenderFrameHostChangedCallback GetScriptExecutorCallback(
     std::string callback_script) {
   return base::BindOnce(
@@ -7586,7 +7600,8 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
 
   // 2) Set up a navigation that will start after we commit the next navigation.
   RenderFrameHostChangedCallbackRunner navigate_after_commit(
-      web_contents, GetScriptExecutorCallback("window.location.reload();"));
+      web_contents,
+      GetAsyncScriptExecutorCallback("window.location.reload();"));
 
   // 3) Navigate same-site to a.com/title2.html.
   EXPECT_TRUE(NavigateToURL(shell(), url_a2));
@@ -7624,6 +7639,8 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   {
     // 2) Set up a script that will call postMessage on the current window
     // after we commit the next navigation.
+    // TODO(https://crbug.com/1110497): GetAsyncScriptExecutorCallback() must be
+    // removed in favor of GetSyncExecutorCallback()
     RenderFrameHostChangedCallbackRunner post_message_after_same_site_commit(
         web_contents,
         GetScriptExecutorCallback("window.postMessage('hello', '*')"));
@@ -7643,6 +7660,8 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   {
     // 4) Set up a script that will call postMessage on the current window
     // after we commit the next navigation.
+    // TODO(https://crbug.com/1110497): GetAsyncScriptExecutorCallback() must be
+    // removed in favor of GetSyncExecutorCallback()
     RenderFrameHostChangedCallbackRunner post_message_after_cross_site_commit(
         web_contents,
         GetScriptExecutorCallback("window.postMessage('hello', '*')"));
@@ -7686,6 +7705,8 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   {
     // 2) Set up a script that will call postMessage on a same-site iframe
     // after we commit the next navigation.
+    // TODO(https://crbug.com/1110497): GetAsyncScriptExecutorCallback() must be
+    // removed in favor of GetSyncExecutorCallback()
     RenderFrameHostChangedCallbackRunner post_message_after_same_site_commit(
         web_contents, GetScriptExecutorCallback(
                           "window.frames[0].postMessage('hello', '*')"));
@@ -7705,6 +7726,8 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   {
     // 4) Set up a script that will call postMessage on a cross-site iframe
     // after we commit the next navigation.
+    // TODO(https://crbug.com/1110497): GetAsyncScriptExecutorCallback() must be
+    // removed in favor of GetSyncExecutorCallback()
     RenderFrameHostChangedCallbackRunner post_message_after_same_site_commit(
         web_contents, GetScriptExecutorCallback(
                           "window.frames[0].postMessage('hello', '*')"));
@@ -7766,8 +7789,8 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
     // navigation.
     RenderFrameHostChangedCallbackRunner
         set_local_storage_after_same_site_commit(
-            web_contents,
-            GetScriptExecutorCallback("localStorage.setItem('foo', 'bar'); "));
+            web_contents, GetAsyncScriptExecutorCallback(
+                              "localStorage.setItem('foo', 'bar'); "));
 
     // 3) Navigate same-site to a.com/title2.html.
     EXPECT_TRUE(NavigateToURL(shell(), url_a2));
@@ -7785,7 +7808,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
     // next navigation.
     RenderFrameHostChangedCallbackRunner
         set_session_storage_after_same_site_commit(
-            web_contents, GetScriptExecutorCallback(
+            web_contents, GetAsyncScriptExecutorCallback(
                               "sessionStorage.setItem('foo', 'bar'); "));
 
     // 5) Navigate same-site to a.com/title3.html.
@@ -7802,7 +7825,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
     // 6) Set up a script that will modify localStorage and sessionStorage after
     // we commit the next navigation.
     RenderFrameHostChangedCallbackRunner set_storage_after_cross_site_commit(
-        web_contents, GetScriptExecutorCallback(R"(
+        web_contents, GetAsyncScriptExecutorCallback(R"(
       localStorage.setItem('foo', 'bar');
       sessionStorage.setItem('foo', 'bar');
     )"));
@@ -7822,7 +7845,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
     // 8) Set up a script that will access localStorage and sessionStorage after
     // we commit the next navigation.
     RenderFrameHostChangedCallbackRunner get_storage_after_same_site_commit(
-        web_contents, GetScriptExecutorCallback(R"(
+        web_contents, GetAsyncScriptExecutorCallback(R"(
       localStorage.getItem('foo');
       sessionStorage.getItem('foo');
     )"));
