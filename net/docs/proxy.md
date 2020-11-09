@@ -469,7 +469,7 @@ implicitly](#Implicit-bypass-rules).
 
 *Subtracts* the [implicit proxy bypass rules](#Implicit-bypass-rules)
 (localhost and link local addresses). This is generally only needed for test
-setupe. Beware of the security implications to proxying localhost.
+setups. Beware of the security implications to proxying localhost.
 
 Whereas regular bypass rules instruct the browser about URLs that should *not*
 use the proxy, this rule has the opposite effect and tells the browser to
