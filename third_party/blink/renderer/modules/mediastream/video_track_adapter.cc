@@ -413,6 +413,7 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
   if (settings_.max_frame_rate() == 0.0f ||
       (source_frame_rate > 0 &&
        source_frame_rate <= settings_.max_frame_rate())) {
+    last_time_stamp_ = frame.timestamp();
     return false;
   }
 

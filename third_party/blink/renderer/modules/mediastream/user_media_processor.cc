@@ -1228,7 +1228,8 @@ void UserMediaProcessor::OnDeviceRequestStateChange(
   }
   if (new_state == mojom::blink::MediaStreamStateChange::PAUSE) {
     if (video_source->IsRunning()) {
-      video_source->StopForRestart(base::DoNothing());
+      video_source->StopForRestart(base::DoNothing(),
+                                   /*send_black_frame=*/true);
     }
   } else if (new_state == mojom::blink::MediaStreamStateChange::PLAY) {
     if (video_source->IsStoppedForRestart()) {

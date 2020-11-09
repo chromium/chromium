@@ -198,7 +198,8 @@ void MediaStreamVideoSource::ReconfigureTrack(
   UpdateTrackSettings(track, adapter_settings);
 }
 
-void MediaStreamVideoSource::StopForRestart(RestartCallback callback) {
+void MediaStreamVideoSource::StopForRestart(RestartCallback callback,
+                                            bool send_black_frame) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (state_ != STARTED) {
     Thread::Current()->GetTaskRunner()->PostTask(
@@ -211,6 +212,21 @@ void MediaStreamVideoSource::StopForRestart(RestartCallback callback) {
   track_adapter_->StopFrameMonitoring();
   state_ = STOPPING_FOR_RESTART;
   restart_callback_ = std::move(callback);
+
+  if (send_black_frame) {
+    const base::Optional<gfx::Size> source_size =
+        track_adapter_->source_frame_size();
+    scoped_refptr<media::VideoFrame> black_frame =
+        media::VideoFrame::CreateBlackFrame(
+            source_size.has_value() ? *source_size
+                                    : gfx::Size(kDefaultWidth, kDefaultHeight));
+    PostCrossThreadTask(
+        *io_task_runner(), FROM_HERE,
+        CrossThreadBindOnce(&VideoTrackAdapter::DeliverFrameOnIO,
+                            track_adapter_, black_frame,
+                            base::TimeTicks::Now()));
+  }
+
   StopSourceForRestartImpl();
 }
 

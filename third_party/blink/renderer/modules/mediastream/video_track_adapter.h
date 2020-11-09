@@ -95,6 +95,10 @@ class MODULES_EXPORT VideoTrackAdapter
                                    const VideoTrackAdapterSettings& settings,
                                    gfx::Size* desired_size);
 
+  base::Optional<gfx::Size> source_frame_size() const {
+    return source_frame_size_;
+  }
+
  private:
   virtual ~VideoTrackAdapter();
   friend class WTF::ThreadSafeRefCounted<VideoTrackAdapter>;

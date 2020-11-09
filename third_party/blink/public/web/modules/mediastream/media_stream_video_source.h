@@ -102,7 +102,8 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // verified by checking that the IsRunning() method returns true.
   // Any attempt to invoke StopForRestart() before the source has started
   // results in no action and |callback| invoked with INVALID_STATE.
-  void StopForRestart(RestartCallback callback);
+  // If |send_black_frame| is set, an additional black frame will be sent.
+  void StopForRestart(RestartCallback callback, bool send_black_frame = false);
 
   // Tries to restart a source that was previously temporarily stopped using the
   // supplied |new_format|. This method can be invoked only after a successful
