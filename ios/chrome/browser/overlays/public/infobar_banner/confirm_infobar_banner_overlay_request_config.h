@@ -23,6 +23,9 @@ class ConfirmBannerRequestConfig
  public:
   ~ConfirmBannerRequestConfig() override;
 
+  // The title text.
+  base::string16 title_text() const { return title_text_; }
+
   // The message text.
   base::string16 message_text() const { return message_text_; }
 
@@ -45,6 +48,7 @@ class ConfirmBannerRequestConfig
   // The InfoBar causing this banner.
   infobars::InfoBar* infobar_ = nullptr;
   // Configuration data extracted from |infobar_|'s confirm delegate.
+  base::string16 title_text_;
   base::string16 message_text_;
   base::string16 button_label_text_;
   gfx::Image icon_image_;

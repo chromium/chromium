@@ -38,8 +38,41 @@ class ConfirmInfobarBannerOverlayMediatorTest : public PlatformTest {
 };
 
 // Tests that a ConfirmInfobarBannerOverlayMediator correctly sets up its
-// consumer.
-TEST_F(ConfirmInfobarBannerOverlayMediatorTest, SetUpConsumer) {
+// consumer with a title and display message.
+TEST_F(ConfirmInfobarBannerOverlayMediatorTest,
+       SetUpConsumerWithTitleAndMessage) {
+  // Create an InfoBarIOS with a ConfirmInfoBarDelegate.
+  std::unique_ptr<FakeInfobarDelegate> passed_delegate =
+      std::make_unique<FakeInfobarDelegate>(base::ASCIIToUTF16("title"),
+                                            base::ASCIIToUTF16("message"));
+  FakeInfobarDelegate* delegate = passed_delegate.get();
+  InfoBarIOS infobar(InfobarType::kInfobarTypeConfirm,
+                     std::move(passed_delegate));
+  // Package the infobar into an OverlayRequest, then create a mediator that
+  // uses this request in order to set up a fake consumer.
+  std::unique_ptr<OverlayRequest> request =
+      OverlayRequest::CreateWithConfig<ConfirmBannerRequestConfig>(&infobar);
+  ConfirmInfobarBannerOverlayMediator* mediator =
+      [[ConfirmInfobarBannerOverlayMediator alloc]
+          initWithRequest:request.get()];
+  FakeInfobarBannerConsumer* consumer =
+      [[FakeInfobarBannerConsumer alloc] init];
+  mediator.consumer = consumer;
+  // Verify that the infobar was set up properly.
+  NSString* title = base::SysUTF16ToNSString(delegate->GetTitleText());
+  NSString* subtitle = base::SysUTF16ToNSString(delegate->GetMessageText());
+
+  EXPECT_NSEQ(title, consumer.titleText);
+  EXPECT_NSEQ(subtitle, consumer.subtitleText);
+  EXPECT_NSEQ(base::SysUTF16ToNSString(
+                  delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK)),
+              consumer.buttonText);
+  EXPECT_FALSE(consumer.presentsModal);
+}
+
+// Tests that a ConfirmInfobarBannerOverlayMediator correctly sets up its
+// consumer with a display message.
+TEST_F(ConfirmInfobarBannerOverlayMediatorTest, SetUpConsumerWithMessage) {
   // Create an InfoBarIOS with a ConfirmInfoBarDelegate.
   std::unique_ptr<FakeInfobarDelegate> passed_delegate =
       std::make_unique<FakeInfobarDelegate>();

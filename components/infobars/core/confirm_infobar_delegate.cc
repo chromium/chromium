@@ -26,6 +26,10 @@ ConfirmInfoBarDelegate::GetInfoBarAutomationType() const {
   return CONFIRM_INFOBAR;
 }
 
+base::string16 ConfirmInfoBarDelegate::GetTitleText() const {
+  return base::string16();
+}
+
 gfx::ElideBehavior ConfirmInfoBarDelegate::GetMessageElideBehavior() const {
   return gfx::ELIDE_TAIL;
 }

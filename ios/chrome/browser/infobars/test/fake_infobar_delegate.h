@@ -14,6 +14,7 @@ class FakeInfobarDelegate : public ConfirmInfoBarDelegate {
  public:
   FakeInfobarDelegate();
   FakeInfobarDelegate(base::string16 message_text);
+  FakeInfobarDelegate(base::string16 title_text, base::string16 message_text);
   FakeInfobarDelegate(infobars::InfoBarDelegate::InfoBarIdentifier identifier);
   ~FakeInfobarDelegate() override;
 
@@ -21,10 +22,17 @@ class FakeInfobarDelegate : public ConfirmInfoBarDelegate {
   InfoBarIdentifier GetIdentifier() const override;
 
   // Returns the message string to be displayed for the Infobar.
+  base::string16 GetTitleText() const override;
+
+  // Returns the message string to be displayed for the Infobar.
   base::string16 GetMessageText() const override;
 
  private:
+  FakeInfobarDelegate(infobars::InfoBarDelegate::InfoBarIdentifier identifier,
+                      base::string16 title_text,
+                      base::string16 message_text);
   infobars::InfoBarDelegate::InfoBarIdentifier identifier_;
+  base::string16 title_text_;
   base::string16 message_text_;
 };
 

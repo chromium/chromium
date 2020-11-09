@@ -24,6 +24,7 @@ ConfirmBannerRequestConfig::ConfirmBannerRequestConfig(
   DCHECK(infobar_);
   ConfirmInfoBarDelegate* delegate =
       static_cast<ConfirmInfoBarDelegate*>(infobar_->delegate());
+  title_text_ = delegate->GetTitleText();
   message_text_ = delegate->GetMessageText();
   button_label_text_ =
       delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK);

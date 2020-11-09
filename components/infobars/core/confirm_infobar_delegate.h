@@ -35,6 +35,10 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
   // Returns the InfoBar type to be displayed for the InfoBar.
   InfoBarAutomationType GetInfoBarAutomationType() const override;
 
+  // Returns the title string to be displayed for the InfoBar.
+  // Defaults to having not title. Currently only used on iOS.
+  virtual base::string16 GetTitleText() const;
+
   // Returns the message string to be displayed for the InfoBar.
   virtual base::string16 GetMessageText() const = 0;
 
