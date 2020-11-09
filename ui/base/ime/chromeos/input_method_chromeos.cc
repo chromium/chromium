@@ -438,7 +438,7 @@ void InputMethodChromeOS::ResetContext(bool reset_engine) {
   if (IsPasswordOrNoneInputFieldFocused() || !GetTextInputClient())
     return;
 
-  pending_composition_ = CompositionText();
+  pending_composition_ = base::nullopt;
   result_text_.clear();
   composing_text_ = false;
   composition_changed_ = false;
@@ -589,14 +589,14 @@ void InputMethodChromeOS::ProcessInputMethodResult(ui::KeyEvent* event,
           pending_composition_range_->range,
           pending_composition_range_->text_spans);
     }
-    if (pending_composition_.text.length()) {
+    if (pending_composition_) {
       composing_text_ = true;
-      client->SetCompositionText(pending_composition_);
+      client->SetCompositionText(*pending_composition_);
     } else if (result_text_.empty() && !pending_composition_range_) {
       client->ClearCompositionText();
     }
 
-    pending_composition_ = CompositionText();
+    pending_composition_ = base::nullopt;
     pending_composition_range_.reset();
   }
 
@@ -674,22 +674,22 @@ void InputMethodChromeOS::UpdateCompositionText(const CompositionText& text,
     return;
   }
 
-  ExtractCompositionText(text, cursor_pos, &pending_composition_);
-
+  pending_composition_ = ExtractCompositionText(text, cursor_pos);
   composition_changed_ = true;
 
   // In case OnShowPreeditText() is not called.
-  if (pending_composition_.text.length())
+  if (pending_composition_->text.length())
     composing_text_ = true;
 
   if (!handling_key_event_) {
     // If we receive a composition text without pending key event, then we need
     // to send it to the focused text input client directly.
-    if (!SendFakeProcessKeyEvent(true))
-      GetTextInputClient()->SetCompositionText(pending_composition_);
+    if (!SendFakeProcessKeyEvent(true)) {
+      GetTextInputClient()->SetCompositionText(*pending_composition_);
+    }
     SendFakeProcessKeyEvent(false);
     composition_changed_ = false;
-    pending_composition_ = CompositionText();
+    pending_composition_ = base::nullopt;
   }
 }
 
@@ -699,7 +699,7 @@ void InputMethodChromeOS::HidePreeditText() {
 
   // Intentionally leaves |composing_text_| unchanged.
   composition_changed_ = true;
-  pending_composition_ = CompositionText();
+  pending_composition_ = base::nullopt;
 
   if (!handling_key_event_) {
     TextInputClient* client = GetTextInputClient();
@@ -761,21 +761,20 @@ bool InputMethodChromeOS::ExecuteCharacterComposer(const ui::KeyEvent& event) {
   return true;
 }
 
-void InputMethodChromeOS::ExtractCompositionText(
+CompositionText InputMethodChromeOS::ExtractCompositionText(
     const CompositionText& text,
-    uint32_t cursor_position,
-    CompositionText* out_composition) const {
-  *out_composition = CompositionText();
-  out_composition->text = text.text;
+    uint32_t cursor_position) const {
+  CompositionText composition;
+  composition.text = text.text;
 
-  if (out_composition->text.empty())
-    return;
+  if (composition.text.empty())
+    return composition;
 
   // ibus uses character index for cursor position and attribute range, but we
   // use char16 offset for them. So we need to do conversion here.
   std::vector<size_t> char16_offsets;
-  size_t length = out_composition->text.length();
-  for (base::i18n::UTF16CharIterator char_iterator(out_composition->text);
+  size_t length = composition.text.length();
+  for (base::i18n::UTF16CharIterator char_iterator(composition.text);
        !char_iterator.end(); char_iterator.Advance()) {
     char16_offsets.push_back(char_iterator.array_pos());
   }
@@ -788,7 +787,7 @@ void InputMethodChromeOS::ExtractCompositionText(
   size_t cursor_offset =
       char16_offsets[std::min(char_length, cursor_position)];
 
-  out_composition->selection = gfx::Range(cursor_offset);
+  composition.selection = gfx::Range(cursor_offset);
 
   const ImeTextSpans text_ime_text_spans = text.ime_text_spans;
   if (!text_ime_text_spans.empty()) {
@@ -803,7 +802,7 @@ void InputMethodChromeOS::ExtractCompositionText(
                                 ui::ImeTextSpan::UnderlineStyle::kSolid,
                                 text_ime_text_span.background_color);
       ime_text_span.underline_color = text_ime_text_span.underline_color;
-      out_composition->ime_text_spans.push_back(ime_text_span);
+      composition.ime_text_spans.push_back(ime_text_span);
     }
   }
 
@@ -815,27 +814,29 @@ void InputMethodChromeOS::ExtractCompositionText(
         ui::ImeTextSpan::Type::kComposition, char16_offsets[start],
         char16_offsets[end], ui::ImeTextSpan::Thickness::kThick,
         ui::ImeTextSpan::UnderlineStyle::kSolid, SK_ColorTRANSPARENT);
-    out_composition->ime_text_spans.push_back(ime_text_span);
+    composition.ime_text_spans.push_back(ime_text_span);
 
     // If the cursor is at start or end of this ime_text_span, then we treat
     // it as the selection range as well, but make sure to set the cursor
     // position to the selection end.
     if (ime_text_span.start_offset == cursor_offset) {
-      out_composition->selection.set_start(ime_text_span.end_offset);
-      out_composition->selection.set_end(cursor_offset);
+      composition.selection.set_start(ime_text_span.end_offset);
+      composition.selection.set_end(cursor_offset);
     } else if (ime_text_span.end_offset == cursor_offset) {
-      out_composition->selection.set_start(ime_text_span.start_offset);
-      out_composition->selection.set_end(cursor_offset);
+      composition.selection.set_start(ime_text_span.start_offset);
+      composition.selection.set_end(cursor_offset);
     }
   }
 
   // Use a thin underline with text color by default.
-  if (out_composition->ime_text_spans.empty()) {
-    out_composition->ime_text_spans.push_back(ImeTextSpan(
+  if (composition.ime_text_spans.empty()) {
+    composition.ime_text_spans.push_back(ImeTextSpan(
         ui::ImeTextSpan::Type::kComposition, 0, length,
         ui::ImeTextSpan::Thickness::kThin,
         ui::ImeTextSpan::UnderlineStyle::kSolid, SK_ColorTRANSPARENT));
   }
+
+  return composition;
 }
 
 bool InputMethodChromeOS::IsPasswordOrNoneInputFieldFocused() {

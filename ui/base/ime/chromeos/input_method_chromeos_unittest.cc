@@ -568,9 +568,8 @@ TEST_F(InputMethodChromeOSTest, ExtractCompositionTextTest_NoAttribute) {
   CompositionText chromeos_composition_text;
   chromeos_composition_text.text = kSampleAsciiText;
 
-  CompositionText composition_text;
-  ime_->ExtractCompositionText(
-      chromeos_composition_text, kCursorPos, &composition_text);
+  CompositionText composition_text =
+      ime_->ExtractCompositionText(chromeos_composition_text, kCursorPos);
   EXPECT_EQ(kSampleAsciiText, composition_text.text);
   // If there is no selection, |selection| represents cursor position.
   EXPECT_EQ(kCursorPos, composition_text.selection.start());
@@ -597,9 +596,8 @@ TEST_F(InputMethodChromeOSTest, ExtractCompositionTextTest_SingleUnderline) {
                         SK_ColorTRANSPARENT);
   composition_text.ime_text_spans.push_back(underline);
 
-  CompositionText composition_text2;
-  ime_->ExtractCompositionText(composition_text, kCursorPos,
-                               &composition_text2);
+  CompositionText composition_text2 =
+      ime_->ExtractCompositionText(composition_text, kCursorPos);
   EXPECT_EQ(kSampleText, composition_text2.text);
   // If there is no selection, |selection| represents cursor position.
   EXPECT_EQ(kCursorPos, composition_text2.selection.start());
@@ -630,9 +628,8 @@ TEST_F(InputMethodChromeOSTest, ExtractCompositionTextTest_DoubleUnderline) {
                         SK_ColorTRANSPARENT);
   composition_text.ime_text_spans.push_back(underline);
 
-  CompositionText composition_text2;
-  ime_->ExtractCompositionText(composition_text, kCursorPos,
-                               &composition_text2);
+  CompositionText composition_text2 =
+      ime_->ExtractCompositionText(composition_text, kCursorPos);
   EXPECT_EQ(kSampleText, composition_text2.text);
   // If there is no selection, |selection| represents cursor position.
   EXPECT_EQ(kCursorPos, composition_text2.selection.start());
@@ -664,9 +661,8 @@ TEST_F(InputMethodChromeOSTest, ExtractCompositionTextTest_ErrorUnderline) {
   underline.underline_color = SK_ColorRED;
   composition_text.ime_text_spans.push_back(underline);
 
-  CompositionText composition_text2;
-  ime_->ExtractCompositionText(composition_text, kCursorPos,
-                               &composition_text2);
+  CompositionText composition_text2 =
+      ime_->ExtractCompositionText(composition_text, kCursorPos);
   EXPECT_EQ(kSampleText, composition_text2.text);
   EXPECT_EQ(kCursorPos, composition_text2.selection.start());
   EXPECT_EQ(kCursorPos, composition_text2.selection.end());
@@ -690,9 +686,8 @@ TEST_F(InputMethodChromeOSTest, ExtractCompositionTextTest_Selection) {
   composition_text.selection.set_start(1UL);
   composition_text.selection.set_end(4UL);
 
-  CompositionText composition_text2;
-  ime_->ExtractCompositionText(composition_text, kCursorPos,
-                               &composition_text2);
+  CompositionText composition_text2 =
+      ime_->ExtractCompositionText(composition_text, kCursorPos);
   EXPECT_EQ(kSampleText, composition_text2.text);
   EXPECT_EQ(kCursorPos, composition_text2.selection.start());
   EXPECT_EQ(kCursorPos, composition_text2.selection.end());
@@ -719,9 +714,8 @@ TEST_F(InputMethodChromeOSTest,
   composition_text.selection.set_start(kCursorPos);
   composition_text.selection.set_end(4UL);
 
-  CompositionText composition_text2;
-  ime_->ExtractCompositionText(composition_text, kCursorPos,
-                               &composition_text2);
+  CompositionText composition_text2 =
+      ime_->ExtractCompositionText(composition_text, kCursorPos);
   EXPECT_EQ(kSampleText, composition_text2.text);
   // If the cursor position is same as selection bounds, selection start
   // position become opposit side of selection from cursor.
@@ -752,9 +746,8 @@ TEST_F(InputMethodChromeOSTest,
   composition_text.selection.set_start(1UL);
   composition_text.selection.set_end(kCursorPos);
 
-  CompositionText composition_text2;
-  ime_->ExtractCompositionText(composition_text, kCursorPos,
-                               &composition_text2);
+  CompositionText composition_text2 =
+      ime_->ExtractCompositionText(composition_text, kCursorPos);
   EXPECT_EQ(kSampleText, composition_text2.text);
   // If the cursor position is same as selection bounds, selection start
   // position become opposit side of selection from cursor.
