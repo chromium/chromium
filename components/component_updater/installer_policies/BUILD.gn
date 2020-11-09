@@ -6,6 +6,8 @@ static_library("installer_policies") {
   sources = [
     "on_device_head_suggest_component_installer.cc",
     "on_device_head_suggest_component_installer.h",
+    "safety_tips_component_installer.cc",
+    "safety_tips_component_installer.h",
   ]
 
   deps = [
@@ -13,5 +15,7 @@ static_library("installer_policies") {
     "//components/component_updater",
     "//components/omnibox/browser",
     "//components/omnibox/common",
+    "//components/reputation/core",
+    "//components/reputation/core:proto",
   ]
 }

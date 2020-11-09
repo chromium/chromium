@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/component_updater/safety_tips_component_installer.h"
+#include "components/component_updater/installer_policies/safety_tips_component_installer.h"
 
 #include <memory>
 #include <utility>
@@ -16,8 +16,6 @@
 #include "base/task/thread_pool.h"
 #include "components/reputation/core/safety_tips.pb.h"
 #include "components/reputation/core/safety_tips_config.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 
 using component_updater::ComponentUpdateService;
 
@@ -87,7 +85,6 @@ void SafetyTipsComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     std::unique_ptr<base::DictionaryValue> /* manifest */) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DVLOG(1) << "Component ready, version " << version.GetString() << " in "
            << install_dir.value();
 
