@@ -105,6 +105,15 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
   return chrome_test_util::GetBrowsingHistoryEntryCount(error);
 }
 
++ (NSInteger)navigationBackListItemsCount {
+  web::WebState* webState = chrome_test_util::GetCurrentWebState();
+
+  if (!webState)
+    return -1;
+
+  return webState->GetNavigationManager()->GetBackwardItems().size();
+}
+
 + (NSError*)removeBrowsingCache {
   if (chrome_test_util::RemoveBrowsingCache()) {
     return nil;

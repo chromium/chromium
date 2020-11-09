@@ -2049,14 +2049,16 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   //   2. Current nav item has a failed URL. This may happen when
   //      back/forward/refresh on a loaded page;
   //   3. Current nav item is an irrelevant page.
-  // For 1&2, load an empty string to remove existing JS code.
+  //   4. Current nav item is a session restoration.
+  // For 1, 2 and 4, load an empty string to remove existing JS code.
   // For 3, load error page file to create a new nav item.
   // The actual error HTML will be loaded in didFinishNavigation callback.
   WKNavigation* errorNavigation = nil;
   if (provisionalLoad &&
       ![errorPage
           isErrorPageFileURLForFailedNavigationURL:backForwardItem.URL] &&
-      ![backForwardItem.URL isEqual:errorPage.failedNavigationURL]) {
+      ![backForwardItem.URL isEqual:errorPage.failedNavigationURL] &&
+      !web::wk_navigation_util::IsRestoreSessionUrl(backForwardItem.URL)) {
     errorNavigation = [webView loadFileURL:errorPage.errorPageFileURL
                    allowingReadAccessToURL:errorPage.errorPageFileURL];
   } else {

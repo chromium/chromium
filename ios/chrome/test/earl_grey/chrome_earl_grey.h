@@ -76,6 +76,9 @@ id ExecuteJavaScript(NSString* javascript, NSError* __autoreleasing* out_error);
 // induced on error.
 - (NSInteger)browsingHistoryEntryCount;
 
+// Gets the number of items in the back list.
+- (NSInteger)navigationBackListItemsCount;
+
 // Clears browsing cache. Raises an EarlGrey exception if history is not
 // cleared within a timeout.
 - (void)removeBrowsingCache;
