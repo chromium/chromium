@@ -280,7 +280,10 @@ template("libwebviewchromium_tmpl") {
       "//third_party/blink/public:blink",
     ]
     configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
-    configs += [ "//build/config/android:hide_all_but_jni" ]
+    configs += [
+      "//build/config/android:hide_all_but_jni",
+      "//build/config/compiler:chrome_orderfile_config",
+    ]
   }
 }
 
