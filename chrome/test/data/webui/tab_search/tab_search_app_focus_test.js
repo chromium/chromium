@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {TabSearchAppElement} from 'chrome://tab-search/app.js';
@@ -15,7 +14,7 @@ import {assertEquals, assertGT} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
 import {generateSampleDataFromSiteNames, sampleData, sampleSiteNames} from './tab_search_test_data.js';
-import {assertTabItemAndNeighborsInViewBounds, disableScrollIntoViewAnimations} from './tab_search_test_helper.js';
+import {assertTabItemAndNeighborsInViewBounds, disableScrollIntoViewAnimations, initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
 suite('TabSearchAppFocusTest', () => {
@@ -28,16 +27,14 @@ suite('TabSearchAppFocusTest', () => {
 
   /**
    * @param {ProfileTabs} sampleData
-   * @param {Object=} loadTimeOverridenData
+   * @param {Object=} loadTimeOverriddenData
    */
-  async function setupTest(sampleData, loadTimeOverridenData) {
+  async function setupTest(sampleData, loadTimeOverriddenData) {
     testProxy = new TestTabSearchApiProxy();
     testProxy.setProfileTabs(sampleData);
     TabSearchApiProxyImpl.instance_ = testProxy;
 
-    if (loadTimeOverridenData) {
-      loadTimeData.overrideValues(loadTimeOverridenData);
-    }
+    initLoadTimeDataWithDefaults(loadTimeOverriddenData);
 
     tabSearchApp = /** @type {!TabSearchAppElement} */
         (document.createElement('tab-search-app'));

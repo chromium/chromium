@@ -8,14 +8,47 @@
     user-select: none;
   }
 
+  :host([has-search-text]) label {
+    visibility: hidden;
+  }
+
   #searchIcon {
     height: var(--mwb-icon-size);
     padding-inline-end: var(--mwb-list-item-horizontal-margin);
     width: var(--mwb-icon-size);
   }
 
+  #searchWrapper {
+    display: flex;
+    flex: 1;
+    height: 100%;
+    position: relative;
+  }
+
+  #searchLabel {
+    align-items: center;
+    color: var(--cr-secondary-text-color);
+    cursor: text;
+    display: flex;
+    font-size: var(--mwb-primary-text-font-size);
+    height: 100%;
+    justify-content: space-between;
+    position: absolute;
+    width: 100%;
+  }
+
   #searchInput {
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    color: var(--cr-primary-text-color);
+    flex: 1;
+    font-family: inherit;
+    font-size: var(--mwb-primary-text-font-size);
+    font-style: inherit;
+    outline: none;
     padding: 0;
+    text-overflow: ellipsis;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -23,21 +56,16 @@
       color: var(--google-blue-refresh-300);
     }
   }
-
-  input {
-    align-self: stretch;
-    background-color: transparent;
-    border: none;
-    border-radius: 0;
-    color: var(--cr-primary-text-color);
-    flex: 1;
-    font-size: var(--mwb-primary-text-font-size);
-    outline: none;
-    text-overflow: ellipsis;
-  }
 </style>
+
 <iron-icon id="searchIcon" icon="mwb16:search"></iron-icon>
-<input id="searchInput" on-search="onSearchTermSearch"
-    on-input="onSearchTermInput" aria-label$="[[label]]" type="search"
-    autofocus="[[autofocus]]" placeholder="[[label]]" autocomplete="off"
-    spellcheck="false">
+<div id="searchWrapper">
+  <label id="searchLabel" for="searchInput" aria-hidden="true">
+    <span>[[label]]</span>
+    <span>[[shortcut_]]</span>
+  </label>
+  <input id="searchInput" aria-labelledby="searchLabel"
+      autofocus="[[autofocus]]" autocomplete="off"
+      on-search="onSearchTermSearch" on-input="onSearchTermInput" type="search"
+      spellcheck="false">
+</div>

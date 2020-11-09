@@ -20,6 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
 
@@ -62,8 +63,12 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
                                  features::kTabSearchSearchThresholdMax));
   source->AddDouble("searchTitleToHostnameWeightRatio",
                     features::kTabSearchTitleToHostnameWeightRatio.Get());
-
   source->AddLocalizedString("close", IDS_CLOSE);
+
+  ui::Accelerator accelerator(ui::VKEY_A,
+                              ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR);
+  source->AddString("shortcutText", accelerator.GetShortcutText());
+
   webui::SetupWebUIDataSource(
       source, base::make_span(kTabSearchResources, kTabSearchResourcesSize),
       /*generated_path=*/std::string(), IDR_TAB_SEARCH_TAB_SEARCH_PAGE_HTML);

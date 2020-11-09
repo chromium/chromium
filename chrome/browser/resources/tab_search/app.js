@@ -14,7 +14,6 @@ import './tab_search_search_field.js';
 import './strings.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isMac} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
@@ -421,14 +420,6 @@ export class TabSearchAppElement extends PolymerElement {
    */
   ariaLabel_(tabData) {
     return `${tabData.tab.title} ${tabData.hostname}`;
-  }
-
-  /**
-   * @return {string}
-   * @private
-   */
-  getKeyboardShortcut_() {
-    return (isMac ? 'Cmd' : 'Ctrl') + '+Shift+A';
   }
 
   /**

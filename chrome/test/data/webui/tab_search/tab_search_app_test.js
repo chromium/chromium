@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {TabSearchAppElement} from 'chrome://tab-search/app.js';
 import {ProfileTabs, Tab} from 'chrome://tab-search/tab_search.mojom-webui.js';
@@ -14,7 +13,7 @@ import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from '
 import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
 
 import {generateSampleDataFromSiteNames, sampleData, sampleSiteNames} from './tab_search_test_data.js';
-import {assertTabItemAndNeighborsInViewBounds, assertTabItemInViewBounds, disableScrollIntoViewAnimations} from './tab_search_test_helper.js';
+import {assertTabItemAndNeighborsInViewBounds, assertTabItemInViewBounds, disableScrollIntoViewAnimations, initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
 suite('TabSearchAppTest', () => {
@@ -45,16 +44,14 @@ suite('TabSearchAppTest', () => {
 
   /**
    * @param {ProfileTabs} sampleData
-   * @param {Object=} loadTimeOverridenData
+   * @param {Object=} loadTimeOverriddenData
    */
-  async function setupTest(sampleData, loadTimeOverridenData) {
+  async function setupTest(sampleData, loadTimeOverriddenData) {
     testProxy = new TestTabSearchApiProxy();
     testProxy.setProfileTabs(sampleData);
     TabSearchApiProxyImpl.instance_ = testProxy;
 
-    if (loadTimeOverridenData) {
-      loadTimeData.overrideValues(loadTimeOverridenData);
-    }
+    initLoadTimeDataWithDefaults(loadTimeOverriddenData);
 
     tabSearchApp = /** @type {!TabSearchAppElement} */
         (document.createElement('tab-search-app'));

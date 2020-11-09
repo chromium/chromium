@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertGE, assertLE} from '../../chai_assert.js';
 
 /**
@@ -54,4 +55,19 @@ export function assertTabItemAndNeighborsInViewBounds(
   if (index < tabItems.length - 1) {
     assertTabItemInViewBounds(tabsDiv, tabItems[index + 1]);
   }
+}
+
+/**
+ * Initialize the loadTimeData with the provided data and defaults.
+ * @param {Object=} loadTimeOverriddenData
+ */
+export function initLoadTimeDataWithDefaults(loadTimeOverriddenData) {
+  if (!loadTimeOverriddenData) {
+    loadTimeOverriddenData = {};
+  }
+  if (!loadTimeOverriddenData.hasOwnProperty('shortcutText')) {
+    loadTimeOverriddenData.shortcutText = '';
+  }
+
+  loadTimeData.overrideValues(loadTimeOverriddenData);
 }
