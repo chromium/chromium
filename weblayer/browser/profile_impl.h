@@ -45,7 +45,7 @@ class ProfileImpl : public Profile {
       std::unique_ptr<ProfileImpl> profile,
       base::OnceClosure done_callback);
 
-  explicit ProfileImpl(const std::string& name);
+  ProfileImpl(const std::string& name, bool is_incognito);
   ~ProfileImpl() override;
 
   // Returns the ProfileImpl from the specified BrowserContext.
@@ -108,7 +108,8 @@ class ProfileImpl : public Profile {
 #if defined(OS_ANDROID)
   ProfileImpl(JNIEnv* env,
               const base::android::JavaParamRef<jstring>& path,
-              const base::android::JavaParamRef<jobject>& java_profile);
+              const base::android::JavaParamRef<jobject>& java_profile,
+              bool is_incognito);
 
   jint GetNumBrowserImpl(JNIEnv* env);
   jlong GetBrowserContext(JNIEnv* env);

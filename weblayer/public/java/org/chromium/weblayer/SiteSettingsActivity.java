@@ -34,7 +34,23 @@ public class SiteSettingsActivity extends AppCompatActivity {
      * settings categories.
      */
     public static Intent createIntentForCategoryList(Context context, String profileName) {
-        return SiteSettingsIntentHelper.createIntentForCategoryList(context, profileName);
+        return SiteSettingsIntentHelper.createIntentForCategoryList(
+                context, profileName, "".equals(profileName));
+    }
+
+    /**
+     * Creates an Intent that will launch the root/full Site Settings UI, which displays a list of
+     * settings categories.
+     *
+     * @param profileName The name of the profile.
+     * @param isIncognito If the profile is incognito.
+     *
+     * @since 87
+     */
+    public static Intent createIntentForCategoryList(
+            Context context, String profileName, boolean isIncognito) {
+        return SiteSettingsIntentHelper.createIntentForCategoryList(
+                context, profileName, isIncognito);
     }
 
     @Override

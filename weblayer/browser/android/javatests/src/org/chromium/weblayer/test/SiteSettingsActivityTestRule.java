@@ -32,7 +32,8 @@ public class SiteSettingsActivityTestRule extends WebLayerActivityTestRule<SiteS
             // initialized with the Application as its appContext, which breaks tests because a
             // SharedPreferences xml file is persisted to disk.
             WebLayer.loadSync(getContext());
-            return SiteSettingsActivity.createIntentForCategoryList(getContext(), profileName);
+            return SiteSettingsActivity.createIntentForCategoryList(
+                    getContext(), profileName, "".equals(profileName));
         });
         return launchActivity(siteSettingsIntent);
     }
@@ -46,7 +47,7 @@ public class SiteSettingsActivityTestRule extends WebLayerActivityTestRule<SiteS
             // SharedPreferences xml file is persisted to disk.
             WebLayer.loadSync(getContext());
             return SiteSettingsTestUtils.createIntentForSingleWebsite(
-                    getContext(), profileName, url);
+                    getContext(), profileName, "".equals(profileName), url);
         });
         return launchActivity(siteSettingsIntent);
     }

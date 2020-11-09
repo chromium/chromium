@@ -12,20 +12,26 @@ import android.os.Bundle;
  * A helper class for creating Intents to start the Site Settings UI.
  */
 public class SiteSettingsIntentHelper {
-    /** Creates an Intent that launches the main category list UI. */
-    public static Intent createIntentForCategoryList(Context context, String profileName) {
+    private static Bundle createSiteSettingsExtras(String profileName, boolean isIncognito) {
         Bundle extras = new Bundle();
         extras.putString(SiteSettingsFragmentArgs.PROFILE_NAME, profileName);
+        extras.putBoolean(SiteSettingsFragmentArgs.IS_INCOGNITO_PROFILE, isIncognito);
+        return extras;
+    }
+
+    /** Creates an Intent that launches the main category list UI. */
+    public static Intent createIntentForCategoryList(
+            Context context, String profileName, boolean isIncognito) {
+        Bundle extras = createSiteSettingsExtras(profileName, isIncognito);
         extras.putString(
                 SiteSettingsFragmentArgs.FRAGMENT_NAME, SiteSettingsFragmentArgs.CATEGORY_LIST);
         return createIntentWithExtras(context, extras);
     }
 
     /** Creates an Intent that launches the settings UI for a single category. */
-    public static Intent createIntentForSingleCategory(
-            Context context, String profileName, String categoryType, String categoryTitle) {
-        Bundle extras = new Bundle();
-        extras.putString(SiteSettingsFragmentArgs.PROFILE_NAME, profileName);
+    public static Intent createIntentForSingleCategory(Context context, String profileName,
+            boolean isIncognito, String categoryType, String categoryTitle) {
+        Bundle extras = createSiteSettingsExtras(profileName, isIncognito);
         extras.putString(
                 SiteSettingsFragmentArgs.FRAGMENT_NAME, SiteSettingsFragmentArgs.SINGLE_CATEGORY);
 
@@ -38,9 +44,8 @@ public class SiteSettingsIntentHelper {
 
     /** Creates an Intent that launches the single website settings UI. */
     public static Intent createIntentForSingleWebsite(
-            Context context, String profileName, String url) {
-        Bundle extras = new Bundle();
-        extras.putString(SiteSettingsFragmentArgs.PROFILE_NAME, profileName);
+            Context context, String profileName, boolean isIncognito, String url) {
+        Bundle extras = createSiteSettingsExtras(profileName, isIncognito);
         extras.putString(
                 SiteSettingsFragmentArgs.FRAGMENT_NAME, SiteSettingsFragmentArgs.SINGLE_WEBSITE);
 
@@ -52,9 +57,8 @@ public class SiteSettingsIntentHelper {
 
     /** Creates an Intent that launches the all sites settings UI. */
     public static Intent createIntentForAllSites(
-            Context context, String profileName, String type, String title) {
-        Bundle extras = new Bundle();
-        extras.putString(SiteSettingsFragmentArgs.PROFILE_NAME, profileName);
+            Context context, String profileName, boolean isIncognito, String type, String title) {
+        Bundle extras = createSiteSettingsExtras(profileName, isIncognito);
         extras.putString(
                 SiteSettingsFragmentArgs.FRAGMENT_NAME, SiteSettingsFragmentArgs.ALL_SITES);
 

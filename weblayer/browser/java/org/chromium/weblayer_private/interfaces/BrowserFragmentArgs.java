@@ -8,4 +8,10 @@ package org.chromium.weblayer_private.interfaces;
 public interface BrowserFragmentArgs {
     String PROFILE_NAME = "profile_name";
     String PERSISTENCE_ID = "persistence_id";
+    /**
+     * A boolean value indicating whether the profile is incognito.
+     *
+     * @since 87
+     */
+    String IS_INCOGNITO = "is_incognito";
 }

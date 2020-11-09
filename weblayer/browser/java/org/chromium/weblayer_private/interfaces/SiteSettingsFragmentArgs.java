@@ -10,6 +10,7 @@ public interface SiteSettingsFragmentArgs {
 
     // Argument names
     String PROFILE_NAME = "profile_name";
+    String IS_INCOGNITO_PROFILE = "is_incognito_profile";
     String FRAGMENT_NAME = "fragment_name";
     String FRAGMENT_ARGUMENTS = "fragment_arguments";
 

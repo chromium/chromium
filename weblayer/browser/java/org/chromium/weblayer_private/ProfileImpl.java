@@ -40,6 +40,7 @@ import java.util.Set;
 @JNINamespace("weblayer")
 public final class ProfileImpl extends IProfile.Stub implements BrowserContextHandle {
     private final String mName;
+    private final boolean mIsIncognito;
     private long mNativeProfile;
     private CookieManagerImpl mCookieManager;
     private PrerenderControllerImpl mPrerenderController;
@@ -55,18 +56,21 @@ public final class ProfileImpl extends IProfile.Stub implements BrowserContextHa
         ProfileImplJni.get().enumerateAllProfileNames(baseCallback);
     }
 
-    ProfileImpl(String name, Runnable onDestroyCallback) {
-        if (!name.matches("^\\w*$")) {
-            throw new IllegalArgumentException("Name can only contain words: " + name);
+    ProfileImpl(String name, boolean isIncognito, Runnable onDestroyCallback) {
+        // Normal profiles have restrictions on the name.
+        if (!isIncognito && !name.matches("^\\w+$")) {
+            throw new IllegalArgumentException(
+                    "Non-incongito profiles names can only contain words: " + name);
         }
+        mIsIncognito = isIncognito;
         mName = name;
-        mNativeProfile = ProfileImplJni.get().createProfile(name, ProfileImpl.this);
+        mNativeProfile = ProfileImplJni.get().createProfile(name, ProfileImpl.this, mIsIncognito);
         mCookieManager =
                 new CookieManagerImpl(ProfileImplJni.get().getCookieManager(mNativeProfile));
         mPrerenderController = new PrerenderControllerImpl(
                 ProfileImplJni.get().getPrerenderController(mNativeProfile));
         mOnDestroyCallback = onDestroyCallback;
-        mDownloadCallbackProxy = new DownloadCallbackProxy(mName, mNativeProfile);
+        mDownloadCallbackProxy = new DownloadCallbackProxy(this);
     }
 
     private void destroyDependentJavaObjects() {
@@ -152,8 +156,9 @@ public final class ProfileImpl extends IProfile.Stub implements BrowserContextHa
         return mUserIdentityCallbackClient;
     }
 
+    @Override
     public boolean isIncognito() {
-        return mName.isEmpty();
+        return mIsIncognito;
     }
 
     public boolean areDownloadsInitialized() {
@@ -300,7 +305,7 @@ public final class ProfileImpl extends IProfile.Stub implements BrowserContextHa
     @NativeMethods
     interface Natives {
         void enumerateAllProfileNames(Callback<String[]> callback);
-        long createProfile(String name, ProfileImpl caller);
+        long createProfile(String name, ProfileImpl caller, boolean isIncognito);
         void deleteProfile(long profile);
         long getBrowserContext(long nativeProfileImpl);
         int getNumBrowserImpl(long nativeProfileImpl);

@@ -417,8 +417,30 @@ public class WebLayer {
     }
 
     /**
-     * Return a list of Profile names currently on disk. This will not include the incognito
-     * profile. This will not include profiles that are being deleted from disk.
+     * Get or create the incognito profile with the name {@link profileName}.
+     *
+     * @param profileName The name of the profile. Null is mapped to an empty string.
+     *
+     * @since 87
+     */
+    @NonNull
+    public Profile getIncognitoProfile(@Nullable String profileName) {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 87) {
+            throw new UnsupportedOperationException();
+        }
+        IProfile iprofile;
+        try {
+            iprofile = mImpl.getIncognitoProfile(sanitizeProfileName(profileName));
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+        return Profile.of(iprofile);
+    }
+
+    /**
+     * Return a list of Profile names currently on disk. This does not include incognito
+     * profiles. This will not include profiles that are being deleted from disk.
      * WebLayer must be initialized before calling this.
      * @since 82
      */
@@ -500,13 +522,44 @@ public class WebLayer {
     @NonNull
     public static Fragment createBrowserFragment(
             @Nullable String profileName, @Nullable String persistenceId) {
+        String sanitizedName = sanitizeProfileName(profileName);
+        boolean isIncognito = "".equals(sanitizedName);
+        return createBrowserFragmentImpl(sanitizedName, persistenceId, isIncognito);
+    }
+
+    /**
+     * Creates a new WebLayer Fragment using the incognito profile with the specified name.
+     *
+     * @param profileName The name of the incongito profile, null is mapped to an empty string.
+     * @param persistenceId If non-null and not empty uniquely identifies the Browser for saving
+     * state.
+     *
+     * @throws UnsupportedOperationException If {@link params} is incognito and name is not empty
+     *         and <= 87.
+     *
+     * @since 87
+     */
+    @NonNull
+    public static Fragment createBrowserFragmentWithIncognitoProfile(
+            @Nullable String profileName, @Nullable String persistenceId) {
+        return createBrowserFragmentImpl(sanitizeProfileName(profileName), persistenceId, true);
+    }
+
+    private static Fragment createBrowserFragmentImpl(
+            @NonNull String profileName, @Nullable String persistenceId, boolean isIncognito) {
         ThreadCheck.ensureOnUiThread();
-        // TODO: use a profile id instead of the path to the actual file.
+        if (WebLayer.getSupportedMajorVersionInternal() < 87 && isIncognito
+                && !"".equals(profileName)) {
+            // Incognito profiles are only allowed to have non-empty names in >= 87.
+            throw new UnsupportedOperationException();
+        }
+
         Bundle args = new Bundle();
-        args.putString(BrowserFragmentArgs.PROFILE_NAME, sanitizeProfileName(profileName));
+        args.putString(BrowserFragmentArgs.PROFILE_NAME, profileName);
         if (persistenceId != null) {
             args.putString(BrowserFragmentArgs.PERSISTENCE_ID, persistenceId);
         }
+        args.putBoolean(BrowserFragmentArgs.IS_INCOGNITO, isIncognito);
         BrowserFragment fragment = new BrowserFragment();
         fragment.setArguments(args);
         return fragment;

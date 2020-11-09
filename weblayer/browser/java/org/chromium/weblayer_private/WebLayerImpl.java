@@ -351,7 +351,14 @@ public final class WebLayerImpl extends IWebLayer.Stub {
     @Override
     public IProfile getProfile(String profileName) {
         StrictModeWorkaround.apply();
-        return mProfileManager.getProfile(profileName);
+        boolean isIncognito = "".equals(profileName);
+        return mProfileManager.getProfile(profileName, isIncognito);
+    }
+
+    @Override
+    public IProfile getIncognitoProfile(String profileName) {
+        StrictModeWorkaround.apply();
+        return mProfileManager.getProfile(profileName, true);
     }
 
     @Override

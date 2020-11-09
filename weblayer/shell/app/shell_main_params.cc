@@ -78,10 +78,11 @@ class MainDelegateImpl : public MainDelegate {
 #if !defined(OS_ANDROID)
   void InitializeProfile() {
     auto* command_line = base::CommandLine::ForCurrentProcess();
-    std::string profile_name =
-        command_line->HasSwitch(switches::kStartInIncognito) ? "" : "web_shell";
+    const bool is_incognito =
+        command_line->HasSwitch(switches::kStartInIncognito);
+    std::string profile_name = is_incognito ? "" : "web_shell";
 
-    profile_ = Profile::Create(profile_name);
+    profile_ = Profile::Create(profile_name, is_incognito);
   }
 
   void DestroyProfile() { profile_.reset(); }

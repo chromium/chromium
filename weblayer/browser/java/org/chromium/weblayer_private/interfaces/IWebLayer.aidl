@@ -104,4 +104,5 @@ interface IWebLayer {
   IObjectWrapper getApplicationContext() = 20;
   IMediaRouteDialogFragment createMediaRouteDialogFragmentImpl(
       in IRemoteFragmentClient remoteFragmentClient) = 21;
+  IProfile getIncognitoProfile(in String profileName) = 24;
 }
