@@ -86,4 +86,4 @@ RepeatingClosure MakeExpectedNotRunClosure(const Location& location,
 
 }  // namespace base
 
-#endif  // BASE_TEST_BIND_TEST_UTIL_H_
+#endif  // BASE_TEST_BIND_H_
