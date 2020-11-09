@@ -85,7 +85,8 @@ enum class RenderTextAPI {
   kIsGraphemeBoundary,
   kIndexOfAdjacentGrapheme,
   kSetObscuredGlyphSpacing,
-  kMaxValue = kSetObscuredGlyphSpacing
+  kSetDisplayRect,
+  kMaxValue = kSetDisplayRect
 };
 
 gfx::DirectionalityMode ConsumeDirectionalityMode(FuzzedDataProvider* fdp) {
@@ -344,6 +345,13 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       case RenderTextAPI::kSetObscuredGlyphSpacing:
         render_text->SetObscuredGlyphSpacing(
             fdp.ConsumeIntegralInRange<size_t>(0, 10));
+        break;
+      case RenderTextAPI::kSetDisplayRect:
+        render_text->SetDisplayRect(
+            gfx::Rect(fdp.ConsumeIntegralInRange<int>(-30, 30),
+                      fdp.ConsumeIntegralInRange<int>(-30, 30),
+                      fdp.ConsumeIntegralInRange<int>(0, 200),
+                      fdp.ConsumeIntegralInRange<int>(0, 30)));
         break;
     }
   }
