@@ -335,6 +335,11 @@ void CaptureLabelView::ScheduleCountDownAnimation() {
 
 bool CaptureLabelView::OnCountDownAnimationCompleted(
     const ui::CallbackLayerAnimationObserver& observer) {
+  // If animation was aborted, return directly to avoid crash as |this| may
+  // no longer be valid.
+  if (observer.aborted_count())
+    return false;
+
   if (timeout_count_down_ == kCountDownEndSeconds) {
     std::move(countdown_finished_callback_).Run();  // |this| is destroyed here.
   } else {

@@ -25,6 +25,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -1276,6 +1277,23 @@ TEST_F(CaptureModeTest, CaptureModeBarButtonTypeHistograms) {
   ClickOnView(GetWindowToggleButton(), event_generator);
   histogram_tester.ExpectBucketCount(kTabletHistogram,
                                      CaptureModeBarButtonType::kWindow, 1);
+}
+
+// Test that cancel recording during countdown won't cause crash.
+TEST_F(CaptureModeTest, CancelCaptureDuringCountDown) {
+  ui::ScopedAnimationDurationScaleMode animatin_scale(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  // Hit Enter to begin recording, Wait for 1 second, then press ESC while count
+  // down is in progress.
+  auto* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_RETURN, event_generator);
+  base::RunLoop loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() { loop.Quit(); }),
+      base::TimeDelta::FromSeconds(1));
+  loop.Run();
+  SendKey(ui::VKEY_ESCAPE, event_generator);
 }
 
 }  // namespace ash

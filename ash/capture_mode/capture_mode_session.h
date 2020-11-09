@@ -19,7 +19,6 @@
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace gfx {
@@ -199,7 +198,7 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   CaptureModeBarView* capture_mode_bar_view_ = nullptr;
 
   // Widget which displays capture region size during a region capture session.
-  views::UniqueWidgetPtr dimensions_label_widget_;
+  std::unique_ptr<views::Widget> dimensions_label_widget_;
 
   // Widget that shows an optional icon and a message in the middle of the
   // screen or in the middle of the capture region and prompts the user what to
@@ -207,7 +206,7 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // and source and can be empty in some cases. And in video capture mode, when
   // starting capturing, the widget will transform into a 3-second countdown
   // timer.
-  views::UniqueWidgetPtr capture_label_widget_;
+  std::unique_ptr<views::Widget> capture_label_widget_;
 
   // Magnifier glass used during a region capture session.
   MagnifierGlass magnifier_glass_;
