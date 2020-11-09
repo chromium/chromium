@@ -402,6 +402,8 @@ void EventReportValidator::ValidateDlpRule(
         expected_rule) {
   ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
                 expected_rule.rule_name());
+  ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
+                expected_rule.rule_id());
 }
 
 void EventReportValidator::ValidateField(

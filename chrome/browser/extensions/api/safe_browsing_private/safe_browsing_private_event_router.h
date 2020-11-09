@@ -73,6 +73,7 @@ class SafeBrowsingPrivateEventRouter
   static const char kKeyNetErrorCode[];
   static const char kKeyClickedThrough[];
   static const char kKeyTriggeredRuleName[];
+  static const char kKeyTriggeredRuleId[];
   static const char kKeyTriggeredRuleInfo[];
   static const char kKeyThreatType[];
   static const char kKeyContentType[];

@@ -80,6 +80,9 @@ void AddAnalysisConnectorVerdictToEvent(
     triggered_rule.SetStringKey(
         extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
         trigger.rule_name());
+    triggered_rule.SetStringKey(
+        extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
+        trigger.rule_id());
 
     triggered_rule_info.Append(std::move(triggered_rule));
   }
@@ -121,6 +124,7 @@ const char SafeBrowsingPrivateEventRouter::kKeyNetErrorCode[] = "netErrorCode";
 const char SafeBrowsingPrivateEventRouter::kKeyClickedThrough[] =
     "clickedThrough";
 const char SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName[] = "ruleName";
+const char SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId[] = "ruleId";
 const char SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo[] =
     "triggeredRuleInfo";
 const char SafeBrowsingPrivateEventRouter::kKeyThreatType[] = "threatType";
