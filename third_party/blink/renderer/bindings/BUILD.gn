@@ -139,6 +139,8 @@ collect_idl_files("web_idl_in_modules_for_testing") {
 }
 
 action_with_pydeps("web_idl_database") {
+  visibility += [ "//tools/privacy_budget/blink_apis:*" ]
+
   # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
   run_under_python2 = true
 
@@ -150,12 +152,11 @@ action_with_pydeps("web_idl_database") {
                      get_target_outputs(":web_idl_in_modules_for_testing")
   runtime_enabled_features_file = "../platform/runtime_enabled_features.json5"
   inputs = input_data_files + [ runtime_enabled_features_file ]
-  output_data_file = "${bindings_output_dir}/web_idl_database.pickle"
-  outputs = [ output_data_file ]
+  outputs = [ web_idl_database_filepath ]
 
   args = [
            "--output",
-           rebase_path(output_data_file, root_build_dir),
+           rebase_path(web_idl_database_filepath, root_build_dir),
            "--runtime_enabled_features",
            rebase_path(runtime_enabled_features_file, root_build_dir),
            "--",
@@ -235,29 +236,6 @@ generate_bindings("generate_bindings_all") {
     outputs += generated_namespace_sources_in_core +
                generated_namespace_sources_in_modules
   }
-}
-
-action_with_pydeps("generate_high_entropy_list") {
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  run_under_python2 = true
-
-  script = "${bindings_scripts_dir}/generate_high_entropy_list.py"
-
-  web_idl_database_outputs = get_target_outputs(":web_idl_database")
-  web_idl_database = web_idl_database_outputs[0]
-
-  inputs = [ web_idl_database ]
-  output_data_file = "${root_build_dir}/high_entropy_list.csv"
-  outputs = [ output_data_file ]
-
-  args = [
-    "--web_idl_database",
-    rebase_path(web_idl_database, root_build_dir),
-    "--output",
-    rebase_path(output_data_file, root_build_dir),
-  ]
-
-  deps = [ ":web_idl_database" ]
 }
 
 # Exposes the libraries that affect the resulting blob image of the V8 context

@@ -178,6 +178,7 @@ bindings_dir = get_path_info(".", "abspath")
 blink_output_dir = "$root_gen_dir/third_party/blink/renderer"
 bindings_output_dir = "$root_gen_dir/third_party/blink/renderer/bindings"
 bindings_core_v8_output_dir = "$bindings_output_dir/core/v8"
+web_idl_database_filepath = "${bindings_output_dir}/web_idl_database.pickle"
 
 bindings_unittest_files =
     get_path_info(
