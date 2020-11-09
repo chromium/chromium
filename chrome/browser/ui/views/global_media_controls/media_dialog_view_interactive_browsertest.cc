@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_observer.h"
@@ -36,6 +37,9 @@
 #include "ui/views/view_utils.h"
 
 using media_session::mojom::MediaSessionAction;
+
+// Global Media Controls are not supported on Chrome OS.
+#if !BUILDFLAG(IS_LACROS)
 
 namespace {
 
@@ -966,3 +970,5 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, LiveCaptionProgressUpdate) {
   EXPECT_EQ("Live Caption (English only)",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 }
+
+#endif  // !BUILDFLAG(IS_LACROS)

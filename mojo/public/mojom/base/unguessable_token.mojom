@@ -5,6 +5,7 @@
 module mojo_base.mojom;
 
 // Corresponds to |base::UnguessableToken| in base/unguessable_token.h
+[Stable]
 struct UnguessableToken {
   uint64 high;
   uint64 low;

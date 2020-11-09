@@ -32,6 +32,7 @@
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/device_service.h"
+#include "content/public/browser/media_session_service.h"
 
 namespace crosapi {
 
@@ -112,6 +113,25 @@ void AshChromeServiceImpl::BindHidManager(
 void AshChromeServiceImpl::BindFeedback(
     mojo::PendingReceiver<mojom::Feedback> receiver) {
   feedback_ash_ = std::make_unique<FeedbackAsh>(std::move(receiver));
+}
+
+void AshChromeServiceImpl::BindMediaSessionController(
+    mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
+        receiver) {
+  content::GetMediaSessionService().BindMediaControllerManager(
+      std::move(receiver));
+}
+
+void AshChromeServiceImpl::BindMediaSessionAudioFocus(
+    mojo::PendingReceiver<media_session::mojom::AudioFocusManager> receiver) {
+  content::GetMediaSessionService().BindAudioFocusManager(std::move(receiver));
+}
+
+void AshChromeServiceImpl::BindMediaSessionAudioFocusDebug(
+    mojo::PendingReceiver<media_session::mojom::AudioFocusManagerDebug>
+        receiver) {
+  content::GetMediaSessionService().BindAudioFocusManagerDebug(
+      std::move(receiver));
 }
 
 void AshChromeServiceImpl::OnLacrosStartup(mojom::LacrosInfoPtr lacros_info) {
