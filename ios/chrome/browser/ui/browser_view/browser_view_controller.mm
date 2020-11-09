@@ -991,7 +991,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                 headerBehaviour:Hideable]];
     }
   } else {
-    if (self.tabStripView && !base::FeatureList::IsEnabled(kModernTabStrip)) {
+    if (self.tabStripView) {
       [results addObject:[HeaderDefinition definitionWithView:self.tabStripView
                                               headerBehaviour:Hideable]];
     }
