@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -35,6 +36,7 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_service.mojom.h"
 #include "content/public/test/test_utils.h"
+#include "net/base/test_completion_callback.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
@@ -1439,6 +1441,36 @@ TEST_F(ServiceWorkerVersionTest, AddMessageToConsole) {
   loop.Run();
   ASSERT_EQ(1UL, service_worker->console_messages().size());
   EXPECT_EQ(test_message, service_worker->console_messages()[0]);
+}
+
+// Test that writing metadata aborts gracefully when a remote connection to
+// the Storage Service is disconnected.
+TEST_F(ServiceWorkerVersionTest, WriteMetadata_RemoteStorageDisconnection) {
+  const std::string kMetadata("Test metadata");
+
+  net::TestCompletionCallback completion;
+  version_->script_cache_map()->WriteMetadata(
+      version_->script_url(), base::as_bytes(base::make_span(kMetadata)),
+      completion.callback());
+
+  helper_->context()->registry()->SimulateStorageRestartForTesting();
+
+  ASSERT_EQ(completion.WaitForResult(), net::ERR_FAILED);
+}
+
+// Test that writing metadata aborts gracefully when the storage is disabled.
+TEST_F(ServiceWorkerVersionTest, WriteMetadata_StorageDisabled) {
+  const std::string kMetadata("Test metadata");
+
+  helper_->context()->registry()->GetRemoteStorageControl()->Disable();
+  helper_->context()->registry()->GetRemoteStorageControl().FlushForTesting();
+
+  net::TestCompletionCallback completion;
+  version_->script_cache_map()->WriteMetadata(
+      version_->script_url(), base::as_bytes(base::make_span(kMetadata)),
+      completion.callback());
+
+  ASSERT_EQ(completion.WaitForResult(), net::ERR_FAILED);
 }
 
 class ServiceWorkerVersionTerminationOnNoControlleeTest

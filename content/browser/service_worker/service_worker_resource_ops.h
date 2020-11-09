@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/browser/service_worker/service_worker_disk_cache.h"
+#include "content/common/content_export.h"
 
 namespace content {
 
@@ -108,7 +109,7 @@ class DiskEntryOpener {
 };
 
 // The implementation of storage::mojom::ServiceWorkerResourceReader.
-class ServiceWorkerResourceReaderImpl
+class CONTENT_EXPORT ServiceWorkerResourceReaderImpl
     : public storage::mojom::ServiceWorkerResourceReader {
  public:
   ServiceWorkerResourceReaderImpl(
@@ -175,7 +176,7 @@ class ServiceWorkerResourceReaderImpl
 };
 
 // The implementation of storage::mojom::ServiceWorkerResourceWriter.
-class ServiceWorkerResourceWriterImpl
+class CONTENT_EXPORT ServiceWorkerResourceWriterImpl
     : public storage::mojom::ServiceWorkerResourceWriter {
  public:
   ServiceWorkerResourceWriterImpl(
@@ -234,7 +235,7 @@ class ServiceWorkerResourceWriterImpl
 };
 
 // The implementation of storage::mojom::ServiceWorkerResourceMetadataWriter.
-class ServiceWorkerResourceMetadataWriterImpl
+class CONTENT_EXPORT ServiceWorkerResourceMetadataWriterImpl
     : public storage::mojom::ServiceWorkerResourceMetadataWriter {
  public:
   ServiceWorkerResourceMetadataWriterImpl(

@@ -97,7 +97,7 @@ void ServiceWorkerScriptCacheMap::WriteMetadata(
     base::span<const uint8_t> data,
     net::CompletionOnceCallback callback) {
   if (!context_) {
-    std::move(callback).Run(net::ERR_ABORTED);
+    std::move(callback).Run(net::ERR_FAILED);
     return;
   }
 
@@ -109,16 +109,25 @@ void ServiceWorkerScriptCacheMap::WriteMetadata(
     return;
   }
 
+  int64_t resource_id = found->second->resource_id;
   mojo_base::BigBuffer buffer(base::as_bytes(data));
+
+  DCHECK(!base::Contains(callbacks_, resource_id));
+  callbacks_[resource_id] = std::move(callback);
+
   mojo::Remote<storage::mojom::ServiceWorkerResourceMetadataWriter> writer;
   context_->GetStorageControl()->CreateResourceMetadataWriter(
-      found->second->resource_id, writer.BindNewPipeAndPassReceiver());
+      resource_id, writer.BindNewPipeAndPassReceiver());
+  writer.set_disconnect_handler(
+      base::BindOnce(&ServiceWorkerScriptCacheMap::OnWriterDisconnected,
+                     weak_factory_.GetWeakPtr(), resource_id));
+
   auto* raw_writer = writer.get();
   raw_writer->WriteMetadata(
       std::move(buffer),
       base::BindOnce(&ServiceWorkerScriptCacheMap::OnMetadataWritten,
                      weak_factory_.GetWeakPtr(), std::move(writer),
-                     std::move(callback)));
+                     resource_id));
 }
 
 void ServiceWorkerScriptCacheMap::ClearMetadata(
@@ -127,11 +136,22 @@ void ServiceWorkerScriptCacheMap::ClearMetadata(
   WriteMetadata(url, std::vector<uint8_t>(), std::move(callback));
 }
 
+void ServiceWorkerScriptCacheMap::OnWriterDisconnected(int64_t resource_id) {
+  RunCallback(resource_id, net::ERR_FAILED);
+}
+
 void ServiceWorkerScriptCacheMap::OnMetadataWritten(
     mojo::Remote<storage::mojom::ServiceWorkerResourceMetadataWriter> writer,
-    net::CompletionOnceCallback callback,
+    int64_t resource_id,
     int result) {
-  std::move(callback).Run(result);
+  RunCallback(resource_id, result);
+}
+
+void ServiceWorkerScriptCacheMap::RunCallback(int64_t resource_id, int result) {
+  auto it = callbacks_.find(resource_id);
+  DCHECK(it != callbacks_.end());
+  std::move(it->second).Run(result);
+  callbacks_.erase(it);
 }
 
 }  // namespace content
