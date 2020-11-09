@@ -122,10 +122,13 @@ struct VideoCaptureImpl::BufferContext
     DCHECK(buffer_context->media_task_runner_->BelongsToCurrentThread());
     DCHECK(buffer_context->gpu_factories_);
     DCHECK_EQ(info->pixel_format, media::PIXEL_FORMAT_NV12);
-    DCHECK_EQ(
-        buffer_context->gpu_factories_->VideoFrameOutputFormat(
-            info->pixel_format),
-        media::GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB);
+
+    bool should_recreate_shared_image = false;
+    if (gpu_factories != buffer_context->gpu_factories_) {
+      DVLOG(1) << "GPU context changed; re-creating SharedImage objects";
+      buffer_context->gpu_factories_ = gpu_factories;
+      should_recreate_shared_image = true;
+    }
 
     // Create GPU texture and bind GpuMemoryBuffer to the texture.
     auto* sii = buffer_context->gpu_factories_->SharedImageInterface();
