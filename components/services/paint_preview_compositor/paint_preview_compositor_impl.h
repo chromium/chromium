@@ -39,6 +39,10 @@ class PaintPreviewCompositorImpl : public mojom::PaintPreviewCompositor {
       base::OnceClosure disconnect_handler);
   ~PaintPreviewCompositorImpl() override;
 
+  PaintPreviewCompositorImpl(const PaintPreviewCompositorImpl&) = delete;
+  PaintPreviewCompositorImpl& operator=(const PaintPreviewCompositorImpl&) =
+      delete;
+
   // PaintPreviewCompositor implementation.
   void BeginSeparatedFrameComposite(
       mojom::PaintPreviewBeginCompositeRequestPtr request,
@@ -57,6 +61,9 @@ class PaintPreviewCompositorImpl : public mojom::PaintPreviewCompositor {
   void SetRootFrameUrl(const GURL& url) override;
 
  private:
+  void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+
   // Adds |frame_proto| to |frames_| and copies required data into |response|.
   // Consumes the corresponding file in |file_map|. Returns true on success.
   bool AddFrame(
@@ -96,9 +103,9 @@ class PaintPreviewCompositorImpl : public mojom::PaintPreviewCompositor {
   // Must be modified only by |BeginMainFrameComposite|.
   sk_sp<SkPicture> root_frame_;
 
-  PaintPreviewCompositorImpl(const PaintPreviewCompositorImpl&) = delete;
-  PaintPreviewCompositorImpl& operator=(const PaintPreviewCompositorImpl&) =
-      delete;
+  std::unique_ptr<base::MemoryPressureListener> listener_;
+
+  base::WeakPtrFactory<PaintPreviewCompositorImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace paint_preview

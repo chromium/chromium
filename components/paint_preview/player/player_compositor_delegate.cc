@@ -123,14 +123,15 @@ void PlayerCompositorDelegate::Initialize(
                                     "PlayerCompositorDelegate CreateCompositor",
                                     TRACE_ID_LOCAL(this));
   auto* memory_monitor = memory_pressure_monitor();
+  // If the device is already under moderate memory pressure abort right away.
   if (memory_monitor &&
       memory_monitor->GetCurrentPressureLevel() >=
-          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(compositor_error),
                        static_cast<int>(
-                           CompositorStatus::STOPPED_DUE_TO_MEMORY_PRESSURE)));
+                           CompositorStatus::SKIPPED_DUE_TO_MEMORY_PRESSURE)));
     return;
   }
 
@@ -420,6 +421,11 @@ void PlayerCompositorDelegate::ProcessBitmapRequestsFromQueue() {
 
     BitmapRequest& request = it->second;
     active_requests_++;
+    // If the client disconnects mid request, just give up as we should be
+    // exiting.
+    if (!paint_preview_compositor_client_)
+      return;
+
     paint_preview_compositor_client_->BitmapForSeparatedFrame(
         request.frame_guid, request.clip_rect, request.scale_factor,
         std::move(request.callback));

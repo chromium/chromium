@@ -11,7 +11,9 @@ import android.util.Size;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.UnguessableToken;
+import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 
@@ -153,12 +155,16 @@ public class PlayerFrameBitmapState {
             }
         }
 
-        // Request bitmaps for adjacent tiles that are not currently in the view port. The reason
-        // that we do this in a separate loop is to make sure bitmaps for tiles inside the view port
-        // are fetched first.
-        for (int col = colStart; col < colEnd; col++) {
-            for (int row = rowStart; row < rowEnd; row++) {
-                requestBitmapForAdjacentTiles(row, col);
+        // Only fetch out-of-viewport bitmaps eagerly if not under memory pressure.
+        if (MemoryPressureMonitor.INSTANCE.getLastReportedPressure()
+                < MemoryPressureLevel.MODERATE) {
+            // Request bitmaps for adjacent tiles that are not currently in the view port. The
+            // reason that we do this in a separate loop is to make sure bitmaps for tiles inside
+            // the view port are fetched first.
+            for (int col = colStart; col < colEnd; col++) {
+                for (int row = rowStart; row < rowEnd; row++) {
+                    requestBitmapForAdjacentTiles(row, col);
+                }
             }
         }
 

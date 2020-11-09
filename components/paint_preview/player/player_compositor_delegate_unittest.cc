@@ -850,7 +850,7 @@ TEST_F(PlayerCompositorDelegateTest, CriticalMemoryPressureBeforeStart) {
             [](base::OnceClosure quit, int compositor_status) {
               EXPECT_EQ(compositor_status,
                         static_cast<int>(
-                            CompositorStatus::STOPPED_DUE_TO_MEMORY_PRESSURE));
+                            CompositorStatus::SKIPPED_DUE_TO_MEMORY_PRESSURE));
               std::move(quit).Run();
             },
             loop.QuitClosure()),
