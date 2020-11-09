@@ -12,27 +12,6 @@
 
 namespace web {
 
-bool IsSafeBrowsingWarningDisplayedInWebView(WKWebView* web_view) {
-  // A SafeBrowsing warning is a UIScrollView that is inserted on top of
-  // WKWebView's scroll view. This method uses heuristics to detect this view.
-  // It may break in the future if WebKit's implementation of SafeBrowsing
-  // warnings changes.
-  UIView* containing_view = web_view.scrollView.superview;
-  if (!containing_view)
-    return false;
-
-  UIView* top_view = containing_view.subviews.lastObject;
-
-  if (top_view == web_view.scrollView)
-    return false;
-
-  return [top_view isKindOfClass:[UIScrollView class]] &&
-         [NSStringFromClass([top_view class]) containsString:@"Warning"] &&
-         top_view.subviews.count > 0 &&
-         [top_view.subviews.firstObject.subviews.lastObject
-             isKindOfClass:[UIButton class]];
-}
-
 bool RequiresContentFilterBlockingWorkaround() {
   // This is fixed in iOS13 beta 7.
   if (@available(iOS 13, *))

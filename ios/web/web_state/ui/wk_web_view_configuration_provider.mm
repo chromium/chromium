@@ -135,12 +135,9 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
 
     // WKWebView's "fradulentWebsiteWarning" is an iOS 13+ feature that is
     // conceptually similar to Safe Browsing but uses a non-Google provider and
-    // only works for devices in certain locales. Disable this feature when
-    // Safe Browsing is available.
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::kSafeBrowsingAvailableOnIOS)) {
-      [[configuration_ preferences] setFraudulentWebsiteWarningEnabled:NO];
-    }
+    // only works for devices in certain locales. Disable this feature since
+    // Chrome uses Google-provided Safe Browsing.
+    [[configuration_ preferences] setFraudulentWebsiteWarningEnabled:NO];
   }
 
   [configuration_ setAllowsInlineMediaPlayback:YES];

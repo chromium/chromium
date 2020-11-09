@@ -7,7 +7,6 @@
 #import <Foundation/Foundation.h>
 
 #include "base/test/scoped_feature_list.h"
-#include "components/safe_browsing/core/features.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -41,8 +40,6 @@ class SafeBrowsingTabHelperTest
   SafeBrowsingTabHelperTest()
       : task_environment_(web::WebTaskEnvironment::IO_MAINLOOP),
         browser_state_(TestChromeBrowserState::Builder().Build()) {
-    feature_list_.InitAndEnableFeature(
-        safe_browsing::kSafeBrowsingAvailableOnIOS);
     SafeBrowsingQueryManager::CreateForWebState(&web_state_);
     SafeBrowsingTabHelper::CreateForWebState(&web_state_);
     SafeBrowsingUrlAllowList::CreateForWebState(&web_state_);
@@ -156,7 +153,6 @@ class SafeBrowsingTabHelperTest
   web::TestWebState web_state_;
   bool is_web_state_for_prerender_ = false;
   web::TestNavigationManager* navigation_manager_ = nullptr;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests the case of a single navigation request and response, for a URL that is

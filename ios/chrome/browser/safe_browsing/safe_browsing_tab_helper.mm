@@ -70,10 +70,7 @@ GURL GetCanonicalizedUrl(const GURL& url) {
 SafeBrowsingTabHelper::SafeBrowsingTabHelper(web::WebState* web_state)
     : policy_decider_(web_state),
       query_observer_(web_state, &policy_decider_),
-      navigation_observer_(web_state, &policy_decider_) {
-  DCHECK(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingAvailableOnIOS));
-}
+      navigation_observer_(web_state, &policy_decider_) {}
 
 SafeBrowsingTabHelper::~SafeBrowsingTabHelper() = default;
 

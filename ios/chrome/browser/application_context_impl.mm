@@ -34,7 +34,6 @@
 #include "components/network_time/network_time_tracker.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/features.h"
 #include "components/sessions/core/session_id_generator.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/ukm/ukm_service.h"
@@ -425,9 +424,7 @@ ApplicationContextImpl::GetComponentUpdateService() {
 
 SafeBrowsingService* ApplicationContextImpl::GetSafeBrowsingService() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingAvailableOnIOS) &&
-      !safe_browsing_service_) {
+  if (!safe_browsing_service_) {
     safe_browsing_service_ = base::MakeRefCounted<SafeBrowsingServiceImpl>();
   }
   return safe_browsing_service_.get();

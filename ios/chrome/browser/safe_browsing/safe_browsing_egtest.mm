@@ -97,7 +97,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(safe_browsing::kSafeBrowsingAvailableOnIOS);
   config.features_enabled.push_back(safe_browsing::kRealTimeUrlLookupEnabled);
   // EnableCloseAllTabsConfirmation feature is disabled in order to be able to
   // restore session from |triggerRestoreViaTabGridRemoveAllUndo|.

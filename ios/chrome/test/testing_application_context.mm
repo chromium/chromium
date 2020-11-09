@@ -11,7 +11,6 @@
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "components/network_time/network_time_tracker.h"
-#include "components/safe_browsing/core/features.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/policy/configuration_policy_handler_list_factory.h"
 #import "ios/chrome/browser/safe_browsing/fake_safe_browsing_service.h"
@@ -192,8 +191,6 @@ TestingApplicationContext::GetComponentUpdateService() {
 
 SafeBrowsingService* TestingApplicationContext::GetSafeBrowsingService() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingAvailableOnIOS));
   if (!fake_safe_browsing_service_) {
     fake_safe_browsing_service_ =
         base::MakeRefCounted<FakeSafeBrowsingService>();

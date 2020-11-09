@@ -139,13 +139,10 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     BreadcrumbManagerTabHelper::CreateForWebState(web_state);
   }
 
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingAvailableOnIOS)) {
-    SafeBrowsingQueryManager::CreateForWebState(web_state);
-    SafeBrowsingTabHelper::CreateForWebState(web_state);
-    SafeBrowsingUrlAllowList::CreateForWebState(web_state);
-    SafeBrowsingUnsafeResourceContainer::CreateForWebState(web_state);
-  }
+  SafeBrowsingQueryManager::CreateForWebState(web_state);
+  SafeBrowsingTabHelper::CreateForWebState(web_state);
+  SafeBrowsingUrlAllowList::CreateForWebState(web_state);
+  SafeBrowsingUnsafeResourceContainer::CreateForWebState(web_state);
 
   if (IsURLBlocklistEnabled()) {
     PolicyUrlBlockingTabHelper::CreateForWebState(web_state);

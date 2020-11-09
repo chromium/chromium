@@ -18,7 +18,6 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/core/features.h"
 #include "components/safety_check/safety_check.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/application_context.h"
@@ -65,7 +64,6 @@
 #endif
 
 using l10n_util::GetNSString;
-using safe_browsing::kSafeBrowsingAvailableOnIOS;
 
 namespace {
 

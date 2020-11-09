@@ -467,9 +467,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          web::features::kIOSLookalikeUrlNavigationSuggestionsUI)},
-    {"safe-browsing-available", flag_descriptions::kSafeBrowsingAvailableName,
-     flag_descriptions::kSafeBrowsingAvailableDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(safe_browsing::kSafeBrowsingAvailableOnIOS)},
     {"safe-browsing-real-time",
      flag_descriptions::kSafeBrowsingRealTimeLookupName,
      flag_descriptions::kSafeBrowsingRealTimeLookupDescription,

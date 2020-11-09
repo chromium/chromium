@@ -272,9 +272,7 @@ TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePages) {
 // expected.
 TEST_F(SafeBrowsingServiceTest, RealTimeSafeAndUnsafePages) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({safe_browsing::kSafeBrowsingAvailableOnIOS,
-                                 safe_browsing::kRealTimeUrlLookupEnabled},
-                                {});
+  feature_list.InitWithFeatures({safe_browsing::kRealTimeUrlLookupEnabled}, {});
   TestingApplicationContext::GetGlobal();
 
   // Opt into real-time checks.

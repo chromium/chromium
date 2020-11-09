@@ -11,9 +11,6 @@
 #include "base/callback.h"
 
 namespace web {
-// Returns true if a SafeBrowsing warning is currently displayed within
-// |web_view|.
-bool IsSafeBrowsingWarningDisplayedInWebView(WKWebView* web_view);
 
 // Returns true if workaround for loading restricted URLs should be applied.
 // TODO(crbug.com/954332): Remove this workaround when iOS 12 is dropped.

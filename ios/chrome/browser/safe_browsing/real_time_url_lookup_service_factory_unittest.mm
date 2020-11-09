@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/safe_browsing/real_time_url_lookup_service_factory.h"
 
-#include "base/test/scoped_feature_list.h"
-#include "components/safe_browsing/core/features.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
@@ -17,14 +15,10 @@
 class RealTimeUrlLookupServiceFactoryTest : public PlatformTest {
  protected:
   RealTimeUrlLookupServiceFactoryTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()) {
-    feature_list_.InitAndEnableFeature(
-        safe_browsing::kSafeBrowsingAvailableOnIOS);
-  }
+      : browser_state_(TestChromeBrowserState::Builder().Build()) {}
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Checks that RealTimeUrlLookupServiceFactory returns a null for an

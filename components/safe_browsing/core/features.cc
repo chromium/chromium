@@ -126,9 +126,6 @@ const base::Feature kRealTimeUrlLookupNonMainframeEnabledForEP{
     "SafeBrowsingRealTimeUrlLookupNonMainframeEnabledForEP",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kSafeBrowsingAvailableOnIOS{
-    "SafeBrowsingAvailableOnIOS", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kSafeBrowsingSeparateNetworkContexts{
     "SafeBrowsingSeparateNetworkContexts", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -183,7 +180,6 @@ constexpr struct {
     {&kRealTimeUrlLookupEnabledForEPWithToken, true},
     {&kRealTimeUrlLookupEnabledWithToken, true},
     {&kRealTimeUrlLookupNonMainframeEnabledForEP, true},
-    {&kSafeBrowsingAvailableOnIOS, true},
     {&kSafeBrowsingSeparateNetworkContexts, true},
     {&kSafeBrowsingSectionUIAndroid, true},
     {&kSuspiciousSiteTriggerQuotaFeature, true},

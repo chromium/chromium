@@ -31,7 +31,6 @@
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/rappor/rappor_service_impl.h"
-#include "components/safe_browsing/core/features.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/ukm/ios/features.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
@@ -261,16 +260,13 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
         application_context_->GetSharedURLLoaderFactory());
   }
 
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingAvailableOnIOS)) {
-    // Ensure that Safe Browsing is initialized.
-    SafeBrowsingService* safe_browsing_service =
-        application_context_->GetSafeBrowsingService();
-    base::FilePath user_data_path;
-    CHECK(base::PathService::Get(ios::DIR_USER_DATA, &user_data_path));
-    safe_browsing_service->Initialize(last_used_browser_state->GetPrefs(),
-                                      user_data_path);
-  }
+  // Ensure that Safe Browsing is initialized.
+  SafeBrowsingService* safe_browsing_service =
+      application_context_->GetSafeBrowsingService();
+  base::FilePath user_data_path;
+  CHECK(base::PathService::Get(ios::DIR_USER_DATA, &user_data_path));
+  safe_browsing_service->Initialize(last_used_browser_state->GetPrefs(),
+                                    user_data_path);
 }
 
 void IOSChromeMainParts::PostMainMessageLoopRun() {

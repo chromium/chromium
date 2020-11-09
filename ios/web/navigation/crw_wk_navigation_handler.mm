@@ -82,12 +82,6 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
 }  // namespace
 
 @interface CRWWKNavigationHandler () {
-  // Used to poll for a SafeBrowsing warning being displayed. This is created in
-  // |decidePolicyForNavigationAction| and destroyed once any of the following
-  // happens: 1) a SafeBrowsing warning is detected; 2) any WKNavigationDelegate
-  // method is called; 3) |stopLoading| is called.
-  base::RepeatingTimer _safeBrowsingWarningDetectionTimer;
-
   // Referrer for the current page; does not include the fragment.
   NSString* _currentReferrerString;
 
@@ -488,48 +482,6 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
         return;
       }
     }
-  }
-
-  // Only try to detect a SafeBrowsing warning if one isn't already displayed,
-  // since the detection logic won't be able to distinguish between the current
-  // warning and a warning for the page that's about to be loaded. Also, since
-  // the purpose of running this logic is to ensure that the right URL is
-  // displayed in the omnibox, don't try to detect a SafeBrowsing warning for
-  // iframe navigations, because the omnibox already shows the correct main
-  // frame URL in that case.
-  if (policyDecision.ShouldAllowNavigation() && isMainFrameNavigationAction &&
-      !web::IsSafeBrowsingWarningDisplayedInWebView(webView)) {
-    __weak CRWWKNavigationHandler* weakSelf = self;
-    __weak WKWebView* weakWebView = webView;
-    const base::TimeDelta kDelayUntilSafeBrowsingWarningCheck =
-        base::TimeDelta::FromMilliseconds(20);
-    _safeBrowsingWarningDetectionTimer.Start(
-        FROM_HERE, kDelayUntilSafeBrowsingWarningCheck, base::BindRepeating(^{
-          __strong __typeof(weakSelf) strongSelf = weakSelf;
-          __strong __typeof(weakWebView) strongWebView = weakWebView;
-          if (web::IsSafeBrowsingWarningDisplayedInWebView(strongWebView)) {
-            // Extract state from an existing navigation context if one exists.
-            // Create a new context rather than just re-using the existing one,
-            // since the existing context will continue to be used if the user
-            // decides to proceed to the unsafe page. In that case, WebKit
-            // continues the navigation with the same WKNavigation* that's
-            // associated with the existing context.
-            web::NavigationContextImpl* existingContext = [strongSelf
-                contextForPendingMainFrameNavigationWithURL:requestURL];
-            bool hasUserGesture =
-                existingContext ? existingContext->HasUserGesture() : false;
-            bool isRendererInitiated =
-                existingContext ? existingContext->IsRendererInitiated() : true;
-            std::unique_ptr<web::NavigationContextImpl> context =
-                web::NavigationContextImpl::CreateNavigationContext(
-                    strongSelf.webStateImpl, requestURL, hasUserGesture,
-                    transition, isRendererInitiated);
-            [strongSelf navigationManagerImpl] -> AddTransientItem(requestURL);
-            strongSelf.webStateImpl->OnNavigationStarted(context.get());
-            strongSelf.webStateImpl->OnNavigationFinished(context.get());
-            strongSelf->_safeBrowsingWarningDetectionTimer.Stop();
-          }
-        }));
   }
 
   if (policyDecision.ShouldCancelNavigation()) {
@@ -1360,13 +1312,9 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
              : nullptr;
 }
 
-// This method should be called on receiving WKNavigationDelegate callbacks. It
-// stops the SafeBrowsing warning detection timer, since after this point it's
-// too late for a SafeBrowsing warning to be displayed for the navigation for
-// which the timer was started.
+// This method should be called on receiving WKNavigationDelegate callbacks.
 - (void)didReceiveWKNavigationDelegateCallback {
   DCHECK(!self.beingDestroyed);
-  _safeBrowsingWarningDetectionTimer.Stop();
 }
 
 // Extracts navigation info from WKNavigationAction and sets it as a pending.
@@ -2384,7 +2332,6 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
 
 - (void)stopLoading {
   self.pendingNavigationInfo.cancelled = YES;
-  _safeBrowsingWarningDetectionTimer.Stop();
   [self loadCancelled];
   _certVerificationErrors->Clear();
 }
@@ -2633,12 +2580,6 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
       self.navigationManagerImpl->GetLastCommittedItem()->SetURL(
           context->GetUrl());
     }
-    // If a SafeBrowsing warning is currently displayed, the user has tapped
-    // the button on the warning page to proceed to the site, the site has
-    // started loading, and the warning is about to be removed. In this case,
-    // the transient item for the warning needs to be removed too.
-    if (web::IsSafeBrowsingWarningDisplayedInWebView(webView))
-      self.navigationManagerImpl->DiscardNonCommittedItems();
   }
 }
 

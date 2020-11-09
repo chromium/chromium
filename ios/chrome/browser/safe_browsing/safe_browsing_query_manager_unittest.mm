@@ -6,8 +6,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/test/scoped_feature_list.h"
-#include "components/safe_browsing/core/features.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/chrome/browser/safe_browsing/fake_safe_browsing_service.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
@@ -82,8 +80,6 @@ class SafeBrowsingQueryManagerTest
         http_method_("GET"),
         navigation_item_id_(
             GetParam() == safe_browsing::ResourceType::kMainFrame ? -1 : 0) {
-    feature_list_.InitAndEnableFeature(
-        safe_browsing::kSafeBrowsingAvailableOnIOS);
     SafeBrowsingQueryManager::CreateForWebState(web_state_.get());
     manager()->AddObserver(&observer_);
   }
@@ -93,7 +89,6 @@ class SafeBrowsingQueryManagerTest
   }
 
   web::WebTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
   MockQueryManagerObserver observer_;
   std::unique_ptr<web::WebState> web_state_;
   std::string http_method_;

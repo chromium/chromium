@@ -11,7 +11,6 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/core/features.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #include "components/sync/driver/sync_service.h"
@@ -50,7 +49,6 @@
 #endif
 
 using l10n_util::GetNSString;
-using safe_browsing::kSafeBrowsingAvailableOnIOS;
 
 typedef NSArray<TableViewItem*>* ItemArray;
 
@@ -629,31 +627,28 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
                         dataType:0];
       [items addObject:autocompleteItem];
     }
-    if (base::FeatureList::IsEnabled(kSafeBrowsingAvailableOnIOS)) {
-      if (base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) &&
-          self.userPrefService->IsManagedPreference(
-              prefs::kSafeBrowsingEnabled)) {
-        TableViewInfoButtonItem* safeBrowsingManagedItem = [self
-            TableViewInfoButtonItemType:
-                AutocompleteSearchesAndURLsManagedItemType
-                           textStringID:
-                               IDS_IOS_GOOGLE_SERVICES_SETTINGS_SAFE_BROWSING_TEXT
-                         detailStringID:
-                             IDS_IOS_GOOGLE_SERVICES_SETTINGS_SAFE_BROWSING_DETAIL
-                                 status:self.safeBrowsingPreference];
-        [items addObject:safeBrowsingManagedItem];
-      } else {
-        SyncSwitchItem* safeBrowsingItem = [self
-            switchItemWithItemType:SafeBrowsingItemType
-                      textStringID:
-                          IDS_IOS_GOOGLE_SERVICES_SETTINGS_SAFE_BROWSING_TEXT
-                    detailStringID:
-                        IDS_IOS_GOOGLE_SERVICES_SETTINGS_SAFE_BROWSING_DETAIL
-                          dataType:0];
-        safeBrowsingItem.accessibilityIdentifier =
-            kSafeBrowsingItemAccessibilityIdentifier;
-        [items addObject:safeBrowsingItem];
-      }
+    if (base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) &&
+        self.userPrefService->IsManagedPreference(
+            prefs::kSafeBrowsingEnabled)) {
+      TableViewInfoButtonItem* safeBrowsingManagedItem = [self
+          TableViewInfoButtonItemType:AutocompleteSearchesAndURLsManagedItemType
+                         textStringID:
+                             IDS_IOS_GOOGLE_SERVICES_SETTINGS_SAFE_BROWSING_TEXT
+                       detailStringID:
+                           IDS_IOS_GOOGLE_SERVICES_SETTINGS_SAFE_BROWSING_DETAIL
+                               status:self.safeBrowsingPreference];
+      [items addObject:safeBrowsingManagedItem];
+    } else {
+      SyncSwitchItem* safeBrowsingItem = [self
+          switchItemWithItemType:SafeBrowsingItemType
+                    textStringID:
+                        IDS_IOS_GOOGLE_SERVICES_SETTINGS_SAFE_BROWSING_TEXT
+                  detailStringID:
+                      IDS_IOS_GOOGLE_SERVICES_SETTINGS_SAFE_BROWSING_DETAIL
+                        dataType:0];
+      safeBrowsingItem.accessibilityIdentifier =
+          kSafeBrowsingItemAccessibilityIdentifier;
+      [items addObject:safeBrowsingItem];
     }
     [items addObject:self.passwordLeakCheckItem];
     SyncSwitchItem* improveChromeItem =
