@@ -1434,15 +1434,21 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
     CHECK(!process_lock.is_locked_to_site())
         << "A process that's already locked to " << process_lock.ToString()
         << " cannot be updated to a more permissive lock";
+    // Update the process lock state to signal that the process has been
+    // associated with a SiteInstance that is not locked to a site yet.  Note
+    // that even if the process lock is already set to a lock that allows any
+    // site, we still need to notify ChildProcessSecurityPolicy about the
+    // current SiteInstance's IsolationContext, so that the corresponding
+    // BrowsingInstance can be associated with |process_|.  See
+    // https://crbug.com/1135539.
     if (process_lock.is_invalid()) {
-      // Update the process lock state to signal that the process has been
-      // associated with a SiteInstance that is not locked to a site yet.
       auto new_process_lock =
           ProcessLock::CreateAllowAnySite(GetCoopCoepCrossOriginIsolatedInfo());
       process_->SetProcessLock(GetIsolationContext(), new_process_lock);
     } else {
       CHECK(process_lock.allows_any_site())
           << "Unexpected process lock " << process_lock.ToString();
+      policy->IncludeIsolationContext(process_->GetID(), GetIsolationContext());
     }
     return;
   }

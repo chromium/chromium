@@ -9078,6 +9078,64 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   }
 }
 
+// Helper class to run tests without site isolation.
+class RenderFrameHostManagerNoSiteIsolationTest
+    : public RenderFrameHostManagerTest {
+ public:
+  RenderFrameHostManagerNoSiteIsolationTest() = default;
+  ~RenderFrameHostManagerNoSiteIsolationTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kDisableSiteIsolation);
+  }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(RenderFrameHostManagerNoSiteIsolationTest);
+};
+
+// Ensure that when a process that allows any site gets reused by new
+// BrowsingInstances, ChildProcessSecurityPolicy gets notified about those new
+// BrowsingInstances.  Failure to do so will lead to a crash at commit time due
+// to mismatched process locks.  See https://crbug.com/1141877.
+IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerNoSiteIsolationTest,
+                       IncludeIsolationContextInProcessThatAllowsAnySite) {
+  StartEmbeddedServer();
+  // Ensure we have one renderer process that's reused for everything.
+  RenderProcessHost::SetMaxRendererProcessCount(1);
+
+  // The test starts out with an initial window with a blank SiteInstance.
+  // Create a new window in a new BrowsingInstance and another blank
+  // SiteInstance.
+  Shell* shell2 =
+      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
+                             GURL(), nullptr, gfx::Size());
+  SiteInstanceImpl* old_instance = static_cast<SiteInstanceImpl*>(
+      shell()->web_contents()->GetMainFrame()->GetSiteInstance());
+  SiteInstanceImpl* new_instance = static_cast<SiteInstanceImpl*>(
+      shell2->web_contents()->GetMainFrame()->GetSiteInstance());
+  EXPECT_FALSE(old_instance->IsRelatedSiteInstance(new_instance));
+
+  // At this point, neither SiteInstance should have a site assigned.
+  EXPECT_FALSE(old_instance->HasSite());
+  EXPECT_FALSE(new_instance->HasSite());
+
+  // Both should use the same process.
+  EXPECT_EQ(old_instance->GetProcess(), new_instance->GetProcess());
+
+  // Close the test's initial window.  This should destroy the initial
+  // BrowsingInstance and remove it from ChildProcessSecurityPolicy.
+  //
+  // TODO(wjmaclean): Update this to handle timeouts once
+  // ChildProcessSecurityPolicy is updated to keep track of multiple
+  // BrowsingInstances per process, and BrowsingInstance removal uses a
+  // timeout.
+  shell()->Close();
+
+  // Navigate to a web URL in the second window.  This shouldn't crash.
+  GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell2->web_contents(), url));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          RenderFrameHostManagerTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
@@ -9107,4 +9165,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(All,
                          RenderFrameHostManagerDefaultProcessTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         RenderFrameHostManagerNoSiteIsolationTest,
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+
 }  // namespace content
