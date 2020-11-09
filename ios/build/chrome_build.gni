@@ -14,9 +14,6 @@ declare_args() {
   # Enable iOS 14, WidgetKit extension.
   ios_enable_widget_kit_extension = true
 
-  # Enable iOS 14, WidgetKit extension (prebuilt).
-  ios_enable_prebuilt_widget_kit_extension = false
-
   # Enable share extension.
   ios_enable_share_extension = true
 
